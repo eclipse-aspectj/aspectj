@@ -43,7 +43,9 @@ import org.aspectj.apache.bcel.generic.SWAP;
 import org.aspectj.apache.bcel.generic.StoreInstruction;
 import org.aspectj.apache.bcel.generic.TargetLostException;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -56,6 +58,7 @@ import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Var;
 
@@ -1456,7 +1459,14 @@ public class BcelShadow extends Shadow {
 		 
 		// !!! THIS BLOCK OF CODE SHOULD BE IN A METHOD CALLED weaveAround(...);
         Member mungerSig = munger.getSignature();
-        ResolvedTypeX declaringType = world.resolve(mungerSig.getDeclaringType());
+        ResolvedTypeX declaringType = world.resolve(mungerSig.getDeclaringType(),true);
+        if (declaringType == ResolvedTypeX.MISSING) {
+          IMessage msg = new Message(
+                WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE,declaringType.getClassName()),
+                "",IMessage.ERROR,getSourceLocation(),null,
+                new ISourceLocation[]{ munger.getSourceLocation()});
+          world.getMessageHandler().handleMessage(msg);
+        }
         //??? might want some checks here to give better errors
         BcelObjectType ot = BcelWorld.getBcelObjectType(declaringType); 
         
@@ -1793,11 +1803,20 @@ public class BcelShadow extends Shadow {
 			
 			returnConversionCode.append(InstructionConstants.ALOAD_0); // put "this" back on the stack
 			for (int i = 0, len = stateTypes.length; i < len; i++) {
+                TypeX bcelTX = BcelWorld.fromBcel(stateTypes[i]);
+                ResolvedTypeX stateRTX = world.resolve(bcelTX,true);
+                if (stateRTX == ResolvedTypeX.MISSING) {
+                    IMessage msg = new Message(
+                             WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE_PREINIT,bcelTX.getClassName()),
+                              "",IMessage.ERROR,getSourceLocation(),null,
+                              new ISourceLocation[]{ munger.getSourceLocation()});
+                    world.getMessageHandler().handleMessage(msg);
+                }
 				stateTempVar.appendConvertableArrayLoad(
 					returnConversionCode, 
 					fact, 
 					i, 
-					world.resolve(BcelWorld.fromBcel(stateTypes[i])));
+					stateRTX);
 			}
 		} else {
 	        returnConversionCode = 
