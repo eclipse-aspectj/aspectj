@@ -24,6 +24,19 @@ import org.aspectj.tools.ajc.AjcTestCase;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class AjcTest {
+	
+	private static boolean is13VMOrGreater = true;
+	private static boolean is14VMOrGreater = true;
+	private static boolean is15VMOrGreater = false;
+	
+	static {
+		String vm = System.getProperty("java.vm.version");
+		if (vm.startsWith("1.3")) {
+			is14VMOrGreater = false;
+		} else if (vm.startsWith("1.5")) {
+			is15VMOrGreater = true;
+		}
+	}
 
 	private List testSteps = new ArrayList();
 	
@@ -32,6 +45,7 @@ public class AjcTest {
 	private String title;
 	private String keywords;
 	private String comment;
+	private String vmLevel = "1.4";
 
 	public AjcTest() {
 	}
@@ -42,8 +56,9 @@ public class AjcTest {
 	}
 	
 	public void runTest(AjcTestCase testCase) {
+		if (!canRunOnThisVM()) return;
 		try {
-			System.out.print("TEST: " + getTitle() + "\t");
+			System.out.print("TEST: " + getTitle() + "\t");			
 			for (Iterator iter = testSteps.iterator(); iter.hasNext();) {
 				ITestStep step = (ITestStep) iter.next();
 				step.setBaseDir(getDir());
@@ -53,6 +68,18 @@ public class AjcTest {
 		} finally {
 			System.out.println("DONE");
 		}
+	}
+	
+	private boolean canRunOnThisVM() {		
+		if (vmLevel.equals("1.3")) return true;
+		boolean canRun = true;
+		if (vmLevel.equals("1.4")) canRun = is14VMOrGreater;
+		if (vmLevel.equals("1.5")) canRun = is15VMOrGreater;
+		if (!canRun) {
+			System.out.println("***SKIPPING TEST***" + getTitle()+ " needs " + getVmLevel() 
+					+ ", currently running on " + System.getProperty("java.vm.version"));
+		}
+		return canRun;
 	}
 	
 	/**
@@ -117,4 +144,17 @@ public class AjcTest {
 		this.title = title;
 	}
 
+	/**
+	 * @param vmLevel The vmLevel to set.
+	 */
+	public void setVmLevel(String vmLevel) {
+		this.vmLevel = vmLevel;
+	}
+	
+	/**
+	 * @return Returns the vmLevel.
+	 */
+	public String getVmLevel() {
+		return vmLevel;
+	}
 }

@@ -238,6 +238,7 @@ public class AjcTestCase extends TestCase {
 					null,
 					Collections.EMPTY_LIST,
 					Collections.EMPTY_LIST,
+					Collections.EMPTY_LIST,
 					Collections.EMPTY_LIST);
 		
 		boolean ignoreInfos = true;
@@ -245,6 +246,7 @@ public class AjcTestCase extends TestCase {
 		public List infos;
 		public List warnings;
 		public List errors;
+		public List weaves;
 		
 		/**
 		 * Set to true to enable or disable comparison of information messages. 
@@ -272,7 +274,7 @@ public class AjcTestCase extends TestCase {
 		 * @param fails The set of fail or abort messages to test for - can pass null to indicate
 		 * empty set.
 		 */
-		public MessageSpec(List infos, List warnings, List errors, List fails) {
+		public MessageSpec(List infos, List warnings, List errors, List fails, List weaves) {
 			if (infos != null) {
 				this.infos = infos;
 				ignoreInfos = false;
@@ -282,6 +284,7 @@ public class AjcTestCase extends TestCase {
 			this.warnings = ((warnings == null) ? Collections.EMPTY_LIST : warnings);
 			this.errors = ((errors == null) ? Collections.EMPTY_LIST : errors);
 			this.fails = ((fails == null) ? Collections.EMPTY_LIST : fails);
+			this.weaves = ((weaves == null) ? Collections.EMPTY_LIST : weaves);
 		}
 		
 		/**
@@ -290,7 +293,7 @@ public class AjcTestCase extends TestCase {
 		 * abort messages in a CompilationResult will be a test failure.
 		 */
 		public MessageSpec(List infos, List warnings, List errors) {
-			this(infos,warnings,errors,null);
+			this(infos,warnings,errors,null,null);
 		}
 
 		/**
@@ -300,7 +303,7 @@ public class AjcTestCase extends TestCase {
 		 * messages will be ignored.
 		 */
 		public MessageSpec(List warnings, List errors) {
-			this(null,warnings,errors,null);
+			this(null,warnings,errors,null,null);
 		}
 	}
 	
@@ -377,20 +380,23 @@ public class AjcTestCase extends TestCase {
 		List missingInfos = copyAll(expected.infos);
 		List missingWarnings = copyAll(expected.warnings);
 		List missingErrors = copyAll(expected.errors);
+		List missingWeaves = copyAll(expected.weaves);
 		List extraFails = copyAll(result.getFailMessages());
 		List extraInfos = copyAll(result.getInfoMessages());
 		List extraWarnings = copyAll(result.getWarningMessages());
 		List extraErrors = copyAll(result.getErrorMessages());
+		List extraWeaves = copyAll(result.getWeaveMessages());
 		compare(expected.fails,result.getFailMessages(),missingFails,extraFails);
 		compare(expected.warnings,result.getWarningMessages(),missingWarnings,extraWarnings);
 		compare(expected.errors,result.getErrorMessages(),missingErrors,extraErrors);
 		if (!expected.isIgnoringInfoMessages()) {
 			compare(expected.infos,result.getInfoMessages(),missingInfos,extraInfos);
 		}
+		compare(expected.weaves,result.getWeaveMessages(),missingWeaves,extraWeaves);
 
 		boolean infosEmpty = expected.isIgnoringInfoMessages() ? true: (missingInfos.isEmpty() && extraInfos.isEmpty());
-		if ( !(missingFails.isEmpty() && missingWarnings.isEmpty() && missingErrors.isEmpty() &&
-			   extraFails.isEmpty() && extraWarnings.isEmpty() && extraErrors.isEmpty() && infosEmpty)) {
+		if ( !(missingFails.isEmpty() && missingWarnings.isEmpty() && missingErrors.isEmpty() && missingWeaves.isEmpty() &&
+			   extraFails.isEmpty() && extraWarnings.isEmpty() && extraErrors.isEmpty() && extraWeaves.isEmpty() && infosEmpty)) {
 			StringBuffer failureReport = new StringBuffer(message);
 			failureReport.append("\n");
 			if (!expected.isIgnoringInfoMessages()) {
@@ -399,12 +405,14 @@ public class AjcTestCase extends TestCase {
 			addMissing(failureReport,"warning",missingWarnings);
 			addMissing(failureReport,"error",missingErrors);
 			addMissing(failureReport,"fail",missingFails);
+			addMissing(failureReport,"weaveInfo",missingWeaves);
 			if (!expected.isIgnoringInfoMessages()) {
 				addExtra(failureReport,"info",extraInfos);
 			}
 			addExtra(failureReport,"warning",extraWarnings);
 			addExtra(failureReport,"error",extraErrors);
 			addExtra(failureReport,"fail",extraFails);
+			addExtra(failureReport,"weaveInfo",extraWeaves);
 			failureReport.append("\ncommand was: ajc");
 			String[] args = result.getArgs();
 			for (int i = 0; i < args.length; i++) {
@@ -475,6 +483,10 @@ public class AjcTestCase extends TestCase {
 			fail("IOException thrown during compilation: " + ioEx);
 		}
 		return null;
+	}
+	
+	public File getSandboxDirectory() {
+		return ajc.getSandboxDirectory();
 	}
 	
 	/**

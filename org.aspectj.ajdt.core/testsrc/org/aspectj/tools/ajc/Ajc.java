@@ -156,6 +156,7 @@ public class Ajc {
 		List errors = new ArrayList();
 		List warnings = new ArrayList();
 		List infos = new ArrayList();
+		List weaves = new ArrayList();
 		
 		try {
 			if (!isIncremental && shouldEmptySandbox) {
@@ -170,13 +171,13 @@ public class Ajc {
 				main.runMain(args,false);
 			}
 			addMessagesTo(infos,holder.getMessages(IMessage.INFO,false));
-			addMessagesTo(infos,holder.getMessages(IMessage.WEAVEINFO,false));
 			addMessagesTo(warnings,holder.getWarnings());
 			addMessagesTo(errors,holder.getErrors());
 			addMessagesTo(fails,holder.getMessages(IMessage.FAIL,true));
+			addMessagesTo(weaves,holder.getMessages(IMessage.WEAVEINFO,false));
 			String stdOut = new String(out.toByteArray());
 			String stdErr = new String(err.toByteArray());
-			result = new CompilationResult(args,stdOut,stdErr,infos,errors,warnings,fails);
+			result = new CompilationResult(args,stdOut,stdErr,infos,errors,warnings,fails,weaves);
 		} finally {
 			System.setOut(systemOut);
 			System.setErr(systemErr);

@@ -63,10 +63,14 @@ public class CompileSpec implements ITestStep {
 	public void setBaseDir(String dir) {
 		this.baseDir = dir;
 	}
+	
+	protected String getBaseDir() { return baseDir; }
 		
 	public void setTest(AjcTest t) {
 		this.myTest = t;
 	}
+	
+	protected AjcTest getTest() { return myTest; }
 	
 	/**
 	 * @return Returns the aspectpath.
@@ -186,7 +190,7 @@ public class CompileSpec implements ITestStep {
 	public String getExtdirs() { return extdirs;}
 	public void setExtdirs(String extdirs) { this.extdirs = extdirs; }
 	
-	private String[] buildArgs() {
+	protected String[] buildArgs() {
 		StringBuffer args = new StringBuffer();
 		// add any set options, and then files to compile at the end
 		if (getAspectpath() != null) {
@@ -264,11 +268,12 @@ public class CompileSpec implements ITestStep {
 		return ret;
 	}
 	
-	private AjcTestCase.MessageSpec buildMessageSpec() {
+	protected AjcTestCase.MessageSpec buildMessageSpec() {
 		List infos = null;
 		List warnings = new ArrayList();
 		List errors = new ArrayList();
 		List fails = new ArrayList();
+		List weaveInfos = new ArrayList();
 		for (Iterator iter = expected.iterator(); iter.hasNext();) {
 			ExpectedMessageSpec exMsg = (ExpectedMessageSpec) iter.next();
 			String kind = exMsg.getKind();
@@ -283,9 +288,11 @@ public class CompileSpec implements ITestStep {
 				fails.add(exMsg.toMessage());
 			} else if (kind.equals("abort")) {
 				fails.add(exMsg.toMessage());
+			} else if (kind.equals("weave")) {
+				weaveInfos.add(exMsg.toMessage());
 			}
 		}
-		return new AjcTestCase.MessageSpec(infos,warnings,errors,fails);
+		return new AjcTestCase.MessageSpec(infos,warnings,errors,fails,weaveInfos);
 	}
 
 }

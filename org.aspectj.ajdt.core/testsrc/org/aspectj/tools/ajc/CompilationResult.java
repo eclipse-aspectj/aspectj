@@ -39,6 +39,7 @@ public class CompilationResult {
 	private List /*IMessage*/ errorMessages;
 	private List /*IMessage*/ warningMessages;
 	private List /*IMessage*/ failMessages;
+	private List /*IMessage*/ weaveMessages;
 
 	/**
 	 * Build a compilation result - called by the Ajc.compile and
@@ -52,7 +53,8 @@ public class CompilationResult {
 			List infoMessages,
 			List errorMessages,
 			List warningMessages,
-			List failMessages) {
+			List failMessages,
+			List weaveMessages) {
 		this.args = args;
 		this.stdOut = stdOut;
 		this.stdErr = stdErr;
@@ -60,6 +62,7 @@ public class CompilationResult {
 		this.errorMessages = (errorMessages == null) ? Collections.EMPTY_LIST : errorMessages;
 		this.warningMessages = (warningMessages == null) ? Collections.EMPTY_LIST : warningMessages;		
 		this.failMessages = (failMessages == null) ? Collections.EMPTY_LIST : failMessages;		
+		this.weaveMessages = (weaveMessages == null) ? Collections.EMPTY_LIST : weaveMessages;		
 	}
 	
 	/**
@@ -78,7 +81,7 @@ public class CompilationResult {
 	/**
 	 * True if the compiler issued any messages of any kind.
 	 */
-	public boolean hasMessages() { return (hasInfoMessages() || hasErrorMessages() || hasWarningMessages() || hasFailMessages()); }
+	public boolean hasMessages() { return (hasInfoMessages() || hasErrorMessages() || hasWarningMessages() || hasFailMessages() || hasWeaveMessages()); }
 	/**
 	 * True if the compiler issued one or more informational messages.
 	 */
@@ -95,7 +98,11 @@ public class CompilationResult {
 	 * True if the compiler issued one or more fail or abort messages.
 	 */
 	public boolean hasFailMessages() { return !failMessages.isEmpty(); }
-	
+	/**
+	 * True if the compiler issued one or more weave info messages.
+	 */
+	public boolean hasWeaveMessages() { return !weaveMessages.isEmpty(); }
+		
 	/**
 	 * The informational messages produced by the compiler. The list
 	 * entries are the <code>IMessage</code> objects created during the
@@ -137,6 +144,8 @@ public class CompilationResult {
 	 */
 	public List /*IMessage*/ getFailMessages() { return failMessages; }
 	
+	public List /*IMessage*/ getWeaveMessages() { return weaveMessages; }
+	
 	/**
 	 * Returns string containing message count summary, list of messages
 	 * by type, and the actual ajc compilation command that was issued.
@@ -144,7 +153,7 @@ public class CompilationResult {
 	public String toString() {
 		StringBuffer buff = new StringBuffer();
 		buff.append("AspectJ Compilation Result:\n");
-		int totalMessages = infoMessages.size() + warningMessages.size() + errorMessages.size() + failMessages.size();
+		int totalMessages = infoMessages.size() + warningMessages.size() + errorMessages.size() + failMessages.size() + weaveMessages.size();
 		buff.append(totalMessages);
 		buff.append(" messages");
 		if (totalMessages > 0) {
@@ -156,7 +165,9 @@ public class CompilationResult {
 			buff.append(errorMessages.size());
 			buff.append(" error, ");
 			buff.append(failMessages.size());
-			buff.append(" fail)");
+			buff.append(" fail, )");
+			buff.append(weaveMessages.size());
+			buff.append(" weaveInfo");
 		} 
 		buff.append("\n");
 		int msgNo = 1;
@@ -186,6 +197,14 @@ public class CompilationResult {
 		msgNo = 1;
 		for (Iterator iter = infoMessages.iterator(); iter.hasNext();) {
 			buff.append("[info ");
+			buff.append(msgNo++);
+			buff.append("] ");
+			buff.append(iter.next().toString());			
+			buff.append("\n");
+		}
+		msgNo = 1;
+		for (Iterator iter = weaveMessages.iterator(); iter.hasNext();) {
+			buff.append("[weaveInfo ");
 			buff.append(msgNo++);
 			buff.append("] ");
 			buff.append(iter.next().toString());			

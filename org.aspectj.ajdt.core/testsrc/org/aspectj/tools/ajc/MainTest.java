@@ -37,6 +37,6 @@ public class MainTest extends AjcTestCase {
         xoptionText = xoptionText.substring("{compiler.name}".length());
 		CompilationResult result = ajc(null,new String[] {"-X"});
 		assertMessages(result,"Expecting xoptions usage message",
-				new MessageSpec(null,null,null,newMessageList(new Message(xoptionText))));
+				new MessageSpec(null,null,null,newMessageList(new Message(xoptionText)),null));
     }
 }

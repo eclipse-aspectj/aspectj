@@ -30,6 +30,8 @@ public class RunSpec implements ITestStep {
 	private String baseDir;
 	private String options;
 	private AjcTest myTest;
+	private OutputSpec stdErrSpec;
+	private OutputSpec stdOutSpec;
 	
 	public RunSpec() {
 	}
@@ -43,6 +45,12 @@ public class RunSpec implements ITestStep {
 		}
 		String[] args = buildArgs();
 		AjcTestCase.RunResult rr = inTestCase.run(getClassToRun(),args,null);
+		if (stdErrSpec != null) {
+			stdErrSpec.matchAgainst(rr.getStdErr());
+		}
+		if (stdOutSpec != null) {
+			stdOutSpec.matchAgainst(rr.getStdOut());
+		}
 	}
 
 	public void addExpectedMessage(ExpectedMessageSpec message) {
@@ -63,6 +71,13 @@ public class RunSpec implements ITestStep {
 	
 	public void setOptions(String options) {
 		this.options = options;
+	}
+	
+	public void addStdErrSpec(OutputSpec spec) {
+		this.stdErrSpec = spec;
+	}
+	public void addStdOutSpec(OutputSpec spec) {
+		this.stdOutSpec = spec;
 	}
 	/**
 	 * @return Returns the classToRun.
