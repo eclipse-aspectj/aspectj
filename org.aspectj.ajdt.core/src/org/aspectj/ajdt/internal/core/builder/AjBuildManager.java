@@ -92,189 +92,125 @@ public class AjBuildManager {
         return buildConfig.isGenerateModelMode();
     }
 
+	public boolean batchBuild(
+        AjBuildConfig buildConfig, 
+        IMessageHandler baseHandler) 
+        throws IOException, AbortException {
+        return doBuild(buildConfig, baseHandler, true);
+    }
+
+    public boolean incrementalBuild(
+        AjBuildConfig buildConfig, 
+        IMessageHandler baseHandler) 
+        throws IOException, AbortException {
+        return doBuild(buildConfig, baseHandler, false);
+    }
+    
+
     /** @throws AbortException if check for runtime fails */
-	public boolean batchBuild(AjBuildConfig buildConfig, IMessageHandler baseHandler) 
-        throws IOException, AbortException
-    {
-		this.handler = CountingMessageHandler.makeCountingMessageHandler(baseHandler);
- 
-		try {
-			setBuildConfig(buildConfig);
-			state.prepareForNextBuild(buildConfig);
-			
-			String check = checkRtJar(buildConfig);
-			if (check != null) {
+    protected boolean doBuild(
+        AjBuildConfig buildConfig, 
+        IMessageHandler baseHandler, 
+        boolean batch) throws IOException, AbortException {
+        
+        try {
+            boolean canIncremental = state.prepareForNextBuild(buildConfig);
+            if (!canIncremental && !batch) { // retry as batch?
+                return doBuild(buildConfig, handler, true);
+            }
+            this.handler = 
+                CountingMessageHandler.makeCountingMessageHandler(baseHandler);
+            // XXX duplicate, no? remove?
+            String check = checkRtJar(buildConfig);
+            if (check != null) {
                 if (FAIL_IF_RUNTIME_NOT_FOUND) {
-                    MessageUtil.error(check);
+                    MessageUtil.error(handler, check);
                     return false;
                 } else {
-                    MessageUtil.warn(check);
+                    MessageUtil.warn(handler, check);
                 }
             }
-
-			setupModel();
-            initBcelWorld(handler);
+            // if (batch) {
+                setBuildConfig(buildConfig);
+            //}
+            setupModel();
+            if (batch) {
+                initBcelWorld(handler);
+            }
             if (handler.hasErrors()) {
                 return false;
             }
-
-			if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {  
-				bcelWorld.setModel(StructureModelManager.INSTANCE.getStructureModel());
-			}
-			
-			performCompilation(buildConfig.getFiles());
-
-			if (buildConfig.isEmacsSymMode()) {
-				new org.aspectj.ajdt.internal.core.builder.EmacsStructureModelManager().externalizeModel();
-			}
-
-			if (handler.hasErrors()) {
-                return false;
-            }
             
-            state.successfulCompile(buildConfig);  //!!! a waste of time when not incremental
+            if (batch) {
+                //System.err.println("XXXX batch: " + buildConfig.getFiles());
+                if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {  
+                    bcelWorld.setModel(StructureModelManager.INSTANCE.getStructureModel());
+                    // in incremental build, only get updated model?
+                }
+                performCompilation(buildConfig.getFiles());
+                if (handler.hasErrors()) {
+                    return false;
+                }
+            } else {
+// done already?
+//                if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {  
+//                    bcelWorld.setModel(StructureModelManager.INSTANCE.getStructureModel());
+//                }
+                //System.err.println("XXXX start inc ");
+                List files = state.getFilesToCompile(true);
+                for (int i = 0; (i < 5) && !files.isEmpty(); i++) {
+                    //System.err.println("XXXX inc: " + files);
+                    performCompilation(files);
+                    if (handler.hasErrors()) {
+                        return false;
+                    } 
+                    files = state.getFilesToCompile(false);
+                }
+                if (!files.isEmpty()) {
+                    return batchBuild(buildConfig, baseHandler);
+                }
+            }
 
-			boolean weaved = weaveAndGenerateClassFiles();
-			
-			if (buildConfig.isGenerateModelMode()) {
-				StructureModelManager.INSTANCE.fireModelUpdated();  
-			}
-			return !handler.hasErrors();
-		} finally {
+            // XXX not in Mik's incremental
+            if (buildConfig.isEmacsSymMode()) {
+                new org.aspectj.ajdt.internal.core.builder.EmacsStructureModelManager().externalizeModel();
+            }
+            // have to tell state we succeeded or next is not incremental
+            state.successfulCompile(buildConfig);
+
+            boolean weaved = weaveAndGenerateClassFiles();
+            // if not weaved, then no-op build, no model changes
+            // but always returns true
+            // XXX weaved not in Mik's incremental
+            if (buildConfig.isGenerateModelMode()) {
+                StructureModelManager.INSTANCE.fireModelUpdated();  
+            }
+            return !handler.hasErrors();
+        } finally {
             handler = null;        
         }
-	}
+    }
+     
+    private void setupModel() {
+        String rootLabel = "<root>";
+        if (buildConfig.getConfigFile() != null) {
+            rootLabel = buildConfig.getConfigFile().getName();
+            StructureModelManager.INSTANCE.getStructureModel().setConfigFile(
+                buildConfig.getConfigFile().getAbsolutePath()
+            );  
+        }
+        StructureModelManager.INSTANCE.getStructureModel().setRoot(
+            new ProgramElementNode(
+                rootLabel,
+                ProgramElementNode.Kind.FILE_JAVA,
+                new ArrayList()));
+                
+        HashMap modelFileMap = new HashMap();
+        StructureModelManager.INSTANCE.getStructureModel().setFileMap(new HashMap());
+        setStructureModel(StructureModelManager.INSTANCE.getStructureModel());            
+    }
     
-	private void setupModel() {
-		String rootLabel = "<root>";
-		if (buildConfig.getConfigFile() != null) {
-			rootLabel = buildConfig.getConfigFile().getName();
-			StructureModelManager.INSTANCE.getStructureModel().setConfigFile(
-				buildConfig.getConfigFile().getAbsolutePath()
-			);	
-		}
-		StructureModelManager.INSTANCE.getStructureModel().setRoot(
-			new ProgramElementNode(
-				rootLabel,
-				ProgramElementNode.Kind.FILE_JAVA,
-				new ArrayList()));
-				
-		HashMap modelFileMap = new HashMap();
-		StructureModelManager.INSTANCE.getStructureModel().setFileMap(new HashMap());
-		setStructureModel(StructureModelManager.INSTANCE.getStructureModel());
-			
-	}
-
-	//XXX fake incremental
-	public boolean incrementalBuild(AjBuildConfig buildConfig, IMessageHandler baseHandler) throws IOException {
-//		StructureModelManager.INSTANCE.getStructureModel().getRoot().removeChildren();
-
-		
-		if (!state.prepareForNextBuild(buildConfig)) {
-			return batchBuild(buildConfig, baseHandler);
-		}
-
-		
-		
-		//!!! too much cut-and-paste from batchBuild
-		this.handler = CountingMessageHandler.makeCountingMessageHandler(baseHandler);
- 
-		String check = checkRtJar(buildConfig);
-		if (check != null) {
-			IMessage message = new Message(check, Message.WARNING, null, null);
-			// give delegate a chance to implement different message (abort)?
-			handler.handleMessage(message); 
-		} 
- 
-		try {
-			setBuildConfig(buildConfig);
-
-			setupModel();
-//			initBcelWorld(handler);
-//			if (handler.hasErrors()) {
-//				return false;
-//			}
-
-			if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {  
-				bcelWorld.setModel(StructureModelManager.INSTANCE.getStructureModel());
-			}
-
-//			if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {  
-//				bcelWorld.setModel(StructureModelManager.INSTANCE.getStructureModel());
-//			}
-			int count = 0;
-			List filesToCompile;
-			while ( !(filesToCompile = state.getFilesToCompile(count == 0)).isEmpty() ) {
-				//if (count > 0) return batchBuild(buildConfig, baseHandler);  //??? only 1 try
-				
-				performCompilation(filesToCompile);
-				
-				if (handler.hasErrors()) return false;
-				
-				if (count++ > 5) {
-					return batchBuild(buildConfig, baseHandler);
-				}
-			}
-
-			if (handler.hasErrors()) {
-				return false;
-			}
-            
-			state.successfulCompile(buildConfig);
-
-			boolean weaved = weaveAndGenerateClassFiles();
-
-			
-			if (buildConfig.isGenerateModelMode()) {
-				StructureModelManager.INSTANCE.fireModelUpdated();  
-			}  
-			return !handler.hasErrors();
-		} finally {
-			handler = null;        
-		}		
-		
-	}
-
-//        if (javaBuilder == null || javaBuilder.currentProject == null || javaBuilder.lastState == null) {
-//        	return batchBuild(buildConfig, messageHandler);
-//        }
-//        
-//        
-//        final CountingMessageHandler counter = new CountingMessageHandler(messageHandler);                    
-//        try {
-//            currentHandler = counter;
-//    		IncrementalBuilder builder = getIncrementalBuilder(messageHandler);
-//    //		SimpleLookupTable deltas = 
-//    		//XXX for Mik, replace this with a call to builder.build(SimpleLookupTable deltas)
-//        
-//    		IContainer[] sourceFolders = new IContainer[buildConfig.getSourceRoots().size()];
-//    		int count = 0;
-//    		for (Iterator i = buildConfig.getSourceRoots().iterator(); i.hasNext(); count++) {
-//    			sourceFolders[count] = new FilesystemFolder(((File)i.next()).getAbsolutePath());
-//    		}
-//    		builder.setSourceFolders(sourceFolders);
-//    		getJavaBuilder().binaryResources = new SimpleLookupTable();
-//    		SimpleLookupTable deltas = getDeltas(buildConfig);
-//    	 
-//    	 	//MessageUtil.info(messageHandler, "about to do incremental build: " + deltas);
-//    	 
-//    		boolean succeeded = builder.build(deltas);
-//    		
-//       		if (counter.hasErrors()) {
-//                return false;
-//            }
-//    		
-//       		if (succeeded) {
-//    			return weaveAndGenerateClassFiles(builder.getNewState());
-//    		} else {
-//    			return batchBuild(buildConfig, messageHandler);
-//    		}
-//        } finally {
-//            currentHandler = null;
-//        }
-//    
-//	}	
-		
+    /** init only on initial batch compile? no file-specific options */
 	private void initBcelWorld(IMessageHandler handler) throws IOException {
 		bcelWorld = new BcelWorld(buildConfig.getClasspath(), handler);
 		bcelWorld.setXnoInline(buildConfig.isXnoInline());
@@ -305,11 +241,6 @@ public class AjBuildManager {
 		
 		//check for org.aspectj.runtime.JoinPoint
 		bcelWorld.resolve("org.aspectj.lang.JoinPoint");
-		
-//		if () {
-//			bcelWorld.showMessage(IMessage.ERROR,
-//					"can't find type org.aspectj.lang.JoinPoint on classpath", null, null);
-//		}
 	}
 	
 	public World getWorld() {
@@ -327,7 +258,8 @@ public class AjBuildManager {
 		handler.handleMessage(MessageUtil.info("weaving"));
 		if (progressListener != null) progressListener.setText("weaving aspects");
 		//!!! doesn't provide intermediate progress during weaving
-		addAspectClassFilesToWeaver(state.addedClassFiles);
+		// XXX add all aspects even during incremental builds?
+        addAspectClassFilesToWeaver(state.addedClassFiles);
 		if (buildConfig.isNoWeave()) {
 			if (buildConfig.getOutputJar() != null) {
 				bcelWeaver.dumpUnwoven(buildConfig.getOutputJar());
@@ -370,17 +302,6 @@ public class AjBuildManager {
 			defaultEncoding = null; //$NON-NLS-1$
 
 		for (int i = 0; i < fileCount; i++) {
-//			these tests are performed for AjBuildConfig
-//			char[] charName = filenames[i].toCharArray();
-//			if (knownFileNames.get(charName) != null) {
-//				MessageUtil.error(handler, "duplicate file " + filenames[i]);
-//			} else {
-//				knownFileNames.put(charName, charName);
-//			}
-//			File file = new File(filenames[i]);
-//			if (!file.exists()) {
-//				MessageUtil.error(handler, "missing file " + filenames[i]);
-//			}
 			String encoding = encodings[i];
 			if (encoding == null)
 				encoding = defaultEncoding;
@@ -430,13 +351,6 @@ public class AjBuildManager {
 			environment = new StatefulNameEnvironment(environment, state.classesFromName);
 		}
 		
-//		Compiler batchCompiler =
-//			new Compiler(
-//				environment,
-//				getHandlingPolicy(),
-//				getOptions(),
-//				getBatchRequestor(),
-//				getProblemFactory());
 		AjCompiler compiler = new AjCompiler(
 			environment,
 			DefaultErrorHandlingPolicies.proceedWithAllProblems(),
