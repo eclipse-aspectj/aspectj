@@ -247,7 +247,12 @@ class BcelClassWeaver implements IClassWeaver {
         
         // start by munging all typeMungers
         for (Iterator i = typeMungers.iterator(); i.hasNext(); ) {
-        	BcelTypeMunger munger = (BcelTypeMunger)i.next();
+        	Object o = i.next();
+        	if ( !(o instanceof BcelTypeMunger) ) {
+        		System.err.println("surprising: " + o);
+        		continue;
+        	}
+        	BcelTypeMunger munger = (BcelTypeMunger)o;
         	isChanged |= munger.munge(this);
         }
         

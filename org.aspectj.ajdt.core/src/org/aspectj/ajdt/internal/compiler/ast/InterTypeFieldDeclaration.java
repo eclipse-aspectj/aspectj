@@ -25,9 +25,15 @@ import org.eclipse.jdt.internal.compiler.codegen.CodeStream;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 
+
 /**
+ * An inter-type field declaration.
+ * 
  * returnType encodes the type of the field
  * selector encodes the name
+ * statements is null until resolution when it is filled in from the initializer
+ * 
+ * @author Jim Hugunin
  */
 public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 	public Expression initialization;

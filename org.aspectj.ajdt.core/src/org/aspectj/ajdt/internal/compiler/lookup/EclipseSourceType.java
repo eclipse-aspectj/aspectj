@@ -15,8 +15,7 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 
 import java.util.*;
 
-import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
-import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.*;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.*;
@@ -26,6 +25,11 @@ import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 
+/**
+ * Supports viewing eclipse TypeDeclarations/SourceTypeBindings as a ResolvedTypeX
+ * 
+ * @author Jim Hugunin
+ */
 public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 	protected ResolvedPointcutDefinition[] declaredPointcuts = null;
 	protected ResolvedMember[] declaredMethods = null;
@@ -74,21 +78,32 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 		List declaredMethods = new ArrayList();
 		List declaredFields = new ArrayList();
 		
-		MethodBinding[] methods = binding.methods();
-		for (int i=0, len=methods.length; i < len; i++) {
-			MethodBinding m = methods[i];
-			AbstractMethodDeclaration amd = m.sourceMethod();
-			if (amd == null) continue; //???
-			if (amd instanceof PointcutDeclaration) {
-				PointcutDeclaration d = (PointcutDeclaration)amd;
-				ResolvedPointcutDefinition df = d.makeResolvedPointcutDefinition();
-				declaredPointcuts.add(df);
-			} else {
-				//XXX this doesn't handle advice quite right
-				declaredMethods.add(eclipseWorld().makeResolvedMember(m));
+		binding.methods();  // the important side-effect of this call is to make sure bindings are completed
+		AbstractMethodDeclaration[] methods = declaration.methods;
+		if (methods != null) {
+			for (int i=0, len=methods.length; i < len; i++) {
+				AbstractMethodDeclaration amd = methods[i];
+				if (amd == null || amd.ignoreFurtherInvestigation) continue;
+				if (amd instanceof PointcutDeclaration) {
+					PointcutDeclaration d = (PointcutDeclaration)amd;
+					ResolvedPointcutDefinition df = d.makeResolvedPointcutDefinition();
+					declaredPointcuts.add(df);
+				} else if (amd instanceof InterTypeDeclaration) {
+					// these are handled in a separate pass
+					continue;
+				} else if (amd instanceof DeclareDeclaration) {
+					// these are handled in a separate pass
+					continue;
+				} else if (amd instanceof AdviceDeclaration) {
+					// these are ignored during compilation and only used during weaving
+					continue;
+				} else {
+					if (amd.binding == null || !amd.binding.isValidBinding()) continue;
+					declaredMethods.add(eclipseWorld().makeResolvedMember(amd.binding));
+				}
 			}
 		}
-		
+
 		FieldBinding[] fields = binding.fields();
 		for (int i=0, len=fields.length; i < len; i++) {
 			FieldBinding f = fields[i];

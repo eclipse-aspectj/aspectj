@@ -60,7 +60,7 @@ public class AjCompiler extends Compiler {
 	 */
 	protected void process(CompilationUnitDeclaration unit, int i) {
 		EclipseFactory world = 
-			EclipseFactory.forLookupEnvironment(lookupEnvironment);
+			EclipseFactory.fromLookupEnvironment(lookupEnvironment);
 		world.showMessage(IMessage.INFO, "compiling " + new String(unit.getFileName()), null, null);
 		super.process(unit, i);
 				

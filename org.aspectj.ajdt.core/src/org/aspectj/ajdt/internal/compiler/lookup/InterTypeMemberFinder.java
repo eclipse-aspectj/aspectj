@@ -380,6 +380,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 	
 
 	public void addInterTypeField(FieldBinding binding) {
+		//System.err.println("adding: " + binding + " to " + this);
 		interTypeFields.add(binding);
 	}
 	

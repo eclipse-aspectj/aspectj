@@ -28,7 +28,11 @@ import org.eclipse.jdt.internal.compiler.flow.FlowInfo;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 
-
+/**
+ * An inter-type method declaration.
+ *
+ * @author Jim Hugunin
+ */
 public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 	public InterTypeMethodDeclaration(CompilationResult result, TypeReference onType) {
 		super(result, onType);

@@ -115,6 +115,7 @@ def makeSet(errors):
 	ret = {}
 	for e in errors:
 		loc = e.getISourceLocation()
+		if loc is None: continue  #???
 		s = "%s:%i" % (loc.sourceFile.name[:-5], loc.line)
 		ret[s] = s
 	return ret.keys()

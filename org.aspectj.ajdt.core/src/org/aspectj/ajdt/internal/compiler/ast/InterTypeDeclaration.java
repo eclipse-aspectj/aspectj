@@ -28,16 +28,18 @@ import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.util.CharOperation;
 
+/**
+ * Base type for all inter-type declarations including methods, fields and constructors.
+ *
+ * @author Jim Hugunin
+ */
 public abstract class InterTypeDeclaration extends MethodDeclaration {
-	//public AstNode myDeclaration;
 	public TypeReference onType;
 	protected ReferenceBinding onTypeBinding;
 
 	protected ResolvedTypeMunger munger;
 	protected int declaredModifiers;
 	protected char[] declaredSelector;
-
-	//protected Set superMethodsCalled;
 
 	public InterTypeDeclaration(CompilationResult result, TypeReference onType) {
 		super(result);
@@ -59,7 +61,6 @@ public abstract class InterTypeDeclaration extends MethodDeclaration {
 		
 		
 		ClassScope newParent = new InterTypeScope(upperScope, onTypeBinding);
-			//interBinding.introducedField.declaringClass);
 		scope.parent = newParent;
 		this.scope.isStatic = Modifier.isStatic(declaredModifiers);
 		super.resolve(newParent);
@@ -75,32 +76,15 @@ public abstract class InterTypeDeclaration extends MethodDeclaration {
 		SuperFixerVisitor v = new SuperFixerVisitor(this, onTypeBinding);
 		this.traverse(v, (ClassScope)null);
 		munger.setSuperMethodsCalled(v.superMethodsCalled);
-//		HashSet set = new HashSet();
-//		for (Iterator i = v.superMethodsCalled.iterator(); i.hasNext(); ) {
-//			MethodBinding b = (MethodBinding)i.next();
-//			set.add(EclipseWorld.makeResolvedMember(b));
-//		}
-//		
-//		munger.setSuperMethodsCalled(set);
 	}
 
 	protected void resolveOnType(ClassScope classScope) {
 		checkSpec();		
 		onTypeBinding = (ReferenceBinding)onType.getTypeBinding(classScope);
 		if (!onTypeBinding.isValidBinding()) {
-			if (onTypeBinding instanceof ProblemReferenceBinding) {
-				classScope.problemReporter().invalidType(onType, onTypeBinding);
-			} else {
-				//XXX trouble
-			}
+			classScope.problemReporter().invalidType(onType, onTypeBinding);
 			ignoreFurtherInvestigation = true;
 		}
-		//??? this is not a friendly compiler limitation
-//		if (!(onTypeBinding instanceof SourceTypeBinding)) {
-//			classScope.problemReporter().signalError(onType.sourceStart, onType.sourceEnd,
-//						"can only introduce on types available as source code (compiler limitation)");
-//			ignoreFurtherInvestigation = true;
-//		}
 	}
 	
 	
@@ -130,15 +114,12 @@ public abstract class InterTypeDeclaration extends MethodDeclaration {
 	}
 	
 	protected int generateInfoAttributes(ClassFile classFile) {
-		//munger.getSignature().setPosition(sourceStart, sourceEnd);
-		
-		//System.out.println("generating effective for " + this);
 		List l;;
 		Shadow.Kind kind = getShadowKindForBody();
 		if (kind != null) {
 			l = makeEffectiveSignatureAttribute(munger.getSignature(), kind, true);
 		} else {
-			l = new ArrayList(0); //AstUtil.getAjSyntheticAttribute();
+			l = new ArrayList(0);
 		}
 
 		return classFile.generateMethodInfoAttribute(binding, l);

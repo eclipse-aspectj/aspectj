@@ -13,41 +13,23 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
-import org.aspectj.ajdt.internal.compiler.lookup.InterTypeScope;
-import org.aspectj.weaver.AjAttribute;
-import org.aspectj.weaver.AjcMemberMaker;
-import org.aspectj.weaver.CrosscuttingMembers;
-import org.aspectj.weaver.Member;
-import org.aspectj.weaver.NameMangler;
-import org.aspectj.weaver.NewConstructorTypeMunger;
-import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.ajdt.internal.compiler.lookup.*;
+import org.aspectj.weaver.*;
 import org.eclipse.jdt.internal.compiler.ClassFile;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpression;
-import org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
-import org.eclipse.jdt.internal.compiler.ast.CastExpression;
-import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
-import org.eclipse.jdt.internal.compiler.ast.Expression;
-import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.NullLiteral;
-import org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
-import org.eclipse.jdt.internal.compiler.ast.Statement;
-import org.eclipse.jdt.internal.compiler.ast.TypeReference;
-import org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
-import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
-import org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
-import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
-import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
-import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
+import org.eclipse.jdt.internal.compiler.ast.*;
+import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 
-
+/**
+ * An inter-type constructor declaration.
+ * 
+ * This will generate two implementation methods in the aspect, the main one for the body
+ * of the constructor, and an additional <code>preMethod</code> for the code that 
+ * runs before the super constructor is called.
+ * 
+ * @author Jim Hugunin
+ */
 public class InterTypeConstructorDeclaration extends InterTypeDeclaration {	
 	private MethodDeclaration preMethod;
 	private ExplicitConstructorCall explicitConstructorCall = null;

@@ -23,7 +23,14 @@ import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 
-
+/**
+ * Used to represent any method call to a method named <code>proceed</code>.  During
+ * <code>resolvedType</code> it will be determined if this is actually in the body
+ * of an <code>around</code> advice and if not this will be treated like any other
+ * MessageSend.
+ * 
+ * @author Jim Hugunin
+ */
 public class Proceed extends MessageSend {
 	public boolean inInner = false;
 	
@@ -46,15 +53,13 @@ public class Proceed extends MessageSend {
 
 	public TypeBinding resolveType(BlockScope scope) {
 		// find out if I'm really in an around body or not
-		//??? there is a small performance issue here
+		//??? this could in theory be done by the parser, but that appears to be hard
 		AdviceDeclaration aroundDecl = findEnclosingAround(scope);
 		
 		if (aroundDecl == null) {
 			return super.resolveType(scope);
 		}
 		
-
-
 		constant = NotAConstant;
 		binding = codegenBinding = aroundDecl.proceedMethodBinding;
 		
@@ -125,7 +130,4 @@ public class Proceed extends MessageSend {
 		
 		return findEnclosingAround(scope.parent);
 	}
-
-
-
 }

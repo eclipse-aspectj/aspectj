@@ -127,6 +127,11 @@ public class AjProblemReporter extends ProblemReporter {
 			return;
 		}
 		
+		if (CharOperation.startsWith(abstractMethod.selector, "ajc$interField".toCharArray())) {
+			//??? think through how this could go wrong
+			return;
+		}
+		
 		
 		// if we implemented this method by an inter-type declaration, then there is no error
 		//??? be sure this is always right

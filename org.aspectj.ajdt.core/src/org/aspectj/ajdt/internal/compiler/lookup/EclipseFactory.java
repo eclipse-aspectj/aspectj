@@ -42,13 +42,13 @@ public class EclipseFactory {
 	//XXX currently unused
 	private Map/*TypeBinding, ResolvedTypeX*/ bindingToResolvedTypeX = new HashMap();
 	
-	public static EclipseFactory forLookupEnvironment(LookupEnvironment env) {
+	public static EclipseFactory fromLookupEnvironment(LookupEnvironment env) {
 		AjLookupEnvironment aenv = (AjLookupEnvironment)env;
 		return aenv.factory;
 	}
 	
 	public static EclipseFactory fromScopeLookupEnvironment(Scope scope) {
-		return forLookupEnvironment(AstUtil.getCompilationUnitScope(scope).environment);
+		return fromLookupEnvironment(AstUtil.getCompilationUnitScope(scope).environment);
 	}
 	
 	
@@ -68,50 +68,6 @@ public class EclipseFactory {
 	{
 		getWorld().showMessage(kind, message, loc1, loc2);
 	}
-
-	
-//    public Advice concreteAdvice(
-//       	AjAttribute.AdviceAttribute attribute,
-//    	Pointcut pointcut,
-//        Member signature)
-//    {
-//        return new EclipseAdvice(attribute, pointcut, signature);
-//    }
-//
-//    public ConcreteTypeMunger concreteTypeMunger(
-//		ResolvedTypeMunger munger, ResolvedTypeX aspectType)
-//	{
-//		return null;
-//	}
-
-//	protected ResolvedTypeX.ConcreteName resolveObjectType(ResolvedTypeX.Name typeX) {
-//		TypeBinding binding = makeTypeBinding(typeX);
-//		
-////		System.err.println("resolvedObjectType: " + typeX + 
-////						" found " + 
-////						(binding == null ? "null" : binding.getClass().getName()));
-//		
-//		if (!(binding instanceof SourceTypeBinding)) {
-//			//System.err.println("missing: " + binding);
-//			return null;
-//		}
-//		
-////		if (binding instanceof BinaryTypeBinding) {
-////			//System.err.println("binary: " + typeX);
-////			return new EclipseBinaryType(
-////					buildManager.bcelWorld.resolve(typeX), 
-////					this,
-////					(BinaryTypeBinding)binding);
-////		}
-//		
-//		return new EclipseSourceType(typeX, this,(SourceTypeBinding)binding);
-//	}
-//	
-	public EclipseSourceType lookupConcreteName(SourceTypeBinding b) {
-		throw new RuntimeException("unimplemented");
-	}
-			
-
 
 	public ResolvedTypeX fromEclipse(ReferenceBinding binding) {
 		if (binding == null) return ResolvedTypeX.MISSING;
@@ -174,13 +130,41 @@ public class EclipseFactory {
 	public Collection getDeclareParents() {
 		return getWorld().getDeclareParents();
 	}
+	
+	public Collection finishedTypeMungers = null;
+	
+	public boolean areTypeMungersFinished() {
+		return finishedTypeMungers != null;
+	}
+	
+	public void finishTypeMungers() {
+		// make sure that type mungers are
+		finishedTypeMungers = new ArrayList();
+		Collection baseTypeMungers = 
+			getWorld().getCrosscuttingMembersSet().getTypeMungers();
+		for (Iterator i = baseTypeMungers.iterator(); i.hasNext(); ) {
+			ConcreteTypeMunger munger = (ConcreteTypeMunger) i.next();
+			EclipseTypeMunger etm = makeEclipseTypeMunger(munger);
+			if (etm != null) finishedTypeMungers.add(etm);
+		}		
+	}
+	
+	public EclipseTypeMunger makeEclipseTypeMunger(ConcreteTypeMunger concrete) {
+		if (concrete instanceof EclipseTypeMunger) return (EclipseTypeMunger)concrete;
+		if (EclipseTypeMunger.supportsKind(concrete.getMunger().getKind())) {
+			return new EclipseTypeMunger(this, concrete.getMunger(), concrete.getAspectType(), null);
+		} else {
+			return null;
+		}
+	}
 
 	public Collection getTypeMungers() {
-		//XXX almost certainly the wrong types
-		return getWorld().getCrosscuttingMembersSet().getTypeMungers();
+		//??? assert finishedTypeMungers != null
+		return finishedTypeMungers;
 	}
 	
 	public static ResolvedMember makeResolvedMember(MethodBinding binding) {
+		//System.err.println("member for: " + binding + ", " + new String(binding.declaringClass.sourceName));
 		ResolvedMember ret =  new ResolvedMember(
 			binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD,
 			fromBinding(binding.declaringClass),
