@@ -27,10 +27,7 @@ number of new language features as well as major improvements to the
 functionality of the tools.   </p>
 
 <p> This document is intended to completely describe the 1.1 language
-and tools in relation to AspectJ 1.0.6.  With that in mind, many
-features are documented sketchily with the flag "not working in
-1.1beta2", but we believe it to include some description of all the
-features of 1.1 that are different from those in 1.0.6.
+and tools in relation to AspectJ 1.0.6.
 </p>
 
 <p>The information in this document will be folded into the main line
@@ -124,7 +121,7 @@ release schedule closely, however, these are the changes since the
   In all but a few cases, programs written in AspectJ 1.0 should
   compile correctly in AspectJ 1.1.  In many cases, there are
   new or preferred forms in AspectJ 1.1.  However, some AspectJ 1.0
-  features are not yet implemented in 1.1, so some 1.0 programs
+  features have changed in 1.1, so some 1.0 programs
   will not compile in this release.
   </p>
 
@@ -231,7 +228,7 @@ release schedule closely, however, these are the changes since the
   same as the interface to ajc 1.0.  There are two important changes
   under the hood, however. </p>
 
-  <p> First, the 1.1 compiler is implemented on top of IBM's
+  <p> First, the 1.1 compiler is implemented on top of the
   open-source Eclipse compiler.  This has two benefits: It allows us
   to concentrate on the AspectJ extensions to Java and let the Eclipse
   team worry about making sure the Java edge cases work, and it allows
@@ -256,9 +253,6 @@ release schedule closely, however, these are the changes since the
     <li><a href="#BYTECODE_WEAVING">The -injars option</a>: This option
     takes one or more jar files, and indicates that all the classfiles
     in the jar files should be woven into.  </li>
-
-    <li><a href="#XNOWEAVE">-XnoWeave, a compiler option to suppress
-    weaving</a></li>
 
     <li><a href="#BINARY_ASPECTS">-aspectpath, working with aspects in
     .class/.jar form</a></li>
@@ -346,7 +340,10 @@ release schedule closely, however, these are the changes since the
   we are delaying work on ajdoc until after the 1.1 release.</p>
 
   <p>AspectJ 1.1 will not include <tt>ajdb</tt>, the AspectJ
-  stand-alone debugger.  It is no longer necessary because more
+  stand-alone debugger.  It is no longer necessary for two reasons.
+  First, the -XnoInline flag will tell the compiler to generate
+  code without inlining that should work correctly with any Java
+  debugger.  For code generated with inlining enabled, more
   third-party debuggers are starting to work according to JSR 45,
   "Debugging support for other languages", which we plan to support in
   AspectJ 1.1. </p>
@@ -473,7 +470,7 @@ release schedule closely, however, these are the changes since the
     && within(Aspect)</code> to restrict it to only those pieces of
     advice defined in a particular aspect. <br>
     <code>preinitialization(<var>ConstructorPattern</var>)</code> will
-    pick out pre-initialization join points where the initializaiton
+    pick out pre-initialization join points where the initialization
     process is entered through
     <code><var>ConstructorPattern</var></code>. </p>
 
@@ -1113,6 +1110,9 @@ release schedule closely, however, these are the changes since the
       <a href="#XNOINLINE"><code>-XnoInline</code></a> in the final.
       </li>
 
+      <li><a href="#XNOWEAVE">-XnoWeave, a compiler option to suppress
+           weaving</a></li>
+
       <li>-XtargetNearSource: Not suppoted in 1.1beta2, may not be
       supported in 1.1 final. </li>
 
@@ -1126,7 +1126,7 @@ release schedule closely, however, these are the changes since the
       options</a>. </li>
     </ul>
 
-  <h3><a name="ERROR_MESSAGES">Many confusing error messages in
+  <h3><a name="ERROR_MESSAGES">Some confusing error messages in
   1.1beta2</a></h3>
 
     <p>Building on the eclipse compiler has given us access to a very
@@ -1135,11 +1135,8 @@ release schedule closely, however, these are the changes since the
     better error messages than from ajc-1.0.6.  However, when we don't
     handle errors correctly this can sometimes lead to cascading error
     messages where a single small syntax error will produce dozens of
-    other messages.</p>
-
-    <p>Many error condition in beta2 are signalled by exception.  You
-    may see RuntimeException("unimplemented") produced from programs
-    that use features we just haven't implemented yet.</p>
+    other messages.  Please report any very confusing error messages as
+    bugs.</p>
 
 
   <h3><a name="EXCEPTION_CHECKING">No exception checking during
@@ -1199,15 +1196,15 @@ release schedule closely, however, these are the changes since the
 
   <h3><a name="NO_PORTING">The -porting option</a></h3>
 
-    <p> AspectJ 1.1 does not have a -porting option.  We believe that
-    many useful porting information will be presented by the -Xlint
-    option when it is enabled. </p>
+    <p> AspectJ 1.1 does not have a -porting option.</p>
 
   <h3><a name="13_REQUIRED">J2SE 1.3 required</a></h3>
 
     <p>Because we build on Eclipse, the compiler will no longer run
     under J2SE 1.2.  You must run the compiler (and all tools based on
-    the compiler) using J2SE 1.3 or later. </p>
+    the compiler) using J2SE 1.3 or later. The code generated by the
+    compiler can still run on Java1.1 or later VMs if compiled against
+    the correct runtime libraries.</p>
 
   <h3><a name="DEFAULT_CONSTRUCTOR_CONFLICT">Default
   constructors</a></h3>
