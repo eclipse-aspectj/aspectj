@@ -169,9 +169,14 @@ public class ReferencePointcut extends Pointcut {
 		for (int i=0,len=arguments.size(); i < len; i++) {
 			TypePattern p = arguments.get(i);
 			//we are allowed to bind to pointcuts which use subtypes as this is type safe
+			if (p == TypePattern.NO) {
+				scope.message(IMessage.ERROR, this,
+								"bad parameter to pointcut reference");
+				return;
+			}
 			if (!p.matchesSubtypes(parameterTypes[i])) {
 				scope.message(IMessage.ERROR, p, "incompatible type, expected " +
-						parameterTypes[i] + " found " + p);
+						parameterTypes[i].getName() + " found " + p);
 				return;
 			}
 		}
