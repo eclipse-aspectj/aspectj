@@ -67,9 +67,9 @@ public class AjcTaskTest extends TestCase {
         	// add nothing
         } else if (input.endsWith(".lst")) {
         	if (-1 != input.indexOf(",")) {
-        		task.setArgfiles(input);
+                throw new IllegalArgumentException("lists not supported: " + input);
         	} else {
-        		task.setArgfile(new File(input));
+        		task.setArgfiles(new Path(task.getProject(), input));
         	}
         } else if ((input.endsWith(".java") || input.endsWith(".aj"))) {
         	// not working
@@ -122,7 +122,6 @@ public class AjcTaskTest extends TestCase {
         AjcTask task = getTask("testdata/Default.java");
         runTest(task, NO_EXCEPTION, IMessageHolderChecker.INFOS);
     }
-
 
     public void testNoFile() {
         AjcTask task = getTask(NOFILE);
