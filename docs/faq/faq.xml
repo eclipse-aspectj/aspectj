@@ -23,7 +23,7 @@
        2003 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated April 9, 2003.
+  <para>Last updated June 4, 2003.
   </para>
   <para>
    
@@ -209,12 +209,10 @@
             aspect-oriented programming language and tool set.
           </para>
           <para>
-            The latest release is 1.0.6 <!-- XXX todo Update me! --> 
-	        which can be downloaded from the 1.0 AspectJ
-            <ulink url="http://aspectj.org/dl.html">download</ulink> page.
-             To download the current source tree from the
-             <ulink url="http://eclipse.org/aspectj">AspectJ project</ulink>,
-             see
+            The latest release is 1.1 <!-- XXX todo Update me! --> 
+	        which can be downloaded from the 
+             <ulink url="http://eclipse.org/aspectj">AspectJ project page</ulink>,
+             including sources as described
              <xref linkend="q:buildingsource"/>.
              Development is focused on supporting applications, 
 	         improving quality and performance, 
@@ -239,8 +237,8 @@
           Java platform (jdk1.1 and later).  When running, your program classes must
 	      be able to reach classes in the
           small (&lt; 100K) runtime library (aspectjrt.jar) from the distribution.
-          The tools themselves require Java 2 (jdk 1.2) or later to run,
-          but the compiler can be set up to target any 1.1-compliant
+          The tools themselves require J2SE 1.3 or later to run,
+          but the compiler can produce classes for any 1.1-compliant
           version of the Java platform.
           </para>
         </answer>
@@ -1505,6 +1503,12 @@ aspect PublicErrorLogging {
           <programlisting>ajc @sources.lst
 ajc -argfile sources.lst
           </programlisting>
+          <para>Another way in AspectJ 1.1 is to use the 
+          	<literal>-sourceroots</literal> options, which reads all
+          	source files in a given set of diretories:
+          </para>
+          <programlisting>ajc -sourceroots "src;testsrc"
+          </programlisting>
           <para>
           For more information, see the <literal>ajc</literal> tool 
           section of the
@@ -1527,7 +1531,8 @@ ajc -argfile sources.lst
             for your platform. The compiler's performance is dependent on the
             performance of the JVM it is running on, so the faster a JVM you
             can find to run it on, the shorter your compile times will be. At a
-            minimum you need to use a Java 2 or later JVM to run the compiler.
+            minimum you need to use a Java 2 or later JVM to run the compiler
+            (J2SE 1.3 for AspectJ 1.1).
             We realize that this constraint can be a problem for users who 
             don't currently have a Java 2 JVM available. We're sorry for the
             inconvenience, but we had to make the hard decision that the
@@ -1670,8 +1675,8 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
           </para>
         </question>
         <answer>
-          <para>
-          The PARSER for ajc is written by hand.  This choice was made with full 
+          <para>In AspectJ 1.0,
+          the PARSER for ajc is written by hand.  This choice was made with full 
           awareness of the generator tools out there.  (Jim had for example used 
           the excellent javacc tool for building the parser for JPython (now Jython)).  
           One of the reasons that AspectJ uses a hand-written parser is that using 
@@ -1735,6 +1740,12 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
             The sort of case that gives standard parser generators fits is something 
             like "*1.f(..)" which no one would ever write, but which must be 
             supported for a consistent language.
+              </para>
+              <para>
+              In AspectJ 1.1, the parser was written as it is for the underlying
+              Eclipse compiler,
+              with some hand-coding of the sort that avoids adding keywords to
+              the language.
               </para>
             </listitem>
           </itemizedlist>
@@ -2007,10 +2018,11 @@ import org.aspectj.lang.*;
 import org.aspectj.lang.reflect.*;
 import java.io.*;
 
-public abstract aspect TraceJoinPoints dominates * {
+public abstract aspect TraceJoinPoints {
     protected abstract pointcut entry();
     protected pointcut exit(): call(* java..*.*(..));
 
+    declare precedence : TraceJoinPoints, *;
     final pointcut start(): entry() && !cflowbelow(entry());
 
     final pointcut trace():
@@ -2109,6 +2121,11 @@ public abstract aspect TraceJoinPoints dominates * {
 ]]>
           </programlisting>
           </para>
+          <para>Note that if you are using AspectJ 1.0,
+          	the line starting with <literal>declare precedence</literal>
+          	would be removed, and the aspect declaration would look like
+          	<literal>aspect TraceMyJoinPoints dominates *</literal>.
+          </para>
         </answer>
       </qandaentry>
       <qandaentry>
@@ -2126,7 +2143,7 @@ public abstract aspect TraceJoinPoints dominates * {
           </para>
           <para>
 	    The main difference is that a call join point happens outside of
-	    the object (for non-static methods) or class (for static methods
+	    the target object (for non-static methods) or class (for static methods
 	    and constructors), and that an execution join point happens inside
 	    the object or class.  This means that the <literal>within</literal>
 	    and <literal>withincode</literal> pointcuts pick them out
@@ -2190,9 +2207,12 @@ public abstract aspect TraceJoinPoints dominates * {
 	<literal>execution</literal>.
           </para>
           <para>
-                In most cases you should use the <literal>call()</literal> 
+          		Because of differences in the way AspectJ 1.0 and 1.1
+          		are implemented, in 1.0
+                you should use the <literal>call()</literal> 
                 pointcut designator unless you have a good reason to use
-	        <literal>execution()</literal>
+	        <literal>execution()</literal>; in AspectJ 1.1, the 
+	        reverse is true.
           </para>
         </answer>
       </qandaentry>
@@ -2282,6 +2302,12 @@ class Test extends Super implements I {
     Test() {}
 }
 
+]]>
+          </programlisting>
+          <para>For a program compiled with AspectJ 1.0, 
+          	the result is this:</para>
+          <programlisting>
+            <![CDATA[
   <constructor-call sig="Test()" >
     <staticinitialization sig="Super._init_" />
     <staticinitialization sig="Test._init_" />
@@ -2370,7 +2396,7 @@ class Test extends Super implements I {
         </question>
         <answer>
           <para>
-	  This reflects both a conceptual error and a programming mistake.
+	  This usually reflects both a conceptual error and a programming mistake.
 	  Most likely you want to do something like "run the advice for all 
 	public and private calls," and the code looks something like this:
           </para>
@@ -2378,7 +2404,7 @@ class Test extends Super implements I {
             within(com.xerox.printing..*) &amp;&amp; call(public * *(..)) &amp;&amp; call(private * *(..))
           </programlisting>
           <para>
-	A pointcut picks out join points; it is evaluated at each join point.
+	But a pointcut is evaluated at *each* join point.
         The expression above would never pick out any call join point,
 	because no method signature has both public and private access.
 	In a pointcut, <literal>pc1() &amp;&amp; pc2()</literal> means both
@@ -2405,6 +2431,12 @@ class Test extends Super implements I {
 	  code executing in a static context except by specification.
 	  This makes it impossible to refer to static members using 
 	  runtime information.
+          </para>
+          <para>However, AspectJ can determine the class for something
+          	in the join point context, which you can use as a per-class key. 
+          	Then you can actually declare an instance field to contain
+          	the per-class value (see the next question).  This comes at
+          	the cost of an extra reference, but the field can be final.
           </para>
         </answer>
       </qandaentry>
@@ -2656,6 +2688,10 @@ aspect A {
           <literal>after</literal> advice, like a finally clause, runs even 
           after exceptions are thrown. You can fix this by following two practices:
           </para>
+          <para>In AspectJ 1.1, the String concatenation operator (+) is
+          	advised in its StringBuffer form, so if your advise uses 
+          	String + in a way that is picked out by your pointcut,
+          	you will get infinite recursion.</para>
           <para>
           (1) Use <literal>after returning</literal> to advise normal completions
               or <literal>after throwing</literal> to advise abrupt completions.
@@ -2744,7 +2780,7 @@ aspect A {
             <literal>-Xmx256M</literal>.
           </para>
           <para>When running under Ant, give Ant more memory or
-          use the <literal>fork</literal> fork option together with
+          use the <literal>fork</literal> option together with
           the <literal>Xmaxmem</literal> option.
           </para>
           <para>When running under an IDE, look to the documentation
@@ -2763,8 +2799,9 @@ aspect A {
         <answer>
           <para>
             <literal>ajc</literal> 1.0 does not currently support incremental
-          compilation, but the 1.1 release does.  It may still recompile
-          files that have not changed, if they are affected by aspects
+          compilation, but the 1.1 release does when passed the 
+          	<literal>-incremental</literal> option.  It may still recompile
+          files that have not changed, if they could be affected by aspects
           in particular ways, but the files compiled should be fewer
           and result in faster compiles.
           </para>
@@ -3081,7 +3118,12 @@ vmparam -Xmx384m
         <answer>
           <itemizedlist>
             <listitem>
-              <para>
+              <para>The bugs affecting the semantics of the language
+              	are marked with the "info" keyword.  Find them with
+              	the query
+              	<ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;keywords=info">
+              		        http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;keywords=info
+              		        </ulink>
               </para>
             </listitem>
           </itemizedlist>
@@ -3444,23 +3486,23 @@ vmparam -Xmx384m
           </para>
           <para>
           <itemizedlist>
-            <listitem>For any builds: build, lib
-            </listitem>
-            <listitem>For the documentation: docs
-            </listitem>
-            <listitem>For the compiler: bridge, util, testing-util,
+            <listitem><para>For any builds: build, lib
+            </para></listitem>
+            <listitem><para>For the documentation: docs
+            </para></listitem>
+            <listitem><para>For the compiler: bridge, util, testing-util,
             weaver, asm, org.eclipse.jdt.core, org.aspectj.ajdt.core,
             and runtime.
-            </listitem>
-            <listitem>For ajbrowser: the compiler modules, plus
+            </para></listitem>
+            <listitem><para>For ajbrowser: the compiler modules, plus
             ajbrowser, taskdefs, and ajde.
-            </listitem>
-            <listitem>For the test harness: the ajbrowser modules, plus
+            </para></listitem>
+            <listitem><para>For the test harness: the ajbrowser modules, plus
             testing, testing-client, and testing-drivers.
-            </listitem>
-            <listitem>To run the test suite: the test harness modules, plus
+            </para></listitem>
+            <listitem><para>To run the test suite: the test harness modules, plus
             tests.
-            </listitem>
+            </para></listitem>
           </itemizedlist>
           </para>
           <para>
@@ -3484,30 +3526,32 @@ vmparam -Xmx384m
           (i.e., in <literal>org.aspectj/modules/build/...</literal>).
           Most pertinant:          
             <itemizedlist>
-              <listitem><literal>../build/readme-build-and-test-aspectj.html</literal>
+              <listitem><para>
+              	<literal>../build/readme-build-and-test-aspectj.html</literal>
                   describes how to build the AspectJ distribution in Eclipse
                   and in Ant.
-              </listitem>
-              <listitem><literal>../build/readme-docs-module.html</literal>
+              </para></listitem>
+              <listitem>
+              	<para><literal>../build/readme-docs-module.html</literal>
                   describes the AspectJ documentation sources and
                   how to build the documentation using Ant.
-              </listitem>
-              <listitem><literal>../build/readme-tests-module.html</literal>
+              </para></listitem>
+              <listitem><para><literal>../build/readme-tests-module.html</literal>
                   describes the all the tests 
                   in the <literal>tests</literal> module.
-              </listitem>
-              <listitem><literal>../build/readme-writing-compiler-tests.html</literal>
+              </para></listitem>
+              <listitem><para><literal>../build/readme-writing-compiler-tests.html</literal>
                   describes how to write compiler tests that can be run by
                   the AspectJ test harness.
-              </listitem>
-              <listitem><literal>../build/readme-testing-drivers-module.html</literal>
+              </para></listitem>
+              <listitem><para><literal>../build/readme-testing-drivers-module.html</literal>
                   describes the test harness used to run the compiler tests
                   in the <literal>tests</literal> module.
-              </listitem>
-              <listitem><literal>../build/readme-testing-drivers-module.html</literal>
+              </para></listitem>
+              <listitem><para><literal>../build/readme-testing-drivers-module.html</literal>
                   describes the test harness used to run the compiler tests
                   in the <literal>testing</literal> module.
-              </listitem>
+              </para></listitem>
             </itemizedlist>
           </para> 
         </answer>
@@ -3920,6 +3964,8 @@ vmparam -Xmx384m
           <para>
           The FAQ has been updated to reflect the move 
           to eclipse.org and changes in the 1.1 version.
+          The most recent changes corrected 1.0-specific statements
+          in many entries.
           Entries changed since the earlier March 3, 2003 version:
             <itemizedlist>
         <listitem><para><xref linkend="q:noaspectbound"/></para></listitem>
@@ -4052,10 +4098,11 @@ vmparam -Xmx384m
           </para>
         </question>
         <answer>
-	  <para>The AspectJ team aims to keep the implementation up-to-date
-	 and bug-free, but to limit language changes to those that 
-	are carefully considered, compelling, and backwards-compatible,
-	and to deliver those language changes only in significant releases (1.0, 1.1).
+	  <para>The AspectJ team aims to keep the implementation bug-free and 
+	  	up-to-date with the Java language, 
+	 	to limit AspectJ language changes to those that 
+		are carefully considered, compelling, and backwards-compatible,
+		and to deliver those language changes only in significant releases (1.0, 1.1).
 	  </para>
           <table>
             <title></title>
@@ -4066,6 +4113,10 @@ vmparam -Xmx384m
                   <entry align="left">Description</entry>
                 </row>
                 <row>
+                  <entry>AspectJ 1.1</entry>
+                  <entry>A few language changes and clarifications;
+                  	bytecode weaving and incremental compilation.
+                  </entry>
                   <entry>AspectJ 1.0</entry>
                   <entry>Many language changes, fixes, cleanup and
                     clarifications, some significant.
@@ -4161,8 +4212,9 @@ vmparam -Xmx384m
 	                 and a small number of language changes.</entry>
                 </row>
                 <row>
-                  <entry valign="top" align="center">2.0</entry>
-                  <entry>New, dynamic crosscuts (bytecode-only)</entry>
+                  <entry valign="top" align="center">1.2</entry>
+                  <entry>language upgrades to increase reusability
+                  	of aspects,	compliance with any released J2SE 1.5</entry>
                 </row>
               </tbody>
             </tgroup>
