@@ -226,56 +226,5 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
       assertTrue("Should say updated hello",after.getStdOut().startsWith("updated hello"));
   }
   
-  private long nextIncrement(boolean doWait) {
-  	long time = System.currentTimeMillis();
-  	if (doWait) {
-  		try {
-  	  		Thread.sleep(1000);
-  		} catch (InterruptedException intEx) {}
-  	}
-  	return time;
-  }
-  
-  private void copyFileAndDoIncrementalBuild(String from, String to) throws Exception {
-  	String dir = getCurrentTest().getDir();
-  	FileUtil.copyFile(new File(dir + File.separator + from),
-  			          new File(ajc.getSandboxDirectory(),to));
-  	CompilationResult result = ajc.doIncrementalCompile();
-  	assertNoMessages(result,"Expected clean compile from test '" + getCurrentTest().getTitle() + "'");
-  }
-  
-  private void copyFileAndDoIncrementalBuild(String from, String to, MessageSpec expectedResults) throws Exception {
-  	String dir = getCurrentTest().getDir();
-  	FileUtil.copyFile(new File(dir + File.separator + from),
-  			          new File(ajc.getSandboxDirectory(),to));
-  	CompilationResult result = ajc.doIncrementalCompile();
-  	assertMessages(result,"Test '" + getCurrentTest().getTitle() + "' did not produce expected messages",expectedResults);
-  }
-  
-  
-  private void deleteFileAndDoIncrementalBuild(String file, MessageSpec expectedResult) throws Exception {
-  	new File(ajc.getSandboxDirectory(),file).delete();
-  	CompilationResult result = ajc.doIncrementalCompile();
-  	assertMessages(result,"Test '" + getCurrentTest().getTitle() + "' did not produce expected messages",expectedResult);
-  }
-  
-  private void deleteFileAndDoIncrementalBuild(String file) throws Exception {
-  	deleteFileAndDoIncrementalBuild(file,MessageSpec.EMPTY_MESSAGE_SET);
-  }
-  
-  private void assertAdded(String file) {
-  	assertTrue("File " + file + " should have been added",
-  			new File(ajc.getSandboxDirectory(),file).exists());
-  }
-
-  private void assertDeleted(String file) {
-  	assertFalse("File " + file + " should have been deleted",
-  			new File(ajc.getSandboxDirectory(),file).exists());
-  }
-
-  private void assertUpdated(String file, long sinceTime) {
-  	File f = new File(ajc.getSandboxDirectory(),file);
-  	assertTrue("File " + file + " should have been updated",f.lastModified() > sinceTime);
-  }
 }
 
