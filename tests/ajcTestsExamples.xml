@@ -1,0 +1,90 @@
+
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+
+<!-- 
+	Test documentation examples.
+	Results unverified except for compiler messages, runtime exceptions,
+	and System.exit codes
+-->
+<suite>
+    <ajc-test dir="../docs/dist/doc/examples"
+    	keywords="doc-examples"
+		title="introduction">
+        <compile argfiles="introduction/files.lst"/>
+        <run class="introduction.Point"/>
+        <run class="introduction.CloneablePoint"/>
+        <run class="introduction.ComparablePoint"/>
+        <run class="introduction.HashablePoint"/>
+    </ajc-test>   
+
+    <ajc-test dir="../docs/dist/doc/examples"
+    	keywords="doc-examples"
+		title="observer example">
+        <compile argfiles="observer/files.lst"/>
+        <!-- GUI run class="observer.Demo"/ -->
+    </ajc-test>   
+
+    <ajc-test dir="../docs/dist/doc/examples"
+    	keywords="doc-examples"
+		title="spacewar example">
+        <compile argfiles="spacewar/debug.lst"/>
+        <compile argfiles="spacewar/demo.lst"/>
+        <!-- GUI run class="spacewar.Game"/ -->
+    </ajc-test>   
+
+    <ajc-test dir="../docs/dist/doc/examples"
+    	keywords="doc-examples"
+		title="telecom basic example">
+        <compile argfiles="telecom/basic.lst"/>
+        <run class="telecom.BasicSimulation"/>
+    </ajc-test>   
+
+    <ajc-test dir="../docs/dist/doc/examples"
+    	keywords="doc-examples"
+		title="telecom billing example">
+        <compile argfiles="telecom/billing.lst"/>
+        <run class="telecom.BillingSimulation"/>
+    </ajc-test>   
+
+    <ajc-test dir="../docs/dist/doc/examples"
+    	keywords="doc-examples"
+		title="telecom billing example">
+        <compile argfiles="telecom/billing.lst"/>
+        <run class="telecom.BillingSimulation"/>
+    </ajc-test>   
+
+    <ajc-test dir="../docs/dist/doc/examples"
+    	keywords="doc-examples"
+		title="thisJoinPoint example">
+        <compile argfiles="tjp/files.lst"/>
+        <run class="tjp.Demo"/>
+    </ajc-test>   
+
+    <ajc-test dir="../docs/dist/doc/examples"
+    	keywords="doc-examples"
+		title="tracing example - none">
+        <compile argfiles="tracing/notrace.lst"/>
+        <run class="tracing.ExampleMain"/>
+    </ajc-test>   
+
+    <ajc-test dir="../docs/dist/doc/examples"
+    	keywords="doc-examples"
+		title="tracing example - version 1">
+        <compile argfiles="tracing/tracev1.lst"/>
+        <run class="tracing.version1.TraceMyClasses"/>
+    </ajc-test>   
+
+    <ajc-test dir="../docs/dist/doc/examples"
+    	keywords="doc-examples"
+		title="tracing example - version 2">
+        <compile argfiles="tracing/tracev2.lst"/>
+        <run class="tracing.version2.TraceMyClasses"/>
+    </ajc-test>   
+
+    <ajc-test dir="../docs/dist/doc/examples"
+    	keywords="doc-examples"
+		title="tracing example - version 3">
+        <compile argfiles="tracing/tracev3.lst"/>
+        <run class="tracing.version3.TraceMyClasses"/>
+    </ajc-test>   
+</suite>
