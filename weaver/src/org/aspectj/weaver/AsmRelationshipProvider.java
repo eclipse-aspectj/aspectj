@@ -59,14 +59,11 @@ public class AsmRelationshipProvider {
 				// TODO: might want to show these in the future
 				return;
 			}
+			
 			IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
 			IProgramElement targetNode = getNode(AsmManager.getDefault().getHierarchy(), shadow);			
 			String adviceHandle = advice.getHandle(); 
 			if (adviceHandle != null && targetNode != null) {
-//				ProgramElement.createHandleIdentifier(
-//					advice.getSourceLocation().getSourceFile(),
-//					advice.getSourceLocation().getLine(),
-//					advice.getSourceLocation().getColumn());
 		
 				if (targetNode != null) {
 					String targetHandle = targetNode.getHandleIdentifier();	
@@ -137,7 +134,7 @@ public class AsmRelationshipProvider {
 			model.findElementForType(declaringType.getPackageName(), declaringType.getClassName());
 		return findMemberInClass(classNode, member);
 	}
-
+ 
 	private static IProgramElement findMemberInClass(
 		IProgramElement classNode,
 		Member member)
@@ -145,7 +142,6 @@ public class AsmRelationshipProvider {
 		if (classNode == null) return null; // XXX remove this check
 		for (Iterator it = classNode.getChildren().iterator(); it.hasNext(); ) {
 			IProgramElement node = (IProgramElement)it.next();
-			//System.err.println("checking: " + member.getName() + " with " + node.getBytecodeName() + ", " + node.getBytecodeSignature());
 			if (member.getName().equals(node.getBytecodeName()) &&
 				member.getSignature().equals(node.getBytecodeSignature()))
 			{
