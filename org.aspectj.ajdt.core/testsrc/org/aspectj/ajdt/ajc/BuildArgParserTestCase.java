@@ -42,7 +42,7 @@ public class BuildArgParserTestCase extends TestCase {
 		return new BuildArgParser(handler).genBuildConfig(args);
 	}
 
-	public void testDefaultClasspathAndTargetCombo() throws InvalidInputException {
+	public void testDefaultClasspathAndTargetCombo() throws Exception {
 		String ENTRY = "1.jar" + File.pathSeparator + "2.jar";
 		final String classpath = System.getProperty("java.class.path");
 		try {
@@ -85,12 +85,20 @@ public class BuildArgParserTestCase extends TestCase {
 			//			these errors are deffered to the compiler now
             //err = parser.getOtherMessages(true);       
             //assertTrue("expected errors for missing jars", null != err);
+    		List cp = config.getClasspath();
+    		boolean jar1Found = false;
+    		boolean jar2Found = false;
+    		for (Iterator iter = cp.iterator(); iter.hasNext();) {
+                String element = (String) iter.next();
+                if (element.indexOf("1.jar") != -1) jar1Found = true;
+                if (element.indexOf("2.jar") != -1) jar2Found = true;
+            }
     		assertTrue(
     			config.getClasspath().toString(),
-    			config.getClasspath().contains("1.jar"));
+    			jar1Found);
     		assertTrue(
     			config.getClasspath().toString(),
-    			config.getClasspath().contains("2.jar"));
+    			jar2Found);
     			
         } finally {
             // do finally to avoid messing up classpath for other tests
@@ -99,6 +107,29 @@ public class BuildArgParserTestCase extends TestCase {
             String m = "other tests will fail - classpath not reset";
             assertEquals(m, classpath, setPath); 
         }
+	}
+	
+	public void testPathResolutionFromConfigArgs() {
+		String FILE_PATH =   "@" + TEST_DIR + "configWithClasspathExtdirsBootCPArgs.lst";
+		AjBuildConfig config = genBuildConfig(new String[] { FILE_PATH }, messageWriter);
+		List classpath = config.getClasspath();
+		// should have three entries, resolved relative to location of .lst file
+		assertEquals("Three entries in classpath",3,classpath.size());
+		Iterator cpIter = classpath.iterator();
+		try {
+		    assertEquals("Should be relative to TESTDIR",new File(TEST_DIR+File.separator+"xyz").getCanonicalPath(),cpIter.next());
+		    assertEquals("Should be relative to TESTDIR",new File(TEST_DIR+File.separator+"myextdir" + File.separator + "dummy.jar").getCanonicalPath(),cpIter.next());
+		    assertEquals("Should be relative to TESTDIR",new File(TEST_DIR+File.separator+"abc.jar").getCanonicalPath(),cpIter.next());
+			List files = config.getFiles();
+			assertEquals("Two source files",2,files.size());
+			Iterator fIter = files.iterator();
+			assertEquals("Should be relative to TESTDIR",new File(TEST_DIR+File.separator+"Abc.java").getCanonicalFile(),fIter.next());
+			assertEquals("Should be relative to TESTDIR",new File(TEST_DIR+File.separator+"xyz"+File.separator+"Def.aj").getCanonicalFile(),fIter.next());
+		    
+		} catch (IOException ex) {
+		    fail("Test case failure attempting to create canonical path: " + ex);
+		}
+		
 	}
 	
 	public void testAjOptions() throws InvalidInputException {
@@ -254,13 +285,13 @@ public class BuildArgParserTestCase extends TestCase {
 		
 	}
 
-	public void testExtDirs() throws InvalidInputException {
+	public void testExtDirs() throws Exception {
 		final String DIR = AjdtAjcTests.TESTDATA_PATH;
 		AjBuildConfig config = genBuildConfig(new String[] { 
 			"-extdirs", DIR }, 
 			messageWriter);
 		assertTrue(config.getClasspath().toString(), config.getClasspath().contains(
-			new File(DIR + File.separator + "testclasses.jar").getAbsolutePath()
+			new File(DIR + File.separator + "testclasses.jar").getCanonicalPath()
 		));
 	}
 
@@ -269,7 +300,7 @@ public class BuildArgParserTestCase extends TestCase {
 		AjBuildConfig config = genBuildConfig(new String[] { 
 			"-bootclasspath", PATH }, 
 			messageWriter);		
-		assertTrue(config.getClasspath().toString(), config.getClasspath().get(0).equals(PATH)); 
+		assertTrue(config.getClasspath().toString(), ((String)config.getClasspath().get(0)).indexOf(PATH) != -1); 
 
 		config = genBuildConfig(new String[] { 
 			}, 
@@ -327,13 +358,20 @@ public class BuildArgParserTestCase extends TestCase {
 		String ENTRY = "1.jar" + File.pathSeparator + "2.jar";
 		AjBuildConfig config = genBuildConfig(new String[] {  "-classpath", ENTRY }, messageWriter);
 		
+   		List cp = config.getClasspath();
+		boolean jar1Found = false;
+		boolean jar2Found = false;
+		for (Iterator iter = cp.iterator(); iter.hasNext();) {
+            String element = (String) iter.next();
+            if (element.indexOf("1.jar") != -1) jar1Found = true;
+            if (element.indexOf("2.jar") != -1) jar2Found = true;
+        }
 		assertTrue(
 			config.getClasspath().toString(),
-			config.getClasspath().contains("1.jar"));
-
+			jar1Found);
 		assertTrue(
 			config.getClasspath().toString(),
-			config.getClasspath().contains("2.jar"));
+			jar2Found);
 	}
 
 	public void testArgInConfigFile() throws InvalidInputException {

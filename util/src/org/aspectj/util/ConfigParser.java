@@ -20,6 +20,7 @@ import java.io.*;
 
 public class ConfigParser {
     Location location;
+    protected File relativeDirectory = null;
     protected List files = new LinkedList();
     private boolean fileParsed = false;
     protected static String CONFIG_MSG = "build config error: ";  
@@ -69,7 +70,10 @@ public class ConfigParser {
             location = new SourceLocation(configFile, lineNum);
             showError("error reading config file: " + e.toString());
         }
+        File oldRelativeDirectory = relativeDirectory; // for nested arg files;
+        relativeDirectory = configFile.getParentFile();
         parseArgs(args);
+        relativeDirectory = oldRelativeDirectory;
         fileParsed = true;
     }
 
@@ -203,7 +207,11 @@ public class ConfigParser {
 	}
 
     public File makeFile(String name) {
-        return makeFile(getCurrentDir(), name);
+        if (relativeDirectory != null) {
+            return makeFile(relativeDirectory,name);
+        } else {
+            return makeFile(getCurrentDir(), name);
+        }
     }
 
     private File makeFile(File dir, String name) {

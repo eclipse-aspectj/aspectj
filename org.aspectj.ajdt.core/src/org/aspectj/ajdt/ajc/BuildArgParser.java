@@ -503,21 +503,48 @@ public class BuildArgParser extends Main {
                 }
 			} else if (arg.equals("-bootclasspath")) {
 				if (args.size() > nextArgIndex) {
-					bootclasspath = ((ConfigParser.Arg)args.get(nextArgIndex)).getValue();
+					String bcpArg = ((ConfigParser.Arg)args.get(nextArgIndex)).getValue();
+					StringBuffer bcp = new StringBuffer();
+					StringTokenizer strTok = new StringTokenizer(bcpArg,File.pathSeparator);
+					while (strTok.hasMoreTokens()) {
+					    bcp.append(makeFile(strTok.nextToken()));
+					    if (strTok.hasMoreTokens()) {
+					        bcp.append(File.pathSeparator);
+					    }
+					}
+					bootclasspath = bcp.toString();
 					args.remove(args.get(nextArgIndex));	
 				} else {
 					showError("-bootclasspath requires classpath entries");
 				}
 			} else if (arg.equals("-classpath")) {
 				if (args.size() > nextArgIndex) {
-					classpath = ((ConfigParser.Arg)args.get(nextArgIndex)).getValue();
+					String cpArg = ((ConfigParser.Arg)args.get(nextArgIndex)).getValue();
+					StringBuffer cp = new StringBuffer();
+					StringTokenizer strTok = new StringTokenizer(cpArg,File.pathSeparator);
+					while (strTok.hasMoreTokens()) {
+					    cp.append(makeFile(strTok.nextToken()));
+					    if (strTok.hasMoreTokens()) {
+					        cp.append(File.pathSeparator);
+					    }
+					}
+					classpath = cp.toString();
 					args.remove(args.get(nextArgIndex));	
 				} else {
 					showError("-classpath requires classpath entries");
 				}
 			} else if (arg.equals("-extdirs")) {
 				if (args.size() > nextArgIndex) {
-					extdirs = ((ConfigParser.Arg)args.get(nextArgIndex)).getValue();
+					String extdirsArg = ((ConfigParser.Arg)args.get(nextArgIndex)).getValue();
+					StringBuffer ed = new StringBuffer();
+					StringTokenizer strTok = new StringTokenizer(extdirsArg,File.pathSeparator);
+					while (strTok.hasMoreTokens()) {
+					    ed.append(makeFile(strTok.nextToken()));
+					    if (strTok.hasMoreTokens()) {
+					        ed.append(File.pathSeparator);
+					    }
+					}					
+					extdirs = ed.toString();
 					args.remove(args.get(nextArgIndex));
                 } else {
                     showError("-extdirs requires list of external directories");

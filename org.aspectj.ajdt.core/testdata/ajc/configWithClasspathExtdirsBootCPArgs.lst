@@ -1,0 +1,9 @@
+-classpath
+abc.jar
+-bootclasspath
+xyz
+-extdirs
+myextdir
+Abc.java
+xyz/Def.aj
+
