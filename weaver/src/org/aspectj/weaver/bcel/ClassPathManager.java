@@ -26,6 +26,7 @@ import java.util.zip.ZipFile;
 
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverMessages;
 
@@ -33,6 +34,22 @@ import org.aspectj.weaver.WeaverMessages;
 public class ClassPathManager {
 	
 	private List entries;
+	
+	// In order to control how many open files we have, we maintain a list.
+	// The max number is configured through the property:
+	//    org.aspectj.weaver.openarchives
+	// and it defaults to 1000
+	private List openArchives                = new ArrayList();
+	private static int maxOpenArchives       = -1;
+    private static final int MAXOPEN_DEFAULT = 1000;
+	
+	static {
+		String openzipsString = getSystemPropertyWithoutSecurityException("org.aspectj.weaver.openzips",Integer.toString(MAXOPEN_DEFAULT));
+		maxOpenArchives=Integer.parseInt(openzipsString);
+		if (maxOpenArchives<20) maxOpenArchives=1000;
+	}
+	
+	
 	
 	public ClassPathManager(List classpath, IMessageHandler handler) {
 		entries = new ArrayList();
@@ -106,24 +123,36 @@ public class ClassPathManager {
 	public abstract static class ClassFile {
 		public abstract InputStream getInputStream() throws IOException;
 		public abstract String getPath();
+		public abstract void close();
 	}
-
 
 	public abstract static class Entry {
 		public abstract ClassFile find(String name);
 		public abstract List getAllClassFiles();
 	}
 	
-	
 	private static class FileClassFile extends ClassFile {
 		private File file;
+		private FileInputStream fis;
+		
 		public FileClassFile(File file) {
 			this.file = file;
 		}
 	
 		public InputStream getInputStream() throws IOException {
-			return new FileInputStream(file);
+			fis = new FileInputStream(file);
+			return fis;
 		}
+		
+		public void close() {
+			try {
+				if (fis!=null) fis.close();
+			} catch (IOException ioe) {
+				throw new BCException("Can't close class file : "+file.getName()+": "+ioe.toString());
+			}   finally {
+				fis = null;
+			}
+		} 
 		
 		public String getPath() { return file.getPath(); }	
 	}
@@ -147,58 +176,133 @@ public class ClassPathManager {
 		public String toString() { return dirPath; }
 	}
 	
-	
 	private static class ZipEntryClassFile extends ClassFile {
 		private ZipEntry entry;
-		private ZipFile zipFile;
-		public ZipEntryClassFile(ZipFile zipFile, ZipEntry entry) {
+		private ZipFileEntry zipFile;
+		private InputStream is;
+		
+		public ZipEntryClassFile(ZipFileEntry zipFile, ZipEntry entry) {
 			this.zipFile = zipFile;
 			this.entry = entry;
 		}
 	
 		public InputStream getInputStream() throws IOException {
-			return zipFile.getInputStream(entry);
+			is = zipFile.getZipFile().getInputStream(entry);
+			return is;
 		}
 		
+		public void close() {
+			try {
+				if (is!=null) is.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				is = null;
+			}
+		} 
+				
 		public String getPath() { return entry.getName(); }
 	
 	}
 	
-	
 	public class ZipFileEntry extends Entry {
+		private File file;
 		private ZipFile zipFile;
 		
 		public ZipFileEntry(File file) throws IOException {
-			this(new ZipFile(file));
+			this.file = file;
 		}
 		
 		public ZipFileEntry(ZipFile zipFile) {
 			this.zipFile = zipFile;
 		}
 		
+		public ZipFile getZipFile() {
+			return zipFile;
+		}
+		
 		public ClassFile find(String name) {
+			ensureOpen();
 			String key = name.replace('.', '/') + ".class";
 			ZipEntry entry = zipFile.getEntry(key);
-			if (entry != null) return new ZipEntryClassFile(zipFile, entry);
-			else return null;
+			if (entry != null) return new ZipEntryClassFile(this, entry);
+			else               return null; // This zip will be closed when necessary...
 		}
 		
 		public List getAllClassFiles() {
+			ensureOpen();
 			List ret = new ArrayList();
 			for (Enumeration e = zipFile.entries(); e.hasMoreElements(); ) {
 				ZipEntry entry = (ZipEntry)e.nextElement();
 				String name = entry.getName();
-				if (hasClassExtension(name)) ret.add(new ZipEntryClassFile(zipFile, entry));
+				if (hasClassExtension(name)) ret.add(new ZipEntryClassFile(this, entry));
 			}
+//			if (ret.isEmpty()) close();
 			return ret;
 		}
-
 		
-		public String toString() { return zipFile.getName(); }
+		private void ensureOpen() {
+			if (zipFile != null) return; // If its not null, the zip is already open
+			try {
+				if (openArchives.size()>=maxOpenArchives) {
+					closeSomeArchives(openArchives.size()/10); // Close 10% of those open
+				}
+				zipFile = new ZipFile(file);
+				openArchives.add(zipFile);
+			} catch (IOException ioe) {
+				throw new BCException("Can't open archive: "+file.getName()+": "+ioe.toString());
+			}
+		}
+		
+		public void closeSomeArchives(int n) {
+			for (int i=n-1;i>=0;i--) {
+				ZipFile zf = (ZipFile)openArchives.get(i);
+				try {
+					zf.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				openArchives.remove(i);
+			}
+		}
+		
+		public void close() {
+			if (zipFile == null) return;
+			try {
+				openArchives.remove(zipFile);
+				zipFile.close();
+			} catch (IOException ioe) {
+				throw new BCException("Can't close archive: "+file.getName()+": "+ioe.toString());
+			} finally {
+				zipFile = null;
+			}
+		}
+		
+		public String toString() { return file.getName(); }
 	}
 
 
 	/* private */ static boolean hasClassExtension(String name) {
 		return name.toLowerCase().endsWith((".class"));
+	}
+
+	
+	public void closeArchives() {
+		for (Iterator i = entries.iterator(); i.hasNext(); ) {
+			Entry entry = (Entry)i.next();
+			if (entry instanceof ZipFileEntry) {
+				((ZipFileEntry)entry).close();
+			}
+			openArchives.clear();
+		}
+	}
+	
+    // Copes with the security manager
+	private static String getSystemPropertyWithoutSecurityException (String aPropertyName, String aDefaultValue) {
+		try {
+			return System.getProperty(aPropertyName, aDefaultValue);
+		} catch (SecurityException ex) {
+			return aDefaultValue;
+		}
 	}
 }

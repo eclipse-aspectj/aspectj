@@ -97,6 +97,7 @@ public class EclipseClassPathManager extends ClassPathManager {
 	private class ClassFileReaderBackedClassFile extends ClassPathManager.ClassFile {
 
 		private ClassFileReader source;
+		private InputStream is;
 		
 		public ClassFileReaderBackedClassFile(ClassFileReader cfr) {
 			source = cfr;
@@ -106,8 +107,18 @@ public class EclipseClassPathManager extends ClassPathManager {
 		 * @see org.aspectj.weaver.bcel.ClassPathManager.ClassFile#getInputStream()
 		 */
 		public InputStream getInputStream() throws IOException {
-			return new ByteArrayInputStream(source.getReferenceBytes());
+			is = new ByteArrayInputStream(source.getReferenceBytes());
+			return is;
 		}
+		
+		public void close() {
+			try {
+				if (is!=null) is.close();
+			} catch (IOException e) {
+				// Should never happen !
+				e.printStackTrace();
+			}
+		} 
 
 		/* (non-Javadoc)
 		 * @see org.aspectj.weaver.bcel.ClassPathManager.ClassFile#getPath()

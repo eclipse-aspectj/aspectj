@@ -33,6 +33,7 @@ import org.aspectj.apache.bcel.generic.InvokeInstruction;
 import org.aspectj.apache.bcel.generic.PUTSTATIC;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.apache.bcel.util.ClassPath;
+import org.aspectj.apache.bcel.util.Repository;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
@@ -49,7 +50,7 @@ import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.SimpleScope;
 
-public class BcelWorld extends World {
+public class BcelWorld extends World implements Repository {
 	private ClassPathManager classPath;
 	
 	//private ClassPathManager aspectPath = null;
@@ -88,12 +89,16 @@ public class BcelWorld extends World {
 		this.classPath = new ClassPathManager(classPath, handler);
 		setMessageHandler(handler);	
 		setXRefHandler(xrefHandler);
+		// Tell BCEL to use us for resolving any classes
+		org.aspectj.apache.bcel.Repository.setRepository(this);
 	}
 	
 	public BcelWorld(ClassPathManager cpm, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
 		this.classPath = cpm;
 		setMessageHandler(handler);
 		setXRefHandler(xrefHandler);
+		// Tell BCEL to use us for resolving any classes
+		org.aspectj.apache.bcel.Repository.setRepository(this);
 	}
 	
 	public void addPath (String name) {
@@ -220,7 +225,7 @@ public class BcelWorld extends World {
 	        ClassParser parser = new ClassParser(file.getInputStream(), file.getPath());
 	        
 	        JavaClass jc = parser.parse();
-			
+			file.close();
 			return jc;
 		} catch (IOException ioe) {
 			return null;
@@ -365,6 +370,38 @@ public class BcelWorld extends World {
 	public static BcelObjectType getBcelObjectType(ResolvedTypeX concreteAspect) {
 		//XXX need error checking
 		return (BcelObjectType) ((ResolvedTypeX.Name)concreteAspect).getDelegate();
+	}
+
+	public void tidyUp() {
+	    // At end of compile, close any open files so deletion of those archives is possible
+		classPath.closeArchives();
+	}
+
+	
+	/// The repository interface methods
+
+	public JavaClass findClass(String className) {
+		return lookupJavaClass(classPath,className);
+	}
+
+	public JavaClass loadClass(String className) throws ClassNotFoundException {
+		return lookupJavaClass(classPath,className);
+	}
+
+	public void storeClass(JavaClass clazz) {
+		throw new RuntimeException("Not implemented");
+	}
+
+	public void removeClass(JavaClass clazz) {
+		throw new RuntimeException("Not implemented");
+	}
+
+	public JavaClass loadClass(Class clazz) throws ClassNotFoundException {
+		throw new RuntimeException("Not implemented");
+	}
+
+	public void clear() {
+		throw new RuntimeException("Not implemented");
 	}
 
 }
