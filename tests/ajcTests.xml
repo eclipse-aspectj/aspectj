@@ -6232,12 +6232,17 @@
         </compile>
         <run class="CatchSig"/>
     </ajc-test>
-    
-
+   
     <ajc-test dir="bugs" pr="37304"
    	 title="public static fields being ignored">
         <compile files="FinalFields.java"/>
         <run class="FinalFields"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs/lines" pr="37758"
+   	 title="Weaving rt.jar results in stack overflow">
+        <compile files="A.java,big.jar"/>
+        <run class="Big"/>
     </ajc-test>
 
 </suite>
