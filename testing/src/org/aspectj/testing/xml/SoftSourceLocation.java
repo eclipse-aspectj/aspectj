@@ -17,6 +17,7 @@ package org.aspectj.testing.xml;
 import java.io.File;
 
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.util.LangUtil;
 
 /**
  * Immutable source location.
@@ -56,6 +57,7 @@ public class SoftSourceLocation implements ISourceLocation  { // XXX endLine?
     private int line;
     private int column;
     private int endLine;
+    private String context;
     
     public SoftSourceLocation() {
     }
@@ -73,6 +75,9 @@ public class SoftSourceLocation implements ISourceLocation  { // XXX endLine?
     
     public int getEndLine() {
         return line;
+    }
+    public String getContext() {
+        return context;
     }
     
     public void setFile(String sourceFile) {
@@ -93,7 +98,10 @@ public class SoftSourceLocation implements ISourceLocation  { // XXX endLine?
     public void setEndLine(String line) {
         this.endLine = convert(line);
     }
-    
+
+    public void setContext(String context) {
+        this.context = context;    
+    }
     
     private int convert(String in) {
         return Integer.valueOf(in).intValue();
@@ -103,11 +111,11 @@ public class SoftSourceLocation implements ISourceLocation  { // XXX endLine?
 		return null;
 	}
     
-    /** @return String : file:line:column */
+    /** @return String : {context\n}file:line:column */
     public String toString() {
-    	return getSourceFile().getPath() + ":" + getLine() + ":" + getColumn();
+        return (null == context ? "" : context + LangUtil.EOL)
+            + getSourceFile().getPath() 
+            + ":" + getLine() 
+            + ":" + getColumn();
     }
-    
-    //XXX making the build work again, Wes needs to implement the correct fix
-    public String getContext() { return null; }
 }
