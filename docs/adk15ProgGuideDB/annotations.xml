@@ -708,7 +708,10 @@
     </para>
     
     <para>It is a compilation error to attempt to match on an annotation type 
-    that does not have runtime retention using one of these pointcut designators.</para>
+    that does not have runtime retention using <literal>@this, @target</literal>
+    or <literal>@args</literal>. It is a compilation error to attempt to use
+    any of these designators to expose an annotation value that does not
+    have runtime retention.</para>
 
     <para>
         The <literal>this()</literal>, <literal>target()</literal>, and
