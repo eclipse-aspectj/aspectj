@@ -23,7 +23,7 @@
        2003 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated February 26, 2003.
+  <para>Last updated March 3, 2003.
   </para>
   <para>
    
@@ -51,15 +51,19 @@
             of modularity is the class. In AspectJ, aspects modularize concerns that
             affect more than one class.  
 	  </para>
-          <para> AspectJ includes a compiler (<literal>ajc</literal>), a
-            debugger (<literal>ajdb</literal>), a documentation generator
-            (<literal>ajdoc</literal>), a program structure browser
-            (<literal>ajbrowser</literal>), and integration
-            with Eclipse, Sun-ONE/Netbeans, GNU Emacs/XEmacs, JBuilder, and Ant.
+          <para>You compile your program using the AspectJ compiler 
+          (perhaps using the supported development environments) 
+          and then run it, 
+          supplying a small (&lt; 100K) runtime library.
           </para>
-          <para>You compile your program using the AspectJ compiler (perhaps using
-	the supported development environments) and then run it, supplying 
-	a small (&lt; 100K) runtime library.
+          <para>The AspectJ technologies include 
+           a compiler (<literal>ajc</literal>), 
+           a debugger (<literal>ajdb</literal>), 
+           a documentation generator (<literal>ajdoc</literal>), 
+           a program structure browser (<literal>ajbrowser</literal>), 
+           and integration with
+            Eclipse, Sun-ONE/Netbeans, GNU Emacs/XEmacs, 
+            JBuilder, and Ant.
           </para>
         </answer>
       </qandaentry>
@@ -3170,6 +3174,113 @@ vmparam -Xmx384m
         </answer>
       </qandaentry>
     </qandadiv>
+    <qandadiv id="Technology" xreflabel="Understanding AspectJ Technology">
+      <title>Understanding AspectJ Technology</title>
+      <qandaentry>
+        <question id="q:implementation"
+            xreflabel="Q:Do I need to know how the compiler works?">
+          <para>Do I need to know how the compiler or weaver works?
+          </para>
+        </question>
+        <answer>
+          <para>Writing AspectJ programs only requires understanding the
+          <ulink url="progguide/index.html">Programming Guide</ulink>.
+          However, current implementations do not control everything in
+          a system, so AspectJ program semantics may be limited to code
+          the implementation controls.  For our implementation, these 
+          limitations are stated in 
+          <ulink url="progguide/apc.html">
+             Programming Guide Appendix C</ulink>.
+		  Aside from understanding the use and limitations of the 
+		  implementation, there is no need to understand the underlying 
+		  technology when writing AspectJ programs.
+          </para>
+          <para>
+          The technology that implements AspectJ interests 
+          some academic researchers and some developers 
+          who want new features or new ways to weave.
+          These extensions are not discussed in the documentation.
+          Some are being developed already,
+          others are on the drawing board (or perhaps were left off
+          long ago), and still others haven't been considered.
+		  If you are interested in a certain extension, 
+          check the bug database for feature requests
+          and the mailing list archives for any past discussions.
+		  Then email the list to see if it's been considered. 
+		  For more information, see
+		      <xref linkend="Developers"/>.     
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:whitepapers"
+            xreflabel="Q:How does the compiler/weaver work? Are there any white papers?">
+          <para>How does the compiler/weaver work? Are there any white papers?
+          </para>
+        </question>
+        <answer>
+          <para>
+          There are currently no documents describing this process in any detail.  
+          Currently, the best way to understand this is to compile programs and 
+          then inspect the generated source or bytecode.  Many people have found 
+          this very effective for understanding the weaving model.  You also have 
+          access to the source code for a different perspective.  (See 
+          <xref linkend="Developers"/>).
+          We hope to write 
+          a couple of papers on the bytecode weaving model used in AspectJ-1.1 if 
+          we can ever find the free time.
+          </para> 
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:reflection"
+            xreflabel="Q:Does AspectJ use reflection at runtime?">
+          <para>Does AspectJ use reflection at runtime?
+          </para>
+        </question>
+        <answer>
+          <para>
+          The only time that reflection is used during run-time is when the special 
+          thisJoinPoint object is used to discover reflective information about the 
+          join point.  If you don't use thisJoinPoint then no reflection will be used.
+          </para> 
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:loadtimeWeaving"
+            xreflabel="Q:What about load-time weaving? Can I weave aspects at runtime?">
+          <para>What about load-time weaving? Can I weave aspects at runtime?
+          </para>
+        </question>
+        <answer>
+          <para>Not now, but it should be possible soon. 
+          AspectJ 1.1 can weave binary aspects
+          into classes in bytecode form.  Hooked up to a class loader,
+          this can weave class bytecodes after they are read in,
+          before the
+          class is defined by the VM.  In the final 1.1 release,
+          we hope to document a small class loader as a proof-of-concept,
+          but we expect most people will already have a custom 
+          class loader which they will adapt to invoke our weaver.
+          </para> 
+          <para>Some have asked about only weaving classes specified 
+          at run-time.
+		  Aspects should work across an entire namespace, and problems 
+		  will likely result from weaving
+          some classes but not others.  Also, it's confusing to 
+          specify crosscutting both in the aspect and in the
+          list of runtime classes; the crosscutting specification
+          should be in the aspect itself,
+          where it can be processed by tools.
+          </para> 
+          <para>And just to state the obvious:
+          do not use bytecode weaving, at load-time or otherwise,
+          to modify .class files protected by license,
+          without permission from the licensor.
+          </para> 
+        </answer>
+      </qandaentry>
+    </qandadiv>
     <qandadiv id="Developers" xreflabel="AspectJ Project Development">
       <title>AspectJ Project Development</title>
       <qandaentry>
@@ -3364,8 +3475,6 @@ vmparam -Xmx384m
                   in the <literal>testing</literal> module.
               </listitem>
             </itemizedlist>
-          </para> 
-          <para>
           </para> 
         </answer>
       </qandaentry>
@@ -3781,6 +3890,10 @@ vmparam -Xmx384m
           Entries changes to reflect the move are not listed here.
     Other entries changed since the earlier November 26 version:
             <itemizedlist>
+        <listitem><para><xref linkend="q:implementation"/></para></listitem>
+        <listitem><para><xref linkend="q:whitepapers"/></para></listitem>
+        <listitem><para><xref linkend="q:reflection"/></para></listitem>
+        <listitem><para><xref linkend="q:loadtimeWeaving"/></para></listitem>
         <listitem><para><xref linkend="q:adviseconstructors"/></para></listitem>
         <listitem><para><xref linkend="q:whyeclipse"/></para></listitem>
         <listitem><para><xref linkend="q:eclipserequired"/></para></listitem>
