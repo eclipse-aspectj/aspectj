@@ -23,7 +23,7 @@
        2003 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated April 18, 2004
+  <para>Last updated September 2, 2004
   </para>
   <para>
    This FAQ covers AspectJ versions 1.0 and 1.1.
@@ -4514,6 +4514,7 @@ vmparam -Xmx384m
           Entries changed recently:
             <itemizedlist>
         <listitem><para><xref linkend="q:dynamicaop"/></para></listitem>
+        <listitem><para><xref linkend="q:java5"/></para></listitem>
             </itemizedlist>
           </para>
         </answer>
@@ -4772,12 +4773,55 @@ vmparam -Xmx384m
                 </row>
                 <row>
                   <entry valign="top" align="center">1.2</entry>
-                  <entry>language upgrades to increase reusability
-                  	of aspects,	compliance with any released J2SE 1.5</entry>
+                  <entry>Faster weaving, -inpath option, better error messages,
+                  better handling of binary input and resources
+                  during incremental compilation, faster runtime
+                  </entry>
+                </row>
+                <row>
+                  <entry valign="top" align="center">1.3</entry>
+                  <entry>Support for Java 1.5
+                  </entry>
                 </row>
               </tbody>
             </tgroup>
           </table>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:java5"
+            xreflabel="Q:Will AspectJ support Java 5?">
+          <para>
+            Will AspectJ support Java 5?
+          </para>
+        </question>
+        <answer>
+          <para>
+          Yes. We are working on Java 5 support in phases:
+          </para>
+          <itemizedlist>
+            <listitem><para>
+            Ensure the weaver can cope with class files
+            produced by a Java 5 compiler.
+            We know we should not create join points for execution or call
+            of methods that have the ACC_BRIDGE attribute (bug 70704), and 
+            we will look at covariance and members with the ACC_ENUM attribute.
+            When we are done, users will be able to compile Java source using 
+            a Java 5 compiler, and weave with AspectJ.
+			</para></listitem>
+            <listitem><para>
+			Extend the AspectJ compiler so that it can compile the 
+			new Java 5 features correctly. Mostly this involves waiting for the 
+			Eclipse JDT team to get their Java 5 support sufficiently down the road, 
+			and then we will pick this up and work out how to re-integrate it into 
+			AspectJ.   When this is done, users will be able to use ajc to compile
+			code with Java 5 constructs.
+			</para></listitem>
+            <listitem><para>
+			Finally, we'll consider changes in the AspectJ language (pointcut 
+			expressions, treatment of generics, support of annotations, etc.).
+			</para></listitem>
+          </itemizedlist>
         </answer>
       </qandaentry>
     </qandadiv>
