@@ -92,8 +92,16 @@ public class ExactTypePattern extends TypePattern {
 	
 	protected boolean matchesExactly(ResolvedTypeX matchType) {
 		boolean typeMatch = this.type.equals(matchType);
+		annotationPattern.resolve(matchType.getWorld());
 		boolean annMatch = this.annotationPattern.matches(matchType).alwaysTrue();
 		return (typeMatch && annMatch);
+	}
+	
+	protected boolean matchesExactly(ResolvedTypeX matchType, ResolvedTypeX annotatedType) {
+		boolean typeMatch = this.type.equals(matchType);
+		annotationPattern.resolve(matchType.getWorld());
+		boolean annMatch = this.annotationPattern.matches(annotatedType).alwaysTrue();
+		return (typeMatch && annMatch);		
 	}
 	
 	public TypeX getType() { return type; }

@@ -1052,7 +1052,7 @@
     </ajc-test>
 
     <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: annotation type pattern matching">
-        <compile files="AnnotationsInTypePatterns.aj,org/xyz/OrgXYZAnnotation.java,org/xyz/Types.java,org/abc/Types.java,Immutable.java,NonPersistent.java" options="-1.5">
+        <compile files="AnnotationsInTypePatterns.aj,org/xyz/OrgXYZAnnotation.java,org/xyz/Types.java,org/abc/Types.java,anns/Immutable.java,anns/NonPersistent.java" options="-1.5">
             <message kind="warning" line="23" text="(@Immutable *)"/>
             <message kind="warning" line="32" text="(@Immutable *)"/>
             <message kind="warning" line="3" text="(@Immutable *)"/>
@@ -1064,8 +1064,8 @@
             <message kind="warning" line="5" text="(!@Immutable *)"/>
             <message kind="warning" line="6" text="(!@Immutable *)"/>
             <message kind="warning" line="2" text="(!@Immutable *)"/>
-            <message kind="warning" line="1" text="(!@Immutable *)"/>
-            <message kind="warning" line="4" text="(!@Immutable *)"/>
+            <message kind="warning" line="2" text="(!@Immutable *)"/>
+            <message kind="warning" line="5" text="(!@Immutable *)"/>
             <message kind="warning" line="3" text="@Immutable (org.xyz.* || org.abc.*)"/>
             <message kind="warning" line="5" text="@Immutable (org.xyz.* || org.abc.*)"/>
             <message kind="warning" line="8" text="@Immutable (org.xyz.* || org.abc.*)"/>
@@ -1076,22 +1076,23 @@
             <message kind="warning" line="8" text="@(Immutable || NonPersistent) org.xyz..*"/>
             <message kind="warning" line="8" text="@Immutable @NonPersistent org.xyz..*"/>
             <message kind="warning" line="6" text="@(@Inherited *) org.xyz..*"/>
+            <message kind="warning" line="8" text="@(@Inherited *) org.xyz..*"/>            
         </compile>
     </ajc-test>
 
     <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: annotations in sig patterns">
-        <compile files="AnnotationsInSignaturePatterns.aj,Cachable.java,SensitiveData.java,Persisted.java,Classified.java,Immutable.java,Secure.java,Catastrophic.java,Oneway.java,Transaction.java,org/xyz/SignatureTypes.java" options="-1.5">
+        <compile files="AnnotationsInSignaturePatterns.aj,anns/Cachable.java,anns/SensitiveData.java,anns/Persisted.java,Classified.java,anns/Immutable.java,Secure.java,Catastrophic.java,Oneway.java,anns/Transaction.java,org/xyz/SignatureTypes.java" options="-1.5">
             <message kind="warning" line="32" text="@SensitiveData * *"/>
-            <message kind="warning" line="6" text="@SensitiveData * *"/>
-            <message kind="warning" line="12" text="@SensitiveData * *"/>
-            <message kind="warning" line="6" text="@SensitiveData List org.xyz..*.*"/>
-            <message kind="warning" line="10" text="(@SensitiveData *) org.xyz..*.*"/>
-            <message kind="warning" line="12" text="(@SensitiveData *) org.xyz..*.*"/>
+            <message kind="warning" line="7" text="@SensitiveData * *"/>
+            <message kind="warning" line="13" text="@SensitiveData * *"/>
+            <message kind="warning" line="7" text="@SensitiveData List org.xyz..*.*"/>
+            <message kind="warning" line="11" text="(@SensitiveData *) org.xyz..*.*"/>
+            <message kind="warning" line="13" text="(@SensitiveData *) org.xyz..*.*"/>
             <message kind="warning" line="50" text="@Foo (@Goo *) (@Hoo *).*"/>
             <message kind="warning" line="38" text="@Persisted @Classified * *"/>
             
             <message kind="warning" line="44" text="@Oneway * *(..)"/>
-            <message kind="warning" line="17" text="@Transaction * (@Persisted org.xyz..*).*(..)"/>
+            <message kind="warning" line="18" text="@Transaction * (@Persisted org.xyz..*).*(..)"/>
             <message kind="warning" line="52" text="* *.*(@Immutable *,..)"/>
             <message kind="warning" line="53" text="* *.*(@Immutable *,..)"/>
             <message kind="warning" line="54" text="* *.*(@Immutable *,..)"/>
@@ -1099,10 +1100,10 @@
             <message kind="warning" line="62" text="within(@Secure *)"/>
             <message kind="warning" line="63" text="within(@Secure *)"/>
             <message kind="warning" line="66" text="staticinitialization(@Persisted *)"/>
-            <message kind="warning" line="16" text="staticinitialization(@Persisted *)"/>
+            <message kind="warning" line="17" text="staticinitialization(@Persisted *)"/>
             <message kind="warning" line="56" text="call(@Oneway * *(..))"/>
-            <message kind="warning" line="27" text="execution(public (@Immutable *) org.xyz..*.*(..))"/>
-            <message kind="warning" line="25" text="set(@Cachable * *)"/>
+            <message kind="warning" line="28" text="execution(public (@Immutable *) org.xyz..*.*(..))"/>
+            <message kind="warning" line="26" text="set(@Cachable * *)"/>
             <message kind="warning" line="80" text="handler(!@Catastrophic *)"/>
             
         </compile>

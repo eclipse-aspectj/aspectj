@@ -117,6 +117,10 @@ public class WildTypePattern extends TypePattern {
 	 * @see org.aspectj.weaver.TypePattern#matchesExactly(IType)
 	 */
 	protected boolean matchesExactly(ResolvedTypeX type) {
+		return matchesExactly(type,type);
+	}
+
+	protected boolean matchesExactly(ResolvedTypeX type, ResolvedTypeX annotatedType) {
 		String targetTypeName = type.getName();
 		
 		//System.err.println("match: " + targetTypeName + ", " + knownMatches); //Arrays.asList(importedPrefixes));
@@ -124,9 +128,10 @@ public class WildTypePattern extends TypePattern {
 		annotationPattern.resolve(type.getWorld());
 		
 		return matchesExactlyByName(targetTypeName) &&
-		       annotationPattern.matches(type).alwaysTrue();
+		       annotationPattern.matches(annotatedType).alwaysTrue();
 	}
-
+	
+	
 	/**
 	 * Used in conjunction with checks on 'isStar()' to tell you if this pattern represents '*' or '*[]' which are 
 	 * different !
@@ -450,6 +455,7 @@ public class WildTypePattern extends TypePattern {
 			} else {
 				if (dim != 0) type = TypeX.makeArray(type, dim);
 				TypePattern ret = new ExactTypePattern(type, includeSubtypes,isVarArgs);
+				ret.setAnnotationTypePattern(annotationPattern);
 				ret.copyLocationFrom(this);
 				return ret;
 			}

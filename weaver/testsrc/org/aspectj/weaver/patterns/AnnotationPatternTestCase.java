@@ -170,18 +170,14 @@ public class AnnotationPatternTestCase extends TestCase {
 		PatternParser p = new PatternParser("(@(Foo || Boo) (Foo || Boo))");
 		TypePattern t = p.parseTypePattern();
 		assertTrue("OrTypePattern",t instanceof OrTypePattern);
-		WildAnnotationTypePattern wtp = (WildAnnotationTypePattern) t.annotationPattern;
-		assertEquals("@((Foo || Boo))",wtp.toString());
-		assertEquals("(@((Foo || Boo)) (Foo || Boo))",t.toString());
+		assertEquals("((@((Foo || Boo)) Foo) || (@((Foo || Boo)) Boo))",t.toString());
 	}
 	
 	public void testNotSyntax() {
 		PatternParser p = new PatternParser("!@Foo (Foo || Boo))");
 		TypePattern t = p.parseTypePattern();
 		assertTrue("OrTypePattern",t instanceof OrTypePattern);
-		NotAnnotationTypePattern natp = (NotAnnotationTypePattern) t.annotationPattern;
-		assertEquals("!@(Foo)",natp.toString());
-		assertEquals("(!@(Foo) (Foo || Boo))",t.toString());		
+		assertEquals("((!@(Foo) Foo) || (!@(Foo) Boo))",t.toString());		
 	}
 
 	public void testParseMethodOrConstructorSigNoAP() {

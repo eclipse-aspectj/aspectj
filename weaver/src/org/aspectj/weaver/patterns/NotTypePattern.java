@@ -17,6 +17,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.VersionedDataInputStream;
@@ -51,7 +52,11 @@ public class NotTypePattern extends TypePattern {
 	}
 
 	protected boolean matchesExactly(ResolvedTypeX type) {
-		return !pattern.matchesExactly(type);
+		return (!pattern.matchesExactly(type) && annotationPattern.matches(type).alwaysTrue());
+	}
+	
+	protected boolean matchesExactly(ResolvedTypeX type, ResolvedTypeX annotatedType) {
+		return (!pattern.matchesExactly(type,annotatedType) && annotationPattern.matches(annotatedType).alwaysTrue());
 	}
 	
 	public boolean matchesStatically(Class type) {
@@ -70,14 +75,27 @@ public class NotTypePattern extends TypePattern {
 		return !pattern.matchesStatically(type);
 	}
 	
+	public void setAnnotationTypePattern(AnnotationTypePattern annPatt) {
+		super.setAnnotationTypePattern(annPatt);
+	}
+	
+	public void setIsVarArgs(boolean isVarArgs) {
+		pattern.setIsVarArgs(isVarArgs);
+	}
+	
+	
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(TypePattern.NOT);
 		pattern.write(s);
+		annotationPattern.write(s);
 		writeLocation(s);
 	}
 	
 	public static TypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		TypePattern ret = new NotTypePattern(TypePattern.read(s, context));
+		if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
+			ret.annotationPattern = AnnotationTypePattern.read(s,context);
+		}
 		ret.readLocation(context, s);
 		return ret;
 	}

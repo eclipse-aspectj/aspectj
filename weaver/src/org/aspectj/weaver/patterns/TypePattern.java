@@ -169,6 +169,8 @@ public abstract class TypePattern extends PatternNode {
 	}
 	
 	protected abstract boolean matchesExactly(ResolvedTypeX type);
+	
+	protected abstract boolean matchesExactly(ResolvedTypeX type, ResolvedTypeX annotatedType);
 
 	protected boolean matchesSubtypes(ResolvedTypeX type) {
 		//System.out.println("matching: " + this + " to " + type);
@@ -180,7 +182,22 @@ public abstract class TypePattern extends PatternNode {
 		// FuzzyBoolean ret = FuzzyBoolean.NO; // ??? -eh
 		for (Iterator i = type.getDirectSupertypes(); i.hasNext(); ) {
 			ResolvedTypeX superType = (ResolvedTypeX)i.next();
-			if (matchesSubtypes(superType)) return true;
+			if (matchesSubtypes(superType,type)) return true;
+		}
+		return false;
+	}
+	
+	protected boolean matchesSubtypes(ResolvedTypeX superType, ResolvedTypeX annotatedType) {
+		//System.out.println("matching: " + this + " to " + type);
+		if (matchesExactly(superType,annotatedType)) {
+			//System.out.println("    true");
+			return true;
+		}
+		
+		// FuzzyBoolean ret = FuzzyBoolean.NO; // ??? -eh
+		for (Iterator i = superType.getDirectSupertypes(); i.hasNext(); ) {
+			ResolvedTypeX superSuperType = (ResolvedTypeX)i.next();
+			if (matchesSubtypes(superSuperType,annotatedType)) return true;
 		}
 		return false;
 	}
@@ -317,6 +334,10 @@ class EllipsisTypePattern extends TypePattern {
 	protected boolean matchesExactly(ResolvedTypeX type) {
 		return false;
 	}
+	
+	protected boolean matchesExactly(ResolvedTypeX type, ResolvedTypeX annotatedType) {
+		return false;
+	}
 
 	/**
 	 * @see org.aspectj.weaver.patterns.TypePattern#matchesInstanceof(IType)
@@ -385,6 +406,10 @@ class AnyTypePattern extends TypePattern {
 		return true;
 	}
 
+	protected boolean matchesExactly(ResolvedTypeX type, ResolvedTypeX annotatedType) {
+		return true;
+	}
+	
 	/**
 	 * @see org.aspectj.weaver.patterns.TypePattern#matchesInstanceof(IType)
 	 */
@@ -461,6 +486,11 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 		annotationPattern.resolve(type.getWorld());
 		return annotationPattern.matches(type).alwaysTrue();
 	}
+	
+	protected boolean matchesExactly(ResolvedTypeX type, ResolvedTypeX annotatedType) {
+		annotationPattern.resolve(type.getWorld());
+		return annotationPattern.matches(annotatedType).alwaysTrue();		
+	}
 
 	public FuzzyBoolean matchesInstanceof(ResolvedTypeX type) {
 		return FuzzyBoolean.YES;
@@ -529,6 +559,10 @@ class NoTypePattern extends TypePattern {
 	 * @see org.aspectj.weaver.patterns.TypePattern#matchesExactly(IType)
 	 */
 	protected boolean matchesExactly(ResolvedTypeX type) {
+		return false;
+	}
+	
+	protected boolean matchesExactly(ResolvedTypeX type, ResolvedTypeX annotatedType) {
 		return false;
 	}
 

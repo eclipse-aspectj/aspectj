@@ -1,4 +1,4 @@
-
+package org.xyz; import anns.*;
 @Immutable
 class C {}
 

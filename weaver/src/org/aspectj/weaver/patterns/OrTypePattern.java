@@ -54,6 +54,11 @@ public class OrTypePattern extends TypePattern {
 		//??? if these had side-effects, this sort-circuit could be a mistake
 		return left.matchesExactly(type) || right.matchesExactly(type);
 	}
+
+	protected boolean matchesExactly(ResolvedTypeX type, ResolvedTypeX annotatedType) {
+		//??? if these had side-effects, this sort-circuit could be a mistake
+		return left.matchesExactly(type,annotatedType) || right.matchesExactly(type,annotatedType);
+	}
 	
 	public boolean matchesStatically(ResolvedTypeX type) {
 		return left.matchesStatically(type) || right.matchesStatically(type);
@@ -76,6 +81,22 @@ public class OrTypePattern extends TypePattern {
 		this.isVarArgs = isVarArgs;
 		left.setIsVarArgs(isVarArgs);
 		right.setIsVarArgs(isVarArgs);
+	}
+	
+	public void setAnnotationTypePattern(AnnotationTypePattern annPatt) {
+		if (annPatt == AnnotationTypePattern.ANY) return;
+		if (left.annotationPattern == AnnotationTypePattern.ANY) {
+			left.setAnnotationTypePattern(annPatt);
+		} else {
+			left.setAnnotationTypePattern(
+					new AndAnnotationTypePattern(left.annotationPattern,annPatt));
+		}
+		if (right.annotationPattern == AnnotationTypePattern.ANY) {
+			right.setAnnotationTypePattern(annPatt);			
+		} else {
+			right.setAnnotationTypePattern(
+					new AndAnnotationTypePattern(right.annotationPattern,annPatt));			
+		}
 	}
 	
 	public void write(DataOutputStream s) throws IOException {
