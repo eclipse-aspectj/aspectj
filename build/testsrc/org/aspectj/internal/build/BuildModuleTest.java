@@ -22,13 +22,11 @@ import org.apache.tools.ant.types.Commandline.Argument;
 import org.aspectj.internal.tools.ant.taskdefs.*;
 import org.aspectj.internal.tools.ant.taskdefs.BuildModule;
 import org.aspectj.internal.tools.build.*;
-import org.aspectj.internal.tools.build.Modules;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-//import junit.framework.*;
 import junit.framework.TestCase;
 
 /**
@@ -44,13 +42,15 @@ import junit.framework.TestCase;
  */
 public class BuildModuleTest extends TestCase {
 
+    private static boolean printInfoMessages = false;
     private static boolean printedMessage;
     // skip those requiring ajdoc, which requires tools.jar
     // also skip those requiring java5 unless manually set up
     private static final String[] SKIPS 
-        = {"ajbrowser", "aspectjtools", "ajdoc", "aspectj5rt"};
+        = {"aspectjtools", "ajdoc", "aspectj5rt"};
     private static final String SKIP_MESSAGE = 
-        "Define \"run.build.tests\" as a system property to run tests to build ";
+        "BuildModuleTest: Define \"run.build.tests\" as a system "
+        + "property to run tests to build ";
     private static final String BUILD_CONFIG;
     static {
         String config = null;
@@ -60,7 +60,9 @@ public class BuildModuleTest extends TestCase {
             // ignore
         }
         BUILD_CONFIG = config;
-        System.out.println("BuildModuleTest build.config: " + config);
+        if (printInfoMessages) {
+            System.out.println("BuildModuleTest build.config: " + config);
+        }
     }
     
     ArrayList tempFiles = new ArrayList();
@@ -147,32 +149,6 @@ public class BuildModuleTest extends TestCase {
         checkBuildProduct(productDir, baseDir, distDir, jarDir);
     }
 
-    public void testModuleAntecedantsClipped() {
-        checkAntClipping("testing-drivers", true);
-        checkAntClipping("taskdefs", false);
-    }
-    
-    void checkAntClipping(String moduleName, boolean expectAnt) {
-        File baseDir = new File("..").getAbsoluteFile();
-        File jarDir = getJarDir().getAbsoluteFile();
-        Messager handler = new Messager();
-        Modules modules = new Modules(baseDir, jarDir, false, handler);
-        Module td = modules.getModule(moduleName);
-        ArrayList list = td.findKnownJarAntecedants();
-        // should include ant
-        boolean gotAnt = false;
-        for (Iterator iter = list.iterator(); iter.hasNext();) {
-            File lib = (File) iter.next();
-            if (lib.getPath().endsWith("ant.jar")) {
-                gotAnt = true;
-                break;
-            }
-        }
-        String label = (expectAnt ? "expected" : "not expecting")
-                        + " ant in antecedants for " 
-                        + moduleName;
-        assertTrue(label, expectAnt == gotAnt);
-    }
 
     void checkBuildProduct(File productDir, File baseDir, File distDir, File jarDir) {
         if (!shouldBuild(productDir.getPath())) {
@@ -252,7 +228,9 @@ public class BuildModuleTest extends TestCase {
         }
         for (int i = 0; i < SKIPS.length; i++) {
             if (SKIPS[i].equals(target)) {
-                System.err.println(target + " expressly skipped...");                
+                if (printInfoMessages) {
+                    System.err.println(target + " skipped build test [" + getClass().getName() + ".shouldBuild(..)]");                
+                }
                 return false;
             }
         }
@@ -282,7 +260,6 @@ public class BuildModuleTest extends TestCase {
         task.execute();
         jar = new File(getJarDir(), module + "-all.jar");
         assertTrue("cannot read " + jar, jar.canRead());
-        
         // verify if possible
         if (null == classname) {
             return;
