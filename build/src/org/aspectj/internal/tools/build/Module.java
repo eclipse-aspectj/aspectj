@@ -97,7 +97,7 @@ public class Module {
         
         for (Iterator iter = module.getLibJars().iterator(); iter.hasNext();) {
             File libJar = (File) iter.next();
-            if (!skipLibraryJarAntecedant(libJar)
+            if (!skipLibraryJarAntecedant(module, libJar)
                 && !known.contains(libJar)) { // XXX what if same referent, diff path...
                 known.add(libJar);
             }
@@ -113,13 +113,17 @@ public class Module {
         }
     }
     
-    /** XXX gack explicitly skip Ant */
-    private static boolean skipLibraryJarAntecedant(File libJar) {
+    /** XXX gack explicitly skip Ant except for testing... modules */
+    private static boolean skipLibraryJarAntecedant(Module module, File libJar) {
         if (null == libJar) {
             return true;
         }
-        String path = libJar.getPath().replace('\\', '/');
-        return (-1 != path.indexOf("/lib/ant/lib/"));
+        if (!module.name.startsWith("testing")) {
+            String path = libJar.getPath().replace('\\', '/');
+            path = path.replace(File.separatorChar, '/');
+            return (-1 != path.indexOf("/lib/ant/lib/"));
+        }
+        return false;
     }
 
     /** XXX gack explicitly skip runtime */
