@@ -20,7 +20,6 @@ import java.security.CodeSource;
 
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.bcel.ClassPathManager;
-import org.aspectj.weaver.tools.*;
 
 public abstract class ExtensibleURLClassLoader extends URLClassLoader {
 	
