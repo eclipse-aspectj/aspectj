@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/cpl-v10.html
  * 
  * Contributors:
- *     Matthew Webster - initial implementation
+ *     Andy Clement - initial implementation
  *******************************************************************************/
 package org.aspectj.ajde;
 
