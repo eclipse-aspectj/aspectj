@@ -4,7 +4,7 @@ privileged aspect TheAspect perthis(this(TheObject)) {
      private TheObject theObject;
      private int myPrivate_int=-1, myPackage_int=-1, myProtected_int=-1, myPublic_int=-1;
 
-     after() returning(TheObject obj): execution(new()) { // CW 7 nonmatching target
+     after() returning(TheObject obj): execution(new()) { 
           theObject = obj;
      }
 
