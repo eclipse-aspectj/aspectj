@@ -57,8 +57,9 @@ public class EclipseSourceLocation implements ISourceLocation {
 	public int getColumn() {
         if (-1 == column) {
             int lineNumber = getLine();
-            if (0 < lineNumber) {
-                int lineStart = result.lineSeparatorPositions[getLine()];
+            // JJH added check that lineNumber is in legal range to avoid exceptions
+            if (0 < lineNumber && lineNumber < result.lineSeparatorPositions.length) {
+                int lineStart = result.lineSeparatorPositions[lineNumber];
                 int col = startPos - lineStart; // 1-based
                 if (0 <= col) { 
                     column = col;
