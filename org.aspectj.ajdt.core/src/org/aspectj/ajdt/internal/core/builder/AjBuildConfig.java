@@ -308,5 +308,14 @@ public class AjBuildConfig {
 	public void setXnoInline(boolean xnoInline) {
 		XnoInline = xnoInline;
 	}
+    
+    /** @return true if any config file, sourceroots, sourcefiles, or injars */
+    public boolean hasSources() {
+        return ((null != configFile)
+            || (0 < sourceRoots.size())
+            || (0 < files.size())
+            || (0 < inJars.size())
+            );
+    }
 
 }
