@@ -1,0 +1,379 @@
+<html>
+<title>Build and Test AspectJ</title>
+<body>
+<h1>Build and Test AspectJ</h1>
+
+This describes how to build and test AspectJ
+for developers working on source code for AspectJ.
+It covers building with Ant or Eclipse and testing with 
+JUnit or the harness used for compiler tests.
+
+For information on how the build works and debugging failed builds,
+see <a href="readme-build-module.html">
+           readme-build-module.html</a>.
+  
+           
+<ol>
+  <li>Quick start</li>
+  <li>Requirements</li>
+  <li>Standard builds</li>
+    <ol>
+    <li>Building using Ant</li>
+    <li>Building with Eclipse</li>
+    <li>Running the Ant build scripts from Eclipse</li>
+    <li>Using Eclipse to compile but Ant to assemble</li>
+    </ol>
+  <li>Running build products
+    <ol>
+    <li>Running the compiler, browser, or harness from the command-line</li>
+    <li>Running the compiler, browser, or harness from Eclipse</li>
+    <li>Running Ant-built jars from Eclipse</li>
+    </ol>
+   </li>
+  <li>Testing AspectJ
+    <ol>
+    <li>Running JUnit tests in Eclipse</li>
+	<li>Running JUnit tests from the command-line without Eclipse</li>
+	<li>Running JUnit tests from Ant without Eclipse</li>
+	<li>Using the test harness to run compiler tests</li>
+    </ol>
+   </li>
+  <li>Releases
+    <ol>
+    <li>Release builds</li>
+    <li>Release preconditions and testing</li>
+    <li>Release completion</li>
+    </ol>
+   </li>  
+</ol>
+
+<h3>Quick start</h3>
+This is a minimal introduction to building and testing AspectJ.
+
+<p>Command-line users use CVS to check out something like this:
+<pre>
+  export CVS_ROOT=":pserver:anonymous@dev.eclipse.org:/home/technology"
+  cvs co org.aspectj/modules</pre>
+If using Eclipse, check out the subdirectories of 
+<code>org.aspectj/modules</code> as Java projects.
+Skip modules <code>aspectj-attic</code> if not <code>tests</code>
+and <code>testing-*</code>.
+
+<p>Build an AspectJ distribution:
+<pre>
+  cd org.aspectj/modules/build
+  ../lib/ant/bin/ant -f build.xml</pre>
+
+To speed the build, Eclipse users can adopt the Eclipse-produced .class files:
+<pre>  ../lib/ant/bin/ant -f build.xml -Dbuild.config=useEclipseCompiles</pre>
+
+Install the distribution (e.g., into build/../aspectj-DEVELOPMENT):
+
+<pre>  java -jar ../aj-build/dist/aspectj-DEVELOPMENT.jar</pre>
+
+Test it by running the build script in the examples directory:
+
+<pre>  cd ../aspectj-DEVELOPMENT/doc/examples
+  ../../ant/bin/ant</pre>
+
+This should build and run the spacewar example.
+  
+<h3>Requirements</h3>
+To build requires only the AspectJ project modules.
+All necessary libraries and tools are in the 
+<a href="../lib/">lib</a> directory.  For command-line users,
+that usually means checking out the modules directory:
+<pre>
+   export CVS_ROOT=":pserver:anonymous@dev.eclipse.org:/home/technology"
+   cvs co org.aspectj/modules
+</pre>
+Eclipse users should check out subdirectories of 
+ <code>org.aspectj/modules</code> as a Java project.  
+
+<p>Not all modules are required.
+The <code>aspectj-attic</code> module only has old code,
+and the <code>tests</code> and <code>testing-*</code> modules
+are only needed to run tests.
+
+<h3>Standard builds</h3>
+<h4>Building using Ant</h4>
+To do a build, use Ant to run <a href="build.xml">build.xml</a>
+from this <a href=".">build</a> directory.  
+To run Ant, use the project's <a href="../lib/ant">../lib/ant</a>
+scripts and libraries, not your own.
+The default target builds the AspectJ distribution;
+see the <a href="build.xml">build.xml</a> for other targets.
+
+Consider defining the following flag properties:
+<p>
+<table cellpadding="1" border="1">
+<tr><th>Property</th><th>Meaning</th>
+    </tr>
+<tr><td>module.name
+    </td><td>To build any module (esp. those not directly supported
+             by a target), use the "any-module" target and define
+             the module name.
+	</td></tr>
+<tr><td>check.build.jar
+    </td><td>any value cause build to fail if 
+    <code>lib/build/build.jar</code> is out of date.  (This is a
+     built archive of the build module to avoid bootstrapping.)
+	</td></tr>
+<tr><td>build.config
+    </td><td>override default configuration in build.xml.
+     Significant values include "verbose" for more output
+     and "useEclipseCompiles" to assume that Eclipse has 
+     compiled modules into their bin directories, and just
+     assemble those classes.
+	</td></tr>
+</table>
+
+<p>
+For example, to build everything into a release bundle,
+with verbose logging
+<pre>
+  cd modules/build
+  ../lib/ant/bin/ant 
+</pre>
+
+To build only the asm module (and any modules it requires):
+<pre>
+  cd modules/build
+  ../lib/ant/bin/ant -f build.xml any-module -Dmodule.name=asm
+</pre>
+
+To build the test harness into 
+  <code>../aj-build/jars/testing-drivers-all.jar</code>:
+<pre>
+  cd modules/build
+  ../lib/ant/bin/ant -f build.xml build-testing-drivers
+</pre>
+
+<h4>Building with Eclipse</h4>
+As mentioned above, the modules are Eclipse Java projects, so
+once checked out, they should build as-is.  That will enable you
+to run the compiler or test harness from within Eclipse (see below),
+but it will not build the AspectJ release as Ant does.
+
+<h4>Running the Ant build scripts from Eclipse</h4>
+When running Ant from Eclipse, be sure to replace the Eclipse Ant 
+libraries with ours.  In the Ant configuration, remove all jars 
+specified by Eclipse and add all the libraries in 
+<a href="../lib/ant/lib">../lib/ant/lib</a>
+as well as in <a href="../lib/junit">../lib/junit</a>.
+(Do not add <code>../lib/build/build.jar</code>, which is
+added via a taskdef declaration.)
+<p>
+If you find on rebuilding that the build products are not
+being regenerated, you may need to manually delete them
+or restart eclipse (the files are not being closed); see
+<a href="readme-build-module.html">readme-build-module.html</a>
+for more information.
+
+<h4>Using Eclipse to compile but Ant to assemble</h4>
+Assuming Eclipse is compiling the AspectJ modules successfully,
+you can use Ant to assemble the eclipse-build .class files into a 
+product by including <code>useEclipseCompiles</code> in the 
+<code>build.config</code>
+variable as described above.  That reduces the build process
+to product assembly, which can be completed in a couple minutes.
+(And of course you can run Ant from Eclipse as described above.)
+
+<h4>Running the compiler, browser, or harness from the command-line</h4>
+The build produces jar files in 
+  <a href="../aj-build/jars/">../aj-build/jars/</a>,
+some of which have manifests specifying the main class, so they
+can be run using <code>java -jar {file} {arguments}</code>.
+
+<p>To run the compiler from the command-line, use the <code>ajbrowser</code> jar file:
+<pre>
+   java -jar aj-build/jars/ajbrowser-all.jar {compile arguments}
+</pre>
+This will run <code>ajbrowser</code> if you provide no arguments or
+ only (unflagged) .lst file arguments.  To run the test harness,
+ use the <code>testing-drivers</code> jar file:
+<pre>
+   java -jar aj-build/jars/testing-drivers-all.jar tests/ajcTests.xml ...
+</pre>
+
+<h4>Running the compiler, browser, or harness from Eclipse</h4>
+To run things within Eclipse, create a run configuration from the
+defining module using the main class:
+<p>
+
+<table border="1" cellpadding="1">
+<tr><th>Program</th><th>Module</th><th>Main</th></tr>
+<tr><td>AspectJ compiler</td><td>org.aspectj.ajdt.core</td><td>org.aspectj.tools.ajc.Main</td></tr>
+<tr><td>AspectJ browser</td><td>ajbrowser</td><td>org.aspectj.tools.ajbrowser.Main</td></tr>
+<tr><td>Test harness</td><td>testing-drivers</td><td>org.aspectj.testing.drivers.Harness</td></tr>
+</table>
+
+<h4>Running Ant-built jars from Eclipse</h4>
+You can run build products (built jars) from Eclipse in two ways:
+<ul>
+   <li>Put them on the classpath of some run configuration</li>
+   <li>Select the jar files and right-click to "open with default editor"
+       (assuming your system is configured to run .jar files)</li>
+</ul>
+You might do this to run the installer or test the browser as built.
+However, doing so might prevent those jar files from being recreated
+in the next build.
+It appears that sometimes these jar files are not close during the
+Eclipse session, which means they cannot be overwritten in new builds,
+even those run from a different Ant process.
+If you find that builds are silently failing, try deleting the 
+build products.
+
+
+<h3>Testing AspectJ</h3>
+Each module has a tree of JUnit tests in the <code>testsrc</code> directory.
+These parallel the <code>src</code> directories and contain roll-up suites
+for each package 
+  (<code>{module}/testsrc/{packagePath}/{package}Tests.java</code>) and 
+for the module as a whole  
+  (<code>{module}/testsrc/{module}ModuleTests.java</code>). 
+
+The AspectJ project also has custom tests in the 
+  <a href="../tests">tests module</a>,
+mainly the compiler tests run by the harness in 
+  <a href="../tests/ajcTests.xml">ajcTests.xml</a>.
+
+<h4>Running JUnit tests in Eclipse</h4>
+JUnit tests may be run under eclipse by selecting any JUnit source file
+and creating a run configuration for it.
+To run all the JUnit tests, use Ant to "build"
+   <a href="../tests/junitModules.xml">../tests/junitModules.xml</a>.
+This file uses the eclipse module bin directories as its classpath,
+so it will not work for someone not compiling with Eclipse.
+
+<h4>Running JUnit tests from the command-line without Eclipse</h4>
+The AspectJ project committers do not do this, but it should work fine.
+The trick is to build the modules with their associated test code 
+(which happens by default) 
+and put the resulting jars on the classpath with the JUnit harness. 
+
+<h4>Running JUnit tests from Ant without Eclipse</h4>
+This entails editing
+   <a href="../tests/junitModules.xml">../tests/junitModules.xml</a>
+to use a classpath containing the built module jars as described above.
+[todo: update junitModules.xml with non-eclipse variant]
+
+<h4>Using the test harness to run compiler tests</h4>
+The <code>build-testing-drivers</code> target builds a single jar with
+the AspectJ binaries and a test harness as the main class. 
+It reads test suite files like 
+   <a href="../tests/ajcTests.xml">../tests/ajcTests.xml</a>;
+use the -help flag to see available options.
+For more information, see
+  <a href="../tests/readme-tests-module.html">
+           ../tests/readme-tests-module.html</a>.
+  
+
+<h3><a name="releases"></a>Releases</h3>
+<h4>Release builds</h4>
+Committers do official release builds to create the distribution
+released in binary form from the web site.
+
+Release builds differ only in running
+from a clean, up-to-date tree and with correct build version values
+in <a href="build-properties.xml">build-properties.xml</a>, which
+will update <code>org.aspectj.bridge.Version</code>.
+See <a href="#version">Version synchronization</a> below
+for more details on how the version is updated.
+
+<h4>Release preconditions and testing</h4>
+<p>
+Normally, we do releases only after fixing all high-priority
+(P1 and P2) bugs in the bug database
+  (a href="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&priority=P1&priority=P2">
+   All open AspectJ bugs with P1 and P2</a>).
+For bug fixes, associated tests in 
+  <code>tests/ajcTestsFailing.xml</code> are fixed and moved to
+  <code>tests/ajcTests.xml</code>.
+  
+
+<p>Before a release, run the following tests:
+<ul>
+  <li>JUnit tests.  Run these before the final build
+  using <code>tests/junitModules.xml</code>
+  (which runs all the 
+  <code>modules/{module}/testsrc/{module}ModuleTests.java</code>).
+  </li>
+  
+  <li>All compiler tests in <code>tests/ajcTests.xml</code>. 
+    Run these before the final build using the test harness.  
+    Run both with and without the
+    -emacssym option.  You can ignore known limitations and pure-java
+    failures (the latter 
+    because they are presumed to be the fault of the underlying
+    eclipse Java compiler); do that by excluding those keywords.  
+    For example, the following command runs the <code>ajcTests.xml</code>
+    suite twice (with and without -emacssym), skipping tests with
+    "pureJava" or "knownLimitation" as keywords, emitting verbose harness
+    information but logging only failures (not passes).  It also
+    suppresses the output streams (but those associated with
+    failures are emitted when the failures are logged).
+<pre>
+  cd tests/
+  java -jar ../aj-build/jars/testing-drivers-all.jar ajcTests.xml -emacssym- \
+     -ajctestSkipKeywords=pureJava,knownLimitation -logFail -verbose -hideStreams
+</pre>
+   You might also be able to use the build script:
+<pre>
+  cd build
+  ../lib/ant/bin/ant -f build.xml ajcTests
+</pre>    
+    For more information, see the instructions for building and running
+    the test harness
+       <a href="../testing-drivers/readme-testing-drivers.html">
+                ../testing-drivers/readme-testing-drivers.html</a>
+    and the tests
+       <a href="../tests/readme-tests-module.html">
+                ../tests/readme-tests-module.html</a>.
+  </li>
+  
+  <li>Examples.  Run these on the built/installed release:
+<pre>
+    cd {aspectj-install}/doc/examples
+    ant -f build.xml
+</pre>
+This should build and run the spacewar example. 
+To run all examples, use target <code>all</code>.
+To run all the examples that do not require manual operation,
+use target <code>nonGui</code>. 
+This quick test verifies that the aspectjtools.jar and aspectjrt.jar
+are installed and have a matching version, that the examples actually
+compile and run, etc.
+</p>
+   </li> 
+   <li>If there are any bugs which are closed with this release
+   but which do not have an automated test case run using
+   JUnit or the harness, those bugs should be manually tested 
+   against the release.
+   </li> 
+   <li>Any other tests warranted by release objectives.
+   E.g., make sure it works as expected for any demos or 
+   for any clients (e.g., Emacs, AJDT).
+   </li> 
+</ul>
+
+<h4>Release completion</h4>
+When the release build is accepted,
+tag the tree with the release version
+so others can do diffs or create patches
+based on the release code.  E.g., from the command line:
+<pre>
+   cd org.aspectj/
+   cvs tag -R -c v1_1_0
+</pre>
+<p>
+Pushing the release out to the web involves manually updating
+  <code>aspectj-home/</code> with the release files 
+  (and documentation, if it is not a preview release),
+  verifying the downloads and pages, 
+  and sending any release notifications.
+  
+<hr>
+
+</body>
+</html>
