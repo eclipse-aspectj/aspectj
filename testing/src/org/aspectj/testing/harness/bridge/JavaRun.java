@@ -369,11 +369,11 @@ public class JavaRun implements IAjcRun {
         /**
          * skip description, skip sourceLocation, 
          * do keywords, do options, skip paths, do comment,
-         * skip staging,  
+         * skip staging,   skip badInput,
          * do dirChanges, do messages but skip children. 
          */
         private static final XMLNames NAMES = new XMLNames(XMLNames.DEFAULT,
-                "", "", null, null, "", null, "", false, false, true);
+                "", "", null, null, "", null, "", "", false, false, true);
                 
         /** fully-qualified name of the class to run */
         protected String className;
@@ -447,10 +447,7 @@ public class JavaRun implements IAjcRun {
             if (!LangUtil.isEmpty(dirChanges)) {
                 DirChanges.Spec.writeXml(out, dirChanges);
             }
-            List messages = getMessages();
-            if (0 < messages.size()) {
-                SoftMessage.writeXml(out, messages);
-            }
+            SoftMessage.writeXml(out, getMessages());
             out.endElement(xmlElementName);
         }
         public String toLongString() {
