@@ -15,6 +15,7 @@ package org.aspectj.weaver.bcel;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -150,13 +151,28 @@ public class UnwovenClassFile {
 	public String toString() {
 		return "UnwovenClassFile(" + filename + ", " + getClassName() + ")";
 	}
-
+	
+	/**
+	 * delete not just this file, but any files in the same directory that
+	 * were generated as a result of weaving it (e.g. for an around closure). 
+	 */
 	public void deleteRealFile() throws IOException {
-		new File(filename).delete();
+		File victim = new File(filename);
+		String namePrefix = victim.getName();
+		namePrefix = namePrefix.substring(0,namePrefix.lastIndexOf('.'));
+		final String targetPrefix = namePrefix + "$Ajc";
+		File dir = victim.getParentFile();
+		if (dir != null) {
+			File[] weaverGenerated = dir.listFiles(new FilenameFilter() {
+				public boolean accept(File dir, String name) {
+					return name.startsWith(targetPrefix);
+				}});
+			for (int i = 0; i < weaverGenerated.length; i++) {
+				weaverGenerated[i].delete();
+			}
+		}
+		victim.delete();
 	}
-
-
-
 
 	// record
 	public static class ChildClass {

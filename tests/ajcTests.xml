@@ -7489,4 +7489,18 @@
         <compile files="WeaveLocal.java" aspectpath="notAJar.jar" outjar="notAJar.jar" >         	
         </compile>
     </ajc-test>
+    
+     
+    <ajc-test dir="incremental/initialTests/classWAroundClosureRemoved"
+      title="make sure additional classes generated during weave are deleted with src class file"
+      keywords="incremental-test">
+      <compile staging="true" 
+        	options="-incremental"
+        	sourceroots="."/>
+        <inc-compile tag="20" >
+            <dir-changes removed="AdviceOnIntroduced$AjcClosure1"/>
+        </inc-compile>
+    </ajc-test>
+
+    
 </suite>
