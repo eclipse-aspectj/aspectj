@@ -30,6 +30,8 @@ import org.aspectj.ajde.ui.swing.CompilerMessage;
 import org.aspectj.ajde.ui.swing.CompilerMessagesCellRenderer;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
+import org.aspectj.bridge.IMessage.Kind;
 
 /**
  * Used to display a list of compiler messages that can be clicked in order
@@ -59,7 +61,9 @@ public class CompilerMessagesPanel extends JPanel implements TaskListManager {
                      int index = list.locationToIndex(e.getPoint());
                      if (listModel.getSize() >= index && index != -1) {
                      	CompilerMessage cm = (CompilerMessage)listModel.getElementAt(index);
-                     	Ajde.getDefault().getEditorManager().showSourceLine(cm.sourceLocation, true);
+                        if ((null != cm) && (null != cm.message)) {
+                            displayMessage(cm.message);
+                        }
                      }
                   }
              }
@@ -67,14 +71,35 @@ public class CompilerMessagesPanel extends JPanel implements TaskListManager {
         list.addMouseListener(mouseListener);
         list.setCellRenderer(new CompilerMessagesCellRenderer());
     } 
+    
+    public void addSourcelineTask(
+        String message,
+        ISourceLocation sourceLocation,
+        Kind kind) {
+            addSourcelineTask(new Message(message, kind, null, sourceLocation));
+    }
 
-    public void addSourcelineTask(String message, ISourceLocation sourceLocation, IMessage.Kind kind) {   
-        listModel.addElement(new CompilerMessage(message, sourceLocation,kind));
+    /**
+     * called when user double-clicks on a message.
+     */
+    protected void displayMessage(IMessage message) {
+        ISourceLocation loc = message.getISourceLocation();
+        Ajde.getDefault().getEditorManager().showSourceLine(loc, true);
+        // show dialog with stack trace if thrown
+        Throwable thrown = message.getThrown();
+        if (null != thrown) { 
+            Ajde.getDefault().getErrorHandler().handleError(message.getMessage(), thrown);
+        }
+    }
+
+    public void addSourcelineTask(IMessage message) {   
+        listModel.addElement(new CompilerMessage(message));
         BrowserManager.getDefault().showMessages();
     }
 
     public void addProjectTask(String message, IMessage.Kind kind) {
-		listModel.addElement(new CompilerMessage(message,kind));
+        IMessage m = new Message(message, kind, null, null);
+		listModel.addElement(new CompilerMessage(m));
 		BrowserManager.getDefault().showMessages();
 	}
 
