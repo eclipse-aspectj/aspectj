@@ -119,10 +119,15 @@ each component in the chain may accept and interpret:
      <code>-outjar</code>, and
      <code>-sourceroot</code>.
      </td></tr>
-  <tr><td><u>compiler selectors</u>: Use <code>-ajc</code> or <code>-eclipse</code> to select the old
+  <tr><td><u>compiler selectors</u>: 
+  	 Use <code>-ajc</code> or <code>-eclipse</code> to select the old
      (ajc 1.0) or new (eajc 1.1) compilers.  
       Note that the old compiler is not
       available in the CVS source tree at eclipse.org.
+      Use <code>-ajdeCompiler</code> to run a wrapper around the
+      AJDE interface
+      and <code>-ajctaskCompiler</code> to run a wrapper around the
+      AjcTask (Ant task) interface.
      </td></tr>
   <tr><td><u>option dominance <code>-!^</code></u>: 
      Some tests require or prohibit certain options; 
