@@ -1,0 +1,120 @@
+/* *******************************************************************
+ * Copyright (c) 2004 IBM Corporation
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Adrian Colyer, 
+ * ******************************************************************/
+package org.aspectj.testing;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.aspectj.tools.ajc.AjcTestCase;
+
+/**
+ * @author colyer
+ *
+ * TODO To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Style - Code Templates
+ */
+public class AjcTest {
+
+	private List testSteps = new ArrayList();
+	
+	private String dir;
+	private String pr;
+	private String title;
+	private String keywords;
+	private String comment;
+
+	public AjcTest() {
+	}
+	
+	public void addTestStep(ITestStep step) {
+		testSteps.add(step);
+		step.setTest(this);
+	}
+	
+	public void runTest(AjcTestCase testCase) {
+		try {
+			System.out.print("TEST: " + getTitle() + "\t");
+			for (Iterator iter = testSteps.iterator(); iter.hasNext();) {
+				ITestStep step = (ITestStep) iter.next();
+				step.setBaseDir(getDir());
+				System.out.print(".");
+				step.execute(testCase);
+			}
+		} finally {
+			System.out.println("DONE");
+		}
+	}
+	
+	/**
+	 * @return Returns the comment.
+	 */
+	public String getComment() {
+		return comment;
+	}
+	/**
+	 * @param comment The comment to set.
+	 */
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+	/**
+	 * @return Returns the dir.
+	 */
+	public String getDir() {
+		return dir;
+	}
+	/**
+	 * @param dir The dir to set.
+	 */
+	public void setDir(String dir) {
+		dir = "../tests/" + dir;
+		this.dir = dir;
+	}
+	/**
+	 * @return Returns the keywords.
+	 */
+	public String getKeywords() {
+		return keywords;
+	}
+	/**
+	 * @param keywords The keywords to set.
+	 */
+	public void setKeywords(String keywords) {
+		this.keywords = keywords;
+	}
+	/**
+	 * @return Returns the pr.
+	 */
+	public String getPr() {
+		return pr;
+	}
+	/**
+	 * @param pr The pr to set.
+	 */
+	public void setPr(String pr) {
+		this.pr = pr;
+	}
+	/**
+	 * @return Returns the title.
+	 */
+	public String getTitle() {
+		return title;
+	}
+	/**
+	 * @param title The title to set.
+	 */
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+}

@@ -1,0 +1,291 @@
+/* *******************************************************************
+ * Copyright (c) 2004 IBM Corporation
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Adrian Colyer, 
+ * ******************************************************************/
+package org.aspectj.testing;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import org.aspectj.tools.ajc.AjcTestCase;
+import org.aspectj.tools.ajc.CompilationResult;
+
+/**
+ * @author colyer
+ *
+ * TODO To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Style - Code Templates
+ */
+public class CompileSpec implements ITestStep {
+
+	private List expected = new ArrayList();
+	
+	private String files;
+	private boolean includeClassesDir;
+	private String aspectpath;
+	private String classpath;
+	private String inpath;
+	private String sourceroots;
+	private String outjar;
+	private String xlintfile;
+	private String options;
+	private String baseDir;
+	private String extdirs;
+	private AjcTest myTest;
+	
+	public CompileSpec() {
+	}
+	
+	public void execute(AjcTestCase inTestCase) {
+		File base = new File(baseDir);
+		String[] args = buildArgs();
+		CompilationResult result = inTestCase.ajc(base,args);
+		AjcTestCase.MessageSpec messageSpec = buildMessageSpec();
+		String failMessage = "test \"" + myTest.getTitle() + "\" failed";
+		inTestCase.assertMessages(result,failMessage,messageSpec);
+		inTestCase.setShouldEmptySandbox(false); // so subsequent steps in same test see my results
+	}
+
+	public void addExpectedMessage(ExpectedMessageSpec message) {
+		expected.add(message);
+	}
+
+	public void setBaseDir(String dir) {
+		this.baseDir = dir;
+	}
+		
+	public void setTest(AjcTest t) {
+		this.myTest = t;
+	}
+	
+	/**
+	 * @return Returns the aspectpath.
+	 */
+	public String getAspectpath() {
+		return aspectpath;
+	}
+	/**
+	 * @param aspectpath The aspectpath to set.
+	 */
+	public void setAspectpath(String aspectpath) {
+		this.aspectpath = aspectpath.replace(',',File.pathSeparatorChar);
+	}
+	/**
+	 * @return Returns the classpath.
+	 */
+	public String getClasspath() {
+		return classpath;
+	}
+	/**
+	 * @param classpath The classpath to set.
+	 */
+	public void setClasspath(String classpath) {
+		this.classpath = classpath.replace(',',File.pathSeparatorChar);
+	}
+	/**
+	 * @return Returns the files.
+	 */
+	public String getFiles() {
+		return files;
+	}
+	/**
+	 * @param files The files to set.
+	 */
+	public void setFiles(String files) {
+		this.files = files;
+	}
+	/**
+	 * @return Returns the includeClassesDir.
+	 */
+	public boolean isIncludeClassesDir() {
+		return includeClassesDir;
+	}
+	/**
+	 * @param includeClassesDir The includeClassesDir to set.
+	 */
+	public void setIncludeClassesDir(boolean includeClassesDir) {
+		this.includeClassesDir = includeClassesDir;
+	}
+	/**
+	 * @return Returns the inpath.
+	 */
+	public String getInpath() {
+		return inpath;
+	}
+	/**
+	 * @param inpath The inpath to set.
+	 */
+	public void setInpath(String inpath) {
+		this.inpath = inpath.replace(',',File.pathSeparatorChar);
+	}
+	/**
+	 * @return Returns the options.
+	 */
+	public String getOptions() {
+		return options;
+	}
+	/**
+	 * @param options The options to set.
+	 */
+	public void setOptions(String options) {
+		int i = options.indexOf("!eclipse");
+		if (i != -1) {
+			this.options = options.substring(0,i);
+			this.options += options.substring(i + "!eclipse".length());
+		} else {
+			this.options = options;
+		}
+	}
+	/**
+	 * @return Returns the outjar.
+	 */
+	public String getOutjar() {
+		return outjar;
+	}
+	/**
+	 * @param outjar The outjar to set.
+	 */
+	public void setOutjar(String outjar) {
+		this.outjar = outjar;
+	}
+	/**
+	 * @return Returns the sourceroots.
+	 */
+	public String getSourceroots() {
+		return sourceroots;
+	}
+	/**
+	 * @param sourceroots The sourceroots to set.
+	 */
+	public void setSourceroots(String sourceroots) {
+		this.sourceroots = sourceroots;
+	}
+	/**
+	 * @return Returns the xlintfile.
+	 */
+	public String getXlintfile() {
+		return xlintfile;
+	}
+	/**
+	 * @param xlintfile The xlintfile to set.
+	 */
+	public void setXlintfile(String xlintfile) {
+		this.xlintfile = xlintfile;
+	}
+	
+	public String getExtdirs() { return extdirs;}
+	public void setExtdirs(String extdirs) { this.extdirs = extdirs; }
+	
+	private String[] buildArgs() {
+		StringBuffer args = new StringBuffer();
+		// add any set options, and then files to compile at the end
+		if (getAspectpath() != null) {
+			args.append("-aspectpath ");
+			args.append(getAspectpath());
+			args.append(" ");
+		}
+		if (getSourceroots() != null) {
+			args.append("-sourceroots ");
+			args.append(getSourceroots());
+			args.append(" ");
+		}
+		if (getOutjar() != null) {
+			args.append("-outjar ");
+			args.append(getOutjar());
+			args.append(" ");
+		}
+		if (getOptions() != null) {
+			StringTokenizer strTok = new StringTokenizer(getOptions(),",");
+			while (strTok.hasMoreTokens()) {
+				args.append(strTok.nextToken());
+				args.append(" ");
+			}
+		}
+		if (getClasspath() != null) {
+			args.append("-classpath ");
+			args.append(getClasspath());
+			args.append(" ");
+		}
+		if (getXlintfile() != null) {
+			args.append("-Xlintfile ");
+			args.append(getXlintfile());
+			args.append(" ");
+		}
+		if (getExtdirs() != null) {
+			args.append("-extdirs ");
+			args.append(getExtdirs());
+			args.append(" ");
+		}
+		List fileList = new ArrayList();
+		List jarList = new ArrayList();
+		// convention that any jar on file list should be added to inpath
+		String files = getFiles();
+	    if (files == null) files = "";
+		StringTokenizer strTok = new StringTokenizer(files,",");
+		while (strTok.hasMoreTokens()) {
+			String file = strTok.nextToken();
+			if (file.endsWith(".jar")) {
+				jarList.add(file);
+			} else {
+				fileList.add(file);
+			}
+		}
+		if ((getInpath() != null) || !jarList.isEmpty()) {
+			args.append("-inpath ");
+			if (getInpath() != null) args.append(getInpath());
+			for (Iterator iter = jarList.iterator(); iter.hasNext();) {
+				String jar = (String) iter.next();
+				args.append(File.pathSeparator);
+				args.append(jar);
+			}
+			args.append(" ");
+		}
+		for (Iterator iter = fileList.iterator(); iter.hasNext();) {
+			String file = (String) iter.next();
+			args.append(file);
+			args.append(" ");
+		}
+		String argumentString = args.toString();
+		strTok = new StringTokenizer(argumentString," ");
+		String[] ret = new String[strTok.countTokens()];
+		for (int i = 0; i < ret.length; i++) {
+			ret[i] = strTok.nextToken();
+		}
+		return ret;
+	}
+	
+	private AjcTestCase.MessageSpec buildMessageSpec() {
+		List infos = null;
+		List warnings = new ArrayList();
+		List errors = new ArrayList();
+		List fails = new ArrayList();
+		for (Iterator iter = expected.iterator(); iter.hasNext();) {
+			ExpectedMessageSpec exMsg = (ExpectedMessageSpec) iter.next();
+			String kind = exMsg.getKind();
+			if (kind.equals("info")) {
+				if (infos == null) infos = new ArrayList();
+				infos.add(exMsg.toMessage());
+			} else if (kind.equals("warning")) {
+				warnings.add(exMsg.toMessage());
+			} else if (kind.equals("error")) {
+				errors.add(exMsg.toMessage());				
+			} else if (kind.equals("fail")) {
+				fails.add(exMsg.toMessage());
+			} else if (kind.equals("abort")) {
+				fails.add(exMsg.toMessage());
+			}
+		}
+		return new AjcTestCase.MessageSpec(infos,warnings,errors,fails);
+	}
+
+}
