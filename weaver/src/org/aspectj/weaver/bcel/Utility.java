@@ -274,6 +274,13 @@ public class Utility {
         //System.out.println("cast to: " + toType);
 
         InstructionList il = new InstructionList();
+        
+        //PR71273
+        if ((fromType.equals(Type.BYTE) || fromType.equals(Type.CHAR) || fromType.equals(Type.SHORT)) &&
+            (toType.equals(Type.INT))) {
+        	return il;
+        }
+        
         if (fromType.equals(toType))
             return il;
         if (toType.equals(Type.VOID)) {
