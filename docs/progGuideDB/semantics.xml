@@ -189,6 +189,115 @@
         </listitem>
       </varlistentry>
     </variablelist>
+
+    <para>
+      Each join point potentially has three pieces of state associated
+      with it: the currently executing object, the target object, and
+      an object array of arguments.  These are exposed by the three
+      state-exposing pointcuts, <literal>this</literal>,
+      <literal>target</literal>, and <literal>args</literal>,
+      respectively.
+    </para>
+
+    <para>
+      Informally, the currently executing object is the object that a
+      <literal>this</literal> expression would pick out at the join
+      point.  The target object is where control or attention is
+      transferred to by the join point.  The arguments are those
+      values passed for that transfer of control or attention. 
+    </para>
+
+    <informaltable frame="1">
+      <tgroup cols="4" align="left">
+        <tbody valign="top">
+          <row>
+            <entry><emphasis role="bold">Join Point</emphasis></entry>
+            <entry><emphasis role="bold">Current Object</emphasis></entry>
+            <entry><emphasis role="bold">Target Object</emphasis></entry>
+            <entry><emphasis role="bold">Arguments</emphasis></entry>
+          </row>
+
+          <row>
+            <entry>Method Call</entry>
+            <entry>executing object*</entry>
+            <entry>target object**</entry>
+            <entry>method arguments</entry>
+          </row>
+
+          <row>
+            <entry>Method Execution</entry>
+            <entry>executing object*</entry>
+            <entry>executing object*</entry>
+            <entry>method arguments</entry>
+          </row>
+          <row>
+            <entry>Constructor Call</entry>
+            <entry>executing object*</entry>
+            <entry>None</entry>
+            <entry>constructor arguments</entry>
+          </row>
+
+          <row>
+            <entry>Constructor Execution</entry>
+            <entry>executing object</entry>
+            <entry>executing object</entry>
+            <entry>constructor arguments</entry>
+          </row>
+
+          <row>
+            <entry>Static initializer execution</entry>
+            <entry>None</entry>
+            <entry>None</entry>
+            <entry>None</entry>
+          </row>
+          <row>
+            <entry>Object pre-initialization</entry>
+            <entry>None</entry>
+            <entry>None</entry>
+            <entry>constructor arguments</entry>
+          </row>
+          <row>
+            <entry>Object initialization</entry>
+            <entry>executing object</entry>
+            <entry>executing object</entry>
+            <entry>constructor arguments</entry>
+          </row>
+          <row>
+            <entry>Field reference</entry>
+            <entry>executing object*</entry>
+            <entry>target object**</entry>
+            <entry>None</entry>
+          </row>
+          <row>
+            <entry>Field assignment</entry>
+            <entry>executing object*</entry>
+            <entry>target object**</entry>
+            <entry>assigned value</entry>
+          </row>
+          <row>
+            <entry>Handler execution</entry>
+            <entry>executing object*</entry>
+            <entry>executing object*</entry>
+            <entry>caught exception</entry>
+          </row>
+          <row>
+            <entry>Advice execution</entry>
+            <entry>executing aspect</entry>
+            <entry>executing aspect</entry>
+            <entry>advice arguments</entry>
+          </row>
+	</tbody>
+      </tgroup>
+     </informaltable>
+
+     <para>* There is no executing object in static contexts such as
+     static method bodies or static initializers.
+     </para>
+
+     <para>** There is no target object for join points associated
+     with static methods or fields. 
+     </para>
+
   </sect1>
 
 <!-- ============================== -->
