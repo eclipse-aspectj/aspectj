@@ -5202,6 +5202,7 @@
       title="after returning advice on interface constructor - error">
         <compile files="AfterReturningInterfaceConstructorCE.java">
         	<message kind="error" line="26"/>
+        	<message kind="warning" line="30"/>
         </compile>
     </ajc-test>
 
@@ -7691,7 +7692,7 @@
 	
    <ajc-test dir="bugs/compileOrdering" 
 		pr="59778"
-		title=" InterTypeMethodDeclaration.java:104">
+		title="InterTypeMethodDeclaration.java:104">
         <compile files="B.java,D.java" >
           <message kind="error" line="2" file="B.java"/>
         </compile>
@@ -7699,4 +7700,26 @@
           <message kind="error" line="2" file="B.java"/>
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs" 
+		pr="61538" title="nested uses of this() inside constructors not handled properly for initialization and preinitialization pointcuts">
+        <compile files="ConstructorMain.java"/>
+        <run class="ConstructorMain"/>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs"
+		pr="61568" title="wrong variable binding in || pointcuts">
+        <compile files="DisjunctVarBinding.java">
+          <message kind="error" line="18" text="Ambiguous binding of type B"/>
+          <message kind="error" line="18" text="Ambiguous binding of type A"/>
+        </compile>
+    </ajc-test>
+ 
+ 	<ajc-test dir="bugs" 
+		pr="60936" title="error message for constructor-execution pcd">
+        <compile files="InterfaceConstructor.java">
+          <message kind="warning" line="10" text="no interface constructor-execution join point"/>
+        </compile>
+    </ajc-test>
+ 
 </suite>
