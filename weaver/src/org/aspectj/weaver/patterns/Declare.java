@@ -23,6 +23,7 @@ public abstract class Declare extends PatternNode {
 	public static final byte PARENTS = 2;
 	public static final byte SOFT = 3;
 	public static final byte DOMINATES = 4;
+	public static final byte ANNOTATION = 5;
 
 	public static Declare read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		byte kind = s.readByte();
@@ -35,6 +36,8 @@ public abstract class Declare extends PatternNode {
 				return DeclareParents.read(s, context);
 			case SOFT:
 				return DeclareSoft.read(s, context);
+			case ANNOTATION:
+				return DeclareAnnotation.read(s,context);
 			default:
 				throw new RuntimeException("unimplemented");
 		}

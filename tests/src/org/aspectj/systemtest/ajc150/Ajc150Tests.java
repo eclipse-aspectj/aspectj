@@ -45,6 +45,14 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
   }
   
+  public void test_aroundMethod() {
+  	runTest("method called around in class");
+  }
+ 
+  public void test_aroundMethodAspect() {
+  	runTest("method called around in aspect");
+  }
+  
   public void test_ambiguousBindingsDetection() {
   	runTest("Various kinds of ambiguous bindings");
   }

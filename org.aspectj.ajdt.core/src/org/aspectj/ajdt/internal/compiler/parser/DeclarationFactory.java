@@ -16,6 +16,7 @@ import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.AjConstructorDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.AjMethodDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.DeclareAnnotationDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.DeclareDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.IfPseudoToken;
 import org.aspectj.ajdt.internal.compiler.ast.InterTypeConstructorDeclaration;
@@ -30,8 +31,10 @@ import org.aspectj.ajdt.internal.compiler.ast.PseudoTokens;
 import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.patterns.Declare;
+import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
@@ -199,6 +202,17 @@ public class DeclarationFactory implements IDeclarationFactory {
 		return new DeclareDeclaration(result,declare); 
 	}
 
+	/* (non-Javadoc)
+	 * @see org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser.IDeclarationFactory#createDeclareAnnotationDeclaration(org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult, org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode, org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation, org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser)
+	 */
+	public MethodDeclaration createDeclareAnnotationDeclaration(
+			CompilationResult result, ASTNode pseudoTokens,
+			Annotation annotation, Parser parser) {
+		DeclareAnnotation declare = (DeclareAnnotation) ((PseudoTokens)pseudoTokens).parseAnnotationDeclare(parser);
+		DeclareAnnotationDeclaration decl = new DeclareAnnotationDeclaration(result,declare,annotation);
+		return decl;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.compiler.parser.Parser.IDeclarationFactory#createInterTypeFieldDeclaration(org.eclipse.jdt.internal.compiler.CompilationResult, org.eclipse.jdt.internal.compiler.ast.TypeReference)
 	 */

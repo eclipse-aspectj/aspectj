@@ -100,7 +100,6 @@ public class InterTypeFieldBinding extends FieldBinding {
 		return false;
 	}
 
-
 	public SyntheticMethodBinding getAccessMethod(boolean isReadAccess) {
 		if (isReadAccess) return reader;
 		else return writer;

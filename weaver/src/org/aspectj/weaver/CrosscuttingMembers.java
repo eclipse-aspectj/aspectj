@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.weaver.patterns.Declare;
+import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
@@ -114,6 +115,8 @@ public class CrosscuttingMembers {
 			m.pointcut = concretePointcut;
 			declareSofts.add(new DeclareSoft(d.getException(), concretePointcut));
 			addConcreteShadowMunger(m);
+		} else if (declare instanceof DeclareAnnotation) {
+			System.err.println("Need to implement CrosscuttingMembers.addDeclare for annotations");
 		} else {
 			throw new RuntimeException("unimplemented");
 		}

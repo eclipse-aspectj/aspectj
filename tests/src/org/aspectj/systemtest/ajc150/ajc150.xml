@@ -26,6 +26,19 @@
 	   </compile>
 	   <run class="C"/>
     </ajc-test>
+
+	<ajc-test dir="java5/pseudoKeywords" 
+	   title="method called around in class">
+	   <compile files="MethodCalledAround.java">
+	   </compile>
+    </ajc-test>
+
+	<ajc-test dir="java5/pseudoKeywords" 
+	   title="method called around in aspect">
+	   <compile files="MethodCalledAroundAspect.java">
+	       <message kind="error" line="2"/>
+	   </compile>
+    </ajc-test>
     
     <ajc-test dir="decp" pr="80249" title="Order of types passed to compiler determines weaving behavior">
         <compile files="A.java,B.java,AspectX.java"/>
@@ -912,7 +925,84 @@
            <message kind="weave" text="Type 'SimpleVarargs' (SimpleVarargs.java:27) advised by before advice from 'VarargsAspect06' (VarargsAspect06.aj:3)"/>
        </compile>
    </ajc-test>
-   
+
+   <!-- ======================================================================================= -->
+   <!--               annotated aspect members                                                  -->
+   <!-- ======================================================================================= -->
+
+    <ajc-test dir="java5/annotations/aspectMembers" title="annotated annotations (@Target)">
+        <compile files="a/Annotations.java,a/Foo.java" options="-1.5">
+            <message kind="error" line="16" text="The annotation @MethodAnnotation is disallowed for this location"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/aspectMembers" title="simple annotated aspect members">
+        <compile files="a/Annotations.java,a/AnnotatedAspect.aj" options="-1.5">
+            <message kind="warning" line="4" text="annotated type"/>
+            <message kind="warning" line="6" text="annotated field"/>
+            <message kind="warning" line="8" text="annotated method"/>
+            <message kind="warning" line="11" text="annotated constructor"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/aspectMembers" title="simple annotated aspect members with bad target">
+        <compile files="a/Annotations.java,a/AnnotatedAspect02.aj" options="-1.5">
+            <message kind="error" line="3" text="The annotation @MethodAnnotation is disallowed for this location"/>
+            <message kind="error" line="6" text="The annotation @TypeAnnotation is disallowed for this location"/>
+            <message kind="error" line="8" text="The annotation @FieldAnnotation is disallowed for this location"/>
+            <message kind="error" line="10" text="The annotation @AnnotationAnnotation is disallowed for this location"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/aspectMembers" title="annotated itds">
+        <compile files="a/Annotations.java,a/AnnotatedAspect03.aj" options="-1.5">
+            <message kind="warning" line="4" text="annotated type"/>
+            <message kind="warning" line="6" text="annotated field"/>
+            <message kind="warning" line="8" text="annotated field"/>
+            <message kind="warning" line="10" text="annotated method"/>
+            <message kind="warning" line="12" text="annotated constructor"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/aspectMembers" title="annotated itds with bad target">
+        <compile files="a/Annotations.java,a/AnnotatedAspect04.aj" options="-1.5">
+            <message kind="error" line="6" text="The annotation @ConstructorAnnotation is disallowed for this location"/>
+            <message kind="error" line="8" text="The annotation @FieldAnnotation is disallowed for this location"/>
+            <message kind="error" line="10" text="The annotation @TypeAnnotation is disallowed for this location"/>
+            <!-- known limitation...
+                <message kind="error" line="12" text="The annotation @MethodAnnotation is disallowed for this location"/>
+            -->
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/aspectMembers" title="annotated advice">
+        <compile files="a/Annotations.java,a/AnnotatedAspect05.aj" options="-1.5">
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/aspectMembers" title="annotated advice with bad target">
+        <compile files="a/Annotations.java,a/AnnotatedAspect06.aj" options="-1.5">
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/aspectMembers" title="annotated pointcut">
+        <compile files="a/Annotations.java,a/AnnotatedAspect07.aj" options="-1.5">
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="java5/annotations/aspectMembers" title="annotated declare statements">
+        <compile files="a/Annotations.java,a/AnnotatedAspect08.aj" options="-1.5">
+        </compile>
+    </ajc-test>
+
+   <!-- ======================================================================================= -->
+   <!--               declare annotation                                                        -->
+   <!-- ======================================================================================= -->
+
+   <ajc-test dir="java5/annotations/declare" title="basic declare annotation parse test">
+        <compile files="BasicParseTest.aj" options="-1.5">
+        </compile>
+    </ajc-test>
 
 </suite>
 

@@ -26,12 +26,15 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
 import org.aspectj.org.eclipse.jdt.internal.compiler.IProblemFactory;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 import org.aspectj.util.FuzzyBoolean;
@@ -216,6 +219,30 @@ public class AjProblemReporter extends ProblemReporter {
 		super.abstractMethodMustBeImplemented(type, abstractMethod);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemReporter#disallowedTargetForAnnotation(org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation)
+	 */
+	public void disallowedTargetForAnnotation(Annotation annotation) {
+		// if the annotation's recipient is an ITD, it might be allowed after all...
+		if (annotation.recipient instanceof MethodBinding) {
+			MethodBinding binding = (MethodBinding) annotation.recipient;
+			String name = new String(binding.selector);
+			if (name.startsWith("ajc$")) {
+				long metaTagBits = annotation.resolvedType.getAnnotationTagBits(); // could be forward reference
+				if (name.indexOf("interField") != -1) {
+					if ((metaTagBits & TagBits.AnnotationForField) != 0) return;
+				} else if (name.indexOf("InterConstructor") != -1) {
+					if ((metaTagBits & TagBits.AnnotationForConstructor) != 0) return;
+				} else if (name.indexOf("interMethod") != -1) {
+					if ((metaTagBits & TagBits.AnnotationForMethod) != 0) return;
+				}
+			}
+		}
+		
+		// not our special case, report the problem...
+		super.disallowedTargetForAnnotation(annotation);
+	}
+	
 	public void handle(
 		int problemId,
 		String[] problemArguments,

@@ -101,7 +101,6 @@ public class PatternParser {
 		String kind = parseIdentifier();
 		eat(":");
 		Declare ret;
-		//XXX beta add soft, dominates
 		if (kind.equals("error")) {
 			ret = parseErrorOrWarning(true);
 		} else if (kind.equals("warning")) {
@@ -121,6 +120,53 @@ public class PatternParser {
 	    int endPos = tokenSource.peek(-1).getEnd();
 		ret.setLocation(sourceContext, startPos, endPos);
 		return ret;
+	}
+	
+	public Declare parseDeclareAnnotation() {
+		int startPos = tokenSource.peek().getStart();
+		
+		eatIdentifier("declare");
+		eat("@");
+		String kind = parseIdentifier();
+		eat(":");
+		Declare ret;
+		if (kind.equals("type")) {
+			ret = parseDeclareAtType();
+		} else if (kind.equals("method")) {
+			ret = parseDeclareAtMethod(true);
+		} else if (kind.equals("field")) {
+			ret = parseDeclareAtField();			
+		} else if (kind.equals("constructor")) {
+			ret = parseDeclareAtMethod(false);			
+		} else {
+			throw new ParserException("expected one of type, method, field, constructor",
+				tokenSource.peek(-1));
+		}
+		eat(";");
+	    int endPos = tokenSource.peek(-1).getEnd();
+		ret.setLocation(sourceContext, startPos, endPos);
+		return ret;
+		
+	}
+	
+	public DeclareAnnotation parseDeclareAtType() {
+		return new DeclareAnnotation("type",parseTypePattern());
+	}
+
+	public DeclareAnnotation parseDeclareAtMethod(boolean isMethod) {
+		SignaturePattern sp = parseMethodOrConstructorSignaturePattern();
+		boolean isConstructorPattern = (sp.getKind() == Member.CONSTRUCTOR);
+		if (isMethod && isConstructorPattern) {
+				throw new ParserException("method signature pattern",tokenSource.peek(-1));
+		}
+		if (!isMethod && !isConstructorPattern) {
+			throw new ParserException("constructor signature pattern",tokenSource.peek(-1));
+		}
+		return new DeclareAnnotation("method",sp); // sp itself differentiates...
+	}
+
+	public DeclareAnnotation parseDeclareAtField() {
+		return new DeclareAnnotation("field",parseFieldSignaturePattern());		
 	}
 
 	public DeclarePrecedence parseDominates() {

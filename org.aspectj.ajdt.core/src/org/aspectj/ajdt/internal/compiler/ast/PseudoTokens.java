@@ -139,6 +139,17 @@ public class PseudoTokens extends ASTNode {
 		}
 	}
 	
+	public Declare parseAnnotationDeclare(Parser parser) {
+		PatternParser patternParser = new PatternParser(tokenSource);
+		try {
+			Declare ret = patternParser.parseDeclareAnnotation();
+			checkEof(parser);
+			return ret;
+		} catch (ParserException pe) {
+			reportError(parser, pe);
+			return null;
+		}	}
+	
 	
 	public void postParse(TypeDeclaration typeDec, MethodDeclaration enclosingDec) {
 		for (int i=0, len=tokens.length; i < len; i++) {

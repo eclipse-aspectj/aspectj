@@ -60,6 +60,48 @@ public class Annotations extends XMLBasedAjcTestCase {
 	}
   }
   
+  public void testAnnotatedAnnotations() {
+  	runTest("annotated annotations (@Target)");
+  }
+  
+  public void testSimpleAnnotatedAspectMembers() {
+  	runTest("simple annotated aspect members");
+  }
+  
+  public void testAnnotatedAspectMembersWithWrongAnnotationType() {
+  	runTest("simple annotated aspect members with bad target");
+  }
+  
+  // more implementation work needed before this test passes
+//  public void testAnnotatedITDs() {
+//  	runTest("annotated itds");
+//  }
+
+  public void testAnnotatedITDsWithWrongAnnotationType() {
+  	runTest("annotated itds with bad target");
+  }
+  
+// these tests to be completed
+//  public void testAnnotatedAdvice() {
+//  	runTest("annotated advice");
+//  }
+//  
+//  public void testAnnotatedAdviceWithWrongAnnotationType() {
+//  	runTest("annotated advice with bad target");
+//  }
+//  
+//  public void testAnnotatedPointcut() {
+//  	runTest("annotated pointcut");
+//  }
+//  
+//  public void testAnnotatedDeclareStatements() {
+//  	runTest("annotated declare statements");
+//  }
+  
+  public void testBasicDeclareAnnotation() {
+  	runTest("basic declare annotation parse test");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

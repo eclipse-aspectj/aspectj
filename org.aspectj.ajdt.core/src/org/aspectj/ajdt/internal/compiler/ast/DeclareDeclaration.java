@@ -48,13 +48,22 @@ public class DeclareDeclaration extends AjMethodDeclaration {
 
 
 	/**
-	 * A pointcut declaration exists in a classfile only as an attibute on the
+	 * A declare declaration exists in a classfile only as an attibute on the
 	 * class.  Unlike advice and inter-type declarations, it has no corresponding
 	 * method.
+	 * **AMC** changed the above policy in the case of declare annotation, which uses a 
+	 * corresponding method as the anchor for the declared annotation
 	 */
 	public void generateCode(ClassScope classScope, ClassFile classFile) {
 		classFile.extraAttributes.add(new EclipseAttributeAdapter(new AjAttribute.DeclareAttribute(declareDecl)));
+		if (shouldDelegateCodeGeneration()) {
+			super.generateCode(classScope,classFile);
+		}
 		return;
+	}
+	
+	protected boolean shouldDelegateCodeGeneration() {
+		return false;
 	}
 
 	public void parseStatements(
