@@ -268,7 +268,7 @@ For more information, see
   <a href="../tests/readme-tests-module.html">
            ../tests/readme-tests-module.html</a>.
   
-
+<hr>
 <h3><a name="releases"></a>Releases</h3>
 <h4>Release builds</h4>
 Committers do official release builds to create the distribution
@@ -374,6 +374,18 @@ Pushing the release out to the web involves manually updating
   and sending any release notifications.
   
 <hr>
+<h3>Build problems</h3>
+Some build problems and fixes encountered in the past:
+<ul>
+  <li>If your compiles fail because Ant cannot find <code>javac</code>,
+      put the JDK bin directory on your PATH and/or define
+      the JAVA_HOME environment variable.
+      Ant requires the path to the <code>javac</code> executable
+      when the <code>BuildModule</code> taskdef runs.  I think it either
+      gets it from <code>$JAVA_HOME</code> or if the <code>bin</code>
+      directory is on the <code>PATH</code>.
+   </li>
+<ul>
 
 </body>
 </html>
