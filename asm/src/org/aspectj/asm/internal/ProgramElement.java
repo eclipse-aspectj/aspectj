@@ -172,7 +172,7 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public boolean isMemberKind() {
-		return kind.isMemberKind();
+		return kind.isMember();
 	}
 
 	public void setRunnable(boolean value) {
@@ -395,7 +395,7 @@ public class ProgramElement implements IProgramElement {
 		String label;
 		if (kind == Kind.CODE || kind == Kind.INITIALIZER) {
 			label = parent.getParent().getName() + ": ";
-		} else if (kind.isInterTypeMemberKind()) {
+		} else if (kind.isInterTypeMember()) {
 			int dotIndex = name.indexOf('.');  
 			if (dotIndex != -1) {
 				return parent.getName() + ": " + toLabelString().substring(dotIndex+1);

@@ -278,7 +278,7 @@ public interface IProgramElement extends Serializable {
 			return list;
 		}
 		
-		public boolean isMemberKind() {
+		public boolean isMember() {
 			return this == FIELD
 				|| this == METHOD
 				|| this == CONSTRUCTOR
@@ -286,24 +286,24 @@ public interface IProgramElement extends Serializable {
 				|| this == ADVICE;
 		}
 
-		public boolean isInterTypeMemberKind() {
+		public boolean isInterTypeMember() {
 			return this == INTER_TYPE_CONSTRUCTOR
 				|| this == INTER_TYPE_FIELD
 				|| this == INTER_TYPE_METHOD;
 		}
 		
-		public boolean isTypeKind() {
+		public boolean isType() {
 			return this == CLASS
 				|| this == INTERFACE
 				|| this == ASPECT;	
 		}
 
-		public boolean isSourceFileKind() {
+		public boolean isSourceFile() {
 			return this == FILE_ASPECTJ
 				|| this == FILE_JAVA;
 		}
 		
-		public boolean isDeclareKind() {
+		public boolean isDeclare() {
 			return name.startsWith("declare");	
 		} 
 

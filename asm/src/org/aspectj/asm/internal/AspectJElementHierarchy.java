@@ -264,7 +264,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 					&& node.getSourceLocation().getEndLine() >= lineNumber)
 					||
 					(lineNumber <= 1
-					 && node.getKind().isSourceFileKind())
+					 && node.getKind().isSourceFile())
 				);
 //		} catch (IOException ioe) { 
 //			return false;

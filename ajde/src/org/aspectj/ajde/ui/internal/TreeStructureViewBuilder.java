@@ -145,13 +145,13 @@ public class TreeStructureViewBuilder {
 		} else if (granularity == StructureViewProperties.Granularity.TYPE
 			&& (kind == IProgramElement.Kind.PROJECT
 				|| kind == IProgramElement.Kind.PACKAGE
-				|| kind.isSourceFileKind()
-				|| kind.isTypeKind())) {
+				|| kind.isSourceFile()
+				|| kind.isType())) {
 			return true;			
 		} else if (granularity == StructureViewProperties.Granularity.FILE
 			&& (kind == IProgramElement.Kind.PROJECT
 				|| kind == IProgramElement.Kind.PACKAGE
-				|| kind.isSourceFileKind())) {
+				|| kind.isSourceFile())) {
 			return true;			
 		} else if (granularity == StructureViewProperties.Granularity.PACKAGE
 			&& (kind == IProgramElement.Kind.PROJECT
@@ -167,7 +167,7 @@ public class TreeStructureViewBuilder {
 			IProgramElement pNode = (IProgramElement)node;
 			if (!acceptGranularity(pNode.getKind(), properties.getGranularity())) {
 				return false;
-			} else if (pNode.getKind().isMemberKind()) {
+			} else if (pNode.getKind().isMember()) {
 				if (properties.getFilteredMemberAccessibility().contains(pNode.getAccessibility())) {
 					return false;	
 				}

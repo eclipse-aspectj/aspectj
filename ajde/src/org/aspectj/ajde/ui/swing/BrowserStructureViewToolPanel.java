@@ -109,7 +109,7 @@ public class BrowserStructureViewToolPanel extends JPanel {
 
 		IProgramElement.Kind[] kinds = IProgramElement.Kind.ALL;
 		for (int i = 0; i < kinds.length; i++) {
-			if (kinds[i].isMemberKind()) {
+			if (kinds[i].isMember()) {
 				CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(kinds[i]);
 				menuItem.setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getIcon(kinds[i]).getIconResource());
 				filterMenu.add(menuItem);
