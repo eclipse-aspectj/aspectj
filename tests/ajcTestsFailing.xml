@@ -133,31 +133,4 @@
         <run class="InterfaceInitializerOrder"/>
     </ajc-test>
 
-    <ajc-test dir="bugs/systemouts"
-    	pr="57432"
-		title="declare error binary-weaving NPE">
-        <compile files="injar.jar,A.java">
-			<message kind="error" line="12" file="X.java"/>
-			<message kind="error" line="13" file="X.java"/>
-			<message kind="error" line="20" file="X.java"/>
-			<message kind="error" line="22" file="X.java"/>
-			<message kind="error" line="23" file="X.java"/>
-			<message kind="error" line="27" file="X.java"/>
-			<message kind="error" line="28" file="X.java"/>
-			<message kind="error" line="29" file="X.java"/>
-			<message kind="error" line="30" file="X.java"/>
-			<message kind="error" line="31" file="X.java"/>
-			<message kind="error" line="32" file="X.java"/>
-			<message kind="error" line="33" file="X.java"/>
-			<message kind="error" line="34" file="X.java"/>
-			<message kind="error" line="35" file="X.java"/>
-			<message kind="error" line="36" file="X.java"/>
-			<message kind="error" line="37" file="X.java"/>
-			<message kind="error" line="38" file="X.java"/>
-			<message kind="error" line="39" file="X.java"/>
-			<message kind="error" line="40" file="X.java"/>
-			<message kind="error" line="41" file="X.java"/>
-        </compile>
-    </ajc-test>
-
 </suite>
