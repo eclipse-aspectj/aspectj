@@ -1,0 +1,22 @@
+
+This directory contains a script "aj" to demonstrate load-time weaving. Java
+classes on the CLASSPATH are loaded and woven with aspects on the ASPECTPATH.
+This feature is only supported on JDK 1.4 and later.
+
+--To compile the tracing example--
+
+ ant -f ../build.xml tracing-lt
+
+--To run the example--
+
+ set CLASSPATH to include "../jars/tracingApp.jar"
+
+ aj tracing.ExampleMain
+
+--To run the example with tracing--
+
+ set ASPECTPATH=../jars/tracingLib.jar
+
+ aj tracing.ExampleMain
+
+

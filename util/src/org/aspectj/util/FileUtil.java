@@ -1262,7 +1262,16 @@ public class FileUtil {
     }
 
     private FileUtil() { throw new Error("utility class"); }
-
+	
+	public static List makeClasspath(URL[] urls) {
+		List ret = new LinkedList();
+		if (urls != null) {
+			for (int i = 0; i < urls.length; i++) {
+				ret.add(urls[i].getPath());
+			}
+		}
+		return ret;
+	}
 
     /**
      * A pipe when run reads from an input stream to an output stream,

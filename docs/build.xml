@@ -166,14 +166,15 @@
     </target>
 
     <target name="api" depends="init"
-       description="javadoc for AspectJ lang and lang.reflect">
+       description="javadoc for AspectJ lang, lang.reflect and org.aspectj.weaver.tools">
         <delete dir="${docs.dist.dir}/doc/api"/>
         <mkdir dir="${docs.dist.dir}/doc/api"/>
-        <javadoc sourcepath="${aspectj.modules.dir}/runtime/src"
+        <javadoc sourcepath="${aspectj.modules.dir}/runtime/src;${aspectj.modules.dir}/weaver/src"
                     destdir="${docs.dist.dir}/doc/api"
                 windowtitle="AspectJ(tm) runtime API"
                        link="http://java.sun.com/j2se/1.4.2/docs/api"
-               packagenames="org.aspectj.lang,org.aspectj.lang.reflect" />
+                       classpath="${aspectj.modules.dir}/asm/bin;${aspectj.modules.dir}/bridge/bin;${aspectj.modules.dir}/util/bin;${aspectj.modules.dir}/lib/bcel/bcel.jar"
+               packagenames="org.aspectj.lang,org.aspectj.lang.reflect,org.aspectj.weaver.tools" />
                <!-- note: link ineffective at avoiding see tag warning -->
     </target>
 

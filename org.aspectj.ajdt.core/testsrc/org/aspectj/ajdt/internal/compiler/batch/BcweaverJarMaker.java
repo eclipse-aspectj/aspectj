@@ -36,6 +36,8 @@ public class BcweaverJarMaker {
 		
 		
 		makeTestJars();
+
+		makeURLWeavingClassLoaderJars();
 	}
 	
 	public static void makeJar0() throws IOException {
@@ -179,5 +181,85 @@ public class BcweaverJarMaker {
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 	}	
 	
+	public static void makeURLWeavingClassLoaderJars() throws IOException {
+		List args = new ArrayList();
+
+		/*
+		 * Vanilla classes
+		 */
+		args.add("-classpath"); 
+		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar" +
+		   File.pathSeparator + System.getProperty("aspectjrt.path"));
+		args.add("-outjar");
+		args.add("../weaver/testdata/ltw-classes.jar");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/LTWHelloWorld.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/ltw/LTWPackageTest.java");
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+
+		/* 
+		 * Woven classes
+		 */
+		args = new ArrayList();
+		args.add("-classpath"); 
+		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar;../weaver/testdata/ltw-classes.jar" +
+		   File.pathSeparator + System.getProperty("aspectjrt.path"));
+		args.add("-outjar");
+		args.add("../weaver/testdata/ltw-woven.jar");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/LTWHelloWorld.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/LTWAspect.aj");
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+
+		/*
+		 * Advice
+		 */
+		args = new ArrayList();
+		args.add("-classpath"); 
+		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar;../weaver/testdata/ltw-classes.jar" +
+		   File.pathSeparator + System.getProperty("aspectjrt.path"));
+		args.add("-outjar");
+		args.add("../weaver/testdata/ltw-aspects.jar");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/LTWAspect.aj");
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+
+		/*
+		 * Around closure advice
+		 */
+		args = new ArrayList();
+		args.add("-classpath"); 
+		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar;../weaver/testdata/ltw-classes.jar" +
+		   File.pathSeparator + System.getProperty("aspectjrt.path"));
+		args.add("-outjar");
+		args.add("../weaver/testdata/ltw-acaspects.jar");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/LTWAroundClosure.aj");
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+
+		/*
+		 * ITD
+		 */
+		args = new ArrayList();
+		args.add("-Xlint:ignore"); 
+		args.add("-classpath"); 
+		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar;../weaver/testdata/ltw-classes.jar" +
+		   File.pathSeparator + System.getProperty("aspectjrt.path"));
+		args.add("-outjar");
+		args.add("../weaver/testdata/ltw-itdaspects.jar");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/LTWInterfaceITD.aj");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/LTWFieldITD.aj");
+		/* Uncomment when bug #55341 fixed */
+//		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/LTWMethodITD.aj");
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+
+		/*
+		 * perXXX()
+		 */
+		args = new ArrayList();
+		args.add("-classpath"); 
+		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar;../weaver/testdata/ltw-classes.jar" +
+		   File.pathSeparator + System.getProperty("aspectjrt.path"));
+		args.add("-outjar");
+		args.add("../weaver/testdata/ltw-peraspects.jar");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/LTWPerthis.aj");
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+	}	
 	
 }

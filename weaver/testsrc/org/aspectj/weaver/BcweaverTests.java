@@ -16,6 +16,7 @@ package org.aspectj.weaver;
 import java.io.File;
 
 import org.aspectj.util.FileUtil;
+import org.aspectj.weaver.tools.*;
 
 import junit.framework.*;
 
@@ -49,7 +50,8 @@ public class BcweaverTests extends TestCase {
         //suite.addTestSuite(AbstractWorldTestCase.class); 
         //$JUnit-BEGIN$
         suite.addTestSuite(MemberTestCase.class); 
-        suite.addTestSuite(TypeXTestCase.class); 
+		suite.addTestSuite(TypeXTestCase.class); 
+		suite.addTestSuite(WeavingURLClassLoaderTest.class); 
         //$JUnit-END$
         return suite;
     }
