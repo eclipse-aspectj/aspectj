@@ -14,10 +14,6 @@
 
 package org.aspectj.ajde;
 
-import java.io.File;
-import java.io.PrintStream;
-import java.util.List;
-
 import org.aspectj.ajde.internal.AspectJBuildManager;
 import org.aspectj.ajde.internal.LstBuildConfigManager;
 import org.aspectj.ajde.ui.EditorManager;
@@ -30,6 +26,10 @@ import org.aspectj.bridge.Version;
 import org.aspectj.util.LangUtil;
 import org.aspectj.util.Reflection;
 
+import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Singleton class responsible for AJDE initialization, and the main point of access to
  * Ajde functionality. 
@@ -41,33 +41,7 @@ public class Ajde {
 	private static final Ajde INSTANCE = new Ajde();
 	private static final String NOT_INITIALIZED_MESSAGE = "Ajde is not initialized.";
 	private static boolean isInitialized = false;
-
-    /**
-     * Utility to run the project main class in the same VM
-     * using a class loader populated with the classpath
-     * and output path or jar.
-     * @param project the ProjectPropertiesAdapter specifying the
-     * main class, classpath, and executable arguments.
-     */
-    public static void runInSameVM(ProjectPropertiesAdapter project) {
-        String mainClass = "<none>";
-        try {            
-            mainClass = project.getClassToExecute();
-            if (LangUtil.isEmpty(mainClass)) {
-                Ajde.getDefault().getErrorHandler().handleWarning("No main class specified");
-            }
-            String classpath = project.getOutputPath();
-            if (LangUtil.isEmpty(classpath)) {
-                classpath = project.getOutJar();
-            }
-            classpath += File.pathSeparator + project.getClasspath();
-            String[] args = LangUtil.split(project.getExecutionArgs());
-            Reflection.runMainInSameVM(classpath, mainClass, args);
-        } catch(Throwable e) {
-            Ajde.getDefault().getErrorHandler().handleError("Error running " + mainClass, e);
-        }
-    }  
-
+    
 	private BuildManager buildManager;
 	private EditorManager editorManager;
 	private StructureViewManager structureViewManager;
@@ -206,6 +180,101 @@ public class Ajde {
 		}	
 	}
 
+    /**
+     * Utility to run the project main class from the project
+     * properties in the same VM
+     * using a class loader populated with the classpath
+     * and output path or jar.
+     * Errors are logged to the ErrorHandler.
+     * @param project the ProjectPropertiesAdapter specifying the
+     * main class, classpath, and executable arguments.
+     * @return Thread running with process, or null if unable to start
+     */
+    public Thread runInSameVM() {
+        final RunProperties props 
+            = new RunProperties(getProjectProperties(), getErrorHandler());
+        if (!props.valid) {
+            return null; // error already handled
+        }
+        Runnable runner = new Runnable() {
+            public void run() {
+                try {            
+                    Reflection.runMainInSameVM(
+                        props.classpath, 
+                        props.mainClass, 
+                        props.args); 
+                } catch(Throwable e) {
+                    Ajde.getDefault().getErrorHandler().handleError("Error running " + props.mainClass, e);
+                }
+            }
+        };
+        Thread result = new Thread(runner, props.mainClass);
+        result.start();
+        return result;
+    }
+
+    /**
+     * Utility to run the project main class from the project
+     * properties in a new VM.
+     * Errors are logged to the ErrorHandler.
+     * @return LangUtil.ProcessController running with process, 
+     *         or null if unable to start
+     */
+    public LangUtil.ProcessController runInNewVM() {
+        final RunProperties props 
+            = new RunProperties(getProjectProperties(), getErrorHandler());
+        if (!props.valid) {
+            return null; // error already handled
+        }
+        // setup to run asynchronously, pipe streams through, and report errors
+        final StringBuffer command = new StringBuffer();
+        LangUtil.ProcessController controller
+            = new LangUtil.ProcessController() {
+                protected void doCompleting(Throwable thrown, int result) {
+                    LangUtil.ProcessController.Thrown any = getThrown(); 
+                    if (!any.thrown && (null == thrown) && (0 == result)) {
+                        return; // no errors
+                    }
+                    // handle errors
+                    String context = props.mainClass 
+                        + " command \"" 
+                        + command 
+                        + "\"";
+                    if (null != thrown) {
+                        String m = "Exception running " + context;
+                        getErrorHandler().handleError(m, thrown);
+                    } else if (0 != result) {
+                        String m = "Result of running " + context;
+                        getErrorHandler().handleError(m + ": " + result);
+                    }
+                    if (null != any.fromInPipe) {
+                        String m = "Error processing input pipe for " + context;
+                        getErrorHandler().handleError(m, any.fromInPipe);
+                    }
+                    if (null != any.fromOutPipe) {
+                        String m = "Error processing output pipe for " + context;
+                        getErrorHandler().handleError(m, any.fromOutPipe);
+                    }
+                    if (null != any.fromErrPipe) {
+                        String m = "Error processing error pipe for " + context;
+                        getErrorHandler().handleError(m, any.fromErrPipe);
+                    }
+                }
+            };
+            
+        controller = LangUtil.makeProcess(
+                        controller, 
+                        props.classpath, 
+                        props.mainClass, 
+                        props.args);
+                        
+        command.append(Arrays.asList(controller.getCommand()).toString());
+
+        // now run the process
+        controller.start();
+        return controller;
+    }
+
 	private final BuildConfigListener STRUCTURE_UPDATE_CONFIG_LISTENER = new BuildConfigListener() {
 		public void currConfigChanged(String configFilePath) {
 			if (configFilePath != null) Ajde.getDefault().getStructureModelManager().readStructureModel(configFilePath);
@@ -247,6 +316,45 @@ public class Ajde {
 		this.errorHandler = errorHandler;
 	}
 
+    /** struct class to interpret project properties */
+    private static class RunProperties {
+        final String mainClass;
+        final String classpath;
+        final String[] args;
+        final boolean valid;
+        RunProperties(
+            ProjectPropertiesAdapter project, 
+            ErrorHandler handler) {
+            // XXX really run arbitrary handler in constructor? hmm.
+            LangUtil.throwIaxIfNull(project, "project");
+            LangUtil.throwIaxIfNull(handler, "handler");
+            String mainClass = null;
+            String classpath = null;            
+            String[] args = null;
+            boolean valid = false;
+            
+            mainClass = project.getClassToExecute();
+            if (LangUtil.isEmpty(mainClass)) {
+                handler.handleWarning("No main class specified");
+            } else {
+                classpath = LangUtil.makeClasspath(
+                    project.getBootClasspath(),
+                    project.getClasspath(),
+                    project.getOutputPath(),
+                    project.getOutJar());
+                if (LangUtil.isEmpty(classpath)) {
+                    handler.handleWarning("No classpath specified");
+                } else {
+                    args = LangUtil.split(project.getExecutionArgs());
+                    valid = true;
+                }
+            }
+            this.mainClass = mainClass;
+            this.classpath = classpath;
+            this.args = args;
+            this.valid = valid;
+        }
+    }
 }
 
 
