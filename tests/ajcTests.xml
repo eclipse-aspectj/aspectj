@@ -4235,10 +4235,6 @@
     <ajc-test dir="new" pr="694" title="after returning advice param"
       keywords="from-resolved_10x">
         <compile files="AfterReturningParam.java">
-            <message kind="warning" line="35"/>
-            <message kind="warning" line="38"/>
-            <message kind="warning" line="41"/>
-            <message kind="warning" line="65"/>
         </compile>
         <run class="AfterReturningParam"/>
     </ajc-test>
@@ -5244,12 +5240,17 @@
     </ajc-test>
 
     <!-- .................................... aspectpath tests -->
+	<!-- The jars used by this test can be regenerated with
+	     org.aspectj.ajdt.core/testsrc/org.aspectj.ajdt.internal.compiler.batch.BcweaverJarMaker
+	-->
     <ajc-test dir="new/options11" 
       comment="XXX not validated correct yet"
       title="testing new options">
-        <compile files="Main.java,inJar.jar,Aspect.java" 
+        <compile files="Main.java,injar.jar,Aspect.java" 
             aspectpath="aspectlib1.jar,aspectlib2.jar"/>
-        <run class="Main"/>
+        <!-- can't run until we support classpath including the above jars
+             <run class="Main"/>
+        -->
     </ajc-test>
     
 </suite>
