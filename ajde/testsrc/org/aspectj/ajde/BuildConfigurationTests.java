@@ -10,26 +10,20 @@ Adrian Colyer - initial version
 **********************************************************************/
 package org.aspectj.ajde;
 
+import org.aspectj.ajde.internal.CompilerAdapter;
+import org.aspectj.ajde.ui.UserPreferencesAdapter;
+import org.aspectj.ajde.ui.internal.AjcBuildOptions;
+import org.aspectj.ajde.ui.internal.UserPreferencesStore;
+import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
+import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+
 import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.JFrame;
-
 import junit.framework.TestSuite;
-
-import org.aspectj.ajde.internal.CompilerAdapter;
-import org.aspectj.ajde.ui.IdeUIAdapter;
-import org.aspectj.ajde.ui.UserPreferencesAdapter;
-import org.aspectj.ajde.ui.internal.AjcBuildOptions;
-import org.aspectj.ajde.ui.internal.UserPreferencesStore;
-import org.aspectj.ajde.ui.swing.AjdeUIManager;
-import org.aspectj.ajde.ui.swing.BasicEditor;
-import org.aspectj.ajde.ui.swing.IconRegistry;
-import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
-import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 /**
  * Tests that a correctly populated AjBuildConfig object is created

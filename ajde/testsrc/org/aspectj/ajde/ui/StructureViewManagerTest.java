@@ -20,7 +20,7 @@ import junit.framework.TestSuite;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.AjdeTestCase;
-import org.aspectj.asm.StructureModelManager;
+import org.aspectj.asm.StructureModel;
 import org.aspectj.asm.StructureNode;
 
 /**
@@ -66,7 +66,7 @@ public class StructureViewManagerTest extends AjdeTestCase {
 		assertTrue(
 			"no structure", 
 			currentView.getRootNode().getStructureNode().getChildren().get(0) 
-			== StructureModelManager.INSTANCE.getStructureModel().NO_STRUCTURE
+			== StructureModel.NO_STRUCTURE
 		);			
 	}
 
@@ -87,7 +87,7 @@ public class StructureViewManagerTest extends AjdeTestCase {
 		assertTrue(
 			"no structure", 
 			currentView.getRootNode().getStructureNode().getChildren().get(0) 
-			== StructureModelManager.INSTANCE.getStructureModel().NO_STRUCTURE
+			== StructureModel.NO_STRUCTURE
 		);	
 	}
 
@@ -125,7 +125,7 @@ public class StructureViewManagerTest extends AjdeTestCase {
 		assertTrue(
 			"no structure", 
 			currentView.getRootNode().getStructureNode() 
-			== StructureModelManager.INSTANCE.getStructureModel().NO_STRUCTURE
+			== StructureModel.NO_STRUCTURE
 		);
 	}
   
