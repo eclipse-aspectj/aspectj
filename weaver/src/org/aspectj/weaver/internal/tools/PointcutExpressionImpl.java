@@ -218,5 +218,9 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		public Class getHandledExceptionType() {
 			return exType;
 		}
+
+		public boolean isSynthetic() {
+			return false;
+		}
 	}
 }
