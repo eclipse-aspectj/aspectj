@@ -137,14 +137,14 @@
 
 <div align=right><small>
 &copy; Copyright 1998-2002 Palo Alto Research Center Incorporated
-                      2003 Contributors.
+                 2003-2004 Contributors.
 All rights reserved.
 </small></div>
 
 <h2>Changes in AspectJ</h2>
 
 <ul>
-  <li> <a href="#1.2">1.2</a> (released TODO XXX) 
+  <li> <a href="#1.2">1.2</a> (released 2004-04) 
   </li>
   <li> <a href="#1.1.1">1.1.1</a> (released 2003-09) 
   </li>
@@ -190,12 +190,143 @@ All rights reserved.
 <hr />
 
 <h2><a name="1.2">1.2</a></h2>
-<p>Some of the more significant bug fixes and enhancements in this release include:
+<p>All known P1 and P2 bugs have been fixed in this release. The 
+<a href="https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&target_milestone=1.2">full list of fixes and 
+enhancements</a> can be found on bugzilla.
+Some of the more significant bug fixes and enhancements include:
   <ul>
      <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=46347">46347</a> 
      The ajc compiler now can read .class files from directories as well as
-     zip files for bytecode weaving. 
+     zip files for bytecode weaving, via the new -inpath option.
      </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=48080">48080</a> 
+     Error and warning messages emitted as a result of a declare error or 
+     declare warning statement now include context information that indicates
+     the matched join point.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=54819">54819</a> 
+     Error and warning messages coming from the weaving phase of compilation now
+     show source context wherever it is available, and also indicate as the source
+     location of the error either the class file or jar file from which the binary
+     source unit came.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=36430">36430</a>
+     A new -Xreweavable option has been added which allows class files to be woven
+     more than once. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=49250">49250</a> 
+     SoftException now supports getCause().
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=51320">51320</a>
+     AspectJ 1.2 now gives a compilation error if one of the non-statically determinable
+     pointcut forms is used in a declare statement.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=53012">53012</a>
+     Declaring precedence on a class type (rather than an aspect type) is now an 
+     error unless subtypes are included. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=36069">36069</a>
+     The source information for inlined advice is now correct (using JSR 45). 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=34206">34206</a>
+     (See also <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=44587">44587</a>).
+     Errors occuring during static initialisation of an aspect are now handled much more gracefully. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=41952">41952</a>
+     A new Xlint warning warns users specifying declaring type patterns in 
+     call pointcut designators if the pointcut does not match at places they
+     may expect it to. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=42574">42574</a>
+     -extdirs opion now recognises .zip files as well as .jar. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=48091">48091</a>
+     New option -XlazyTjp defers creation of JoinPoint objects until just before
+     calling the advice body that requires them. This allows the cost of creating
+     JoinPoint objects to be avoided using an if() pointcut test that returns
+     false when the advice body is not required to be executed. Speed-ups of 10-100X are
+     obtained via this optimisation (as compared to putting the test inside the advice
+     body). 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=45441">45441</a> 
+     IncompatibleClassChangeError at runtime when compiling with the -1.4 option.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=54625">54625</a>
+     Incremental compilation did not support the -outjar option, but silently
+     failed if it was specified. AspectJ 1.2 always performs a full build when
+     the -outjar option is present. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=54965">54965</a>
+     Incremental compilation under AspectJ 1.2 is approximately twice as fast as
+     under AspectJ 1.1.1. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=55134">55134</a>
+     Incremental compilation now deletes any additional class files generated during
+     the weave phase when the class file from whence they came is deleted. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=50200">50200</a> 
+     The aspectjrt.jar manifest file now has  the correct (upper) case.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=49457">49457</a>
+     No error given when overloading pointcuts, unless variables are bound. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=50776">50776</a> 
+     Compilation failure when overriding an inter-type declared method with a
+     different throws clause.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=51919">51919</a> 
+     Polymorphic inter-type declaration fails.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=52464">52464</a>
+     Declare warning coupled with inter-type declaration causes compiler crash. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=41125">41125</a>
+     Variable names in the local variable table (for debugging) are now correctly
+     preserved in all cases. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=43792">43792</a>
+     Improved support for non-US locales (and significantly boosted weaver 
+     performance at the same time). 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=35636">35636</a>
+     AspectJ 1.2 behaves much more gracefully when running out of memory. (It also
+     requires less memory than 1.1.1 did in any case). 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=42711">42711</a>
+     Super-types of parameters not recognised when calling priveleged methods.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=43972">43972</a>
+     (See also <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=45676">45676</a>).
+     Incorrectly adding synthetic attribute to generated methods. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=45184">45184</a>
+     External pointcut references not resolved when a named pointcut is used by a 
+     declare statement. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=46750">46750</a>
+     Declare soft does not work inside a nested aspect. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=47754">47754</a>
+     No error signalled when attempting to declare a static method on an interface
+     using an inter-type declaration. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=48522">48522</a> 
+     Declare soft softens all exceptions at matched join points, not just the
+     exception declared to be soft.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=49295">49295</a>
+     AspectJ 1.2 no longer supports inter-type constructor declarations on interfaces. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=51929">51929</a>
+     Call to a protected super-type method within a advice body causes java.lang.VerifyError. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=52928">52928</a>
+     Private members introduced via an interface are incorrectly visible within implementing classes. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=47910">47910</a>
+     An output jar file created by AspectJ when using the -outjar option does not contain a 
+     valid manifest file. 
+     </li>     
   </ul>
 
 <h2><a name="1.1.1">1.1.1</a></h2>
