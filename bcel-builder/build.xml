@@ -1,51 +1,22 @@
-<project default="unpackAndJar" basedir=".">
+<project default="extractAndJar" basedir=".">
 
-  <target name="unpackAndJar" depends="unpack,jar" />
+  <!-- top-level -->
+  <target name="extractAndJar" depends="extract,jar" />
 
-  <target name="jar">
+  <target name="extract" depends="unzipSource,createPatchedSource" />
+
+  <target name="jar" depends="pack">
     <copy file="../lib/regexp/jakarta-regexp-1.2.jar"
         tofile="bcel/lib/Regex.jar" />
     <ant dir="bcel" target="jar" />
     <copy file="bcel/bin/bcel.jar" toDir="." />
   </target>
-
-  <target name="update">
+  
+  <target name="push">
     <copy file="bcel.jar" todir="../lib/bcel" />
   </target>
-
-  <target name="pack">
-    <move toDir="bcel/src/java">
-      <fileset dir="src" />
-    </move>
-  </target>
-
-  <target name="unpack" depends="extract,patch,srcclean">
-    <move toDir="src">
-      <fileset dir="bcel/src/java" />
-    </move>
-  </target>
-
-  <target name="extract">
-    <unzip src="bcel-5.1-src.zip" dest="." />
-  </target>
-
-  <target name="srcclean">
-    <delete dir="src/org" />
-  </target>
-
-  <target name="clean" depends="srcclean">
-    <delete dir="bcel-5.1" />
-    <delete dir="bcel" />
-  </target>
-
-  <target name="patch">
-    <copy todir="bcel">
-      <fileset dir="bcel-5.1" />
-    </copy>
-    <patch patchfile="patch.txt" strip="1" dir="bcel" />
-  </target>
-
-  <target name="diff">
+  
+  <target name="diff" depends="pack">
     <exec dir="." executable="diff.exe" output="patch.txt">
       <arg line="-N"/>
       <arg line="-a"/>
@@ -55,6 +26,45 @@
       <arg line="bcel-5.1" />
       <arg line="bcel" />
     </exec>
+  </target>
+ 
+  <target name="clean">
+    <delete dir="bcel-5.1" />
+    <delete dir="bcel" />
+    <delete file="bcel.jar" />
+    <delete dir="src" />
+    <mkdir dir="src" /> <!-- empty src dir -->
+  </target>
+ 
+  <!-- internals -->
+
+  <target name="unzipSource">
+    <delete dir="bcel-5.1" />
+    <unzip src="bcel-5.1-src.zip" dest="." />
+  </target>
+  
+  <target name="createPatchedSource" depends="patch,unpack" />
+
+  <target name="patch">
+    <delete dir="bcel" />
+    <copy todir="bcel">
+      <fileset dir="bcel-5.1" />
+    </copy>
+    <patch patchfile="patch.txt" strip="1" dir="bcel" />
+  </target>
+
+  <target name="pack">
+    <delete dir="bcel/src/java" />
+    <copy toDir="bcel/src/java">
+      <fileset dir="src" />
+    </copy>
+  </target>
+
+  <target name="unpack">
+    <delete dir="src" />
+    <copy toDir="src">
+      <fileset dir="bcel/src/java" />
+    </copy>
   </target>
 
 </project>

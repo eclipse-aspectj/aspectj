@@ -19,6 +19,9 @@
 this directory?  Well, the whole point is to generate bcel/bcel.jar in
 the lib package.  To do so, first stick
 <strong>bcel-5.1-src.zip</strong> in this directory, then run ant.
+(at one point, this was available at
+<a href="http://archive.apache.org/dist/jakarta/bcel/source/bcel-5.1-src.zip">
+http://archive.apache.org/dist/jakarta/bcel/source/bcel-5.1-src.zip</a>)
 After much unzipping, patching, and compiling, you should get an
 appropriate bcel.jar file.  Now put it in the appropriate place. </p>
 
@@ -28,28 +31,35 @@ to know some more ant targets.  But before anything, get that
 <strong>bcel-5.1-src.zip</strong> and stick it in this directory.
 </p>
 
+<p> There are five top-level ant targets apart from the usual "clean":</p>
+
 <ul>
-  <li>ant unpack -- unpack the sources for the AspectJ-version of BCEL
-  into the <strong>src</strong> subdirectory.  Though you probably
-  don't care, this invokes the following subtasks: </li>
-
-       <ul>
-	 <li>ant extract -- extract the contents of bcel-5.1-src.zip
-	 into the bcel-5.1 directory.</li>
-
-	 <li>ant patch -- apply the patchfile patch.txt to the
-	 <strong>bcel-5.1/src</strong> directory, creating
-	 <strong>src</strong>.</li>
-       </ul>
-
-  <li>ant pack -- pack the sources for AspectJ's version of bcel back
-  into a tiny little patchfile.  This uses exec, and requires that you
-  have diff somewhere on your path.  Actually, it's much worse: it
-  requires you have diff.exe somewhere on your path.  I hate that I'm
-  turning into a windows whore. </li>
-
-  <li>ant clean -- get rid of everything extraneous in preparation for
-  a checkin.  </li>
+  <li>ant extractAndJar -- this is just the composition of the extract
+  and jar targets, and is the default.  It extracts the source from bcel-5.1-src.zip, 
+  patches it, compiles the patched version into a jar and drops the new jar,
+  bcel.jar, into the project root.  This is the default task, mainly used
+  to sanity check the building and make sure we're generating something.
+  The bcel.jar this generates should be the same as that in ..\lib\bcel\bcel.jar. 
+  </li>
+  
+  <li>ant extract -- this extracts the source from bcel-5.1-src.zip,
+  patches it, and copies the patched source into the project src directory, 
+  there to be visible by eclipse for people to do development on it.
+  </li>
+  
+  <li>ant jar -- this copies the edited source from the project source
+  directory and jars it up into bcel.jar, there to be tested.
+  </li>
+  
+  <li>ant push -- this pushes the new bcel.jar into ..\lib\bcel\bcel.jar, 
+  ready to be used by the greater compiler.</li>
+  
+  <li>ant diff -- this creates the patch.txt file, composed of the differences
+  between the project src directory and the original bcel-5.1 source. </li>
 </ul>
+
+<p> All of the tasks are destructive, so don't do "ant extract", for example,
+if you have anything in the project source directory you care about.
+</p>
 
 </body> </html>
