@@ -95,12 +95,20 @@ public class WeaverMessages {
 	public static final String DIRECTORY_ENTRY_MISSING = "directoryEntryMissing";
 	public static final String OUTJAR_IN_INPUT_PATH = "outjarInInputPath";
 	
+	
 	public static final String XLINT_LOAD_ERROR = "problemLoadingXLint";
 	public static final String XLINTDEFAULT_LOAD_ERROR = "unableToLoadXLintDefault";
 	public static final String XLINTDEFAULT_LOAD_PROBLEM = "errorLoadingXLintDefault";
 	public static final String XLINT_KEY_ERROR = "invalidXLintKey";
 	public static final String XLINT_VALUE_ERROR = "invalidXLintMessageKind";
 	
+    // Java5 messages
+	public static final String ITDC_ON_ENUM_NOT_ALLOWED = "itdcOnEnumNotAllowed";
+	public static final String ITDM_ON_ENUM_NOT_ALLOWED = "itdmOnEnumNotAllowed";
+	public static final String ITDF_ON_ENUM_NOT_ALLOWED = "itdfOnEnumNotAllowed";
+	public static final String ITDC_ON_ANNOTATION_NOT_ALLOWED = "itdcOnAnnotationNotAllowed";
+	public static final String ITDM_ON_ANNOTATION_NOT_ALLOWED = "itdmOnAnnotationNotAllowed";
+	public static final String ITDF_ON_ANNOTATION_NOT_ALLOWED = "itdfOnAnnotationNotAllowed";
 	
 	public static String format(String key) {
 		return bundle.getString(key);
