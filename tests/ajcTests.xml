@@ -5432,4 +5432,20 @@
         </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs" pr="28702" title="percflow code hangs compiler">
+        <compile files="CloseConnectionsCflow.java">
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs" pr="28703" title="assert and pertarget crashes compiler">
+        <compile files="EnsureOverriding.java" options="-1.4"/>
+        <run class="EnsureOverriding"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs" pr="28852"
+      title="Verification error tracing constructor that takes arguments">
+        <compile files="ConstructorArgTracing.java"/>
+        <run class="ConstructorArgTracing"/>
+    </ajc-test>
+    
 </suite>

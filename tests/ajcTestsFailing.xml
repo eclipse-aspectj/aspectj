@@ -52,7 +52,6 @@
         <run class="pack.ImportInnerFromInterfaceImplementor"/>
     </ajc-test>
 
-
     <ajc-test dir="bugs" pr="906"
       title="privileged access to code outside the control of the compiler">
         <compile files="PrivilegeBeyondScope.java">

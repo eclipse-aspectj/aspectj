@@ -1,12 +1,7 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 <suite>
-    <ajc-test dir="new" pr="764"
-      title="binding handler args with indeterminate prefix and suffix"
-      keywords="from-resolved_105">
-        <compile files="IndeterminateHandlerArg.java"/>
-        <run class="IndeterminateHandlerArg"/>
-    </ajc-test>
 
+    
        <!--
     <ajc-test dir="base/test129"
       title="DEPRECATED: introduce of abstract methods works"
