@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -54,9 +56,10 @@ public class Checklics extends MatchingTask {
     public static final String PARC_COPYRIGHT_TAG = "parc-copy";
     public static final String CPL_IBM_PARC_XEROX_TAG = "cpl-ibm|parc|xerox";
     public static final String CPL_IBM_PARC_XEROX_OTHERS_TAG = "cpl-ibm|parc|xerox|others";
-    public static final String DEFAULT = CPL_IBM_PARC_XEROX_OTHERS_TAG;
+    public static final String EPL_CPL_IBM_PARC_XEROX_OTHERS_TAG = "epl-cpl-ibm|parc|xerox|others";
+    public static final String DEFAULT = EPL_CPL_IBM_PARC_XEROX_OTHERS_TAG;
     
-    static final Hashtable LICENSES; // XXX unmodifiable Map
+    static final Map LICENSES; // unmodifiable Map
     
 	static {
         final String CONTRIBUTORS = "Contributors";
@@ -67,11 +70,9 @@ public class Checklics extends MatchingTask {
 		final String IBM_LONG = "International Business Machines";
 		final String LIC_APL =
 			"Apache Software Foundation (http://www.apache.org/)";
-		// XXX
 		final String LIC_MPL = "http://aspectj.org/MPL/";
-		//final String LIC_CPL    = "http://www.eclipse.org/legal/cpl-v"; // XXX not versioned
-		final String LIC_CPL = "Common Public License";
-		// XXX not versioned
+        final String LIC_CPL = "Common Public License";
+        final String LIC_ECPL = " Public License";
 		License APL = new License(APACHE_TAG, LIC_APL, APACHE);
 		License MPL = new License(MPL_TAG, LIC_MPL, XEROX);
 		License MPL_XEROX_PARC = new License(DEFAULT, LIC_MPL, XEROX, PARC);
@@ -79,8 +80,12 @@ public class Checklics extends MatchingTask {
 				                    new String[] { IBM_LONG, IBM, PARC });
         License CPL_IBM_PARC_XEROX = new License(CPL_IBM_PARC_XEROX_TAG,LIC_CPL,
                                     new String[] { IBM_LONG, IBM, PARC, XEROX });
+
+        
         License CPL_IBM_PARC_XEROX_OTHERS = new License(CPL_IBM_PARC_XEROX_OTHERS_TAG, LIC_CPL,
                                     new String[] { IBM_LONG, IBM, PARC, XEROX, CONTRIBUTORS });
+        License EPL_CPL_IBM_PARC_XEROX_OTHERS = new License(EPL_CPL_IBM_PARC_XEROX_OTHERS_TAG, LIC_ECPL,
+                new String[] { IBM_LONG, IBM, PARC, XEROX, CONTRIBUTORS });
         License CPL_IBM = new License(CPL_IBM_TAG, LIC_CPL, IBM, IBM_LONG);
         License MPL_ONLY = new License(MPL_ONLY_TAG, LIC_MPL);
         License MPL_PARC = new License(MPL_PARC_TAG, LIC_MPL, PARC);
@@ -96,14 +101,15 @@ public class Checklics extends MatchingTask {
 		LICENSES.put(PARC_COPYRIGHT.tag, PARC_COPYRIGHT);
         LICENSES.put(CPL_IBM_PARC_XEROX.tag, CPL_IBM_PARC_XEROX);
         LICENSES.put(CPL_IBM_PARC_XEROX_OTHERS.tag, CPL_IBM_PARC_XEROX_OTHERS);
+        LICENSES.put(EPL_CPL_IBM_PARC_XEROX_OTHERS.tag, EPL_CPL_IBM_PARC_XEROX_OTHERS);
 	}
     
     /** @param args String[] { &lt; sourcepath &gt; {, &lt; licenseTag &gt; } } */
     public static void main(String[] args) {
         switch (args.length) {
-            case 1 :  runDirect(args[0], null);
+            case 1 :  runDirect(args[0], null, false);
                 break;
-            case 2 :  runDirect(args[0], args[1]);
+            case 2 :  runDirect(args[0], args[1], false);
                 break;
             default:
                 String options = "{replace-headers|get-years|list|{licenseTag}}";
@@ -116,10 +122,11 @@ public class Checklics extends MatchingTask {
      * Run the license check directly
      * @param sourcepaths String[] of paths to source directories
      * @param license the String tag for the license, if any
+     * @param failonerror boolean flag to pass to Checklics
      * @throws IllegalArgumentException if sourcepaths is empty
      * @return total number of failed licenses
      */
-    public static int runDirect(String sourcepath, String license) {
+    public static int runDirect(String sourcepath, String license, boolean failonerror) {
         if ((null == sourcepath) || (1 > sourcepath.length())) {
             throw new IllegalArgumentException("bad sourcepath: " + sourcepath);
         }
@@ -128,6 +135,7 @@ public class Checklics extends MatchingTask {
         p.setName("direct interface to Checklics");
         p.setBasedir(".");
         me.setProject(p);
+        me.setFailOnError(failonerror);
         me.setSourcepath(new Path(p, sourcepath));
         if (null != license) {
             if ("replace-headers".equals(license)) {
@@ -310,78 +318,25 @@ public class Checklics extends MatchingTask {
         visitAll(visitor);
         this.failed = visitor.failed;
         this.passed = visitor.passed;
-        getOut().println(
-            "Total passed: "
-                + visitor.passed
-                + (visitor.failed == 0 ? "" : " failed: " + visitor.failed));
-        if (failOnError && (0 < visitor.failed)) {
-            throw new BuildException(
-                failed + " files failed license check");
+        if (0 < visitor.failed) {
+            getOut().println(
+                    "Total passed: "
+                        + visitor.passed
+                        + (visitor.failed == 0 ? "" : " failed: " + visitor.failed));
+            if (failOnError) {
+                throw new BuildException(
+                    failed + " files failed license check");
+            }
         }
     }
     
-//    private void oldrun() throws BuildException {
-//    	if (list) {
-//			list();
-//			return;
-//		}
-//		if (null == license) {
-//			setLicense(DEFAULT);
-//		}
-//		final License license = this.license; // being paranoid...
-//		if (null == license) {
-//			throw new BuildException("no license");
-//		}
-//		final PrintStream out = getOut();
-//
-//		List filelist = new ArrayList();
-//		String[] dirs = sourcepath.list();
-//        failed = 0;
-//        passed = 0;
-//		for (int i = 0; i < dirs.length; i++) {
-//			int dirFailed = 0;
-//			int dirPassed = 0;
-//			File dir = project.resolveFile(dirs[i]);
-//			String[] files = getDirectoryScanner(dir).getIncludedFiles();
-//			for (int j = 0; j < files.length; j++) {
-//				File file = new File(dir, files[j]);
-//				String path = file.getPath();
-//				if (path.endsWith(".java")) {
-//					if (license.checkFile(file)) {
-//                        dirPassed++;
-//                    } else {
-//						dirFailed++;
-//						if (!license.foundLicense()) {
-//							out.println(
-//								license.tag + "   LICENSE FAIL: " + path);
-//						}
-//						if (!license.foundCopyright()) {
-//							out.println(
-//								license.tag + " COPYRIGHT FAIL: " + path);
-//						}
-//					}
-//				}
-//			}
-//            if (printDirectories) {
-//    			out.println(
-//    				"dir: "
-//    					+ dirs[i]
-//    					+ " passed: "
-//    					+ dirPassed
-//    					+ (dirFailed == 0 ? "" : " failed: " + dirFailed));
-//            }
-//			failed += dirFailed;
-//			passed += dirPassed;
-//		}
-//	}
-
 	private void list() {
-		Enumeration enu = LICENSES.keys();
+		Iterator enu = LICENSES.keySet().iterator();
 		StringBuffer sb = new StringBuffer();
 		sb.append("known license keys:");
 		boolean first = true;
-		while (enu.hasMoreElements()) {
-			sb.append((first ? " " : ", ") + enu.nextElement());
+		while (enu.hasNext()) {
+			sb.append((first ? " " : ", ") + enu.next());
 			if (first) {
 				first = false;
 			}
@@ -396,8 +351,8 @@ public class Checklics extends MatchingTask {
 	 */
 	public static class License {
 		/** acceptable years for copyright prefix to company - append " " */
-		static final String[] YEARS = // XXX remove older after license xfer?
-			new String[] { "2002 ", "2003 ", "2004 ", "2001 ", "2000 ", "1999 " }; 
+		static final String[] YEARS = // remove older after license xfer?
+			new String[] { "2002 ", "2003 ", "2004 ", "2005", "2006", "2001 ", "2000 ", "1999 " }; 
 		public final String tag;
 		public final String license;
 		private final String[] copyright;
