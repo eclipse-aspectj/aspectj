@@ -22,6 +22,7 @@ public class BcweaverModuleTests extends TestCase {
         suite.addTest(org.aspectj.weaver.bcel.BcelTests.suite()); 
         suite.addTest(org.aspectj.weaver.BcweaverTests.suite()); 
         suite.addTest(org.aspectj.weaver.patterns.PatternsTests.suite()); 
+        suite.addTestSuite(LocaleTest.class);
         return suite;
     }
 
