@@ -19,14 +19,18 @@ import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.weaver.*;
 
 /**
+ * !!! is this class still being used?
+ * 
  * @author Mik Kersten
  */
 public class AsmInterTypeRelationshipProvider {
 
+    protected static AsmInterTypeRelationshipProvider INSTANCE = new AsmInterTypeRelationshipProvider();
+    
 	public static final String INTER_TYPE_DECLARES = "declared on";
 	public static final String INTER_TYPE_DECLARED_BY = "aspect declarations";
 
-	public static void addRelationship(
+	public void addRelationship(
 		ResolvedTypeX onType,
 		EclipseTypeMunger munger) {
 			
@@ -63,4 +67,16 @@ public class AsmInterTypeRelationshipProvider {
 			}
 		}
 	}
+	
+    public static AsmInterTypeRelationshipProvider getDefault() {
+        return INSTANCE;
+    }
+    
+    /**
+     * Reset the instance of this class, intended for extensibility.
+     * This enables a subclass to become used as the default instance.
+     */
+    public static void setDefault(AsmInterTypeRelationshipProvider instance) {
+        INSTANCE = instance;
+    }
 }

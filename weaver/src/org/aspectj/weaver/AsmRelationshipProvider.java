@@ -13,6 +13,7 @@
 
 package org.aspectj.weaver;
 
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -28,6 +29,8 @@ import org.aspectj.weaver.bcel.BcelAdvice;
 
 public class AsmRelationshipProvider {
 	
+    protected static AsmRelationshipProvider INSTANCE = new AsmRelationshipProvider();
+    
 	public static final String ADVISES = "advises";
 	public static final String ADVISED_BY = "advised by";
 	public static final String DECLARES_ON = "declares on";
@@ -36,8 +39,8 @@ public class AsmRelationshipProvider {
 	public static final String MATCHES_DECLARE = "matches declare";
 	public static final String INTER_TYPE_DECLARES = "declared on";
 	public static final String INTER_TYPE_DECLARED_BY = "aspect declarations";
-
-	public static void checkerMunger(IHierarchy model, Shadow shadow, Checker checker) {
+	
+	public void checkerMunger(IHierarchy model, Shadow shadow, Checker checker) {
 		if (shadow.getSourceLocation() == null || checker.getSourceLocation() == null) return;
 		
 		String sourceHandle = ProgramElement.createHandleIdentifier(
@@ -65,7 +68,7 @@ public class AsmRelationshipProvider {
 	}
 
     // For ITDs
-	public static void addRelationship(
+	public void addRelationship(
 		ResolvedTypeX onType,
 		ResolvedTypeMunger munger,
 		ResolvedTypeX originatingAspect) {
@@ -102,7 +105,7 @@ public class AsmRelationshipProvider {
 		}
 	}
 	
-	public static void addDeclareParentsRelationship(ISourceLocation decp,ResolvedTypeX targetType) {
+	public void addDeclareParentsRelationship(ISourceLocation decp,ResolvedTypeX targetType, List newParents) {
 
 		String sourceHandle = ProgramElement.createHandleIdentifier(decp.getSourceFile(),decp.getLine(),decp.getColumn());
 		
@@ -125,7 +128,7 @@ public class AsmRelationshipProvider {
 		
 	}
 	
-	public static void adviceMunger(IHierarchy model, Shadow shadow, ShadowMunger munger) {
+	public void adviceMunger(IHierarchy model, Shadow shadow, ShadowMunger munger) {
 		if (munger instanceof Advice) {
 			Advice advice = (Advice)munger;
 			
@@ -168,7 +171,7 @@ public class AsmRelationshipProvider {
 		}
 	}
 
-	private static IProgramElement getNode(IHierarchy model, Shadow shadow) {
+	private IProgramElement getNode(IHierarchy model, Shadow shadow) {
 		Member enclosingMember = shadow.getEnclosingCodeSignature();
 		
 		IProgramElement enclosingNode = lookupMember(model, enclosingMember);
@@ -189,13 +192,13 @@ public class AsmRelationshipProvider {
 		}
 	}
 	
-	private static boolean sourceLinesMatch(ISourceLocation loc1,ISourceLocation loc2) {
+	private boolean sourceLinesMatch(ISourceLocation loc1,ISourceLocation loc2) {
 		if (loc1.getLine()!=loc2.getLine()) return false;
 		return true;
 	}
 	
 	
-	private static IProgramElement findOrCreateCodeNode(IProgramElement enclosingNode, Member shadowSig, Shadow shadow)
+	private IProgramElement findOrCreateCodeNode(IProgramElement enclosingNode, Member shadowSig, Shadow shadow)
 	{
 		for (Iterator it = enclosingNode.getChildren().iterator(); it.hasNext(); ) {
 			IProgramElement node = (IProgramElement)it.next();
@@ -224,14 +227,14 @@ public class AsmRelationshipProvider {
 		return peNode;
 	}
 	
-	private static IProgramElement lookupMember(IHierarchy model, Member member) {
+	private IProgramElement lookupMember(IHierarchy model, Member member) {
 		TypeX declaringType = member.getDeclaringType();
 		IProgramElement classNode =
 			model.findElementForType(declaringType.getPackageName(), declaringType.getClassName());
 		return findMemberInClass(classNode, member);
 	}
  
-	private static IProgramElement findMemberInClass(
+	private IProgramElement findMemberInClass(
 		IProgramElement classNode,
 		Member member)
 	{
@@ -275,4 +278,16 @@ public class AsmRelationshipProvider {
 //		}
 //	}
 
+    public static AsmRelationshipProvider getDefault() {
+        return INSTANCE;
+    }
+    
+    /**
+     * Reset the instance of this class, intended for extensibility.
+     * This enables a subclass to become used as the default instance.
+     */
+    public static void setDefault(AsmRelationshipProvider instance) {
+        INSTANCE = instance;
+    }
+	
 }

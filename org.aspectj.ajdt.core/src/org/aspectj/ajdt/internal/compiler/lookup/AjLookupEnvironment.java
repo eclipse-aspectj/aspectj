@@ -329,7 +329,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
 				// (When done at weave time, it is done by invoking addRelationship() on 
 				// AsmRelationshipProvider (see BCELTypeMunger)
 				if (!ResolvedTypeMunger.persistSourceLocation) // Do it up front if we bloody have to
-				 AsmInterTypeRelationshipProvider.addRelationship(onType, munger);
+				 AsmInterTypeRelationshipProvider.getDefault().addRelationship(onType, munger);
 			}
 		}
 		
@@ -362,7 +362,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
 										onType + ": " + dangerousInterfaces.get(parent),
 										onType.getSourceLocation(), null);
 				}
-				AsmRelationshipProvider.addDeclareParentsRelationship(declareParents.getSourceLocation(),factory.fromEclipse(sourceType));
+				AsmRelationshipProvider.getDefault().addDeclareParentsRelationship(declareParents.getSourceLocation(),factory.fromEclipse(sourceType), newParents);
 				addParent(sourceType, parent);
 			}
 		}

@@ -66,7 +66,7 @@ public class Checker extends ShadowMunger {
 			}
 			
 			if (world.getModel() != null) {
-				AsmRelationshipProvider.checkerMunger(world.getModel(), shadow, this);
+				AsmRelationshipProvider.getDefault().checkerMunger(world.getModel(), shadow, this);
 			}
 		}
 		return false;

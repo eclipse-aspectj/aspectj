@@ -458,7 +458,7 @@ public abstract class Shadow {
 			
 			if (world.getModel() != null) {
 				//System.err.println("munger: " + munger + " on " + this);
-				AsmRelationshipProvider.adviceMunger(world.getModel(), this, munger);
+				AsmRelationshipProvider.getDefault().adviceMunger(world.getModel(), this, munger);
 			}
 		}
 	}
