@@ -35,7 +35,7 @@ class PersistenceException extends RuntimeException
 
 
 class Root {
-	Root(String s) throws IOException {
+	Root(String s) /*throws IOException*/ {
 	}
 }
 

@@ -449,3 +449,10 @@
 		<compile files="ArrayCloning.java"/>
 		<run class="ArrayCloning"/>
 	</ajc-test>
+
+    <ajc-test dir="bugs" pr="72157"
+		title="declare soft can cause programs with invalid exception behaviour to be generated">
+		<compile files="PR72157.java">
+ 	      <message kind="error" line="13" text="Unhandled"/>
+		</compile>
+	</ajc-test>

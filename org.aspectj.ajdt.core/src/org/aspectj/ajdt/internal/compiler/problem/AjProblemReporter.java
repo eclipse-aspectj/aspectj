@@ -33,6 +33,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.IProblemFactory;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
@@ -74,6 +75,12 @@ public class AjProblemReporter extends ProblemReporter {
 		if (!factory.getWorld().getDeclareSoft().isEmpty()) {
 			Shadow callSite = factory.makeShadow(location, referenceContext);
 			Shadow enclosingExec = factory.makeShadow(referenceContext);
+			// PR 72157 - calls to super / this within a constructor are not part of the cons join point.
+			if ((callSite == null) && (enclosingExec.getKind() == Shadow.ConstructorExecution)
+			        && (location instanceof ExplicitConstructorCall)) {
+				super.unhandledException(exceptionType, location);
+				return;
+			}
 //			System.err.println("about to show error for unhandled exception: "  + new String(exceptionType.sourceName()) + 
 //					" at " + location + " in " + referenceContext);		
 			

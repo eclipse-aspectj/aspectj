@@ -306,5 +306,8 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
     runTest("around advice throws java.lang.VerifyError at runtime");
   }
    
+  public void test057_decSoftWithSuper() {
+      runTest("declare soft can cause programs with invalid exception behaviour to be generated");
+    }
 }
 
