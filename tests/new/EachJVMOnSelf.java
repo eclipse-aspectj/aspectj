@@ -11,8 +11,8 @@ public class EachJVMOnSelf {
 aspect A issingleton() {
     String advisedNewClass = null;
 
-    after () returning (): this(*) && execution(new(..)) {
-	advisedNewClass = thisJoinPoint.getSourceLocation().getWithinType().getName();
+    after () returning (): this(*) && execution(new(..)) && !this(A) {
+		advisedNewClass = thisJoinPoint.getSourceLocation().getWithinType().getName();
     }
 }
 
