@@ -68,9 +68,9 @@ programs from 1.0 to 1.1.
   features have changed in 1.1, so some 1.0 programs
   will not compile or will run differently in 1.1.
   The corresponding features are marked below as compile-time 
-  or run-time incompatible (<em>RTI</em> or <em>CTI</em>, respectively).
+  or run-time incompatible (<em>CTI</em> or <em>RTI</em>, respectively).
   When the language change involves a move in the static shadow effective
-  at run-time but also apparant at compile-time (e.g., in declare
+  at run-time but also apparent at compile-time (e.g., in declare
   error or warning statements), it is marked <em>CRTI</em>.
   Programs using run-time incompatible forms should be verified that 
   they are behaving as expected in 1.1.
@@ -171,7 +171,7 @@ programs from 1.0 to 1.1.
     instead be, 'int C.field1; int D.field2;' (<em>CTI</em>) <p></p></li>
     
     <li>We did not implement the handling of more than one
-    <code>..</code> wildcard in args PCDs (rarely encountered in the
+    <code>..</code> wildcard in args PCD's (rarely encountered in the
     wild) because we didn't have the time.  This might be available
     in later releases if there is significant outcry. (<em>CTI</em>) </li>
     
@@ -200,7 +200,7 @@ programs from 1.0 to 1.1.
   us to piggyback on Eclipse's already mature incremental compilation
   facilities.  </p>
 
-  <p> Second, ajc now cleanly deliniates compilation of source code
+  <p> Second, ajc now cleanly delineates compilation of source code
   from assembly (or "weaving") of bytecode.  The compiler still
   accepts source code, but internally it transforms it into bytecode
   format before weaving. </p>
@@ -333,8 +333,8 @@ programs from 1.0 to 1.1.
 <h2><a name="devenv">The AJDE Tools</a></h2>
 
   <p> The AspectJ Browser supports incremental compilation and running
-  programs.  AJDE for JBuilder, AJDE for Netbeans, and AJDE for Emacs 
-  are now independent sourceforge projects (to keep their licenses).
+  programs.  AJDE for JBuilder, AJDE for NetBeans, and AJDE for Emacs 
+are now independent SourceForge projects (to keep their licenses).
   They use the batch-build mode of the new compiler.  
   </p>
 
@@ -458,7 +458,7 @@ are now independent SourceForge projects. </p>
 
     <pre>    pointcut throwsMathlike():
       // each call to a method with a throws clause containing at least
-      // one exception exception with "Math" in its name.
+      // one exception with "Math" in its name.
       call(* *(..) throws *..*Math*);
 
     pointcut doesNotThrowMathlike():
@@ -495,7 +495,7 @@ are now independent SourceForge projects. </p>
 
     <p> These rules are completely backwards compatible with
     AspectJ 1.0. The rule for "!" matching has one potentially
-    surprising property, in that the two PCDs shown below will have
+    surprising property, in that the two PCD's shown below will have
     different matching rules. </p>
 
     <pre>    [1] call(* *(..) throws !IOException)
@@ -620,7 +620,7 @@ are now independent SourceForge projects. </p>
 
     <p> The end of an exception handler is underdetermined in bytecode,
   	so ajc will not implement after or around advice on handler join 
-  	points, instead signalling a compile-time error.</p>
+    points, instead signaling a compile-time error.</p>
 
   <h3><a name="CONSTRUCTOR_EXECUTION_IS_BIGGER">Initializers run
     inside constructor execution join points</a></h3>
@@ -691,7 +691,7 @@ are now independent SourceForge projects. </p>
   <h3><a name="WITHIN_MEMBER_TYPES">Small limitations of the within
     pointcut</a></h3>
 
-    <p> Becuase of the guarantees made (and not made) by the Java
+   <p>Because of the guarantees made (and not made) by the Java
     classfile format, there are cases where AspectJ 1.1 cannot
     guarantee that the within pointcut designator will pick out all
     code that was originally within the source code of a certain
@@ -759,7 +759,7 @@ are now independent SourceForge projects. </p>
 
     <p>If you want the more dynamic matching and are willing to pay
     for the performance, then you should use the Java reflection API
-    combinded with if.  That would look something like:</p>
+    combined with if.  That would look something like:</p>
 
     <pre>    pointcut oneOfMine(): this(Object) &&
         if(classMatches("com.bigboxco..*",
@@ -771,7 +771,7 @@ are now independent SourceForge projects. </p>
     }
     </pre>
 
-    <p>Note: wildcard type matching still works in all other pcds that
+    <p>Note: wildcard type matching still works in all other PCD's that
     match based on static types.  So, you can use
     'within(com.bigboxco..*+)' to match any code lexically within one
     of your classes or a subtype thereof.  This is often a good
@@ -812,7 +812,7 @@ are now independent SourceForge projects. </p>
     <h4>Various cycles</h4>
 
       <p> It is an error for any aspect to be matched by more than one
-      TypePattern in a single decare precedence, so: </p>
+      TypePattern in a single declare precedence, so: </p>
 
       <pre>      declare precedence:  A, B, A ;  // error
       </pre>
@@ -844,7 +844,7 @@ are now independent SourceForge projects. </p>
           }
       }
 
-      aspect aspect MyProfiling {
+      aspect MyProfiling {
           abstract pointcut profiled();
 
           Object around(): profiled() {
@@ -1063,7 +1063,7 @@ are now independent SourceForge projects. </p>
        property for the current separate compilation model. <br>
 
        However, allowing implementation of call advice on either
-       side requires simultaneous knowlege of both sides.  If we first
+       side requires simultaneous knowledge of both sides.  If we first
        have access to a call, we can't decide to simply put the advice
        on the call site, since later we may decide to implement on the
        callee.</li>
@@ -1178,7 +1178,7 @@ are now independent SourceForge projects. </p>
 
     <p>Building on the eclipse compiler has given us access to a very
     sophisticated problem reporting system as well as highly optimized
-    error messages for pure Java code.  Often this leads to noticably
+    error messages for pure Java code.  Often this leads to noticeably
     better error messages than from ajc-1.0.6.  However, when we don't
     handle errors correctly this can sometimes lead to cascading error
     messages where a single small syntax error will produce dozens of
@@ -1239,7 +1239,7 @@ are now independent SourceForge projects. </p>
     <p>Because we build on Eclipse, the compiler will no longer run
     under J2SE 1.2.  You must run the compiler (and all tools based on
     the compiler) using J2SE 1.3 or later. The code generated by the
-    compiler can still run on Java1.1 or later VMs if compiled against
+    compiler can still run on Java 1.1 or later VM's if compiled against
     the correct runtime libraries.</p>
 
   <h3><a name="DEFAULT_CONSTRUCTOR_CONFLICT">Default
