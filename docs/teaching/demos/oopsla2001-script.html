@@ -1,0 +1,310 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>AspectJ Installation Note</title>
+<STYLE TYPE="text/css">
+<!--
+ 
+   /* FOR THE SDA PAGE */
+ 
+	/*
+	BODY {margin-top: 15px; margin-left: 15px; margin-right: 15px;}
+	*/
+
+	A:link {
+		color:#4756AC;
+	}
+	A:visited {
+		color:#60657B;
+	}
+	A:hover {
+		color:red
+	}
+	
+	INPUT {font:12px "Courier New", sans-serif;}
+	
+	H2 {
+		font:18px/18px Verdana, Arial, Helvetica, sans-serif; 
+		color:black; 
+		font-weight:bold; 
+		margin-left: 10px;
+		line-height:110%; 
+	}
+	H3 {
+		font:18px/18px Verdana, Arial, Helvetica, sans-serif; 
+		color:black; 
+		font-weight:bold; 
+		margin-left: 10px;
+		line-height:110%; 
+	}
+	H4 {
+		font:15px/16px Verdana, Arial, Helvetica, sans-serif; 
+		color:black; 
+		font-weight:bold; 
+		margin-left: 10px;
+		line-height:140%;
+	}
+	P {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif; 
+		margin-right: 10px;
+		margin-left: 10px;
+		line-height:130%; 
+	}
+	.paragraph {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif; 
+		margin-right: 10px;
+		margin-left: 10px;
+		line-height:130%; 
+	}
+	.smallParagraph {
+		font:11px/11px Verdana, Arial, Helvetica, sans-serif; 
+		margin-right: 10px;
+		margin-left: 10px;
+		line-height:130%; 
+	}
+	LI {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif;
+		text-align:justify; 
+		margin-right: 10px;
+		margin-left: 15px;
+		line-height:120%; 
+	}
+	/*
+	UL {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif;
+		text-align:justify; 
+		margin-right: 10px;
+		margin-left: 15px;
+		line-height:120%; 
+	}*/
+	
+	DL {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif;
+		text-align:justify; 
+		margin-right: 10px;
+		margin-left: 15px;
+		line-height:120%; 
+	}
+	B { font:13px/13px Verdana, Arial, Helvetica, sans-serif; 
+		font-weight:bold; 
+		line-height:140%;
+	}
+	.footer {
+		font:10px/10px Verdana, Arial, Helvetica, sans-serif;  
+		color:#888888; 
+		text-align:left
+	}
+	.figureTitle {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif; 
+		text-align:justify; 
+		text-align:center
+	}
+	.copyrightNotice {
+		font:10px/10px Verdana, Arial, Helvetica, sans-serif; 
+		color:#999999; 
+		line-height:110%;
+	}
+	.smallHeading {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif; 
+		font-weight:bold;
+		line-height:110%;
+	}
+	.tinyHeading {
+		font:11px/11px Verdana, Arial, Helvetica, sans-serif; 
+		font-weight:bold;
+		line-height:120%;
+	}
+	.newsText {
+		font:11px/11px Verdana, Arial, Helvetica, sans-serif; 
+		line-height:130%;
+	}
+	.smallParagraph {
+		font:11px/11px Verdana, Arial, Helvetica, sans-serif; 
+		line-height:130%;
+	}
+	.fancyHeading {
+		font:20px/20px Chantilly, Arial, Helvetica, sans-serif; 
+		margin-right: 10px;
+		color:#6f7a92;
+		margin-left: 10px;
+		line-height:130%;
+	}
+ 
+-->
+</STYLE>
+</head>
+
+<BODY BGCOLOR="white">
+
+<h3 align="center">AspectJ Demo</h3>
+
+<h4>1. Installing the Demo</h4>
+
+<ul>
+  <li>Extract the contents of &quot;aspectj-demo.zip&quot; to
+    &quot;C:\aspectj-demo&quot;, resulting in the following directory structure:
+    <ul>
+      <li>C:\aspectj-demo
+        <ul>
+          <li>apps</li>
+          <li>bin</li>
+          <li>examples</li>
+          <li>slides</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Verify that JBuilder 4 is using the correct project by opening it, closing
+    all of the current projects 
+    <ul>
+      <li>Under the &quot;File&quot; menu select &quot;Close Projects...&quot;,
+        select all of the open projects and close them</li>
+      <li>Under the &quot;File&quot; menu select &quot;Open Project...&quot;,
+        and open &quot;C:\aspectj-demo\examples\jbuilder\Spacewar.jpr&quot;</li>
+      <li>You should now be able to compile &quot;Spacewar&quot;.&nbsp; If
+        ajdeForJBuilder reports any problems refer to
+        &quot;C:\aspectj-demo\apps\aspectj0.8\doc\primer\tools\ajdeForJBuilder.html&quot;</li>
+    </ul>
+  </li>
+  <li>Set up your &quot;Windows Taskbar&quot; to be permanently visible by
+    right-clicking the bar, selecting &quot;Properties&quot;, and un-checking
+    &quot;Auto hide&quot;</li>
+  <li>From your &quot;Windows Explorer&quot; drag the
+    &quot;C:\aspectj-demo\bin\Demo&quot; folder to the &quot;Windows
+    Taskbar&quot;.&nbsp; This will have the effect of placing the demo buttons
+    on the taskbar.&nbsp; To remove the buttons drag off the &quot;Demo&quot;
+    toolbar and close the resulting floating toolbar window.</li>
+  <li>It is useful to have the &quot;Task Manager&quot; running in the
+    &quot;System Tray&quot; during the demo in order to see when the debugger is
+    loading since it is slow.&nbsp; To launch it right-click the &quot;Windows
+    Taskbar&quot; and select &quot;Task Manager&quot;, then minimize the window.
+  </li>
+</ul>
+<h4>2. Initial Setup</h4>
+<ul>
+  <li>Emacs Setup
+    <ul>
+      <li>Click &quot;Emacs&quot;, and move the cursor to the beginning of the
+        &quot;spacewar.Ship.fire&quot; method</li>
+    </ul>
+  </li>
+  <li>JBuilder Setup
+    <ul>
+      <li>Click &quot;JBuilder&quot;, open the &quot;AspectJ Structure
+        View&quot;, and bring the editor to the &quot;spacewar.Ship.fire&quot;
+        method</li>
+      <li>under the &quot;Spacewar.jpr&quot; node in the &quot;Project
+        Explorer&quot; (left pane of main window) expand the &quot;spacewar&quot;
+        package to see its classes</li>
+      <li>ensure that the last compile was done without &quot;Debug.java&quot;
+        in the build configuration</li>
+    </ul>
+  </li>
+  <li>Forte Setup
+    <ul>
+      <li>Click &quot;Forte&quot;, click the &quot;AspectJ Structure View&quot;
+        button, and navigate the editor to the &quot;spacewar.EnsureShipIsAlive&quot;
+        class </li>
+    </ul>
+  </li>
+  <li>AJDoc Setup
+    <ul>
+      <li>click &quot;AJDoc&quot;, browse to the &quot;spacewar/Ship.java&quot;
+        class</li>
+    </ul>
+  </li>
+</ul>
+<h4>3. Running the Demo</h4>
+<ul>
+  <li>Emacs
+    <ul>
+      <li>At the declaration of the &quot;spacewar.Ship.fire&quot; method hit
+        &quot;&lt;cntrl&gt;x, &lt;cntrl&gt;j&quot;</li>
+      <li>Follow the resulting popup menu to the &quot;EnsureShipIsAlive&quot;
+        advice</li>
+      <li>Navigate back to &quot;spacewar.Ship.fire&quot; using the same method</li>
+    </ul>
+  </li>
+  <li>JBuilder
+    <ul>
+      <li>Navigation
+        <ul>
+          <li>In the &quot;Structure View&quot; select the &quot;fire&quot;
+            method and expand it's children to reveal &quot;EnsureShipIsAlive:
+            around...&quot;</li>
+          <li>Double-click &quot;EnsureShipIsAlive: around...&quot; to navigate
+            to that advice declaration</li>
+          <li>Navigate back using the same method, or using the
+            &quot;Back&quot;, then &quot;Forward&quot; method in conjuntion with
+            the structure tree (this navigation can also be done by
+            right-clicking the inline advice icons in the editor's gutter)</li>
+        </ul>
+      </li>
+      <li>Compilation
+        <ul>
+          <li>In &quot;EnsureShipIsAlive&quot; remove &quot;ship&quot; from the
+            &quot;proceed(ship)&quot; call and recompile.</li>
+          <li>When the error message pops up fix it by replacing
+            &quot;ship&quot;</li>
+        </ul>
+      </li>
+      <li>Build Configuration
+        <ul>
+          <li>Double-click &quot;Default.lst&quot; and select the &quot;lst
+            Designer&quot; tab at the bottom of the editor pane</li>
+          <li>Expand the &quot;spacewar&quot; node</li>
+          <li>Click &quot;Debug.java&quot; in order to add it to the
+            configuration</li>
+          <li>Navigate to the &quot;Ship.java&quot; class so that the effects of
+            the new compilation are visible in the &quot;Structure View&quot;
+            when the compilation completes</li>
+          <li>Compile &quot;Default.lst&quot;</li>
+          <li>Run the project (top the execution of the project by clicking the
+            red stop button in the run messages pane)</li>
+        </ul>
+      </li>
+      <li>Debugging
+        <ul>
+          <li>Start the debugger</li>
+          <li>When the &quot;Please select launch parameters...&quot; dialog
+            pops up click &quot;OK&quot;</li>
+          <li>Select the &quot;Classes&quot; tab (4th tab from the top)</li>
+          <li>When the game starts, expand &quot;spacewar&quot;, expand &quot;Ship.java&quot;</li>
+          <li>Browse to the &quot;fire&quot; method and expand it</li>
+          <li>Right-click on the &quot;fire&quot; method and select &quot;stop
+            in spaceawar.Ship.fire&quot;</li>
+          <li>Wait for the breakpoint to be hit</li>
+          <li>Use the &quot;Step Into&quot; button (5th button on the bottom
+            from the left) to single step the file until you step through the
+            advice and into the body of the fire method</li>
+          <li>Click the red stop button (1st button) in order to stop the
+            debugging</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Forte
+    <ul>
+      <li>Currently no Forte demo (fyi: navigate the structure the same way as
+        in JBuilder, and right-click the LST files to compile them, right click
+        &quot;Game.java&quot; to execute it)</li>
+    </ul>
+  </li>
+  <li>AJDoc
+    <ul>
+      <li>Scroll down to the &quot;fire&quot; method, and follow it's
+        &quot;Advised by: &quot; link to get to the &quot;EnsureShipIsAlive&quot;
+        aspect</li>
+    </ul>
+  </li>
+</ul>
+<p>&nbsp;</p>
+
+
+</body>
+
+</html>

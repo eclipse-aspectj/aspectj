@@ -1,0 +1,671 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 11">
+<meta name=Originator content="Microsoft Word 11">
+<link rel=File-List href="oopsla2002-script_files/filelist.xml">
+<title>demo: OO IDE</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>Mik Kersten</o:Author>
+  <o:LastAuthor>Mik Kersten</o:LastAuthor>
+  <o:Revision>2</o:Revision>
+  <o:TotalTime>91</o:TotalTime>
+  <o:LastPrinted>2002-09-06T19:46:00Z</o:LastPrinted>
+  <o:Created>2003-11-11T03:52:00Z</o:Created>
+  <o:LastSaved>2003-11-11T03:52:00Z</o:LastSaved>
+  <o:Pages>1</o:Pages>
+  <o:Words>320</o:Words>
+  <o:Characters>1829</o:Characters>
+  <o:Company>Xerox PARC</o:Company>
+  <o:Lines>15</o:Lines>
+  <o:Paragraphs>4</o:Paragraphs>
+  <o:CharactersWithSpaces>2145</o:CharactersWithSpaces>
+  <o:Version>11.5606</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+  <w:Compatibility>
+   <w:BreakWrappedTables/>
+   <w:SnapToGridInCell/>
+   <w:WrapTextWithPunct/>
+   <w:UseAsianBreakRules/>
+   <w:UseWord2002TableStyleRules/>
+  </w:Compatibility>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+ </w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState="false" LatentStyleCount="156">
+ </w:LatentStyles>
+</xml><![endif]-->
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Courier;
+	panose-1:2 7 4 9 2 2 5 2 4 4;
+	mso-font-alt:"Courier New";
+	mso-font-charset:0;
+	mso-generic-font-family:modern;
+	mso-font-format:other;
+	mso-font-pitch:fixed;
+	mso-font-signature:3 0 0 0 1 0;}
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;
+	mso-font-charset:2;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:0 268435456 0 0 -2147483648 0;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:1627421319 -2147483648 8 0 66047 0;}
+@font-face
+	{font-family:Verdana;
+	panose-1:2 11 6 4 3 5 4 4 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:536871559 0 0 0 415 0;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.MsoHeader, li.MsoHeader, div.MsoHeader
+	{margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	tab-stops:center 3.0in right 6.0in;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.MsoFooter, li.MsoFooter, div.MsoFooter
+	{margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	tab-stops:center 3.0in right 6.0in;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+ /* Page Definitions */
+ @page
+	{mso-footnote-separator:url("oopsla2002-script_files/header.html") fs;
+	mso-footnote-continuation-separator:url("oopsla2002-script_files/header.html") fcs;
+	mso-endnote-separator:url("oopsla2002-script_files/header.html") es;
+	mso-endnote-continuation-separator:url("oopsla2002-script_files/header.html") ecs;}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:.5in 1.25in .5in 1.25in;
+	mso-header-margin:.2in;
+	mso-footer-margin:.2in;
+	mso-header:url("oopsla2002-script_files/header.html") h1;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+ /* List Definitions */
+ @list l0
+	{mso-list-id:68115525;
+	mso-list-type:hybrid;
+	mso-list-template-ids:858938398 1703206876 -2139089146 -2064071216 1691643238 1804361448 1106935208 795498688 1114022646 513440110;}
+@list l0:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:•;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Times New Roman";}
+@list l1
+	{mso-list-id:149487999;
+	mso-list-type:hybrid;
+	mso-list-template-ids:996163290 67698689 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l1:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:40.5pt;
+	mso-level-number-position:left;
+	margin-left:40.5pt;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l2
+	{mso-list-id:285232438;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1431031654 -726899658 -63553996 -873671648 -1949522634 -2029475690 883689166 1438958244 -911152764 -143889788;}
+@list l2:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:•;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Times New Roman";}
+@list l3
+	{mso-list-id:666597725;
+	mso-list-type:hybrid;
+	mso-list-template-ids:1496319566 67698689 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l3:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:40.5pt;
+	mso-level-number-position:left;
+	margin-left:40.5pt;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l4
+	{mso-list-id:829760420;
+	mso-list-type:hybrid;
+	mso-list-template-ids:697599534 737209016 718337656 126128176 699144238 -186582856 2015656828 -573567698 -98694796 -102872622;}
+@list l4:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:•;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Times New Roman";}
+@list l5
+	{mso-list-id:1175682958;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1913763548 1683933168 -207477172 -1896716198 -1685027206 1819944446 78184194 2140690680 2113166228 -1703233950;}
+@list l5:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:•;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Times New Roman";}
+@list l6
+	{mso-list-id:1372803880;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1464406574 67698689 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l6:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:40.5pt;
+	mso-level-number-position:left;
+	margin-left:40.5pt;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l7
+	{mso-list-id:1447773079;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1699440192 67698689 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l7:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l8
+	{mso-list-id:1451361852;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1759205440 67698689 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l8:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:40.5pt;
+	mso-level-number-position:left;
+	margin-left:40.5pt;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l9
+	{mso-list-id:1524708695;
+	mso-list-type:hybrid;
+	mso-list-template-ids:343073212 67698689 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l9:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l10
+	{mso-list-id:1659534521;
+	mso-list-type:hybrid;
+	mso-list-template-ids:291794924 67698689 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l10:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:40.5pt;
+	mso-level-number-position:left;
+	margin-left:40.5pt;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l11
+	{mso-list-id:1796213947;
+	mso-list-type:hybrid;
+	mso-list-template-ids:286165626 -348468910 -768843216 1184416038 1188434802 1919294230 -1935737384 -448084024 -1107797042 -1968251254;}
+@list l11:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:•;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Times New Roman";}
+@list l12
+	{mso-list-id:1823081790;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1570481774 -1554755134 -381011836 -1997633904 -940664112 -1372821974 -923489310 2081716164 235678500 2136529842;}
+@list l12:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:•;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Times New Roman";}
+ol
+	{margin-bottom:0in;}
+ul
+	{margin-bottom:0in;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:"Table Normal";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0in 5.4pt 0in 5.4pt;
+	mso-para-margin:0in;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-ansi-language:#0400;
+	mso-fareast-language:#0400;
+	mso-bidi-language:#0400;}
+</style>
+<![endif]-->
+</head>
+
+<body lang=EN-US style='tab-interval:.5in'>
+
+<div class=Section1>
+
+<div align=center>
+
+<table class=MsoNormalTable border=0 cellspacing=3 cellpadding=0 width=709
+ style='width:531.65pt;mso-cellspacing:2.2pt;margin-left:-7.95pt;mso-padding-alt:
+ 1.5pt 1.5pt 1.5pt 1.5pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;height:14.3pt'>
+  <td width=703 colspan=3 style='width:527.25pt;background:#C8CEDC;padding:
+  1.5pt 1.5pt 1.5pt 1.5pt;height:14.3pt'>
+  <p class=MsoNormal align=center style='mso-margin-top-alt:auto;margin-right:
+  7.5pt;mso-margin-bottom-alt:auto;margin-left:4.5pt;text-align:center;
+  line-height:130%'><b><span style='font-size:8.5pt;line-height:130%;
+  font-family:Verdana;color:#383E4C'>demo: object-oriented IDE</span></b><span
+  style='font-size:8.5pt;line-height:130%;font-family:Verdana'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1;height:33.45pt'>
+  <td width=703 colspan=3 style='width:527.25pt;background:#F7F7F7;padding:
+  1.5pt 1.5pt 1.5pt 1.5pt;height:33.45pt'>
+  <ul style='margin-top:0in' type=disc>
+   <li class=MsoNormal style='mso-list:l9 level1 lfo7;tab-stops:list .5in'><span
+       style='font-size:10.0pt;font-family:Tahoma'>good at showing hierarchical
+       OO structure…<o:p></o:p></span></li>
+  </ul>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2;height:10.45pt'>
+  <td width=703 colspan=3 style='width:527.25pt;background:#C8CEDC;padding:
+  1.5pt 1.5pt 1.5pt 1.5pt;height:10.45pt'>
+  <p class=MsoNormal align=center style='mso-margin-top-alt:auto;margin-right:
+  7.5pt;mso-margin-bottom-alt:auto;margin-left:4.5pt;text-align:center;
+  line-height:130%'><b><span style='font-size:8.5pt;line-height:130%;
+  font-family:Verdana;color:#383E4C'>demo: modularize concern</span></b><span
+  style='font-size:8.5pt;line-height:130%;font-family:Verdana'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:3;height:33.45pt'>
+  <td width=253 style='width:189.7pt;background:#F7F7F7;padding:1.5pt 1.5pt 1.5pt 1.5pt;
+  height:33.45pt'>
+  <p class=MsoNormal style='margin-left:40.5pt;text-indent:-.25in;mso-list:
+  l8 level1 lfo8;tab-stops:list 40.5pt'><![if !supportLists]><span
+  style='font-size:10.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+  mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+  style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span></span></span><![endif]><span style='font-size:10.0pt;font-family:
+  Tahoma'>Show FigureEd running<o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:40.5pt;text-indent:-.25in;mso-list:
+  l8 level1 lfo8;tab-stops:list 40.5pt'><![if !supportLists]><span
+  style='font-size:10.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+  mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+  style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span></span></span><![endif]><span style='font-size:10.0pt;font-family:
+  Tahoma'>Inspect Point.java<o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:40.5pt;text-indent:-.25in;mso-list:
+  l8 level1 lfo8;tab-stops:list 40.5pt'><![if !supportLists]><span
+  style='font-size:10.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+  mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+  style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span></span></span><![endif]><span style='font-size:10.0pt;font-family:
+  Tahoma'>Use joinpoint probe to find<o:p></o:p></span></p>
+  </td>
+  <td width=447 colspan=2 style='width:335.35pt;background:#F7F7F7;padding:
+  1.5pt 1.5pt 1.5pt 1.5pt;height:33.45pt'>
+  <p class=MsoNormal style='margin-left:7.5pt'><span style='font-family:Courier;
+  mso-bidi-font-family:Tahoma'>call(void figures.Canvas.updateHistory())
+  &amp;&amp; within(*)<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:4;height:33.45pt'>
+  <td width=253 style='width:189.7pt;background:#F7F7F7;padding:1.5pt 1.5pt 1.5pt 1.5pt;
+  height:33.45pt'>
+  <p class=MsoNormal style='margin-left:40.5pt;text-indent:-.25in;mso-list:
+  l1 level1 lfo9;tab-stops:list 40.5pt'><![if !supportLists]><span
+  style='font-size:10.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+  mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+  style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span></span></span><![endif]><span style='font-size:10.0pt;font-family:
+  Tahoma'>Describe places that it’s called<o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:40.5pt;text-indent:-.25in;mso-list:
+  l1 level1 lfo9;tab-stops:list 40.5pt'><![if !supportLists]><span
+  style='font-size:10.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+  mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+  style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span></span></span><![endif]><span style='font-size:10.0pt;font-family:
+  Tahoma'>create aspect (defines a special class that can crosscut other
+  classes)<o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:40.5pt;text-indent:-.25in;mso-list:
+  l1 level1 lfo9;tab-stops:list 40.5pt'><![if !supportLists]><span
+  style='font-size:10.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+  mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+  style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span></span></span><![endif]><span style='font-size:10.0pt;font-family:
+  Tahoma'>aspect HistoryUpdating <o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:40.5pt;text-indent:-.25in;mso-list:
+  l1 level1 lfo9;tab-stops:list 40.5pt'><![if !supportLists]><span
+  style='font-size:10.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+  mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+  style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span></span></span><![endif]><span style='font-size:10.0pt;font-family:
+  Tahoma'>write pointcut (has name and parameters)<o:p></o:p></span></p>
+  </td>
+  <td width=447 colspan=2 style='width:335.35pt;background:#F7F7F7;padding:
+  1.5pt 1.5pt 1.5pt 1.5pt;height:33.45pt'>
+  <p class=MsoNormal style='margin-left:7.5pt'><span style='font-family:Courier;
+  mso-bidi-font-family:Tahoma'>pointcut moves(): <o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:7.5pt'><span style='font-family:Courier;
+  mso-bidi-font-family:Tahoma'><span style='mso-tab-count:1'>    </span>call(void
+  Line.setP1(Point)) || <o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:7.5pt'><span style='font-family:Courier;
+  mso-bidi-font-family:Tahoma'><span style='mso-tab-count:1'>    </span>call(void
+  Line.setP2(Point));<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:5;height:33.45pt'>
+  <td width=253 style='width:189.7pt;background:#F7F7F7;padding:1.5pt 1.5pt 1.5pt 1.5pt;
+  height:33.45pt'>
+  <p class=MsoNormal style='margin-left:40.5pt;text-indent:-.25in;mso-list:
+  l6 level1 lfo10;tab-stops:list 40.5pt'><![if !supportLists]><span
+  style='font-size:10.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+  mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+  style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span></span></span><![endif]><span style='font-size:10.0pt;font-family:
+  Tahoma'>write after advice (runs “on the way back out”)<o:p></o:p></span></p>
+  </td>
+  <td width=447 colspan=2 style='width:335.35pt;background:#F7F7F7;padding:
+  1.5pt 1.5pt 1.5pt 1.5pt;height:33.45pt'>
+  <p class=MsoNormal style='margin-left:7.5pt'><span style='font-family:Courier;
+  mso-bidi-font-family:Tahoma'>after() returning: move() { <br>
+  <span style='mso-spacerun:yes'>   </span>&lt;runs after each move&gt; }<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:6;height:33.45pt'>
+  <td width=253 style='width:189.7pt;background:#F7F7F7;padding:1.5pt 1.5pt 1.5pt 1.5pt;
+  height:33.45pt'>
+  <p class=MsoNormal style='margin-left:40.5pt;text-indent:-.25in;mso-list:
+  l6 level1 lfo10;tab-stops:list 40.5pt'><![if !supportLists]><span
+  style='font-size:10.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+  mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+  style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span></span></span><![endif]><span style='font-size:10.0pt;font-family:
+  Tahoma'>extend advice to Point setters (multi-class)<o:p></o:p></span></p>
+  </td>
+  <td width=447 colspan=2 style='width:335.35pt;background:#F7F7F7;padding:
+  1.5pt 1.5pt 1.5pt 1.5pt;height:33.45pt'>
+  <p class=MsoNormal style='margin-left:7.5pt'><span style='font-family:Courier;
+  mso-bidi-font-family:Tahoma'>call(void FigureElement+.set*(..))<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:7;height:33.45pt'>
+  <td width=253 style='width:189.7pt;background:#F7F7F7;padding:1.5pt 1.5pt 1.5pt 1.5pt;
+  height:33.45pt'>
+  <p class=MsoNormal style='margin-left:40.5pt;text-indent:-.25in;mso-list:
+  l6 level1 lfo10;tab-stops:list 40.5pt'><![if !supportLists]><span
+  style='font-size:10.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+  mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+  style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span></span></span><![endif]><span style='font-size:10.0pt;font-family:
+  Tahoma'>capture context &amp; use interface<o:p></o:p></span></p>
+  </td>
+  <td width=447 colspan=2 style='width:335.35pt;background:#F7F7F7;padding:
+  1.5pt 1.5pt 1.5pt 1.5pt;height:33.45pt'>
+  <p class=MsoNormal style='margin-left:7.5pt'><span style='font-family:Courier;
+  mso-bidi-font-family:Tahoma'>move(FigureElement fe): target(fe) &amp;&amp;..<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:8;height:33.45pt'>
+  <td width=253 style='width:189.7pt;background:#F7F7F7;padding:1.5pt 1.5pt 1.5pt 1.5pt;
+  height:33.45pt'>
+  <p class=MsoNormal style='margin-left:40.5pt;text-indent:-.25in;mso-list:
+  l6 level1 lfo10;tab-stops:list 40.5pt'><![if !supportLists]><span
+  style='font-size:10.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+  mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+  style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span></span></span><![endif]><span style='font-size:10.0pt;font-family:
+  Tahoma'>Show structure, note that SlothfulPoint is now included<o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:40.5pt;text-indent:-.25in;mso-list:
+  l6 level1 lfo10;tab-stops:list 40.5pt'><![if !supportLists]><span
+  style='font-size:10.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+  mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+  style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span></span></span><![endif]><span style='font-size:10.0pt;font-family:
+  Tahoma'>Run &amp; show effect<o:p></o:p></span></p>
+  </td>
+  <td width=447 colspan=2 style='width:335.35pt;background:#F7F7F7;padding:
+  1.5pt 1.5pt 1.5pt 1.5pt;height:33.45pt'>
+  <p class=MsoNormal style='margin-left:7.5pt'><span style='font-family:Courier;
+  mso-bidi-font-family:Tahoma'><o:p>&nbsp;</o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:9;height:33.45pt'>
+  <td width=253 style='width:189.7pt;background:#F7F7F7;padding:1.5pt 1.5pt 1.5pt 1.5pt;
+  height:33.45pt'>
+  <p class=MsoNormal style='margin-left:40.5pt;text-indent:-.25in;mso-list:
+  l6 level1 lfo10;tab-stops:list 40.5pt'><![if !supportLists]><span
+  style='font-size:10.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+  mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+  style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span></span></span><![endif]><span style='font-size:10.0pt;font-family:
+  Tahoma'>Show Point.moveBy history violoation<o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:40.5pt;text-indent:-.25in;mso-list:
+  l6 level1 lfo10;tab-stops:list 40.5pt'><![if !supportLists]><span
+  style='font-size:10.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+  mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+  style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span></span></span><![endif]><span style='font-size:10.0pt;font-family:
+  Tahoma'>Want to make sure that sets of private fields of classes implementing
+  FigureElement only happen from within the set methods<b style='mso-bidi-font-weight:
+  normal'><o:p></o:p></b></span></p>
+  </td>
+  <td width=447 colspan=2 style='width:335.35pt;background:#F7F7F7;padding:
+  1.5pt 1.5pt 1.5pt 1.5pt;height:33.45pt'>
+  <p class=MsoNormal style='margin-left:7.5pt'><span style='font-family:Courier;
+  mso-bidi-font-family:Tahoma'>declare warning: <o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:7.5pt'><span style='font-family:Courier;
+  mso-bidi-font-family:Tahoma'><span style='mso-spacerun:yes'>   
+  </span>set(private * FigureElement+.*) <o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:7.5pt'><span style='font-family:Courier;
+  mso-bidi-font-family:Tahoma'><span style='mso-spacerun:yes'>   
+  </span>&amp;&amp; !(withincode(* FigureElement+.set*(..)) || <span
+  style='mso-tab-count:1'>     </span><span style='mso-spacerun:yes'>  </span><span
+  style='mso-tab-count:2'>        </span><span
+  style='mso-spacerun:yes'>  </span>withincode(FigureElement+.new(..))):<o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:7.5pt'><span style='font-family:Courier;
+  mso-bidi-font-family:Tahoma'><span style='mso-spacerun:yes'>   
+  </span>&quot;should only assign to fields from set methods&quot;;<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:10;height:33.45pt'>
+  <td width=253 style='width:189.7pt;background:#F7F7F7;padding:1.5pt 1.5pt 1.5pt 1.5pt;
+  height:33.45pt'>
+  <p class=MsoNormal style='margin-left:40.5pt;text-indent:-.25in;mso-list:
+  l3 level1 lfo13;tab-stops:list 40.5pt'><![if !supportLists]><span
+  style='font-size:10.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+  mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+  style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span></span></span><![endif]><span style='font-size:10.0pt;font-family:
+  Tahoma'>Write before advice that does precondition checking on Points.<o:p></o:p></span></p>
+  </td>
+  <td width=447 colspan=2 style='width:335.35pt;background:#F7F7F7;padding:
+  1.5pt 1.5pt 1.5pt 1.5pt;height:33.45pt'>
+  <p class=MsoNormal style='margin-left:7.5pt'><span style='font-family:"Courier New"'>before(int
+  newValue): <br>
+  <span style='mso-spacerun:yes'>    </span>set(int Point.*) &amp;&amp;
+  args(newValue) {<br>
+  &nbsp;&nbsp;&nbsp; if (newValue &lt; 0) {<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; throw new IAE(&quot;too
+  small&quot;);<br>
+  &nbsp;&nbsp;&nbsp; } <br>
+  }</span><span style='font-size:10.0pt;font-family:Tahoma'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:11;height:15.85pt'>
+  <td width=703 colspan=3 style='width:527.25pt;background:#C8CEDC;padding:
+  1.5pt 1.5pt 1.5pt 1.5pt;height:15.85pt'>
+  <p class=MsoNormal align=center style='mso-margin-top-alt:auto;margin-right:
+  7.5pt;mso-margin-bottom-alt:auto;margin-left:4.5pt;text-align:center;
+  line-height:130%'><b><span style='font-size:8.5pt;line-height:130%;
+  font-family:Verdana;color:#383E4C'>demo: pluggable aspects</span></b><span
+  style='font-size:8.5pt;line-height:130%;font-family:Verdana'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:12;height:33.45pt'>
+  <td width=350 colspan=2 style='width:262.5pt;background:#F7F7F7;padding:1.5pt 1.5pt 1.5pt 1.5pt;
+  height:33.45pt'>
+  <p class=MsoNormal style='margin-left:40.5pt;text-indent:-.25in;mso-list:
+  l10 level1 lfo12;tab-stops:list 40.5pt'><![if !supportLists]><span
+  style='font-size:10.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+  mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+  style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span></span></span><![endif]><span style='font-size:10.0pt;font-family:
+  Tahoma'>World’s first fully interactive video game, now 41 years old..<o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:40.5pt;text-indent:-.25in;mso-list:
+  l10 level1 lfo12;tab-stops:list 40.5pt'><![if !supportLists]><span
+  style='font-size:10.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+  mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+  style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span></span></span><![endif]><span style='font-size:10.0pt;font-family:
+  Tahoma'>Explain spacewar <o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:40.5pt;text-indent:-.25in;mso-list:
+  l10 level1 lfo12;tab-stops:list 40.5pt'><![if !supportLists]><span
+  style='font-size:10.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+  mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+  style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span></span></span><![endif]><span style='font-size:10.0pt;font-family:
+  Tahoma'>Launch with Ship.java and &quot;Release.lst&quot; selected and compiled.<span
+  style='mso-spacerun:yes'>  </span><o:p></o:p></span></p>
+  </td>
+  <td width=350 style='width:262.55pt;background:#F7F7F7;padding:1.5pt 1.5pt 1.5pt 1.5pt;
+  height:33.45pt'>
+  <ul style='margin-top:0in' type=disc>
+   <li class=MsoNormal style='mso-list:l7 level1 lfo11;tab-stops:list .5in'><span
+       style='font-size:10.0pt;font-family:Tahoma'>Run <o:p></o:p></span></li>
+   <li class=MsoNormal style='mso-list:l7 level1 lfo11;tab-stops:list .5in'><span
+       style='font-size:10.0pt;font-family:Tahoma'>Show debug configuration in
+       config designer<o:p></o:p></span></li>
+   <li class=MsoNormal style='mso-list:l7 level1 lfo11;tab-stops:list .5in'><span
+       style='font-size:10.0pt;font-family:Tahoma'>Select
+       &quot;Debug.lst&quot;, compile, and run again <o:p></o:p></span></li>
+   <li class=MsoNormal style='mso-list:l7 level1 lfo11;tab-stops:list .5in'><span
+       style='font-size:10.0pt;font-family:Tahoma'>Show debug window, menu, and
+       method tracing<o:p></o:p></span></li>
+  </ul>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:13;height:13.15pt'>
+  <td width=703 colspan=3 style='width:527.25pt;background:#C8CEDC;padding:
+  1.5pt 1.5pt 1.5pt 1.5pt;height:13.15pt'>
+  <p class=MsoNormal align=center style='mso-margin-top-alt:auto;margin-right:
+  7.5pt;mso-margin-bottom-alt:auto;margin-left:4.5pt;text-align:center;
+  line-height:130%'><b><span style='font-size:8.5pt;line-height:130%;
+  font-family:Verdana;color:#383E4C'>demo: crosscutting structure</span></b><span
+  style='font-size:8.5pt;line-height:130%;font-family:Verdana'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:14;mso-yfti-lastrow:yes;height:33.45pt'>
+  <td width=350 colspan=2 style='width:262.5pt;background:#F7F7F7;padding:1.5pt 1.5pt 1.5pt 1.5pt;
+  height:33.45pt'>
+  <p class=MsoNormal style='margin-left:4.5pt'><span style='font-size:10.0pt;
+  font-family:Tahoma'>•<span style='mso-tab-count:1'>         </span>Explain
+  annotations over program structure<o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:4.5pt'><span style='font-size:10.0pt;
+  font-family:Tahoma'>•<span style='mso-tab-count:1'>         </span>Explain
+  links and associations, inheritance links<o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:4.5pt'><span style='font-size:10.0pt;
+  font-family:Tahoma'>•<span style='mso-tab-count:1'>         </span>Explain
+  model genericity, different views<o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:4.5pt'><span style='font-size:10.0pt;
+  font-family:Tahoma'>•<span style='mso-tab-count:1'>         </span>Show
+  inline annotations<o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:4.5pt'><span style='font-size:10.0pt;
+  font-family:Tahoma'>•<span style='mso-tab-count:1'>         </span>Show
+  history navigation<o:p></o:p></span></p>
+  </td>
+  <td width=350 style='width:262.55pt;background:#F7F7F7;padding:1.5pt 1.5pt 1.5pt 1.5pt;
+  height:33.45pt'>
+  <p class=MsoNormal style='margin-left:4.5pt'><span style='font-size:10.0pt;
+  font-family:Tahoma'>•<span style='mso-tab-count:1'>         </span>Show
+  global views (multiple views of your code)<o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:4.5pt'><span style='font-size:10.0pt;
+  font-family:Tahoma'>•<span style='mso-tab-count:1'>         </span>Show
+  refactoring by changing helmCommandsCut<o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:4.5pt'><span style='font-size:10.0pt;
+  font-family:Tahoma'>•<span style='mso-tab-count:1'>         </span>Show view
+  synchronization, task-oriented views<o:p></o:p></span></p>
+  <p class=MsoNormal style='margin-left:4.5pt'><span style='font-size:10.0pt;
+  font-family:Tahoma'>•<span style='mso-tab-count:1'>         </span>Discuss
+  how it is harder in AJ (implicit invocation)<o:p></o:p></span></p>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Tahoma'><span
+  style='mso-spacerun:yes'>  </span>•<span style='mso-tab-count:1'>         </span>Show
+  fluid documents (ISTL project)<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <![if !supportMisalignedColumns]>
+ <tr height=0>
+  <td width=257 style='border:none'></td>
+  <td width=97 style='border:none'></td>
+  <td width=354 style='border:none'></td>
+ </tr>
+ <![endif]>
+</table>
+
+</div>
+
+<p class=MsoNormal style='margin-right:-45.0pt'><o:p>&nbsp;</o:p></p>
+
+</div>
+
+</body>
+
+</html>
