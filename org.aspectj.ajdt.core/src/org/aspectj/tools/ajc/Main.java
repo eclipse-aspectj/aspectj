@@ -39,11 +39,37 @@ import java.util.List;
  * Not thread-safe.
  */
 public class Main {
+	/** Header used when rendering exceptions for users */
+    public static final String THROWN_PREFIX // XXX change as needed before each release
+    	= "Exception thrown from AspectJ "+ Version.text + LangUtil.EOL
+    + ""+ LangUtil.EOL
+    + "This might be logged as a bug already -- see the bug database at" + LangUtil.EOL
+	+ "  http://dev.eclipse.org (product: AspectJ, component: compiler)"  + LangUtil.EOL
+    + ""  + LangUtil.EOL
+    + "Bugs for exceptions thrown have titles File:line from the top stack, "  + LangUtil.EOL
+    + "e.g., \"SomeFile.java:243\"" + LangUtil.EOL
+    + ""  + LangUtil.EOL
+    + "If you don't find the exception below in a bug, please add a new bug" + LangUtil.EOL
+    + "To make the bug a priority, please include a test program" + LangUtil.EOL
+    + "that can reproduce this exception."  + LangUtil.EOL;
     
     /** @param args the String[] of command-line arguments */
     public static void main(String[] args) throws IOException {
         new Main().runMain(args, true);
     }
+    
+    /** 
+     * @return String rendering throwable as compiler error for user/console,
+     *          including information on how to report as a bug.
+     * @throws NullPointerException if thrown is null
+     */
+    public static String renderExceptionForUser(Throwable thrown) {
+        String m = thrown.getMessage();
+        return THROWN_PREFIX 
+            + (null != m ? m + "\n": "") 
+            + LangUtil.renderException(thrown, true);
+    }
+        		
 
     
     /** append nothing if numItems is 0,
@@ -319,19 +345,6 @@ public class Main {
     
     /** interceptor IMessageHandler to print as we go */
     public static class MessagePrinter implements IMessageHandler {
-        // XXX change as needed before each release
-        public static final String THROWN_PREFIX =
-            "Exception thrown from AspectJ "+ Version.text + LangUtil.EOL
-        + ""+ LangUtil.EOL
-        + "This might be logged as a bug already -- see the bug database at" + LangUtil.EOL
- 		+ "  http://dev.eclipse.org (product: AspectJ, component: compiler)"  + LangUtil.EOL
-        + ""  + LangUtil.EOL
-        + "Bugs for exceptions thrown have titles File:line from the top stack, "  + LangUtil.EOL
-        + "e.g., \"SomeFile.java:243\"" + LangUtil.EOL
-        + ""  + LangUtil.EOL
-        + "If you don't find the exception below in a bug, please add a new bug" + LangUtil.EOL
-        + "To make the bug a priority, please include a test program" + LangUtil.EOL
-        + "that can reproduce this exception."  + LangUtil.EOL;
    
         public static final IMessageHandler VERBOSE 
             = new MessagePrinter(true);
@@ -366,7 +379,7 @@ public class Main {
                 if (null == t) {
                     return "abort (no message)";
                 } else {
-                    return render(t);
+                    return Main.renderExceptionForUser(t);
                 }
             }
             String m = message.getMessage();
@@ -376,13 +389,6 @@ public class Main {
             return m;
         }
 
-        protected String render(Throwable t) {
-            String m = t.getMessage();
-            return THROWN_PREFIX 
-                + (null != m ? m + "\n": "") 
-                + LangUtil.renderException(t, true);
-        }
-        		
         public boolean isIgnoring(IMessage.Kind kind) {
 			return (null != getStreamFor(kind));
 		}
