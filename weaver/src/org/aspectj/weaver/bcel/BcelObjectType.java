@@ -216,7 +216,22 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
     	isObject = (javaClass.getSuperclassNameIndex() == 0);
         unpackAspectAttributes();
     }
-
+    
+    public void finishedWith() {
+    	// memory usage experiments....
+//		this.interfaces = null;
+//    	this.superClass = null;
+//    	this.fields = null;
+//    	this.methods = null;
+//    	this.pointcuts = null;
+//    	this.perClause = null;
+//    	this.weaverState = null;
+//    	this.lazyClassGen = null;
+    	// this next line frees up memory, but need to understand incremental implications
+    	// before leaving it in.
+//    	getResolvedTypeX().setSourceContext(null);
+    }
+    
 	public WeaverStateInfo getWeaverState() {
 		return weaverState;
 	}

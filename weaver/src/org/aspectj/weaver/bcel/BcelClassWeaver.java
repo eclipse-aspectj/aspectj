@@ -285,7 +285,7 @@ class BcelClassWeaver implements IClassWeaver {
     // ----
     
     public boolean weave() {
-		
+
         if (clazz.isWoven() && !clazz.isReweavable()) {
         	world.showMessage(IMessage.ERROR, 
 				"class \'" + clazz.getType().getName() + "\' is already woven and has not been built with -Xreweavable",
@@ -301,8 +301,7 @@ class BcelClassWeaver implements IClassWeaver {
         
         // we want to "touch" all aspects
         if (clazz.getType().isAspect()) isChanged = true;
-        
-        
+                
         // start by munging all typeMungers
         for (Iterator i = typeMungers.iterator(); i.hasNext(); ) {
         	Object o = i.next();
@@ -327,12 +326,11 @@ class BcelClassWeaver implements IClassWeaver {
         if (addedSuperInitializersAsList == null) {
         	throw new BCException("circularity in inter-types");
         }
-        
+      
         // this will create a static initializer if there isn't one
         // this is in just as bad taste as NOPs
         LazyMethodGen staticInit = clazz.getStaticInitializer();
         staticInit.getBody().insert(genInitInstructions(addedClassInitializers, true));
-        
         
         // now go through each method, and match against each method.  This
         // sets up each method's {@link LazyMethodGen#matchedShadows} field, 
@@ -350,6 +348,7 @@ class BcelClassWeaver implements IClassWeaver {
 			}
         }
         if (! isChanged) return false;
+        
         
         // now we weave all but the initialization shadows
 		for (Iterator i = methodGens.iterator(); i.hasNext();) {
@@ -785,72 +784,7 @@ class BcelClassWeaver implements IClassWeaver {
 		List shadowAccumulator = new ArrayList();
 		// we want to match ajsynthetic constructors...
 		if (mg.getName().equals("<init>")) {
-			// XXX the enclosing join point is wrong for things before ignoreMe.
-			InstructionHandle superOrThisCall = findSuperOrThisCall(mg);
-
-			// we don't walk bodies of things where it's a wrong constructor thingie
-			if (superOrThisCall == null) return false;
-
-			enclosingShadow = BcelShadow.makeConstructorExecution(world, mg, superOrThisCall);
-			
-			// walk the body
-			boolean beforeSuperOrThisCall = true;
-			if (shouldWeaveBody(mg)) {
-				if (canMatchBodyShadows) {
-					for (InstructionHandle h = mg.getBody().getStart();
-						h != null;
-						h = h.getNext()) {
-						if (h == superOrThisCall) {
-							beforeSuperOrThisCall = false;
-							continue;
-						}
-						match(mg, h, beforeSuperOrThisCall ? null : enclosingShadow, shadowAccumulator);
-					}
-				}
-				match(enclosingShadow, shadowAccumulator);
-			}
-			
-			// XXX we don't do pre-inits of interfaces
-			
-			// now add interface inits
-			if (superOrThisCall != null && ! isThisCall(superOrThisCall)) {
-				InstructionHandle curr = enclosingShadow.getRange().getStart();
-				for (Iterator i = addedSuperInitializersAsList.iterator(); i.hasNext(); ) {
-					IfaceInitList l = (IfaceInitList) i.next();
-
-					Member ifaceInitSig = AjcMemberMaker.interfaceConstructor(l.onType);
-					
-					BcelShadow initShadow =
-						BcelShadow.makeIfaceInitialization(world, mg, ifaceInitSig);
-					
-					// insert code in place
-					InstructionList inits = genInitInstructions(l.list, false);
-					if (match(initShadow, shadowAccumulator) || !inits.isEmpty()) {
-						initShadow.initIfaceInitializer(curr);
-						initShadow.getRange().insert(inits, Range.OutsideBefore);
-					}
-				}
-				
-				// now we add our initialization code
-				InstructionList inits = genInitInstructions(addedThisInitializers, false);
-				enclosingShadow.getRange().insert(inits, Range.OutsideBefore);				
-			}
-
-			// actually, you only need to inline the self constructors that are 
-			// in a particular group (partition the constructors into groups where members
-			// call or are called only by those in the group).  Then only inline 
-			// constructors
-			// in groups where at least one initialization jp matched.  Future work.
-			boolean addedInitialization = 
-				match(
-					BcelShadow.makeUnfinishedInitialization(world, mg), 
-					initializationShadows);
-			addedInitialization |=
-				match(
-					BcelShadow.makeUnfinishedPreinitialization(world, mg),
-					initializationShadows);
-			mg.matchedShadows = shadowAccumulator;
-			return addedInitialization || !shadowAccumulator.isEmpty();
+			return matchInit(mg, shadowAccumulator);
 		} else if (!shouldWeaveBody(mg)) { //.isAjSynthetic()) {
 			return false;			
 		} else {
@@ -888,6 +822,76 @@ class BcelClassWeaver implements IClassWeaver {
 			mg.matchedShadows = shadowAccumulator;
 			return !shadowAccumulator.isEmpty();
 		}
+	}
+
+	private boolean matchInit(LazyMethodGen mg, List shadowAccumulator) {
+		BcelShadow enclosingShadow;
+		// XXX the enclosing join point is wrong for things before ignoreMe.
+		InstructionHandle superOrThisCall = findSuperOrThisCall(mg);
+
+		// we don't walk bodies of things where it's a wrong constructor thingie
+		if (superOrThisCall == null) return false;
+
+		enclosingShadow = BcelShadow.makeConstructorExecution(world, mg, superOrThisCall);
+		
+		// walk the body
+		boolean beforeSuperOrThisCall = true;
+		if (shouldWeaveBody(mg)) {
+			if (canMatchBodyShadows) {
+				for (InstructionHandle h = mg.getBody().getStart();
+					h != null;
+					h = h.getNext()) {
+					if (h == superOrThisCall) {
+						beforeSuperOrThisCall = false;
+						continue;
+					}
+					match(mg, h, beforeSuperOrThisCall ? null : enclosingShadow, shadowAccumulator);
+				}
+			}
+			match(enclosingShadow, shadowAccumulator);
+		}
+		
+		// XXX we don't do pre-inits of interfaces
+		
+		// now add interface inits
+		if (superOrThisCall != null && ! isThisCall(superOrThisCall)) {
+			InstructionHandle curr = enclosingShadow.getRange().getStart();
+			for (Iterator i = addedSuperInitializersAsList.iterator(); i.hasNext(); ) {
+				IfaceInitList l = (IfaceInitList) i.next();
+
+				Member ifaceInitSig = AjcMemberMaker.interfaceConstructor(l.onType);
+				
+				BcelShadow initShadow =
+					BcelShadow.makeIfaceInitialization(world, mg, ifaceInitSig);
+				
+				// insert code in place
+				InstructionList inits = genInitInstructions(l.list, false);
+				if (match(initShadow, shadowAccumulator) || !inits.isEmpty()) {
+					initShadow.initIfaceInitializer(curr);
+					initShadow.getRange().insert(inits, Range.OutsideBefore);
+				}
+			}
+			
+			// now we add our initialization code
+			InstructionList inits = genInitInstructions(addedThisInitializers, false);
+			enclosingShadow.getRange().insert(inits, Range.OutsideBefore);				
+		}
+
+		// actually, you only need to inline the self constructors that are 
+		// in a particular group (partition the constructors into groups where members
+		// call or are called only by those in the group).  Then only inline 
+		// constructors
+		// in groups where at least one initialization jp matched.  Future work.
+		boolean addedInitialization = 
+			match(
+				BcelShadow.makeUnfinishedInitialization(world, mg), 
+				initializationShadows);
+		addedInitialization |=
+			match(
+				BcelShadow.makeUnfinishedPreinitialization(world, mg),
+				initializationShadows);
+		mg.matchedShadows = shadowAccumulator;
+		return addedInitialization || !shadowAccumulator.isEmpty();
 	}
 
 	private boolean shouldWeaveBody(LazyMethodGen mg) {	

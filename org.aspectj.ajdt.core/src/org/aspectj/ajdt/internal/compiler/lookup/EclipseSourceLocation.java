@@ -39,6 +39,18 @@ public class EclipseSourceLocation implements ISourceLocation {
 		this.startPos = startPos;
 		this.endPos = endPos;
 	}
+	
+	public CompilationResult getCompilationResult() {
+		return result;
+	}
+	
+	public int getStartPos() {
+		return startPos;
+	}
+	
+	public int getEndPos() {
+		return endPos;
+	}
 
 	public File getSourceFile() {
 		if (null == file) {

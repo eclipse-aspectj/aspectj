@@ -577,7 +577,7 @@ public abstract class ResolvedTypeX extends TypeX {
 		}
 
 		public boolean isExposedToWeaver() {
-			return delegate.isExposedToWeaver();  //??? where does this belong
+			return (delegate == null) || delegate.isExposedToWeaver();  //??? where does this belong
 		}
 		
 		public WeaverStateInfo getWeaverState() {
@@ -652,7 +652,7 @@ public abstract class ResolvedTypeX extends TypeX {
     public static abstract class ConcreteName {
     	//protected ISourceContext sourceContext;
     	protected boolean exposedToWeaver;
-    	ResolvedTypeX.Name resolvedTypeX;
+    	protected ResolvedTypeX.Name resolvedTypeX;
 	
 
         public ConcreteName(ResolvedTypeX.Name resolvedTypeX, boolean exposedToWeaver) {

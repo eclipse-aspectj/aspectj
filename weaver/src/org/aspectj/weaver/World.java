@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.bridge.IMessageHandler;
@@ -32,7 +33,7 @@ public abstract class World {
 	protected IMessageHandler messageHandler = IMessageHandler.SYSTEM_ERR;
 	protected ICrossReferenceHandler xrefHandler = null;
 
-    protected Map typeMap = new HashMap(); // Signature to ResolvedType
+    protected TypeMap typeMap = new TypeMap(); // Signature to ResolvedType
     
     protected CrosscuttingMembersSet crosscuttingMembersSet = new CrosscuttingMembersSet(this);
     
@@ -72,7 +73,7 @@ public abstract class World {
     public ResolvedTypeX resolve(TypeX ty, boolean allowMissing) {
     	//System.out.println("resolve: " + ty + " world " + typeMap.keySet());
         String signature = ty.getSignature();
-        ResolvedTypeX ret = (ResolvedTypeX)typeMap.get(signature);
+        ResolvedTypeX ret = typeMap.get(signature);
         if (ret != null) return ret;
         
         if (ty.isArray()) {
@@ -387,5 +388,75 @@ public abstract class World {
         
 		return ret;
 	}
-
+	
+//	public void clearUnexposed() {
+//		List toRemove = new ArrayList();
+//		for (Iterator iter = typeMap.keySet().iterator(); iter.hasNext();) {
+//			String sig = (String) iter.next();
+//			ResolvedTypeX x = (ResolvedTypeX) typeMap.get(sig);
+//			if (!x.isExposedToWeaver() && (!x.isPrimitive())) toRemove.add(sig);
+//		}		
+//		for (Iterator iter = toRemove.iterator(); iter.hasNext();) {
+//			typeMap.remove(iter.next());		
+//		}
+//	}
+//	
+//	// for testing...
+//	public void dumpTypeMap() {
+//		int exposed = 0;
+//		for (Iterator iter = typeMap.keySet().iterator(); iter.hasNext();) {
+//			String sig = (String) iter.next();
+//			ResolvedTypeX x = (ResolvedTypeX) typeMap.get(sig);
+//			if (x.isExposedToWeaver()) exposed++;
+//		}
+//		System.out.println("type map contains " + typeMap.size() + " entries, " + exposed + " exposed to weaver");
+//	}
+//	
+//	public void deepDumpTypeMap() {
+//		for (Iterator iter = typeMap.keySet().iterator(); iter.hasNext();) {
+//			String sig = (String) iter.next();
+//			ResolvedTypeX x = (ResolvedTypeX) typeMap.get(sig);
+//			if (! (x instanceof ResolvedTypeX.Name)) {
+//				System.out.println(sig + " -> " + x.getClass().getName() + ", " + x.getClassName());
+//			} else {
+//				ResolvedTypeX.ConcreteName cname = ((ResolvedTypeX.Name)x).getDelegate();
+//				System.out.println(sig + " -> " + cname.getClass().getName() + ", " + cname.toString());
+//			}
+//		}
+//		
+//	}
+	
+	// Map of types in the world, with soft links to expendable ones
+	protected static class TypeMap {
+		private Map tMap = new HashMap();
+		private Map expendableMap = new WeakHashMap();
+					
+		public ResolvedTypeX put(String key, ResolvedTypeX type) {
+			if (isExpendable(type))  {
+				return (ResolvedTypeX) expendableMap.put(key,type);
+			} else {
+				return (ResolvedTypeX) tMap.put(key,type);
+			}
+		}
+		
+		public ResolvedTypeX get(String key) {
+			ResolvedTypeX ret = (ResolvedTypeX) tMap.get(key);
+			if (ret == null) ret = (ResolvedTypeX) expendableMap.get(key);
+			return ret;
+		}
+		
+		public ResolvedTypeX remove(String key) {
+			ResolvedTypeX ret = (ResolvedTypeX) tMap.remove(key);
+			if (ret == null) ret = (ResolvedTypeX) expendableMap.remove(key);
+			return ret;
+		}
+		
+		private boolean isExpendable(ResolvedTypeX type) {
+			return (
+					  (type != null) &&
+					  (!type.isExposedToWeaver()) &&
+					  (!type.isPrimitive())
+					);
+		}
+	}	
 }

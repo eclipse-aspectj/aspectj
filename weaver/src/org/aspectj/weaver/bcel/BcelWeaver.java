@@ -13,7 +13,7 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.io.BufferedOutputStream;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -41,6 +41,8 @@ import org.aspectj.bridge.IProgressListener;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.CrosscuttingMembersSet;
+import org.aspectj.weaver.IClassFileProvider;
+import org.aspectj.weaver.IWeaveRequestor;
 import org.aspectj.weaver.IWeaver;
 import org.aspectj.weaver.NewParentTypeMunger;
 import org.aspectj.weaver.ResolvedTypeMunger;
@@ -59,7 +61,6 @@ public class BcelWeaver implements IWeaver {
     private double progressPerClassFile;
     
     private boolean inReweavableMode = false;
-    private boolean compressReweavableAttributes = false;
     
     public BcelWeaver(BcelWorld world) {
         super();
@@ -72,7 +73,7 @@ public class BcelWeaver implements IWeaver {
     }
 
 	// ---- fields	
-    private Map  sourceJavaClasses = new HashMap();   /* String -> UnwovenClassFile */
+//    private Map  sourceJavaClasses = new HashMap();   /* String -> UnwovenClassFile */
     private List addedClasses      = new ArrayList(); /* List<UnovenClassFile> */
     private List deletedTypenames  = new ArrayList(); /* List<String> */
     private Map  resources         = new HashMap(); /* String -> UnwovenClassFile */ 
@@ -139,13 +140,15 @@ public class BcelWeaver implements IWeaver {
 
 	// The ANT copy task should be used to copy resources across.
 	private final static boolean CopyResourcesFromInpathDirectoriesToOutput=false;
+	private Set alreadyConfirmedReweavableState;
 	
 	/**
 	 * Add any .class files in the directory to the outdir.  Anything other than .class files in
 	 * the directory (or its subdirectories) are considered resources and are also copied. 
 	 *  
 	 */
-	public void addDirectoryContents(File inFile,File outDir) throws IOException {
+	public List addDirectoryContents(File inFile,File outDir) throws IOException {
+		List addedClassFiles = new ArrayList();
 		
 		// Get a list of all files (i.e. everything that isnt a directory)
 		File[] files = FileUtil.listFiles(inFile,new FileFilter() {
@@ -170,6 +173,7 @@ public class BcelWeaver implements IWeaver {
 			if (filename.endsWith(".class")) {
 				// System.err.println("BCELWeaver: processing class from input directory "+classFile);
 				this.addClassFile(classFile);
+				addedClassFiles.add(classFile);
 			} else {
 			  if (CopyResourcesFromInpathDirectoriesToOutput) {
 				// System.err.println("BCELWeaver: processing resource from input directory "+filename);
@@ -179,18 +183,20 @@ public class BcelWeaver implements IWeaver {
 			fis.close();
 		}
 		
+		return addedClassFiles;
 	}
 
 
 	/** Adds all class files in the jar
 	 */
-	public void addJarFile(File inFile, File outDir, boolean canBeDirectory) throws IOException {
+	public List addJarFile(File inFile, File outDir, boolean canBeDirectory) throws IOException {
 //		System.err.println("? addJarFile(" + inFile + ", " + outDir + ")");
+		List addedClassFiles = new ArrayList();
 		needToReweaveWorld = true;
 		
 		// Is this a directory we are looking at?
 		if (inFile.isDirectory() && canBeDirectory) {
-			addDirectoryContents(inFile,outDir);
+			addedClassFiles.addAll(addDirectoryContents(inFile,outDir));
 		} else {
 		
 			ZipInputStream inStream = new ZipInputStream(new FileInputStream(inFile)); //??? buffered
@@ -205,6 +211,7 @@ public class BcelWeaver implements IWeaver {
 
 				if (filename.endsWith(".class")) {
 					this.addClassFile(classFile);
+					addedClassFiles.add(classFile);
 				}
 				else if (!entry.isDirectory()) {
 
@@ -216,6 +223,8 @@ public class BcelWeaver implements IWeaver {
 			}
 			inStream.close();
 		}
+		
+		return addedClassFiles;
 	}
 
 	public void addResource(String name, File inPath, File outDir) throws IOException {
@@ -232,21 +241,25 @@ public class BcelWeaver implements IWeaver {
 			addResource(name,resourceFile);
 		}
 	}
-    
+
+	public boolean needToReweaveWorld() {
+		return needToReweaveWorld;
+	}
+	
     /** Should be addOrReplace
      */
     public void addClassFile(UnwovenClassFile classFile) {
     	addedClasses.add(classFile);
-    	if (null != sourceJavaClasses.put(classFile.getClassName(), classFile)) {
-//    		throw new RuntimeException(classFile.getClassName());
-    	}
+//    	if (null != sourceJavaClasses.put(classFile.getClassName(), classFile)) {
+////    		throw new RuntimeException(classFile.getClassName());
+//    	}
     	world.addSourceObjectType(classFile.getJavaClass());
     }
 
 
     public void deleteClassFile(String typename) {
     	deletedTypenames.add(typename);
-    	sourceJavaClasses.remove(typename);
+//    	sourceJavaClasses.remove(typename);
     	world.deleteSourceObjectType(TypeX.forName(typename));
     }
 
@@ -297,23 +310,23 @@ public class BcelWeaver implements IWeaver {
 			});
     }
     
-    public void dumpUnwoven(File file) throws IOException {
-    	BufferedOutputStream os = FileUtil.makeOutputStream(file);
-    	this.zipOutputStream = new ZipOutputStream(os);
-    	dumpUnwoven();
-		/* BUG 40943*/
-		dumpResourcesToOutJar();
-    	zipOutputStream.close();  //this flushes and closes the acutal file
-    }
-    
-    
-    public void dumpUnwoven() throws IOException {
-    	Collection filesToDump = new HashSet(sourceJavaClasses.values());
-    	for (Iterator i = filesToDump.iterator(); i.hasNext(); ) {
-            UnwovenClassFile classFile = (UnwovenClassFile)i.next();
-            dumpUnchanged(classFile);
-       	}
-    }
+//    public void dumpUnwoven(File file) throws IOException {
+//    	BufferedOutputStream os = FileUtil.makeOutputStream(file);
+//    	this.zipOutputStream = new ZipOutputStream(os);
+//    	dumpUnwoven();
+//		/* BUG 40943*/
+//		dumpResourcesToOutJar();
+//    	zipOutputStream.close();  //this flushes and closes the acutal file
+//    }
+//    
+//    
+//    public void dumpUnwoven() throws IOException {
+//    	Collection filesToDump = new HashSet(sourceJavaClasses.values());
+//    	for (Iterator i = filesToDump.iterator(); i.hasNext(); ) {
+//            UnwovenClassFile classFile = (UnwovenClassFile)i.next();
+//            dumpUnchanged(classFile);
+//       	}
+//    }
     
 	public void dumpResourcesToOutPath() throws IOException {
 //		System.err.println("? dumpResourcesToOutPath() resources=" + resources.keySet());
@@ -322,6 +335,7 @@ public class BcelWeaver implements IWeaver {
 			UnwovenClassFile res = (UnwovenClassFile)resources.get(i.next());
 			dumpUnchanged(res);
 		}
+		//resources = new HashMap();
 	}
 
 	/* BUG #40943 */
@@ -333,127 +347,248 @@ public class BcelWeaver implements IWeaver {
 			UnwovenClassFile res = (UnwovenClassFile)resources.get(name);
 			writeZipEntry(name,res.getBytes());
 		}
+		//resources = new HashMap();
+    }
+    
+    // halfway house for when the jar is managed outside of the weaver, but the resources
+    // to be copied are known in the weaver.
+    public void dumpResourcesToOutJar(ZipOutputStream zos) throws IOException {
+    	this.zipOutputStream = zos;
+    	dumpResourcesToOutJar();
     }
     
     // ---- weaving
 
+    // Used by some test cases...
     public Collection weave(File file) throws IOException {
     	OutputStream os = FileUtil.makeOutputStream(file);
     	this.zipOutputStream = new ZipOutputStream(os);
-    	Collection c = weave();
+    	prepareForWeave();
+    	Collection c = weave( new IClassFileProvider() {
+
+			public Iterator getClassFileIterator() {
+				return addedClasses.iterator();
+			}
+
+			public IWeaveRequestor getRequestor() {
+				return new IWeaveRequestor() {
+					public void acceptResult(UnwovenClassFile result) {}
+					public void processingReweavableState() {}
+					public void addingTypeMungers() {}
+					public void weavingAspects() {}
+					public void weavingClasses() {}
+					public void weaveCompleted() {}
+				};
+			}
+		});
     	/* BUG 40943*/
     	dumpResourcesToOutJar();
     	zipOutputStream.close();  //this flushes and closes the acutal file
     	return c;
     }
     
-    public Collection weave() throws IOException {
-    	prepareForWeave();
-    	Collection filesToWeave;
-    	
-    	if (needToReweaveWorld) {
-    		filesToWeave = sourceJavaClasses.values();
-    	} else {
-    		filesToWeave = addedClasses;
-    	}
-    	
+//    public Collection weave() throws IOException {
+//    	prepareForWeave();
+//    	Collection filesToWeave;
+//    	
+//    	if (needToReweaveWorld) {
+//    		filesToWeave = sourceJavaClasses.values();
+//    	} else {
+//    		filesToWeave = addedClasses;
+//    	}
+//    	
+//    	Collection wovenClassNames = new ArrayList();
+//    	world.showMessage(IMessage.INFO, "might need to weave " + filesToWeave + 
+//    					"(world=" + needToReweaveWorld + ")", null, null);
+//    	
+//    	
+//    	//System.err.println("typeMungers: " + typeMungerList);
+//    	
+//    	prepareToProcessReweavableState();
+//		// clear all state from files we'll be reweaving
+//        for (Iterator i = filesToWeave.iterator(); i.hasNext(); ) {
+//            UnwovenClassFile classFile = (UnwovenClassFile)i.next();
+//	    	String className = classFile.getClassName();
+//            BcelObjectType classType = getClassType(className);			            
+//			processReweavableStateIfPresent(className, classType);
+//        }
+//    	
+//    	
+//    	
+//    	//XXX this isn't quite the right place for this...
+//    	for (Iterator i = filesToWeave.iterator(); i.hasNext(); ) {
+//            UnwovenClassFile classFile = (UnwovenClassFile)i.next();
+//            String className = classFile.getClassName();
+//            addTypeMungers(className);
+//        }
+//    	
+//		// first weave into aspects
+//        for (Iterator i = filesToWeave.iterator(); i.hasNext(); ) {
+//            UnwovenClassFile classFile = (UnwovenClassFile)i.next();
+//	    	String className = classFile.getClassName();
+//            BcelObjectType classType = BcelWorld.getBcelObjectType(world.resolve(className));
+//            if (classType.isAspect()) {
+//	            weave(classFile, classType);
+//	            wovenClassNames.add(className);
+//            }
+//        }
+//
+//		// then weave into non-aspects
+//		for (Iterator i = filesToWeave.iterator(); i.hasNext(); ) {
+//            UnwovenClassFile classFile = (UnwovenClassFile)i.next();
+//	    	String className = classFile.getClassName();
+//            BcelObjectType classType = BcelWorld.getBcelObjectType(world.resolve(className));
+//            if (! classType.isAspect()) {
+//	            weave(classFile, classType);
+//	            wovenClassNames.add(className);
+//            }
+//        }
+//        
+//        if (zipOutputStream != null && !needToReweaveWorld) {
+//        	Collection filesToDump = new HashSet(sourceJavaClasses.values());
+//        	filesToDump.removeAll(filesToWeave);
+//        	for (Iterator i = filesToDump.iterator(); i.hasNext(); ) {
+//                UnwovenClassFile classFile = (UnwovenClassFile)i.next();
+//                dumpUnchanged(classFile);
+//        	}
+//        }
+//        
+//        addedClasses = new ArrayList();
+//    	deletedTypenames = new ArrayList();
+//		
+//        return wovenClassNames;
+//    }
+    
+    // variation of "weave" that sources class files from an external source.
+    public Collection weave(IClassFileProvider input) throws IOException {
     	Collection wovenClassNames = new ArrayList();
-    	world.showMessage(IMessage.INFO, "might need to weave " + filesToWeave + 
-    					"(world=" + needToReweaveWorld + ")", null, null);
-    	
-    	
-    	//System.err.println("typeMungers: " + typeMungerList);
-    	
+    	IWeaveRequestor requestor = input.getRequestor();
 
+    	requestor.processingReweavableState();
+		prepareToProcessReweavableState();
+		// clear all state from files we'll be reweaving
+		for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
+		    UnwovenClassFile classFile = (UnwovenClassFile)i.next();
+			String className = classFile.getClassName();
+		    BcelObjectType classType = getClassType(className);			            
+			processReweavableStateIfPresent(className, classType);
+		}
+								
+		requestor.addingTypeMungers();
+		//XXX this isn't quite the right place for this...
+		for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
+		    UnwovenClassFile classFile = (UnwovenClassFile)i.next();
+		    String className = classFile.getClassName();
+		    addTypeMungers(className);
+		}
+
+		requestor.weavingAspects();
+		// first weave into aspects
+		for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
+		    UnwovenClassFile classFile = (UnwovenClassFile)i.next();
+			String className = classFile.getClassName();
+		    BcelObjectType classType = BcelWorld.getBcelObjectType(world.resolve(className));
+		    if (classType.isAspect()) {
+		        weaveAndNotify(classFile, classType,requestor);
+		        wovenClassNames.add(className);
+		    }
+		}
+
+		requestor.weavingClasses();
+		// then weave into non-aspects
+		for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
+		    UnwovenClassFile classFile = (UnwovenClassFile)i.next();
+			String className = classFile.getClassName();
+		    BcelObjectType classType = BcelWorld.getBcelObjectType(world.resolve(className));
+		    if (! classType.isAspect()) {
+		        weaveAndNotify(classFile, classType, requestor);
+		        wovenClassNames.add(className);
+		    }
+		}
+		
+		addedClasses = new ArrayList();
+		deletedTypenames = new ArrayList();
+		requestor.weaveCompleted();
+		
+    	return wovenClassNames;
+    }
+    
+    public void prepareToProcessReweavableState() {
 		if (inReweavableMode)
 			world.showMessage(IMessage.INFO, "weaver operating in reweavable mode.  Need to verify any required types exist.", null, null);
-    	 	
-    	
-    	Set alreadyConfirmedOK = new HashSet();
-		// clear all state from files we'll be reweaving
-        for (Iterator i = filesToWeave.iterator(); i.hasNext(); ) {
-            UnwovenClassFile classFile = (UnwovenClassFile)i.next();
-	    	String className = classFile.getClassName();
-            BcelObjectType classType = BcelWorld.getBcelObjectType(world.resolve(className));
-
-			
-            // If the class is marked reweavable, check any aspects around when it was built are in this world
-			WeaverStateInfo wsi = classType.getWeaverState();		
-			if (wsi!=null && wsi.isReweavable()) { // Check all necessary types are around!
-				world.showMessage(IMessage.INFO,"processing reweavable type "+className+": "+classType.getSourceLocation().getSourceFile(),null,null);
-        		Set aspectsPreviouslyInWorld = wsi.getAspectsAffectingType();
-				if (aspectsPreviouslyInWorld!=null) {
-					for (Iterator iter = aspectsPreviouslyInWorld.iterator(); iter.hasNext();) {
-						String requiredTypeName = (String) iter.next();
-						if (!alreadyConfirmedOK.contains(requiredTypeName)) {
-							ResolvedTypeX rtx = world.resolve(TypeX.forName(requiredTypeName),true);
-							boolean exists = rtx!=ResolvedTypeX.MISSING;
-							if (!exists) {
-								world.showMessage(IMessage.ERROR, "type " + requiredTypeName + 
-									" is needed by reweavable type " + className,
-									classType.getSourceLocation(), null);
-							} else {
-								if (!world.getMessageHandler().isIgnoring(IMessage.INFO))
-								  world.showMessage(IMessage.INFO,"successfully verified type "+requiredTypeName+
-                                    " exists.  Originates from "+rtx.getSourceLocation().getSourceFile(),null,null);
-								alreadyConfirmedOK.add(requiredTypeName);
-							}
-						}		
-					}
+    	 	    	
+    	alreadyConfirmedReweavableState = new HashSet();
+    }
+    
+    public void processReweavableStateIfPresent(String className, BcelObjectType classType) {
+		// If the class is marked reweavable, check any aspects around when it was built are in this world
+		WeaverStateInfo wsi = classType.getWeaverState();		
+		if (wsi!=null && wsi.isReweavable()) { // Check all necessary types are around!
+			world.showMessage(IMessage.INFO,"processing reweavable type "+className+": "+classType.getSourceLocation().getSourceFile(),null,null);
+			Set aspectsPreviouslyInWorld = wsi.getAspectsAffectingType();
+			if (aspectsPreviouslyInWorld!=null) {
+				for (Iterator iter = aspectsPreviouslyInWorld.iterator(); iter.hasNext();) {
+					String requiredTypeName = (String) iter.next();
+					if (!alreadyConfirmedReweavableState.contains(requiredTypeName)) {
+						ResolvedTypeX rtx = world.resolve(TypeX.forName(requiredTypeName),true);
+						boolean exists = rtx!=ResolvedTypeX.MISSING;
+						if (!exists) {
+							world.showMessage(IMessage.ERROR, "type " + requiredTypeName + 
+								" is needed by reweavable type " + className,
+								classType.getSourceLocation(), null);
+						} else {
+							if (!world.getMessageHandler().isIgnoring(IMessage.INFO))
+							  world.showMessage(IMessage.INFO,"successfully verified type "+requiredTypeName+
+		                        " exists.  Originates from "+rtx.getSourceLocation().getSourceFile(),null,null);
+							alreadyConfirmedReweavableState.add(requiredTypeName);
+						}
+					}		
 				}
-				classType.setJavaClass(Utility.makeJavaClass(classType.getJavaClass().getFileName(), wsi.getUnwovenClassFileData()));
-			} else {
-            	classType.resetState();
 			}
-        }
-    	
-    	
-    	
-    	//XXX this isn't quite the right place for this...
-    	for (Iterator i = filesToWeave.iterator(); i.hasNext(); ) {
-            UnwovenClassFile classFile = (UnwovenClassFile)i.next();
-            String className = classFile.getClassName();
-            ResolvedTypeX onType = world.resolve(className);
-            weave(onType);
-        }
-    	
-		// first weave into aspects
-        for (Iterator i = filesToWeave.iterator(); i.hasNext(); ) {
-            UnwovenClassFile classFile = (UnwovenClassFile)i.next();
-	    	String className = classFile.getClassName();
-            BcelObjectType classType = BcelWorld.getBcelObjectType(world.resolve(className));
-            if (classType.isAspect()) {
-	            weave(classFile, classType);
-	            wovenClassNames.add(className);
-            }
-        }
+			classType.setJavaClass(Utility.makeJavaClass(classType.getJavaClass().getFileName(), wsi.getUnwovenClassFileData()));
+		} else {
+			classType.resetState();
+		}
+	}
 
-		// then weave into non-aspects
-		for (Iterator i = filesToWeave.iterator(); i.hasNext(); ) {
-            UnwovenClassFile classFile = (UnwovenClassFile)i.next();
-	    	String className = classFile.getClassName();
-            BcelObjectType classType = BcelWorld.getBcelObjectType(world.resolve(className));
-            if (! classType.isAspect()) {
-	            weave(classFile, classType);
-	            wovenClassNames.add(className);
-            }
-        }
-        
-        if (zipOutputStream != null && !needToReweaveWorld) {
-        	Collection filesToDump = new HashSet(sourceJavaClasses.values());
-        	filesToDump.removeAll(filesToWeave);
-        	for (Iterator i = filesToDump.iterator(); i.hasNext(); ) {
-                UnwovenClassFile classFile = (UnwovenClassFile)i.next();
-                dumpUnchanged(classFile);
-        	}
-        }
-        
-        addedClasses = new ArrayList();
-    	deletedTypenames = new ArrayList();
-		
-        return wovenClassNames;
+    private void weaveAndNotify(UnwovenClassFile classFile, BcelObjectType classType,
+    		                    IWeaveRequestor requestor) throws IOException {
+    	LazyClassGen clazz = weaveWithoutDump(classFile,classType);
+    	classType.finishedWith();
+		//clazz is null if the classfile was unchanged by weaving...
+		if (clazz != null) {
+			UnwovenClassFile[] newClasses = getClassFilesFor(clazz);
+			for (int i = 0; i < newClasses.length; i++) {
+				requestor.acceptResult(newClasses[i]);
+			}
+		} else {
+			requestor.acceptResult(classFile);
+		}
+    }
+    
+	// helper method
+    public BcelObjectType getClassType(String forClass) {
+        return BcelWorld.getBcelObjectType(world.resolve(forClass));    	
+    }
+ 
+    
+    public void addTypeMungers(String typeName) {
+    	weave(world.resolve(typeName));
     }
 
+    public UnwovenClassFile[] getClassFilesFor(LazyClassGen clazz) {
+    	List childClasses = clazz.getChildClasses(world);
+    	UnwovenClassFile[] ret = new UnwovenClassFile[1 + childClasses.size()];    	
+    	ret[0] = new UnwovenClassFile(clazz.getFileName(),clazz.getJavaClass(world).getBytes());
+    	int index = 1;
+    	for (Iterator iter = childClasses.iterator(); iter.hasNext();) {
+			UnwovenClassFile.ChildClass element = (UnwovenClassFile.ChildClass) iter.next();
+			UnwovenClassFile childClass = new UnwovenClassFile(clazz.getFileName() + "$" + element.name, element.bytes);
+			ret[index++] = childClass;
+		}
+    	return ret;
+    }
+    
 	public void weave(ResolvedTypeX onType) {
 		onType.clearInterTypeMungers();
 		
@@ -622,9 +757,11 @@ public class BcelWeaver implements IWeaver {
 
 	public void setReweavableMode(boolean mode,boolean compress) {
 		inReweavableMode = mode;
-		compressReweavableAttributes = compress;
 		WeaverStateInfo.setReweavableModeDefaults(mode,compress);
 		BcelClassWeaver.setReweavableMode(mode,compress);
 	}
 
+	public boolean isReweavable() {
+		return inReweavableMode;
+	}
 }
