@@ -19,11 +19,17 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
 import org.aspectj.apache.bcel.generic.ArrayType;
 import org.aspectj.apache.bcel.generic.BIPUSH;
 import org.aspectj.apache.bcel.generic.BasicType;
@@ -602,4 +608,39 @@ public class Utility {
 	public static boolean isConstantPushInstruction(Instruction i) {
 		return (i instanceof ConstantPushInstruction) || (i instanceof LDC);
 	}
+	
+	/**
+     * Check if the annotations contain a SuppressAjWarnings annotation and
+     * if that annotation specifies that the given lint message (identified
+     * by its key) should be ignored.
+     *
+     */
+    public static boolean isSuppressing(Annotation[] anns,String lintkey) {
+        boolean suppressed = false;
+        // Go through the annotation types on the advice
+        for (int i = 0;!suppressed && i<anns.length;i++) {
+          // Check for the SuppressAjWarnings annotation
+          if (TypeX.SUPPRESS_AJ_WARNINGS.getSignature().equals(anns[i].getTypeSignature())) {
+            // Two possibilities:
+            // 1. there are no values specified (i.e. @SuppressAjWarnings)
+            // 2. there are values specified (i.e. @SuppressAjWarnings("A") or @SuppressAjWarnings({"A","B"})
+            List vals = anns[i].getValues();
+            if (vals == null || vals.size()==0) { // (1)
+                suppressed = true;
+            } else { // (2)
+            	// We know the value is an array value
+            	ArrayElementValue array = (ArrayElementValue)((ElementNameValuePair)vals.get(0)).getValue();
+            	ElementValue[] values = array.getElementValuesArray();
+            	for (int j = 0; j < values.length; j++) {
+            		// We know values in the array are strings
+					SimpleElementValue value = (SimpleElementValue)values[j];
+					if (value.getValueString().equals(lintkey)) {
+						suppressed = true;
+					}
+				}
+            }
+          }
+        }
+        return suppressed;
+    }
 }
