@@ -16,16 +16,18 @@ package org.aspectj.ajdt.internal.compiler.ast;
 //import java.util.List;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
+import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.FormalBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
-import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.*;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
-import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 
 public class DeclareDeclaration extends AjMethodDeclaration {
+
 	public Declare declareDecl;
 
 	/**
@@ -43,7 +45,19 @@ public class DeclareDeclaration extends AjMethodDeclaration {
 		}
 		//??? we might need to set parameters to be empty
 		this.returnType = TypeReference.baseTypeReference(T_void, 0);
-		this.selector = ("ajc$declare_"+counter++).toCharArray(); //??? performance
+		
+        StringBuffer sb = new StringBuffer();
+        sb.append("ajc$declare");
+        // Declares can choose to provide a piece of the name - to enable
+        // them to be easily distinguised at weave time (e.g. see declare annotation)
+        String suffix = symbolicDeclare.getNameSuffix();
+        if (suffix.length()!=0) {
+        	sb.append("_");
+        	sb.append(suffix);
+        }
+        sb.append("_");
+        sb.append(counter++);
+        this.selector = sb.toString().toCharArray();
 	}
 
 
@@ -106,6 +120,14 @@ public class DeclareDeclaration extends AjMethodDeclaration {
 			output.append(declareDecl.toString());
 		}
 		return output;
+	}
+	
+	/**
+	 * We need the ajc$declare method that is created to represent this declare to
+	 * be marked as synthetic
+	 */
+	protected int generateInfoAttributes(ClassFile classFile) {
+		return super.generateInfoAttributes(classFile,true);
 	}
 
 }
