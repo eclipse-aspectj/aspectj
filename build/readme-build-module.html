@@ -1,0 +1,59 @@
+<html>
+<title>AspectJ build</title>
+<body>
+<h1>AspectJ build</h1>
+
+This build module contains taskdefs and resources for doing builds
+and checking source licenses.
+
+To do a build, use Ant to run 
+<a href="build.xml">build.xml</a>
+from this directory.  
+
+<p>
+The 
+<a href="src/org/aspectj/internal/tools/ant/taskdefs/BuildModule.java">
+   BuildModule</a>
+taskdef implements an integrated module or product build.
+<u>Module builds</u> are based on the Eclipse .classpath file, and can produce
+a jar with the module classes, with two variations: (a) include only
+the module classes, or assemble the jar complete with all antecedent
+modules and libraries; and (b) compile the module(s) without any
+testing source or libraries.  If there is a file {moduleName}.mf.txt
+in the module directory, it will be used as the manifest for the
+module jar file.
+
+<u>Product builds</u> are defined by introspection of a 
+<a href="products">products</a> subdirectory like 
+<a href="products/tools">products/tools</a> for the AspectJ tools installer.
+
+These have an <code>install</code> directory for installer resources
+and a <code>dist</code> directory containing all files belonging in
+the distribution, including 0-length placeholders for the module build
+results.
+
+<p>
+Top-level temporary build directories are prefixed "aj-",
+so you can safely destroy any such directory or ignore it
+in CVS or the Eclipse package explorer.  By default the build script
+puts them at the same level as other modules.
+<p>
+<u>Updating this module</u>:  
+
+Because the BuildModule taskdef extracts dependencies from the Eclipse 
+.classpath file, there is no need to update build scripts when
+adding or removing modules or changing their dependencies, so long
+as they are all in the base modules directory (usually the base of
+the eclipse workspace.
+All required libraries are checked into the <code>lib</code> module.
+
+<p>The BuildModule taskdef makes some assumptions about the naming, 
+position, and contents of module directories and files.  
+Understand those (documented in 
+<a href="src/org/aspectj/internal/tools/ant/taskdefs/BuildModule.java">
+   BuildModule.java</a>) before using non-standard module directories. 
+
+<hr>
+
+</body>
+</html>

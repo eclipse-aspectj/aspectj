@@ -1,0 +1,44 @@
+<html>
+<title>AspectJ library module</title>
+<body>
+<h2>AspectJ library module</h2>
+
+This module primarily contains binary libraries from open-source projects, 
+some of which are subject to licenses other than the Common Public License (CPL).  
+Those not subject to CPL are not distributed in source or binary form with
+AspectJ (except for Apache's BCEL), but are used in the development of AspectJ.  
+This module also contains some bootstrap libraries and test sources.
+
+<ul>
+   <li><a href="ant">ant</a>:
+       Ant 1.5.1 from 
+       <a ="http:jakarta.apache.org/ant">http:jakarta.apache.org/ant</a>.
+       This contains a modified Ant script that works with our quicklook
+       and puts the optional tasks on the classpath by default.
+       Ant is available under the Apache Software License.
+       </li>
+   <li><a href="bcel">bcel</a>:
+       The Bytecode Engineering Library from 
+       <a ="http:jakarta.apache.org/bcel">http:jakarta.apache.org/bcel</a>,
+       available under the Apache Software License.
+       </li>
+   <li><a href="build">build</a>: bootstrap libraries for the build process.
+       </li>
+   <li><a href="eclipse2.0">eclipse2.0</a>:
+       The AspectJ compiler is a patch to the Eclipse 2.0 compiler.
+       These are the non-compiler binaries.  For the eclipse compiler
+       and patched, see the org.eclipse.jdt.core module.
+       This is available under the CPL.
+       </li>
+   <li><a href="junit">junit</a>:
+       JUnit 3.7 test libraries, available from 
+       <a ="http:junit.org">junit.org</a> and under the CPL.
+       </li>
+   <li><a href="test">test</a>: bootstrap libraries for the test process.
+       These could be replaced with build products, to avoid the checked-in
+       versions being out of date, but these build products change rarely
+       (and almost never in binary-incompatible ways).
+       </li>
+</ul>
+</body>
+</html>

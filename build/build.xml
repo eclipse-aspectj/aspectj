@@ -1,0 +1,264 @@
+<!-- -*- Mode: SGML; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- -->
+
+<!-- ========================================================================= -->
+<!-- Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).        -->
+<!-- All rights reserved.                                                      -->
+<!-- This program and the accompanying materials are made available            -->
+<!-- under the terms of the Common Public License v1.0                         -->
+<!-- which accompanies this distribution and is available at                   -->
+<!-- http://www.eclipse.org/legal/cpl-v10.html                                 -->
+<!--                                                                           -->
+<!-- Contributors:                                                             -->
+<!--     Xerox/PARC     initial implementation                                 -->
+<!-- ========================================================================= -->
+
+<!DOCTYPE project [
+<!ENTITY build-properties SYSTEM "file:build-properties.xml">
+]>
+<project name="build" default="all" basedir=".">
+
+    <target name="all"     depends="aspectj"/>
+    <target name="rebuild" depends="clean,all"/>
+    <target name="clean"   depends="clean-directories"/>
+
+
+    <!-- ===================================================================== -->
+    <!-- Init                                                                  -->
+    <!-- ===================================================================== -->
+    <!-- use this file to force prop values -->
+    <property file="${basedir}/local.properties"/>
+    
+    &build-properties;
+
+    <target name="init" depends="init-properties,init-directories">
+      <property name="build.config" value="verbose"/> 
+      <property name="aj.installer.jar" 
+            location="${aj.dist.dir}/aspectj-${build.version.short}.jar"/>
+
+      <available property="ant.lib.aspectjtools"
+         file="${ant.home}/lib/aspectjtools.jar"
+         value="Expect classpath errors from ${ant.home}/lib/aspectjtools.jar"/>
+
+      <available property="ant.lib.aspectjrt"
+         file="${ant.home}/lib/aspectjrt.jar"
+         value="Expect classpath errors from ${ant.home}/lib/aspectjrt.jar"/>
+
+      <available property="testing.drivers.all.available"
+         file="${aj.jar.dir}/testing-drivers-all.jar"
+         value="${aj.jar.dir}/testing-drivers-all.jar"/>
+
+    </target>
+
+    <target name="init-version" depends="init,init-filters" 
+         unless="init.version.done" if="release.build" > <!-- unless=version.uptodate -->
+      <antcall target="init-filters"/>
+      <copy file="${aspectj.modules.dir}/build/lib/BridgeVersion.java.txt"
+          tofile="${aspectj.modules.dir}/bridge/src/org/aspectj/bridge/Version.java"
+          overwrite="yes" filtering="yes"/>
+      <property name="init.version.done" value="done"/>
+      <!-- consider checking this in? -->
+    </target>
+
+
+    <!-- ===================================================================== -->
+    <!-- Misc setup and warnings                                               -->
+    <!-- ===================================================================== -->
+    <target name="warn.ant.lib.aspectjrt" if="ant.lib.aspectjrt">
+      <echo message="----- WARNING: ${ant.lib.aspectjrt}" /> 
+    </target>
+
+    <target name="warn.ant.lib.aspectjtools" if="ant.lib.aspectjtools">
+      <echo message="----- WARNING: ${ant.lib.aspectjtools}" /> 
+    </target>
+
+    <!-- ===================================================================== -->
+    <!-- test targets                                                          -->
+    <!-- ===================================================================== -->	
+	
+	<target name="quicklook" >
+	   <antcall target="clean"/>
+	   <!-- todo: compile modules without test sources -->
+	   <!-- todo: junit tests (compile with test sources) -->
+	   <antcall target="aspectj"/>
+	   <antcall target="ajcTests"/>
+	   <!-- todo: product install and tests -->
+	</target>
+	
+    <!-- ===================================================================== -->
+    <!-- tree targets                                                          -->
+    <!-- ===================================================================== -->	
+	<target name="update.tree" depends="init"
+     description="update tree">
+      <fail unless="CVSROOT" 
+           message="required: {ant} -DCVSROOT=... ..."/>
+      <cvs cvsRoot="${CVSROOT}"
+              dest="${aspectj.modules.dir}"
+             quiet="on" 
+       failonerror="on" 
+           command="update -dP" />
+    </target>
+
+    <!-- ===================================================================== -->
+    <!-- antcall targets                                                       -->
+    <!-- ===================================================================== -->	
+	
+	<target name="build-product" depends="init,init-taskdefs,init-version"
+	 description="build $${product.name}">
+      <ajbuild jarDir="${aj.jar.dir}"
+              baseDir="${aspectj.modules.dir}"
+              distDir="${aj.dist.dir}"
+           productDir="${aspectj.modules.dir}/build/products/${product.name}"
+          trimTesting="true"
+          buildConfig="${build.config}" 
+              version="${build.version.long}"
+              verbose="true"
+          failonerror="true"/>		
+	</target>
+
+	<target name="build-module" depends="init,init-taskdefs,init-version">
+      <ajbuild jarDir="${aj.jar.dir}"
+              baseDir="${aspectj.modules.dir}"
+              distDir="${aj.dist.dir}"
+               module="${module.name}"              
+          trimTesting="true"
+          buildConfig="${build.config}" 
+              version="${build.version.long}"
+              verbose="true"
+          failonerror="true"/>		
+	</target>
+
+
+	<target name="build-module-all" depends="init,init-taskdefs,init-version">
+      <ajbuild module="${module.name}"
+              baseDir="${aspectj.modules.dir}"
+              distDir="${aj.dist.dir}"
+               jarDir="${aj.jar.dir}"
+          trimTesting="true"
+          buildConfig="${build.config}" 
+              version="${build.version.long}"
+              verbose="true"
+          assembleall="true"
+          failonerror="true"/>		
+	</target>
+
+
+	<target name="create-installer" depends="init,init-taskdefs,init-filters"
+	 description="create ${installer.file} from ${staging.dir} using ${htmlSrc.dir} and ${simpleClassName}">
+        <!-- init-filters: filter on copy used by ajinstaller taskdef -->
+        
+        <delete quiet="on" file="${installer.file}"/>
+        <ajinstaller zipfile="${installer.file}"
+           installerclassjar="${aspectj.build.jar}"
+                     basedir="${staging.dir}"
+                   mainclass="$$installer$$.org.aspectj.${simpleClassName}"
+                     htmlSrc="${htmlSrc.dir}"
+                resourcesSrc="${aspectj.modules.build.dir}/installer-resources"/>
+	</target>
+
+    <!-- ===================================================================== -->
+    <!-- custom targets                                                        -->
+    <!-- ===================================================================== -->
+	<target name="build-testing-drivers" depends="init-taskdefs,init"
+	      unless="testing.drivers.all.available"> 
+      <ajbuild module="testing-drivers"
+              baseDir="${aspectj.modules.dir}"
+               jarDir="${aj.jar.dir}"
+          trimTesting="false"
+          buildConfig="${build.config}" 
+              version="${build.version.long}"
+              verbose="true"
+          assembleall="true"
+          failonerror="true"/>		
+	</target>
+	
+	<target name="ajcTests" depends="init,build-testing-drivers">
+      <java fork="true" jar="${aj.jar.dir}/testing-drivers-all.jar"
+            dir="${aspectj.modules.tests.dir}"
+          output="${aj.results.dir}/ajcTests.out.txt">
+        <arg value="-traceTestsMin"/>
+        <arg value="-logFail"/>
+        <arg value="-hideStreams"/>
+        <arg value="-loud"/>
+        <arg value="-ajctestSkipKeywords=purejava,knownLimitations"/>
+        <arg value="ajcTests.xml"/>
+      </java>
+      <echo message="find result in ${aj.results.dir}/ajcTests.out.txt"/>
+	</target>
+	
+	<target name="aspectj" depends="init,aspectjtools-dist,docs-dist" 
+	  description="create installer from local distributions">
+	  <property name="installer.staging.dir"
+            location="${aj.temp.dir}/installer-staging"/>
+	  <mkdir dir="${installer.staging.dir}"/>
+	  <delete dir="${installer.staging.dir}"/>
+	  <mkdir dir="${installer.staging.dir}"/>
+	  <copy todir="${installer.staging.dir}">
+	    <fileset dir="${aj.dist.dir}/tools"/>
+	    <fileset dir="${aj.dist.dir}/docs"/>
+	  </copy>
+	  
+	  <antcall target="create-installer">
+	    <param name="installer.file" 
+	       location="${aj.installer.jar}"/>
+	    <param name="staging.dir" 
+	       location="${installer.staging.dir}"/>
+	    <param name="htmlSrc.dir" 
+	       location="${aspectj.modules.build.dir}/products/aspectj/install"/>
+	    <param name="simpleClassName" value="ToolsInstaller"/>
+	  </antcall>
+	  <delete dir="${installer.staging.dir}"/> 
+	</target>
+	
+	<target name="docs-dist" depends="init">
+	   <ant dir="${aspectj.modules.dir}/docs"
+	    antfile="build.xml"
+	    target="local-dist"
+	    inheritAll="false"/> <!-- true? -->
+	</target>
+	
+    <!-- ===================================================================== -->
+    <!-- boilerplate antcalls                                                  -->
+    <!-- ===================================================================== -->
+
+	<!-- for any-[module|product], define [module|product].name -->
+	<target name="any-module" depends="init">
+	  <antcall target="build-module">
+	    <param name="module.name" value="${module.name}"/>
+	  </antcall>
+	</target>
+
+	<target name="any-product" depends="init">
+	  <antcall target="build-product">
+	    <param name="product.name" value="${product.name}"/>
+	  </antcall>
+	</target>
+
+	<!-- literal targets -->
+	<target name="eajc" depends="init">
+	  <antcall target="build-module-all">
+	    <param name="module.name" value="org.aspectj.ajdt.core"/>
+	  </antcall>
+	  <echo message="use org.aspectj.ajdt.core-all.jar for eajc.jar"/>
+	</target>
+
+	<target name="ajbrowser-all">
+	  <antcall target="build-module-all">
+	    <param name="module.name" value="ajbrowser"/>
+	  </antcall>
+    </target>
+
+	<target name="build">
+	  <antcall target="build-module">
+	    <param name="module.name" value="build"/>
+	  </antcall>
+    </target>
+
+	<target name="aspectjtools-dist" depends="init"
+	 description="build local distribution">
+	  <antcall target="build-product">
+	    <param name="product.name" value="tools"/>
+	  </antcall>
+    </target>
+
+</project>
+

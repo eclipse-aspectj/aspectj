@@ -1,0 +1,148 @@
+<!-- -*- Mode: SGML; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-     -->
+<!-- ========================================================================= -->
+<!-- Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).        -->
+<!-- All rights reserved.                                                      -->
+<!-- This program and the accompanying materials are made available            -->
+<!-- under the terms of the Common Public License v1.0                         -->
+<!-- which accompanies this distribution and is available at                   -->
+<!-- http://www.eclipse.org/legal/cpl-v10.html                                 -->
+<!--                                                                           -->
+<!-- Contributors:                                                             -->
+<!--     Xerox/PARC     initial implementation                                 -->
+<!-- ========================================================================= -->
+
+<!-- include as common entity for module build scripts -->
+<!-- should only need to edit version properties -->
+
+    <target name="init-properties"
+           unless="aspectj.modules.build.dir">
+
+      <!-- change version manually -->
+      <property name="build.version"       value="1.1b2"/> 
+      <property name="build.version.base"  value="1.1"/> 
+      <property name="build.version.long"  value="1.1beta2"/> 
+      <property name="build.version.short" value="1.1b2"/> 
+
+      <!-- formats comply with SimpleDateFormat -->
+      <property name="build.time.format"   value="MM/dd/yy 'at' hh:mm:ss z"/> 
+      <property name="build.date.format"   value="EEEE MMM d, yyyy"/> 
+	  <tstamp>
+		<format property="build.date" 
+		         pattern="${build.date.format}"
+		         timezone="PST"/>
+		<format property="build.time" 
+		         pattern="${build.time.format}"
+		         timezone="PST"/>
+	  </tstamp>
+	  
+	  <property name="copyright.allRights.from1998"
+               value="Copyright (c) 1998-2001 Xerox Corporation, 2002 Palo Alto Research Center, Incorporated.  All rights reserved." />
+      <!-- XXX interim hack -->
+	  <property name="aspectj.home.url"     value="http://aspectj.org" />
+
+      <!-- callers define basedir as dir of build file? -->
+      <property name="aspectj.modules.dir"
+            location="${basedir}/.."/>
+
+	  <!-- aj... names are generated, can be mutated/cleaned -->
+      <property name="aj.results.dir" 
+            location="${aspectj.modules.dir}/aj-build-results"/>
+	  <!-- these names are known to BuildModule.java and common to all -->
+      <property name="aj.build.dir" 
+            location="${aspectj.modules.dir}/aj-build"/>
+      <property name="aj.temp.dir" 
+            location="${aj.build.dir}/temp"/>
+      <property name="aj.jar.dir" 
+            location="${aj.build.dir}/jars"/>
+      <property name="aj.dist.dir" 
+            location="${aj.build.dir}/dist"/>
+      <property name="aj.webDeploy.dir" 
+            location="${aj.build.dir}/webDeploy"/>
+
+	  <!-- aspectj... names are sources, not to be mutated -->
+      <property name="aspectj.modules.lib.dir"
+            location="${aspectj.modules.dir}/lib"/>
+      <property name="aspectj.modules.build.dir" 
+            location="${aspectj.modules.dir}/build"/>
+      <property name="aspectj.modules.docs.dir" 
+            location="${aspectj.modules.dir}/docs"/>
+      <property name="aspectj.modules.tests.dir"
+            location="${aspectj.modules.dir}/tests"/>
+      <!-- BuildModule.java assumes products are here -->
+      <property name="aspectj.products.dir"
+            location="${aspectj.modules.build.dir}/products"/>
+      <property name="aspectj.modules.tests.dir"
+            location="${aspectj.modules.dir}/tests"/>
+      <property name="aspectj.build.jar"
+            location="${aspectj.modules.lib.dir}/build/build.jar"/>
+      <available file="${aspectj.build.jar}"
+             property="aspectj.build.jar.available"
+                value="${aspectj.build.jar}"/>
+    </target>
+
+    <target name="init-taskdefs" 
+         depends="init-properties"
+          unless="init-taskdefs.done" >
+      <fail unless="aspectj.build.jar.available"
+          message="unable to find aspectj.build.jar: ${aspectj.build.jar}"/>
+      <taskdef resource="org/aspectj/internal/tools/ant/taskdefs/taskdefs.properties"
+         classpath="${aspectj.build.jar}"/>
+      <property name="init-taskdefs.done" value="done"/>
+    </target>
+
+    <target name="init-directories" 
+         depends="init-properties"
+          unless="init-directories.done" >
+      <mkdir dir="${aj.results.dir}" />
+      <mkdir dir="${aj.build.dir}" />
+      <mkdir dir="${aj.temp.dir}" />
+      <mkdir dir="${aj.jar.dir}" />
+      <mkdir dir="${aj.dist.dir}" />
+      <property name="init-directories.done" value="done"/>
+    </target>
+
+    <target name="init-filters"
+         depends="init-properties"
+          unless="init-filters.done" >
+      <!-- change version manually -->
+      <!-- see also org.aspectj.ajdt.core/src/org/aspectj/ajdt/ajc/messages.properties -->
+      <filter token="build.version"       value="${build.version}"/> 
+      <filter token="build.version.base"  value="${build.version.base}"/> 
+      <filter token="build.version.long"  value="${build.version.long}"/> 
+      <filter token="build.version.short" value="${build.version.short}"/> 
+
+      <filter token="build.time.format"   value="${build.time.format}"/> 
+      <filter token="build.date.format"   value="${build.date.format}"/> 
+      <filter token="build.date"          value="${build.date}"/>
+      <filter token="build.time"          value="${build.time}"/>
+      <filter token="copyright.allRights.from1998" 
+              value="${copyright.allRights.from1998}" />
+      <property name="init-filters.done" value="done"/>
+    </target>
+
+    <target name="clean-directories" 
+         depends="init-directories"
+          unless="clean-directories.done" >
+      <property name="clean-directories.done" value="done"/>
+      <delete quiet="on" dir="${aj.build.dir}" /> <!-- warning if not deleted? -->
+      <antcall target="init-directories"/>
+      <!-- aj.results.dir is not cleaned -->
+    </target>
+
+    <target name="echo-properties" depends="init-properties">
+      <echo>
+  Build Properties
+
+           build.date = ${build.date}
+           build.time = ${build.time}
+        build.version = ${build.version}
+   build.version.long = ${build.version.long}
+  build.version.short = ${build.version.short}
+  aspectj.modules.dir = ${aspectj.modules.dir}
+         aj.build.dir = ${aj.build.dir}
+       aj.results.dir = ${aj.results.dir}
+        release.build = ${release.build}
+             ant.home = ${ant.home}
+            java.home = ${java.home}
+</echo>
+    </target>
