@@ -262,9 +262,13 @@ public class CompilerRun implements IAjcRun {
 
         // save classpath and aspectpath in sandbox for this and other clients
         final boolean checkReadable = true; // hmm - third validation?
-        File[] cp = new File[2 + classFiles.length];
+        int size = spec.includeClassesDir ? 3 : 2;
+        File[] cp = new File[size + classFiles.length];
         System.arraycopy(classFiles, 0, cp, 0, classFiles.length);
         int index = classFiles.length;
+        if (spec.includeClassesDir) {
+            cp[index++] = sandbox.classesDir;
+        }
         cp[index++] = Globals.F_aspectjrt_jar;
         cp[index++] = Globals.F_testingclient_jar;
         sandbox.setClasspath(cp, checkReadable, this);
@@ -495,6 +499,7 @@ public class CompilerRun implements IAjcRun {
         
         // use same command - see also IncCompiler.Spec.fresh
         protected boolean reuseCompiler;
+        protected boolean includeClassesDir;
         
         protected TestSetup testSetup;
         
@@ -512,6 +517,9 @@ public class CompilerRun implements IAjcRun {
             compiler = DEFAULT_COMPILER;
         }
         
+        public void setIncludeClassesDir(boolean include) {
+            this.includeClassesDir = include;
+        }
         public void setReuseCompiler(boolean reuse) {
             this.reuseCompiler = reuse;
         }
@@ -989,8 +997,11 @@ public class CompilerRun implements IAjcRun {
             if (!DEFAULT_COMPILER.equals(compiler)) {
                 out.printAttribute("compiler", compiler);
             }
-            if (!reuseCompiler) {
+            if (reuseCompiler) {
                 out.printAttribute("reuseCompiler", "true");
+            }
+            if (includeClassesDir) {
+                out.printAttribute("includeClassesDir", "true");
             }
             if (!LangUtil.isEmpty(argfiles)) {
                 out.printAttribute("argfiles", XMLWriter.flattenFiles(argfiles));
