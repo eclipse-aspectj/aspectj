@@ -58,7 +58,7 @@ class SwingTreeViewNodeRenderer extends DefaultTreeCellRenderer {
 		} else {
 			setIcon(null);
 		}
-        
+         
         if (node instanceof IProgramElement) {
 //        	if (pNode.isRunnable()) {
 //        		//setIcon(AjdeUIManager.getDefault().getIconRegistry().getExecuteIcon());
@@ -79,10 +79,10 @@ class SwingTreeViewNodeRenderer extends DefaultTreeCellRenderer {
 				}
 			}
 
-        } else if (node instanceof IRelationship) {
-        	this.setFont(new Font(this.getFont().getName(), Font.ITALIC, this.getFont().getSize()));
-        }
-		
+        } 
+//        else if (node instanceof IRelationship) {
+//        	this.setFont(new Font(this.getFont().getName(), Font.ITALIC, this.getFont().getSize()));
+//        }		
         return this;
     }
 }

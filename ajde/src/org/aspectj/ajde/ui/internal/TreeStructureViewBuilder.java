@@ -113,14 +113,15 @@ public class TreeStructureViewBuilder {
 				node.setRunnable(false);
 			}
 		}
-//		if (node.getChildren() != null) {
-//			for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
-//				IProgramElement IProgramElement = (IProgramElement)it.next();
-//				if (acceptNode(IProgramElement, properties)) {
-//					children.add(createViewNode(IProgramElement, properties));
-//				}
-//			}	
-//		}
+		if (node.getChildren() != null) {
+			for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
+				IProgramElement IProgramElement = (IProgramElement)it.next();
+				if (acceptNode(IProgramElement, properties)) {
+					children.add(createViewNode(IProgramElement, properties));
+				}
+			}	
+		}
+
 		StructureViewNode viewNode = nodeFactory.createNode(node, children);//new TreeViewNode(root, null, children);
 		return viewNode;	
 	}
@@ -178,9 +179,9 @@ public class TreeStructureViewBuilder {
 					}	
 				}
 			}
-		} else if (node instanceof IRelationship) {
-			IRelationship relation = (IRelationship)node;
-			return properties.getRelations().contains(relation);
+//		} else if (node instanceof IRelationship) {
+//			IRelationship relation = (IRelationship)node;
+//			return properties.getRelations().contains(relation);
 		} else {
 			return true;
 		}
@@ -355,11 +356,11 @@ public class TreeStructureViewBuilder {
     private StructureViewNode getRelations(IRelationship node) {
         //StructureViewNode treeNode = new StructureViewNode(node);
         StructureViewNode treeNode = nodeFactory.createNode(node);
-        for (Iterator it = node.getTargets().iterator(); it.hasNext(); ) {
-            treeNode.add(
-            	nodeFactory.createNode((IProgramElement)it.next())
-            );
-        }
+//        for (Iterator it = node.getTargets().iterator(); it.hasNext(); ) {
+//            treeNode.add(
+//            	nodeFactory.createNode((IProgramElement)it.next())
+//            );
+//        }
         return treeNode;
     }
 
