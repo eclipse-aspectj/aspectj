@@ -14,19 +14,8 @@
 
 package org.aspectj.tools.ajdoc;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.BufferedWriter;
-import java.io.PrintWriter;
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import java.util.*;
 
 /**
  * @author Mik Kersten

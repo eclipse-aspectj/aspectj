@@ -13,13 +13,10 @@
 package org.aspectj.tools.ajdoc;
 
 import java.io.File;
-import java.io.PrintStream;
-import java.io.PrintWriter;
 
 import junit.framework.TestCase;
 
 import org.aspectj.bridge.Version;
-import org.aspectj.util.StreamPrintWriter;
 
 /**
  * @author Mik Kersten
