@@ -71,11 +71,26 @@ public final class Factory {
         ret.setLookupClassLoader(lookupClassLoader);
         return ret;
     }
+    
+    public MethodSignature makeMethodSig(int modifiers, String name, Class declaringType, 
+            Class[] parameterTypes, String[] parameterNames, Class[] exceptionTypes,
+	        Class returnType) {
+        MethodSignatureImpl ret = new MethodSignatureImpl(modifiers,name,declaringType,parameterTypes,parameterNames,exceptionTypes,returnType);
+        ret.setLookupClassLoader(lookupClassLoader);
+        return ret;   
+    }
 
     public ConstructorSignature makeConstructorSig(String stringRep) {
         ConstructorSignatureImpl ret = new ConstructorSignatureImpl(stringRep);
         ret.setLookupClassLoader(lookupClassLoader);
         return ret;
+    }
+    
+    public ConstructorSignature makeConstructorSig(int modifiers, Class declaringType, 
+            Class[] parameterTypes, String[] parameterNames, Class[] exceptionTypes) {
+        ConstructorSignatureImpl ret = new ConstructorSignatureImpl(modifiers,declaringType,parameterTypes,parameterNames,exceptionTypes);
+        ret.setLookupClassLoader(lookupClassLoader);
+        return ret;  	
     }
 
     public FieldSignature makeFieldSig(String stringRep) {
@@ -83,9 +98,24 @@ public final class Factory {
         ret.setLookupClassLoader(lookupClassLoader);
         return ret;
     }
+    
+    public FieldSignature makeFieldSig(int modifiers, String name, Class declaringType, 
+            Class fieldType) {
+        FieldSignatureImpl ret = new FieldSignatureImpl(modifiers,name,declaringType,fieldType);
+        ret.setLookupClassLoader(lookupClassLoader);
+        return ret;    	
+    }
 
     public AdviceSignature makeAdviceSig(String stringRep) {
         AdviceSignatureImpl ret = new AdviceSignatureImpl(stringRep);
+        ret.setLookupClassLoader(lookupClassLoader);
+        return ret;
+    }
+
+    public AdviceSignature makeAdviceSig(int modifiers, String name, Class declaringType, 
+            Class[] parameterTypes, String[] parameterNames, Class[] exceptionTypes,
+	        Class returnType) {
+        AdviceSignatureImpl ret = new AdviceSignatureImpl(modifiers,name,declaringType,parameterTypes,parameterNames,exceptionTypes,returnType);
         ret.setLookupClassLoader(lookupClassLoader);
         return ret;
     }
@@ -96,10 +126,23 @@ public final class Factory {
         return ret;
     }
 
+    public InitializerSignature makeInitializerSig(int modifiers, Class declaringType) {
+        InitializerSignatureImpl ret = new InitializerSignatureImpl(modifiers,declaringType);
+        ret.setLookupClassLoader(lookupClassLoader);
+        return ret;
+    }
+    
     public CatchClauseSignature makeCatchClauseSig(String stringRep) {
         CatchClauseSignatureImpl ret = new CatchClauseSignatureImpl(stringRep);
         ret.setLookupClassLoader(lookupClassLoader);
         return ret;
+    }
+    
+    public CatchClauseSignature makeCatchClauseSig(Class declaringType, 
+            Class parameterType, String parameterName) {
+        CatchClauseSignatureImpl ret = new CatchClauseSignatureImpl(declaringType,parameterType,parameterName);
+        ret.setLookupClassLoader(lookupClassLoader);
+        return ret;    	
     }
     
 
