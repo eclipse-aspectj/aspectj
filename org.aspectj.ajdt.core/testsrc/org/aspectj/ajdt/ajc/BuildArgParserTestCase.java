@@ -300,7 +300,8 @@ public class BuildArgParserTestCase extends TestCase {
 		AjBuildConfig config = genBuildConfig(new String[] { 
 			"-bootclasspath", PATH }, 
 			messageWriter);		
-		assertTrue(config.getClasspath().toString(), ((String)config.getClasspath().get(0)).indexOf(PATH) != -1); 
+		assertTrue("Should find '" + PATH + "' contained in the first entry of '" + config.getClasspath().toString(),
+				((String)config.getClasspath().get(0)).indexOf(PATH) != -1); 
 
 		config = genBuildConfig(new String[] { 
 			}, 
