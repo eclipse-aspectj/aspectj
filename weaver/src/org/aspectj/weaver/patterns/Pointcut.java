@@ -62,7 +62,7 @@ public abstract class Pointcut extends PatternNode {
 	/**
 	 * Could I match any shadows in the code defined within this type?
 	 */
-	public abstract FuzzyBoolean fastMatch(ResolvedTypeX type);
+	public abstract FuzzyBoolean fastMatch(FastMatchInfo info);
 	
 	/**
 	 * Do I really match this shadow?
@@ -202,7 +202,7 @@ public abstract class Pointcut extends PatternNode {
 			return Literal.FALSE; // can only get here if an earlier error occurred
 		}
 
-		public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+		public FuzzyBoolean fastMatch(FastMatchInfo type) {
 			return FuzzyBoolean.NO;
 		}
 		

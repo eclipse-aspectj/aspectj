@@ -37,7 +37,7 @@ public class NotPointcut extends Pointcut {
 	}
 
 
-	public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return body.fastMatch(type).not();
 	}
 

@@ -41,7 +41,7 @@ public class ArgsPointcut extends NameBindingPointcut {
 		this.arguments = arguments;
 	}
 	
-    public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+    public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
 

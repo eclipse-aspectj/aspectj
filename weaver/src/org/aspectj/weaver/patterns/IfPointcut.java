@@ -50,7 +50,7 @@ public class IfPointcut extends Pointcut {
 		this.extraParameterFlags = extraParameterFlags;
 	}
 	
-    public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+    public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
     

@@ -38,7 +38,7 @@ public class HandlerPointcut extends Pointcut {
 		this.exceptionType = exceptionType;
 	}
 
-    public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+    public FuzzyBoolean fastMatch(FastMatchInfo type) {
     	//??? should be able to do better by finding all referenced types in type
 		return FuzzyBoolean.MAYBE;
 	}

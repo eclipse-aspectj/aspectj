@@ -62,6 +62,8 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.Shadow.Kind;
+import org.aspectj.weaver.patterns.FastMatchInfo;
 
 class BcelClassWeaver implements IClassWeaver {
     
@@ -127,12 +129,48 @@ class BcelClassWeaver implements IClassWeaver {
 		this.ty = clazz.getBcelObjectType();
 		this.cpg = clazz.getConstantPoolGen();
 		this.fact = clazz.getFactory();
+		
+		fastMatchShadowMungers(shadowMungers);
+		
 		initializeSuperInitializerMap(ty.getResolvedTypeX());
 	} 
     
-    // --------------------------------------------
-   
-   	private void initializeSuperInitializerMap(ResolvedTypeX child) {
+    private List[] perKindShadowMungers;
+    private boolean canMatchBodyShadows = false;
+    private boolean canMatchInitialization = false;
+    private void fastMatchShadowMungers(List shadowMungers) {
+    	perKindShadowMungers = new List[Shadow.MAX_SHADOW_KIND+1];
+    	for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
+			Shadow.Kind kind = Shadow.SHADOW_KINDS[i];
+			ArrayList mungers = new ArrayList(0);
+			perKindShadowMungers[kind.getKey()] = mungers;
+			fastMatchShadowMungers(shadowMungers, mungers, kind);
+			if (mungers.isEmpty()) {
+				perKindShadowMungers[kind.getKey()] = null;
+			} else {
+				if (kind == Shadow.Initialization) {
+					canMatchInitialization = true;
+				} else if (!kind.isEnclosingKind()) {
+					canMatchBodyShadows = true;
+				}
+			}
+		}
+    }
+    
+    private boolean canMatch(Shadow.Kind kind) {
+    	return perKindShadowMungers[kind.getKey()] != null;
+    }
+    
+   	private void fastMatchShadowMungers(List shadowMungers, ArrayList mungers, Kind kind) {
+		FastMatchInfo info = new FastMatchInfo(clazz.getType(), kind);
+		for (Iterator i = shadowMungers.iterator(); i.hasNext();) {
+			ShadowMunger munger = (ShadowMunger) i.next();
+			if (munger.getPointcut().fastMatch(info).maybeTrue()) mungers.add(munger);
+		}
+	}
+
+
+	private void initializeSuperInitializerMap(ResolvedTypeX child) {
 		ResolvedTypeX[] superInterfaces = child.getDeclaredInterfaces();
 		for (int i=0, len=superInterfaces.length; i < len; i++) {
 			if (ty.getResolvedTypeX().isTopmostImplementor(superInterfaces[i])) {
@@ -287,6 +325,7 @@ class BcelClassWeaver implements IClassWeaver {
         List methodGens = new ArrayList(clazz.getMethodGens());
         for (Iterator i = methodGens.iterator(); i.hasNext();) {
             LazyMethodGen mg = (LazyMethodGen)i.next();
+            //mg.getBody();
 			if (! mg.hasBody()) continue;
             isChanged |= match(mg);
         }
@@ -786,7 +825,7 @@ class BcelClassWeaver implements IClassWeaver {
 			} else {
 				AjAttribute.EffectiveSignatureAttribute effective = mg.getEffectiveSignature();
 				if (effective == null) {
-					enclosingShadow = BcelShadow.makeMethodExecution(world, mg);
+					enclosingShadow = BcelShadow.makeMethodExecution(world, mg, !canMatchBodyShadows);
 				} else if (effective.isWeaveBody()) {
 					enclosingShadow =
 						BcelShadow.makeShadowForMethod(
@@ -799,18 +838,22 @@ class BcelClassWeaver implements IClassWeaver {
 				}
 			}
 
-			for (InstructionHandle h = mg.getBody().getStart();
-				h != null;
-				h = h.getNext()) {
-				match(mg, h, enclosingShadow, shadowAccumulator);
+			if (canMatchBodyShadows) {
+				for (InstructionHandle h = mg.getBody().getStart();
+					h != null;
+					h = h.getNext()) {
+					match(mg, h, enclosingShadow, shadowAccumulator);
+				}
 			}
-			match(enclosingShadow, shadowAccumulator);
+			if (match(enclosingShadow, shadowAccumulator)) {
+				enclosingShadow.init();
+			}
 			mg.matchedShadows = shadowAccumulator;
 			return !shadowAccumulator.isEmpty();
 		}
 	}
 
-	private boolean shouldWeaveBody(LazyMethodGen mg) {
+	private boolean shouldWeaveBody(LazyMethodGen mg) {	
 		if (mg.isAjSynthetic()) return mg.getName().equals("<clinit>");
 		AjAttribute.EffectiveSignatureAttribute a = mg.getEffectiveSignature();
 		if (a != null) return a.isWeaveBody();

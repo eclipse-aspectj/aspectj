@@ -40,7 +40,7 @@ public class ConcreteCflowPointcut extends Pointcut {
 		this.slots = slots;
 	}
     
-    public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+    public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
     

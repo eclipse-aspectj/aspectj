@@ -35,7 +35,7 @@ public class OrPointcut extends Pointcut {
 	}
 
 
-	public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return left.fastMatch(type).or(right.fastMatch(type));
 	}
 

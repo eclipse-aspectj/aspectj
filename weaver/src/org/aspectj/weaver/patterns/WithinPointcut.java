@@ -42,8 +42,8 @@ public class WithinPointcut extends Pointcut {
 		return FuzzyBoolean.NO;
 	}
 	
-	public FuzzyBoolean fastMatch(ResolvedTypeX type) {
-		return isWithinType(type);
+	public FuzzyBoolean fastMatch(FastMatchInfo info) {
+		return isWithinType(info.getType());
 	}
     
 	public FuzzyBoolean match(Shadow shadow) {

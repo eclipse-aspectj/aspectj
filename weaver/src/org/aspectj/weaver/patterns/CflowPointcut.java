@@ -59,7 +59,7 @@ public class CflowPointcut extends Pointcut {
 		this.freeVars = freeVars;
 	}
     
-    public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+    public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
     

@@ -47,7 +47,7 @@ public class PerCflow extends PerClause {
 	
 	// -----
 	
-	public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
 	

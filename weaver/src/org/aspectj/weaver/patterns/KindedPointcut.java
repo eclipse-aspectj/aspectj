@@ -51,9 +51,14 @@ public class KindedPointcut extends Pointcut {
         this.munger = munger;
     }
 	
-    public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+    public FuzzyBoolean fastMatch(FastMatchInfo info) {
+    	if (info.getKind() != null) {
+			if (info.getKind() != kind) return FuzzyBoolean.NO;
+    	}
+
 		return FuzzyBoolean.MAYBE;
 	}	
+	
 	public FuzzyBoolean match(Shadow shadow) {
 		if (shadow.getKind() != kind) return FuzzyBoolean.NO;
 		
@@ -61,10 +66,10 @@ public class KindedPointcut extends Pointcut {
             if(kind == Shadow.MethodCall) {
                 warnOnConfusingSig(shadow);
             }
-            return  FuzzyBoolean.NO; 
+            return FuzzyBoolean.NO; 
         }
 
-		return  FuzzyBoolean.YES;
+		return FuzzyBoolean.YES;
 	}
 	
 	private void warnOnConfusingSig(Shadow shadow) {

@@ -56,6 +56,7 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
 
 
 /** 
@@ -74,13 +75,13 @@ import org.aspectj.weaver.ResolvedTypeX;
 
 public final class LazyMethodGen {
     private        int             accessFlags;
-    private final Type            returnType;
+    private  Type            returnType;
     private final String          name;
-    private final Type[]          argumentTypes;
+    private  Type[]          argumentTypes;
     //private final String[]        argumentNames;
-    private final String[]        declaredExceptions;
-    private final InstructionList body; // leaving null for abstracts
-    private final Attribute[]     attributes;
+    private  String[]        declaredExceptions;
+    private  InstructionList body; // leaving null for abstracts
+    private  Attribute[]     attributes;
     /* private */ final LazyClassGen    enclosingClass;   
     private final BcelMethod      memberView;
     int highestLineNumber = 0;
@@ -116,6 +117,7 @@ public final class LazyMethodGen {
         String[] declaredExceptions,
         LazyClassGen enclosingClass) 
     {
+    	//System.err.println("raw create of: " + name + ", " + enclosingClass.getName() + ", " + returnType);
 		this.memberView = null; // ??? should be okay, since constructed ones aren't woven into
         this.accessFlags = accessFlags;
         this.returnType = returnType;
@@ -143,8 +145,11 @@ public final class LazyMethodGen {
         return ret;   
     }
     
-    // build from an existing method
+    private Method savedMethod = null;
+    // build from an existing method, lazy build saves most work for initialization
     public LazyMethodGen(Method m, LazyClassGen enclosingClass) {
+    	savedMethod = m;
+    	
         this.enclosingClass = enclosingClass;
         if (!(m.isAbstract() || m.isNative()) && m.getCode() == null) {
         	throw new RuntimeException("bad non-abstract method with no code: " + m + " on " + enclosingClass);
@@ -152,25 +157,47 @@ public final class LazyMethodGen {
         if ((m.isAbstract() || m.isNative()) && m.getCode() != null) {
         	throw new RuntimeException("bad abstract method with code: " + m + " on " + enclosingClass);
         }
-        MethodGen gen = new MethodGen(m, enclosingClass.getName(), enclosingClass.getConstantPoolGen());
 		this.memberView = new BcelMethod(enclosingClass.getBcelObjectType(), m);
-        this.accessFlags = gen.getAccessFlags();
-        this.returnType = gen.getReturnType();
-        this.name = gen.getName();
-        this.argumentTypes = gen.getArgumentTypes();
-        //this.argumentNames = gen.getArgumentNames();
-        this.declaredExceptions = gen.getExceptions();
-        this.attributes = gen.getAttributes();
-        this.maxLocals = gen.getMaxLocals();
+        
+		this.accessFlags = m.getAccessFlags();
+		this.name = m.getName();
+    }
+    
+    private void initialize() {
+    	if (returnType != null) return;
+    	
+    	//System.err.println("initializing: " + getName() + ", " + enclosingClass.getName() + ", " + returnType + ", " + savedMethod);
+    	
+		MethodGen gen = new MethodGen(savedMethod, enclosingClass.getName(), enclosingClass.getConstantPoolGen());
+        
+		this.returnType = gen.getReturnType();
+		this.argumentTypes = gen.getArgumentTypes();
+
+		this.declaredExceptions = gen.getExceptions();
+		this.attributes = gen.getAttributes();
+		this.maxLocals = gen.getMaxLocals();
+        
+//		this.returnType = BcelWorld.makeBcelType(memberView.getReturnType());
+//		this.argumentTypes = BcelWorld.makeBcelTypes(memberView.getParameterTypes());
+//
+//		this.declaredExceptions = TypeX.getNames(memberView.getExceptions()); //gen.getExceptions();
+//		this.attributes = new Attribute[0]; //gen.getAttributes();
+//		this.maxLocals = savedMethod.getCode().getMaxLocals();
+        
+        
         if (gen.isAbstract() || gen.isNative()) {
             body = null;
         } else {
+        	//body = new InstructionList(savedMethod.getCode().getCode());
             body = gen.getInstructionList();
+            
             unpackHandlers(gen);
             unpackLineNumbers(gen);
             unpackLocals(gen);
         }
         assertGoodBody();
+        
+		//System.err.println("initialized: " + this.getClassName() + "." + this.getName());
     }
     
     // XXX we're relying on the javac promise I've just made up that we won't have an early exception
@@ -293,6 +320,8 @@ public final class LazyMethodGen {
     }
 
     public Method getMethod() {
+    	if (savedMethod != null) return savedMethod;  //??? this relies on gentle treatment of constant pool
+    	
     	try {
 			MethodGen gen = pack();
 			return gen.getMethod();
@@ -303,7 +332,11 @@ public final class LazyMethodGen {
     			this.getMemberView() == null ? null : this.getMemberView().getSourceLocation(), null);
     		throw e;
     	}
-        
+    }
+    
+    public void markAsChanged() {
+    	initialize();
+    	savedMethod = null;
     }
     
     // =============================
@@ -656,12 +689,9 @@ public final class LazyMethodGen {
     }
 
     public Type[] getArgumentTypes() {
+    	initialize();
         return argumentTypes;
     }
-
-//	public String[] getArgumentNames() {
-//		return argumentNames;
-//	}
 
     public LazyClassGen getEnclosingClass() {
         return enclosingClass;
@@ -676,6 +706,7 @@ public final class LazyMethodGen {
     }
 
     public Type getReturnType() {
+    	initialize();
         return returnType;
     }
 
@@ -684,11 +715,14 @@ public final class LazyMethodGen {
     }
     
     public InstructionList getBody() {
+    	markAsChanged();
         return body;
     }
        
-    public boolean hasBody() { return body != null; }
-
+    public boolean hasBody() {
+    	if (savedMethod != null) return savedMethod.getCode() != null;
+    	return body != null;
+    }
 
     public Attribute[] getAttributes() {
         return attributes;
@@ -998,8 +1032,7 @@ public final class LazyMethodGen {
 //            }            
 //        }
         l.add(0, fresh);        
-    }    
-
+    }
 
 
     public boolean isPrivate() {
@@ -1035,13 +1068,12 @@ public final class LazyMethodGen {
 	 */
 	
 	public void assertGoodBody() {
-		// XXX this is REALLY slow since we get the string first...
-		assertGoodBody(getBody(), toString());
+		if (true) return; // only enable for debugging, consider using cheaper toString()
+		assertGoodBody(getBody(), toString()); //definingType.getNameAsIdentifier() + "." + getName()); //toString());
 	}
 	
-	// XXX we might not want to release with any calls to this incredibly inefficient method.
 	public static void assertGoodBody(InstructionList il, String from) {
-		if (true) return;
+		if (true) return;  // only to be enabled for debugging
 		if (il == null) return;
 		Set body = new HashSet();
 		Stack ranges = new Stack();
@@ -1217,8 +1249,9 @@ public final class LazyMethodGen {
     }
     
 	public String getSignature() {
-		return Member.typesToSignature(BcelWorld.fromBcel(getReturnType()), 
-										BcelWorld.fromBcel(getArgumentTypes()));
+		return memberView.getSignature();
+//		return Member.typesToSignature(BcelWorld.fromBcel(getReturnType()), 
+//										BcelWorld.fromBcel(getArgumentTypes()));
 	}
 
 	public BcelMethod getMemberView() {
@@ -1226,6 +1259,7 @@ public final class LazyMethodGen {
 	}
 
 	public void forcePublic() {
+		markAsChanged();
 		accessFlags = Utility.makePublic(accessFlags);
 	}
 
@@ -1236,8 +1270,4 @@ public final class LazyMethodGen {
 	public void setCanInline(boolean canInline) {
 		this.canInline = canInline;
 	}
-	public boolean hasExceptionHandlers() {
-		return hasExceptionHandlers;
-	}
-
 }

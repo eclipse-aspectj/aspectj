@@ -47,6 +47,7 @@ import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.patterns.DeclareParents;
+import org.aspectj.weaver.patterns.FastMatchInfo;
 
 public class BcelWeaver implements IWeaver {
     private BcelWorld world;
@@ -487,7 +488,7 @@ public class BcelWeaver implements IWeaver {
 				}
 			} catch (RuntimeException re) {
 				System.err.println("trouble in: ");
-				clazz.print(System.err);
+				//XXXclazz.print(System.err);
 				throw re;
 			} catch (Error re) {
 				System.err.println("trouble in: ");
@@ -552,11 +553,15 @@ public class BcelWeaver implements IWeaver {
 	private List fastMatch(List list, ResolvedTypeX type) {
 		if (list == null) return Collections.EMPTY_LIST;
 
+		// here we do the coarsest grained fast match with no kind constraints
+		// this will remove all obvious non-matches and see if we need to do any weaving
+		FastMatchInfo info = new FastMatchInfo(type, null);
+
 		List result = new ArrayList();
 		Iterator iter = list.iterator();
 		while (iter.hasNext()) {
 			ShadowMunger munger = (ShadowMunger)iter.next();
-			if (munger.getPointcut().fastMatch(type).maybeTrue()) {
+			if (munger.getPointcut().fastMatch(info).maybeTrue()) {
 				result.add(munger);
 			}
 		}

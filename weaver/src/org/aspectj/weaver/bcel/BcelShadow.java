@@ -515,12 +515,42 @@ public class BcelShadow extends Shadow {
 	}
 	
 	
+	public static BcelShadow makeMethodExecution(
+			BcelWorld world,
+			LazyMethodGen enclosingMethod,
+			boolean lazyInit) 
+	{
+		if (!lazyInit) return makeMethodExecution(world, enclosingMethod);
+		
+		BcelShadow s =
+			new BcelShadow(
+				world,
+				MethodExecution,
+				enclosingMethod.getMemberView(),
+				enclosingMethod,
+				null);
+		                
+		return s;
+	}
+	
+	
+	public void init() {
+		if (range != null) return;
+		
+		final InstructionList body = enclosingMethod.getBody();
+		ShadowRange r = new ShadowRange(body);
+		r.associateWithShadow(this);
+		r.associateWithTargets(
+			Range.genStart(body),
+			Range.genEnd(body));
+	}
+	
     public static BcelShadow makeMethodExecution(
             BcelWorld world,
             LazyMethodGen enclosingMethod) 
     {
     	return makeShadowForMethod(world, enclosingMethod, MethodExecution,
-    			world.makeMethodSignature(enclosingMethod));
+    			enclosingMethod.getMemberView()); //world.makeMethodSignature(enclosingMethod));
     }	
     	
     	

@@ -180,6 +180,13 @@ public abstract class Shadow {
     public static final Kind AdviceExecution      = new Kind(JoinPoint.ADVICE_EXECUTION, 9,  false);
     public static final Kind Initialization       = new Kind(JoinPoint.INITIALIZATION, 10,  false);
     public static final Kind ExceptionHandler     = new Kind(JoinPoint.EXCEPTION_HANDLER, 11,  true);
+    
+    public static final int MAX_SHADOW_KIND = 11;
+    public static final Kind[] SHADOW_KINDS = new Kind[] {
+    	MethodCall, ConstructorCall, MethodExecution, ConstructorExecution,
+    	FieldGet, FieldSet, StaticInitialization, PreInitialization,
+    	AdviceExecution, Initialization, ExceptionHandler,
+    };
 
 
     /** A type-safe enum representing the kind of shadows

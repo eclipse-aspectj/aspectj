@@ -32,7 +32,7 @@ public class WithincodePointcut extends Pointcut {
 		this.signature = signature;
 	}
     
-	public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
     

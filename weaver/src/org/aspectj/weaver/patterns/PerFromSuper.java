@@ -31,7 +31,7 @@ public class PerFromSuper extends PerClause {
 		this.kind = kind;
 	}
 	
-	public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		throw new RuntimeException("unimplemented");
 	}
 	

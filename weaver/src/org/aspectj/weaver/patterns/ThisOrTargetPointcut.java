@@ -50,7 +50,7 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		this.type = type;
 	}
 	
-	public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
 	
