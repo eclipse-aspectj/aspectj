@@ -147,7 +147,7 @@ public class AjcTest {
 	/**
 	 * @param vmLevel The vmLevel to set.
 	 */
-	public void setVmLevel(String vmLevel) {
+	public void setVm(String vmLevel) {
 		this.vmLevel = vmLevel;
 	}
 	
