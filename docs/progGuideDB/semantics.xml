@@ -1500,11 +1500,7 @@
     <para>
       Around advice runs in place of the join point it operates over, rather
       than before or after it.  Because around is allowed to return a value, it
-      must be declared with a return type, like a method.  A piece of around
-      advice may be declared <literal>void</literal>, in which case it is not
-      allowed to return a value, and instead whatever value the join point
-      returned will be returned by the around advice (unless the around advice
-      throws an exception of its own).
+      must be declared with a return type, like a method.
     </para>
 
     <para>
