@@ -1,0 +1,22 @@
+<project name="extdirs-setup" basedir="." default="injar.jar">
+
+	<target name="injar.jar">
+		<property 
+			name="classes.dir" 
+			location="${basedir}/../classes"/>
+
+		<mkdir dir="${classes.dir}"/>
+		<delete	dir="${classes.dir}"/>
+		<mkdir dir="${classes.dir}"/>
+		<javac 
+			destdir="${classes.dir}"
+			includes="pack/X.java"
+			srcdir="${basedir}"/>		
+		<zip 
+			destfile="${basedir}/../injar.jar">
+			<fileset dir="${classes.dir}"/>	
+		</zip>
+		<delete dir="${classes.dir}"/>
+	</target>
+
+</project>
