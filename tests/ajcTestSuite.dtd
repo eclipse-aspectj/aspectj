@@ -46,4 +46,5 @@
    <!ATTLIST dir-changes updated CDATA #IMPLIED >
    <!ATTLIST dir-changes unchanged CDATA #IMPLIED >
    <!ATTLIST dir-changes expDir CDATA #IMPLIED >
+   <!ATTLIST dir-changes fastFail CDATA #IMPLIED >
 
