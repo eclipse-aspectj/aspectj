@@ -231,7 +231,6 @@ public class AnnotationBinding extends XMLBasedAjcTestCase {
   //'@within()' but multiple types around (some annotated)
   public void testWithinBinding2() {
 	runTest("@within - multiple types");
-	System.err.println(getLastRunResult().getStdErr());
   }
   
   ///////////////////////////////////// @WITHINCODE
