@@ -2108,7 +2108,7 @@
 	<!-- we're not implementing this error check in 1.1 -->
     <ajc-test dir="errors"
       title="checking the contra-variant errors for typing of proceed"
-      keywords="from-errors,knownLimitations">
+      keywords="from-errors,knownLimitation">
         <compile files="BadAround.java">
             <message kind="error" line="12"/>
             <message kind="error" line="15"/>
@@ -3921,9 +3921,11 @@
         <run class="AspectInIntroducedMethod"/>
     </ajc-test>
 
+	<!-- This behavior is different from 1.0, but we might want to consider allowing it
+	     Using the eclipse compiler it would be much easier to permit than forbid. -->
     <ajc-test dir="new/introTypeMissing"
       title="Introduced type unavailable to instanceof expressions in introduced methods"
-      keywords="from-resolved_10x">
+      keywords="from-resolved_10x,knownLimitation">
         <compile files="InstanceOf.java,TargetClass.java,Util.java">
             <message kind="error" line="19"/>
             <message kind="error" line="20"/>
@@ -3952,7 +3954,7 @@
 
     <ajc-test dir="new"
       title="enclosing join point not exported properly in pre-initialization join point"
-      keywords="from-resolved_10x">
+      keywords="from-resolved_10x,knownLimitation">
         <compile files="PreInitialization.java"/>
         <run class="PreInitialization"/>
     </ajc-test>
@@ -4565,6 +4567,12 @@
         <compile files="ConstructorExecInit.java"/>
         <run class="ConstructorExecInit"/>
     </ajc-test>
+    
+    <ajc-test dir="new"
+      title="after returning from initialization causes ExceptionInInitializer in aspect">
+        <compile files="ConstructorExecInitFails.java"/>
+        <run class="ConstructorExecInitFails"/>
+    </ajc-test>
 
     <ajc-test dir="new" pr="659"
       title="name binding in before cflow containing cflowbelow"
@@ -4725,7 +4733,7 @@
 
     <ajc-test dir="new"
       title="package typepattern with no packages (in default package)"
-      keywords="from-resolved_105">
+      keywords="from-resolved_105,knownLimitation">
         <compile options="-Xlint" files="TypeNames.java">
             <message kind="warning" line="34"/>
             <message kind="warning" line="39"/>
