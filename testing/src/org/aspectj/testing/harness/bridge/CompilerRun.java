@@ -179,8 +179,9 @@ public class CompilerRun implements IAjcRun {
         // validate readable for sources
         if (!spec.badInput) {
             if (!validator.canRead(testBaseSrcDir, srcPaths, "sources")
-                || !validator.canRead(testBaseSrcDir, injarPaths, "injars")
-                || !validator.canRead(testBaseSrcDir, inpathPaths, "inpaths")
+                // moved validation of inpathPaths below due to ambiguous base dir
+                //|| !validator.canRead(testBaseSrcDir, injarPaths, "injars")
+                //|| !validator.canRead(testBaseSrcDir, inpathPaths, "inpaths")
                 || !validator.canRead(
                     testBaseSrcDir,
                     spec.argfiles,
@@ -231,7 +232,24 @@ public class CompilerRun implements IAjcRun {
             FileUtil.getBaseDirFiles(testBaseSrcDir, spec.classpath);
         final File[] xlintFiles = (null == spec.xlintfile ? new File[0]
             : FileUtil.getBaseDirFiles(testBaseSrcDir, new String[] {spec.xlintfile}));
-            
+
+        // injars might be outjars in the classes dir...
+        for (int i = 0; i < injarFiles.length; i++) {
+            if (!injarFiles[i].exists()) {
+                injarFiles[i] = new File(sandbox.classesDir, injarPaths[i]);
+            }
+        }
+        for (int i = 0; i < inpathFiles.length; i++) {
+            if (!inpathFiles[i].exists()) {
+                inpathFiles[i] = new File(sandbox.classesDir, inpathPaths[i]);
+            }
+        }
+        // moved after solving any injars that were outjars
+        if (!validator.canRead(injarFiles, "injars")
+                || !validator.canRead(injarFiles, "injars")) {
+            return false;
+        }
+        
         // hmm - duplicates validation above, verifying getBaseDirFiles?
         if (!spec.badInput) {
             if (!validator.canRead(argFiles, "argFiles")
