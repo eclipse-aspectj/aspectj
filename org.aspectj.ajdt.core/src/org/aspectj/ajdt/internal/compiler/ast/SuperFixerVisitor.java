@@ -46,6 +46,9 @@ public class SuperFixerVisitor extends AbstractSyntaxTreeVisitorAdapter {
 		if (call.codegenBinding == null) return; 
 		
 		MethodBinding superBinding = call.codegenBinding;
+		if (superBinding instanceof ProblemMethodBinding) {
+			return;
+		}
 		char[] accessName;
 		boolean isSuper;
 		if (call.isSuperAccess() && !call.binding.isStatic()) {

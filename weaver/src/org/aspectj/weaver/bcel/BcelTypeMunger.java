@@ -72,6 +72,17 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				addMethodDispatch(gen, member,
 					AjcMemberMaker.privilegedAccessMethodForMethod(aspectType, member));
 				return true;
+			} else if (member.getKind() == Member.CONSTRUCTOR) {
+				for (Iterator i = gen.getMethodGens().iterator(); i.hasNext(); ) {
+					LazyMethodGen m = (LazyMethodGen)i.next();
+					if (m.getMemberView() != null && m.getMemberView().getKind() == Member.CONSTRUCTOR) {
+						// m.getMemberView().equals(member)) {
+						m.forcePublic();
+						//return true;
+					}
+				}
+				return true;
+				//throw new BCException("no match for " + member + " in " + gen);
 			} else if (member.getKind() == Member.STATIC_INITIALIZATION) {
 				gen.forcePublic();
 				return true;

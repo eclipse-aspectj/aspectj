@@ -95,7 +95,11 @@ public class CrosscuttingMembers {
 		} else if (declare instanceof DeclareDominates) {
 			declareDominates.add(declare);
 		} else if (declare instanceof DeclareParents) {
-			declareParents.add(declare);
+			DeclareParents dp = (DeclareParents)declare;
+			for (Iterator i = dp.getParents().collectAccessTypeMungers(world).iterator(); i.hasNext(); ) {
+				addTypeMunger(world.concreteTypeMunger((PrivilegedAccessMunger)i.next(), inAspect));
+			}
+			declareParents.add(dp);
 		} else if (declare instanceof DeclareSoft) {
 			DeclareSoft d = (DeclareSoft)declare;
 			Pointcut concretePointcut = d.getPointcut().concretize(inAspect, 0);

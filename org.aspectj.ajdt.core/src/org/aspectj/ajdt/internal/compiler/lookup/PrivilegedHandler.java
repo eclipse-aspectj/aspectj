@@ -40,9 +40,15 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 	public MethodBinding getPrivilegedAccessMethod(MethodBinding baseMethod) {
 		ResolvedMember key = inAspect.world.makeResolvedMember(baseMethod);
 		if (accessors.containsKey(key)) return (MethodBinding)accessors.get(key);
-		MethodBinding ret = inAspect.world.makeMethodBinding(
+		
+		MethodBinding ret;
+		if (baseMethod.isConstructor()) {
+			ret = baseMethod;
+		} else {
+			ret = inAspect.world.makeMethodBinding(
 			AjcMemberMaker.privilegedAccessMethodForMethod(inAspect.typeX, key)
-		);
+			);
+		}
 		
 		//new PrivilegedMethodBinding(inAspect, baseMethod);
 		accessors.put(key, ret);

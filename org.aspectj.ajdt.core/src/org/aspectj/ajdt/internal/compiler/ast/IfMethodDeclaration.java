@@ -16,6 +16,7 @@ package org.aspectj.ajdt.internal.compiler.ast;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.IfPointcut;
+import org.eclipse.jdt.internal.compiler.*;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ast.*;
 import org.eclipse.jdt.internal.compiler.lookup.*;
@@ -34,6 +35,10 @@ public class IfMethodDeclaration extends MethodDeclaration {
 		Parser parser,
 		CompilationUnitDeclaration unit) {
 		// do nothing, we're already fully parsed
+	}
+	
+	protected int generateInfoAttributes(ClassFile classFile) {
+		return classFile.generateMethodInfoAttribute(binding, AstUtil.getAjSyntheticAttribute());
 	}
 	
 	public void resolveStatements(ClassScope upperScope) {

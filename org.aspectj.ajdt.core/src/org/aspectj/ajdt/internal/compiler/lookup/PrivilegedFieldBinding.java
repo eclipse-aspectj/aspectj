@@ -19,6 +19,7 @@ import org.aspectj.ajdt.internal.compiler.ast.*;
 import org.aspectj.ajdt.internal.compiler.ast.AstUtil;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.NameMangler;
+import org.eclipse.jdt.internal.compiler.ast.*;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.eclipse.jdt.internal.compiler.lookup.*;
@@ -43,6 +44,9 @@ public class PrivilegedFieldBinding extends FieldBinding {
 				AjcMemberMaker.privilegedAccessMethodForFieldSet(
 					inAspect.typeX, inAspect.world.makeResolvedMember(baseField)
 			)));
+			
+		this.constant = AstNode.NotAConstant;
+		this.baseField = baseField;
 	}
 
 
@@ -59,8 +63,10 @@ public class PrivilegedFieldBinding extends FieldBinding {
 	
 	public boolean alwaysNeedsAccessMethod(boolean isReadAccess) { return true; }
 
-	
+	public FieldBinding getFieldBindingForLookup() { return baseField; }
 
+
+	public String toString() { return "PrivilegedWrapper(" + baseField + ")"; }
 //	public ReferenceBinding getTargetType() {
 //		return introducedField.declaringClass;
 //	}

@@ -73,34 +73,39 @@ public class IfPointcut extends Pointcut {
 		return "if(" + testMethod + ")";
 	}
 
+	private boolean findingResidue = false;
 	public Test findResidue(Shadow shadow, ExposedState state) {
-		if (residueSource == null) return Literal.TRUE;  //???
-		
-		ExposedState myState = new ExposedState(baseArgsCount);
-		//System.out.println(residueSource);
-		residueSource.findResidue(shadow, myState); // don't care about Test
-		
-		//System.out.println(myState);
-		
-		List args = new ArrayList();
-        for (int i=0; i < baseArgsCount; i++) {
-        	args.add(myState.get(i));
-        }
-
-        // handle thisJoinPoint parameters
-        if ((extraParameterFlags & Advice.ThisJoinPoint) != 0) {
-        	args.add(shadow.getThisJoinPointVar());
-        }
-        
-        if ((extraParameterFlags & Advice.ThisJoinPointStaticPart) != 0) {
-        	args.add(shadow.getThisJoinPointStaticPartVar());
-        }
-        
-        if ((extraParameterFlags & Advice.ThisEnclosingJoinPointStaticPart) != 0) {
-        	args.add(shadow.getThisEnclosingJoinPointStaticPartVar());
-        }
-
-		return Test.makeCall(testMethod, (Expr[])args.toArray(new Expr[args.size()]));
+		if (findingResidue) return Literal.TRUE;
+		findingResidue = true;
+		try {
+			ExposedState myState = new ExposedState(baseArgsCount);
+			//System.out.println(residueSource);
+			residueSource.findResidue(shadow, myState); // don't care about Test
+			
+			//System.out.println(myState);
+			
+			List args = new ArrayList();
+	        for (int i=0; i < baseArgsCount; i++) {
+	        	args.add(myState.get(i));
+	        }
+	
+	        // handle thisJoinPoint parameters
+	        if ((extraParameterFlags & Advice.ThisJoinPoint) != 0) {
+	        	args.add(shadow.getThisJoinPointVar());
+	        }
+	        
+	        if ((extraParameterFlags & Advice.ThisJoinPointStaticPart) != 0) {
+	        	args.add(shadow.getThisJoinPointStaticPartVar());
+	        }
+	        
+	        if ((extraParameterFlags & Advice.ThisEnclosingJoinPointStaticPart) != 0) {
+	        	args.add(shadow.getThisEnclosingJoinPointStaticPartVar());
+	        }
+	
+			return Test.makeCall(testMethod, (Expr[])args.toArray(new Expr[args.size()]));
+		} finally {
+			findingResidue = false;
+		}
 	}
 	
 	
@@ -108,10 +113,14 @@ public class IfPointcut extends Pointcut {
 		return this.concretize1(inAspect, bindings);
 	}
 	
+	private IfPointcut partiallyConcretized = null;
 	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+		//System.err.println("concretize: " + this + " already: " + partiallyConcretized);
+		if (partiallyConcretized != null) {
+			return partiallyConcretized;
+		}
 		IfPointcut ret = new IfPointcut(testMethod, extraParameterFlags);
-		if (this.state == CONCRETE) return ret;
-		this.state = CONCRETE;
+		partiallyConcretized = ret;
 		if (bindings.directlyInAdvice()) {
 			Advice advice = bindings.getEnclosingAdvice();
 			ret.baseArgsCount = advice.getBaseParameterCount();

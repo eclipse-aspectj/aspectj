@@ -98,7 +98,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 	
 	public void generateCode(ClassScope classScope, ClassFile classFile) {
 		if (ignoreFurtherInvestigation) {
-			System.err.println("no code for " + this);
+			//System.err.println("no code for " + this);
 			return;
 		}
 		

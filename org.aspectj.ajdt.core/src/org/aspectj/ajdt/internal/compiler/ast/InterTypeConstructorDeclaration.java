@@ -222,7 +222,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 	
 	
 	private AjAttribute makeAttribute(EclipseWorld world) {
-		if (explicitConstructorCall != null) {
+		if (explicitConstructorCall != null && !(explicitConstructorCall.binding instanceof ProblemMethodBinding)) {
 			MethodBinding explicitConstructor = explicitConstructorCall.binding;
 			if (explicitConstructor.alwaysNeedsAccessMethod()) {
 				explicitConstructor = explicitConstructor.getAccessMethod();

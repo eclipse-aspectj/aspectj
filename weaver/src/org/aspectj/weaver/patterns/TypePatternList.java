@@ -14,6 +14,7 @@
 package org.aspectj.weaver.patterns;
 
 import java.io.*;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 import org.aspectj.weaver.*;
@@ -230,5 +231,19 @@ public class TypePatternList extends PatternNode {
     public TypePattern[] getTypePatterns() {
         return typePatterns;
     }
+
+	public Collection collectAccessTypeMungers(World world) {
+		ArrayList ret = new ArrayList();
+		for (int i=0; i<typePatterns.length; i++) {
+			TypeX t = typePatterns[i].getExactType();
+			ResolvedTypeX rt = t.resolve(world);
+			if (!Modifier.isPublic(rt.getModifiers())) {
+				ret.add(new PrivilegedAccessMunger(new ResolvedMember(
+					Member.STATIC_INITIALIZATION, rt, 0, ResolvedTypeX.VOID, "", TypeX.NONE
+				)));
+			}
+		}
+		return ret;
+	}
 
 }

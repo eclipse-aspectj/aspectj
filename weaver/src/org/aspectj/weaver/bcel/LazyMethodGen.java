@@ -38,7 +38,7 @@ import org.aspectj.weaver.*;
  */
 
 public final class LazyMethodGen {
-    private final int             accessFlags;
+    private        int             accessFlags;
     private final Type            returnType;
     private final String          name;
     private final Type[]          argumentTypes;
@@ -1058,6 +1058,10 @@ public final class LazyMethodGen {
 
 	public BcelMethod getMemberView() {
 		return memberView;
+	}
+
+	public void forcePublic() {
+		accessFlags = Utility.makePublic(accessFlags);
 	}
 
 }

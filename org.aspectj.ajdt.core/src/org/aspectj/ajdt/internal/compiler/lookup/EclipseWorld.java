@@ -141,7 +141,7 @@ public class EclipseWorld extends World {
 	
 	public static ResolvedMember makeResolvedMember(MethodBinding binding) {
 		return new ResolvedMember(
-			Member.METHOD,
+			binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD,
 			fromBinding(binding.declaringClass),
 			binding.modifiers,
 			fromBinding(binding.returnType),
