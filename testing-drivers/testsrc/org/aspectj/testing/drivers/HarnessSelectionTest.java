@@ -199,7 +199,8 @@ public class HarnessSelectionTest extends TestCase {
     
     public void testTitleContainsSubstringSelection() {
         String[] options = new String[] 
-            { "-ajctestTitleContains=run and " 
+            { "-ajctestTitleContains=run and ",
+                "-eclipse" 
             };
         Exp exp = new Exp(17, 1, 16, 1, 0, 0, 16);
         checkSelection(SELECT, options, "run and", exp);
@@ -207,7 +208,8 @@ public class HarnessSelectionTest extends TestCase {
     
     public void testTitleContainsSubstringSelectionPlural() {
         String[] options = new String[] 
-            { "-ajctestTitleContains= run and , if skipKeyword " 
+            { "-ajctestTitleContains= run and , if skipKeyword ",
+                "-eclipse" 
             };
         Exp exp = new Exp(17, 2, 15, 2, 0, 0, 15);
         checkSelection(SELECT, options, "title", exp);
@@ -215,7 +217,8 @@ public class HarnessSelectionTest extends TestCase {
 
     public void testTitleContainsExactSelection() {
         String[] options = new String[] 
-            { "-ajctestTitleContains=run and pass" 
+            { "-ajctestTitleContains=run and pass",
+                "-eclipse" 
             };
         Exp exp = new Exp(17, 1, 16, 1, 0, 0, 16);
         checkSelection(SELECT, options, "run and pass", exp);
@@ -223,7 +226,8 @@ public class HarnessSelectionTest extends TestCase {
     
     public void testTitleContainsExactSelectionPlural() {
         String[] options = new String[] 
-            { "-ajctestTitleContains= run and pass , omit if skipKeyword " 
+            { "-ajctestTitleContains= run and pass , omit if skipKeyword ",
+                "-eclipse" 
             };
         Exp exp = new Exp(17, 2, 15, 2, 0, 0, 15);
         checkSelection(SELECT, options, "title", exp);
@@ -231,7 +235,8 @@ public class HarnessSelectionTest extends TestCase {
 
     public void testTitleListSelection() {
         String[] options = new String[] 
-            { "-ajctestTitleList=run and pass" 
+            { "-ajctestTitleList=run and pass",
+                "-eclipse" 
             };
         Exp exp = new Exp(17, 1, 16, 1, 0, 0, 16);
         checkSelection(SELECT, options, "run and pass", exp);
@@ -239,7 +244,8 @@ public class HarnessSelectionTest extends TestCase {
     
     public void testTitleListSelectionPlural() {
         String[] options = new String[] 
-            { "-ajctestTitleList= run and pass , omit if skipKeyword " 
+            { "-ajctestTitleList= run and pass , omit if skipKeyword ",
+                "-eclipse" 
             };
         Exp exp = new Exp(17, 2, 15, 2, 0, 0, 15);
         checkSelection(SELECT, options, "title", exp);
@@ -247,7 +253,8 @@ public class HarnessSelectionTest extends TestCase {
 
     public void testTitleListFileSelection() {
         String[] options = new String[] 
-            { "-ajctestTitleList=" + TITLE_LIST_ONE
+            { "-ajctestTitleList=" + TITLE_LIST_ONE,
+                "-eclipse"
             };
         Exp exp = new Exp(17, 1, 16, 1, 0, 0, 16);
         checkSelection(SELECT, options, TITLE_LIST_ONE, exp);
@@ -255,7 +262,8 @@ public class HarnessSelectionTest extends TestCase {
     
     public void testTitleListFileSelectionPlural() {
         String[] options = new String[] 
-            { "-ajctestTitleList=" + TITLE_LIST_PLURAL
+            { "-ajctestTitleList=" + TITLE_LIST_PLURAL,
+                "-eclipse"
             };
         Exp exp = new Exp(17, 2, 15, 2, 0, 0, 15);
         checkSelection(SELECT, options, TITLE_LIST_PLURAL, exp);
@@ -263,10 +271,13 @@ public class HarnessSelectionTest extends TestCase {
     
     public void testTitleListFileSelectionPluralFailOnly() {
         String[] options = new String[] 
-            { "-ajctestTitleFailList=" + TITLE_LIST_PLURAL
+            { "-ajctestTitleFailList=" + TITLE_LIST_PLURAL,
+                "-eclipse"
             };
-        Exp exp = new Exp(17, 1, 16, 1, 0, 0, 16);
-        checkSelection(SELECT, options, TITLE_LIST_PLURAL, exp);
+        // 1 messages skipped when run under 1.4 for other reasons,
+        // so count "skip" instead of TITLE_LIST_PLURAL
+        Exp exp = new Exp(17, 2, 15, 2, 0, 0, 15);
+        checkSelection(SELECT, options, "skip", exp);
     }
 
     /** 
