@@ -300,8 +300,12 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			for (Iterator iter = neededSuperCalls.iterator(); iter.hasNext(); ) {
 				ResolvedMember superMethod = (ResolvedMember) iter.next();
 				if (weaver.addDispatchTarget(superMethod)) {
-					String dispatchName = genSuperDispatchName(onType, superMethod);
-					LazyMethodGen dispatcher = makeDispatcher(gen, dispatchName, superMethod, weaver.getWorld());
+					//System.err.println("super type: " + superMethod.getDeclaringType() + ", " + gen.getType());
+					boolean isSuper = !superMethod.getDeclaringType().equals(gen.getType());
+					String dispatchName;
+					if (isSuper) dispatchName = NameMangler.superDispatchMethod(onType, superMethod.getName());
+					else dispatchName = NameMangler.protectedDispatchMethod(onType, superMethod.getName());
+					LazyMethodGen dispatcher = makeDispatcher(gen, dispatchName, superMethod, weaver.getWorld(), isSuper);
 
 					weaver.addLazyMethodGen(dispatcher);
 				}
@@ -433,7 +437,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		LazyClassGen onGen,
 		String dispatchName,
 		ResolvedMember superMethod,
-		BcelWorld world) 
+		BcelWorld world,
+		boolean isSuper) 
 	{
 		Type[] paramTypes = BcelWorld.makeBcelTypes(superMethod.getParameterTypes());
 		Type returnType = BcelWorld.makeBcelType(superMethod.getReturnType());
@@ -459,21 +464,15 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			body.append(fact.createLoad(paramType, pos));
 			pos+=paramType.getSize();
 		}
-		body.append(Utility.createSuperInvoke(fact, world, superMethod));
+		if (isSuper) {
+			body.append(Utility.createSuperInvoke(fact, world, superMethod));
+		} else {
+			body.append(Utility.createInvoke(fact, world, superMethod));
+		}
 		body.append(fact.createReturn(returnType));
 
 		return mg;
-	}
-
-
-	private static String genSuperDispatchName(
-		ResolvedTypeX onType,
-		ResolvedMember superMethod) 
-	{
-		return "ajc$" + ResolvedTypeMunger.SUPER_DISPATCH_NAME + "$" + onType.getNameAsIdentifier() + "$" + superMethod.getName();
-	}
-
-	
+	}	
 	
 	private boolean mungeNewField(BcelClassWeaver weaver, NewFieldTypeMunger munger) {
 		ResolvedMember initMethod = munger.getInitMethod(aspectType);

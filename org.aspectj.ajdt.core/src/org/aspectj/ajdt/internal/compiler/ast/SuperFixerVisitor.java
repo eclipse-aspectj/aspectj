@@ -16,6 +16,7 @@ package org.aspectj.ajdt.internal.compiler.ast;
 import java.util.*;
 import java.util.Arrays;
 
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.ShadowMunger;
 import org.eclipse.jdt.internal.compiler.AbstractSyntaxTreeVisitorAdapter;
@@ -44,15 +45,28 @@ public class SuperFixerVisitor extends AbstractSyntaxTreeVisitorAdapter {
 		// an error has already occurred
 		if (call.codegenBinding == null) return; 
 		
-		if (!call.isSuperAccess() || call.binding.isStatic()) return;
-
-		call.receiver = new ThisReference();
-		
 		MethodBinding superBinding = call.codegenBinding;
-		
-		char[] accessName = AstUtil.makeAjcMangledName(
-			ResolvedTypeMunger.SUPER_DISPATCH_NAME.toCharArray(), targetClass, superBinding.selector
-		);
+		char[] accessName;
+		boolean isSuper;
+		if (call.isSuperAccess() && !call.binding.isStatic()) {
+			call.receiver = new ThisReference();
+			accessName =
+				NameMangler.superDispatchMethod(EclipseWorld.fromBinding(targetClass), 
+							new String(superBinding.selector)).toCharArray();
+		} else if (call.receiver.isThis() && call.binding.isProtected() && !call.binding.isStatic()) {
+			//XXX this is a hack that violates some binary compatibility rules
+			if (superBinding.declaringClass.equals(targetClass)) {
+				accessName =
+					NameMangler.protectedDispatchMethod(EclipseWorld.fromBinding(targetClass), 
+								new String(superBinding.selector)).toCharArray();
+			} else {
+				accessName =
+				NameMangler.superDispatchMethod(EclipseWorld.fromBinding(targetClass), 
+							new String(superBinding.selector)).toCharArray();
+			}
+		} else {
+			return;
+		}
 		
 		//??? do we want these to be unique
 		MethodBinding superAccessBinding =
@@ -62,7 +76,7 @@ public class SuperFixerVisitor extends AbstractSyntaxTreeVisitorAdapter {
 		
 		call.codegenBinding = superAccessBinding;
 		
-		superMethodsCalled.add(superBinding);
-
+		ResolvedMember targetMember = EclipseWorld.makeResolvedMember(superBinding);
+		superMethodsCalled.add(targetMember);
 	}
 }

@@ -283,7 +283,7 @@ public class BcelWeaver implements IWeaver {
 
 		LazyClassGen clazz = null;
 		
-		if (shadowMungers.size() > 0 || typeMungers.size() > 0) {
+		if (shadowMungers.size() > 0 || typeMungers.size() > 0 || classType.isAspect()) {
 			clazz = classType.getLazyClassGen();
 			try {
 				boolean isChanged = BcelClassWeaver.weave(world, clazz, shadowMungers, typeMungers);

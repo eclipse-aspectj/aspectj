@@ -231,11 +231,20 @@ public class NameMangler {
 	// ----
 
 	/**
-	 * This static method goes on the declaring aspect of the inter-type method.
+	 * This static method goes on the target class of the inter-type method.
 	 */
-	public static String superDispatcher(TypeX classType, String name) 
+	public static String superDispatchMethod(TypeX classType, String name) 
 	{
 		return makeName("superDispatch",
+					classType.getNameAsIdentifier(), name);
+	}
+
+	/**
+	 * This static method goes on the target class of the inter-type method.
+	 */
+	public static String protectedDispatchMethod(TypeX classType, String name) 
+	{
+		return makeName("protectedDispatch",
 					classType.getNameAsIdentifier(), name);
 	}
 

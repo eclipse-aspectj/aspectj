@@ -70,13 +70,14 @@ public abstract class InterTypeDeclaration extends MethodDeclaration {
 	public void fixSuperCallsInBody() {
 		SuperFixerVisitor v = new SuperFixerVisitor(this, onTypeBinding);
 		this.traverse(v, (ClassScope)null);
-		HashSet set = new HashSet();
-		for (Iterator i = v.superMethodsCalled.iterator(); i.hasNext(); ) {
-			MethodBinding b = (MethodBinding)i.next();
-			set.add(EclipseWorld.makeResolvedMember(b));
-		}
-		
-		munger.setSuperMethodsCalled(set);
+		munger.setSuperMethodsCalled(v.superMethodsCalled);
+//		HashSet set = new HashSet();
+//		for (Iterator i = v.superMethodsCalled.iterator(); i.hasNext(); ) {
+//			MethodBinding b = (MethodBinding)i.next();
+//			set.add(EclipseWorld.makeResolvedMember(b));
+//		}
+//		
+//		munger.setSuperMethodsCalled(set);
 	}
 
 	protected void resolveOnType(ClassScope classScope) {
