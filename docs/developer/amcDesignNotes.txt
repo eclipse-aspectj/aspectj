@@ -1,0 +1,388 @@
+
+How Compilation Progresses in the JDT:
+======================================
+
+Compiler.compile(ICompilationUnit[] sourceUnits) {
+
+  foreach sourceUnit
+    create a new CompilationUnitResult
+    CompilationUnitDeclaration = parser.parse(sourceUnit, result)
+    remember CompilationUnitDeclaration (holds ref to result) in
+      "unitsToProcess"
+  end
+
+  foreach unitToProcess
+    resolve 
+    analyse 
+    generateCode
+      puts class files (plural) into CompilationUnitResult
+
+    unit.cleanup (discards AST info etc.)
+    requestor.acceptResult(result)  -- each requestor does there own thing
+    discard CompilationUnitDeclaration
+  end
+}
+
+Some portions of the JDT call the resolve method instead of compile,
+this works the same way except that there is only a single sourceUnit
+passed to the compiler, and the code generation phase is optional
+(controlled by flag passed by caller).
+
+
+How (batch) Compilation Progresses in AspectJ 1.1.x
+===================================================
+
+AjBuildManager.doBuild() {
+
+  init phase
+  ----------
+  new AjState().prepareForNextBuild()
+    builds empty lists to hold classes etc.
+
+  setUpModel()  // this stage should be omitted unless s.one wants it
+
+  new BcelWorld(classpath)
+  new BcelWeaver(world)
+
+  add all aspectpath entries to weaver
+  add all injars to weaver
+  add all inpath entries to weaver
+  add all source path *resources* to weaver
+
+  compile phase
+  -------------
+  build name environment, lookup environment, problem reporter and
+  compiler
+
+  compiler.compile() 
+   proceeds as above, we pass in a requestor that adds the 
+   resulting class files in the result into a list of addedClassFiles
+   in AjState
+
+  weave phase
+  -----------
+  add the addedClassFiles to the weaver
+  
+  pass over all class files known to weaver, building xcut set
+  pass over all types, adding interTypeMungers to them
+  pass over all aspects, weave them
+  pass over all classes, weave them
+
+  write out any resources added to weaver 
+}
+
+How we want (batch) compilation to proceed in AspectJ 1.2
+=========================================================
+
+The key design goal is to do all the work inside the compile method of
+the compiler (this makes life much easier for integration with the
+rest of the JDT that, quite reasonably, expects the class files to be
+ready for action once a compile has completed). The second design goal
+is that it should be up to the requestor passed into the compiler
+whether or not the class files actually get written out to disk
+(different parts of the JDT pass in many different kinds of requestors
+that do different things).
+
+This simple model ignores aspectpath, inpath, injars, outjar,
+sourceDirs for now.
+
+Compiler.compile(ICompilationUnit[] sourceUnits) {
+
+  initial parse phase
+  -------------------
+  foreach sourceUnit
+    create a new CompilationUnitResult
+    CompilationUnitDeclaration = parser.parse(sourceUnit, result)
+    remember CompilationUnitDeclaration (holds ref to result) in
+      "unitsToProcess"
+  end
+
+  generate phase
+  --------------
+  foreach unitToProcess
+    resolve 
+    analyse 
+    generateCode
+      puts class files (plural) into CompilationUnitResult
+
+    unit.cleanup (discards AST info etc.)
+    
+    // up to this point we are identical to JDT current behaviour,
+    // from now on we deviate
+    resultsPendingWeave.add(result)
+    discard CompilationUnitDeclaration
+  end
+
+  weave phase
+  -----------
+  //createWorldAndWeaver(classpath)
+  //the world and weaver have to be passed into the compiler, to
+  //support incremental use cases.
+
+  buildXCutSet(resultsPendingWeave)
+  addTypeMungers(resultsPendingWeave)
+  weaveAspects(resultsPendingWeave)
+  weaveClasses(resultsPendingWeave)
+
+  completion phase
+  ----------------
+  foreach resultPendingWeave
+    requestor.acceptResult(result)  -- each requestor does their own
+                                       thing
+  end
+
+  // note : movement of any resouces is moved to outside of compile
+  // altogether. In eclipse, the xxxImageBuilders handle this.   
+}
+
+
+buildXCutSet(resultsPendingWeave) {
+  foreach resultPendingWeave
+    foreach classfile
+      resolve
+      if aspect, add to xcut set.
+    end
+  end
+}
+
+addTypeMungers(resultsPendingWeave) {
+  foreach resultPendingWeave
+    foreach classfile
+      resolve
+      addTypeMungers
+    end
+  end
+}
+
+weaveAspect(resultsPendingWeave) {
+  foreach resultPendingWeave
+    foreach classfile
+      get corresponding BcelObjectType
+      weave
+      update classfile held in result
+    end
+  end
+}
+
+weaveClass(resultsPendingWeave) {
+  foreach resultPendingWeave
+    foreach classfile
+      get corresponding BcelObjectType
+      weave
+      update classfile held in result
+    end
+  end
+}
+
+
+Note on createWorldAndWeaver(classpath)
+ - we can probably avoid having to turn the Eclipse nameEnvironment
+ into an externalized classpath by extending
+ weaver.bcel.ClasspathManager to cope with "third party" managed
+ classpath entries. On the eclipse side we can implement some
+ interface and map it back into a call to INameEnvironment.findType -
+ will need to cast returned IBinaryType into ClassFileReader, this is
+ the only nasty. Much better than doing classpath nonsense though.
+
+Note on handling the outjar option:
+ - this will be addressed by the requestor, if they want the results
+ to go into an outjar, they can do so when accepting results. It will
+ also have to be known by the piece of logic that moves resources (but
+ that is outside of compile anyway).
+
+Note on handling sourceDirs:
+ - this is a command-line option only, and is handled by adding all
+ the source files in the directories to the list of sourceUnits passed
+ into compile.
+
+Note on handling aspectpath:
+ - this is a list of directories and jar files containing class files
+ to be added to the list of aspects. These class files will be added
+ to the weaver's list of added aspects at the start of the weave phase
+
+Note on handling injars, inpath: 
+ - these contain a set of class files that were not generated via
+ parsing source, but instead are read directly from disk. We build a
+ dummy CompilationResult in which getClassFiles() returns ClassFile
+ objects for each of the class files. (Note, may need to define a
+ ClassFile subclass with that just takes byte[] - this is a horrid
+ hack but contained, and keeps the rest of the design clean).  
+ 
+Note on handling -XnoWeave:
+ - just skip the weave phase!
+
+
+Handling Batch Compiles From Eclipse Using the New Model
+========================================================
+
+Eclipse is responsible for building the name enviroment and list of
+ICompilationUnits to be compiled (does this already today). Eclipse is
+also responsible for creating and passing in the desired requestor
+(does this already today too).
+
+We will add a new BcelWorld constructor that takes an
+org.aspectj.weaver.IManagedClasspath or similar in place of a
+List of String classpath entries. ClasspathManager will be extended to
+do the right thing with this, and on the Eclipse side we will
+implement the interface backed by an INameEnvironment as discussed in
+the notes above.
+
+The AspectJ specific options (aspectpath etc) are stored in an
+extension of IJavaProject, IAspectJProject, and persisted in .ajpath
+(analagous to .classpath) in the AspectJ project.
+
+The AbstractImageBuilder handles resource copying, and we don't need
+to change this logic in any way.
+
+That's all folks!
+
+Handling Batch Compiles From ajc Using the New Model
+====================================================
+
+AjBuildManager creates the list of ICompilationUnits to be compiled in
+the same way that it does today. 
+
+It could obtain a classpath to give to the weaver from AjBuildConfig
+in the same way that it does today - but it might be simpler and more
+consistent to pass across an IManagedClasspath built from the
+FileSystem (INameEnvironment) built from the classpath - this will
+give consistency across inside and outside Eclipse compiles.
+
+The compiler is constructed with a requestor that writes class files
+in CompilationUnitResults out to disk at the output location (or jar
+file) in the AjBuildConfig.
+
+The AspectJ specific options (aspectpath etc) are obtained from
+AjBuildConfig as today.
+
+Resource copying will ideally be handled outside of the weaver (from
+source dirs and inpath dirs only) inside AjBuildManager.
+
+How Incremental Compilation Works in the JDT
+============================================
+
+Incremental compilation begins in the JavaBuilder with a request to
+perform an incremental build. If the classpath of the project has
+changed, or a binary project member (jar or .class file) has changed,
+it reverts to a full build.
+
+An IncrementalImageBuilder is then created and asked to build the
+deltas since the last build. If this succeeds the new build state is
+recorded for the next compile, otherwise we revert to a full build.
+
+The IncrementalImageBuilder algorithm proceeds as follows:
+   // initialize builder
+   // walk this project's deltas, find changed source files
+   // walk prereq projects' deltas, find changed class files & add 
+      affected source files
+   //   use the build state # to skip the deltas for certain prereq projects
+   //   ignore changed zip/jar files since they caused a full build
+   // compile the source files & acceptResult()
+   // compare the produced class files against the existing ones on disk
+   // recompile all dependent source files of any type with structural
+      changes or new/removed secondary type
+   // keep a loop counter to abort & perform a full build (after 5 attempts)
+
+
+
+How Incremental Compilation Works in AspectJ 1.1.x
+==================================================
+
+As per batch building, except that:
+
+* if previous built state (AjState) exists, we do not create a new
+  bcelWorld (will use existing one). 
+* create list of source files to compile by looking at all source
+  files modified since last build date
+* delete any class files that resulted from now deleted files, tell
+  the weaver about them
+* extend list of source files to compile with files containing types
+  that reference types defined in modified source files
+* ask the compiler to compile the source files
+* find the list of source files that refer to things we changed, if
+  its non-empty, defer to a batch build (this is like the eclipse
+  algorithm, but with a loop count of 1).
+
+now hand-off to weaver...
+
+* tell the weaver about every class file we wrote
+* weaver determines whether or not it needs to reweave everything by
+  looking at added and deleted classes and searching for aspects
+  (slight simplification)
+* weave proceeds as before, weaving either only the added classes, or
+  everything, as required.
+
+How we want Incremental Compilation to proceed in AspectJ 1.2
+=============================================================
+
+This is harder to get right than batch (surprise). We still want the
+same two statements to hold at the end of the compilation of an
+individual source file:
+1) all the class files have been written out and are ready to be used
+2) all errors in any type defined in the file have been reported
+
+In both cases, the real 'incremental' logic is outside of the Compiler
+itself (in IncrementalImageBuilder and in AjBuildManager). In the
+current ajc case though, all compilation iterations have completed
+before entering a single back-end weave phase. Pushing weaving inside
+compile (as outlined in the proposal for batch building) makes this
+design harder to accomplish in the new world. We are saved by the fact
+that the current AspectJ incremental implementation currently only
+supports one go round the loop before bailing out to a full build, and
+we can mimic that behaviour easily. 
+
+The logic in AjState that currently updates the weaver with
+addedClassFiles as compilation results are produced will have to be
+moved into the compiler (adaptor), to occur between the intermediate
+class file generation and the weaving phase.
+
+Incremental AspectJ Compilation in Eclipse
+==========================================
+
+The JavaBuilder (one per project) will be responsible for managing the
+bcelWorld and bcelWeaver. These will be passed to the Compiler
+(Adaptor) prior to calling compile. The incremental build manager
+which processes deltas will be responsible for informing the weaver of
+deleted class files. Added class files are determined as compilation
+progresses. Weaving will happen inside the compile method, as
+described for batch, with the twist that the whole world may be
+rewoven if the weaver feels this is necessary. To keep things
+initially as close to the current AspectJ implementation as possible,
+we will set the maximum loop limit to 1 in the IncrementalImageBuilder
+so that we bail out to a full build if we don't compile everything we
+need in the first go. With a suitable test suite in place, there's no
+conceptual reason why we couldn't put that back up to 5 (the JDT
+default) as far as I can see right now.
+ When performing a whole world weave, the compiler may end up asking
+requestors to acceptResult()s that they didn't request to be compiled,
+but this is no different to the dependency analysis done on
+referencing types that may then get added into subsequent incremental
+loops in the JDT today.
+
+Incremental AspectJ Compilation in ajc
+======================================
+
+AjBuildManager manages the bcelWorld and weaver as it does today, and
+passes them to the compiler adaptor for it to call the weave method
+rather than AjBuildManager calling weave directly as it does
+today. 
+
+
+Note on handling aspectpath:
+If the JavaBuilder detects that the aspectpath itself has changed in
+any way, it will request a full build. If delta analysis during the
+first phase of incremental compilation detects that a jar or class
+file in an aspectpath has changed, it will bail out to a full build.
+
+Note on handling injars, inpath:
+We must make sure that the delta analysis allows a project with only
+an inpath change to proceed to building (rather than thinking that
+there is nothing to do). Any changed jars or class files will have
+their classes added to the weaver, and the weaver will be notified of
+deletions too. We need to ensure that we still continue on to
+compilation even when there are no "source files" in the work queue -
+will need some design. 
+
+For tomorrow:  start looking at refactoring AspectJ codebase itself to
+fit the new shape, ahead of trying to do ImageBuilder integration at
+the same time (in AspectJ, I have the test harness to guide me).

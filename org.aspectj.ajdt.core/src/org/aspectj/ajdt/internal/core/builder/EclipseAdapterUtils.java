@@ -21,7 +21,6 @@ import org.aspectj.bridge.Message;
 import org.aspectj.bridge.SourceLocation;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
-import org.eclipse.jdt.internal.compiler.util.Util;
 
 /**
  * 
@@ -42,7 +41,8 @@ public class EclipseAdapterUtils {
         
         if ((startPosition > endPosition)
             || ((startPosition <= 0) && (endPosition <= 0)))
-            return Util.bind("problem.noSourceInformation"); //$NON-NLS-1$
+            //return Util.bind("problem.noSourceInformation"); //$NON-NLS-1$
+        	return "(no source information available)";
 
         final char SPACE = '\u0020';
         final char MARK = '^';
@@ -99,7 +99,7 @@ public class EclipseAdapterUtils {
             }
         }
         //mark the error position
-        for (int i = startPosition;
+        for (int i = startPosition + trimLeftIndex;  // AMC if we took stuff off the start, take it into account!
             i <= (endPosition >= source.length ? source.length - 1 : endPosition);
             i++)
             underneath[pos++] = MARK;
@@ -127,9 +127,29 @@ public class EclipseAdapterUtils {
      */
     public static IMessage makeMessage(ICompilationUnit unit, IProblem problem) { 
         ISourceLocation sourceLocation = makeSourceLocation(unit, problem);
-        return new Message(problem.getMessage(), sourceLocation, problem.isError());
+        IProblem[] seeAlso = problem.seeAlso();
+        ISourceLocation[] seeAlsoLocations = new ISourceLocation[seeAlso.length];
+        for (int i = 0; i < seeAlso.length; i++) {
+        	seeAlsoLocations[i] = new SourceLocation(new File(new String(seeAlso[i].getOriginatingFileName())),
+        											 seeAlso[i].getSourceLineNumber());
+													 
+		}
+        IMessage msg = new Message(problem.getMessage(), 
+        						   problem.getSupplementaryMessageInfo(),
+								   problem.isError() ? IMessage.ERROR : IMessage.WARNING,
+								   sourceLocation, 
+								   null,
+								   seeAlsoLocations);
+        return msg;
     }               
 
+    public static IMessage makeErrorMessage(ICompilationUnit unit, String text, Exception ex) {
+    	ISourceLocation loc = new SourceLocation(new File(new String(unit.getFileName())),
+    												0,0,0,"");
+    	IMessage msg = new Message(text,IMessage.ERROR,ex,loc);
+    	return msg;
+    }
+    
 	private EclipseAdapterUtils() {
 	}
 

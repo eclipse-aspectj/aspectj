@@ -425,7 +425,9 @@ public class Main {
                     String name = file.getName();
                     if (!toString || (-1 == text.indexOf(name))) {                        
                         sb.append(FileUtil.getBestPath(file));
-                        sb.append(":" + loc.getLine());
+                        if (loc.getLine() > 0) {
+                            sb.append(":" + loc.getLine());                        	
+                        }
                         int col = loc.getColumn();
                         if (0 < col) {
                             sb.append(":" + col);
@@ -435,6 +437,14 @@ public class Main {
                 }
                 context = loc.getContext();
             }
+            
+            // per Wes' suggestion on dev...
+            if (message.getKind() == IMessage.ERROR) {
+            	sb.append("error ");
+            } else if (message.getKind() == IMessage.WARNING) {
+            	sb.append("warning ");
+            }
+            
             sb.append(text);
             if (null != context) {
                 sb.append(LangUtil.EOL);

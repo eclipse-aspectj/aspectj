@@ -105,5 +105,16 @@
         <run class="Main"/>
     </ajc-test>
 
+     <ajc-test dir="aspectSourceAdded" 
+    	title="add aspect source file and check world is rewoven"
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+        	sourceroots="."/>
+        <inc-compile tag="20">
+            <dir-changes added="Detour"/>
+        </inc-compile>
+        <run class="Main"/>
+    </ajc-test>
 
 </suite>

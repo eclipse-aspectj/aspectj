@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.aspectj.ajdt.internal.compiler.InterimCompilationResult;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
@@ -43,9 +44,10 @@ public class AjState {
 	AjBuildConfig buildConfig;
 	AjBuildConfig newBuildConfig;
 	
-	Map/*<File, List<UnwovenClassFile>*/ classesFromFile = new HashMap();
+//	Map/*<File, List<UnwovenClassFile>*/ classesFromFile = new HashMap();
+	Map/*<File, CompilationResult*/ resultsFromFile = new HashMap();
 	Map/*<File, ReferenceCollection>*/ references = new HashMap();
-	
+	Map/*File, List<UnwovenClassFile>*/ binarySourceFiles = new HashMap();
 	Map/*<String, UnwovenClassFile>*/ classesFromName = new HashMap();
 	
 	ArrayList/*<String>*/ qualifiedStrings;
@@ -143,13 +145,12 @@ public class AjState {
 			File deletedFile = (File)i.next();
 			//System.out.println("deleting: " + deletedFile);
 			addDependentsOf(deletedFile);
-			List unwovenClassFiles = (List)classesFromFile.get(deletedFile);
-			classesFromFile.remove(deletedFile);
+			InterimCompilationResult intRes = (InterimCompilationResult) resultsFromFile.get(deletedFile);
+			resultsFromFile.remove(deletedFile);
 			//System.out.println("deleting: " + unwovenClassFiles);
-			if (unwovenClassFiles == null) continue;
-			for (Iterator j = unwovenClassFiles.iterator(); j.hasNext(); ) {
-				UnwovenClassFile classFile = (UnwovenClassFile)j.next();
-				deleteClassFile(classFile);
+			if (intRes == null) continue;
+			for (int j=0; j<intRes.unwovenClassFiles().length; j++ ) {
+				deleteClassFile(intRes.unwovenClassFiles()[j]);
 			}
 		}
 	}
@@ -164,81 +165,150 @@ public class AjState {
 			//!!! might be okay to ignore
 		}
 	}
+	
+	public void noteResult(InterimCompilationResult result) {
+		File sourceFile = new File(result.fileName());
+		CompilationResult cr = result.result();
 
-	public void noteClassesFromFile(CompilationResult result, String sourceFileName, List unwovenClassFiles) {
-		File sourceFile = new File(sourceFileName);
-		
 		if (result != null) {
-			references.put(sourceFile, new ReferenceCollection(result.qualifiedReferences, result.simpleNameReferences));
+			references.put(sourceFile, new ReferenceCollection(cr.qualifiedReferences, cr.simpleNameReferences));
 		}
-		
-		List previous = (List)classesFromFile.get(sourceFile);
-		List newClassFiles = new ArrayList();
-		for (Iterator i = unwovenClassFiles.iterator(); i.hasNext();) {
-			UnwovenClassFile cf = (UnwovenClassFile) i.next();
-			cf = writeClassFile(cf, findAndRemoveClassFile(cf.getClassName(), previous));
-			newClassFiles.add(cf);
-			classesFromName.put(cf.getClassName(), cf);
+
+		InterimCompilationResult previous = (InterimCompilationResult) resultsFromFile.get(sourceFile);
+		UnwovenClassFile[] unwovenClassFiles = result.unwovenClassFiles();
+		for (int i = 0; i < unwovenClassFiles.length; i++) {
+			UnwovenClassFile lastTimeRound = removeFromPreviousIfPresent(unwovenClassFiles[i],previous);
+			recordClassFile(unwovenClassFiles[i],lastTimeRound);
+			classesFromName.put(unwovenClassFiles[i].getClassName(),unwovenClassFiles[i]);
 		}
-		
-		if (previous != null && !previous.isEmpty()) {
-			for (Iterator i = previous.iterator(); i.hasNext();) {
-				UnwovenClassFile cf = (UnwovenClassFile) i.next();
-				deleteClassFile(cf);
+
+		if (previous != null) {
+			for (int i = 0; i < previous.unwovenClassFiles().length; i++) {
+				if (previous.unwovenClassFiles()[i] != null) {
+					deleteClassFile(previous.unwovenClassFiles()[i]);
+				}
 			}
 		}
+		resultsFromFile.put(sourceFile, result);
 
-		classesFromFile.put(sourceFile, newClassFiles);
 	}
-
-	private UnwovenClassFile findAndRemoveClassFile(String name, List previous) {
+	
+	private UnwovenClassFile removeFromPreviousIfPresent(UnwovenClassFile cf, InterimCompilationResult previous) {
 		if (previous == null) return null;
-		for (Iterator i = previous.iterator(); i.hasNext();) {
-			UnwovenClassFile cf = (UnwovenClassFile) i.next();
-			if (cf.getClassName().equals(name)) {
-				i.remove();
-				return cf;
-			} 
+		UnwovenClassFile[] unwovenClassFiles = previous.unwovenClassFiles();
+		for (int i = 0; i < unwovenClassFiles.length; i++) {
+			UnwovenClassFile candidate = unwovenClassFiles[i];
+			if ((candidate != null) && candidate.getFilename().equals(cf.getFilename())) {
+				unwovenClassFiles[i] = null;
+				return candidate;
+			}
 		}
 		return null;
 	}
+	
+	private void recordClassFile(UnwovenClassFile thisTime, UnwovenClassFile lastTime) {
+		if (simpleStrings == null) return; // batch build
 
-	private UnwovenClassFile writeClassFile(UnwovenClassFile cf, UnwovenClassFile previous) {
-		if (simpleStrings == null) { // batch build
-			addedClassFiles.add(cf);
-			return cf;
+		if (lastTime == null) {
+			addDependentsOf(thisTime.getClassName());
+			return;
 		}
-		
-		try {
-			if (previous == null) {
-				addedClassFiles.add(cf);
-				addDependentsOf(cf.getClassName());
-				return cf;
-			} 
-			
-			byte[] oldBytes = previous.getBytes();
-			byte[] newBytes = cf.getBytes();
-			//if (this.compileLoop > 1) { // only optimize files which were recompiled during the dependent pass, see 33990
-				notEqual : if (newBytes.length == oldBytes.length) {
-					for (int i = newBytes.length; --i >= 0;) {
-						if (newBytes[i] != oldBytes[i]) break notEqual;
-					}
-					//addedClassFiles.add(previous); //!!! performance wasting
-					buildManager.bcelWorld.addSourceObjectType(previous.getJavaClass());
-					return previous; // bytes are identical so skip them
+
+		byte[] newBytes = thisTime.getBytes();
+		byte[] oldBytes = lastTime.getBytes();
+		boolean bytesEqual = (newBytes.length == oldBytes.length);
+		for (int i = 0; (i < oldBytes.length) && bytesEqual; i++) {
+			if (newBytes[i] != oldBytes[i]) bytesEqual = false;
+		}
+		if (!bytesEqual) {
+			try {
+				ClassFileReader reader = new ClassFileReader(oldBytes, lastTime.getFilename().toCharArray());
+				// ignore local types since they're only visible inside a single method
+				if (!(reader.isLocal() || reader.isAnonymous()) && reader.hasStructuralChanges(newBytes)) {
+					addDependentsOf(lastTime.getClassName());
 				}
-			//}
-			ClassFileReader reader = new ClassFileReader(oldBytes, previous.getFilename().toCharArray());
-			// ignore local types since they're only visible inside a single method
-			if (!(reader.isLocal() || reader.isAnonymous()) && reader.hasStructuralChanges(newBytes)) {
-				addDependentsOf(cf.getClassName());
-			}
-		} catch (ClassFormatException e) {
-			addDependentsOf(cf.getClassName());
+			} catch (ClassFormatException e) {
+				addDependentsOf(lastTime.getClassName());
+			}			
 		}
-		addedClassFiles.add(cf);
-		return cf;
 	}
+	
+
+//	public void noteClassesFromFile(CompilationResult result, String sourceFileName, List unwovenClassFiles) {
+//		File sourceFile = new File(sourceFileName);
+//		
+//		if (result != null) {
+//			references.put(sourceFile, new ReferenceCollection(result.qualifiedReferences, result.simpleNameReferences));
+//		}
+//		
+//		List previous = (List)classesFromFile.get(sourceFile);
+//		List newClassFiles = new ArrayList();
+//		for (Iterator i = unwovenClassFiles.iterator(); i.hasNext();) {
+//			UnwovenClassFile cf = (UnwovenClassFile) i.next();
+//			cf = writeClassFile(cf, findAndRemoveClassFile(cf.getClassName(), previous));
+//			newClassFiles.add(cf);
+//			classesFromName.put(cf.getClassName(), cf);
+//		}
+//		
+//		if (previous != null && !previous.isEmpty()) {
+//			for (Iterator i = previous.iterator(); i.hasNext();) {
+//				UnwovenClassFile cf = (UnwovenClassFile) i.next();
+//				deleteClassFile(cf);
+//			}
+//		}
+//
+//		classesFromFile.put(sourceFile, newClassFiles);
+//		resultsFromFile.put(sourceFile, result);
+//	}
+//
+//	private UnwovenClassFile findAndRemoveClassFile(String name, List previous) {
+//		if (previous == null) return null;
+//		for (Iterator i = previous.iterator(); i.hasNext();) {
+//			UnwovenClassFile cf = (UnwovenClassFile) i.next();
+//			if (cf.getClassName().equals(name)) {
+//				i.remove();
+//				return cf;
+//			} 
+//		}
+//		return null;
+//	}
+//
+//	private UnwovenClassFile writeClassFile(UnwovenClassFile cf, UnwovenClassFile previous) {
+//		if (simpleStrings == null) { // batch build
+//			addedClassFiles.add(cf);
+//			return cf;
+//		}
+//		
+//		try {
+//			if (previous == null) {
+//				addedClassFiles.add(cf);
+//				addDependentsOf(cf.getClassName());
+//				return cf;
+//			} 
+//			
+//			byte[] oldBytes = previous.getBytes();
+//			byte[] newBytes = cf.getBytes();
+//			//if (this.compileLoop > 1) { // only optimize files which were recompiled during the dependent pass, see 33990
+//				notEqual : if (newBytes.length == oldBytes.length) {
+//					for (int i = newBytes.length; --i >= 0;) {
+//						if (newBytes[i] != oldBytes[i]) break notEqual;
+//					}
+//					//addedClassFiles.add(previous); //!!! performance wasting
+//					buildManager.bcelWorld.addSourceObjectType(previous.getJavaClass());
+//					return previous; // bytes are identical so skip them
+//				}
+//			//}
+//			ClassFileReader reader = new ClassFileReader(oldBytes, previous.getFilename().toCharArray());
+//			// ignore local types since they're only visible inside a single method
+//			if (!(reader.isLocal() || reader.isAnonymous()) && reader.hasStructuralChanges(newBytes)) {
+//				addDependentsOf(cf.getClassName());
+//			}
+//		} catch (ClassFormatException e) {
+//			addDependentsOf(cf.getClassName());
+//		}
+//		addedClassFiles.add(cf);
+//		return cf;
+//	}
 	
 	private static StringSet makeStringSet(List strings) {
 		StringSet ret = new StringSet(strings.size());
@@ -309,12 +379,11 @@ public class AjState {
 	}
 
 	protected void addDependentsOf(File sourceFile) {
-		List l = (List)classesFromFile.get(sourceFile);
-		if (l == null) return;
+		InterimCompilationResult intRes = (InterimCompilationResult)resultsFromFile.get(sourceFile);
+		if (intRes == null) return;
 		
-		for (Iterator i = l.iterator(); i.hasNext();) {
-			UnwovenClassFile cf = (UnwovenClassFile) i.next();
-			addDependentsOf(cf.getClassName());
+		for (int i = 0; i < intRes.unwovenClassFiles().length; i++) {
+			addDependentsOf(intRes.unwovenClassFiles()[i].getClassName());
 		}
 	}
 }

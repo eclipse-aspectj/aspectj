@@ -341,10 +341,14 @@ public class FileUtil {
      */
     public static String getBestPath(File file) {
         LangUtil.throwIaxIfNull(file, "file");
-        try {
-            return file.getCanonicalPath();
-        } catch (IOException e) {
-            return file.getAbsolutePath();
+        if (file.exists()) {
+	        try {
+	            return file.getCanonicalPath();
+	        } catch (IOException e) {
+	            return file.getAbsolutePath();
+	        }
+        } else {
+        	return file.getPath();
         }
     }
     
