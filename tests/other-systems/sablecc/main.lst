@@ -1,0 +1,5 @@
+src/org/sablecc/sablecc/*.java
+src/org/sablecc/sablecc/analysis/*.java
+src/org/sablecc/sablecc/lexer/*.java
+src/org/sablecc/sablecc/node/*.java
+src/org/sablecc/sablecc/parser/*.java

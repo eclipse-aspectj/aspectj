@@ -1,0 +1,12 @@
+d:/jdk1.3/src/java/util/*.java
+d:/jdk1.3/src/java/util/jar/*.java
+d:/jdk1.3/src/java/util/zip/*.java
+
+d:/jdk1.3/src/java/sql/*.java
+d:/jdk1.3/src/java/text/*.java
+d:/jdk1.3/src/java/math/*.java
+d:/jdk1.3/src/java/net/*.java
+
+d:/jdk1.3/src/java/lang/reflect/*.java
+d:/jdk1.3/src/java/lang/ref/*.java
+

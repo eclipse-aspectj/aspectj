@@ -1,0 +1,4 @@
+tests/jfc/Notepad/src/*.java
+tests/jfc/FileChooserDemo/src/*.java
+tests/jfc/Metalworks/src/*.java
+tests/jfc/Stylepad/src/*.java

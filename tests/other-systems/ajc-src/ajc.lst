@@ -1,0 +1,3 @@
+@../../../modules/compiler/src/compilerSrc.lst
+@../../../modules/util/src/utilSrc.lst
+@../../../modules/runtime/src/runtimeSrc.lst

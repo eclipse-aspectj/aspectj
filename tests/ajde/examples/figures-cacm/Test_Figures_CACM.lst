@@ -1,0 +1,10 @@
+figures/Display.java
+figures/DisplayUpdating.java
+figures/FactoryEnforcement.java
+figures/Figure.java
+figures/FigureElement.java
+figures/Line.java
+figures/Main.java
+figures/Point.java
+figures/PointBoundsChecking.java
+figures/SimpleTracing.java

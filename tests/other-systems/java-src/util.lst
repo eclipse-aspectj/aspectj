@@ -1,0 +1,12 @@
+src/java/util/*.java
+src/java/util/jar/*.java
+src/java/util/zip/*.java
+
+src/java/sql/*.java
+src/java/text/*.java
+src/java/math/*.java
+src/java/net/*.java
+
+src/java/lang/reflect/*.java
+src/java/lang/ref/*.java
+

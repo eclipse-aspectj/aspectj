@@ -1,0 +1,8 @@
+src/javax/swing/border/*.java
+src/javax/swing/colorchooser/*.java
+src/javax/swing/event/*.java
+src/javax/swing/filechooser/*.java
+src/javax/swing/table/*.java
+src/javax/swing/tree/*.java
+src/javax/swing/undo/*.java
+
