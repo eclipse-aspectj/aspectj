@@ -14,8 +14,10 @@
 
 package org.aspectj.ajde;
 
-import java.io.File;
+import java.io.*;
 import java.util.*;
+
+import org.aspectj.util.FileUtil;
 
 /**
  * @author	Mik Kersten
@@ -102,6 +104,23 @@ public class NullIdeProperties implements ProjectPropertiesAdapter {
     public Set getInJars( ) {
     	return inJars;
     }
+    
+	public Map getSourcePathResources() {
+		File srcBase = new File(getProjectSourcePath());
+		File[] fromResources = FileUtil.listFiles(srcBase, new FileFilter() {
+			public boolean accept(File pathname) {
+				String name = pathname.getName().toLowerCase();
+				return !name.endsWith(".class") && !name.endsWith(".java") && !name.endsWith(".aj");
+			}
+		});
+		Map map = new HashMap();
+		for (int i = 0; i < fromResources.length; i++) {
+			String normPath = FileUtil.normalizedPath(fromResources[i] ,srcBase);
+			map.put(normPath, fromResources[i]);
+
+		}
+		return map;
+	}
 
 	public void setOutJar( String jar ){ this.outJar = jar; }
 

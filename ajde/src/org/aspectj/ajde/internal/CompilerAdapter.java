@@ -488,6 +488,7 @@ public class CompilerAdapter {
 
         join(config.getSourceRoots(), properties.getSourceRoots());
         join(config.getInJars(), properties.getInJars());
+		config.setSourcePathResources(properties.getSourcePathResources());
         join(config.getAspectpath(), properties.getAspectPath());
 	}
 

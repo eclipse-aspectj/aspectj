@@ -36,7 +36,7 @@ public class CompilerMessagesCellRenderer extends JLabel implements ListCellRend
 		boolean cellHasFocus) {
             String label = "<no message>";
             String detail = null;
-            IMessage.Kind kind = IMessage.INFO;
+            IMessage.Kind kind = IMessage.ERROR;
             if (value instanceof IMessage) {
 				IMessage cm = (IMessage) value;
                 label = cm.getMessage();

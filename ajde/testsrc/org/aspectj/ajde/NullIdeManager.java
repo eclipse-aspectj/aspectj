@@ -32,6 +32,7 @@ public class NullIdeManager {
 	
 	private static NullIdeManager ideManager = null;
 	private NullIdeTaskListManager taskListManager = null;
+	private NullIdeProperties projectProperties = null;
 	
 	public static NullIdeManager getIdeManager() {
 		if ( null == ideManager ) {
@@ -43,7 +44,7 @@ public class NullIdeManager {
 	public void init(String testProjectPath) {
 		try {
 			UserPreferencesAdapter preferencesAdapter = new UserPreferencesStore(false);
-			ProjectPropertiesAdapter browserProjectProperties = new NullIdeProperties(testProjectPath);
+			projectProperties = new NullIdeProperties(testProjectPath);
 			taskListManager = new NullIdeTaskListManager();
 			EditorAdapter ajdeEditor = new NullIdeEditorAdapter();
 			IdeUIAdapter uiAdapter = new NullIdeUIAdapter();
@@ -53,7 +54,7 @@ public class NullIdeManager {
 			AjdeUIManager.getDefault().init(
 				ajdeEditor,
 				taskListManager,
-				browserProjectProperties,  
+				projectProperties,  
 				preferencesAdapter,
 				uiAdapter,
 				new IconRegistry(),

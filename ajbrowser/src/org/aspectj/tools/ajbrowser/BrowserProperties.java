@@ -161,4 +161,9 @@ public class BrowserProperties implements ProjectPropertiesAdapter {
 	public Set getAspectPath( ) { // XXX unimplemented
 		return null;
 	}
+
+	public Map getSourcePathResources() {
+		return null;
+	}
+
 }

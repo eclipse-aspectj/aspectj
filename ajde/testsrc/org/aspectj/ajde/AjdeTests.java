@@ -28,6 +28,7 @@ public class AjdeTests extends TestCase {
         suite.addTestSuite(VersionTest.class); 
 		suite.addTestSuite(CompilerMessagesTest.class);
 		suite.addTestSuite(AsmDeclarationsTest.class);
+		suite.addTestSuite(ResourceCopyTestCase.class);
 		
         //$JUnit-END$
         return suite;

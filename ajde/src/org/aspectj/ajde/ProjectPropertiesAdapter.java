@@ -16,8 +16,7 @@
  
 package org.aspectj.ajde;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author	Mik Kersten
@@ -68,6 +67,16 @@ public interface ProjectPropertiesAdapter {
 	 * From -injars.
 	 */
 	public Set getInJars();
+	
+	/**
+	 * Get the set of non-Java resources for this compilation.
+	 * Set members should be of type java.io.File.
+	 * An empty set or null is acceptable for this option.
+	 * From -injars.
+	 * 
+	 * @return map from unique resource name to absolute path to source resource (String to File)
+	 */
+	public Map getSourcePathResources();
 	
 	/**
 	 * Get the output jar file for the compilation results.
