@@ -17,6 +17,7 @@ import java.io.*;
 import java.util.*;
 
 import org.aspectj.asm.internal.*;
+import org.aspectj.bridge.ISourceLocation;
 
 /**
  * @author Mik Kersten
@@ -64,53 +65,51 @@ public class AsmManager {
     	String sourceFile, 
     	boolean showSubMember, 
     	boolean showMemberAndType) { 
-        
-        throw new RuntimeException("unimplemented");
-        
-//        if (!model.isValid()) return null;
-//		
-//        HashMap annotations = new HashMap();
-//        IProgramElement node = model.findRootNodeForSourceFile(sourceFile);
-//        if (node == StructureModel.NO_STRUCTURE) {
-//            return null;
-//        } else {
-//            IProgramElement fileNode = (IProgramElement)node;
-//            ArrayList peNodes = new ArrayList();
-//            getAllStructureChildren(fileNode, peNodes, showSubMember, showMemberAndType);
-//            for (Iterator it = peNodes.iterator(); it.hasNext(); ) {
-//                IProgramElement peNode = (IProgramElement)it.next();
-//                List entries = new ArrayList();
-//                entries.add(peNode);
-//                ISourceLocation sourceLoc = peNode.getSourceLocation();
-//                if (null != sourceLoc) {
-//                    Integer hash = new Integer(sourceLoc.getLine());
-//                    List existingEntry = (List)annotations.get(hash);
-//                    if (existingEntry != null) {
-//                        entries.addAll(existingEntry);
-//                    }
-//                    annotations.put(hash, entries);
-//                }
-//            }
-//            return annotations;
-//        }
+
+        if (!hierarchy.isValid()) return null;
+		
+        HashMap annotations = new HashMap();
+        IProgramElement node = hierarchy.findElementForSourceFile(sourceFile);
+        if (node == IHierarchy.NO_STRUCTURE) {
+            return null;
+        } else {
+            IProgramElement fileNode = (IProgramElement)node;
+            ArrayList peNodes = new ArrayList();
+            getAllStructureChildren(fileNode, peNodes, showSubMember, showMemberAndType);
+            for (Iterator it = peNodes.iterator(); it.hasNext(); ) {
+                IProgramElement peNode = (IProgramElement)it.next();
+                List entries = new ArrayList();
+                entries.add(peNode);
+                ISourceLocation sourceLoc = peNode.getSourceLocation();
+                if (null != sourceLoc) {
+                    Integer hash = new Integer(sourceLoc.getLine());
+                    List existingEntry = (List)annotations.get(hash);
+                    if (existingEntry != null) {
+                        entries.addAll(existingEntry);
+                    }
+                    annotations.put(hash, entries);
+                }
+            }
+            return annotations;
+        }
     }
 
-//    private void getAllStructureChildren(IProgramElement node, List result, boolean showSubMember, boolean showMemberAndType) {
-//        List children = node.getChildren();
-//        for (Iterator it = children.iterator(); it.hasNext(); ) {
-//			IProgramElement next = (IProgramElement)it.next();
-//            if (next instanceof IProgramElement) {
-//                IProgramElement pNode = (IProgramElement)next;
-//                if (pNode != null
-//                	&& ((pNode.isCode() && showSubMember) || (!pNode.isCode() && showMemberAndType))
-//                	&& pNode.getRelations() != null 
-//                	&& pNode.getRelations().size() > 0) {
-//                    result.add(next);
-//                }
-//                getAllStructureChildren((IProgramElement)next, result, showSubMember, showMemberAndType);
-//            }
-//        }
-//    }
+    private void getAllStructureChildren(IProgramElement node, List result, boolean showSubMember, boolean showMemberAndType) {
+        List children = node.getChildren();
+        if (node.getChildren() == null) return;
+        for (Iterator it = children.iterator(); it.hasNext(); ) {
+			IProgramElement next = (IProgramElement)it.next();
+            List rels = AsmManager.getDefault().getRelationshipMap().get(next);
+            if (next != null
+            	&& ((next.getKind() == IProgramElement.Kind.CODE && showSubMember) 
+            	|| (next.getKind() != IProgramElement.Kind.CODE && showMemberAndType))
+            	&& rels != null 
+            	&& rels.size() > 0) {
+                result.add(next);
+            }
+            getAllStructureChildren((IProgramElement)next, result, showSubMember, showMemberAndType);
+        }
+    }
 
     public void addListener(IHierarchyListener listener) {
         structureListeners.add(listener);

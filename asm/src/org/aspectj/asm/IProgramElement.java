@@ -72,6 +72,11 @@ public interface IProgramElement extends Serializable {
 	public String toString();
 
 	/**
+	 * Includes information about the origin of the node.
+	 */
+	public String toLinkLabelString();
+
+	/**
 	 * Includes name, parameter types (if any) and details (if any).
 	 */
 	public String toLabelString();
@@ -257,6 +262,12 @@ public interface IProgramElement extends Serializable {
 				|| this == CONSTRUCTOR
 				|| this == POINTCUT
 				|| this == ADVICE;
+		}
+
+		public boolean isInterTypeMemberKind() {
+			return this == INTER_TYPE_CONSTRUCTOR
+				|| this == INTER_TYPE_FIELD
+				|| this == INTER_TYPE_METHOD;
 		}
 		
 		public boolean isTypeKind() {

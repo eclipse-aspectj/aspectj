@@ -384,6 +384,26 @@ public class ProgramElement implements IProgramElement {
 		return sb.toString();
 	}
 
+	public String toLinkLabelString() {
+		String label;
+		if (kind == Kind.CODE || kind == Kind.INITIALIZER) {
+			label = parent.getParent().getName() + ": ";
+		} else if (kind.isInterTypeMemberKind()) {
+			int dotIndex = name.indexOf('.');  
+			if (dotIndex != -1) {
+				return parent.getName() + ": " + toLabelString().substring(dotIndex+1);
+			} else {
+				label = parent.getName() + '.';	
+			}
+		} else if (kind == Kind.CLASS || kind == kind.ASPECT) {
+			label = "";
+		} else {
+			label = parent.getName() + '.';
+		}
+		label += toLabelString();
+		return label;
+	}
+
 	public String toLabelString() {
 		String label = toSignatureString();
 		if (details != null) {
