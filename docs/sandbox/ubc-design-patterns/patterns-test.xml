@@ -1,0 +1,250 @@
+<!DOCTYPE suite SYSTEM "../../../tests/ajcTestSuite.dtd">
+
+<!--
+	To run with the harness, run 
+	
+	java org.aspectj.testing.drivers.Harness \
+  	   ../docs/sandbox/ubc-design-patterns/patterns-test.xml -logFail	
+
+	from a project directory (tests/ docs/ or testing-drivers)
+
+	See tests/readme-writing-compiler-tests.html for more info on the harness.
+-->
+<suite>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns library">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns abstractFactory">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/abstractFactory/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns adapter">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/adapter/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns bridge">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/bridge/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns builder">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/builder/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns chainOfResponsibility">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/chainOfResponsibility/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns command">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/command/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns composite">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/composite/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns decorator">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/decorator/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns facade">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/facade/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns factoryMethod">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/factoryMethod/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns flyweight">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/flyweight/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns interpreter">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/interpreter/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns iterator">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/iterator/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns mediator">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/mediator/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns memento">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/memento/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns observer">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/observer/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns prototype">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/prototype/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns proxy">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/proxy/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns singleton">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/singleton/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns state">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/state/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns strategy">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/strategy/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns templateMethod">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/templateMethod/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns visitor">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/visitor/aspectj"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java abstractFactory">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/abstractFactory/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java adapter">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/adapter/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java bridge">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/bridge/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java builder">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/builder/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java chainOfResponsibility">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/chainOfResponsibility/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java command">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/command/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java composite">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/composite/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java decorator">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/decorator/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java facade">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/facade/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java factoryMethod">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/factoryMethod/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java flyweight">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/flyweight/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java interpreter">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/interpreter/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java iterator">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/iterator/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java mediator">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/mediator/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java memento">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/memento/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java observer">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/observer/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java prototype">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/prototype/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java proxy">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/proxy/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java singleton">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/singleton/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java state">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/state/java"/>
+	</ajc-test>
+
+	<ajc-test dir="src" 
+		title="UBC design patterns java strategy">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/strategy/java"/>
+	</ajc-test>
+	
+	<ajc-test dir="src" 
+		title="UBC design patterns java templateMethod">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/templateMethod/java"/>
+	</ajc-test>
+	
+	<ajc-test dir="src" 
+		title="UBC design patterns java visitor">
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/examples/visitor/java"/>
+	</ajc-test>
+
+</suite>
