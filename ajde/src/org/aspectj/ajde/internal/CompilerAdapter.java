@@ -28,7 +28,21 @@ import org.aspectj.util.LangUtil;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 public class CompilerAdapter {
-
+	
+	private static final Set DEFAULT__AJDE_WARNINGS;
+	
+	static {
+		DEFAULT__AJDE_WARNINGS = new HashSet();
+		DEFAULT__AJDE_WARNINGS.add(BuildOptionsAdapter.WARN_ASSERT_IDENITIFIER);
+		DEFAULT__AJDE_WARNINGS.add(BuildOptionsAdapter.WARN_CONSTRUCTOR_NAME);
+		DEFAULT__AJDE_WARNINGS.add(BuildOptionsAdapter.WARN_DEPRECATION);
+		DEFAULT__AJDE_WARNINGS.add(BuildOptionsAdapter.WARN_MASKED_CATCH_BLOCKS);
+		DEFAULT__AJDE_WARNINGS.add(BuildOptionsAdapter.WARN_PACKAGE_DEFAULT_METHOD);
+		DEFAULT__AJDE_WARNINGS.add(BuildOptionsAdapter.WARN_UNUSED_IMPORTS);
+//		DEFAULT__AJDE_WARNINGS.put(BuildOptionsAdapter.WARN_);
+//		DEFAULT__AJDE_WARNINGS.put(BuildOptionsAdapter.WARN_);
+	}
+	
 //	private Map optionsMap;
 	private AjBuildManager buildManager = null;
     private MessageHandlerAdapter messageHandler = null;
@@ -151,22 +165,24 @@ public class CompilerAdapter {
             = CountingMessageHandler.makeCountingMessageHandler(messageHandler);
 		BuildArgParser parser = new BuildArgParser(handler);
 		
-        AjBuildConfig config = parser.genBuildConfig(args, false, configFile);  
+		AjBuildConfig config = new AjBuildConfig();
+        parser.populateBuildConfig(config, args, false, configFile);  
+		configureBuildOptions(config,Ajde.getDefault().getBuildManager().getBuildOptions(),handler);
 		configureProjectOptions(config, Ajde.getDefault().getProjectProperties());  // !!! not what the API intended
 
-		// -- get globals, treat as defaults used if no local values
-		AjBuildConfig global = new AjBuildConfig();
-		// AMC refactored into two methods to populate buildConfig from buildOptions and
-		// project properties - bugzilla 29769.
-		BuildOptionsAdapter buildOptions 
-			= Ajde.getDefault().getBuildManager().getBuildOptions();
-		if (!configureBuildOptions(global, buildOptions, handler)) {
-			return null;
-		}
-		ProjectPropertiesAdapter projectOptions =
-			Ajde.getDefault().getProjectProperties();
-		configureProjectOptions(global, projectOptions);
-		config.installGlobals(global);
+//		// -- get globals, treat as defaults used if no local values
+//		AjBuildConfig global = new AjBuildConfig();
+//		// AMC refactored into two methods to populate buildConfig from buildOptions and
+//		// project properties - bugzilla 29769.
+//		BuildOptionsAdapter buildOptions 
+//			= Ajde.getDefault().getBuildManager().getBuildOptions();
+//		if (!configureBuildOptions(/* global */ config, buildOptions, handler)) {
+//			return null;
+//		}
+//		ProjectPropertiesAdapter projectOptions =
+//			Ajde.getDefault().getProjectProperties();
+//		configureProjectOptions(global, projectOptions);
+//		config.installGlobals(global);
 
 		ISourceLocation location = null;
 		if (config.getConfigFile() != null) {
@@ -281,6 +297,9 @@ public class CompilerAdapter {
 			disableWarnings( optionsToSet );
 			// then selectively enable those in the set
 			enableWarnings( optionsToSet, warnings );
+		} else if (warnings == null) {
+			// set default warnings on...
+			enableWarnings( optionsToSet, DEFAULT__AJDE_WARNINGS);
 		}
 
 		Set debugOptions = options.getDebugLevel();
