@@ -1,6 +1,7 @@
-<!-- -*- Mode: SGML; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-     -->
+<!-- -*- Mode: SGML; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- -->
 <!-- ========================================================================= -->
-<!-- Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).        -->
+<!-- Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC),        -->
+<!--               2004-2005 Contributors.                                     -->
 <!-- All rights reserved.                                                      -->
 <!-- This program and the accompanying materials are made available            -->
 <!-- under the terms of the Common Public License v1.0                         -->
@@ -16,11 +17,12 @@
 ]>
 <project name="build-docs" default="dist" basedir=".">
 
-  <property name="project.name" value="build-docs"/>
+    <property name="project.name" value="build-docs" />
 
-    <target name="product"        depends="local-dist"/>
-    <target name="clean" 
-         depends="clean-directories,clean-doc-directories"/>
+    <target name="product" depends="local-dist" />
+    <target name="clean"
+            depends="clean-directories,clean-doc-directories"
+    />
 
     <!-- ===================================================================== -->
     <!-- Init                                                                  -->
@@ -29,54 +31,82 @@
     &build-properties;
 
     <target name="init" depends="init-properties,init-directories">
-       
-      <property name="docs.src.pattern"
-               value="**/*.xml,**/*.html,**/*.doc,**/*.gif,**/*.java,**/*.lst,**/*.pdf"/>
-      <property name="docs.src.dir"       
-            location="${aspectj.modules.docs.dir}"/>
 
-      <property name="docs.dist.dir"      location="${aj.dist.dir}/docs"/>
-      <property name="docs.temp.dir"      location="${aj.temp.dir}/doc"/>
-      <property name="web.doc.dir"        location="${aj.webDeploy.dir}/documentation/dist"/>
+        <property name="docs.src.pattern"
+                  value="**/*.xml,**/*.html,**/*.doc,**/*.gif,**/*.java,**/*.lst,**/*.pdf"
+        />
+        <property name="docs.src.dir"
+                  location="${aspectj.modules.docs.dir}"
+        />
 
-      <property name="docs.product.name" 
-               value="aspectj-docs-${build.version}"/>
+        <property name="docs.dist.dir"
+                  location="${aj.dist.dir}/docs"
+        />
+        <property name="docs.temp.dir"
+                  location="${aj.temp.dir}/doc"
+        />
+        <property name="web.doc.dir"
+                  location="${aj.webDeploy.dir}/documentation/dist"
+        />
 
-      <property name="docs.product.zip"  
-            location="${aj.dist.dir}/${docs.product.name}.zip"/>
-      <!-- must specify (not *.gif) to not delete other gifs during build-in-place -->
-      <!-- to find refs: gp ax imagedata | sed -n 's|.*\=\"\(..*\)\".*|\1|p' -->
-      <property name="devguide.icons.dir" 
-            location="${aspectj.modules.dir}/ajde/src/org/aspectj/ajde/resources/actions"/>
-      <property name="include.devguide.icons"
-                 value="build.gif,openConfig.gif,browseroptions.gif" />
+        <property name="docs.product.name"
+                  value="aspectj-docs-${build.version}"
+        />
 
-      <!-- callers of xml-html use these by default -->
-      <property name="chunk.xsl.source" 
-            location="${aspectj.modules.lib.dir}/docbook/docbook-xsl/html/chunk.xsl"/>
-      <property name="nochunk.xsl.source" 
-            location="${aspectj.modules.lib.dir}/docbook/docbook-xsl/html/docbook.xsl"/>
-      <!-- default xml-html nochunking file (0-length dummy created when chunking) -->
-      <property name="xml-target-file" 
-            location="${docs.temp.dir}/xml-target-file.dummy"/>
-      <!-- default value for xml-html copying (copy all graphics) -->
-      <property name="xml-html-copy" value="*.gif,*.png" />
-      <property name="binary.pattern" 
-               value="**/*.gif,**/*.png,**/*.doc,**/*.pdf,**/*.jpg,**/*.JPG"/>
-      <uptodate property="local.dist.uptodate"
-              targetfile="${docs.dist.dir}/doc/faq.html"> <!-- use faq as tag file -->
-         <srcfiles dir="${docs.src.dir}" includes="${docs.src.pattern}"/>  
-      </uptodate>
-      <uptodate property="dist.uptodate"
-             targetfile="${docs.product.zip}"> <!-- use zip as tag file -->
-         <srcfiles dir="${docs.src.dir}"  includes="${docs.src.pattern}"/>
-         <srcfiles dir="${docs.dist.dir}" includes="${docs.src.pattern}"/>
-      </uptodate>
+        <property name="docs.product.zip"
+                  location="${aj.dist.dir}/${docs.product.name}.zip"
+        />
+        <!-- must specify (not *.gif) to not delete other gifs during build-in-place -->
+        <!-- to find refs: gp ax imagedata | sed -n 's|.*\=\"\(..*\)\".*|\1|p' -->
+        <property name="devguide.icons.dir"
+                  location="${aspectj.modules.dir}/ajde/src/org/aspectj/ajde/resources/actions"
+        />
+        <property name="include.devguide.icons"
+                  value="build.gif,openConfig.gif,browseroptions.gif"
+        />
+
+        <!-- callers of xml-html use these by default -->
+        <property name="chunk.xsl.source"
+                  location="${aspectj.modules.lib.dir}/docbook/docbook-xsl/html/chunk.xsl"
+        />
+        <property name="nochunk.xsl.source"
+                  location="${aspectj.modules.lib.dir}/docbook/docbook-xsl/html/docbook.xsl"
+        />
+        <!-- default xml-html nochunking file (0-length dummy created when chunking) -->
+        <property name="xml-target-file"
+                  location="${docs.temp.dir}/xml-target-file.dummy"
+        />
+        <!-- default value for xml-html copying (copy all graphics) -->
+        <property name="xml-html-copy" value="*.gif,*.png" />
+        <property name="binary.pattern"
+                  value="**/*.gif,**/*.png,**/*.doc,**/*.pdf,**/*.jpg,**/*.JPG"
+        />
+        <uptodate property="local.dist.uptodate"
+                  targetfile="${docs.dist.dir}/doc/faq.html"
+        >
+            <!-- use faq as tag file -->
+            <srcfiles dir="${docs.src.dir}"
+                      includes="${docs.src.pattern}"
+            />
+        </uptodate>
+        <uptodate property="dist.uptodate"
+                  targetfile="${docs.product.zip}"
+        >
+            <!-- use zip as tag file -->
+            <srcfiles dir="${docs.src.dir}"
+                      includes="${docs.src.pattern}"
+            />
+            <srcfiles dir="${docs.dist.dir}"
+                      includes="${docs.src.pattern}"
+            />
+        </uptodate>
 
     </target>
 
-    <target name="clean-doc-directories" depends="init"
-     description="clean build dirs (including local deploy dir)">
+    <target name="clean-doc-directories"
+            depends="init"
+            description="clean build dirs (including local deploy dir)"
+    >
         <delete quiet="on">
             <fileset dir="${docs.dist.dir}" />
             <fileset dir="${docs.jar.dir}" />
@@ -84,285 +114,371 @@
         </delete>
     </target>
 
-    <target name="dist" depends="init,local-dist"
-     description="create unused doc zip - see ../build/build.xml for installer"
-          unless="dist.uptodate">
-        <delete file="${docs.product.zip}"/>
+    <target name="dist"
+            depends="init,local-dist"
+            description="create unused doc zip - see ../build/build.xml for installer"
+            unless="dist.uptodate"
+    >
+        <delete file="${docs.product.zip}" />
         <zip zipfile="${docs.product.zip}"
-             basedir="${docs.dist.dir}"/>
+             basedir="${docs.dist.dir}"
+        />
 
-        <echo message="find doc zip in ${docs.product.zip}"/>                     
+        <echo message="find doc zip in ${docs.product.zip}" />
     </target>
 
-    <target name="web.deploy.faqonly" depends="init,faq"
-     description="deploy docs.dist.dir faq to web.doc.dir">
-     <copy todir="${web.doc.dir}" filtering="on">
-       <fileset dir="${docs.dist.dir}/doc" includes="faq.html"/>
-     </copy>
-     <stripnonbodyhtml srcdir="${web.doc.dir}" 
-                     includes="faq.html" />
-     <echo message="do link check on index and faq before release"/>
+    <target name="web.deploy.faqonly"
+            depends="init,faq"
+            description="deploy docs.dist.dir faq to web.doc.dir"
+    >
+        <copy todir="${web.doc.dir}" filtering="on">
+            <fileset dir="${docs.dist.dir}/doc" includes="faq.html" />
+        </copy>
+        <stripnonbodyhtml srcdir="${web.doc.dir}"
+                          includes="faq.html"
+        />
+        <echo message="do link check on index and faq before release"
+        />
     </target>
 
-    <target name="web.deploy.faqindex" depends="init,dist"
-     description="deploy built faq and index to web.doc.dir">
-     <copy todir="${web.doc.dir}" filtering="on">
-       <fileset dir="${docs.dist.dir}/doc"
-            includes="faq.html,index.html"/>
-     </copy>
-     <stripnonbodyhtml srcdir="${web.doc.dir}" 
-                     includes="faq.html,index.html" />
-     <echo message="do link check on index and faq before release"/>
+    <target name="web.deploy.faqindex"
+            depends="init,dist"
+            description="deploy built faq and index to web.doc.dir"
+    >
+        <copy todir="${web.doc.dir}" filtering="on">
+            <fileset dir="${docs.dist.dir}/doc"
+                     includes="faq.html,index.html"
+            />
+        </copy>
+        <stripnonbodyhtml srcdir="${web.doc.dir}"
+                          includes="faq.html,index.html"
+        />
+        <echo message="do link check on index and faq before release"
+        />
     </target>
 
     <target name="web.deploy" depends="web.deploy.README-11" />
 
-    <target name="web.deploy.README-11" depends="init"
-     description="deploy README-11.html to the web site">
-     <property name="readme11.dir"
-           location="${web.doc.dir}/documentation/readme11"/>
-     <mkdir dir="${readme11.dir}"/>
-     <delete file="${readme11.dir}/index.html"/>
-     <mkdir dir="${readme11.dir}"/>
-     <copy tofile="${readme11.dir}/index.html"
-             file="${aspectj.products.dir}/tools/dist/README-11.html"
-       filtering="on"/>
-     <stripnonbodyhtml srcdir="${readme11.dir}" 
-                     includes="index.html" />
+    <target name="web.deploy.README-11"
+            depends="init"
+            description="deploy README-11.html to the web site"
+    >
+        <property name="readme11.dir"
+                  location="${web.doc.dir}/documentation/readme11"
+        />
+        <mkdir dir="${readme11.dir}" />
+        <delete file="${readme11.dir}/index.html" />
+        <mkdir dir="${readme11.dir}" />
+        <copy tofile="${readme11.dir}/index.html"
+              file="${aspectj.products.dir}/tools/dist/README-11.html"
+              filtering="on"
+        />
+        <stripnonbodyhtml srcdir="${readme11.dir}"
+                          includes="index.html"
+        />
     </target>
 
-    <target name="web.deploy.old" depends="init"
-     description="deploy built docs to the web site">
-     <mkdir dir="${web.doc.dir}"/>
-     <delete dir="${web.doc.dir}"/>
-     <mkdir dir="${web.doc.dir}"/>
-     <copy todir="${web.doc.dir}">
-       <fileset dir="${docs.dist.dir}/doc"/>
-     </copy>
-     <stripnonbodyhtml srcdir="${web.doc.dir}" 
-                     includes="**/*.html" />
+    <target name="web.deploy.old"
+            depends="init"
+            description="deploy built docs to the web site"
+    >
+        <mkdir dir="${web.doc.dir}" />
+        <delete dir="${web.doc.dir}" />
+        <mkdir dir="${web.doc.dir}" />
+        <copy todir="${web.doc.dir}">
+            <fileset dir="${docs.dist.dir}/doc" />
+        </copy>
+        <stripnonbodyhtml srcdir="${web.doc.dir}"
+                          includes="**/*.html"
+        />
     </target>
 
     <!-- ============================================================ -->
     <!-- build all doc products                                       -->
     <!-- ============================================================ -->
-    <target name="local-dist" depends="init"
-          unless="local.dist.uptodate" 
-     description="avoid local-dist antecedants if uptodate">
-       <antcall target="do-local-dist"/>
+    <target name="local-dist"
+            depends="init"
+            unless="local.dist.uptodate"
+            description="avoid local-dist antecedants if uptodate"
+    >
+        <antcall target="do-local-dist" />
     </target>
 
-    <target name="do-local-dist" 
-         depends="init,init-filters,api,faq,devguide,progguide, adk15guide"
-      description="finish products by copying dist files and library sources">
+    <target name="do-local-dist"
+            depends="init,init-filters,api,faq,devguide,progguide, adk15guide"
+            description="finish products by copying dist files and library sources"
+    >
+
         <copy todir="${docs.dist.dir}" filtering="on">
-            <fileset dir="${docs.src.dir}/dist" 
-                excludes="${binary.pattern}"/>
+            <fileset dir="${docs.src.dir}/dist"
+                     excludes="${binary.pattern}"
+            />
         </copy>
         <copy todir="${docs.dist.dir}" filtering="off">
-            <fileset dir="${docs.src.dir}/dist" 
-                includes="${binary.pattern}"/>
+            <fileset dir="${docs.src.dir}/dist"
+                     includes="${binary.pattern}"
+            />
         </copy>
-        <available 
-            file="${docs.src.dir}/../org.aspectj.lib/build-aspectjlib.xml" 
-            property="org.aspectj.lib.available"/>
+        <available file="${docs.src.dir}/../org.aspectj.lib/build-aspectjlib.xml"
+                   property="org.aspectj.lib.available"
+        />
         <fail unless="org.aspectj.lib.available"
-        	message="unable to find org.aspectj.lib"/>
-        <mkdir dir="${docs.dist.dir}/aspectjlib"/>
+              message="unable to find org.aspectj.lib"
+        />
+        <mkdir dir="${docs.dist.dir}/aspectjlib" />
         <copy todir="${docs.dist.dir}/doc/aspectjlib" filtering="off">
-            <fileset dir="${docs.src.dir}/../org.aspectj.lib" 
-                includes="build-aspectjlib.xml,src"/>
+            <fileset dir="${docs.src.dir}/../org.aspectj.lib"
+                     includes="build-aspectjlib.xml,src"
+            />
         </copy>
     </target>
 
-    <target name="api" depends="init"
-       description="javadoc for AspectJ lang, lang.reflect and org.aspectj.weaver.tools">
-        <delete dir="${docs.dist.dir}/doc/api"/>
-        <mkdir dir="${docs.dist.dir}/doc/api"/>
+    <target name="api"
+            depends="init"
+            description="javadoc for AspectJ lang, lang.reflect and org.aspectj.weaver.tools"
+    >
+        <delete dir="${docs.dist.dir}/doc/api" />
+        <mkdir dir="${docs.dist.dir}/doc/api" />
         <javadoc sourcepath="${aspectj.modules.dir}/runtime/src;${aspectj.modules.dir}/weaver/src"
-                    destdir="${docs.dist.dir}/doc/api"
-                windowtitle="AspectJ(tm) runtime API"
-                       link="http://java.sun.com/j2se/1.4.2/docs/api"
-                       classpath="${aspectj.modules.dir}/asm/bin;${aspectj.modules.dir}/bridge/bin;${aspectj.modules.dir}/util/bin;${aspectj.modules.dir}/lib/bcel/bcel.jar"
-               packagenames="org.aspectj.lang,org.aspectj.lang.reflect,org.aspectj.weaver.tools" />
-               <!-- note: link ineffective at avoiding see tag warning -->
+                 destdir="${docs.dist.dir}/doc/api"
+                 windowtitle="AspectJ(tm) runtime API"
+                 link="http://java.sun.com/j2se/1.4.2/docs/api"
+                 classpath="${aspectj.modules.dir}/asm/bin;${aspectj.modules.dir}/bridge/bin;${aspectj.modules.dir}/util/bin;${aspectj.modules.dir}/lib/bcel/bcel.jar"
+                 packagenames="org.aspectj.lang,org.aspectj.lang.reflect,org.aspectj.weaver.tools"
+        />
+        <!-- note: link ineffective at avoiding see tag warning -->
     </target>
 
     <target name="faq" depends="init">
         <antcall target="xml-html">
-            <param name="xml-source-dir" 
-                  value="${docs.src.dir}/faq"/>
-            <param name="xml-source-root" 
-                  value="faq.xml"/>
-            <param name="xsl-source-file" 
-                  value="${nochunk.xsl.source}"/>
-            <param name="xml-target-dir" 
-                  value="${docs.dist.dir}"/>
-            <param name="xml-target-file" 
-                  value="${docs.dist.dir}/doc/faq.html"/>
+            <param name="xml-source-dir"
+                   value="${docs.src.dir}/faq"
+            />
+            <param name="xml-source-root" value="faq.xml" />
+            <param name="xsl-source-file"
+                   value="${nochunk.xsl.source}"
+            />
+            <param name="xml-target-dir" value="${docs.dist.dir}" />
+            <param name="xml-target-file"
+                   value="${docs.dist.dir}/doc/faq.html"
+            />
         </antcall>
     </target>
 
-    <!-- experimental targets collapse guide-making (lose individual targets) -->
     <target name="progguide" depends="init">
-      <antcall target="build-guide">
-        <param name="guide.dir" value="progGuideDB"/>
-        <param name="guide.name" value="progguide"/>
-      </antcall>
+        <antcall target="build-guide">
+            <param name="guide.dir" value="progGuideDB" />
+            <param name="guide.name" value="progguide" />
+        </antcall>
     </target>
 
-   <target name="adk15guide" depends="init">
-	      <antcall target="build-guide">
-	        <param name="guide.dir" value="adk15ProgGuideDB"/>
-	        <param name="guide.name" value="adk15notebook"/>
-	      </antcall>
-	</target>
+    <target name="adk15guide" depends="init">
+        <antcall target="build-guide">
+            <param name="guide.dir" value="adk15ProgGuideDB" />
+            <param name="guide.name" value="adk15notebook" />
+        </antcall>
+    </target>
 
-	
+
     <target name="devguide" depends="init">
-    
-<!-- GCH -->
-<echo message="**** docs: just inside devguide target"/>
-    
-      <copy todir="${docs.src.dir}/devGuideDB" filtering="off" >
-         <fileset dir="${devguide.icons.dir}"
-             includes="${include.devguide.icons}" />
+
+        <echo level="info"
+              message="**** docs: just inside devguide target"
+        />
+
+        <copy todir="${docs.src.dir}/devGuideDB" filtering="off">
+            <fileset dir="${devguide.icons.dir}"
+                     includes="${include.devguide.icons}"
+            />
         </copy>
-        
-<!-- GCH -->
-<echo message="**** docs: about to make call to build-guide target"/>
-        
-      <antcall target="build-guide">
-        <param name="xml-html-copy" value="ajbrowser-building.gif,ajbrowser-options.gif,${include.devguide.icons}" />
-        <param name="guide.dir" value="devGuideDB"/>
-        <param name="guide.name" value="devguide"/>
-      </antcall>
-      <delete quiet="on"> <!-- clean icons for build-in-place -->
-        <fileset dir="${docs.src.dir}/devGuideDB" 
-           includes="${include.devguide.icons}" />
-      </delete>
+
+        <echo level="info"
+              message="**** docs: about to make call to build-guide target"
+        />
+
+        <antcall target="build-guide">
+            <param name="xml-html-copy"
+                   value="ajbrowser-building.gif,ajbrowser-options.gif,${include.devguide.icons}"
+            />
+            <param name="guide.dir" value="devGuideDB" />
+            <param name="guide.name" value="devguide" />
+        </antcall>
+        <delete quiet="on">
+            <fileset dir="${docs.src.dir}/devGuideDB"
+                     includes="${include.devguide.icons}"
+            />
+        </delete>
     </target>
 
-    <target name="build-guide" depends="init"
-     description="build prog or dev guide, using guide.dir and guide.name">
+    <target name="build-guide"
+            depends="init"
+            description="build prog or dev guide, using guide.dir and guide.name"
+    >
         <!-- chunked -->
         <antcall target="xml-html">
-            <param name="xml-source-dir" 
-                  value="${docs.src.dir}/${guide.dir}"/>
-            <param name="xml-source-root" 
-                  value="${guide.name}.xml"/>
-            <param name="xsl-source-file" 
-                  value="${chunk.xsl.source}"/>
-            <param name="xml-target-dir" 
-                  value="${docs.dist.dir}/doc/${guide.name}"/>
+            <param name="xml-source-dir"
+                   value="${docs.src.dir}/${guide.dir}"
+            />
+            <param name="xml-source-root" value="${guide.name}.xml" />
+            <param name="xsl-source-file"
+                   value="${chunk.xsl.source}"
+            />
+            <param name="xml-target-dir"
+                   value="${docs.dist.dir}/doc/${guide.name}"
+            />
         </antcall>
         <!-- single -->
         <antcall target="xml-html">
-            <param name="xml-source-dir" 
+            <param name="xml-source-dir"
+                   value="${docs.src.dir}/${guide.dir}"
+            />
+            <param name="xml-source-root" value="${guide.name}.xml" />
+            <param name="xsl-source-file"
+                   value="${nochunk.xsl.source}"
+            />
+            <param name="xml-target-dir"
+                   value="${docs.dist.dir}/doc/${guide.name}"
+            />
+            <param name="xml-target-file"
+                   value="${docs.dist.dir}/doc/${guide.name}/printable.html"
+            />
+        </antcall>
+        <!-- pdf TODO pdf rendering completes, result is awful
+		<antcall target="xml-pdf">
+			<param name="xml-source-dir" 
                   value="${docs.src.dir}/${guide.dir}"/>
-            <param name="xml-source-root" 
-                  value="${guide.name}.xml"/>
-            <param name="xsl-source-file" 
-                  value="${nochunk.xsl.source}"/>
-            <param name="xml-target-dir" 
-                  value="${docs.dist.dir}/doc/${guide.name}"/>
-            <param name="xml-target-file" 
-                  value="${docs.dist.dir}/doc/${guide.name}/printable.html"/>
-        </antcall>
-        <!-- pdf - enable when it works 
-        <antcall target="xml-pdf">
-            <param name="xml-source-dir" 
-                  value="${docs.src.dir}/doc/${guide.dir}"/>
-            <param name="xml-source-root" value="${guide.name}.xml"/>
-            <param name="xml-target-file" 
+			<param name="xml-source-root" value="${guide.name}.xml"/>
+			<param name="pdf-target-file" 
                   value="${docs.dist.dir}/doc/${guide.name}.pdf"/>
+		</antcall>
+		-->
+
+    </target>
+
+    <target name="test-pdf"
+            depends="init"
+            description="test pdf build of [prog|dev|adk]guide"
+    >
+        <!-- NPE in fop task when building programming guide.
+        see patch at https://bugs.eclipse.org/bugs/show_bug.cgi?id=81654
+        <antcall target="build-pdf">
+            <param name="guide.dir" value="progGuideDB" />
+            <param name="guide.name" value="progguide" />
         </antcall>
-        -->
+		-->
+        <antcall target="build-pdf">
+            <param name="guide.dir" value="adk15ProgGuideDB" />
+            <param name="guide.name" value="adk15notebook" />
+        </antcall>
+        <copy todir="${docs.src.dir}/devGuideDB" filtering="off">
+            <fileset dir="${devguide.icons.dir}"
+                     includes="${include.devguide.icons}"
+            />
+        </copy>
+
+        <antcall target="build-pdf">
+            <param name="xml-html-copy"
+                   value="ajbrowser-building.gif,ajbrowser-options.gif,${include.devguide.icons}"
+            />
+            <param name="guide.dir" value="devGuideDB" />
+            <param name="guide.name" value="devguide" />
+        </antcall>
     </target>
-    <!-- end of experimental targets -->
 
-   <!-- XML conversion stuff -->
+    <target name="build-pdf"
+            depends="init"
+            description="build prog or dev guide, using guide.dir and guide.name"
+    >
+        <antcall target="xml-pdf">
+            <param name="xml-source-dir"
+                   value="${docs.src.dir}/${guide.dir}"
+            />
+            <param name="xml-source-root" value="${guide.name}.xml" />
+            <param name="pdf-target-file"
+                   value="${docs.dist.dir}/doc/${guide.name}.pdf"
+            />
+        </antcall>
+    </target>
 
-   <!-- todo xml-pdf broken; when fixed, see xml-html for example -->
+    <!-- XML conversion stuff -->
+
+    <!-- xml-pdf -->
     <target name="xml-pdf">
-        <delete file="${xml-target-file}"/>
-        <touch file="${xml-target-file}"/>
-        <java classname="com.icl.saxon.StyleSheet"
-              fork="yes">
+        <delete file="${pdf-target-file}" />
+        <touch file="${pdf-target-file}" />
+        <delete file="${xml-source-dir}/index.fo" />
+
+        <!-- produce index.fo from docbook sources -->
+        <java classname="com.icl.saxon.StyleSheet" fork="yes">
             <classpath>
-                <pathelement location="${saxon.dir}/saxon.jar"/>
+                <pathelement location="${aspectj.modules.lib.dir}/saxon/saxon.jar"
+                />
             </classpath>
-            <arg value="-o"/>
-            <arg value="${xml-source-dir}/index.fo"/>
-            <arg value="${xml-source-dir}/${xml-source-root}"/>
-            <arg value="${docbook.dir}/docbook-xsl/fo/docbook.xsl"/>
-        </java>            
+            <arg value="-o" />
+            <arg value="${xml-source-dir}/index.fo" />
+            <arg value="${xml-source-dir}/${xml-source-root}" />
+            <arg value="${aspectj.modules.lib.dir}/docbook/docbook-xsl/fo/docbook.xsl"
+            />
+        </java>
+
+        <!-- index.fo to pdf (TODO if formatting fixed, to init-taskdefs) -->
+        <taskdef name="fop"
+                 classname="org.apache.fop.tools.anttasks.Fop"
+        >
+            <classpath>
+                <fileset dir="${aspectj.modules.lib.dir}/docbook/fop">
+                    <include name="fop.jar" />
+                    <include name="batik.jar" />
+                    <include name="avalon.jar" />
+                </fileset>
+                <fileset dir="${aspectj.modules.lib.dir}/ant">
+                    <include name="xalan.jar" />
+                    <include name="xercesImpl.jar" />
+                    <include name="xml-apis.jar" />
+                </fileset>
+            </classpath>
+        </taskdef>
+        <!-- TODO messagelevel="info" -->
+        <fop format="application/pdf"
+             messagelevel="verbose"
+             basedir="${guide.dir}"
+             fofile="${guide.dir}/index.fo"
+             outfile="${pdf-target-file}"
+        >
+        </fop>
+        <delete quiet="on" file="${guide.dir}/index.fo" />
     </target>
 
-   <target name="xml-html"
-    description="antcall(xml-source-dir, xml-source-root, xml-target-dir, xml-target-file)
+    <target name="xml-html"
+            description="antcall(xml-source-dir, xml-source-root, xml-target-dir, xml-target-file)
      convert xml to html using docbook. parameters: 
      xml-source-dir  # base directory of source 
      xml-source-root # base file of source (relative to xml-source-dir)
      xsl-source-file # xsl transform to apply (use chunk.xsl.source by default) 
      xml-target-dir  # target directory for output (used as xsl param base.dir)
      xml-target-file # full path to output file in xml-source-dir, ignored when chunking
-     xml-html-copy   # copy files to target (defaults to *.gif,*.png">
+     xml-html-copy   # copy files to target (defaults to *.gif,*.png"
+    >
 
-     <mkdir dir="${xml-target-dir}"/>
+        <mkdir dir="${xml-target-dir}" />
         <copy todir="${xml-target-dir}">
-            <fileset dir="${xml-source-dir}" 
-                includes="${xml-html-copy}"/>
+            <fileset dir="${xml-source-dir}"
+                     includes="${xml-html-copy}"
+            />
         </copy>
         <java classname="com.icl.saxon.StyleSheet"
               classpath="${aspectj.modules.lib.dir}/saxon/saxon.jar"
-                   fork="yes" 
-            failonerror="yes"> <!-- todo: establish failure policy -->
-            <arg value="-o"/>
-            <arg value="${xml-target-file}"/>
-            <arg value="${xml-source-dir}/${xml-source-root}"/>
-            <arg value="${xsl-source-file}"/>
-            <arg value="base.dir=${xml-target-dir}/"/>
-            <arg value="use.id.as.filename=1"/>
-        </java>            
+              fork="yes"
+              failonerror="yes"
+        >
+            <!-- todo: establish failure policy -->
+            <arg value="-o" />
+            <arg value="${xml-target-file}" />
+            <arg value="${xml-source-dir}/${xml-source-root}" />
+            <arg value="${xsl-source-file}" />
+            <arg value="base.dir=${xml-target-dir}/" />
+            <arg value="use.id.as.filename=1" />
+        </java>
     </target>
-
-  <target name="info" 
-     description="misc info for writing and building docbook">
-<echo>
----- misc info for writing and building docbook
-- link tag linkend attribute takes an id 
-  - xsl converts as needed during output
-  - do NOT use ulink; this will be converted to ""
-    (but see param citerefentry-link: might enable this)
-
-- to use sensible names for the files produced, 
-  - use an xsl wrapper to add/modify features
-  - set flag to use the id of the top-level element in the output
-    file as the filename.  
-    xsl:param name="use.id.as.filename" select="1"
-  - fyi, other related parameters: html-ext, root-filename
-  - In this example, the top-level element in the output file
-    is the refentry, so set ids which become the basename of the file:
-    refentry id="aspectj-mode"          # in aspectj-mode.xml, produces aspecj-mode.html
-    refentry id="ajdee"                 # in ajdee.xml, produces ajdee.html
-
--- fyi
-- related parameters: 
-  html-ext, root-filename
-- these tags did not work for me:
- dbhtml filename="foo.htm"
- dbhtml prefix="foo-"
-
-- resources 
-  - the dtd reference for docbook
-    http://www.oreilly.com/catalog/docbook/chapter/book/docbook.html
-  - the stylesheet reference for docbook xsl
-    http://docbook.sourceforge.net/projects/dsssl/doc/html.html
-- todo
-  - fyi, generate.reference.titlepage appears not to be respected.
-    tried to add if statement to html/refentry.xsl, but file still gen'd
-</echo>
-  </target>
 
 </project>
