@@ -50,6 +50,13 @@ public class AjdtCommand implements ICommand {
 		buildManager = new AjBuildManager(handler); 
 		savedArgs = new String[args.length];
         System.arraycopy(args, 0, savedArgs, 0, savedArgs.length);
+        for (int i = 0; i < args.length; i++) {
+            if ("-help".equals(args[i])) {
+                // should be info, but handler usually suppresses
+                MessageUtil.abort(handler, BuildArgParser.getUsage());
+                return true;
+            }
+        }
         return doCommand(handler, false);
     }
 

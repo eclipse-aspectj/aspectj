@@ -42,6 +42,7 @@ import org.eclipse.jdt.internal.compiler.batch.Main;
 public class BuildArgParser extends Main {
 
 	private static final String BUNDLE_NAME = "org.aspectj.ajdt.ajc.messages";
+    private static boolean LOADED_BUNDLE = false;
     
     /** to initialize super's PrintWriter but refer to underlying StringWriter */
     private static class StringPrintWriter extends PrintWriter {
@@ -54,6 +55,9 @@ public class BuildArgParser extends Main {
 
     /** @return multi-line String usage for the compiler */    
     public static String getUsage() {
+        if (!LOADED_BUNDLE) { // get eclipse usage unless bundle loaded...
+            new BuildArgParser();
+        }
         return Main.bind("misc.usage", Main.bind("compiler.version"));
     }
     
@@ -72,6 +76,9 @@ public class BuildArgParser extends Main {
 	public BuildArgParser(PrintWriter writer) {
 		super(writer, writer, false);
 		bundle = ResourceBundle.getBundle(BUNDLE_NAME);
+        if (!LOADED_BUNDLE) {
+            LOADED_BUNDLE = true;
+        }
         if (writer instanceof StringPrintWriter) {
             errorSink = ((StringPrintWriter) writer).stringWriter.getBuffer();
         } else {
