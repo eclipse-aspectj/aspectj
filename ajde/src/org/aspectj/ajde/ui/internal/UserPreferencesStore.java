@@ -27,6 +27,7 @@ import java.util.StringTokenizer;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.ui.UserPreferencesAdapter;
+import org.aspectj.util.LangUtil;
 
 public class UserPreferencesStore implements UserPreferencesAdapter {
     public static final String FILE_NAME = "/.ajbrowser";
@@ -34,14 +35,14 @@ public class UserPreferencesStore implements UserPreferencesAdapter {
     private Properties properties = new Properties();
 	
 	public UserPreferencesStore() {
-        try {
-            if (new File(getPropertiesFilePath()).exists()) {
-                properties.load(new FileInputStream(getPropertiesFilePath()));
-            }
-        } catch (IOException ioe) {
-            Ajde.getDefault().getErrorHandler().handleError("Could not read properties", ioe);
-        }	
+        this(true);
 	}
+
+    public UserPreferencesStore(boolean loadDefault) {
+        if (loadDefault) {
+            loadProperties(getPropertiesFilePath());
+        }
+    }
 	
     public String getProjectPreference(String name) {
         return properties.getProperty(name);
@@ -60,7 +61,7 @@ public class UserPreferencesStore implements UserPreferencesAdapter {
     }
 
     public void setProjectPreference(String name, String value) {
-        properties.setProperty(name, value);
+        properties.setProperty(name, value); 
         saveProperties();
     }
 
@@ -73,7 +74,7 @@ public class UserPreferencesStore implements UserPreferencesAdapter {
         saveProperties();
     }
 
-    public String getPropertiesFilePath() {
+    public static String getPropertiesFilePath() {
         String path = System.getProperty("user.home");
         if (path == null) {
             path = ".";
@@ -96,12 +97,48 @@ public class UserPreferencesStore implements UserPreferencesAdapter {
 	public void setGlobalMultivalPreference(String name, List values) {
 		setProjectMultivalPreference(name, values);
 	}
-	
-    public void saveProperties() {
+	private void loadProperties(String path) {
+        if (LangUtil.isEmpty(path)) {
+            return;
+        }
+        File file = new File(path);
+        if (!file.canRead()) {
+            return;
+        }
+        FileInputStream in = null;
         try {
-            properties.store(new FileOutputStream(getPropertiesFilePath()), "AJDE Settings");
+            path = getPropertiesFilePath();
+            in = new FileInputStream(file);
+            properties.load(in);
         } catch (IOException ioe) {
-            Ajde.getDefault().getErrorHandler().handleError("Could not write properties", ioe);
+            Ajde.getDefault().getErrorHandler().handleError("Error reading properties from " + path, ioe);
+        } finally {
+            if (null != in) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
+        }
+	}
+    public void saveProperties() {
+        FileOutputStream out = null;
+        String path = null;
+        try {
+            path = getPropertiesFilePath();
+            out = new FileOutputStream(path);
+            properties.store(out, "AJDE Settings");
+        } catch (IOException ioe) {
+            Ajde.getDefault().getErrorHandler().handleError("Error writing properties to " + path, ioe);
+        } finally {
+            if (null != out) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
         }
     }
 }
