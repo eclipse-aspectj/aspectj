@@ -12,15 +12,17 @@
 	
 	aspectjrt.path   path to release version of runtime
 
-	test.classpath   use jar.classpath or bin.classpath
+	test.classpath   use "jar.classpath" or "bin.classpath"
 	                 (default is bin if available)
-	                 Using jar.classpath requires building all modules
-	                 *with* testing code, as follows:
-       cd build
-       ant clean
-       ant -Dtrim.testing.default=false build-testing-drivers	                 
-       ant -Dtrim.testing.default=false aspectjrt
-       ant -Dtrim.testing.default=false any-module -Dmodule.name=ajbrowser
+	  
+	  Both require module tests be built with the modules.
+	  
+	  bin.classpath: use eclipse bin/ directories
+	  
+      jar.classpath: use build.xml jar files:      
+        cd build
+        ant clean
+        ant -Dtrim.testing.default=false build-testing-jars	                 
 	                 
 		</echo>
 	</target>
@@ -41,14 +43,13 @@
 
 		<mkdir dir="${junitModules.output.dir}"/>
 		<path id="lib.classpath">
-          <pathelement location="${aspectj.modules.lib.dir}/eclipse2.0/jdtDepends.jar" />
           <pathelement location="${aspectj.modules.lib.dir}/bcel/bcel.jar" />
           <pathelement location="${aspectj.modules.lib.dir}/jdiff/jdiff.jar" />
           <pathelement location="${aspectj.modules.lib.dir}/commons/commons.jar" />
           <pathelement location="${aspectj.modules.lib.dir}/ant/lib/ant.jar" />
           <pathelement location="${aspectj.modules.lib.dir}/ant/lib/xml-apis.jar" />
           <pathelement location="${aspectj.modules.lib.dir}/ant/lib/xercesImpl.jar" />
-          <pathelement location="${aspectj.modules.lib.dir}/test/	.jar" />
+          <pathelement location="${aspectj.modules.lib.dir}/junit/junit.jar" />
           <pathelement location="${modules.dir}/org.eclipse.jdt.core/jdtcore-for-aspectj.jar" />
 		</path>
 
@@ -111,7 +112,7 @@
     </target>
 
     <target name="jdepend" depends="init"
-     description="run jdepend">
+     description="run jdepend - untested">
 	  <jdepend format="xml">
 	    <sourcespath>
 	        <pathelement location="${tests.module.dir}/../testing/src" />
@@ -136,40 +137,110 @@
             location="${junitModules.output.dir}/html/index.html"/>
       <echo message="View results in file:${fileUrl}"/>
     </target>
-
+    
+    <target name="test-all-at-once" depends="init,select-path"
+     description="run all module tests (except IDE integrations)">
+		<echo message="fails - AJDE needs ../ajde-style paths"/>
+		<mkdir dir="${junitModules.output.dir}"/>
+		<delete dir="${junitModules.output.dir}"/>
+		<mkdir dir="${junitModules.output.dir}"/>
+		<junit fork="on" 
+			includeAntRuntime="off" 
+			dir="${tests.module.dir}"
+			printsummary="yes" 
+			haltonfailure="${haltOnTestFailure}" >
+			<classpath>
+				<path refid="${test.classpath}"/>
+			</classpath>
+			
+			<jvmarg value="-Daspectjrt.path=${aspectjrt.path}" />
+			
+			<formatter type="xml"/>
+			
+			<batchtest todir="${junitModules.output.dir}">
+				<formatter type="xml"/>
+				<fileset dir="${modules.dir}/ajbrowser/testsrc">
+					<include name="*ModuleTests.java" />
+				</fileset>
+				<fileset dir="${modules.dir}/asm/testsrc">
+					<include name="*ModuleTests.java" />
+				</fileset>
+				<fileset dir="${modules.dir}/ajde/testsrc">
+					<include name="*ModuleTests.java" />
+				</fileset>
+				<fileset dir="${modules.dir}/bridge/testsrc">
+					<include name="*ModuleTests.java" />
+				</fileset>
+				<fileset dir="${modules.dir}/build/testsrc">
+					<include name="*ModuleTests.java" />
+				</fileset>
+				<fileset dir="${modules.dir}/org.aspectj.ajdt.core/testsrc">
+					<include name="*ModuleTests.java" />
+				</fileset>
+				<fileset dir="${modules.dir}/runtime/testsrc">
+					<include name="*ModuleTests.java" />
+				</fileset>
+				<fileset dir="${modules.dir}/taskdefs/testsrc">
+					<include name="*ModuleTests.java" />
+				</fileset>
+				<fileset dir="${modules.dir}/testing/testsrc">
+					<include name="*ModuleTests.java" />
+				</fileset>
+				<fileset dir="${modules.dir}/testing-client/testsrc">
+					<include name="*ModuleTests.java" />
+				</fileset>
+				<fileset dir="${modules.dir}/testing-drivers/testsrc">
+					<include name="*ModuleTests.java" />
+				</fileset>
+				<fileset dir="${modules.dir}/testing-util/testsrc">
+					<include name="*ModuleTests.java" />
+				</fileset>
+				<fileset dir="${modules.dir}/util/testsrc">
+					<include name="*ModuleTests.java" />
+				</fileset>
+				<fileset dir="${modules.dir}/weaver/testsrc">
+					<include name="*ModuleTests.java" />
+				</fileset>
+			</batchtest>        
+  		</junit>        
+    </target>
+ 
     <target name="test-all" depends="init,select-path"
      description="run all module tests (except IDE integrations)">
-      <!-- not running bridgeImpl, compiler, netbeans, jbuilder tests -->
      
       <mkdir dir="${junitModules.output.dir}"/>
       <delete dir="${junitModules.output.dir}"/>
       <mkdir dir="${junitModules.output.dir}"/>
- 
+
       <antcall target="run-module-junit-tests">
          <param name="moduleName" value="ajbrowser"/>
       </antcall>
+      
       <antcall target="run-module-junit-tests">
          <param name="moduleName" value="ajde"/>
       </antcall>
+      
       <antcall target="run-module-junit-tests">
          <param name="moduleName" value="asm"/>
       </antcall>
+      
       <antcall target="run-module-junit-tests">
          <param name="moduleName" value="weaver"/>
       </antcall>
+      
       <antcall target="run-module-junit-tests">
          <param name="moduleName" value="bridge"/>
       </antcall>
+      
       <antcall target="run-module-junit-tests">
          <param name="moduleName" value="build"/>
       </antcall>
+      
       <antcall target="run-module-junit-tests">
          <param name="moduleName" value="org.aspectj.ajdt.core"/>
-      </antcall>
+      </antcall>      
+
       <!-- no JUnit testsrc in org.eclipse.jdt.core -->
-      <antcall target="run-module-junit-tests">
-         <param name="moduleName" value="testing"/>
-      </antcall>
       <antcall target="run-module-junit-tests">
          <param name="moduleName" value="runtime"/>
       </antcall>
@@ -177,18 +248,23 @@
       <antcall target="run-module-junit-tests">
          <param name="moduleName" value="taskdefs"/>
       </antcall>
+      
       <antcall target="run-module-junit-tests">
          <param name="moduleName" value="testing"/>
       </antcall>
+
       <antcall target="run-module-junit-tests">
          <param name="moduleName" value="testing-client"/>
       </antcall>
+      
       <antcall target="run-module-junit-tests">
          <param name="moduleName" value="testing-drivers"/>
       </antcall>
+      
       <antcall target="run-module-junit-tests">
          <param name="moduleName" value="testing-util"/>
       </antcall>
+      
       <antcall target="run-module-junit-tests">
          <param name="moduleName" value="util"/>
       </antcall>   
@@ -224,8 +300,11 @@
       <mkdir dir="${junitModules.output.dir}/${moduleName}"/>
       <!-- fork to load classes, include AntRuntime to get taskdef classes junit.jar -->
       <echo message="Starting ${moduleName} tests..."/>
-      <junit fork="on" includeAntRuntime="on" dir="${modules.dir}/${moduleName}"
-           printsummary="yes" haltonfailure="${haltOnTestFailure}" >
+      <junit fork="on" 
+      		includeAntRuntime="off" 
+      		dir="${modules.dir}/${moduleName}"
+           	printsummary="yes" 
+           	haltonfailure="${haltOnTestFailure}" >
            <classpath>
            	<path refid="${test.classpath}"/>
            </classpath>
