@@ -3,7 +3,7 @@
 <!-- This assumes a complete pre-built eclipse workspace                            -->
 <!-- ============================================================================== -->
 
-<project name="junitModules" default="test-all" basedir=".">
+<project name="junitModules" default="test-all-but-ajc" basedir=".">
   <property name="project.name" value="junitModules"/>
 
 	<target name="info">
@@ -23,6 +23,10 @@
         cd build
         ant clean
         ant -Dtrim.testing.default=false build-testing-jars	                 
+        
+      java13.path: path to jdk 1.3 java.exe command for ajc tests
+      
+      java14.path: path to jdk 1.4 java.exe command for ajc tests
 	                 
 		</echo>
 	</target>
@@ -40,6 +44,15 @@
 			location="${tests.module.dir}/bin/junitXmlOutput" />
 		<property name="aspectjrt.path"
 			location="${aspectj.modules.lib.dir}/test/aspectjrt.jar"/>
+	   <property name="ajc.tests.xml.file"
+	       location="${tests.module.dir}/ajcTests.xml"/>
+	   <property name="ajc.tests.output.file"
+	       location="${junitModules.output.dir}/ajc/TEST-ajcTests.xml"/>
+	   <property name="ajc.tests.emacssym.xml.file"
+	       location="${tests.module.dir}/ajcTestsEmacssym.xml"/>
+	   <property name="ajc.tests.emacssym.output.file"
+	       location="${junitModules.output.dir}/ajc/TEST-ajcTestsEmacssym.xml"/>
+
 
 		<mkdir dir="${junitModules.output.dir}"/>
 		<path id="lib.classpath">
@@ -205,6 +218,75 @@
   		</junit>        
     </target>
  
+    <target name="test-all-but-ajc" depends="init,select-path"
+     description="run all module tests (except IDE integrations)">
+     
+      <mkdir dir="${junitModules.output.dir}"/>
+      <delete dir="${junitModules.output.dir}"/>
+      <mkdir dir="${junitModules.output.dir}"/>
+
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="ajbrowser"/>
+      </antcall>
+      
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="ajde"/>
+      </antcall>
+      
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="asm"/>
+      </antcall>
+      
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="weaver"/>
+      </antcall>
+      
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="bridge"/>
+      </antcall>
+      
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="build"/>
+      </antcall>
+      
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="org.aspectj.ajdt.core"/>
+      </antcall>      
+
+      <!-- no JUnit testsrc in org.eclipse.jdt.core -->
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="runtime"/>
+      </antcall>
+
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="taskdefs"/>
+      </antcall>
+      
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="testing"/>
+      </antcall>
+
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="testing-client"/>
+      </antcall>
+      
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="testing-drivers"/>
+      </antcall>
+      
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="testing-util"/>
+      </antcall>
+      
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="util"/>
+      </antcall>   
+      
+      <antcall target="report-tests"/>
+
+    </target>
+  
+ 
     <target name="test-all" depends="init,select-path"
      description="run all module tests (except IDE integrations)">
      
@@ -268,7 +350,14 @@
       <antcall target="run-module-junit-tests">
          <param name="moduleName" value="util"/>
       </antcall>   
-
+      
+      <!-- run the ajc tests too... 
+      -->
+      <antcall target="ajc-tests">
+      </antcall>
+      <antcall target="ajc-tests-emacssym">
+      </antcall>
+      
       <antcall target="report-tests"/>
 
     </target>
@@ -343,4 +432,30 @@
             location="${junitModules.output.dir}/html/index.html"/>
       <echo message="View results in file:${fileUrl}"/>
     </target>
+    
+    <target name="ajc-tests" depends="init-taskdefs">
+       <mkdir dir="${junitModules.output.dir}/ajc"/>
+   	   <java classname="org.aspectj.testing.drivers.Harness"
+	            classpathref="bin.classpath"
+	            output="${ajc.tests.output.file}"
+	            fork="true">
+	            <arg value="-cruisecontrol"/>
+	            <arg file="${ajc.tests.xml.file}"/>
+	   </java>
+    </target>
+
+    <target name="ajc-tests-emacssym" depends="init-taskdefs">
+       <mkdir dir="${junitModules.output.dir}/ajc"/>
+       <copy file="${ajc.tests.xml.file}" tofile="${ajc.tests.emacssym.xml.file}"/>
+   	   <java classname="org.aspectj.testing.drivers.Harness"
+	            classpathref="bin.classpath"
+	            output="${ajc.tests.emacssym.output.file}"
+	            fork="true">
+	            <arg value="-cruisecontrol"/>
+	            <arg value="-emacssym"/>
+	            <arg file="${ajc.tests.emacssym.xml.file}"/>
+	   </java>
+	   <delete file="${ajc.tests.emacssym.xml.file}"/>
+    </target>
+
 </project>
