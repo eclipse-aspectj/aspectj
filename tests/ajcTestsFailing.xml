@@ -52,4 +52,11 @@
         </compile>
     </ajc-test>
 
+    <ajc-test dir="binding"
+      title="no such constructor for proceed argument (error)">
+        <compile files="UnfoundConstructor.java">
+        	<message kind="error" line="25"/>
+        </compile>
+    </ajc-test>
+
 </suite>
