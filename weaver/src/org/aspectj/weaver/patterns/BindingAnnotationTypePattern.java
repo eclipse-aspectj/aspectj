@@ -39,11 +39,6 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 	}
 	
 	public void resolveBinding(World world) {
-	    // For 1.5.0 M1
-		IMessage lim = MessageUtil.error("Binding not supported in @pcds (1.5.0 M1 limitation): " +
-		        getSourceLocation());
-		world.getMessageHandler().handleMessage(lim);
-	    // End of 1.5.0 M1
 	    
 		if (resolved) return;
 		resolved = true;
