@@ -14,8 +14,7 @@
 
 package org.aspectj.runtime.reflect;
 
-import org.aspectj.lang.reflect.*;
-import org.aspectj.lang.*;
+import org.aspectj.lang.reflect.InitializerSignature;
 
 import java.lang.reflect.Modifier;
 

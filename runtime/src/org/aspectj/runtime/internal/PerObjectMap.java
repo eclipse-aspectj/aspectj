@@ -14,11 +14,7 @@
 
 package org.aspectj.runtime.internal;
 
-import org.aspectj.runtime.CFlow;
-
-
-// REQUIRES JAVA 2!!!!!!!!!!!!!!!!
-import java.util.WeakHashMap;
+import java.util.WeakHashMap;  // XXX REQUIRES JAVA 2!!!!!!!!!!!!!!!!
 
 public class PerObjectMap {
     private WeakHashMap map = new WeakHashMap();

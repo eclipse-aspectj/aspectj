@@ -16,13 +16,11 @@ import org.apache.tools.ant.*;
 import org.apache.tools.ant.types.*;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.taskdefs.*;
-import org.apache.tools.ant.taskdefs.compilers.*;
 import java.io.*;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
-import java.lang.reflect.*;
 
 /**
  * Ant task for the AspectJ compiler -- AJC.

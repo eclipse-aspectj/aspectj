@@ -14,6 +14,21 @@
 
 package org.aspectj.tools.ant.taskdefs;
 
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Location;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.MatchingTask;
+import org.apache.tools.ant.types.Commandline;
+import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.Reference;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.IMessageHolder;
+import org.aspectj.bridge.MessageHandler;
+import org.aspectj.tools.ajc.Main;
+import org.aspectj.tools.ajc.Main.MessagePrinter;
+import org.aspectj.util.LangUtil;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,21 +37,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
-
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Location;
-import org.apache.tools.ant.taskdefs.MatchingTask;
-import org.apache.tools.ant.types.Commandline;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.Reference;
-import org.aspectj.bridge.CountingMessageHandler;
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.IMessageHolder;
-import org.aspectj.bridge.MessageHandler;
-import org.aspectj.tools.ajc.Main;
-import org.aspectj.tools.ajc.Main.MessagePrinter;
-import org.aspectj.util.LangUtil;
 
 
 /**
@@ -243,15 +243,14 @@ public class AjcTask extends MatchingTask {
     }
 
 	/** 
-	 * -Xlint:file={lint.properties} - enable or disable specific forms 
+	 * -Xlintfile {lint.properties} - enable or disable specific forms 
 	 * of -Xlint messages based on a lint properties file
 	 *  (default is 
 	 * <code>org/aspectj/weaver/XLintDefault.properties</code>)
 	 * @param xlintFile the File with lint properties
 	 */
     public void setXlintfile(File xlintFile) { 
-        String flag = "-Xlintfile:" + xlintFile.getAbsolutePath();
-        addFlag(flag, true);
+        addFlagged("-Xlintfile", xlintFile.getAbsolutePath());
     }
 
     public void setPreserveAllLocals(boolean preserveAllLocals) {  
@@ -549,7 +548,7 @@ public class AjcTask extends MatchingTask {
         try {
         	if (0 < ignored.size()) {
 				for (Iterator iter = ignored.iterator(); iter.hasNext();) {
-					log("ignored: " + iter.next(), project.MSG_INFO);					
+					log("ignored: " + iter.next(), Project.MSG_INFO);					
 				}
         	}
             Main main = new Main();
@@ -557,7 +556,7 @@ public class AjcTask extends MatchingTask {
             addListArgs();
             String[] args = cmd.getArguments();
 	        if (verbose) {
-	        	log("ajc " + Arrays.asList(args), project.MSG_VERBOSE);
+	        	log("ajc " + Arrays.asList(args), Project.MSG_VERBOSE);
 	        }
             main.runMain(args, false);
             

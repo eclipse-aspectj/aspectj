@@ -14,9 +14,6 @@
 
 package org.aspectj.runtime.reflect;
 
-import org.aspectj.lang.*;
-import org.aspectj.lang.reflect.*;
-
 import java.lang.reflect.Modifier;
 
 class StringMaker {

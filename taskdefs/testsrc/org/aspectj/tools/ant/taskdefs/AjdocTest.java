@@ -14,7 +14,6 @@
 package org.aspectj.tools.ant.taskdefs;
 
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.types.Path;
 
 import java.io.File;
 

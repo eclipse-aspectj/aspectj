@@ -12,19 +12,19 @@
 
 package org.aspectj.tools.ant.taskdefs.compilers;
 
-import org.apache.tools.ant.*;
-import org.apache.tools.ant.types.*;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.taskdefs.*;
-import org.apache.tools.ant.taskdefs.compilers.*;
-import java.io.*;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
-import java.lang.reflect.*;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Javac;
+import org.apache.tools.ant.taskdefs.LogOutputStream;
+import org.apache.tools.ant.taskdefs.compilers.DefaultCompilerAdapter;
+import org.apache.tools.ant.types.Commandline;
 
-//XXX
-import java.util.*;
+import java.io.File;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Ajc uses this as the CompilerAdapter.

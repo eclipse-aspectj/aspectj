@@ -14,13 +14,11 @@
 
 package org.aspectj.tools.ant.taskdefs;
 
-import org.apache.tools.ant.Project;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.taskdefs.compilers.DefaultCompilerAdapter;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;

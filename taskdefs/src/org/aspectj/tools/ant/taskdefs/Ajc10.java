@@ -12,31 +12,30 @@
 
 package org.aspectj.tools.ant.taskdefs;
 
-import org.apache.tools.ant.*;
-import org.apache.tools.ant.types.*;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Location;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.MatchingTask;
+import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.Reference;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
-import org.aspectj.bridge.MessageUtil;
 import org.aspectj.tools.ajc.Main;
 import org.aspectj.tools.ajc.Main.MessagePrinter;
-import org.apache.tools.ant.taskdefs.*;
-import org.apache.tools.ant.taskdefs.compilers.*;
-import java.io.*;
+
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
-import java.util.Iterator;
-import java.util.ArrayList;
 import java.util.StringTokenizer;
-import java.lang.reflect.*;
-import java.net.*;
+import java.util.Vector;
 
 /**
  * Main taskdef class for the AspectJ 1.0 compiler, <code>ajc</code>.

@@ -19,7 +19,6 @@ import org.aspectj.runtime.CFlow;
 
 import java.util.Stack;
 import java.util.Hashtable;
-import java.util.Vector;
 import java.util.Enumeration;
 
 public class CFlowStack {

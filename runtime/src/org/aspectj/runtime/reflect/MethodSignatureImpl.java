@@ -14,9 +14,7 @@
 
 package org.aspectj.runtime.reflect;
 
-import org.aspectj.lang.*;
-import org.aspectj.lang.reflect.*;
-import java.lang.reflect.Modifier;
+import org.aspectj.lang.reflect.MethodSignature;
 
 class MethodSignatureImpl extends CodeSignatureImpl implements MethodSignature {
     Class returnType;

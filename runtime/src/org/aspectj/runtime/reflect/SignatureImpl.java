@@ -14,10 +14,10 @@
 
 package org.aspectj.runtime.reflect;
 
-import org.aspectj.lang.*;
-import org.aspectj.lang.reflect.*;
+import org.aspectj.lang.Signature;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.StringTokenizer;
 
 abstract class SignatureImpl implements Signature {
     int modifiers = -1;

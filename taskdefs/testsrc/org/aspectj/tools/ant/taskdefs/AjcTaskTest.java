@@ -13,14 +13,10 @@
 
 package org.aspectj.tools.ant.taskdefs;
 
-import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Task;
-import org.apache.tools.ant.taskdefs.Ant;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.selectors.FilenameSelector;
 import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
