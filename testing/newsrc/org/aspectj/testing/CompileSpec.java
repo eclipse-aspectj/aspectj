@@ -68,6 +68,9 @@ public class CompileSpec implements ITestStep {
 		
 	public void setTest(AjcTest t) {
 		this.myTest = t;
+		if (options != null && (options.indexOf("-1.5") != -1)) {
+		    myTest.setVm("1.5");
+		}
 	}
 	
 	protected AjcTest getTest() { return myTest; }

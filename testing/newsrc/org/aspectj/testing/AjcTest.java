@@ -70,7 +70,7 @@ public class AjcTest {
 		}
 	}
 	
-	private boolean canRunOnThisVM() {		
+	public boolean canRunOnThisVM() {		
 		if (vmLevel.equals("1.3")) return true;
 		boolean canRun = true;
 		if (vmLevel.equals("1.4")) canRun = is14VMOrGreater;
