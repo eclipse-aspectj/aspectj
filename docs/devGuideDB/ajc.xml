@@ -181,6 +181,28 @@
       </varlistentry>
 
       <varlistentry>
+        <term>-bootclasspath <replaceable>Path</replaceable></term>
+        <listitem><para>
+          Override location of VM's bootclasspath 
+          for purposes of evaluating types when compiling.
+        Path is a single argument containing
+        a list of paths to zip files or directories, 
+        delimited by the platform-specific path delimiter.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-extdirs <replaceable>Path</replaceable></term>
+        <listitem><para>
+          Override location of VM's extension directories 
+          for purposes of evaluating types when compiling.
+        Path is a single argument containing
+        a list of paths to directories, 
+        delimited by the platform-specific path delimiter.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
         <term>-d <replaceable>Directory</replaceable></term>
         <listitem><para>
           Specify where to place generated .class files.
