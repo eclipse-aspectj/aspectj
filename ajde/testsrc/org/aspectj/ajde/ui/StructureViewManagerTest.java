@@ -82,12 +82,14 @@ public class StructureViewManagerTest extends AjdeTestCase {
 		Ajde.getDefault().getStructureModelManager().readStructureModel(CONFIG_FILE_PATH);
 		
 		assertTrue("notified", renderer.getHasBeenNotified());	
-		//System.err.println(">>>>>> " + currentView.getRootNode().getStructureNode());	
-		StructureNode n = currentView.getRootNode().getStructureNode();
+		//System.err.println(">>>>>> " + currentView.getRootNode().getStructureNode());
+		// AMC should this be currentView, or should we recreate the root... do the latter	
+		//StructureNode n = currentView.getRootNode().getStructureNode();
+		StructureNode n = Ajde.getDefault().getStructureModelManager().getStructureModel().getRoot();
 		assertTrue(
 			"no structure", 
-			currentView.getRootNode().getStructureNode().getChildren().get(0) 
-			== StructureModel.NO_STRUCTURE
+			//currentView.getRootNode().getStructureNode().getChildren().get(0) 
+			n == StructureModel.NO_STRUCTURE
 		);	
 	}
 
