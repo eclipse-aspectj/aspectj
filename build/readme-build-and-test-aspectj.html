@@ -368,6 +368,17 @@ Some build problems and fixes encountered in the past:
    from the project or Eclipse complains about duplicate jar files
    in the path.
    </li>
+   <li>More generally, if you find extra classes in the assembled jars, 
+	most likely you have added unexpected libraries to the build, e.g., 
+	when adding libraries for the IBM JRE.  
+	To skip those, add them to the "skip.libraries" list in 
+	<a href="src/org/aspectj/internal/tools/build/Builder.properties">
+		src/org/aspectj/internal/tools/build/Builder.properties</a>.
+	These libraries will always be skipped for any module built this way;
+	there is no way to include a library in one module but not another.
+	For more information on the properties file, see
+	<a href="readme-build-module.html">readme-build-module.html</a>.
+   </li>
 </ul>
 
 </body>

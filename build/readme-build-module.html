@@ -138,6 +138,23 @@ Under Ant, when building in a pre-Java-5 VM, this source will be ignored
 (hence, it must not be required to compile).  Under Eclipse, developers
 not using Java 5 should close the corresponding modules.
 
+<h4>Builder.properties, resources, and tree audit tests</h4>
+<p/>
+In <a href="src/org/aspectj/internal/tools/build/Builder.properties">
+		src/org/aspectj/internal/tools/build/Builder.properties</a>
+you can set up 
+<ul>
+	<li>product aliases for mapping module jars</li>
+	<li>libraries to exclude for assembling module jars</li>
+	<li>patterns for copying resources.</li>
+</ul>
+Regarding the patterns, if you add a resource with an unrecognized suffix to a
+source tree, the corresponding unit test in 
+<a href="testsrc/BuildModuleTests.java">testsrc/BuildModuleTests.java</a>
+will fail.  You'll need to update the <code>Builder.properties</code>
+file (and recreate the build.jar) to ensure that the new resource
+is copied to the assembled module jar.
+	
 <h3>Debugging build problems</h3>
 <h4>Running under Eclipse</h4>
 When running Ant from eclipse,
