@@ -25,10 +25,10 @@
       	- Changing version here causes org/aspectj/bridge/Version.java to be updated
         - also change org.aspectj.ajdt.core/src/org/aspectj/ajdt/ajc/messages.properties
       -->
-      <property name="build.version"       value="DEVELOPMENT"/> 
+      <property name="build.version"       value="1.1.0"/> 
       <property name="build.version.base"  value="1.1"/> 
-      <property name="build.version.long"  value="DEVELOPMENT"/> 
-      <property name="build.version.short" value="DEVELOPMENT"/> 
+      <property name="build.version.long"  value="1.1.0 Release"/> 
+      <property name="build.version.short" value="1.1.0"/> 
 
       <!-- formats comply with SimpleDateFormat -->
       <property name="build.time.format"   value="MM/dd/yy 'at' hh:mm:ss z"/> 
