@@ -443,3 +443,9 @@
 	  <compile files="Main2.java,MainAspect.java"/>
 	  <run class="dk.infimum.aspectjtest.Main2"/>
 	</ajc-test>
+	
+    <ajc-test dir="bugs" pr="72528"
+		title="around advice throws java.lang.VerifyError at runtime">
+		<compile files="ArrayCloning.java"/>
+		<run class="ArrayCloning"/>
+	</ajc-test>

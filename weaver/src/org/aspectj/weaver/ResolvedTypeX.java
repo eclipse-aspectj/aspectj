@@ -724,7 +724,11 @@ public abstract class ResolvedTypeX extends TypeX {
         }
         public final ResolvedMember[] getDeclaredMethods() {
             // ??? should this return clone?  Probably not...
-            return ResolvedMember.NONE;
+            // If it ever does, here is the code:
+            //  ResolvedMember cloneMethod =
+            //    new ResolvedMember(Member.METHOD,this,Modifier.PUBLIC,TypeX.OBJECT,"clone",new TypeX[]{});
+            //  return new ResolvedMember[]{cloneMethod};
+        	return ResolvedMember.NONE;
         }
         public final ResolvedTypeX[] getDeclaredInterfaces() {
             return

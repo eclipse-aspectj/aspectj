@@ -21,6 +21,7 @@ import java.util.List;
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.generic.ACONST_NULL;
+import org.aspectj.apache.bcel.generic.ANEWARRAY;
 import org.aspectj.apache.bcel.generic.ArrayType;
 import org.aspectj.apache.bcel.generic.BranchInstruction;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
@@ -36,6 +37,8 @@ import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.InstructionTargeter;
 import org.aspectj.apache.bcel.generic.InvokeInstruction;
+import org.aspectj.apache.bcel.generic.LoadInstruction;
+import org.aspectj.apache.bcel.generic.MULTIANEWARRAY;
 import org.aspectj.apache.bcel.generic.NEW;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.ReturnInstruction;
@@ -1110,11 +1113,73 @@ public class BcelShadow extends Shadow {
         } else {
             initializeArgVars(); // gotta pop off the args before we find the target
             TypeX type = getTargetType();
+            type = ensureTargetTypeIsCorrect(type);
             targetVar = genTempVar(type, "ajc$target");
             range.insert(targetVar.createStore(fact), Range.OutsideBefore); 
 	        targetVar.setPositionInAroundState(hasThis() ? 1 : 0);            
         }
     }
+    
+    /* PR 72528
+     * This method double checks the target type under certain conditions.  The Java 1.4
+     * compilers seem to take calls to clone methods on array types and create bytecode that
+     * looks like clone is being called on Object.  If we advise a clone call with around
+     * advice we extract the call into a helper method which we can then refer to.  Because the
+     * type in the bytecode for the call to clone is Object we create a helper method with
+     * an Object parameter - this is not correct as we have lost the fact that the actual
+     * type is an array type.  If we don't do the check below we will create code that fails
+     * java verification.  This method checks for the peculiar set of conditions and if they
+     * are true, it has a sneak peek at the code before the call to see what is on the stack.
+     */
+    public TypeX ensureTargetTypeIsCorrect(TypeX tx) {
+    	if (tx.equals(ResolvedTypeX.OBJECT) && getKind() == MethodCall && 
+    	    getSignature().getReturnType().equals(ResolvedTypeX.OBJECT) && 
+			getSignature().getArity()==0 && 
+			getSignature().getName().charAt(0) == 'c' &&
+			getSignature().getName().equals("clone")) {
+    		
+    		// Lets go back through the code from the start of the shadow
+            InstructionHandle searchPtr = range.getStart().getPrev();
+            while (Range.isRangeHandle(searchPtr) || 
+            	   searchPtr.getInstruction() instanceof StoreInstruction) { // ignore this instruction - it doesnt give us the info we want
+            	searchPtr = searchPtr.getPrev();  
+            }
+            
+            // A load instruction may tell us the real type of what the clone() call is on
+            if (searchPtr.getInstruction() instanceof LoadInstruction) {
+            	LoadInstruction li = (LoadInstruction)searchPtr.getInstruction();
+            	li.getIndex();
+            	LocalVariableTag lvt = LazyMethodGen.getLocalVariableTag(searchPtr,li.getIndex());
+            	return lvt.getType();
+            }
+            // A field access instruction may tell us the real type of what the clone() call is on
+            if (searchPtr.getInstruction() instanceof FieldInstruction) {
+            	FieldInstruction si = (FieldInstruction)searchPtr.getInstruction();
+            	Type t = si.getFieldType(getEnclosingClass().getConstantPoolGen());
+            	return BcelWorld.fromBcel(t);
+            } 
+            // A new array instruction obviously tells us it is an array type !
+            if (searchPtr.getInstruction() instanceof ANEWARRAY) {
+            	//ANEWARRAY ana = (ANEWARRAY)searchPoint.getInstruction();
+            	//Type t = ana.getType(getEnclosingClass().getConstantPoolGen());
+            	// Just use a standard java.lang.object array - that will work fine
+            	return BcelWorld.fromBcel(new ArrayType(Type.OBJECT,1));
+            }
+            // A multi new array instruction obviously tells us it is an array type !
+            if (searchPtr.getInstruction() instanceof MULTIANEWARRAY) {
+            	MULTIANEWARRAY ana = (MULTIANEWARRAY)searchPtr.getInstruction();
+                // Type t = ana.getType(getEnclosingClass().getConstantPoolGen());
+            	// t = new ArrayType(t,ana.getDimensions());
+            	// Just use a standard java.lang.object array - that will work fine
+            	return BcelWorld.fromBcel(new ArrayType(Type.OBJECT,ana.getDimensions()));
+            }
+            throw new BCException("Can't determine real target of clone() when processing instruction "+
+              searchPtr.getInstruction());
+    	}
+    	return tx;
+    }
+    
+    
     public void initializeArgVars() {
         if (argVars != null) return;
     	InstructionFactory fact = getFactory();
@@ -2208,9 +2273,12 @@ public class BcelShadow extends Shadow {
         modifiers |= Modifier.STATIC;
         if (targetVar != null && targetVar != thisVar) {
             TypeX targetType = getTargetType();
+            targetType = ensureTargetTypeIsCorrect(targetType);
             ResolvedMember resolvedMember = getSignature().resolve(world);
+            
             if (resolvedMember != null && Modifier.isProtected(resolvedMember.getModifiers()) && 
-            	!samePackage(targetType.getPackageName(), getEnclosingType().getPackageName()))
+            	!samePackage(targetType.getPackageName(), getEnclosingType().getPackageName()) &&
+				!resolvedMember.getName().equals("clone"))
             {
             	if (!targetType.isAssignableFrom(getThisType(), world)) {
             		throw new BCException("bad bytecode");

@@ -301,6 +301,10 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void test055_cnfe() {
     runTest("passing null to array arguments confuzes static join point signature. (2)");
   }
+  
+  public void test056_arrayCloning() {
+    runTest("around advice throws java.lang.VerifyError at runtime");
+  }
    
 }
 
