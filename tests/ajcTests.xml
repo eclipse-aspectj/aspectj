@@ -7,8 +7,10 @@
   purejava
   broken-test         ??
   messages-vary       one of many (usually two) test specs that differ only in 
-                      messages expected by the different compilers
-  new-messages-vary   ?? to split like messages-vary
+                      messages expected by the different compilers.
+                      Currently ajc 1.0 tests are in ajcTests10.xml,
+                      so there may only be one copy marked "messages-vary" here.
+  new-messages-vary   like messages-vary, except need to make ajcTest10 variant
 
   fail-{...}          test fails in some configuration
   fail-unimplmented   eajc throwing "unimplemented" exception
@@ -17,7 +19,7 @@
   fail-publicType     now fixed - no longer presenting error for public type in wrong file
 
   from-{file}         from original {file}.txt for file in
-                      java, bigjava, resolved_1*, 14tests, ng, errors, design, base... 
+                      java, bigjava, resolved_1*, 14tests, errors, design, base... 
 
   -->
 
