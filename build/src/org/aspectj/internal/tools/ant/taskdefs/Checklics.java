@@ -151,8 +151,8 @@ public class Checklics extends MatchingTask {
     private boolean failOnError;
     private boolean getYears;
     private boolean replaceHeaders;
-    private int passed;
     private int failed;
+    private int passed;
 
 	private boolean printDirectories;
 
@@ -308,6 +308,8 @@ public class Checklics extends MatchingTask {
         }
         Visitor visitor = new Visitor();
         visitAll(visitor);
+        this.failed = visitor.failed;
+        this.passed = visitor.passed;
         getOut().println(
             "Total passed: "
                 + visitor.passed
@@ -318,60 +320,60 @@ public class Checklics extends MatchingTask {
         }
     }
     
-    private void oldrun() throws BuildException {
-    	if (list) {
-			list();
-			return;
-		}
-		if (null == license) {
-			setLicense(DEFAULT);
-		}
-		final License license = this.license; // being paranoid...
-		if (null == license) {
-			throw new BuildException("no license");
-		}
-		final PrintStream out = getOut();
-
-		List filelist = new ArrayList();
-		String[] dirs = sourcepath.list();
-        failed = 0;
-        passed = 0;
-		for (int i = 0; i < dirs.length; i++) {
-			int dirFailed = 0;
-			int dirPassed = 0;
-			File dir = project.resolveFile(dirs[i]);
-			String[] files = getDirectoryScanner(dir).getIncludedFiles();
-			for (int j = 0; j < files.length; j++) {
-				File file = new File(dir, files[j]);
-				String path = file.getPath();
-				if (path.endsWith(".java")) {
-					if (license.checkFile(file)) {
-                        dirPassed++;
-                    } else {
-						dirFailed++;
-						if (!license.foundLicense()) {
-							out.println(
-								license.tag + "   LICENSE FAIL: " + path);
-						}
-						if (!license.foundCopyright()) {
-							out.println(
-								license.tag + " COPYRIGHT FAIL: " + path);
-						}
-					}
-				}
-			}
-            if (printDirectories) {
-    			out.println(
-    				"dir: "
-    					+ dirs[i]
-    					+ " passed: "
-    					+ dirPassed
-    					+ (dirFailed == 0 ? "" : " failed: " + dirFailed));
-            }
-			failed += dirFailed;
-			passed += dirPassed;
-		}
-	}
+//    private void oldrun() throws BuildException {
+//    	if (list) {
+//			list();
+//			return;
+//		}
+//		if (null == license) {
+//			setLicense(DEFAULT);
+//		}
+//		final License license = this.license; // being paranoid...
+//		if (null == license) {
+//			throw new BuildException("no license");
+//		}
+//		final PrintStream out = getOut();
+//
+//		List filelist = new ArrayList();
+//		String[] dirs = sourcepath.list();
+//        failed = 0;
+//        passed = 0;
+//		for (int i = 0; i < dirs.length; i++) {
+//			int dirFailed = 0;
+//			int dirPassed = 0;
+//			File dir = project.resolveFile(dirs[i]);
+//			String[] files = getDirectoryScanner(dir).getIncludedFiles();
+//			for (int j = 0; j < files.length; j++) {
+//				File file = new File(dir, files[j]);
+//				String path = file.getPath();
+//				if (path.endsWith(".java")) {
+//					if (license.checkFile(file)) {
+//                        dirPassed++;
+//                    } else {
+//						dirFailed++;
+//						if (!license.foundLicense()) {
+//							out.println(
+//								license.tag + "   LICENSE FAIL: " + path);
+//						}
+//						if (!license.foundCopyright()) {
+//							out.println(
+//								license.tag + " COPYRIGHT FAIL: " + path);
+//						}
+//					}
+//				}
+//			}
+//            if (printDirectories) {
+//    			out.println(
+//    				"dir: "
+//    					+ dirs[i]
+//    					+ " passed: "
+//    					+ dirPassed
+//    					+ (dirFailed == 0 ? "" : " failed: " + dirFailed));
+//            }
+//			failed += dirFailed;
+//			passed += dirPassed;
+//		}
+//	}
 
 	private void list() {
 		Enumeration enum = LICENSES.keys();
