@@ -9,7 +9,7 @@
    <!ATTLIST source-location endLine CDATA #IMPLIED >
    <!ATTLIST source-location column CDATA #IMPLIED >
    <!ATTLIST source-location sourceFile CDATA #IMPLIED >
-]>
+] >
 
 <message-list>
 <message kind="fail"
