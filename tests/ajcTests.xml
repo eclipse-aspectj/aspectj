@@ -7710,8 +7710,8 @@
     <ajc-test dir="bugs"
 		pr="61568" title="wrong variable binding in || pointcuts">
         <compile files="DisjunctVarBinding.java">
-          <message kind="error" line="18" text="Ambiguous binding of type B"/>
-          <message kind="error" line="18" text="Ambiguous binding of type A"/>
+          <message kind="error" line="34" text="Ambiguous binding of type B"/>
+          <message kind="error" line="34" text="Ambiguous binding of type A"/>
         </compile>
     </ajc-test>
  
@@ -7719,6 +7719,18 @@
 		pr="60936" title="error message for constructor-execution pcd">
         <compile files="InterfaceConstructor.java">
           <message kind="warning" line="10" text="no interface constructor-execution join point"/>
+        </compile>
+    </ajc-test>
+    
+   	<ajc-test dir="bugs"
+		pr="62073" title="false ambigous binding error (introduced in 1.2rc2)">
+        <compile files="DisjunctVarBinding_2.java,DisjunctVarBinding_3.java">
+        	<message kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type B"/>
+        	<message kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type A"/>
+        </compile>
+        <compile files="DisjunctVarBinding_3.java,DisjunctVarBinding_2.java">
+        	<message kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type B"/>
+        	<message kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type A"/>
         </compile>
     </ajc-test>
  
