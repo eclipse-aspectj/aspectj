@@ -133,5 +133,14 @@
         <run class="InterfaceInitializerOrder"/>
     </ajc-test>
 
+    <ajc-test 
+    	dir="bugs/invalidAbsoluteTypeName" 
+    	pr="65925"
+		title="Valid but inaccessible type names should not be flagged by XLint:invalidAbsoluteTypeName">
+        <compile files="False_InvalidAbsoluteTypeName.java">
+        	<message kind="warning" line="17"/>
+        </compile>
+        <run class="False_InvalidAbsoluteTypeName"/>
+    </ajc-test>
   
 </suite>
