@@ -110,6 +110,20 @@ public class Member implements Comparable, AnnotatedElement {
         return buf.toString();        
     }
     
+    /**
+     * Returns "(<signaturesOfParamTypes>,...)" - unlike the other typesToSignature
+     * that also includes the return type, this one just deals with the parameter types.
+     */
+    public static String typesToSignature(TypeX[] paramTypes) {
+        StringBuffer buf = new StringBuffer();
+        buf.append("(");
+        for(int i=0;i<paramTypes.length;i++) {
+         buf.append(paramTypes[i].getSignature());
+        }
+        buf.append(")");
+        return buf.toString();   
+    }
+    
     /** returns an Object[] pair of TypeX, TypeX[] representing return type, 
      * argument types parsed from the JVM bytecode signature of a method.  Yes,
      * this should actually return a nice statically-typed pair object, but we

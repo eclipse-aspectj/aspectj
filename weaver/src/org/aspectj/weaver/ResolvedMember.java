@@ -227,6 +227,14 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 	public boolean isPublic() {
 		return Modifier.isPublic(modifiers);
 	}
+    
+    public boolean isProtected() {
+        return Modifier.isProtected(modifiers);   
+    }
+    
+    public boolean isDefault() {
+        return !(isPublic() || isProtected() || isPrivate());
+    }
 
 	public boolean isVisible(ResolvedTypeX fromType) {
 		World world = fromType.getWorld();
