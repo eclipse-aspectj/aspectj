@@ -18,7 +18,7 @@ import java.awt.Rectangle;
 
 aspect Answer2e {
     void around(Point p, int dx, int dy):
-            target(fe) && call(void move(int, int)) && args(dx, dy) {
+            target(p) && call(void move(int, int)) && args(dx, dy) {
         int preX = p.getX();
         int preY = p.getY();
 
