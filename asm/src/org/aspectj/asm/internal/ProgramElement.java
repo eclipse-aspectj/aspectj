@@ -414,38 +414,31 @@ public class ProgramElement implements IProgramElement {
 		return label;
 	}
 
-	// TODO: determine if using canonical path incurrs performance overhead
 	public static String createHandleIdentifier(File sourceFile, int line,int column) {
-//		try {
 			StringBuffer sb = new StringBuffer();
-			sb.append(sourceFile.getAbsolutePath());
+			sb.append(AsmManager.getDefault().getCanonicalFilePath(sourceFile));
 			sb.append(ID_DELIM);
 			sb.append(line);
 			sb.append(ID_DELIM);
 			sb.append(column);
 			return sb.toString();		
-//		} catch (IOException ioe) {
-//			ioe.printStackTrace();
-//			return null;
-//		}
 	}
 
+	private String handle = null;
 	public String getHandleIdentifier() {
-//		try {
-			StringBuffer sb = new StringBuffer();
-			if (sourceLocation == null) {
-				return null;
-			} else {  
-				sb.append(sourceLocation.getSourceFile().getAbsolutePath());
-				sb.append(ID_DELIM);
-				sb.append(sourceLocation.getLine());
-				sb.append(ID_DELIM);
-				sb.append(sourceLocation.getColumn());
-				return sb.toString();
-			}
-//		} catch (IOException ioe) {
-//			return null;
-//		}
+		    if (null == handle) {
+				if (sourceLocation != null) {
+					StringBuffer sb = new StringBuffer();
+					sb.append(AsmManager.getDefault()
+										.getCanonicalFilePath(sourceLocation.getSourceFile()));
+					sb.append(ID_DELIM);
+					sb.append(sourceLocation.getLine());
+					sb.append(ID_DELIM);
+					sb.append(sourceLocation.getColumn());
+					handle = sb.toString();
+				}
+		    }
+		    return handle;
 	}
 
 	public List getParameterNames() {
