@@ -6450,4 +6450,10 @@
         </compile>
         <run class="Test"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs" pr="40589"
+   	 title="Default method impl for interface causes internal exception.">
+        <compile files="CloneMethod.java"/>
+        <run class="CloneMethod"/>
+    </ajc-test>
 </suite>
