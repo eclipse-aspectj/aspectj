@@ -33,25 +33,17 @@
 
     <abstract>
       <para>
-	This user's guide describes the tools which are part of the
-	AspectJ development environment. A companion guide describes the
-	AspectJ language.
+	This guide describes the tools which are part of the AspectJ
+	development environment.  They currently describe the 1.0.6 versions of
+	the tools: See README-11.html in the distribution for a description of
+	changes.  A companion guide describes the AspectJ language.
       </para>
     </abstract>
   </bookinfo>
 
   <reference>
-    <title>Command Line Tools</title>
       &ajc;
-  </reference>
-
-  <reference>
-    <title>Development Environment Support</title>
       &ajbrowser;
-      &ajdejbuilder;
-      &ajdeforte;
-      &aspectj-mode;
-      &ajdee;
   </reference>
 
 </book>

@@ -47,7 +47,7 @@
       <property name="devguide.icons.dir" 
             location="${aspectj.modules.dir}/ajde/src/org/aspectj/ajde/resources/actions"/>
       <property name="include.devguide.icons"
-                 value="startAjde.gif,build.gif,openConfig.gif,browseroptions.gif,jbuilder-build.gif" />
+                 value="build.gif,openConfig.gif,browseroptions.gif" />
 
       <!-- callers of xml-html use these by default -->
       <property name="chunk.xsl.source" 
@@ -204,6 +204,7 @@
              includes="${include.devguide.icons}" />
         </copy>
       <antcall target="build-guide">
+        <param name="xml-html-copy" value="ajbrowser-building.gif,ajbrowser-options.gif,${include.devguide.icons}" />
         <param name="guide.dir" value="devGuideDB"/>
         <param name="guide.name" value="devguide"/>
       </antcall>
