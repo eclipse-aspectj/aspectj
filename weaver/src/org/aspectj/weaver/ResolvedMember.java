@@ -106,6 +106,10 @@ public class ResolvedMember extends Member implements IHasPosition {
     	return (modifiers & Constants.ACC_BRIDGE)!=0;
     }
     
+    public boolean isVarargsMethod() {
+    	return (modifiers & Constants.ACC_VARARGS)!=0;
+    }
+    
 	public boolean isSynthetic() {
 		return false;
 	}

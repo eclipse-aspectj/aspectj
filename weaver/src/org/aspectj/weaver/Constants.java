@@ -19,6 +19,6 @@ package org.aspectj.weaver;
  */
 public interface Constants {
 
-    // modifier for a bridge method
-	public final static int ACC_BRIDGE = 0x0040;
+	public final static int ACC_BRIDGE  = 0x0040;
+	public final static int ACC_VARARGS = 0x0080;
 }
