@@ -14,6 +14,9 @@
 package org.aspectj.ajde;
 
 import java.io.*;
+
+import org.aspectj.asm.AsmManager;
+
 import junit.framework.TestCase;
 
 public class AjdeTestCase extends TestCase {
@@ -50,6 +53,9 @@ public class AjdeTestCase extends TestCase {
 
 	protected void setUp(String testDataPath) throws Exception {
 		currTestDataPath = TEST_DATA_PATH + File.separatorChar + testDataPath;
+		// AMC - added this next line as a temporary workaround for 
+		// listener leakage in AsmManager induced by the Ajde test suite.
+		AsmManager.getDefault().removeAllListeners();
 		ideManager.init(currTestDataPath);
 		super.setUp();
 		assertTrue(NullIdeManager.getIdeManager().isInitialized()); 
