@@ -1,0 +1,2188 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 10">
+<meta name=Originator content="Microsoft Word 10">
+<link rel=File-List href="ajc_batchBuild_annotated_files/filelist.xml">
+<title>//Annotated trace of AjBuildManager</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author> </o:Author>
+  <o:Template>Normal</o:Template>
+  <o:LastAuthor> </o:LastAuthor>
+  <o:Revision>6</o:Revision>
+  <o:TotalTime>1003</o:TotalTime>
+  <o:Created>2003-07-19T20:34:00Z</o:Created>
+  <o:LastSaved>2003-07-20T13:18:00Z</o:LastSaved>
+  <o:Pages>1</o:Pages>
+  <o:Words>5956</o:Words>
+  <o:Characters>33953</o:Characters>
+  <o:Company>IBM</o:Company>
+  <o:Lines>282</o:Lines>
+  <o:Paragraphs>79</o:Paragraphs>
+  <o:CharactersWithSpaces>39830</o:CharactersWithSpaces>
+  <o:Version>10.4219</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:SpellingState>Clean</w:SpellingState>
+  <w:GrammarState>Clean</w:GrammarState>
+  <w:Compatibility>
+   <w:BreakWrappedTables/>
+   <w:SnapToGridInCell/>
+   <w:WrapTextWithPunct/>
+   <w:UseAsianBreakRules/>
+  </w:Compatibility>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+ </w:WordDocument>
+</xml><![endif]-->
+<style>
+<!--
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.MsoPlainText, li.MsoPlainText, div.MsoPlainText
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Courier New";
+	mso-fareast-font-family:"Times New Roman";}
+span.SpellE
+	{mso-style-name:"";
+	mso-spl-e:yes;}
+span.GramE
+	{mso-style-name:"";
+	mso-gram-e:yes;}
+@page Section1
+	{size:612.0pt 792.0pt;
+	margin:72.0pt 65.95pt 72.0pt 65.95pt;
+	mso-header-margin:35.4pt;
+	mso-footer-margin:35.4pt;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:"Table Normal";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0cm 5.4pt 0cm 5.4pt;
+	mso-para-margin:0cm;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";}
+</style>
+<![endif]-->
+</head>
+
+<body lang=EN-US style='tab-interval:36.0pt'>
+
+<div class=Section1>
+
+<p class=MsoPlainText><b style='mso-bidi-font-weight:normal'><span
+style='color:#339966'>//Annotated trace of <span class=SpellE>AjBuildManager.batchBuild</span>...
+for &quot;<span class=SpellE>ajc</span> <span class=SpellE>Hello.java</span>&quot;<o:p></o:p></span></b></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span class=SpellE><span class=GramE>ajdtcore::Entering</span></span>
+execution(<span class=SpellE>boolean</span> <span class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildManager.batchBuild</span>(<o:p></o:p></p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                </span><span
+class=SpellE>AjBuildConfig</span>, <span class=SpellE>IMessageHandler</span>)) <o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>         </span><span
+style='mso-spacerun:yes'>          </span><span class=GramE>arguments</span>
+(org.aspectj.ajdt.internal.core.builder.AjBuildConfig@b1b4c3,MessageHandler: no
+messages)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span> execution(<span
+class=SpellE>boolean</span> <span class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildManager.doBuild</span>(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                </span><span
+class=SpellE>AjBuildConfig</span>, <span class=SpellE>IMessageHandler</span>, <span
+class=SpellE><span class=GramE>boolean</span></span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>            </span><span
+class=GramE>arguments</span>
+(org.aspectj.ajdt.internal.core.builder.AjBuildConfig@b1b4c3,MessageHandler: no
+<span class=SpellE>messages,true</span>)<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>    </span>// create an <span class=SpellE>AjState</span>
+instance to hold state associated with the build<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span> execution(<span
+class=SpellE>org.aspectj.ajdt.internal.core.builder.AjState</span>(<span
+class=SpellE>AjBuildManager</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                      
+</span><span class=GramE>arguments</span> (<span class=SpellE>AjBuildManager</span>())<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+class=SpellE><span class=GramE>ajdtcore::Exiting</span></span> execution(<span
+class=SpellE>org.aspectj.ajdt.internal.core.builder.AjState</span>(<span
+class=SpellE>AjBuildManager</span>))<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>    </span>// could we do an incremental build if we
+wanted to...<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span> execution(<span
+class=SpellE>boolean</span> org.aspectj.ajdt.internal.core.builder.AjState.prepareForNextBuild(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                   </span><span
+class=SpellE>AjBuildConfig</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                      
+</span><span class=GramE>arguments</span>
+(org.aspectj.ajdt.internal.core.builder.AjBuildConfig@b1b4c3)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+class=SpellE><span class=GramE>ajdtcore::Exiting</span></span> execution(<span
+class=SpellE>boolean</span>
+org.aspectj.ajdt.internal.core.builder.AjState.prepareForNextBuild(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                   </span><span
+class=SpellE>AjBuildConfig</span>)) <o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                     
+</span><span class=GramE>return</span>: false<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>     </span>// check that <span class=SpellE>aspectjrt.jar</span>
+is present on the <span class=SpellE>classpath</span> and has the right version<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span>
+execution(String <span class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildManager.checkRtJar</span>(<span
+class=SpellE>AjBuildConfig</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                      
+</span><span class=GramE>arguments</span>
+(org.aspectj.ajdt.internal.core.builder.AjBuildConfig@b1b4c3)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+class=SpellE><span class=GramE>ajdtcore::Exiting</span></span> execution(String
+<span class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildManager.checkRtJar</span>(<span
+class=SpellE>AjBuildConfig</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                     
+</span><span class=GramE>return</span>: null<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>     </span>// remember the build configuration<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span> execution(void
+org.aspectj.ajdt.internal.core.builder.AjBuildManager.setBuildConfig(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                            </span><span
+class=SpellE>AjBuildConfig</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                      
+</span><span class=GramE>arguments</span>
+(org.aspectj.ajdt.internal.core.builder.AjBuildConfig@b1b4c3)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+class=SpellE><span class=GramE>ajdtcore::Exiting</span></span> execution(void
+org.aspectj.ajdt.internal.core.builder.AjBuildManager.setBuildConfig(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                            </span><span
+class=SpellE>AjBuildConfig</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                     
+</span><span class=GramE>return</span>: null<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>    </span>// set up a new, empty structure model
+ready to receive the results of the compilation<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span> execution(void <span
+class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildManager.setupModel</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>asm::Entering</span></span> execution(<span
+class=SpellE>StructureModel</span> <span class=SpellE>org.aspectj.asm.StructureModelManager.getStructureModel</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>asm::Exiting</span></span> execution(<span
+class=SpellE>StructureModel</span> <span class=SpellE>org.aspectj.asm.StructureModelManager.getStructureModel</span>())
+<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                   </span><span
+class=GramE>return</span>: org.aspectj.asm.StructureModel@122cdb6<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>// if there is a .<span class=SpellE>lst</span>
+file specified, make that the root (there isn't in this case)<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span> execution(File
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig.getConfigFile()) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                        
+</span><span class=GramE>arguments</span> ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>// create a new <span class=SpellE>ProgramElementNode</span>
+for the root of the structure model<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>asm::Entering</span></span> execution(<span
+class=SpellE>org.aspectj.asm.ProgramElementNode</span>(String, <span
+class=SpellE>ProgramElementNode.Kind</span>, List)) <o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                   
+</span><span class=GramE>arguments</span> (&lt;root&gt;,java source file,[])<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>asm::Exiting</span></span> execution(<span
+class=SpellE>org.aspectj.asm.ProgramElementNode</span>(String, <span
+class=SpellE>ProgramElementNode.Kind</span>, List))<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>asm::Entering</span></span> execution(void <span
+class=SpellE>org.aspectj.asm.StructureModel.setRoot</span>(<span class=SpellE>StructureNode</span>))
+arguments (&lt;root&gt;)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>asm::Exiting</span></span> execution(void <span
+class=SpellE>org.aspectj.asm.StructureModel.setRoot</span>(<span class=SpellE>StructureNode</span>))
+return: null<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>// give it an empty file map<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>asm::Entering</span></span> execution(void <span
+class=SpellE>org.aspectj.asm.StructureModel.setFileMap</span>(<span
+class=SpellE>HashMap</span>)) arguments ({})<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>asm::Exiting</span></span> execution(void <span
+class=SpellE>org.aspectj.asm.StructureModel.setFileMap</span>(<span
+class=SpellE>HashMap</span>)) return: null<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>// remember the model we just created<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span> execution(void
+org.aspectj.ajdt.internal.core.builder.AjBuildManager.setStructureModel(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                         </span><span
+class=SpellE>StructureModel</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                        
+</span><span class=GramE>arguments</span> (org.aspectj.asm.StructureModel@122cdb6)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>ajdtcore::Exiting</span></span> execution(void
+org.aspectj.ajdt.internal.core.builder.AjBuildManager.setStructureModel(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                         </span><span
+class=SpellE>StructureModel</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                       
+</span><span class=GramE>return</span>: null<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+class=SpellE><span class=GramE>ajdtcore::Exiting</span></span> execution(void <span
+class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildManager.setupModel</span>())
+return: null<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>    </span>// create a new BCEL World to use for the
+batch compile<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span> execution(void
+org.aspectj.ajdt.internal.core.builder.AjBuildManager.initBcelWorld(</p>
+
+<p class=MsoPlainText><span lang=DA style='mso-ansi-language:DA'><span
+style='mso-spacerun:yes'>                                       </span>IMessageHandler))
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span lang=DA style='mso-ansi-language:DA'><span
+style='mso-spacerun:yes'>                       </span>arguments (MessageHandler:
+no messages)<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span lang=DA style='color:#339966;mso-ansi-language:
+DA'><span style='mso-spacerun:yes'>      </span></span><span style='color:#339966'>//
+get the <span class=SpellE>classpath</span><o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span> execution(List
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig.getClasspath()) arguments
+()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>ajdtcore::Exiting</span></span> execution(List
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig.getClasspath()) return: <o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                       
+</span>[C:\ColyerRoot\Programs\SunJDK141\jre\lib\rt.jar<span class=GramE>, ...,</span>
+<span style='mso-spacerun:yes'> </span><o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                         </span>C:\ColyerRoot\Programs\aspectj1.1b4\lib\aspectjrt.jar]<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>// create the <span class=SpellE>BcelWorld</span><o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>org.aspectj.weaver.bcel.BcelWorld</span>(List, <span class=SpellE>IMessageHandler</span>))
+<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                      
+</span><span class=GramE>arguments</span>
+([C:\ColyerRoot\Programs\SunJDK141\jre\lib\rt.jar, ... </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                   </span>C:\ColyerRoot\Programs\aspectj1.1b4\lib\aspectjrt.jar]<span
+class=GramE>,<span class=SpellE>MessageHandler</span></span>: no messages)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>        </span>// <span class=SpellE>superclass</span>
+constructor creates a new <span class=SpellE>org.aspectj.weaver.CrosscuttingMembersSet</span>
+- this is a key data structure<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>        </span>// <span class=SpellE>initialise</span>
+a <span class=SpellE>ClassPathManager</span><o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>org.aspectj.weaver.bcel.ClassPathManager</span>(List, <span
+class=SpellE>IMessageHandler</span>)) <o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                </span><span
+class=GramE>arguments</span> <span style='color:blue'>([C:\ColyerRoot\Programs\SunJDK141\jre\lib\rt.jar,
+<span style='mso-spacerun:yes'>   </span><o:p></o:p></span></p>
+
+<p class=MsoPlainText style='margin-left:144.0pt'><span style='color:blue'><span
+style='mso-spacerun:yes'>    </span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\i18n.jar,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText style='margin-left:144.0pt'><span style='color:blue'><span
+style='mso-spacerun:yes'>    </span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\sunrsasign.jar,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText style='margin-left:144.0pt'><span style='color:blue'><span
+style='mso-spacerun:yes'>    </span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\jsse.jar,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText style='margin-left:144.0pt'><span style='color:blue'><span
+style='mso-spacerun:yes'>    </span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\jce.jar,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText style='margin-left:144.0pt'><span style='color:blue'><span
+style='mso-spacerun:yes'>    </span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\charsets.jar,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText style='margin-left:144.0pt'><span style='color:blue'><span
+style='mso-spacerun:yes'>    </span>C:\ColyerRoot\Programs\SunJDK141\jre\classes,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText style='margin-left:144.0pt'><span style='color:blue'><span
+style='mso-spacerun:yes'>    </span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\ext\aspectjrt.jar,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText style='margin-left:144.0pt'><span style='color:blue'><span
+style='mso-spacerun:yes'>    </span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\ext\dnsns.jar,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText style='margin-left:144.0pt'><span style='color:blue'><span
+style='mso-spacerun:yes'>    </span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\ext\ldapsec.jar,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText style='margin-left:144.0pt'><span style='color:blue'><span
+style='mso-spacerun:yes'>    </span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\ext\localedata.jar,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText style='margin-left:144.0pt'><span style='color:blue'><span
+style='mso-spacerun:yes'>    </span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\ext\sunjce_provider.jar,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText style='margin-left:144.0pt'><span style='color:blue'><span
+style='mso-spacerun:yes'>    </span>c:\ColyerRoot\Programs\aspectj1.1\lib\aspectjtools_g.jar,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText style='margin-left:144.0pt'><span style='color:blue'><span
+style='mso-spacerun:yes'>    </span>c:\ColyerRoot\Programs\aspectj1.1\lib\aspectjtools.jar,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText style='margin-left:144.0pt'><span style='color:blue'><span
+style='mso-spacerun:yes'>    </span>c:\ColyerRoot\Programs\aspectj1.1\lib\log4j-1.2.7.jar,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText style='margin-left:144.0pt'><span style='color:blue'><span
+style='mso-spacerun:yes'>    </span>c:\ColyerRoot\Programs\aspectj1.1\lib<span
+class=GramE>, .,</span> <o:p></o:p></span></p>
+
+<p class=MsoPlainText style='margin-left:144.0pt'><span style='color:blue'><span
+style='mso-spacerun:yes'>    </span>C:\ColyerRoot\Programs\aspectj1.1b4\lib\aspectjrt.jar]</span><span
+class=GramE>,<span class=SpellE>MessageHandler</span></span>: no messages)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>          </span>// for each entry... validate and add<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>          </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.bcel.ClassPathManager.addPath</span>(String, <span
+class=SpellE>IMessageHandler</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                          
+</span><span class=GramE>arguments</span>
+(C:\ColyerRoot\Programs\SunJDK141\jre\lib\rt.jar,MessageHandler: no messages)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>          </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.bcel.ClassPathManager.addPath</span>(String, <span
+class=SpellE>IMessageHandler</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                         
+</span><span class=GramE>return</span>: null<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>org.aspectj.weaver.bcel.ClassPathManager</span>(List, <span
+class=SpellE>IMessageHandler</span>))<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>org.aspectj.weaver.bcel.BcelWorld</span>(List, <span class=SpellE>IMessageHandler</span>))<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>// set the <span class=SpellE>XnoInline</span>
+option<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span> execution(<span
+class=SpellE>boolean</span> <span class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildConfig.isXnoInline</span>())
+</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                        
+</span><span class=GramE>arguments</span> ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>ajdtcore::Exiting</span></span> execution(<span
+class=SpellE>boolean</span> <span class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildConfig.isXnoInline</span>())
+</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                        
+</span><span class=GramE>return</span>: false<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.World.setXnoInline</span>(<span class=SpellE>boolean</span>))
+arguments (false)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.World.setXnoInline</span>(<span class=SpellE>boolean</span>))
+return: null<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>// create a new <span class=SpellE>BcelWeaver</span>
+for the world<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>org.aspectj.weaver.bcel.BcelWeaver</span>(<span class=SpellE>BcelWorld</span>))
+arguments (<span class=SpellE>BcelWorld</span>())<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>CrosscuttingMembersSet</span> <span class=SpellE>org.aspectj.weaver.World.getCrosscuttingMembersSet</span>())
+</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                        
+</span><span class=GramE>arguments</span> ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>CrosscuttingMembersSet</span> <span class=SpellE>org.aspectj.weaver.World.getCrosscuttingMembersSet</span>())
+<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                       
+</span><span class=GramE>return</span>:
+org.aspectj.weaver.CrosscuttingMembersSet@1f3aa07<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>org.aspectj.weaver.bcel.BcelWeaver</span>(<span class=SpellE>BcelWorld</span>))<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>// add each library in the <span
+class=SpellE>aspectpath</span> to the weaver (none in this case) using <span
+class=SpellE>BcelWeaver.addLibraryJarFile</span><o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span> execution(List
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig.getAspectpath()) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                        
+</span><span class=GramE>arguments</span> ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>ajdtcore::Exiting</span></span> execution(List
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig.getAspectpath()) return:
+[]<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>// configure the lint options<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span>
+execution(String <span class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildConfig.getLintMode</span>())
+</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                        
+</span><span class=GramE>arguments</span> ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>ajdtcore::Exiting</span></span> execution(String
+<span class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildConfig.getLintMode</span>())
+</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                       
+</span><span class=GramE>return</span>: default<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span>
+execution(String <span class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildConfig.getLintMode</span>())
+</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                        
+</span><span class=GramE>arguments</span> ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>ajdtcore::Exiting</span></span> execution(String
+<span class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildConfig.getLintMode</span>())
+</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                       
+</span><span class=GramE>return</span>: default<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(Lint <span
+class=SpellE>org.aspectj.weaver.World.getLint</span>()) arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(Lint <span
+class=SpellE>org.aspectj.weaver.World.getLint</span>()) return:
+org.aspectj.weaver.Lint@c832d2<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.Lint.loadDefaultProperties</span>()) arguments
+()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.Lint.loadDefaultProperties</span>()) return:
+null<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span> execution(File
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig.getLintSpecFile()) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                        
+</span><span class=GramE>arguments</span> ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>ajdtcore::Exiting</span></span> execution(File
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig.getLintSpecFile()) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                        
+</span><span class=GramE>return</span>: null<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>// add each library in the <span
+class=SpellE>injars</span> to the weaver (none in this case) using <span
+class=SpellE>BcelWeaver.addJarFile</span><o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span> execution(List <span
+class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildConfig.getInJars</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+style='mso-spacerun:yes'>  </span><span class=SpellE><span class=GramE>ajdtcore::Exiting</span></span>
+execution(List <span class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildConfig.getInJars</span>())
+return: []<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>// attempt to resolve &quot;<span
+class=SpellE>org.aspectj.lang.JoinPoint</span>&quot; to verify that all is well
+in the world<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>ResolvedTypeX</span> <span class=SpellE>org.aspectj.weaver.World.resolve</span>(String))
+</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                      
+</span><span class=GramE>arguments</span> (<span class=SpellE>org.aspectj.lang.JoinPoint</span>)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>TypeX</span> <span class=SpellE>org.aspectj.weaver.TypeX.forName</span>(String))
+</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                        
+</span><span class=GramE>arguments</span> (<span class=SpellE>org.aspectj.lang.JoinPoint</span>)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>          </span>// convert to signature string<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>     </span><span
+style='mso-spacerun:yes'>     </span><span class=SpellE><span class=GramE>weaver::Entering</span></span>
+execution(String <span class=SpellE>org.aspectj.weaver.TypeX.nameToSignature</span>(String))
+</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                          
+</span><span class=GramE>arguments</span> (<span class=SpellE>org.aspectj.lang.JoinPoint</span>)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>          </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(String <span
+class=SpellE>org.aspectj.weaver.TypeX.nameToSignature</span>(String)) <o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                  </span><span
+style='mso-spacerun:yes'>         </span><span class=GramE>return</span>: <span
+class=SpellE>Lorg/aspectj/lang/JoinPoint</span>;<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>          </span>// get the type for this signature,
+it's either a primitive, array, or an object<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>          </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>TypeX</span> <span class=SpellE>org.aspectj.weaver.TypeX.forSignature</span>(String))
+</p>
+
+<p class=MsoPlainText><span lang=FR style='mso-ansi-language:FR'><span
+style='mso-spacerun:yes'>                           </span>arguments
+(Lorg/aspectj/lang/JoinPoint;)<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span lang=FR style='color:#339966'><span
+style='mso-spacerun:yes'> </span></span><span style='color:#339966'><span
+style='mso-tab-count:1'>     </span><span style='mso-spacerun:yes'>    </span><span
+style='mso-spacerun:yes'>  </span>// <span class=GramE>its</span> an object
+signature, create a new <span class=SpellE>TypeX</span> to hold it<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>            </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>org.aspectj.weaver.TypeX</span>(String)) arguments (<span
+class=SpellE>Lorg/aspectj/lang/JoinPoint</span>;)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>            </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>org.aspectj.weaver.TypeX</span>(String))<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>          </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>TypeX</span> <span class=SpellE>org.aspectj.weaver.TypeX.forSignature</span>(String))
+</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                         
+</span><span class=GramE>return</span>: <span class=SpellE>org.aspectj.lang.JoinPoint</span><o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>TypeX</span> <span class=SpellE>org.aspectj.weaver.TypeX.forName</span>(String))
+return: <span class=SpellE>org.aspectj.lang.JoinPoint</span><o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>        </span>// now we have a <span class=SpellE>TypeX</span>,
+resolve it<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>ResolvedTypeX</span> <span class=SpellE>org.aspectj.weaver.World.resolve</span>(<span
+class=SpellE>TypeX</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                        
+</span><span class=GramE>arguments</span> (<span class=SpellE>org.aspectj.lang.JoinPoint</span>)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>          </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>ResolvedTypeX</span> <span class=SpellE>org.aspectj.weaver.World.resolve</span>(<span
+class=SpellE>TypeX</span>, <span class=SpellE>boolean</span>)) </p>
+
+<p class=MsoPlainText><span lang=FR style='mso-ansi-language:FR'><span
+style='mso-spacerun:yes'>                           </span>arguments
+(org.aspectj.lang.JoinPoint,false)<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span lang=FR style='color:#339966;mso-ansi-language:
+FR'><span style='mso-spacerun:yes'>            </span></span><span
+style='color:#339966'>// get the signature<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>            </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(String <span
+class=SpellE>org.aspectj.weaver.TypeX.getSignature</span>()) arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>            </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(String <span
+class=SpellE>org.aspectj.weaver.TypeX.getSignature</span>()) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                            </span><span class=GramE>return</span>:
+<span class=SpellE>Lorg/aspectj/lang/JoinPoint</span>;<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>            </span>// <span class=GramE>its</span> not
+in our <span class=SpellE>typeMap</span>, so better look for it<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>            </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>ResolvedTypeX</span> <span class=SpellE>org.aspectj.weaver.World.resolveObjectType</span>(<span
+class=SpellE>TypeX</span>)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                             </span><span class=GramE>arguments</span>
+(<span class=SpellE>org.aspectj.lang.JoinPoint</span>)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>       </span><span
+style='mso-spacerun:yes'>       </span>// create a resolved type name<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>              </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>org.aspectj.weaver.ResolvedTypeX.Name</span>(String, World)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                               </span><span
+class=GramE>arguments</span> (<span class=SpellE>Lorg/aspectj/lang/JoinPoint;,BcelWorld</span>())<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>              </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>org.aspectj.weaver.ResolvedTypeX.Name</span>(String, World))<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>              </span>// and resolve it<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>              </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>ResolvedTypeX.ConcreteName</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelWorld.resolveObjectType</span>(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                               </span><span
+class=SpellE>ResolvedTypeX.Name</span>)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                               </span><span
+class=GramE>arguments</span> (<span class=SpellE>org.aspectj.lang.JoinPoint</span>)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>               </span><span
+style='mso-spacerun:yes'> </span>// look up the class in the <span
+class=SpellE>classpath</span><o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>JavaClass</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelWorld.lookupJavaClass</span>(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                               </span><span
+class=SpellE>ClassPathManager</span>, String)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                 </span><span
+class=GramE>arguments</span> (C:\ColyerRoot\Programs\SunJDK141\jre\lib\rt.jar;...</p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>                  </span>// find the file that defines
+the type<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                  </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>ClassPathManager.ClassFile</span> <span class=SpellE>org.aspectj.weaver.bcel.ClassPathManager.find</span>(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                               
+</span><span class=SpellE>TypeX</span>)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                   </span><span
+class=GramE>arguments</span> (<span class=SpellE>org.aspectj.lang.JoinPoint</span>)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>                    </span>// look in the jars on the <span
+class=SpellE>classpath</span>...<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                   
+</span><span class=SpellE><span class=GramE>weaver::Entering</span></span>
+execution(<span class=SpellE>ClassPathManager.ClassFile</span> </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                               </span><span
+class=SpellE><span class=GramE>org.aspectj.weaver.bcel.ClassPathManager.ZipFileEntry.find</span></span><span
+class=GramE>(</span>String))</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                    </span><span
+style='mso-spacerun:yes'> </span><span class=GramE>arguments</span> (<span
+class=SpellE>org.aspectj.lang.JoinPoint</span>)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                   
+</span><span class=SpellE><span class=GramE>weaver::Exiting</span></span>
+execution(<span class=SpellE>ClassPathManager.ClassFile</span> </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                              </span><span
+class=SpellE><span class=GramE>org.aspectj.weaver.bcel.ClassPathManager.ZipFileEntry.find</span></span><span
+class=GramE>(</span>String)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                    </span><span
+class=GramE>return</span>: null<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>                    </span>...<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                   
+</span><span class=SpellE><span class=GramE>weaver::Entering</span></span>
+execution(<span class=SpellE>ClassPathManager.ClassFile</span> </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                               </span><span
+class=SpellE><span class=GramE>org.aspectj.weaver.bcel.ClassPathManager.ZipFileEntry.find</span></span><span
+class=GramE>(</span>String)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                     </span><span
+class=GramE>arguments</span> (<span class=SpellE>org.aspectj.lang.JoinPoint</span>)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                   
+</span><span class=SpellE><span class=GramE>weaver::Exiting</span></span>
+execution(<span class=SpellE>ClassPathManager.ClassFile</span> </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                    </span><span
+style='mso-spacerun:yes'>          </span><span class=SpellE><span class=GramE>org.aspectj.weaver.bcel.ClassPathManager.ZipFileEntry.find</span></span><span
+class=GramE>(</span>String)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                    </span><span
+class=GramE>return</span>:
+org.aspectj.weaver.bcel.ClassPathManager$ZipEntryClassFile@139eeda<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                  </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>ClassPathManager.ClassFile</span> <span
+style='mso-spacerun:yes'> </span></p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                            </span><span
+class=SpellE><span class=GramE>org.aspectj.weaver.bcel.ClassPathManager.find</span></span><span
+class=GramE>(</span><span class=SpellE>TypeX</span>)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                  </span><span
+class=GramE>return</span>:
+org.aspectj.weaver.bcel.ClassPathManager$ZipEntryClassFile@139eeda<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>                  </span>// get the input stream and
+file path<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                  </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>InputStream</span> </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                             </span><span
+class=GramE>org.aspectj.weaver.bcel.ClassPathManager.ZipEntryClassFile.getInputStream(</span>))</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                  </span><span
+style='mso-spacerun:yes'> </span><span class=GramE>arguments</span> ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                  </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>InputStream</span> </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                            </span><span
+class=GramE>org.aspectj.weaver.bcel.ClassPathManager.ZipEntryClassFile.getInputStream(</span>))
+</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                  </span><span
+class=GramE>return</span>: java.util.zip.ZipFile$1@1b4fad5<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                  </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(String
+org.aspectj.weaver.bcel.ClassPathManager.ZipEntryClassFile.getPath()) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                   </span><span
+class=GramE>arguments</span> ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                  </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(String
+org.aspectj.weaver.bcel.ClassPathManager.ZipEntryClassFile.getPath())</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                  </span><span
+style='mso-spacerun:yes'> </span><span class=GramE>return</span>: org/<span
+class=SpellE>aspectj/lang/JoinPoint.class</span><o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>                  </span>// use <span class=SpellE>bcel.classfile.ClassParser</span>
+to parse the file and return a BCEL <span class=SpellE>JavaClass</span><o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>JavaClass</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelWorld.lookupJavaClass</span>(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                               
+</span><span class=SpellE>ClassPathManager</span>, String)) <o:p></o:p></p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                              </span><span
+class=GramE>return</span>: <span style='color:blue'>public abstract interface <span
+class=SpellE>org.aspectj.lang.JoinPoint</span> extends <span class=SpellE>java.lang.Object</span><o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'> </span><span
+style='mso-spacerun:yes'>                                     </span><span
+class=GramE>filename</span><span style='mso-tab-count:2'>        </span>org/<span
+class=SpellE>aspectj/lang/JoinPoint.class</span><span
+style='mso-spacerun:yes'>   </span><span
+style='mso-spacerun:yes'>                                  </span><br>
+<span style='mso-spacerun:yes'>  </span><span class=GramE>compiled</span> from<span
+style='mso-tab-count:2'>         </span><span class=SpellE>JoinPoint.java</span><br>
+<span style='mso-spacerun:yes'>  </span><span class=GramE>compiler</span>
+version<span style='mso-tab-count:1'>      </span>46.0<br>
+<span style='mso-spacerun:yes'>  </span><span class=GramE>access</span> flags<span
+style='mso-tab-count:2'>          </span>1537<br>
+<span style='mso-spacerun:yes'>  </span><span class=GramE>constant</span> pool<span
+style='mso-tab-count:2'>         </span>62 entries<br>
+<span style='mso-spacerun:yes'>  </span>ACC_SUPER flag<span style='mso-tab-count:
+2'>        </span>false<br>
+<br>
+<span style='mso-spacerun:yes'>  </span>Attribute(s):<br>
+<span style='mso-tab-count:1'>      </span><span style='mso-tab-count:6'>                                    </span><span
+class=SpellE><span class=GramE>SourceFile</span></span><span class=GramE>(</span><span
+class=SpellE>JoinPoint.java</span>)<br>
+<span style='mso-tab-count:1'>      </span><span style='mso-tab-count:6'>                                    </span><span
+class=SpellE>InnerClass<span class=GramE>:public</span></span> static abstract <o:p></o:p></span></p>
+
+<p class=MsoPlainText style='margin-left:252.0pt;text-indent:36.0pt'><span
+class=SpellE><span style='color:blue'>org.aspectj.lang.JoinPoint$<span
+class=GramE>StaticPart</span></span></span><span class=GramE><span
+style='color:blue'>(</span></span><span style='color:blue'>&quot;<span
+class=SpellE>org.aspectj.lang.JoinPoint</span>&quot;, <span
+style='mso-spacerun:yes'>  </span><o:p></o:p></span></p>
+
+<p class=MsoPlainText style='margin-left:252.0pt;text-indent:36.0pt'><span
+style='color:blue'><span
+style='mso-spacerun:yes'>                                       </span>&quot;<span
+class=SpellE>StaticPart</span>&quot;)<br>
+<br>
+11 fields:<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+static final String METHOD_EXECUTION = &quot;method-execution&quot;<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+static final String METHOD_CALL = &quot;method-call&quot;<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+static final String CONSTRUCTOR_EXECUTION = &quot;constructor-execution&quot;<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+static final String CONSTRUCTOR_CALL = &quot;constructor-call&quot;<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+static final String FIELD_GET = &quot;field-get&quot;<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+static final String FIELD_SET = &quot;field-set&quot;<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+static final String STATICINITIALIZATION = &quot;<span class=SpellE>staticinitialization</span>&quot;<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+static final String PREINTIALIZATION = &quot;<span class=SpellE>preinitialization</span>&quot;<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+static final String INITIALIZATION = &quot;initialization&quot;<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+static final String EXCEPTION_HANDLER = &quot;exception-handler&quot;<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+static final String ADVICE_EXECUTION = &quot;advice-execution&quot;<br>
+<br>
+10 methods:<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+abstract String <span class=SpellE>toString</span>()<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+abstract String <span class=SpellE>toShortString</span>()<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+abstract String <span class=SpellE>toLongString</span>()<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+abstract Object <span class=SpellE>getThis</span>()<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+abstract Object <span class=SpellE>getTarget</span>()<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+abstract Object[] <span class=SpellE>getArgs</span>()<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+abstract <span class=SpellE>org.aspectj.lang.Signature</span> <span
+class=SpellE>getSignature</span>()<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+abstract <span class=SpellE>org.aspectj.lang.reflect.SourceLocation</span> <span
+class=SpellE>getSourceLocation</span>()<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+abstract String <span class=SpellE>getKind</span>()<br>
+<span style='mso-tab-count:1'>      </span><span class=GramE>public</span>
+abstract <span class=SpellE>org.aspectj.lang.JoinPoint$StaticPart</span> <span
+class=SpellE>getStaticPart</span>()<br>
+</span><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>                </span>// make the <span class=SpellE>JavaClass</span>
+into a <span class=SpellE>ResolvedTypeX.ConcreteName</span>...<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>BcelObjectType</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelWorld.makeBcelObjectType</span>(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                               </span><span
+class=SpellE>ResolvedTypeX.Name</span>, <span class=SpellE>JavaClass</span>, <span
+class=SpellE><span class=GramE>boolean</span></span>)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                 </span><span
+class=GramE>arguments</span> (<span class=SpellE>org.aspectj.lang.JoinPoint,public</span>
+abstract interface ... <o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                  </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>org.aspectj.weaver.ResolvedTypeX.ConcreteName</span>(<span
+class=SpellE>ResolvedTypeX.Name</span>, <span class=SpellE>boolean</span>)) </p>
+
+<p class=MsoPlainText style='margin-left:180.0pt'><span lang=FR
+style='mso-ansi-language:FR'><span style='mso-spacerun:yes'>     </span>arguments
+(org.aspectj.lang.JoinPoint,false)<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                  </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>org.aspectj.weaver.ResolvedTypeX.ConcreteName</span>(<span
+class=SpellE>ResolvedTypeX.Name</span>, <span class=SpellE>boolean</span>))<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                  </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>org.aspectj.weaver.bcel.BcelObjectType</span>(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                                  
+</span><span class=SpellE>ResolvedTypeX.Name</span>, <span class=SpellE>JavaClass</span>,
+<span class=SpellE><span class=GramE>boolean</span></span>)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                   </span><span
+class=GramE>arguments</span> (<span class=SpellE>org.aspectj.lang.JoinPoint,public</span>
+abstract interface … <o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>                    </span>// remember the source
+context (file name, enclosing type, package name)<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                   
+</span><span class=SpellE><span class=GramE>weaver::Entering</span></span>
+execution(<span class=SpellE>org.aspectj.weaver.bcel.BcelSourceContext</span>(<span
+class=SpellE>BcelObjectType</span>))</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                    </span><span
+style='mso-spacerun:yes'> </span><span class=GramE>arguments</span>
+(org.aspectj.weaver.bcel.BcelObjectType@12a0f6c)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                   
+</span><span class=SpellE><span class=GramE>weaver::Exiting</span></span>
+execution(<span class=SpellE>org.aspectj.weaver.bcel.BcelSourceContext</span>(<span
+class=SpellE>BcelObjectType</span>))<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                   
+</span><span class=SpellE><span class=GramE>weaver::Entering</span></span>
+execution(void <span class=SpellE>org.aspectj.weaver.ResolvedTypeX.Name.setSourceContext</span>(</p>
+
+<p class=MsoPlainText><span lang=FR style='mso-ansi-language:FR'><span
+style='mso-spacerun:yes'>                                               </span>ISourceContext))
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span lang=FR style='mso-ansi-language:FR'><span
+style='mso-spacerun:yes'>                                     </span>arguments
+(org.aspectj.weaver.bcel.BcelSourceContext@5a9de6)<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span lang=FR style='mso-ansi-language:FR'><span
+style='mso-spacerun:yes'>                    </span></span><span class=SpellE><span
+class=GramE>weaver::Exiting</span></span> execution(void <span class=SpellE>org.aspectj.weaver.ResolvedTypeX.Name.setSourceContext</span>(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                               </span><span
+class=SpellE>ISourceContext</span>)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                     </span><span
+class=GramE>return</span>: null<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>                    </span>// decode <span
+class=SpellE>pointcuts</span>, type <span class=SpellE>mungers</span>, <span
+class=GramE>declares, ...</span> stored as attributes in the class file<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                   
+</span><span class=SpellE><span class=GramE>weaver::Entering</span></span>
+execution(void <span class=SpellE>org.aspectj.weaver.bcel.BcelObjectType.unpackAspectAttributes</span>())
+</p>
+
+<p class=MsoPlainText style='margin-left:180.0pt;text-indent:36.0pt'><span
+style='mso-spacerun:yes'> </span><span class=GramE>arguments</span> ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                     
+</span><span class=SpellE><span class=GramE>weaver::Entering</span></span>
+execution(List <span class=SpellE>org.aspectj.weaver.bcel.BcelAttributes.readAjAttributes</span>(</p>
+
+<p class=MsoPlainText><span lang=FR style='mso-ansi-language:FR'><span
+style='mso-spacerun:yes'>                                                   
+</span>Attribute[], ISourceContext)) <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span lang=FR style='mso-ansi-language:FR'><span
+style='mso-spacerun:yes'>                                      </span>arguments
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span lang=FR style='mso-ansi-language:FR'><span
+style='mso-spacerun:yes'>                                      </span>([Lorg.apache.bcel.classfile.Attribute;@1c9a690,<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span lang=FR style='mso-ansi-language:FR'><span
+style='mso-spacerun:yes'>                                      </span>org.aspectj.weaver.bcel.BcelSourceContext@5a9de6)<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span lang=FR style='mso-ansi-language:FR'><span
+style='mso-spacerun:yes'>                      </span></span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(List <span
+class=SpellE>org.aspectj.weaver.bcel.BcelAttributes.readAjAttributes</span>(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                            </span><span
+class=GramE>Attribute[</span>], <span class=SpellE>ISourceContext</span>)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                      </span><span
+class=GramE>return</span>: []<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                   
+</span><span class=SpellE><span class=GramE>weaver::Exiting</span></span>
+execution(void <span class=SpellE>org.aspectj.weaver.bcel.BcelObjectType.unpackAspectAttributes</span>())</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                   </span><span
+style='mso-spacerun:yes'> </span><span class=GramE>return</span>: null<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                  </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>org.aspectj.weaver.bcel.BcelObjectType</span>(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                     </span><span
+class=SpellE>ResolvedTypeX.Name</span>, <span class=SpellE>JavaClass</span>, <span
+class=SpellE><span class=GramE>boolean</span></span>))<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>                  </span>// point the name to its
+resolved, concrete name<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                  </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.ResolvedTypeX.Name.setDelegate</span>(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                          </span><span
+class=SpellE>ResolvedTypeX.ConcreteName</span>)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                   </span><span
+class=GramE>arguments</span> (org.aspectj.weaver.bcel.BcelObjectType@12a0f6c)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                  </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.ResolvedTypeX.Name.setDelegate</span>(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                                
+</span><span class=SpellE>ResolvedTypeX.ConcreteName</span>)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                   </span><span
+class=GramE>return</span>: null<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>BcelObjectType</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelWorld.makeBcelObjectType</span>(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                              </span><span
+class=SpellE>ResolvedTypeX.Name</span>, <span class=SpellE>JavaClass</span>, <span
+class=SpellE><span class=GramE>boolean</span></span>)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                </span><span
+class=GramE>return</span>: org.aspectj.weaver.bcel.BcelObjectType@12a0f6c<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>              </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>ResolvedTypeX.ConcreteName</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelWorld.resolveObjectType</span>(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                                                       
+</span><span class=SpellE>ResolvedTypeX.Name</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                     
+</span><span class=GramE>return</span>:
+org.aspectj.weaver.bcel.BcelObjectType@12a0f6c<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>            </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>ResolvedTypeX</span> <span class=SpellE>org.aspectj.weaver.World.resolveObjectType</span>(<span
+class=SpellE>TypeX</span>)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                            </span><span class=GramE>return</span>:
+<span class=SpellE>org.aspectj.lang.JoinPoint</span><o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>          </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>ResolvedTypeX</span> <span class=SpellE>org.aspectj.weaver.World.resolve</span>(<span
+class=SpellE>TypeX</span>, <span class=SpellE>boolean</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                         
+</span><span class=GramE>return</span>: <span class=SpellE>org.aspectj.lang.JoinPoint</span><o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>ResolvedTypeX</span> <span class=SpellE>org.aspectj.weaver.World.resolve</span>(<span
+class=SpellE>TypeX</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                       
+</span><span class=GramE>return</span>: <span class=SpellE>org.aspectj.lang.JoinPoint</span><o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>ResolvedTypeX</span> <span class=SpellE>org.aspectj.weaver.World.resolve</span>(String))
+</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                     
+</span><span class=GramE>return</span>: <span class=SpellE>org.aspectj.lang.JoinPoint</span><o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>  </span><span style='mso-spacerun:yes'>  </span>// we
+now exit <span class=SpellE>initBcelWorld</span> and are going back to <span
+class=SpellE>doBuild</span>...<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+style='mso-spacerun:yes'>  </span><span class=SpellE><span class=GramE>ajdtcore::Exiting</span></span>
+execution(void org.aspectj.ajdt.internal.core.builder.AjBuildManager.initBcelWorld(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                        </span><span
+class=SpellE>IMessageHandler</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+style='mso-spacerun:yes'>                    </span><span class=GramE>return</span>:
+null<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>  </span><span style='mso-spacerun:yes'>  </span>// do
+we need to build a structure model?<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+style='mso-spacerun:yes'>  </span><span class=SpellE><span class=GramE>ajdtcore::Entering</span></span>
+execution(<span class=SpellE>boolean</span>
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig.isEmacsSymMode()) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                      
+</span><span class=GramE>arguments</span> ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+style='mso-spacerun:yes'>  </span><span class=SpellE><span class=GramE>ajdtcore::Exiting</span></span>
+execution(<span class=SpellE>boolean</span>
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig.isEmacsSymMode()) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                     
+</span><span class=GramE>return</span>: false<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+style='mso-spacerun:yes'>  </span><span class=SpellE><span class=GramE>ajdtcore::Entering</span></span>
+execution(<span class=SpellE>boolean</span>
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig.isGenerateModelMode()) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                      
+</span><span class=GramE>arguments</span> ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+style='mso-spacerun:yes'>  </span><span class=SpellE><span class=GramE>ajdtcore::Exiting</span></span>
+execution(<span class=SpellE>boolean</span>
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig.isGenerateModelMode()) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                     
+</span><span class=GramE>return</span>: false<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>  </span><span style='mso-spacerun:yes'>  </span>//
+get the list of files to compile<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'> </span><span
+style='mso-spacerun:yes'>  </span><span style='mso-spacerun:yes'> </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span> execution(List <span
+class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildConfig.getFiles</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+style='mso-spacerun:yes'>  </span><span class=SpellE><span class=GramE>ajdtcore::Exiting</span></span>
+execution(List <span class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildConfig.getFiles</span>())
+<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+style='mso-spacerun:yes'>          </span><span
+style='mso-spacerun:yes'>        </span><span class=GramE>return</span>:
+[C:\Documents and Settings\<span class=SpellE>colyer\Hello.java</span>]<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>  </span><span style='mso-spacerun:yes'>  </span>//
+here we go! <span class=GramE>perform</span> the compilation...<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'> </span><span
+style='mso-spacerun:yes'>  </span><span style='mso-spacerun:yes'> </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span> execution(void
+org.aspectj.ajdt.internal.core.builder.AjBuildManager.performCompilation(List))
+</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                      
+</span><span class=GramE>arguments</span> ([C:\Documents and Settings\<span
+class=SpellE>colyer\Hello.java</span>])<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>   </span><span style='mso-spacerun:yes'>  </span><span
+style='mso-spacerun:yes'> </span>//
+=======================================================================================<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>    </span><span style='mso-spacerun:yes'>  </span>//
+details of compilation step in separate annotated trace<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>    </span><span style='mso-spacerun:yes'>  </span>//
+=======================================================================================<o:p></o:p></span></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+style='mso-spacerun:yes'>  </span><span class=SpellE><span class=GramE>ajdtcore::Exiting</span></span>
+execution(void org.aspectj.ajdt.internal.core.builder.AjBuildManager.performCompilation(List))
+</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                     
+</span><span class=GramE>return</span>: null<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>  </span><span style='mso-spacerun:yes'>  </span>//
+record the fact that the compile succeeded<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'> </span><span
+style='mso-spacerun:yes'>  </span><span style='mso-spacerun:yes'> </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span> execution(void <span
+class=SpellE>org.aspectj.ajdt.internal.core.builder.AjState.successfulCompile</span>(<span
+class=SpellE>AjBuildConfig</span>)) </p>
+
+<p class=MsoPlainText style='margin-left:108.0pt'><span
+style='mso-spacerun:yes'>     </span><span class=GramE>arguments</span>
+(org.aspectj.ajdt.internal.core.builder.AjBuildConfig@b1b4c3)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+style='mso-spacerun:yes'>  </span><span class=SpellE><span class=GramE>ajdtcore::Exiting</span></span>
+execution(void <span class=SpellE>org.aspectj.ajdt.internal.core.builder.AjState.successfulCompile</span>(<span
+class=SpellE>AjBuildConfig</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                     
+</span><span class=GramE>return</span>: null<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+style='color:#339966'><span style='mso-spacerun:yes'>  </span>// perform any
+weaving and output the <span class=SpellE>classfiles</span> to disk<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span> execution(<span
+class=SpellE>boolean</span> <span class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildManager</span>.</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                           </span><span
+class=SpellE><span class=GramE><b style='mso-bidi-font-weight:normal'>weaveAndGenerateClassFiles</b></span></span><span
+class=GramE>(</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                    
+</span><span class=GramE>arguments</span> ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+style='color:#339966'><span style='mso-spacerun:yes'>  </span>// <span
+class=GramE>add<span style='mso-spacerun:yes'>  </span>any</span> aspect class
+files in <span class=SpellE>AjState</span> to the weaver<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>  </span></span><span
+style='mso-spacerun:yes'>  </span><span class=SpellE><span class=GramE>ajdtcore::Entering</span></span>
+execution(void <span class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildManager</span>.</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                             </span><span
+class=SpellE><span class=GramE>addAspectClassFilesToWeaver</span></span><span
+class=GramE>(</span>List)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                       
+</span><span class=GramE>arguments</span> ([<span class=SpellE>UnwovenClassFile</span>(C:\Documents
+and Settings\<span class=SpellE>colyer\Hello.class</span>, Hello)])<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.bcel.BcelWeaver.addClassFile</span>(<span
+class=SpellE>UnwovenClassFile</span>)) <o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>              </span><span
+style='mso-spacerun:yes'>         </span><span class=GramE>arguments</span> (<span
+class=SpellE>UnwovenClassFile</span>(C:\Documents and Settings\<span
+class=SpellE>colyer\Hello.class</span>, Hello))<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>BcelObjectType</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelWorld.addSourceObjectType</span>(<span
+class=SpellE>JavaClass</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                        
+</span><span class=GramE>arguments</span> (public class Hello extends <span
+class=SpellE>java.lang.Object</span> …<br>
+<span style='color:#339966'><span style='mso-spacerun:yes'>          </span>//
+resolve the type (as before) and add to the type map<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>          </span>// ...<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>BcelObjectType</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelWorld.addSourceObjectType</span>(<span
+class=SpellE>JavaClass</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                       
+</span><span class=GramE>return</span>: org.aspectj.weaver.bcel.BcelObjectType@f1fad1<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.bcel.BcelWeaver.addClassFile</span>(<span
+class=SpellE>UnwovenClassFile</span>)) return: null<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+class=SpellE><span class=GramE>ajdtcore::Exiting</span></span> execution(void <span
+class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildManager</span>.</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                      </span><span
+class=SpellE><span class=GramE>addAspectClassFilesToWeaver</span></span><span
+class=GramE>(</span>List)) return: null<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span>
+execution(Collection <span class=SpellE>org.aspectj.weaver.bcel.BcelWeaver.weave</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.bcel.BcelWeaver.prepareForWeave</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+style='color:#339966'>// get each class and resolve it<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(String <span
+class=SpellE>org.aspectj.weaver.bcel.UnwovenClassFile.getClassName</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(String <span
+class=SpellE>org.aspectj.weaver.bcel.UnwovenClassFile.getClassName</span>())
+return: Hello<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>ResolvedTypeX</span> <span class=SpellE>org.aspectj.weaver.World.resolve</span>(String))
+arguments (Hello)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>ResolvedTypeX</span> <span class=SpellE>org.aspectj.weaver.World.resolve</span>(String))
+return: Hello<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>        </span>// if this class is an aspect, we may
+need to reweave the world<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>boolean</span> <span class=SpellE>org.aspectj.weaver.ResolvedTypeX.Name.isAspect</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>          </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>boolean</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelObjectType.isAspect</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>          </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>boolean</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelObjectType.isAspect</span>())
+return: false<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>boolean</span> <span class=SpellE>org.aspectj.weaver.ResolvedTypeX.Name.isAspect</span>())
+return: false<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'> </span><span style='mso-tab-count:1'>     </span><span
+style='mso-spacerun:yes'>  </span>// get the list of entities to weave with<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(List <span
+class=SpellE>org.aspectj.weaver.CrosscuttingMembersSet.getShadowMungers</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(List <span
+class=SpellE>org.aspectj.weaver.CrosscuttingMembersSet.getShadowMungers</span>())
+return: []<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(List <span
+class=SpellE>org.aspectj.weaver.CrosscuttingMembersSet.getTypeMungers</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(List <span
+class=SpellE>org.aspectj.weaver.CrosscuttingMembersSet.getTypeMungers</span>())
+return: []<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(List <span
+class=SpellE>org.aspectj.weaver.CrosscuttingMembersSet.getDeclareParents</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(List <span
+class=SpellE>org.aspectj.weaver.CrosscuttingMembersSet.getDeclareParents</span>())
+return: []<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.bcel.BcelWeaver.prepareForWeave</span>())
+return: null<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>  </span><span style='mso-spacerun:yes'>    </span>//
+for each file to be woven, reset its <span class=SpellE>BcelObjectType</span>
+state<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>ResolvedTypeX</span> <span class=SpellE>org.aspectj.weaver.World.resolve</span>(String))
+arguments (Hello)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>ResolvedTypeX</span> <span class=SpellE>org.aspectj.weaver.World.resolve</span>(String))
+return: Hello<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>BcelObjectType</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelWorld.getBcelObjectType</span>(<span
+class=SpellE>ResolvedTypeX</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                      
+</span><span class=GramE>arguments</span> (Hello)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>BcelObjectType</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelWorld.getBcelObjectType</span>(<span
+class=SpellE>ResolvedTypeX</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                      
+</span><span class=GramE>return</span>:
+org.aspectj.weaver.bcel.BcelObjectType@f1fad1<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.bcel.BcelObjectType.resetState</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>        </span>// set all member lists to null,
+then...<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.bcel.BcelObjectType.unpackAspectAttributes</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.bcel.BcelObjectType.unpackAspectAttributes</span>())
+return: null<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.bcel.BcelObjectType.resetState</span>())
+return: null<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>// first pass over all files, calling
+weave on their resolved types - generates list of applicable <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>// inter-type <span class=SpellE>mungers</span></span><o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(String <span
+class=SpellE>org.aspectj.weaver.bcel.UnwovenClassFile.getClassName</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(String <span
+class=SpellE>org.aspectj.weaver.bcel.UnwovenClassFile.getClassName</span>())
+return: Hello<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>ResolvedTypeX</span> <span class=SpellE>org.aspectj.weaver.World.resolve</span>(String))
+arguments (Hello)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'> </span><span
+style='mso-spacerun:yes'>     </span><span class=SpellE><span class=GramE>weaver::Exiting</span></span>
+execution(<span class=SpellE>ResolvedTypeX</span> <span class=SpellE>org.aspectj.weaver.World.resolve</span>(String))
+return: Hello<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.bcel.BcelWeaver.weave</span>(<span
+class=SpellE>ResolvedTypeX</span>)) arguments (Hello)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.ResolvedTypeX.clearInterTypeMungers</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.ResolvedTypeX.clearInterTypeMungers</span>())
+return: null<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>        </span>// process any declare parents (none in
+this case),<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>        </span>// then go through list of inter-type <span
+class=SpellE>mungers</span> seeing if they match on this type<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>        </span>// add all matching inter-type <span
+class=SpellE>mungers</span> to the list for this type<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.bcel.BcelWeaver.weave</span>(<span
+class=SpellE>ResolvedTypeX</span>)) return: null<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>// second pass, weaving into aspects...<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(String <span
+class=SpellE>org.aspectj.weaver.bcel.UnwovenClassFile.getClassName</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(String <span
+class=SpellE>org.aspectj.weaver.bcel.UnwovenClassFile.getClassName</span>())
+return: Hello<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>ResolvedTypeX</span> <span class=SpellE>org.aspectj.weaver.World.resolve</span>(String))
+arguments (Hello)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>ResolvedTypeX</span> <span class=SpellE>org.aspectj.weaver.World.resolve</span>(String))
+return: Hello<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>BcelObjectType</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelWorld.getBcelObjectType</span>(<span
+class=SpellE>ResolvedTypeX</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                      
+</span><span class=GramE>arguments</span> (Hello)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>BcelObjectType</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelWorld.getBcelObjectType</span>(<span
+class=SpellE>ResolvedTypeX</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                      
+</span><span class=GramE>return</span>: org.aspectj.weaver.bcel.BcelObjectType@f1fad1<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>boolean</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelObjectType.isAspect</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>  </span><span
+style='mso-spacerun:yes'>      </span>// not an aspect in this case so we do
+nothing<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>boolean</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelObjectType.isAspect</span>())
+return: false<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>// third pass, weaving into
+non-aspects...<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(String <span
+class=SpellE>org.aspectj.weaver.bcel.UnwovenClassFile.getClassName</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(String <span
+class=SpellE>org.aspectj.weaver.bcel.UnwovenClassFile.getClassName</span>())
+return: Hello<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>ResolvedTypeX</span> <span class=SpellE>org.aspectj.weaver.World.resolve</span>(String))
+arguments (Hello)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>ResolvedTypeX</span> <span class=SpellE>org.aspectj.weaver.World.resolve</span>(String))
+return: Hello<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>BcelObjectType</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelWorld.getBcelObjectType</span>(<span
+class=SpellE>ResolvedTypeX</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                      
+</span><span class=GramE>arguments</span> (Hello)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>BcelObjectType</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelWorld.getBcelObjectType</span>(<span
+class=SpellE>ResolvedTypeX</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                     
+</span><span class=GramE>return</span>:
+org.aspectj.weaver.bcel.BcelObjectType@f1fad1<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>boolean</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelObjectType.isAspect</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>// not an aspect so weave...<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>boolean</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelObjectType.isAspect</span>())
+return: false<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>LazyClassGen</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelWeaver.weave</span>(<span
+class=SpellE>UnwovenClassFile</span>, <span class=SpellE>BcelObjectType</span>))
+</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                      
+</span><span class=GramE>arguments</span> (<span class=SpellE>UnwovenClassFile</span>(C:\Documents
+and Settings\<span class=SpellE>colyer\Hello.class</span>, <span
+style='mso-spacerun:yes'> </span></p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                  </span>Hello)<span
+class=GramE>,org.aspectj.weaver.bcel.BcelObjectType@f1fad1</span>)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>LazyClassGen</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelWeaver.weave</span>(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                          </span><span
+class=SpellE>UnwovenClassFile</span>, <span class=SpellE>BcelObjectType</span>,
+<span class=SpellE><span class=GramE>boolean</span></span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                        
+</span><span class=GramE>arguments</span> (<span class=SpellE>UnwovenClassFile</span>(C:\Documents
+and Settings\<span class=SpellE>colyer\Hello.class</span>, </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                        </span>Hello)<span
+class=GramE>,org.aspectj.weaver.bcel.BcelObjectType@f1fad1,true</span>)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>          </span>// is this an <span class=SpellE>ajc</span>
+generated type? (<span class=GramE>has</span> $<span class=SpellE>ajc</span> in
+name)<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>          </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(<span
+class=SpellE>boolean</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelObjectType.isSynthetic</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>          </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>boolean</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelObjectType.isSynthetic</span>())
+return: false<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>    </span><span
+style='mso-spacerun:yes'>      </span>// get the <span class=SpellE>JavaClass</span><o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+style='mso-spacerun:yes'>      </span><span class=SpellE><span class=GramE>weaver::Entering</span></span>
+execution(<span class=SpellE>JavaClass</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelObjectType.getJavaClass</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+style='mso-spacerun:yes'>    </span><span style='mso-spacerun:yes'>    </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(<span
+class=SpellE>JavaClass</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelObjectType.getJavaClass</span>())
+</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                         
+</span><span class=GramE>return</span>: public class Hello extends <span
+class=SpellE>java.lang.Object</span> …<br>
+<span style='color:#339966'><span style='mso-spacerun:yes'>    </span><span
+style='mso-spacerun:yes'>      </span>// get the set of shadow <span
+class=SpellE>mungers</span> that may match<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+style='mso-spacerun:yes'>      </span><span class=SpellE><span class=GramE>weaver::Entering</span></span>
+execution(List <span class=SpellE>org.aspectj.weaver.bcel.BcelWeaver.fastMatch</span>(List,
+<span class=SpellE>ResolvedTypeX</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                          
+</span><span class=GramE>arguments</span> ([],Hello)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+style='mso-spacerun:yes'>      </span><span class=SpellE><span class=GramE>weaver::Exiting</span></span>
+execution(List <span class=SpellE>org.aspectj.weaver.bcel.BcelWeaver.fastMatch</span>(List,
+<span class=SpellE>ResolvedTypeX</span>)) return: []<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+style='mso-spacerun:yes'>   </span><span style='color:#339966'><span
+style='mso-spacerun:yes'> </span><span style='mso-spacerun:yes'>  </span>// get
+the set of inter-type <span class=SpellE>mungers</span> defined for the type<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+style='mso-spacerun:yes'>    </span><span style='mso-spacerun:yes'>  </span><span
+class=SpellE><span class=GramE>weaver::Entering</span></span> execution(List <span
+class=SpellE>org.aspectj.weaver.ResolvedTypeX.getInterTypeMungers</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+style='mso-spacerun:yes'>    </span><span style='mso-spacerun:yes'>  </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(List <span
+class=SpellE>org.aspectj.weaver.ResolvedTypeX.getInterTypeMungers</span>())
+return: []<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>    </span><span
+style='mso-spacerun:yes'>      </span>// if there were either shadow or inter-type
+<span class=SpellE>mungers</span> matching, we would call <span class=SpellE>BcelClassWeaver.weave</span>
+at this <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>   </span><span style='mso-spacerun:yes'>    </span><span
+style='mso-spacerun:yes'>   </span>// point, but there aren't for compiling
+hello world.<o:p></o:p></span></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+style='color:#339966'><span style='mso-spacerun:yes'>      </span>// dump out
+the class file<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>    </span><span style='mso-spacerun:yes'>    </span></span><span
+style='mso-spacerun:yes'>  </span><span class=SpellE><span class=GramE>weaver::Entering</span></span>
+execution(void <span class=SpellE>org.aspectj.weaver.bcel.BcelWeaver.dumpUnchanged</span>(<span
+class=SpellE>UnwovenClassFile</span>)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                          
+</span><span class=GramE>arguments</span> (<span class=SpellE>UnwovenClassFile</span>(C:\Documents
+and Settings\<span class=SpellE>colyer\Hello.class</span>, Hello))<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span><span
+style='mso-spacerun:yes'>    </span><span class=SpellE><span class=GramE>weaver::Entering</span></span>
+execution(void <span class=SpellE>org.aspectj.weaver.bcel.UnwovenClassFile.writeUnchangedBytes</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>          </span><span
+style='mso-spacerun:yes'>    </span><span class=SpellE><span class=GramE>weaver::Entering</span></span>
+execution(byte[] <span class=SpellE>org.aspectj.weaver.bcel.UnwovenClassFile.getBytes</span>())
+arguments ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>          </span><span
+style='mso-spacerun:yes'>    </span><span class=SpellE><span class=GramE>weaver::Exiting</span></span>
+execution(byte[] <span class=SpellE>org.aspectj.weaver.bcel.UnwovenClassFile.getBytes</span>())
+return: [B@15b55bc<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>          </span><span
+style='mso-spacerun:yes'>    </span><span class=SpellE><span class=GramE>weaver::Entering</span></span>
+execution(void <span class=SpellE>org.aspectj.weaver.bcel.UnwovenClassFile.writeWovenBytes</span>(byte[],
+List)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                               </span><span
+class=GramE>arguments</span> ([B@15b55bc,[])<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>            </span><span
+style='mso-spacerun:yes'>    </span><span class=SpellE><span class=GramE>weaver::Entering</span></span>
+execution(void <span class=SpellE>org.aspectj.weaver.bcel.UnwovenClassFile.writeChildClasses</span>(List))
+</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+style='mso-spacerun:yes'>                               </span><span
+class=GramE>arguments</span> ([])<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>              </span><span
+style='mso-spacerun:yes'>    </span><span class=SpellE><span class=GramE>weaver::Entering</span></span>
+execution(void <span class=SpellE>org.aspectj.weaver.bcel.UnwovenClassFile.deleteAllChildClasses</span>())
+</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                   </span><span
+class=GramE>arguments</span> ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>              </span><span
+style='mso-spacerun:yes'>    </span><span class=SpellE><span class=GramE>weaver::Exiting</span></span>
+execution(void <span class=SpellE>org.aspectj.weaver.bcel.UnwovenClassFile.deleteAllChildClasses</span>())
+</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                  </span><span
+class=GramE>return</span>: null<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>            </span><span
+style='mso-spacerun:yes'>    </span><span class=SpellE><span class=GramE>weaver::Exiting</span></span>
+execution(void <span class=SpellE>org.aspectj.weaver.bcel.UnwovenClassFile.writeChildClasses</span>(List))
+</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                 </span><span
+class=GramE>return</span>: null<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>            </span><span
+style='mso-spacerun:yes'>    </span><span class=SpellE><span class=GramE>util::Entering</span></span>
+execution(<span class=SpellE>BufferedOutputStream</span> <span class=SpellE>org.aspectj.util.FileUtil.makeOutputStream</span>(File))
+</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                               </span><span
+class=GramE>arguments</span> (C:\Documents and Settings\<span class=SpellE>colyer\Hello.class</span>)<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>            </span><span
+style='mso-spacerun:yes'>    </span><span class=SpellE><span class=GramE>util::Exiting</span></span>
+execution(<span class=SpellE>BufferedOutputStream</span> <span class=SpellE>org.aspectj.util.FileUtil.makeOutputStream</span>(File))
+</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                              </span><span
+class=GramE>return</span>: java.io.BufferedOutputStream@8c858a<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>          </span><span
+style='mso-spacerun:yes'>    </span><span class=SpellE><span class=GramE>weaver::Exiting</span></span>
+execution(void <span class=SpellE>org.aspectj.weaver.bcel.UnwovenClassFile.writeWovenBytes</span>(byte[],
+List))</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                             </span><span
+style='mso-spacerun:yes'> </span><span class=GramE>return</span>: null<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>       </span><span
+style='mso-spacerun:yes'> </span><span style='mso-spacerun:yes'>    </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span> execution(void <span
+class=SpellE>org.aspectj.weaver.bcel.UnwovenClassFile.writeUnchangedBytes</span>())
+return: null<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span><span
+style='mso-spacerun:yes'>    </span><span class=SpellE><span class=GramE>weaver::Exiting</span></span>
+execution(void <span class=SpellE>org.aspectj.weaver.bcel.BcelWeaver.dumpUnchanged</span>(<span
+class=SpellE>UnwovenClassFile</span>)) return: null<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>     </span><span
+style='mso-spacerun:yes'> </span><span class=SpellE><span class=GramE>weaver::Exiting</span></span>
+execution(<span class=SpellE>LazyClassGen</span> <span class=SpellE>org.aspectj.weaver.bcel.BcelWeaver.weave</span>(</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                </span><span
+style='mso-spacerun:yes'>                       </span><span class=SpellE>UnwovenClassFile</span>,
+<span class=SpellE>BcelObjectType</span>)) return: null<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+class=SpellE><span class=GramE>weaver::Exiting</span></span>
+execution(Collection <span class=SpellE>org.aspectj.weaver.bcel.BcelWeaver.weave</span>())
+return: [Hello]<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+style='mso-spacerun:yes'>  </span><span class=SpellE><span class=GramE>ajdtcore::Exiting</span></span>
+execution(<span class=SpellE>boolean</span> <span class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildManager</span>.</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                   </span><span
+class=SpellE><span class=GramE>weaveAndGenerateClassFiles</span></span><span
+class=GramE>(</span>)) return: true<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+style='color:#339966'><span style='mso-spacerun:yes'>  </span>// should we
+generate structure model?<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>  </span><span style='mso-spacerun:yes'>  </span></span><span
+class=SpellE><span class=GramE>ajdtcore::Entering</span></span> execution(<span
+class=SpellE>boolean</span>
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig.isGenerateModelMode()) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                      
+</span><span class=GramE>arguments</span> ()<o:p></o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+style='mso-spacerun:yes'>  </span><span class=SpellE><span class=GramE>ajdtcore::Exiting</span></span>
+execution(<span class=SpellE>boolean</span>
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig.isGenerateModelMode()) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                     
+</span><span class=GramE>return</span>: false<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+class=SpellE><span class=GramE>ajdtcore::Exiting</span></span> execution(<span
+class=SpellE>boolean</span> <span class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildManager.doBuild</span>(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                 </span><span
+class=SpellE>AjBuildConfig</span>, <span class=SpellE>IMessageHandler</span>, <span
+class=SpellE><span class=GramE>boolean</span></span>)) return: true<o:p></o:p></p>
+
+<p class=MsoPlainText><span class=SpellE><span class=GramE>ajdtcore::Exiting</span></span>
+execution(<span class=SpellE>boolean</span> <span class=SpellE>org.aspectj.ajdt.internal.core.builder.AjBuildManager.batchBuild</span>(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                               </span><span
+class=SpellE>AjBuildConfig</span>, <span class=SpellE>IMessageHandler</span>))
+return: true</p>
+
+</div>
+
+</body>
+
+</html>

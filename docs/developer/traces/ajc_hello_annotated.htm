@@ -1,0 +1,951 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 10">
+<meta name=Originator content="Microsoft Word 10">
+<link rel=File-List href="ajc_hello_annotated_files/filelist.xml">
+<title>ajc command line, annotated trace</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Template>Normal</o:Template>
+  <o:LastAuthor> </o:LastAuthor>
+  <o:Revision>11</o:Revision>
+  <o:TotalTime>22</o:TotalTime>
+  <o:Created>2003-07-18T19:17:00Z</o:Created>
+  <o:LastSaved>2003-07-24T09:18:00Z</o:LastSaved>
+  <o:Pages>1</o:Pages>
+  <o:Words>2539</o:Words>
+  <o:Characters>14475</o:Characters>
+  <o:Company>IBM</o:Company>
+  <o:Lines>120</o:Lines>
+  <o:Paragraphs>33</o:Paragraphs>
+  <o:CharactersWithSpaces>16981</o:CharactersWithSpaces>
+  <o:Version>10.4219</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:Compatibility>
+   <w:BreakWrappedTables/>
+   <w:SnapToGridInCell/>
+   <w:WrapTextWithPunct/>
+   <w:UseAsianBreakRules/>
+  </w:Compatibility>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+ </w:WordDocument>
+</xml><![endif]-->
+<style>
+<!--
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;
+	text-underline:single;}
+p.MsoPlainText, li.MsoPlainText, div.MsoPlainText
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Courier New";
+	mso-fareast-font-family:"Times New Roman";}
+@page Section1
+	{size:612.0pt 792.0pt;
+	margin:72.0pt 65.95pt 72.0pt 65.95pt;
+	mso-header-margin:35.4pt;
+	mso-footer-margin:35.4pt;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:"Table Normal";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0cm 5.4pt 0cm 5.4pt;
+	mso-para-margin:0cm;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";}
+</style>
+<![endif]-->
+</head>
+
+<body lang=EN-US link=blue vlink=purple style='tab-interval:36.0pt'>
+
+<div class=Section1>
+
+<p class=MsoPlainText>This is an annotated trace of an ajc compilation of
+HelloWorld (no aspects involved).</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText>ajdtcore::Entering execution(void
+org.aspectj.tools.ajc.Main.main(String[])) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                  
+</span>arguments ([Ljava.lang.String;@1ac1fe4)</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>  </span>// ---------------------------------------------------------------------------<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>  </span>// create an ajc.Main instance...<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>  </span>//
+---------------------------------------------------------------------------<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'> 
+</span>ajdtcore::Entering execution(org.aspectj.tools.ajc.Main()) arguments ()</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+style='color:#339966'>// command controller is used for repeated compilations
+in incremental mode</span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>   
+</span>ajdtcore::Entering
+execution(org.aspectj.tools.ajc.Main.CommandController()) arguments ()</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>   
+</span>ajdtcore::Exiting execution(org.aspectj.tools.ajc.Main.CommandController())</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>    </span>// message handler is used to accumulate
+messages resulting from the compilation<o:p></o:p></span></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>   
+</span>bridge::Entering execution(org.aspectj.bridge.MessageHandler(boolean))
+arguments (true)</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>     
+</span>bridge::Entering execution(void org.aspectj.bridge.MessageHandler.init(boolean))
+arguments (true)</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>     
+</span>bridge::Exiting execution(void
+org.aspectj.bridge.MessageHandler.init(boolean)) return: null</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span>bridge::Exiting
+execution(org.aspectj.bridge.MessageHandler(boolean))\<br style='mso-special-character:
+line-break'>
+<![if !supportLineBreakNewLine]><br style='mso-special-character:line-break'>
+<![endif]></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span>ajdtcore::Exiting
+execution(org.aspectj.tools.ajc.Main())</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>  </span>//
+----------------------------------------------------------------------------<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>  </span>// run it!<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>  </span>//
+----------------------------------------------------------------------------<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'> 
+</span>ajdtcore::Entering execution(void org.aspectj.tools.ajc.Main.runMain(String[],
+boolean)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                    
+</span>arguments ([Ljava.lang.String;@1ac1fe4,true)</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  </span><span
+style='color:#339966'><span style='mso-spacerun:yes'>  </span>// set message
+verboseness according to presence of -verbose arg<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>    </span>// run<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>    </span>// -------------<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'> </span></span><span style='mso-spacerun:yes'>  
+</span>ajdtcore::Entering execution(void org.aspectj.tools.ajc.Main.run(String[],
+IMessageHolder)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                      
+</span>arguments ([Ljava.lang.String;@1ac1fe4,MessageHandler: no messages)</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>// initialise the command controller -
+strips out any incremental compilation options, leaving rest intact<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>     
+</span>ajdtcore::Entering execution(String[]
+org.aspectj.tools.ajc.Main.CommandController.init(String[],
+IMessageHandler))<span style='mso-spacerun:yes'>    </span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                        
+</span>arguments ([Ljava.lang.String;@1ac1fe4,MessageHandler: no messages)</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>// create a command object for
+compilation (an ICommand)<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>     
+</span>bridge::Entering execution(ICommand
+org.aspectj.bridge.ReflectionFactory.makeCommand(String, IMessageHandler)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                      
+</span>arguments (org.aspectj.ajdt.ajc.<b style='mso-bidi-font-weight:normal'><span
+style='color:red'>AjdtCommand</span></b>,MessageHandler: no messages)</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>       </span><span
+style='mso-spacerun:yes'> </span>ajdtcore::Entering
+execution(org.aspectj.ajdt.ajc.AjdtCommand()) arguments ()</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>       
+</span>ajdtcore::Exiting execution(org.aspectj.ajdt.ajc.AjdtCommand())</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        </span>...</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>     
+</span>bridge::Exiting execution(ICommand
+org.aspectj.bridge.ReflectionFactory.makeCommand(String, IMessageHandler)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                     
+</span>return: org.aspectj.ajdt.ajc.AjdtCommand@11c8a71</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>//
+----------------------------------------------------------------------------------------------------<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>// run the command... all the
+command-line args except verbosity and incremental options are passed in<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>      </span>//
+----------------------------------------------------------------------------------------------------<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>     
+</span>ajdtcore::Entering execution(boolean
+org.aspectj.ajdt.ajc.AjdtCommand.runCommand(String[], IMessageHandler)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                        
+</span>arguments ([Ljava.lang.String;@1ac1fe4,MessageHandler: no messages)</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      </span></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span style='mso-tab-count:
+1'>      </span>// create a build manager that sends messages to the given
+message holder<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-tab-count:1'>      </span>ajdtcore::Entering
+execution(org.aspectj.ajdt.internal.core.builder.<b style='mso-bidi-font-weight:
+normal'><span style='color:red'>AjBuildManager</span></b>(IMessageHandler)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                        
+</span>arguments (MessageHandler: no messages)</p>
+
+<p class=MsoPlainText><span style='mso-tab-count:1'>      </span>ajdtcore::Exiting
+execution(org.aspectj.ajdt.internal.core.builder.AjBuildManager(IMessageHandler))</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span style='mso-tab-count:
+1'>      </span>// call do-command - this handles both one-off and incremental
+(repeat) compiles<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-tab-count:1'>      </span>ajdtcore::Entering
+execution(boolean org.aspectj.ajdt.ajc.AjdtCommand.doCommand(IMessageHandler,
+boolean)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                        
+</span><span lang=DA style='mso-ansi-language:DA'>arguments (MessageHandler: no
+messages,false)<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span lang=DA style='mso-ansi-language:DA'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoPlainText><span lang=DA style='color:#339966;mso-ansi-language:
+DA'><span style='mso-spacerun:yes'>          </span></span><span
+style='color:#339966'>// create build configuration object for this build by
+parsing command-line arguments<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>         
+</span>ajdtcore::Entering execution(AjBuildConfig
+org.aspectj.ajdt.ajc.AjdtCommand.genBuildConfig(String[],</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                         </span>CountingMessageHandler))
+</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                             </span>arguments
+([Ljava.lang.String;@76cbf7,MessageHandler: no messages)</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span style='mso-tab-count:
+1'>      </span><span style='mso-spacerun:yes'>      </span>// create a build
+arg parser, this is actually a subclass of the eclipse batch compiler<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>            </span>// which is org.eclipse.jdt.internal.compiler.batch.Main<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>           
+</span>ajdtcore::Entering execution(org.aspectj.ajdt.ajc.<b style='mso-bidi-font-weight:
+normal'><span style='color:red'>BuildArgParser</span></b>()) arguments ()</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>           
+</span>ajdtcore::Exiting execution(org.aspectj.ajdt.ajc.BuildArgParser())</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span style='mso-tab-count:
+1'>      </span><span style='mso-spacerun:yes'>      </span>// ask the parser
+to create the build configuration object<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>           
+</span>ajdtcore::Entering execution(<b style='mso-bidi-font-weight:normal'><span
+style='color:red'>AjBuildConfig</span></b>
+org.aspectj.ajdt.ajc.BuildArgParser.genBuildConfig(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                         
+</span>String[], IMessageHandler)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                               </span>arguments
+([Ljava.lang.String;@76cbf7,MessageHandler: no messages)</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>             
+</span>ajdtcore::Entering
+execution(org.aspectj.ajdt.internal.core.builder.AjBuildConfig()) arguments ()</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>             
+</span>ajdtcore::Exiting
+execution(org.aspectj.ajdt.internal.core.builder.AjBuildConfig())</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>             </span><span
+style='mso-spacerun:yes'> </span>ajdtcore::Entering
+execution(org.aspectj.ajdt.ajc.BuildArgParser.<b style='mso-bidi-font-weight:
+normal'><span style='color:red'>AjcConfigParser</span></b>(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                    </span><span
+lang=DA style='mso-ansi-language:DA'>BuildArgParser, AjBuildConfig,
+IMessageHandler)) <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span lang=DA style='mso-ansi-language:DA'><span
+style='mso-spacerun:yes'>                                 </span>arguments (</span><a
+href="mailto:org.aspectj.ajdt.ajc.BuildArgParser@126804e"><span lang=DA
+style='mso-ansi-language:DA'>org.aspectj.ajdt.ajc.BuildArgParser@126804e</span></a><span
+lang=DA style='mso-ansi-language:DA'>,<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span lang=DA style='mso-ansi-language:DA'><span
+style='mso-spacerun:yes'>                                            </span></span><a
+href="mailto:org.aspectj.ajdt.internal.core.builder.AjBuildConfig@b1b4c3"><span
+lang=DA style='mso-ansi-language:DA'>org.aspectj.ajdt.internal.core.builder.AjBuildConfig@b1b4c3</span></a><span
+lang=DA style='mso-ansi-language:DA'>,<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span lang=DA style='mso-ansi-language:DA'><span
+style='mso-spacerun:yes'>                                           
+</span>MessageHandler: no messages)<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span lang=DA style='mso-ansi-language:DA'><span
+style='mso-spacerun:yes'>              </span>ajdtcore::Exiting
+execution(org.aspectj.ajdt.ajc.BuildArgParser.AjcConfigParser(<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span lang=DA style='mso-ansi-language:DA'><span
+style='mso-spacerun:yes'>                                            </span></span>BuildArgParser,
+AjBuildConfig, IMessageHandler))</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>             
+</span>util::Entering execution(void
+org.aspectj.util.ConfigParser.parseCommandLine(String[])) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                             </span>arguments
+([Ljava.lang.String;@76cbf7)</p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>                </span>// build a linked list of
+arguments and then...<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>   </span><span
+style='mso-spacerun:yes'>             </span>util::Entering execution(void
+org.aspectj.util.ConfigParser.parseArgs(LinkedList)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                               </span>arguments
+([org.aspectj.util.ConfigParser$Arg@72ffb])</p>
+
+<p class=MsoPlainText><span style='color:#339966'><span style='mso-tab-count:
+2'>            </span><span style='mso-spacerun:yes'>    </span>// ajc options
+are handled by BuildArgParser.AjcConfigParser.parseOption<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>                </span>// all other args (source
+files, lst files, imported argfiles) are handled in ConfigParser superclass<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>               
+</span>util::Exiting execution(void
+org.aspectj.util.ConfigParser.parseArgs(LinkedList)) return: null</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>             
+</span>util::Exiting execution(void
+org.aspectj.util.ConfigParser.parseCommandLine(String[])) return: null</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+style='color:#339966'><span style='mso-spacerun:yes'>          </span>// get
+the list of files to be compiled<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>    </span></span><span
+style='mso-spacerun:yes'>          </span>util::Entering execution(List
+org.aspectj.util.ConfigParser.getFiles()) arguments ()</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>          </span><span
+style='mso-spacerun:yes'>    </span>util::Exiting execution(List
+org.aspectj.util.ConfigParser.getFiles()) return: </p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                   </span>[C:\Documents and
+Settings\colyer\Hello.java]<o:p></o:p></span></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>              </span>// get any remaining arguments...
+these will be passed up to the eclipse batch compiler<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+style='mso-spacerun:yes'>          </span>ajdtcore::Entering execution(List
+org.aspectj.ajdt.ajc.BuildArgParser.AjcConfigParser.getUnparsedArgs()) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                 </span>arguments ()</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>             
+</span>ajdtcore::Exiting execution(List
+org.aspectj.ajdt.ajc.BuildArgParser.AjcConfigParser.getUnparsedArgs()) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                </span>return: []</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>              </span>// configure the batch compiler
+(superclass) with any as yet unparsed args<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>             
+</span>jdtcore::Entering execution(void
+org.eclipse.jdt.internal.compiler.batch.Main.configure(String[])) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                </span>arguments
+([Ljava.lang.String;@1df38fd)</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>             
+</span>jdtcore::Exiting execution(void
+org.eclipse.jdt.internal.compiler.batch.Main.configure(String[])) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                               </span>return: null</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>          </span><span
+style='mso-spacerun:yes'>    </span>// tell the AjBuildConfig what it has to
+build<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>             
+</span>ajdtcore::Entering execution(void
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig.setFiles(List)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                 </span>arguments
+([C:\Documents and Settings\colyer\Hello.java])</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>             
+</span>ajdtcore::Exiting execution(void
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig.setFiles(List)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                </span>return: null</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span style='mso-tab-count:
+1'>      </span><span style='mso-spacerun:yes'>        </span>// calculate the
+classpath for compilation<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>             
+</span>ajdtcore::Entering execution(List
+org.aspectj.ajdt.ajc.BuildArgParser.getClasspath(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                                  
+</span>BuildArgParser.AjcConfigParser)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                 </span>arguments
+(org.aspectj.ajdt.ajc.BuildArgParser$AjcConfigParser@126e85f)</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>     </span><span
+style='mso-spacerun:yes'>         </span>...</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>             
+</span>ajdtcore::Exiting execution(List
+org.aspectj.ajdt.ajc.BuildArgParser.getClasspath(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                           
+</span>BuildArgParser.AjcConfigParser)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                </span>return: </p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                       </span>[C:\ColyerRoot\Programs\SunJDK141\jre\lib\rt.jar,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                       
+</span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\i18n.jar, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                       
+</span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\sunrsasign.jar, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                       
+</span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\jsse.jar, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                       
+</span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\jce.jar, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                       
+</span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\charsets.jar, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                       
+</span>C:\ColyerRoot\Programs\SunJDK141\jre\classes, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>     </span><span
+style='mso-spacerun:yes'>                   </span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\ext\aspectjrt.jar,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                       
+</span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\ext\dnsns.jar, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                       
+</span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\ext\ldapsec.jar, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>            </span><span
+style='mso-spacerun:yes'>            </span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\ext\localedata.jar,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                       
+</span>C:\ColyerRoot\Programs\SunJDK141\jre\lib\ext\sunjce_provider.jar, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                       
+</span>c:\ColyerRoot\Programs\aspectj1.1\lib\aspectjtools_g.jar, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>        </span><span
+style='mso-spacerun:yes'>                </span>c:\ColyerRoot\Programs\aspectj1.1\lib\aspectjtools.jar,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                       
+</span>c:\ColyerRoot\Programs\aspectj1.1\lib\log4j-1.2.7.jar, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                       
+</span>c:\ColyerRoot\Programs\aspectj1.1\lib, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                        </span>., <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>           </span><span
+style='mso-spacerun:yes'>             </span>C:\ColyerRoot\Programs\aspectj1.1b4\lib\aspectjrt.jar]<o:p></o:p></span></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>              </span>// tell the build config what we
+learnt...<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-tab-count:1'>      </span><span
+style='mso-spacerun:yes'>        </span>ajdtcore::Entering execution(void
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig.setClasspath(List)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>             </span><span
+style='mso-spacerun:yes'>                    </span>arguments (...)</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>             
+</span>ajdtcore::Exiting execution(void
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig.setClasspath(List)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                </span>return: null</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>              </span>// ensure we always generate
+debug info at this phase<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>             
+</span>ajdtcore::Entering execution(void
+org.aspectj.ajdt.ajc.BuildArgParser.setDebugOptions()) arguments ()</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>             
+</span>ajdtcore::Exiting execution(void
+org.aspectj.ajdt.ajc.BuildArgParser.setDebugOptions()) return: null</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>         </span><span
+style='mso-spacerun:yes'>     </span>// give the build config the java options
+that were parsed by the eclipse batch compiler<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>             
+</span>ajdtcore::Entering execution(void
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig.setJavaOptions(Map)) </p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                       </span>arguments ( {org.eclipse.jdt.core.compiler.problem.staticAccessReceiver=ignore,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.compliance=1.3, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.problem.unusedParameterWhenOverridingConcrete=disabled,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.codegen.unusedLocal=optimize out, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.problem.deprecation=ignore,<span
+style='mso-spacerun:yes'>                                               </span><span
+style='mso-spacerun:yes'> </span><o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.problem.<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                              
+</span>unusedParameterWhenImplementingAbstract=disabled, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.problem.nonExternalizedStringLiteral=ignore,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.problem.unusedLocal=ignore, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.problem.unusedImport=ignore, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                  </span><span
+style='mso-spacerun:yes'>  </span>org.eclipse.jdt.core.compiler.problem.overridingPackageDefaultMethod=ignore,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.problem.syntheticAccessEmulation=ignore, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.debug.localVariable=generate, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.problem.incompatibleNonInheritedInterfaceMethod=ignore,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.debug.sourceFile=generate, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>          </span><span
+style='mso-spacerun:yes'>                          </span>org.eclipse.jdt.core.compiler.problem.unusedPrivateMember=ignore,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.debug.lineNumber=generate, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.problem.unusedParameter=ignore, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.problem.methodWithConstructorName=ignore, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.problem.assertIdentifier=ignore, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                 </span><span
+style='mso-spacerun:yes'>                   </span>org.eclipse.jdt.core.compiler.problem.hiddenCatchBlock=ignore,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.problem.invalidImport=error, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.problem.unreachableCode=error, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.1, <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                                   
+</span>org.eclipse.jdt.core.compiler.problem.noImplicitStringConversion=ignore,
+<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:blue'><span
+style='mso-spacerun:yes'>                              </span><span
+style='mso-spacerun:yes'>      </span>org.eclipse.jdt.core.compiler.source=1.3})<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>             
+</span>ajdtcore::Exiting execution(void
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig.setJavaOptions(Map)) </p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                </span>return: null</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>           
+</span>ajdtcore::Exiting execution(AjBuildConfig
+org.aspectj.ajdt.ajc.BuildArgParser.genBuildConfig(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                                        
+</span><span lang=DA style='mso-ansi-language:DA'>String[], IMessageHandler)) <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                              </span>return:
+org.aspectj.ajdt.internal.core.builder.AjBuildConfig@b1b4c3<o:p></o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    </span><span
+style='mso-spacerun:yes'>     </span>ajdtcore::Exiting execution(AjBuildConfig
+org.aspectj.ajdt.ajc.AjdtCommand.genBuildConfig(<o:p></o:p></p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                       </span>String[],
+CountingMessageHandler)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                          
+</span>return: org.aspectj.ajdt.internal.core.builder.AjBuildConfig@b1b4c3</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>  </span><span style='mso-tab-count:1'>    </span><span
+style='mso-spacerun:yes'>   </span>//
+------------------------------------------------------------------------------------------<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>         </span>// here we go... kick off a batch
+build, if we were in incremental mode this would be a call<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>         </span>// to AjBuildManager.incrementalBuild()
+instead<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>         </span>//
+------------------------------------------------------------------------------------------<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        
+</span>ajdtcore::Entering execution(boolean
+org.aspectj.ajdt.internal.core.builder.AjBuildManager.batchBuild(</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                         
+</span><span style='mso-spacerun:yes'>              </span><span lang=DA
+style='mso-ansi-language:DA'>AjBuildConfig, IMessageHandler)) <o:p></o:p></span></p>
+
+<p class=MsoPlainText><span lang=DA style='mso-ansi-language:DA'><span
+style='mso-spacerun:yes'>                            </span>arguments (</span><a
+href="mailto:org.aspectj.ajdt.internal.core.builder.AjBuildConfig@b1b4c3"><span
+lang=DA style='mso-ansi-language:DA'>org.aspectj.ajdt.internal.core.builder.AjBuildConfig@b1b4c3</span></a><span
+lang=DA style='mso-ansi-language:DA'>,<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span lang=DA style='mso-ansi-language:DA'><span
+style='mso-spacerun:yes'>                         </span><span
+style='mso-spacerun:yes'>              </span></span>MessageHandler: no
+messages)</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span style='mso-tab-count:
+2'>            </span>// *********************************************<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span style='mso-tab-count:
+2'>            </span>// what happens here is captured separately!!<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>            </span>// see <a
+href="ajc_batchBuild_annotated.htm">ajc_batchBuild_annotated.htm</a><o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span style='mso-tab-count:
+2'>            </span>// *********************************************<o:p></o:p></span></p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>        
+</span>ajdtcore::Exiting execution(boolean org.aspectj.ajdt.internal.core.builder.AjBuildManager.batchBuild(</p>
+
+<p class=MsoPlainText><span
+style='mso-spacerun:yes'>                                               
+</span>AjBuildConfig, IMessageHandler)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                          
+</span>return: true</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>      
+</span>ajdtcore::Exiting execution(boolean
+org.aspectj.ajdt.ajc.AjdtCommand.doCommand(IMessageHandler, boolean)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                        
+</span>return: true</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    
+</span>ajdtcore::Exiting execution(boolean
+org.aspectj.ajdt.ajc.AjdtCommand.runCommand(String[], IMessageHandler)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                      
+</span>return: true</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>     </span>// and we're back in Main.run()...<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='color:#339966'><span
+style='mso-spacerun:yes'>     </span>// report the results of the compilation<o:p></o:p></span></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    
+</span>ajdtcore::Entering execution(boolean
+org.aspectj.tools.ajc.Main.report(boolean, IMessageHolder)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>              
+</span>arguments (true,MessageHandler: no messages)</p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>    
+</span>ajdtcore::Exiting execution(boolean org.aspectj.tools.ajc.Main.report(boolean,
+IMessageHolder)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>              
+</span>return: true</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>  
+</span>ajdtcore::Exiting execution(void
+org.aspectj.tools.ajc.Main.run(String[], IMessageHolder)) return: null</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText>ajdtcore::Entering execution(void
+org.aspectj.tools.ajc.Main.systemExit(IMessageHolder)) </p>
+
+<p class=MsoPlainText><span style='mso-spacerun:yes'>                  
+</span>arguments (MessageHandler: no messages)</p>
+
+<p class=MsoPlainText><o:p>&nbsp;</o:p></p>
+
+<p class=MsoPlainText><span style='color:#339966'>// its all over!<o:p></o:p></span></p>
+
+</div>
+
+</body>
+
+</html>
