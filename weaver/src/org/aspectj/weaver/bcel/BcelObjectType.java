@@ -282,6 +282,14 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 		return javaClass.isInterface();
 	}
 	
+	public boolean isEnum() {
+		return javaClass.isEnum();
+	}
+	
+	public boolean isAnnotation() {
+		return javaClass.isAnnotation();
+	}
+	
 	public boolean isSynthetic() {
 		return getResolvedTypeX().isSynthetic();
 	}
