@@ -413,3 +413,9 @@
 		</compile>
 	</ajc-test>
 	
+	<ajc-test dir="bugs/java5/arrayCloning" pr="72150"
+	   title="AJC possible bug with static nested classes">
+	   <compile files="A.java" inpath="OneFiveCode.jar"/>
+	   <!--run class="C"/-->
+    </ajc-test>
+	

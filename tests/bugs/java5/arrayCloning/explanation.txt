@@ -1,0 +1,2 @@
+Under Java 1.4 the target of a clone() method called on an array type was 'Object.clone' in the byte code.
+Under Java 1.5 this has been changed to be (correctly) a call to the clone() method on the array type.

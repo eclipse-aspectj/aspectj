@@ -267,5 +267,9 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void test050_typePatternMatchingWithArrays() {
   	runTest("declare warning warns at wrong points");
   }
+
+  public void test051_arrayCloningInJava5() {
+    runTest("AJC possible bug with static nested classes");
+  }
 }
 

@@ -583,8 +583,13 @@ public class TypeX {
         if (name.equals("void")) return "V";
         if (name.endsWith("[]")) 
             return "[" + nameToSignature(name.substring(0, name.length() - 2));
-        if (name.length() != 0)  // lots more tests could be made here...
-            return "L" + name.replace('.', '/') + ";";
+        if (name.length() != 0) {
+        	// lots more tests could be made here...
+        	
+        	// 1) If it is already an array type, do not mess with it.
+        	if (name.charAt(0)=='[' && name.charAt(name.length()-1)==';') return name;
+        	else return "L" + name.replace('.', '/') + ";";
+        }
         else 
             throw new BCException("Bad type name: " + name);
     }
