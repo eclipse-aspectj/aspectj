@@ -20,7 +20,7 @@ privileged aspect A {
 
     after() returning (Object o ) : 
         execution(Object C.get()) {
-        observable.setChanged(); // CE 22 (unable to implement privilege outside C
+        observable.setChanged(); // CE 23 (unable to implement privilege outside C
           // CE unable to implement privilege outside code the compiler controls
     }
 }
