@@ -54,6 +54,24 @@ package org.aspectj.apache.bcel.classfile;
  * <http://www.apache.org/>.
  */
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.CharArrayReader;
+import java.io.CharArrayWriter;
+import java.io.DataOutputStream;
+import java.io.FilterReader;
+import java.io.FilterWriter;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
@@ -64,24 +82,17 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnot
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
 import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.util.ByteSequence;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.zip.*;
 
 /**
  * Utility functions that do not really belong to any class in particular.
  *
- * @version $Id: Utility.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: Utility.java,v 1.3 2005/03/10 12:14:08 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * 
+ * modified: Andy Clement  2-mar-05  Removed unnecessary static and optimized
  */
 public abstract class Utility {
-  private static int consumed_chars; /* How many chars have been consumed
-				      * during parsing in signatureToString().
-				      * Read by methodSignatureToString().
-				      * Set by side effect,but only internally.
-				      */
+
   private static boolean wide=false; /* The `WIDE' instruction is used in the
 				      * byte code to allow 16-bit wide indices
 				      * for local variables. This opcode
@@ -131,7 +142,7 @@ public abstract class Utility {
 	if(for_class && ((p == Constants.ACC_SUPER) || (p == Constants.ACC_INTERFACE)))
 	  continue;	    
 
-	buf.append(Constants.ACCESS_NAMES[i] + " ");
+	buf.append(Constants.ACCESS_NAMES[i]).append(" ");
       }
     }
 
@@ -579,16 +590,16 @@ public abstract class Utility {
     return methodSignatureArgumentTypes(signature, true);
   }    
 
+  
+  
+  
   /**
    * @param  signature    Method signature
-   * @param chopit Shorten class names ?
-   * @return Array of argument types
+   * @param     chopit    Shorten class names ?
+   * @return              Array of argument types
    * @throws  ClassFormatException  
    */
-  public static final String[] methodSignatureArgumentTypes(String signature,
-							    boolean chopit)
-    throws ClassFormatException
-  {
+  public static final String[] methodSignatureArgumentTypes(String signature,boolean chopit) throws ClassFormatException {
     ArrayList vec = new ArrayList();
     int       index;
     String[]  types;
@@ -600,8 +611,9 @@ public abstract class Utility {
       index = 1; // current string position
 
       while(signature.charAt(index) != ')') {
-	vec.add(signatureToString(signature.substring(index), chopit));
-	index += consumed_chars; // update position
+      	ResultHolder rh = signatureToStringInternal(signature.substring(index),chopit);
+	    vec.add(rh.getResult());
+	    index += rh.getConsumedChars(); // update position
       }
     } catch(StringIndexOutOfBoundsException e) { // Should never occur
       throw new ClassFormatException("Invalid method signature: " + signature);
@@ -611,6 +623,8 @@ public abstract class Utility {
     vec.toArray(types);
     return types;
   }      
+  
+  
   /**
    * @param  signature    Method signature
    * @return return type of method
@@ -712,7 +726,8 @@ public abstract class Utility {
       index = 1; // current string position
 
       while(signature.charAt(index) != ')') {
-	String param_type = signatureToString(signature.substring(index), chopit);
+      	ResultHolder rh = signatureToStringInternal(signature.substring(index), chopit);
+	String param_type = rh.getResult();
 	buf.append(param_type);
 
 	if(vars != null) {
@@ -729,7 +744,7 @@ public abstract class Utility {
 	  var_index++;
 
 	buf.append(", ");
-	index += consumed_chars; // update position
+	index += rh.getConsumedChars(); // update position
       }
 
       index++; // update position
@@ -798,6 +813,12 @@ public abstract class Utility {
   public static final String signatureToString(String signature) {
     return signatureToString(signature, true);
   }    
+  
+
+  public static final String signatureToString(String signature,boolean chopit) {
+  	ResultHolder rh = signatureToStringInternal(signature,chopit);
+  	return rh.getResult();
+  }
 
   /**
    * The field signature represents the value of an argument to a function or 
@@ -834,68 +855,64 @@ public abstract class Utility {
    * @throws ClassFormatException
    */
   // J5TODO: This will have problems with nest generic types...(but then I think we all will)
-  public static final String signatureToString(String signature,
-					       boolean chopit)
-  {
-    consumed_chars = 1; // This is the default, read just one char like `B'
+  public static final ResultHolder signatureToStringInternal(String signature,boolean chopit) {
+    int processedChars = 1; // This is the default, read just one char like `B'
     try {
       switch(signature.charAt(0)) {
-      case 'B' : return "byte";
-      case 'C' : return "char";
-      case 'D' : return "double";
-      case 'F' : return "float";
-      case 'I' : return "int";
-      case 'J' : return "long";
+        case 'B' : return ResultHolder.BYTE;
+        case 'C' : return ResultHolder.CHAR;
+        case 'D' : return ResultHolder.DOUBLE;
+        case 'F' : return ResultHolder.FLOAT;
+        case 'I' : return ResultHolder.INT;
+        case 'J' : return ResultHolder.LONG;
 
-      case 'L' : { // Full class name
-      	int    index = signature.indexOf(';'); // Look for closing `;'
-      	// Jump to the correct ';'
-      	if (index!=-1 && 
+        case 'L' : { // Full class name
+      	  int    index = signature.indexOf(';'); // Look for closing `;'
+      	  // Jump to the correct ';'
+      	  if (index!=-1 && 
       		signature.length()>index+1 && 
 		    signature.charAt(index+1)=='>') index = index+2;
 
-	if(index < 0)
-	  throw new ClassFormatException("Invalid signature: " + signature);
+	      if (index < 0)
+	        throw new ClassFormatException("Invalid signature: " + signature);
 	
-	int genericStart = signature.indexOf('<');
-	int genericEnd = signature.indexOf('>');
-	if (genericStart !=-1) {
-		return compactClassName(signature.substring(1,genericStart)+"<"+
-				  signatureToString(signature.substring(genericStart+1,genericEnd),chopit)+">",chopit);
-	} else {
-	
-	  consumed_chars = index + 1; // "Lblabla;" `L' and `;' are removed
+	      int genericStart = signature.indexOf('<');
+	      int genericEnd = signature.indexOf('>');
+	      if (genericStart !=-1) {
+	      	// FIXME asc going to need a lot more work in here for generics
+	      	ResultHolder rh = signatureToStringInternal(signature.substring(genericStart+1,genericEnd),chopit);
+		    ResultHolder retval = new ResultHolder(compactClassName(signature.substring(1,genericStart)+"<"+
+				    rh.getResult()+">",chopit),genericEnd+1);
+				    return retval;
+	      } else {
+	        processedChars = index + 1; // "Lblabla;" `L' and `;' are removed
+	        ResultHolder retval = new ResultHolder(compactClassName(signature.substring(1, index), chopit),processedChars);
+	        return retval;
+	      }
+        }
 
-	  return compactClassName(signature.substring(1, index), chopit);
-	}
-      }
-
-      case 'S' : return "short";
-      case 'Z' : return "boolean";
+      case 'S' : return ResultHolder.SHORT;
+      case 'Z' : return ResultHolder.BOOLEAN;
 
       case '[' : { // Array declaration
-	int          n;
-	StringBuffer buf, brackets;
-	String       type;
-	char         ch;
-	int          consumed_chars; // Shadows global var
+      	StringBuffer  brackets;
+      	int          consumedChars,n;
 
-	brackets = new StringBuffer(); // Accumulate []'s
-
-	// Count opening brackets and look for optional size argument
-	for(n=0; signature.charAt(n) == '['; n++)
-	  brackets.append("[]");
-
-	consumed_chars = n; // Remember value
-
-	// The rest of the string denotes a `<field_type>'
-	type = signatureToString(signature.substring(n), chopit);
+	    brackets = new StringBuffer(); // Accumulate []'s
+	    // Count opening brackets and look for optional size argument
+	    for(n=0; signature.charAt(n) == '['; n++)
+	      brackets.append("[]");
+	      consumedChars = n;
+	      // The rest of the string denotes a `<field_type>'
+	      ResultHolder restOfIt = signatureToStringInternal(signature.substring(n),chopit);
+	      
+	      //  type = signatureToString(signature.substring(n), chopit);
 	
-	Utility.consumed_chars += consumed_chars;
-	return type + brackets.toString();
-      }
+	      consumedChars+= restOfIt.getConsumedChars();
+	      return new ResultHolder(restOfIt.getResult() + brackets.toString(),consumedChars);
+        }
             	
-      case 'V' : return "void";
+      case 'V' : return ResultHolder.VOID;
 
       default  : throw new ClassFormatException("Invalid signature: `" +
 					    signature + "'");
@@ -1577,4 +1594,28 @@ public abstract class Utility {
 	}
   	return null;
   }
+  
+  private static class ResultHolder {
+  	private String result;
+  	private int consumed;
+  	
+  	public static final ResultHolder BYTE     = new ResultHolder("byte",1);
+  	public static final ResultHolder CHAR     = new ResultHolder("char",1);
+  	public static final ResultHolder DOUBLE   = new ResultHolder("double",1);
+  	public static final ResultHolder FLOAT    = new ResultHolder("float",1);
+  	public static final ResultHolder INT      = new ResultHolder("int",1);
+  	public static final ResultHolder LONG     = new ResultHolder("long",1);
+  	public static final ResultHolder SHORT    = new ResultHolder("short",1);
+  	public static final ResultHolder BOOLEAN  = new ResultHolder("boolean",1);
+  	public static final ResultHolder VOID     = new ResultHolder("void",1);
+  	
+  	public ResultHolder(String s,int c) {
+  		result = s;
+  		consumed = c;
+  	}
+  	
+  	public String getResult() { return result;}
+  	public int getConsumedChars() { return consumed; }
+  }
+
 }

@@ -60,19 +60,22 @@ import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ClassFormatException;
 import org.aspectj.apache.bcel.classfile.Utility;
 
+
 /** 
  * Abstract super class for all possible java types, namely basic types
  * such as int, object types like String and array types, e.g. int[]
  *
- * @version $Id: Type.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: Type.java,v 1.4 2005/03/10 12:14:19 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * 
+ * modified:
+ * AndyClement 2-mar-05: Removed unnecessary static and optimized
  */
 public abstract class Type implements java.io.Serializable {
   protected byte   type;
   protected String signature; // signature for the type
 
-  /** Predefined constants
-   */
+  /* Predefined constants */
   public static final BasicType     VOID         = new BasicType(Constants.T_VOID);
   public static final BasicType     BOOLEAN      = new BasicType(Constants.T_BOOLEAN);
   public static final BasicType     INT          = new BasicType(Constants.T_INT);
@@ -88,8 +91,7 @@ public abstract class Type implements java.io.Serializable {
   public static final ObjectType    THROWABLE    = new ObjectType("java.lang.Throwable");
   public static final Type[]        NO_ARGS      = new Type[0];
   public static final ReferenceType NULL         = new ReferenceType(){};
-  public static final Type          UNKNOWN      = new Type(Constants.T_UNKNOWN,
-							    "<unknown object>"){};
+  public static final Type          UNKNOWN      = new Type(Constants.T_UNKNOWN,"<unknown object>"){};
 
   protected Type(byte t, String s) {
     type      = t;
@@ -111,15 +113,15 @@ public abstract class Type implements java.io.Serializable {
    */
   public int getSize() {
     switch(type) {
-    case Constants.T_DOUBLE:
-    case Constants.T_LONG: return 2;
-    case Constants.T_VOID: return 0;
-    default:     return 1;
+      case Constants.T_DOUBLE:
+      case Constants.T_LONG: return 2;
+      case Constants.T_VOID: return 0;
+      default:               return 1;
     }
   }
 
   /**
-   * @return Type string, e.g. `int[]'
+   * @return Type string, e.g. 'int[]'
    */
   public String toString() {
     return ((this.equals(Type.NULL) || (type >= Constants.T_UNKNOWN)))? signature :
@@ -134,55 +136,48 @@ public abstract class Type implements java.io.Serializable {
    * @param arg_types what are the argument types
    * @return method signature for given type(s).
    */
-  public static String getMethodSignature(Type return_type, Type[] arg_types) { 
+  public static String getMethodSignature(Type return_type, Type[] arg_types) {
     StringBuffer buf = new StringBuffer("(");
     int length = (arg_types == null)? 0 : arg_types.length;
 
     for(int i=0; i < length; i++)
       buf.append(arg_types[i].getSignature());
-
     buf.append(')');
     buf.append(return_type.getSignature());
-
+    
     return buf.toString();
   }
 
-  private static int consumed_chars=0; // Remember position in string, see getArgumentTypes
+  // private static int consumed_chars=0; // Remember position in string, see getArgumentTypes
 
+  
+  public static final Type getType(String signature) {
+  	TypeHolder th = getTypeInternal(signature);
+  	return th.getType();
+  }
+  
+  
   /**
    * Convert signature to a Type object.
    * @param signature signature string such as Ljava/lang/String;
    * @return type object
    */
-  public static final Type getType(String signature)
-    throws StringIndexOutOfBoundsException
-  {
+  public static final TypeHolder getTypeInternal(String signature) throws StringIndexOutOfBoundsException {
     byte type = Utility.typeOfSignature(signature);
 
-    if(type <= Constants.T_VOID) {
-      consumed_chars = 1;
-      return BasicType.getType(type);
-    } else if(type == Constants.T_ARRAY) {
+    if (type <= Constants.T_VOID) {
+      return new TypeHolder(BasicType.getType(type),1);
+    } else if (type == Constants.T_ARRAY) {
       int dim=0;
-      do { // Count dimensions
-	dim++;
-      } while(signature.charAt(dim) == '[');
-
+      do { dim++; } while(signature.charAt(dim) == '[');
       // Recurse, but just once, if the signature is ok
-      Type t = getType(signature.substring(dim));
-
-      consumed_chars += dim; // update counter
-
-      return new ArrayType(t, dim);
+      TypeHolder th = getTypeInternal(signature.substring(dim));
+      return new TypeHolder(new ArrayType(th.getType(), dim),dim+th.getConsumed());
     } else { // type == T_REFERENCE
+      // Format is 'Lblahblah;'
       int index = signature.indexOf(';'); // Look for closing `;'
-
-      if(index < 0)
-	throw new ClassFormatException("Invalid signature: " + signature);
-	
-      consumed_chars = index + 1; // "Lblabla;" `L' and `;' are removed
-
-      return new ObjectType(signature.substring(1, index).replace('/', '.'));
+      if(index < 0) throw new ClassFormatException("Invalid signature: " + signature);
+      return new TypeHolder(new ObjectType(signature.substring(1, index).replace('/', '.')),index+1);
     }
   }
 
@@ -213,14 +208,15 @@ public abstract class Type implements java.io.Serializable {
     Type[]     types;
 
     try { // Read all declarations between for `(' and `)'
-      if(signature.charAt(0) != '(')
-	throw new ClassFormatException("Invalid method signature: " + signature);
+      if (signature.charAt(0) != '(')
+	     throw new ClassFormatException("Invalid method signature: " + signature);
 
       index = 1; // current string position
 
       while(signature.charAt(index) != ')') {
-	vec.add(getType(signature.substring(index)));
-	index += consumed_chars; // update position
+      	TypeHolder th = getTypeInternal(signature.substring(index));
+	    vec.add(th.getType());
+	    index += th.getConsumed(); // update position
       }
     } catch(StringIndexOutOfBoundsException e) { // Should never occur
       throw new ClassFormatException("Invalid method signature: " + signature);
@@ -240,7 +236,7 @@ public abstract class Type implements java.io.Serializable {
       throw new IllegalArgumentException("Class must not be null");
     }
 
-    /* That's an amzingly easy case, because getName() returns
+    /* That's an amazingly easy case, because getName() returns
      * the signature. That's what we would have liked anyway.
      */
     if(cl.isArray()) {
@@ -273,7 +269,7 @@ public abstract class Type implements java.io.Serializable {
       return new ObjectType(cl.getName());
     }
   }
-
+  
   public static String getSignature(java.lang.reflect.Method meth) {
     StringBuffer sb = new StringBuffer("(");
     Class[] params = meth.getParameterTypes(); // avoid clone
@@ -286,4 +282,15 @@ public abstract class Type implements java.io.Serializable {
     sb.append(getType(meth.getReturnType()).getSignature());
     return sb.toString();
   }
+  
+  public static class TypeHolder {
+  	private Type t;
+  	private int consumed;
+  	
+  	public Type getType() {return t;}
+  	public int getConsumed() { return consumed;}
+  	
+  	public TypeHolder(Type t,int i) { this.t=t;this.consumed = i;}
+  }
+
 }
