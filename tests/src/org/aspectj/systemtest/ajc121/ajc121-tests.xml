@@ -404,3 +404,12 @@
 		</compile>
 	</ajc-test>
 		
+	
+	<ajc-test dir="bugs/pr72531" pr="72531"
+	  	title="declare warning warns at wrong points">
+		<compile files="de/rohith/HelloWorld.java,de/rohith/HelloWorldAspect.java,de/rohith/PrinterWorld.java">
+			<message kind="warning" line="15" text="*[] returning method called"/>
+			<message kind="warning" line="22" text="*[] returning method called"/>
+		</compile>
+	</ajc-test>
+	

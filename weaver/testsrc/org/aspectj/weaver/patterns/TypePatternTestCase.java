@@ -201,6 +201,20 @@ public class TypePatternTestCase extends TestCase {
 		
 	
 	}
+  	
+  	public void testArrayMatch() {
+  		world = new BcelWorld();
+  		checkMatch("*[][]","java.lang.Object",false);
+  		checkMatch("*[]","java.lang.Object[]",true);
+  		checkMatch("*[][]","java.lang.Object[][]",true);
+  		checkMatch("java.lang.Object[]","java.lang.Object",false);
+  		checkMatch("java.lang.Object[]","java.lang.Object[]",true);
+  		checkMatch("java.lang.Object[][]","java.lang.Object[][]",true);
+  		checkMatch("java.lang.String[]","java.lang.Object",false);
+  		checkMatch("java.lang.String[]","java.lang.Object[]",false);
+  		checkMatch("java.lang.String[][]","java.lang.Object[][]",false);
+  		checkMatch("java.lang.Object+[]","java.lang.String[]",true);
+  	}
 
 	private void checkIllegalInstanceofMatch(String pattern, String name) {
 		try {

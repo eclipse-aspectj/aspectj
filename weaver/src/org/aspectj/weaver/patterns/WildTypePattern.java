@@ -96,6 +96,23 @@ public class WildTypePattern extends TypePattern {
 			return innerMatchesExactly(targetTypeName);
 		}
 		
+		if (isStar()) {
+			// we match if the dimensions match
+			int numDimensionsInTargetType = 0;
+			if (dim > 0) {
+				int index;
+				while((index = targetTypeName.indexOf('[')) != -1) {
+					numDimensionsInTargetType++;
+					targetTypeName = targetTypeName.substring(index+1);
+				}
+				if (numDimensionsInTargetType == dim) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+		
 		// if our pattern is length 1, then known matches are exact matches
 		// if it's longer than that, then known matches are prefixes of a sort
 		if (namePatterns.length == 1) {
@@ -308,7 +325,9 @@ public class WildTypePattern extends TypePattern {
     								boolean allowBinding, boolean requireExactType)
     { 		
     	if (isStar()) {
-			return TypePattern.ANY;  //??? loses source location
+    		if (dim == 0) { // pr72531
+    			return TypePattern.ANY;  //??? loses source location
+    		} 
 		}
 
 		String simpleName = maybeGetSimpleName();

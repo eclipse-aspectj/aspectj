@@ -264,5 +264,8 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
     runTest("The introduction on interface causes the interface implementation class error (4)");
   }
   
+  public void test050_typePatternMatchingWithArrays() {
+  	runTest("declare warning warns at wrong points");
+  }
 }
 
