@@ -87,8 +87,8 @@ public class CountingMessageHandler implements IMessageHandler {
         }
         int result = 0;
         if (null == kind) {            
-            for (Enumeration enum = counters.elements(); enum.hasMoreElements();) {
-				result += ((IntHolder) enum.nextElement()).count;				
+            for (Enumeration enu = counters.elements(); enu.hasMoreElements();) {
+				result += ((IntHolder) enu.nextElement()).count;				
 			}
         } else if (!orGreater) {
             result = numMessages(kind);

@@ -217,9 +217,9 @@ public class FileUtil {
         if (null == visitor) throw new IllegalArgumentException("null visitor");
         int index = 0;
         try {
-            Enumeration enum = zipfile.entries();
-            while (enum.hasMoreElements()) {
-                ZipEntry entry = (ZipEntry) enum.nextElement();
+            Enumeration enu = zipfile.entries();
+            while (enu.hasMoreElements()) {
+                ZipEntry entry = (ZipEntry) enu.nextElement();
                 index++;
                 if (! visitor.accept(entry.getName())) {
                     break;
@@ -366,9 +366,9 @@ public class FileUtil {
         ZipFile zip = null;
         try {
             zip = new ZipFile(zipfile); // ZipFile.OPEN_READ| ZipFile.OPEN_DELETE); delete is 1.3 only
-            Enumeration enum = zip.entries();
-            while (enum.hasMoreElements()) {
-                results.add(renderZipEntry(zipfile, (ZipEntry) enum.nextElement()));
+            Enumeration enu = zip.entries();
+            while (enu.hasMoreElements()) {
+                results.add(renderZipEntry(zipfile, (ZipEntry) enu.nextElement()));
             }
             zip.close();
             zip = null;

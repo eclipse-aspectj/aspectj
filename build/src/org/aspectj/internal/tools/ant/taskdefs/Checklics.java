@@ -376,12 +376,12 @@ public class Checklics extends MatchingTask {
 //	}
 
 	private void list() {
-		Enumeration enum = LICENSES.keys();
+		Enumeration enu = LICENSES.keys();
 		StringBuffer sb = new StringBuffer();
 		sb.append("known license keys:");
 		boolean first = true;
-		while (enum.hasMoreElements()) {
-			sb.append((first ? " " : ", ") + enum.nextElement());
+		while (enu.hasMoreElements()) {
+			sb.append((first ? " " : ", ") + enu.nextElement());
 			if (first) {
 				first = false;
 			}
