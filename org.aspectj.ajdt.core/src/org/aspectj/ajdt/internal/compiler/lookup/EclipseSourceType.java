@@ -22,7 +22,9 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.PerSingleton;
+import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
 
@@ -230,7 +232,15 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 	}
 	
 	public boolean hasAnnotation(TypeX ofType) {
-		throw new RuntimeException("How to implement this?  Needs to ask eclipse!");
+		Annotation[] as = declaration.annotations;
+		for (int i = 0; i < as.length; i++) {
+			Annotation annotation = as[i];
+			String tname = CharOperation.charToString(annotation.resolvedType.constantPoolName());
+			if (TypeX.forName(tname).equals(ofType)) {
+				return true;
+			}			
+		}
+		return false;
 	}
 	
 	public ResolvedTypeX[] getAnnotationTypes() {
