@@ -6,7 +6,7 @@ import java.util.*;
 public class ArrayFieldDeclaration {
 
     public static void main(String[] args) {
-        Tester.check(null != new C().f[0], "null != new C().f[0]");
+        //Tester.check(null != new C().f[0], "null != new C().f[0]");
     }
 }
 
@@ -14,5 +14,5 @@ class C {
 }
 
 aspect A {
-    Object C.f[] = new Object[] { "hello" };
+    Object C.f[] = new Object[] { "hello" };  //CE postfix [] syntax is illegal in inter-type decs
 }
