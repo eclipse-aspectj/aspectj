@@ -101,6 +101,7 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 
 	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
 		String name = new String(typeDeclaration.name);
+		//System.err.println("type with name: " + name);
 		ProgramElementNode.Kind kind = ProgramElementNode.Kind.CLASS;
 		if (typeDeclaration instanceof AspectDeclaration) kind = ProgramElementNode.Kind.ASPECT;
 		else if (typeDeclaration.isInterface()) kind = ProgramElementNode.Kind.INTERFACE;
@@ -124,6 +125,8 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 	// ??? share impl with visit(TypeDeclaration, ..) ?
 	public boolean visit(MemberTypeDeclaration memberTypeDeclaration, ClassScope scope) {
 		String name = new String(memberTypeDeclaration.name);
+		//System.err.println("member type with name: " + name);
+		
 		ProgramElementNode.Kind kind = ProgramElementNode.Kind.CLASS;
 		if (memberTypeDeclaration instanceof AspectDeclaration) kind = ProgramElementNode.Kind.ASPECT;
 		else if (memberTypeDeclaration.isInterface()) kind = ProgramElementNode.Kind.INTERFACE;
@@ -143,6 +146,54 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 	public void endVisit(MemberTypeDeclaration memberTypeDeclaration, ClassScope scope) {
 		stack.pop();
 	}
+	
+	public boolean visit(LocalTypeDeclaration memberTypeDeclaration, BlockScope scope) {
+		String name = new String(memberTypeDeclaration.name);
+		String fullName = new String(memberTypeDeclaration.binding.constantPoolName());
+		int dollar = fullName.indexOf('$');
+		fullName = fullName.substring(dollar+1);
+//		
+//		System.err.println("member type with name: " + name + ", " + 
+//				new String(fullName));
+		
+		ProgramElementNode.Kind kind = ProgramElementNode.Kind.CLASS;
+		if (memberTypeDeclaration.isInterface()) kind = ProgramElementNode.Kind.INTERFACE;
+
+		ProgramElementNode peNode = new ProgramElementNode(
+			fullName,
+			kind,
+			makeLocation(memberTypeDeclaration),
+			memberTypeDeclaration.modifiers,
+			"",
+			new ArrayList());
+		
+		//??? we add this to the compilation unit
+		findEnclosingClass(stack).addChild(peNode);
+		stack.push(peNode);
+		return true;
+	}
+	public void endVisit(LocalTypeDeclaration memberTypeDeclaration, BlockScope scope) {
+		stack.pop();
+	}
+	
+	public boolean visit(AnonymousLocalTypeDeclaration memberTypeDeclaration, BlockScope scope) {
+		return visit((LocalTypeDeclaration)memberTypeDeclaration, scope);
+	}
+
+	public void endVisit(AnonymousLocalTypeDeclaration memberTypeDeclaration, BlockScope scope) {
+		stack.pop();
+	}
+	
+	private StructureNode findEnclosingClass(Stack stack) {
+		for (int i = stack.size()-1; i >= 0; i--) {
+			ProgramElementNode pe = (ProgramElementNode)stack.get(i);
+			if (pe.getProgramElementKind() == ProgramElementNode.Kind.CLASS) {
+				return pe;
+			}
+			
+		}
+		return (StructureNode)stack.peek();
+	}	
 	
 	// !!! improve name and type generation
 	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {
@@ -171,10 +222,11 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 			methodDeclaration.modifiers,
 			"",
 			new ArrayList());
-			
-		Member member = EclipseWorld.makeResolvedMember(methodDeclaration.binding);
-		peNode.setBytecodeName(member.getName());
-		peNode.setBytecodeSignature(member.getSignature());
+		if (methodDeclaration.binding != null) {
+			Member member = EclipseWorld.makeResolvedMember(methodDeclaration.binding);
+			peNode.setBytecodeName(member.getName());
+			peNode.setBytecodeSignature(member.getSignature());
+		}
 		((StructureNode)stack.peek()).addChild(peNode);
 		stack.push(peNode);
 		

@@ -77,6 +77,7 @@ public class AsmAdaptor {
 	private static ProgramElementNode getNode(StructureModel model, Advice a) {
 		//ResolvedTypeX inAspect = a.getConcreteAspect();
 		Member member = a.getSignature();
+		if (a.getSignature() == null) return null;
 		return lookupMember(model, member);
 	}
 	
@@ -84,6 +85,13 @@ public class AsmAdaptor {
 		Member enclosingMember = shadow.getEnclosingCodeSignature();
 		
 		ProgramElementNode enclosingNode = lookupMember(model, enclosingMember);
+		if (enclosingNode == null) {
+			Lint.Kind err = shadow.getIWorld().getLint().shadowNotInStructure;
+			if (err.isEnabled()) {
+				err.signal(shadow.toString(), shadow.getSourceLocation());
+			}
+			return null;
+		}
 		
 		Member shadowSig = shadow.getSignature();
 		if (!shadowSig.equals(enclosingMember)) {
@@ -117,7 +125,7 @@ public class AsmAdaptor {
 			"",
 			new ArrayList());
 			
-		System.err.println(peNode.getSourceLocation());
+		//System.err.println(peNode.getSourceLocation());
 		peNode.setBytecodeName(shadowSig.getName());
 		peNode.setBytecodeSignature(shadowSig.getSignature());
 		enclosingNode.addChild(peNode);
@@ -142,13 +150,16 @@ public class AsmAdaptor {
 		if (classNode == null) return null; // XXX remove this check
 		for (Iterator it = classNode.getChildren().iterator(); it.hasNext(); ) {
 			ProgramElementNode node = (ProgramElementNode)it.next();
+			//System.err.println("checking: " + member.getName() + " with " + node.getBytecodeName() + ", " + node.getBytecodeSignature());
 			if (member.getName().equals(node.getBytecodeName()) &&
 				member.getSignature().equals(node.getBytecodeSignature()))
 			{
 				return node;
 			}
 		}
-		return null;
+	 	// if we can't find the member, we'll just put it in the class
+	 	//??? is this what the IDEs want
+		return classNode;
 	}
 
 

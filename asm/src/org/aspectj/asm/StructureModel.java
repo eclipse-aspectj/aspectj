@@ -70,14 +70,39 @@ public class StructureModel implements Serializable {
 			}
 			if (packageNode == null) return null;
 		}
-		// !!! this searches each file for a class
+		
+		// this searches each file for a class
 		for (Iterator it = packageNode.getChildren().iterator(); it.hasNext(); ) {
 			ProgramElementNode fileNode = (ProgramElementNode)it.next();
-			for (Iterator j = fileNode.getChildren().iterator(); j.hasNext(); ) {
-				ProgramElementNode classNode = (ProgramElementNode)j.next();	
-				if (classNode instanceof ProgramElementNode && className.equals(classNode.getName())) {
-					return (ProgramElementNode)classNode;
-				}
+			ProgramElementNode ret = findClassInNodes(fileNode.getChildren(), className);
+			if (ret != null) return ret;
+		}
+		
+		return null;
+	}
+	
+	private ProgramElementNode findClassInNodes(Collection nodes, String name) {
+		String baseName;
+		String innerName;
+		int dollar = name.indexOf('$');
+		if (dollar == -1) {
+			baseName = name;
+			innerName = null;
+		} else {
+			baseName = name.substring(0, dollar);
+			innerName = name.substring(dollar+1);
+		}
+		
+		
+		for (Iterator j = nodes.iterator(); j.hasNext(); ) {
+			ProgramElementNode classNode = (ProgramElementNode)j.next();
+//			System.err.println("checking: " + classNode + " for " + baseName);	
+//			System.err.println("children: " + classNode.getChildren());
+			if (baseName.equals(classNode.getName())) {
+				if (innerName == null) return classNode;
+				else return findClassInNodes(classNode.getChildren(), innerName);
+			} else if (name.equals(classNode.getName())) {
+				return classNode;
 			}
 		}
 		return null;

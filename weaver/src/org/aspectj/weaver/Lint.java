@@ -37,6 +37,9 @@ public class Lint {
 	public final Kind typeNotExposedToWeaver = 
 		new Kind("typeNotExposedToWeaver", "this affected type is not exposed to the weaver: {0}");
 		
+	public final Kind shadowNotInStructure = 
+		new Kind("shadowNotInStructure", "the shadow for this join point is not exposed in the structure model: {0}");
+		
 	public Lint(World world) {
 		this.world = world;
 	}

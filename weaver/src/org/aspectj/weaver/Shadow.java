@@ -305,7 +305,7 @@ public abstract class Shadow {
 			ShadowMunger munger = (ShadowMunger) iter.next();
 			munger.implementOn(this);
 			if (world.getModel() != null) {
-				System.err.println("munger: " + munger + " on " + this);
+				//System.err.println("munger: " + munger + " on " + this);
 				AsmAdaptor.noteMunger(world.getModel(), this, munger);
 			}
 		}

@@ -436,6 +436,10 @@ public abstract class ResolvedTypeX extends TypeX {
     }
     
     
+    public boolean isSynthetic() {
+    	return signature.indexOf("$ajc") != -1;
+    }
+    
     public final boolean isFinal() {
         return Modifier.isFinal(getModifiers());
     }

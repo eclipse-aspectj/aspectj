@@ -294,6 +294,11 @@ public class BcelWeaver implements IWeaver {
 
 	// non-private for testing
 	LazyClassGen weave(UnwovenClassFile classFile, BcelObjectType classType) throws IOException {
+		if (classType.isSynthetic()) {
+			dumpUnchanged(classFile);
+			return null;
+		}
+		
 		JavaClass javaClass = classType.getJavaClass();
 		List shadowMungers = fastMatch(shadowMungerList, javaClass);
 		List typeMungers = fastMatch(classType.getInterTypeMungers(), javaClass);
