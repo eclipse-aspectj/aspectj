@@ -39,7 +39,8 @@
     </ajc-test>
 
     <ajc-test dir="harness"
-      title="fail 2 error, with 1 bad filename">
+      title="fail 2 error, with 1 bad filename"
+      keywords="expect-fail">
         <compile files="ErrorTest.java">
             <message kind="error" line="5" file="ErrorTest.java"/>
             <message kind="error" line="6" file="ErrorTest2.java"/>
@@ -47,9 +48,10 @@
     </ajc-test>
     
     <ajc-test dir="harness"
-      title="fail 2 error, with 2 bad filename">
+      title="fail 2 error, with 2 bad filename"
+      keywords="expect-fail">
         <compile files="ErrorTest.java">
-            <message kind="error" line="5" file="ErrorTest.java"/>
+            <message kind="error" line="5" file="ErrorTest3.java"/>
             <message kind="error" line="6" file="ErrorTest2.java"/>
         </compile>
     </ajc-test>
