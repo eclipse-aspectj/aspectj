@@ -186,6 +186,9 @@ public class Harness {
 	/** if true, then log results in report(..) when done */
 	private boolean logResults;
     
+    /** if true and there were failures, do System.exit({numFailures})*/
+    private boolean exitOnFailure;
+    
     protected Harness() {
         features = new HashMap();
     }
@@ -283,9 +286,10 @@ public class Harness {
                 if (!skip) {
                     doStartSuite(suiteFile);            
                     long elapsed = 0;
-                    try {
+                    RunResult result = null;
+                    try {                    
                         final long startTime = System.currentTimeMillis();
-                        RunResult result = run(spec);
+                        result = run(spec);
                         if (null != resultList) {
                             resultList.add(result);
                         }
@@ -293,6 +297,17 @@ public class Harness {
                         report(result.status, skipList.size(), result.numIncomplete, elapsed);                   
                     } finally {
                         doEndSuite(suiteFile,elapsed);
+                    }
+                    if (exitOnFailure && (null != result)) {
+                        int numFailures = RunUtils.numFailures(result.status, true);
+                        if (0 < numFailures) {
+                            System.exit(numFailures);
+                        }
+                        Object value = result.status.getResult();
+                        if ((value instanceof Boolean) 
+                                && !((Boolean) value).booleanValue()) {
+                            System.exit(-1);
+                        }
                     }
                 }
             }
@@ -462,6 +477,8 @@ public class Harness {
             killTemp = true; 
         } else if ("-logResults".equals(option)) {
             logResults = true; 
+        } else if ("-exitOnFailure".equals(option)) {
+            exitOnFailure = true; 
         } else {
 	        return false;
         }
@@ -522,6 +539,7 @@ public class Harness {
         out.println("  -quietHarness     harness components suppress logging");
         out.println("  -keepTemp         do not delete temporary files");
         out.println("  -logResults       log results at end, verbosely if fail");
+        out.println("  -exitOnFailure    do System.exit({num-failures}) if suite fails");
         out.println("  {suiteFile}.xml.. specify test suite XML file");
         out.println("  {suiteFile}.txt.. specify test suite .txt file (deprecated)");
     }
