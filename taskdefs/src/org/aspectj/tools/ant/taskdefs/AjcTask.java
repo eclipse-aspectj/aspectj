@@ -255,7 +255,8 @@ public class AjcTask extends MatchingTask {
             
     static {
         String[] xs = new String[] 
-            {   "serializableAspects", "incrementalFile", "lazyTjp"
+            {   "serializableAspects", "incrementalFile", "lazyTjp",
+        		"reweavable", "reweavable:compress", "noInline"
             	//, "targetNearSource", "OcodeSize",
                  };
         VALID_XOPTIONS = Collections.unmodifiableList(Arrays.asList(xs));

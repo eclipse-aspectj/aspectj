@@ -521,6 +521,23 @@ public class AjcTaskTest extends TestCase {
 		runTest(task, NO_EXCEPTION, MessageHolderChecker.INFOS);
 	}
 
+	public void testXOptions() {
+		String[] xopts = new String[] {
+			"serializableAspects",
+			"lazyTjp",
+			"reweavable",
+			"reweavable:compress",
+			"noInline"
+		};
+		for (int i = 0; i < xopts.length; i++) {
+			AjcTask task = getTask(NOFILE);
+			task.setX(xopts[i]);
+			String[] cmd = task.makeCommand();
+			checkContains(cmd,"-X" + xopts[i],true);
+		}
+		
+	}
+	
 	protected void runTest(
 		AjcTask task,
 		Class exceptionType,
