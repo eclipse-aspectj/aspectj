@@ -72,6 +72,16 @@ public class AdviceDeclaration extends MethodDeclaration {
 		
 		modifiers = binding.modifiers = checkAndSetModifiers(modifiers, upperScope);
 		
+		if (kind == AdviceKind.AfterThrowing && extraArgument != null) {
+			TypeBinding argTb = extraArgument.binding.type;
+			TypeBinding expectedTb = upperScope.getJavaLangThrowable();
+			if (!upperScope.areTypesCompatible(argTb, expectedTb)) {
+				scope.problemReporter().typeMismatchError(argTb, expectedTb, extraArgument);
+				ignoreFurtherInvestigation = true;
+				return;
+			}
+		}
+		
 		
 		pointcutDesignator.finishResolveTypes(this, this.binding, 
 			baseArgumentCount, upperScope.referenceContext.binding);
@@ -160,6 +170,8 @@ public class AdviceDeclaration extends MethodDeclaration {
 
 
 	public void generateCode(ClassScope classScope, ClassFile classFile) {
+		if (ignoreFurtherInvestigation) return;
+		
 		super.generateCode(classScope, classFile);
 		if (proceedMethodBinding != null) {
 			generateProceedMethod(classScope, classFile);
