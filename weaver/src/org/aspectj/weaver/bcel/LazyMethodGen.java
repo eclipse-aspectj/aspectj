@@ -103,6 +103,9 @@ public final class LazyMethodGen {
         if (!(m.isAbstract() || m.isNative()) && m.getCode() == null) {
         	throw new RuntimeException("bad non-abstract method with no code: " + m + " on " + enclosingClass);
         }
+        if ((m.isAbstract() || m.isNative()) && m.getCode() != null) {
+        	throw new RuntimeException("bad abstract method with code: " + m + " on " + enclosingClass);
+        }
         MethodGen gen = new MethodGen(m, enclosingClass.getName(), enclosingClass.getConstantPoolGen());
 		this.memberView = new BcelMethod(enclosingClass.getType(), m);
         this.accessFlags = gen.getAccessFlags();
@@ -657,6 +660,8 @@ public final class LazyMethodGen {
             packBody(gen);
             gen.setMaxLocals();
             gen.setMaxStack();
+        } else {
+        	gen.setInstructionList(null);
         }
         return gen;
     }
