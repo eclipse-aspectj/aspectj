@@ -422,6 +422,28 @@ public class BuildArgParserTestCase extends TestCase {
 		assertTrue(new File(lintFile).exists());
 		assertEquals(getCanonicalPath(new File(lintFile)),config.getLintSpecFile().getAbsolutePath());	
 	}
+	
+	/**
+	 * The option '-1.5' are currently eaten by the AspectJ argument parser - since
+	 * the JDT compiler upon which we are based doesn't understand them - *this should change* when we
+	 * switch to a 1.5 compiler base.  They are currently used to determine whether the weaver should
+	 * behave in a '1.5' way - for example autoboxing behaves differently when the 1.5 flag is specified.
+	 * Under 1.4 Integer != int
+	 * Under 1.5 Integer == int
+	 * (this applies to all primitive types)
+	 */
+	public void testSource15() throws InvalidInputException {
+//		AjBuildConfig config = genBuildConfig(new String[]{"-source","1.5"},messageWriter);
+//		assertTrue("should be in 1.5 mode",config.getJave5Behaviour());
+		AjBuildConfig config = genBuildConfig(new String[]{"-1.5"},messageWriter);
+		assertTrue("should be in 1.5 mode",config.getBehaveInJava5Way());
+		config = genBuildConfig(new String[]{"-source","1.4"},messageWriter);
+		assertTrue("should not be in 1.5 mode",!config.getBehaveInJava5Way());
+		assertTrue("should be in 1.4 mode",config.getOptions().sourceLevel == CompilerOptions.JDK1_4);
+		config = genBuildConfig(new String[]{"-source","1.3"},messageWriter);
+		assertTrue("should not be in 1.5 mode",!config.getBehaveInJava5Way());
+		assertTrue("should be in 1.3 mode",config.getOptions().sourceLevel == CompilerOptions.JDK1_3);
+	}
 
 	public void testOptions() throws InvalidInputException {
 //		AjdtCommand command = new AjdtCommand();

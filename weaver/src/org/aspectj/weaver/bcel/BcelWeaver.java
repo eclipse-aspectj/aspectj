@@ -673,7 +673,7 @@ public class BcelWeaver implements IWeaver {
 		// need to do any declare parents before the matching below
 		for (Iterator i = declareParentsList.iterator(); i.hasNext(); ) {
 			DeclareParents p = (DeclareParents)i.next();
-			List newParents = p.findMatchingNewParents(onType);
+			List newParents = p.findMatchingNewParents(onType,true);
 			if (!newParents.isEmpty()) {
 				BcelObjectType classType = BcelWorld.getBcelObjectType(onType);
 				//System.err.println("need to do declare parents for: " + onType);

@@ -30,6 +30,7 @@ import org.aspectj.weaver.World;
 public class DeclareParents extends Declare {
 	private TypePattern child;
 	private TypePatternList parents;
+	private boolean isWildChild = false;
 	
 
 	public DeclareParents(TypePattern child, List parents) {
@@ -39,6 +40,7 @@ public class DeclareParents extends Declare {
 	private DeclareParents(TypePattern child, TypePatternList parents) {
 		this.child = child;
 		this.parents = parents;
+		if (child instanceof WildTypePattern) isWildChild = true;
 	}
 	
 	public boolean match(ResolvedTypeX typeX) {
@@ -90,12 +92,27 @@ public class DeclareParents extends Declare {
 		return ret;
 	}
 	
+	public boolean parentsIncludeInterface(World w) {
+		for (int i = 0; i < parents.size(); i++) {
+			if (parents.get(i).getExactType().isInterface(w)) return true;
+		}
+	  return false;	
+	}
+	public boolean parentsIncludeClass(World w) {
+		for (int i = 0; i < parents.size(); i++) {
+			if (parents.get(i).getExactType().isClass(w)) return true;
+		}
+	  return false;	
+	}
+	
     public void resolve(IScope scope) {
     	child = child.resolveBindings(scope, Bindings.NONE, false, false);
     	parents = parents.resolveBindings(scope, Bindings.NONE, false, true); 
-//    	for (int i=0; i < parents.size(); i++) {
-//    		parents.get(i).assertExactType(scope.getMessageHandler());
-//		}
+
+//    	 Could assert this ...
+//    	    	for (int i=0; i < parents.size(); i++) {
+//    	    		parents.get(i).assertExactType(scope.getMessageHandler());
+//    			}
     }
 
 	public TypePatternList getParents() {
@@ -110,7 +127,7 @@ public class DeclareParents extends Declare {
 		return false;
 	}
 	
-	private ResolvedTypeX maybeGetNewParent(ResolvedTypeX targetType, TypePattern typePattern, World world) {
+	private ResolvedTypeX maybeGetNewParent(ResolvedTypeX targetType, TypePattern typePattern, World world,boolean reportErrors) {
 		if (typePattern == TypePattern.NO) return null;  // already had an error here
 		TypeX iType = typePattern.getExactType();
 		ResolvedTypeX parentType = iType.resolve(world);
@@ -121,8 +138,64 @@ public class DeclareParents extends Declare {
 			        this.getSourceLocation(), null);
 			return null;
 		}
-			
+
 		if (parentType.isAssignableFrom(targetType)) return null;  // already a parent
+		
+		// Enum types that are targetted for decp through a wild type pattern get linted 
+		if (reportErrors && isWildChild && targetType.isEnum()) {
+			world.getLint().enumAsTargetForDecpIgnored.signal(targetType.toString(),getSourceLocation());	
+		}
+		
+		// Annotation types that are targetted for decp through a wild type pattern get linted 
+		if (reportErrors && isWildChild && targetType.isAnnotation()) {
+			world.getLint().annotationAsTargetForDecpIgnored.signal(targetType.toString(),getSourceLocation());	
+		}
+
+		// 1. Can't use decp to make an enum/annotation type implement an interface
+		if (targetType.isEnum() && parentType.isInterface()) {
+   			if (reportErrors && !isWildChild)  {
+				world.showMessage(IMessage.ERROR,
+						WeaverMessages.format(WeaverMessages.CANT_DECP_ON_ENUM_TO_IMPL_INTERFACE,targetType),getSourceLocation(),null);
+   			}
+			return null;
+		}
+		if (targetType.isAnnotation() && parentType.isInterface()) {
+   			if (reportErrors && !isWildChild)  {
+				world.showMessage(IMessage.ERROR,WeaverMessages.format(WeaverMessages.CANT_DECP_ON_ANNOTATION_TO_IMPL_INTERFACE,targetType),getSourceLocation(),null);
+   			}
+			return null;
+		}
+		
+		// 2. Can't use decp to change supertype of an enum/annotation
+		if (targetType.isEnum() && parentType.isClass()) {
+			if (reportErrors && !isWildChild) {
+				world.showMessage(IMessage.ERROR,WeaverMessages.format(WeaverMessages.CANT_DECP_ON_ENUM_TO_EXTEND_CLASS,targetType),getSourceLocation(),null);
+			}
+			return null;
+		}
+		if (targetType.isAnnotation() && parentType.isClass()) {
+			if (reportErrors && !isWildChild) {
+				world.showMessage(IMessage.ERROR,WeaverMessages.format(WeaverMessages.CANT_DECP_ON_ANNOTATION_TO_EXTEND_CLASS,targetType),getSourceLocation(),null);
+			}
+			return null;
+		}
+		
+		// 3. Can't use decp to declare java.lang.Enum/java.lang.annotation.Annotation as the parent of a type
+		if (parentType.getSignature().equals(TypeX.ENUM.getSignature())) {
+			if (reportErrors && !isWildChild) {
+			    world.showMessage(IMessage.ERROR,
+			    		WeaverMessages.format(WeaverMessages.CANT_DECP_TO_MAKE_ENUM_SUPERTYPE,targetType),getSourceLocation(),null);
+			}
+			return null;
+		}	
+		if (parentType.getSignature().equals(TypeX.ANNOTATION.getSignature())) {
+			if (reportErrors && !isWildChild) {
+			    world.showMessage(IMessage.ERROR,
+			    		WeaverMessages.format(WeaverMessages.CANT_DECP_TO_MAKE_ANNOTATION_SUPERTYPE,targetType),getSourceLocation(),null);
+			}
+			return null;
+		}	
+			
 					
 		if (targetType.isAssignableFrom(parentType)) {
 			world.showMessage(IMessage.ERROR,
@@ -159,12 +232,12 @@ public class DeclareParents extends Declare {
 	}
 	
 
-	public List/*<ResolvedTypeX>*/ findMatchingNewParents(ResolvedTypeX onType) {
+	public List/*<ResolvedTypeX>*/ findMatchingNewParents(ResolvedTypeX onType,boolean reportErrors) {
 		if (!match(onType)) return Collections.EMPTY_LIST;
 		
 		List ret = new ArrayList();
 		for (int i=0; i < parents.size(); i++) {
-			ResolvedTypeX t = maybeGetNewParent(onType, parents.get(i), onType.getWorld());
+			ResolvedTypeX t = maybeGetNewParent(onType, parents.get(i), onType.getWorld(),reportErrors);
 			if (t != null) ret.add(t);
 		}
 		

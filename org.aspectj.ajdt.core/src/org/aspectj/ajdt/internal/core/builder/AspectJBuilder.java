@@ -154,6 +154,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 	private void initWorldAndWeaver(AjCompilerOptions options) {
 		cpManager = new EclipseClassPathManager(nameEnvironment);
 		myBcelWorld = new BcelWorld(cpManager,new UnhandledMessageHandler(getProject()),null /*(xrefHandler)*/);
+		myBcelWorld.setBehaveInJava5Way(options.behaveInJava5Way);
 		myBcelWorld.setXnoInline(options.xNoInline);
 		myBcelWorld.setXlazyTjp(options.xLazyThisJoinPoint);
 		setLintProperties(myBcelWorld,options);

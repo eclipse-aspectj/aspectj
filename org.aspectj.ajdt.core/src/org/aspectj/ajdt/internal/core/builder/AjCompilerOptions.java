@@ -66,6 +66,9 @@ public class AjCompilerOptions extends CompilerOptions {
 	public boolean xReweavableCompress = false;
 	public boolean showWeavingInformation = false;
 	
+	// If true - autoboxing behaves differently ...
+	public boolean behaveInJava5Way = false;
+	
 	// these next three not exposed by IDEs
 	public boolean generateModel = false;
 	public boolean generateJavaDocsInModel = false;

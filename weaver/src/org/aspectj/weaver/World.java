@@ -44,7 +44,10 @@ public abstract class World implements Dump.INode {
     
     protected boolean XnoInline;
     protected boolean XlazyTjp;
+
+    public boolean behaveInJava5Way = false;
     
+
     private List dumpState_cantFindTypeExceptions = null;
 	
     protected World() {
@@ -118,7 +121,7 @@ public abstract class World implements Dump.INode {
     	//System.out.println("resolve: " + ty + " world " + typeMap.keySet());
         String signature = ty.getSignature();
         ResolvedTypeX ret = typeMap.get(signature);
-        if (ret != null) return ret;
+        if (ret != null) { ret.world = this; return ret; } // Set the world for the RTX
         
         if (ty.isArray()) {
             ret = new ResolvedTypeX.Array(signature, this, resolve(ty.getComponentType(), allowMissing));
@@ -158,7 +161,7 @@ public abstract class World implements Dump.INode {
     }
 
     protected final boolean isAssignableFrom(TypeX type, TypeX other) {
-        return resolve(type).isAssignableFrom(other);
+        return resolve(type).isAssignableFrom(resolve(other));
     }
 
     public boolean needsNoConversionFrom(TypeX type, TypeX other) {
@@ -519,4 +522,8 @@ public abstract class World implements Dump.INode {
 					);
 		}
 	}	
+	
+	public void setBehaveInJava5Way(boolean b) {
+    	behaveInJava5Way = b;
+    }
 }

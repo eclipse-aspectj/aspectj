@@ -368,7 +368,7 @@ public class TypeX implements AnnotatedElement {
     public boolean isAssignableFrom(TypeX other, World world) {
 		// primitives override this method, so we know we're not primitive.
 		// So if the other is primitive, don't bother asking the world anything.
-		if (other.isPrimitive()) return false;
+		if (other.isPrimitive() && !world.behaveInJava5Way) return false;
         return world.isAssignableFrom(this, other);
     }
 
@@ -582,6 +582,9 @@ public class TypeX implements AnnotatedElement {
     public static final TypeX   ERROR    = forSignature("Ljava/lang/Error;");    
     public static final TypeX   AT_INHERITED = forSignature("Ljava/lang/annotation/Inherited;");
     public static final TypeX   AT_RETENTION = forSignature("Ljava/lang/annotation/Retention;");
+    public static final TypeX   ENUM         = forSignature("Ljava/lang/Enum;");
+    public static final TypeX   ANNOTATION   = forSignature("Ljava/lang/annotation/Annotation;");
+
     
     // ---- helpers
     

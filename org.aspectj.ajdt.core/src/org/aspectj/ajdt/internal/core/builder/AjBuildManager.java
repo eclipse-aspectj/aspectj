@@ -489,6 +489,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		List cp = buildConfig.getBootclasspath();
 		cp.addAll(buildConfig.getClasspath());
 		bcelWorld = new BcelWorld(cp, handler, null);
+		bcelWorld.setBehaveInJava5Way(buildConfig.getBehaveInJava5Way());
 		bcelWorld.setXnoInline(buildConfig.isXnoInline());
 		bcelWorld.setXlazyTjp(buildConfig.isXlazyTjp());
 		bcelWeaver = new BcelWeaver(bcelWorld);

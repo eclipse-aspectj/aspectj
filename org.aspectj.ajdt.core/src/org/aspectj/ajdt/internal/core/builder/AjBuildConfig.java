@@ -524,4 +524,12 @@ public class AjBuildConfig {
 	public boolean getProceedOnError() {
 		return options.proceedOnError;
 	}
+
+	public void setBehaveInJava5Way(boolean b) {
+		options.behaveInJava5Way = b;
+	}
+	
+	public boolean getBehaveInJava5Way() {
+		return options.behaveInJava5Way;
+	}
 }

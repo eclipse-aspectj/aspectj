@@ -416,7 +416,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
 	}
 	
 	private void doDeclareParents(DeclareParents declareParents, SourceTypeBinding sourceType) {
-		List newParents = declareParents.findMatchingNewParents(factory.fromEclipse(sourceType));
+		List newParents = declareParents.findMatchingNewParents(factory.fromEclipse(sourceType),false);
 		if (!newParents.isEmpty()) {
 			for (Iterator i = newParents.iterator(); i.hasNext(); ) {
 				ResolvedTypeX parent = (ResolvedTypeX)i.next();

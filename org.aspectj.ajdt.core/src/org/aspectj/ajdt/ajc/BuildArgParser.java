@@ -612,6 +612,21 @@ public class BuildArgParser extends Main {
             	buildConfig.setProceedOnError(true);
             } else if (new File(arg).isDirectory()) {
                 showError("dir arg not permitted: " + arg);
+            } else if (arg.equals("-1.5")) {
+            	buildConfig.setBehaveInJava5Way(true);
+// this would enable the '-source 1.5' to do the same as '-1.5' but doesnt sound quite right as
+// as an option right now as it doesnt mean we support 1.5 source code - people will get confused...
+//            } else if (arg.equals("-source")) {
+//            	if (args.size() > nextArgIndex) {
+//            		String level = ((ConfigParser.Arg)args.get(nextArgIndex)).getValue();
+//            		if (!level.equals("1.5")) {
+//            			unparsedArgs.add("-source");
+//            			unparsedArgs.add(level);
+//            		} else {
+//            			buildConfig.setJava5Behaviour(true);
+//            		}
+//            		args.remove(args.get(nextArgIndex));
+//            	}
 			} else {
                 // argfile, @file parsed by superclass
                 // no eclipse options parsed:

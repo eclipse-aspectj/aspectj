@@ -18,8 +18,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
@@ -99,11 +101,42 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
     public boolean needsNoConversionFrom(TypeX other, World world) {
         return needsNoConversionFrom(other);
     }
+    
+    // This set contains pairs of types whose signatures are concatenated
+    // together, this means with a fast lookup we can tell if two types
+    // are equivalent.
+    private static Set validBoxing = new HashSet();
+    
+    static {
+      validBoxing.add("Ljava/lang/Byte;B");
+      validBoxing.add("Ljava/lang/Character;C");
+      validBoxing.add("Ljava/lang/Double;D");
+      validBoxing.add("Ljava/lang/Float;F");
+      validBoxing.add("Ljava/lang/Integer;I");
+      validBoxing.add("Ljava/lang/Long;J");
+      validBoxing.add("Ljava/lang/Short;S");
+      validBoxing.add("Ljava/lang/Boolean;Z");
+      validBoxing.add("BLjava/lang/Byte;");
+      validBoxing.add("CLjava/lang/Character;");
+      validBoxing.add("DLjava/lang/Double;");
+      validBoxing.add("FLjava/lang/Float;");
+      validBoxing.add("ILjava/lang/Integer;");
+      validBoxing.add("JLjava/lang/Long;");
+      validBoxing.add("SLjava/lang/Short;");
+      validBoxing.add("ZLjava/lang/Boolean;");
+    }
+    
     public final boolean isConvertableFrom(TypeX other) {
         if (this.equals(OBJECT) || other.equals(OBJECT)) return true;
+        if (world.behaveInJava5Way) {
+        	if (this.isPrimitive()^other.isPrimitive()) { // If one is primitive and the other isnt
+        		if (validBoxing.contains(this.getSignature()+other.getSignature())) return true;
+        	}
+        }
         return this.isCoerceableFrom(other);
     }
     
+
     // utilities                
     public ResolvedTypeX getResolvedComponentType() {
     	return null;
@@ -595,7 +628,10 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
         }
 	     
         public final boolean isAssignableFrom(TypeX o) {
-            if (o.isPrimitive()) return false;
+        	if (o.isPrimitive()) {
+        		if (!world.behaveInJava5Way) return false;
+        		if (validBoxing.contains(this.getSignature()+o.getSignature())) return true;
+        	}
             ResolvedTypeX other = o.resolve(world);
 
             return isAssignableFrom(other);
@@ -879,7 +915,10 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
         	return false;
         }
         public final boolean isAssignableFrom(TypeX other) {
-            if (! other.isPrimitive()) return false;
+            if (!other.isPrimitive()) {
+            	if (!world.behaveInJava5Way) return false;
+            	return validBoxing.contains(this.getSignature()+other.getSignature());
+            }
             return assignTable[((Primitive)other).index][index];
         }
         public final boolean isCoerceableFrom(TypeX other) {

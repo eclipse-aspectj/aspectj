@@ -18,6 +18,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Set;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ClassParser;
@@ -206,6 +209,29 @@ public class Utility {
         return ret;
     }
     
+    // Lookup table, for converting between pairs of types, it gives
+    // us the method name in the Conversions class
+    private static Hashtable validBoxing = new Hashtable();
+    
+    static {
+      validBoxing.put("Ljava/lang/Byte;B","byteObject");
+      validBoxing.put("Ljava/lang/Character;C","charObject");
+      validBoxing.put("Ljava/lang/Double;D","doubleObject");
+      validBoxing.put("Ljava/lang/Float;F","floatObject");
+      validBoxing.put("Ljava/lang/Integer;I","intObject");
+      validBoxing.put("Ljava/lang/Long;J","longObject");
+      validBoxing.put("Ljava/lang/Short;S","shortObject");
+      validBoxing.put("Ljava/lang/Boolean;Z","booleanObject");
+      validBoxing.put("BLjava/lang/Byte;","byteValue");
+      validBoxing.put("CLjava/lang/Character;","charValue");
+      validBoxing.put("DLjava/lang/Double;","doubleValue");
+      validBoxing.put("FLjava/lang/Float;","floatValue");
+      validBoxing.put("ILjava/lang/Integer;","intValue");
+      validBoxing.put("JLjava/lang/Long;","longValue");
+      validBoxing.put("SLjava/lang/Short;","shortValue");
+      validBoxing.put("ZLjava/lang/Boolean;","booleanValue");
+    }
+    
     public static void appendConversion(
         InstructionList il,
         InstructionFactory fact,
@@ -215,8 +241,12 @@ public class Utility {
         if (! toType.isConvertableFrom(fromType)) {
             throw new BCException("can't convert from " + fromType + " to " + toType);
         }
-        if (toType.needsNoConversionFrom(fromType)) return;
-
+	    // XXX I'm sure this test can be simpler but my brain hurts and this works
+        if (!toType.getWorld().behaveInJava5Way) {
+        	if (toType.needsNoConversionFrom(fromType)) return;
+        } else {
+        	if (toType.needsNoConversionFrom(fromType) && !(toType.isPrimitive()^fromType.isPrimitive())) return;
+        }
         if (toType.equals(ResolvedTypeX.VOID)) {
             // assert fromType.equals(TypeX.OBJECT)
             il.append(InstructionFactory.createPop(fromType.getSize()));
@@ -249,6 +279,29 @@ public class Utility {
                     Type.OBJECT,
                     new Type[] { from },
                     Constants.INVOKESTATIC));
+        } else if (toType.getWorld().behaveInJava5Way && validBoxing.get(toType.getSignature()+fromType.getSignature())!=null) {
+        	// XXX could optimize by using any java boxing code that may be just before the call...
+        	Type from   = BcelWorld.makeBcelType(fromType);
+        	Type to     = BcelWorld.makeBcelType(toType);
+            String name = (String)validBoxing.get(toType.getSignature()+fromType.getSignature());
+            if (toType.isPrimitive()) {
+            	il.append(
+                        fact.createInvoke(
+                          "org.aspectj.runtime.internal.Conversions",
+                          name,
+						  to,
+                          new Type[]{Type.OBJECT},
+                          Constants.INVOKESTATIC));
+            } else {
+                il.append(
+                  fact.createInvoke(
+                    "org.aspectj.runtime.internal.Conversions",
+                    name,
+                    Type.OBJECT,
+                    new Type[] { from },
+                    Constants.INVOKESTATIC));
+                il.append(fact.createCheckCast((ReferenceType) to));
+            }
         } else if (fromType.isPrimitive()) {
             // assert toType.isPrimitive()
             Type from = BcelWorld.makeBcelType(fromType);
