@@ -96,10 +96,10 @@ public class DirChanges {
         startTime = 0l;
         final boolean doCompare = false;
         boolean result 
-                = exists("at start, did not expect file to be added", !EXISTS, spec.added, doCompare);            
-        result &= exists("at start, expected file to be unchanged", EXISTS, spec.unchanged, doCompare);            
-        result &= exists("at start, expected file to be updated", EXISTS, spec.updated, doCompare);            
-        result &= exists("at start, expected file to be removed", EXISTS, spec.removed, doCompare);            
+                = exists("at start, did not expect added file to exist", !EXISTS, spec.added, doCompare);            
+        result &= exists("at start, expected unchanged file to exist", EXISTS, spec.unchanged, doCompare);            
+        result &= exists("at start, expected updated file to exist", EXISTS, spec.updated, doCompare);            
+        result &= exists("at start, expected removed file to exist", EXISTS, spec.removed, doCompare);            
         startTime = System.currentTimeMillis();
         this.handler = oldHandler;
         return result;        
@@ -122,7 +122,7 @@ public class DirChanges {
         try {
             // variant 1: check specified files
             // deferring comparison to end...
-            final boolean doCompare = false && (null != fileChecker);
+            final boolean doCompare = (null != fileChecker);
             final boolean fastFail = spec.fastFail;
             boolean result
                     = exists("at end, expected file was not added",   EXISTS, spec.added, doCompare);            
