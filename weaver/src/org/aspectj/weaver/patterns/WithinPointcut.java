@@ -28,6 +28,10 @@ public class WithinPointcut extends Pointcut {
     
 	public FuzzyBoolean match(Shadow shadow) {
 		TypeX enclosingType = shadow.getEnclosingType();
+//		if (shadow.getKind() == Shadow.FieldSet) {
+//			System.err.println("within?" + type  + " matches " + enclosingType + " on " + shadow);
+//		}
+		
 		while (enclosingType != null) {
 			if (type.matchesStatically(shadow.getIWorld().resolve(enclosingType))) {
 				return FuzzyBoolean.YES;

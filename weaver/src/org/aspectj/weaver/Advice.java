@@ -21,10 +21,10 @@ import org.aspectj.weaver.patterns.*;
 
 public abstract class Advice extends ShadowMunger {
 
-    protected AdviceKind kind;
+	AjAttribute.AdviceAttribute attribute; // the pointcut field is ignored
+
+    protected AdviceKind kind; // alias of attribute.getKind()
     protected Member signature;
-    protected int extraParameterFlags;
-    protected int lexicalPosition;
     
     // not necessarily declaring aspect, this is a semantics change from 1.0
     protected ResolvedTypeX concreteAspect; // null until after concretize
@@ -73,14 +73,12 @@ public abstract class Advice extends ShadowMunger {
     }
     	
 
-    public Advice(AdviceKind kind, Pointcut pointcut, Member signature, 
-    	int extraParameterFlags, int start, int end, ISourceContext sourceContext)
+    public Advice(AjAttribute.AdviceAttribute attribute, Pointcut pointcut, Member signature)
     {
-    	super(pointcut, start, end, sourceContext);
-		this.kind = kind;
+    	super(pointcut, attribute.getStart(), attribute.getEnd(), attribute.getSourceContext());
+		this.attribute = attribute;
+		this.kind = attribute.getKind(); // alias
 		this.signature = signature;
-		this.extraParameterFlags = extraParameterFlags;
-		this.lexicalPosition = start;  //XXX should go away
     }    
 
 	
@@ -143,11 +141,15 @@ public abstract class Advice extends ShadowMunger {
 	}
 	
 	public boolean hasExtraParameter() {
-		return (extraParameterFlags & ExtraArgument) != 0;
+		return (getExtraParameterFlags() & ExtraArgument) != 0;
+	}
+
+	protected int getExtraParameterFlags() {
+		return attribute.getExtraParameterFlags();
 	}
 
 	protected int getExtraParameterCount() {
-		return countOnes(extraParameterFlags & ParameterMask);
+		return countOnes(getExtraParameterFlags() & ParameterMask);
 	}
 	
 	public static int countOnes(int bits) {
@@ -160,7 +162,7 @@ public abstract class Advice extends ShadowMunger {
 	}
 	
 	public int getBaseParameterCount() {
-		return signature.getParameterTypes().length - getExtraParameterCount();
+		return getSignature().getParameterTypes().length - getExtraParameterCount();
 	}
 
 	public TypeX getExtraParameterType() {
@@ -173,10 +175,10 @@ public abstract class Advice extends ShadowMunger {
 	}
 
 	protected String extraParametersToString() {
-		if (extraParameterFlags == 0) {
+		if (getExtraParameterFlags() == 0) {
 			return "";
 		} else {
-			return "(extraFlags: " + extraParameterFlags + ")";
+			return "(extraFlags: " + getExtraParameterFlags() + ")";
 		}
     }
 
@@ -197,7 +199,7 @@ public abstract class Advice extends ShadowMunger {
         	p.state = Pointcut.CONCRETE;
         }
         
-		Advice munger = world.concreteAdvice(kind, p, signature, extraParameterFlags, start, end, sourceContext);
+		Advice munger = world.concreteAdvice(attribute, p, signature);
 		munger.concreteAspect = fromType;
     	//System.err.println("concretizing here " + p + " with clause " + clause);
         return munger;
@@ -218,8 +220,9 @@ public abstract class Advice extends ShadowMunger {
     public boolean equals(Object other) {
         if (! (other instanceof Advice)) return false;
         Advice o = (Advice) other;
-        return o.kind == kind && o.pointcut.equals(pointcut) && o.signature.equals(signature) &&
-            o.extraParameterFlags == extraParameterFlags;
+        return o.attribute.equals(attribute) 
+        	&& o.pointcut.equals(pointcut) 
+        	&& o.signature.equals(signature);
     }
     private volatile int hashCode = 0;
     public int hashCode() {
@@ -243,9 +246,11 @@ public abstract class Advice extends ShadowMunger {
 	public static final int ParameterMask = 0xf;
 	
 	public static final int CanInline = 0x40;
-	
+
+
+	// for testing only	
 	public void setLexicalPosition(int lexicalPosition) {
-		this.lexicalPosition = lexicalPosition;
+		start = lexicalPosition;
 	}
 
 	public ResolvedTypeX getConcreteAspect() {

@@ -46,7 +46,7 @@ public class ResolvedPointcutDefinition extends ResolvedMember {
 		getDeclaringType().write(s);
 		s.writeInt(getModifiers());
 		s.writeUTF(getName());
-		TypeX.write(getParameterTypes(), s);
+		TypeX.writeArray(getParameterTypes(), s);
 		pointcut.write(s);
 	}
 	

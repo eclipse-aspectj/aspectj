@@ -106,7 +106,7 @@ public class BcelWorld extends World {
         Pointcut p =
         	pointcut.resolve(new SimpleScope(this, bindings));
 
-        return concreteAdvice(kind, p, m, extraFlag, 0, 0, null);
+        return new BcelAdvice(kind, p, m, extraFlag, 0, 0, null, null);
     }
     
     private String[] parseIds(String str) {
@@ -297,14 +297,12 @@ public class BcelWorld extends World {
 	}
 
     public Advice concreteAdvice(
-        AdviceKind kind,
-        Pointcut p,
-        Member signature,
-        int extraParameterFlags,
-        int start, int end, ISourceContext sourceContext) 
+       	AjAttribute.AdviceAttribute attribute,
+    	Pointcut pointcut,
+        Member signature)
     {
     	//System.err.println("concrete advice: " + signature + " context " + sourceContext);
-        return new BcelAdvice(kind, p, signature, extraParameterFlags, start, end, sourceContext, null);
+        return new BcelAdvice(attribute, pointcut, signature, null);
     }
     
     public ConcreteTypeMunger concreteTypeMunger(

@@ -50,10 +50,13 @@ public class EclipseWorld extends World {
 		setMessageHandler(handler);
 	}
 	
-	public Advice concreteAdvice(AdviceKind kind, Pointcut p, Member m, int extraMods,
-        int start, int end, ISourceContext context)
+    public Advice concreteAdvice(
+       	AjAttribute.AdviceAttribute attribute,
+    	Pointcut pointcut,
+        Member signature)
     {
-    	return new EclipseAdvice(kind, p, m, extraMods, start, end, context);
+    	//System.err.println("concrete advice: " + signature + " context " + sourceContext);
+        return new EclipseAdvice(attribute, pointcut, signature);
     }
 
     public ConcreteTypeMunger concreteTypeMunger(

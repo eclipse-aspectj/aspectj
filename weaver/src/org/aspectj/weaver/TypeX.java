@@ -599,7 +599,7 @@ public class TypeX {
 		}
 	}
 	
-	public static void write(TypeX[] types, DataOutputStream s) throws IOException {
+	public static void writeArray(TypeX[] types, DataOutputStream s) throws IOException {
 		int len = types.length;
 		s.writeShort(len);
 		for (int i=0; i < len; i++) {

@@ -177,8 +177,7 @@ public abstract class World {
         public ResolvedTypeX resolveObjectType(TypeX ty) {
             return ResolvedTypeX.MISSING;
         }
-        public Advice concreteAdvice(AdviceKind kind, Pointcut p, Member m, int extraMods,
-        int start, int end, ISourceContext context) {
+        public Advice concreteAdvice(AjAttribute.AdviceAttribute attribute, Pointcut p, Member m) {
             throw new RuntimeException("unimplemented");
         }
         public ConcreteTypeMunger concreteTypeMunger(ResolvedTypeMunger munger, ResolvedTypeX aspectType) {
@@ -188,11 +187,9 @@ public abstract class World {
     
     
     public abstract Advice concreteAdvice(
-        AdviceKind kind,
-        Pointcut p,
-        Member signature,
-        int extraParameterFlags,
-        int start, int end, ISourceContext context);
+    	AjAttribute.AdviceAttribute attribute,
+    	Pointcut pointcut,
+        Member signature);
         
     public final Advice concreteAdvice(
      	AdviceKind kind,
@@ -201,7 +198,9 @@ public abstract class World {
         int extraParameterFlags,
         IHasSourceLocation loc)
     {
-    	return concreteAdvice(kind, p, signature, extraParameterFlags, loc.getStart(), loc.getEnd(), loc.getSourceContext());
+    	AjAttribute.AdviceAttribute attribute = 
+    		new AjAttribute.AdviceAttribute(kind, p, extraParameterFlags, loc.getStart(), loc.getEnd(), loc.getSourceContext());
+		return concreteAdvice(attribute, p, signature);
     }
         
         

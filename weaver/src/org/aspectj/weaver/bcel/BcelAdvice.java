@@ -28,12 +28,23 @@ public class BcelAdvice extends Advice {
 	private Test pointcutTest;
 	private ExposedState exposedState;
 
+	public BcelAdvice(
+		AjAttribute.AdviceAttribute attribute,
+		Pointcut pointcut,
+		Member signature,
+		ResolvedTypeX concreteAspect) 
+	{
+		super(attribute, pointcut, signature);
+		this.concreteAspect = concreteAspect;
+	}
+
+	// !!! only used for testing
 	public BcelAdvice(AdviceKind kind, Pointcut pointcut, Member signature,
 		int extraArgumentFlags,
         int start, int end, ISourceContext sourceContext, ResolvedTypeX concreteAspect)
     {
-		super(kind, pointcut, signature, extraArgumentFlags, start, end, sourceContext);
-		this.concreteAspect = concreteAspect;
+		this(new AjAttribute.AdviceAttribute(kind, pointcut, extraArgumentFlags, start, end, sourceContext), 
+			pointcut, signature, concreteAspect);
 	}
 
     // ---- implementations of ShadowMunger's methods
@@ -61,15 +72,15 @@ public class BcelAdvice extends Advice {
 		pointcutTest = getPointcut().findResidue(shadow, exposedState);
 		
         // make sure thisJoinPoint parameters are initialized
-        if ((extraParameterFlags & ThisJoinPointStaticPart) != 0) {
+        if ((getExtraParameterFlags() & ThisJoinPointStaticPart) != 0) {
         	((BcelShadow)shadow).getThisJoinPointStaticPartVar();
         }
 
-        if ((extraParameterFlags & ThisJoinPoint) != 0) {
+        if ((getExtraParameterFlags() & ThisJoinPoint) != 0) {
         	((BcelShadow)shadow).getThisJoinPointVar();
         }
         
-        if ((extraParameterFlags & ThisEnclosingJoinPointStaticPart) != 0) {
+        if ((getExtraParameterFlags() & ThisEnclosingJoinPointStaticPart) != 0) {
         	((BcelShadow)shadow).getThisEnclosingJoinPointStaticPartVar();
         }
     }   
@@ -214,16 +225,16 @@ public class BcelAdvice extends Advice {
         // handle thisJoinPoint parameters
         // these need to be in that same order as parameters in 
         // org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration
-        if ((extraParameterFlags & ThisJoinPointStaticPart) != 0) {
+        if ((getExtraParameterFlags() & ThisJoinPointStaticPart) != 0) {
         	shadow.getThisJoinPointStaticPartBcelVar().appendLoad(il, fact);
         }
         
-        if ((extraParameterFlags & ThisJoinPoint) != 0) {
+        if ((getExtraParameterFlags() & ThisJoinPoint) != 0) {
         	shadow.getThisJoinPointBcelVar().appendLoad(il, fact);
         }
         
 
-        if ((extraParameterFlags & ThisEnclosingJoinPointStaticPart) != 0) {
+        if ((getExtraParameterFlags() & ThisEnclosingJoinPointStaticPart) != 0) {
         	shadow.getThisEnclosingJoinPointStaticPartBcelVar().appendLoad(il, fact);
         }
         
@@ -289,9 +300,9 @@ public class BcelAdvice extends Advice {
 		
 		if (declaringAspect == o_declaringAspect) {
 		    if (kind.isAfter() || o.kind.isAfter()) {
-		    	return this.lexicalPosition < o.lexicalPosition ? -1: +1;
+		    	return this.getStart() < o.getStart() ? -1: +1;
 		    } else {
-		    	return this.lexicalPosition < o.lexicalPosition ? +1: -1;
+		    	return this.getStart()< o.getStart() ? +1: -1;
 		    }
 		} else if (declaringAspect.isAssignableFrom(o_declaringAspect)) {
 			return -1;

@@ -92,12 +92,20 @@ public class ResolvedMember extends Member implements IHasPosition {
     	s.writeInt(modifiers);
     	s.writeUTF(getName());
     	s.writeUTF(getSignature());
-		TypeX.write(getExceptions(), s);
+		TypeX.writeArray(getExceptions(), s);
 
 		s.writeInt(getStart());
 		s.writeInt(getEnd());
 
     }
+
+    public static void writeArray(ResolvedMember[] members, DataOutputStream s) throws IOException {
+		s.writeInt(members.length);
+		for (int i = 0, len = members.length; i < len; i++) {
+			members[i].write(s);
+		}
+    }
+
     
     public static ResolvedMember readResolvedMember(DataInputStream s, ISourceContext sourceContext) throws IOException {
     	ResolvedMember m = new ResolvedMember(Kind.read(s), TypeX.read(s), s.readInt(), s.readUTF(), s.readUTF());
@@ -107,6 +115,17 @@ public class ResolvedMember extends Member implements IHasPosition {
 		m.sourceContext = sourceContext;
 		return m;
     }
+    
+    public static ResolvedMember[] readResolvedMemberArray(DataInputStream s, ISourceContext context) throws IOException {
+    	int len = s.readInt();
+		ResolvedMember[] members = new ResolvedMember[len];
+		for (int i=0; i < len; i++) {
+			members[i] = ResolvedMember.readResolvedMember(s, context);
+		}
+		return members;
+    }
+    
+    
     
 	public ResolvedMember resolve(World world) {
 		return this;

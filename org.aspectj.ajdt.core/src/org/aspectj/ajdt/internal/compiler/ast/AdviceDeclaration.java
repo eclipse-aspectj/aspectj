@@ -43,10 +43,15 @@ public class AdviceDeclaration extends MethodDeclaration {
 	public Argument extraArgument;
 	
 	public AdviceKind kind;
-	
 	private int extraArgumentFlags = 0;
 	
 	public MethodBinding proceedMethodBinding;
+	
+	public boolean proceedInInners;
+	public ResolvedMember[] proceedCallSignatures;
+	public boolean[] formalsUnchangedToProceed;
+	public TypeX[] declaredExceptions;
+	
 	
 	public AdviceDeclaration(CompilationResult result, AdviceKind kind) {
 		super(result);
@@ -63,8 +68,15 @@ public class AdviceDeclaration extends MethodDeclaration {
 	}
 	
 	public AjAttribute makeAttribute() {
-		return new AjAttribute.AdviceAttribute(kind, pointcutDesignator.getPointcut(), 
-				extraArgumentFlags, sourceStart, sourceEnd, null);
+		if (kind == AdviceKind.Around) {
+			return new AjAttribute.AdviceAttribute(kind, pointcutDesignator.getPointcut(), 
+					extraArgumentFlags, sourceStart, sourceEnd, null,
+					proceedInInners, proceedCallSignatures, formalsUnchangedToProceed, 
+					declaredExceptions);
+		} else {
+			return new AjAttribute.AdviceAttribute(kind, pointcutDesignator.getPointcut(), 
+					extraArgumentFlags, sourceStart, sourceEnd, null);
+		}
 	}
 
 	public void resolveStatements(ClassScope upperScope) {
@@ -88,6 +100,13 @@ public class AdviceDeclaration extends MethodDeclaration {
 		
 		
 		if (kind == AdviceKind.Around && binding != null) {
+			//XXX set these correctly
+			proceedInInners = false;
+			proceedCallSignatures = new ResolvedMember[0];
+			formalsUnchangedToProceed = new boolean[baseArgumentCount];
+			declaredExceptions = new TypeX[0];
+			
+			
 			ReferenceBinding[] exceptions = 
 				new ReferenceBinding[] { upperScope.getJavaLangThrowable() };
 			proceedMethodBinding = new MethodBinding(Modifier.STATIC,

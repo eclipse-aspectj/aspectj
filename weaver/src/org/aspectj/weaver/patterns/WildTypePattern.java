@@ -433,8 +433,8 @@ public class WildTypePattern extends TypePattern {
 		s.writeInt(dim);
 		//??? storing this information with every type pattern is wasteful of .class
 		//    file size. Storing it on enclosing types would be more efficient
-		FileUtil.writeStringArray(s, knownMatches);
-		FileUtil.writeStringArray(s, importedPrefixes);
+		FileUtil.writeStringArray(knownMatches, s);
+		FileUtil.writeStringArray(importedPrefixes, s);
 		writeLocation(s);
 	}
 	

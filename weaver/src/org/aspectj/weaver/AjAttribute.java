@@ -185,7 +185,7 @@ public abstract class AjAttribute {
 		}
 		public void write(DataOutputStream s) throws IOException {
 			s.writeUTF(sourceFileName);
-			FileUtil.writeIntArray(s, lineBreaks);
+			FileUtil.writeIntArray(lineBreaks, s);
 		}
 		
 		public static SourceContextAttribute read(DataInputStream s) throws IOException {
@@ -249,51 +249,101 @@ public abstract class AjAttribute {
 		
 		private AdviceKind kind;
 		private Pointcut pointcut;
-		private int extraArgumentFlags;
+		private int extraParameterFlags;
 		private int start;
 		private int end;
 		private ISourceContext sourceContext;
+		
+		// these are only used by around advice
+		private boolean proceedInInners;
+		private ResolvedMember[] proceedCallSignatures; // size == # of proceed calls in body
+		private boolean[] formalsUnchangedToProceed; // size == formals.size
+		private TypeX[] declaredExceptions;
 		
 		/**
 		 * @param lexicalPosition must be greater than the lexicalPosition 
 		 * of any advice declared before this one in an aspect, otherwise,
 		 * it can be any value.
 		 */
-		public AdviceAttribute(AdviceKind kind, Pointcut pointcut, int extraArgumentFlags, int start, int end, ISourceContext sourceContext) {
+		public AdviceAttribute(AdviceKind kind, Pointcut pointcut, int extraArgumentFlags, 
+								int start, int end, ISourceContext sourceContext) {
 			this.kind = kind;
 			this.pointcut = pointcut;
-			this.extraArgumentFlags = extraArgumentFlags;
+			this.extraParameterFlags = extraArgumentFlags;
 			this.start = start;
 			this.end = end;
 			this.sourceContext = sourceContext;
+
+			//XXX put this back when testing works better (or fails better)
+			//if (kind == AdviceKind.Around) throw new IllegalArgumentException("not for around");
+		}
+		
+		public AdviceAttribute(AdviceKind kind, Pointcut pointcut, int extraArgumentFlags, 
+								int start, int end, ISourceContext sourceContext,
+								boolean proceedInInners, ResolvedMember[] proceedCallSignatures,
+								boolean[] formalsUnchangedToProceed, TypeX[] declaredExceptions) {
+			this.kind = kind;
+			this.pointcut = pointcut;
+			this.extraParameterFlags = extraArgumentFlags;
+			this.start = start;
+			this.end = end;
+			this.sourceContext = sourceContext;
+			
+			if (kind != AdviceKind.Around) throw new IllegalArgumentException("only for around");
+			
+			this.proceedInInners = proceedInInners;
+			this.proceedCallSignatures = proceedCallSignatures;
+			this.formalsUnchangedToProceed = formalsUnchangedToProceed;
+			this.declaredExceptions = declaredExceptions;
 		}
 		
 		public static AdviceAttribute read(DataInputStream s, ISourceContext context) throws IOException {
-			return new AdviceAttribute(
-				AdviceKind.read(s),
-				Pointcut.read(s, context),
-				s.readByte(),
-				s.readInt(), s.readInt(), context);
+			AdviceKind kind = AdviceKind.read(s);
+			if (kind == AdviceKind.Around) {
+				return new AdviceAttribute(
+					kind,
+					Pointcut.read(s, context),
+					s.readByte(),
+					s.readInt(), s.readInt(), context,
+					s.readBoolean(),
+					ResolvedMember.readResolvedMemberArray(s, context),
+					FileUtil.readBooleanArray(s),
+					TypeX.readArray(s));
+			} else {
+				return new AdviceAttribute(
+					kind,
+					Pointcut.read(s, context),
+					s.readByte(),
+					s.readInt(), s.readInt(), context);
+			}
 		}
  
 		public void write(DataOutputStream s) throws IOException {
 			kind.write(s);
 			pointcut.write(s);
-			s.writeByte(extraArgumentFlags);
+			s.writeByte(extraParameterFlags);
 			s.writeInt(start);
 			s.writeInt(end);
+			
+			if (kind == AdviceKind.Around) {
+				s.writeBoolean(proceedInInners);
+				ResolvedMember.writeArray(proceedCallSignatures, s);
+				FileUtil.writeBooleanArray(formalsUnchangedToProceed, s);
+				TypeX.writeArray(declaredExceptions, s);
+			}
 		}
+		
 		public Advice reify(Member signature, World world) {
-			return world.concreteAdvice(kind, pointcut, signature, extraArgumentFlags, start, end, sourceContext);
+			return world.concreteAdvice(this, pointcut, signature);
 		}
 		
 		public String toString() {
 			return "AdviceAttribute(" + kind + ", " + pointcut + ", " + 
-						extraArgumentFlags + ", " + start+")";
+						extraParameterFlags + ", " + start+")";
 		}
 		
-		public int getExtraArgumentFlags() {
-			return extraArgumentFlags;
+		public int getExtraParameterFlags() {
+			return extraParameterFlags;
 		}
 
 		public AdviceKind getKind() {
@@ -302,6 +352,34 @@ public abstract class AjAttribute {
 
 		public Pointcut getPointcut() {
 			return pointcut;
+		}
+
+		public TypeX[] getDeclaredExceptions() {
+			return declaredExceptions;
+		}
+
+		public boolean[] getFormalsUnchangedToProceed() {
+			return formalsUnchangedToProceed;
+		}
+
+		public ResolvedMember[] getProceedCallSignatures() {
+			return proceedCallSignatures;
+		}
+
+		public boolean isProceedInInners() {
+			return proceedInInners;
+		}
+
+		public int getEnd() {
+			return end;
+		}
+
+		public ISourceContext getSourceContext() {
+			return sourceContext;
+		}
+
+		public int getStart() {
+			return start;
 		}
 
 	}
@@ -339,10 +417,7 @@ public abstract class AjAttribute {
 			this.accessedMembers = accessedMembers;
 		}
 		public void write(DataOutputStream s) throws IOException {
-			s.writeInt(accessedMembers.length);
-			for (int i = 0, len = accessedMembers.length; i < len; i++) {
-				accessedMembers[i].write(s);
-			}
+			ResolvedMember.writeArray(accessedMembers, s);
 		}		
 		
 		public ResolvedMember[] getAccessedMembers() {
@@ -350,12 +425,7 @@ public abstract class AjAttribute {
 		}
 
 		public static PrivilegedAttribute read(DataInputStream s, ISourceContext context) throws IOException {
-			int len = s.readInt();
-			ResolvedMember[] members = new ResolvedMember[len];
-			for (int i=0; i < len; i++) {
-				members[i] = ResolvedMember.readResolvedMember(s, context);
-			}
-			return new PrivilegedAttribute(members);
+			return new PrivilegedAttribute(ResolvedMember.readResolvedMemberArray(s, context));
 		}
 	}	
 	

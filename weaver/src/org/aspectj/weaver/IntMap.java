@@ -54,7 +54,7 @@ public class IntMap {
 	}
 	
 	public Member getAdviceSignature() {
-		if (enclosingAdvice instanceof Advice) return ((Advice)enclosingAdvice).signature;
+		if (enclosingAdvice instanceof Advice) return ((Advice)enclosingAdvice).getSignature();
 		else return null;
 	}
 	

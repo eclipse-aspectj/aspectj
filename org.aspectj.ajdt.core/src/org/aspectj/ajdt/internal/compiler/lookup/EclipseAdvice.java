@@ -19,14 +19,9 @@ import org.aspectj.weaver.patterns.Pointcut;
 
 
 public class EclipseAdvice extends Advice {
-	public EclipseAdvice(
-		AdviceKind kind,
-		Pointcut pointcut,
-		Member signature,
-		int extraParameterFlags,
-		int start, int end, ISourceContext context) {
+	public EclipseAdvice(AjAttribute.AdviceAttribute attribute, Pointcut pointcut, Member signature) {
 			
-		super(kind, pointcut, signature, extraParameterFlags, start, end, context);
+		super(attribute, pointcut, signature);
 	}
 
 

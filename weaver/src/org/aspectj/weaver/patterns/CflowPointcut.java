@@ -55,7 +55,7 @@ public class CflowPointcut extends Pointcut {
 		s.writeByte(Pointcut.CFLOW);
 		entry.write(s);
 		s.writeBoolean(isBelow);
-		FileUtil.writeIntArray(s, freeVars);
+		FileUtil.writeIntArray(freeVars, s);
 		writeLocation(s);
 	}
 	public static Pointcut read(DataInputStream s, ISourceContext context) throws IOException {
