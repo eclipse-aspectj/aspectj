@@ -163,6 +163,10 @@ public class AdviceDeclaration extends MethodDeclaration {
 				
 				AccessForInlineVisitor v = new AccessForInlineVisitor((AspectDeclaration)upperScope.referenceContext, handler);
 				this.traverse(v, (ClassScope) null);
+				
+				// ??? if we found a construct that we can't inline, set
+				//     proceedInInners so that we won't try to inline this body
+				if (!v.isInlinable) proceedInInners = true;
 			}
 		}
 	}

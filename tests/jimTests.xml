@@ -1,7 +1,17 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 <suite> 
 
-
+    <ajc-test dir="bugs/interSpecials" title="IllegalAccessError while accessing introduced variable / 1.1rc1"
+      pr="36110">
+        <compile files="p1/C.java,p2/A1.java"/>
+        <run class="p2.A1"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs/interSpecials" title="testing that assert works like .class"
+      pr="36110">
+        <compile files="p1/C.java,p2/A2.java" options="-source14"/>
+        <run class="p2.A2" vm="1.4"/>
+    </ajc-test>
 
     <!--
   

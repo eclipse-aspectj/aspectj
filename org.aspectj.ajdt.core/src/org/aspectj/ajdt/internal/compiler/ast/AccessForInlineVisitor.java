@@ -23,6 +23,8 @@ import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.ResolvedMember;
 import org.eclipse.jdt.internal.compiler.AbstractSyntaxTreeVisitorAdapter;
 import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
+import org.eclipse.jdt.internal.compiler.ast.AssertStatement;
+import org.eclipse.jdt.internal.compiler.ast.ClassLiteralAccess;
 import org.eclipse.jdt.internal.compiler.ast.FieldReference;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
@@ -56,6 +58,10 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 	PrivilegedHandler handler;
 	AspectDeclaration inAspect;
 	EclipseFactory world; // alias for inAspect.world
+	
+	//	set to true for ClassLiteralAccess and AssertStatement
+	// ??? A better answer would be to transform these into inlinable forms
+	public boolean isInlinable = true;  
 	
 	public AccessForInlineVisitor(AspectDeclaration inAspect, PrivilegedHandler handler) {
 		this.inAspect = inAspect;
@@ -187,4 +193,18 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 			return;
 		}
 	}
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.internal.compiler.IAbstractSyntaxTreeVisitor#endVisit(org.eclipse.jdt.internal.compiler.ast.AssertStatement, org.eclipse.jdt.internal.compiler.lookup.BlockScope)
+	 */
+	public void endVisit(AssertStatement assertStatement, BlockScope scope) {
+		isInlinable = false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.internal.compiler.IAbstractSyntaxTreeVisitor#endVisit(org.eclipse.jdt.internal.compiler.ast.ClassLiteralAccess, org.eclipse.jdt.internal.compiler.lookup.BlockScope)
+	 */
+	public void endVisit(ClassLiteralAccess classLiteral, BlockScope scope) {
+		isInlinable = false;
+	}
+
 }
