@@ -16,6 +16,7 @@
    <!ATTLIST compile staging CDATA #IMPLIED >
    <!ATTLIST compile files CDATA #IMPLIED >
    <!ATTLIST compile reuseCompiler CDATA #IMPLIED >
+   <!ATTLIST compile includeClassesDir CDATA #IMPLIED >
    <!ATTLIST compile argfiles CDATA #IMPLIED >
    <!ATTLIST compile aspectpath CDATA #IMPLIED >
    <!ATTLIST compile classpath CDATA #IMPLIED > <!-- XXX unused - calculated -->
