@@ -68,6 +68,26 @@ public class ExactTypePattern extends TypePattern {
 		this.type = type;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.TypePattern#couldEverMatchSameTypesAs(org.aspectj.weaver.patterns.TypePattern)
+	 */
+	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
+		if (super.couldEverMatchSameTypesAs(other)) return true;
+		// false is necessary but not sufficient
+		TypeX otherType = other.getExactType();
+		if (otherType != ResolvedTypeX.MISSING) {
+			return type.equals(otherType);
+		} 
+		if (other instanceof WildTypePattern) {
+			WildTypePattern owtp = (WildTypePattern) other;
+			String yourSimpleNamePrefix = owtp.namePatterns[0].maybeGetSimpleName();
+			if (yourSimpleNamePrefix != null) {
+				return (type.getName().startsWith(yourSimpleNamePrefix));
+			}
+		}
+		return true;
+	}
+	
 	protected boolean matchesExactly(ResolvedTypeX matchType) {
 		return this.type.equals(matchType);
 	}

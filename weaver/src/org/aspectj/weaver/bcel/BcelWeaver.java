@@ -72,11 +72,13 @@ import org.aspectj.weaver.patterns.ConcreteCflowPointcut;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.FastMatchInfo;
 import org.aspectj.weaver.patterns.IfPointcut;
+import org.aspectj.weaver.patterns.KindedPointcut;
 import org.aspectj.weaver.patterns.NameBindingPointcut;
 import org.aspectj.weaver.patterns.NotPointcut;
 import org.aspectj.weaver.patterns.OrPointcut;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.PointcutRewriter;
+import org.aspectj.weaver.patterns.WithinPointcut;
 
 
 public class BcelWeaver implements IWeaver {
@@ -480,7 +482,7 @@ public class BcelWeaver implements IWeaver {
     	}
 		Set kindsInCommon = left.couldMatchKinds();
 		kindsInCommon.retainAll(right.couldMatchKinds());
-		if (!kindsInCommon.isEmpty()) {
+		if (!kindsInCommon.isEmpty() && couldEverMatchSameJoinPoints(left,right)) {
 			// we know that every branch binds every formal, so there is no ambiguity
 			// if each branch binds it in exactly the same way...
 			List ambiguousNames = new ArrayList();
@@ -559,6 +561,41 @@ public class BcelWeaver implements IWeaver {
 				}				
 			}
     	}
+    }
+    
+    
+    // By returning false from this method, we are allowing binding of the same
+    // variable on either side of an or.
+    // Be conservative :- have to consider overriding, varargs, autoboxing,
+    // the effects of itds (on within for example), interfaces, the fact that
+    // join points can have multiple signatures and so on.
+    private boolean couldEverMatchSameJoinPoints(Pointcut left, Pointcut right) {
+    	if ((left instanceof OrPointcut) || (right instanceof OrPointcut)) return true;
+    	// look for withins
+    	WithinPointcut leftWithin = (WithinPointcut) findFirstPointcutIn(left,WithinPointcut.class);
+    	WithinPointcut rightWithin = (WithinPointcut) findFirstPointcutIn(right,WithinPointcut.class);
+    	if ((leftWithin != null) && (rightWithin != null)) {
+    		if (!leftWithin.couldEverMatchSameJoinPointsAs(rightWithin)) return false;
+    	}
+    	// look for kinded
+    	KindedPointcut leftKind = (KindedPointcut) findFirstPointcutIn(left,KindedPointcut.class);
+    	KindedPointcut rightKind = (KindedPointcut) findFirstPointcutIn(right,KindedPointcut.class);
+    	if ((leftKind != null) && (rightKind != null)) {
+    		if (!leftKind.couldEverMatchSameJoinPointsAs(rightKind)) return false;
+    	}
+    	return true;
+    }
+    
+    private Pointcut findFirstPointcutIn(Pointcut toSearch, Class toLookFor) {
+    	if (toSearch instanceof NotPointcut) return null;
+    	if (toLookFor.isInstance(toSearch)) return toSearch;
+    	if (toSearch instanceof AndPointcut) {
+    		AndPointcut apc = (AndPointcut) toSearch;
+    		Pointcut left = findFirstPointcutIn(apc.getLeft(),toLookFor);
+    		if (left != null) return left;
+    		return findFirstPointcutIn(apc.getRight(),toLookFor);
+    	}
+    	return null;
     }
     
     /**

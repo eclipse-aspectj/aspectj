@@ -39,6 +39,13 @@ public class OrTypePattern extends TypePattern {
 		setLocation(left.getSourceContext(), left.getStart(), right.getEnd());
 	}
 
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.TypePattern#couldEverMatchSameTypesAs(org.aspectj.weaver.patterns.TypePattern)
+	 */
+	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
+		return true; // don't dive at the moment...
+	}
+	
 	public FuzzyBoolean matchesInstanceof(ResolvedTypeX type) {
 		return left.matchesInstanceof(type).or(right.matchesInstanceof(type));
 	}

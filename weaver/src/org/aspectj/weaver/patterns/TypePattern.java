@@ -67,6 +67,14 @@ public abstract class TypePattern extends PatternNode {
 		this.annotationPattern = annPatt;
 	}
 	
+	// answer conservatively...
+	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
+		if (this.includeSubtypes || other.includeSubtypes) return true;
+		if (this.annotationPattern != AnnotationTypePattern.ANY) return true;
+		if (other.annotationPattern != AnnotationTypePattern.ANY) return true;
+		return false;
+	}
+	
 	//XXX non-final for Not, && and ||
 	public boolean matchesStatically(ResolvedTypeX type) {
 		if (includeSubtypes) {
@@ -284,6 +292,12 @@ class EllipsisTypePattern extends TypePattern {
 		super(false,false);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.TypePattern#couldEverMatchSameTypesAs(org.aspectj.weaver.patterns.TypePattern)
+	 */
+	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
+		return true;
+	}
 	/**
 	 * @see org.aspectj.weaver.patterns.TypePattern#matchesExactly(IType)
 	 */
@@ -345,6 +359,12 @@ class AnyTypePattern extends TypePattern {
 		super(false,false);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.TypePattern#couldEverMatchSameTypesAs(org.aspectj.weaver.patterns.TypePattern)
+	 */
+	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
+		return true;
+	}
 	/**
 	 * @see org.aspectj.weaver.patterns.TypePattern#matchesExactly(IType)
 	 */
@@ -415,6 +435,13 @@ class NoTypePattern extends TypePattern {
 		super(false,false);
 	}
 
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.TypePattern#couldEverMatchSameTypesAs(org.aspectj.weaver.patterns.TypePattern)
+	 */
+	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
+		return false;
+	}
 	/**
 	 * @see org.aspectj.weaver.patterns.TypePattern#matchesExactly(IType)
 	 */

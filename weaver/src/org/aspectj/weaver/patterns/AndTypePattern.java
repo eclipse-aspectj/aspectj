@@ -39,6 +39,9 @@ public class AndTypePattern extends TypePattern {
 		setLocation(left.getSourceContext(), left.getStart(), right.getEnd());
 	}
 
+	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
+		return true; // don't dive into ands yet....
+	}
 	public FuzzyBoolean matchesInstanceof(ResolvedTypeX type) {
 		return left.matchesInstanceof(type).and(right.matchesInstanceof(type));
 	}

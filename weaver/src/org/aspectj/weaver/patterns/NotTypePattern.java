@@ -39,6 +39,13 @@ public class NotTypePattern extends TypePattern {
 		setLocation(pattern.getSourceContext(), pattern.getStart(), pattern.getEnd());
 	}
 
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.TypePattern#couldEverMatchSameTypesAs(org.aspectj.weaver.patterns.TypePattern)
+	 */
+	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
+		return true;
+	}
+	
 	public FuzzyBoolean matchesInstanceof(ResolvedTypeX type) {
 		return pattern.matchesInstanceof(type).not();
 	}

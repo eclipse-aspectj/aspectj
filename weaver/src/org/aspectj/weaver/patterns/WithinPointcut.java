@@ -136,6 +136,10 @@ public class WithinPointcut extends Pointcut {
 		typePattern.postRead(enclosingType);
 	}
 
+	public boolean couldEverMatchSameJoinPointsAs(WithinPointcut other) {
+		return typePattern.couldEverMatchSameTypesAs(other.typePattern);
+	}
+	
 	public boolean equals(Object other) {
 		if (!(other instanceof WithinPointcut)) return false;
 		WithinPointcut o = (WithinPointcut)other;

@@ -65,6 +65,30 @@ public class WildTypePattern extends TypePattern {
 		this.isVarArgs = isVarArg;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.TypePattern#couldEverMatchSameTypesAs(org.aspectj.weaver.patterns.TypePattern)
+	 */
+	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
+		if (super.couldEverMatchSameTypesAs(other)) return true;
+		// false is necessary but not sufficient
+		TypeX otherType = other.getExactType();
+		if (otherType != ResolvedTypeX.MISSING) {
+			if (namePatterns.length > 0) {
+				if (!namePatterns[0].matches(otherType.getName())) return false;
+			}
+		} 
+		if (other instanceof WildTypePattern) {
+			WildTypePattern owtp = (WildTypePattern) other;
+			String mySimpleName = namePatterns[0].maybeGetSimpleName();
+			String yourSimpleName = owtp.namePatterns[0].maybeGetSimpleName();
+			if (mySimpleName != null && yourSimpleName != null) {
+				return (mySimpleName.startsWith(yourSimpleName) ||
+						yourSimpleName.startsWith(mySimpleName));
+			}
+		}
+		return true;
+	}
+	
 	//XXX inefficient implementation
 	public static char[][] splitNames(String s) {
 		List ret = new ArrayList();

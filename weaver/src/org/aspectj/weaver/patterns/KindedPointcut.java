@@ -67,6 +67,26 @@ public class KindedPointcut extends Pointcut {
 		return matchKinds;
 	}
 	
+	public boolean couldEverMatchSameJoinPointsAs(KindedPointcut other) {
+		if (this.kind != other.kind) return false;
+		String myName = signature.getName().maybeGetSimpleName();
+		String yourName = other.signature.getName().maybeGetSimpleName();
+		if (myName != null && yourName != null) {
+			if ( !myName.equals(yourName)) {
+				return false;
+			}
+		}
+		if (signature.getParameterTypes().ellipsisCount == 0) {
+			if (other.signature.getParameterTypes().ellipsisCount == 0) {
+				if (signature.getParameterTypes().getTypePatterns().length !=
+					other.signature.getParameterTypes().getTypePatterns().length) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
     public FuzzyBoolean fastMatch(FastMatchInfo info) {
     	if (info.getKind() != null) {
 			if (info.getKind() != kind) return FuzzyBoolean.NO;
