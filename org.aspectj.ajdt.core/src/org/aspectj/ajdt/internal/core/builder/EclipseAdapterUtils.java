@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     PARC     initial implementation 
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.core.builder;
