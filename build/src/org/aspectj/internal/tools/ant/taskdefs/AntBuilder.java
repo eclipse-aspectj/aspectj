@@ -241,6 +241,32 @@ public class AntBuilder extends Builder {
         
         // -- classpath
         Path classpath = new Path(project);
+        boolean hasLibraries = setupClasspath(module, classpath);
+        // need to add system classes??
+        boolean inEclipse = true; // XXX detect, fork only in eclipse
+        if (hasLibraries && inEclipse) {
+            javac.setFork(true); // XXX otherwise never releases library jars
+        }
+        
+        // -- set output directory
+        classpath.createPathElement().setLocation(classesDir);
+        javac.setClasspath(classpath);
+        // misc
+        javac.setDebug(true);
+        // compile
+        try {
+            return executeTask(javac);
+        } catch (BuildException e) {
+            String args = "" + Arrays.asList(javac.getCurrentCompilerArgs());
+            errors.add("BuildException compiling " + module.toLongString() + args 
+                + ": " + Util.renderException(e));
+            return false;
+        } finally {
+            javac.init(); // be nice to let go of classpath libraries...
+        }
+    }
+    
+    public boolean setupClasspath(Module module, Path classpath) { // XXX fix test access
         boolean hasLibraries = false;
         // required libraries
         for (Iterator iter = module.getLibJars().iterator(); iter.hasNext();) {
@@ -265,28 +291,7 @@ public class AntBuilder extends Builder {
                 classpath.createPathElement().setLocation((File) iterator.next());
             }
         }
-        // need to add system classes??
-        boolean inEclipse = true; // XXX detect, fork only in eclipse
-        if (hasLibraries && inEclipse) {
-            javac.setFork(true); // XXX otherwise never releases library jars
-        }
-        
-        // -- set output directory
-        classpath.createPathElement().setLocation(classesDir);
-        javac.setClasspath(classpath);
-        // misc
-        javac.setDebug(true);
-        // compile
-        try {
-            return executeTask(javac);
-        } catch (BuildException e) {
-            String args = "" + Arrays.asList(javac.getCurrentCompilerArgs());
-            errors.add("BuildException compiling " + module.toLongString() + args 
-                + ": " + Util.renderException(e));
-            return false;
-        } finally {
-            javac.init(); // be nice to let go of classpath libraries...
-        }
+        return hasLibraries;
     }
     
     /**
