@@ -24,6 +24,7 @@ import org.aspectj.weaver.Checker;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
@@ -69,16 +70,26 @@ public class KindedPointcut extends Pointcut {
 
             if(kind == Shadow.MethodCall) {
                 warnOnConfusingSig(shadow);
-             	int shadowModifiers = shadow.getSignature().getModifiers(shadow.getIWorld());
-			    if (ResolvedTypeX.hasBridgeModifier(shadowModifiers)) {
-				  shadow.getIWorld().getLint().noJoinpointsForBridgeMethods.signal(new String[]{},getSourceLocation(),
-						new ISourceLocation[]{shadow.getSourceLocation()});
-			    }
+                warnOnBridgeMethod(shadow);
             }
             return FuzzyBoolean.NO; 
         }
 
 		return FuzzyBoolean.YES;
+	}
+	
+	
+	private void warnOnBridgeMethod(Shadow shadow) {
+		if (shadow.getIWorld().getLint().noJoinpointsForBridgeMethods.isEnabled()) {
+			ResolvedMember rm = shadow.getSignature().resolve(shadow.getIWorld());
+			if (rm!=null) {
+				int shadowModifiers = shadow.getSignature().getModifiers(shadow.getIWorld());
+				if (ResolvedTypeX.hasBridgeModifier(shadowModifiers)) {
+					shadow.getIWorld().getLint().noJoinpointsForBridgeMethods.signal(new String[]{},getSourceLocation(),
+						new ISourceLocation[]{shadow.getSourceLocation()});
+				}
+			}
+		}
 	}
 	
 	public FuzzyBoolean match(JoinPoint.StaticPart jpsp) {
@@ -111,6 +122,9 @@ public class KindedPointcut extends Pointcut {
 	}
 	
 	private void warnOnConfusingSig(Shadow shadow) {
+		// Don't do all this processing if we don't need to !
+		if (!shadow.getIWorld().getLint().unmatchedSuperTypeInCall.isEnabled()) return;
+		
         // no warnings for declare error/warning
         if (munger instanceof Checker) return;
         
