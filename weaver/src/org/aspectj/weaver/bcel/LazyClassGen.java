@@ -452,12 +452,17 @@ public final class LazyClassGen {
     
     public void addInterface(TypeX typeX, ISourceLocation sourceLocation) {
     	myGen.addInterface(typeX.getName());
-		warnOnAddedInterface(typeX.getName(),sourceLocation);
+        if (!typeX.equals(TypeX.SERIALIZABLE)) 
+		  warnOnAddedInterface(typeX.getName(),sourceLocation);
     }
     
 	public void setSuperClass(TypeX typeX) {
 		myGen.setSuperclassName(typeX.getName());
 	 }
+    
+    public String getSuperClassname() {
+        return myGen.getSuperclassName();   
+    }
 
 
     // non-recursive, may be a bug, ha ha.
@@ -817,6 +822,10 @@ public final class LazyClassGen {
 	public boolean isInterface() {
 		return myGen.isInterface();
 	}
+    
+    public boolean isAbstract() {
+      return myGen.isAbstract();   
+    }
 
 	public LazyMethodGen getLazyMethodGen(Member m) {
 		return getLazyMethodGen(m.getName(), m.getSignature());
