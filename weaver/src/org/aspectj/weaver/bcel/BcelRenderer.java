@@ -17,7 +17,6 @@ import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
-import org.aspectj.apache.bcel.generic.LDC_W;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.ReferenceType;
 import org.aspectj.apache.bcel.generic.Type;
