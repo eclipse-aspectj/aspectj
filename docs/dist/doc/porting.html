@@ -136,6 +136,14 @@ where it cannot be determined at compile time whether the type of the receiver w
 the <code>target</code> expression. Note that <code>target</code> cannot be used in <code>declare</code> statements.
 </p>
 
+<p><b>Use of non-statically determinable pointcut expressions in declare statements</b> has always been forbidden, 
+but prior to 1.2 the AspectJ compiler did not raise an error if they were used. The AspectJ Language
+Semantics appendix states that <code>cflow, cflowbelow, this, target, args</code> and <code>if</code> pointcut
+designators cannot be used directly or indirectly (through a user-defined pointcut) inside of a <code>declare</code>
+statment. When moving code from 1.1 to 1.2, additional errors may be raised due to the stricter policing of this
+rule. The solution is to recode the declare statement avoiding pointcut expressions that may require a run-time test.
+</p>
+
 <h2><a name="pre-1.1">Porting pre-1.1 code to AspectJ 1.1</a></h2>
 <a href="README-11.html">README-11.html</a> contains a discussion 
 of the language changes from 1.0 to 1.1.  The high points:

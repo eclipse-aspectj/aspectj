@@ -239,7 +239,7 @@ Some of the more significant bug fixes and enhancements include:
      </li>
      <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=42574">42574</a>
      -extdirs opion now recognises .zip files as well as .jar. 
-     </li>
+     </li> 
      <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=48091">48091</a>
      New option -XlazyTjp defers creation of JoinPoint objects until just before
      calling the advice body that requires them. This allows the cost of creating
@@ -263,6 +263,22 @@ Some of the more significant bug fixes and enhancements include:
      <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=55134">55134</a>
      Incremental compilation now deletes any additional class files generated during
      the weave phase when the class file from whence they came is deleted. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=54621">54621</a>
+     Incremental compilation will now detect changes (add, delete, modify) to class
+     files in directories on the inpath and will include them in incremental compilation.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=54621">54621</a>
+     Incremental compilation will now detect changes to jars on the inpath (and injars),
+     and trigger a full build if a jar is modified.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=54622">54622</a>
+     Incremental compilation will now detect changes to resources on the inpath.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=54618">54618</a>
+     Incremental compilation will now detect changes to any of the paths affecting
+     compilation, and triggers a full build if there has been any change since the
+     last build.
      </li>
      <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=50200">50200</a> 
      The aspectjrt.jar manifest file now has  the correct (upper) case.
