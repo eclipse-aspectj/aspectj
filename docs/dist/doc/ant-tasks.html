@@ -59,7 +59,7 @@ the "resource" attribute to specify the default names:
       resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties"&gt;
 </pre>
 The current resource file retains the name "ajc" for the Ajc10 task, 
-using "iajc" for the AspectJ 1.1 task.  
+and uses "iajc" for the AspectJ 1.1 task.  
 This may change in the final release of AspectJ 1.1. <!-- XXX -->
 </p> 
 <p>For more information on using Ant, please refer to 
@@ -73,7 +73,7 @@ This should permit those with existing build scripts using
 the Ajc Ant task to continue using the same scripts 
 when compiling with 1.1.  
 
-This will list any use of options no longer supported
+This will list any use of options no longer supported in 1.1
 (e.g., fork, lenient, strict, workingdir, preprocess, usejavac,...),
 and does not provide access to the new features of AspectJ 1.1.
 (Developers using AspectJ 1.1 only should
@@ -127,14 +127,14 @@ exists, the build will complete.  Messages are printed as usual.
 
   &lt;target name="compile" &gt;
     &lt;mkdir dir="dest" /&gt;
-    &lt;inc-ajc destdir="dest" 
+    &lt;iajc destdir="dest" 
             tagfile="tagfile.txt" 
             sourceroots="src${path.separator}testsrc" &gt;
       &lt;!-- declare classes needed to compile the target files --&gt;
       &lt;classpath&gt;
         &lt;pathelement location="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/&gt;
       &lt;/classpath&gt;
-    &lt;/inc-ajc&gt;
+    &lt;/iajc&gt;
   &lt;/target&gt;
 &lt;/project&gt;
 </pre>
@@ -192,8 +192,7 @@ directly on the command line.
 
 <li>If the problem occurs on the command line also, then the problem is 
 not in the task.  
-(It may be in the tools; please send bug reports, but only if the code 
-is pure-Java.) </li>
+(It may be in the tools; please send bug reports.) </li>
 
 
 <li>If the problem does not occur on the command line,
@@ -205,20 +204,22 @@ from Ant, then please send a report (including your build file, if possible).</l
 
 <p><b>Known Problems</b>
 <br>For the most up-to-date information on known problems, see the
-  <a href="http://dev.eclipse.org">bug database</a>.
-  <!-- 
-  for 
-  <a href="http://dev.eclipse.org/compiler">compiler bugs</a>
-  or <a href="http://dev.eclipse.org/ant-support">task bugs</a>.
-  -->
+  <a href="http://dev.eclipse.org/bugs">bug database</a>
+  for unresolved
+  <a href="http://dev.eclipse.org/bugs/buglist.cgi?&product=AspectJ&component=Compiler&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED">compiler bugs</a>
+  or
+  <a href="http://dev.eclipse.org/bugs/buglist.cgi?&product=AspectJ&component=Ant&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED">taskdef bugs</a>.
+
 <li><u>Memory and forking</u>:
 Users email most often about the ajc task running out of memory.  This is
 not a problem with the task; some compiles take a lot of memory,
-often more than the same compiles using javac.  
+often more than similar compiles using javac.  
+
 <u>Forking is not supported in this release</u>, so the only solution is to 
 increase the memory available to Ant (see the Ant documentation, searching for ANT_OPTS,
 the variable they use in their scripts to pass VM options, e.g., ANT_OPTS=-Xmx128m). 
 </li>
+
 <li><u>Messages suppressed</u>: In the incremental task,
 messages from the compiler are printed but not segregated.
 </li>
@@ -228,7 +229,7 @@ You can send email to <a href="mailto:aspectj-users@dev.eclipse.org">
 mailto:aspectj-users@dev.eclipse.org</a>.
 (Do join the list to participate!)  We also welcome any bug reports; you can 
 submit them to the bug database at
-<a href="http://dev.eclipse.org">http://dev.eclipse.org</a>
+<a href="http://dev.eclipse.org/bugs">http://dev.eclipse.org/bugs</a>
 using the <code>AspectJ</code> product and <code>Ant</code> component.
 </body>
 
