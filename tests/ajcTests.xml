@@ -5493,6 +5493,7 @@
         <compile files="DeclareSoftCf.java" options="-Xlint:warning">
 		  <message kind="warning" line="28"/>
 		  <message kind="error" line="29"/>
+		  <message kind="warning"/>
         </compile>
     </ajc-test>
     
@@ -7235,6 +7236,168 @@
          
         </compile>
     </ajc-test>
+     
+    <ajc-test dir="bugs/serialVersionUID"
+		title="SUID: Before execution advice" pr="41181">
+		<compile files="Test.java, Util.java"/>
+        <run class="Test"/>
+		<compile files="Test.java, Util.java, BeforeExecutionAdvice.aj" options="-Xlint:warning"/>
+        <run class="Util"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs/serialVersionUID"
+		title="SUID: Around execution advice" comment="OK because around_body private" pr="41181">
+		<compile files="Test.java, Util.java"/>
+        <run class="Test"/>
+		<compile files="Test.java, Util.java, AroundExecutionAdvice.aj" options="-Xlint:warning"/>
+        <run class="Util"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs/serialVersionUID" 
+	    title="SUID: Around closure execution advice (-Xlint:ignore)" comment="OK because ignoring warnings"
+		pr="41181">
+		<compile files="Test.java, Util.java"/>
+        <run class="Test"/>
+		<compile files="Test.java, Util.java, AroundClosureExecutionAdvice.aj" options="-Xlint:ignore"/>
+        <run class="Util" options="-fail"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs/serialVersionUID"
+		title="SUID: Around closure execution advice" comment="Warning because around_body non-private"
+		pr="41181">
+		<compile files="Test.java, Util.java"/>
+        <run class="Test"/>
+		<compile files="Test.java, Util.java, AroundClosureExecutionAdvice.aj"
+		  xlintfile="Xlint.properties">
+            <message kind="warning" line="9"/>
+		</compile>
+        <run class="Util" options="-fail"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs/serialVersionUID"
+		title="SUID: thisJoinPoint" comment="Warning because of introduced clinit"	pr="41181">
+		<compile files="Test.java, Util.java"/>
+        <run class="Test"/>
+		<compile
+			files="Test.java, Util.java, TJP.aj" options="-Xlint:warning">
+            <message kind="warning" line="6"/>
+            <message kind="warning" line="13"/>
+            <message kind="warning" line="17"/>
+            <message kind="warning" line="24"/>
+            <message kind="warning" line="31"/>
+		</compile>
+        <run class="Util" options="-fail"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs/serialVersionUID"
+		title="SUID: thisJoinPoint with clinit method" comment="OK if tjp private and existing clinit"
+		pr="41181">
+		<compile files="ClinitTest.java, Util.java"/>
+        <run class="ClinitTest"/>
+		<compile files="ClinitTest.java, Util.java, TJP.aj" options="-Xlint:warning"/>
+        <run class="Util" options="-read"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs/serialVersionUID"
+		title="SUID: After returning staticinitialization advice" comment="Warning because of added clinit"
+		pr="41181">
+		<compile files="Test.java, Util.java"/>
+        <run class="Test"/>
+		<compile
+		  files="Test.java, Util.java, AfterReturningStaticinitializationAdvice.aj" options="-Xlint:warning">
+            <message kind="warning" line="6"/>
+		</compile>
+        <run class="Util" options="-fail"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs/serialVersionUID"
+		title="SUID: After returning staticinitialization advice with serialVersionUID field"
+		comment="OK because of serialVersionUID field" pr="41181">
+		<compile files="SuidTest.java, Util.java" />
+        <run class="SuidTest"/>
+		<compile files="SuidTest.java, Util.java, AfterReturningStaticinitializationAdvice.aj" options="-Xlint:warning"/>
+        <run class="Util"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs/serialVersionUID"
+		title="SUID: ITD field" comment="Error because added field may not be initialized" pr="41181">
+		<compile files="Test.java, Util.java"/>
+        <run class="Test"/>
+		<compile files="Test.java, Util.java, ITDField.aj" options="-Xlint:error">
+            <message kind="error" line="0"/>
+		</compile>
+	</ajc-test>
+
+	<ajc-test dir="bugs/serialVersionUID"
+		title="SUID: ITD method" comment="Warning because of added method" pr="41181">
+		<compile files="Test.java, Util.java" />
+        <run class="Test"/>
+		<compile files="Test.java, Util.java, ITDMethod.aj" options="-Xlint:warning">
+            <message kind="warning" line="3"/>
+		</compile>
+        <run class="Util" options="-fail"/>
+	</ajc-test>
+    
+	<ajc-test dir="bugs/serialVersionUID"
+		title="SUID: Declare extends" comment="OK" pr="41181">
+		<compile files="Test.java, Util.java" />
+        <run class="Test"/>
+		<compile files="Test.java, Util.java, DeclareExtends.aj" options="-Xlint:warning"/>
+        <run class="Util"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs/serialVersionUID"
+		title="SUID: Declare implements (compile)" comment="Warning because of added interface" pr="41181">
+		<compile files="Test.java, Util.java" />
+        <run class="Test"/>
+		<compile files="Test.java, Util.java, DeclareImplements.aj" options="-Xlint:warning">
+            <message kind="warning"/>
+		</compile>
+        <run class="Util" options="-fail"/>
+	</ajc-test>
+ 
+ 	<ajc-test dir="bugs/serialVersionUID"
+		title="SUID: Declare implements non-Serializable (compile)" comment="OK because not Serializable"
+		pr="41181">
+		<compile files="NonSerializableTest.java, DeclareImplements.aj" options="-Xlint:warning"/>
+	</ajc-test>
+ 
+ 	<ajc-test dir="bugs/serialVersionUID"
+		title="SUID: Declare implements Serializable (compile)" comment="OK because adding Serializable"
+		pr="41181">
+		<compile files="NonSerializableTest.java, DeclareImplementsSerializable.aj" options="-Xlint:warning"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs/serialVersionUID"
+		title="SUID: Declare implements (weave)" comment="Warning because of added interface" pr="41181">
+		<compile files="Test.java, Util.java" />
+        <run class="Test"/>
+		<compile files="injar.jar, DeclareImplements.aj" options="-Xlint:warning">
+            <message kind="warning" line="0"/>
+		</compile>
+        <run class="Util" options="-fail"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs/serialVersionUID" title="SUID: Priviliged aspect" pr="41181">
+		<compile files="Test.java, Util.java"/>
+        <run class="Test"/>
+		<compile files="Test.java, Util.java, PrivilegedAspect.aj" options="-Xlint:warning">
+            <message kind="warning" line="1"/>
+		</compile>
+        <run class="Util" options="-fail"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs/serialVersionUID"
+		title="SUID: Perthis aspect"
+		comment="Warning because added of added interface MightHaveAspect. Added field is private transient"
+		pr="41181">
+		<compile files="Test.java, Util.java" />
+        <run class="Test"/>
+		<compile files="Test.java, Util.java, PerThisAspect.aj" options="-Xlint:warning">
+            <message kind="warning" line="0"/>
+		</compile>
+        <run class="Util" options="-fail"/>
+	</ajc-test>
     
    	<ajc-test dir="bugs/fieldsOnInterfaces"
 		pr="52107"
@@ -7267,8 +7430,8 @@
    	 title="fail in compiling aspect with overriding method introduction with different throws clause ">
         <compile files="IntertypeDifferentThrows.java" />
     </ajc-test>
-    
-	<ajc-test dir="new" 
+
+   	<ajc-test dir="new" 
 		comment="in ajc 1.1.1, VerifyError Illegal use of nonvirtual function call"
 		title="super call in anonymous class created in around advice">
         <compile files="SuperClosure.java" />
@@ -7303,8 +7466,8 @@
             <message kind="error" line="6"/> 
         </compile>
     </ajc-test>
-    
-    <ajc-test dir="bugs"  pr="51322"
+
+   <ajc-test dir="bugs"  pr="51322"
     	title="Introduce Unknown Type to class causes Null pointer exception"  >
         <compile files="Pr51322.java"> 
         	<message kind="error" line="5"/>

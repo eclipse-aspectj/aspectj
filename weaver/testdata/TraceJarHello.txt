@@ -44,7 +44,7 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
     method-execution(java.lang.String DynamicHelloWorld.doit(java.lang.String, java.util.List))
     |               INVOKESTATIC MyTrace.aspectOf ()LMyTrace;
     |               ALOAD_0
-    |               INVOKEVIRTUAL Trace.ajc$before$Trace$51 (Ljava/lang/Object;)V
+    |               INVOKEVIRTUAL Trace.ajc$before$Trace$1$26352be2 (Ljava/lang/Object;)V
     |               ALOAD_0
     |               ALOAD_3
     |               ALOAD 4
@@ -58,12 +58,12 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
     |               INVOKESTATIC MyTrace.aspectOf ()LMyTrace;
     |               ALOAD_0
     |               ALOAD 5
-    |               INVOKEVIRTUAL MyTrace.ajc$afterReturning$MyTrace$6e (Ljava/lang/Object;Ljava/lang/Object;)V
+    |               INVOKEVIRTUAL MyTrace.ajc$afterReturning$MyTrace$1$2b31dfa3 (Ljava/lang/Object;Ljava/lang/Object;)V
     |               ARETURN
     method-execution(java.lang.String DynamicHelloWorld.doit(java.lang.String, java.util.List))
   end String doit(String, java.util.List)
 
-  static final String doit_aroundBody0(DynamicHelloWorld, String, java.util.List):
+  private static final String doit_aroundBody0(DynamicHelloWorld, String, java.util.List):
                     ALOAD_2   (line 21)
                     ALOAD_1
                     INVOKEINTERFACE java.util.List.add (Ljava/lang/Object;)Z
@@ -71,9 +71,9 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
                     ALOAD_2   (line 22)
                     INVOKEVIRTUAL java.lang.Object.toString ()Ljava/lang/String;
                     ARETURN
-  end static final String doit_aroundBody0(DynamicHelloWorld, String, java.util.List)
+  end private static final String doit_aroundBody0(DynamicHelloWorld, String, java.util.List)
 
-  static final Object doit_aroundBody1$advice(DynamicHelloWorld, String, java.util.List, Trace, Object, org.aspectj.runtime.internal.AroundClosure):
+  private static final Object doit_aroundBody1$advice(DynamicHelloWorld, String, java.util.List, Trace, Object, org.aspectj.runtime.internal.AroundClosure):
                     GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 17)
                     NEW java.lang.StringBuffer
                     DUP
@@ -104,9 +104,9 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
                     INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
                     ALOAD 6   (line 20)
                     ARETURN
-  end static final Object doit_aroundBody1$advice(DynamicHelloWorld, String, java.util.List, Trace, Object, org.aspectj.runtime.internal.AroundClosure)
+  end private static final Object doit_aroundBody1$advice(DynamicHelloWorld, String, java.util.List, Trace, Object, org.aspectj.runtime.internal.AroundClosure)
 
-  static final String doit_aroundBody2(DynamicHelloWorld, String, java.util.List):
+  private static final String doit_aroundBody2(DynamicHelloWorld, String, java.util.List):
                     ALOAD_0
                     ALOAD_1
                     ALOAD_2
@@ -116,9 +116,9 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
                     INVOKESTATIC DynamicHelloWorld.doit_aroundBody1$advice (LDynamicHelloWorld;Ljava/lang/String;Ljava/util/List;LTrace;Ljava/lang/Object;Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
                     CHECKCAST java.lang.String
                     ARETURN
-  end static final String doit_aroundBody2(DynamicHelloWorld, String, java.util.List)
+  end private static final String doit_aroundBody2(DynamicHelloWorld, String, java.util.List)
 
-  static final Object doit_aroundBody3$advice(DynamicHelloWorld, String, java.util.List, Trace, org.aspectj.runtime.internal.AroundClosure):
+  private static final Object doit_aroundBody3$advice(DynamicHelloWorld, String, java.util.List, Trace, org.aspectj.runtime.internal.AroundClosure):
                     LDC "Hi"   (line 9)
                     ASTORE 5
                     GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 10)
@@ -148,5 +148,5 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
                     INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
                     ALOAD 6   (line 13)
                     ARETURN
-  end static final Object doit_aroundBody3$advice(DynamicHelloWorld, String, java.util.List, Trace, org.aspectj.runtime.internal.AroundClosure)
+  end private static final Object doit_aroundBody3$advice(DynamicHelloWorld, String, java.util.List, Trace, org.aspectj.runtime.internal.AroundClosure)
 end public class DynamicHelloWorld

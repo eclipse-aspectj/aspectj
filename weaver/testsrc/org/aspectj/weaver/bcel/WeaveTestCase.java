@@ -154,7 +154,7 @@ public abstract class WeaveTestCase extends TestCase {
     }
 
     void realCheckClass(LazyClassGen gen, String outDir, String expectedFile) throws IOException {
-    	TestUtil.assertMultiLineStringEquals("classes", 
+    	TestUtil.assertMultiLineStringEquals(expectedFile/*"classes"*/, 
     	             FileUtil.readAsString(new File(TESTDATA_DIR, expectedFile)),
     	             gen.toLongString());
     }
