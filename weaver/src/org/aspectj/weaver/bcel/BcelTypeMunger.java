@@ -223,13 +223,15 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	
 	
 	private LazyMethodGen makeMethodGen(LazyClassGen gen, ResolvedMember member) {
-		return new LazyMethodGen(
+		LazyMethodGen ret = new LazyMethodGen(
 			member.getModifiers(),
 			BcelWorld.makeBcelType(member.getReturnType()),
 			member.getName(),
 			BcelWorld.makeBcelTypes(member.getParameterTypes()),
 			TypeX.getNames(member.getExceptions()),
 			gen);
+		ret.makeSynthetic();
+		return ret;
 	}
 
 

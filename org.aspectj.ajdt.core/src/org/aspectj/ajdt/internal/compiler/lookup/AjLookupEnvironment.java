@@ -160,7 +160,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
 			Collection mungers = 
 				onType.getWeaverState().getTypeMungers(onType);
 				
-			//System.out.println("mungers: " + mungers);
+			//System.out.println(onType + " mungers: " + mungers);
 			for (Iterator i = mungers.iterator(); i.hasNext(); ) {
 				ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
 				EclipseTypeMunger munger = factory.makeEclipseTypeMunger(m);
@@ -235,6 +235,12 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		if (!newParents.isEmpty()) {
 			for (Iterator i = newParents.iterator(); i.hasNext(); ) {
 				ResolvedTypeX parent = (ResolvedTypeX)i.next();
+				if (dangerousInterfaces.containsKey(parent)) {
+					ResolvedTypeX onType = factory.fromEclipse(sourceType);
+					factory.showMessage(IMessage.ERROR, 
+										onType + ": " + dangerousInterfaces.get(parent),
+										onType.getSourceLocation(), null);
+				}
 				addParent(sourceType, parent);
 			}
 		}

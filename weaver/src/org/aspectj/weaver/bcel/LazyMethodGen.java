@@ -30,11 +30,13 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Synthetic;
 import org.apache.bcel.generic.BranchHandle;
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.CPInstruction;
 import org.apache.bcel.generic.ClassGenException;
 import org.apache.bcel.generic.CodeExceptionGen;
+import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
@@ -84,6 +86,8 @@ public final class LazyMethodGen {
     
     private boolean canInline = true;
     private boolean hasExceptionHandlers;
+    
+    private boolean isSynthetic = false;
     
     /**
      * only used by {@link BcelClassWeaver}
@@ -702,6 +706,13 @@ public final class LazyMethodGen {
         for (int i = 0, len = attributes.length; i < len; i++) {
             gen.addAttribute(attributes[i]);
         }
+        
+        if (isSynthetic) {
+			ConstantPoolGen cpg = gen.getConstantPool();
+			int index = cpg.addUtf8("Synthetic");
+			gen.addAttribute(new Synthetic(index, 0, new byte[0], cpg.getConstantPool()));
+        }
+        
         if (hasBody()) {
             packBody(gen);
             gen.setMaxLocals();
@@ -711,6 +722,10 @@ public final class LazyMethodGen {
         }
         return gen;
     }
+    
+    public void makeSynthetic() {
+    	isSynthetic = true;
+    }    	
         
     /** fill the newly created method gen with our body, 
      * inspired by InstructionList.copy()

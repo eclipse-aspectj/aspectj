@@ -6667,4 +6667,40 @@
 			</compile>
 		</ajc-test>
 		
+		
+	<ajc-test dir="bugs/moreInterfaceLibrary"
+		pr="41123"
+		title="Weaving failure when using injars (no jars)">
+		<compile
+			files="lib/ExecutionMonitor.aj,model/BusObj.java,model/MonitorBusObj.java">
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs/moreInterfaceLibrary"
+		pr="41123"
+		title="Weaving failure when using injars (on aspectpath)">
+		<compile
+			files="model/BusObj.java,model/MonitorBusObj.java"
+			aspectpath="lib.jar">
+		</compile>
+	</ajc-test>
+
+	<ajc-test dir="bugs/moreInterfaceLibrary"
+		pr="41123"
+		title="Weaving failure when using injars (on classpath)">
+		<compile
+			files="model/BusObj.java,model/MonitorBusObj.java"
+			classpath="lib.jar">
+		    <message kind="error" line="3"/>
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs/moreInterfaceLibrary"
+		pr="41123"
+		title="Weaving failure when using injars (actual injars)">
+		<compile
+			files="model/BusObj.java,model/MonitorBusObj.java,lib.jar">
+		    <message kind="error" line="3"/>
+		</compile>
+	</ajc-test>
 </suite>
