@@ -20,6 +20,11 @@ import org.aspectj.asm.internal.*;
 import org.aspectj.bridge.ISourceLocation;
 
 /**
+ * The Abstract Structure Model (ASM) represents the containment hierarchy and crossccutting
+ * structure map for AspectJ programs.  It is used by IDE views such as the document outline,
+ * and by other tools such as ajdoc to show both AspectJ declarations and crosscutting links,
+ * such as which advice affects which join point shadows.
+ * 
  * @author Mik Kersten
  */
 public class AsmManager {
