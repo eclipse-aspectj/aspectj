@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+    <classpathentry kind="src" path="testsrc"/>
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+    <classpathentry kind="src" path="/ajbrowser"/>
+    <classpathentry kind="src" path="/ajde"/>
+    <classpathentry kind="src" path="/asm"/>
+    <classpathentry kind="src" path="/bridge"/>
+    <classpathentry kind="src" path="/build"/>
+    <classpathentry kind="src" path="/org.aspectj.ajdt.core"/>
+    <classpathentry kind="src" path="/org.eclipse.jdt.core"/>
+    <classpathentry kind="src" path="/runtime"/>
+    <classpathentry kind="src" path="/taskdefs"/>
+    <classpathentry kind="src" path="/testing"/>
+    <classpathentry kind="src" path="/testing-client"/>
+    <classpathentry kind="src" path="/testing-drivers"/>
+    <classpathentry kind="src" path="/testing-util"/>
+    <classpathentry kind="src" path="/util"/>
+    <classpathentry kind="src" path="/weaver"/>
+    <classpathentry kind="lib" path="/lib/junit/junit.jar" sourcepath="/lib/junit/junit-src.jar"/>
+    <classpathentry kind="output" path="bin"/>
+</classpath>
