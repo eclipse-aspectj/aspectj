@@ -61,7 +61,10 @@ public class PointcutDesignator extends AstNode {
 		//System.err.println("resolving: " + this);
 		//Thread.currentThread().dumpStack();
 		//XXX why do we need this test
-		if (pointcut.state == Pointcut.RESOLVED) return true;
+		// AMC added concrete too. Needed because declare declarations concretize their
+		// shadow mungers early.
+		if (pointcut.state == Pointcut.RESOLVED ||
+			pointcut.state == Pointcut.CONCRETE) return true;
 		
 		TypeBinding[] parameters = method.parameters;
 		Argument[] arguments = dec.arguments;
