@@ -598,10 +598,31 @@ public class FileUtil {
         } else {
             result = new File[paths.length];
             for (int i = 0; i < result.length; i++) {
-                result[i] = new File(basedir, paths[i]);
+                result[i] = newFile(basedir, paths[i]);
             }
         }
         return result;
+    }
+    
+    /**
+     * Create a new File, resolving paths ".." and "." specially.
+     * @param dir the File for the parent directory of the file
+     * @param path the path in the parent directory (filename only?)
+     * @return File for the new file.
+     */
+    private static File newFile(File dir, String path) {
+        if (".".equals(path)) {
+            return dir;
+        } else if ("..".equals(path)) {
+            File parentDir = dir.getParentFile();
+            if (null != parentDir) {
+                return parentDir;
+            } else {
+                return new File(dir, "..");
+            }
+        } else {
+            return new File(dir, path);
+        }
     }
 
     /**
@@ -624,8 +645,8 @@ public class FileUtil {
         for (int i = 0; i < paths.length; i++) {
             String path = paths[i];
             LangUtil.throwIaxIfNull(path, "relativePaths-entry");
-            File src = new File(srcDir, relativePaths[i]);
-            File dest = new File(destDir, path);
+            File src = newFile(srcDir, paths[i]);
+            File dest = newFile(destDir, path);
             File destParent = dest.getParentFile();
             if (!destParent.exists()) {
                 destParent.mkdirs();
