@@ -7832,4 +7832,12 @@
         </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs"
+		pr="67774" title="Nullpointer-Exception when defining a withincode() pointcut">
+        <compile files="WithincodeNPE01.java">
+          <!-- there are 3 join points that result in decw match, but 2 are on the same line! -->
+          <message kind="warning" line="2" text="In String ctor"/>
+          <message kind="warning" line="11" text="In String ctor"/>
+        </compile>
+    </ajc-test>
 </suite>

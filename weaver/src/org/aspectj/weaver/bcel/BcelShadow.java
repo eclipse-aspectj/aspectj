@@ -1015,6 +1015,10 @@ public class BcelShadow extends Shadow {
     public Member getEnclosingCodeSignature() {
     	if (getKind().isEnclosingKind()) {
     		return getSignature();
+    	} else if (getKind() == Shadow.PreInitialization) {
+          // PreInit doesn't enclose code but its signature
+          // is correctly the signature of the ctor.
+    	  return getSignature();
     	} else if (enclosingShadow == null) {
     		return getEnclosingMethod().getMemberView();
     	} else {
