@@ -20,7 +20,7 @@ public class pr62642 {
          C.main(null);   
         } catch (ExceptionInInitializerError eiie) {
         	System.err.println("EIIE="+eiie.toString());
-            System.err.println("CAUSE="+eiie.getCause().toString());
+            //System.err.println("CAUSE="+eiie.getCause().toString());
         }
 	}
 }
