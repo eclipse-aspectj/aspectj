@@ -1,5 +1,5 @@
 aspect BadTypeName {
-    static pointcut prints(Foo f): call(void System.out.println(..));
+    pointcut prints(Foo f): call(void System.out.println(..));
 
     Foo x = null;
 
