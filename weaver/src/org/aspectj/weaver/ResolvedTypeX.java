@@ -1107,9 +1107,9 @@ public abstract class ResolvedTypeX extends TypeX {
 		ResolvedMember sig = munger.getSignature();
 		while (existingMembers.hasNext()) {
 			ResolvedMember existingMember = (ResolvedMember)existingMembers.next();
-			
+			//System.err.println("Comparing munger: "+sig+" with member "+existingMember);
 			if (conflictingSignature(existingMember, munger.getSignature())) {
-				//System.err.println("conflict: " + existingMember + " with " + munger);
+				//System.err.println("conflict: existingMember=" + existingMember + "   typeMunger=" + munger);
 				//System.err.println(munger.getSourceLocation() + ", " + munger.getSignature() + ", " + munger.getSignature().getSourceLocation());
 				
 				if (isVisible(existingMember.getModifiers(), this, munger.getAspectType())) {
@@ -1191,7 +1191,15 @@ public abstract class ResolvedTypeX extends TypeX {
 						
 			return false;
 		}
-		
+		if (parent.isStatic() && !child.isStatic()) {
+			world.showMessage(IMessage.ERROR,
+			  child.toString()+" cannot override "+parent.toString()+"; overridden method is static",
+			  child.getSourceLocation(),null);
+		} else if (child.isStatic() && !parent.isStatic()) {
+			world.showMessage(IMessage.ERROR,
+			  child.toString()+" cannot override "+parent.toString()+"; overriding method is static",
+			  child.getSourceLocation(),null);
+		}
 		return true;
 		
 	}

@@ -7776,4 +7776,23 @@
         <message kind="error" line="9" text="can't bind type name 'unknown.Error'"/>
         </compile>
     </ajc-test> 
+    
+    <ajc-test dir="bugs/intertypeOverrides"
+		pr="69459" title="Hiding of Instance Methods by static methods">
+        <compile files="IntertypeOverrides.java">
+          <message kind="error" line="8" text="void Sub.m() cannot override void Super.m(); overriding method is static"/>
+        </compile>
+        <compile files="IntertypeOverrides2.java">
+          <message kind="error" line="8" text="void Sub.m() cannot override void Super.m(); overridden method is static"/>
+        </compile>
+        <compile files="Superclass.java,Subclass.java,Aspect1.java">
+          <message file="Aspect1.java" kind="error" line="2" 
+             text="void Subclass.staticMethod() cannot override void Superclass.staticMethod(); overridden method is static"/>
+        </compile>
+        <compile files="Superclass.java,Subclass.java,Aspect2.java">
+          <message file="Aspect2.java" kind="error" line="2"
+             text="void Subclass.nonstaticMethod() cannot override void Superclass.nonstaticMethod(); overriding method is static"/>
+        </compile>
+    </ajc-test>
+    
 </suite>
