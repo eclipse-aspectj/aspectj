@@ -80,7 +80,7 @@ public class AjState {
 			return false;
 		}
 		
-//		if (newBuildConfig.getOutputJar() != null) return false;
+		if (newBuildConfig.getOutputJar() != null) return false;
 		
 		simpleStrings = new ArrayList();
 		qualifiedStrings = new ArrayList();
