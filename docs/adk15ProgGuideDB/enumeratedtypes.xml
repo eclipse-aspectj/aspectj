@@ -34,7 +34,7 @@
       </para>
       
       <itemizedlist>
-          <listitem>You can use declare parents to change the super type of
+          <listitem>You cannot use declare parents to change the super type of
           an enum.</listitem>
           <listitem>You cannot use declare parents to declare java.lang.Enum as
           the parent of any type.</listitem>
@@ -55,7 +55,7 @@
       version of AspectJ.</para>
       
       <para>If an enum is named explicitly as the target of a
-    declare parents statement, a compilation error will result. If an annotation
+    declare parents statement, a compilation error will result. If an enumerated
     type is matched by a non-explicit type pattern used in a declare parents
     statement it will be ignored (and an XLint warning issued).</para>
   </sect1>
