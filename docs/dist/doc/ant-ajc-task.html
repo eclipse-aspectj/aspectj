@@ -23,15 +23,12 @@ to compile Java sources, but it can also compile AspectJ sources or
 weave binary aspects with Java bytecode.  It can run in normal "batch" mode
 or in an "incremental" mode, where it only recompiles files it has to revisit.
 For more information on <tt>ajc</tt>, see the links from 
-the <a href="index.html">AspectJ docs home</a>.  The main things to remember:
-<ul>
-  <li>In incremental mode, sources may only be specified using source root directories.
-      </li>
-  <li>A .class file may only be woven once.  That means
-      binaries in injars or aspectjpath must have been compiled with jikes or javac
-      or, if using ajc, with noweave.
-      </li>
-</ul>
+the <a href="index.html">AspectJ docs home</a>,
+especially the usage notes in
+the <a href="devguide/devguide.html">Development Environment Guide</a>
+for command-line mode of the compiler.
+
+<p>
 This task is named <tt>iajc</tt> now to avoid conflict with the 
 1.0 task <tt>ajc</tt>, but the name may change to <tt>ajc</tt> in
 the future.
@@ -43,6 +40,19 @@ an introduction to handling compiler messages programmatically.
 <h3>
 Parameters</h3>
 
+The following table lists the supported parameters.
+For any parameter specified as a Path, 
+a single path can be specified directly as an attribute, 
+multiple paths can be specified using a nested element of the same name,
+and a common path can be reused by defining it as a global
+and passing the id to the corresponding {name}ref attribute.
+See <a href="#nestedElements">Nested Elements</a> below for more information.
+
+<p>
+Some sources must be specified, but all other attributes and
+nested elements are optional
+(except that the compiler requires <code>aspectjrt.jar</code> 
+to be on the classpath).
 <p>
 <table BORDER CELLSPACING=0 CELLPADDING=2 >
 <tr>
@@ -54,118 +64,166 @@ Parameters</h3>
 </tr>
 
 <tr>
-<th colspan="3">Specifying source and destination files</th>
+<th colspan="3">Specifying sources</th>
 </tr>
 
-<td VALIGN=TOP>sourceRoots</td>
-
-<td VALIGN=TOP>Base directory of the source files.
-All source files (.java and .aj) in the base directories are compiled. 
-    May also be specified as a <a href="nestedElements">nested element</a>.
+<tr> 
+<td VALIGN=TOP>argfiles, argfilesRef
+ <br>(<a href="#nestedElements">Path</a>)
 </td>
-<td rowspan="2" ALIGN=CENTER VALIGN=TOP>Yes, in incremental mode.</td>
+<td VALIGN=TOP>An argument file
+contains a list of arguments read by the compiler.
+Each line is read into one element of the argument
+array and may include another argfile by reference.
+</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
 </tr>
 
-<td VALIGN=TOP>sourceRootsList</td>
-
-<td VALIGN=TOP>Comma-delimited list of base directories source root
-directories.
-    May also be specified as a <a href="nestedElements">nested element</a>.
+<tr>
+<td VALIGN=TOP>sourceRoots,
+ sourceRootsRef
+ <br>(<a href="#nestedElements">Path</a>)
 </td>
 
+<td VALIGN=TOP>
+ Directories containing source files
+ (ending with .java or .aj) to compile.
+</td>
+<td ALIGN=CENTER VALIGN=TOP>Yes, in incremental mode.</td>
+</tr>
+
+
+<tr>
+<td VALIGN=TOP>srcdir
+ <br>(<a href="#nestedElements">Path</a>)
+</td>
+<td VALIGN=TOP>Base directory of sources to compile,
+	assuming there are <a href="#nestedElements">nested elements</a>
+	for <code>includes</code> or <code>excludes</code>.
+    This uses the Ant process for matching .java files
+    and is not compatible with incremental mode.
+    Unless using filters to limit the sources included,
+    use <code>sourceroots</code> instead.
+</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>injars, injarsRef
+ <br>(<a href="#nestedElements">Path</a>)
+</td>
+<td VALIGN=TOP>
+ Input zip files with .class file entries for bytecode weaving
+</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>classpath, classpathRef
+ <br>(<a href="#nestedElements">Path</a>)
+</td>
+<td VALIGN=TOP>The classpath required by the input being compiled.
+    Strictly-speaking not required, but the compiler
+    insists <code>aspectjrt.jar</code> be on the classpath.
+</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>aspectpath, aspectpathref
+ <br>(<a href="#nestedElements">Path</a>)
+</td>
+<td VALIGN=TOP>The aspectpath to use -- like classpath, only for
+read-only, binary aspect libraries (only accepts jar/zip files, no directories).
+</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
+<th colspan="3">Specifying output</th>
+<tr> 
+<td VALIGN=TOP>destdir</td>
+<td VALIGN=TOP>The directory in which to place the generated class files.
+Conflicts with <code>outjar</code>.
+</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
 </tr>
 
 <tr> 
 <td VALIGN=TOP>outjar</td>
-<td VALIGN=TOP>Path to an output jar to generate with all output classes.</td>
+<td VALIGN=TOP>The zip file in which to place the generated output class files.
+Conflicts with <code>destdir</code>.
+</td>
 <td ALIGN=CENTER VALIGN=TOP>No</td>
 </tr>
 
 <tr> 
-<td VALIGN=TOP>destdir</td>
-<td VALIGN=TOP>Specify where to place the generated class files.</td>
-<td ALIGN=CENTER VALIGN=TOP>No</td>
-</tr>
+  <td VALIGN=TOP>copyInjars</td>
+  <td VALIGN=TOP>Copy all non-.class files from input jar(s) to the output jar
+   or destination directory
+   after the compile (or incremental compile) completes
+   -- defaults to <tt>false</tt>.
+   </td> 
+   <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
 
-<tr>
-<td VALIGN=TOP>classpath</td>
-<td VALIGN=TOP>The classpath required by the source files to compile.
-    May also be specified as a <a href="nestedElements">nested element</a>.
-</td>
-<td ALIGN=CENTER VALIGN=TOP>No</td>
-</tr>
-
-<tr>
-<td VALIGN=TOP>srcdir</td>
-<td VALIGN=TOP>The nested source base directory to compile,
-    specified as a <a href="nestedElements">nested element</a>.
-</td>
-<td ALIGN=CENTER VALIGN=TOP>No</td>
-</tr>
-
-<tr>
-<td VALIGN=TOP>aspectpath</td>
-<td VALIGN=TOP>The aspectpath to use -- like classpath, only for
-read-only, binary aspect libraries (only accepts jar/zip files, no directories).
-May also be specified as a <a href="nestedElements">nested element</a>.
-</td>
-<td ALIGN=CENTER VALIGN=TOP>No</td>
-</tr>
-
-<tr>
-<td VALIGN=TOP>bootclasspath</td>
-<td VALIGN=TOP>Location of bootstrap class files.</td>
-<td ALIGN=CENTER VALIGN=TOP>No</td>
-</tr>
-
-<tr>
-<td VALIGN=TOP>classpathref</td>
-<td VALIGN=TOP>The classpath to use, given as a<a href="http://jakarta.apache.org/ant/manual/using.html#references">
-reference</a> to a PATH defined elsewhere.</td>
-<td ALIGN=CENTER VALIGN=TOP>No</td>
-</tr>
-
-<tr>
-<td VALIGN=TOP>bootclasspathref</td>
-<td VALIGN=TOP>Location of bootstrap class files, given as a <a href="http://jakarta.apache.org/ant/manual/using.html#references">reference</a>
-to a PATH defined elsewhere.</td>
-<td ALIGN=CENTER VALIGN=TOP>No</td>
-</tr>
+<tr> 
+  <td VALIGN=TOP>sourceRootCopyFilter</td>
+  <td VALIGN=TOP>When set, copy all files from the sourceroot directories
+   to the output jar or destination directory
+   except those specified in the filter pattern.
+   The pattern should be compatible with an Ant fileset excludes filter;
+   when using this, most developers pass 
+   <code>**/CVS/*,**/*.java</code> to exclude
+   any CVS directories or source files.
+   </td> 
+   <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
 
 <tr>
 <th colspan="3">Specifying compiler behavior</th>
 </tr>
 
 <tr>
-<td VALIGN=TOP>noweave</td>
-<td VALIGN=TOP>If true, produce binaries for the -injars option (only) --
-defaults to <tt>false</tt>.</td>
-<td ALIGN=CENTER VALIGN=TOP>No</td>
-</tr>
-
-<tr>
   <td VALIGN=TOP>incremental</td>
-  <td VALIGN=TOP>Build once, then recompile on demand only required files; 
-  defaults to <tt>false</tt>.
-  By default, files are recompiled based on input passed to stdin
-  (see tagfile)</td>
+  <td VALIGN=TOP>incremental mode: 
+  Build once, then recompile only required  source files
+  when user provides input.
+  Requires that source files be specified only using
+  <code>sourceroots</code>.
+  Defaults to <tt>false</tt>.
   <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>
 
 <tr> 
   <td VALIGN=TOP>tagfile</td>
-  <td VALIGN=TOP>File that controls when incremental builds are done
-      and when the task completes.</td>
+  <td VALIGN=TOP>incremental mode:
+  		Build once, then recompile only required source files
+  		when the tag file is updated,
+  		finally exiting when tag file is deleted
+  		(also requires <code>sourceroots</code>).
+      </td>
    <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>
 
 <tr> 
   <td VALIGN=TOP>X</td>
   <td VALIGN=TOP>Set experimental option(s), using comma-separated list
-     of accepted options (unlisted here -- for XLint, use
-     the xlint entries).  Options should not contain the leading X.</td> <!-- XXX list -->
+     of accepted options (unlisted here).
+     Options should not contain the leading X.
+     XLint options should be specified using the xlint... entries.
+     </td> 
    <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>
+
+<tr>
+<td VALIGN=TOP>Xnoweave</td>
+<td VALIGN=TOP>Experimental option to 
+produce binaries that can only be used as input for the
+-injars option --
+defaults to <tt>false</tt>.</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
 
 
 <tr>
@@ -381,30 +439,91 @@ interface and having a public no-argument constructor.</td>
 
 </table>
 
+<br>&nbsp;
 <a name="nestedElements"></a>
-<h3>Nested Elements</h3>
-This taskdef should support nested elements as the old one did;
-see <a href="taskdef-ajc10.html#nestedElements">taskdef-ajc10.html#nestedElements</a>.
+<h3>
+Parameters specified as nested elements</h3>
+This task forms an implicit 
+<a href="http://jakarta.apache.org/ant/manual/CoreTypes/fileset.html">FileSet</a>
+and supports all attributes of <tt>&lt;fileset></tt> 
+(<tt>dir</tt> becomes <tt>srcdir</tt>)
+as well as the nested
+<tt>&lt;include></tt>, <tt>&lt;exclude></tt>,
+and <tt>&lt;patternset></tt> elements.
+These can be used to specify source files.
+However, we recommend using <code>sourceRoots</code>
+to specify source directories
+unless using filters to exclude some files from compilation.
+<p>
+Some parameters are path-like structures containing one or
+more elements; these are 
+<tt>sourceroots</tt>,
+<tt>argfiles</tt>,
+<tt>injars</tt>,
+<tt>classpath</tt>, and
+<tt>aspectpath</tt>.
+
+In all cases, these may be specified as nested elements,
+something like this:
+<pre>
+    &lt;iajc {attributes..} /&gt;
+        &lt;{name}&gt;    
+            &lt;pathelement path="{first-location}"/&gt;
+            &lt;pathelement path="{second-location}"/&gt;
+            ...
+        &lt;{name}&gt;    
+        ...
+    &lt;/iajc&gt;
+</pre>
+As with other Path-like structures, they may be defined 
+elsewhere and specified using the refid attribute:
+<pre>
+    &lt;path id="aspect.path"&gt;
+        &lt;pathelement path="${home}/lib/persist.jar"/&gt;
+        &lt;pathelement path="${home}/lib/trace.jar"/&gt;
+    &lt;/path&gt;
+    ...
+    &lt;iajc {attributes..} /&gt;
+        &lt;aspectpath refid="aspect.path"/&gt;    
+        ...
+    &lt;/iajc&gt;
+</pre>
+
+The task also supports an attribute 
+<code>{name}ref</code> for each such parameter.  E.g., for 
+<code>aspectpath</code>:
+<pre>
+    &lt;iajc {attributes..} aspectpathref="aspect.path"/&gt;    
+</pre>
+
+<p>
+
+<h3>
+Examples</h3>
+
+See <a href="examples/build.xml">examples/build.xml</a>
+for an example build script.
 
 <a name="compilerMessages"></>
 <h3>Programmatically handling compiler messages</h3>
 
-Users may specify a message holder which is passed all 
-messages generated by the compiler synchronously.  This overrides all of the normal
-message printing, but does not prevent the task from failing if failonerror is true
-and errors or exceptions were encountered.
+Users may specify a message holder to which the compiler will
+pass all messages as they are generated.  
+This will override all of the normal
+message printing, but does not prevent the task from failing 
+if exceptions were thrown 
+or if <tt>failonerror</tt> is true and the compiler detected errors in the sources.
 
+<p>
 Handling messages programmatically could be useful 
-when using the compiler to inspect code.
+when using the compiler to verify code.
 If aspects consist of declare [error|warning], then
 the compiler can act to detect invariants in the code being processed.  
 For code to compare expected and actual messages, see the AspectJ
 testing module (which is not included in the binary distribution).
-
+<p>
 
 <hr>
-<center>
-</center>
 
 </body>
 </html>
