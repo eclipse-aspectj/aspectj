@@ -12,7 +12,7 @@
    <!ATTLIST ajc-test keywords CDATA #IMPLIED >
    <!ATTLIST ajc-test comment CDATA #IMPLIED >
 
-   <!ELEMENT compile (dir-changes*,file*,message*)>
+   <!ELEMENT compile (dir-changes*,message*)>
    <!ATTLIST compile staging CDATA #IMPLIED >
    <!ATTLIST compile badInput CDATA #IMPLIED >
    <!ATTLIST compile files CDATA #IMPLIED >
@@ -39,9 +39,8 @@
    <!ATTLIST run options CDATA #IMPLIED >
    <!ATTLIST run errStreamIsError CDATA #IMPLIED >
    <!ATTLIST run outStreamIsError CDATA #IMPLIED >
-
-   <!ELEMENT file (#PCDATA)>
-   <!ATTLIST file path CDATA #IMPLIED >
+   <!ATTLIST run fork CDATA #IMPLIED >
+   <!ATTLIST run vmargs CDATA #IMPLIED >
 
    <!ELEMENT message (source*)>
    <!ATTLIST message kind (abort | fail | error | warning | info | Xlint) #REQUIRED >
