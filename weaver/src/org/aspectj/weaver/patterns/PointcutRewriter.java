@@ -193,7 +193,8 @@ public class PointcutRewriter {
 			if (element instanceof IfPointcut) {
 				if (((IfPointcut)element).alwaysFalse()) return Pointcut.makeMatchesNothing(element.state);
 			}
-			if (element.toString().equals("")) return element;  // matches nothing...
+			// If it can't match anything, the whole AND can't match anything
+			if (element.couldMatchKinds().isEmpty()) return element;
 		}
 		if (apc.couldMatchKinds().isEmpty()) return Pointcut.makeMatchesNothing(apc.state);
 		// write out with cheapest on left
