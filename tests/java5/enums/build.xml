@@ -1,0 +1,22 @@
+<project name="Java 5 compilation of test source" default="default" basedir=".">
+
+  <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    <classpath>
+      <pathelement location="c:/aspectj1.2/lib/aspectjtools.jar"/>
+    </classpath>
+  </taskdef>
+
+
+    <target name="default" depends="aspect_jars">
+       <delete dir="output" failonerror="false"/>
+       <mkdir dir="output"/>
+       <javac destdir="output" debug="on" srcdir="." includes="*.java"/>
+       <zip file="testcode.jar" basedir="output" includes="*"/>
+       <delete dir="output"/>
+    </target>
+
+  <target name="aspect_jars">
+      <iajc outjar="EnumAspect01.jar" srcdir="." includes="EnumAspect01.aj" classpath="c:/aspectj1.2/lib/aspectjrt.jar"/>
+  </target>
+
+</project>
