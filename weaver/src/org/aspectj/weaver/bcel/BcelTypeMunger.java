@@ -101,7 +101,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		// Whilst type mungers aren't persisting their source locations, we add this relationship during
 		// compilation time (see other reference to ResolvedTypeMunger.persist)
 		if (ResolvedTypeMunger.persistSourceLocation) {
-			if (changed) {
+			if (changed && worthReporting) {
 				if (munger.getKind().equals(ResolvedTypeMunger.Parent)) {
 			  	  AsmRelationshipProvider.getDefault().addRelationship(weaver.getLazyClassGen().getType(), munger,getAspectType());
 				} else {
