@@ -92,6 +92,11 @@ public class EclipseFactory {
 	
 	
 	private static String getName(TypeBinding binding) {
+		if (binding instanceof ReferenceBinding) {
+			return new String(
+				CharOperation.concatWith(((ReferenceBinding)binding).compoundName, '.'));
+		}
+		
 		String packageName = new String(binding.qualifiedPackageName());
 		String className = new String(binding.qualifiedSourceName()).replace('.', '$');
 		if (packageName.length() > 0) {
