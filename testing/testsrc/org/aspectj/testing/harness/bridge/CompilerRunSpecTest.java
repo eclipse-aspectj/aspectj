@@ -151,11 +151,10 @@ public class CompilerRunSpecTest extends TestCase {
         final boolean FAIL = false;
         checkSourceTargetVersionConversion("target", 1, PASS, null);
         checkSourceTargetVersionConversion("target", 2, PASS, null);
-        checkSourceTargetVersionConversion(
-            "target",
-            3,
-            FAIL,
-            "illegal input");
+        checkSourceTargetVersionConversion("target", 3, PASS, null);
+        checkSourceTargetVersionConversion("target", 4, PASS, null);
+        checkSourceTargetVersionConversion("target", 5, PASS, null);
+        checkSourceTargetVersionConversion("target", 6, FAIL, "illegal input");
     }
 
     /** @testcase check -source converts for 1.3 and 1.4, not others */
