@@ -6,6 +6,7 @@
 		<project>ajde</project>
 		<project>asm</project>
 		<project>bridge</project>
+		<project>taskdefs</project>
 		<project>testing-client</project>
 		<project>testing-util</project>
 		<project>util</project>

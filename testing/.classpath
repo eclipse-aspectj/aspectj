@@ -16,5 +16,6 @@
     <classpathentry kind="src" path="/testing-util"/>
     <classpathentry kind="src" path="/ajde"/>
     <classpathentry kind="src" path="/asm"/>
+    <classpathentry kind="src" path="/taskdefs"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
