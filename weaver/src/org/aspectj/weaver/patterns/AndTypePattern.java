@@ -68,6 +68,12 @@ public class AndTypePattern extends TypePattern {
 		return left.matchesStatically(type) && right.matchesStatically(type);
 	}
 	
+	public void setIsVarArgs(boolean isVarArgs) {
+		this.isVarArgs = isVarArgs;
+		left.setIsVarArgs(isVarArgs);
+		right.setIsVarArgs(isVarArgs);
+	}
+	
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(TypePattern.AND);
 		left.write(s);
@@ -76,8 +82,9 @@ public class AndTypePattern extends TypePattern {
 	}
 	
 	public static TypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
-		TypePattern ret = new AndTypePattern(TypePattern.read(s, context), TypePattern.read(s, context));
+		AndTypePattern ret = new AndTypePattern(TypePattern.read(s, context), TypePattern.read(s, context));
 		ret.readLocation(context, s);
+		if (ret.left.isVarArgs && ret.right.isVarArgs) ret.isVarArgs = true;
 		return ret;
 	}
 

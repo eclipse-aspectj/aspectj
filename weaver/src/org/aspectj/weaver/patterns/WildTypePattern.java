@@ -66,6 +66,12 @@ public class WildTypePattern extends TypePattern {
 		this.isVarArgs = isVarArg;
 	}
 
+	// called by parser after parsing a type pattern, must bump dim as well as setting flag
+	public void setIsVarArgs(boolean isVarArgs) {
+		this.isVarArgs = isVarArgs;
+		if (isVarArgs) this.dim += 1;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.TypePattern#couldEverMatchSameTypesAs(org.aspectj.weaver.patterns.TypePattern)
 	 */
@@ -564,6 +570,7 @@ public class WildTypePattern extends TypePattern {
     		}
     	}
     	if (includeSubtypes) buf.append('+');
+		if (isVarArgs) buf.append("...");
     	if (annotationPattern != AnnotationTypePattern.ANY) {
     		buf.append(')');
     	}

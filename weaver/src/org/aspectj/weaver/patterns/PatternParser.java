@@ -542,6 +542,8 @@ public class PatternParser {
 			TypePattern p = parseTypePattern();
 			p = setAnnotationPatternForTypePattern(p,ap);
 			eat(")");
+			boolean isVarArgs = maybeEat("...");
+			p.setIsVarArgs(isVarArgs);
 			return p;
 		}
 		int startPos = tokenSource.peek().getStart();

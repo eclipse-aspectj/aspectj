@@ -68,6 +68,10 @@ public abstract class TypePattern extends PatternNode {
 		this.annotationPattern = annPatt;
 	}
 	
+	public void setIsVarArgs(boolean isVarArgs) {
+		this.isVarArgs = isVarArgs;
+	}
+	
 	// answer conservatively...
 	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
 		if (this.includeSubtypes || other.includeSubtypes) return true;
@@ -492,7 +496,7 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 	}
 	
 	public boolean isStar() {
-		return true;
+		return false;
 	}
 	
 	public String toString() { return annotationPattern+" *"; }

@@ -1220,13 +1220,13 @@
             <message kind="warning" line="14" text="execution vararg match"/>
             <message kind="warning" line="5" text="init vararg match"/>
             <message kind="warning" line="6" text="init vararg match"/>
-            <message kind="warning" line="26" text="single vararg"/>
-            <message kind="warning" line="27" text="single String[]"/>
-            <message kind="warning" line="17" text="single String[]"/>
+            <message kind="warning" line="27" text="single vararg"/>
+            <message kind="warning" line="28" text="single String[]"/>
+            <message kind="warning" line="18" text="single String[]"/>
         </compile>
         <run class="AJDKExamples">
             <stdout>
-                <line text="Matched at xxx"/>
+                <line text="Matched at call(void X.foo(int, String[]))"/>
             </stdout>
         </run>
     </ajc-test>

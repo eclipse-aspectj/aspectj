@@ -1,3 +1,4 @@
+import org.xyz.*;
 public aspect AJDKExamples {
 	
 	declare warning : call(* org.xyz.*.*(int, String...)) : "call vararg match";
