@@ -66,7 +66,12 @@ public class AjcTestCase extends TestCase {
 		File.pathSeparator +
 		".." + File.separator + "bridge" + File.separator + "bin" +
 		File.pathSeparator +
-		".." + File.separator + "util" + File.separator + "bin";
+		".." + File.separator + "util" + File.separator + "bin"
+        //ALEX Andy. ?? What does _IDE add?
+		// + File.pathSeparator+ ".."+File.separator+"_IDE"
+		+ File.pathSeparator+ ".."+File.separator+"lib"+File.separator+"junit"+File.separator+"junit.jar";
+
+    
 
 	/**
 	 * Helper class that represents the specification of an individual
