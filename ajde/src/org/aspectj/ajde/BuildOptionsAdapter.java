@@ -80,7 +80,14 @@ public interface BuildOptionsAdapter {
 	 * @deprecated Use getComplianceLevel instead
 	 */
 	public boolean getSourceOnePointFourMode();
-	  
+	
+
+    /**
+     * Run compiles incrementally.
+     * @since AspectJ 1.1
+     */
+    public boolean getIncrementalMode();
+
 	/**
 	 * Be extra-lenient in interpreting the Java specification.  The default is "false", 
 	 * i.e. "regular" mode.
