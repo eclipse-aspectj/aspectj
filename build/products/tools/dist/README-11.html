@@ -53,7 +53,13 @@ release schedule closely, however, these are the changes since the
   points, and the -XserializableAspects experimental option. </li>
 
   <li><a href="#VOID_FIELD_SET">Field set join points now have a
-  <code>void</code> return type.</a></li> XXX
+  <code>void</code> return type.</a> This will require porting of code
+  that uses the <code>set</code> PCD in conjunction with <code>after
+  returning</code> or <code>around</code> advice.</li>
+
+  <li>Various <a href="#STRINGBUFFER">StringBuffer</a> methods and
+  constructors resulting from the Java Language string concatenation
+  operator <code>+</code> now result in join points. </li>
 
   <li>Users now have more control over the <a href="#XLINT">-Xlint</a>
   option. </li>
@@ -65,16 +71,24 @@ release schedule closely, however, these are the changes since the
   <li>The <code>-noweave</code> option is now the
   <code><a href="#XNOWEAVE">-XnoWeave</a></code> option.</li>
 
-  <li>A new option, <code><a href="#XNOINLINE"></a>-XnoInline</code>,
+  <li>A new option, <code><a href="#XNOINLINE">-XnoInline</a></code>,
   is now supported to control some compiler behavior.</li>
 
   <li>A class's default constructor may
   <a href="#DEFAULT_CONSTRUCTOR_CONFLICT">conflict</a> with an
   inter-type constructor. </li>
 
+  <li><a href="#INTER_TYPE_FIELD_INITIALIZERS">inter-type field
+  initializers</a> run before class-local field initializers. </li>
+
   <li>Some of the treatment of
   <a href="#SUPER_IFACE_INITS">initialization join points for
-  super-interfaces</a> have been clarified. </li> 
+  super-interfaces</a> have been clarified. </li>
+
+  <li>The behavior of the compiler in
+  <a href="#TARGET_TYPES_MADE_PUBLIC">lifting the visibility</a> of
+  the target types of some declares and pointcuts to public has been
+  clarified. </li>
 
   <li>The <a href="#PER_TYPE">new pertype aspect specifier</a> has
   been taken off the table for 1.1rc, though it may well be in a
@@ -105,7 +119,7 @@ release schedule closely, however, these are the changes since the
   In all but a few cases, programs written in AspectJ 1.0 should
   compile correctly in AspectJ 1.1.  In many cases, there are
   new or preferred forms in AspectJ 1.1.  However, some AspectJ 1.0
-  features are not yet implemented in 1.1, so many 1.0 programs
+  features are not yet implemented in 1.1, so some 1.0 programs
   will not compile in this release.
   </p>
 
@@ -120,9 +134,8 @@ release schedule closely, however, these are the changes since the
     exceptions. </li>
 
     <li><a href="#NEW_PCDS">New kinded pointcut designators</a>: Now
-    every kind of pointcut has a corresponding kinded pointcut
+    every kind of join point has a corresponding kinded pointcut
     designator. </li>
-
   </ul>
 
   <p> Some are have different behavior in edge cases but offer
@@ -130,8 +143,12 @@ release schedule closely, however, these are the changes since the
 
   <ul>
     <li><a href="#ASPECT_PRECEDENCE">New aspect precedence form</a>:
-    AspectJ 1.1 has a new declare form, declare dominates, that is
-    intended to replace the "dominates" clause on aspects.  </li>
+    AspectJ 1.1 has a new declare form, <code>declare
+    dominates</code>, that is intended to replace the "dominates"
+    clause on aspects.  </li>
+
+    <li>The order of <a href="#SUPER_IFACE_INITS">initialization join
+    points for super-interfaces</a> has been clarified. </li>
   </ul>
 
   <p> But in order to support weaving into bytecode effectively,
@@ -145,7 +162,7 @@ release schedule closely, however, these are the changes since the
     <li><a href="#NO_CALLEE_SIDE_CALL">No callee-side call join
     points</a>: The AspectJ 1.1 compiler does not expose call join
     points unless it is given the calling code. </li>
-	 
+         
     <li><a href="#SINGLE_INTERCLASS_TARGET">One target for intertype
     declarations</a></li>
 
@@ -154,6 +171,9 @@ release schedule closely, however, these are the changes since the
 
     <li><a href="#CONSTRUCTOR_EXECUTION_IS_BIGGER">Initializers run
     inside constructor execution join points</a></li>
+
+    <li><a href="#INTER_TYPE_FIELD_INITIALIZERS">inter-type field
+    initializers</a> run before class-local field initializers</li>
 
     <li><a href="#WITHIN_MEMBER_TYPES">Small limitations of the within
     pointcut</a></li>
@@ -176,6 +196,11 @@ release schedule closely, however, these are the changes since the
   the current compiler implementation. </p>
 
   <ul>
+    <li><a href="#VOID_FIELD_SET">Field set join points now have a
+    <code>void</code> return type.</a>  This will require 
+    porting of code that uses the <code>set</code> PCD in conjunction
+    with after-returning or around advice.</li>
+
     <li>'declare soft: TYPE: POINTCUT;' In 1.0 a TYPE_PATTERN was
     allowed rather than a TYPE.  This limitation makes declare soft
     much easier to implement efficiently.</li>
@@ -201,7 +226,7 @@ release schedule closely, however, these are the changes since the
   same as the interface to ajc 1.0.  There are two important changes
   under the hood, however. </p>
 
-  <p> First, The 1.1 compiler is implemented on top of IBM's
+  <p> First, the 1.1 compiler is implemented on top of IBM's
   open-source Eclipse compiler.  This has two benefits: It allows us
   to concentrate on the AspectJ extensions to Java and let the Eclipse
   team worry about making sure the Java edge cases work, and it allows
@@ -215,9 +240,7 @@ release schedule closely, however, these are the changes since the
 
   <p> This new architecture, and other changes to the compiler, allows
   us to implement some features that were defined in the AspectJ 1.0
-  language but not implementable in the 1.1 compiler (after returning
-  advice on handler join points will probably be one of those
-  features, when handler join points are finished).  It also makes
+  language but not implementable in the 1.1 compiler.  It also makes
   some new features available: </p>
 
   <ul>
@@ -265,7 +288,7 @@ release schedule closely, however, these are the changes since the
     <li>Only one <code>..</code> wildcard is supported in the args
     PCD. </li>
   </ul>
-
+  
   <p> But some features of the 1.0 compiler are not supported in the
   1.1 compiler: </p>
 
@@ -283,8 +306,19 @@ release schedule closely, however, these are the changes since the
     J2SE 1.3 or later is required;.</a></li>
   </ul>
 
+  <p> And some changes to the implementation are almost entirely
+  internal:
+  </p>
+  
+  <ul>
+    <li>The behavior of the compiler in
+    <a href="#TARGET_TYPES_MADE_PUBLIC">lifting the visibility</a> of
+    the target types of some declares and pointcuts to public has been
+    clarified. </li>
+  </ul>
+  
   <p> A short description of the options ajc accepts is available with
-  "ajc -help".  </p>
+  "<code>ajc -help</code>".  </p>
   <p> </p>
 
 <!-- ============================== -->
@@ -331,12 +365,10 @@ release schedule closely, however, these are the changes since the
 <hr>
 <h2><a name="devenv">The AJDE Tools</a></h2>
 
-  <p> AJDE for JBuilder, AJDE for Netbeans, and AJDE for Emacs and the
-  AJBrowser have not changed much.  They use the batch-build mode of
-  the new compiler.  The beta compiler does not yet produce
-  crosscutting structure (for anything but method executions) so there are no inline
-  annotations in JBuilder or Emacs support and you only see a
-  declaration tree in the structure views.  Incremental building and
+  <p> The AspectJ Browser hasn't changed much, and apart from being
+  distributed from Sourceforge, AJDE for JBuilder, AJDE for Netbeans,
+  and AJDE for Emacs haven't changed much either. They use the
+  batch-build mode of the new compiler.  Incremental building and
   bytecode weaving are not available in the AJDE tools in the beta
   release, but will be in a future release.</p>
 
@@ -437,9 +469,10 @@ release schedule closely, however, these are the changes since the
     advice defined in a particular aspect. <br>
     <code>preinitialization(<var>ConstructorPattern</var>)</code> will
     pick out pre-initialization join points where the initializaiton
-    process is entered through <var>ConstructorPattern</var>. </p>
+    process is entered through
+    <code><var>ConstructorPattern</var></code>. </p>
 
-  <h3><a name="PER_TYPE">New pertype aspect specifier</a></h3>
+  <h3><a name="PER_TYPE">New pertype aspect specifier</a> (not in 1.1)</h3>
 
     <p>We strongly considered adding a pertype aspect kind to 1.1.
     This is somewhat motivated by the new
@@ -519,7 +552,7 @@ release schedule closely, however, these are the changes since the
   <h3><a name="UNAVAILABLE_JOIN_POINTS">No initializer execution join
     points</a></h3>
 
-    <p> AspectJ 1.1 does not consider initializer execution as a
+    <p> AspectJ 1.1 does not consider initializer execution a
     principled join point.  The collection of initializer code (the
     code that sets fields with initializers and the code in non-static
     initializer blocks) is something that makes sense only in Java
@@ -562,6 +595,34 @@ release schedule closely, however, these are the changes since the
     since programmers using before advice on constructor execution
     must always assume incomplete object initialization, since the
     constructor has not yet run.  </p>
+
+  <h3><a name="INTER_TYPE_FIELD_INITIALIZERS">Inter-type field initializers</a></h3>
+
+    <p> The initializer, if any, of an inter-type field definition runs
+    before the class-local initializers of its target class.  </p>
+
+    <p> In AspectJ 1.0.6, such an initializer would run after the
+    initializers of a class but before the execution of any of its
+    constructor bodies.  As already discussed in the sections about
+    <a href="#UNAVAILABLE_JOIN_POINTS">initializer execution join
+    points</a> and <a href="#CONSTRUCTOR_EXECUTION_IS_BIGGER">constructor
+    execution</a>, the point in code between the initializers of a class
+    and its constructor body is not principled in bytecode.  So we had a
+    choice of running the initializer of an inter-type field definition at
+    the beginning of initialization (i.e., before initializers from
+    the target class) or at the end (i.e., just before its called
+    constructor exits).  We chose the former, having this pattern in mind:
+    </p>
+
+    <PRE>
+    int C.methodCount = 0;
+    before(C c): this(c) &amp;&amp; execution(* *(..)) { c.methodCount++; }
+    </PRE>
+
+    <p> We felt there would be too much surprise if a constructor called a
+    method (thus incrementing the method count) and then the field was
+    reset to zero after the constructor was done. 
+    </p>
 
   <h3><a name="WITHIN_MEMBER_TYPES">Small limitations of the within
     pointcut</a></h3>
@@ -800,10 +861,6 @@ release schedule closely, however, these are the changes since the
     .java files on the command line, and the -injars option.
     </p>
 
-    <p> <strong>ALPHA:</strong> In the beta release of the compiler,
-    only one directory can be passed to the -sourceroots option.
-    </p>
-
   <h3><a name="BYTECODE_WEAVING">The -injars option</a></h3>
 
     <p> The AspectJ 1.1 compiler now accepts an -injars option used to
@@ -839,29 +896,29 @@ release schedule closely, however, these are the changes since the
     <pre>    ajc -injars myBase.jar MyTracing.java -outjar myTracedBase.jar
     </pre>
 
-    <p> No meta information is placed in the output jar file </p>
+    <p> No meta information is placed in the output jar file. </p>
 
   <h3><a name="INCREMENTAL">Incremental compilation</a></h3>
 
     <p> The AspectJ 1.1 compiler now supports incremental compilation.
     For the final release, this will work from the various IDE plugins we
-    ship, but for the Alpha release, it is only supported on the
+    ship, but for the 1.1beta2 release, it is only supported on the
     command-line compiler.
     </p>
 
     <p> When ajc is called with the -incremental option, it must also be
     passed a -sourceroots option specifying a directory to incrementally
     compile.  Once the initial compile is done, ajc waits for console
-    input.  Every time it reads a new line, (i.e., every time the user
+    input.  Every time it reads a new line (i.e., every time the user
     hits return) ajc recompiles those input files that need recompiling.
     </p>
 
     <h4>Limitations for 1.1beta2</h4>
 
-    <p> some changes to classes should force re-weaving, but are not
+    <p> Some changes to classes should force re-weaving, but are not
     noticed</p>
 
-    <p> inter-type declarations, declare parents are not tracked
+    <p> Inter-type declarations, declare parents are not tracked
     correctly</p>
 
   <h3><a name="XNOWEAVE">-XnoWeave, a compiler option to suppress
@@ -1043,11 +1100,13 @@ release schedule closely, however, these are the changes since the
     </p>
 
     <ul>
-      <li>-XOcodeSize: Not supported in 1.1beta2, since we're not
-      doing <em>any</em> <a href="#NO_AROUND_OPTIMIZATION">inlining of
-      around advice</a> in beta.  This may or may not be supported in
-      1.1 final: bytecode weaving gives us more leeway in inlining
-      anyway, so this may be the default. </li> XXX replaced with noInline
+      <li>-XOcodeSize: Though 1.1beta2 does not turn
+      <a href="#NO_AROUND_OPTIMIZATION">inlining of around advice</a>
+      on, we expect that it will be on by default in the final, and so
+      <code>-XOcodeSize</code> is no longer necessary.  We will be
+      supporting its inverse,
+      <a href="#XNOINLINE"><code>-XnoInline</code></a> in the final.
+      </li>
 
       <li>-XtargetNearSource: Not suppoted in 1.1beta2, may not be
       supported in 1.1 final. </li>
@@ -1074,9 +1133,8 @@ release schedule closely, however, these are the changes since the
     other messages.</p>
 
     <p>Many error condition in beta2 are signalled by exception.  You
-    shouldn't be surprised to see RuntimeException("unimplemented")
-    produced from perfectly reasonable programs that use features we
-    just haven't implemented yet.</p>
+    may see RuntimeException("unimplemented") produced from programs
+    that use features we just haven't implemented yet.</p>
 
 
   <h3><a name="EXCEPTION_CHECKING">No exception checking during
@@ -1141,44 +1199,233 @@ release schedule closely, however, these are the changes since the
     option when it is enabled. </p>
 
   <h3><a name="13_REQUIRED">J2SE 1.3 required</a></h3>
-    <p>Because we build on Eclipse, the compiler will no longer run under J2SE 1.2.
-    You must run the compiler (and all tools based on the compiler)
-    using J2SE 1.3 or later. </p>
+
+    <p>Because we build on Eclipse, the compiler will no longer run
+    under J2SE 1.2.  You must run the compiler (and all tools based on
+    the compiler) using J2SE 1.3 or later. </p>
 
   <h3><a name="DEFAULT_CONSTRUCTOR_CONFLICT">Default
-  Constructors</a></h3>
-  XXX
+  constructors</a></h3>
 
-  <pre>
-  inter-type constructors and default constructors conflict now
-  </pre>
+    <p> AspectJ 1.1 does not allow the inter-type definition of a
+    zero-argument constructor on a class with a visible default
+    constructor.  So this is no longer allowed: </p>
 
+    <PRE>
+    class C {}
+
+    aspect A {
+        C.new() {}  // was allowed in 1.0.6
+                    // is a "multiple definitions" conflict in 1.1
+    }
+    </PRE>
+
+    <p> In the Java Programming Language, a class defined without a
+    constructor actually has a "default" constructor that takes no
+    arguments and just calls <code>super()</code>.  </p>
+
+    <p> This default constructor is a member of the class like any other
+    member, and can be referenced by other classes, and has code generated
+    for it in classfiles.  Therefore, it was an oversight that AspectJ
+    1.0.6 allowed such an "overriding" inter-type constructor definition.
+    </p>
 
   <h3><a name="SUPER_IFACE_INITS">Initialization join points for
     super-interfaces</a></h3>
-  XXX
-  <pre>
-  We promised to run super inits in L-R order.  This was, of course, totally ludricous.  We couldn't do it then and we can't do it now.
-  It is undefined what order they go in, apart from the other promises made in that section (interfaces with members)
 
+    <p> In AspectJ, interfaces may have non-static members due to
+    inter-type declarations.  Because of this, the semantics of AspectJ
+    defines the order that initializer code for interfaces is run.  
+    </p>
 
-    int C.methodCount = 0;
-    before(C c): this(c) &amp;&amp; execution(* *(..)) { c.methodCount++; }
-  --
-    this would have bizarre behavior if we didn't run initializers before constructors
-  </pre>
+    <p> In the semantics document for AspectJ 1.0.6, the following
+    promises were made about the order of this initialization:
+    </p>
+
+    <ol>
+      <li>a supertype is initialized before a subtype</li>
+      <li>initialized code runs only once</li>
+      <li>initializers for supertypes run in left-to-right order</li>
+    </ol>
+
+    <p> The first two properties are important and are preserved in
+    AspectJ 1.1, but the third property is and was ludicrous, and was
+    never properly implemented (and never could be) in AspectJ 1.0.6.
+    Consider: </p>
+
+    <PRE>
+    interface Top0 {}
+    interface Top1 {}
+    interface I extends Top0, Top1 {} 
+    interface J extends Top1, Top0 {}
+
+    class C implements I, J {}
+    // I says Top0's inits must run before Top1's
+    // J says Top1's inits must run before Top0's
+
+    aspect A {
+        int Top0.i = foo("I'm in Top0");
+        int Top1.i = foo("I'm in Top1");
+        static int foo(String s) {
+            System.out.println(s);
+            return 37;
+        }
+    }
+    </PRE>
+
+    <p> This was simply a bug in the AspectJ specification.  The correct
+    third rule is:
+    </p>
+
+    <blockquote>the initializers for a type's superclass are run before the
+    initializers for its superinterfaces.
+    </blockquote>
+
 
   <h3><a name="VOID_FIELD_SET">Field Set Join Points</a></h3>
-  XXX
 
-  <p> Are now void
-  </p>
+    <p> In AspectJ 1.0.6, the join point for setting a field F had, as a
+    return type, F's type.  This was "java compatible" because
+    field assignment in java, such as "Foo.i = 37", is in fact an
+    expression, and does in fact return a value, the value that the
+    field is assigned to.
+    </p>
 
-<h3><a name="XNOINLINE">The -XnoInline Option</a></h3>
-XXX
+    <p> This was never "java programmer compatible", however, largely
+    because programmers have absorbed the good style of rarely using an
+    assignment statement in a value context.  Programmers typically expect
+    "Foo.i = 37" not to return a value, but to simply assign a value. </p>
 
-<p> Link to other X flags, in particular XblahBlah
+    <p> Thus, programmers typically wanted to write something like:
+    </p>
+
+    <PRE>
+    void around(): set(int Foo.i) {
+        if (theSetIsAllowed()) {
+            proceed();
+        }
+    }
+    </PRE>
+
+    <p> And were confused by it being a compile-time error.  They weren't
+    confused for long, and soon adapted to writing:
+    </p>    
+
+    <PRE>
+    int around(): set(int Foo.i) {
+        if (theSetIsAllowed()) {
+            return proceed();
+        } else {
+            return Foo.i;
+        }
+    }
+    </PRE>
+
+    <p> But there was definitely a short disconnect.  </p>
+
+    <p> On top of that, we were never shown a convincing use-case for
+    returning an interesting value from a set join point.  When we
+    revisited this issue, in fact, we realized we had a long-standing bug
+    in 1.0.6 dealing with the return value of pre-increment expressions
+    (such as ++Foo.i) that nobody had found because nobody cares about the
+    return value of such join points. 
+    </p>
+
+    <p> So, because it's easier to implement, and because we believe that
+    this is the last possibility to make the semantics more useful, we
+    have made set join points have a void return type in 1.1beta2.
+    Please complain voiceferously if you believe this is wrong, and we
+    can revert for the final version.  </p>
+
+  <h3><a name="XNOINLINE">The -XnoInline Option</a></h3>
+
+    <p> Though 1.1beta2 does not have code inlining turned on, we expect
+    that the final release will have inlining on for many cases of around
+    advice.  Therefore, we are supporting the <code>-XnoInline</code>
+    option to indicate that no inlining of any kind should be done.  This
+    is purely a compiler pragma:  No program semantics (apart from stack
+    traces) will be changed by the presence or absence of this option. 
+    </p>
+
+  <h3><a name="TARGET_TYPES_MADE_PUBLIC">Target types made
+  public</a></h3>
+
+    <p> Even in 1.0.6, the AspectJ compiler has occasionally needed to
+    convert the visibility of a package-level class to a public one.  This
+    was previously done in an ad-hoc basis that took whole-program
+    analysis into account.  With the incremental compilation model of
+    AspectJ 1.1, we can now specify the occasions when the compiler makes
+    these visibility changes.
+    </p>
+
+    <p> In particular, the types used in the <code>this</code>,
+    <code>target</code>, and <code>args</code> pointcuts are made public,
+    as are the super-types from <code>declare parents</code> and the
+    exception type from <code>declare soft</code>. 
+    </p> 
+
+    <p> We believe the visibility changes could be avoided in the future
+    with various implementation tricks if they become a serious
+    concern, but did not encounter them as such a concern when they were
+    done in the 1.0.6 implementation.  </p>
+
+<h3><a name="STRINGBUFFER">String + now advised</a></h3>
+
+<p> In Java, the + operator sometimes results in StringBuffer objects
+being created, appended to, and used to generate a new String.  Thus, 
 </p>
+
+<PRE>
+class Foo {
+    String makeEmphatic(String s) {
+        return s + "!";
+    }
+}
+</PRE>
+
+<p> is approximately the same at runtime as
+</p>
+
+<PRE>
+class Foo {
+    String makeEmphatic(String s) {
+        return new StringBuffer(s).append("!").toString();
+    }
+}
+</PRE>
+
+
+<p> In the design process of AspectJ 1.0.6 we didn't expose those
+StringBuffer methods and constructors as join points (though we did
+discuss it), but in 1.1 we do.  </p>
+
+<p> This change is likely to affect highly wildcarded aspects, and can
+do so in surprising ways.  In particular:
+</p>
+
+<PRE>
+class A {
+    before(int i): call(* *(int)) &amp;&amp; args(i) {
+        System.err.println("entering with " + i);
+    }
+}
+</PRE>
+
+<p> may result in a stack overflow error, since the argument to
+println is really </p>
+
+<PRE>
+new StringBuffer("entering with ").append(i).toString()
+</PRE>
+
+<p> which has a call to StringBuffer.append(int).  In such cases, it's
+worth restricting your pointcut, with something like one of:
+</p>
+
+<PRE>
+call(* *(int)) &amp;&amp; args(i) &amp;&amp; !within(A)
+call(* *(int)) &amp;&amp; args(i) &amp;&amp; !target(StringBuffer)
+</PRE>
 
 
 </body> </html>
