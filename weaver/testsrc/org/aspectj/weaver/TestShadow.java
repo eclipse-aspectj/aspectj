@@ -22,19 +22,13 @@ public class TestShadow extends Shadow {
 	private final TypeX thisType;
 
     public TestShadow(Kind kind, Member signature, TypeX thisType, World world) {
-        super(kind, signature);
+        super(kind, signature, null);
         this.world = world;
         this.thisType = thisType;
     }
 
     public World getIWorld() {
         return world;
-    }
-    
-    public boolean hasThis() { return true; }
-
-    public TypeX getThisType() {
-        return thisType;
     }
 
 	/** this is subtly wrong.  ha ha */
