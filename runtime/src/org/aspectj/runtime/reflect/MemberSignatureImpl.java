@@ -14,12 +14,9 @@
 
 package org.aspectj.runtime.reflect;
 
-import java.lang.reflect.AccessibleObject;
-
 import org.aspectj.lang.reflect.MemberSignature;
 
 abstract class MemberSignatureImpl extends SignatureImpl implements MemberSignature {
-	protected AccessibleObject accessibleObj = null;
 	
     MemberSignatureImpl(int modifiers, String name, Class declaringType) {   
         super(modifiers, name, declaringType);
@@ -29,15 +26,4 @@ abstract class MemberSignatureImpl extends SignatureImpl implements MemberSignat
         super(stringRep);
     }
     
-    /* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.MemberSignature#getAccessibleObject()
-	 */
-	public AccessibleObject getAccessibleObject() {
-		if (accessibleObj == null) {
-			accessibleObj = createAccessibleObject();
-		}
-		return accessibleObj;
-	}
-	
-	protected abstract AccessibleObject createAccessibleObject();
 }

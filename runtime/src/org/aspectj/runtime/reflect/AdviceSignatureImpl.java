@@ -14,12 +14,13 @@
 
 package org.aspectj.runtime.reflect;
 
-import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Method;
 
 import org.aspectj.lang.reflect.AdviceSignature;
 
 class AdviceSignatureImpl extends CodeSignatureImpl implements AdviceSignature {
     Class returnType;
+	private Method adviceMethod = null;
     
     AdviceSignatureImpl(int modifiers, String name, Class declaringType, 
         Class[] parameterTypes, String[] parameterNames, Class[] exceptionTypes,
@@ -58,12 +59,14 @@ class AdviceSignatureImpl extends CodeSignatureImpl implements AdviceSignature {
     /* (non-Javadoc)
 	 * @see org.aspectj.runtime.reflect.MemberSignatureImpl#createAccessibleObject()
 	 */
-	protected AccessibleObject createAccessibleObject() {
-		try {
-			return declaringType.getDeclaredMethod(getName(),getParameterTypes());
-		} catch (Exception ex) {
-			; // nothing we can do, caller will see null
+	public Method getAdvice() {
+		if (adviceMethod == null) {
+			try {
+				adviceMethod = declaringType.getDeclaredMethod(getName(),getParameterTypes());
+			} catch (Exception ex) {
+				; // nothing we can do, caller will see null
+			}
 		}
-		return null;
+		return adviceMethod;
 	}
 }

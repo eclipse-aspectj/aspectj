@@ -14,11 +14,13 @@
 
 package org.aspectj.runtime.reflect;
 
-import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
 
 import org.aspectj.lang.reflect.ConstructorSignature;
 
 class ConstructorSignatureImpl extends CodeSignatureImpl implements ConstructorSignature {
+	private Constructor constructor;
+	
     ConstructorSignatureImpl(int modifiers, Class declaringType, 
         Class[] parameterTypes, String[] parameterNames, Class[] exceptionTypes)
     {
@@ -43,12 +45,14 @@ class ConstructorSignatureImpl extends CodeSignatureImpl implements ConstructorS
     /* (non-Javadoc)
 	 * @see org.aspectj.runtime.reflect.MemberSignatureImpl#createAccessibleObject()
 	 */
-	protected AccessibleObject createAccessibleObject() {
-		try {
-			return declaringType.getDeclaredConstructor(getParameterTypes());
-		} catch (Exception ex) {
-			; // nothing we can do, caller will see null
+	public Constructor getConstructor() {
+		if (constructor == null) {
+			try {
+				constructor = declaringType.getDeclaredConstructor(getParameterTypes());
+			} catch (Exception ex) {
+				; // nothing we can do, caller will see null
+			}
 		}
-		return null;
+		return constructor;
 	}
 }

@@ -13,9 +13,11 @@
 
 
 package org.aspectj.lang.reflect;
+import java.lang.reflect.Method;
 
 public interface AdviceSignature extends CodeSignature {
     Class getReturnType();      /* name is consistent with reflection API   */
                                 /* before and after always return Void.TYPE */
                                 /* (some around also return Void.Type)      */
+	Method getAdvice();
 }

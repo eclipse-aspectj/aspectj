@@ -16,10 +16,12 @@ package org.aspectj.runtime.reflect;
 
 import org.aspectj.lang.reflect.InitializerSignature;
 
-import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 
 class InitializerSignatureImpl extends CodeSignatureImpl implements InitializerSignature {
+	private Constructor constructor;
+	
     InitializerSignatureImpl(int modifiers, Class declaringType) {
         super(modifiers, Modifier.isStatic(modifiers) ? "<clinit>" : "<init>", declaringType, EMPTY_CLASS_ARRAY, 
               EMPTY_STRING_ARRAY, EMPTY_CLASS_ARRAY);
@@ -45,12 +47,14 @@ class InitializerSignatureImpl extends CodeSignatureImpl implements InitializerS
     /* (non-Javadoc)
 	 * @see org.aspectj.runtime.reflect.MemberSignatureImpl#createAccessibleObject()
 	 */
-	protected AccessibleObject createAccessibleObject() {
-		try {
-			return declaringType.getDeclaredConstructor(getParameterTypes());
-		} catch (Exception ex) {
-			; // nothing we can do, caller will see null
+	public Constructor getInitializer() {
+		if (constructor == null) {
+			try {
+				constructor = declaringType.getDeclaredConstructor(getParameterTypes());
+			} catch (Exception ex) {
+				; // nothing we can do, caller will see null
+			}
 		}
-		return null;
+		return constructor;
 	}
 }

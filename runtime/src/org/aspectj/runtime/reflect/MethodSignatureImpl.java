@@ -14,11 +14,12 @@
 
 package org.aspectj.runtime.reflect;
 
-import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Method;
 
 import org.aspectj.lang.reflect.MethodSignature;
 
 class MethodSignatureImpl extends CodeSignatureImpl implements MethodSignature {
+	private Method method;
     Class returnType;
     
     MethodSignatureImpl(int modifiers, String name, Class declaringType, 
@@ -56,12 +57,14 @@ class MethodSignatureImpl extends CodeSignatureImpl implements MethodSignature {
     /* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.MemberSignature#getAccessibleObject()
 	 */
-	public AccessibleObject createAccessibleObject() {
-		try {
-			return declaringType.getDeclaredMethod(getName(),getParameterTypes());
-		} catch (NoSuchMethodException nsmEx) {
-			; // nothing we can do, user will see null return
+	public Method getMethod() {
+		if (method == null) {
+			try {
+				method = declaringType.getDeclaredMethod(getName(),getParameterTypes());
+			} catch (NoSuchMethodException nsmEx) {
+				; // nothing we can do, user will see null return
+			}
 		}
-		return null;
+		return method;
 	}
 }
