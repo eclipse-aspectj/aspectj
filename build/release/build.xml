@@ -347,11 +347,9 @@
 		<antcall target="do-14-target">
 			<param name="do.target" value="do-test-install-sequence"/>
 		</antcall>
-	    <!-- TODO: also under 1.5
-		<antcall target="do-14-target">
+		<antcall target="do-15-target">
 			<param name="do.target" value="do-test-install-sequence"/>
 		</antcall>
-		-->
 		<antcall target="test-doc-links"/>
 		<echo message="TODO: Run test-examples-11 manually - AWT not exiting?"/>
 		<!-- antcall target="test-examples-11"/ -->
@@ -435,11 +433,9 @@
 		<antcall target="do-14-target">
 			<param name="do.target" value="do-test-sources-sequence"/>
 		</antcall>
-	    <!-- TODO also under 1.5
 		<antcall target="do-15-target">
 			<param name="do.target" value="do-test-sources-sequence"/>
 		</antcall>
-		-->
 	</target>
 
 	<target name="do-test-sources-sequence">
