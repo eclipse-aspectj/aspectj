@@ -83,7 +83,12 @@ public class AjState {
 			return false;
 		}
 		
+		// we don't support incremental with an outjar yet
 		if (newBuildConfig.getOutputJar() != null) return false;
+		
+		// we can't do an incremental build if one of our paths
+		// has changed, or a jar on a path has been modified
+		if (pathChange(buildConfig,newBuildConfig)) return false;
 		
 		simpleStrings = new ArrayList();
 		qualifiedStrings = new ArrayList();
@@ -121,6 +126,40 @@ public class AjState {
 		return ret;
 	}
 
+	private boolean pathChange(AjBuildConfig oldConfig, AjBuildConfig newConfig) {
+		boolean changed = false;
+		List oldClasspath = oldConfig.getClasspath();
+		List newClasspath = newConfig.getClasspath();
+		if (changed(oldClasspath,newClasspath)) return true;
+		List oldAspectpath = oldConfig.getAspectpath();
+		List newAspectpath = newConfig.getAspectpath();
+		if (changed(oldAspectpath,newAspectpath)) return true;
+		List oldInJars = oldConfig.getInJars();
+		List newInJars = newConfig.getInJars();
+		if (changed(oldInJars,newInJars)) return true;
+		List oldInPath = oldConfig.getInpath();
+		List newInPath = newConfig.getInpath();
+		if (changed(oldInPath, newInPath)) return true;
+		return changed;
+	}
+	
+	private boolean changed(List oldPath, List newPath) {
+		if (oldPath == null) oldPath = new ArrayList();
+		if (newPath == null) newPath = new ArrayList();
+		if (oldPath.size() != newPath.size()) {
+			return true;
+		}
+		for (int i = 0; i < oldPath.size(); i++) {
+			if (!oldPath.get(i).equals(newPath.get(i))) {
+				return true;
+			}
+			File f = new File((String)oldPath.get(i));
+			if (f.exists() && !f.isDirectory() && (f.lastModified() >= lastSuccessfulBuildTime)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public List getFilesToCompile(boolean firstPass) {
 		List thisTime = new ArrayList();
