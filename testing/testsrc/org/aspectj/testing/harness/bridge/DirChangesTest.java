@@ -29,7 +29,8 @@ import org.aspectj.testing.xml.XMLWriter;
 import org.aspectj.util.LangUtil;
 
 /**
- *
+ * (broken) tests for unutilized feature to read in
+ * expected directory changes as messages.
  */
 public class DirChangesTest extends TestCase {
     private static final boolean PRINTING = false;
