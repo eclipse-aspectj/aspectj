@@ -443,7 +443,12 @@ public class AjBuildManager {
 
 				try {
                     String version = null;
-                    Attributes attr = new JarFile(p).getManifest().getAttributes("org/aspectj/lang/");
+                    Manifest manifest = new JarFile(p).getManifest();
+                    if (manifest == null) {
+                    	return "no manifest found in " + p.getAbsolutePath() + 
+								", expected " + Version.text;
+                    }
+                    Attributes attr = manifest.getAttributes("org/aspectj/lang/");
                     if (null != attr) {
                         version = attr.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
                         if (null != version) {
