@@ -33,15 +33,22 @@ import org.aspectj.bridge.Version;
  */
 public class OptionsFrame extends JFrame {
 
+    // XXX using \n b/c JTextArea.setLineWrap(true) lineates inside words.
     private static final String ABOUT_TEXT =
-        "\nPlease submit bugs at http://aspectj.org/bugs\n" +
-        "For support questions email support@aspectj.org\n\n" +
-        "The AspectJ compiler and core tools are distributed under\n" +
-        "the Mozilla Public License version 1.1.  This license has\n" +
-        "been approved by the Open Source Initiative as conforming\n" +
-        "to the Open Source Definition.  For more information and the\n" +
-        "license please visit http://aspectj.org/license\n";
-
+        "\nThe AspectJ compiler and core tools are produced by the\n" +
+        "AspectJ project.\n\n" +
+        "This software is distributed under the Common Public License\n" +
+        "version 1.0, approved by the Open Source Initiative as\n" +
+        "conforming to the Open Source Definition.\n\n" +
+        "For support or for more information about the AspectJ\n" +
+        "project or the license, visit the project home page at\n" + 
+        "    http://eclipse.org/aspectj\n\n" +
+        "If you find a bug (not solved by the documentation in the\n" +
+        "Development Environment Guide available with this release,\n" +
+        "any release notes, or the bug database), please submit steps\n" +
+        "to reproduce the bug (using the IDE component) at:\n" + 
+        "    http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ";
+        
     private JTabbedPane main_tabbedPane = new JTabbedPane();
     private JPanel button_panel = new JPanel();
     private JButton apply_button = new JButton();
@@ -239,6 +246,7 @@ public class OptionsFrame extends JFrame {
         jTextArea1.setFont(new java.awt.Font("SansSerif", 0, 12));
         jTextArea1.setEditable(false);
         jTextArea1.setText(ABOUT_TEXT);
+        
         about_panel.setBorder(border9);
         built_label.setText("Built: ");
         built_label.setFont(new java.awt.Font("Dialog", 1, 12));
