@@ -162,7 +162,9 @@ public class AsmElementFormatter {
 				
 			} else if (declare.declareDecl instanceof DeclareAnnotation) {
 			    DeclareAnnotation deca = (DeclareAnnotation)declare.declareDecl;
-			    node.setName(name + deca.getKind());
+				String thekind = deca.getKind().toString();
+				node.setName(name+"@"+thekind.substring(3));
+
 			    if (deca.getKind()==DeclareAnnotation.AT_CONSTRUCTOR) {
 			      node.setKind(IProgramElement.Kind.DECLARE_ANNOTATION_AT_CONSTRUCTOR);
 			    } else  if (deca.getKind()==DeclareAnnotation.AT_FIELD) {
