@@ -3,7 +3,7 @@ import org.aspectj.testing.Tester;
 
 import packagevisibility.testPackage.*;
 
-public class PackagesAndAdvice
+public class PackagesAndAdviceCf
 {
     public static void main(String[] args) { test(); }
 
@@ -24,7 +24,9 @@ aspect A {
     static String message = "-advised";
 
     String around(String s):
-        call(String doIt(String)) && args(s) {
+        call(String doIt(String)) && args(s) &&
+	    (target(packagevisibility.testPackage.Class1) ||
+                  target(packagevisibility.testPackage.Class2)) {  // Cf type not visible
         String result = s + message;
 	result += A1.message;
 	return result + proceed(s);
