@@ -559,7 +559,7 @@ class FeatureHarness extends Harness {
             + OPTION_DELIM + "!eclipse",
           "-release", 
               "-baseline" 
-              + OPTION_DELIM + "-ajctestSkipKeywords=knownLimitations,purejava" 
+              + OPTION_DELIM + "-ajctestSkipKeywords=knownLimitation,purejava" 
         };
     static {
         Properties optionAliases = Harness.getOptionAliases();
