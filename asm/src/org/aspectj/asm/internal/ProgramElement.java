@@ -416,36 +416,36 @@ public class ProgramElement implements IProgramElement {
 
 	// TODO: determine if using canonical path incurrs performance overhead
 	public static String createHandleIdentifier(File sourceFile, int line,int column) {
-		try {
+//		try {
 			StringBuffer sb = new StringBuffer();
-			sb.append(sourceFile.getCanonicalPath());
+			sb.append(sourceFile.getAbsolutePath());
 			sb.append(ID_DELIM);
 			sb.append(line);
 			sb.append(ID_DELIM);
 			sb.append(column);
 			return sb.toString();		
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-			return null;
-		}
+//		} catch (IOException ioe) {
+//			ioe.printStackTrace();
+//			return null;
+//		}
 	}
 
 	public String getHandleIdentifier() {
-		try {
+//		try {
 			StringBuffer sb = new StringBuffer();
 			if (sourceLocation == null) {
 				return null;
 			} else {  
-				sb.append(sourceLocation.getSourceFile().getCanonicalPath());
+				sb.append(sourceLocation.getSourceFile().getAbsolutePath());
 				sb.append(ID_DELIM);
 				sb.append(sourceLocation.getLine());
 				sb.append(ID_DELIM);
 				sb.append(sourceLocation.getColumn());
 				return sb.toString();
 			}
-		} catch (IOException ioe) {
-			return null;
-		}
+//		} catch (IOException ioe) {
+//			return null;
+//		}
 	}
 
 	public List getParameterNames() {

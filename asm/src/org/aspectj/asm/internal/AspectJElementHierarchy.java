@@ -163,7 +163,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 	       	if (!isValid() || sourceFile == null) {   
 	            return IHierarchy.NO_STRUCTURE;
 	        } else {
-	            String correctedPath = new File(sourceFile).getCanonicalPath();//.replace('\\', '/');
+	            String correctedPath = new File(sourceFile).getAbsolutePath();//.replace('\\', '/');
 	            //StructureNode node = (StructureNode)getFileMap().get(correctedPath);//findFileNode(filePath, model);
 				IProgramElement node = (IProgramElement)findInFileMap(correctedPath);//findFileNode(filePath, model);
 	            if (node != null) {
@@ -182,7 +182,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 	 */
 	public IProgramElement findElementForSourceLine(ISourceLocation location) {
 		try {
-			return findElementForSourceLine(location.getSourceFile().getCanonicalPath(), location.getLine());
+			return findElementForSourceLine(location.getSourceFile().getAbsolutePath(), location.getLine());
 		} catch (Exception e) {
 			return null;
 		}
@@ -233,7 +233,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 	}
 
 	private boolean matches(IProgramElement node, String sourceFilePath, int lineNumber) {
-		try {			
+//		try {			
 //			if (node != null && node.getSourceLocation() != null)
 //				System.err.println("====\n1: " + 
 //					sourceFilePath + "\n2: " +
@@ -241,16 +241,16 @@ public class AspectJElementHierarchy implements IHierarchy {
 //				);				
 			return node != null 
 				&& node.getSourceLocation() != null
-				&& node.getSourceLocation().getSourceFile().getCanonicalPath().equals(sourceFilePath)
+				&& node.getSourceLocation().getSourceFile().getAbsolutePath().equals(sourceFilePath)
 				&& ((node.getSourceLocation().getLine() <= lineNumber
 					&& node.getSourceLocation().getEndLine() >= lineNumber)
 					||
 					(lineNumber <= 1
 					 && node.getKind().isSourceFileKind())
 				);
-		} catch (IOException ioe) { 
-			return false;
-		} 
+//		} catch (IOException ioe) { 
+//			return false;
+//		} 
 	}
 	
 	private boolean hasMoreSpecificChild(IProgramElement node, String sourceFilePath, int lineNumber) {
