@@ -100,7 +100,6 @@ public class IncCompilerRun implements IAjcRun {
         }
         boolean result = false;
         try {
-            //ArrayList changed = new ArrayList();
             final String toSuffix = ".java";
             final String fromSuffix = "." + spec.tag + toSuffix;
             // copy our tagged generation of files to the staging directory,

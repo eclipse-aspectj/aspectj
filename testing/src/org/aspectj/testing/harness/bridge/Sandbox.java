@@ -403,7 +403,10 @@ public class Sandbox {
      * This ignores aspectpath since it may contain only jar files.
      * @param readable if true, omit non-readable directories 
      */
-    File[] getClasspathDirectories(boolean readable, JavaRun caller) {
+    File[] getClasspathDirectories(
+        boolean readable, 
+        JavaRun caller, 
+        boolean includeOutput) {
         LangUtil.throwIaxIfNull(caller, "caller");
         assertState(null != compileClasspath, "classpath not set");
         ArrayList result = new ArrayList();
@@ -414,6 +417,10 @@ public class Sandbox {
                 result.add(f);
             }
 		}
+        if (includeOutput && (null != classesDir) 
+            && (!readable || classesDir.canRead())) {
+            result.add(classesDir);                
+        }
         return (File[]) result.toArray(new File[0]);
     }
 

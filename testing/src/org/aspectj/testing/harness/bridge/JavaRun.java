@@ -108,7 +108,7 @@ public class JavaRun implements IAjcRun {
             && validator.canReadDir(sandbox.getTestBaseSrcDir(this), "testBaseSrc dir")
             && validator.canWriteDir(sandbox.runDir, "run dir")
             && validator.canReadFiles(sandbox.getClasspathJars(true, this), "classpath jars")
-            && validator.canReadDirs(sandbox.getClasspathDirectories(true, this), "classpath dirs")
+            && validator.canReadDirs(sandbox.getClasspathDirectories(true, this, true), "classpath dirs")
             );            
         
 	}
@@ -126,7 +126,8 @@ public class JavaRun implements IAjcRun {
         try {
             final boolean readable = true;
             File[] libs = sandbox.getClasspathJars(readable, this);
-            File[] dirs = sandbox.getClasspathDirectories(readable, this);
+            boolean includeClassesDir = true;
+            File[] dirs = sandbox.getClasspathDirectories(readable, this, includeClassesDir);
             completedNormally = FORK // || spec.fork
                 ? runInOtherVM(status, libs, dirs)
                 : runInSameVM(status, libs, dirs);

@@ -197,18 +197,24 @@ public class CompilerRun implements IAjcRun {
             }
         } else { // staging - copy files
             try {
+                // copy all files, then remove tagged ones
+                // XXX make copyFiles support a filter?
                 srcFiles = FileUtil.copyFiles(testBaseSrcDir, srcPaths, sandbox.stagingDir);
                 if (!LangUtil.isEmpty(spec.sourceroots)) {
                     sourcerootFiles = FileUtil.copyFiles(testBaseSrcDir, spec.sourceroots, sandbox.stagingDir);
                     // delete incremental files in sourceroot after copying // XXX inefficient
                     FileFilter pickIncFiles = new FileFilter() {
-                        // XXX weak rule to find incremental files
+                        // an incremental file has an extra "." in name
+                        // most .java files don't, because they are named after
+                        // the principle type they contain, and simple type names
+                        // have no dots.
                         public boolean accept(File file) {
                             if (file.isDirectory()) { // continue recursion
                                 return true;
                             }
                             String path = file.getPath();
-                            if (!FileUtil.hasSourceSuffix(path)) {
+                            // only source files are relevant to staging
+                            if (!FileUtil.hasSourceSuffix(path)) { 
                                 return false;
                             }
                             int first = path.indexOf(".");
@@ -256,10 +262,9 @@ public class CompilerRun implements IAjcRun {
 
         // save classpath and aspectpath in sandbox for this and other clients
         final boolean checkReadable = true; // hmm - third validation?
-        File[] cp = new File[3 + classFiles.length];
+        File[] cp = new File[2 + classFiles.length];
         System.arraycopy(classFiles, 0, cp, 0, classFiles.length);
         int index = classFiles.length;
-        cp[index++] = sandbox.classesDir;
         cp[index++] = Globals.F_aspectjrt_jar;
         cp[index++] = Globals.F_testingclient_jar;
         sandbox.setClasspath(cp, checkReadable, this);
