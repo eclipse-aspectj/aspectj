@@ -1,0 +1,45 @@
+<project default="unpackAndJar" basedir=".">
+
+  <target name="unpackAndJar" depends="unpack,jar" />
+
+  <target name="jar">
+    <copy file="../lib/regexp/jakarta-regexp-1.2.jar"
+        tofile="bcel/lib/regexp-1.2.jar" />
+    <ant dir="bcel" target="jar" />
+    <copy file="bcel/bin/bcel.jar" toDir="." />
+  </target>
+
+  <target name="pack">
+  </target>
+
+  <target name="unpack" depends="extract,patch" />
+
+  <target name="extract">
+    <unzip src="bcel-5.1-src.zip" dest="." />
+  </target>
+
+  <target name="clean">
+    <delete dir="bcel-5.1" />
+    <delete dir="bcel" />
+  </target>
+
+  <target name="patch">
+    <copy todir="bcel">
+      <fileset dir="bcel-5.1" />
+    </copy>
+    <patch patchfile="patch.txt" strip="1" dir="bcel" />
+  </target>
+
+  <target name="diff">
+    <exec dir="." executable="diff.exe" output="patch.txt">
+      <arg line="-N"/>
+      <arg line="-a"/>
+      <arg line="-u"/>
+      <arg line="-r"/>
+      <arg line="-b"/>
+      <arg line="bcel-5.1" />
+      <arg line="bcel" />
+    </exec>
+  </target>
+
+</project>

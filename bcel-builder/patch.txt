@@ -1,0 +1,19 @@
+diff -N -a -u -r -b bcel-5.1/build.xml bcel/build.xml
+--- bcel-5.1/build.xml	2003-04-25 09:06:14.000000000 -0700
++++ bcel/build.xml	2004-01-27 11:15:53.460625000 -0800
+@@ -65,7 +65,7 @@
+   <target name="build" depends="compile"/>
+ 
+   <!-- Jar the library -->
+-  <target name="jar" depends="examples">
++  <target name="jar" depends="init,compile">
+     <jar jarfile="${build.dir}/${name}.jar" 
+          basedir="${build.dest}"
+ 	 manifest="${basedir}/manifest.txt"
+diff -N -a -u -r -b bcel-5.1/manifest.txt bcel/manifest.txt
+--- bcel-5.1/manifest.txt	1969-12-31 16:00:00.000000000 -0800
++++ bcel/manifest.txt	2004-01-27 11:14:51.835625000 -0800
+@@ -0,0 +1,3 @@
++Created-By: Jakarta BCEL 5.1
++Manifest-Version: 1.0
++Main-Class: listclass

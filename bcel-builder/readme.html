@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>The BCEL-builder module</title>
+</head>
+
+<body>
+<h1>The BCEL-builder module</h1>
+
+<p> The contents of this directory are:
+</p>
+
+<ul>
+  <li>This file</li>
+  <li>build.xml -- an ant script </li>
+  <li>patch.txt -- a diff patchfile</li>
+</ul>
+
+<p> And pretty much nothing else.  Well, then, what do you do with
+this directory?  Well, the whole point is to generate bcel/bcel.jar in
+the lib package.  To do so, first stick
+<strong>bcel-5.1-src.zip</strong> in this directory, then run ant.
+After much unzipping, patching, and compiling, you should get an
+appropriate bcel.jar file.  Now put it in the appropriate place. </p>
+
+<p> If there's something <em>wrong</em> with the bcel.jar in the lib
+project, well, then you've got some development to do.  You'll need
+to know some more ant targets.  But before anything, get that
+<strong>bcel-5.1-src.zip</strong> and stick it in this directory.
+</p>
+
+<ul>
+  <li>ant unpack -- unpack the sources for the AspectJ-version of BCEL
+  into the <strong>src</strong> subdirectory.  Though you probably
+  don't care, this invokes the following subtasks: </li>
+
+       <ul>
+	 <li>ant extract -- extract the contents of bcel-5.1-src.zip
+	 into the bcel-5.1 directory.</li>
+
+	 <li>ant patch -- apply the patchfile patch.txt to the
+	 <strong>bcel-5.1/src</strong> directory, creating
+	 <strong>src</strong>.</li>
+       </ul>
+
+  <li>ant pack -- pack the sources for AspectJ's version of bcel back
+  into a tiny little patchfile.  This uses exec, and requires that you
+  have diff somewhere on your path.  Actually, it's much worse: it
+  requires you have diff.exe somewhere on your path.  I hate that I'm
+  turning into a windows whore. </li>
+
+  <li>ant clean -- get rid of everything extraneous in preparation for
+  a checkin.  </li>
+</ul>
+
+</body> </html>
