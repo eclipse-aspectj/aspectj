@@ -52,7 +52,7 @@ public class BcelWorld extends World {
 	private ClassPathManager classPath;
 	
 	//private ClassPathManager aspectPath = null;
-	private List aspectPathEntries;
+	// private List aspectPathEntries;
 	
     // ---- constructors
 

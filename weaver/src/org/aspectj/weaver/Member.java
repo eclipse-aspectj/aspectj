@@ -247,7 +247,7 @@ public class Member implements Comparable {
     
     public static Member methodFromString(String str) {
         str = str.trim();
-        final int len = str.length();
+        // final int len = str.length();
         int i = 0;
 
         int mods = 0;

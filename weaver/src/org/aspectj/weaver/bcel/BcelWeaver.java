@@ -151,7 +151,7 @@ public class BcelWeaver implements IWeaver {
 			
 			FileInputStream fis = new FileInputStream(files[i]);
 			byte[] bytes = FileUtil.readAsByteArray(fis);
-			String relativePath = files[i].getPath();
+			// String relativePath = files[i].getPath();
 			
 			// ASSERT: files[i].getAbsolutePath().startsWith(inFile.getAbsolutePath()
 			// or we are in trouble...

@@ -850,7 +850,7 @@ class BcelClassWeaver implements IClassWeaver {
 		if (i instanceof FieldInstruction) {
 			FieldInstruction fi = (FieldInstruction) i;
 						
-			if (i instanceof PUTFIELD || i instanceof PUTSTATIC) {
+			if (fi instanceof PUTFIELD || fi instanceof PUTSTATIC) {
 				// check for sets of constant fields.  We first check the previous 
 				// instruction.  If the previous instruction is a LD_WHATEVER (push
 				// constant on the stack) then we must resolve the field to determine

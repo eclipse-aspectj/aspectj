@@ -386,7 +386,6 @@ public class AjcMemberMaker {
 		//System.out.println("ret: " + ret + " mods: " + Modifier.toString(modifiers));
 		if (Modifier.isPublic(constructor.getModifiers()))
 			return ret;
-		int i = 0;
 		while (true) {
 			ret = addCookieTo(ret, aspectType);
 			if (targetType.lookupMemberNoSupers(ret) == null)

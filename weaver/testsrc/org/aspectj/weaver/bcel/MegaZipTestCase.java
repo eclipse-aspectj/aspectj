@@ -44,7 +44,7 @@ public class MegaZipTestCase extends WeaveTestCase {
 
 
     private BcelAdvice makeAroundMunger(final boolean matchOnlyPrintln) {
-        BcelWorld world = new BcelWorld();
+        // BcelWorld world = new BcelWorld();
         final Member sig = 
             Member.method(
                 TypeX.forName("fluffy.Aspect"),

@@ -91,7 +91,7 @@ public abstract class TypePattern extends PatternNode {
 			return true;
 		}
 		
-		FuzzyBoolean ret = FuzzyBoolean.NO; // ??? -eh
+		// FuzzyBoolean ret = FuzzyBoolean.NO; // ??? -eh
 		for (Iterator i = type.getDirectSupertypes(); i.hasNext(); ) {
 			ResolvedTypeX superType = (ResolvedTypeX)i.next();
 			if (matchesSubtypes(superType)) return true;

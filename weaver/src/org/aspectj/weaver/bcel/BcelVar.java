@@ -39,21 +39,18 @@ public class BcelVar extends Var {
 
     public int getSlot() { return slot; }
 
+	// fact is used in the subtypes
     public Instruction createLoad(InstructionFactory fact) {
-		// TODO: remove fact
         return InstructionFactory.createLoad(BcelWorld.makeBcelType(getType()), slot);
     }
     public Instruction createStore(InstructionFactory fact) {
-    	// TODO: remove fact
         return InstructionFactory.createStore(BcelWorld.makeBcelType(getType()), slot);
     }
 
 	public void appendStore(InstructionList il, InstructionFactory fact) {
-		// TODO: remove fact
 		il.append(createStore(fact));
 	}
     public void appendLoad(InstructionList il, InstructionFactory fact) {
-		// TODO: remove fact
         il.append(createLoad(fact));
     }
 	public void appendLoadAndConvert(
@@ -64,11 +61,9 @@ public class BcelVar extends Var {
 		Utility.appendConversion(il, fact, getType(), toType);
 	} 
     public void insertLoad(InstructionList il, InstructionFactory fact) {
-		// TODO: remove fact    	
         il.insert(createLoad(fact));
     }
     public InstructionList createCopyFrom(InstructionFactory fact, int oldSlot) {
-		// TODO: remove fact
         InstructionList il = new InstructionList();
         il.append(InstructionFactory.createLoad(BcelWorld.makeBcelType(getType()), oldSlot));
         il.append(createStore(fact));

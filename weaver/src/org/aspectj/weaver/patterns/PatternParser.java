@@ -399,7 +399,7 @@ public class PatternParser {
 	
 	private TypePattern parseAtomicTypePattern() {
 		if (maybeEat("!")) {
-			int startPos = tokenSource.peek(-1).getStart();
+			//int startPos = tokenSource.peek(-1).getStart();
 			//??? we lose source location for true start of !type
 			TypePattern p = new NotTypePattern(parseAtomicTypePattern());
 			return p;			

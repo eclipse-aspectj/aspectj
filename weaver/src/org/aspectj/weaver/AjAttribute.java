@@ -130,7 +130,7 @@ public abstract class AjAttribute {
 		public String getNameString() {
 			return AttributeName;
 		}
-		private ResolvedTypeMunger munger;
+		// private ResolvedTypeMunger munger;
 		public AjSynthetic() {}
 
 		public void write(DataOutputStream s) throws IOException {}

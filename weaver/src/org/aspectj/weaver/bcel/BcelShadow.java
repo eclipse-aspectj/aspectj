@@ -429,7 +429,7 @@ public class BcelShadow extends Shadow {
 		Member interfaceConstructorSignature) 
 	{
 		InstructionList body = constructor.getBody();
-		TypeX inType = constructor.getEnclosingClass().getType();
+		// TypeX inType = constructor.getEnclosingClass().getType();
         BcelShadow s =
             new BcelShadow(
                 world,
@@ -453,9 +453,9 @@ public class BcelShadow extends Shadow {
 		InstructionHandle next,
 		Member interfaceConstructorSignature) 
 	{
-		final InstructionFactory fact = constructor.getEnclosingClass().getFactory();
+		// final InstructionFactory fact = constructor.getEnclosingClass().getFactory();
 		InstructionList body = constructor.getBody();
-		TypeX inType = constructor.getEnclosingClass().getType();
+		// TypeX inType = constructor.getEnclosingClass().getType();
         BcelShadow s =
             new BcelShadow(
                 world,
@@ -705,13 +705,13 @@ public class BcelShadow extends Shadow {
 		}
 	}
 
-    // ---- type access methods
-    private ObjectType getTargetBcelType() {
-        return (ObjectType) BcelWorld.makeBcelType(getTargetType());
-    }
-    private Type getArgBcelType(int arg) {
-        return BcelWorld.makeBcelType(getArgType(arg));
-    }
+//    // ---- type access methods
+//    private ObjectType getTargetBcelType() {
+//        return (ObjectType) BcelWorld.makeBcelType(getTargetType());
+//    }
+//    private Type getArgBcelType(int arg) {
+//        return BcelWorld.makeBcelType(getArgType(arg));
+//    }
 
     // ---- kinding
 
@@ -766,7 +766,7 @@ public class BcelShadow extends Shadow {
     // reflective thisJoinPoint support
     private BcelVar thisJoinPointVar = null;
     private BcelVar thisJoinPointStaticPartVar = null;  
-    private BcelVar thisEnclosingJoinPointStaticPartVar = null;  
+    // private BcelVar thisEnclosingJoinPointStaticPartVar = null;  
     
 	public final Var getThisJoinPointVar() {
 		return getThisJoinPointBcelVar();
@@ -948,7 +948,7 @@ public class BcelShadow extends Shadow {
 	 * (Unless we have a void return type in which case there's nothing)
 	 */
     public void weaveAfterReturning(BcelAdvice munger) {
-        InstructionFactory fact = getFactory();
+        // InstructionFactory fact = getFactory();
         List returns = new ArrayList();
         Instruction ret = null;
         for (InstructionHandle ih = range.getStart(); ih != range.getEnd(); ih = ih.getNext()) {
@@ -1354,7 +1354,7 @@ public class BcelShadow extends Shadow {
     	// we push a null for the unused closure.  It's sad, but there it is.
     	    	
     	InstructionList advice = new InstructionList();
-        InstructionHandle adviceMethodInvocation;
+        // InstructionHandle adviceMethodInvocation;
         {
 			for (Iterator i = argVarList.iterator(); i.hasNext(); ) {
 				BcelVar var = (BcelVar)i.next();
@@ -1366,7 +1366,7 @@ public class BcelShadow extends Shadow {
 					this,
 					null,
 					new InstructionList(InstructionConstants.ACONST_NULL)));
-		    adviceMethodInvocation =
+		    // adviceMethodInvocation =
 		        advice.append(
 		        	Utility.createInvoke(fact, localAdviceMethod)); //(fact, getWorld(), munger.getSignature()));
 			advice.append(

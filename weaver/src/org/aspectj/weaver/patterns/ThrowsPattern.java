@@ -72,7 +72,7 @@ public class ThrowsPattern extends PatternNode {
 		//System.out.println("matching: " + this + " with " + Arrays.asList(tys));
 		
 		ResolvedTypeX[] types = world.resolve(tys);
-		int len = types.length;
+		// int len = types.length;
 		for (int j=0, lenj = required.size(); j < lenj; j++) {
 			if (! matchesAny(required.get(j), types)) {
 				return false;
