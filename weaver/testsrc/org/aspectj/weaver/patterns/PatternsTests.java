@@ -32,6 +32,11 @@ public class PatternsTests extends TestCase {
         suite.addTestSuite(TypePatternListTestCase.class); 
         suite.addTestSuite(TypePatternTestCase.class); 
         suite.addTestSuite(WithinTestCase.class); 
+        suite.addTestSuite(PointcutTestCase.class);
+        suite.addTestSuite(ArgsTestCase.class);
+        suite.addTestSuite(HandlerTestCase.class);
+        suite.addTestSuite(KindedTestCase.class);
+        suite.addTestSuite(WithinCodeTestCase.class);
         //$JUnit-END$
         return suite;
     }
