@@ -135,7 +135,9 @@ public class CflowPointcut extends Pointcut {
 		
 		Pointcut concreteEntry;
 		
-		CrosscuttingMembers xcut = bindings.getConcreteAspect().crosscuttingMembers;		
+		ResolvedTypeX concreteAspect = bindings.getConcreteAspect();
+		
+		CrosscuttingMembers xcut = concreteAspect.crosscuttingMembers;		
 		Collection previousCflowEntries = xcut.getCflowEntries();
 		
 		entryBindings.pushEnclosingDefinition(CFLOW_MARKER);
@@ -150,17 +152,18 @@ public class CflowPointcut extends Pointcut {
 
 		
 		ResolvedMember cflowField = new ResolvedMember(
-			Member.FIELD, inAspect, Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL,
+			Member.FIELD, concreteAspect, Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL,
 					NameMangler.cflowStack(xcut), 
 					TypeX.forName(NameMangler.CFLOW_STACK_TYPE).getSignature());
+		//System.out.println("adding field to: " + inAspect + " field " + cflowField);
 					
 		// add field and initializer to inAspect
 		//XXX and then that info above needs to be mapped down here to help with
 		//XXX getting the exposed state right
-		bindings.getConcreteAspect().crosscuttingMembers.addConcreteShadowMunger(
+		concreteAspect.crosscuttingMembers.addConcreteShadowMunger(
 				Advice.makeCflowEntry(world, concreteEntry, isBelow, cflowField, freeVars.length, innerCflowEntries));
 		
-		bindings.getConcreteAspect().crosscuttingMembers.addTypeMunger(
+		concreteAspect.crosscuttingMembers.addTypeMunger(
 			world.makeCflowStackFieldAdder(cflowField));
 			
 			

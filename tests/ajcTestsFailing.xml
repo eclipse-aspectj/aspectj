@@ -5,13 +5,6 @@
 
 <suite>
 	<ajc-test dir="bugs"
-		pr="40876"
-		title="subtype-qualified pointcut reference">
-		<compile files="PointcutLibraryTest.java"/>
-		<run class="PointcutLibraryTest"/>
-		</ajc-test>
-
-	<ajc-test dir="bugs"
 		pr="40858"
 		comment="shouldn't super ref be permitted?"
 		title="weaver trace on mis-qualified pointcut reference">

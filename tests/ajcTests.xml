@@ -6470,5 +6470,12 @@
 			<message kind="error" line="10"/>
 		</compile>
 	</ajc-test>
+	
+	<ajc-test dir="bugs"
+		pr="40876"
+		title="subtype-qualified pointcut reference">
+		<compile files="PointcutLibraryTest.java"/>
+		<run class="PointcutLibraryTest"/>
+	</ajc-test>
 
 </suite>
