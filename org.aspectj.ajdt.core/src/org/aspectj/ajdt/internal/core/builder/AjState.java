@@ -93,7 +93,15 @@ public class AjState {
 		
 		// we can't do an incremental build if one of our paths
 		// has changed, or a jar on a path has been modified
-		if (pathChange(buildConfig,newBuildConfig)) return false;
+		if (pathChange(buildConfig,newBuildConfig)) {
+		    // last time we built, .class files and resource files from jars on the
+		    // inpath will have been copied to the output directory.
+		    // these all need to be deleted in preparation for the clean build that is
+		    // coming - otherwise a file that has been deleted from an inpath jar 
+		    // since the last build will not be deleted from the output directory.
+		    removeAllResultsOfLastBuild();
+		    return false;
+		}
 		
 		simpleStrings = new ArrayList();
 		qualifiedStrings = new ArrayList();
@@ -255,6 +263,33 @@ public class AjState {
 			// return empty set... we've already done our bit.
 		}
 		return toWeave;
+	}
+	
+	/**
+	 * Called when a path change is about to trigger a full build, but
+	 * we haven't cleaned up from the last incremental build...
+	 */
+	private void removeAllResultsOfLastBuild() {
+	    // remove all binarySourceFiles, and all classesFromName...
+	    for (Iterator iter = binarySourceFiles.values().iterator(); iter.hasNext();) {
+            List ucfs = (List) iter.next();
+            for (Iterator iterator = ucfs.iterator(); iterator.hasNext();) {
+                UnwovenClassFile ucf = (UnwovenClassFile) iterator.next();
+                try {
+                    ucf.deleteRealFile();
+                } catch (IOException ex) { /* we did our best here */ } 
+            }
+        }
+	    for (Iterator iterator = classesFromName.values().iterator(); iterator.hasNext();) {
+            UnwovenClassFile ucf = (UnwovenClassFile) iterator.next();
+            try {
+                ucf.deleteRealFile();
+            } catch (IOException ex) { /* we did our best here */ }  
+        }
+	    for (Iterator iter = resources.iterator(); iter.hasNext();) {
+            String resource = (String) iter.next();
+            new File(buildConfig.getOutputDir(),resource).delete();            
+        }
 	}
 	
 	private void deleteClassFiles() {
