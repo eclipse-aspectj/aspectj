@@ -1,115 +1,119 @@
-<project name="build" default="dist" basedir=".">
+<!-- 
+
+This build script will create a directory called burn that is
+_almost_ suitable for burning onto a CD.  However, there
+are a number of things that should be done to this directory
+before actually burning:
+
+The PDFs in the print directory need to be manually generated.
+Use the content of foo.pdf.contents to generate foo.pdf, and
+and then delete the foo.pdf.contents directory.
+
+The powerpoint and packages directory should be populated
+with whatever you want to populate it with.  The
+packages directory is typically filled with Linux installers
+and a clean AspectJ installer.
+-->
+
+<project name="build" default="burn" basedir=".">
   <description>
-    Build the exercises we do at various conferences
+    Build a CD image containing AspectJ exercises.
   </description>
 
-  <!-- this directory needs to hold tools and docs, unpacked -->
-  <property name="aj.home" value="c:/apps/aspectj106" />
+  <!-- CUSTOMIZE THESE PROPERTIES -->
 
-  <!-- this is the name of the tutorial event -->
-  <property name="aj.event" value="aosd2003" />
+  <!-- this directory should hold a clean unpacked AspectJ release -->
+  <property name="aj.home" value="c:/apps/aspectj11" />
+
+  <!-- this is the name of the event -->
+  <property name="aj.event" value="oopsla2003" />
+
+  <!-- NO CUSTOMIZABLE PROPERTIES BELOW HERE -->
+
+  <property name="burndir" value="burn" />
+  <property name="eventdir" value="${burndir}/aj-${aj.event}" />
+  <property name="packagedir" value="${burndir}/packages" />
+  <property name="printdir" value="${burndir}/print" />
+  <property name="powerpointdir" value="${burndir}/powerpoint" />
 
   <!-- now real targets -->
+  <target name="burn" depends="clean,skeleton,event,answers,printables" />
 
-  <target name="dist"
-        depends="clean,distdir,exercises.zip,answers.zip" />
+  <target name="printables" depends="skeleton">
+    <delete dir="${printdir}/answers.pdf.contents" />
+    <mkdir dir="${printdir}/answers.pdf.contents" />
+    <copy toDir="${printdir}/answers.pdf.contents">
+      <fileset dir="answers" includes="*.java" excludes="Answer.java"/>
+    </copy>
 
-  <target name="event.zip" depends="tools,exercises">
-    <zip destfile="dist/${aj.event}.zip">
-      <zipfileset dir="dist/aj-${aj.event}"
-        prefix="aj-${aj.event}"
-	excludes="answers/*.java"
-      />
-      <zipfileset dir="dist/aj-${aj.event}"
-        prefix="aj-${aj.event}"
-	includes="answers/Answer.java"
-      />
-    </zip>		 
+    <delete dir="${printdir}/exercises.pdf.contents" />
+    <mkdir dir="${printdir}/exercises.pdf.contents" />
+    <copy toDir="${printdir}/exercises.pdf.contents" file="index.html" />
+
+    <delete dir="${printdir}/install.pdf.contents" />
+    <mkdir dir="${printdir}/install.pdf.contents" />
+    <copy toDir="${printdir}/install.pdf.contents" file="install.txt" />
   </target>
 
-  <target name="exercises.zip" depends="exercises">
-    <zip destfile="dist/${aj.event}-exercises.zip">
-      <zipfileset dir="dist/aj-${aj.event}"
-        prefix="aj-${aj.event}"
-	includes="junit.jar,base.lst,guibase.lst,*.html,support/**/*.java,figures/**/*.java,tests/**/*.java,answers/Answer.java"
+  <target name="answers" depends="skeleton">
+    <zip destfile="${packagedir}/${aj.event}-answers.zip">
+      <zipfileset dir="answers"
+        prefix="aj-${aj.event}/answers"
+	includes="*.java"
+	excludes="Answer.java"
       />
-    </zip>		 
+    </zip>
   </target>
 
-  <target name="answers.zip" depends="answers">
-    <zip destfile="dist/${aj.event}-answers.zip">
-      <zipfileset dir="dist/aj-${aj.event}"
-        prefix="aj-${aj.event}"
-	includes="answers/*.java"
-	excludes="answers/Answer.java"
-      />
-    </zip>		 
+  <target name="event" depends="tools,exercises">
+    <filter token="aj.event" value="${aj.event}" /> 
+    <copy file="install.txt" toDir="${eventdir}" filtering="yes" />
   </target>
 
-  <target name="tools" depends="eventdir">
-    <mkdir dir="dist/aj-${aj.event}" />
-    <mkdir dir="dist/aj-${aj.event}/aspectj" />
+  <target name="exercises" depends="skeleton">
+    <copy toDir="${eventdir}">
+      <fileset dir="."
+        includes="junit.jar,base.lst,guibase.lst,*.html,support/**/*.java,figures/**/*.java,tests/**/*.java,answers/Answer.java"
+      />
+    </copy>
+  </target>
+
+  <target name="tools" depends="skeleton">
+    <mkdir dir="${eventdir}/aspectj" />
     <filter token="aj.event" value="${aj.event}" /> 
 
-    <copy toDir="dist/aj-${aj.event}/aspectj">
+    <copy toDir="${eventdir}/aspectj">
       <fileset dir="${aj.home}" excludes="bin/**" />
     </copy>
-    <copy toDir="dist/aj-${aj.event}/aspectj/bin" filtering="yes">
+    <copy toDir="${eventdir}/aspectj/bin" filtering="yes">
       <fileset dir="scripts" excludes="setpaths*" />
     </copy>
-    <copy toDir="dist/aj-${aj.event}" filtering="yes">
+    <copy toDir="${eventdir}" filtering="yes">
       <fileset dir="scripts" includes="setpaths*" />
     </copy>
-    <fixcrlf srcDir="dist/aj-${aj.event}"
+    <fixcrlf srcDir="${eventdir}"
       includes="setpaths.bat,aspectj/bin/ajbrowser.bat,aspectj/bin/ajc.bat"
       eol="crlf" />
-    <fixcrlf srcDir="dist/aj-${aj.event}"
+    <fixcrlf srcDir="${eventdir}"
       includes="setpaths.sh,setpaths.csh,aspectj/bin/ajbrowser,aspectj/bin/ajc"
       eol="lf" />
   </target>
 
-  <target name="exercises" depends="eventdir">
-    <filter token="aj.event" value="${aj.event}" /> 
-    <copy file="install.txt" toDir="dist/aj-${aj.event}" filtering="yes" />
-    <copy toDir="dist/aj-${aj.event}">
-     <fileset dir="."
-     includes="junit.jar,base.lst,guibase.lst,*.html,support/**/*.java,figures/**/*.java,tests/**/*.java,answers/Answer.java"
-     />
-    </copy>
-  </target>
-
-  <target name="answers" depends="eventdir">
-    <copy toDir="dist/aj-${aj.event}">
-     <fileset dir="."
-       includes="answers/*.java"
-       excludes="answers/Answer.java"
-     />
-    </copy>
-  </target>
-
-  <target name="allcontent.zip" depends="exercises.zip,answers.zip">
-    <zip destfile="dist/${aj.event}-notools.zip">
-      <zipfileset src="dist/${aj.event}-exercises.zip" />
-      <zipfileset src="dist/${aj.event}-answers.zip" />
-    </zip>
-  </target>
-
-  <target name="distdir">
-    <mkdir dir="dist" />
-  </target>
-
-  <target name="eventdir" depends="distdir">
-    <mkdir dir="dist/aj-${aj.event}" />
+  <target name="skeleton">
+    <mkdir dir="${burndir}" />
+    <mkdir dir="${eventdir}" />
+    <mkdir dir="${packagedir}" />
+    <mkdir dir="${printdir}" />
+    <mkdir dir="${powerpointdir}" />
   </target>
 
   <target name="clean">
-    <delete dir="dist" />
+    <delete dir="burn" />
   </target>
 
   <target name="javaclean">
-    <delete dir="dist" />
+    <delete dir="burn" />
   </target>
-
 
 </project>
 

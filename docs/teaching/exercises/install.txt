@@ -1,0 +1,63 @@
+0. Install
+
+  Now get the directory "aj-@aj.event@/".  Just copy the
+  "aj-@aj.event@/" directory from the provided CD.
+
+  If you're running a Windows machine, we recommend you copy into
+  "c:\".  If you're running your favorite Unix (we've had success under
+  Linux and MacOS X), we recommend you install into "~\".
+
+1. Configure
+
+  Our installation is fairly well self-contained, but it does need to know
+  where Java lives.  To do this you must set the environment variable named
+  JAVA_HOME.  This variable should point to something like
+
+    c:\apps\jdk1.3.1_04
+    /usr/java
+    /System/Library/Frameworks/JavaVM.framework/Versions/CurrentJDK/Home
+
+  depending on your system.  You may either do this globally, or you may
+  edit the appropriate setpaths script:
+
+    setpaths.bat          (under Windows)
+    setpaths.sh           (if you run bash/sh/ksh, like most Linux setups)
+    setpaths.csh          (if you run csh, like most MacOS X setups)      
+
+  Also, if you installed into a directory other than "c:\" or "~/", then you
+  need to change the EXTRACTION environment variable in the setpaths script.
+
+2. Test
+
+  Open a new command shell and change to the "aj-@aj.event@/" directory.
+
+  We have provided a "setpaths" script to set permissions and various paths
+  variables, so run this script:
+
+    > setpaths.bat         (under Windows)
+    > source setpaths.sh   (if you run bash/sh/ksh, like most Linux setups)
+    > source setpaths.csh  (if you run csh, like most MacOS X setups)      
+
+  You must remember to run this script every time you open a new command
+  shell.
+
+  Now, compile the core system with ajc:
+
+    > ajc -argfile guibase.lst
+
+  This should compile the figures application (source code in the figures
+  directory) as well as a single unit test (source code in the tests
+  directory).
+
+  See if the compile was successful by running the gui figures app you just
+  compiled:
+
+    > java figures.gui.Main
+
+  And, after quitting out of the gui figures app, run the unit test:
+
+    > java tests.Test
+    ....
+    Time: 0.076
+
+    OK (4 tests)
