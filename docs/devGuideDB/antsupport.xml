@@ -140,8 +140,14 @@
 	    </para>
 
 		<!-- . . . . . . . . . . . . . . . . iajc options table -->
-		<table>
-		<title>AjcTask (iajc) options for specifying sources</title>
+		<!-- table (and caption/title) not supported by fop -->	
+		<para>
+			<emphasis role="strong">
+			AjcTask (iajc) options for specifying sources
+			</emphasis>		
+		</para>	
+		<informaltable>
+			
 		<tgroup cols="2">
 			<thead>
 			<row>
@@ -242,10 +248,14 @@
 			</row>
 			</tbody>
 		</tgroup>
-		</table> 
+		</informaltable> 
 
-		<table>
-		<title>AjcTask (iajc) options for specifying output</title>
+		<para>
+			<emphasis role="strong">
+		AjcTask (iajc) options for specifying output
+			</emphasis>		
+		</para>	
+		<informaltable>
 		<tgroup cols="2">
 			<thead>
 			<row>
@@ -297,10 +307,14 @@
 			</row>
 			</tbody>
 		</tgroup>
-		</table> 
+		</informaltable> 
 
-		<table>
-		<title>AjcTask (iajc) options for specifying compiler behavior</title>
+		<para>
+			<emphasis role="strong">
+		AjcTask (iajc) options for specifying compiler behavior
+			</emphasis>		
+		</para>	
+		<informaltable>
 		<tgroup cols="2">
 			<thead>
 			<row>
@@ -384,10 +398,14 @@
 			</row>
 			</tbody>
 		</tgroup>
-		</table> 
+		</informaltable> 
 
-		<table>
-		<title>AjcTask (iajc) options for specifying compiler side-effects and messages</title>
+		<para>
+			<emphasis role="strong">
+		AjcTask (iajc) options for specifying compiler side-effects and messages
+			</emphasis>		
+		</para>
+		<informaltable>
 		<tgroup cols="2">
 			<thead>
 			<row>
@@ -490,11 +508,15 @@
 			</row>
 			</tbody>
 		</tgroup>
-		</table> 
+		</informaltable> 
 
 
-		<table>
-		<title>AjcTask (iajc) options for specifying Eclipse compiler options</title>
+		<para>
+			<emphasis role="strong">
+		AjcTask (iajc) options for specifying Eclipse compiler options
+			</emphasis>		
+		</para>
+		<informaltable>
 		<tgroup cols="2">
 			<thead>
 			<row>
@@ -630,7 +652,7 @@
 			</row>
 			</tbody>
 		</tgroup>
-		</table> 
+		</informaltable> 
 
 		<!-- . . . . . . . . . . . . . . . . iajc options table -->
 	</sect2>

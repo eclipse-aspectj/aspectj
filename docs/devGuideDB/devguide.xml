@@ -27,7 +27,7 @@
       <legalnotice>
         <para>Copyright (c) 1998-2001 Xerox Corporation, 
          2002 Palo Alto Research Center, Incorporated,
-         2003 Contributors.  
+         2003-2005 Contributors.  
          All rights reserved.
         </para>
       </legalnotice>
@@ -47,18 +47,18 @@
               				http://eclipse.org/aspectj</ulink>.
         <!--
         <itemizedlist>
-              <listitem><ulink url="../progguide/index.html">The
-        				AspectJ Programming Guide</ulink>
+              <listitem><para><ulink url="../progguide/index.html">the
+        				AspectJ Programming Guide</ulink></para>
               </listitem>
-              <listitem>the
+              <listitem><para>the
 		        documentation available with the AspectJ support available for
 		        various integrated development environments (e.g., Eclipse, Emacs,
-		        JBuilder, and NetBeans)
+		        JBuilder, and NetBeans)</para>
               </listitem>
-              <listitem>the most-recent documentation available from 
+              <listitem><para>the most-recent documentation available from 
               the AspectJ project page, at
               	<ulink url="http://eclipse.org/aspectj">
-              				http://eclipse.org/aspectj</ulink>.
+              				http://eclipse.org/aspectj</ulink>.</para>
               </listitem>
         </itemizedlist>
 		-->
@@ -67,6 +67,12 @@
   </bookinfo>
 
   <reference>
+	<referenceinfo>
+		<abstract>
+			<title>Summary of command-line tools</title><para/>
+		</abstract>
+	</referenceinfo>
+	<title>Command-line tools</title>	
       &ajc;
       &ajdoc;
   </reference>

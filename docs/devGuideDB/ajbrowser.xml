@@ -3,6 +3,7 @@
   <title>AspectJ Browser</title>
 
   <sect1 id="ajbrowser-intro">
+	<title>Introduction</title>
 	<para>
 	AJBrowser presents a GUI for compiling programs with ajc 
 	and navigating crosscutting structure.
@@ -106,10 +107,12 @@
         (see label 1 in the graphic below).
         (If you get classpath or other errors, set up the
         global build options as described above.)
-    </para>
+		<inlinemediaobject>
       <imageobject>
         <imagedata fileref="ajbrowser-building.gif"/>
       </imageobject>
+		</inlinemediaobject>
+    </para>
   </sect2>
   </sect1>
 
@@ -123,10 +126,12 @@
         displayed in italics.  Links to other structure nodes appear in blue
         below the association.  If there is no corresponding source for the
         link it will appear light-blue.
-    </para>
+		<inlinemediaobject>
       <imageobject>
         <imagedata fileref="ajbrowser-building.gif"/>
       </imageobject>
+		</inlinemediaobject>
+    </para>
 
   	<sect2>
         <title>Example: Exploring the "Spacewar" sample code </title>
@@ -136,7 +141,7 @@
           <listitem> <para>Launch <literal>ajbrowser</literal></para>
             </listitem>
 
-          <listitem> Choose "File -&gt; Open" or click the "Open Build
+          <listitem> <para>Choose "File -&gt; Open" or click the "Open Build
           Configuration" button
            (<inlinemediaobject>
              <imageobject>
@@ -144,7 +149,7 @@
              </imageobject>
           </inlinemediaobject>) and select the configuration file for debugging
           the spacewar example, in
-          <literal>examples/spacewar/debug.lst</literal>.
+          <literal>examples/spacewar/debug.lst</literal>.</para>
             </listitem>
 
           <listitem> <para>Click the "Build" button (<inlinemediaobject>
@@ -176,9 +181,11 @@
               </para>
 
               <para>
-          <imageobject>
+          <inlinemediaobject>
+		  <imageobject>
             <imagedata fileref="ajbrowser-options.gif"/>
           </imageobject>
+		  </inlinemediaobject>>
               </para>
 
             </listitem>
@@ -187,17 +194,17 @@
           left can display different orderings and granularity for structure:
 
            <itemizedlist>
-            <listitem> The package hierarchy view shows the traditional hierarchy
-               of package, class, and members. </listitem>
+            <listitem><para>The package hierarchy view shows the traditional hierarchy
+               of package, class, and members.</para></listitem>
 
-            <listitem> The inheritance view shows the hierarchy from topmost
-               parent classes through subclasses to members. </listitem>
+            <listitem><para>The inheritance view shows the hierarchy from topmost
+               parent classes through subclasses to members.</para></listitem>
 
-            <listitem> The crosscutting view shows the aspect members
-               and the code they affect. </listitem>
+            <listitem><para>The crosscutting view shows the aspect members
+               and the code they affect.</para></listitem>
 
-            <listitem> Additional buttons in the pane can be used to change the
-               granularity and filter out items.
+            <listitem><para>Additional buttons in the pane can be used to change the
+               granularity and filter out items.</para>
             </listitem>
 
            </itemizedlist>

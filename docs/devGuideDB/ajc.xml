@@ -1,12 +1,13 @@
 <refentry id="ajc-ref" xreflabel="The ajc Command-line Reference">
-  <refnamediv>
+	
+  <refnamediv>	
     <refname>ajc</refname>
-    <refpurpose>compiler and bytecode weaver for the AspectJ and Java languages </refpurpose>
-  </refnamediv>
+    <refpurpose>compiler and bytecode weaver for the AspectJ and Java languages</refpurpose>
+  </refnamediv>  
 
   <refsynopsisdiv>
     <cmdsynopsis>
-      <command>ajc</command>
+       <command>ajc</command>
       <arg><replaceable>Options</replaceable></arg>
       <group>
         <arg><replaceable>file...</replaceable></arg>
@@ -15,7 +16,6 @@
       </group>
     </cmdsynopsis>
   </refsynopsisdiv>
-
   <refsect1 id="ajc" xreflabel="ajc">
     <title>Description</title>
 
@@ -38,7 +38,7 @@
         extend to the end of the line.
     </para>
 
-    <para>
+    <para>	
         <command>NB:</command> 
         You must explicitly pass <command>ajc</command> all sources necessary 
         for the compilation.  When compiling source files containing aspects
@@ -419,7 +419,8 @@
 
     </refsect2>
 
-    <refsect2> <title>File names</title>
+    <refsect2> 
+    <title>File names</title>
 
     <para>ajc accepts source files with either the <filename>.java</filename>
     extension or the <filename>.aj</filename> extension.  We normally use
@@ -432,23 +433,21 @@
     <para>We'd like to discourage other means of mechanical distinction such as
     naming conventions or sub-packages in favor of the <filename>.aj</filename>
     extension.</para>
-    <para>
     
     <itemizedlist>
 
-    <listitem>Filename conventions are hard to enforce and lead to awkward names
+    <listitem><para>Filename conventions are hard to enforce and lead to awkward names
     for your aspects.  Instead of <filename>TracingAspect.java</filename> we
     recommend using <filename>Tracing.aj</filename> (or just
-    <filename>Tracing.java</filename>) instead.</listitem>
+    <filename>Tracing.java</filename>) instead.</para></listitem>
 
-    <listitem>Sub-packages move aspects out of their natural place in a system
+    <listitem><para>Sub-packages move aspects out of their natural place in a system
     and can create an artificial need for privileged aspects.  Instead of
     adding a sub-package like <filename>aspects</filename> we recommend using the
     <filename>.aj</filename> extension and including these files in your existing
-    packages instead.</listitem>
+    packages instead.</para></listitem>
 
     </itemizedlist>
-    </para>
 
     </refsect2>
 
@@ -493,33 +492,30 @@
           and may include other argfiles by @-reference.
           The following file <literal>sources.lst</literal>
           contains absolute and relative files and @-references:
-          <para><programlisting>
+          </para>
+		  <programlisting>
 Gui.java
 /home/user/src/Library.java
 data/Repository.java
 data/Access.java
 @../../common/common.lst
 @/home/user/src/lib.lst
-view/body/ArrayView.java</programlisting></para>
+view/body/ArrayView.java</programlisting>
 
-          Compile the files using either the -argfile or @ form:
-
-          <para><programlisting>
+          <para>Compile the files using either the -argfile or @ form:</para>
+          <programlisting>
 ajc -argfile sources.lst
-ajc @sources.lst</programlisting></para>
-        </para>
+ajc @sources.lst</programlisting>
         <para>
         Argfiles are also supported by jikes and javac, so you 
         can use the files in hybrid builds.  However, the support varies:
         </para>
-        <para>
 	    <itemizedlist>
-            <listitem>Only ajc accepts command-line options</listitem>
-            <listitem>Jikes and Javac do not accept internal @argfile references.
-              </listitem>
-            <listitem>Jikes and Javac only accept the @file form on the command line.</listitem>
+            <listitem><para>Only ajc accepts command-line options</para></listitem>
+            <listitem><para>Jikes and Javac do not accept internal @argfile references.
+            </para></listitem>
+            <listitem><para>Jikes and Javac only accept the @file form on the command line.</para></listitem>
 	    </itemizedlist>
-        </para>
 
       </example>
       <example id="examplebytecode">
@@ -578,61 +574,60 @@ ajc @sources.lst</programlisting></para>
 are "/".  All commands are on one line.  Adjust paths and 
 commands to your environment as needed. 
 
-</para><para>Setup the path, classpath, and current directory: 
+</para><para>Setup the path, classpath, and current directory:</para> 
     
-        <para><programlisting>
+        <programlisting>
     cd examples 
     export ajrt=../lib/aspectjrt.jar 
     export CLASSPATH="$ajrt" 
     export PATH="../bin:$PATH" 
-        </programlisting></para>
+        </programlisting>
 
-</para><para>Build a read-only tracing library: 
-        <para><programlisting>
+<para>Build a read-only tracing library:</para> 
+        <programlisting>
     ajc -argfile tracing/tracelib.lst -outjar tracelib.jar 
-        </programlisting></para>
+        </programlisting>
 
-</para><para>Build the application with tracing in one step: 
+<para>Build the application with tracing in one step:</para> 
 
-        <para><programlisting>
+        <programlisting>
     ajc -aspectpath tracelib.jar -argfile tracing/notrace.lst -outjar tracedapp.jar 
-        </programlisting></para>
+        </programlisting>
 
-</para><para>Run the application with tracing: 
+<para>Run the application with tracing:</para> 
 
-        <para><programlisting>
+        <programlisting>
     java -classpath "$ajrt;tracedapp.jar;tracelib.jar" tracing.ExampleMain 
-        </programlisting></para>
+        </programlisting>
 
-</para><para>Build the application with tracing from binaries in two steps: 
-    <listitem><para>
-(a) Build the application classes (using javac for demonstration's sake): 
-        <para><programlisting>
+<para>Build the application with tracing from binaries in two steps:</para> 
+    <itemizedlist><listitem><para>
+(a) Build the application classes (using javac for demonstration's sake):</para> 
+        <programlisting>
     mkdir classes 
     javac -d classes tracing/*.java 
     jar cfM app.jar -C classes . 
-        </programlisting></para>
+        </programlisting>
 
-    </para></listitem>
+    </listitem>
     <listitem><para>
-(b) Build the application with tracing: 
-        <para><programlisting>
+(b) Build the application with tracing:</para> 
+        <programlisting>
     ajc -injars app.jar -aspectpath tracelib.jar -outjar tracedapp.jar 
-        </programlisting></para>
-    </para></listitem>
+        </programlisting>
+    </listitem></itemizedlist>
 
-</para><para>Run the application with tracing (same as above): 
+<para>Run the application with tracing (same as above):</para> 
 
-        <para><programlisting>
+        <programlisting>
     java -classpath "$ajrt;tracedapp.jar;tracelib.jar" tracing.ExampleMain 
-        </programlisting></para>
+        </programlisting>
 
-</para><para>Run the application without tracing: 
+<para>Run the application without tracing:</para> 
 
-        <para><programlisting>
+        <programlisting>
     java -classpath "app.jar" tracing.ExampleMain
-        </programlisting></para>
-</para>
+        </programlisting>
 
       </example>
 
@@ -735,9 +730,3 @@ File0;File1[Number1];File2[Number2] ... :LineNumber
 
   </refsect1>
 </refentry>
-
-<!-- Local variables: -->
-<!-- fill-column: 79 -->
-<!-- sgml-local-ecat-files: devguide.ced -->
-<!-- sgml-parent-document:("devguide.sgml" "book" "refentry") -->
-<!-- End: -->
