@@ -112,7 +112,7 @@ public class Module {
         }
     }
     
-    /** XXX gack explicitly skip Ant except for testing... modules */
+    /** XXX gack explicitly skip Ant, sun tools.jar except for testing... modules */
     private static boolean skipLibraryJarAntecedant(Module module, File libJar) {
         if (null == libJar) {
             return true;
@@ -120,7 +120,11 @@ public class Module {
         if (!module.name.startsWith("testing")) {
             String path = libJar.getPath().replace('\\', '/');
             path = path.replace(File.separatorChar, '/');
-            return (-1 != path.indexOf("/lib/ant/lib/"));
+            if (-1 != path.indexOf("/lib/ant/lib/")) {
+                return true;
+            } else if (-1 != path.indexOf("/tools.jar")) {
+                return true;
+            }
         }
         return false;
     }
