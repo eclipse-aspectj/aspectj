@@ -9,6 +9,7 @@
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
+ *     Wes Isberg     2004 updates
  * ******************************************************************/
 
 package org.aspectj.testing.harness.bridge;
@@ -30,7 +31,6 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.testing.run.IRunIterator;
-//import org.aspectj.testing.util.*;
 import org.aspectj.testing.util.BridgeUtil;
 import org.aspectj.testing.util.options.*;
 import org.aspectj.testing.util.options.Option.InvalidInputException;
@@ -38,6 +38,8 @@ import org.aspectj.testing.xml.IXmlWritable;
 import org.aspectj.testing.xml.SoftMessage;
 import org.aspectj.testing.xml.XMLWriter;
 import org.aspectj.util.LangUtil;
+
+import sun.misc.MessageUtils;
 
 /**
  * Base class for initialization of components expecting messages,
@@ -81,18 +83,8 @@ import org.aspectj.util.LangUtil;
  * @see XMLWriter@unflattenList(String)
  * @see XMLWriter@flattenList(List)
  */
-abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHandler?
+abstract public class AbstractRunSpec implements IRunSpec {
 
-
-	private static final Fork FORK;
-
-	static {
-		String value = 
-			Globals.getSystemProperty(Globals.FORK_NAME, null);
-		FORK = (LangUtil.isEmpty(value) 
-			? Fork.NOFORK 
-			: new Fork(value));
-	}
     /** true if we expect to use a staging directory */
     boolean isStaging;
     
@@ -112,11 +104,12 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
     protected final IMessageHolder /*IMessage*/ messages;
     protected final ArrayList /*String*/ options;
     protected final ArrayList /*String*/ paths;
-    protected final ArrayList /*ISourceLocation*/ sourceLocations; // XXX remove?
+//  XXXXXunused protected final ArrayList /*ISourceLocation*/ sourceLocations; // XXX remove?
     protected final ArrayList /*IRunSpec*/ children;
     protected final ArrayList /*DirChanges.Spec*/ dirChanges;
     protected XMLNames xmlNames;
     protected String comment;
+    
     
     /** These options are 1:1 with spec, but set at runtime (not saved) */
     public final RT runtime;
@@ -136,7 +129,7 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
         messages = new MessageHandler(true);
         options = new ArrayList();
         paths = new ArrayList();
-        sourceLocations = new ArrayList();
+//      XXXXXunused sourceLocations = new ArrayList();
         keywords = new ArrayList();
         children = new ArrayList();
         dirChanges = new ArrayList();
@@ -271,34 +264,6 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
         }    
     }
 
-    // -------------- source locations
-//    /** @return ArrayList of ISourceLocation sourceLocs */    
-//    public ArrayList getSourceLocationsList() {
-//        return makeList(sourceLocations);
-//    }
-//
-//    /** @return ISourceLocation[] sourceLocs */    
-//    public ISourceLocation[] getSourceLocationsArray() {
-//        return (ISourceLocation[]) sourceLocations.toArray(new ISourceLocation[0]);
-//    }
-//
-//    
-//    public void setSourceLocation(String input) {
-//        if (null != input) {
-//            ISourceLocation sl = BridgeUtil.makeSourceLocation(input);
-//            if (null != sl) {
-//                addSourceLocation(sl);
-//            }
-//            // XXX need error-handling for bad input            
-//        }
-//    }
-//    
-//    public void addSourceLocation(ISourceLocation sourceLoc) {
-//        if (null != sourceLoc) {
-//            sourceLocations.add(sourceLoc);
-//        }    
-//    }
-
     // --------------- (String) paths
     /** @return ArrayList of String paths */    
     public ArrayList getPathsList() {
@@ -309,33 +274,6 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
     public String[] getPathsArray() {
         return (String[]) paths.toArray(new String[0]);
     }
-
-//    /** @return String[] of paths, removing any matching stripPrefix prefix */    
-//    public String[] getPathsArray(String stripPrefix) {
-//        String[] result = getPathsArray();
-//        if (!LangUtil.isEmpty(stripPrefix)) {
-//            final int LEN = stripPrefix.length();
-//            for (int i = 0; i < result.length; i++) {
-//                if ((null != result[i]) && result[i].startsWith(stripPrefix)) {
-//                    result[i] = result[i].substring(LEN);
-//                }               
-//            }
-//        }
-//        return result;
-//    }
-//
-//    /** @return ArrayList of File baseDir/{path} */    
-//    public ArrayList getPathsAsFile(File baseDir) {
-//        if (null == baseDir) {
-//            baseDir = new File(".");
-//        }
-//        ArrayList result = makeList(null);
-//        for (Iterator iter = paths.iterator(); iter.hasNext();) {
-//            String path = (String) iter.next();
-//            result.add(new File(baseDir, path));
-//        }
-//        return result;
-//    }
     
     public void setPath(String path) {
         addPath(path);
@@ -362,12 +300,6 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
             for (int i = 0; i < ra.length; i++) {
                 addPath(ra[i]);
             }
-        }    
-    }
-
-    public void addWrapFile(WrapFile file) {
-        if (null != file) {
-            paths.add(file.path);
         }    
     }
     
@@ -412,10 +344,11 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
         if (null != messages) {
             for (Iterator iter = messages.iterator(); iter.hasNext();) {
 				Object o = iter.next();
-				if (o instanceof IMessage) {
+                if (o instanceof IMessage) {
                     addMessage((IMessage) o);
                 } else {
-                    // XXX warning?
+                    String m = "not message: " + o;
+                    addMessage(new Message(m,IMessage.WARNING, null, null));
                 }
 			}
         }    
@@ -494,19 +427,14 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
             int i = 0;
             for (ListIterator iter = children.listIterator(); iter.hasNext(); i++) {
 				IRunSpec child = (IRunSpec) iter.next();
-				if (child instanceof AbstractRunSpec) { // XXX ugly instanceof
+				if (child instanceof AbstractRunSpec) {
                     AbstractRunSpec arsChild = (AbstractRunSpec) child;
                     if (!arsChild.adoptParentValues(runtime, handler)) {
                         skipSet.set(i);
-                        //iter.remove();
                         if (!skipped) {
                             skipped = true;
                             if (skipIfAnyChildSkipped) { // no need to continue checking
-//                                String m = "skipping " + toString() + " because child " 
-//                                    + arsChild + " skipped";
-//                                MessageUtil.info(handler, m);
                                 skipAll = true;
-                                //children.clear();
                                 return false;
                             }
                         }
@@ -721,7 +649,7 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
         StringBuffer result = new StringBuffer();
         addListCount("options", options, result);
         addListCount("paths", paths, result);
-        addListCount("sourceLocations", sourceLocations, result);
+        //XXXXXunused addListCount("sourceLocations", sourceLocations, result);
         List messagesList = messages.getUnmodifiableListView();
         addListCount("messages", messagesList, result);
         
@@ -742,7 +670,7 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
         StringBuffer result = new StringBuffer();
         addListEntries("options", options, result);
         addListEntries("paths", paths, result);
-        addListEntries("sourceLocations", sourceLocations, result);
+//      XXXXXunused addListEntries("sourceLocations", sourceLocations, result);
         List messagesList = messages.getUnmodifiableListView();
         addListEntries("messages", messagesList, result);
         
@@ -786,17 +714,12 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
             spec.skipSet = new BitSet();
             spec.skipSet.or(skipSet);
         }
-        spec.sourceLocation = sourceLocation;
-        spec.sourceLocations.clear();
-        spec.sourceLocations.addAll(sourceLocations);
+        //spec.sourceLocation = sourceLocation;
+        //spec.sourceLocations.clear();
+//      XXXXXunused spec.sourceLocations.addAll(sourceLocations);
         spec.xmlElementName = xmlElementName;
         spec.xmlNames = ((AbstractRunSpec.XMLNames) xmlNames.clone());
     }
-
-	protected final Fork getFork() {
-		// spec ignored now, but perhaps not later...
-		return FORK;
-	}     
 
     private static void addListCount(String name, List list, StringBuffer sink) {
         int size = list.size();
@@ -824,8 +747,11 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
     
     /** 
      * Subclasses use this to rename attributes or omit attributes or subelements.
-     * To suppress output of an attribute, * pass "" as the name of the attribute. 
+     * To suppress output of an attribute, pass "" as the name of the attribute. 
      * To use default entries, pass null for that entry.
+     * XXX this really should be replaced with nested properties
+     * associated logical name with actual name (or placeholders 
+     * for "unused" and "default").
      */
     public static class XMLNames {
         public static final XMLNames DEFAULT =
@@ -900,19 +826,10 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
             }
         }
     }
-
-    
+   
     /** subclasses implement this to create and set up a run */
     abstract public IRunIterator makeRunIterator(Sandbox sandbox, Validator validator);
-
-    /** This is for separate file (sub-) elements with path attributes */
-    public static class WrapFile {
-        public String path;
-        public void setPath(String path) {
-            this.path = path;
-        }
-    }
-    
+   
     /** segregate runtime-only state in spec */
     public static class RT {        
         /** true if we should emit verbose messages */
@@ -1066,124 +983,4 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
 		}
     }   // class RT
     
-	protected static class Fork {
-		public static final Fork NOFORK = new Fork();
-		private static final String DELIMITER = ",";
-		private final boolean fork;
-		private final String version;
-		private final String java;
-		private final File javaHome;
-		private final String bootclasspath;
-		private final String errs;
-
-		private Fork() {
-			this(null);
-		}
-
-		/**
-		 * @param spec a String null (no) or of the form
-		 *   <code>1.[12345],{javaHome},{java},{bootclasspath}</code>
-		 *   where {javaHome} is a readable directory and
-		 *   a prefix of {java}.
-		 */
-		private Fork(String spec) {
-			if (null == spec) {
-				fork = false;
-				version = null;
-				java = null;
-				javaHome = null;
-				bootclasspath = null;
-				errs = null;
-				return;
-			}
-			String inputVersion = null;
-			File inputJavaHome = null;
-			String inputJava = null;
-			String inputBootclasspath = null;
-			//
-			// paths should be in system-specific form
-			final String EXPECT = 
-				"{version=1.[12345],{java.home},{java.command},{bootclasspath}";
-			final String EXAMPLE =
-				"1.1,d:/jdk11,d:/jdk11/bin/java,d:/jdk11/lib/classes.zip";
-			if (LangUtil.isEmpty(spec)) {
-				spec = "";
-			}
-			StringBuffer inputErrs = new StringBuffer();
-			StringTokenizer st = new StringTokenizer(spec, DELIMITER);
-			if (4 != st.countTokens()) {
-				inputErrs.append(" expecting 4 tokens.");
-			} else {
-				inputVersion = st.nextToken().trim();
-				String inputJavaHomePath = st.nextToken().trim();
-				inputJava = st.nextToken().trim();
-				inputBootclasspath = st.nextToken().trim();
-				if (!inputVersion.startsWith("1.")
-					|| (3 != inputVersion.length())
-					|| ('1' > inputVersion.charAt(2))
-					|| ('6' < inputVersion.charAt(2)) ) {
-					inputErrs.append(" expecting version 1.[12345]");
-				}
-				inputJavaHome = new File(inputJavaHomePath);
-				if (!inputJavaHome.canRead()
-					|| !inputJavaHome.isDirectory()) {
-					inputErrs.append(" expecting java.home dir: "
-						+ inputJavaHomePath);
-				}
-				if (!inputJava.startsWith(inputJavaHomePath)) {
-					inputErrs.append(" expecting java in java.home.dir: "
-					+ inputJava);
-				}
-				if (LangUtil.isEmpty(inputBootclasspath)) {
-					inputBootclasspath = null;
-				}
-			}
-			String inputErrString = inputErrs.toString();
-			fork = (0 == inputErrString.length());
-			if (fork) {
-				errs = null;
-			} else {
-				errs = "bad fork specification.  Expecting "
-					+ EXPECT
-					+ " - for example, "
-					+ EXAMPLE
-					+ ". Problems: "
-					+ inputErrString;
-			}
-			version = inputVersion;
-			java = inputJava;
-			javaHome = inputJavaHome;
-			bootclasspath = inputBootclasspath;
-		}
-		public boolean fork() {
-			return fork;
-		}
-		public String getJavaExecutablePath() {
-			return java;
-		}
-		public File getJavaHome() {
-			return javaHome;
-		}
-		public String getJavaBootclasspath() {
-			return bootclasspath;
-		}
-		public String getErrors() {
-			return errs;
-		}
-		public String toSpecString() {
-			if (!fork) {
-				return null;
-			}
-			return version
-				+ DELIMITER
-				+ javaHome
-				+ DELIMITER
-				+ java
-				+ DELIMITER
-				+ bootclasspath;
-		}
-		public String toString() {
-			return (fork ? "Fork [true]" : "Fork [false]"); // XXX upgrade
-		}
-	} // class Fork
 }
