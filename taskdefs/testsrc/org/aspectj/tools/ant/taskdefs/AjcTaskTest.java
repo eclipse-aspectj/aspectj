@@ -134,6 +134,24 @@ public class AjcTaskTest extends TestCase {
         runTest(task, NO_EXCEPTION, IMessageHolderChecker.ONE_ERROR_ONE_ABORT);
     }
 
+    public void testClasspath() {
+        AjcTask task = getTask(NOFILE);
+        String[] cmd = task.setupCommand(true);
+        String classpath = null;
+        String bootclasspath = null;
+        for (int i = 0; i < cmd.length; i++) {
+            if ("-classpath".equals(cmd[i])) {
+                classpath = cmd[i+1];
+            } else if ("-bootclasspath".equals(cmd[i])) {
+                bootclasspath = cmd[i+1];
+            }        
+        }
+        assertTrue("not expecting bootclasspath", 
+            null == bootclasspath);
+        assertTrue("expecting aspectj in classpath", 
+            (-1 != classpath.indexOf("aspectjrt.jar")));
+    }
+
     // ---------------------------------------- sourcefile
     // XXX need to figure out how to specify files directly programmatically
 //    public void testDefaultFile() {

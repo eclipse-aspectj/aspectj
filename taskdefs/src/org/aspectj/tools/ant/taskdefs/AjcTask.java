@@ -653,10 +653,10 @@ public class AjcTask extends MatchingTask {
     }
         
     public Path createClasspath() {
-        if (bootclasspath == null) {
-            bootclasspath = new Path(project);
+        if (classpath == null) {
+            classpath = new Path(project);
         }
-        return bootclasspath.createPath();
+        return classpath.createPath();
     }        
 
     public void setBootclasspath(Path path) {
@@ -668,10 +668,10 @@ public class AjcTask extends MatchingTask {
     }
     
     public Path createBootclasspath() {
-        if (classpath == null) {
-            classpath = new Path(project);
+        if (bootclasspath == null) {
+            bootclasspath = new Path(project);
         }
-        return classpath.createPath();
+        return bootclasspath.createPath();
     }        
     
     public void setExtdirs(Path path) {
@@ -749,36 +749,12 @@ public class AjcTask extends MatchingTask {
             executing = true;
         }
         try {
-        	if (0 < ignored.size()) {
-				for (Iterator iter = ignored.iterator(); iter.hasNext();) {
-					log("ignored: " + iter.next(), Project.MSG_INFO);					
-				}
-        	}
-            // when copying resources, use temp jar for class output
-            // then copy temp jar contents and resources to output jar
-            if (null != outjar) {
-                if (copyInjars || (null != sourceRootCopyFilter)) {
-                    String path = outjar.getAbsolutePath();
-                    int len = FileUtil.zipSuffixLength(path);
-                    if (len < 1) {
-                        log("not copying injars - weird outjar: " + path);
-                    } else {
-                        path = path.substring(0, path.length()-len) + ".tmp.jar";
-                        tmpOutjar = new File(path);
-                    }
-                }
-                if (null == tmpOutjar) {                
-                    cmd.addFlagged("-outjar", outjar.getAbsolutePath());        
-                } else {
-                    cmd.addFlagged("-outjar", tmpOutjar.getAbsolutePath());        
-                }
-            }
-            
-            addListArgs();
-	        if (verbose || listFileArgs) { // XXX if listFileArgs, only do that
+            boolean copyArgs = false;
+            setupCommand(copyArgs);
+            if (verbose || listFileArgs) { // XXX if listFileArgs, only do that
                 String[] args = cmd.extractArguments();
-	        	log("ajc " + Arrays.asList(args), Project.MSG_VERBOSE);
-	        }
+                log("ajc " + Arrays.asList(args), Project.MSG_VERBOSE);
+            }
             if (!fork) {
                 executeInSameVM();
             } else { // when forking, Adapter handles failonerror
@@ -797,6 +773,40 @@ public class AjcTask extends MatchingTask {
                 tmpOutjar.delete();
             }
         }        
+    }
+
+    String[] setupCommand(boolean copyArgs) {
+        if (0 < ignored.size()) {
+            for (Iterator iter = ignored.iterator(); iter.hasNext();) {
+                log("ignored: " + iter.next(), Project.MSG_INFO);                   
+            }
+        }
+        // when copying resources, use temp jar for class output
+        // then copy temp jar contents and resources to output jar
+        if (null != outjar) {
+            if (copyInjars || (null != sourceRootCopyFilter)) {
+                String path = outjar.getAbsolutePath();
+                int len = FileUtil.zipSuffixLength(path);
+                if (len < 1) {
+                    log("not copying injars - weird outjar: " + path);
+                } else {
+                    path = path.substring(0, path.length()-len) + ".tmp.jar";
+                    tmpOutjar = new File(path);
+                }
+            }
+            if (null == tmpOutjar) {                
+                cmd.addFlagged("-outjar", outjar.getAbsolutePath());        
+            } else {
+                cmd.addFlagged("-outjar", tmpOutjar.getAbsolutePath());        
+            }
+        }
+        
+        addListArgs();
+        String[] result = null;
+        if (copyArgs) {
+            result = cmd.extractArguments();
+        }
+        return result;
     }   
 
     /**
