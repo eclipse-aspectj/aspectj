@@ -11,6 +11,7 @@ package org.aspectj.weaver.patterns;
 
 import java.util.Iterator;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.aspectj.weaver.Shadow;
 
@@ -48,25 +49,104 @@ public class PointcutRewriterTest extends TestCase {
 		assertEquals("Unchanged",aAndb,prw.rewrite(aAndb));
 		Pointcut aOrb = getPointcut("this(Foo) || this(Moo)");
 		assertEquals("Unchanged",aOrb,prw.rewrite(aOrb));
+
 		Pointcut leftOr = getPointcut("this(Foo) || (this(Goo) && this(Boo))");
-		System.out.println(prw.rewrite(leftOr));
-		assertEquals("(this(Foo) || (this(Boo) && this(Goo)))",prw.rewrite(leftOr).toString());
+		assertEquals("or%anyorder%this(Foo)%and%anyorder%this(Boo)%this(Goo)",prw.rewrite(leftOr));
+		//assertEquals("(this(Foo) || (this(Boo) && this(Goo)))",prw.rewrite(leftOr).toString());
+		
 		Pointcut rightOr = getPointcut("(this(Goo) && this(Boo)) || this(Foo)");
-		assertEquals("(this(Foo) || (this(Boo) && this(Goo)))",prw.rewrite(rightOr).toString());
+//		assertEquals("(this(Foo) || (this(Boo) && this(Goo)))",prw.rewrite(rightOr).toString());
+		assertEquals("or%anyorder%this(Foo)%and%anyorder%this(Goo)%this(Boo)",prw.rewrite(rightOr));
+		
 		Pointcut leftAnd = getPointcut("this(Foo) && (this(Goo) || this(Boo))");
-		assertEquals("((this(Boo) && this(Foo)) || (this(Foo) && this(Goo)))",prw.rewrite(leftAnd).toString());
+//		assertEquals("((this(Boo) && this(Foo)) || (this(Foo) && this(Goo)))",prw.rewrite(leftAnd).toString());
+		assertEquals("or%anyorder%and%anyorder%this(Boo)%this(Foo)%and%anyorder%this(Foo)%this(Goo)",prw.rewrite(leftAnd));
+		
 		Pointcut rightAnd = getPointcut("(this(Goo) || this(Boo)) && this(Foo)");
-		assertEquals("((this(Boo) && this(Foo)) || (this(Foo) && this(Goo)))",prw.rewrite(rightAnd).toString());
+//		assertEquals("((this(Boo) && this(Foo)) || (this(Foo) && this(Goo)))",prw.rewrite(rightAnd).toString());
+		assertEquals("or%anyorder%and%anyorder%this(Boo)%this(Foo)%and%anyorder%this(Foo)%this(Goo)",prw.rewrite(rightAnd));
+		
 		Pointcut nestedOrs = getPointcut("this(Foo) || this(Goo) || this(Boo)");
-		assertEquals("((this(Boo) || this(Foo)) || this(Goo))",prw.rewrite(nestedOrs).toString());
+//		assertEquals("((this(Boo) || this(Foo)) || this(Goo))",prw.rewrite(nestedOrs).toString());
+		assertEquals("or%anyorder%this(Goo)%or%anyorder%this(Boo)%this(Foo)",prw.rewrite(nestedOrs));
+		
 		Pointcut nestedAnds = getPointcut("(this(Foo) && (this(Boo) && (this(Goo) || this(Moo))))");
 		// t(F) && (t(B) && (t(G) || t(M)))
 		// ==> t(F) && ((t(B) && t(G)) || (t(B) && t(M)))
 		// ==> (t(F) && (t(B) && t(G))) || (t(F) && (t(B) && t(M)))
-		assertEquals("(((this(Boo) && this(Foo)) && this(Goo)) || ((this(Boo) && this(Foo)) && this(Moo)))",
-				prw.rewrite(nestedAnds).toString());
+//		assertEquals("(((this(Boo) && this(Foo)) && this(Goo)) || ((this(Boo) && this(Foo)) && this(Moo)))",
+//				prw.rewrite(nestedAnds).toString());
+		assertEquals("or%anyorder%and%anyorder%and%anyorder%this(Boo)%this(Foo)%this(Goo)%and%anyorder%and%anyorder%this(Boo)%this(Foo)%this(Moo)",prw.rewrite(nestedAnds));
 	}
 		
+	/**
+	 * spec is reverse polish notation with operators and, or , not, anyorder,
+	 * delimiter is "%" (not whitespace).
+	 * @param spec
+	 * @param pc
+	 */
+	private void assertEquals(String spec, Pointcut pc) {
+	    StringTokenizer strTok = new StringTokenizer(spec,"%");
+	    String[] tokens = new String[strTok.countTokens()];
+	    for (int i = 0; i < tokens.length; i++) {
+            tokens[i] = strTok.nextToken();
+        }
+	    tokenIndex = 0;
+	    assertTrue(spec,equals(pc,tokens));
+	}
+	
+	private int tokenIndex = 0;
+	private boolean equals(Pointcut pc, String[] tokens) {
+	    if (tokens[tokenIndex].equals("and")) {
+	        tokenIndex++;
+	        if (!(pc instanceof AndPointcut)) return false;
+	        AndPointcut apc = (AndPointcut) pc;
+	        Pointcut left = apc.getLeft();
+	        Pointcut right = apc.getRight();
+	        if (tokens[tokenIndex].equals("anyorder")) {
+	            tokenIndex++;
+	            int restorePoint = tokenIndex;
+	            boolean leftMatchFirst = equals(left,tokens) &&
+	                                     equals(right,tokens);
+	            if (leftMatchFirst) return true;
+                tokenIndex = restorePoint;
+	            boolean rightMatchFirst = equals(right,tokens) &&
+	            						 equals(left,tokens);
+	            return rightMatchFirst;
+	        } else {
+	            return equals(left,tokens) &&
+                	   equals(right,tokens);
+	        }
+	    } else if (tokens[tokenIndex].equals("or")) {
+	        tokenIndex++;
+	        if (!(pc instanceof OrPointcut)) return false;
+	        OrPointcut opc = (OrPointcut) pc;
+	        Pointcut left = opc.getLeft();
+	        Pointcut right = opc.getRight();
+	        if (tokens[tokenIndex].equals("anyorder")) {
+	            tokenIndex++;
+	            int restorePoint = tokenIndex;
+	            boolean leftMatchFirst = equals(left,tokens) &&
+	                                     equals(right,tokens);
+	            if (leftMatchFirst) return true;
+	            tokenIndex = restorePoint;
+	            boolean rightMatchFirst = equals(right,tokens) &&
+	            						 equals(left,tokens);
+	            return rightMatchFirst;
+	        } else {
+	            return equals(left,tokens) &&
+                	   equals(right,tokens);
+	        }
+	        
+	    } else if (tokens[tokenIndex].equals("not")) {
+	        if (!(pc instanceof NotPointcut)) return false;
+	        tokenIndex++;
+	        NotPointcut np = (NotPointcut) pc;
+	        return equals(np.getNegatedPointcut(),tokens);
+	    } else {
+	        return tokens[tokenIndex++].equals(pc.toString());
+	    }
+	}
 	
 //	public void testSplitOutWithins() {
 //		Pointcut simpleExecution = getPointcut("execution(* *.*(..))");
