@@ -11,6 +11,7 @@ package org.aspectj.weaver.patterns;
 
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.bcel.BcelWorld;
 
 import junit.framework.TestCase;
 
@@ -148,7 +149,7 @@ public class AnnotationPatternTestCase extends TestCase {
 	}
 
 	public void testMaybeParseAnnotationPattern() {
-		PatternParser p = new PatternParser("@Foo && @Boo");
+		PatternParser p = new PatternParser("@Foo");
 		AnnotationTypePattern a = p.maybeParseAnnotationPattern();
 		assertNotNull("Should find annotation pattern",a);
 		p = new PatternParser("Foo && Boo");
@@ -184,66 +185,146 @@ public class AnnotationPatternTestCase extends TestCase {
 	}
 
 	public void testParseMethodOrConstructorSigNoAP() {
-		
+		PatternParser p = new PatternParser("* *.*(..)");
+		SignaturePattern s = p.parseMethodOrConstructorSignaturePattern();
+		assertEquals("Any annotation",AnnotationTypePattern.ANY,s.getAnnotationPattern());
+		assertEquals("Any return","*",s.getReturnType().toString());
+		assertEquals("Any dec type","*",s.getDeclaringType().toString());
+		assertEquals("Any name","*",s.getName().toString());
+		assertEquals("* *.*(..)",s.toString());
 	}
 	
 	public void testParseMethodOrConstructorSigSimpleAP() {
-		
+		PatternParser p = new PatternParser("@Foo * *.*(..)");
+		SignaturePattern s = p.parseMethodOrConstructorSignaturePattern();
+		assertEquals("Exact annotation","@Foo",((ExactAnnotationTypePattern)s.getAnnotationPattern()).toString());
+		assertEquals("Any return","*",s.getReturnType().toString());
+		assertEquals("Any dec type","*",s.getDeclaringType().toString());
+		assertEquals("Any name","*",s.getName().toString());
+		assertEquals("@Foo * *.*(..)",s.toString());
 	}
 	
 	public void testParseMethodOrConstructorSigComplexAP() {
-		
+		PatternParser p = new PatternParser("@(!@Foo || @Goo) * *.*(..)");
+		SignaturePattern s = p.parseMethodOrConstructorSignaturePattern();
+		assertEquals("complex annotation","((!@Foo) || @Goo)",s.getAnnotationPattern().toString());
+		assertEquals("Any return","*",s.getReturnType().toString());
+		assertEquals("Any dec type","*",s.getDeclaringType().toString());
+		assertEquals("Any name","*",s.getName().toString());	
+		assertEquals("@((!@Foo) || @Goo) * *.*(..)",s.toString());		
 	}
 	
 	public void testParseMethodFieldSigNoAP() {
-		
+		PatternParser p = new PatternParser("* *.*");
+		SignaturePattern s = p.parseFieldSignaturePattern();
+		assertEquals("Any annotation",AnnotationTypePattern.ANY,s.getAnnotationPattern());
+		assertEquals("Any field type","*",s.getReturnType().toString());
+		assertEquals("Any dec type","*",s.getDeclaringType().toString());
+		assertEquals("Any name","*",s.getName().toString());
+		assertEquals("* *.*",s.toString());		
 	}
 	
 	public void testParseFieldSigSimpleAP() {
-		
+		PatternParser p = new PatternParser("@Foo * *.*");
+		SignaturePattern s = p.parseFieldSignaturePattern();
+		assertEquals("Exact annotation","@Foo",((ExactAnnotationTypePattern)s.getAnnotationPattern()).toString());
+		assertEquals("Any field type","*",s.getReturnType().toString());
+		assertEquals("Any dec type","*",s.getDeclaringType().toString());
+		assertEquals("Any name","*",s.getName().toString());
+		assertEquals("@Foo * *.*",s.toString());				
 	}
 	
 	public void testParseFieldSigComplexAP() {
-		
+		PatternParser p = new PatternParser("@(!@Foo || @Goo) * *.*");
+		SignaturePattern s = p.parseFieldSignaturePattern();
+		assertEquals("complex annotation","((!@Foo) || @Goo)",s.getAnnotationPattern().toString());
+		assertEquals("Any field type","*",s.getReturnType().toString());
+		assertEquals("Any dec type","*",s.getDeclaringType().toString());
+		assertEquals("Any name","*",s.getName().toString());
+		assertEquals("@((!@Foo) || @Goo) * *.*",s.toString());				
 	}
 	
 	public void testExactAnnotationPatternMatching() {
-		// matching, non-matching
+		PatternParser p = new PatternParser("@Foo");
+		AnnotationTypePattern ap = p.parseAnnotationTypePattern();
+		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[]{"Foo"});
+		assertTrue("matches element with Foo",ap.matches(ae).alwaysTrue());
+		AnnotatedElementImpl ae2 = new AnnotatedElementImpl(new String[]{"Boo"});
+		assertTrue("does not match element with Boo",ap.matches(ae2).alwaysFalse());
 	}
 	
 	public void testBindingAnnotationPatternMatching() {
-		// matching, non-matching
+		PatternParser p = new PatternParser("foo");
+		AnnotationTypePattern ap = p.parseAnnotationNameOrVarTypePattern();
+		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
+		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[]{"Foo"});
+		assertTrue("matches element with Foo",ap.matches(ae).alwaysTrue());
+		AnnotatedElementImpl ae2 = new AnnotatedElementImpl(new String[]{"Boo"});
+		assertTrue("does not match element with Boo",ap.matches(ae2).alwaysFalse());
 	}
 	
 	public void testAndAnnotationPatternMatching() {
-		
+		PatternParser p = new PatternParser("@Foo && @Boo");
+		AnnotationTypePattern ap = p.parseAnnotationTypePattern();
+		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[] {"Foo","Boo"});
+		assertTrue("matches foo and boo",ap.matches(ae).alwaysTrue());
+		ae = new AnnotatedElementImpl(new String[] {"Foo"});
+		assertTrue("does not match foo",ap.matches(ae).alwaysFalse());
+		ae = new AnnotatedElementImpl(new String[] {"Boo"});
+		assertTrue("does not match boo",ap.matches(ae).alwaysFalse());
+		ae = new AnnotatedElementImpl(new String[] {"Goo"});
+		assertTrue("does not match goo",ap.matches(ae).alwaysFalse());		
 	}
 	
 	public void testOrAnnotationPatternMatching() {
-		
+		PatternParser p = new PatternParser("@Foo || @Boo");
+		AnnotationTypePattern ap = p.parseAnnotationTypePattern();
+		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[] {"Foo","Boo"});
+		assertTrue("matches foo and boo",ap.matches(ae).alwaysTrue());
+		ae = new AnnotatedElementImpl(new String[] {"Foo"});
+		assertTrue("matches foo",ap.matches(ae).alwaysTrue());
+		ae = new AnnotatedElementImpl(new String[] {"Boo"});
+		assertTrue("matches boo",ap.matches(ae).alwaysTrue());
+		ae = new AnnotatedElementImpl(new String[] {"Goo"});
+		assertTrue("does not match goo",ap.matches(ae).alwaysFalse());				
 	}
 	
 	public void testNotAnnotationPatternMatching() {
-		
+		PatternParser p = new PatternParser("!@Foo");
+		AnnotationTypePattern ap = p.parseAnnotationTypePattern();
+		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[] {"Foo","Boo"});
+		assertTrue("does not match foo and boo",ap.matches(ae).alwaysFalse());		
+		ae = new AnnotatedElementImpl(new String[] {"Boo"});
+		assertTrue("matches boo",ap.matches(ae).alwaysTrue());		
 	}
 	
 	public void testAnyAnnotationPatternMatching() {
-		
+		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[] {"Foo","Boo"});
+		assertTrue("always matches",AnnotationTypePattern.ANY.matches(ae).alwaysTrue());				
+		ae = new AnnotatedElementImpl(new String[] {});
+		assertTrue("always matches",AnnotationTypePattern.ANY.matches(ae).alwaysTrue());				
+	}
+	
+	
+	public TestScope makeSimpleScope() {
+		return new TestScope(new String[] {"int", "java.lang.String","Foo"}, new String[] {"a", "b","foo"}, new BcelWorld());
 	}
 	
 	// put test cases for AnnotationPatternList matching in separate test class...
 	
 	static class AnnotatedElementImpl implements AnnotatedElement {
 
-		private boolean answer;
+		private String[] annotationTypes;
 		
-		public static final AnnotatedElementImpl YES = new AnnotatedElementImpl(true);
-		public static final AnnotatedElementImpl NO = new AnnotatedElementImpl(false);
-		
-		public AnnotatedElementImpl(boolean answer) { this.answer = answer; }
+		public AnnotatedElementImpl(String[] annotationTypes) { 
+			this.annotationTypes = annotationTypes;
+		}
 		
 		public boolean hasAnnotation(TypeX ofType) {
-			return answer;
+			for (int i = 0; i < annotationTypes.length; i++) {
+				if (annotationTypes[i].equals(ofType.getName())) return true;
+			}
+			return false;
 		}
 		
 	}
