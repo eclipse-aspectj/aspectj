@@ -18,7 +18,7 @@ import java.io.*;
 import java.util.*;
 
 import org.aspectj.asm.internal.ProgramElement;
-import org.aspectj.bridge.SourceLocation;
+import org.aspectj.bridge.*;
 
 /**
  * @author Mik Kersten
@@ -32,6 +32,10 @@ public class StructureModel implements Serializable {
     
     public static final IProgramElement NO_STRUCTURE = new ProgramElement("<build to view structure>", IProgramElement.Kind.ERROR, null);
 
+	public IProgramElement getElement(String handle) {
+		throw new RuntimeException("unimplemented");
+	}
+
     public IProgramElement getRoot() {
         return root;
     }
@@ -40,21 +44,18 @@ public class StructureModel implements Serializable {
         this.root = root;
     }
 
-	private Map getFileMap() {
-        return fileMap;
-    }
-
 	public void addToFileMap( Object key, Object value ){
 		fileMap.put( key, value );
 	}
-	
+
+	public void setFileMap(HashMap fileMap) {
+		  this.fileMap = fileMap;
+	  }
+
 	public Object findInFileMap( Object key ) {
 		return fileMap.get(key);
 	}
 
-	public void setFileMap(HashMap fileMap) {
-        this.fileMap = fileMap;
-    }
 
 	public Set getFileMapEntrySet() {
 		return fileMap.entrySet();
@@ -63,6 +64,7 @@ public class StructureModel implements Serializable {
 	public boolean isValid() {
         return root != null && fileMap != null;
     }
+
 
 	/** 
 	 * Returns the first match
@@ -86,8 +88,12 @@ public class StructureModel implements Serializable {
 		return null;
 	}
 
+	/**
+	 * 
+	 * @param signatureKey	PackageName.TypeName.Signature.SourceLine.SourceColumn
+	 */
 	public IProgramElement findNodeForSignatureKey(String signatureKey) {
-		return null;	
+		throw new RuntimeException("unimplemented");
 	}	
 
 	/**
@@ -167,6 +173,13 @@ public class StructureModel implements Serializable {
     }
 
 	/**
+	 * TODO: discriminate columns
+	 */
+	public IProgramElement findNodeForSourceLine(ISourceLocation location) {
+		return findNodeForSourceLine(location.getSourceFile().getAbsolutePath(), location.getLine());
+	}
+
+	/**
 	 * Never returns null 
 	 * 
 	 * @param		sourceFilePath	canonicalized path for consistency
@@ -174,8 +187,7 @@ public class StructureModel implements Serializable {
 	 * @return		a new structure node for the file if it was not found in the model
 	 */
 	public IProgramElement findNodeForSourceLine(String sourceFilePath, int lineNumber) {
-		String correctedPath = sourceFilePath;//.replace('\\', '/');
-		IProgramElement node = findNodeForSourceLineHelper(root, correctedPath, lineNumber);
+		IProgramElement node = findNodeForSourceLineHelper(root, sourceFilePath, lineNumber);
 		if (node != null) {
 			return node;	
 		} else {
@@ -224,7 +236,7 @@ public class StructureModel implements Serializable {
 				&& node.getSourceLocation().getSourceFile().getCanonicalPath().equals(sourceFilePath)
 				&& ((node.getSourceLocation().getLine() <= lineNumber
 					&& node.getSourceLocation().getEndLine() >= lineNumber)
-				    ||
+					||
 					(lineNumber <= 1
 					 && node instanceof IProgramElement 
 					 && ((IProgramElement)node).getKind().isSourceFileKind())	
@@ -249,6 +261,5 @@ public class StructureModel implements Serializable {
 	public void setConfigFile(String configFile) {
 		this.configFile = configFile;
 	}
-
 }
 

@@ -102,7 +102,7 @@ public class BrowserManager {
 		
 			AjdeUIManager.getDefault().getOptionsFrame().addOptionsPanel(new BrowserOptionsPanel());
 		
-			StructureModelManager.getDefault().addListener(VIEW_LISTENER);	
+			AsmManager.getDefault().addListener(VIEW_LISTENER);	
 		
 			//String lastOpenFilePath = browserProjectProperties.getLastOpenSourceFilePath();
 			//editorManager.showSourceLine(lastOpenFilePath, 1, false);	

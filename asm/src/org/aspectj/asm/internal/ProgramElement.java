@@ -121,7 +121,7 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public String getPackageName() {
-		if (kind == Kind.PACKAGE) return getSignature();
+		if (kind == Kind.PACKAGE) return getName();
 		if (getParent() == null || !(getParent() instanceof IProgramElement)) {
 			return "";
 		}
@@ -130,10 +130,6 @@ public class ProgramElement implements IProgramElement {
 
 	public Kind getKind() {
 		return kind;
-	}
-
-	public String getSignature() {
-		return name;
 	}
 
 	public boolean isCode() {

@@ -23,46 +23,63 @@ import org.aspectj.bridge.*;
 public interface IProgramElement extends Serializable {
 	
 	public List/*IProgramElement*/ getChildren();
+
+	public void setChildren(List children);	
 	public void addChild(IProgramElement child);
-	public Kind getKind();
-	public List getModifiers();
-	public Accessibility getAccessibility();
-	public String getDeclaringType();
-	public String getPackageName();
-	public String getSignature();
+
+	public IProgramElement getParent();
+	public void setParent(IProgramElement parent);
+
 	public String getName();
-	public boolean isCode();
-	public boolean isMemberKind();
+	public void setName(String name);
+	
+	public IProgramElement.Kind getKind();
+	public void setKind(Kind kind);
+		
+	public List getModifiers();
+	public void setModifiers(int i);
+
+	public Accessibility getAccessibility();
+
+	public String getDeclaringType();  // TODO: remove (Emacs uses it)
+	public String getPackageName();
+
+	public void setReturnType(String returnType);
+	public String getReturnType();
+	
+	public String getFullSignature();
+	public void setFullSignature(String string);
+	
 	public void setRunnable(boolean value);
 	public boolean isRunnable();
+	
 	public boolean isImplementor();
 	public void setImplementor(boolean value);
+	
 	public boolean isOverrider();
 	public void setOverrider(boolean value);
-	public List getRelations();
-	public void setRelations(List relations);
-	public String getFormalComment();
+
+	public IMessage getMessage();
+	public void setMessage(IMessage message);
+
+	public ISourceLocation getSourceLocation();
+	public void setSourceLocation(ISourceLocation sourceLocation);
+	
 	public String toString();
+	
+	// public String getHandle() TODO: check IJavaElement
+	
+	/**
+	 * @return	a string representation of this node and all of its children (recursive)
+	 */
+	public String toLongString();
+	
 	public String getBytecodeName();
 	public String getBytecodeSignature();
 	public void setBytecodeName(String bytecodeName);
 	public void setBytecodeSignature(String bytecodeSignature);
-	public String getFullSignature();
-	public void setFullSignature(String string);
-	public void setKind(Kind kind);
-	public void setReturnType(String returnType);
-	public String getReturnType();
-	public ISourceLocation getSourceLocation();
-	public void setSourceLocation(ISourceLocation sourceLocation);
-	public IMessage getMessage();
-	public void setMessage(IMessage message);
-	public IProgramElement getParent();
-	public void setParent(IProgramElement parent);
+
 	public IProgramElement walk(HierarchyWalker walker);
-	public void setName(String name);
-	public void setChildren(List children);
-	public void setModifiers(int i);
-//	public String getSignatureKey();
 	
 	/**
 	 * Uses "typesafe enum" pattern.

@@ -22,20 +22,18 @@ import org.aspectj.asm.internal.*;
 /**
  * @author Mik Kersten
  */
-public class StructureModelManager {
+public class AsmManager {
 	
 	/**
 	 * @deprecated	use getDefault() method instead
-	 */ 
-	public static StructureModelManager INSTANCE = new StructureModelManager();
+	 */  
+	private static AsmManager INSTANCE = new AsmManager();
 	private boolean shouldSaveModel = true;
     protected StructureModel model = new StructureModel();
     private List structureListeners = new ArrayList();
-
 	private IRelationshipMapper mapper;
-//	public static final IRelationship ADVICE = new Relationship("advises", "advised by", IRelationship.Kind.ADVICE);
 
-    protected StructureModelManager() {
+    protected AsmManager() {
     	List relationships = new ArrayList();
 //    	relationships.add(ADVICE);
 		mapper = new RelationshipMapper();
@@ -165,9 +163,10 @@ public class StructureModelManager {
 		this.shouldSaveModel = shouldSaveModel;
 	}
 
-	public static StructureModelManager getDefault() {
+	public static AsmManager getDefault() {
 		return INSTANCE;
 	}
+	
 	public IRelationshipMapper getMapper() {
 		return mapper;
 	}

@@ -21,17 +21,15 @@ import org.aspectj.asm.IRelationship.Kind;
  * @author Mik Kersten
  */
 public interface IRelationshipMapper extends Serializable {
-
-//	public List getRelationshipsForElement(String source, IRelationship relationship);
-//	
-//	public void putRelationshipForElement(String source, IRelationship relationship, List targets);
-//
-//	public void putRelationshipForElement(String source, IRelationship kind, String target);
  
+ 	// TODO: return a list
 	public IRelationship get(IProgramElement source);
-
-//	public void putRelationshipForElement(IProgramElement source, IRelationship relationship, List targets);
-
+	
+	// TODO: return a list 
+	public IRelationship get(String handle);
+	
 	public void put(IProgramElement source, IRelationship relationship);
+	
+	
  
 }

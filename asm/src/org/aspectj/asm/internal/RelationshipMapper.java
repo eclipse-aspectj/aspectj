@@ -25,12 +25,15 @@ public class RelationshipMapper extends HashMap implements IRelationshipMapper {
 		return (IRelationship)super.get(source);
 	}
 
-	/**
-	 * Creates the relationship if not present.
-	 */
+	public IRelationship get(String handle) {
+		throw new RuntimeException("unimplemented");
+	}
+
 	public void put(IProgramElement source, IRelationship relationship) {
 		super.put(source, relationship);
 	}
+	
+	// TODO: add a remove, and a clear all
 
 	private static class RelationshipTable {
 		private IRelationship relationship;
@@ -49,4 +52,5 @@ public class RelationshipMapper extends HashMap implements IRelationshipMapper {
 			return relationship;
 		}
 	}
+
 }
