@@ -181,7 +181,7 @@ public class ExplicitConstructorCall
 
 	public void manageSyntheticAccessIfNecessary(BlockScope currentScope) {
 		if (binding.alwaysNeedsAccessMethod()) {
-			syntheticAccessor = binding.getAccessMethod();
+			syntheticAccessor = binding.getAccessMethod(true);
 			return;
 		}
 		

@@ -142,7 +142,7 @@ public void manageEnclosingInstanceAccessIfNecessary(BlockScope currentScope) {
 }
 public void manageSyntheticAccessIfNecessary(BlockScope currentScope){
 	if (binding.alwaysNeedsAccessMethod()) {
-		syntheticAccessor = binding.getAccessMethod();
+		syntheticAccessor = binding.getAccessMethod(isSuperAccess());
 		return;
 	}
 

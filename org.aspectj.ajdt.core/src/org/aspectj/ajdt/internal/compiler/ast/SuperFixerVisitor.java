@@ -16,6 +16,7 @@ package org.aspectj.ajdt.internal.compiler.ast;
 import java.util.*;
 import java.util.Arrays;
 
+import org.aspectj.ajdt.internal.compiler.lookup.*;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.ShadowMunger;
@@ -49,6 +50,17 @@ public class SuperFixerVisitor extends AbstractSyntaxTreeVisitorAdapter {
 		if (superBinding instanceof ProblemMethodBinding) {
 			return;
 		}
+		// InterTypeMethodBindings are always statically bound, so there's no
+		// need to treat super calls specially here
+		if (superBinding instanceof InterTypeMethodBinding) {
+			return;
+//			InterTypeMethodBinding m = (InterTypeMethodBinding)superBinding;
+//			if (m.postDispatchMethod != null) {
+//				call.binding = m.postDispatchMethod;
+//			}
+//			return;
+		}
+		
 		char[] accessName;
 		if (call.isSuperAccess() && !call.binding.isStatic()) {
 			call.receiver = new ThisReference();

@@ -1,18 +1,11 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 <suite>
-    <ajc-test dir="bugs" pr="29691"
-    		title="Static inner aspects cannot reference user defined pointcuts">
-        <compile files="PcdLookup.java" />
-        <run class="PcdLookup"/>
-    </ajc-test>
+
+
+
 
     <!--
     
-    <ajc-test dir="new"
-      title="work nicely with inner class method look-up rules and call-site advice"
-      keywords="from-resolved_10x">
-        <compile files="InnerMethods.java"/>
-        <run class="InnerMethods"/>
-    </ajc-test>
+
 	-->
 </suite>

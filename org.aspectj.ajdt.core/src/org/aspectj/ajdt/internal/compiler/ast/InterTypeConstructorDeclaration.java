@@ -110,7 +110,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		if (explicitConstructorCall != null) {
 			explicitConstructor = explicitConstructorCall.binding;
 			if (explicitConstructor.alwaysNeedsAccessMethod()) {
-				explicitConstructor = explicitConstructor.getAccessMethod();
+				explicitConstructor = explicitConstructor.getAccessMethod(true);
 			}
 		}
 		
@@ -226,7 +226,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		if (explicitConstructorCall != null && !(explicitConstructorCall.binding instanceof ProblemMethodBinding)) {
 			MethodBinding explicitConstructor = explicitConstructorCall.binding;
 			if (explicitConstructor.alwaysNeedsAccessMethod()) {
-				explicitConstructor = explicitConstructor.getAccessMethod();
+				explicitConstructor = explicitConstructor.getAccessMethod(true);
 			}
 			
 			

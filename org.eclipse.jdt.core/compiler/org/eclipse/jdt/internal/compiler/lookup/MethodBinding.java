@@ -421,7 +421,7 @@ public final int sourceStart() {
 	 * This will only be called if alwaysNeedsAccessMethod() returns true.
 	 * In that case it should return the access method to be used.
 	 */
-	public MethodBinding getAccessMethod() {
+	public MethodBinding getAccessMethod(boolean staticReference) {
 		throw new RuntimeException("unimplemented");
 	}
 

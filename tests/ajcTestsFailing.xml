@@ -51,4 +51,11 @@
             <message kind="warning" line="73"/>
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs" pr="29959"
+            title="super call in intertype method declaration body causes VerifyError">
+        <compile files="SuperToIntro.java"/>
+        <run class="SuperToIntro"/>
+    </ajc-test>
+
 </suite>

@@ -18,11 +18,10 @@ import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 
 public class InterTypeMethodBinding extends MethodBinding {
-	//private ReferenceBinding withinType;
 	private ReferenceBinding targetType;
 	private MethodBinding syntheticMethod;
 		
-	//public MethodBinding introducedMethod;
+	public MethodBinding postDispatchMethod;
 	
 	public AbstractMethodDeclaration sourceMethod;
 	
@@ -38,42 +37,17 @@ public class InterTypeMethodBinding extends MethodBinding {
 		if (signature.getKind() == Member.METHOD) {			
 			syntheticMethod = 
 				world.makeMethodBinding(AjcMemberMaker.interMethodDispatcher(signature, withinType));
+			postDispatchMethod = 
+				world.makeMethodBinding(AjcMemberMaker.interMethodBody(signature, withinType));
 		} else {
 			syntheticMethod = world.makeMethodBinding(
 				AjcMemberMaker.interConstructor(world.resolve(signature.getDeclaringType()),
 							signature, withinType));
+			postDispatchMethod = syntheticMethod;
 		}
 
 		
 	}
-		
-//		
-//		this.declaringClass = 
-//		
-//		
-//		
-//		char[] dispatch2Name;
-//		if (Modifier.isPublic(modifiers)) {
-//			dispatch2Name = name;
-//		} else if (Modifier.isPrivate(modifiers)) {
-//			dispatch2Name = 
-//			AstUtil.makeAjcMangledName("dispatch2".toCharArray(), withinType, selector);
-//		} else {
-//			// package visible
-//			//??? optimize both in same package
-//			dispatch2Name = 
-//				AstUtil.makeAjcMangledName("dispatch2".toCharArray(), 
-//								withinType.qualifiedPackageName(), selector);
-//		}
-//		
-//		introducedMethod =
-//			new MethodBinding(AstUtil.makePublic(modifiers), dispatch2Name, 
-//							type, args, exceptions, declaringClass);
-//		
-//		this.dispatchMethod =
-//				new DispatchMethodBinding(introducedMethod, withinType, mangledParams);
-//	}
-
 
 	//XXX this is identical to InterTypeFieldBinding
 	public boolean canBeSeenBy(TypeBinding receiverType, InvocationSite invocationSite, Scope scope) {
@@ -127,8 +101,9 @@ public class InterTypeMethodBinding extends MethodBinding {
 	}
 
 
-	public MethodBinding getAccessMethod() {
-		return syntheticMethod;
+	public MethodBinding getAccessMethod(boolean staticReference) {
+		if (staticReference) return postDispatchMethod;
+		else return syntheticMethod;
 	}
 	
 	public boolean alwaysNeedsAccessMethod() { return true; }
