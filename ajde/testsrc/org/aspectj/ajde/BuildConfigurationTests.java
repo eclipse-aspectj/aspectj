@@ -62,12 +62,12 @@ public class BuildConfigurationTests extends AjdeTestCase {
 
 	// The tests...
 	public void testCharacterEncoding() {
-		buildOptions.setCharacterEncoding( "12345" );
+		buildOptions.setCharacterEncoding( "UTF-8" );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );
         assertTrue(configFile + " failed", null != buildConfig);			
 		Map options = buildConfig.getOptions().getMap();
 		String encoding = (String) options.get( CompilerOptions.OPTION_Encoding );
-		assertEquals( "character encoding", "12345", encoding );
+		assertEquals( "character encoding", "UTF-8", encoding );
 	}
 	
 	public void testComplianceLevel() {
@@ -149,7 +149,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		assertOptionEquals( "report assert identifer",
 							options, 
 						    CompilerOptions.OPTION_ReportAssertIdentifier,
-						    CompilerOptions.IGNORE);						    
+						    CompilerOptions.WARNING);						    
 	}
 	
 //	public void testEmptyWarnings() {
@@ -282,7 +282,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
         assertTrue(configFile + " failed", null != buildConfig);            
 		Map options = buildConfig.getOptions().getMap();
 		
-		// this should leave us with the debug on
+		// this should leave us with the default debug 
 		assertOptionEquals( "debug source",
 							options, 
 						    CompilerOptions.OPTION_SourceFileAttribute,
