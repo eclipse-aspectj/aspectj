@@ -144,6 +144,8 @@ All rights reserved.
 <h2>Changes in AspectJ</h2>
 
 <ul>
+	
+  <li> <a href="#1.2.1">1.2.1</a> (released 2004-10)</li>
   <li> <a href="#1.2">1.2</a> (released 2004-05) 
   </li>
   <li> <a href="#1.1.1">1.1.1</a> (released 2003-09) 
@@ -188,6 +190,149 @@ All rights reserved.
 </ul>
 
 <hr />
+
+<h2><a name="1.2.1">1.2.1</a></h2>
+<p>All known P1 and P2 bugs have been fixed in this release. The 
+<a href="https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&target_milestone=1.2.1&bug_status=RESOLVED&resolution=FIXED">full list of fixes and 
+enhancements</a> can be found on bugzilla.
+Some of the more significant bug fixes and enhancements include:
+  <ul>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=53981">53981</a> 
+     Any occurence of proceed(..) within the body of around advice is treated as the 
+     special proceed form (even if the aspect defines a method named proceed) unless 
+     a target other than the aspect instance is specified as the recipient of the 
+     call.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=48990">48990</a>
+     Optimisations added for the special cases of if(true) and if(false) in pointcut
+     expressions. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=69319">69319</a> 
+     The Eclipse JDT compiler inside AspectJ has been upgraded to the Eclipse 3.0 release
+     version.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=61572">61572</a> 
+     AspectJ 1.2.1 correctly detects an attempt to access instance variables of the
+     declaring aspect of an inter-type declared method from within the body of that
+     method.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=65319">65319</a> 
+     Error message now correctly produced when attempting to bind a pointcut formal
+     in both a this() and a target() pointcut sub-expression.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=70619">70619</a>
+     Conflicting declare precedence statements are now handled gracefully. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=42573">42573</a>
+     Relative paths specified in .lst files are now resolved relative to the lst file
+     location. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=57666">57666</a>
+     Resource copying from jar files correctly handles duplicate manifests. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=61768">61768</a> 
+     Static inner types of an aspect can now be referenced within the body of inter-type
+     declared methods in that aspect.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=62642">62642</a> 
+     after-throwing advice on a static initialization join point no longer swallows
+     ExceptionInInitializer errors.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=67578">67578</a>
+     AspectJ 1.2.1 correctly handles privileged access to members defined in a different
+     package to the privileged aspect.	 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=67592">67592</a>
+     The Object[] given in response to a getArgs() call on a JoinPoint object is now
+     a value copy. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=68991">68991</a> 
+     Initialisers of inter-type declared fields now have field-set join points.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=69459">69459</a>
+     A static inter-type method declaration is not allowed to hide an instance method. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=70794">70794</a>
+     An inter-type declaration of an abstract method on a target type which is an interface
+     must be declared as public. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=71372">71372</a>
+     Calls can be made to private static methods of enclosing types from the body of 
+     around advice in an inner aspect. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=71377">71377</a>
+     Join points are now correctly detected for calls to private methods and set/get of 
+     private fields within the body of around advice. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=71723">71723</a>
+     A non-privileged inter-type declared method cannot call protected methods defined in 
+     parent classes of the target type.
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=74238">74238</a>
+     Any privileged calls made by the AspectJ runtime library are now correctly 
+     wrapped in doPrivileged blocks, with fall-back implementations, allowing
+     usage in restricted environments. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=74245">74245</a>
+     Specifying the -proceedOnError flag will now cause the compiler to attempt
+     weaving even in the face of errors. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=76030">76030</a>
+     Runtime optimisations for cflow (in the case where there are no arguments bound in
+     the cflow pointcut) have been implemented. This can dramatically speed-up some programs
+     making heavy use of cflow. Thanks to the abc compiler team for detecting this performance
+     related bug and for piloting the fix. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=54421">54421</a>
+     String concatentation (using "+") is now allowed for the message associated with
+     a declare error or warning statement. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=69011">69011</a>
+     	ajdoc now correctly handles types in the default package. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=36747">36747</a>
+     The 1.2.1 compiler supports an additional option, -showWeaveInfo, which will
+     produce informational messages concerning the activity of the weaver. For example:
+     </br>
+     <pre>
+     	Type 'tjp.Demo' (Demo.java:30) advised by around advice from 'tjp.GetInfo' 
+        (GetInfo.java:26) [RuntimeTest=true] 
+     </pre>
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=44191">44191</a> 
+     AspectJ 1.2.1 improves the error messages issued in many of the infamous "can't find type"
+     scenarios. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=46298">46298</a>
+     	The code generated by ajc is now more easily digested by many decompilers (but you
+     	wouldn't want to do that anyway would you?? ;) ). 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=49743">49743</a>
+     Performance optimisations in the AspectJ runtime library when using getSignature() and
+     toString(). 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=61374">61374</a>
+     AspectJ now includes its own version of BCEL under the org.aspectj namespace which eliminates
+     unwanted conflicts with BCEL versions inside JDKs or on classpaths in general. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=68494">68494</a>
+     ajdoc now supports ".aj" files. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=72154">72154</a> 
+     The AspectJ 1.2.1 compiler includes the ability to dump information about the current state of the
+     compiler on failure. By default this only happens on an abort, but it can also be forced to
+     dump on error by specifying the property: org.aspectj.weaver.Dump.condition=error
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=37020">37020</a>
+     The line number locations for method execution and static initialization join points now give
+     the first line of the method declaration (rather than the line number of the first line of code in
+     the method body) when the source code is compiled by ajc. 
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=73369">73369</a>
+     A new jar, aspectjweaver.jar is included in the lib directory, which contains the subset
+     of aspectjtools.jar needed for weaving. The "aj" script is also moved into the bin directory. 
+  </ul>
+
 
 <h2><a name="1.2">1.2</a></h2>
 <p>All known P1 and P2 bugs have been fixed in this release. The 
