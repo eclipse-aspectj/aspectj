@@ -46,11 +46,11 @@
       <available property="testing.drivers.all.available"
          file="${aj.jar.dir}/testing-drivers-all.jar"
          value="${aj.jar.dir}/testing-drivers-all.jar"/>
-
     </target>
 
     <target name="version-uptodate" depends="init,init-taskdefs"
          unless="version-uptodate.done">
+         <!-- XXX change task to pre-check & avoid scan if dates uptodate -->
 		 <versionuptodate
 			version="${build.version}"
 			versionSourceFile="${aspectj.modules.dir}/bridge/src/org/aspectj/bridge/Version.java"
@@ -83,6 +83,38 @@
       <echo message="----- WARNING: ${ant.lib.aspectjtools}" /> 
     </target>
 
+	<target name="fail-unless-boot-libraries-uptodate" depends="init"
+	 description="fail unless all boot libraries are up-to-date">
+		
+		<antcall target="verify-boot-lib">
+			<param name="boot.lib"        value="test/aspectjrt.jar"/>
+			<param name="vbl.module.name" value="runtime"/>
+		</antcall>
+		
+		<antcall target="verify-boot-lib">
+			<param name="boot.lib"        value="build/build.jar"/>
+			<param name="vbl.module.name" value="build"/>
+		</antcall>
+
+		<antcall target="verify-boot-lib">
+			<param name="boot.lib"        value="test/testing-client.jar"/>
+			<param name="vbl.module.name" value="testing-client"/>
+		</antcall>
+
+		<echo message="all boot libraries verified"/>		
+	</target>
+
+	<target name="update-tree" depends="init"
+     description="update tree">
+      <fail unless="CVSROOT" 
+           message="required: {ant} -DCVSROOT=... ..."/>
+      <cvs cvsRoot="${CVSROOT}"
+              dest="${aspectj.modules.dir}"
+             quiet="on" 
+       failonerror="on" 
+           command="update -dP" />
+    </target>
+
     <!-- ===================================================================== -->
     <!-- test targets                                                          -->
     <!-- ===================================================================== -->	
@@ -96,20 +128,6 @@
 	   <!-- todo: product install and tests -->
 	</target>
 	
-    <!-- ===================================================================== -->
-    <!-- tree targets                                                          -->
-    <!-- ===================================================================== -->	
-	<target name="update.tree" depends="init"
-     description="update tree">
-      <fail unless="CVSROOT" 
-           message="required: {ant} -DCVSROOT=... ..."/>
-      <cvs cvsRoot="${CVSROOT}"
-              dest="${aspectj.modules.dir}"
-             quiet="on" 
-       failonerror="on" 
-           command="update -dP" />
-    </target>
-
     <!-- ===================================================================== -->
     <!-- antcall targets                                                       -->
     <!-- ===================================================================== -->	
@@ -166,6 +184,19 @@
                      htmlSrc="${htmlSrc.dir}"
                 resourcesSrc="${aspectj.modules.build.dir}/installer-resources"/>
 	</target>
+
+	<target name="verify-boot-lib" depends="init"
+	 description="fail if ${boot.lib} is out of date wrt ${vbl.module.name}">
+      <uptodate property="lib-warning-${vbl.module.name}"
+              targetfile="${aspectj.modules.dir}/lib/${boot.lib}">
+      	<srcfiles dir="${aspectj.modules.dir}/${vbl.module.name}/src"
+              includes="**/*.java"/>
+      </uptodate>
+      
+      <fail unless="lib-warning-${vbl.module.name}"
+        message="${boot.lib} out of date wrt module ${vbl.module.name}"/>
+
+    </target>
 
     <!-- ===================================================================== -->
     <!-- custom targets                                                        -->
@@ -228,10 +259,13 @@
 	    inheritAll="false"/> <!-- true? -->
 	</target>
 	
-	<target name="runtime" depends="init">
+	<target name="aspectjrt" depends="init"
+	 description="build aspectjrt.jar (differently than release)">
 	  <antcall target="build-module-all">
 	    <param name="module.name" value="runtime"/>
 	  </antcall>
+	  <copy file="${aj.jar.dir}/runtime.jar"
+	      tofile="${aj.jar.dir}/aspectjrt.jar"/>
 	</target>
 	
     <!-- ===================================================================== -->
