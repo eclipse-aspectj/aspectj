@@ -263,11 +263,11 @@ public class AjBuildConfig { // XXX needs bootclasspath?
             full.add(((File)i.next()).getAbsolutePath());
         }
         full.addAll(getClasspath());
-        if (null != outputDir) {
-            full.add(outputDir.getAbsolutePath());
-        } else if (null != outputJar) {
-            full.add(outputJar.getAbsolutePath());
-        }
+//        if (null != outputDir) {
+//            full.add(outputDir.getAbsolutePath());
+//        } else if (null != outputJar) {
+//            full.add(outputJar.getAbsolutePath());
+//        }
         return full;
     }
     
