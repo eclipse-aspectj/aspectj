@@ -156,7 +156,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
                     bcelWorld.setModel(AsmManager.getDefault().getHierarchy());
                     // in incremental build, only get updated model?
                 }
-                binarySourcesForTheNextCompile = state.getBinaryFilesToCompile();
+                binarySourcesForTheNextCompile = state.getBinaryFilesToCompile(true);
                 performCompilation(buildConfig.getFiles());
                 if (handler.hasErrors()) {
                     return false;
@@ -167,17 +167,17 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 //                    bcelWorld.setModel(StructureModelManager.INSTANCE.getStructureModel());
 //                }
                 // System.err.println("XXXX start inc ");
+                binarySourcesForTheNextCompile = state.getBinaryFilesToCompile(true);
                 List files = state.getFilesToCompile(true);
-                binarySourcesForTheNextCompile = state.getBinaryFilesToCompile();
-                boolean hereWeGoAgain = !(files.isEmpty() && binarySourcesForTheNextCompile.isEmpty());
+                               boolean hereWeGoAgain = !(files.isEmpty() && binarySourcesForTheNextCompile.isEmpty());
                 for (int i = 0; (i < 5) && hereWeGoAgain; i++) {
                     // System.err.println("XXXX inc: " + files);
                     performCompilation(files);
                     if (handler.hasErrors() || (progressListener!=null && progressListener.isCancelledRequested())) {
                         return false;
                     } 
+                    binarySourcesForTheNextCompile = state.getBinaryFilesToCompile(false);
                     files = state.getFilesToCompile(false);
-                    binarySourcesForTheNextCompile = state.getBinaryFilesToCompile();
                     hereWeGoAgain = !(files.isEmpty() && binarySourcesForTheNextCompile.isEmpty());
                 }
                 if (!files.isEmpty()) {

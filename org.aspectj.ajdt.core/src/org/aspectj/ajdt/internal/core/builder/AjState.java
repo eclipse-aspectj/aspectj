@@ -228,25 +228,30 @@ public class AjState {
 		return thisTime;
 	}
 
-	public Map /* String -> List<ucf> */ getBinaryFilesToCompile() {
+	public Map /* String -> List<ucf> */ getBinaryFilesToCompile(boolean firstTime) {
 		if (lastSuccessfulBuildTime == -1 || buildConfig == null) {
 			return binarySourceFiles;
 		}
 		// else incremental...
 		Map toWeave = new HashMap();
-		List addedOrModified = new ArrayList();
-		addedOrModified.addAll(addedBinaryFiles);
-		addedOrModified.addAll(getModifiedBinaryFiles());
-		for (Iterator iter = addedOrModified.iterator(); iter.hasNext();) {
-			AjBuildConfig.BinarySourceFile bsf = (AjBuildConfig.BinarySourceFile) iter.next();
-			UnwovenClassFile ucf = createUnwovenClassFile(bsf);
-			if (ucf == null) continue;
-			List ucfs = new ArrayList();
-			ucfs.add(ucf);
-			binarySourceFiles.put(bsf.binSrc.getPath(),ucfs);
-			toWeave.put(bsf.binSrc.getPath(),ucfs);
+		if (firstTime) {
+			List addedOrModified = new ArrayList();
+			addedOrModified.addAll(addedBinaryFiles);
+			addedOrModified.addAll(getModifiedBinaryFiles());
+			for (Iterator iter = addedOrModified.iterator(); iter.hasNext();) {
+				AjBuildConfig.BinarySourceFile bsf = (AjBuildConfig.BinarySourceFile) iter.next();
+				UnwovenClassFile ucf = createUnwovenClassFile(bsf);
+				if (ucf == null) continue;
+				List ucfs = new ArrayList();
+				ucfs.add(ucf);
+				addDependentsOf(ucf.getClassName());
+				binarySourceFiles.put(bsf.binSrc.getPath(),ucfs);
+				toWeave.put(bsf.binSrc.getPath(),ucfs);
+			}
+			deleteBinaryClassFiles();
+		} else {
+			// return empty set... we've already done our bit.
 		}
-		deleteBinaryClassFiles();
 		return toWeave;
 	}
 	
