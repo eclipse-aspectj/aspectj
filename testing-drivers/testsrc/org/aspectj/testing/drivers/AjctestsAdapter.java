@@ -12,42 +12,51 @@
 
 package org.aspectj.testing.drivers;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestResult;
+import junit.framework.TestSuite;
 
-import org.aspectj.bridge.*;
-import org.aspectj.testing.harness.bridge.*;
-import org.aspectj.testing.run.*;
-//import org.aspectj.testing.util.RunUtils;
-//import org.aspectj.testing.xml.AjcSpecXmlReader;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHolder;
+import org.aspectj.bridge.MessageHandler;
+import org.aspectj.bridge.MessageUtil;
+import org.aspectj.testing.harness.bridge.AjcTest;
+import org.aspectj.testing.harness.bridge.RunSpecIterator;
+import org.aspectj.testing.harness.bridge.Sandbox;
+import org.aspectj.testing.harness.bridge.Validator;
+import org.aspectj.testing.run.IRunIterator;
+import org.aspectj.testing.run.RunStatus;
+import org.aspectj.testing.run.Runner;
 
 /*
- * Adapt Harness tests to JUnit driver.
- * This renders suite files as TestSuite
- * and AjcTest as TestCase.
- * When run, aborts are reported as error
- * and fails as failures, with all messages stuffed
- * into the one JUnit exception message.
- * Test options are supported, but no harness options.
- * The TestSuite implementation prevents us
- * from re-running tests.
- * In the Eclipse JUnit test runner,
- * the tests display hierarchically and with annotations 
- * and with messages.  You can stop the tests, but not
- * traverse to the source or re-run the test.
+ * Adapt Harness tests to JUnit driver. This renders suite files as TestSuite
+ * and AjcTest as TestCase. When run, aborts are reported as error and fails as
+ * failures, with all messages stuffed into the one JUnit exception message.
+ * Test options are supported, but no harness options. The TestSuite
+ * implementation prevents us from re-running tests. In the Eclipse JUnit test
+ * runner, the tests display hierarchically and with annotations and with
+ * messages. You can stop the tests, but not traverse to the source or re-run
+ * the test.
  */
 public class AjctestsAdapter extends TestSuite {
-    public static final String VERBOSE_NAME =
-        AjctestsAdapter.class.getName() + ".VERBOSE";
-    
-    private static final boolean VERBOSE
-        = HarnessJUnitUtil.readBooleanSystemProperty(VERBOSE_NAME);
-        
+    public static final String VERBOSE_NAME = AjctestsAdapter.class.getName()
+            + ".VERBOSE";
+
+    private static final boolean VERBOSE = HarnessJUnitUtil
+            .readBooleanSystemProperty(VERBOSE_NAME);
+
     /**
      * Factory to make and populate suite without options.
-     * @param suitePath the String path to a harness suite file
+     * 
+     * @param suitePath
+     *            the String path to a harness suite file
      * @return AjctestJUnitSuite populated with tests
      */
     public static AjctestsAdapter make(String suitePath) {
@@ -56,8 +65,11 @@ public class AjctestsAdapter extends TestSuite {
 
     /**
      * Factory to make and populate suite
-     * @param suitePath the String path to a harness suite file
-     * @param options the String[] options to use when creating tests
+     * 
+     * @param suitePath
+     *            the String path to a harness suite file
+     * @param options
+     *            the String[] options to use when creating tests
      * @return AjctestJUnitSuite populated with tests
      */
     public static AjctestsAdapter make(String suitePath, String[] options) {
@@ -79,16 +91,24 @@ public class AjctestsAdapter extends TestSuite {
     }
 
     private final String suitePath;
+
     private final String[] options;
+
     private AjcTest.Suite.Spec spec;
+
     private Runner runner;
+
     private Validator validator;
+
     private IMessageHolder holder;
+
     private Sandbox sandbox;
+
     private File suiteDir;
+
     private String name;
 
-    private AjctestsAdapter(String suitePath, String[] options) { 
+    private AjctestsAdapter(String suitePath, String[] options) {
         this.suitePath = suitePath;
         String[] opts = new String[0];
         if (!HarnessJUnitUtil.isEmpty(options)) {
@@ -99,11 +119,10 @@ public class AjctestsAdapter extends TestSuite {
     }
 
     public void addTest(Test test) {
-        if (! (test instanceof AjcTestSpecAsTest)) {
+        if (!(test instanceof AjcTestSpecAsTest)) {
             String m = "expecting AjcTestSpecAsTest, got "
-                + (null == test 
-                    ? "null test" 
-                    : test.getClass().getName() + ": " + test);
+                    + (null == test ? "null test" : test.getClass().getName()
+                            + ": " + test);
             throw new IllegalArgumentException(m);
         }
         super.addTest(test);
@@ -112,20 +131,23 @@ public class AjctestsAdapter extends TestSuite {
     public void addTestSuite(Class testClass) {
         throw new Error("unimplemented");
     }
-    
+
     public String getName() {
         if (null == name) {
-            name = HarnessJUnitUtil.cleanTestName(suitePath + Arrays.asList(options));
+            name = HarnessJUnitUtil.cleanTestName(suitePath
+                    + Arrays.asList(options));
         }
         return name;
     }
-                
+
     /**
-     * Callback from test to run it using suite-wide holder, etc.
-     * The caller is responsible for calling 
-     * result.startTest(test) and result.endTest(test);
-     * @param test the AjcTestSpecAsTest to run
-     * @param result the TestResult for any result messages
+     * Callback from test to run it using suite-wide holder, etc. The caller is
+     * responsible for calling result.startTest(test) and result.endTest(test);
+     * 
+     * @param test
+     *            the AjcTestSpecAsTest to run
+     * @param result
+     *            the TestResult for any result messages (may be null)
      */
     protected void runTest(AjcTestSpecAsTest test, TestResult result) {
         final Runner runner = getRunner();
@@ -139,7 +161,8 @@ public class AjctestsAdapter extends TestSuite {
             holder.clearMessages();
             IRunIterator steps = test.spec.makeRunIterator(sandbox, validator);
             if (0 < holder.numMessages(IMessage.ERROR, true)) {
-                MessageUtil.handleAll(status, holder, IMessage.INFO, true, false);
+                MessageUtil.handleAll(status, holder, IMessage.INFO, true,
+                        false);
             } else {
                 runner.runIterator(steps, status, null);
             }
@@ -147,8 +170,13 @@ public class AjctestsAdapter extends TestSuite {
                 numIncomplete = ((RunSpecIterator) steps).getNumIncomplete();
             }
         } finally {
-            HarnessJUnitUtil.reportResult(result, status, test, numIncomplete);
-            validator.deleteTempFiles(true);
+            try {
+                // reportResult handles null TestResult
+                HarnessJUnitUtil
+                        .reportResult(null, status, test, numIncomplete);
+            } finally {
+                validator.deleteTempFiles(true);
+            }
         }
     }
 
@@ -189,16 +217,17 @@ public class AjctestsAdapter extends TestSuite {
     private AjcTest.Suite.Spec getSpec() {
         if (null == spec) {
             IMessageHolder holder = getHolder();
-            spec = HarnessJUnitUtil.getSuiteSpec(suitePath, options, getHolder());
+            spec = HarnessJUnitUtil.getSuiteSpec(suitePath, options,
+                    getHolder());
             if (VERBOSE && holder.hasAnyMessage(null, true)) {
-                MessageUtil.print(System.err, holder, "skip ", 
-                    MessageUtil.MESSAGE_MOST);
+                MessageUtil.print(System.err, holder, "skip ",
+                        MessageUtil.MESSAGE_MOST);
             }
             holder.clearMessages();
         }
-        return spec; 
+        return spec;
     }
-    
+
     private Sandbox getSandbox() {
         if (null == sandbox) {
             sandbox = new Sandbox(spec.getSuiteDirFile(), getValidator());
@@ -206,13 +235,138 @@ public class AjctestsAdapter extends TestSuite {
         return sandbox;
     }
 
+    /**
+     * Wrap AjcTest.Spec for lookup by description
+     * 
+     * @author wes
+     */
+    public static class SpecTests {
+        private static final HashMap TESTS = new HashMap();
+
+        private static void putSpecTestsFor(String id, SpecTests tests) {
+            TESTS.put(id, tests);
+        }
+
+        private static SpecTests getSpecTestsFor(String id) {
+            SpecTests result = (SpecTests) TESTS.get(id);
+            if (null == result) {
+                throw new Error("no tests found for " + id);
+            }
+            return result;
+        }
+
+        private static String safeName(String name) {
+            return HarnessJUnitUtil.cleanTestName(name); 
+        }
+
+        private static String filename(String path) {            
+            if (null == path) {
+                throw new IllegalArgumentException("null path");
+            }
+            int loc = path.lastIndexOf(File.pathSeparator);
+            if (-1 != loc) {
+                path = path.substring(loc+1);
+            }
+            loc = path.lastIndexOf('/');
+            if (-1 != loc) {
+                path = path.substring(loc+1);
+            }
+            loc = path.lastIndexOf(".");
+            if (-1 != loc) {
+                path = path.substring(0, loc);
+            }
+            return path;
+        }
+
+        private static String classnameToPath(String classname) {
+            return classname.replace('.', File.separatorChar) + ".class";
+        }
+
+
+        // ------------------------------------
+        final AjctestsAdapter mAjctestsAdapter;
+
+        private final Map mDescriptionToAjcTestSpec;
+
+        // ------------------------------------
+        private SpecTests(AjctestsAdapter ajctestsAdapter, AjcTest.Spec[] tests) {
+            mAjctestsAdapter = ajctestsAdapter;
+            Map map = new HashMap();
+            for (int i = 0; i < tests.length; i++) {
+                map.put(tests[i].getDescription(), tests[i]);
+            }
+            ;
+            mDescriptionToAjcTestSpec = Collections.unmodifiableMap(map);
+        }
+
+        /**
+         * @param description
+         *            the String description of the test
+         * @throws IllegalArgumentException
+         *             if testName is not found
+         */
+        protected void runTest(String description) {
+            AjcTest.Spec spec = getSpec(description);
+            AjctestsAdapter.AjcTestSpecAsTest ajcTestAsSpec = new AjctestsAdapter.AjcTestSpecAsTest(
+                    spec, mAjctestsAdapter);
+            // runTest handles null TestResult
+            mAjctestsAdapter.runTest(ajcTestAsSpec, null);
+        }
+
+        /**
+         * @param description
+         *            the String description of the test
+         * @throws IllegalArgumentException
+         *             if testName is not found
+         */
+        private AjcTest.Spec getSpec(String description) {
+            AjcTest.Spec spec = (AjcTest.Spec) mDescriptionToAjcTestSpec
+                    .get(description);
+            if (null == spec) {
+                throw new IllegalArgumentException("no test for " + description);
+            }
+            return spec;
+        }
+
+        /**
+         * makeUsingTestClass(..) extends this to create TestCase with
+         * test_{name} for each test case.
+         */
+        public static class TestClass extends TestCase {
+            public TestClass() {                
+            }
+            private SpecTests mTests;
+
+            /**
+             * Called by code generated in makeUsingTestClass(..)
+             * 
+             * @param description
+             *            the String identifier of the test stored in SpecTests
+             *            mTests.
+             * @throws Error
+             *             on first and later uses if getTestsFor() returns
+             *             null.
+             */
+            public final void runTest(String description) {
+                if (null == mTests) {
+                    String classname = getClass().getName();
+                    mTests = getSpecTestsFor(classname);
+                }
+                mTests.runTest(description);
+            }
+        }
+    }
+
     /** Wrap AjcTest.Spec as a TestCase. Run by delegation to suite */
-    private static class AjcTestSpecAsTest extends TestCase 
-        implements HarnessJUnitUtil.IHasAjcSpec {
-        // this could implement Test, but Ant batchtest fails to pull name 
+    private static class AjcTestSpecAsTest extends TestCase implements
+            HarnessJUnitUtil.IHasAjcSpec {
+        // this could implement Test, but Ant batchtest fails to pull name
         final String name;
+
         final AjcTest.Spec spec;
+
         AjctestsAdapter suite;
+
         AjcTestSpecAsTest(AjcTest.Spec spec, AjctestsAdapter suite) {
             super(HarnessJUnitUtil.cleanTestName(spec.getDescription()));
             this.name = HarnessJUnitUtil.cleanTestName(spec.getDescription());
@@ -220,19 +374,22 @@ public class AjctestsAdapter extends TestSuite {
             this.spec = spec;
             spec.setSuiteDir(suite.getSuiteDir());
         }
+
         public int countTestCases() {
             return 1;
         }
+
         public AjcTest.Spec getAjcTestSpec() {
             return spec;
         }
+
         public void run(TestResult result) {
             if (null == suite) {
                 throw new Error("need to re-init");
             }
             try {
                 result.startTest(this);
-                suite.runTest(this, result); 
+                suite.runTest(this, result);
             } finally {
                 result.endTest(this);
                 suite = null;
@@ -242,6 +399,7 @@ public class AjctestsAdapter extends TestSuite {
         public String getName() {
             return name;
         }
+
         public String toString() {
             return name;
         }

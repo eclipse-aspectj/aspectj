@@ -112,22 +112,48 @@ public class HarnessJUnitUtil {
       if (status.runResult()) {
           if (expectFail) {
               String m = "did not fail as expected per expect-fail keyword";
-              AssertionFailedError failure = new AssertionFailedError(m);
-              result.addFailure(test, failure);
+              reportResultToJUnit(m, false, true, test, result);
           }
       } else if (!expectFail) {
           final boolean includeChildren = true;
           if (status.hasAnyMessage(IMessage.FAIL, false, includeChildren)) {
               String m = render(status, null);
-              AssertionFailedError failure = new AssertionFailedError(m);
-              result.addFailure(test, failure);
+              reportResultToJUnit(m, false, true, test, result);
           } else if (status.hasAnyMessage(IMessage.ERROR, true, includeChildren)) {
               String m = render(status, null);
-              AssertionFailedError failure = new AssertionFailedError(m);
-              result.addError(test, failure);
+              reportResultToJUnit(m, true, false, test, result);
           } // /XXX  skip INFO, DEBUG
       }
       return 0; // XXX not doing incomplete
+    }
+    
+    /**
+     * Report results as error, failure, or success (ignored),
+     * differently if result is null
+     * @param description the String description of the result
+     * @param isError if true, report as failure
+     * @param isFailure if true and not isError, report as failure
+     * @param test the Test case
+     * @param result the TestResult sink - ignored if null
+     * @return 0
+     */
+    private static int reportResultToJUnit(String description, boolean isError, boolean isFailure, Test test, TestResult result) {
+        if (null != result) {
+            if (isError) {
+                result.addError(test, new AssertionFailedError(description));
+            } else if (isFailure) {
+                result.addFailure(test, new AssertionFailedError(description));
+            } // no need to log success
+        } else { // have to throw failure
+            if (isError) {
+                String m = safeTestName(test) + " " + description;
+                throw new Error(m);
+            } else if (isFailure) {
+                String m = safeTestName(test) + " " + description;
+                throw new AssertionFailedError(description);
+            } // no need to log success
+        }
+        return 0;
     }
     
 //    public static int reportResultComplex(
@@ -187,6 +213,19 @@ public class HarnessJUnitUtil {
 //    }
 
     /**
+     * @return TestCase.getName() or Test.toString() or "nullTest"
+     */
+    public static String safeTestName(Test test) {
+        if (test instanceof TestCase) {
+            return ((TestCase) test).getName();
+        } else if (null != test) {
+            return test.toString();
+        } else {
+            return "nullTest";
+        }
+    }
+    
+    /**
      * Fix up test names for JUnit.
      * (i.e., workaround eclipse JUnit bugs)
      * @param name the String identifier for the test
@@ -203,12 +242,7 @@ public class HarnessJUnitUtil {
     public static boolean readBooleanSystemProperty(String name) {
         boolean result = false;
         try {
-            String value = System.getProperty(name);
-            if (null != value) {
-                // XXX convert using Boolean?
-                value = value.toLowerCase();
-                result = ("true".equals(value) || "on".equals(value));
-            }
+            result = Boolean.getBoolean(name);
         } catch (Throwable t) {
             // ignore
         }
