@@ -25,7 +25,8 @@ import org.aspectj.bridge.MessageUtil;
 import org.eclipse.jdt.internal.core.builder.MissingSourceFileException;
 
 /**
- * ICommand adapter for the AspectJ eclipse-based compiler.
+ * ICommand adapter for the AspectJ compiler.
+ * Not thread-safe.
  */
 public class AjdtCommand implements ICommand {
     
@@ -43,74 +44,86 @@ public class AjdtCommand implements ICommand {
      * @param args the String[] for the compiler
      * @param handler the IMessageHandler for any messages
 	 * @see org.aspectj.bridge.ICommand#runCommand(String[], IMessageHandler)
-     * @return false if command failed
+     * @return false if handler has errors or the command failed
 	 */
 	public boolean runCommand(String[] args, IMessageHandler handler) {
-		try {
-			buildManager = new AjBuildManager(handler); 
-			savedArgs = new String[args.length];
-            System.arraycopy(args, 0, savedArgs, 0, savedArgs.length);
-			CountingMessageHandler counter = new CountingMessageHandler(handler);
-            AjBuildConfig config = genBuildConfig(savedArgs, counter);
-            return (!counter.hasErrors()
-                && buildManager.batchBuild(config, counter)
-                && !counter.hasErrors());
-		} catch (AbortException ae) {
-        	if (ae.isSilent()) {
-        		throw ae;
-        	} else {
-        		MessageUtil.abort(handler, ABORT_MESSAGE, ae);
-        		return false;
-        	}
-        } catch (MissingSourceFileException t) { // XXX special handling - here only?
-            MessageUtil.error(handler, t.getMessage());
-            return false;
-    	} catch (Throwable t) {
-			//System.err.println("caught: " + t);
-            MessageUtil.abort(handler, ABORT_MESSAGE, t);
-            return false;
-		} 
-	} 
+		buildManager = new AjBuildManager(handler); 
+		savedArgs = new String[args.length];
+        System.arraycopy(args, 0, savedArgs, 0, savedArgs.length);
+        return doCommand(handler, false);
+    }
 
     /**
      * Run AspectJ compiler, wrapping any exceptions thrown as
      * ABORT messages (containing ABORT_MESSAGE String).
+     * @param handler the IMessageHandler for any messages
      * @see org.aspectj.bridge.ICommand#repeatCommand(IMessageHandler)
-     * @return false if command failed
+     * @return false if handler has errors or the command failed
      */
 	public boolean repeatCommand(IMessageHandler handler) {
 		if (null == buildManager) {
             MessageUtil.abort(handler, "repeatCommand called before runCommand");
             return false;            
         }
+        return doCommand(handler, true);
+    }
+    
+    /** 
+     * Delegate of both runCommand and repeatCommand.
+     * This invokes the argument parser each time
+     * (even when repeating).
+     * If the parser detects errors, this signals an 
+     * abort with the usage message and returns false.
+     * @param handler the IMessageHandler sink for any messages
+     * @param repeat if true, do incremental build, else do batch build
+     * @return false if handler has any errors or command failed
+     */
+    protected boolean doCommand(IMessageHandler handler, boolean repeat) {
         try {
 			//buildManager.setMessageHandler(handler);
             CountingMessageHandler counter = new CountingMessageHandler(handler);
+            if (counter.hasErrors()) {
+                return false;
+            }
             // regenerate configuration b/c world might have changed (?)
-			AjBuildConfig config = genBuildConfig(savedArgs, counter);  
-			//System.err.println("errs: " + counter.hasErrors());          
-            return (!counter.hasErrors()
-                    && buildManager.incrementalBuild(config, handler)
+            AjBuildConfig config = genBuildConfig(savedArgs, counter);
+            if (!config.hasSources()) {
+                MessageUtil.error(counter, "no sources specified");
+            }
+            if (counter.hasErrors())  { // print usage for config errors
+                String usage = BuildArgParser.getUsage();
+                MessageUtil.abort(handler, usage);
+                return false;
+            }
+            //System.err.println("errs: " + counter.hasErrors());          
+            return ((repeat 
+                        ? buildManager.incrementalBuild(config, handler)
+                        : buildManager.batchBuild(config, handler))
                     && !counter.hasErrors());
-        } catch (MissingSourceFileException t) {
-        	System.err.println("missing file");
-            return false; // already converted to error
-		} catch (Throwable t) {
+        } catch (AbortException ae) {
+            if (ae.isSilent()) {
+                throw ae;
+            } else {
+                MessageUtil.abort(handler, ABORT_MESSAGE, ae);
+            }
+        } catch (MissingSourceFileException t) { 
+            MessageUtil.error(handler, t.getMessage());
+        } catch (Throwable t) {
             MessageUtil.abort(handler, ABORT_MESSAGE, t);
-            return false;
-		}
-	}
+        } 
+        return false;
+    }
 
-    /** @throws AbortException.ABORT on error after logging message */
-    AjBuildConfig genBuildConfig(String[] args, IMessageHandler handler) {
+    /** @throws AbortException on error after handling message */
+    AjBuildConfig genBuildConfig(String[] args, CountingMessageHandler handler) {
         BuildArgParser parser = new BuildArgParser();
         AjBuildConfig config = parser.genBuildConfig(args, handler);
-        String message = parser.getOtherMessages(true);       
+        String message = parser.getOtherMessages(true);
 
         if (null != message) {
             IMessage.Kind kind = inferKind(message);
-            handler.handleMessage(new Message(message, kind, null, null));
-            throw new AbortException(); // XXX tangled - assumes handler prints?
+            IMessage m = new Message(message, kind, null, null);            
+            handler.handleMessage(m);
         }
         return config;
     }
