@@ -10,9 +10,13 @@
  *******************************************************************************/
 package org.aspectj.ajde;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.io.File;
 
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IProgramElement;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.tools.ajc.CompilationResult;
@@ -50,6 +54,78 @@ public class ExtensionTests extends AjcTestCase {
 			m.getID()==IProblem.UnusedImport);
 	}
 	
+	public void testInnerClassesInASM() {
+		String[] args = new String[] {"InnerClasses.java","-emacssym"};
+		CompilationResult result = ajc(baseDir,args);
+		List l = result.getWarningMessages();
+		Properties p = AsmManager.ModelInfo.summarizeModel().getProperties();
+		System.out.println("Structure Model for InnerClasses.java:");
+		walkit(AsmManager.getDefault().getHierarchy().getRoot(),0);
+		foundNode = null;
+		findChild("main",AsmManager.getDefault().getHierarchy().getRoot());
+		assertTrue("Should have found node 'main' in the model",foundNode!=null);
+		IProgramElement runnableChild = getChild(foundNode,"new Runnable() {..}");
+		assertTrue("'main' should have a child 'new Runnable() {..}'",
+				runnableChild!=null);
+		assertTrue("'new Runnable() {..}' should have a 'run' child",
+				getChild(runnableChild,"run")!=null);
+		
+		/* Left hand side is before the fix, right hand side is after:
+<root>
+  InnerClasses.java
+    import declarations
+    InnerClasses
+      A							A
+        method						method
+        1								new Runnable() {..}
+          run								run
+      main						main
+      2								new Runnable() {..}
+      	  run							run
+      3 							new Object() {..}
+        toString						toString
+      4								new Runnable
+        run								run
+		 */
+
+	}
+	
+	private IProgramElement getChild(IProgramElement parent,String s) {
+		List kids = parent.getChildren();
+		for (Iterator iter = kids.iterator(); iter.hasNext();) {
+			IProgramElement element = (IProgramElement) iter.next();
+			if (element.getName().indexOf(s)!=-1) return element;
+		}
+		return null;
+	}
+	
+	private IProgramElement foundNode = null;
+	
+	private void findChild(String s,IProgramElement ipe) {
+		if (ipe == null) return;
+		if (ipe.getName().indexOf(s)!=-1) {foundNode = ipe; return;}
+		if (ipe.getChildren()!=null) {
+			List kids = ipe.getChildren();
+			for (Iterator iter = kids.iterator(); iter.hasNext();) {
+				IProgramElement element = (IProgramElement) iter.next();
+				findChild(s,element);
+			}
+		}
+	}
+	
+	public void walkit(IProgramElement ipe,int indent) {
+	  if (ipe!=null) {
+	  	for (int i = 0 ;i<indent;i++) System.out.print(" ");
+	  	System.out.println(ipe.toLabelString());//getName());
+	    if (ipe.getChildren()!=null) {
+	    	List kids = ipe.getChildren();
+	    	for (Iterator iter = kids.iterator(); iter.hasNext();) {
+				IProgramElement element = (IProgramElement) iter.next();
+				walkit(element,indent+2);
+			}
+	    }
+	  }
+	}
 	
 
 }

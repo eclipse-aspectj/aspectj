@@ -279,11 +279,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		String fullName = "<undefined>";
 		if (memberTypeDeclaration.binding != null
 			&& memberTypeDeclaration.binding.constantPoolName() != null) {
-			fullName = new String(memberTypeDeclaration.binding.constantPoolName());
+			// Create a name something like 'new Runnable() {..}'
+			fullName = "new "+memberTypeDeclaration.allocation.type.toString()+"() {..}";
 		}
-		 
-		int dollar = fullName.indexOf('$');
-		fullName = fullName.substring(dollar+1);
 
 		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
 		if (memberTypeDeclaration.isInterface()) kind = IProgramElement.Kind.INTERFACE;
@@ -298,8 +296,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		peNode.setSourceSignature(genSourceSignature(memberTypeDeclaration));
 		peNode.setFormalComment(generateJavadocComment(memberTypeDeclaration));
 		
-		//??? we add this to the compilation unit
-		findEnclosingClass(stack).addChild(peNode);
+
+		((IProgramElement)stack.peek()).addChild(peNode);
 		stack.push(peNode);
 		return true;
 	}
