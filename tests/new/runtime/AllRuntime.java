@@ -52,6 +52,7 @@ public class AllRuntime {
         ok = me.catchThrows();
         if (!ok) result++;
 
+
         int temp = me.publicIntMethod(2);
         if (temp != 12) result++;
 
@@ -213,13 +214,13 @@ aspect A {
     
     /** unused - enable to throw exception from run() */
     public boolean TargetClass.throwException;
-    public void TargetClass.run() {
+    public void TargetClass.run() throws Exception {
         if (throwException) throwsException();
     }
 
     //-------------------------------------- advice 
-    /** callee-side call join point */ // todo: not being invoked, though TargetClass.toString is???
-    before() : call(public String toString()) 
+    /** was callee-side call join point, now is execution */ // todo: not being invoked, though TargetClass.toString is???
+    before() : execution(public String toString()) 
         && target(TargetClass) { 
         /* comment out test to avoid StackOverflow
         test(thisJoinPoint, thisJoinPointStaticPart, this, 
@@ -469,7 +470,7 @@ aspect A {
             }
             sb.append(path);
             sb.append(":" + sl.getLine());
-            sb.append(":" + sl.getColumn());
+            //sb.append(":" + sl.getColumn());
         }
     }
 
