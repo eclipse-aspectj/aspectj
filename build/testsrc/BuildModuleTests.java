@@ -16,6 +16,7 @@
 
 import org.aspectj.internal.tools.ant.taskdefs.Checklics;
 import org.aspectj.internal.build.BuildModuleTest;
+import org.aspectj.internal.build.ModulesTest;
 
 import java.io.File;
 
@@ -39,6 +40,7 @@ public class BuildModuleTests extends TestCase {
         TestSuite suite = new TestSuite("Build module tests");
         suite.addTestSuite(BuildModuleTests.class); 
         suite.addTestSuite(BuildModuleTest.class); 
+        suite.addTestSuite(ModulesTest.class); 
         return suite;
     }
 

@@ -48,7 +48,15 @@ import java.util.StringTokenizer;
  * @see Modules#getModule(String)
  */
 public class Module {
-    
+    private static final String[] ATTS = new String[]
+        { "exported", "kind", "path", "sourcepath" };
+        
+    private static final int getATTSIndex(String key) {
+        for (int i = 0; i < ATTS.length; i++) {
+            if (ATTS[i].equals(key)) return i;
+        }
+        return -1;
+    }
     /** @return true if file is null or cannot be read or was
      *           last modified after time
      */
@@ -58,26 +66,26 @@ public class Module {
             || (file.lastModified() > time));
     }
     
-	/** @return all source files under srcDir */
-	private static Iterator sourceFiles(File srcDir) {
+    /** @return all source files under srcDir */
+    private static Iterator sourceFiles(File srcDir) {
         ArrayList result = new ArrayList();
         sourceFiles(srcDir, result);
         return result.iterator();
     }
     
-	private static void sourceFiles(File srcDir, List result) {
+    private static void sourceFiles(File srcDir, List result) {
         if ((null == srcDir) || !srcDir.canRead() || !srcDir.isDirectory()) {
             return;
         }
         File[] files = srcDir.listFiles();
         for (int i = 0; i < files.length; i++) {
-			if (files[i].isDirectory()) {
+            if (files[i].isDirectory()) {
                 sourceFiles(files[i], result);
             } else if (isSourceFile(files[i])) {
                 result.add(files[i]);
             }
-		}
-	}
+        }
+    }
 
     /** 
      * Recursively find antecedant jars. 
@@ -98,7 +106,7 @@ public class Module {
             Module required = (Module) iter.next();
             File requiredJar = required.getModuleJar();
             if (!skipModuleJarAntecedant(requiredJar)
-            	&& !known.contains(requiredJar)) {
+                && !known.contains(requiredJar)) {
                 known.add(requiredJar);
                 doFindKnownJarAntecedants(required, known);
             }
@@ -116,18 +124,18 @@ public class Module {
 
     /** XXX gack explicitly skip runtime */
     private static boolean skipModuleJarAntecedant(File requiredJar) {
-    	if (null == requiredJar) {
-    		return true;
-    	} else {
-	        return "runtime.jar".equals(requiredJar.getName());
-    	}
+        if (null == requiredJar) {
+            return true;
+        } else {
+            return "runtime.jar".equals(requiredJar.getName());
+        }
     }
 
-	/**@return true if this is a source file */
-	private static boolean isSourceFile(File file) {
+    /**@return true if this is a source file */
+    private static boolean isSourceFile(File file) {
         String path = file.getPath();
         return (path.endsWith(".java") || path.endsWith(".aj"));   // XXXFileLiteral
-	}
+    }
     
     public final boolean valid;
 
@@ -348,9 +356,15 @@ public class Module {
             fin = new FileReader(file);
             BufferedReader reader = new BufferedReader(fin);
             String line;
+            
+            XMLEntry entry = new XMLEntry("classpathentry", ATTS);
             String lastKind = null;
             while (null != (line = reader.readLine())) {
-                lastKind = parseLine(line, lastKind);
+                // we assume no internal spaces...
+                entry.acceptTokens(line);
+                if (entry.started && entry.ended) {
+                    update(entry);
+                }
             }
             return (0 < (srcDirs.size() + libJars.size()));
         } catch (IOException e) {
@@ -360,6 +374,58 @@ public class Module {
                 try { fin.close(); }
                 catch (IOException e) {} // ignore
             }
+        }
+        return false;
+    }
+    
+    private boolean update(XMLEntry entry) {
+        String kind = entry.attributes[getATTSIndex("kind")];
+        String path = entry.attributes[getATTSIndex("path")];
+        if ("src".equals(kind)) {
+            if (path.startsWith("/")) { // module
+                String moduleName = path.substring(1);
+                Module req = modules.getModule(moduleName);
+                if (null != req) {
+                    required.add(req);
+                    return true;
+                } else {
+                    messager.error("unable to create required module: " + moduleName);
+                }                
+            } else {                    // src dir
+                String fullPath = getFullPath(path);
+                File srcDir = new File(fullPath);
+                if (srcDir.canRead() && srcDir.isDirectory()) {
+                    srcDirs.add(srcDir); 
+                    return true;
+                } else {
+                    messager.error("not a src dir: " + srcDir);
+                }
+            }
+        } else if ("lib".equals(kind)) {
+             String fullPath = getFullPath(path);
+             File libJar= new File(fullPath);
+             if (libJar.canRead() && libJar.isFile()) {
+                libJars.add(libJar);
+                String exp = entry.attributes[getATTSIndex("exported")];
+                if ("true".equals(exp)) {
+                    exportedLibJars.add(libJar);
+                }
+                return true;
+             } else {
+                messager.error("no such library jar " + libJar + " from " + entry);                
+             }
+        } else if ("var".equals(kind)) {
+            if (!"JRE_LIB".equals(path)) {
+                messager.log("cannot handle var yet: " + entry);
+            }
+        } else if ("con".equals(kind)) {
+            if (-1 == path.indexOf("JRE")) { // warn non-JRE containers
+                messager.log("cannot handle con yet: " + entry);
+            }
+        } else if ("out".equals(kind) || "output".equals(kind)) {
+            // ignore output entries
+        } else {
+            messager.log("unrecognized kind " + kind + " in " + entry);
         }
         return false;
     }
@@ -399,12 +465,12 @@ public class Module {
         }
         try {
             for (ListIterator iter = srcDirs.listIterator(); iter.hasNext();) {
-    			File srcDir = (File) iter.next();
-    		    String name = srcDir.getName();
+                File srcDir = (File) iter.next();
+                String name = srcDir.getName();
                 if ("testsrc".equals(name.toLowerCase())) { // XXXFileLiteral
                     iter.remove(); // XXX if verbose log
-                }	
-    		}
+                }   
+            }
             for (ListIterator iter = libJars.listIterator(); iter.hasNext();) {
                 File libJar = (File) iter.next();
                 String name = libJar.getName();
@@ -426,80 +492,6 @@ public class Module {
         return true;
     }
     
-    private String parseLine(final String line, String lastKind) {
-        if (null == line) {
-            return null;
-        }
-        String kind;
-        int loc = line.indexOf("kind=\"");
-        if ((-1 == loc) || (loc + 9 > line.length())) {
-            // no kind string - fail unless have lastKind
-            if (null == lastKind) {
-                return null; 
-            } else {
-                kind = lastKind;
-            }
-        } else { // have kind string - get kind
-            loc += 6; // past kind="
-            kind = line.substring(loc, loc+3);
-        }
-        
-        // now look for value
-        loc = line.indexOf("path=\"");
-        if (-1 == loc)  { // no value - return lastKind
-            return kind;
-        } 
-        loc += 6; // past path="
-        int end = line.indexOf("\"", loc);
-        if (-1 == end) {
-            throw new Error("unterminated path in " + line);
-        } 
-        final String path = line.substring(loc, end);
-        
-        if ("src".equals(kind)) {
-            if (path.startsWith("/")) { // module
-                String moduleName = path.substring(1);
-                Module req = modules.getModule(moduleName);
-                if (null != req) {
-                    required.add(req);
-                } else {
-                    messager.error("unable to create required module: " + moduleName);
-                }                
-            } else {                    // src dir
-                String fullPath = getFullPath(path);
-                File srcDir = new File(fullPath);
-                if (srcDir.canRead() && srcDir.isDirectory()) {
-                    srcDirs.add(srcDir); 
-                } else {
-                    messager.error("not a src dir: " + srcDir);
-                }
-            }
-        } else if ("lib".equals(kind)) {
-             String fullPath = getFullPath(path);
-             File libJar= new File(fullPath);
-             if (libJar.canRead() && libJar.isFile()) {
-                libJars.add(libJar);
-                if (-1 != line.indexOf("exported=\"true\"")) {
-                    exportedLibJars.add(libJar);
-                }
-             } else {
-                messager.error("no such library jar " + libJar + " from " + line);                
-             }
-        } else if ("var".equals(kind)) {
-            if (!"JRE_LIB".equals(path)) {
-                messager.log("cannot handle var yet: " + line);
-            }
-        } else if ("con".equals(kind)) {
-            if (-1 == line.indexOf("JRE")) { // warn non-JRE containers
-                messager.log("cannot handle con yet: " + line);
-            }
-        } else if ("out".equals(kind)) {
-            // ignore output entries
-        } else {
-            messager.log("unrecognized kind " + kind + " in " + line);
-        }
-        return null;
-    }
     /** resolve path absolutely, assuming / means base of modules dir */
     private String getFullPath(String path) {
         String fullPath;
@@ -543,4 +535,102 @@ public class Module {
         return result;
     }
 }
+/**
+ * Extremely dumb class to parse XML entries
+ * that contain no entities.
+ */
+class XMLEntry {
+    static final String END = "/>";
+    static final String END_ATTRIBUTES = ">";
+    final String name;
+    final String startName;
+    final String endName;
+    final String[] attributeNames;
+    final String[] attributes;
+    final StringBuffer input;
+    boolean started;
+    boolean ended;
+    boolean attributesEnded;
+
+    XMLEntry(String name, String[] attributeNames) {
+        this.name = name;
+        this.attributeNames = attributeNames;
+        this.attributes = new String[attributeNames.length];
+        input = new StringBuffer();
+        startName = "<" + name;
+        endName = "</" + name;
+    }
     
+    public void acceptTokens(String tokens) {
+        StringTokenizer st = new StringTokenizer(tokens);
+        while (st.hasMoreTokens()) {
+            acceptToken(st.nextToken());
+        }    
+    }
+    
+    /**
+     * accept input (with no white space except that in values)
+     * Does not handle multi-token attributes, etc.
+     * @param s
+     */
+    public int acceptToken(String s) {
+        if ((null != s) || (0 < s.length())) {
+            input.append(s);
+            input.append(" ");
+            s = s.trim();
+            if (startName.equals(s)) {
+                reset();
+                started = true;
+            } else if (endName.equals(s) || END.equals(s)) {
+                ended = true;
+            } else if (END_ATTRIBUTES.equals(s)) {
+                if (started && !ended) {
+                    if (attributesEnded) {
+                        throw new IllegalStateException(s);
+                    } else {
+                        attributesEnded = true;
+                    }
+                }
+            } else if (started && !attributesEnded) {
+                return readAttributes(s);
+            }
+        }
+        return -1;
+    }
+    
+    void reset() {
+        for (int i = 0; i < attributes.length; i++) {
+            attributes[i] = null;
+        }
+        started = false;
+        ended = false;
+        attributesEnded = false;
+        input.setLength(0);
+    }
+
+    /**
+     * 
+     * @param s one String attribute, optionally terminated with end
+     * @return
+     */
+    int readAttributes(String s) {
+        for (int i = 0; i < attributeNames.length; i++) {
+            if (s.startsWith(attributeNames[i] + "=\"")) {
+                int start = 2+attributeNames[i].length();
+                int endLoc = s.indexOf("\"", start);
+                if (-1 == endLoc) {
+                    throw new IllegalArgumentException(s);
+                }
+                attributes[i] = s.substring(start, endLoc);
+                if (endLoc+1 < s.length()) {
+                    s = s.substring(endLoc+1);
+                    if (END.equals(s)) {
+                        ended = true;
+                    }
+                }
+                return i;
+            }
+        }
+        return -1;
+    }
+} // class XMLEntry
