@@ -455,10 +455,7 @@ public class Main {
          *           System.out for INFO if verbose.
          */
         protected PrintStream getStreamFor(IMessage.Kind kind) {
-            if (IMessage.FAIL.equals(kind)
-                || IMessage.ERROR.equals(kind)
-                || IMessage.WARNING.equals(kind)
-                || IMessage.ABORT.equals(kind)) {
+            if (IMessage.WARNING.isSameOrLessThan(kind)) {
                 return System.err;
             } else if (verbose && IMessage.INFO.equals(kind)) {
                 return System.out;
