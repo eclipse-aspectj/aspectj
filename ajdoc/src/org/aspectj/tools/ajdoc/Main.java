@@ -17,7 +17,10 @@ package org.aspectj.tools.ajdoc;
 import java.io.*;
 import java.util.*;
 
+import java.io.FileFilter;
+
 import org.aspectj.bridge.Version;
+import org.aspectj.util.FileUtil;
 
 /**
  * This is an old implementation of ajdoc that does not use an OO style.  However, it 
@@ -214,13 +217,25 @@ public class Main implements Config {
                                               symbolManager,
                                               inputFiles,
                                               docModifier); 
+            
             System.out.println( "> Removing generated tags (this may take a while)..." );
-            removeDeclIDsFromFile("index-all.html");
-            removeDeclIDsFromFile("serialized-form.html");
-            for (int p = 0; p < packageList.size(); p++) {
-                removeDeclIDsFromFile(((String)packageList.elementAt(p)).replace('.','/') +
-                                       Config.DIR_SEP_CHAR +
-                                       "package-summary.html" );
+            removeDeclIDsFromFile("index-all.html", true);
+            removeDeclIDsFromFile("serialized-form.html", true);
+            if (packageList.size() > 0) {
+	            for (int p = 0; p < packageList.size(); p++) {
+	                removeDeclIDsFromFile(((String)packageList.elementAt(p)).replace('.','/') +
+	                                       Config.DIR_SEP_CHAR +
+	                                       "package-summary.html", true);
+	            }
+            } else {
+            	File[] files = FileUtil.listFiles(rootDir, new FileFilter() {
+            		public boolean accept(File f) {
+						return f.getName().equals("package-summary.html");
+					}
+            	});
+            	for (int j = 0; j < files.length; j++) {
+            		removeDeclIDsFromFile(files[j].getAbsolutePath(), false);
+            	}
             }
             System.out.println( "> Finished." );
         } catch (Throwable e) {
@@ -228,10 +243,15 @@ public class Main implements Config {
             exit(-2);
         }
     }
-
-    static void removeDeclIDsFromFile(String filename) {
+    
+    private static void removeDeclIDsFromFile(String filename, boolean relativePath) {
         // Remove the decl ids from "index-all.html"
-        File indexFile = new File( docDir + Config.DIR_SEP_CHAR + filename );
+        File indexFile;
+        if (relativePath) {
+        	indexFile = new File(docDir + Config.DIR_SEP_CHAR + filename);
+        } else {
+        	indexFile = new File(filename);
+        }
         try {
         if ( indexFile.exists() ) {
             BufferedReader indexFileReader = new BufferedReader( new FileReader( indexFile ) );
@@ -495,9 +515,9 @@ public class Main implements Config {
             else if ( arg.equals( "-source" ) ) {
                 addNextAsOption = true;
                 addNextToAJCOptions = true;
-                addNextAsClasspath = true;
-                options.addElement( arg );
-                ajcOptions.addElement( arg );
+                addNextAsClasspath = false;
+                options.addElement(arg);
+                ajcOptions.addElement(arg);
             }
             else if ( arg.equals( "-classpath" ) ) {
                 addNextAsOption = true;
