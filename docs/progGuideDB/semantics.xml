@@ -1334,11 +1334,13 @@ aspect A {
         but the meaning varies slightly for each join point signature,
         in line with Java semantics.
         </para>
+
         <para>
         When matching for pointcuts <literal>withincode</literal>, 
         <literal>get</literal>, and <literal>set</literal>, the declaring
         type is the class that contains the declaration.
         </para>
+
         <para>
         When matching method-call join points, the 
         declaring type is the static type used to access the method.
@@ -1346,32 +1348,40 @@ aspect A {
         <literal>call</literal> pointcut that is a subtype of the 
         originally-declaring type. For example, given the class
         </para>
+
 <programlisting>
   class Service implements Runnable {
     public void run() { ... }
   } 
 </programlisting>
+
         <para>
         the following pointcut
         </para>
+
 <programlisting>
   call(void Service.run())
 </programlisting>
+
         <para>
         would fail to pick out the join point for the code
         </para>
+
 <programlisting>
   ((Runnable) new Service()).run();
 </programlisting>
+
         <para>
         Specifying the originally-declaring type is correct, but would
         pick out any such call (here, calls to the <literal>run()</literal>
         method of any Runnable).  
         In this situation, consider instead picking out the target type:
         </para>
+
 <programlisting>
   call(void run()) &amp;&amp; target(Service)
 </programlisting>
+
         <para>
         When matching method-execution join points, 
         if the execution pointcut method signature specifies a declaring type, 
@@ -1379,9 +1389,11 @@ aspect A {
         that override methods declared in or inherited by that type.
         So the pointcut
       </para>
+
 <programlisting>
   execution(public void Middle.*())
 </programlisting>
+
       <para>
       picks out all method executions for public methods returning void
       and having no arguments that are either declared in, or inherited by, 
@@ -1389,6 +1401,7 @@ aspect A {
       So the pointcut would pick out the method-execution join point
       for Sub.m() in this code:
       </para>
+
 <programlisting>
   class Super {
     protected void m() { ... }
@@ -1399,6 +1412,7 @@ aspect A {
     public void m() { ... }
   }
 </programlisting>
+
       </sect3>
 
       <sect3>
@@ -1497,7 +1511,7 @@ aspect A {
       </para>
 
       <sect3>
-        <title>Type name patterns</title>
+        <title>Exact type pattern</title>
 
         <para>
           First, all type names are also type patterns.  So
@@ -1505,6 +1519,44 @@ aspect A {
           <literal>Map.Entry</literal>, <literal>int</literal> are all type
           patterns.
         </para>
+
+	<para>
+	  If a type pattern is an exact type&mdash;if it doesn't
+	  include a wildcard&mdash;then the matching works just
+	  like normal type lookup in Java: </para>
+
+        <itemizedlist>
+          <listitem>Patterns that have the same names as
+          primitive types (like <literal>int</literal>) match
+          those primitive types.</listitem>
+
+          <listitem>Patterns that are qualified by package names
+          (like <literal>java.util.HashMap</literal>) match types
+          in other packages.
+          </listitem>
+
+          <listitem>Patterns that are not qualified (like
+          <literal>HashMap</literal>) match types that are
+          resolved by Java's normal scope rules.  So, for
+          example, <literal>HashMap</literal> might match a
+          package-level type in the same package or a type that
+          have been imported with java's
+          <literal>import</literal> form.  But it would not match
+          <literal>java.util.HashMap</literal> unless the aspect
+          were in <literal>java.util</literal> or the type had
+          been imported.
+          </listitem> 
+        </itemizedlist>
+
+        <para>
+	  So exact type patterns match based on usual Java scope
+	  rules.
+        </para>
+
+      </sect3>
+
+      <sect3>
+        <title>Type name patterns</title>
 
         <para>
           There is a special type name, *, which is also a type pattern.  * picks out all
@@ -1560,6 +1612,13 @@ aspect A {
         <para>
           picks out all join points where the code is in any 
           declaration of a type whose name begins with "<literal>com.xerox.</literal>".
+        </para>
+
+	<para>
+	  Type patterns with wildcards do not depend on Java's
+	  usual scope rules&mdash;they match against all types
+	  available to the weaver, not just those that are
+	  imported into an Aspect's declaring file.
         </para>
 
       </sect3>
