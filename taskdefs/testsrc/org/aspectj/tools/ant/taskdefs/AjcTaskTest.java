@@ -176,6 +176,9 @@ public class AjcTaskTest extends TestCase {
 
     public void testFindAspectjtoolsJar() {
         File toolsJar = AjcTask.findAspectjtoolsJar();
+        if (null != toolsJar) {
+            assertNull("tools jar found?: " + toolsJar, toolsJar);
+        }
         // not found when unit testing b/c not on system classpath
         // so just checking for exceptions.
         // XXX need aspect to stub out System.getProperty(..) 
@@ -213,6 +216,35 @@ public class AjcTaskTest extends TestCase {
         return task;
     }
     
+    public void testDefaultListForkedNoTools() {
+        AjcTask task = getTask("default.lst");
+        task.setFork(true);
+        boolean passed = false;
+        try {
+            runTest(task, BuildException.class, MessageHolderChecker.NONE);
+            passed = true;
+        } finally {
+            if (!passed) {
+                String m = "AjcTaskTest.testDefaultListForkedNoTools()"
+                    + " fails if aspectjtools.jar is on the classpath";
+                System.err.println(m);
+            }
+        }
+    }
+
+    public void testDefaultListForkedIncremental() {
+        AjcTask task = getTask("default.lst");
+        task.setFork(true);
+        task.setIncremental(true);
+        runTest(task, BuildException.class, MessageHolderChecker.NONE);
+    }
+
+    /** failonerror should default to true, unlike other booleans */
+    public void testCompileErrorFailOnErrorDefault() {
+        AjcTask task = getTask("compileError.lst");
+        runTest(task, BuildException.class, MessageHolderChecker.ONE_ERROR);
+    }
+    
     public void testDefaultList() {
         AjcTask task = getTask("default.lst");
         runTest(task, NO_EXCEPTION, MessageHolderChecker.INFOS);
@@ -220,6 +252,7 @@ public class AjcTaskTest extends TestCase {
 
     public void testCompileErrorList() {
         AjcTask task = getTask("compileError.lst");
+        task.setFailonerror(false);
         runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR);
     }
 
@@ -230,6 +263,7 @@ public class AjcTaskTest extends TestCase {
 
     public void testNoSuchFileList() {
         AjcTask task = getTask("NoSuchFile.lst");
+        task.setFailonerror(false);
         runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR_ONE_ABORT);
     }
 
@@ -260,6 +294,7 @@ public class AjcTaskTest extends TestCase {
 
     public void testNoFile() {
         AjcTask task = getTask(NOFILE);
+        task.setFailonerror(false);
         runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR_ONE_ABORT);
     }
     
@@ -268,16 +303,19 @@ public class AjcTaskTest extends TestCase {
 
     public void testCompileErrorFile() {
         AjcTask task = getTask("compileError.lst");
+        task.setFailonerror(false);
         runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR);
     }
 
     public void testCompileWarningFile() {
         AjcTask task = getTask("compileWarning.lst");
+        task.setFailonerror(false);
         runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_WARNING);
     }
 
     public void testNoSuchFile() {
         AjcTask task = getTask("NoSuchFile.lst");
+        task.setFailonerror(false);
         runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR_ONE_ABORT);
     }
 

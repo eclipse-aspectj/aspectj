@@ -15,43 +15,16 @@
 
 package org.aspectj.tools.ant.taskdefs;
 
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Location;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Copy;
-import org.apache.tools.ant.taskdefs.Execute;
-import org.apache.tools.ant.taskdefs.Expand;
-import org.apache.tools.ant.taskdefs.Javac;
-import org.apache.tools.ant.taskdefs.LogStreamHandler;
-import org.apache.tools.ant.taskdefs.MatchingTask;
-import org.apache.tools.ant.taskdefs.Zip;
-import org.apache.tools.ant.types.Commandline;
-import org.apache.tools.ant.types.CommandlineJava;
-import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.PatternSet;
-import org.apache.tools.ant.types.Reference;
-import org.apache.tools.ant.types.ZipFileSet;
+import java.io.*;
+import java.util.*;
+
+import org.apache.tools.ant.*;
+import org.apache.tools.ant.taskdefs.*;
+import org.apache.tools.ant.types.*;
 import org.aspectj.bridge.*;
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.IMessageHolder;
-import org.aspectj.bridge.MessageHandler;
 import org.aspectj.tools.ajc.Main;
 import org.aspectj.tools.ajc.Main.MessagePrinter;
-import org.aspectj.util.FileUtil;
-import org.aspectj.util.LangUtil;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
+import org.aspectj.util.*;
 
 
 /**
@@ -182,43 +155,66 @@ public class AjcTask extends MatchingTask {
     }
     
    /**
-     * Find aspectjtools.jar in the system classpath.
+     * Find aspectjtools.jar on the task or system classpath.
      * Accept <code>aspectj{-}tools{...}.jar</code>
      * mainly to support build systems using maven-style 
      * re-naming 
      * (e.g., <code>aspectj-tools-1.1.0.jar</code>.
+     * Note that we search the task classpath first, 
+     * though an entry on the system classpath would be loaded first,
+     * because it seems more correct as the more specific one.
      * @return readable File for aspectjtools.jar, or null if not found.
      */            
     public static File findAspectjtoolsJar() {
-        final Path classpath = Path.systemClasspath;
-        final String[] paths = classpath.list();
+        File result = null;
+        ClassLoader loader = AjcTask.class.getClassLoader();
+        if (loader instanceof AntClassLoader) {
+            AntClassLoader taskLoader = (AntClassLoader) loader;
+            String cp = taskLoader.getClasspath();
+            String[] cps = LangUtil.splitClasspath(cp);
+            for (int i = 0; (i < cps.length) && (null == result); i++) {
+                result = isAspectjtoolsjar(cps[i]);
+            }
+        }
+        if (null == result) {
+            final Path classpath = Path.systemClasspath;
+            final String[] paths = classpath.list();
+            for (int i = 0; (i < paths.length) && (null == result); i++) {
+                result = isAspectjtoolsjar(paths[i]);
+            }
+        }
+        return (null == result? null : result.getAbsoluteFile());
+    }
+    
+    /** @return File if readable jar with aspectj tools name, or null */
+    private static File isAspectjtoolsjar(String path) {
+        if (null == path) {
+            return null;
+        }
         final String prefix = "aspectj";        
         final String infix = "tools";        
         final String altInfix = "-tools";        
         final String suffix = ".jar";
-        final int prefixLength = prefix.length();
-        final int minLength = prefixLength + infix.length() 
-                            + suffix.length();        
-        for (int i = 0; i < paths.length; i++) {
-            String path = paths[i];
-            if (!paths[i].endsWith(suffix)) {
-                continue;
-            }
-            int loc = path.lastIndexOf(prefix);
-            if ((-1 != loc) && ((loc + minLength) <= path.length())) {
-                String rest = path.substring(loc+prefixLength);
-                if (-1 != rest.indexOf(File.pathSeparator)) {
-                    continue;
-                }
-                if (rest.startsWith(infix)
-                    || rest.startsWith(altInfix)) {
-                    File result = new File(path);
-                    if (result.canRead() && result.isFile()) {
-                        return result;
-                    }
-                }
-            }
+        final int prefixLength = 7; // prefix.length();
+        final int minLength = 16;
+        // prefixLength + infix.length() + suffix.length();        
+        if (!path.endsWith(suffix)) {
+            return null;
         }
+        int loc = path.lastIndexOf(prefix);
+        if ((-1 != loc) && ((loc + minLength) <= path.length())) {
+            String rest = path.substring(loc+prefixLength);
+            if (-1 != rest.indexOf(File.pathSeparator)) {
+                return null;
+            }
+            if (rest.startsWith(infix)
+                || rest.startsWith(altInfix)) {
+                File result = new File(path);
+                if (result.canRead() && result.isFile()) {
+                    return result;
+                }
+            }
+        }        
         return null;
     }
 
@@ -278,7 +274,6 @@ public class AjcTask extends MatchingTask {
 	
 	// ------- single entries dumped into cmd
     protected GuardedCommand cmd;
-    private int cmdLength;
 	
 	// ------- lists resolved in addListArgs() at execute() time
     private Path srcdir;
@@ -352,13 +347,12 @@ public class AjcTask extends MatchingTask {
         bootclasspath = null;
         classpath = null;
         cmd = new GuardedCommand();
-        cmdLength = 0;
         copyInjars = false;
         destDir = DEFAULT_DESTDIR;
         executing = false;
         executingInOtherVM = false;
         extdirs = null;
-        failonerror = false;
+        failonerror = true;  // non-standard default
         forkclasspath = null;
         inIncrementalMode = false;
         inIncrementalFileMode = false;
@@ -417,7 +411,7 @@ public class AjcTask extends MatchingTask {
     
     public void setIncremental(boolean incremental) {  
         cmd.addFlag("-incremental", incremental);
-        inIncrementalMode = true;
+        inIncrementalMode = incremental;
     }
 
     public void setHelp(boolean help) {  
@@ -859,6 +853,7 @@ public class AjcTask extends MatchingTask {
         } else {
             executing = true;
         }
+        verifyOptions();
         try {
             String[] args = makeCommand();
             if (verbose || listFileArgs) { // XXX if listFileArgs, only do that
@@ -935,6 +930,17 @@ public class AjcTask extends MatchingTask {
         addListArgs(result);
         return (String[]) result.toArray(new String[0]);
     }   
+
+    /**
+     * @throw BuildException if options conflict
+     */
+    protected void verifyOptions() {
+        if (fork && isInIncrementalMode() && !isInIncrementalFileMode()) {
+            String m = "can fork incremental only using tag file";
+            throw new BuildException(m);
+        }
+
+    }
 
     /**
      * Run the compile in the same VM by
@@ -1060,13 +1066,29 @@ public class AjcTask extends MatchingTask {
         javaCmd.setClassname(org.aspectj.tools.ajc.Main.class.getName());
         
         final Path vmClasspath = javaCmd.createClasspath(getProject());
-        if ((null != forkclasspath) 
-            && (0 != forkclasspath.size())) {
-            vmClasspath.addExisting(forkclasspath);
-        } else {
-            File aspectjtools = findAspectjtoolsJar();
-            if (null != aspectjtools) {
-                vmClasspath.createPathElement().setLocation(aspectjtools);
+        {
+            File aspectjtools = null;
+            int vmClasspathSize = vmClasspath.size();
+            if ((null != forkclasspath) 
+                && (0 != forkclasspath.size())) {
+                vmClasspath.addExisting(forkclasspath);
+            } else {                
+                aspectjtools = findAspectjtoolsJar();
+                if (null != aspectjtools) {
+                    vmClasspath.createPathElement().setLocation(aspectjtools);
+                }
+            }
+            int newVmClasspathSize = vmClasspath.size();
+            if (vmClasspathSize == newVmClasspathSize) {
+                String m = "unable to find aspectjtools to fork - ";
+                if (null != aspectjtools) {
+                    m += "tried " + aspectjtools.toString();
+                } else if (null != forkclasspath) {
+                    m += "tried " + forkclasspath.toString();
+                } else {
+                    m += "define forkclasspath or put aspectjtools on classpath";
+                }
+                throw new BuildException(m);
             }
         }
         if (null != maxMem) {
