@@ -16,6 +16,7 @@ package org.aspectj.weaver.patterns;
 import java.io.*;
 import java.util.List;
 
+import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.ResolvedTypeX;
 
@@ -77,9 +78,12 @@ public class DeclareDominates extends Declare {
 			TypePattern p = patterns.get(i);
 			if (p.isStar()) {
 				starMatch = i;
-			} else if (p.matchesExactly(a)) {
+			} else if (p.matchesStatically(a)) {
 				if (knownMatch != -1) {
-					throw new BCException("multiple matches: " + this + " with " + a);
+					a.getWorld().showMessage(IMessage.ERROR, "multiple matches for " + a + 
+							", matches both " + patterns.get(knownMatch) + " and " + p,
+							patterns.get(knownMatch).getSourceLocation(), p.getSourceLocation());
+					return -1;
 				} else {
 					knownMatch = i;
 				}
