@@ -14,10 +14,8 @@ package answers;
 
 import support.Log;
 
-import figures.Point;
-
 aspect Answer3a {
-    before(): execution(void Point.move(int, int)) {
-        Log.log("moving");
+    before(): execution(public * *(..)) && within(figures.*) {
+        Log.log(thisJoinPoint.toString());
     }
 }

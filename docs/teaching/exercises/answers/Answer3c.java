@@ -14,21 +14,11 @@ package answers;
 
 import support.Log;
 
-import figures.Point;
-import figures.Group;
-import figures.FigureElement;
+import figures.*;
 
 aspect Answer3c {
-    private Group Point.enclosingGroup = null;
-
-    before(Point p, Group g):
-        execution(void add(FigureElement)) && args(p) && target(g) {
-        p.enclosingGroup = g;
+    before():
+	execution(void Group.add(FigureElement)) && args(Point) {
+        Log.log("adding Point");
     }
-
-    before(Point p):
-        call(void move(int, int)) && target(p) {
-        Log.log("moving as a part of " + p.enclosingGroup);
-    }
-
 }

@@ -265,29 +265,26 @@ aspect,
 </p>
 
 <blockquote><PRE>
-$ ajc -Xlint -argfile base.lst
-
 $ java tests.Test2a
-.F.F.F....
-Time: 0.099
-There were 3 failures:
+.F..F....
+Time: 0.04
+There were 2 failures:
 1) testTooSmall(tests.Test2a)junit.framework.AssertionFailedError: should have thrown IllegalArgumentException
-2) testTooBig(tests.Test2a)junit.framework.AssertionFailedError: should have thrown IllegalArgumentException
-3) testMove(tests.Test2a)junit.framework.AssertionFailedError: should have thrown IllegalArgumentException
+2) testMove(tests.Test2a)junit.framework.AssertionFailedError: should have thrown IllegalArgumentException
 
 FAILURES!!!
-Tests run: 7,  Failures: 3,  Errors: 0
+Tests run: 7,  Failures: 2,  Errors: 0
 </PRE></blockquote>
 
 <p> But after compiling in the aspect...
 </p>
 
 <blockquote><PRE>
-$ ajc -Xlint -argfile base.lst
+$ ajc -Xlint -argfile base.lst answers/Answer.java
 
 $ java tests.Test2a
 .......
-Time: 0.097
+Time: 0.04
 
 OK (7 tests)
 </PRE></blockquote>
@@ -429,6 +426,15 @@ and call <code>Log.log(String)</code></p>
 
 <p> <strong>Tools:</strong> <code>target</code>
 </p>
+
+<p> AspectJ can expose the target object at a join point for tracing.
+In this exercise, you will print not only the join point information,
+but also the target object, with the form
+</p>
+
+<blockquote><pre>
+<em>thisJoinPointInfo</em> at <em>targetObject</em>
+</pre></blockquote>
 
 
 <h3>c. More specialized logging</h3>

@@ -19,8 +19,11 @@ import figures.Group;
 import figures.FigureElement;
 
 aspect Answer3b {
-    before():
-        execution(void Group.add(FigureElement)) && args(Point) {
-        Log.log("adding Point");
+    before(Object o):
+            execution(public * *(..))
+            && within(figures.*) && target(o)
+            && !withincode(public String toString(..)) // don't overflow!
+    {
+        Log.log(thisJoinPoint.toString() + " at " + o);
     }
 }

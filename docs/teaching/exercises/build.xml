@@ -106,5 +106,10 @@
     <delete dir="dist" />
   </target>
 
+  <target name="javaclean">
+    <delete dir="dist" />
+  </target>
+
+
 </project>
 
