@@ -12,8 +12,6 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
-import EajcModuleTests;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
