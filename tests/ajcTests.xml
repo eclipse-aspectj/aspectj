@@ -3864,7 +3864,7 @@
         <run class="AspectOf"/>
     </ajc-test>
 
-    <ajc-test dir="new/privilegedAspects"
+    <ajc-test dir="new/privilegedAspects" pr="35593"
       title="access to all members of class and inner class from privileged aspect"
       keywords="from-resolved_10x">
         <compile

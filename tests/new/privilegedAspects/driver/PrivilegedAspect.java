@@ -116,4 +116,11 @@ public privileged aspect PrivilegedAspect {
         defaultInnerTarget.defaultDefaultInnerMethod();
         defaultInnerTarget.privateDefaultInnerMethod();
     }
+    
+    // added for Bugzilla Bug 35593  
+	// Problem with priviliged aspects 
+    public static void foo(pack.DefaultTarget t) {
+    }
+    
+    before(pack.DefaultTarget t): call(void mumble()) && this(t) {}
 }
