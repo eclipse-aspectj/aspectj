@@ -132,19 +132,6 @@ public class BrowserProperties implements ProjectPropertiesAdapter {
         preferencesAdapter.setProjectPreference("build.classpath", path);
     }
 
-    public String getAjcWorkingDir() {
-        String workingDir = preferencesAdapter.getProjectPreference("build.workingdir");
-        if (workingDir == null || workingDir.equals(getOutputPath())) {
-            return getOutputPath() + "./ajworkingdir";
-        } else {
-            return workingDir;
-        }
-    }
-
-    public void setAjcWorkingDir(String path) {
-        preferencesAdapter.setProjectPreference("build.workingdir", path);
-    }
-    
     // 1.1 options
     public Set getInJars( ) {
     	return null;
@@ -169,5 +156,18 @@ public class BrowserProperties implements ProjectPropertiesAdapter {
 	public Map getSourcePathResources() {
 		return null;
 	}
-
 }
+
+//public String getAjcWorkingDir() {
+//String workingDir = preferencesAdapter.getProjectPreference("build.workingdir");
+//if (workingDir == null || workingDir.equals(getOutputPath())) {
+//  return getOutputPath() + "./ajworkingdir";
+//} else {
+//  return workingDir;
+//}
+//}
+
+//public void setAjcWorkingDir(String path) {
+//preferencesAdapter.setProjectPreference("build.workingdir", path);
+//}
+
