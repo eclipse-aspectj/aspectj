@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     PARC     initial implementation 
+ *     PARC     initial implementation
  * ******************************************************************/
 
 
@@ -152,7 +152,8 @@ public class EclipseFactory {
 	
 	public EclipseTypeMunger makeEclipseTypeMunger(ConcreteTypeMunger concrete) {
 		if (concrete instanceof EclipseTypeMunger) return (EclipseTypeMunger)concrete;
-		if (EclipseTypeMunger.supportsKind(concrete.getMunger().getKind())) {
+		
+		if (concrete.getMunger() != null && EclipseTypeMunger.supportsKind(concrete.getMunger().getKind())) {
 			return new EclipseTypeMunger(this, concrete.getMunger(), concrete.getAspectType(), null);
 		} else {
 			return null;
