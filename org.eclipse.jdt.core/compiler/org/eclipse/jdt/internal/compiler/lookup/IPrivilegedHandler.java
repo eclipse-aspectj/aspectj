@@ -23,4 +23,5 @@ public interface IPrivilegedHandler {
 	FieldBinding getPrivilegedAccessField(FieldBinding baseField);
 	
 	MethodBinding getPrivilegedAccessMethod(MethodBinding baseMethod);
+	void notePrivilegedTypeAccess(ReferenceBinding type);
 }

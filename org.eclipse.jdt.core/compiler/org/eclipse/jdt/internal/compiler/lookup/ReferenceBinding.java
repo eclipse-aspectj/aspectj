@@ -64,6 +64,20 @@ public final boolean canBeSeenBy(PackageBinding invocationPackage) {
 */
 
 public final boolean canBeSeenBy(ReferenceBinding receiverType, SourceTypeBinding invocationType) {
+	boolean ret = innerCanBeSeenBy(receiverType, invocationType);
+	return ret;
+//	if (ret) return true;
+//
+//	System.err.println("trying to see: " + new String(sourceName));
+//
+//	if (invocationType.privilegedHandler != null) {
+//		invocationType.privilegedHandler.notePrivilegedTypeAccess(this);
+//		return true;
+//	}
+//	return false;
+}
+
+private final boolean innerCanBeSeenBy(ReferenceBinding receiverType, SourceTypeBinding invocationType) {
 	if (isPublic()) return true;
 
 	if (invocationType == this && invocationType == receiverType) return true;
@@ -132,10 +146,28 @@ public final boolean canBeSeenBy(ReferenceBinding receiverType, SourceTypeBindin
 */
 
 public final boolean canBeSeenBy(Scope scope) {
+	boolean ret = innerCanBeSeenBy(scope);
+	if (ret) return true;
+	
+	SourceTypeBinding invocationType = scope.invocationType();
+//	System.err.println("trying to see (scope): " + new String(sourceName) + 
+//			" from " + new String(invocationType.sourceName));
+
+
+	if (invocationType.privilegedHandler != null) {
+		//System.err.println("    is privileged!");
+		invocationType.privilegedHandler.notePrivilegedTypeAccess(this);
+		return true;
+	}
+	return false;
+}
+		
+private final boolean innerCanBeSeenBy(Scope scope) {
 	if (isPublic()) return true;
 
 	SourceTypeBinding invocationType = scope.enclosingSourceType();
 	if (invocationType == this) return true;
+	
 
 	if (isProtected()) {
 		// answer true if the invocationType is the declaringClass or they are in the same package

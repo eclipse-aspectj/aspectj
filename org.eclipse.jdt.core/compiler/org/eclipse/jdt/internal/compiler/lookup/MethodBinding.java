@@ -136,7 +136,7 @@ public boolean canBeSeenBy(InvocationSite invocationSite, Scope scope) {
 public boolean canBeSeenBy(TypeBinding receiverType, InvocationSite invocationSite, Scope scope) {
 	if (isPublic()) return true;
 
-	SourceTypeBinding invocationType = scope.enclosingSourceType();
+	SourceTypeBinding invocationType = scope.invocationType(); //enclosingSourceType();
 	if (invocationType == declaringClass && invocationType == receiverType) return true;
 
 	if (isProtected()) {
