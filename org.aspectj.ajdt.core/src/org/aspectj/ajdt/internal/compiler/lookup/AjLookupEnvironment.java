@@ -20,6 +20,7 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.*;
 import org.eclipse.jdt.internal.compiler.ast.*;
+import org.eclipse.jdt.internal.compiler.env.*;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.*;
 import org.eclipse.jdt.internal.compiler.lookup.*;
@@ -27,6 +28,9 @@ import org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 
 public class AjLookupEnvironment extends LookupEnvironment {
 	public EclipseWorld world = null;
+	
+	private boolean builtInterTypesAndPerClauses = false;
+	private List pendingTypesToWeave = new ArrayList();
 	
 	public AjLookupEnvironment(
 		ITypeRequestor typeRequestor,
@@ -36,9 +40,10 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		super(typeRequestor, options, problemReporter, nameEnvironment);
 	}
 	
-	//XXX figure out if we can do this through super or not
-	//XXX otherwise duplicates some of super's code
+	//??? duplicates some of super's code
 	public void completeTypeBindings() {
+		builtInterTypesAndPerClauses = false;
+		//pendingTypesToWeave = new ArrayList();
 		stepCompleted = BUILD_TYPE_HIERARCHY;
 		
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
@@ -62,8 +67,9 @@ public class AjLookupEnvironment extends LookupEnvironment {
 			for (int j = 0; j < b.length; j++) {
 				buildInterTypeAndPerClause(b[j].scope);
 			}
-		}		
-		//??? do we need a new stepCompleted
+		}
+		builtInterTypesAndPerClauses = true;
+		doPendingWeaves();
 	
 		// now do weaving
 		Collection typeMungers = world.getTypeMungers();
@@ -76,6 +82,15 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		stepCompleted = BUILD_FIELDS_AND_METHODS;
 		lastCompletedUnitIndex = lastUnitIndex;
 	}
+
+	private void doPendingWeaves() {
+		for (Iterator i = pendingTypesToWeave.iterator(); i.hasNext(); ) {
+			SourceTypeBinding t = (SourceTypeBinding)i.next();
+			weaveInterTypeDeclarations(t);
+		}
+		pendingTypesToWeave.clear();
+	}
+
 	
 	private void buildInterTypeAndPerClause(ClassScope s) {
 		TypeDeclaration dec = s.referenceContext;
@@ -91,20 +106,33 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		}
 	}
 	
+	
+	
 		
 	private void weaveInterTypeDeclarations(CompilationUnitScope unit, Collection typeMungers, Collection declareParents) {
 		for (int i = 0, length = unit.topLevelTypes.length; i < length; i++)
-		    weaveInterTypeDeclarations(unit.topLevelTypes[i].scope, typeMungers, declareParents);
+		    weaveInterTypeDeclarations(unit.topLevelTypes[i], typeMungers, declareParents);
 	
 		//System.err.println("done with inter types");
 	}
 	
-	private void weaveInterTypeDeclarations(ClassScope scope, Collection typeMungers, Collection declareParents) {
-		//System.err.println("weaving: " + scope);
-		SourceTypeBinding sourceType = scope.referenceContext.binding;
+	
+	private void weaveInterTypeDeclarations(SourceTypeBinding sourceType) {
+		if (!builtInterTypesAndPerClauses) {
+			pendingTypesToWeave.add(sourceType);
+		} else {
+			//System.err.println("weaving: " + new String(sourceType.sourceName()) + ", " + world.getTypeMungers());
+			weaveInterTypeDeclarations(sourceType, world.getTypeMungers(), world.getDeclareParents());
+		}
+	}
+	
+	
+	private void weaveInterTypeDeclarations(SourceTypeBinding sourceType, Collection typeMungers, Collection declareParents) {
 		ResolvedTypeX onType = world.fromEclipse(sourceType);
+		onType.clearInterTypeMungers();
+		
 		for (Iterator i = declareParents.iterator(); i.hasNext();) {
-			doDeclareParents((DeclareParents)i.next(), scope);
+			doDeclareParents((DeclareParents)i.next(), sourceType);
 		}
 		
 		for (Iterator i = typeMungers.iterator(); i.hasNext();) {
@@ -118,28 +146,29 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		
 		for (Iterator i = onType.getInterTypeMungers().iterator(); i.hasNext();) {
 			EclipseTypeMunger munger = (EclipseTypeMunger) i.next();
-			munger.munge(scope);
+			munger.munge(sourceType);
 		}
 		
 		
 
 		ReferenceBinding[] memberTypes = sourceType.memberTypes;
 		for (int i = 0, length = memberTypes.length; i < length; i++) {
-			weaveInterTypeDeclarations(((SourceTypeBinding) memberTypes[i]).scope, typeMungers, declareParents);
-		}
-	}
-
-	private void doDeclareParents(DeclareParents declareParents, ClassScope scope) {
-		if (declareParents.match(world.fromEclipse(scope.referenceContext.binding))) {
-			TypePatternList l = declareParents.getParents();
-			for (int i=0, len=l.size(); i < len; i++) {
-				addParent(declareParents, scope, l.get(i));
+			if (memberTypes[i] instanceof SourceTypeBinding) {
+				weaveInterTypeDeclarations((SourceTypeBinding) memberTypes[i], typeMungers, declareParents);
 			}
 		}
 	}
 
-	private void addParent(DeclareParents declareParents, ClassScope scope, TypePattern typePattern) {
-		SourceTypeBinding sourceType = scope.referenceContext.binding;
+	private void doDeclareParents(DeclareParents declareParents, SourceTypeBinding sourceType) {
+		if (declareParents.match(world.fromEclipse(sourceType))) {
+			TypePatternList l = declareParents.getParents();
+			for (int i=0, len=l.size(); i < len; i++) {
+				addParent(declareParents, sourceType, l.get(i));
+			}
+		}
+	}
+
+	private void addParent(DeclareParents declareParents, SourceTypeBinding sourceType, TypePattern typePattern) {
 		//if (!typePattern.assertExactType(world.getMessageHandler())) return;
 		if (typePattern == TypePattern.NO) return;  // already had an error here
 		TypeX iType = typePattern.getExactType();
@@ -192,11 +221,43 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		}
 		
 	}
-
-	private TypeReference makeReference(ExactTypePattern e) {
-		return new SingleTypeReference(e.getType().getName().toCharArray(),
-			AstUtil.makeLongPos(e.getStart(), e.getEnd()));
+	
+	
+	
+	private List pendingTypesToFinish = new ArrayList();
+	boolean inBinaryTypeCreation = false;
+	public BinaryTypeBinding createBinaryTypeFrom(
+		IBinaryType binaryType,
+		PackageBinding packageBinding,
+		boolean needFieldsAndMethods)
+	{
+		if (inBinaryTypeCreation) {
+			BinaryTypeBinding ret = super.createBinaryTypeFrom(
+				binaryType,
+				packageBinding,
+				needFieldsAndMethods);
+			pendingTypesToFinish.add(ret);
+			return ret;
+		}
+		
+		
+		inBinaryTypeCreation = true;
+		try {
+			BinaryTypeBinding ret = super.createBinaryTypeFrom(
+				binaryType,
+				packageBinding,
+				needFieldsAndMethods);
+			weaveInterTypeDeclarations(ret);
+			
+			return ret;
+		} finally {
+			inBinaryTypeCreation = false;
+			if (!pendingTypesToFinish.isEmpty()) {
+				for (Iterator i = pendingTypesToFinish.iterator(); i.hasNext(); ) {
+					weaveInterTypeDeclarations((BinaryTypeBinding)i.next());
+				}
+				pendingTypesToFinish.clear();
+			}
+		}		
 	}
-
-
 }

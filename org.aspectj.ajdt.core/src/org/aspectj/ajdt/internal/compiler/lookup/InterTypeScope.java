@@ -26,27 +26,14 @@ public class InterTypeScope extends ClassScope {
 		this.onType = onType;
 	}
 
+	// this method depends on the fact that BinaryTypeBinding extends SourceTypeBinding
 	private SourceTypeBinding makeSourceTypeBinding(ReferenceBinding onType) {
 		if (onType instanceof SourceTypeBinding) return (SourceTypeBinding)onType;
 		else throw new RuntimeException("can't handle: " + onType);
-		//return new FakeSourceTypeBinding(onType);
-	}
-
-	public FieldBinding findField(
-		TypeBinding receiverType,
-		char[] fieldName,
-		InvocationSite invocationSite)
-	{
-		//System.out.println("find: " + new String(fieldName));
-		return super.findField(receiverType, fieldName, invocationSite);
 	}
 
 	public SourceTypeBinding invocationType() {
 		return parent.enclosingSourceType();
-	}
-	
-	public ReferenceBinding effectiveThisType() {
-		return onType;
 	}
 	
 	public int addDepth() {

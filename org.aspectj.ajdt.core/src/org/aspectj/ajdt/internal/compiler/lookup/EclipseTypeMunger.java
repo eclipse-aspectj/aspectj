@@ -27,26 +27,27 @@ import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 public class EclipseTypeMunger extends ConcreteTypeMunger {
 	protected ReferenceBinding targetBinding = null;
 	private AbstractMethodDeclaration sourceMethod;
+	private EclipseWorld world;
 
 	public EclipseTypeMunger(ResolvedTypeMunger munger, ResolvedTypeX aspectType,
 								AbstractMethodDeclaration sourceMethod)
 	{
 		super(munger, aspectType);
 		this.sourceMethod = sourceMethod;
+		this.world = (EclipseWorld)aspectType.getWorld();
 	}
 
 	public String toString() {
 		return "(EclipseTypeMunger " + getMunger() + ")";
 	}
 	
-	private boolean match(ClassScope scope) {
+	private boolean match(SourceTypeBinding sourceType) {
 		if (targetBinding == null) {
 			TypeX targetTypeX = munger.getSignature().getDeclaringType();
-			targetBinding =
-				(ReferenceBinding)EclipseWorld.fromScopeLookupEnvironment(scope).makeTypeBinding(targetTypeX);
+			targetBinding = (ReferenceBinding)world.makeTypeBinding(targetTypeX);
 		}
 		//??? assumes instance uniqueness for ReferenceBindings
-		return targetBinding == scope.referenceContext.binding;
+		return targetBinding == sourceType;
 		
 	}
 	
@@ -54,15 +55,15 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 	 * Modifies signatures of a TypeBinding through its ClassScope,
 	 * i.e. adds Method|FieldBindings, plays with inheritance, ...
 	 */
-	public boolean munge(ClassScope classScope) {
-		if (!match(classScope)) return false;
+	public boolean munge(SourceTypeBinding sourceType) {
+		if (!match(sourceType)) return false;
 		
 		if (munger.getKind() == ResolvedTypeMunger.Field) {
-			mungeNewField(classScope, (NewFieldTypeMunger)munger);
+			mungeNewField(sourceType, (NewFieldTypeMunger)munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.Method) {
-			mungeNewMethod(classScope, (NewMethodTypeMunger)munger);
+			mungeNewMethod(sourceType, (NewMethodTypeMunger)munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.Constructor) {
-			mungeNewConstructor(classScope, (NewConstructorTypeMunger)munger);
+			mungeNewConstructor(sourceType, (NewConstructorTypeMunger)munger);
 		} else {
 			throw new RuntimeException("unimplemented");
 		}
@@ -70,9 +71,7 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 	}
 	
 
-	private void mungeNewMethod(ClassScope classScope, NewMethodTypeMunger munger) {
-		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(classScope);
-		
+	private void mungeNewMethod(SourceTypeBinding sourceType, NewMethodTypeMunger munger) {
 //		if (shouldTreatAsPublic()) {
 //			MethodBinding binding = world.makeMethodBinding(munger.getSignature());
 //			findOrCreateInterTypeMemberFinder(classScope).addInterTypeMethod(binding);
@@ -80,36 +79,32 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 //		} else {
 			InterTypeMethodBinding binding =
 				new InterTypeMethodBinding(world, munger.getSignature(), aspectType, sourceMethod);
-			findOrCreateInterTypeMemberFinder(classScope).addInterTypeMethod(binding);
+			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeMethod(binding);
 //		}
 
 	}
-	private void mungeNewConstructor(ClassScope classScope, NewConstructorTypeMunger munger) {
-		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(classScope);
-		
+	private void mungeNewConstructor(SourceTypeBinding sourceType, NewConstructorTypeMunger munger) {		
 		if (shouldTreatAsPublic()) {
 			MethodBinding binding = world.makeMethodBinding(munger.getSignature());
-			findOrCreateInterTypeMemberFinder(classScope).addInterTypeMethod(binding);
+			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeMethod(binding);
 			//classScope.referenceContext.binding.addMethod(binding);
 		} else {
 			InterTypeMethodBinding binding =
 				new InterTypeMethodBinding(world, munger.getSignature(), aspectType, sourceMethod);
-			findOrCreateInterTypeMemberFinder(classScope).addInterTypeMethod(binding);
+			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeMethod(binding);
 		}
 
 	}
 
-	private void mungeNewField(ClassScope classScope, NewFieldTypeMunger munger) {
-		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(classScope);
-		
+	private void mungeNewField(SourceTypeBinding sourceType, NewFieldTypeMunger munger) {		
 		if (shouldTreatAsPublic() && !targetBinding.isInterface()) {
 			FieldBinding binding = world.makeFieldBinding(munger.getSignature());
-			findOrCreateInterTypeMemberFinder(classScope).addInterTypeField(binding);
+			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeField(binding);
 			//classScope.referenceContext.binding.addField(binding);
 		} else {
 			InterTypeFieldBinding binding =
 				new InterTypeFieldBinding(world, munger.getSignature(), aspectType, sourceMethod);
-			findOrCreateInterTypeMemberFinder(classScope).addInterTypeField(binding);
+			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeField(binding);
 		}
 	}
 	
@@ -122,13 +117,13 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 	}
 	
 	
-	private InterTypeMemberFinder findOrCreateInterTypeMemberFinder(ClassScope classScope) {
+	private InterTypeMemberFinder findOrCreateInterTypeMemberFinder(SourceTypeBinding sourceType) {
 		InterTypeMemberFinder finder = 
-			(InterTypeMemberFinder)classScope.referenceContext.binding.memberFinder;
+			(InterTypeMemberFinder)sourceType.memberFinder;
 		if (finder == null) {
 			finder = new InterTypeMemberFinder();
-			classScope.referenceContext.binding.memberFinder = finder;
-			finder.sourceTypeBinding = classScope.referenceContext.binding;
+			sourceType.memberFinder = finder;
+			finder.sourceTypeBinding = sourceType;
 		}
 		return finder;
 	}

@@ -33,7 +33,7 @@ public class EclipseObjectType extends ResolvedTypeX.Name {
 	
 
 	public EclipseObjectType(String signature, EclipseWorld world, ReferenceBinding binding) {
-		super(signature, world);
+		super(signature, world, !(binding instanceof BinaryTypeBinding));  //XXX
 		this.binding = binding;
 	}
 	
@@ -169,7 +169,7 @@ public class EclipseObjectType extends ResolvedTypeX.Name {
 	}
 
 	public ISourceLocation getSourceLocation() {
-		if (!(binding instanceof SourceTypeBinding)) return null;
+		if (!(binding instanceof SourceTypeBinding) || (binding instanceof BinaryTypeBinding)) return null;
 		SourceTypeBinding sourceType = (SourceTypeBinding)binding;
 		TypeDeclaration dec = sourceType.scope.referenceContext;
 		return new EclipseSourceLocation(dec.compilationResult, dec.sourceStart, dec.sourceEnd);
