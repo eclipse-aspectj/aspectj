@@ -6797,4 +6797,9 @@
 			extdirs="lib/lowercase"/>
 	</ajc-test>
 
+	<ajc-test dir="bugs/privilege/packageProtected" pr="42711" 
+            title="priviledged aspects calling methods from advice"> 
+        <compile files="concern/ContextUser.java,concern/BaseTarget.java,core/Base.java" /> 
+    </ajc-test> 
+
 </suite>
