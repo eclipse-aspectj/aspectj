@@ -40,6 +40,7 @@ public class AjdeTests extends TestCase {
 		suite.addTestSuite(BuildCancellingTest.class);
 		suite.addTestSuite(JarManifestTest.class);
 		suite.addTestSuite(ExtensionTests.class);
+		suite.addTestSuite(GenericsTest.class); 
 		
         //$JUnit-END$
         return suite;
