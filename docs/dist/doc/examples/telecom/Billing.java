@@ -30,7 +30,7 @@ package telecom;
  */
 public aspect Billing {
     // domination required to get advice on endtiming in the right order
-    declare dominates: Billing, Timing;
+    declare precedence: Billing, Timing;
 
     public static final long LOCAL_RATE = 3;
     public static final long LONG_DISTANCE_RATE = 10;
