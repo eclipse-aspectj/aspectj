@@ -281,7 +281,7 @@ public class BcelWeaver implements IWeaver {
         return wovenClassNames;
     }
 
-	private void weave(ResolvedTypeX onType) {
+	public void weave(ResolvedTypeX onType) {
 		onType.clearInterTypeMungers();
 		for (Iterator i = typeMungerList.iterator(); i.hasNext(); ) {
 			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
@@ -291,11 +291,19 @@ public class BcelWeaver implements IWeaver {
 		}
 	}
 
+	// exposed for ClassLoader dynamic weaving
+	public LazyClassGen weaveWithoutDump(UnwovenClassFile classFile, BcelObjectType classType) throws IOException {
+		return weave(classFile, classType, false);
+	}
 
 	// non-private for testing
 	LazyClassGen weave(UnwovenClassFile classFile, BcelObjectType classType) throws IOException {
+		return weave(classFile, classType, true);
+	}
+	
+	private LazyClassGen weave(UnwovenClassFile classFile, BcelObjectType classType, boolean dump) throws IOException {
 		if (classType.isSynthetic()) {
-			dumpUnchanged(classFile);
+			if (dump) dumpUnchanged(classFile);
 			return null;
 		}
 		
@@ -311,7 +319,7 @@ public class BcelWeaver implements IWeaver {
 			try {
 				boolean isChanged = BcelClassWeaver.weave(world, clazz, shadowMungers, typeMungers);
 				if (isChanged) {
-					dump(classFile, clazz);
+					if (dump) dump(classFile, clazz);
 					return clazz;
 				}
 			} catch (RuntimeException re) {
@@ -325,9 +333,16 @@ public class BcelWeaver implements IWeaver {
 			}
 		}
 		
-		dumpUnchanged(classFile);
-		return clazz;
+		// this is very odd return behavior trying to keep everyone happy
+		if (dump) {
+			dumpUnchanged(classFile);
+			return clazz;
+		} else {
+			return null;
+		}
 	}
+
+
 
 	// ---- writing
 

@@ -70,6 +70,10 @@ public class BcelWorld extends World {
 		setMessageHandler(handler);	
 	}
 	
+	public void addPath (String name) {
+		classPath.addPath(name, this.getMessageHandler());
+	}
+
     /**
      * Parse a string into advice.
      * 
@@ -191,7 +195,7 @@ public class BcelWorld extends World {
 	}
 	
 	
-	BcelObjectType addSourceObjectType(JavaClass jc) {
+	public BcelObjectType addSourceObjectType(JavaClass jc) {
 		String signature = TypeX.forName(jc.getClassName()).getSignature();
         BcelObjectType ret = (BcelObjectType)typeMap.get(signature);
         if (ret == null) {

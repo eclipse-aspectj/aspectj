@@ -32,28 +32,33 @@ public class ClassPathManager {
 		entries = new ArrayList();
 		for (Iterator i = classpath.iterator(); i.hasNext();) {
 			String name = (String) i.next();
-			File f = new File(name);
-			String lc = name.toLowerCase();
-			if (lc.endsWith(".jar") || lc.endsWith(".zip")) {
-				if (!f.isFile()) {
-					MessageUtil.info(handler, "zipfile classpath entry does not exist: " + name);
-					continue;
-				}
-				try {
-					entries.add(new ZipFileEntry(f));
-				} catch (IOException ioe) {
-					MessageUtil.warn(handler, "zipfile classpath entry is invalid: " + name + "<" + ioe.getMessage() + ">");
-					continue;
-				}
-			} else {
-				if (!f.isDirectory()) {
-					MessageUtil.info(handler, "directory classpath entry does not exist: " + name);
-					continue;
-				}
-				entries.add(new DirEntry(f));
-			}
+			addPath(name, handler);
 		}
 	}
+
+	public void addPath (String name, IMessageHandler handler) {
+		File f = new File(name);
+		String lc = name.toLowerCase();
+		if (lc.endsWith(".jar") || lc.endsWith(".zip")) {
+			if (!f.isFile()) {
+			MessageUtil.info(handler, "zipfile classpath entry does not exist: " + name);
+			return;
+			}
+			try {
+				entries.add(new ZipFileEntry(f));
+			} catch (IOException ioe) {
+			MessageUtil.warn(handler, "zipfile classpath entry is invalid: " + name + "<" + ioe.getMessage() + ">");
+			return;
+			}
+		} else {
+			if (!f.isDirectory()) {
+			MessageUtil.info(handler, "directory classpath entry does not exist: " + name);
+			return;
+			}
+			entries.add(new DirEntry(f));
+		}
+	}
+
 
 	public ClassFile find(TypeX type) {
 		String name = type.getName();

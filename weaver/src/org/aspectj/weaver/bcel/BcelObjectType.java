@@ -182,7 +182,7 @@ public class BcelObjectType extends ResolvedTypeX.Name {
         return javaClass;
     }
     
-    void resetState() {
+    public void resetState() {
 		this.interfaces = null;
     	this.superClass = null;
     	this.fields = null;
