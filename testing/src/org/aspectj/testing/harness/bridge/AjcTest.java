@@ -452,6 +452,20 @@ public class AjcTest extends RunSpecIterator {
      */
     public static class Suite extends RunSpecIterator {
         final Spec spec;
+        
+        /**
+         * Count the number of AjcTest in this suite.
+         * @param spec
+         * @return
+         */
+        public static int countTests(Suite.Spec spec) {
+            return spec.children.size();
+        }
+
+        public static AjcTest.Spec[] getTests(Suite.Spec spec) {
+            return (AjcTest.Spec[]) spec.children.toArray(new AjcTest.Spec[0]);
+        }
+
         public Suite(Spec spec, Sandbox sandbox, Validator validator) {
             super(spec, sandbox, validator, false);
             this.spec = spec;
