@@ -135,6 +135,13 @@ users who bind System.out to a static field to save typing.  </p>
 
 <h3>b. Mandate setters</h3>
 
+<p> <strong>Problem:</strong> Add warnings for assignments outside of setter methods.
+</p>
+
+<p> <strong>Tools:</strong> <code>set</code>, <code>withincode</code>,
+signature <code>void set*(..)</code>
+</p>
+
 <p> One common coding convention is that no private field should be
 set outside of setter methods.  Write an aspect to warn at compile
 time when such an illegal assignment expression exists.  </p>
@@ -157,53 +164,21 @@ pointcuts.  ) </p>
 
 <p> Make sure your program still passes the JUnit test
 <code>tests.Test</code> before continuing, and that you see all of the
-following warning messages.  You'll notice a LOT of warnings here.
-Wait to fix them until the next exercise...
+following warning messages.  Make sure you get 11 warnings from this.
+Wait to fix them until the next exercise.
 </p>
-
-<pre>
-.\figures\Box.java:17:9: bad field set (warning)
-        _p0 = new Point(x0, y0);
-        ^
-.\figures\Box.java:18:9: bad field set (warning)
-        _p1 = new Point(x0+width, y0);
-        ^
-.\figures\Box.java:19:9: bad field set (warning)
-        _p2 = new Point(x0+width, y0+height);
-        ^
-.\figures\Box.java:20:9: bad field set (warning)
-        _p3 = new Point(x0, y0+height);
-        ^
-.\figures\Group.java:16:23: bad field set (warning)
-        this._members = new ArrayList();
-                      ^
-.\figures\Line.java:15:9: bad field set (warning)
-        _p1 = p1;
-        ^
-.\figures\Line.java:16:9: bad field set (warning)
-        _p2 = p2;
-        ^
-.\figures\Point.java:15:9: bad field set (warning)
-        _x = x;
-        ^
-.\figures\Point.java:16:9: bad field set (warning)
-        _y = y;
-        ^
-.\figures\Point.java:28:9: bad field set (warning)
-        _x += dx;
-        ^
-.\figures\Point.java:29:9: bad field set (warning)
-        _y += dy;
-        ^
-</pre>
-
 
 <h3>c. Refine setters mandate</h3>
 
+<p> <strong>Problem:</strong> Allow assignmnents inside of constructors.
+</p>
+
+<p> <strong>Tools:</strong> signature <code>new(..)</code> </p>
+
 <p> Look at some of the warnings.  Notice that a lot of them are from
 within constructors.  Actually, the common coding convention is that
-no private field should be set outside of setter methods <b>or
-constructors</b>.  Modify your answer (in a new file) to signal an
+no private field should be set outside of setter methods <emph>or
+constructors</emph>.  Modify your answer (in a new file) to signal an
 actual error at compile time (rather than just a warning) when such an
 illegal assignment expression exists.  </p>
 
@@ -225,30 +200,15 @@ the following two errors:</p>
 2 errors
 </pre>
 
-<p> (If you see more, go back to 1b; you may be capturing sets to
-too many fields.)
-</p>
-
 <p>Rewrite these two occurrences so as not to violate
 the convention.  Make sure your program still passes the JUnit test
 <code>tests.Test</code> before continuing.  </p>
 
-<h3>d. Re-refine setters mandate</h3>
+<h3>d. Congratulatoins</h3>
 
-<p> In part (c), you rewrote the code to fit the convention enforced
-by the aspect. It may be that this code doesn't violate the convention
-of your mythical organization.  Try to instead fix the pointcut so it
-doesn't signal an error for these two assignments, and then change
-your code back to making the assignments.  </p>
-
-<p> Make sure your program still passes the JUnit test
-<code>tests.Test</code> before continuing.  </p>
-
-<h3>Help Yourself by Helping Others</h3>
-
-<p> At this point, check the people to your left and right.  If
-they're stuck somewhere, see if you can help them.  </p>
-
+<p> You've taken your first steps.  At this point, check the people to
+your left and right.  If they're stuck somewhere, see if you can help
+them.  </p>
 
 <!-- ============================== -->
 
@@ -259,11 +219,18 @@ they're stuck somewhere, see if you can help them.  </p>
 
 <h3>a. Check a simple precondition</h3>
 
+<p> <strong>Problem:</strong> Pass <code>tests.Test2a</code>.
+</p>
+
+<p> <strong>Tools:</strong> <code>args</code>, <code>before</code>
+</p>
+
+<p> THERE IS AN ANSWER BELOW. LOOK AT IT.  TYPE IT IN.  
+</p>
+
 <p> Write an aspect to throw an <code>IllegalArgumentException</code>
 whenever an attempt is made to set one of <code>Point</code>'s
-<code>int</code> fields to a value that is either too large (greater
-than <code>FigureElement.MAX_VALUE</code>) or too small (less than
-<code>FigureElement.MIN_VALUE</code>).  </p>
+<code>int</code> fields to a value that is less than zero.  </p>
 
 <p> This should make the test case of <code>tests.Test2a</code> pass,
 which wouldn't without your aspect.  So before compiling in the
