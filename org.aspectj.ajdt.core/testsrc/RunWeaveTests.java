@@ -11,11 +11,9 @@
  * ******************************************************************/
 
 import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -29,9 +27,9 @@ public class RunWeaveTests {
 	private static boolean RUN_MED = true;
 	private static boolean RUN_LARGE = true;
 		
-	private static final String SMALL_PROGRAM_ARGS = "-c 5 -m 100 -l 10 "; // must end on a space in case any more arguments are added later in the script
-	private static final String MEDIUM_PROGRAM_ARGS = "-c 25 -m 100 -l 10 ";
-	private static final String LARGE_PROGRAM_ARGS = "-c 125 -m 100 -l 10 ";
+	private static final String SMALL_PROGRAM_ARGS = "-c 8 -m 100 -l 10 "; // must end on a space in case any more arguments are added later in the script
+	private static final String MEDIUM_PROGRAM_ARGS = "-c 64 -m 100 -l 10 ";
+	private static final String LARGE_PROGRAM_ARGS = "-c 512 -m 100 -l 10 ";
 	
 	private static final String WARMUP_ARGS = "-c 3 -m 100 -l 10 ";
 
