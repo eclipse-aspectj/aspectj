@@ -367,7 +367,7 @@ To use testing client jar in tests,
 	<target name="org.aspectj.ajde.source" depends="init"
 	  description="build the AspectJ source distribution plugin">
 	  <copy todir="${aj.plugin.org.aspectj.ajde.source.dir}">
-	    <fileset dir="${aspectj.modules.dir}/eclipse.plugins/org.aspectj.ajde.source"/>
+	    <fileset dir="${aspectj.modules.dir}/eclipse.plugin/org.aspectj.ajde.source"/>
 	  </copy>	  
 	  <replace file="${aj.plugin.org.aspectj.ajde.source.dir}/plugin.xml"
 	           token="build.version.eclipse.plugins"
@@ -393,7 +393,7 @@ To use testing client jar in tests,
 	<target name="org.aspectj.ajde.doc" depends="init,docs-dist"
 	  description="build the AspectJ documentation plugin for Eclipse">
 	  <copy todir="${aj.plugin.org.aspectj.ajde.doc.dir}">
-	    <fileset dir="${aspectj.modules.dir}/eclipse.plugins/org.aspectj.ajde.doc"/>
+	    <fileset dir="${aspectj.modules.dir}/eclipse.plugin/org.aspectj.ajde.doc"/>
 	  </copy>
 	  <copy todir="${aj.plugin.org.aspectj.ajde.doc.dir}/doc">
 	    <fileset dir="${aj.dist.dir}/docs/doc" includes="**"/>	    	  
@@ -409,7 +409,7 @@ To use testing client jar in tests,
 	<target name="org.aspectj.ajde" depends="init,aspectj"
 	  description="build the AspectJ library plugin for Eclipse">
 	  <copy todir="${aj.plugin.org.aspectj.ajde.dir}">
-	    <fileset dir="${aspectj.modules.dir}/eclipse.plugins/org.aspectj.ajde"/>
+	    <fileset dir="${aspectj.modules.dir}/eclipse.plugin/org.aspectj.ajde"/>
 	  </copy>	  
 	  <replace file="${aj.plugin.org.aspectj.ajde.dir}/plugin.xml"
 	           token="build.version.eclipse.plugins"
