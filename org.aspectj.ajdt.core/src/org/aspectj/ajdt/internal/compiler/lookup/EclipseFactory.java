@@ -114,6 +114,12 @@ public class EclipseFactory {
 		return ret;
 	}	
 	
+	public ResolvedTypeX fromTypeBindingToRTX(TypeBinding tb) {
+		if (tb == null) return ResolvedTypeX.MISSING;
+		ResolvedTypeX ret = getWorld().resolve(fromBinding(tb));
+		return ret;
+	}
+	
 	public ResolvedTypeX[] fromEclipse(ReferenceBinding[] bindings) {
 		if (bindings == null) {
 			return ResolvedTypeX.NONE;
@@ -171,6 +177,18 @@ public class EclipseFactory {
 	
 	public Collection getDeclareParents() {
 		return getWorld().getDeclareParents();
+	}
+	
+	public Collection getDeclareAnnotationOnTypes() {
+		return getWorld().getDeclareAnnotationOnTypes();
+	}
+	
+	public Collection getDeclareAnnotationOnFields() {
+		return getWorld().getDeclareAnnotationOnFields();
+	}
+	
+	public Collection getDeclareAnnotationOnMethods() {
+		return getWorld().getDeclareAnnotationOnMethods();
 	}
 	
 	public Collection finishedTypeMungers = null;
