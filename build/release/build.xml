@@ -1,4 +1,3 @@
-
 <!-- ========================================================================= -->
 <!-- Copyright (c) 2003 Contributors.                                          -->
 <!-- All rights reserved.                                                      -->
@@ -17,20 +16,34 @@
 
 	<target name="info">
 	<echo>
-  This downloads and build the AspectJ source tree.
+  This downloads and build the AspectJ source tree:
+  
+  - checkout entire tree
+  - build distribution
+  - install distribution
+  - test
+    - ajcTests.xml ajc/harness tests in the build
+    - junitModules.xml junit tests in the build
+    - build installed examples
   
   Targets of note:
 
     install                checkout, build, and install AspectJ
     test (default)         test AspectJ sources and installation
   
-  Properties of note:
+  Properties of note (flags and default values):
 
+     -- flags to control   
      skip.cvs              no CVS checkout (done already)
      skip.build            no build (done already)
-
+     skip.build.release    no build of release
+     skip.build.tests      no build of tests
      version               set if not DEVELOPMENT
-     aspectj.modules.dir   define this to reuse existing
+     
+     -- locations to re-use existing tree or install  
+     aspectj.workspace     location for new cvs tree
+     aspectj.modules.dir   location for existing cvs tree
+     aj.build.install.dir  location for installed distribution
      
 	</echo>
 	</target>
@@ -46,6 +59,8 @@
 			location="${aspectj.workspace}/org.aspectj/modules"/>
 		<property name="aspectj.build.dir"
 			location="${aspectj.modules.dir}/build"/>
+		<property name="aspectj.tests.dir"
+			location="${aspectj.modules.dir}/tests"/>
 		<property name="aspectj.lib.dir"
 			location="${aspectj.modules.dir}/lib"/>
 		<property name="aspectj.ant.home"
@@ -68,10 +83,48 @@
 		<property name="aspectj.jar"
 			location="${aj.build.dist.dir}/aspectj-${version}.jar"/>
 			
+		<property name="harness.jar"
+			location="${aj.build.jar.dir}/testing-drivers-all.jar"/>
+
 		<property name="java.command"
 			location="${java.home}/bin/java"/>
 		
 		<mkdir dir="${aj.build.log.dir}"/>
+		
+		<path id="lib.classpath">
+          <pathelement location="${aspectj.lib.dir}/eclipse2.0/jdtDepends.jar" />
+          <pathelement location="${aspectj.lib.dir}/bcel/bcel.jar" />
+          <pathelement location="${aspectj.lib.dir}/jdiff/jdiff.jar" />
+          <pathelement location="${aspectj.lib.dir}/commons/commons.jar" />
+          <pathelement location="${aspectj.lib.dir}/ant/lib/ant.jar" />
+          <pathelement location="${aspectj.lib.dir}/ant/lib/xml-apis.jar" />
+          <pathelement location="${aspectj.lib.dir}/ant/lib/xercesImpl.jar" />
+          <pathelement location="${aspectj.lib.dir}/junit/junit.jar" />
+          <pathelement location="${aspectj.modules.dir}/org.eclipse.jdt.core/jdtcore-for-aspectj.jar" />
+		</path>
+
+		<!-- requires normal build, i.e., with test classes -->
+		<path id="jar.classpath">
+          <pathelement location="${aj.build.jar.dir}/ajde.jar" />
+          <pathelement location="${aj.build.jar.dir}/ajbrowser.jar" />
+          <pathelement location="${aj.build.jar.dir}/asm.jar" />
+          <pathelement location="${aj.build.jar.dir}/bridge.jar" />
+          <pathelement location="${aj.build.jar.dir}/build.jar" />
+          <pathelement location="${aj.build.jar.dir}/org.aspectj.ajdt.core.jar" />
+          <pathelement location="${aj.build.jar.dir}/runtime.jar" />
+          <pathelement location="${aj.build.jar.dir}/taskdefs.jar" />
+          <pathelement location="${aj.build.jar.dir}/testing.jar" />
+          <pathelement location="${aj.build.jar.dir}/testing-client.jar" />
+          <pathelement location="${aj.build.jar.dir}/testing-drivers.jar" />
+          <pathelement location="${aj.build.jar.dir}/testing-util.jar" />
+          <pathelement location="${aj.build.jar.dir}/util.jar" />
+          <pathelement location="${aj.build.jar.dir}/weaver.jar" />
+          <path refid="lib.classpath"/>
+        </path>
+        
+        <available property="jar.path.available"
+        	file="${aj.build.jar.dir}/ajbrowser.jar" type="file"/>
+
 	</target>
 	
 	<target name="sources-available" depends="init-variables"
@@ -85,7 +138,16 @@
 		unless="aspectj.available">
 		<available property="aspectj.available"
 			file="${aj.build.install.dir}" type="dir"/>
-		<fail unless="aspectj.available" message="install first"/>
+		<fail unless="aspectj.available" 
+			message="install first in ${aj.build.install.dir}"/>
+	</target>
+
+	<target name="tests-available" depends="init-variables"
+		unless="tests.available">
+		<available property="tests.available"
+			file="${aj.build.jar.dir}" type="dir"/>
+		<fail unless="tests.available" 
+			message="first build-tests"/>
 	</target>
 
 <!-- ========================================================================= -->
@@ -101,25 +163,62 @@
 			<arg line="-to ${aj.build.install.dir}"/>
 		</java>
 	</target>
-
-	<target name="build" depends="init-variables,create-tree"
-		description="build an AspectJ release"
+		
+	<target name="build" depends="init-variables"
+		description="build an AspectJ release and tests"
 		unless="skip.build">
-		 <antcall target="run-ant">
+		<antcall target="build.release"/>
+		<antcall target="build.tests"/>
+	</target>
+		
+	<target name="build-release" depends="init-variables,create-tree"
+		description="build an AspectJ release"
+		unless="skip.build.release">
+		
+		<antcall target="run-ant">
 			<param name="ant.dir" 	location="${aspectj.build.dir}"/>
 			<param name="run.ant.file" value="build.xml"/>
 			<param name="ant.target" value="clean"/>
 			<param name="ant.output" 
 				location="${aj.build.log.dir}/build-clean.txt"/>
-		 </antcall>
-		 <antcall target="run-ant">
+		</antcall>
+		
+		<!-- product built without testing classes --> 
+		<antcall target="run-ant">
 			<param name="ant.dir" location="${aspectj.build.dir}"/>
 			<param name="run.ant.file" value="build.xml"/>
 			<param name="ant.target" value="aspectj"/>
 			<param name="ant.output" 
 				location="${aj.build.log.dir}/build-aspectj.txt"/>
-		 </antcall>
+		</antcall>
+		
 	</target>
+
+	<target name="build-tests" depends="init-variables,create-tree"
+		description="build AspectJ tests"
+		unless="skip.build.tests">
+				
+		<!-- now build with testing classes in jars --> 
+		<antcall target="run-ant">
+			<param name="ant.dir" 	location="${aspectj.build.dir}"/>
+			<param name="run.ant.file" value="build.xml"/>
+			<param name="ant.target" value="clean-jars"/>
+			<param name="ant.output" 
+				location="${aj.build.log.dir}/build-clean-jars.txt"/>
+		</antcall>
+		
+		<antcall target="run-ant">
+			<param name="ant.dir" location="${aspectj.build.dir}"/>
+			<param name="run.ant.file" value="build.xml"/>
+			<param name="ant.target" value="build-testing-jars"/>
+			<param name="ant.output" 
+				location="${aj.build.log.dir}/build-testing-jars.txt"/>
+			<param name="ant.properties" 
+				value="-Dtrim.testing.default=false"/>
+		</antcall>
+
+	</target>
+
 	<target name="create-tree" depends="init-variables"
 		unless="skip.cvs"
 		description="create an AspectJ source tree">
@@ -128,7 +227,7 @@
 		<delete dir="${aspectj.workspace}"/>
 		<mkdir dir="${aspectj.workspace}"/>
 		<cvs cvsRoot=":pserver:anonymous@eclipse.org:/home/technology"
-		          dest="${quicklook.tree.dir}"
+		          dest="${aspectj.workspace}"
 		       package="org.aspectj/modules" 
 		         quiet="on" 
 		   failonerror="on" 
@@ -137,13 +236,21 @@
 	
 <!-- ========================================================================= -->
 
-	<target name="test" 
-		depends="init-variables,aspectj-available">
-		<!-- antcall target="build-examples"/ -->
+	<target name="test" depends="test-sources,test-install"/>
+	
+	<target name="test-sources" 
+		depends="init-variables,tests-available">
+		<!-- these require only sources and built tree -->
 		<antcall target="junit-module-tests"/>
 		<antcall target="run-harness-tests"/>
 	</target>
 	
+	<target name="test-install" 
+		depends="init-variables,aspectj-available">
+		<antcall target="compile-aspectj-using-aspectj"/>
+		<antcall target="build-examples"/>
+	</target>
+
 	<target name="junit-module-tests" 
 		depends="init-variables,aspectj-available">
 		<echo message="need to build all with -Dtrim.testing.default=false"/>
@@ -155,6 +262,18 @@
 			<param name="ant.output" 
 				location="${aj.build.log.dir}/build-junitModules.txt"/>
 		 </antcall>
+		 
+		 <mkdir dir="${aj.build.log.dir}/junitXmlOutput"/>
+		 <delete quiet="on">
+		 	<fileset dir="${aj.build.log.dir}/junitXmlOutput"
+		 		includes="*"/>
+		 </delete>
+		 <property name="xmlSrcDir"
+		 	location="${aspectj.tests.dir}/bin/junitXmlOutput"/>
+		 <copy todir="${aj.build.log.dir}/junitXmlOutput" 
+		 	filtering="off">
+		 	<fileset dir="${xmlSrcDir}"	includes="*"/>
+		 </copy>
 	</target>
 
 	<target name="build-examples" 
@@ -165,7 +284,7 @@
 		<antcall target="build-one-example">
 			<param name="example.target" value="tracing-bc"/>
 		</antcall>
-		<echo message="Also setup and run compiler adapater example"/>
+		<echo message="Also setup and run compiler adapter example"/>
 	</target>
 
 	<target name="build-one-example" depends="init-variables">
@@ -188,14 +307,29 @@
 		</antcall>
 	</target>
 	
-	<target name="run-harness-tests" depends="harness-available">
+	<target name="run-harness-tests" depends="aspectj-available">
 		<antcall target="run-harness-once">
-			<param name="suite.filename" value="ajcTests.xml"/>
+			<param name="suite.filename" value="ajcHarnessTests"/>
+			<param name="emacssym" value=""/>
+		</antcall>
+		
+		<antcall target="run-harness-once">
+			<param name="suite.filename" value="ajcTestsFailing"/>
 			<param name="emacssym" value=""/>
 		</antcall>
 
 		<antcall target="run-harness-once">
-			<param name="suite.filename" value="ajcTests.xml"/>
+			<param name="suite.filename" value="ajcTestsFailing"/>
+			<param name="emacssym" value="-emacssym"/>
+		</antcall>
+		
+		<antcall target="run-harness-once">
+			<param name="suite.filename" value="ajcTests"/>
+			<param name="emacssym" value=""/>
+		</antcall>
+
+		<antcall target="run-harness-once">
+			<param name="suite.filename" value="ajcTests"/>
 			<param name="emacssym" value="-emacssym"/>
 		</antcall>
 	</target>
@@ -207,24 +341,18 @@
 		<available property="harness.available"
 			file="${harness.jar}"/>
 		<fail unless="harness.available" message="build harness first"/>
+		<property name="harness.output.file"
+			location="${aj.build.log.dir}/${suite.filename}${emacssym}.txt"/>
+		<echo message="run-harness-once ${suite.filename}.xml to ${harness.output.file}"/>
 		<java 
-			dir="${aspectj.modules.dir}/tests"
+			fork="true"
+			dir="${aspectj.tests.dir}"
 			jar="${harness.jar}" 
 			maxmemory="250m"
-			output="${aj.build.log.dir}/${suite.filename}${emacssym}.txt">
+			output="${harness.output.file}">
 			<arg value="${suite.filename}.xml"/>
 			<arg line="-killTemp -release -logFail ${emacssym}"/>			
 		</java>
-	</target>
-
-	<target name="harness-available" depends="init-variables">
-		<antcall target="run-ant">
-			<param name="ant.dir" location="${aspectj.build.dir}"/>
-			<param name="run.ant.file" value="build.xml"/>
-			<param name="ant.target" value="build-testing-drivers"/>
-			<param name="ant.output" 
-				location="${aj.build.log.dir}/build-testing-drivers.txt"/>
-		</antcall>
 	</target>
 
 	<target name="run-ant" depends="init-variables"
@@ -235,6 +363,11 @@
 			inheritAll="false"/>
 		 -->
 		<fail unless="ant.target" message="define ant.target"/>
+		<fail unless="run.ant.file" message="define run.ant.file"/>
+		<!-- fail unless="ant.properties" message="define ant.properties"/-->
+		<!-- set if not defined -->
+		<property name="ant.properties" value=""/>
+		<echo message="ant output for ${run.ant.file} ${ant.target} goes to ${ant.output}"/>
 		<java 
 			fork="true"
 			dir="${ant.dir}"
@@ -252,16 +385,26 @@
 				<pathelement path="${java.home}/lib/tools.jar"/>
 				<pathelement path="${java.home}/../lib/tools.jar"/>
 			</classpath>
+
+			<!-- urk - all properties for any client -->
+			<!-- for any build -->
 			<sysproperty key="JAVA_HOME" path="${java.home}"/>
 			<sysproperty key="ANT_HOME" 
 				path="${aspectj.ant.home}"/>
 
+			<!-- for tests/junitModules.xml -->
 			<sysproperty key="aspectjrt.path"
 				file="${aj.build.install.dir}/lib/aspectjrt.jar"/>
 			<sysproperty key="test.classpath"
 				value="jar.classpath"/>
 
-			<arg line="-f ${run.ant.file} ${ant.target} ${ant.verbose}"/>
+			<!-- for tests/product/build-aspectj/build.xml -->
+			<sysproperty key="ASPECTJ_MODULES"
+				file="${aspectj.modules.dir}"/>
+			<sysproperty key="ASPECTJ_HOME"
+				file="${aj.build.install.dir}"/>
+    
+			<arg line="-f ${run.ant.file} ${ant.target} ${ant.verbose} ${ant.properties}"/>
 		</java>
 	</target>
 
