@@ -289,7 +289,9 @@ individual SourceForge projects. </p>
   <p>This release includes an Ant task for old-style 1.0 build
   scripts, a new task for all the new compiler options, and a
   CompilerAdapter to support running <code>ajc</code> with the Javac
-  task by setting the <code>build.compiler</code> property.  </p>
+  task by setting the <code>build.compiler</code> property.  
+  The new task can automatically copy input resources to output.
+  </p>
 
   <p>This release does not include <code>ajdoc</code>, the
   documentation tool for AspectJ sources, and its 1.1 release looks
@@ -307,8 +309,10 @@ individual SourceForge projects. </p>
   code without inlining that should work correctly with any Java
   debugger.  For code generated with inlining enabled, more
   third-party debuggers are starting to work according to JSR 45,
-  "Debugging support for other languages", which we plan to support in
-  AspectJ 1.1. </p>
+  "Debugging support for other languages," which is supported by
+  AspectJ 1.0.  We aim to support JSR-45 in AspectJ 1.1, but 
+  support will not be in the initial release.  Consider using 
+  the -XnoInline flag until support is available.</p>
 
 <!-- ============================== -->
 <hr>
