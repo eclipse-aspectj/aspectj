@@ -608,6 +608,21 @@ class XMLEntry {
         return -1;
     }
     
+    public String toString() {
+        StringBuffer result = new StringBuffer();
+        result.append("<");
+        result.append(name);
+        for (int i = 0; i < attributeNames.length; i++) {
+            if (null != attributes[i]) {
+                result.append(" ");
+                result.append(attributeNames[i]);
+                result.append("=\"" + attributes[i] + "\"");            
+            }
+        }
+        result.append("/>");
+        return result.toString();
+    }
+    
     void reset() {
         for (int i = 0; i < attributes.length; i++) {
             attributes[i] = null;
