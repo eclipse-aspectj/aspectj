@@ -69,13 +69,16 @@ public class AjBuildConfig {
 	public AjBuildConfig( ) {
 		javaOptions.put(
 			CompilerOptions.OPTION_LocalVariableAttribute,
-			CompilerOptions.DO_NOT_GENERATE);
+			//CompilerOptions.DO_NOT_GENERATE);
+			CompilerOptions.GENERATE);
 		javaOptions.put(
 			CompilerOptions.OPTION_LineNumberAttribute,
-			CompilerOptions.DO_NOT_GENERATE);
+			//CompilerOptions.DO_NOT_GENERATE);
+			CompilerOptions.GENERATE);
 		javaOptions.put(
 			CompilerOptions.OPTION_SourceFileAttribute,
-			CompilerOptions.DO_NOT_GENERATE);
+			//CompilerOptions.DO_NOT_GENERATE);
+			CompilerOptions.GENERATE);
 		javaOptions.put(
 			CompilerOptions.OPTION_PreserveUnusedLocal,
 			CompilerOptions.OPTIMIZE_OUT);
