@@ -125,6 +125,10 @@
     <ajc-test dir="bugs150" title="bad asm for enums" vm="1.5">
         <compile files="Rainbow.java" options="-emacssym,-1.5"/>
     </ajc-test>
+    
+    <ajc-test dir="../docs/dist/doc/examples/introduction" title="introduction sample" vm="1.5">
+        <compile files="CloneablePoint.java,ComparablePoint.java,HashablePoint.java,Point.java" options="-1.5"/>
+    </ajc-test>
 
     <ajc-test dir="java5/varargs" title="varargs in constructor sig" vm="1.5">
         <compile files="Pr88652.aj" options="-1.5">
@@ -2029,4 +2033,11 @@
         </compile>
     </ajc-test>
 
+    <!-- Generics tests -->
+
+    <ajc-test dir="java5/generics" title="ITD with parameterized type" vm="1.5">
+        <compile files="ITDReturningParameterizedType.aj" options="-1.5"/>
+        <run class="ITDReturningParameterizedType"/>
+    </ajc-test>
+ 
 </suite>

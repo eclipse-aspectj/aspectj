@@ -51,6 +51,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
  
 /**
  * @author Jim Hugunin
@@ -157,6 +158,12 @@ public class EclipseFactory {
 		}
 		if (binding == null || binding.qualifiedSourceName() == null) {
 			return ResolvedTypeX.MISSING;
+		}
+		// first piece of generics support!
+		if (binding instanceof TypeVariableBinding) {
+			// this is a type variable...
+			TypeVariableBinding tvb = (TypeVariableBinding) binding;
+			return TypeX.forName(getName(tvb.firstBound)); // XXX needs more investigation as to whether this is correct in all cases
 		}
 		return TypeX.forName(getName(binding));
 	}

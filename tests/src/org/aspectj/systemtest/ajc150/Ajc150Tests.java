@@ -149,6 +149,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("dirs on aspectpath");
   }
   
+  public void testIntroSample() {
+	  runTest("introduction sample");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
