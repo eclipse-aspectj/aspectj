@@ -116,7 +116,22 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 				return this;
 			}
 		} else {
-			annotationType = annotationType.resolve(scope.getWorld());
+			// Non binding case
+
+			String cleanname = annotationType.getClassName();
+			annotationType = scope.getWorld().resolve(annotationType,true);
+			
+			// We may not have found it if it is in a package, lets look it up...
+			if (annotationType == ResolvedTypeX.MISSING) {
+				TypeX type = null;
+				while ((type = scope.lookupType(cleanname,this)) == ResolvedTypeX.MISSING) {
+					int lastDot = cleanname.lastIndexOf('.');
+					if (lastDot == -1) break;
+					cleanname = cleanname.substring(0,lastDot)+"$"+cleanname.substring(lastDot+1);
+				}
+				annotationType = scope.getWorld().resolve(type,true);
+			}
+			
 			verifyIsAnnotationType(annotationType,scope);
 			return this;
 		}
