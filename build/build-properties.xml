@@ -143,6 +143,15 @@
       <!-- aj.results.dir is not cleaned -->
     </target>
 
+    <target name="clean-jars" 
+         depends="init-directories"
+          unless="clean-jars.done" >
+		<delete quiet="on">
+			<fileset dir="${aj.jar.dir}" includes="*"/>
+		</delete>
+      <property name="clean-jars.done" value="done"/>
+    </target>
+
     <target name="echo-properties" depends="init-properties">
       <echo>
   Build Properties
