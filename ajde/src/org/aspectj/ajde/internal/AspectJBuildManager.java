@@ -27,7 +27,7 @@ import org.aspectj.util.ConfigParser;
  */
 public class AspectJBuildManager implements BuildManager {
 	
-	private CompilerAdapter compiler = null;
+	private CompilerAdapter compilerAdapter = null;
     private TaskListManager compilerMessages = null;
     private BuildProgressMonitor progressMonitor = null;
     private BuildOptionsAdapter buildOptions = null;
@@ -44,7 +44,7 @@ public class AspectJBuildManager implements BuildManager {
         this.compilerMessages = compilerMessages;
         this.progressMonitor = progressMonitor;
         this.buildOptions = buildOptions;
-        this.compiler = new CompilerAdapter();
+        this.compilerAdapter = new CompilerAdapter();
     }
 
     public void buildFresh() {
@@ -84,7 +84,7 @@ public class AspectJBuildManager implements BuildManager {
                 fresh = true;
             }
             if (fresh) {
-                this.compiler.nextBuildFresh();
+                this.compilerAdapter.nextBuildFresh();
             }
             CompilerThread compilerThread = new CompilerThread();
             compilerThread.start();
@@ -92,22 +92,22 @@ public class AspectJBuildManager implements BuildManager {
     }
 
     public void abortBuild() {
-        if (compiler != null) {
-            compiler.requestCompileExit();
+        if (compilerAdapter != null) {
+            compilerAdapter.requestCompileExit();
         }
     }
 
     public boolean isStructureDirty() {
-        if (compiler != null) {
-            return compiler.isStructureDirty();
+        if (compilerAdapter != null) {
+            return compilerAdapter.isStructureDirty();
         } else {
             return false;
         }
     }
 
     public void setStructureDirty(boolean structureDirty) {
-        if (compiler != null) {
-            compiler.setStructureDirty(structureDirty);
+        if (compilerAdapter != null) {
+            compilerAdapter.setStructureDirty(structureDirty);
         }
     }
 
@@ -161,7 +161,7 @@ public class AspectJBuildManager implements BuildManager {
        			Ajde.getDefault().logEvent("building with options: " 
        				+ getFormattedOptionsString(buildOptions, Ajde.getDefault().getProjectProperties()));
                 
-                succeeded = compiler.compile(configFile, progressMonitor);
+                succeeded = compilerAdapter.compile(configFile, progressMonitor);
                 
                 long timeEnd = System.currentTimeMillis();
                 lastCompileTime = (int)(timeEnd - timeStart);
