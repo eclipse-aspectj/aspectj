@@ -61,9 +61,7 @@ public class ResourceCopyTestCase extends AjdeTestCase {
 		File outjar = openFile(outjarName);
 		ideManager.getProjectProperties().setOutJar(outjar.getAbsolutePath());
 		assertTrue("Build failed",doSynchronousBuild("config2.lst"));
-		assertFalse("No build warnings",ideManager.getCompilationSourceLineTasks().isEmpty());
-		List msgs = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
-		assertTrue("Wrong message",((NullIdeTaskListManager.SourceLineTask)msgs.get(0)).message.getMessage().startsWith("manifest not copied: "));
+		assertTrue("Build warnings",ideManager.getCompilationSourceLineTasks().isEmpty());
 		compareJars(injar1,"src",outjar);
 	}
 	
@@ -76,10 +74,11 @@ public class ResourceCopyTestCase extends AjdeTestCase {
 		ideManager.getProjectProperties().setInJars(injars);
 		File outjar = openFile(outjarName);
 		ideManager.getProjectProperties().setOutJar(outjar.getAbsolutePath());
-		assertFalse("Build should have failed",doSynchronousBuild("config2.lst"));
-		assertFalse("No build errors",ideManager.getCompilationSourceLineTasks().isEmpty());
+		assertTrue("Build should have suceeded",doSynchronousBuild("config2.lst"));
+		assertFalse("Build warnings for duplicate resource expected",ideManager.getCompilationSourceLineTasks().isEmpty());
 		List msgs = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
-		assertTrue("Wrong message",((NullIdeTaskListManager.SourceLineTask)msgs.get(1)).message.getMessage().startsWith("duplicate resource: "));
+		assertTrue("Wrong message",((NullIdeTaskListManager.SourceLineTask)msgs.get(0)).message.getMessage().startsWith("duplicate resource: "));
+		compareJars(injar1,"src",outjar);
 	}
 	
 	public void testSrcToOutjar () {
@@ -95,9 +94,7 @@ public class ResourceCopyTestCase extends AjdeTestCase {
 		injars.add(injar1);
 		ideManager.getProjectProperties().setInJars(injars);
 		assertTrue("Build failed",doSynchronousBuild("config2.lst"));
-		assertFalse("No build warnings",ideManager.getCompilationSourceLineTasks().isEmpty());
-		List msgs = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
-		assertTrue("Wrong message",((NullIdeTaskListManager.SourceLineTask)msgs.get(0)).message.getMessage().startsWith("manifest not copied: "));
+		assertTrue("Build warnings",ideManager.getCompilationSourceLineTasks().isEmpty());
 		compareInjarsToBin(injar1,"src","bin");
 	}
 	
@@ -114,10 +111,10 @@ public class ResourceCopyTestCase extends AjdeTestCase {
 		for (int i = 0; i < toResources.length; i++) {
 			String fileName = FileUtil.normalizedPath(toResources[i],binBase);
 			boolean b = resources.remove(fileName);
-			assertTrue("Extraneous resoures:" + fileName,b);
+			assertTrue("Extraneous resources: " + fileName,b);
 		}
 		
-		assertTrue("Missing resources:" + resources.toString(), resources.isEmpty());
+		assertTrue("Missing resources: " + resources.toString(), resources.isEmpty());
 	}	
 	
 	/*
@@ -138,10 +135,10 @@ public class ResourceCopyTestCase extends AjdeTestCase {
 				String fileName = entry.getName();
 				if (!fileName.endsWith(".class")) {
 					
-					/* Ensure we didn't copy any JAR manifests */
-					if (fileName.toLowerCase().startsWith("meta-inf")) {
+					/* Ensure we copied right JAR manifest */
+					if (fileName.equalsIgnoreCase("meta-inf/Manifest.mf")) {
 						byte[] outManifest = FileUtil.readAsByteArray(outjar);
-						assertFalse("Manifest has been copied",Arrays.equals(inManifest,outManifest));
+						assertTrue("Wrong manifest has been copied",Arrays.equals(inManifest,outManifest));
 					}
 					
 					boolean b = resources.remove(fileName);
@@ -179,7 +176,7 @@ public class ResourceCopyTestCase extends AjdeTestCase {
 			}
 			outjar.close();
 
-			assertTrue("Missing resources:" + resources.toString(), resources.isEmpty());
+			assertTrue("Missing resources: " + resources.toString(), resources.isEmpty());
 		}
 		catch (IOException ex) {
 			fail(ex.toString());
@@ -202,16 +199,16 @@ public class ResourceCopyTestCase extends AjdeTestCase {
 			for (int i = 0; i < toResources.length; i++) {
 				String fileName = FileUtil.normalizedPath(toResources[i],binBase);
 
-				/* Ensure we didn't copy any JAR manifests */
-				if (fileName.toLowerCase().startsWith("meta-inf")) {
+				/* Ensure we copied the right JAR manifest */
+				if (fileName.equalsIgnoreCase("meta-inf/Manifest.mf")) {
 					byte[] outManifest = FileUtil.readAsByteArray(toResources[i]);
-					assertFalse("Manifest has been copied",Arrays.equals(inManifest,outManifest));
+					assertTrue("Wrong manifest has been copied",Arrays.equals(inManifest,outManifest));
 				}
 				boolean b = resources.remove(fileName);
-				assertTrue("Extraneous resoures:" + fileName,b);
+				assertTrue("Extraneous resources: " + fileName,b);
 			}
 
-			assertTrue("Missing resources:" + resources.toString(), resources.isEmpty());
+			assertTrue("Missing resources: " + resources.toString(), resources.isEmpty());
 		}
 		catch (IOException ex) {
 			fail(ex.toString());
@@ -237,15 +234,13 @@ public class ResourceCopyTestCase extends AjdeTestCase {
 			ZipEntry entry;
 			while (null != (entry = injar.getNextEntry())) {
 				String fileName = entry.getName();
-				if (!fileName.endsWith(".class")) {
+				if (!entry.isDirectory() && !fileName.endsWith(".class")) {
 					
 					/* JAR manifests shouldn't be copied */
-					if (fileName.toLowerCase().startsWith("meta-inf")) {
+					if (fileName.equalsIgnoreCase("meta-inf/Manifest.mf")) {
 						manifest = FileUtil.readAsByteArray(injar);
 					}
-					else {
-						resources.add(fileName);
-					}
+					resources.add(fileName);
 				}
 				injar.closeEntry();
 			}

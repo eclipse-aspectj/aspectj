@@ -128,16 +128,9 @@ public class BcelWeaver implements IWeaver {
 				this.addClassFile(classFile);
 			}
 			else if (!entry.isDirectory()) {
-//				System.err.println("? addJarFile() filename='" + filename + "'");
-				
-				/* Don't copy JAR manifests */
-				if (filename.toLowerCase().startsWith("meta-inf")) {
-					world.showMessage(IMessage.WARNING, "manifest not copied: '" + filename + 
-									"' in JAR '" + inFile + "'", null, null);
-				}
-				else {
-					addResource(filename,classFile);
-				}
+
+				/* bug-44190 Copy meta-data */
+				addResource(filename,classFile);
 			}
 
 			inStream.closeEntry();
@@ -179,9 +172,12 @@ public class BcelWeaver implements IWeaver {
     }
 
 	public void addResource (String name, UnwovenClassFile resourceFile) {
-		Object previous = resources.put(name, resourceFile);
-		if (null != previous) {
-			world.showMessage(IMessage.ERROR, "duplicate resource: '" + name + "'",
+		/* bug-44190 Change error to warning and copy first resource */
+		if (!resources.containsKey(name)) {
+			resources.put(name, resourceFile);
+		}
+		else {
+			world.showMessage(IMessage.WARNING, "duplicate resource: '" + name + "'",
 				null, null);
 		}
 	}
