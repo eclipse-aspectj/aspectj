@@ -274,18 +274,21 @@
 
 	<!-- for any-[module|product], define [module|product].name -->
 	<target name="any-module" depends="init">
+	  <fail unless="module.name" message="use -Dmodule.name=... to define"/>
 	  <antcall target="build-module">
 	    <param name="module.name" value="${module.name}"/>
 	  </antcall>
 	</target>
 
 	<target name="any-module-all" depends="init">
+	  <fail unless="module.name" message="use -Dmodule.name=... to define"/>
 	  <antcall target="build-module-all">
 	    <param name="module.name" value="${module.name}"/>
 	  </antcall>
 	</target>
 
 	<target name="any-product" depends="init">
+	  <fail unless="product.name" message="use -Dproduct.name=... to define"/>
 	  <antcall target="build-product">
 	    <param name="product.name" value="${product.name}"/>
 	  </antcall>
