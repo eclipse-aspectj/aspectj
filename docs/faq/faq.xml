@@ -1521,9 +1521,9 @@ aspect PublicErrorLogging {
           </para>
           <para>
           For more information, see the 
-            <ulink url="devguide/devguide/index.html">
+            <ulink url="devguide/index.html">
               Development Environment Guide</ulink>
-            <ulink url="devguide/devguide/ajc-ref.html">
+            <ulink url="devguide/ajc-ref.html">
               Reference for ajc</ulink>.
           </para>
         </answer>
@@ -1553,9 +1553,9 @@ ajc -argfile sources.lst
           </programlisting>
           <para>
           For more information, see the 
-            <ulink url="devguide/devguide/index.html">
+            <ulink url="devguide/index.html">
               Development Environment Guide</ulink>
-            <ulink url="devguide/devguide/ajc-ref.html">
+            <ulink url="devguide/ajc-ref.html">
               Reference for ajc</ulink>.
           </para>
         </answer>
@@ -1670,9 +1670,9 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
           <para>Yes. As with <literal>Javac</literal>,
           use the <literal>-source 1.4</literal> option as described
           in the
-            <ulink url="devguide/devguide/index.html">
+            <ulink url="devguide/index.html">
               Development Environment Guide</ulink>
-            <ulink url="devguide/devguide/ajc-ref.html">
+            <ulink url="devguide/ajc-ref.html">
               Reference for ajc</ulink>.
           </para>
         </answer>
@@ -1812,9 +1812,9 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
             access to what aspects affect a class.
           </para>
           <para>For example, the
-            <ulink url="devguide/devguide/index.html.html">
+            <ulink url="devguide/index.html">
               Development Environment Guide</ulink>
-            <ulink url="devguide/devguide/ajbrowser.html.html">
+            <ulink url="devguide/ajbrowser.html">
               ajbrowser section</ulink>.
           shows that you can list or navigate
           between method and advice affecting that method and between a type
@@ -2674,7 +2674,7 @@ aspect MyMarker extends MarkerExample {
           	source.  For more information, see the 
           		<literal>-aspectpath</literal>
           	option in the 
-          		<ulink url="devguide/devguide/ajc-ref.html">
+          		<ulink url="devguide/ajc-ref.html">
               				Reference for ajc</ulink>.
           </para>
         </answer>
@@ -3092,10 +3092,10 @@ vmparam -Xmx384m
           stack traces may
           have synthetic methods in the stack, and the line numbers may
           not track your source code.  The 
-            <ulink url="devguide/devguide/index.html">
+            <ulink url="devguide/index.html">
               Development Environment Guide</ulink>
           discusses how to interpret stack at the end of the
-            <ulink url="devguide/devguide/ajc-ref.html">
+            <ulink url="devguide/ajc-ref.html">
               Reference for ajc</ulink>.
           </para>
           <para>In 1.1, line numbers should work correctly.
