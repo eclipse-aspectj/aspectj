@@ -206,7 +206,8 @@
   <literal>IOException</literal> handler.  It is equivalent to
   <literal>cflow(call(void foo()))</literal>.  In general,
   <literal>cflow(handler(<replaceable>Type</replaceable>))</literal>
-  will pick out no join points.
+  will not pick out any join points, the one exception to this is join points
+  that occur during the execution of any before advice on the handler.
   </para>
 
   <para> This does not restrict programs from placing before advice on
