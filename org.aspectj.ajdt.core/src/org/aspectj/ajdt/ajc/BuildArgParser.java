@@ -88,7 +88,9 @@ public class BuildArgParser extends Main {
 	 *         which will be invalid unless there are no handler errors.
 	 */
 	public AjBuildConfig genBuildConfig(String[] args) {
-		return genBuildConfig(args,  true, null);
+		AjBuildConfig config = new AjBuildConfig();
+		populateBuildConfig(config, args,  true, null);
+		return config;
 	}  
       
     /**
@@ -100,8 +102,7 @@ public class BuildArgParser extends Main {
      * @return AjBuildConfig per args, 
      *         which will be invalid unless there are no handler errors.
      */
-	public AjBuildConfig genBuildConfig(String[] args, boolean setClasspath, File configFile) {
-		AjBuildConfig buildConfig = new AjBuildConfig();
+	public AjBuildConfig populateBuildConfig(AjBuildConfig buildConfig, String[] args, boolean setClasspath, File configFile) {		
 		buildConfig.setConfigFile(configFile);
 		try {
 			// sets filenames to be non-null in order to make sure that file paramters are ignored
@@ -124,7 +125,7 @@ public class BuildArgParser extends Main {
             }
 				
 			List javaArgList = new ArrayList();
-			//	disable all special eclipse warnings by default
+			//	disable all special eclipse warnings by default - why???
 			//??? might want to instead override getDefaultOptions()
 			javaArgList.add("-warn:none");
 			// these next four lines are some nonsense to fool the eclipse batch compiler
@@ -163,7 +164,7 @@ public class BuildArgParser extends Main {
 			}
 			
 			setDebugOptions();
-			buildConfig.setJavaOptions(options);
+			buildConfig.getOptions().set(options);
 		} catch (InvalidInputException iie) {
 			ISourceLocation location = null;
 			if (buildConfig.getConfigFile() != null) {
@@ -318,7 +319,7 @@ public class BuildArgParser extends Main {
                 showWarning("empty arg found");
             } else if (arg.equals("-inpath")) {;
             	if (args.size() > nextArgIndex) {
-					buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_Inpath, CompilerOptions.PRESERVE);
+//					buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_Inpath, CompilerOptions.PRESERVE);
 					
 					List inPath = buildConfig.getInpath();
 					StringTokenizer st = new StringTokenizer(
@@ -342,7 +343,7 @@ public class BuildArgParser extends Main {
             	}
             } else if (arg.equals("-injars")) {;
 				if (args.size() > nextArgIndex) {
-					buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_InJARs, CompilerOptions.PRESERVE);
+//					buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_InJARs, CompilerOptions.PRESERVE);
 					
 					StringTokenizer st = new StringTokenizer(
 						((ConfigParser.Arg)args.get(nextArgIndex)).getValue(), 
@@ -404,7 +405,7 @@ public class BuildArgParser extends Main {
 				}
 			} else if (arg.equals("-outjar")) { 
 				if (args.size() > nextArgIndex) {
-					buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_OutJAR, CompilerOptions.GENERATE);
+//					buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_OutJAR, CompilerOptions.GENERATE);
 					File jarFile = makeFile(((ConfigParser.Arg)args.get(nextArgIndex)).getValue());
 					if (FileUtil.hasZipSuffix(jarFile)) {
 						try {
@@ -470,9 +471,9 @@ public class BuildArgParser extends Main {
 					showError("-Xlintfile requires .properties file argument");
 				}
             } else if (arg.equals("-Xlint")) {
-                buildConfig.getAjOptions().put(
-                    AjCompilerOptions.OPTION_Xlint,
-                    CompilerOptions.GENERATE);
+//                buildConfig.getAjOptions().put(
+//                    AjCompilerOptions.OPTION_Xlint,
+//                    CompilerOptions.GENERATE);
                 buildConfig.setLintMode(AjBuildConfig.AJLINT_DEFAULT);
             } else if (arg.startsWith("-Xlint:")) {
                 if (7 < arg.length()) {
