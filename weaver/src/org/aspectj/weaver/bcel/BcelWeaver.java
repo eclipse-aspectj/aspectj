@@ -22,6 +22,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.*;
+import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.Pointcut;
 
 public class BcelWeaver implements IWeaver {
@@ -45,7 +46,8 @@ public class BcelWeaver implements IWeaver {
     private boolean needToReweaveWorld = false;
 
     private List shadowMungerList = null; // setup by prepareForWeave
-    private List typeMungerList = null; // setup by prepareForWeave 
+	private List typeMungerList = null; // setup by prepareForWeave 
+	private List declareParentsList = null; // setup by prepareForWeave 
 
     private ZipOutputStream zipOutputStream;
 
@@ -172,6 +174,7 @@ public class BcelWeaver implements IWeaver {
 
 		shadowMungerList = xcutSet.getShadowMungers();
 		typeMungerList = xcutSet.getTypeMungers();
+		declareParentsList = xcutSet.getDeclareParents();
     	
 		//XXX this gets us a stable (but completely meaningless) order
 		Collections.sort(
@@ -284,6 +287,32 @@ public class BcelWeaver implements IWeaver {
 
 	public void weave(ResolvedTypeX onType) {
 		onType.clearInterTypeMungers();
+		
+		// need to do any declare parents before the matching below
+		for (Iterator i = declareParentsList.iterator(); i.hasNext(); ) {
+			DeclareParents p = (DeclareParents)i.next();
+			List newParents = p.findMatchingNewParents(onType);
+			if (!newParents.isEmpty()) {
+				//???
+				BcelObjectType classType = BcelWorld.getBcelObjectType(world.resolve(onType.getClassName()));
+				//System.err.println("need to do declare parents for: " + onType);
+				for (Iterator j = newParents.iterator(); j.hasNext(); ) {
+					ResolvedTypeX newParent = (ResolvedTypeX)j.next();
+					if (newParent.isClass()) {
+						world.showMessage(IMessage.ERROR,
+							"can't use declare parents to change superclass of binary form \'" +
+							onType.getClassName() + "\' (implementation limitation)",
+							p.getSourceLocation(), null);
+						continue;
+					}
+					
+					classType.addParent(newParent);
+					ResolvedTypeMunger newParentMunger = new NewParentTypeMunger(newParent);
+					onType.addInterTypeMunger(new BcelTypeMunger(newParentMunger, null));
+				}
+			}
+		}
+		
 		for (Iterator i = typeMungerList.iterator(); i.hasNext(); ) {
 			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
 			if (m.matches(onType)) {
@@ -291,6 +320,7 @@ public class BcelWeaver implements IWeaver {
 			}
 		}
 	}
+
 
 	// exposed for ClassLoader dynamic weaving
 	public LazyClassGen weaveWithoutDump(UnwovenClassFile classFile, BcelObjectType classType) throws IOException {

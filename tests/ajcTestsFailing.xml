@@ -4,19 +4,6 @@
 <!-- contains valid tests that the compiler has never passed -->
 <suite>
 
-    <ajc-test dir="new/declareParents"
-      title="Declare parents with intermediate ancestor"
-      keywords="from-new">
-        <compile files="Driver.java"/>
-        <run class="Driver"/>
-    </ajc-test>
-    
-    <ajc-test dir="new/declareParents" 
-      title="Declare parents removing ancestor"
-      keywords="from-new">
-        <compile files="IllegalAdoption.java">
-            <message kind="error" line="13"/>
-        </compile>
-    </ajc-test>
+
 
 </suite>

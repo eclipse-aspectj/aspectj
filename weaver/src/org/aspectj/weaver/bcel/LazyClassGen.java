@@ -177,6 +177,11 @@ public final class LazyClassGen {
     public void addInterface(TypeX typeX) {
     	myGen.addInterface(typeX.getName());
     }
+    
+	public void setSuperClass(TypeX typeX) {
+		myGen.setSuperclassName(typeX.getName());
+	 }
+
 
     // non-recursive, may be a bug, ha ha.
     private List getClassGens() {

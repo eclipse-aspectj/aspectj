@@ -18,5 +18,5 @@ aspect A {
 	declare parents: C2 implements I;  // CE can't implement
 	declare parents: C2 extends C3;  // CE circular
 	
-	declare parents: C1 extends C1; // CE self
+	declare parents: C1 extends C1; // not considered a CE, just does nothing
 }

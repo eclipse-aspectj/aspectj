@@ -29,6 +29,7 @@ import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.NewMethodTypeMunger;
+import org.aspectj.weaver.NewParentTypeMunger;
 import org.aspectj.weaver.PerObjectInterfaceTypeMunger;
 import org.aspectj.weaver.PrivilegedAccessMunger;
 import org.aspectj.weaver.ResolvedMember;
@@ -60,13 +61,25 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			return mungePrivilegedAccess(weaver, (PrivilegedAccessMunger)munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.Constructor) {
 			return mungeNewConstructor(weaver, (NewConstructorTypeMunger)munger);
+		} else if (munger.getKind() == ResolvedTypeMunger.Parent) {
+			return mungeNewParent(weaver, (NewParentTypeMunger)munger);
 		} else {
 			throw new RuntimeException("unimplemented");
 		}
 	}
 
 
-	
+	private boolean mungeNewParent(BcelClassWeaver weaver, NewParentTypeMunger munger) {
+		LazyClassGen gen = weaver.getLazyClassGen();
+		ResolvedTypeX newParent = munger.getNewParent();
+		if (newParent.isClass()) {
+			//gen.setSuperClass(newParent);
+		} else {
+			gen.addInterface(newParent);
+		}
+		return true;
+	}
+
 	private boolean mungePrivilegedAccess(
 		BcelClassWeaver weaver,
 		PrivilegedAccessMunger munger)

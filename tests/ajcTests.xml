@@ -5781,5 +5781,27 @@
         <run class="b_impl.BImpl"/>
     </ajc-test>
 
+    <ajc-test dir="new/declareParents"
+      title="Declare parents with intermediate ancestor"
+      keywords="from-new">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
+    
+    <ajc-test dir="new/declareParents" 
+      title="Declare parents removing ancestor"
+      keywords="from-new">
+        <compile files="IllegalAdoption.java">
+            <message kind="error" line="13"/>
+        </compile>
+    </ajc-test>
+    
+
+    <ajc-test dir="options/injars/simple"  pr="35865"
+      title="options -injars checking declare parents interactions">
+        <compile files="DecParents.java,main.jar"
+        	options="!eclipse"/>
+        <run class="DecParents"/>
+    </ajc-test>
     
 </suite>

@@ -246,6 +246,8 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
     	if (ret == null) {
     		//System.err.println("creating lazy class gen for: " + this);
     		ret = new LazyClassGen(this);
+    		//ret.print(System.err);
+    		//System.err.println("made LCG from : " + this.getJavaClass().getSuperclassName() );
     		if (isAspect()) {
     			lazyClassGen = ret;
     		}				
@@ -263,6 +265,22 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 
 	public ISourceLocation getSourceLocation() {
 		return getResolvedTypeX().getSourceContext().makeSourceLocation(0); //FIXME, we can do better than this
+	}
+
+	public void addParent(ResolvedTypeX newParent) {
+		if (newParent.isClass()) {
+			superClass = newParent;
+		} else {
+			ResolvedTypeX[] oldInterfaceNames = getDeclaredInterfaces();
+			int len = oldInterfaceNames.length;
+			ResolvedTypeX[] newInterfaceNames = new ResolvedTypeX[len+1];
+			System.arraycopy(oldInterfaceNames, 0, newInterfaceNames, 0, len);
+			newInterfaceNames[len] = newParent;
+			
+			interfaces = newInterfaceNames;
+		}
+		//System.err.println("javaClass: " + Arrays.asList(javaClass.getInterfaceNames()) + " super " + javaClass.getSuperclassName());
+		//if (lazyClassGen != null) lazyClassGen.print();
 	}
 } 
     

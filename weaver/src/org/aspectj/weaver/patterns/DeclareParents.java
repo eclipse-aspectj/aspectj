@@ -16,10 +16,15 @@ package org.aspectj.weaver.patterns;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.World;
 
 public class DeclareParents extends Declare {
 	private TypePattern child;
@@ -102,6 +107,59 @@ public class DeclareParents extends Declare {
 	
 	public boolean isAdviceLike() {
 		return false;
+	}
+	
+	private ResolvedTypeX maybeGetNewParent(ResolvedTypeX targetType, TypePattern typePattern, World world) {
+		if (typePattern == TypePattern.NO) return null;  // already had an error here
+		TypeX iType = typePattern.getExactType();
+		ResolvedTypeX parentType = iType.resolve(world);
+			
+		if (parentType.isAssignableFrom(targetType)) return null;  // already a parent
+					
+		if (targetType.isAssignableFrom(parentType)) {
+			world.showMessage(IMessage.ERROR,
+				"type can not extend itself", this.getSourceLocation(), null
+			);
+			return null;
+		}
+					
+		if (parentType.isClass()) {
+			if (targetType.isInterface()) {
+				world.showMessage(IMessage.ERROR, 
+					"interface can not extend a class", 
+					this.getSourceLocation(), null
+				);
+				return null;
+				// how to handle xcutting errors???
+			}
+			
+			if (!targetType.getSuperclass().isAssignableFrom(parentType)) {
+				world.showMessage(IMessage.ERROR,
+									"can only insert a class into hierarchy, but "
+									+ iType.getName() + " is not a subtype of " +
+									targetType.getSuperclass().getName(), 
+									this.getSourceLocation(), null
+				);
+				return null;
+			} else {
+				return parentType;
+			}				
+		} else {
+			return parentType;
+		}
+	}
+	
+
+	public List/*<ResolvedTypeX>*/ findMatchingNewParents(ResolvedTypeX onType) {
+		if (!match(onType)) return Collections.EMPTY_LIST;
+		
+		List ret = new ArrayList();
+		for (int i=0; i < parents.size(); i++) {
+			ResolvedTypeX t = maybeGetNewParent(onType, parents.get(i), onType.getWorld());
+			if (t != null) ret.add(t);
+		}
+		
+		return ret;
 	}
 
 }

@@ -191,58 +191,30 @@ public class AjLookupEnvironment extends LookupEnvironment {
 	}
 
 	private void doDeclareParents(DeclareParents declareParents, SourceTypeBinding sourceType) {
-		if (declareParents.match(factory.fromEclipse(sourceType))) {
-			TypePatternList l = declareParents.getParents();
-			for (int i=0, len=l.size(); i < len; i++) {
-				addParent(declareParents, sourceType, l.get(i));
+		List newParents = declareParents.findMatchingNewParents(factory.fromEclipse(sourceType));
+		if (!newParents.isEmpty()) {
+			for (Iterator i = newParents.iterator(); i.hasNext(); ) {
+				ResolvedTypeX parent = (ResolvedTypeX)i.next();
+				addParent(sourceType, parent);
 			}
 		}
 	}
 
-	private void addParent(DeclareParents declareParents, SourceTypeBinding sourceType, TypePattern typePattern) {
-		if (typePattern == TypePattern.NO) return;  // already had an error here
-		TypeX iType = typePattern.getExactType();
-		ReferenceBinding b = (ReferenceBinding)factory.makeTypeBinding(iType); //"
-				
-		if (b.isClass()) {
-			if (sourceType.isInterface()) {
-				factory.showMessage(IMessage.ERROR, 
-					"interface can not extend a class", 
-					declareParents.getSourceLocation(), null
-				);
-				// how to handle xcutting errors???
-			}
-			
-			if (sourceType == b || sourceType.isSuperclassOf(b)) {
-				factory.showMessage(IMessage.ERROR,
-					"class can not extend itself", declareParents.getSourceLocation(), null
-				);
-				return;
-			}
-			sourceType.superclass = b;
+	private void addParent(SourceTypeBinding sourceType, ResolvedTypeX parent) {
+		ReferenceBinding parentBinding = (ReferenceBinding)factory.makeTypeBinding(parent); 
+		if (parentBinding.isClass()) {
+			sourceType.superclass = parentBinding;
 		} else {
-			//??? it's not considered an error to extend yourself, nothing happens
-			if (sourceType.equals(b)) {
-				return;
-			}
-			
-			if (sourceType.isInterface() && b.implementsInterface(sourceType, true)) {
-				factory.showMessage(IMessage.ERROR,
-					"interface can not extend itself", declareParents.getSourceLocation(), null
-				);
-				return;
-			}
-			if (sourceType == b || b.isSuperclassOf(sourceType)) return;
 			ReferenceBinding[] oldI = sourceType.superInterfaces;
 			ReferenceBinding[] newI;
 			if (oldI == null) {
 				newI = new ReferenceBinding[1];
-				newI[0] = b;
+				newI[0] = parentBinding;
 			} else {
 				int n = oldI.length;
 				newI = new ReferenceBinding[n+1];
 				System.arraycopy(oldI, 0, newI, 0, n);
-				newI[n] = b;
+				newI[n] = parentBinding;
 			}
 			sourceType.superInterfaces = newI;
 		}

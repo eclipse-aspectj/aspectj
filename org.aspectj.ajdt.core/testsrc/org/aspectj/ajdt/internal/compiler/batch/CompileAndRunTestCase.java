@@ -44,7 +44,7 @@ public class CompileAndRunTestCase extends CommandTestCase {
 	}
 	
 	public void testDeclareParentsFail() throws IOException {
-		CommandTestCase.checkCompile("src1/ParentsFail.java", new int[] {3, 11, 19, 21});
+		CommandTestCase.checkCompile("src1/ParentsFail.java", new int[] {3, 11, 19});
 	}
 	
 	public void testDeclareParents() throws IOException {

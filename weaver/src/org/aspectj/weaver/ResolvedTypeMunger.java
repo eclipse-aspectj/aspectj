@@ -154,6 +154,8 @@ public abstract class ResolvedTypeMunger {
 	// not serialized, only created during concretization of aspects
 	public static final Kind PerObjectInterface = new Kind("PerObjectInterface", 3);
 	public static final Kind PrivilegedAccess = new Kind("PrivilegedAccess", 4);
+	
+	public static final Kind Parent = new Kind("Parent", 6);
 
 	public static final String SUPER_DISPATCH_NAME = "superDispatch";
 
