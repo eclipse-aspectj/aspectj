@@ -287,10 +287,67 @@
     initialization, or to delegate to a <literal>this</literal>
     constructor if necessary.
   </para>
-
   </sect2>
-
-
 </sect1>
 
+<sect1>
+  <title>Summary of implementation requirements</title>
+  <para>
+	This summarizes the requirements of our implementation of AspectJ.
+	For more details, see the relevant sections of this guide.	  
+  </para>
+ <itemizedlist spacing="compact">
+	<listitem>
+	  <para>The invoking code must be under the control of ajc
+		for the following join points:</para>
+		 <itemizedlist spacing="compact">
+			<listitem>call join point</listitem>
+			  <listitem>get join point</listitem>
+			  <listitem>set join point</listitem>
+		 </itemizedlist>
+	</listitem>
+	<listitem>
+	  <para>The declaring/target code must be under the control of ajc
+		for the following join points and inter-type declarations:</para>
+		 <itemizedlist spacing="compact">
+			  <listitem>execution join point</listitem>
+			  <listitem>adviceexecution join point</listitem>
+			  <listitem>handler join point</listitem>
+			  <listitem>initialization join point</listitem>
+			  <listitem>preinitialiaztion join point</listitem>
+			  <listitem>staticinitialization join point</listitem>
+			  <listitem>perthis aspect</listitem>
+			  <listitem>pertarget aspect</listitem>
+			  <listitem>declare parents</listitem>
+			  <listitem>declare method or field (see interface caveats below)</listitem>
+		 </itemizedlist>
+	</listitem>
+	<listitem>
+	  <para>Implementation Caveats</para>
+		 <itemizedlist spacing="compact">
+			<listitem>
+			  <para>The initialization and preinitialization join points 
+				  do not support around advice</para>
+			</listitem>
+			<listitem>
+			  <para>The handler join point does not support...</para>
+				 <itemizedlist spacing="compact">
+					<listitem>after advice</listitem>
+					<listitem>around advice</listitem>
+					<listitem>cflow(handler(..))</listitem>
+				 </itemizedlist>
+			</listitem>
+			<listitem>
+			  <para>Declaring members on an interface in an aspect affects only 
+				the topmost implementing classes the implementation controls.</para>
+			</listitem>
+			<listitem>
+			  <para>cflow and cflowbelow pointcuts work within a single thread.</para>
+			</listitem>
+		</itemizedlist>
+   </listitem>
+ </itemizedlist>
+</sect1>
 </appendix>
+
+
