@@ -13,10 +13,13 @@
 
 package org.aspectj.weaver;
 
-import java.util.*;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
+import org.aspectj.apache.bcel.classfile.Field;
+import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.Utility;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
@@ -40,7 +43,11 @@ public class AsmRelationshipProvider {
 	public static final String INTER_TYPE_DECLARES = "declared on";
 	public static final String INTER_TYPE_DECLARED_BY = "aspect declarations";
 	
+	public static final String ANNOTATES = "annotates";
+	public static final String ANNOTATED_BY = "annotated by";
+	
 	public void checkerMunger(IHierarchy model, Shadow shadow, Checker checker) {
+	  if (!AsmManager.isCreatingModel()) return;
 		if (shadow.getSourceLocation() == null || checker.getSourceLocation() == null) return;
 		
 		// Ensure a node for the target exists
@@ -78,6 +85,7 @@ public class AsmRelationshipProvider {
 		ResolvedTypeMunger munger,
 		ResolvedTypeX originatingAspect) {
 
+	  if (!AsmManager.isCreatingModel()) return;
 		String sourceHandle = "";
 		if (munger.getSourceLocation()!=null) {
 			sourceHandle = ProgramElement.createHandleIdentifier(
@@ -114,6 +122,7 @@ public class AsmRelationshipProvider {
 	}
 	
 	public void addDeclareParentsRelationship(ISourceLocation decp,ResolvedTypeX targetType, List newParents) {
+	    if (!AsmManager.isCreatingModel()) return;
 
 		String sourceHandle = ProgramElement.createHandleIdentifier(decp.getSourceFile(),decp.getLine(),decp.getColumn(),decp.getOffset());
 		
@@ -137,7 +146,34 @@ public class AsmRelationshipProvider {
 		
 	}
 	
+	/**
+	 * Adds a declare annotation relationship, sometimes entities don't have source locs (methods/fields) so use other
+	 * variants of this method if that is the case as they will look the entities up in the structure model.
+	 */
+	public void addDeclareAnnotationRelationship(ISourceLocation declareAnnotationLocation,ISourceLocation annotatedLocation) {
+	    if (!AsmManager.isCreatingModel()) return;
+		String sourceHandle = ProgramElement.createHandleIdentifier(declareAnnotationLocation.getSourceFile(),declareAnnotationLocation.getLine(),
+																	declareAnnotationLocation.getColumn(),declareAnnotationLocation.getOffset());
+		IProgramElement declareAnnotationPE = AsmManager.getDefault().getHierarchy().findElementForHandle(sourceHandle);
+		
+		String targetHandle = ProgramElement.createHandleIdentifier(
+				annotatedLocation.getSourceFile(),
+				annotatedLocation.getLine(),
+				annotatedLocation.getColumn(),
+				annotatedLocation.getOffset());
+				
+		IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
+		if (sourceHandle != null && targetHandle != null) {
+			IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATES,false,true);
+			foreward.addTarget(targetHandle);
+				
+			IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATED_BY,false,true);
+			back.addTarget(sourceHandle);
+		}
+	}
+	
 	public void adviceMunger(IHierarchy model, Shadow shadow, ShadowMunger munger) {
+	  if (!AsmManager.isCreatingModel()) return;
 		if (munger instanceof Advice) {
 			Advice advice = (Advice)munger;
 			
@@ -300,5 +336,100 @@ public class AsmRelationshipProvider {
     public static void setDefault(AsmRelationshipProvider instance) {
         INSTANCE = instance;
     }
+
+    /**
+     * Add a relationship to the known set for a declare @method/@constructor construct.  
+     * Locating the method is a messy (for messy read 'fragile') bit of code that could break at any moment
+     * but it's working for my simple testcase.  Currently just fails silently if any of the lookup code
+     * doesn't find anything...
+     */
+	public void addDeclareAnnotationRelationship(ISourceLocation sourceLocation, String typename,Method method) {
+	  if (!AsmManager.isCreatingModel()) return;
+	    
+	  String pkg  = "";
+	  String type = typename;
+	  int packageSeparator = typename.lastIndexOf(".");
+	  if (packageSeparator!=-1) {
+	 	pkg = typename.substring(0,packageSeparator);
+	  	type = typename.substring(packageSeparator+1);
+	  }
+		
+	  IProgramElement typeElem = AsmManager.getDefault().getHierarchy().findElementForType(pkg,type);
+	  if (typeElem == null) return;
+	      
+	    IProgramElement methodElem = null;
+	    String name = method.getName();
+	     
+        String sig   = method.getSignature();
+         
+        try {
+        if (sig.startsWith("(")) sig = sig.substring(1,sig.lastIndexOf(")"));
+        String argsSig = (sig.length()==0?"":Utility.signatureToString(sig));
+        
+	    if (name.startsWith("<init>")) {
+	        // its a ctor
+	    	methodElem = AsmManager.getDefault().getHierarchy().findElementForLabel(typeElem,IProgramElement.Kind.CONSTRUCTOR,type+"("+argsSig+")");
+	    } else {
+	        // its a method
+	     	methodElem = AsmManager.getDefault().getHierarchy().findElementForLabel(typeElem,IProgramElement.Kind.METHOD,method.getName()+"("+argsSig+")");
+	    }
+	     
+
+	    String sourceHandle = 
+	      ProgramElement.createHandleIdentifier(sourceLocation.getSourceFile(),sourceLocation.getLine(),
+		 	sourceLocation.getColumn(),sourceLocation.getOffset());
+			  	
+	    String targetHandle = methodElem.getHandleIdentifier();
+	    IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
+		if (sourceHandle != null && targetHandle != null) {
+				IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATES,false,true);
+				foreward.addTarget(targetHandle);
+					
+				IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATED_BY,false,true);
+				back.addTarget(sourceHandle);
+		}
+        } catch (Throwable t) { // I'm worried about that code above, this will make sure we don't explode if it plays up
+          t.printStackTrace(); // I know I know .. but I don't want to lose it!
+        }
+	}
+	
+    /**
+     * Add a relationship to the known set for a declare @field construct.  Locating the field is trickier than
+     * it might seem since we have no line number info for it, we have to dig through the structure model under
+     * the fields' type in order to locate it.  Currently just fails silently if any of the lookup code
+     * doesn't find anything...
+     */
+	public void addDeclareAnnotationRelationship(ISourceLocation sourceLocation, String typename,Field field) {
+	    if (!AsmManager.isCreatingModel()) return;
+	    
+  	    String pkg  = "";
+	    String type = typename;
+	    int packageSeparator = typename.lastIndexOf(".");
+	    if (packageSeparator!=-1) {
+	  	  pkg  = typename.substring(0,packageSeparator);
+	  	  type = typename.substring(packageSeparator+1);
+	    }
+	    
+        IProgramElement typeElem = AsmManager.getDefault().getHierarchy().findElementForType(pkg,type);
+        if (typeElem == null) return;
+        
+        IProgramElement fieldElem = AsmManager.getDefault().getHierarchy().findElementForSignature(typeElem,IProgramElement.Kind.FIELD,field.getName());
+        if (fieldElem== null) return;
+
+		String sourceHandle = 
+		  ProgramElement.createHandleIdentifier(sourceLocation.getSourceFile(),sourceLocation.getLine(),
+		  	sourceLocation.getColumn(),sourceLocation.getOffset());
+		  	
+		String targetHandle = fieldElem.getHandleIdentifier();
+		
+        IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
+		if (sourceHandle != null && targetHandle != null) {
+			IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATES,false,true);
+			foreward.addTarget(targetHandle);
+				
+			IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATED_BY,false,true);
+			back.addTarget(sourceHandle);
+		}
+	}
 	
 }
