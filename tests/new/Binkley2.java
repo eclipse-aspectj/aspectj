@@ -32,24 +32,25 @@ class C {
 class Post {
     static List haves = new Vector();
     static String[] wants = new String[] {
+        "preinitialization(C())-Ar-0", 
         "initialization(C())-Ar-0", 
-        "execution(C.<init>)-Ar-0",
-        "set(C.x)-Ar-0",
         "execution(C())-Ar-0", 
+        "set(C.x)-Ar-0",
         "execution(C.foo())-Ar-0", 
         "set(C.x)-Ar-0",
         "set(C.x)-Ar-0",
         
+        "preinitialization(C())-Art-0", 
         "initialization(C())-Art-0", 
-        "execution(C.<init>)-Art-1",
+        "execution(C())-Art-1",
         "set(C.x)-Art-2",
-        "execution(C())-Art-3",
         "execution(C.foo())-Art-0",
         "set(C.x)-Art-1",
         "set(C.x)-Art-2",
         };
 
     static void post(JoinPoint jp, String name, int num) {
+    	//System.out.println("have: " + jp.toShortString() + "-" + name + "-" + num);
 	haves.add(jp.toShortString() + "-" + name + "-" + num);
     }
     static void checkAll() {
