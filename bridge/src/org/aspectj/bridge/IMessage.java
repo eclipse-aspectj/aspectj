@@ -73,6 +73,9 @@ public interface IMessage {
 	/** Caller can verify if this message came about because of a DEOW */
 	boolean getDeclared();
 	
+	/** Return the ID of the message where applicable, see IProblem for list of valid IDs */
+	int getID();
+	
 	/** @return Throwable associated with this message, or null if none */
 	Throwable getThrown();
 

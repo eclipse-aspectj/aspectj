@@ -31,6 +31,7 @@ public class Message implements IMessage {
     private final String details;
     private final List/*SourceLocation*/ extraSourceLocations;
     private final boolean declared; // Is it a DEOW ?
+    private final int id; 
         
     /**
      * Create a (compiler) error or warning message
@@ -62,13 +63,14 @@ public class Message implements IMessage {
 	 */
 	public Message(String message, String details, IMessage.Kind kind, 
 		ISourceLocation sourceLocation, Throwable thrown, ISourceLocation[] extraSourceLocations) {
-		this(message,details,kind,sourceLocation,thrown,extraSourceLocations,false);
+		this(message,details,kind,sourceLocation,thrown,extraSourceLocations,false,0);
 	}
 	
 	public Message(String message, String details, IMessage.Kind kind,
 	               ISourceLocation sLoc, Throwable thrown, ISourceLocation[] otherLocs,
-	               boolean declared) {
+	               boolean declared,int id) {
 		this.details = details;
+		this.id = id;
 		this.message = ((message!=null) ? message : ((thrown==null) ? null : thrown.getMessage()));
 		this.kind = kind;
 		this.sourceLocation = sLoc;
@@ -174,6 +176,10 @@ public class Message implements IMessage {
     
 	public List getExtraSourceLocations() {
 		return extraSourceLocations;
+	}
+
+	public int getID() {
+		return id;
 	}
 
 }

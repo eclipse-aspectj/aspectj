@@ -39,6 +39,7 @@ public class SoftMessage implements IMessage {
 	private Throwable thrown;
 	private ISourceLocation sourceLocation;
 	private String details;
+	private int id;
 	private final ArrayList extraSourceLocations = new ArrayList();
 
 	//private ISourceLocation pseudoSourceLocation;  // set directly
@@ -322,6 +323,14 @@ public class SoftMessage implements IMessage {
 
 	public void setDetails(String string) {
 		details = string;
+	}
+	
+	public int getID() {
+		return id;
+	}
+	
+	public void setID(int id) {
+		this.id = id;
 	}
 
 	/* (non-Javadoc)

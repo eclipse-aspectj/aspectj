@@ -39,6 +39,7 @@ public class AjdeTests extends TestCase {
 		suite.addTestSuite(JarManifestTest.class);
 		suite.addTestSuite(DuplicateManifestTest.class);
 		suite.addTestSuite(ShowWeaveMessagesTestCase.class);
+		suite.addTestSuite(ExtensionTests.class);
 		
         //$JUnit-END$
         return suite;
