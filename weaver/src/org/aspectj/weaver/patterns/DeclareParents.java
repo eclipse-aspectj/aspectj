@@ -196,7 +196,8 @@ public class DeclareParents extends Declare {
 			return null;
 		}	
 			
-					
+		if (parentType.isAssignableFrom(targetType)) return null;  // already a parent
+
 		if (targetType.isAssignableFrom(parentType)) {
 			world.showMessage(IMessage.ERROR,
 					WeaverMessages.format(WeaverMessages.CANT_EXTEND_SELF,targetType.getName()),
