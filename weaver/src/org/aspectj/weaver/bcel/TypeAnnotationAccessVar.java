@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2005 
+ * Copyright (c) 2005 IBM
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
