@@ -16,6 +16,8 @@ import org.apache.tools.ant.*;
 import org.apache.tools.ant.types.*;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.taskdefs.*;
+import org.apache.tools.ant.util.JavaEnvUtils;
+
 import java.io.*;
 import java.util.List;
 import java.util.Iterator;
@@ -355,14 +357,14 @@ public class Ajc2 extends Javac {
 
         // If oldBuildCompiler is null try to resolve it
         if (oldBuildCompiler == null) {
-            String javaVersion = Project.getJavaVersion();
-            if (javaVersion.equals(Project.JAVA_1_0)) {
+            String javaVersion = JavaEnvUtils.getJavaVersion();
+            if (javaVersion.equals(JavaEnvUtils.JAVA_1_0)) {
                 // Cannot happen
-            } else if (javaVersion.equals(Project.JAVA_1_1)) {
+            } else if (javaVersion.equals(JavaEnvUtils.JAVA_1_1)) {
                 oldBuildCompiler = "classic";
-            } else if (javaVersion.equals(Project.JAVA_1_2)) {
+            } else if (javaVersion.equals(JavaEnvUtils.JAVA_1_2)) {
                 oldBuildCompiler = "classic";
-            } else if (javaVersion.equals(Project.JAVA_1_3)) {
+            } else if (javaVersion.equals(JavaEnvUtils.JAVA_1_3)) {
                 oldBuildCompiler = "modern";
             }
         }
