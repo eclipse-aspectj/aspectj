@@ -23,6 +23,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -56,6 +57,8 @@ import org.aspectj.asm.ProgramElementNode;
  * @author Mik Kersten
  */
 public class TopFrame extends JFrame {
+
+    private static final File CURRENT_DIR = new File(".");
 
     JLabel statusText_label = new JLabel();
 
@@ -93,6 +96,8 @@ public class TopFrame extends JFrame {
     private Border border6;
     private Border border7;
     private JMenuItem svProperties_menuItem = new JMenuItem();
+    private File lastChosenDir = CURRENT_DIR;
+    
     JPanel toolBar_panel = new JPanel();
     JToolBar build_toolBar = new JToolBar();
     JButton closeConfig_button = new JButton();
@@ -542,13 +547,10 @@ public class TopFrame extends JFrame {
 
     private void openConfig_button_actionPerformed(ActionEvent e) {
         JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(lastChosenDir);
         fileChooser.setFileFilter(new FileFilter() {
             public boolean accept(File f) {
-                if (f.getPath().endsWith(".lst") || f.isDirectory()) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return (f.getPath().endsWith(".lst") || f.isDirectory());
             }
             public String getDescription() {
                 return "AspectJ Build Configuration (*.lst)";
@@ -556,9 +558,14 @@ public class TopFrame extends JFrame {
         });
         int returnVal = fileChooser.showOpenDialog(this);
         if(returnVal == JFileChooser.APPROVE_OPTION) {
-        	String path = fileChooser.getSelectedFile().getAbsolutePath();//.replace('\\', '/');
+            File result = fileChooser.getSelectedFile();
+        	String path = result.getAbsolutePath();//.replace('\\', '/');
         	BrowserManager.getDefault().getConfigFiles().add(0, path);
         	Ajde.getDefault().getConfigurationManager().setActiveConfigFile(path);
+            lastChosenDir = result.getParentFile();
+            if (null == lastChosenDir) {
+                lastChosenDir = CURRENT_DIR;
+            }
             refreshBuildMenu();  
         }
     }
