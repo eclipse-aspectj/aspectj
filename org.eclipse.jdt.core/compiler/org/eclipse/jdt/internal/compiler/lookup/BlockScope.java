@@ -932,7 +932,7 @@ public class BlockScope extends Scope {
 			if (methodBinding.canBeSeenBy(invocationSite, this)) {
 				return methodBinding;
 			} else if (handler != null) {
-				return handler.getPrivilegedAccessMethod(methodBinding);
+				return handler.getPrivilegedAccessMethod(methodBinding, (AstNode)invocationSite);
 			}
 		}
 

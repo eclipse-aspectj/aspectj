@@ -41,7 +41,7 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 			FieldBinding fieldBinding = (FieldBinding)ref.binding;
 			makePublic(fieldBinding.declaringClass);
 			if (isPublic(fieldBinding)) return;
-			ref.binding = handler.getPrivilegedAccessField(fieldBinding);
+			ref.binding = handler.getPrivilegedAccessField(fieldBinding, ref);
 		}
 	}
 
@@ -50,7 +50,7 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 			FieldBinding fieldBinding = (FieldBinding)ref.binding;
 			makePublic(fieldBinding.declaringClass);
 			if (isPublic(fieldBinding)) return;
-			ref.binding = handler.getPrivilegedAccessField(fieldBinding);
+			ref.binding = handler.getPrivilegedAccessField(fieldBinding, ref);
 		}
 	}
 
@@ -59,7 +59,7 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 			FieldBinding fieldBinding = (FieldBinding)ref.binding;
 			makePublic(fieldBinding.declaringClass);
 			if (isPublic(fieldBinding)) return;
-			ref.binding = handler.getPrivilegedAccessField(fieldBinding);
+			ref.binding = handler.getPrivilegedAccessField(fieldBinding, ref);
 		}
 	}
 	public void endVisit(MessageSend send, BlockScope scope) {
@@ -67,13 +67,13 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 		if (send.binding == null) return;
 		if (isPublic(send.binding)) return;
 		makePublic(send.binding.declaringClass);
-		send.binding = send.codegenBinding = handler.getPrivilegedAccessMethod(send.binding);
+		send.binding = send.codegenBinding = handler.getPrivilegedAccessMethod(send.binding, send);
 	}
 	public void endVisit(AllocationExpression send, BlockScope scope) {
 		if (send.binding == null) return;
 		if (isPublic(send.binding)) return;
 		makePublic(send.binding.declaringClass);
-		send.binding = handler.getPrivilegedAccessMethod(send.binding);
+		send.binding = handler.getPrivilegedAccessMethod(send.binding, send);
 	}	
 	public void endVisit(
 		QualifiedTypeReference ref,
@@ -104,7 +104,7 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 	private void makePublic(TypeBinding binding) {
 		if (binding instanceof ReferenceBinding) {
 			ReferenceBinding rb = (ReferenceBinding)binding;
-			if (!rb.isPublic()) handler.notePrivilegedTypeAccess(rb);
+			if (!rb.isPublic()) handler.notePrivilegedTypeAccess(rb, null); //???
 		} else if (binding instanceof ArrayBinding) {
 			makePublic( ((ArrayBinding)binding).leafComponentType );
 		} else {

@@ -16,7 +16,9 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 import java.util.*;
 
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.*;
+import org.eclipse.jdt.internal.compiler.ast.AstNode;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 
 
@@ -29,15 +31,16 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 		this.inAspect = inAspect;
 	}
 
-	public FieldBinding getPrivilegedAccessField(FieldBinding baseField) {
+	public FieldBinding getPrivilegedAccessField(FieldBinding baseField, AstNode location) {
 		ResolvedMember key = inAspect.world.makeResolvedMember(baseField);
 		if (accessors.containsKey(key)) return (FieldBinding)accessors.get(key);
 		FieldBinding ret = new PrivilegedFieldBinding(inAspect, baseField);
+		checkWeaveAccess(key.getDeclaringType(), location);
 		accessors.put(key, ret);
 		return ret;
 	}
 
-	public MethodBinding getPrivilegedAccessMethod(MethodBinding baseMethod) {
+	public MethodBinding getPrivilegedAccessMethod(MethodBinding baseMethod, AstNode location) {
 		ResolvedMember key = inAspect.world.makeResolvedMember(baseMethod);
 		if (accessors.containsKey(key)) return (MethodBinding)accessors.get(key);
 		
@@ -49,18 +52,37 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 			AjcMemberMaker.privilegedAccessMethodForMethod(inAspect.typeX, key)
 			);
 		}
-		
+		checkWeaveAccess(key.getDeclaringType(), location);
 		//new PrivilegedMethodBinding(inAspect, baseMethod);
 		accessors.put(key, ret);
 		return ret;
 	}
 	
-	public void notePrivilegedTypeAccess(ReferenceBinding type) {
+	public void notePrivilegedTypeAccess(ReferenceBinding type, AstNode location) {
 		ResolvedMember key =
 			new ResolvedMember(Member.STATIC_INITIALIZATION,
 				inAspect.world.fromEclipse(type), 0, ResolvedTypeX.VOID, "", TypeX.NONE);
+		
+		checkWeaveAccess(key.getDeclaringType(), location);
 		accessors.put(key, key);
 	}
+
+	private void checkWeaveAccess(TypeX typeX, AstNode location) {
+		World world = inAspect.world;
+		Lint.Kind check = world.getLint().typeNotExposedToWeaver;
+		if (check.isEnabled()) {
+			if (!world.resolve(typeX).isExposedToWeaver()) {
+				ISourceLocation loc = null;
+				if (location != null) {
+					loc = new EclipseSourceLocation(inAspect.compilationResult, 
+							location.sourceStart, location.sourceEnd);
+				}
+				check.signal(typeX.getName() + " (needed for privileged access)",
+							loc);
+			}
+		}
+	}
+
 	
 	public ResolvedMember[] getMembers() {
 		Collection m = accessors.keySet();

@@ -11,6 +11,7 @@
  ******************************************************************************/
 package org.eclipse.jdt.internal.compiler.lookup;
 
+import org.eclipse.jdt.internal.compiler.ast.AstNode;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
@@ -184,7 +185,7 @@ public abstract class Scope
 				IPrivilegedHandler handler = findPrivilegedHandler(invocationType());
 				if (handler != null) {
 					//???System.err.println("privileged access: ");
-					return invocationType().privilegedHandler.getPrivilegedAccessMethod(exactMethod);
+					return invocationType().privilegedHandler.getPrivilegedAccessMethod(exactMethod, (AstNode)invocationSite);
 				}
 			}
 		}

@@ -16,6 +16,7 @@ import java.util.*;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.AssertStatement;
+import org.eclipse.jdt.internal.compiler.ast.AstNode;
 import org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
@@ -512,7 +513,7 @@ public FieldBinding getField(char[] fieldName, InvocationSite site, Scope scope)
 			!ret.canBeSeenBy(this, site, scope))
 		{
 			//System.err.println("privileged access: " + new String(fieldName));
-			return handler.getPrivilegedAccessField(ret);
+			return handler.getPrivilegedAccessField(ret, (AstNode)site);
 		}
 	}
 	return ret;

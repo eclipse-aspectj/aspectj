@@ -11,6 +11,8 @@
 
 package org.eclipse.jdt.internal.compiler.lookup;
 
+import org.eclipse.jdt.internal.compiler.ast.AstNode;
+
 
 /**
  * This interface is used by SourceTypeBinding to provide a delegated lookup
@@ -20,8 +22,8 @@ package org.eclipse.jdt.internal.compiler.lookup;
  */
 public interface IPrivilegedHandler {
 	
-	FieldBinding getPrivilegedAccessField(FieldBinding baseField);
+	FieldBinding getPrivilegedAccessField(FieldBinding baseField, AstNode location);
 	
-	MethodBinding getPrivilegedAccessMethod(MethodBinding baseMethod);
-	void notePrivilegedTypeAccess(ReferenceBinding type);
+	MethodBinding getPrivilegedAccessMethod(MethodBinding baseMethod, AstNode location);
+	void notePrivilegedTypeAccess(ReferenceBinding type, AstNode location);
 }

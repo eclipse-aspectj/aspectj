@@ -36,8 +36,7 @@ public class Lint {
 	
 	public final Kind typeNotExposedToWeaver = 
 		new Kind("typeNotExposedToWeaver", "this affected type is not exposed to the weaver: {0}");
-	
-	
+		
 	public Lint(World world) {
 		this.world = world;
 	}
