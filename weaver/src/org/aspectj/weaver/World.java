@@ -300,13 +300,22 @@ public abstract class World {
 		//??? number of dominates declares in the whole system.
 		//??? This method can be called a large number of times.
 		int order = 0;
+		DeclarePrecedence orderer = null; // Records the declare precedence statement that gives the first ordering
 		for (Iterator i = crosscuttingMembersSet.getDeclareDominates().iterator(); i.hasNext(); ) {
 			DeclarePrecedence d = (DeclarePrecedence)i.next();
 			int thisOrder = d.compare(aspect1, aspect2);
 			//System.out.println("comparing: " + thisOrder + ": " + d);
 			if (thisOrder != 0) {
+				if (orderer==null) orderer = d;
 				if (order != 0 && order != thisOrder) {
-					throw new BCException("conflicting dominates orders");
+					ISourceLocation[] isls = new ISourceLocation[2];
+					isls[0]=orderer.getSourceLocation();
+					isls[1]=d.getSourceLocation();
+					Message m = 
+					  new Message("conflicting declare precedence orderings for aspects: "+
+					              aspect1.getName()+" and "+aspect2.getName(),null,true,isls);
+					messageHandler.handleMessage(m);
+					// throw new BCException("conflicting dominates orders"+d.getSourceLocation());
 				} else {
 					order = thisOrder;
 				}

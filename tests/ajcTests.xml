@@ -7756,5 +7756,18 @@
         	<message kind="error" line="2" text="if() pointcut designator cannot be used directly in a per clause"/>
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs/bug70619"
+		pr="70619" title="compiler aborts with 'conflicting dominates orders' with circular declare precedences">
+        <compile files="Precedence.java">
+          <message kind="error" line="0" text="conflicting declare precedence"/>
+        </compile>
+        <compile files="Conflict.java,Order2.aj,Order1.aj">        
+          <message kind="error" line="0" text="conflicting declare precedence"/>
+        </compile>
+        <compile files="Conflict.java,Order1.aj,Order2.aj">
+          <message kind="error" line="0" text="conflicting declare precedence"/>
+        </compile>
+    </ajc-test>
  
 </suite>
