@@ -45,6 +45,7 @@ public class CompilerMessagesPanel extends JPanel implements TaskListManager {
     private JList list = new JList();
     private DefaultListModel listModel = new DefaultListModel();
     private BorderLayout borderLayout1 = new BorderLayout();
+    private boolean hasWarning = false;
 
     public CompilerMessagesPanel() {
         try {
@@ -94,15 +95,25 @@ public class CompilerMessagesPanel extends JPanel implements TaskListManager {
 
     public void addSourcelineTask(IMessage message) {   
         listModel.addElement(new CompilerMessage(message));
+        if (!hasWarning && IMessage.WARNING.isSameOrLessThan(message.getKind())) {
+            hasWarning = true;
+        }
         BrowserManager.getDefault().showMessages();
     }
 
     public void addProjectTask(String message, IMessage.Kind kind) {
         IMessage m = new Message(message, kind, null, null);
 		listModel.addElement(new CompilerMessage(m));
+        if (!hasWarning && IMessage.WARNING.isSameOrLessThan(kind)) {
+            hasWarning = true;
+        }
 		BrowserManager.getDefault().showMessages();
 	}
 
+    public boolean hasWarning() {
+        return hasWarning;
+    }
+    
     public void clearTasks() {
         listModel.clear();
     }

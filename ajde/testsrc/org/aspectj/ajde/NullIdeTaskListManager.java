@@ -26,26 +26,41 @@ import org.aspectj.bridge.*;
 public class NullIdeTaskListManager implements TaskListManager {
 	
 	List sourceLineTasks = new ArrayList();
+    boolean hasWarning = false;
 
     public void addSourcelineTask(
         String message,
         ISourceLocation sourceLocation,
         IMessage.Kind kind) {
         addSourcelineTask(new Message(message, kind, null, sourceLocation));
+        if (!hasWarning && IMessage.WARNING.isSameOrLessThan(kind)) {
+            hasWarning = true;
+        }
     }
     
     public void addSourcelineTask(IMessage message) {
     	sourceLineTasks.add(new SourceLineTask(message));
+        if (!hasWarning && IMessage.WARNING.isSameOrLessThan(message.getKind())) {
+            hasWarning = true;
+        }
 //    	System.out.println("> added sourceline task: " + message + ", file: " + sourceLocation.getSourceFile().getAbsolutePath()
 //    		+ ": " +  sourceLocation.getLine());
     }
    
     public void addProjectTask(String message, IMessage.Kind kind) {
+        if (!hasWarning && IMessage.WARNING.isSameOrLessThan(kind)) {
+            hasWarning = true;
+        }
 //    	System.out.println("> added project task: " + message + ", kind: " + kind);	
     }
 
+    public boolean hasWarning() {
+        return hasWarning;
+    }
+    
     public void clearTasks() {
     	sourceLineTasks = new ArrayList();
+        hasWarning = false;
 //    	System.out.println("> cleared tasks");
     }
     
