@@ -40,3 +40,18 @@ aspect X {
 	  		throw new RuntimeException("Expected "+exp.length+" advice runs but did "+X.i);
 	  }
 	}
+
+
+//aspect X {
+//  int i = 0;
+//  
+//  before(Colored c): preinitialization(new(..)) && !within(X) && @annotation(c) {
+//  	i++;
+//        System.err.println(thisJoinPoint+" color="+c.color());
+//  	if (i==1 && !c.color().equals("orange")) throw new RuntimeException("First time through should be red, but is "+c.color());
+//  	if (i==2 && !c.color().equals("yellow")) throw new RuntimeException("Second time through should be green, but is "+c.color());
+//  	if (i==3 && !c.color().equals("brown")) throw new RuntimeException("Third time through should be blue, but is "+c.color());
+//  	System.err.println(c.color());
+//  }
+//}
+//
