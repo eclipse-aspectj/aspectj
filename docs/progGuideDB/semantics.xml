@@ -2224,6 +2224,23 @@
       <para>except, in addition to wrapping the exception, it also affects
       Java's static exception checking mechanism. </para>
 
+      <para> Like advice, the declare soft form has no effect in an
+      abstract aspect that is not extended by a concreate aspect.  So
+      the following code will not compile unless it is compiled with an
+      extending concrete aspect:</para>
+
+<programlisting>
+  abstract aspect A {
+    abstract pointcut softeningPC();
+
+    before() : softeningPC() {     
+      Class.forName("FooClass"); // error:  uncaught ClassNotFoundException
+    }    
+                                                      
+    declare soft : ClassNotFoundException : call(* Class.*(..));
+  }
+</programlisting>
+
     </sect2>
 
     <sect2>
