@@ -108,6 +108,8 @@ public class Sandbox {
     /** directories and libraries on the classpath, set by CompileRun.setup(..)  */
     private File[] compileClasspath;
 
+    private String bootClasspath;
+    
     /** aspectpath entries, set by CompileRun.setup(..)  */
     private File[] aspectpath;
 
@@ -348,6 +350,16 @@ public class Sandbox {
         }
     }
 
+    /**
+     * Set bootclasspath, presumed to be delimited by
+     * File.pathSeparator and have valid entries.
+     * @param bootClasspath
+     * @param caller
+     */
+    void setBootclasspath(String bootClasspath, CompilerRun caller) {
+        this.bootClasspath = bootClasspath;
+    }
+    
     /** 
      * Set compile classpath.
      * @param readable if true, then throw IllegalArgumentException if not readable 
@@ -434,7 +446,7 @@ public class Sandbox {
      */
     String aspectpathToString(CompilerRun caller) {
         LangUtil.throwIaxIfNull(caller, "caller");
-        return FileUtil.flatten(aspectpath, null);
+        return FileUtil.flatten(aspectpath, File.pathSeparator);
     }
     
     /** 
@@ -443,6 +455,24 @@ public class Sandbox {
      */
     String classpathToString(CompilerRun caller) {
         LangUtil.throwIaxIfNull(caller, "caller");
-        return FileUtil.flatten(compileClasspath, null);
+        return FileUtil.flatten(compileClasspath, File.pathSeparator);
+    }
+        
+    /** 
+     * Get the bootClasspath as a String.
+     * @return String of bootclasspath entries delimited internally by File.pathSeparator 
+     */
+    String getBootclasspath(CompilerRun caller) {
+        LangUtil.throwIaxIfNull(caller, "caller");
+        return bootClasspath;
+    }
+
+    /** 
+     * Get the bootClasspath as a String.
+     * @return String of bootclasspath entries delimited internally by File.pathSeparator 
+     */
+    String getBootclasspath(JavaRun caller) {
+        LangUtil.throwIaxIfNull(caller, "caller");
+        return bootClasspath;
     }
 }

@@ -267,7 +267,11 @@ public class CompilerRun implements IAjcRun {
         if (0 < aspectFiles.length) {
             sandbox.setAspectpath(aspectFiles, checkReadable, this);
         }
-                
+        
+        // set bootclasspath, if set as system property - urk!
+        if (!LangUtil.isEmpty(JavaRun.BOOTCLASSPATH)) {
+            sandbox.setBootclasspath(JavaRun.BOOTCLASSPATH, this);
+        }
         return true;
     }
     
@@ -322,7 +326,12 @@ public class CompilerRun implements IAjcRun {
                 argList.add("-classpath");
                 argList.add(path);
             }
-
+            path = sandbox.getBootclasspath(this);
+            if (!LangUtil.isEmpty(path)) {
+                argList.add("-bootclasspath");
+                argList.add(path);
+            }
+            
             path = sandbox.aspectpathToString(this);
             if (!LangUtil.isEmpty(path)) {
                 argList.add("-aspectpath");

@@ -25,7 +25,7 @@ each component in the chain may accept and interpret:
 <table cellpadding="1" border="1">
 <tr><th>Component</th><th>Options</th></tr>
 
-<tr><td rowspan="5" valign="top">Harness 
+<tr><td rowspan="6" valign="top">Harness 
     <p>suite files, harness verbosity, temp files, option variants
     </td></tr>
   <tr><td><u>suite files</u>: ajcTest-compliant .txt or .xml files are accepted.
@@ -164,6 +164,36 @@ each component in the chain may accept and interpret:
       or <tt>-loud</tt> is used.) 
      </td></tr>
     
+     
+  <tr><td rowspan="2" valign="top">JavaRun
+  	  <p>Options and forking</td>
+     <td><u>options</u>: options specified in the test are passed
+      to the main method as they would be on the command-line.
+      No options passed to the harness are passed through to
+      the main class.
+     </td></tr>
+  <tr><td><u>forking</u>: 
+        Forking is useful to run in a different version of Java
+        than can be supported by the harness (i.e., some 1.1 flavor);
+        it's very time-consuming otherwise.
+  		Currently forking is only controllable through system properties
+  		of the invoking vm (defined in JavaRun):
+  		<ul>
+  		   <li><u>javarun.fork</u>: anything to run in a new vm.
+  		      </li>
+  		   <li><u>javarun.java</u>: path to the java executable to run
+  		      (suffix included).  If not supplied, the harness tries to
+  		      find the java that invoked the harness.
+  		      </li>
+  		   <li><u>javarun.java.home</u>: the value of the JAVA_HOME 
+  		      environment variable, if it needs to be set.
+  		      </li>
+  		   <li><u>javarun.classpath</u>: this is prepended to the
+  		      run classpath.  Multiple entries must be separated by
+  		      the system-dependent path separator.
+  		      </li>
+  		</ul>
+     </td></tr>
 </table>
 <p>
 Following are some sample configurations:
@@ -211,9 +241,38 @@ run from a peer module directory.  When running tests elsewhere,
 define the environment variable <code>harness.libdir</code> - e.g., 
 <pre>
     $ cd aspectj/tests
-    $ java -Dharness.libdir=../modules/lib/test -jar eajctesting.jar ajcTests.xml
+    $ java -Dharness.libdir=../modules/lib/test ...
 </pre>
-<p>
+
+<p><u>Forking:</u>:
+The harness must be run in a compiler-compatible VM, and the
+compiler steps run in-process.
+However, the java steps can be run in forked mode, which is useful
+when compiling for a VM which can't run the compiler.
+Here's how you would run the harness to compile against a 
+specific version of 1.1:
+<pre>
+   java -Djavarun.java=d:\jdk1.1.8\bin\java.exe \
+        -Djavarun.bootclasspath=d:\jdk1.1.8\lib\classes.zip \
+        -Djavarun.java.home=d:\jdk1.1.8 \
+        -Djavarun.fork=true \
+        -jar ../aj-build/jars/testing-drivers-all.jar \
+        ajcTests.xml -logFail
+</pre>
+
+Here CompilerRun would add the bootclasspath as such when compiling.
+JavaRun would fork using the 1.1 vm and prepend the bootclasspath
+to the classpath, with an effect like these commands
+(ignoring the line splitting in the classpath):
+<pre>
+   set JAVA_HOME=d:\jdk1.1.8
+   d:\jdk1.1.8\bin\java.exe \
+     -classpath "d:\jdk1.1.8\lib\classes.zip;
+                 d:\aspectj-src\lib\test\testing-client.jar;
+                 d:\aspectj-src\lib\test\aspectjrt.jar;
+                 c:\TEMP\sandbox7wers\classes"
+     {mainClass} {option..}
+</pre>
 
 </body>
 </html>
