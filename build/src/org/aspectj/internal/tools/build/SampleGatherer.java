@@ -38,10 +38,6 @@ public class SampleGatherer {
     /** EOL String for gathered lines */
     public static final String EOL = "\n"; // XXX
     
-    /** lowercase source suffixes identify files to gather samples from */
-    public static final String[] SOURCE_SUFFIXES = new String[]
-    { ".java", ".aj", ".sh", ".txt", ".html", ".htm" };
-
     static final String START = "START-SAMPLE";
     static final String END = "END-SAMPLE";
     static final String AUTHOR = "@author";
@@ -140,8 +136,9 @@ public class SampleGatherer {
             return false;
         }
         String path = file.getName().toLowerCase();
-        for (int i = 0; i < SOURCE_SUFFIXES.length; i++) {
-            if (path.endsWith(SOURCE_SUFFIXES[i])) {
+        String[] suffixes = Sample.Kind.SOURCE_SUFFIXES;
+        for (int i = 0; i < suffixes.length; i++) {
+            if (path.endsWith(suffixes[i])) {
                 return true;
             }
         }
@@ -349,6 +346,12 @@ class Sample {
     }
 
     public static class Kind {
+        
+        /** lowercase source suffixes identify files to gather samples from */
+        public static final String[] SOURCE_SUFFIXES = new String[]
+        { ".java", ".aj", ".sh", ".ksh", 
+        ".txt", ".text", ".html", ".htm", ".xml" };
+        static final Kind XML = new Kind();
         static final Kind HTML = new Kind();
         static final Kind PROGRAM = new Kind();
         static final Kind SCRIPT = new Kind();
@@ -370,6 +373,9 @@ class Sample {
             }
             if ((name.endsWith(".txt") || name.endsWith(".text"))) {
                 return TEXT;
+            }
+            if (name.endsWith(".xml")) {
+                return XML;
             }
             return OTHER;
         }
@@ -551,6 +557,8 @@ class HTMLSamplesRenderer extends SamplesRenderer {
         renderHeading(sample.anchorName, sample.anchorTitle, sampleSection); 
         if (sample.kind == Sample.Kind.HTML) {
             renderHTML(sample);
+        } else if (sample.kind == Sample.Kind.XML) {
+            renderXML(sample);
         } else {
             renderPre(sample);
         }
@@ -565,12 +573,15 @@ class HTMLSamplesRenderer extends SamplesRenderer {
         // XXX starting same as pre
         if (doRenderAuthor(sample)) {
             currentAuthor = sample.author;
-            sampleSection.append("    <p>author: " + currentAuthor + "</p>");
+            sampleSection.append("    <p>| &nbsp; " + currentAuthor);
             sampleSection.append(EOL);
         }
-        sampleSection.append("    <p>from: "); 
+        sampleSection.append(" &nbsp;|&nbsp; "); 
         sampleSection.append(SampleUtil.renderCodePath(sample.sourcePath));
         sampleSection.append(":" + sample.startLine);
+        sampleSection.append(" &nbsp;|"); 
+        sampleSection.append(EOL);
+        sampleSection.append("<p>"); 
         sampleSection.append(EOL);
         if (doFlags) {
             boolean flagHeaderDone = false;
@@ -592,6 +603,16 @@ class HTMLSamplesRenderer extends SamplesRenderer {
         }
     }
     
+    protected void renderXML(Sample sample) {
+        renderStandardHeader(sample);
+        sampleSection.append("    <pre>");
+        sampleSection.append(EOL);
+        sampleSection.append(prepareXMLSample(sample.sampleCode));
+        sampleSection.append(EOL);
+        sampleSection.append("    </pre>");
+        sampleSection.append(EOL);
+    }
+
     protected void renderHTML(Sample sample) {
         renderStandardHeader(sample);
         sampleSection.append(EOL);
@@ -648,6 +669,12 @@ class HTMLSamplesRenderer extends SamplesRenderer {
         renderAuthorIndex(samples, sink);
         sink.append("</body></html>");
         sink.append(EOL);
+    }
+
+    protected String prepareXMLSample(String sampleCode) {
+        String[] from = new String[] {"\t", "<"};
+        String[] to   = new String[] {"    ", "&lt;"};
+        return (SampleUtil.replace(sampleCode, from, to));
     }
 
     protected String prepareHTMLSample(String sampleCode) {
