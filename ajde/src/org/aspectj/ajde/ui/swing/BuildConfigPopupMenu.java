@@ -12,7 +12,7 @@
  * ******************************************************************/
 
 
-package org.aspectj.tools.ajbrowser;
+package org.aspectj.ajde.ui.swing;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,7 +24,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.swing.*;
 import org.aspectj.asm.ProgramElementNode;
 
 public class BuildConfigPopupMenu extends JPopupMenu {
@@ -39,11 +38,12 @@ public class BuildConfigPopupMenu extends JPopupMenu {
 	    		new ActionListener() {
 		    		public void actionPerformed(ActionEvent e) {
 		    			Ajde.getDefault().getConfigurationManager().setActiveConfigFile(buildConfig);
-                        if (EditorManager.isShiftDown(e.getModifiers())) {
-                            Ajde.getDefault().getBuildManager().buildFresh();
-                        } else {
+							// ??? should we be able to do a build refresh if shift is down?
+//                        if (EditorManager.isShiftDown(e.getModifiers())) {
+//                            Ajde.getDefault().getBuildManager().buildFresh();
+//                        } else {
                             Ajde.getDefault().getBuildManager().build();
-                        }
+//                        }
 				        action.actionPerformed(e);
 					}
 	    		});

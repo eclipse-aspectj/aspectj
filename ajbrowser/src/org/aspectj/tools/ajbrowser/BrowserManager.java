@@ -35,7 +35,6 @@ public class BrowserManager {
 	private static final BrowserManager INSTANCE = new BrowserManager();
 	private BrowserProperties browserProjectProperties;
 	private EditorManager editorManager;
-	private StructureViewPanel fileStructurePanel = null;
 	
 	public static BrowserManager getDefault() {
 		return INSTANCE;
@@ -73,22 +72,16 @@ public class BrowserManager {
 				preferencesAdapter,
 				browserUIAdapter,
 				new IconRegistry(),
-				topFrame);	
+				topFrame,
+				true);	
 			
 			editorManager = new EditorManager(ajdeEditor);
-			
-			FileStructureView structureView = Ajde.getDefault().getStructureViewManager().createViewForSourceFile(
-				editorManager.getCurrFile(),
-				Ajde.getDefault().getStructureViewManager().getDefaultViewProperties()
-			);
-			Ajde.getDefault().getStructureViewManager().setDefaultFileView(structureView);			
-			fileStructurePanel = new StructureViewPanel(structureView);
 			
 			Ajde.getDefault().getBuildManager().addListener(BUILD_MESSAGES_LISTENER);
 			
 			MultiStructureViewPanel multiViewPanel = new MultiStructureViewPanel(
 				AjdeUIManager.getDefault().getViewManager().getBrowserPanel(),
-				fileStructurePanel
+				AjdeUIManager.getDefault().getFileStructurePanel()
 			);
 			
 			topFrame.init(

@@ -57,7 +57,8 @@ public class NullIdeManager {
 				preferencesAdapter,
 				uiAdapter,
 				new IconRegistry(),
-				nullFrame);	
+				nullFrame,
+				true);	
 				
 			//Ajde.getDefault().enableLogging( System.out );
 		} catch (Throwable t) {
