@@ -119,7 +119,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
         for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
             SourceTypeBinding[] b = units[i].scope.topLevelTypes;
             for (int j = 0; j < b.length; j++) {
-                addAdviceLikeDeclares(b[j].scope);
+            	addAdviceLikeDeclares(b[j].scope);
             }
         }
         
@@ -150,7 +150,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
         SourceTypeBinding sourceType = s.referenceContext.binding;
         ReferenceBinding[] memberTypes = sourceType.memberTypes;
         for (int i = 0, length = memberTypes.length; i < length; i++) {
-            addCrosscuttingStructures(((SourceTypeBinding) memberTypes[i]).scope);
+            addAdviceLikeDeclares(((SourceTypeBinding) memberTypes[i]).scope);
         }
     }
 
