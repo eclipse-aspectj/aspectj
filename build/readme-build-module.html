@@ -11,7 +11,19 @@ from this directory.  To run Ant, use <a href="../lib/ant">../lib/ant</a>
 scripts and libraries.  In particular, when running Ant from eclipse,
 do not use the default Eclipse Ant classpath; remove those jars and
 add all the libraries in <a href="../lib/ant/lib">../lib/ant/lib</a>
-as well as in <a href="../lib/junit">../lib/junit</a>.
+as well as in <a href="../lib/junit">../lib/junit</a>.  
+Consider defining the following flag properties:
+<p>
+<table cellpadding="1" border="1">
+<tr><th>Property</th><th>Effect of setting it to any value</th>
+    </tr>
+<tr><td>check.build.jar
+    </td><td>fail if build.jar is out of date
+	</td></tr>
+<tr><td>release.build
+    </td><td>regenerate org/aspectj/bridge/Version.java
+	</td></tr>
+</table>			
 
 <p>
 The 
