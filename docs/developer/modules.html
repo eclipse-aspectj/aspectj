@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <meta name="GENERATOR" content="Microsoft FrontPage 5.0">
 <meta name="ProgId" content="FrontPage.Editor.Document">
-<title>AJDT Project Proposal</title>
+<title>AspectJ modules</title>
 <STYLE TYPE="text/css">
 <!--
  
@@ -145,9 +145,18 @@
 <p>There are a number of different structures [Parnas]: &quot;the module structure, 
 the uses structure, the runtime structure, ..&quot;&nbsp; This document overviews module structure and summarizes what is hidden by each. 
 For detailed documentation refer to the individual module sources and docs 
-available via CVS. </p>
+available via CVS.  </p>
 <h4 align="center">Core Modules</h4>
 <p><b>CVS Location: </b>dev.eclipse.org:/home/technology/org.aspectj/modules</p>
+<p>
+To set up for building, one need only check out the module directories within the 
+<code>modules/</code> directory.  In Eclipse, check out each module into the
+the workspace as a project.
+(Note: module dependencies may change at any time,
+so this documentation might be out of date.
+The Eclipse .classpath files specify the module dependencies, 
+even when using Ant to build outside of Eclipse.)
+
 <p>
 <table cellSpacing="4" cellPadding="1" width="100%" align="center" border="0" id="table1">
 	<tr>
@@ -228,13 +237,17 @@ structure model which allows them to navigate and interpret the static structure
 	</tr>
 	<tr>
 		<td bgColor="#eeeeee">
-		<p class="smallParagraph" align="left">org.eclipse.ajdt.core</td>
+		<p class="smallParagraph" align="left">org.eclipse.jdt.core</td>
 		<td bgColor="#eeeeee">
 		<p class="smallParagraph" align="left">&nbsp;</td>
 		<td bgColor="#eeeeee">
 		<p class="smallParagraph" align="left">
-				The additional extensibility needed from the JDT compiler is 
-				captured by these deltas.</td>
+				The Eclipse JDT compiler, slightly patched for AspectJ
+                and stored in binary form to avoid accidental changes.
+                Sources are available in CVS at
+                dev.eclipse.org:/home/technology/org.aspectj/shadows.
+         </p>
+         </td>
 	</tr>
 	<tr>
 		<td bgColor="#eeeeee">
@@ -254,7 +267,7 @@ structure model which allows them to navigate and interpret the static structure
 		util</td>
 		<td bgColor="#eeeeee">
 		<p class="smallParagraph" align="left">
-				Ant taskdefs for the ajc and ajdoc command line tools.</td>
+				Ant taskdef for the AspectJ compiler/weaver, ajc.</td>
 	</tr>
 	<tr>
 		<td bgColor="#eeeeee">
@@ -382,7 +395,7 @@ structure model which allows them to navigate and interpret the static structure
       -->
 	</table>
 
-<h4 align="center">Eclipse Support (AJDT)</h4>
+<h4 align="center">Eclipse AspectJ Development Tools (AJDT)</h4>
 <p align="left"><b>CVS Location: </b>dev.eclipse.org:/home/technology/org.eclipse.ajdt/plugins/org.eclipse.ajdt</p>
 <table cellSpacing="4" cellPadding="1" width="100%" align="center" border="0" id="table3">
 	<tr>
