@@ -2,7 +2,11 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 
 <!-- contains valid tests that the compiler has never passed -->
+
 <suite>
-
-
+    <ajc-test dir="bugs" pr="39711"
+   	 title="Class Literals as non final fields (also assert, and this$0)">
+        <compile files="ClassLiteralField.java" options="-source14"/>
+        <run class="ClassLiteralField"/>
+    </ajc-test>
 </suite>
