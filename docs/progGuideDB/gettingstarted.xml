@@ -888,7 +888,7 @@ aspect PointBoundsChecking {
       </para>
 
 <programlisting><![CDATA[
-static aspect RegistrationProtection {
+aspect RegistrationProtection {
 
     pointcut register(): call(void Registry.register(FigureElement));
 
@@ -920,7 +920,7 @@ static aspect RegistrationProtection {
       </para>
 
 <programlisting><![CDATA[
-static aspect RegistrationProtection {
+aspect RegistrationProtection {
 
     pointcut register(): call(void Registry.register(FigureElement));
     pointcut canRegister(): withincode(static * FigureElement.make*(..));

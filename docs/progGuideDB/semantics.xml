@@ -2620,23 +2620,54 @@ ModifiersPattern =
 
     <para>
       An aspect is a crosscutting type defined by the <literal>aspect</literal>
-      declaration. The <literal>aspect</literal> declaration is similar to the
-      <literal>class</literal> declaration in that it defines a type and an
-      implementation for that type. It differs in that the type and
-      implementation can cut across other types (including those defined by
-      other aspect declarations), and that it may not be directly instantiated
-      with a new expression, with cloning, or with serialization. Aspects may
-      have one constructor definition, but if so it must be of a constructor
-      taking no arguments and throwing no checked exceptions.
+      declaration. 
     </para>
 
-    <para>
-      Aspects may be defined either at the package level, or as a static nested
-      aspect -- that is, a static member of a class, interface, or aspect.  If it
-      is not at the package level, the aspect <emphasis>must</emphasis> be
-      defined with the static keyword.  Local and anonymous aspects are not
-      allowed.
-    </para>
+    <sect2>
+      <title>Aspect Declaration</title>
+
+      <para>
+        The <literal>aspect</literal> declaration is similar to the
+	<literal>class</literal> declaration in that it defines a type and an
+	implementation for that type. It differs in a number of
+	ways:
+      </para>
+
+      <sect3>
+        <title>Aspect implementation can cut across other types</title>
+
+	<para> In addition to normal Java class declarations such as
+	methods and fields, aspect declarations can include AspectJ
+	declarations such as advice, pointcuts, and inter-type
+	declarations.  Thus, aspects contain implementation
+	declarations that can can cut across other types (including those defined by
+	other aspect declarations).
+        </para>
+      </sect3> 
+
+      <sect3>
+        <title>Aspects are not directly instantiated</title>
+
+	<para> Aspects are not directly instantiated with a new
+	expression, with cloning, or with serialization. Aspects may
+	have one constructor definition, but if so it must be of a
+	constructor taking no arguments and throwing no checked
+	exceptions.
+        </para>
+      </sect3> 
+
+      <sect3>
+        <title>Nested aspects must be <literal>static</literal></title>
+
+	<para> 
+	  Aspects may be defined either at the package level, or as a static nested
+          aspect -- that is, a static member of a class, interface, or aspect.  If it
+          is not at the package level, the aspect <emphasis>must</emphasis> be
+          defined with the static keyword.  Local and anonymous aspects are not
+          allowed.
+        </para>
+      </sect3> 
+    </sect2>
 
     <sect2>
       <title>Aspect Extension</title>
