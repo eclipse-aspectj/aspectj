@@ -5573,4 +5573,10 @@
         <run class="test.Test3"/>
     </ajc-test>
 
+    <ajc-test dir="bugs" pr="31423" 
+    		title="Pointcut adviceexecution() does not work">
+        <compile files="AdviceExec.java"/>
+        <run class="AdviceExec"/>
+    </ajc-test>
+
 </suite>

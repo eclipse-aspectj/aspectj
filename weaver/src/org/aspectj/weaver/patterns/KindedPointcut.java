@@ -35,8 +35,6 @@ public class KindedPointcut extends Pointcut {
 	public boolean fastMatch(JavaClass jc) { return true; }
 	
 	public FuzzyBoolean match(Shadow shadow) {
-		
-		
 		if (shadow.getKind() != kind) return FuzzyBoolean.NO;
 		
 		if (!signature.matches(shadow.getSignature(), shadow.getIWorld())) return  FuzzyBoolean.NO;
