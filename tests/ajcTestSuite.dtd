@@ -1,0 +1,48 @@
+<!-- this defines a DOCTYPE for a suite of ajc tests -->
+<!-- element-component mappings are in org.aspectj.testing.xml.AjcSpecXmlReader -->
+<!-- element names are determined by the component XMLNAME static variable -->
+
+   <!ELEMENT suite (ajc-test+)>
+   <!ATTLIST suite suiteDir CDATA #IMPLIED >
+
+   <!ELEMENT ajc-test (compile, (compile | inc-compile | run)*)>
+   <!ATTLIST ajc-test title CDATA #REQUIRED >
+   <!ATTLIST ajc-test dir CDATA #REQUIRED >
+   <!ATTLIST ajc-test pr CDATA #IMPLIED >
+   <!ATTLIST ajc-test keywords CDATA #IMPLIED >
+   <!ATTLIST ajc-test comment CDATA #IMPLIED >
+
+   <!ELEMENT compile (dir-changes*,file*,message*)>
+   <!ATTLIST compile staging CDATA #IMPLIED >
+   <!ATTLIST compile files CDATA #IMPLIED >
+   <!ATTLIST compile argfiles CDATA #IMPLIED >
+   <!ATTLIST compile aspectpath CDATA #IMPLIED >
+   <!ATTLIST compile options CDATA #IMPLIED >
+
+   <!ELEMENT inc-compile (dir-changes*,message*)>
+   <!ATTLIST inc-compile tag CDATA #REQUIRED >
+
+   <!ELEMENT run (dir-changes*,message*)>
+   <!ATTLIST run class CDATA #REQUIRED >
+   <!ATTLIST run skipTester CDATA #IMPLIED >
+   <!ATTLIST run vm CDATA #IMPLIED >
+   <!ATTLIST run options CDATA #IMPLIED >
+
+   <!ELEMENT file (#PCDATA)>
+   <!ATTLIST file path CDATA #IMPLIED >
+
+   <!ELEMENT message (#PCDATA)>
+   <!ATTLIST message kind (error | warning | info | Xlint) #REQUIRED >
+   <!ATTLIST message line CDATA #REQUIRED >
+   <!ATTLIST message text CDATA #IMPLIED >
+   <!ATTLIST message file CDATA #IMPLIED >
+
+   <!ELEMENT dir-changes (#PCDATA)>
+   <!ATTLIST dir-changes dirToken (classes | run) #IMPLIED >
+   <!ATTLIST dir-changes defaultSuffix (.class) #IMPLIED >
+   <!ATTLIST dir-changes added CDATA #IMPLIED >
+   <!ATTLIST dir-changes removed CDATA #IMPLIED >
+   <!ATTLIST dir-changes updated CDATA #IMPLIED >
+   <!ATTLIST dir-changes unchanged CDATA #IMPLIED >
+   <!ATTLIST dir-changes expDir CDATA #IMPLIED >
+

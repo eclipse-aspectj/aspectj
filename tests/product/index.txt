@@ -1,0 +1,59 @@
+
+This directory is for "product" tests, which validate the product as delivered 
+to users, i.e., as installed from an installer in relevant combinations. This
+type of testing is also called "system" test, or (less correctly) "integration"
+testing.  It may make use of unit-test drivers, etc.; the difference is not
+in the test tools or techniques, but in the scope of the validation.  However,
+validation typically builds on other testing; e.g., if the compiler has been
+thoroughly tested, then it may suffice in product testing to validate that
+the compiler binaries are the same and that the examples compile using the
+scripts which use the compiler binaries.
+
+The ant script aspectj/test-product.xml drives the process by installing the
+product, copying this entire directory to the target dir, and invoking
+ant product-test.xml. Currently, that script in turn does two things:
+ - executes the ajc.bat script to compile the telecom example, and run it
+ - invokes ant ant-example.xml to compile/doc/run all examples using
+   the ant taskdefs. 
+In both cases the results are not validated except that the operations completed.
+
+Setup of the installation directory (aka product or target directory):
+
+  ## dir/file ##            ## ant source ##        ## variable in ant source ##
+  {target.dir}              test-product.xml        ${target.dir}
+    aspectj-ant             test-product.xml
+      aspectj-ant.jar         aspectj-ant installer ${taskdefs.jar}
+    bin                       tools installer       ${bin.dir}
+    doc                       docs installer        ${lib.dir}
+    examples                  docs installer        ${examples.dir}
+    lib                       tools installer       ${lib.dir}
+      aspectjtools.jar        tools installer       ${aspectjtools.jar}
+      aspectjrt.jar           tools installer       ${aspectjrt.jar}
+    product                 product-test.xml        ${test.source.dir}
+    product-test-output     product-test.xml        ${test.dest.dir}
+      ajx-output            ant-examples.xml        ${ajx.base.dir}
+        {example}/classes   ant-examples.xml        
+        {example}/docs      ant-examples.xml        
+        {example}/output    ant-examples.xml        
+          out.txt           ant-examples.xml        
+
+---------------------------------------------------- to run tests
+cd aspectj
+## either this (which builds the ajde and source files, too) ...
+build/bin/ant.sh -f build.xml download.files 
+## or this (which only builds what's needed)...
+build/bin/ant.sh -f build-tools.xml download.files 
+build/bin/ant.sh -f build-docs.xml download.files 
+build/bin/ant.sh -f build-ant-tasks.xml download.files 
+## then run the tests
+build/bin/ant.sh -f test-product.xml 
+## and inspect the results
+cd ../aj-build/temp/aspectj{version}/product-test-output/ajx-output
+...
+
+---------------------------------------------------- todo
+- include all download.files packages
+  - need to test installer text interface for ide installer jars
+- file differencer on all packages after install
+- source-build tests
+- file differencer as regression test for emitted output

@@ -1,0 +1,2 @@
+<!-- defines target init.product -->
+<!ENTITY aspectj_initProduct SYSTEM "product-properties.xml">

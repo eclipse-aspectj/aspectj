@@ -1,0 +1,416 @@
+<!-- -*- Mode: SGML; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-     -->
+<!--                                                                                -->
+<!-- This file is part of the compiler and core tools for the AspectJ(tm)           -->
+<!-- programming language; see http://aspectj.org                                   -->
+<!--                                                                                -->
+<!-- The contents of this file are subject to the Mozilla Public License            -->
+<!-- Version 1.1 (the "License"); you may not use this file except in               -->
+<!-- compliance with the License. You may obtain a copy of the License at           -->
+<!-- either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.                 -->
+<!--                                                                                -->
+<!-- Software distributed under the License is distributed on an "AS IS" basis,     -->
+<!-- WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License       -->
+<!-- for the specific language governing rights and limitations under the           -->
+<!-- License.                                                                       -->
+<!--                                                                                -->
+<!-- The Original Code is AspectJ.                                                  -->
+<!--                                                                                -->
+<!-- The Initial Developer of the Original Code is Xerox Corporation. Portions      -->
+<!-- created by Xerox Corporation are Copyright (C) 1999, 2000 Xerox Corporation.   -->
+<!-- All Rights Reserved.                                                           -->
+
+<!-- ============================================================================== -->
+<!-- To do a build, invoke build/bin/ant.[sh|bat] after defining JDKDIR.            -->
+<!-- To customize properties, edit local.properties.examples as local.properties.   -->
+<!-- ============================================================================== -->
+<!-- todo: non-distribution license?? -->
+<!-- generated using script - see added: for differences  -->
+
+    <!-- init.product . . . . . . . -->
+    <target name="init.product" depends=""
+          unless="" >
+        <property name="PS" value="${path.separator}" />
+        <property name="product.dir"
+              location="${basedir}" />
+        <property name="product.bin.dir"
+              location="${product.dir}/bin" />
+        <property name="product.src.dir"
+              location="${product.dir}/src" />
+        <property name="product.lib.dir"
+              location="${product.dir}/lib" />
+        <property name="product.tools.jar"
+              location="${product.dir}/lib/aspectjtools.jar" />
+        <property name="product.rt.jar"
+              location="${product.dir}/lib/aspectjrt.jar" />
+        <property name="product.examples.dir"
+              location="${product.dir}/examples" />
+        <property name="product.doc.dir"
+              location="${product.dir}/doc" />
+        <property name="product.doc-tgz.dir"
+              location="${product.dir}/../doc-tgz" />
+        <property name="product.ajdee.dir"
+              location="${product.dir}/../${ajdee.product.name}" />
+        <property name="product.aspectj-mode.dir"
+              location="${product.dir}/../${aspectj-mode.product.name}" />
+        <property name="product.forte.dir"
+              location="${product.dir}/../forte" />
+        <property name="product.jbuilder.dir"
+              location="${product.dir}/../jbuilder" />
+        <property name="product.source.tools.dir"
+              location="${product.dir}/../source-tools" />
+        <property name="product.source.forte.dir"
+              location="${product.dir}/../source-forte" />
+        <property name="product.source.jbuilder.dir"
+              location="${product.dir}/../source-jbuilder" />
+        <property name="product.taskdefs.dir"
+              location="${product.dir}/../${ant.dist.name}" />
+        <property name="product.taskdefs.jar"
+              location="${product.dir}/lib/aspectj-ant.jar" />
+        <property name="productTest.dir"
+              location="${product.dir}/product" />
+        <property name="productTest.output.dir"
+              location="${product.dir}/product-test-output" />
+        <property name="productTest.expect.zip"
+              location="${productTest.dir}/expect.zip" />
+        <property name="productTest.expect.dir"
+              location="${productTest.dir}/expect" />
+        <property name="productTest.expect.bat.dir"
+              location="${productTest.expect.dir}/bat" />
+    </target> <!-- init.product -->
+
+    <!-- product.dir.available . . . . . . . -->
+    <target name="product.dir.available" depends="init.product"
+          unless="" >
+        <available file="${product.dir}" 
+               property="product.dir.available" />
+    </target> <!-- product.dir.available -->
+
+    <!-- product.dir . . . . . . . -->
+    <target name="product.dir" depends="product.dir.available"
+          unless="product.dir.available" >
+        <fail message="expecting product.dir at ${product.dir}"/>
+    </target> <!-- product.dir -->
+
+    <!-- product.bin.dir.available . . . . . . . -->
+    <target name="product.bin.dir.available" depends="init.product"
+          unless="" >
+        <available file="${product.bin.dir}" 
+               property="product.bin.dir.available" />
+    </target> <!-- product.bin.dir.available -->
+
+    <!-- product.bin.dir . . . . . . . -->
+    <target name="product.bin.dir" depends="product.bin.dir.available"
+          unless="product.bin.dir.available" >
+        <fail message="expecting product.bin.dir at ${product.bin.dir}"/>
+    </target> <!-- product.bin.dir -->
+
+    <!-- product.lib.dir.available . . . . . . . -->
+    <target name="product.lib.dir.available" depends="init.product"
+          unless="" >
+        <available file="${product.lib.dir}" 
+               property="product.lib.dir.available" />
+    </target> <!-- product.lib.dir.available -->
+
+    <!-- product.lib.dir . . . . . . . -->
+    <target name="product.lib.dir" depends="product.lib.dir.available"
+          unless="product.lib.dir.available" >
+        <fail message="expecting product.lib.dir at ${product.lib.dir}"/>
+    </target> <!-- product.lib.dir -->
+
+    <!-- product.tools.jar.available . . . . . . . -->
+    <target name="product.tools.jar.available" depends="init.product"
+          unless="" >
+        <available file="${product.tools.jar}" 
+               property="product.tools.jar.available" />
+    </target> <!-- product.tools.jar.available -->
+
+    <!-- product.tools.jar . . . . . . . -->
+    <target name="product.tools.jar" depends="product.tools.jar.available"
+          unless="product.tools.jar.available" >
+        <fail message="expecting product.tools.jar at ${product.tools.jar}"/>
+    </target> <!-- product.tools.jar -->
+
+    <!-- product.rt.jar.available . . . . . . . -->
+    <target name="product.rt.jar.available" depends="init.product"
+          unless="" >
+        <available file="${product.rt.jar}" 
+               property="product.rt.jar.available" />
+    </target> <!-- product.rt.jar.available -->
+
+    <!-- product.rt.jar . . . . . . . -->
+    <target name="product.rt.jar" depends="product.rt.jar.available"
+          unless="product.rt.jar.available" >
+        <fail message="expecting product.rt.jar at ${product.rt.jar}"/>
+    </target> <!-- product.rt.jar -->
+
+    <!-- product.examples.dir.available . . . . . . . -->
+    <target name="product.examples.dir.available" depends="init.product"
+          unless="" >
+        <available file="${product.examples.dir}" 
+               property="product.examples.dir.available" />
+    </target> <!-- product.examples.dir.available -->
+
+    <!-- product.examples.dir . . . . . . . -->
+    <target name="product.examples.dir" depends="product.examples.dir.available"
+          unless="product.examples.dir.available" >
+        <fail message="expecting product.examples.dir at ${product.examples.dir}"/>
+    </target> <!-- product.examples.dir -->
+
+    <!-- product.doc.dir.available . . . . . . . -->
+    <target name="product.doc.dir.available" depends="init.product"
+          unless="" >
+        <available file="${product.doc.dir}" 
+               property="product.doc.dir.available" />
+    </target> <!-- product.doc.dir.available -->
+
+    <!-- product.doc.dir . . . . . . . -->
+    <target name="product.doc.dir" depends="product.doc.dir.available"
+          unless="product.doc.dir.available" >
+        <fail message="expecting product.doc.dir at ${product.doc.dir}"/>
+    </target> <!-- product.doc.dir -->
+
+    <!-- product.doc-tgz.dir.available . . . . . . . -->
+    <target name="product.doc-tgz.dir.available" depends="init.product"
+          unless="" >
+        <available file="${product.doc-tgz.dir}" 
+               property="product.doc-tgz.dir.available" />
+    </target> <!-- product.doc-tgz.dir.available -->
+
+    <!-- product.doc-tgz.dir . . . . . . . -->
+    <target name="product.doc-tgz.dir" depends="product.doc-tgz.dir.available"
+          unless="product.doc-tgz.dir.available" >
+        <fail message="expecting product.doc-tgz.dir at ${product.doc-tgz.dir}"/>
+    </target> <!-- product.doc-tgz.dir -->
+
+    <!-- product.ajdee.dir.available . . . . . . . -->
+    <target name="product.ajdee.dir.available" depends="init.product"
+          unless="" >
+        <available file="${product.ajdee.dir}" 
+               property="product.ajdee.dir.available" />
+    </target> <!-- product.ajdee.dir.available -->
+
+    <!-- product.ajdee.dir . . . . . . . -->
+    <target name="product.ajdee.dir" depends="product.ajdee.dir.available"
+          unless="product.ajdee.dir.available" >
+        <fail message="expecting product.ajdee.dir at ${product.ajdee.dir}"/>
+    </target> <!-- product.ajdee.dir -->
+
+    <!-- product.aspectj-mode.dir.available . . . . . . . -->
+    <target name="product.aspectj-mode.dir.available" depends="init.product"
+          unless="" >
+        <available file="${product.aspectj-mode.dir}" 
+               property="product.aspectj-mode.dir.available" />
+    </target> <!-- product.aspectj-mode.dir.available -->
+
+    <!-- product.aspectj-mode.dir . . . . . . . -->
+    <target name="product.aspectj-mode.dir" depends="product.aspectj-mode.dir.available"
+          unless="product.aspectj-mode.dir.available" >
+        <fail message="expecting product.aspectj-mode.dir at ${product.aspectj-mode.dir}"/>
+    </target> <!-- product.aspectj-mode.dir -->
+
+    <!-- product.forte.dir.available . . . . . . . -->
+    <target name="product.forte.dir.available" depends="init.product"
+          unless="" >
+        <available file="${product.forte.dir}" 
+               property="product.forte.dir.available" />
+    </target> <!-- product.forte.dir.available -->
+
+    <!-- product.forte.dir . . . . . . . -->
+    <target name="product.forte.dir" depends="product.forte.dir.available"
+          unless="product.forte.dir.available" >
+        <fail message="expecting product.forte.dir at ${product.forte.dir}"/>
+    </target> <!-- product.forte.dir -->
+
+    <!-- product.jbuilder.dir.available . . . . . . . -->
+    <target name="product.jbuilder.dir.available" depends="init.product"
+          unless="" >
+        <available file="${product.jbuilder.dir}" 
+               property="product.jbuilder.dir.available" />
+    </target> <!-- product.jbuilder.dir.available -->
+
+    <!-- product.jbuilder.dir . . . . . . . -->
+    <target name="product.jbuilder.dir" depends="product.jbuilder.dir.available"
+          unless="product.jbuilder.dir.available" >
+        <fail message="expecting product.jbuilder.dir at ${product.jbuilder.dir}"/>
+    </target> <!-- product.jbuilder.dir -->
+
+    <!-- product.src.dir.available . . . . . . . -->
+    <target name="product.src.dir.available" depends="init.product"
+          unless="" >
+        <available file="${product.src.dir}" 
+               property="product.src.dir.available" />
+    </target> <!-- product.src.dir.available -->
+
+    <!-- product.src.dir . . . . . . . -->
+    <target name="product.src.dir" depends="product.src.dir.available"
+          unless="product.src.dir.available" >
+        <fail message="expecting product.src.dir at ${product.src.dir}"/>
+    </target> <!-- product.src.dir -->
+
+    <!-- product.source.tools.dir.available . . . . . . . -->
+    <target name="product.source.tools.dir.available" depends="init.product"
+          unless="" >
+        <available file="${product.source.tools.dir}" 
+               property="product.source.tools.dir.available" />
+    </target> <!-- product.source.tools.dir.available -->
+
+    <!-- product.source.tools.dir . . . . . . . -->
+    <target name="product.source.tools.dir" depends="product.source.tools.dir.available"
+          unless="product.source.tools.dir.available" >
+        <fail message="expecting product.source.tools.dir at ${product.source.tools.dir}"/>
+    </target> <!-- product.source.tools.dir -->
+    <!-- product.source.forte.dir.available . . . . . . . -->
+    <target name="product.source.forte.dir.available" depends="init.product"
+          unless="" >
+        <available file="${product.source.forte.dir}" 
+               property="product.source.forte.dir.available" />
+    </target> <!-- product.source.forte.dir.available -->
+
+    <!-- product.source.forte.dir . . . . . . . -->
+    <target name="product.source.forte.dir" depends="product.source.forte.dir.available"
+          unless="product.source.forte.dir.available" >
+        <fail message="expecting product.source.forte.dir at ${product.source.forte.dir}"/>
+    </target> <!-- product.source.forte.dir -->
+
+    <!-- product.source.jbuilder.dir.available . . . . . . . -->
+    <target name="product.source.jbuilder.dir.available" depends="init.product"
+          unless="" >
+        <available file="${product.source.jbuilder.dir}" 
+               property="product.source.jbuilder.dir.available" />
+    </target> <!-- product.source.jbuilder.dir.available -->
+
+    <!-- product.source.jbuilder.dir . . . . . . . -->
+    <target name="product.source.jbuilder.dir" depends="product.source.jbuilder.dir.available"
+          unless="product.source.jbuilder.dir.available" >
+        <fail message="expecting product.source.jbuilder.dir at ${product.source.jbuilder.dir}"/>
+    </target> <!-- product.source.jbuilder.dir -->
+
+    <!-- product.taskdefs.dir.available . . . . . . . -->
+    <target name="product.taskdefs.dir.available" depends="init.product"
+          unless="" >
+        <available file="${product.taskdefs.dir}" 
+               property="product.taskdefs.dir.available" />
+    </target> <!-- product.taskdefs.dir.available -->
+
+    <!-- product.taskdefs.dir . . . . . . . -->
+    <target name="product.taskdefs.dir" depends="product.taskdefs.dir.available"
+          unless="product.taskdefs.dir.available" >
+        <fail message="expecting product.taskdefs.dir at ${product.taskdefs.dir}"/>
+    </target> <!-- product.taskdefs.dir -->
+
+    <!-- product.taskdefs.jar.available . . . . . . . -->
+    <target name="product.taskdefs.jar.available" depends="init.product"
+          unless="" >
+        <available file="${product.taskdefs.jar}" 
+               property="product.taskdefs.jar.available" />
+    </target> <!-- product.taskdefs.jar.available -->
+
+    <!-- product.taskdefs.jar . . . . . . . -->
+    <target name="product.taskdefs.jar" depends="product.taskdefs.jar.available"
+          unless="product.taskdefs.jar.available" >
+        <fail message="expecting product.taskdefs.jar at ${product.taskdefs.jar}"/>
+    </target> <!-- product.taskdefs.jar -->
+
+    <!-- productTest.dir.available . . . . . . . -->
+    <target name="productTest.dir.available" depends="init.product"
+          unless="" >
+        <available file="${productTest.dir}" 
+               property="productTest.dir.available" />
+    </target> <!-- productTest.dir.available -->
+
+    <!-- productTest.dir . . . . . . . -->
+    <target name="productTest.dir" depends="productTest.dir.available"
+          unless="productTest.dir.available" >
+        <fail message="expecting productTest.dir at ${productTest.dir}"/>
+    </target> <!-- productTest.dir -->
+
+    <!-- productTest.output.dir.available . . . . . . . -->
+    <target name="productTest.output.dir.available" depends="init.product"
+          unless="" >
+        <available file="${productTest.output.dir}" 
+               property="productTest.output.dir.available" />
+    </target> <!-- productTest.output.dir.available -->
+
+    <!-- productTest.output.dir . . . . . . . -->
+    <target name="productTest.output.dir" depends="productTest.output.dir.available"
+          unless="productTest.output.dir.available" >
+        <mkdir dir="${productTest.output.dir}"/>
+    </target> <!-- productTest.output.dir -->
+
+    <!-- productTest.expect.zip.available . . . . . . . -->
+    <target name="productTest.expect.zip.available" depends="init.product"
+          unless="" >
+        <available file="${productTest.expect.zip}" 
+               property="productTest.expect.zip.available" />
+    </target> <!-- productTest.expect.zip.available -->
+
+    <!-- productTest.expect.zip . . . . . . . -->
+    <target name="productTest.expect.zip" depends="productTest.expect.zip.available"
+          unless="productTest.expect.zip.available" >
+        <fail message="expecting productTest.expect.zip at ${productTest.expect.zip}"/>
+    </target> <!-- productTest.expect.zip -->
+
+    <!-- productTest.expect.dir.available . . . . . . . -->
+    <target name="productTest.expect.dir.available" depends="init.product"
+          unless="" >
+        <available file="${productTest.expect.dir}" 
+               property="productTest.expect.dir.available" />
+    </target> <!-- productTest.expect.dir.available -->
+
+    <!-- productTest.expect.dir . . . . . . . --> <!-- added: unzip -->
+    <target name="productTest.expect.dir" 
+         depends="init.product,productTest.expect.zip"
+          unless="productTest.expect.dir.available" >
+     <unzip src="${productTest.expect.zip}"
+           dest="${productTest.dir}"/>
+    </target> <!-- productTest.expect.dir -->
+
+    <!-- productTest.expect.bat.dir.available . . . . . . . -->
+    <target name="productTest.expect.bat.dir.available" depends="init.product"
+          unless="" >
+        <available file="${productTest.expect.bat.dir}" 
+               property="productTest.expect.bat.dir.available" />
+    </target> <!-- productTest.expect.bat.dir.available -->
+
+    <!-- productTest.expect.bat.dir . . . . . . . --> <!-- added productTest.expect.dir -->
+    <target name="productTest.expect.bat.dir" 
+         depends="productTest.expect.dir,productTest.expect.bat.dir.available"
+          unless="productTest.expect.bat.dir.available" >
+        <fail message="expecting productTest.expect.bat.dir at ${productTest.expect.bat.dir}"/>
+    </target> <!-- productTest.expect.bat.dir -->
+
+    <!-- about.init.product . . . . . . . -->
+    <target name="about.init.product" depends=""
+          unless="" >
+        <echo>Generated using script generateProperties. 
+-------------------- Required variables
+ajdee.product.name
+ant.jarfile.name
+aspectj-mode.product.name
+forte.product.name
+jbuilder.product.name
+-------------------- target items data
+product.dir                   NONE                   NONE                                   NONE
+product.bin.dir               bin                    ajc.bat                                product.dir
+product.lib.dir               lib                    aspectjrt.jar                          product.dir
+product.tools.jar             lib                    aspectjtools.jar                       product.dir
+product.rt.jar                lib                    aspectjrt.jar                          product.dir
+product.examples.dir          examples               bean/files.lst                         product.dir
+product.doc.dir               doc                    faq.html                               product.dir
+product.doc-tgz.dir           doc-tgz                README-DOCS.html                       product.dir
+product.ajdee.dir             ${ajdee.product.name} ${ajdee.product.name}                 product.dir
+product.aspectj-mode.dir      ${aspectj-mode.product.name} ${aspectj-mode.product.name}   product.dir
+product.forte.dir             forte                  ${forte.product.name}.jar             product.dir
+product.jbuilder.dir          jbuilder               ${jbuilder.product.name}.jar          product.dir
+product.source.tools.dir      source-tools           LICENSE-SOURCES.html                   product.dir
+product.source.forte.dir      source-forte           LICENSE-AJDEFORTE-SOURCES.html         product.dir
+product.source.jbuilder.dir   source-jbuilder        LICENSE-AJDEFORTE-SOURCES.html         product.dir
+product.taskdefs.dir          ${ant.dist.name}      ${ant.jarfile.name}                   product.dir
+product.taskdefs.jar          NONE                   ${ant.jarfile.name}                   product.taskdefs.dir
+productTest.dir               product                expect.zip                             product.dir
+productTest.output.dir        product-test-output    CREATE                                 product.dir
+productTest.expect.zip        NONE                   expect.zip                             productTest.dir
+productTest.expect.dir        expect                 ajx/bean/output/out.txt                productTest.dir      productTest.expect.zip
+productTest.expect.bat.dir    bat                    telecom.ajdb.txt                       productTest.expect.dir
+</echo>
+    </target> <!-- about.init.product -->

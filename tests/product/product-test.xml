@@ -1,0 +1,293 @@
+<!-- -*- Mode: SGML; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-     -->
+<!--                                                                                -->
+<!-- This file is part of the compiler and core tools for the AspectJ(tm)           -->
+<!-- programming language; see http://aspectj.org                                   -->
+<!--                                                                                -->
+<!-- The contents of this file are subject to the Mozilla Public License            -->
+<!-- Version 1.1 (the "License"); you may not use this file except in               -->
+<!-- compliance with the License. You may obtain a copy of the License at           -->
+<!-- either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.                 -->
+<!--                                                                                -->
+<!-- Software distributed under the License is distributed on an "AS IS" basis,     -->
+<!-- WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License       -->
+<!-- for the specific language governing rights and limitations under the           -->
+<!-- License.                                                                       -->
+<!--                                                                                -->
+<!-- The Original Code is AspectJ.                                                  -->
+<!--                                                                                -->
+<!-- The Initial Developer of the Original Code is Xerox Corporation. Portions      -->
+<!-- created by Xerox Corporation are Copyright (C) 1999, 2000 Xerox Corporation.   -->
+<!-- All Rights Reserved.                                                           -->
+
+<!-- ============================================================================== -->
+<!-- To do a build, invoke build/bin/ant.[sh|bat] after defining JDKDIR.            -->
+<!-- To customize properties, edit local.properties.examples as local.properties.   -->
+<!-- ============================================================================== -->
+<!-- todo: non-distribution license?? -->
+
+<!-- This dtd only defines aspectj_initProduct, unlike ../../build.dtd -->
+<!DOCTYPE build SYSTEM "build.dtd">
+
+<!-- This only runs from ../../test-product.xml b/c it uses comparefiles w/o defining it -->
+<project name="product-test" default="test" basedir=".">
+
+    &aspectj_initProduct; 
+
+    <!-- ========================================================================== -->
+    <!-- Init                                                                       -->
+    <!-- ========================================================================== -->
+    <target name="init" depends="init.product,productTest.expect.dir"
+     description="init values - launch from install dir or set product.dir variable">
+      <echo message="init product-test.xml"/> 
+      <property name="productTest.classes.dir"
+            location="${productTest.output.dir}/classes"/>
+      <property name="script.expect.dir"
+            location="${productTest.expect.dir}/bat"/>
+      <!-- use .bat scripts if available, shell scripts otherwise -->
+      <property name="scriptExtension" value=""/>
+      <available file="${product.bin.dir}/ajc.bat"
+             property="scriptExtension"
+                value=".bat" />
+    </target>
+
+    <!-- ========================================================================== -->
+    <!-- Clean everything in created dirs                                           -->
+    <!-- ========================================================================== -->
+
+    <target name="clean" depends="init"
+     description="delete test working dirs (does not clean results)">
+     <mkdir  dir="${productTest.output.dir}"/>
+     <delete dir="${productTest.output.dir}"/>
+     <mkdir  dir="${productTest.output.dir}"/>
+    </target>
+
+    <!-- ========================================================================== -->
+    <!-- Run product tests                                                          -->
+    <!-- ========================================================================== -->
+    <target name="test" 
+         depends="test.examples.buildscript,test.script.telecom,test.tools.sources"
+     description="run available tests"/>
+
+    <target name="test.script.telecom" 
+         depends="init,productTest.dir,product.dir,
+                  productTest.expect.bat.dir,productTest.output.dir"
+     description="ajc/ajdoc/java/ajdb telecom example using bat scripts">
+     <!-- antcall target="clean" / -->
+
+     <!-- todo: execon not working - will fail outside windows -->
+     <echo message="### file product-test.xml target test.script.telecom"/>
+     <!-- ajc -->
+     <property name="ajc.out"   location="${productTest.output.dir}/telecom.ajc.txt"/>
+     <property name="expect.ajc.out"   location="${script.expect.dir}/telecom.ajc.txt"/>
+     <exec dir="${product.examples.dir}"
+      executable="${product.bin.dir}/ajc${scriptExtension}"
+          output="${ajc.out}">
+      <arg value="-d"/>
+      <arg value="${productTest.classes.dir}"/>
+      <arg value="-argfile"/>
+      <arg value="telecom/billing.lst"/>
+      <arg value="-classpath"/>
+      <arg value="${product.rt.jar}"/>
+     </exec>
+     <!-- todo this is always failing... -->
+     <comparefiles lhsFile="${ajc.out}"
+                   rhsFile="${expect.ajc.out}"/>
+
+     <!-- ajdoc -->
+     <property name="expect.ajdoc.out" location="${script.expect.dir}/telecom.ajdoc.txt"/>
+     <property name="ajdoc.out" location="${productTest.output.dir}/telecom.ajdoc.txt"/>
+     <exec dir="${product.examples.dir}"
+      executable="${product.bin.dir}/ajdoc${scriptExtension}"
+          output="${ajdoc.out}">
+      <arg value="-d"/>
+      <arg value="${productTest.classes.dir}"/> <!-- todo dump html in classes dir for now -->
+      <arg value="-argfile"/>
+      <arg value="telecom/billing.lst"/>
+      <arg value="-classpath"/>
+      <arg value="${product.rt.jar}"/>
+      <arg value="telecom"/> <!-- todo (reconsider) had to add packagename -->
+     </exec>
+     <comparefiles lhsFile="${ajdoc.out}"
+                   rhsFile="${expect.ajdoc.out}"/>
+
+     <!-- java -->
+     <property name="java.out"  location="${productTest.output.dir}/telecom.java.txt"/>
+     <property name="expect.java.out"  location="${script.expect.dir}/telecom.java.txt"/>
+     <java classname="telecom.BillingSimulation"
+              output="${java.out}">
+       <classpath>
+         <pathelement location="${productTest.classes.dir}"/>
+         <pathelement location="${product.rt.jar}"/>
+       </classpath>
+     </java>
+     <comparefiles lhsFile="${java.out}"
+                   rhsFile="${expect.java.out}"/>
+
+     <!-- ajdb -->
+     <echo file="${product.examples.dir}/ajdb.in">exit
+     </echo>
+     <property name="ajdb.out"  location="${productTest.output.dir}/telecom.ajdb.txt"/>
+     <property name="expect.ajdb.out"  location="${script.expect.dir}/telecom.ajdb.txt"/>
+     <exec dir="${product.examples.dir}"
+      executable="${product.bin.dir}/ajdb${scriptExtension}"
+          output="${ajdb.out}">
+      <arg value="-classpath"/>
+      <arg value="${product.rt.jar}${PS}${productTest.classes.dir}"/>
+      <arg value="&lt;"/>
+      <arg value="${product.examples.dir}/ajdb.in"/>
+     </exec>
+     <comparefiles lhsFile="${ajdb.out}"
+                   rhsFile="${expect.ajdb.out}"/>
+   </target>    
+
+   <!-- todo: also depends on jdk.tools.jar -->
+   <!-- todo: ignore as duplicating examples/build.xml -->
+   <target name="test.examples.antscript" 
+         depends="init,productTest.dir,product.dir,
+                  product.taskdefs.jar,product.rt.jar,
+                  product.tools.jar"
+     description="compile/doc/run introduction example using ant taskdefs by delegation to ant-example.xml">
+     <echo message="### file product-test.xml target test.examples.antscript"/>
+     <ant antfile="${productTest.dir}/ant-example.xml"
+               dir="${product.examples.dir}"
+            output="${productTest.output.dir}/ant-example.ant.txt">
+       <property name="PS"            
+                value="${path.separator}"/>
+       <property name="product.dir"  
+                value="${product.dir}"/>
+       <property name="jdk.tools.jar" 
+             location="${jdk.tools.jar}"/>
+        <property name="jdk.dir" 
+             location="${jdk.dir}"/>
+     </ant>
+   </target>
+
+   <target name="test.examples.buildscript" 
+         depends="init,product.dir,
+                  product.taskdefs.jar,product.rt.jar,
+                  product.tools.jar"
+     description="compile/doc/run examples using build.xml script distributed with examples">
+     <echo message="### file product-test.xml target test.examples.buildscript"/>
+     <copy file="${product.taskdefs.jar}"
+          todir="${product.lib.dir}" />
+
+     <!-- XXX if docs come after ajc, then _always_ get OutOfMemoryError... -->
+     <antcall target="antcall.test.examples.buildscript">
+       <param name="example.target" value="docs" />
+     </antcall>
+
+     <antcall target="antcall.test.examples.buildscript.norun">
+       <param name="example.target" value="spacewar" />
+     </antcall>
+
+     <antcall target="antcall.test.examples.buildscript">
+       <param name="example.target" value="nonGui" />
+     </antcall>
+
+     <!-- OutOfMemory if including all 
+     <antcall target="antcall.test.examples.buildscript.norun">
+       <param name="example.target" value="all" />
+     </antcall>
+     -->
+   </target>
+
+   <target name="antcall.test.examples.buildscript.norun" 
+         depends="init,product.dir,
+                  product.taskdefs.jar,product.rt.jar,
+                  product.tools.jar"
+     description="invoke ant {example.target} for test.examples.buildscript (with norun)">
+     <echo message="### ${example.target} (norun)"/>
+     <mkdir dir="${productTest.output.dir}" />
+     <ant antfile="${product.examples.dir}/build.xml"
+           target="${example.target}"
+              dir="${product.examples.dir}"
+           output="${productTest.output.dir}/example-build.${example.target}.txt" >
+       <property name="JAVA_HOME" 
+             location="${jdk.dir}"/> 
+       <property name="norun" 
+             location="skipRunning"/> 
+     </ant>
+   </target>
+
+   <target name="antcall.test.examples.buildscript" 
+         depends="init,product.dir,
+                  product.taskdefs.jar,product.rt.jar,
+                  product.tools.jar"
+     description="invoke ant {example.target} for test.examples.buildscript (without norun)">
+     <echo message="### ${example.target} (run)"/>
+     <mkdir dir="${productTest.output.dir}" />
+     <ant antfile="${product.examples.dir}/build.xml"
+           target="${example.target}"
+              dir="${product.examples.dir}"
+           output="${productTest.output.dir}/example-build.${example.target}.txt" >
+       <property name="JAVA_HOME" 
+             location="${jdk.dir}"/> 
+     </ant>
+   </target>
+
+
+   <!-- see also more recent devenv/dev/bin/aj/testToolsSrc.sh -->
+   <target name="test.tools.sources" 
+        depends="init,product.tools.jar,product.src.dir"
+    description="test source dist using ajc, ajdoc (todo remove - see ant-example)">
+
+     <property name="tools.source.out"   
+           location="${productTest.output.dir}/source-tools"/>
+     <property name="test.source.classes.dir"
+           location="${productTest.output.dir}/source-tools"/>
+     <property name="source-tools.jar"
+           location="${productTest.output.dir}/source-tools.jar"/>
+
+     <mkdir dir="${test.source.classes.dir}"/>
+     <delete dir="${test.source.classes.dir}"/>
+     <mkdir dir="${test.source.classes.dir}"/>
+
+     <!-- todo validate product builds by comparison or invocation -->
+     <antcall target="build.source.call">
+       <param name="target.name" value="runtime" />
+     </antcall>
+     <antcall target="build.source.call">
+       <param name="target.name" value="compiler" />
+     </antcall>
+     <antcall target="build.source.call">
+       <param name="target.name" value="ajde" />
+     </antcall>
+     <antcall target="build.source.call">
+       <param name="target.name" value="ajbrowser" />
+     </antcall>
+     <antcall target="build.source.call">
+       <param name="target.name" value="ajdoc" />
+     </antcall>
+
+     <echo message="" file="${tools.source.out}.empty"/>
+     <!-- comparefiles lhsFile="${tools.source.out}"
+                   rhsFile="${tools.source.out}.empty" / -->
+
+     <jar jarfile="${source-tools.jar}"
+          basedir="${test.source.classes.dir}"/>
+     <comparefiles lhsFile="${product.tools.jar}"
+                   rhsFile="${source-tools.jar}" />
+
+     <delete dir="${test.source.classes.dir}"/>
+   </target>
+
+   <target name="build.source.call" >
+     <echo message="# building (source) using ajc${scriptExtension} @${product.src.dir}/${target.name}.lst"/>
+     <mkdir dir="${test.source.classes.dir}/${target.name}"/>
+     <exec dir="${product.src.dir}"
+      executable="${product.bin.dir}/ajc${scriptExtension}"
+          output="${tools.source.out}.${target.name}.txt">
+      <arg value="-d"/>
+      <arg value="${test.source.classes.dir}/${target.name}"/>
+      <arg value="-classpath"/>
+      <arg value="${product.rt.jar}${PS}${jdk.tools.jar}"/> <!-- 1.3 for ajdoc -->
+      <arg value="-argfile"/>
+      <arg value="${target.name}.lst"/>
+     </exec>
+     <echo message="# START building (source) ${target.name} output"/>
+     <echo message="" file="${tools.source.out}.${target.name}.txt"/>
+     <echo message="#   END building (source) ${target.name} output"/>
+   </target>
+
+</project>
+

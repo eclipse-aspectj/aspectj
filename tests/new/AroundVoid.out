@@ -1,0 +1,9 @@
+execution(C.m1())
+caught RuntimeException
+execution(C.m2())
+m2
+execution(C.m3(..))
+execution(C.m4(..))
+execution(C.m5())
+caught ArithmeticException
+execution(C.m6())

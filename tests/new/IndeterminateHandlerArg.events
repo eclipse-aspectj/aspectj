@@ -1,0 +1,47 @@
+handler(catch(java.lang.Error)): java.lang.Error - error @ before Throwable
+handler(catch(java.lang.Error)): java.lang.Error - error @ before Error
+handler(catch(java.lang.Error)): java.lang.Error - error @ before args(Throwable)
+handler(catch(java.lang.Error)): java.lang.Error - error @ before args(Error)
+handler(catch(java.lang.Error)): java.lang.Error - error @ before args(Throwable,..)
+handler(catch(java.lang.Error)): java.lang.Error - error @ before args(..,Throwable)
+handler(catch(java.lang.Error)): java.lang.Error - error @ before args(Error,..)
+handler(catch(java.lang.Error)): java.lang.Error - error @ before args(..,Error)
+handler(catch(java.lang.Error)): java.lang.Error - error @ before Throwable,..
+handler(catch(java.lang.Error)): java.lang.Error - error @ before Error,..
+handler(catch(java.lang.Error)): java.lang.Error - error @ before ..,Throwable
+handler(catch(java.lang.Error)): java.lang.Error - error @ before ..,Error
+error
+handler(catch(java.lang.Throwable)): java.lang.Throwable - throwable @ before Throwable
+handler(catch(java.lang.Throwable)): java.lang.Throwable - throwable @ before args(Throwable)
+handler(catch(java.lang.Throwable)): java.lang.Throwable - throwable @ before args(Throwable,..)
+handler(catch(java.lang.Throwable)): java.lang.Throwable - throwable @ before args(..,Throwable)
+handler(catch(java.lang.Throwable)): java.lang.Throwable - throwable @ before Throwable,..
+handler(catch(java.lang.Throwable)): java.lang.Throwable - throwable @ before ..,Throwable
+throwable
+handler(catch(java.lang.Throwable)): java.lang.Error - error @ before Throwable
+handler(catch(java.lang.Throwable)): java.lang.Error - error @ before Error
+handler(catch(java.lang.Throwable)): java.lang.Error - error @ before args(Throwable)
+handler(catch(java.lang.Throwable)): java.lang.Error - error @ before args(Error)
+handler(catch(java.lang.Throwable)): java.lang.Error - error @ before args(Throwable,..)
+handler(catch(java.lang.Throwable)): java.lang.Error - error @ before args(..,Throwable)
+handler(catch(java.lang.Throwable)): java.lang.Error - error @ before args(Error,..)
+handler(catch(java.lang.Throwable)): java.lang.Error - error @ before args(..,Error)
+handler(catch(java.lang.Throwable)): java.lang.Error - error @ before Throwable,..
+handler(catch(java.lang.Throwable)): java.lang.Error - error @ before Error,..
+handler(catch(java.lang.Throwable)): java.lang.Error - error @ before ..,Throwable
+handler(catch(java.lang.Throwable)): java.lang.Error - error @ before ..,Error
+error
+handler(catch(java.lang.Throwable)): IndeterminateHandlerArg$1 - runtime @ before Throwable
+handler(catch(java.lang.Throwable)): IndeterminateHandlerArg$1 - runtime @ before args(Throwable)
+handler(catch(java.lang.Throwable)): IndeterminateHandlerArg$1 - runtime @ before args(Throwable,..)
+handler(catch(java.lang.Throwable)): IndeterminateHandlerArg$1 - runtime @ before args(..,Throwable)
+handler(catch(java.lang.Throwable)): IndeterminateHandlerArg$1 - runtime @ before Throwable,..
+handler(catch(java.lang.Throwable)): IndeterminateHandlerArg$1 - runtime @ before ..,Throwable
+runtime
+handler(catch(java.lang.RuntimeException)): IndeterminateHandlerArg$1 - runtime @ before Throwable
+handler(catch(java.lang.RuntimeException)): IndeterminateHandlerArg$1 - runtime @ before args(Throwable)
+handler(catch(java.lang.RuntimeException)): IndeterminateHandlerArg$1 - runtime @ before args(Throwable,..)
+handler(catch(java.lang.RuntimeException)): IndeterminateHandlerArg$1 - runtime @ before args(..,Throwable)
+handler(catch(java.lang.RuntimeException)): IndeterminateHandlerArg$1 - runtime @ before Throwable,..
+handler(catch(java.lang.RuntimeException)): IndeterminateHandlerArg$1 - runtime @ before ..,Throwable
+runtime

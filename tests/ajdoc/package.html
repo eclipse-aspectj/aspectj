@@ -1,0 +1,18 @@
+<html>
+<body>
+This is an incomplete attempt to write regression tests for ajdoc by
+comparison with javadoc.  It aims to run both tools against the 
+same pure-java sources and compare the output line-by-line, assuming
+they should be the same where non-AspectJ elements are concerned.
+<p>
+It relies entirely on CLASSPATH and PATH being set correctly, and it 
+generates output directory in the current working directory.
+<p>
+General example of how to run:
+<li>Compile the sources</li>
+<li>Setup CLASSPATH, including compiled sources and JDK tools.jar (for javadoc)</li>
+<li>Setup PATH, so that "java" invokes a 1.2 or later java vm </li>
+<li>Invoke from the directory with input/ as a subdirectory:
+<br><code>java JavadocCompareClassMode</code></li>
+</body>
+</html>

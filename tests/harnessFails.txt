@@ -1,0 +1,13 @@
+######### these should be reported as failing test cases
+
+##### testing Tester client interface
+checks and events, expecting 6 fails
+harness
+TestTesterFail.java
+TestTesterFail
+
+one missing note
+harness
+TesterNotesFail.java
+TesterNotesFail
+

@@ -1,0 +1,25 @@
+;JBuilder -- PROJECT FILE VERSION {2.00} - do not alter this line!
+#0=Test_Figures_Coverage.jpr
+#2=figures
+#3=editor
+sys[0].BackupPath=bak
+sys[0].CheckStable=1
+sys[0].Company=
+sys[0].Copyright=Copyright (c) 2001
+sys[0].DefaultPackage=test_figures_coverage
+sys[0].Description=
+sys[0].DocPath=doc
+sys[0].ExcludeClassEnabled=0
+sys[0].JDK=java 1.3.0-C
+sys[0].LastTag=3
+sys[0].Libraries=
+sys[0].MakeStable=0
+sys[0].OutPath=.
+sys[0].SourcePath=.
+sys[0].Title=
+sys[0].Version=1.0
+sys[0].WorkingDirectory=.
+sys[2].Parent=0
+sys[2].Type=Package
+sys[3].Parent=0
+sys[3].Type=Package

@@ -1,0 +1,201 @@
+<project name="ajc2.test" basedir="." default="init">
+
+  <property name="ant.test.src.dir" value="../src" />
+  <property name="ant.test.classes" value="test-classes"/>
+
+  <target name="init">
+    <tstamp/>
+    <taskdef name="ajc" classname="org.aspectj.tools.ant.taskdefs.Ajc2"
+      classpath="${ajc.taskdef.classpath}" />
+  </target>
+
+  <target name="all" depends="init">
+    <antcall target="test1"/>
+    <antcall target="test2"/>
+    <antcall target="test3"/>
+    <antcall target="test4"/>
+    <antcall target="test4b"/>
+    <antcall target="test5"/>
+    <antcall target="test5b"/>
+    <antcall target="test6"/>
+    <antcall target="test8"/>
+    <antcall target="test9"/>
+    <antcall target="test10"/>
+    <antcall target="test11"/>
+    <antcall target="test12"/>
+    <antcall target="test13"/>
+    <antcall target="fail1"/>
+    <antcall target="fail2"/>
+    <antcall target="fail3"/>
+  </target>
+
+  <target name="test1" depends="init">
+    <mkdir dir="${ant.test.classes}"/>
+    <ajc srcdir="${ant.test.src.dir}"
+         destdir="${ant.test.classes}"
+	 includes="One.java"
+    classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test2" depends="init">
+    <mkdir dir="${ant.test.classes}"/>
+    <ajc srcdir="${ant.test.src.dir}"
+         destdir="${ant.test.classes}"
+	 includes="One.java,Two.java"
+    classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test3" depends="init">
+    <mkdir dir="${ant.test.classes}"/>
+    <ajc srcdir="${ant.test.src.dir}"
+         destdir="${ant.test.classes}"
+	 includes="*"
+    classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test4" depends="init">
+    <mkdir dir="${ant.test.classes}"/>
+    <ajc srcdir="${ant.test.src.dir}"
+         destdir="${ant.test.classes}"
+	 argfiles="${ant.test.src.dir}/files1.lst"
+    classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test4b" depends="init">
+    <mkdir dir="${ant.test.classes}"/>
+    <ajc 
+         destdir="${ant.test.classes}"
+	 argfiles="${ant.test.src.dir}/files1.lst"
+    classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test5" depends="init">
+    <mkdir dir="${ant.test.classes}"/>
+    <ajc srcdir="${ant.test.src.dir}"
+         destdir="${ant.test.classes}"
+	 argfiles="${ant.test.src.dir}/files2.lst"
+    classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test5b" depends="init">
+    <mkdir dir="${ant.test.classes}"/>
+    <ajc 
+         destdir="${ant.test.classes}"
+	 argfiles="${ant.test.src.dir}/files2.lst"
+    classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test6" depends="init">
+    <mkdir dir="${ant.test.classes}"/>
+    <ajc srcdir="${ant.test.src.dir}"
+         destdir="${ant.test.classes}"
+	 argfiles="${ant.test.src.dir}/files3.lst"
+    classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test6b" depends="init">
+    <mkdir dir="${ant.test.classes}"/>
+    <ajc 
+         destdir="${ant.test.classes}"
+	 argfiles="${ant.test.src.dir}/files3.lst"
+    classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test8" depends="init">
+    <mkdir dir="${ant.test.classes}"/>
+    <ajc srcdir="${ant.test.src.dir}"
+         destdir="${ant.test.classes}"
+	 excludes="Two.java"
+	 argfiles="${ant.test.src.dir}/files2.lst"
+    classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test9" depends="init">
+    <mkdir dir="${ant.test.classes}"/>
+    <ajc srcdir="${ant.test.src.dir}"
+         destdir="${ant.test.classes}"
+	 includes="One.java"
+	 threads="1"
+    classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test10" depends="init">
+    <mkdir dir="${ant.test.classes}"/>
+    <ajc srcdir="${ant.test.src.dir}"
+         destdir="${ant.test.classes}"
+	 includes="One.java"
+	 nocomments="yes"
+    classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test11" depends="init">
+    <mkdir dir="${ant.test.classes}"/>
+    <ajc srcdir="${ant.test.src.dir}"
+         destdir="${ant.test.classes}"
+	 includes="One.java"
+	 nosymbols="yes"
+    classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test12" depends="init">
+    <mkdir dir="${ant.test.classes}"/>
+    <ajc srcdir="${ant.test.src.dir}"
+         destdir="${ant.test.classes}"
+	 includes="One.java"
+	 preprocess="yes"
+    classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test13" depends="init">
+    <mkdir dir="${ant.test.classes}"/>
+    <ajc srcdir="${ant.test.src.dir}"
+         destdir="${ant.test.classes}"
+	 includes="One.java"
+	 workingdir="ajworkingdir"
+    classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="fail1" depends="init">
+    <mkdir dir="${ant.test.classes}"/>
+    <ajc 
+         destdir="${ant.test.classes}"
+	 includes="One.java"
+    classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="fail2" depends="init">
+    <mkdir dir="${ant.test.classes}"/>
+    <ajc 
+         destdir="${ant.test.classes}"
+	 excludes="One.java"
+    classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="fail3" depends="init">
+    <mkdir dir="${ant.test.classes}"/>
+    <ajc 
+         destdir="${ant.test.classes}"
+	 includes="Two.java"
+	 excludes="One.java"
+    classpath="${compile.classpath}"
+	 />
+  </target>
+
+</project>

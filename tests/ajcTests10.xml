@@ -1,0 +1,248 @@
+
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+
+
+<suite>
+    <ajc-test dir="jacks"
+      title="14.20-label-11  The break is interrupted by the try-finally"
+      keywords="from-stricttests">
+        <compile options="-strict" files="FinallyReturns.java">
+            <message kind="error" line="11"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="jacks"
+      title="14.20-catch-14  The throw is interrupted by the inner finally"
+      keywords="from-stricttests">
+        <compile options="-strict" files="FinallyReturnsThrows.java">
+            <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="jacks"
+      title="14.20-label-12  The break is interrupted by the try-finally"
+      keywords="from-stricttests">
+        <compile options="-strict" files="FinallyReturnsBreakInCatch.java">
+            <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
+    
+    <!-- strict-only tests treated as 1.0 tests -->
+
+    <!-- ajc-only tests treated as 1.0 tests -->
+    <ajc-test dir="new" pr="567"
+      title="cyclic interface inheritance not detected if no classes implement the interfaces"
+      keywords="from-java,purejava,messages-vary">
+        <compile files="CyclicInterfaceInheritance.java" 
+               options="!ajc">
+            <message kind="error" line="14"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new/packagePrefix" pr="574"
+      title="classes that are package prefixes are illegal"
+      keywords="from-java,purejava,messages-vary">
+        <compile files="p/prefix.java,p/prefix/SomeClass.java"
+               options="!ajc">
+            <message kind="error" line="3"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="suggested by Jacks 15.28-qualified-namestr tests"
+      keywords="from-java,purejava,messages-vary">
+        <compile files="NonConstants.java" 
+               options="!ajc">
+            <message kind="error" line="14"/>
+            <message kind="error" line="15"/>
+            <message kind="error" line="16"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="643" title="try without catch or finally"
+      keywords="from-java,purejava,message-vary">
+        <compile files="TryNoCatchCE.java"
+               options="!ajc">
+            <message kind="error" line="5"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="642" title="invalid floating-point constant"
+      keywords="from-java,purejava,messages-vary">
+        <compile files="ParsingFloatCE.java"
+               options="!ajc">
+            <message kind="error" line="5"/>
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new/subaspects" pr="647"
+      title="concrete aspect unable to access abstract package-private method in parent for overriding"
+      keywords="from-java,purejava,messages-vary">
+        <compile files="parent/ParentMethodCE.java,child/ChildMethodCE.java"
+               options="!ajc">
+            <message kind="error" line="27"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="701"
+      title="CE for ambiguous type reference (two type declarations)"
+      keywords="from-java,purejava,messages-vary">
+        <compile files="AmbiguousClassReference3CE.java"
+               options="!ajc">
+            <message kind="error" line="9"/>
+            <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="701"
+      title="CE for ambiguous type reference (two inner types)"
+      keywords="from-java,purejava,messages-vary">
+        <compile files="AmbiguousClassReference4CE.java"
+               options="!ajc">
+            <message kind="error" line="9"/>
+            <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="Crashes when a cast of the form )int) appears"
+      keywords="from-errors,purejava,messages-vary">
+        <compile files="BadCast.java"
+               options="!ajc">
+            <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="Crashes when the closing brace is reversed"
+      keywords="from-errors,purejava,messages-vary">
+        <compile files="ClosingBrace.java"
+               options="!ajc">
+            <message kind="error" line="14"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="class and interface extension"
+      keywords="from-errors,purejava,messages-vary">
+        <compile files="BadExtension.java"
+               options="!ajc">
+            <message kind="error" line="9"/>
+            <message kind="error" line="16"/>
+            <message kind="error" line="17"/>
+            <message kind="error" line="18"/>
+            <message kind="error" line="19"/>
+            <message kind="error" line="21"/>
+            <message kind="error" line="35"/>
+            <message kind="error" line="38"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="illegal synchronized stmts"
+      keywords="from-errors,purejava,messages-vary">
+        <compile files="BadSynchronized.java"
+               options="!ajc">
+            <message kind="error" line="3"/>
+            <message kind="error" line="4"/>
+            <message kind="error" line="5"/>
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="715" title="incrementing objects, arrays CE"
+      keywords="from-resolved_104,purejava,messages-vary">
+        <compile files="ArrayIncCE.java"
+               options="!ajc">
+            <message kind="error" line="15"/>
+            <message kind="error" line="16"/>
+            <message kind="error" line="17"/>
+            <message kind="error" line="18"/>
+            <message kind="error" line="19"/>
+            <message kind="error" line="20"/>
+            <message kind="error" line="21"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="737"
+      title="should have circular inheritance errors (1)"
+      keywords="from-resolved_105,purejava,messages-vary">
+        <compile files="circle/Test1CF.java"
+               options="!ajc">
+            <message kind="error" line="7"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="737"
+      title="should have circular inheritance errors (2)"
+      keywords="from-resolved_105,purejava,messages-vary">
+        <compile files="circle/Test2CF.java"
+               options="!ajc">
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="try requires block JLS 14.19"
+      keywords="from-resolved_105,purejava,messages-vary">
+        <compile files="TryBlockRequiredCE.java"
+               options="!ajc">
+            <message kind="error" line="6"/>
+            <message kind="error" line="7"/>
+            <message kind="error" line="8"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="722" title="loop expressions not declarations"
+      keywords="from-resolved_105,purejava,messages-vary">
+        <compile files="DeclarationsInLoopsCE.java"
+                options="!ajc">
+            <message kind="error" line="7"/>
+            <message kind="error" line="8"/>
+            <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="ng"
+      title="array initializers can't have random commas"
+      keywords="from-resolved_105,purejava,messages-vary">
+        <compile files="ArrayInitError.java"
+               options="!ajc,^lenient">
+            <message kind="error" line="6"/>
+            <message kind="error" line="7"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="ng"
+      title="array initializers can't have random commas"
+      keywords="from-resolved_105,purejava,messages-vary">
+        <compile files="ArrayInitError.java"
+               options="!ajc,!lenient">
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="ng"
+      title="try stmt must be block [parser, different lines from javac]"
+      keywords="from-resolved_105,purejava,messages-vary">
+        <compile files="NonBlockTryStmt.java"
+               options="!ajc">
+            <message kind="error" line="8"/>
+            <message kind="error" line="10"/>
+            <message kind="error" line="12"/>
+            <message kind="error" line="14"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="initializers must be able to complete normally (found by jacks)"
+      keywords="from-resolved_105,purejava,messages-vary">
+        <compile files="InitializerFlowCf.java"
+               options="!ajc">
+            <message kind="error" line="1"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="884" keywords="v1.0"
+      title="declare constructor on interface subclasses" >
+        <compile options="!ajc" files="DeclareInterfaceConstructor.java"/>
+        <run class="DeclareInterfaceConstructor"/>
+    </ajc-test>
+
+</suite>

@@ -1,0 +1,3 @@
+
+aspect UnrecognizedAspectCE
+    extends UnknownAspect {}

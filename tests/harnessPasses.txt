@@ -1,0 +1,91 @@
+
+# these should be reported as passing test cases
+
+########################## testing reader of test cases, error/warning evaluation
+## error X filename
+2 error, no filename
+harness
+ErrorTest.java
+!compile
+5 6
+
+2 error, filename, argument (strict) todo find strict-specific
+harness -strict
+ErrorTest.java
+!compile
+ErrorTest.java:6 ErrorTest.java:5
+
+compiles under -lenient-only
+harness -strict
+ErrorTest.java
+!compile
+ErrorTest.java:6 ErrorTest.java:5
+
+## error,warning X filename
+1 error and 1 warning, without filename, with args (strict)
+harness -strict
+ErrorWarning.java
+!compile
+13
+14
+
+1 error and 1 warning, with filenames
+harness -strict
+ErrorWarning.java
+!compile
+ErrorWarning.java:13
+ErrorWarning.java:14
+
+messages treated as errors
+harness
+Messages.java
+!compile
+14 15
+
+## non-error warning cases
+0 error and 1 warning, without filename
+harness -lenient
+ErrorWarning.java
+ErrorWarning
+warnings: 14
+
+0 error and 1 warning, with filename
+harness -lenient
+ErrorWarning.java
+ErrorWarning
+warnings: ErrorWarning.java:14
+
+compiles under -lenient-only - compile/run
+harness -lenient
+LenientTest.java
+LenientTest
+
+compiles under -lenient-only - fail by default
+harness
+LenientTest.java
+!compile
+6
+
+compiles under -lenient-only - fail with -strict
+harness -strict
+LenientTest.java
+!compile
+6
+
+########################## testing Tester client interface
+checks and events, all should pass
+harness
+TestTester.java
+TestTester
+
+event files
+harness
+TestTesterFile.java
+TestTesterFile
+
+compile and run, no tester required
+harness
+TestNoTester.java
+TestNoTester
+
+

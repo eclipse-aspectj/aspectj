@@ -1,0 +1,69 @@
+######### these should be abort the harness as errors
+
+###### bad test specifications
+bad arguments passed to ajc
+new -badArgument
+TestTester.java
+TestTester
+
+no such file - report as error (run specification)
+new
+NoSuchFile.java
+NoSuchFile
+
+no such file - report as error (!compile specification)
+new
+NoSuchFile.java
+!compile
+4
+
+no such directory - report as error (run specification)
+noSuchDir
+NoSuchFile.java
+NoSuchFile
+
+no such directory - report as error (!compile specification)
+noSuchDir
+NoSuchFile.java
+!compile
+
+1 error and 1 warning, with warning line wrong 
+harness -strict
+ErrorWarning.java
+!compile
+ErrorWarning.java:13
+ErrorWarning.java:15
+
+1 error and 1 warning, with error line wrong 
+harness -strict
+ErrorWarning.java
+!compile
+ErrorWarning.java:12
+ErrorWarning.java:14
+
+1 error and 1 warning, with both lines wrong 
+harness -strict
+ErrorWarning.java
+!compile
+ErrorWarning.java:12
+ErrorWarning.java:15
+
+1 error and 1 warning, with extra error line specified (same as warning line)
+harness -strict
+ErrorWarning.java
+!compile
+13 14
+ErrorWarning.java:15
+
+1 error and 1 warning, with extra warning line specified (same as error line)
+harness -strict
+ErrorWarning.java
+!compile
+13
+13 14
+
+1 error and 1 warning, with no warning line specified
+harness -strict
+ErrorWarning.java
+!compile
+13

@@ -1,0 +1,374 @@
+
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+
+
+<suite>
+    <ajc-test dir="tom"
+      title="The classes which implement the conflict sets pattern from CPJ(2e).  There should be no errors."
+      keywords="from-tomtests">
+        <compile files="Assertions.java,conflict_sets/*.java"/>
+        <run class="Main"/>
+    </ajc-test>
+
+    <ajc-test dir="tom"
+      title="The Classes which implement the Joint Actions protocols from CPJ(2e).  There should be no errors."
+      keywords="from-tomtests">
+        <compile files="Assertions.java,joint_actions/*.java"/>
+        <run class="Main"/>
+    </ajc-test>
+
+    <ajc-test dir="tom" title="Subject/Observer Pattern.  no errors"
+      keywords="from-tomtests">
+        <compile files="Assertions.java,subject_observer/*.java"/>
+        <run class="Main"/>
+    </ajc-test>
+
+    <ajc-test dir="tom" title="Method Confinement. no errors"
+      keywords="from-tomtests">
+        <compile files="Assertions.java,confinement/*.java"/>
+        <run class="Main"/>
+    </ajc-test>
+
+    <ajc-test dir="tom" title="Double Check policy. no errors"
+      keywords="from-tomtests">
+        <compile files="Assertions.java,double_check/*.java"/>
+        <run class="Main"/>
+    </ajc-test>
+
+    <ajc-test dir="tom" title="A Rollback strategy. no errors"
+      keywords="from-tomtests">
+        <compile files="Assertions.java,rollback/*.java"/>
+        <run class="Main"/>
+    </ajc-test>
+
+    <ajc-test dir="tom" title="An impl of the Futures pattern. no errors"
+      keywords="from-tomtests">
+        <compile files="Assertions.java,futures/*.java"/>
+        <run class="Main"/>
+    </ajc-test>
+
+    <ajc-test dir="tom" title="The Guards policy. no errors"
+      keywords="from-tomtests">
+        <compile files="Assertions.java,guards/*.java"/>
+        <run class="Main"/>
+    </ajc-test>
+
+    <ajc-test dir="tom" title="Using State Variables.  no errors"
+      keywords="from-tomtests">
+        <compile files="Assertions.java,state_variables/*.java"/>
+        <run class="Main"/>
+    </ajc-test>
+
+    <ajc-test dir="tom" title="A guards example. no errors"
+      keywords="from-tomtests">
+        <compile files="Assertions.java,waiting_stack/*.java"/>
+        <run class="Main"/>
+    </ajc-test>
+
+    <ajc-test dir="tom" title="Demonstrates resource sharing. no errors"
+      keywords="from-tomtests">
+        <compile files="Assertions.java,printer_example/*.java"/>
+        <run class="Main"/>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="Should fail because two aspects are public"
+      keywords="from-opentests">
+        <compile files="TwoPublics.java">
+            <message kind="error" line="1"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" title="illegal forward reference using introduction"
+      keywords="from-opentests">
+        <compile files="IllegalForwardReference.java"/>
+        <run class="IllegalForwardReference"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="396"
+      title="Not binding static inner interfaces. ( )" keywords="from-opentests">
+        <compile files="StaticInnerInterfaces_PR386.java"/>
+        <run class="StaticInnerInterfaces_PR386"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="396"
+      title="Not binding non-static inner interfaces. ( )"
+      keywords="from-opentests">
+        <compile files="NonStaticInnerInterfaces_PR386.java"/>
+        <run class="NonStaticInnerInterfaces_PR386"/>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="Ambiguous interface should produce error"
+      keywords="from-opentests">
+        <compile files="AmbiguousInterface.java">
+            <message kind="error" line="13"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors"
+      title="Parser shouldn't accept 'const' as a variable name."
+      keywords="from-opentests">
+        <compile files="Const.java">
+            <message kind="error" line="9"/>
+            <message kind="error" line="10"/>
+            <message kind="error" line="15"/>
+            <message kind="error" line="19"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors"
+      title="Parser shouldn't accept 'goto' as a variable name."
+      keywords="from-opentests">
+        <compile files="Goto.java">
+            <message kind="error" line="4"/>
+            <message kind="error" line="9"/>
+            <message kind="error" line="10"/>
+            <message kind="error" line="14"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors"
+      title="Over-boundary base values cause compile-time errors"
+      keywords="from-opentests">
+        <compile files="BoundaryNums.java">
+            <message kind="error" line="22"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="creates two a.java files when two classes have the same name in different cases (will not fail)"
+      keywords="from-badtests">
+        <compile files="LowerAndUpper.java"/>
+        <run class="LowerAndUpper"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="312"
+      title="don't make each object when there's no this (should take this out)"
+      keywords="from-badtests">
+        <compile files="EachObjectNoThis.java"/>
+        <run class="EachObjectNoThis"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="652"
+      title="declare parent accepting interface for extension"
+      keywords="from-badtests">
+        <compile files="DeclareParentsNonsenseCE.java">
+            <message kind="error" line="4"/>
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" title="Using hasaspect. [eachobject] (still)"
+      keywords="from-08tests">
+        <compile files="HasAspect.java"/>
+        <run class="HasAspect"/>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="(DESIGN QUESTION) aspects of eachobject and serialization (still)"
+      keywords="from-08tests">
+        <compile files="SerializedOf.java"/>
+        <run class="SerializedOf"/>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="around advice interacting with checked exceptions, with callsto (still)"
+      keywords="from-08tests">
+        <compile files="AroundExceptions.java"/>
+        <run class="AroundExceptions"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="TriTestExprs interact with constant folding and name binding"
+      keywords="from-knownbugs">
+        <compile files="TriTestMethodLookup.java"/>
+        <run class="TriTestMethodLookup"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Assignment to final fields w/initializers should _always_ be errors"
+      keywords="from-knownbugs">
+        <compile files="UnderIfFalse.java">
+            <message kind="error" line="11"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="FAILING errors in unwoven advice not detected at compile time"
+      keywords="from-knownbugs">
+        <compile files="UnwovenAdviceNotCheckedCE.java">
+            <message kind="error" line="13"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new/pr626" pr="626"
+      title="declared parent not defined in scope of target class declaration (CE in -usejavac only)"
+      keywords="from-knownbugs">
+        <compile options="-usejavac" files="a/Outer.java,b/Foo.java"/>
+        <run class="a.Outer"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="694"
+      title="after returning advice on handler join points"
+      keywords="from-knownbugs">
+        <compile files="AfterReturningHandler.java"/>
+        <run class="AfterReturningHandler"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="745"
+      title="stack overflow expected when advice recurses into itself"
+      keywords="from-knownbugs">
+        <compile files="AdviceOnAdviceRecursion.java"/>
+        <run class="AdviceOnAdviceRecursion"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="755"
+      title="ajc dies on cflow into field init anon class"
+      keywords="from-knownbugs">
+        <compile files="CflowOfFieldInitAnonMethods.java"/>
+        <run class="CflowOfFieldInitAnonMethods"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Losing information about initializers before checking their control flow"
+      keywords="from-knownbugs">
+        <compile files="InitializerFlowCf.java">
+            <message kind="error" line="2"/>
+            <message kind="error" line="4"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="the way we do privileged access for ++, etc, messes up floats"
+      keywords="from-knownbugs">
+        <compile files="FloatPrivilegedRoundoff.java"/>
+        <run class="FloatPrivilegedRoundoff"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="nested interface does not require new qualifier (7) [extra error message]"
+      keywords="from-knownbugs,purejava">
+        <compile files="InvalidNewQualifier7CE.java">
+            <message kind="error" line="7"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="ng" title="interface inheritance should merge throws clauses"
+      keywords="from-knownbugs,purejava">
+        <compile files="ConflictingThrowsInheritance.java"/>
+        <run class="ConflictingThrowsInheritance"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Locals inside other locals, ordering of processing, name-binding"
+      keywords="from-knownbugs">
+        <compile files="LocalInners3.java"/>
+        <run class="LocalInners3"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="774"
+      title="interface self-reference in anonymous instance"
+      keywords="from-knownbugs">
+        <compile files="AnonymousSelfReference.java"/>
+        <run class="AnonymousSelfReference"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="776"
+      title="self-reference from (aspect-declared) method-local class"
+      keywords="from-knownbugs">
+        <compile files="MethodSelfReference.java"/>
+        <run class="MethodSelfReference"/>
+    </ajc-test>
+
+    <ajc-test dir="new" title="declaring type in signature of anonymous class"
+      keywords="from-knownbugs">
+        <compile files="AnonymousClassName.java"/>
+        <run class="AnonymousClassName"/>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="VM ClassFormatError on windows if nul used as class name (todo NOTOURBUG, so nul class not loaded in test) (will not fail)"
+      keywords="from-knownissues,purejava">
+        <compile files="NulIOException3.java"/>
+        <run class="NulIOException3"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="602"
+      title="LIMITATION no deprecation warnings (regardless of -deprecation flag)"
+      keywords="from-knownissues,purejava">
+        <compile options="-deprecation" files="DeprecationWarning.java">
+            <message kind="warning" line="11"/>
+        </compile>
+        <run class="DeprecationWarning"/>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="around, before, after advice on handler join points"
+      keywords="from-knownissues">
+        <compile files="AroundHandler.java"/>
+        <run class="AroundHandler"/>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="compiler limitation on asserts when using -usejavac"
+      keywords="from-knownissues">
+        <compile options="-usejavac,-source,1.4" files="AssertInInnerIntro.java"/>
+        <run class="AssertInInnerIntro"/>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="binding parameters in a ! pcd lexically is always an error"
+      keywords="from-knownissues">
+        <compile files="BindingInNotCf.java">
+            <message kind="error" line="9"/>
+            <message kind="error" line="11"/>
+            <message kind="error" line="13"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="704"
+      title="RFE mark generated static fields as transient"
+      keywords="from-knownissues">
+        <compile files="GeneratedStaticAsTransient.java"/>
+        <run class="GeneratedStaticAsTransient"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="706"
+      title="compiling large concatenated string [bug also in javac]"
+      keywords="from-knownissues,purejava">
+        <compile files="LongStringAjc.java"/>
+        <run class="LongStringAjc"/>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="rfe: SourceLocationImpl should implement toString as filename:column"
+      keywords="from-knownissues">
+        <compile files="SourceLocationToString.java"/>
+        <run class="SourceLocationToString"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="740"
+      title="pointcut references with incorrect args should prompt compiler errors"
+      keywords="from-knownissues">
+        <compile files="PCDeclarationArgsCE.java">
+            <message kind="error" line="29"/>
+            <message kind="error" line="30"/>
+            <message kind="error" line="31"/>
+            <message kind="error" line="32"/>
+            <message kind="error" line="33"/>
+            <message kind="error" line="34"/>
+            <message kind="error" line="35"/>
+            <message kind="error" line="37"/>
+            <message kind="error" line="38"/>
+            <message kind="error" line="39"/>
+            <message kind="error" line="40"/>
+            <message kind="error" line="42"/>
+            <message kind="error" line="44"/>
+            <message kind="error" line="45"/>
+            <message kind="error" line="46"/>
+            <message kind="error" line="47"/>
+            <message kind="error" line="49"/>
+            <message kind="error" line="50"/>
+            <message kind="error" line="53"/>
+        </compile>
+    </ajc-test>
+</suite>

@@ -1,0 +1,21 @@
+**** exec ****
+exec-string-s1
+exec-integer-10
+exec-double-1.25
+exec-string-s2
+exec-integer-20
+exec-double-2.25
+**** call ****
+call-string-s1
+call-integer-10
+call-double-1.25
+call-string-s2
+call-integer-20
+call-double-2.25
+**** both=call ****
+call-string-s1
+call-integer-10
+call-double-1.25
+call-string-s2
+call-integer-20
+call-double-2.25

@@ -1,0 +1,219 @@
+
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+
+
+<suite>
+    <ajc-test dir="new" pr="774"
+      title="interface self-reference in anonymous instance (correct test in knownbugs)"
+      keywords="tofix"
+      comment="correct behavior for 1.0 is good error message, see real test in knownbugs">
+        <compile files="AnonymousSelfReference.java">
+            <message kind="error" line="17"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="776"
+      title="self-reference from (aspect-declared) method-local class (correct test in knownbugs)"
+      keywords="tofix"
+      comment="correct behavior for 1.0 is good error message, see real test in knownbugs">
+        <compile files="MethodSelfReference.java">
+            <message kind="error" line="16"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="ng"
+      title="parenthesized type name as qualifying expr is illegal (in j2sdk1.4.1beta)"
+      keywords="tofix">
+        <compile files="Parens1.java">
+            <message kind="error" line="3"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" title="expect CE for unterminated declare error"
+      keywords="tofix">
+        <compile files="UnterminatedDeclareErrorCE.java">
+            <message kind="error" line="7"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="expect CE for declaration collision between subaspects instead of domination order"
+      keywords="tofix">
+        <compile files="DeclarationCollisionCE.java">
+            <message kind="error" line="28"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="subtype pattern in dominates should pick out aspect subtypes"
+      keywords="tofix">
+        <compile files="DominatesTypePattern.java"/>
+        <run class="DominatesTypePattern"/>
+    </ajc-test>
+
+    <ajc-test dir="ng"
+      title="long-standing bug in javac and ajc about non-verifiable try stmt"
+      keywords="tofix">
+        <compile files="TryVerification.java"/>
+        <run class="TryVerification"/>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="unmatched type name in a declare parents should result in a warning in -Xlint mode"
+      keywords="tofix">
+        <compile options="-Xlint" files="MissingTypeInDeclareParents.java">
+            <message kind="warning" line="20"/>
+        </compile>
+        <run class="MissingTypeInDeclareParents"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="804"
+      title="aspect static initializers should run before instance constructed"
+      keywords="tofix">
+        <compile files="AspectStaticInit.java"/>
+        <run class="AspectStaticInit"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="827"
+      title="after returning advice on interface and implementation constructor"
+      keywords="tofix">
+        <compile files="AfterReturningConstructor.java"/>
+        <run class="AfterReturningConstructor"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="832"
+      title="after throwing advice with non-throwable formal"
+      keywords="tofix">
+        <compile files="AfterThrowingNonThrowable.java"/>
+        <run class="AfterThrowingNonThrowable"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="823"
+      title="declaring a private method on an inner interface"
+      keywords="tofix">
+        <compile files="PrivateMethodOnInnerInterface.java"/>
+        <run class="PrivateMethodOnInnerInterface"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="829"
+      title="CE expected when declaring fields on arrays" keywords="tofix">
+        <compile files="ArrayFieldDeclarationCE.java">
+            <message kind="error" line="14"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="829" title="declare array field using postfix"
+      keywords="tofix">
+        <compile files="ArrayFieldDeclaration.java"/>
+        <run class="ArrayFieldDeclaration"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="838"
+      title="checking around join point for advice return type - numeric"
+      keywords="tofix" comment="may need to fix error line when bug is fixed">
+        <compile files="AroundNumericCastCE.java">
+            <message kind="error" line="17"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="836" title="void around advice without proceed"
+      keywords="tofix">
+        <compile files="VoidAround.java"/>
+        <run class="VoidAround"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="851"
+      title="prohibit declaring new aspect constructor with arguments">
+        <compile files="DeclareAspectConstructorCE.java">
+          <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="851"
+      title="prohibit declaring only aspect constructor with arguments">
+        <compile files="DeclareOnlyAspectConstructorCE.java">
+          <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new/PR852" pr="852"
+      title="declaring method on superclass and subclass">
+        <compile files="aspect/Aspect.java,target/SubClass.java,target/SuperClass.java">
+          <dir-changes added="target.SubClass,target.SuperClass"/>
+        </compile>
+        <run class="aspect.Aspect"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="853"
+      title="declare class extends interface">
+        <compile files="DeclareClassExtendsInterface.java">
+           <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="853"
+      title="declare class implements class">
+        <compile files="DeclareClassImplementsClass.java">
+           <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="853"
+      title="declare interface implements interface">
+        <compile files="DeclareInterfaceImplementsInterface.java">
+           <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new/PR862" pr="862"
+      title="import any inner from interface implementor"
+      keywords="purejava">
+        <compile files="pack/ImportInnerFromInterfaceImplementor.java">
+          <dir-changes added="pack.ImportInnerFromInterfaceImplementor"/>
+        </compile>
+        <run class="pack.ImportInnerFromInterfaceImplementor"/>
+    </ajc-test>
+    
+    <ajc-test dir="ng"
+      title="wrong scope for inner class creation expression">
+        <compile files="InnerClassCreate.java"/>
+        <run class="InnerClassCreate"/>
+    </ajc-test>
+
+    <ajc-test dir="ng"
+      title="definite unassignment versus try-finally">
+        <compile files="DefiniteUnassignmentTry.java"/>
+        <run class="DefiniteUnassignmentTry"/>
+    </ajc-test>
+
+    <ajc-test dir="ng"
+      title="definite assignment with constant subexpression in control-flow ops">
+        <compile files="DefiniteAssignmentControlFlow.java">
+          <dir-changes added="DefiniteAssignmentControlFlow"/>
+        </compile>
+        <run class="DefiniteAssignmentControlFlow"/>
+    </ajc-test>
+
+    <ajc-test dir="ng"
+      title="conversion from null">
+        <compile files="ConvertFromNull.java">
+           <message kind="error" line="8"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="ng"
+      title="conflicting throws on inherited abstract methods">
+        <compile files="ConflictingThrows.java"/>
+        <run class="ConflictingThrows"/>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="if and cflow arg binding">
+        <compile files="CflowBinding.java">
+          <message kind="error" line="13"/>
+        </compile>
+    </ajc-test>
+    
+
+ 
+</suite>

@@ -1,0 +1,71 @@
+
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+
+
+<suite>
+
+    <ajc-test dir="new" pr="223"
+      title="duplicate class names should be signalled by ajc, not javac"
+      keywords="from-errors,fail-commandLine"
+      comment="XXX harness does not handle per-file errors any more">
+        <compile files="DoubleClass1.java,DoubleClass2.java">
+            <message kind="error" line="3"  text="DoubleClass1.java:3"/>
+            <message kind="error" line="3"  text="DoubleClass2.java:3"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="design/around" title="around and return types"
+      keywords="from-design,fail-commandLine">
+        <compile files="ReturnCastProceed.java,StackChecker.java"/>
+        <run class="ReturnCastProceed"/>
+    </ajc-test>
+    
+    <ajc-test dir="new/privilegedAspects"
+      title="access to all members of class and inner class from unprivileged aspect"
+      keywords="from-resolved_10x,fail-commandLine">
+        <compile
+          files="driver/UnprivilegedAspect.java,util/Util.java,pack/DefaultTarget.java,pack/PublicTarget.java">
+            <message kind="error" line="32"/>
+            <message kind="error" line="33"/>
+            <message kind="error" line="34"/>
+            <message kind="error" line="37"/>
+            <message kind="error" line="38"/>
+            <message kind="error" line="39"/>
+            <message kind="error" line="41"/>
+            <message kind="error" line="42"/>
+            <message kind="error" line="43"/>
+            <message kind="error" line="54"/>
+            <message kind="error" line="55"/>
+            <message kind="error" line="56"/>
+            <message kind="error" line="60"/>
+            <message kind="error" line="61"/>
+            <message kind="error" line="62"/>
+            <message kind="error" line="64"/>
+            <message kind="error" line="65"/>
+            <message kind="error" line="66"/>
+            <message kind="error" line="76"/>
+            <message kind="error" line="77"/>
+            <message kind="error" line="78"/>
+            <message kind="error" line="79"/>
+            <message kind="error" line="80"/>
+            <message kind="error" line="81"/>
+            <message kind="error" line="82"/>
+            <message kind="error" line="83"/>
+            <message kind="error" line="84"/>
+            <message kind="error" line="85"/>
+            <message kind="error" line="86"/>
+            <message kind="error" line="87"/>
+            <message kind="error" line="88"/>
+            <message kind="error" line="96"/>
+            <message kind="error" line="98"/>
+            <message kind="error" line="99"/>
+            <message kind="error" line="100"/>
+            <message kind="error" line="101"/>
+            <message kind="error" line="102"/>
+            <message kind="error" line="103"/>
+            <message kind="error" line="103"/>
+        </compile>
+    </ajc-test>
+
+
+</suite>

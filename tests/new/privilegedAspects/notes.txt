@@ -1,0 +1,89 @@
+
+testing privileged aspects
+These notes apply to subdirectories util, pack, and driver.
+
+---- privileged aspects 
+- A privileged aspect ignores Java's accessibility rules and can access
+  any members anywhere in the world regardless of access restrictions.
+- The privilege extends to anything in the lexical scope of the 
+  privileged aspect, including inner classes and aspects
+  - the privilege does not extend to members introduced 
+    onto the privileged aspect
+  - the privilege does not extend to subaspects
+- a privileged aspect can be public
+- a privileged aspect can be an inner aspect
+  even a static inner aspect of a class
+- In some cases, providing this private access changes the access
+  permissions in the generated (byte)code, visible to other
+  classes compiled or running with the target class.
+  However, in the scope of the AspectJ compilation process,
+  only the privileged aspect should enjoy enhanced permissions
+- type names from external packages must be fully qualified in the 
+  privileged aspect.  the visibility of import statements in the
+  file of the privileged aspect is unchanged.
+  - as a result, if {static} inner aspects are permitted, they will
+    be unable to bind some names that their enclosing class/aspect 
+    can bind unless they fully qualify the names.
+
+---- testing privileged aspects
+- binding: testing binding involves ensuring the class or aspect
+  can (or cannot) bind a name to a type or member at compile time
+  and can actually use that reference at runtime without an
+  IllegalAccessException
+
+testable statements:
+1  any aspect may be privileged, including abstract and inner aspects,
+   including static inner aspects of classes
+2  privileged aspects can bind any members of targets
+   - targets: classes, inner classes; aspects, inner aspects;
+     in the same package, a different package, and the default package
+   - sources in the privileged aspect:
+     - constructors, static and instance methods and initializers
+     - bodies for introduced methods and member initializers
+     - pointcut declarations
+     - pointcut pcd if() bodies 
+     - advice bodies
+     - the same for inner classes and aspects
+3  when privileged aspects get this access, access does not change for 
+   other classes in the same set of files compiled
+4  2 is not true of non-privileged subaspects of a privileged aspect
+5  AspectJ will open up the target class to the minimal extent possible,
+   subject to these rules:
+   - the access permissions for the privileged access will not change
+   - the class hierarchy of the privileged aspect or the target class
+     will not be modified to gain protected access
+   - if protected access is available, AspectJ will not convert
+     to default/package access or to public access
+   - if default/package access is available, AspectJ will not convert
+     to public access
+6  code in privileged aspects has no enhanced runtime permissions for
+   reflective access to (target classes or) non-target classes
+   
+test plan:
+1 compile-time binding test:
+  - public and default access classes in one package
+    each with a corresponding inner class (public/default)
+    each class has static and instance members of all access types
+    -> pack.PublicTarget, pack.DefaultTarget
+  - privileged aspect in another package 
+    accesses all target methods/members from static methods
+    -> driver.PrivilegedAspect
+2 test 1 with the aspect as an inner aspect
+  - unprivileged inner aspect of a privileged aspect
+  - privileged inner aspect of an unprivileged aspect
+  - static privileged inner aspect of a class
+3 test 1 with errors expected for protected/private/default access
+  for a non-privileged subaspect
+  -> driver.UnPrivilegedAspect
+
+----- Priority 3 tests
+4 test 1 with errors expected for private/default access
+  for a non-privileged subaspect inner class of a target subclass
+5 test 1 with errors expected for private access
+  for a non-privileged aspect in the same package
+
+---- current status
+Aggregate versions of tests 1 and 3 done; 2 is close. See -> above.
+Error tests are brittle since it is undefined how many errors the
+compiler will find in a file before giving up.  The error test 
+cases should be broken out into separate test cases/files.

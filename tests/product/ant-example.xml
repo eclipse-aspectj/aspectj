@@ -1,0 +1,343 @@
+<!-- -*- Mode: SGML; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-     -->
+<!--                                                                                -->
+<!-- This file is part of the compiler and core tools for the AspectJ(tm)           -->
+<!-- programming language; see http://aspectj.org                                   -->
+<!--                                                                                -->
+<!-- The contents of this file are subject to the Mozilla Public License            -->
+<!-- Version 1.1 (the "License"); you may not use this file except in               -->
+<!-- compliance with the License. You may obtain a copy of the License at           -->
+<!-- either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.                 -->
+<!--                                                                                -->
+<!-- Software distributed under the License is distributed on an "AS IS" basis,     -->
+<!-- WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License       -->
+<!-- for the specific language governing rights and limitations under the           -->
+<!-- License.                                                                       -->
+<!--                                                                                -->
+<!-- The Original Code is AspectJ.                                                  -->
+<!--                                                                                -->
+<!-- The Initial Developer of the Original Code is Xerox Corporation. Portions      -->
+<!-- created by Xerox Corporation are Copyright (C) 1999, 2000 Xerox Corporation.   -->
+<!-- All Rights Reserved.                                                           -->
+
+<!-- todo: non-distribution license?? -->
+
+<!DOCTYPE build SYSTEM "build.dtd">
+
+<project name="ant-example" default="test" basedir=".">
+
+    <!-- define target init.product -->
+    &aspectj_initProduct;
+
+    <!-- ========================================================================== -->
+    <!-- Init                                                                       -->
+    <!-- ========================================================================== -->
+    <target name="init" depends="init.product"
+     description="caller must define jdk.tools.jar and product.dir or run from product.dir">
+      <echo message="init ant-examples.xml"/> 
+      <!-- directory produced during test install -->
+      <property name="ajx.base.dir"
+            location="${productTest.output.dir}/ajx-output"/>
+      <property name="ajx.expect.dir"
+            location="${productTest.expect.dir}/ajx"/>
+      <property name="noclass"
+               value="noclass"/>
+      <property name="noclass.dir"
+            location="${productTest.output.dir}/${noclass}"/>
+      <property name="aj.public.taskdef.package"
+               value="org.aspectj.tools.ant.taskdef"/>
+      <property name="taskdef.classpath"
+               value="${product.taskdefs.jar}${PS}${product.tools.jar}${PS}${jdk.tools.jar}"/>
+    </target>
+
+    <target name="init.taskdefs" depends="init,product.taskdefs.jar,product.tools.jar">
+      <!-- define taskdefs used here - requires jars, etc. -->
+      <taskdef name="ajc"
+          classname="${aj.public.taskdef.package}.Ajc" >
+       <classpath>
+          <pathelement path="${product.taskdefs.jar}"/>
+          <pathelement path="${product.tools.jar}"/>
+          <pathelement path="${jdk.tools.jar}"/>
+       </classpath>
+      </taskdef>
+      <taskdef name="ajdoc"
+          classname="${aj.public.taskdef.package}.Ajdoc">
+       <classpath>
+          <pathelement path="${product.taskdefs.jar}"/>
+          <pathelement path="${product.tools.jar}"/>
+          <pathelement path="${jdk.tools.jar}"/>
+       </classpath>
+      </taskdef>
+    </target>
+
+
+    <!-- ========================================================================== -->
+    <!-- Clean everything in created dirs                                           -->
+    <!-- ========================================================================== -->
+
+    <target name="clean" depends="init"
+     description="clean output created by this script">
+      <antcall target="mkdir"><param name="dir" value="${ajx.base.dir}"/>
+      </antcall>
+      <antcall target="mkdir"><param name="dir" value="${noclass.dir}"/>
+      </antcall>
+    </target>
+
+    <target name="noclass.setup" depends="init"
+     description="setup no-op dummy class to invoke when test class n/a or requires gui">
+      <echo file="${noclass}.java">
+        public class ${noclass} { public static void main(String[]args){}}
+      </echo>
+      <mkdir dir="${noclass.dir}"/>
+      <delete dir="${noclass.dir}"/>
+      <mkdir dir="${noclass.dir}"/>
+      <javac srcdir="." 
+           includes="${noclass}.java" 
+            destdir="${noclass.dir}"
+        failonerror="true"/>
+      <delete file="${noclass}.java"/>
+      <echo message=" todo check file: ${noclass}.java"/>
+      <java classname="${noclass}"
+          failonerror="true" 
+          classpath="${noclass.dir}"/>
+    </target>
+
+    <!-- ========================================================================== -->
+    <!-- Run        tests                                                          -->
+    <!-- ========================================================================== -->
+    <target name="Ajx" depends="init.taskdefs"
+       description="for {example}, compile {list}, doc {list}, and run {class}">
+       <echo message="##### START Ajx example=${example} list=${list} class=${class}" />
+        <property name="exdir" 
+                 value="${ajx.base.dir}/${example}"/>
+        <property name="expect.exdir" value="${ajx.expect.dir}/${example}"/>
+        <mkdir  dir="${exdir}/classes"/>
+        <mkdir  dir="${exdir}/output"/>
+        <mkdir  dir="${exdir}/docs"/>
+        <delete dir="${exdir}/classes"/>
+        <delete dir="${exdir}/output"/>
+        <delete dir="${exdir}/docs"/>
+        <mkdir  dir="${exdir}/classes"/>
+        <mkdir  dir="${exdir}/output"/>
+        <mkdir  dir="${exdir}/docs"/>
+
+        <echo message="##################### Ajx ajc ${list}"/>
+        <ajc 
+            destdir="${exdir}/classes"
+           argfile="${list}" 
+        failonerror="false" >
+          <classpath>
+            <pathelement location="${product.rt.jar}" />
+            <pathelement location="${jdk.tools.jar}" /> <!-- to compile ajdoc -->
+          </classpath>
+        </ajc>
+        <!-- copying resources, etc. as javac does todo weak -->
+        <copy todir="${exdir}/classes">
+            <fileset dir="${srcDir}" 
+                includes="**/*.properties,**/*.gif,**/*.jpg,**/*.props" />
+        </copy>
+
+        <echo message="##################### Ajx ajdoc ${list} "/>
+        <ajdoc  fork="yes"
+            private="yes"
+            verbose="yes"
+            sourcepath="${product.examples.dir}"
+            destdir="${exdir}/docs"
+           argfile="${list}" 
+           classpath="${product.rt.jar}${PS}${jdk.tools.jar}"
+        failonerror="false" >
+         <!-- internalclasspath 
+           internalclasspath="${taskdef.classpath}" 
+         is required now - but still not producing docs
+          <classpath>
+            <pathelement location="${product.rt.jar}" />
+          </classpath>
+        -->
+        </ajdoc>
+
+        <echo message="##################### Ajx run ${class} START - output in ${exdir}/output/out.txt"/>
+        <java classname="${class}"
+                 output="${exdir}/output/out.txt"
+                   fork="yes"  
+            failonerror="false" >
+            <!-- fork because ajc does a System.exit -->
+          <classpath>
+            <pathelement location="${exdir}/classes"/>
+            <pathelement location="${product.rt.jar}"/>
+            <pathelement location="${noclass.dir}"/>
+            <pathelement location="${jdk.tools.jar}" /> <!-- to run ajdoc and old ajc -->
+          </classpath>
+        </java>
+        <echo message="##################### Ajx run ${class} STOP"/>
+        <echo message="##################### Ajx run ${class} check output START "/>
+        <comparefiles rhsFile="${exdir}/output/out.txt"
+                      lhsFile="${expect.exdir}/output/out.txt"/>
+        <echo message="##################### Ajx run ${class} check output STOP "/>
+       <echo message="##### FINISH Ajx example=${example} list=${list} class=${class}" />
+    </target>
+
+    <target name="test" depends="test.examples,test.sources"/>
+
+    <target name="test.sources" depends="init,noclass.setup,productTest.expect.dir"
+      description="compile, doc, and run the tools-source targets using taskdefs" >
+      <property name="tools.src.dir"
+            location="${product.source.tools.dir}/src"/>
+      <antcall target="Ajx">
+        <param name="list"    value="${tools.src.dir}/runtime.lst"/>
+        <param name="example" value="source-tools-runtime"/>
+        <param name="class"   value="${noclass}"/>
+        <param name="srcDir"  value="${tools.src.dir}"/>
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="${tools.src.dir}/ajc.lst"/>
+        <param name="example" value="source-tools-ajc"/>
+        <param name="class"   value="org.aspectj.tools.ajc.Main"/>
+        <param name="srcDir"  value="${tools.src.dir}"/>
+        <!-- ajc does a System.exit -->
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="${tools.src.dir}/tools.lst"/>
+        <param name="example" value="source-tools-all"/>
+        <param name="class"   value="${noclass}"/>
+        <param name="srcDir"  value="${tools.src.dir}"/>
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="${tools.src.dir}/ajbrowser.lst"/>
+        <param name="example" value="source-tools-ajbrowser"/>
+        <param name="class"   value="${noclass}"/>
+        <param name="srcDir"  value="${tools.src.dir}"/>
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="${tools.src.dir}/ajdoc.lst"/>
+        <param name="example" value="source-tools-ajdoc"/>
+        <param name="class"   value="org.aspectj.tools.ajdoc.Main"/>
+        <param name="srcDir"  value="${tools.src.dir}"/>
+      </antcall>
+    </target>
+
+    <target name="test.examples" depends="init,noclass.setup,productTest.expect.dir"
+      description="compile, doc, and run the valid examples using taskdefs" >
+      <antcall target="Ajx">
+        <param name="list"    value="bean/files.lst"/>
+        <param name="example" value="bean"/>
+        <param name="class"   value="bean.Demo"/>
+        <param name="srcDir"  value="."/>
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="coordination/lib.lst"/>
+        <param name="example" value="coordination"/>
+        <param name="class"   value="${noclass}"/>
+        <param name="srcDir"  value="."/>
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="introduction/files.lst"/>
+        <param name="example" value="introduction-point"/>
+        <param name="class"   value="introduction.Point"/>
+        <param name="srcDir"  value="."/>
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="introduction/files.lst"/>
+        <param name="example" value="introduction-cloneablepoint"/>
+        <param name="class"   value="introduction.CloneablePoint"/>
+        <param name="srcDir"  value="."/>
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="introduction/files.lst"/>
+        <param name="example" value="introduction-comparablepoint"/>
+        <param name="class"   value="introduction.ComparablePoint"/>
+        <param name="srcDir"  value="."/>
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="introduction/files.lst"/>
+        <param name="example" value="introduction-hashablepoint"/>
+        <param name="class"   value="introduction.HashablePoint"/>
+        <param name="srcDir"  value="."/>
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="observer/files.lst"/>
+        <param name="example" value="observer"/>
+        <param name="class"   value="${noclass}"/>
+        <param name="srcDir"  value="."/>
+        <!-- uses gui: param name="class"   value="observer.Demo" -->
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="spacewar/debug.lst"/>
+        <param name="example" value="spacewar-debug"/>
+        <param name="class"   value="${noclass}"/>
+        <param name="srcDir"  value="."/>
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="spacewar/demo.lst"/>
+        <param name="example" value="spacewar-demo"/>
+        <param name="class"   value="${noclass}"/>
+        <param name="srcDir"  value="."/>
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="telecom/basic.lst"/>
+        <param name="example" value="telecom-basic"/>
+        <param name="class"   value="telecom.BasicSimulation"/>
+        <param name="srcDir"  value="."/>
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="telecom/billing.lst"/>
+        <param name="example" value="telecom-billing"/>
+        <param name="class"   value="telecom.BillingSimulation"/>
+        <param name="srcDir"  value="."/>
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="telecom/timing.lst"/>
+        <param name="example" value="telecom-timing"/>
+        <param name="class"   value="telecom.TimingSimulation"/>
+        <param name="srcDir"  value="."/>
+      </antcall>
+    <!-- timeserver not in product - todo check 
+      <antcall target="Ajx">
+        <param name="list"    value="timeserver/abort.lst"/>
+        <param name="example" value="timeserver-abort"/>
+        <param name="class"   value="${noclass}"/>
+        <param name="srcDir"  value="."/>
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="timeserver/retry.lst"/>
+        <param name="example" value="timeserver-retry"/>
+        <param name="class"   value="${noclass}"/>
+        <param name="srcDir"  value="."/>
+      </antcall>
+     -->
+      <antcall target="Ajx">
+        <param name="list"    value="tjp/files.lst"/>
+        <param name="example" value="tjp"/>
+        <param name="class"   value="tjp.Demo"/>
+        <param name="srcDir"  value="."/>
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="tracing/notrace.lst"/>
+        <param name="example" value="tracing-none"/>
+        <param name="class"   value="tracing.ExampleMain"/>
+        <param name="srcDir"  value="."/>
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="tracing/tracelib.lst"/>
+        <param name="example" value="tracing-ExampleMain"/>
+        <param name="class"   value="tracing.ExampleMain"/>
+        <param name="srcDir"  value="."/>
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="tracing/tracev1.lst"/>
+        <param name="example" value="tracing-v1"/>
+        <param name="class"   value="tracing.ExampleMain"/>
+        <param name="srcDir"  value="."/>
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="tracing/tracev2.lst"/>
+        <param name="example" value="tracing-v2"/>
+        <param name="class"   value="tracing.ExampleMain"/>
+        <param name="srcDir"  value="."/>
+      </antcall>
+      <antcall target="Ajx">
+        <param name="list"    value="tracing/tracev3.lst"/>
+        <param name="example" value="tracing-v3"/>
+        <param name="class"   value="tracing.ExampleMain"/>
+        <param name="srcDir"  value="."/>
+      </antcall>
+    </target>
+</project>

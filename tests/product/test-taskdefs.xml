@@ -1,0 +1,466 @@
+<!-- -*- Mode: SGML; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-     -->
+<!--                                                                                -->
+<!-- This file is part of the compiler and core tools for the AspectJ(tm)           -->
+<!-- programming language; see http://aspectj.org                                   -->
+<!--                                                                                -->
+<!-- The contents of this file are subject to the Mozilla Public License            -->
+<!-- Version 1.1 (the "License"); you may not use this file except in               -->
+<!-- compliance with the License. You may obtain a copy of the License at           -->
+<!-- either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.                 -->
+<!--                                                                                -->
+<!-- Software distributed under the License is distributed on an "AS IS" basis,     -->
+<!-- WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License       -->
+<!-- for the specific language governing rights and limitations under the           -->
+<!-- License.                                                                       -->
+<!--                                                                                -->
+<!-- The Original Code is AspectJ.                                                  -->
+<!--                                                                                -->
+<!-- The Initial Developer of the Original Code is Xerox Corporation. Portions      -->
+<!-- created by Xerox Corporation are Copyright (C) 1999, 2000 Xerox Corporation.   -->
+<!-- All Rights Reserved.                                                           -->
+
+<!-- ============================================================================== -->
+<!-- To build, define JAVA_HOME,place in examples/ and run from examples/..         -->
+<!-- ============================================================================== -->
+<!-- todo: non-distribution license?? -->
+
+<project name="test-taskdefs" default="test"> 
+    <!-- ========================================================================== -->
+    <!-- Init                                                                       -->
+    <!-- ========================================================================== -->
+    <target name="init" 
+     description="caller must define jdk.tools.jar and product.dir or run from product.examples.dir">
+      <echo message="init test-taskdefs.xml"/> 
+
+      <property name="PS" value="${path.separator}"/> 
+      <property name="knownFail"
+               value=" - known failure"/>
+
+      <!-- define product.dir or run from it -->
+      <property name="product.dir"
+            location=".."/> 
+
+      <!-- expected from install -->
+      <property name="ex.dir"
+            location="${product.dir}/examples"/> 
+      <property name="product.examples.dir"
+            location="${ex.dir}"/> 
+      <!-- created after install -->
+      <property name="test.dir"
+            location="${product.dir}/test"/> 
+      <property name="expect.file"
+            location="${test.dir}/expect.out"/> 
+      <property name="actual.file"
+            location="${test.dir}/actual.out"/> 
+      <property name="empty.dir"
+            location="${test.dir}/emptydir"/> 
+      <property name="temp.dir"
+            location="${test.dir}/temp"/> 
+      <property name="classes.dir"
+            location="${test.dir}/classes"/> 
+      <property name="expected.classes.dir"
+            location="${test.dir}/expectedClasses"/> 
+      <property name="working.dir"
+            location="${product.dir}/workingdir"/> 
+      <property name="expected.working.dir"
+            location="${test.dir}/expectedWorkingdir"/> 
+      <mkdir dir="${empty.dir}"/>
+      <mkdir dir="${temp.dir}"/>
+      <mkdir dir="${classes.dir}"/>
+      <mkdir dir="${expected.classes.dir}"/>
+      <mkdir dir="${working.dir}"/>
+      <mkdir dir="${expected.working.dir}"/>
+
+      <property name="aspectj-ant.jar"
+            location="${product.dir}/lib/aspectj-ant.jar"/> 
+      <property name="aspectjrt.jar"
+            location="${product.dir}/lib/aspectjrt.jar"/> 
+      <property name="aspectjtools.jar"
+            location="${product.dir}/lib/aspectjtools.jar"/> 
+      <!-- alltesting.jar required for comparefiles -->
+      <property name="alltesting.jar"
+            location="${product.dir}/lib/alltesting.jar"/> 
+
+      <available file="${aspectj-ant.jar}"
+             property="aspectj-ant.jar.available"/>
+      <available file="${aspectjrt.jar}"
+             property="aspectjrt.jar.available"/>
+      <available file="${aspectjtools.jar}"
+             property="aspectjtools.jar.available"/>
+
+      <property name="run.classpath"
+            location="${classes.dir}${PS}${aspectjrt.jar}"/> 
+      <property name="simple.run.classpath"
+            location="${product.dir}${PS}${aspectjrt.jar}"/> 
+    </target>
+
+    <target name="init.taskdefs"
+         depends="init,jars.available" 
+     description="initialize taskdefs without ant.home/lib" >
+      <taskdef name="ajc"
+          classname="org.aspectj.tools.ant.taskdefs.Ajc" >
+          <classpath> 
+            <pathelement path="${aspectjrt.jar}"/> 
+            <pathelement path="${aspectj-ant.jar}"/> 
+            <pathelement path="${aspectjtools.jar}"/> 
+            <pathelement path="${jdk.tools.jar}"/> 
+          </classpath>
+       </taskdef>
+      <taskdef name="ajdoc"
+          classname="org.aspectj.tools.ant.taskdefs.Ajdoc" >
+          <classpath> 
+            <pathelement path="${aspectjrt.jar}"/> 
+            <pathelement path="${aspectj-ant.jar}"/> 
+            <pathelement path="${aspectjtools.jar}"/> 
+            <pathelement path="${jdk.tools.jar}"/> 
+          </classpath>
+       </taskdef>
+      <taskdef name="comparefiles"
+          classname="org.aspectj.testing.taskdefs.CompareFiles">
+          <classpath> <!-- todo: setup -->
+            <pathelement path="${alltesting.jar}"/>  
+          </classpath>
+       </taskdef>
+    </target>
+
+
+    <target name="jars.available" 
+         depends="aspectjtools.jar.available,aspectj-ant.jar.available"/>
+   
+    <target name="aspectjtools.jar.available" depends="init" unless="aspectjtools.jar.available" >
+      <fail message="expecting aspectjtools.jar at ${aspectjtools.jar}"/>
+    </target>
+    <target name="aspectj-ant.jar.available" depends="init" unless="aspectj-ant.jar.available" >
+      <fail message="expecting aspectj-ant.jar at ${aspectj-ant.jar}"/>
+    </target>
+
+    <target name="clean" depends="init"
+     description="todo clean output created by this script">
+    </target>
+
+    <target name="test" depends="test.ajc,test.ajdoc"/>
+    <target name="clear.test.dir" depends="init">
+      <mkdir dir="${test.dir}"/>
+      <delete dir="${test.dir}"/>
+      <mkdir dir="${test.dir}"/>
+    </target>
+
+    <target name="test.ajdoc" depends="init,init.taskdefs,clear.test.dir"
+     description="run variants of ajdoc taskdef on bean, other examples">
+
+        <mkdir dir="${expected.classes.dir}"/>
+        <delete quiet="on" dir="${expected.classes.dir}"/>
+        <mkdir dir="${expected.classes.dir}"/>
+        <mkdir dir="${classes.dir}"/>
+        <delete quiet="on" dir="${classes.dir}"/>
+        <mkdir dir="${classes.dir}"/>
+        <antcall target="cleanajc"/>
+
+        <echo message="## ajdoc setup classes dir" />
+        <ajdoc classpath="${aspectjrt.jar}" destdir="${expected.classes.dir}" 
+               srcdir="${ex.dir}/bean"  packagenames="bean" 
+               argfile="${ex.dir}/bean/files.lst"
+               private="on" />
+
+        <echo message="## @testcase ajdoc same as setup" />
+        <antcall target="cleanajc"/>
+        <ajdoc classpath="${aspectjrt.jar}" destdir="${classes.dir}" 
+               srcdir="${ex.dir}/bean" packagenames="bean"
+               argfile="${ex.dir}/bean/files.lst"
+               private="on" />
+        <antcall target="verifyAndCleanup.ajdoc"/>
+
+        <echo message="## @testcase ajdoc argfile only with nested classpath" />
+        <ajdoc destdir="${classes.dir}" 
+               argfile="${ex.dir}/bean/files.lst"
+               private="on" >
+          <classpath> <pathelement path="${aspectjrt.jar}"/> </classpath>
+        </ajdoc>
+        <antcall target="verifyAndCleanup.ajdoc"/>
+
+<!-- omitted until fixed
+        <echo message="## @testcase ajdoc srcdir with include argument - getting fail" />
+        <ajdoc classpath="${aspectjrt.jar}" destdir="${classes.dir}" 
+               srcdir="${ex.dir}/bean" includes="*.java" 
+               private="on" />
+        <antcall target="verifyAndCleanup.ajdoc"/>
+
+        <echo message="## ajdoc need @testcase ajdoc nested src with kitchen sink" />
+        <echo message="## @testcase ajdoc argfile todo " />
+        <echo message="## @testcase ajdoc Vincent Massol bug" />
+        <ajdoc destdir="${classes.dir}" 
+                srcdir="${ex.dir}/bean"
+               private="on" >
+          <include name="*.java"/>
+          <include name="**.java"/>
+          <classpath> <pathelement path="${aspectjrt.jar}"/> </classpath>
+        </ajdoc>
+        <antcall target="verifyAndCleanup.ajdoc"/>
+
+todo bug ajdoc taskdef not handling any includes or nested src or 
+includes argument 
+-->
+        <!-- todo: version bootclasspath, extdirs 
+             Xporting="on"    # todo: after Jim updates compiler for Xporting
+             todo: nested src n/a
+        -->
+
+    </target>
+
+    <target name="test.ajc" depends="test.ajc1"/> <!-- ,test.ajc2 -->
+    <target name="test.ajc1" depends="init,init.taskdefs,clear.test.dir"
+     description="run variants of ajc taskdef on bean, other examples">
+
+        <echo message="## setup expected working dir, classes dir, and output file" />
+        <antcall target="cleanajc"/>
+        <ajc srcdir="${ex.dir}/bean" classpath="${aspectjrt.jar}" 
+            destDir="${expected.classes.dir}"
+            usejavac="yes"
+         workingdir="${expected.working.dir}"/>
+        <java classname="bean.Demo" 
+              classpath="${expected.classes.dir}${PS}${aspectjrt.jar}" 
+                    dir="${ex.dir}" fork="yes"
+                 output="${expect.file}"/>
+
+        <echo message="## @testcase ajc simple srcdir example" />
+        <antcall target="cleanajc"/>
+        <ajc srcdir="${ex.dir}/bean" classpath="${aspectjrt.jar}" />
+        
+        <!-- todo: fix b/c returning 1 as result -->
+        <echo message="## simple.run.classpath: ${simple.run.classpath} - getting fail" />
+        <java classname="bean.Demo" 
+              classpath="${simple.run.classpath}" 
+                    dir="${ex.dir}" fork="yes"
+                 output="${actual.file}"/>
+        <antcall target="cleanajc"/>
+
+        <echo message="## @testcase ajc srcdir with include arg and (unverified) -source 1.4 and -XaddSafePrefix${knownFail}" /> 
+        <ajc srcdir="${ex.dir}/bean" classpath="${aspectjrt.jar}" includes="*.java"/>
+        <java classname="bean.Demo" 
+              classpath="${simple.run.classpath}" 
+                    dir="${ex.dir}" fork="yes"
+                 output="${actual.file}"/>
+        <antcall target="verifyAndCleanup.noworkingdir.noclassesdir"/>
+
+        <echo message="## @testcase ajc srcdir with include argument${knownFail}" /> 
+        <ajc srcdir="${ex.dir}/bean" classpath="${aspectjrt.jar}" includes="*.java"/>
+        <java classname="bean.Demo" 
+              classpath="${simple.run.classpath}" 
+                    dir="${ex.dir}" fork="yes"
+                 output="${actual.file}"/>
+        <antcall target="verifyAndCleanup.noworkingdir.noclassesdir"/>
+
+        <echo message="## @testcase ajc srcdir with destDir and working workingdir argument" />
+        <ajc srcdir="${ex.dir}/bean" classpath="${aspectjrt.jar}" 
+            destDir="${classes.dir}"
+           usejavac="yes"
+         workingdir="${working.dir}"/>
+        <java classname="bean.Demo" 
+              classpath="${run.classpath}" 
+                    dir="${ex.dir}" fork="yes"
+                 output="${actual.file}"/>
+        <antcall target="verifyAndCleanup.workingdir.classesdir"/>
+
+        <echo message="## @testcase ajc simple srcdir with nested include and nested classpath${knownFail}" />
+        <ajc srcdir="${ex.dir}/bean"> 
+          <include name="**.java"/>
+          <classpath> <pathelement path="${aspectjrt.jar}"/> </classpath>
+        </ajc>
+        <java classname="bean.Demo" 
+              classpath="${simple.run.classpath}" 
+                    dir="${ex.dir}" fork="yes"
+                 output="${actual.file}"/>
+        <antcall target="verifyAndCleanup.noworkingdir.noclassesdir"/>
+
+        <echo message="## @testcase ajc nested src with kitchen sink" />
+        <antcall target="cleanajc"/>
+        <ajc
+             destDir="${classes.dir}"
+             workingdir="${working.dir}"
+             usejavac="on"
+             preprocess="no"
+             verbose="on"
+             deprecation="on"
+             optimize="on"
+             encoding="encodingIgnored"
+             target="targetIgnored"
+             depend="dependIgnored"
+             includeantruntime="includeantruntimeIgnored"
+             includejavaruntime="includejavaruntimeIgnored"
+             failonerror="on"
+
+             nocomments="on"
+             nosymbols="on"
+             emacssym="on"
+             strict="on"
+           > 
+          <src path="${ex.dir}/bean"/> 
+          <include name="**.java"/>
+          <classpath> <pathelement path="${aspectjrt.jar}"/> </classpath>
+        </ajc>
+        <java classname="bean.Demo" 
+              classpath="${run.classpath}" 
+                    dir="${ex.dir}" fork="yes"
+                 output="${actual.file}"/>
+        <antcall target="verifyAndCleanup.workingdir.classesdir"/>
+
+        <echo message="## @testcase ajc srcdir in preprocess mode" />
+        <ajc srcdir="${ex.dir}/bean" classpath="${aspectjrt.jar}" 
+             lenient="on"
+             workingdir="${working.dir}" usejavac="on" preprocess="yes"/>
+        <antcall target="verifyAndCleanup.workingdir.noclassesdir.nooutput"/>
+
+        <echo message="## @testcase ajc argfile in preprocess mode" />
+        <ajc argfile="${ex.dir}/bean/files.lst" classpath="${aspectjrt.jar}" 
+             workingdir="${working.dir}" usejavac="on" preprocess="yes"/>
+        <antcall target="verifyAndCleanup.workingdir.noclassesdir.nooutput"/>
+
+        <echo message="## @testcase ajc argfile in normal mode" />
+        <ajc argfile="${ex.dir}/bean/files.lst" classpath="${aspectjrt.jar}" 
+             destdir="${classes.dir}" usejavac="off" preprocess="no" verbose="yes"/>
+        <java classname="bean.Demo" 
+              classpath="${run.classpath}" 
+                    dir="${ex.dir}" fork="yes"
+                 output="${actual.file}"/>
+        <antcall target="verifyAndCleanup.noworkingdir.classesdir"/>
+
+        <echo message="## @testcase ajc multiple argfile todo restore" />
+        <ajc argfiles="${ex.dir}/bean/files.lst,${ex.dir}/introduction/files.lst"        
+           classpath="${aspectjrt.jar}" destdir="${classes.dir}" >
+        </ajc>
+
+        <java classname="bean.Demo" 
+              classpath="${run.classpath}" 
+                    dir="${ex.dir}" fork="yes"
+                 output="${actual.file}"/>
+        <copy todir="${expected.classes.dir}" >
+          <fileset dir="${classes.dir}" includes="**.class" />
+        </copy>
+        <antcall target="cleanajc"/> <!-- too many classes -->
+    </target>
+
+    <target name="test.ajc2" depends="init,init.taskdefs"
+     description="run variants of ajc taskdef on bean, other examples">
+         <!-- failing here -->
+        <echo message="## @testcase ajc Vincent Massol bug" />
+        <ajc  classpath="${aspectjrt.jar}" fork="yes"
+             workingdir="${working.dir}"  > <!-- preprocess="yes" -->
+            <src path="${ex.dir}/bean"/>
+            <src path="${ex.dir}/introduction"/>
+            <include name="*.java"/>
+            <include name="**.java"/>
+        </ajc>
+        <antcall target="verifyAndCleanup.workingdir.noclassesdir.nooutput"/>
+
+        <echo message="## @testcase ajc warning when no source files specified but have srcdir # " />
+        <ajc srcdir="${ex.dir}/bean" classpath="${aspectjrt.jar}" />
+        <antcall target="cleanajc"/>
+
+        <!-- @testcase ajc -preprocess javac is failing todo -->
+        <echo message="## @testcase ajc -preprocess srcdir no destDir, post-javac compile (-preprocess ignored) # " />
+        <ajc srcdir="${ex.dir}/bean" includes="**.java" classpath="${aspectjrt.jar}" 
+           usejavac="no" preprocess="yes" workingdir="${working.dir}"/>
+
+        <echo message="## @testcase ajc -preprocess list ${working.dir}" />
+        <comparefiles lhsFile="${empty.dir}"   rhsFile="${working.dir}"/>
+        <echo message="## @testcase ajc -preprocess before comparefiles ${working.dir}" />
+        <comparefiles lhsFile="${expected.working.dir}"   rhsFile="${working.dir}"/>
+        <echo message="## @testcase ajc -preprocess before delete classes.dir" />
+        <mkdir dir="${classes.dir}"/>
+        <delete quiet="on" dir="${classes.dir}"/>
+        <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${classes.dir}"/>
+        <echo message="## @testcase ajc -preprocess doing javac" />
+        <!-- todo: unable to invoke javac though .java files in working.dir -never invoked?? -->
+        <javac srcdir="${working.dir}"  includes="**.java"
+              destdir="${classes.dir}" verbose="on"
+              classpath="${aspectjrt.jar}" />
+        <echo message="## @testcase ajc -preprocess after javac, list classes" />
+        <comparefiles lhsFile="${empty.dir}"   rhsFile="${classes.dir}"/>
+        <echo message="## @testcase ajc -preprocess after javac, compare classes" />
+        <comparefiles lhsFile="${expected.classes.dir}"   rhsFile="${classes.dir}"/>
+        
+        <echo message="## @testcase ajc -preprocess after javac, run classes" />
+        <java classname="bean.Demo" 
+              classpath="${run.classpath}" 
+                    dir="${ex.dir}" fork="yes"
+                 output="${actual.file}"/>
+        <antcall target="verifyAndCleanup.workingdir.classesdir"/>
+
+        <!-- todo: version bootclasspath, extdirs 
+             Xporting="on"    # todo: after Jim updates compiler for Xporting
+        -->
+
+    </target>
+
+    <target name="verifyAndCleanup.ajdoc" depends="verifyAndCleanup.noworkingdir.classesdir.nooutput" />
+
+    <target name="verifyAndCleanup.noworkingdir.noclassesdir">
+      <antcall target="expectfile"/>
+      <antcall target="noworkingdir"/>
+      <antcall target="noclassesdir"/>
+      <antcall target="cleanajc"/>
+    </target>
+
+    <target name="verifyAndCleanup.workingdir.noclassesdir">
+      <antcall target="expectfile"/>
+      <antcall target="workingdir"/>
+      <antcall target="noclassesdir"/>
+      <antcall target="cleanajc"/>
+    </target>
+
+    <target name="verifyAndCleanup.workingdir.noclassesdir.nooutput">
+      <antcall target="workingdir"/>
+      <antcall target="noclassesdir"/>
+      <antcall target="cleanajc"/>
+    </target>
+
+    <target name="verifyAndCleanup.noworkingdir.classesdir.nooutput">
+      <antcall target="noworkingdir"/>
+      <antcall target="classesdir"/>
+      <antcall target="cleanajc"/>
+    </target>
+
+    <target name="verifyAndCleanup.noworkingdir.classesdir" >
+      <antcall target="noworkingdir"/>
+      <antcall target="classesdir"/>
+      <antcall target="expectfile"/>
+      <antcall target="cleanajc"/>
+    </target>
+
+    <target name="verifyAndCleanup.workingdir.classesdir">
+      <antcall target="expectfile"/>
+      <antcall target="workingdir"/>
+      <antcall target="classesdir"/>
+      <antcall target="cleanajc"/>
+    </target>
+
+    <target name="expectfile" depends="init">
+        <comparefiles lhsFile="${expect.file}" rhsFile="${actual.file}"/>
+        <delete quiet="on" file="${actual.file}"/>
+    </target>
+    <target name="noworkingdir" depends="init">
+        <comparefiles lhsFile="${empty.dir}"   rhsFile="${working.dir}"/>
+    </target>
+    <target name="workingdir" depends="init">
+        <comparefiles lhsFile="${expected.working.dir}"   rhsFile="${working.dir}"/>
+    </target>
+    <target name="noclassesdir" depends="init">
+        <comparefiles lhsFile="${empty.dir}"   rhsFile="${classes.dir}"/>
+    </target>
+    <target name="classesdir" depends="init">
+        <comparefiles lhsFile="${expected.classes.dir}"   rhsFile="${classes.dir}"/>
+    </target>
+
+    <target name="cleanajc" depends="init">
+      <mkdir dir="${classes.dir}"/>
+      <delete quiet="on" dir="${classes.dir}"/>
+      <mkdir dir="${classes.dir}"/>
+      <mkdir dir="${working.dir}"/>
+      <delete quiet="on" dir="${working.dir}"/>
+      <mkdir dir="${working.dir}"/>
+      <delete quiet="on" >
+        <fileset dir="${product.examples.dir}" includes="**.class,**.ajesym"/>
+      </delete>
+    </target>
+</project>

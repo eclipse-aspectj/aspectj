@@ -1,0 +1,4 @@
+Mode:  vm run
+Title: before methods, count++, multiple files
+
+Exactly like test001, except this one uses multiple files.

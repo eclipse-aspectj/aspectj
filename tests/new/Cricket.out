@@ -1,0 +1,20 @@
+call stringMethod
+->top entry: call(String Lib.stringMethod(int))
+->exit: call(String Lib.stringMethod(int))
+->exit: call(String Lib.stringMethod(int)) with 0
+->exit: call(String Lib.stringMethod(int))
+->exit: call(String Lib.stringMethod(int)) with 1-0
+->exit: call(String Lib.stringMethod(int))
+->exit: call(String Lib.stringMethod(int)) with 2-1-0
+->top exit: call(String Lib.stringMethod(int))
+->top exit: call(String Lib.stringMethod(int)) with 2-1-0
+call voidMethod
+->top entry: call(void Lib.voidMethod(int))
+->exit: call(void Lib.voidMethod(int))
+->exit: call(void Lib.voidMethod(int)) with null
+->exit: call(void Lib.voidMethod(int))
+->exit: call(void Lib.voidMethod(int)) with null
+->exit: call(void Lib.voidMethod(int))
+->exit: call(void Lib.voidMethod(int)) with null
+->top exit: call(void Lib.voidMethod(int))
+->top exit: call(void Lib.voidMethod(int)) with null

@@ -1,0 +1,1104 @@
+
+<!-- -*- Mode: SGML; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- -->
+
+<!-- ========================================================================= -->
+<!-- Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).        -->
+<!-- All rights reserved.                                                      -->
+<!-- This program and the accompanying materials are made available            -->
+<!-- under the terms of the Common Public License v1.0                         -->
+<!-- which accompanies this distribution and is available at                   -->
+<!-- http://www.eclipse.org/legal/cpl-v10.html                                 -->
+<!--                                                                           -->
+<!-- Contributors:                                                             -->
+<!--     Xerox/PARC     initial implementation                                 -->
+<!-- ========================================================================= -->
+
+<!-- ============================================================== -->
+<!--                       -  N  O  T  E  S -                       -->
+<!--                                                                -->
+<!-- All tests use common source directory, common system classes,  -->
+<!-- and common temporary directories. Thus, the setup required:    -->
+<!-- - The temporary directories are created by the script.         -->
+<!-- - Build the ajctest taskdef into ${ajctest.pathelement}        -->
+<!-- - Build the MainWrapper into ${ajctest.mainwrapper.jar}        -->
+<!-- - Aspectj runtime classes must be in ${aspectjrt.jar}          -->
+<!-- - The source directory combines internal and external sources. -->
+<!-- Internal source is from cvs, external is from a zip file, and  -->
+<!-- both are combined in cvs.  This should be changeable with      -->
+<!-- only a few edits to combine in a third directory or read from  -->
+<!-- a single repository.  Also used are rt.jar and tools.jar.      -->
+<!-- The jars and zips are used in-place rather than copying.       -->
+<!-- Also note:                                                     -->
+<!-- - to avoid running the huge tests, define ${skip.hard.tests}   -->
+<!-- - todo: time tests and put in target description               -->
+<!--                                                                -->
+<!-- ============================================================== -->
+
+<!-- @process-test ajc test-other-systems.xml test # run 3P ajc tests -->
+<project name="test-other-systems" default="test" basedir=".">
+  <property name="project.name" value="ajctest"/>
+
+
+  <target name="info">
+    <echo>
+  Runs cycles of ajc/ajdoc/java on other large systems,
+  using taskdef in testing module.  Expected and generated files:
+
+  build/
+    aj-results/
+      jars/
+        testing-drivers-all.jar # taskdef and required libraries
+  lib/
+    test-other-systems/
+      other-systems-src.zip   # sources for other systems
+      lib/                    # libraries for sources (unused?XXX)
+        rt.jar
+        tools.jar
+
+  tests/
+    test-other-systems.xml    # this script - run from this directory
+    other-systems/            # aspect sources
+    aj-other-systems-temp/    # temporary build files
+      other-systems/          # generated, contains other-systems plus library src
+      classes/
+      lib/                    # copy of libraries above
+       rt.jar
+       tools.jar
+</echo>
+  </target>
+
+  <!-- ============================================================ -->
+  <!-- Init                                                         -->
+  <!-- ============================================================ -->
+  <target name="init" >
+    <echo message="init ajctest.xml"/> 
+    <!-- base dir for other-systems test sources -->
+    <property name="other-systems.base.dir" 
+          location="${basedir}"/>
+    <property name="jdk.tools.jar" 
+          location="XXXTODO_DEFINE_TOOLS.jar"/>
+
+    <property name="aspectj.modules.build.dir" 
+          location="${basedir}/../build"/>
+    <property name="aj.build.results.dir" 
+          location="${aspectj.modules.build.dir}/aj-results"/>
+    <property name="aspectj.modules.lib.dir" 
+          location="${basedir}/../lib"/>
+    <property name="aspectj.other-systems.lib.dir" 
+          location="${aspectj.modules.lib.dir}/test-other-systems"/>
+
+    <!-- ============================================================ -->
+    <!-- Global properties - require aspectj.init                     -->
+    <!-- ============================================================ -->
+    <!-- base dir for our internal other-systems test sources -->
+    <!-- base dir for other-systems test sources -->
+    <!-- zip of other-systems test sources -->
+
+    <property name="aj.otherSystems.dir" 
+          location="${basedir}/aj-other-systems"/>
+   
+    <!-- temporary base dir for unzipped test data is not in build temp dir b/c costly -->
+    <property name="aj.otherSystems.dir" 
+          location="${basedir}/aj-other-systems"/>
+    <!-- source files -->
+    <property name="aj.otherSystems.src.dir" 
+          location="${aj.otherSystems.dir}/src"/>
+    <property name="aj.otherSystems.lib.dir" 
+          location="${aj.otherSystems.dir}/lib"/>
+    <!-- temp classes dir -->
+    <property name="output.classes.dir" 
+          location="${aj.otherSystems.dir}/classes"/>
+    <!-- temp working dir XXX unused -->
+    <property name="workingdir" 
+          location="${aj.otherSystems.dir}/workingdir"/>
+    <!-- run from source files directory -->
+    <property name="otherSystems.run.dir" 
+          location="${aj.otherSystems.src.dir}"/>
+
+    <!-- XXX dependency on ../build/build.xml value for jar output position -->
+    <property name="aj.jar.dir" 
+          location="${aspectj.modules.build.dir}/aj-results/jars"/>
+    <property name="aj.modules.runtime.jar" 
+          location="${aj.jar.dir}/runtime.jar"/>
+    <property name="aj.modules.eajctesting.jar" 
+          location="${aj.jar.dir}/testing-drivers-all.jar"/>
+
+    <property name="ajctest.classpath" 
+             value="${aj.modules.eajctesting.jar}${path.separator}${jdk.tools.jar}" />
+
+    <!-- unzipped libraries -->
+    <property name="otherSystems.src.zip" 
+          location="${aspectj.other-systems.lib.dir}/other-systems-src.zip"/>
+    <!-- unused?
+    <property name="otherSystems.runtime.jar" 
+          location="${aj.otherSystems.dir}/lib/rt.jar"/>
+    <property name="otherSystems.tools.jar" 
+          location="${aj.otherSystems.dir}/lib/tools.jar"/>
+    -->
+
+    <!-- sensible alias to combined other-systems test sources -->
+    <property name="ajctest.src.dir" 
+             value="${aj.otherSystems.src.dir}"/>
+    <!-- system classes directory  -->
+    <property name="aj.runtime.classes" 
+             value="${aj.modules.runtime.jar}"/>
+
+    <property name="ajctest.classpath" 
+             value="${aj.modules.eajctesting.jar}${path.separator}${jdk.tools.jar}" />
+
+    <!-- set args applied to ajc when running all tests -->
+    <property name="ajctest.args" 
+             value="" />
+
+    <!-- sources installed? assume everything else is... -->
+    <available property="prepare.completed"
+            file="${aj.otherSystems.src.dir}/rsa/src/JCETest.java" />
+
+    <!-- check if testing classes are available -->
+    <available property="aj.modules.runtime.jar.available" 
+                   file="${aj.modules.runtime.jar}"  />
+    <available property="aj.modules.eajctesting.jar.available" 
+                   file="${aj.modules.eajctesting.jar}"  />
+    <available property="otherSystems.src.zip.available" 
+                   file="${otherSystems.src.zip}"  />
+
+    <!-- XXX properties used in testing..Ajctest.java -->
+    <property name="ajctest.pathelement" 
+          location="${aj.modules.eajctesting.jar}"  />
+    <!-- todo: testing.jar for wrapper - only need MainWrapper classes -->
+    <property name="ajctest.wrapper.jar" 
+          location="${aj.modules.eajctesting.jar}"  /> 
+
+
+    <!-- echo settings that affect running -->
+    <echo>
+    "## ajctest FYI   skip.hard.tests: ${skip.hard.tests}"
+    "## ajctest FYI ajctest.classpath: ${ajctest.classpath}"
+    "## ajctest FYI      ajctest.args: ${ajctest.args}"
+    "## ajctest FYI  ajctest.compiler: ${ajctest.compiler}"
+    </echo>
+
+    <taskdef name="ajctest" 
+             classname="org.aspectj.internal.tools.ant.taskdefs.Ajctest"
+             classpath="${ajctest.classpath}" />
+  
+    <!-- setup needed directories  -->
+    <mkdir dir="${output.classes.dir}"/>
+    <mkdir dir="${ajctest.src.dir}"/>
+
+    <!-- echo context -->
+    <!-- antcall target="echo.build.variables"/ -->
+  </target>
+
+  <target name="warnings" depends="init">
+    <fail unless="aj.modules.runtime.jar.available"
+       message="build ${aj.modules.runtime.jar}"/>
+    <fail unless="aj.modules.eajctesting.jar.available"
+       message="build ${aj.modules.eajctesting.jar}"/>
+    <fail unless="otherSystems.src.zip.available"
+       message="get ${otherSystems.src.zip}"/>
+  </target>
+
+  <!-- ============================================================ -->
+  <!-- Prepare internal and external source                         -->
+  <!-- ============================================================ -->
+  <target name="prepare" depends="init,warnings"
+        unless="prepare.completed">
+     <copy todir="${aj.otherSystems.src.dir}" >
+       <fileset dir="${basedir}/other-systems"/>
+     </copy>
+     <unzip dest="${aj.otherSystems.src.dir}" 
+             src="${otherSystems.src.zip}"/>
+  </target>
+
+  <!-- ============================================================ -->
+  <!-- Tests that pass - before refactoring (todo remove when done) -->
+  <!-- ============================================================ -->
+  <target name="temp-pass-tests" 
+       depends="rsa,biojava,jato,kawa,
+                gnuprolog,jarp,jiu,
+                tt-bytecode,xc4j,jmeter,bcel,
+                jame,sablecc,examples, nsuml,jsci,
+                applets"/>
+
+  <!-- ============================================================ -->
+  <!-- Tests that pass                                              -->
+  <!-- ============================================================ -->
+  <target name="pass-tests" 
+       depends="rsa,biojava,jato,kawa,
+                gnuprolog,jarp,jiu,
+                tt-bytecode,xc4j,jmeter,bcel,
+                jame,sablecc,examples,
+                nsuml,jsci,
+                ajc, java-src,
+                applets, jedit"/>
+
+  <!-- ============================================================ -->
+  <!-- Tests that use a lot of resources                            -->
+  <!-- ============================================================ -->
+  <target name="hard-tests" depends="hard-ajc,hard-java-src"/>
+
+  <!-- ============================================================ -->
+  <!--  Test that should run last                                   -->
+  <!-- ============================================================ -->
+  <target name="last-tests" depends="swing"/>
+
+  <!-- ============================================================ -->
+  <!-- All tests                                                    -->
+  <!-- Depends on the passing tests and failing tests               -->
+  <!-- ============================================================ -->
+  <target name="test" depends="pass-tests,hard-tests,last-tests"/>
+
+  <!-- ============================================================ -->
+  <!-- Clean the build directory                                    -->
+  <!-- todo: also clean internal of external sources?               -->
+  <!-- ============================================================ -->
+  <target name="clean" unless="noclean">
+    <delete dir="${output.classes.dir}"/>
+    <delete dir="${workingdir}"/>
+  </target>
+
+  <!-- ============================================================ -->
+  <!-- compile target for the sake of orthogonal targets            -->
+  <!-- todo: add compile of required classes?                       -->
+  <!-- ============================================================ -->
+  <target name="compile" >
+    <echo message="ajctest: no compile target"/>
+  </target>
+
+  <!-- ============================================================ -->
+  <!-- target to test ajcclean and the build script                 -->
+  <!-- ============================================================ -->
+   <target name="testWrap" depends="prepare"
+    description="(wes-only) target for testing ajclean and build scripts" >
+        <ajctest testId="testWrap"
+            dir="c:/home/wes/work/src"
+            args="${ajctest.args}"
+            destdir="${output.classes.dir}" >
+            <classpath>
+                <pathelement path="${output.classes.dir}"/>
+                <pathelement path="${aj.runtime.classes}"/>
+            </classpath> 
+            <java classname="TestWrap"/>
+            <java classname="TestWrapException"/>
+            <!-- testset argfiles="testwrapCompileError.lst" / -->
+            <testset argfiles="testwrap.lst"/>
+        </ajctest>
+  </target>
+
+  <!-- ============================================================ -->
+  <!-- All the projects                                             -->
+  <!-- ============================================================ -->
+  <target name="rsa" depends="prepare">
+    <ajctest testId="rsa"
+            dir="${ajctest.src.dir}/rsa" 
+            args="showversion,${ajctest.args}"
+             destdir="${output.classes.dir}">
+      <classpath>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+        <pathelement path="${external.other-systems.runtime.jar}"/>
+        <pathelement path="${external.other-systems.tools.jar}"/>
+      </classpath>
+      <java classname="SignatureTest"/>
+      <java classname="JCETest"/>
+      <testset argfiles="getssets.lst"/>
+      <testset argfiles="main.lst"/>
+    </ajctest>
+  </target>
+
+  <target name="biojava.depends" depends="prepare">
+    <copy todir="${output.classes.dir}">
+      <fileset dir="${ajctest.src.dir}/biojava/resources" includes="**/*.xml"/>
+    </copy>
+  </target>
+
+  <target name="biojava" depends="prepare">
+    <ajctest testId="biojava"
+            dir="${ajctest.src.dir}/biojava" 
+            args="${ajctest.args}"
+         destdir="${output.classes.dir}"
+         depends="biojava.depends">
+      <classpath>
+        <fileset dir="${ajctest.src.dir}/biojava/lib">
+          <include name="**/*.jar"/>
+        </fileset>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <java classname="org.biojava.bio.seq.db.SimpleSequenceDBInstallation"/>
+      <java classname="symbol.TestWindowedSymbolList"/>
+      <java classname="symbol.TestSimpleAlignment"/>
+      <java classname="symbol.TestOrderNSymbolList"/>
+      <java classname="symbol.TestGappedSymbolList"/>
+      <java classname="symbol.TestAmbiguity"/>
+      <java classname="seq.TestTranslation"/>
+      <java classname="seq.TestEmbl">
+        <arg line="${ajctest.src.dir}/biojava/demos/files/AL121903.embl"/>
+      </java>
+      <java classname="seq.GCContent">
+        <arg line="${ajctest.src.dir}/biojava/demos/files/short.fasta"/>
+      </java>
+      <java classname="gff.EmblToGffFasta">
+        <arg line="${ajctest.src.dir}/biojava/demos/files/AL121903.embl"/>
+        <arg line="${ajctest.src.dir}/biojava/demos/files/short.fasta"/>
+        <arg line="${ajctest.src.dir}/biojava/demos/files/out.gff"/>
+      </java>
+      <java classname="eventbasedparsing.Pdb2XML">
+        <arg line="${ajctest.src.dir}/biojava/demos/files/pdb/hmga_1.pdb"/>
+      </java>
+      <java classname="eventbasedparsing.BlastLike2XML">
+        <arg line="${ajctest.src.dir}/biojava/demos/files/ncbiblast/shortBlastn.out"/>
+      </java>
+      <java classname="dp.ViterbiAlign"
+                  dir="${otherSystems.run.dir}" >
+        <!-- used as file: URL, but cygwin //c/ looks like network file system -->
+        <arg line="biojava/demos/files/fakepromoter.xml"/>
+        <arg line="biojava/demos/files/short.fasta"/>
+      </java>
+      <java classname="dp.Dice"/>
+      <java classname="ListChangeTypes">
+        <arg line="org.biojava.bio.seq.impl.SimpleSequence"/>
+      </java>
+      <testset argfiles="all.lst"/>
+    </ajctest>
+  </target>
+
+  <target name="jato.depends" depends="prepare">
+    <copy todir="${output.classes.dir}">
+      <fileset dir="${ajctest.src.dir}/jato/examples" includes="**/*.xml"/>
+      <fileset dir="${ajctest.src.dir}/jato/lib" includes="**/*.xml"/>
+    </copy>
+  </target>
+
+  <target name="jato" depends="prepare">
+    <ajctest testId="jato"
+            dir="${ajctest.src.dir}/jato" 
+            args="${ajctest.args}"
+         destdir="${output.classes.dir}"
+         depends="jato.depends">
+      <classpath>
+        <fileset dir="${ajctest.src.dir}/jato/lib">
+          <include name="**/*.jar"/>
+        </fileset>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <java classname="simple.SimpleJavaToXml"/>
+      <!-- java classname="simple.SimpleXmlToJava"/ -->
+      <testset argfiles="all.lst"/>
+    </ajctest>
+  </target>
+
+  <target name="kawa" depends="prepare">
+    <ajctest testId="kawa"
+            dir="${ajctest.src.dir}/kawa"
+            args="${ajctest.args}"
+         destdir="${output.classes.dir}">
+    <classpath>
+      <pathelement path="${output.classes.dir}"/>
+      <pathelement path="${aj.runtime.classes}"/>
+    </classpath>
+    <java classname="kawa.repl">
+      <arg line="-d ${output.classes.dir}"/>
+      <arg line="-P kawa/lib"/>
+
+      <arg line="-C ${ajctest.src.dir}/kawa/kawa/lib/std_syntax.scm"/>
+      <arg line="-C ${ajctest.src.dir}/kawa/kawa/lib/characters.scm"/>
+      <arg line="-C ${ajctest.src.dir}/kawa/kawa/lib/files.scm"/>
+      <arg line="-C ${ajctest.src.dir}/kawa/kawa/lib/keywords.scm"/>
+      <arg line="-C ${ajctest.src.dir}/kawa/kawa/lib/misc.scm"/>
+      <arg line="-C ${ajctest.src.dir}/kawa/kawa/lib/numbers.scm"/>
+      <arg line="-C ${ajctest.src.dir}/kawa/kawa/lib/ports.scm"/>
+      <arg line="-C ${ajctest.src.dir}/kawa/kawa/lib/quantities.scm"/>
+      <arg line="-C ${ajctest.src.dir}/kawa/kawa/lib/reflection.scm"/>
+      <arg line="-C ${ajctest.src.dir}/kawa/kawa/lib/strings.scm"/>
+      <arg line="-C ${ajctest.src.dir}/kawa/kawa/lib/syntax.scm"/>
+      <arg line="-C ${ajctest.src.dir}/kawa/kawa/lib/system.scm"/>
+      <arg line="-C ${ajctest.src.dir}/kawa/kawa/lib/thread.scm"/>
+      <arg line="-C ${ajctest.src.dir}/kawa/kawa/lib/vectors.scm"/>
+
+      <arg line="-C ${ajctest.src.dir}/kawa/testsuite/mac-test.scm"/>
+      <arg line="-C ${ajctest.src.dir}/kawa/testsuite/mac1.scm"/>
+      <arg line="-C ${ajctest.src.dir}/kawa/testsuite/obj-test.scm"/>
+      <arg line="-C ${ajctest.src.dir}/kawa/testsuite/test.scm"/>
+      <arg line="-C ${ajctest.src.dir}/kawa/testsuite/testing.scm"/>
+    </java>
+      <testset argfiles="main.lst"/>
+    </ajctest>
+  </target>
+
+  
+  <target name="gnuprolog.depends" depends="prepare">
+    <copy todir="${output.classes.dir}">
+      <fileset dir="${ajctest.src.dir}/gnuprolog/src" includes="**/*.pro"/>
+    </copy>
+  </target>
+
+  <target name="gnuprolog" depends="prepare">
+    <ajctest testId="gnuprolog"
+            dir="${ajctest.src.dir}/gnuprolog" 
+            args="${ajctest.args},lenient"
+             destdir="${output.classes.dir}"
+         depends="gnuprolog.depends">
+      <classpath>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <testset argfiles="main.lst"/>
+    </ajctest>
+  </target>
+
+  <target name="nsuml.depends" depends="prepare">
+    <copy file="${ajctest.src.dir}/nsuml/src/ru/novosoft/uml/xmi/uml13.dtd"
+          todir="${output.classes.dir}/ru/novosoft/uml/xmi"
+    />
+  </target>
+
+  <target name="nsuml" depends="prepare">
+    <ajctest testId="nsuml"
+            dir="${ajctest.src.dir}/nsuml" 
+            args="JXmx256M,${ajctest.args}"
+             destdir="${output.classes.dir}"
+         depends="nsuml.depends">
+      <classpath>
+        <fileset dir="${ajctest.src.dir}/nsuml/lib">
+          <include name="**/*.jar"/>
+        </fileset>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <java classname="EventTest"/>
+      <testset argfiles="all.lst"/>
+    </ajctest>
+  </target>
+
+  <target name="jarp.depends" depends="prepare">
+    <copy todir="${output.classes.dir}" filtering="yes">
+      <fileset dir="${ajctest.src.dir}/jarp/src">
+        <include name="**/*.properties" />
+      </fileset>
+    </copy>
+    <copy todir="${output.classes.dir}" filtering="no">
+      <fileset dir="${ajctest.src.dir}/jarp/src">
+        <include name="**/*.gif" />
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="jarp" depends="prepare">
+    <ajctest testId="jarp"
+            dir="${ajctest.src.dir}/jarp" 
+            args="${ajctest.args}"
+             destdir="${output.classes.dir}"
+         depends="jarp.depends">
+      <classpath>
+        <fileset dir="${ajctest.src.dir}/jato/lib">
+          <include name="jdom*.jar"/>
+          <include name="xerces*.jar"/>
+        </fileset>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <java classname="org.jarp.Driver" dir="${output.classes.dir}" fork="yes"/>
+      <testset argfiles="all.lst"/>
+    </ajctest>
+  </target>
+
+  <target name="jiu.depends" depends="prepare">
+    <delete dir="${ajctest.src.dir}/jiu/test-images/out"/>
+    <mkdir dir="${ajctest.src.dir}/jiu/test-images/out"/>
+  </target>
+
+  <target name="jiu" depends="prepare">
+    <ajctest testId="jiu"
+            dir="${ajctest.src.dir}/jiu" 
+            args="${ajctest.args}"
+             destdir="${output.classes.dir}"
+         depends="jiu.depends">
+      <java classname="net.sourceforge.jiu.apps.jiu">
+        <classpath>
+          <pathelement path="${output.classes.dir}"/>
+          <pathelement path="${aj.runtime.classes}"/>
+        </classpath>
+    <arg value="-i"/>    
+        <arg value="${ajctest.src.dir}/jiu/test-images/in/airplane.ras"/>
+        <arg value="-o"/>
+        <arg value="${ajctest.src.dir}/jiu/test-images/out/airplane.ras"/>
+      </java>
+      <java classname="net.sourceforge.jiu.apps.jiu">
+        <classpath>
+          <pathelement path="${output.classes.dir}"/>
+          <pathelement path="${aj.runtime.classes}"/>
+        </classpath>
+    <arg value="-i"/>    
+        <arg value="${ajctest.src.dir}/jiu/test-images/in/airplane.ras"/>
+        <arg value="-c"/>
+      </java>
+      <testset argfiles="main.lst"/>
+    </ajctest>
+  </target>
+
+  <target name="tt-bytecode" depends="prepare">
+    <ajctest testId="tt-bytecode"
+            dir="${ajctest.src.dir}/tt-bytecode" 
+            args="${ajctest.args}"
+             destdir="${output.classes.dir}">
+      <classpath>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <java classname="com.techtrader.modules.tools.bytecode.visitor.PrettyPrintVisitor">
+        <arg value="java.lang.Throwable"/>
+      </java>
+      <java classname="com.techtrader.modules.tools.bytecode.visitor.PrettyPrintVisitor">
+        <arg value="javax.swing.JComponent"/>
+      </java>
+      <java classname="com.techtrader.modules.tools.bytecode.visitor.PrettyPrintVisitor">
+        <arg value="com.techtrader.modules.tools.bytecode.visitor.PrettyPrintVisitor"/>
+      </java>
+      <testset argfiles="main.lst"/>
+    </ajctest>
+  </target>
+
+  <target name="xc4j" depends="prepare">
+    <ajctest testId="xc4j"
+            dir="${ajctest.src.dir}/xc4j" 
+            args="${ajctest.args}"
+         destdir="${output.classes.dir}">
+      <classpath>
+        <fileset dir="${ajctest.src.dir}/xc4j/lib">
+          <include name="**/*.jar"/>
+        </fileset>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <java classname="net.sourceforge.xc4j.apps.samples.LexerTest">
+        <arg value="${ajctest.src.dir}/xc4j/src/net/sourceforge/xc4j/apps/samples/LexerTest.java"/>
+      </java>
+      <java classname="net.sourceforge.xc4j.apps.samples.LexerTest">
+        <arg value="${ant.file}"/>
+      </java>
+      <testset argfiles="all.lst"/>
+    </ajctest>
+  </target>
+
+  <target name="jmeter" depends="prepare">
+    <ajctest testId="jmeter"
+            dir="${ajctest.src.dir}/jmeter" 
+            args="${ajctest.args}"
+         destdir="${output.classes.dir}">
+      <classpath>
+        <fileset dir="${ajctest.src.dir}/jmeter/lib">
+          <include name="**/*.jar"/>
+        </fileset>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <testset argfiles="main.lst"/>
+    </ajctest>
+  </target>
+
+
+  <target name="bcel" depends="prepare">
+    <ajctest testId="bcel"
+            dir="${ajctest.src.dir}/bcel" 
+            args="${ajctest.args}"
+             destdir="${output.classes.dir}">
+    <classpath>
+      <pathelement path="${output.classes.dir}"/>
+      <pathelement path="${aj.runtime.classes}"/>
+      <pathelement path="."/> <!-- used by Peephole... -->
+    </classpath>
+    <!-- todo: put HelloWorld output in temp, not current dir -->
+    <java classname="HelloWorldBuilder" />
+    <java classname="JasminVisitor">
+      <arg value="HelloWorld.class"/>
+    </java>
+    <java classname="Peephole">
+      <arg value="HelloWorld"/>
+    </java>
+    <java classname="helloify">
+      <arg value="HelloWorld.class"/>
+    </java>
+    <java classname="patchclass">
+      <arg value="hello"/>
+      <arg value="goodbye"/>
+      <arg value="HelloWorld.class"/>
+    </java>
+    <java classname="listclass">
+      <arg value="HelloWorld.class"/>
+      <arg value="-constants"/>
+      <arg value="-code"/>
+      <arg value="HelloWorld.class"/>
+    </java>
+    <java classname="maxstack">
+      <arg value="HelloWorld"/>
+    </java>
+      <testset argfiles="all.lst"/>
+    </ajctest>
+  </target>
+
+  <!-- Stopped here -->
+
+  <target name="jedit" depends="prepare">
+    <ajctest testId="jedit"
+            dir="${ajctest.src.dir}/jedit" 
+            args="JXmx256M,${ajctest.args}"
+             destdir="${output.classes.dir}">
+      <classpath>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <testset argfiles="main.lst"/>
+    </ajctest>
+  </target>
+
+  <target name="jame" depends="prepare">
+    <ajctest testId="jame"
+            dir="${ajctest.src.dir}/jame" 
+            args="${ajctest.args}"
+             destdir="${output.classes.dir}">
+      <classpath>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <testset argfiles="main.lst"/>
+    </ajctest>
+  </target>
+
+  <target name="sablecc" depends="prepare">
+    <ajctest testId="sablecc"
+            dir="${ajctest.src.dir}/sablecc" 
+            args="${ajctest.args}"
+             destdir="${output.classes.dir}">
+      <classpath>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <testset argfiles="main.lst,node-aspect.lst"/>
+      <testset argfiles="main.lst,nodes-aspect.lst"/>
+      <testset argfiles="main.lst"/>
+      <testset argfiles="main.lst,parser-aspect.lst"/>
+      <testset argfiles="main.lst,lexer-aspect.lst"/>
+    </ajctest>
+  </target>
+ <!-- 
+ -->
+  <target name="mmexamples" depends="prepare">
+    <ajctest testId="examples" 
+            dir="examples" 
+             destdir="${output.classes.dir}">
+      <testset argfiles="bean/files.lst"
+               classes="bean.Demo"/>
+    </ajctest>
+  </target>
+  <target name="examples" depends="prepare">
+    <ajctest testId="examples" 
+            dir="./examples" 
+            args="${ajctest.args}"
+             destdir="${output.classes.dir}">
+      <classpath>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <testset argfiles="bean/files.lst"
+               classes="bean.Demo"/>
+      <testset argfiles="coordination/lib.lst" 
+               classes=""/>
+      <testset argfiles="introduction/files.lst"
+               classes="introduction.CloneablePoint,
+                        introduction.ComparablePoint,
+                        introduction.HashablePoint,
+                        introduction.Point"/>
+      <testset argfiles="observer/files.lst" 
+               classes=""/>
+      <testset argfiles="spacewar/debug.lst" 
+               classes=""/>
+      <testset argfiles="spacewar/demo.lst" 
+               classes=""/>
+      <testset argfiles="telecom/basic.lst"
+               classes="telecom.BasicSimulation"/>
+               
+      <testset argfiles="telecom/billing.lst" 
+               classes="telecom.BillingSimulation" />
+      <testset argfiles="telecom/timing.lst" 
+               classes="telecom.TimingSimulation" />
+
+      <testset argfiles="timeserver/abort.lst" 
+               classes=""/>
+      <testset argfiles="timeserver/retry.lst" 
+               classes=""/>
+      <testset argfiles="tjp/files.lst" 
+               classes="tjp.Demo"/>
+      <testset argfiles="tracing/notrace.lst" 
+               classes="tracing.ExampleMain"/>
+      <testset argfiles="tracing/tracelib.lst" 
+               classes="tracing.lib.TraceMyClasses"/>
+      <testset argfiles="tracing/tracev1.lst" 
+               classes="tracing.version1.TraceMyClasses"/>
+      <testset argfiles="tracing/tracev2.lst" 
+               classes="tracing.version2.TraceMyClasses"/>
+      <testset argfiles="tracing/tracev3.lst" 
+               classes="tracing.version3.TraceMyClasses"/>
+    </ajctest>
+  </target>
+
+  <target name="ajc" depends="prepare">
+    <echo message="tools: ${jdk.tools.jar}"/>
+    <ajctest testId="ajc"
+            dir="${ajctest.src.dir}/ajc-src" 
+            args="nosymbols,timings,JXmx256M,${ajctest.args}"
+             destdir="${output.classes.dir}">
+      <classpath>
+        <pathelement path="${jdk.tools.jar}"/>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <testset argfiles="ajc.lst,mytrace.lst,../texecs.lst"/>
+      <testset argfiles="ajc.lst,mytrace.lst,../tsets.lst"/>
+      <testset argfiles="ajc.lst,mytrace.lst,../taround.lst"/>
+      <testset argfiles="ajc.lst,mytrace.lst,../taround.lst,../texecs.lst"/>
+      <testset argfiles="ajc.lst,showerror.lst"/>
+    </ajctest>
+  </target>
+
+  <target name="hard-ajc" depends="prepare"
+        unless="skip.hard.tests" >
+    <ajctest testId="hard-ajc"
+            dir="${ajctest.src.dir}/ajc-src"
+            args="nosymbols,timings,JXmx350M,${ajctest.args}"
+             destdir="${output.classes.dir}">
+      <classpath>
+        <pathelement path="${jdk.tools.jar}"/>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <testset argfiles="ajc.lst,mytrace.lst,../tcalls.lst"/>
+      <testset argfiles="ajc.lst,mytrace.lst,../treceps.lst"/>
+      <!--testset argfiles="ajc.lst,mytrace.lst,../tcalls.lst,../texecs.lst,../tsets.lst"/-->
+      <!--testset argfiles="ajc.lst,mytrace.lst,../tcalls.lst,../texecs.lst,../treceps.lst"/-->
+    </ajctest>
+  </target>
+
+  <target name="java-src.depends" depends="prepare">
+    <copy todir="${output.classes.dir}" 
+          file="${ajctest.src.dir}/java-src/tests/net/HttpTest.java"/>
+  </target>
+
+  <target name="java-src" depends="prepare">
+    <ajctest testId="java-src"
+            dir="${ajctest.src.dir}/java-src" 
+            args="JXmx256M,timings,${ajctest.args}"
+         destdir="${output.classes.dir}"
+         depends="java-src.depends">
+      <classpath>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+        <pathelement path="${external.other-systems.runtime.jar}"/>
+        <pathelement path="${external.other-systems.tools.jar}"/>
+      </classpath>
+      <testset argfiles="util.lst,tests.lst"/>
+      <testset argfiles="util.lst,tests.lst,mytrace.lst,../texecs.lst"/>
+      <testset argfiles="util.lst,tests.lst,mytrace.lst,../treceps.lst"/>
+      <testset argfiles="util.lst,tests.lst,mytrace.lst,../tsets.lst"/>
+      <testset argfiles="util.lst,tests.lst,mytrace.lst,../tcalls.lst"/>
+      <testset argfiles="util.lst,tests.lst,mytrace.lst,../taround.lst"/>
+	  <!-- final one failing on small machines? -->
+      <testset argfiles="util.lst,tests.lst,mytrace.lst,../taround.lst,../texecs.lst"/>
+      <!-- do not run until you can run with the target classes in bootclasspath -->
+    </ajctest>
+  </target>
+
+  <target name="swingtest.depends" depends="prepare">
+    <mkdir dir="${output.classes.dir}/resources"/>
+    <copy todir="${output.classes.dir}/resources">
+      <fileset dir="${ajctest.src.dir}/java-src/tests/jfc/NotePad/resources"/>
+    </copy>
+    <mkdir dir="${output.classes.dir}/images"/>
+    <copy todir="${output.classes.dir}/images">
+      <fileset dir="${ajctest.src.dir}/java-src/tests/jfc/Metalworks/images"/>
+    </copy>
+    <mkdir dir="${output.classes.dir}/HelpFiles"/>
+    <copy todir="${output.classes.dir}/HelpFiles">
+      <fileset dir="${ajctest.src.dir}/java-src/tests/jfc/Metalworks/HelpFiles"/>
+    </copy>
+    <copy todir="${output.classes.dir}">
+      <fileset dir="${ajctest.src.dir}/java-src/tests/jfc/Metalworks"
+               includes="MyTheme.theme"/>
+    </copy>
+    <copy todir="${output.classes.dir}/resources">
+      <fileset dir="${ajctest.src.dir}/java-src/tests/jfc/Stylepad/resources"/>
+    </copy>
+  </target>
+
+  <target name="swingtest.warning">
+    <echo>
+    -------------------- INFORMATION ---------------------
+    The following tests will print (but NOT throw)
+    exceptions because of a known bug in swing:
+       - FileChooserDemo
+       - Metalworks
+    -------------------- INFORMATION ---------------------
+    </echo>
+  </target>
+
+  <target name="swing" depends="prepare">
+    <ajctest testId="swing"
+            dir="${otherSystems.run.dir}" 
+            args="JXmx256M,${ajctest.args}"
+             destdir="${output.classes.dir}">
+      <classpath>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+        <pathelement path="${external.other-systems.runtime.jar}"/>
+        <pathelement path="${external.other-systems.tools.jar}"/>
+      </classpath>
+      <testset argfiles="${rundir.to.runsrcdir}/java-src/swingtest.lst,
+                         ${rundir.to.runsrcdir}/java-src/swing.lst">
+        <!-- omitting all  swing test runs for now
+        <java  classname="Metalworks" fork="yes" dir="${output.classes.dir}">
+          <jvmarg value="-Xbootclasspath/p:${output.classes.dir}"/>
+        </java>
+        <java  classname="Stylepad" fork="yes">
+          <jvmarg value="-Xbootclasspath/p:${output.classes.dir}"/>
+        </java>
+        <java  classname="FileChooserDemo" fork="yes">
+          <jvmarg value="-Xbootclasspath/p:${output.classes.dir}"/>
+        </java>
+        <java  classname="Notepad" fork="yes">
+          <jvmarg value="-Xbootclasspath/p:${output.classes.dir}"/>
+        </java>
+        -->
+      </testset>
+    </ajctest>
+  </target>
+
+  <target name="applets.depends" depends="prepare">
+    <copy todir="${output.classes.dir}">
+      <fileset dir="${ajctest.src.dir}/applets"
+               includes="**/*.html,**/*.gif,**/*.au,**/*.obj,**/*.xyz"/>
+    </copy>
+  </target>
+
+  <target name="applets" depends="prepare">
+
+    <ajctest testId="applets"
+            dir="${ajctest.src.dir}/applets" 
+            args="${ajctest.args}"
+         destdir="${output.classes.dir}"
+         depends="applets.depends">
+      <classpath>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <java classname="AppletTester" fork="yes">
+        <arg line="-basedir ${output.classes.dir}"/>
+      </java>
+      <testset argfiles="main.lst"/>
+    </ajctest>
+  </target>
+
+  <target name="hard-java-src" depends="prepare"
+          unless="skip.hard.tests" >
+    <ajctest testId="hard-java-src"
+            dir="${ajctest.src.dir}/java-src" 
+            args="JXmx400M,${ajctest.args}"
+             destdir="${output.classes.dir}">
+      <classpath>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+        <pathelement path="${external.other-systems.runtime.jar}"/>
+        <pathelement path="${external.other-systems.tools.jar}"/>
+      </classpath>
+      <testset argfiles="util.lst,mytrace.lst,../tcalls.lst,../texecs.lst,../treceps.lst"/>
+      <testset argfiles="swing.lst,mytrace.lst,../tsets.lst"/>
+    </ajctest>
+  </target>
+
+
+  <target name="jsci" depends="prepare">
+    <ajctest testId="jsci"
+            dir="${ajctest.src.dir}/jsci" 
+            args="${ajctest.args}"
+             destdir="${output.classes.dir}">
+      <classpath>
+        <fileset dir="${ajctest.src.dir}/jsci/lib">
+         <include name="**/*.jar"/>
+        </fileset>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <testset argfiles="main.lst,examples.lst"/>
+      <java classname="TestEigen"/>
+      <java classname="TestWavelet"/>
+      <java classname="TestWavelet2"/>
+    </ajctest>
+  </target>
+
+  <!-- ============================================================ -->
+  <!-- Help                                                         -->
+  <!-- ============================================================ -->
+  <target name="help">
+    <echo>
+     Usage: ant -f ${ant.file} [ant-options] [options]
+     
+     where ant-options can be found be typing:
+
+         ant -help
+
+     and where options include:
+     -Dnodownload=true  do NOT download test files
+     -Dnocompile=true   do NOT compile files, just run the tests
+     -Dnoclean=true     do NOT clean the ${output.classes.dir} before each test
+     -Dnodoc=true       do NOT generate run ajdoc
+     -Dgui=true         display the GUI helper
+     -help              print this help message
+     -Ddumpresults      dump the results to a file
+                        named ajctest-errors[date-and-time].txt
+    </echo>
+  </target>
+
+
+  <!-- ============================================================ -->
+  <!-- Tests for ajctest taskdef                                    -->
+  <!-- ============================================================ -->
+  <target name="testAjctest" 
+       depends="testAjctest.fail,testAjctest.pass"/>
+  <target name="testAjctest.pass" 
+       depends="testAjctest.exit.pass,testAjctest.normal.pass"/>
+  <target name="testAjctest.fail" 
+       depends="testAjctest.exception.fail,testAjctest.error.fail,
+                testAjctest.exit.fail,testAjctest.compileFailure.fail"/>
+  <target name="testAjctest.depends" 
+       depends="prepare">
+    <property name="testAjctest.src.dir"
+          location="${aspectj.test.src.dir}/harness/ajctest"/>
+  </target>
+
+  <target name="testAjctest.all" depends="testAjctest.depends">
+    <ajctest testId="testAjctest.all"
+            dir="${testAjctest.src.dir}" 
+            args="showversion,${ajctest.args}"
+             destdir="${output.classes.dir}">
+      <classpath>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <java classname="Driver"/> 
+      <java classname="Driver"> 
+        <arg line="-exit 0"/>
+      </java>
+      <java classname="Driver">
+        <arg line="-exit 1"/>
+      </java>
+      <java classname="Driver">
+        <arg line="-error errorMessage"/>
+      </java>
+      <java classname="Driver">
+        <arg line="-exception exceptionMessage"/>
+      </java>
+      <testset argfiles="aspect.lst"/>
+      <testset argfiles="driver.lst"/>
+      <testset argfiles="error.lst"/>
+    </ajctest>
+  </target>
+
+  <target name="testAjctest.normal.pass" depends="testAjctest.depends">
+    <ajctest testId="testAjctest.normal.pass"
+            dir="${testAjctest.src.dir}" 
+            args="showversion,${ajctest.args}"
+             destdir="${output.classes.dir}">
+      <classpath>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <java classname="Driver"/> 
+      <testset argfiles="aspect.lst"/>
+      <testset argfiles="driver.lst"/>
+    </ajctest>
+  </target>
+
+  <target name="testAjctest.exception.fail" depends="testAjctest.depends">
+    <ajctest testId="testAjctest.exception.fail"
+            dir="${testAjctest.src.dir}" 
+            args="showversion,${ajctest.args}"
+             destdir="${output.classes.dir}">
+      <classpath>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <java classname="Driver"> 
+        <arg line="-exception exceptionMessage"/>
+      </java>
+      <testset argfiles="aspect.lst"/>
+      <testset argfiles="driver.lst"/>
+    </ajctest>
+  </target>
+
+  <target name="testAjctest.error.fail" depends="testAjctest.depends">
+    <ajctest testId="testAjctest.error.fail"
+            dir="${testAjctest.src.dir}" 
+            args="showversion,${ajctest.args}"
+             destdir="${output.classes.dir}">
+      <classpath>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <java classname="Driver"> 
+        <arg line="-error errorMessage"/>
+      </java>
+      <testset argfiles="aspect.lst"/>
+      <testset argfiles="driver.lst"/>
+    </ajctest>
+  </target>
+
+  <target name="testAjctest.exit.fail" depends="testAjctest.depends">
+    <ajctest testId="testAjctest.exit.fail"
+            dir="${testAjctest.src.dir}" 
+            args="showversion,${ajctest.args}"
+             destdir="${output.classes.dir}">
+      <classpath>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <java classname="Driver"> 
+        <arg line="-exit 1"/>
+      </java>
+      <testset argfiles="aspect.lst"/>
+      <testset argfiles="driver.lst"/>
+    </ajctest>
+  </target>
+
+  <target name="testAjctest.exit.pass" depends="testAjctest.depends">
+    <ajctest testId="testAjctest.exit.pass"
+            dir="${testAjctest.src.dir}" 
+            args="showversion,${ajctest.args}"
+             destdir="${output.classes.dir}">
+      <classpath>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <java classname="Driver"> 
+        <arg line="-exit 0"/>
+      </java>
+      <testset argfiles="aspect.lst"/>
+      <testset argfiles="driver.lst"/>
+    </ajctest>
+  </target>
+
+  <target name="testAjctest.compileFailure.fail" depends="testAjctest.depends">
+    <ajctest testId="testAjctest.compileFailure.fail"
+            dir="${testAjctest.src.dir}" 
+            args="showversion,${ajctest.args}"
+             destdir="${output.classes.dir}">
+      <classpath>
+        <pathelement path="${output.classes.dir}"/>
+        <pathelement path="${aj.runtime.classes}"/>
+      </classpath>
+      <java classname="Driver"/> 
+      <testset argfiles="error.lst"/>
+    </ajctest>
+  </target>
+
+</project>

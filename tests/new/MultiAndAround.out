@@ -1,0 +1,33 @@
+**************************************
+around call(IBase.*)
+around call(IBase+.*)
+IBase.base1 from Intro
+around call(IBase.*)
+around call(IBase+.*)
+around execution(Base+.*)
+Base.base2
+around call(IBase.*)
+around call(IBase+.*)
+IBase.base3 from Intro
+**************************************
+around call(IBase.*)
+around call(IBase+.*)
+IDerived.base1 from Intro
+around call(IBase.*)
+around call(IBase+.*)
+IDerived.base2 from Intro
+around call(IBase.*)
+around call(IBase+.*)
+Derived.base3
+**************************************
+around call(IBase.*)
+around call(IBase+.*)
+IBase.base1 from Intro
+around call(IBase.*)
+around call(IBase+.*)
+around execution(Base+.*)
+Base.base2
+around call(IBase.*)
+around call(IBase+.*)
+around execution(Base+.*)
+SubBase.base3

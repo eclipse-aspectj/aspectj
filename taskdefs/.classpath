@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+    <classpathentry kind="src" path="src"/>
+    <classpathentry kind="src" path="testsrc"/>
+    <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
+    <classpathentry kind="lib" path="/lib/junit/junit.jar" sourcepath="/lib/junit/junit-src.jar"/>
+    <classpathentry kind="lib" path="/lib/ant/lib/ant.jar" sourcepath="/lib/ant/ant-src.zip"/>
+    <classpathentry kind="src" path="/bridge"/>
+    <classpathentry kind="src" path="/org.aspectj.ajdt.core"/>
+    <classpathentry kind="src" path="/util"/>
+    <classpathentry kind="output" path="bin"/>
+</classpath>

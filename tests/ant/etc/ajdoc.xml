@@ -1,0 +1,545 @@
+<project name="ajdoc.test" basedir="." default="test">
+
+  <!-- this file defines ant.test.src.dir, ant.test.doc.dir  todo remove local defs-->
+  <property file="${basedir}/local.properties"/>
+
+  <target name="init">
+    <tstamp/>
+    <taskdef name="ajdoc" classname="org.aspectj.tools.ant.taskdefs.Ajdoc"
+      classpath="${ajc.taskdef.classpath}" />
+  </target>
+
+<!-- fail998 ,fail999 -->
+  <target name="test" 
+          depends="test985
+ ,test986
+ ,test987
+ ,test988
+ ,test989
+ ,test990
+ ,test991
+ ,test992
+ ,test993
+ ,test994
+ ,test995
+ ,test996
+ ,test997
+ ,test998
+ ,test999
+ ,test_author_no
+ ,test_author_yes
+ ,test_bottom
+ ,test_doctitle
+ ,test_footer
+ ,test_header
+ ,test_helpfile
+ ,test_nodeprecated_no
+ ,test_nodeprecated_yes
+ ,test_nodeprecatedlist_no
+ ,test_nodeprecatedlist_yes
+ ,test_nohelp_no
+ ,test_nohelp_yes
+ ,test_noindex_no
+ ,test_noindex_yes
+ ,test_notree_no
+ ,test_notree_yes
+ ,test_package_no
+ ,test_package_yes
+ ,test_private_no
+ ,test_private_yes
+ ,test_protected_no
+ ,test_protected_yes
+ ,test_public_no
+ ,test_public_yes
+ ,test_splitindex_no
+ ,test_splitindex_yes
+ ,test_stylesheetfile
+ ,test_use_no
+ ,test_use_yes
+ ,test_standard_no
+ ,test_standard_yes
+ ,test_windowtitle"/>
+
+  <target name="fail998" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+	   sourcefiles="One.java"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="fail999" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc 
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_stylesheetfile" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   stylesheetfile="${ant.test.src.dir}/mystylesheet.css"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_helpfile" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   helpfile="${ant.test.src.dir}/myhelp.html"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_nodeprecatedlist_no" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   nodeprecatedlist="no"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_nodeprecatedlist_yes" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   nodeprecatedlist="yes"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_nodeprecated_no" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   nodeprecated="no"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_nodeprecated_yes" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   nodeprecated="yes"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_use_no" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   use="no"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_use_yes" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   use="yes"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_standard_yes" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   standard="yes"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_standard_no" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   standard="no"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_author_no" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   author="no"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_author_yes" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   author="yes"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_public_no" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   public="no"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_public_yes" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   public="yes"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_package_no" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   package="no"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_package_yes" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   package="yes"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_protected_no" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   protected="no"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_protected_yes" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   protected="yes"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_private_no" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   private="no"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_private_yes" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   private="yes"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_splitindex_no" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   splitindex="no"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_splitindex_yes" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   splitindex="yes"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_windowtitle" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   windowtitle="Window Title"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_doctitle" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   doctitle="&lt;H1&gt;Doc Title&lt;/H1&gt;"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_bottom" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   bottom="&lt;H1&gt;Bottom&lt;/H1&gt;"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_footer" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   footer="&lt;H1&gt;Footer&lt;/H1&gt;"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_header" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   header="&lt;H1&gt;Header&lt;/H1&gt;"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_nohelp_no" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   nohelp="no"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_nohelp_yes" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   nohelp="yes"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_noindex_no" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   noindex="no"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_noindex_yes" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   noindex="yes"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_notree_no" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   notree="no"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test_notree_yes" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+	   notree="yes"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test985" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   packagelist="${ant.test.src.dir}/pkgs4.lst"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test986" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   packagelist="${ant.test.src.dir}/pkgs3.lst"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test987" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   packagelist="${ant.test.src.dir}/pkgs2.lst"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test988" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   packagelist="${ant.test.src.dir}/pkgs1.lst"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test989" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   packagenames="p1.*,p2.*"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test990" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   packagenames="p1,p1.pp1,p2,p2.pp2"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test991" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   packagenames="p1,p1.pp1,p2"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test992" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   packagenames="p1,p2"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test993" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   packagenames="p1,p1.pp1"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test994" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   packagenames="p1.*"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test995" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   packagenames="p1"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test996" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   argfiles="${ant.test.src.dir}/files2.lst"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test997" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   argfiles="${ant.test.src.dir}/files1.lst"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test998" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java,Two.java"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+  <target name="test999" depends="init">
+    <mkdir dir="${ant.test.doc.dir}"/>
+    <ajdoc sourcepath="${ant.test.src.dir}"
+           destdir="${ant.test.doc.dir}"
+	   sourcefiles="One.java"
+      classpath="${compile.classpath}"
+	 />
+  </target>
+
+</project>
