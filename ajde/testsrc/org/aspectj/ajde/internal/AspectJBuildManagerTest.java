@@ -61,7 +61,7 @@ public class AspectJBuildManagerTest extends AjdeTestCase {
 	}
 
 	public void testSymbolFileGenerated() {
-		File file = createFile("../examples/figures-coverage/all.ajsym");
+		File file = openFile("../examples/figures-coverage/all.ajsym");
         if (file.exists()) {
             file.delete();
         } else {

@@ -76,7 +76,7 @@ public class StructureViewManagerTest extends AjdeTestCase {
 	public void testFreshStructureModelCreation() {
 		renderer.setHasBeenNotified(false);
 		String modelPath = genStructureModelExternFilePath(CONFIG_FILE_PATH);
-		createFile(modelPath).delete();
+		openFile(modelPath).delete();
 		//System.err.println("> path: " + modelPath);
 		
 		Ajde.getDefault().getStructureModelManager().readStructureModel(CONFIG_FILE_PATH);
@@ -136,7 +136,7 @@ public class StructureViewManagerTest extends AjdeTestCase {
 		doSynchronousBuild(CONFIG_FILE_PATH);		
 		
 		properties = Ajde.getDefault().getStructureViewManager().getDefaultViewProperties();
-		testFile = createFile("../examples/figures-coverage/figures/Figure.java");
+		testFile = openFile("../examples/figures-coverage/figures/Figure.java");
 		currentView = Ajde.getDefault().getStructureViewManager().createViewForSourceFile(testFile.getAbsolutePath(), properties);
 		currentView.setRenderer(renderer);
 	}

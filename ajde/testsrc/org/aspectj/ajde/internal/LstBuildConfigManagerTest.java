@@ -15,12 +15,16 @@ package org.aspectj.ajde.internal;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import junit.framework.TestSuite;
 
 import org.aspectj.ajde.AjdeTestCase;
 import org.aspectj.ajde.BuildConfigManager;
+import org.aspectj.ajde.NullIdeManager;
+import org.aspectj.ajde.NullIdeTaskListManager.SourceLineTask;
 import org.aspectj.ajde.ui.BuildConfigModel;
 import org.aspectj.ajde.ui.internal.AjcBuildOptions;
 
@@ -44,8 +48,19 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 		return result;
 	}
 
+	public void testErrorMessages() throws IOException {
+		doSynchronousBuild("invalid-entry.lst");
+		assertTrue("compile failed", !testerBuildListener.getBuildSucceeded());
+		
+		List messages = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
+		SourceLineTask message = (SourceLineTask)messages.get(0);
+
+		System.err.println(">>>> " + message.message);	
+		assertEquals("invalid option: aaa.bbb", message.message);		
+	}
+
 	public void testNonExistentConfigFile() throws IOException {
-		File file = createFile("mumbleDoesNotExist.lst");
+		File file = openFile("mumbleDoesNotExist.lst");
 		assertTrue("valid non-existing file", !file.exists());
 		BuildConfigModel model = buildConfigManager.buildModel(file.getCanonicalPath());
 		System.err.println(model.getRoot().getChildren());
@@ -53,7 +68,7 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 	}
 
 	public void testFileRelativePathSameDir() throws IOException {
-		File file = createFile("file-relPath-sameDir.lst");
+		File file = openFile("file-relPath-sameDir.lst");
 		System.err.println("> " + file.getCanonicalPath());
 		BuildConfigModel model = buildConfigManager.buildModel(file.getCanonicalPath());
 		System.err.println("> " + model.getRoot());

@@ -81,7 +81,7 @@ public class StructureModelTest extends AjdeTestCase {
 
 
 	public void testRootForSourceFile() throws IOException {
-		File testFile = createFile("figures-coverage/figures/Figure.java");	
+		File testFile = openFile("figures-coverage/figures/Figure.java");	
 		StructureNode node = Ajde.getDefault().getStructureModelManager().getStructureModel().findRootNodeForSourceFile(
 			testFile.getCanonicalPath());
 		assertTrue("find result", node != null) ;	
@@ -91,7 +91,7 @@ public class StructureModelTest extends AjdeTestCase {
 	}
 
 	public void testPointcutName() throws IOException {
-		File testFile = createFile("figures-coverage/figures/Main.java");	
+		File testFile = openFile("figures-coverage/figures/Main.java");	
 		//System.err.println("PointcutName, testFile: " + testFile.getCanonicalPath() + " exists: " + testFile.exists());
 		StructureNode node = Ajde.getDefault().getStructureModelManager().getStructureModel().findRootNodeForSourceFile(
 			testFile.getCanonicalPath());
@@ -105,7 +105,7 @@ public class StructureModelTest extends AjdeTestCase {
 	}
 
 	public void testFileNodeFind() throws IOException {
-		File testFile = createFile("figures-coverage/figures/Main.java");
+		File testFile = openFile("figures-coverage/figures/Main.java");
 		//System.err.println("NodeFind, testFile: " + testFile.getCanonicalPath() + " exists: " + testFile.exists());
 		StructureNode node = Ajde.getDefault().getStructureModelManager().getStructureModel().findNodeForSourceLine(
 			testFile.getCanonicalPath(), 1);
@@ -123,7 +123,7 @@ public class StructureModelTest extends AjdeTestCase {
         StructureModel model = Ajde.getDefault().getStructureModelManager().getStructureModel();
         assertTrue("model exists", model != null);
 		assertTrue("root exists", model.getRoot() != null);
-		File testFile = createFile("figures-coverage/figures/Main.java");
+		File testFile = openFile("figures-coverage/figures/Main.java");
 		StructureNode node = model.findNodeForSourceLine(testFile.getCanonicalPath(), 11);	
 			
 		assertTrue("find result", node != null);	

@@ -13,6 +13,7 @@
 package org.aspectj.ajde;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -38,13 +39,13 @@ public class CompilerMessagesTest extends AjdeTestCase {
 		// The build has happened, what messages did the compiler give, and do they
 		// contain the information we expect?
 		List msgs = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
-        if (1 != msgs.size()) {
-            assertTrue("not one message: " + msgs, false);
+        if (2 != msgs.size()) {
+            assertTrue("not two messages: " + msgs, false);
         }
-		assertEquals("One warning message should be produced",1,msgs.size());
+		assertEquals("Two warning messages should be produced",2,msgs.size());
 		NullIdeTaskListManager.SourceLineTask task = 
 			(NullIdeTaskListManager.SourceLineTask) msgs.get(0);
-		assertEquals( 6, task.location.getLine());
+		assertEquals( 8, task.location.getLine());
 		assertEquals( "Please don't call init methods", task.message);
 		try {
 			String fullyQualifiedFile = task.location.getSourceFile().getCanonicalPath();
@@ -57,6 +58,14 @@ public class CompilerMessagesTest extends AjdeTestCase {
 			assertTrue( "Unable to convert source file location: " + task.location.getSourceFile(), false);
 		}
 	}
+
+
+	public void testDeclareMessageContents() {
+		List msgs = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
+		assertEquals( "Please don't call setters" , ((NullIdeTaskListManager.SourceLineTask) msgs.get(1)).message);
+
+	}
+
 
 	/*
 	 * @see TestCase#setUp()

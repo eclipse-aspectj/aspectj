@@ -29,7 +29,7 @@ public class AjdeTestCase extends TestCase {
 		super(name);
 	}
 
-	protected File createFile(String path) {
+	protected File openFile(String path) {
 		return new File(currTestDataPath + File.separatorChar + path);
 	}
 
@@ -38,7 +38,7 @@ public class AjdeTestCase extends TestCase {
 	 */
 	protected void doSynchronousBuild(String configFilePath) {
 		testerBuildListener.reset();
-		File configFile = createFile(configFilePath);
+		File configFile = openFile(configFilePath);
 		Ajde.getDefault().getBuildManager().build(configFile.getAbsolutePath());
 		while(!testerBuildListener.getBuildFinished()) {
 			try {
