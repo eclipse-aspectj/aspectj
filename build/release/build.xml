@@ -178,6 +178,7 @@
 		<path id="jar.classpath">
           <pathelement location="${aj.build.jar.dir}/ajde.jar" />
           <pathelement location="${aj.build.jar.dir}/ajbrowser.jar" />
+          <pathelement location="${aj.build.jar.dir}/ajdoc.jar" />
           <pathelement location="${aj.build.jar.dir}/asm.jar" />
           <pathelement location="${aj.build.jar.dir}/bridge.jar" />
           <pathelement location="${aj.build.jar.dir}/build.jar" />
@@ -294,6 +295,7 @@
 			<param name="do.ant.target" value="aspectj"/>
 			<param name="do.ant.props" value=""/>
 		</antcall>
+		
 		<antcall target="do-aspectj-build">
 			<param name="do.ant.target" value="eclipse.plugins"/>
 			<param name="do.ant.props" value=""/>
@@ -661,7 +663,7 @@
 					<include name="*.jar"/>
 				</fileset>
 				<pathelement location="${aspectj.lib.dir}/junit/junit.jar"/>
-				<pathelement location="${build.java.home}/lib/tools.jar"/>
+				<pathelement location="${build.java.home}/lib/tools.jar"/> 
 			</classpath>
 
 			<!-- urk - all properties for any client -->
