@@ -348,7 +348,7 @@ public class AsmRelationshipProvider {
 	public void addDeclareAnnotationRelationship(ISourceLocation sourceLocation, String typename,Method method) {
 	  if (!AsmManager.isCreatingModel()) return;
 	    
-	  String pkg  = "";
+	  String pkg  = null;
 	  String type = typename;
 	  int packageSeparator = typename.lastIndexOf(".");
 	  if (packageSeparator!=-1) {
@@ -410,7 +410,7 @@ public class AsmRelationshipProvider {
 	public void addDeclareAnnotationRelationship(ISourceLocation sourceLocation, String typename,Field field) {
 	    if (!AsmManager.isCreatingModel()) return;
 	    
-  	    String pkg  = "";
+  	    String pkg  = null;
 	    String type = typename;
 	    int packageSeparator = typename.lastIndexOf(".");
 	    if (packageSeparator!=-1) {
