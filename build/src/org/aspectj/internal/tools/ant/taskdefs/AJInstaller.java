@@ -113,7 +113,7 @@ public class AJInstaller extends MatchingTask {
         cd.addFileset(fileset);
         cd.setTodir(new File(tmp+"/$installer$/org/aspectj/resources"));
         cd.execute();
-        project.addFilter("installer.main.class", this.mainclass);
+        project.getGlobalFilterSet().addFilter("installer.main.class", this.mainclass);
         Copy cf = getCopyTask();
         fileset = new FileSet();
         fileset.setDir(new File(resourcesSrc));
