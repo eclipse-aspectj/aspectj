@@ -2,7 +2,7 @@
 <classpath>
     <classpathentry kind="src" path="src"/>
     <classpathentry kind="src" path="testsrc"/>
-    <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
+    <classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
     <classpathentry kind="src" path="/bridge"/>
     <classpathentry kind="src" path="/weaver"/>
     <classpathentry kind="src" path="/testing"/>
@@ -12,6 +12,5 @@
     <classpathentry kind="lib" path="/lib/commons/commons.jar" sourcepath="/lib/commons/commons-src.zip"/>
     <classpathentry kind="src" path="/org.aspectj.ajdt.core"/>
     <classpathentry kind="src" path="/asm"/>
-    <classpathentry kind="src" path="/org.eclipse.jdt.core"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
