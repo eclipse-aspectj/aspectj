@@ -2145,6 +2145,7 @@
     <ajc-test dir="errors" title="multiple conflicting introductions"
       keywords="from-errors">
         <compile files="MultipleIntros.java">
+            <message kind="error" line="5"/>
             <message kind="error" line="16"/>
             <message kind="error" line="18"/>
             <message kind="error" line="19"/>
@@ -2190,6 +2191,7 @@
       title="should give an error for introducing two members with the same name"
       keywords="from-errors">
         <compile files="TwoIntros.java">
+            <message kind="error" line="10"/>
             <message kind="error" line="14"/>
             <message kind="error" line="16"/>
         </compile>
@@ -3493,12 +3495,15 @@
         <run class="ObjectForInt"/>
     </ajc-test>
 
+   <!-- This test case requires bytecode generated according to the declaring type
+        rules in JLS 2nd edition.  -1.4 must be passed to the eclipse compiler for
+        this behavior. -->
     <ajc-test dir="new"
       title="Does the matrix coverage thing for the new method signatures"
       keywords="from-resolved_10x">
-        <compile files="MethodSignatures.java"/>
-        <run class="MethodSignatures"/>
-    </ajc-test>
+        <compile files="MethodSignatures.java" options="-1.4"/>
+        <run class="MethodSignatures" vm="1.4"/>
+    </ajc-test>  
 
     <ajc-test dir="new"
       title="join points in static/dynamic initializers aren't showing up."
@@ -3514,10 +3519,13 @@
         <run class="Gets"/>
     </ajc-test>
 
+   <!-- This test case requires bytecode generated according to the declaring type
+        rules in JLS 2nd edition.  -1.4 must be passed to the eclipse compiler for
+        this behavior. -->
     <ajc-test dir="new" title="correct types of parameters at call-sites"
       keywords="from-resolved_10x">
-        <compile files="CallTypes.java"/>
-        <run class="CallTypes"/>
+        <compile files="CallTypes.java" options="-1.4"/>
+        <run class="CallTypes" vm="1.4"/>
     </ajc-test>
 
     <ajc-test dir="new"
@@ -3673,11 +3681,14 @@
         <run class="CflowBelowTest"/>
     </ajc-test>
 
+   <!-- This test case requires bytecode generated according to the declaring type
+        rules in JLS 2nd edition.  -1.4 must be passed to the eclipse compiler for
+        this behavior.  That means that this case will only work under 1.4.  -->
     <ajc-test dir="new"
       title="target type matching with messy interface hierarchies"
       keywords="from-resolved_10x">
-        <compile files="CallTypesI.java"/>
-        <run class="CallTypesI"/>
+        <compile files="CallTypesI.java" options="-1.4"/>
+        <run class="CallTypesI" vm="1.4"/>
     </ajc-test>
 
     <ajc-test dir="new" pr="490"
@@ -3856,8 +3867,10 @@
       keywords="from-resolved_10x">
         <compile files="MethodConflictsCF.java">
             <message kind="error" line="8"/>
+            <message kind="error" line="20"/>
+            <message kind="error" line="28"/>
         </compile>
-    </ajc-test>
+    </ajc-test>  
 
     <ajc-test dir="new" title="AspectOf available for different aspect types"
       keywords="from-resolved_10x">
