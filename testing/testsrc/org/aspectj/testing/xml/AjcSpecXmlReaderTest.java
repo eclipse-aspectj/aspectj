@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import junit.framework.*;
 import junit.framework.TestCase;
 
 import org.aspectj.testing.harness.bridge.AjcSpecTest;
@@ -127,6 +128,18 @@ public class AjcSpecXmlReaderTest extends TestCase {
         assertNotNull(suite2);
         AjcSpecTest.sameAjcSuiteSpec(suite1, suite2, this);
         
+        // check clone while we're here
+        try {
+            Object clone = (AjcTest.Suite.Spec) suite1.clone();
+            AjcSpecTest.sameAjcSuiteSpec(suite1, (AjcTest.Suite.Spec) clone, this);
+            clone = (AjcTest.Suite.Spec) suite2.clone();
+            AjcSpecTest.sameAjcSuiteSpec(suite2, (AjcTest.Suite.Spec) clone, this);
+            AjcSpecTest.sameAjcSuiteSpec(suite1, (AjcTest.Suite.Spec) clone, this);
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace(System.err);
+            assertTrue("CloneNotSupportedException: " + e.getMessage(), false);
+        }
+
         for (Iterator iter = toDelete.iterator(); iter.hasNext();) {
           ((File) iter.next()).delete();          
       }
