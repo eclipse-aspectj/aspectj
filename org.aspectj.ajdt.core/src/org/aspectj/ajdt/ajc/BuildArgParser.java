@@ -567,7 +567,7 @@ public class BuildArgParser extends Main {
 				} else {
 					showError("-bootclasspath requires classpath entries");
 				}
-			} else if (arg.equals("-classpath")) {
+			} else if (arg.equals("-classpath") || arg.equals("-cp")) {
 				if (args.size() > nextArgIndex) {
 					String cpArg = ((ConfigParser.Arg)args.get(nextArgIndex)).getValue();
 					StringBuffer cp = new StringBuffer();
