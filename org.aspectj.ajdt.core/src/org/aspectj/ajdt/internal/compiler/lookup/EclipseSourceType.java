@@ -225,7 +225,7 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 	    if (!isAnnotation()) {
 	        return false;
 	    } else {
-			throw new RuntimeException("How to implement this?  Needs to ask eclipse!");	        
+	    	return (binding.getAnnotationTagBits() & TagBits.AnnotationRuntimeRetention)!=0;        
 	    }
 	}
 	
