@@ -100,6 +100,16 @@
     </para>
 
   </refsect1>
+
+  <refsect1>
+    <title>Known limitations</title>
+    <para>
+      <command>ajdoc</command> documents advice and pointcut members, shows where advice applies and
+      links affected members back to the advice.
+      It currently does not document or add structural links for any inter-type declarations or other declare forms.
+    </para>
+  </refsect1>
+
   <refsect1>
     <title>Examples</title>
     <example id="ajdocdocumentingspacewar"> <!-- docbook bug - rendering this as example 4? -->

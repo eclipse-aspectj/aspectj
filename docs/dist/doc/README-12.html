@@ -90,8 +90,7 @@ together with <a href="porting.html">porting.html</a>.
   <p>AspectJ 1.2 contains two important changes to the supporting tools:</p>
   
   <ul>
-  <li><a href="#AJDOC">ajdoc</a> is back.
-  <li>A sample script is supplied for <a href="#LTW">load-time weaving</a> from the command-line.
+  <li><a href="#AJDOC">ajdoc</a> is back<li>A sample script is supplied for <a href="#LTW">load-time weaving</a> from the command-line.
   </ul> 
 <!-- ============================== -->
 <hr>
@@ -120,7 +119,8 @@ together with <a href="porting.html">porting.html</a>.
   AjBrowser tool that benefits from all the enhancements made in the 1.2 compiler.</p>
   
   <p>The 1.2 release of AspectJ also lays a lot of the groundwork for a much better AspectJ
-  IDE experience that we hope to surface initially through AJDT. Amongst the many improvements, we
+  IDE experience that we hope to surface initially through AJDT (AspectJ support 
+	for Eclipse). Amongst the many improvements, we
   will have full eager parsing support that avoids the need to keep the whole structure
   model of a project in memory, hopefully making AJDT much less memory hungry and much
   slicker to use. For more details see the <a href="http://www.eclipse.org/ajdt">
@@ -428,6 +428,16 @@ together with <a href="porting.html">porting.html</a>.
   the AspectJ distribution.  The <code>ajdoc</code> tool produces regular javadoc that also shows advises and
   advised by relationships next to methods and advice. A future enhancement will show inter-type declarations
   in the target class too. </p>
+<p><b>Known limitations: </b>Please note that <code>ajdoc</code> documents 
+advice and pointcut members, shows where advice applies and links affected 
+members back to the advice.&nbsp; It currently does not document or add 
+structural links for any inter-type declarations or other declare forms.</p>
+<p>Run the &quot;ajdoc.bat&quot; script just 
+	as you run javadoc.&nbsp; For a list of accepted parameters run &quot;ajdoc 
+	-help&quot;.&nbsp; For example, to document everything in the Spacewar example 
+	run:<br>
+	<tt>&gt; cd examples<br>
+	&gt; ajdoc -d doc -private spacewar coordination</tt></p>
   
   <p><code>ajdoc</code> sample output for an aspect source file:</p>
   
