@@ -14,13 +14,12 @@
 package org.aspectj.ajdt.ajc;
 
 import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
-import org.aspectj.bridge.AbortException;
-import org.aspectj.bridge.CountingMessageHandler;
-import org.aspectj.bridge.MessageWriter;
-import org.aspectj.util.StreamPrintWriter;
+import org.aspectj.bridge.*;
+import org.aspectj.util.*;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 
-import java.io.PrintWriter;
+import java.io.*;
+import java.util.*;
 
 import junit.framework.TestCase;
 
@@ -29,6 +28,7 @@ import junit.framework.TestCase;
  */
 public class AjdtCommandTestCase extends TestCase {
 
+    private ArrayList tempFiles = new ArrayList();
 	private StreamPrintWriter outputWriter = new StreamPrintWriter(new PrintWriter(System.out));
 	private AjdtCommand command = new AjdtCommand();	
 	private MessageWriter messageWriter = new MessageWriter(outputWriter, false);
@@ -39,6 +39,84 @@ public class AjdtCommandTestCase extends TestCase {
 //		command.buildArgParser.out = outputWriter;
 	}
 	
+    private static boolean delete(File file) {
+        if ((null == file) || !file.exists()) {
+            return true;
+        } else if (!file.canWrite()) {
+            return false;
+        }
+        if (file.isDirectory()) {
+            FileUtil.deleteContents(file);
+        }
+        return file.delete();
+    }
+    
+    public void testIncrementalHandler() throws IOException {
+        // verify that AjdtCommand respects handler parm 
+        // in runCommand and repeatCommand
+        final String sig = getClass().getName() 
+            + ".testIncrementalHandler";
+        boolean runTest = false;
+        try {
+            runTest = null != System.getProperty(sig);
+        } catch (Throwable t) {
+        }
+        if (!runTest) {
+            System.out.println("warning: to run " + sig
+                + "(), set system property " + sig);
+            return;
+        }
+        // setup initial compile
+        File testBase = new File("testdata/ajdtCommand");
+        assertTrue(testBase.isDirectory());
+        assertTrue(testBase.canWrite());
+        File genBase = new File(testBase, "genBase");
+        tempFiles.add(genBase);
+        if (genBase.exists()) {
+            FileUtil.deleteContents(genBase);
+        } else {
+            genBase.mkdirs();
+        }
+        assertTrue(genBase.canWrite());
+        File classesDir = new File(testBase, "classes");
+        tempFiles.add(classesDir);
+        assertTrue(classesDir.mkdirs());
+        File mainSrc= new File(testBase, "Main-1.java");
+        File main = new File(genBase, "Main.java");
+        FileUtil.copyFile(mainSrc, main);
+        assertTrue(main.canRead());
+        long initialSize = main.length();
+        
+        // do initial compile
+        String[] args = new String[] {
+            "-d",
+            classesDir.getPath(),
+            "-classpath",
+            "../lib/test/aspectjrt.jar",
+            main.getPath()
+        };
+        AjdtCommand command = new AjdtCommand();
+        IMessageHolder holder = new MessageHandler();
+        boolean result = command.runCommand(args, holder);
+        assertTrue(result);
+        assertTrue(!holder.hasAnyMessage(IMessage.WARNING, true));
+        int initialMessages = holder.numMessages(null, true);
+
+        // do repeat compile, introducing an error
+        mainSrc= new File(testBase, "Main-2.java");
+        FileUtil.copyFile(mainSrc, main);
+        assertTrue(main.canRead());
+        long nextSize = main.length();
+        assertTrue(nextSize > initialSize);
+        IMessageHolder newHolder = new MessageHandler();
+        result = command.repeatCommand(newHolder);
+
+        // verify failed, no effect on first holder, error in second
+        assertFalse(result);
+        assertEquals(1, newHolder.numMessages(IMessage.ERROR, false));
+        assertEquals(initialMessages, holder.numMessages(null, true));
+    }
+
 	public void testIncrementalOption() throws InvalidInputException {
 		AjBuildConfig config = command.genBuildConfig(
             new String[] {  "-incremental" }, 
@@ -119,5 +197,11 @@ public class AjdtCommandTestCase extends TestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		outputWriter.flushBuffer();
+        for (ListIterator iter = tempFiles.listIterator(); iter.hasNext();) {
+            File file = (File) iter.next();
+            if (delete(file)) {
+                iter.remove();
+            }
+        }
 	}
 }
