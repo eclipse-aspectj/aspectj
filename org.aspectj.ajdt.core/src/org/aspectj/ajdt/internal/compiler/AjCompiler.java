@@ -16,6 +16,7 @@ package org.aspectj.ajdt.internal.compiler;
 import java.util.Map;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
+import org.aspectj.bridge.IMessage;
 import org.eclipse.jdt.internal.compiler.*;
 import org.eclipse.jdt.internal.compiler.Compiler;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
@@ -56,10 +57,11 @@ public class AjCompiler extends Compiler {
 	 * name binding.
 	 */
 	protected void process(CompilationUnitDeclaration unit, int i) {
-		super.process(unit, i);
-		
 		EclipseWorld world = 
 			EclipseWorld.forLookupEnvironment(lookupEnvironment);
+		world.showMessage(IMessage.INFO, "compiling " + new String(unit.getFileName()), null, null);
+		super.process(unit, i);
+				
 		world.finishedCompilationUnit(unit);
 	}
 }
