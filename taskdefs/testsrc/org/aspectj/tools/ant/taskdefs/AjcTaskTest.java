@@ -1,6 +1,7 @@
 /* *******************************************************************
  * Copyright (c) 1999-2001 Xerox Corporation, 
- *               2002 Palo Alto Research Center, Incorporated (PARC).
+ *               2002 Palo Alto Research Center, Incorporated (PARC)
+ *               2003 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -13,6 +14,7 @@
 
 package org.aspectj.tools.ant.taskdefs;
 
+import org.apache.tools.ant.*;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Path;
@@ -24,19 +26,48 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 
+import java.io.*;
 import java.io.File;
+import java.util.Arrays;
 
 import junit.framework.TestCase;
 
 /**
- * 
+ * Some API tests, but mostly functional tests driving
+ * the task execute using data in ../taskdefs/testdata.
+ * This will re-run in forked mode for any nonfailing
+ * compile if aspectjtools-dist is built into
+ * ../aj-build/dist/tools/lib/aspectjtools.jar.
  */
 public class AjcTaskTest extends TestCase {
 
     private static final Class NO_EXCEPTION = null;
 	private static final String NOFILE = "NOFILE";
 	
-    private static File tempDir;
+    private static final File tempDir;
+    private static final String aspectjtoolsJar;
+    private static final String testdataDir;
+    
+    static {
+        tempDir = new File("IncrementalAjcTaskTest-temp");            
+        String toolsPath = "../aj-build/dist/tools/lib/aspectjtools.jar";
+        File toolsjar = new File(toolsPath);
+        if (toolsjar.canRead()) {
+            aspectjtoolsJar = toolsjar.getAbsolutePath();
+        } else {
+            aspectjtoolsJar = null;
+            String s = 
+                "AjcTaskTest not forking - build aspectjtools-dist to get " 
+                + toolsPath;
+            System.out.println(s);
+        }
+        File dir = new File("../taskdefs/testdata");
+        if (dir.canRead() && dir.isDirectory()) {
+            testdataDir = dir.getAbsolutePath();
+        } else {
+            testdataDir = null;
+        }
+    }
     
     private static void deleteTempDir() {
         if ((null != tempDir) && tempDir.exists()) {
@@ -45,9 +76,6 @@ public class AjcTaskTest extends TestCase {
         }
     }    
     private static final File getTempDir() {
-        if (null == tempDir) {
-            tempDir = new File("IncrementalAjcTaskTest-temp");            
-        }
         return tempDir;
     }    
 	
@@ -57,6 +85,60 @@ public class AjcTaskTest extends TestCase {
 
     public void tearDown() {
         deleteTempDir();
+    }
+    
+    public void testLimitTo() {
+        int numArgs = 100;
+        String arg = "123456789";
+        String[] args = new String[numArgs];
+        for (int i = 0; i < args.length; i++) {
+            args[i] = arg;
+        }
+        // no limit
+        int max = numArgs*(arg.length() + 1);
+        Location location = new Location("AjcTaskTest.java");
+        String[] newArgs = AjcTask.GuardedCommand.limitTo(args, max, location);
+        assertTrue("same", args == newArgs);
+
+        // limited - read file and verify arguments
+        max--;
+        newArgs = AjcTask.GuardedCommand.limitTo(args, max, location);
+        assertTrue("not same", args != newArgs);
+        assertTrue("not null", null != newArgs);
+        String label = "newArgs " + Arrays.asList(newArgs);
+        assertTrue("size 2" + label, 2 == newArgs.length);
+        assertEquals("-argfile", newArgs[0]);
+        File file = new File(newArgs[1]);
+        assertTrue("readable newArgs[1]" + label, file.canRead());
+        FileReader fin = null;
+        try {
+            fin = new FileReader(file);
+            BufferedReader reader = new BufferedReader(fin);
+            String line;
+            int i = 0;
+            while (null != (line = reader.readLine())) {
+                assertEquals(i + ": ", args[i++], line);
+            }
+            assertEquals("num entries", i, args.length);
+        } catch (IOException e) {
+            assertTrue("IOException " + e.getMessage(), false);
+        } finally {
+            if (null != fin) {
+                try {
+                    fin.close();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
+            file.delete();
+        }
+    }
+
+    public void testFindAspectjtoolsJar() {
+        File toolsJar = AjcTask.findAspectjtoolsJar();
+        // not found when unit testing b/c not on system classpath
+        // so just checking for exceptions.
+        // XXX need aspect to stub out System.getProperty(..) 
     }
     
     protected AjcTask getTask(String input) {
@@ -69,8 +151,11 @@ public class AjcTaskTest extends TestCase {
         } else if (input.endsWith(".lst")) {
         	if (-1 != input.indexOf(",")) {
                 throw new IllegalArgumentException("lists not supported: " + input);
-        	} else {
-        		task.setArgfiles(new Path(task.getProject(), input));
+        	} else if (null == testdataDir) {
+                throw new Error("testdata not found - run in ../taskdefs");
+            } else {
+                String path = testdataDir + File.separator + input;
+        		task.setArgfiles(new Path(task.getProject(), path));
         	}
         } else if ((input.endsWith(".java") || input.endsWith(".aj"))) {
         	// not working
@@ -88,55 +173,29 @@ public class AjcTaskTest extends TestCase {
         return task;
     }
     
-    // ---------------------------------------- argfile
-    public void testDefaultListForked() {
-        AjcTask task = getTask("testdata/default.lst");
-        task.setFork(true);
-        runTest(task, NO_EXCEPTION, IMessageHolderChecker.NONE);
-    }
-
-    public void testCompileErrorListForked() {
-        AjcTask task = getTask("testdata/compileError.lst");
-        task.setFork(true);
-        runTest(task, NO_EXCEPTION, IMessageHolderChecker.NONE);
-    }
-
-    public void testCompileErrorListForkedFailonerror() {
-        AjcTask task = getTask("testdata/compileError.lst");
-        task.setFork(true);
-        task.setFailonerror(true);
-        runTest(task, BuildException.class, IMessageHolderChecker.NONE);
-    }
-    
-    public void testDefaultFileForked() {
-        AjcTask task = getTask("testdata/Default.java");
-        task.setFork(true);
-        runTest(task, NO_EXCEPTION, IMessageHolderChecker.NONE);
-    }
-
     public void testDefaultList() {
-        AjcTask task = getTask("testdata/default.lst");
-        runTest(task, NO_EXCEPTION, IMessageHolderChecker.INFOS);
+        AjcTask task = getTask("default.lst");
+        runTest(task, NO_EXCEPTION, MessageHolderChecker.INFOS);
     }
 
     public void testCompileErrorList() {
-        AjcTask task = getTask("testdata/compileError.lst");
-        runTest(task, NO_EXCEPTION, IMessageHolderChecker.ONE_ERROR);
+        AjcTask task = getTask("compileError.lst");
+        runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR);
     }
 
     public void testCompileWarningList() {
-        AjcTask task = getTask("testdata/compileWarning.lst");
-        runTest(task, NO_EXCEPTION, IMessageHolderChecker.ONE_WARNING);
+        AjcTask task = getTask("compileWarning.lst");
+        runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_WARNING);
     }
 
     public void testNoSuchFileList() {
-        AjcTask task = getTask("testdata/NoSuchFile.lst");
-        runTest(task, NO_EXCEPTION, IMessageHolderChecker.ONE_ERROR_ONE_ABORT);
+        AjcTask task = getTask("NoSuchFile.lst");
+        runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR_ONE_ABORT);
     }
 
     public void testClasspath() {
         AjcTask task = getTask(NOFILE);
-        String[] cmd = task.setupCommand(true);
+        String[] cmd = task.makeCommand();
         String classpath = null;
         String bootclasspath = null;
         for (int i = 0; i < cmd.length; i++) {
@@ -156,121 +215,137 @@ public class AjcTaskTest extends TestCase {
     // XXX need to figure out how to specify files directly programmatically
 //    public void testDefaultFile() {
 //        AjcTask task = getTask("testdata/Default.java");
-//        runTest(task, NO_EXCEPTION, IMessageHolderChecker.INFOS);
+//        runTest(task, NO_EXCEPTION, MessageHolderChecker.INFOS);
 //    }
 
     public void testNoFile() {
         AjcTask task = getTask(NOFILE);
-        runTest(task, NO_EXCEPTION, IMessageHolderChecker.ONE_ERROR_ONE_ABORT);
+        runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR_ONE_ABORT);
     }
     
-// -------- comment-disabled tests
-    // ---------------------------------------- ant drivers?
-    // doesn't work..
-//    public void testAntScript() {
-//      Ant ant = new Ant();
-//      ant.setProject(new Project());
-//      ant.setDir(new File("."));
-//      ant.setAntfile("test-build.xml");
-//      ant.execute();
-//    }
+
     // XXX find out how to feed files into MatchingTask
-//    public void testCompileErrorFile() {
-//        AjcTask task = getTask("testdata/CompilerError.java");
-//        runTest(task, NO_EXCEPTION, IMessageHolderChecker.ONE_ERROR);
-//    }
-//
-//    public void testCompileWarningFile() {
-//        AjcTask task = getTask("testdata/CompilerWarning.lst");
-//        runTest(task, NO_EXCEPTION, IMessageHolderChecker.ONE_WARNING);
-//    }
-//
-//    public void testNoSuchFile() {
-//        AjcTask task = getTask("testdata/NoSuchFile.java");
-//        runTest(task, NO_EXCEPTION, IMessageHolderChecker.ONE_ERROR);
-//    }
-//
-//    public void testDefaultFileComplete() {
-//        AjcTask task = getTask("testdata/Default.java");
-//        task.setDebugLevel("none");
-//        task.setDeprecation(true);
-//        task.setFailonerror(false);
-//        task.setNoExit(true); // ok to override Ant?
-//        task.setNoImportError(true);
-//        task.setNowarn(true);
-//        task.setNoweave(true);
-//        task.setPreserveAllLocals(true);
-//        task.setProceedOnError(true);
-//        task.setReferenceInfo(true);
-//        task.setSource("1.3");
-//        task.setTarget("1.1");
-//        task.setTime(true);
-//        task.setVerbose(true);
-//        task.setXlintenabled(true);
-//        runTest(task, NO_EXCEPTION, IMessageHolderChecker.INFOS);
-//    }
+
+    public void testCompileErrorFile() {
+        AjcTask task = getTask("compileError.lst");
+        runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR);
+    }
+
+    public void testCompileWarningFile() {
+        AjcTask task = getTask("compileWarning.lst");
+        runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_WARNING);
+    }
+
+    public void testNoSuchFile() {
+        AjcTask task = getTask("NoSuchFile.lst");
+        runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR_ONE_ABORT);
+    }
+
+    public void testDefaultFileComplete() {
+        AjcTask task = getTask("default.lst");
+        task.setDebugLevel("none");
+        task.setDeprecation(true);
+        task.setFailonerror(false);
+        task.setNoExit(true); // ok to override Ant?
+        task.setNoImportError(true);
+        task.setNowarn(true);
+        task.setXNoweave(true);
+        task.setPreserveAllLocals(true);
+        task.setProceedOnError(true);
+        task.setReferenceInfo(true);
+        task.setSource("1.3");
+        task.setTarget("1.1");
+        task.setTime(true);
+        task.setVerbose(true);
+        task.setXlint("info");
+        runTest(task, NO_EXCEPTION, MessageHolderChecker.INFOS);
+    }
 
     protected void runTest(
         AjcTask task, 
         Class exceptionType, 
-        IMessageHolderChecker checker) {
+        MessageHolderChecker checker) {
         Throwable thrown = null;
         MessageHandler holder = new MessageHandler();
-        task.setMessageHolder(holder);        
-        try {
-            task.execute();
-        } catch (Throwable t) {
-            thrown = t;
-        } finally {
-            deleteTempDir();
-        }
-        if (null == exceptionType) {
-            if (null != thrown) {
-                assertTrue("thrown: " + render(thrown), false);
+        task.setMessageHolder(holder);
+        // re-run forked iff tools.jar and expect to pass
+        boolean rerunForked 
+            = ((null != aspectjtoolsJar)
+            && (null == exceptionType)
+            && ((null == checker) || !checker.expectFail()));
+        String label = "same-vm ";
+        while (true) {  // same vm, then perhaps forked   
+            try {
+                task.execute();
+            } catch (Throwable t) {
+                thrown = t;
+            } finally {
+                deleteTempDir();
             }
-        } else if (null == thrown) {
-            assertTrue("expected " + exceptionType.getName(), false);
-        } else if (!(exceptionType.isAssignableFrom(thrown.getClass()))) {
-            assertTrue("expected " + exceptionType.getName()
-                + " got " + render(thrown), false);
+            if (null == exceptionType) {
+                if (null != thrown) {
+                    assertTrue(label + "thrown: " + render(thrown), false);
+                }
+            } else if (null == thrown) {
+                assertTrue(label + "expected " + exceptionType.getName(), false);
+            } else if (!(exceptionType.isAssignableFrom(thrown.getClass()))) {
+                assertTrue(label + "expected " + exceptionType.getName()
+                    + " got " + render(thrown), false);
+            }
+            if (null == checker) {
+                checker = MessageHolderChecker.NONE;
+            }
+            checker.check(holder, label);
+            if (!rerunForked) {
+                break;
+            } else {
+                label = "other-vm ";
+                rerunForked = false;
+                // can't reset without losing values...
+                task.setFork(true);
+                task.setFailonerror(true);
+                task.setForkclasspath(new Path(task.getProject(), 
+                    aspectjtoolsJar));
+            }
         }
-        if (null == checker) {
-            checker = IMessageHolderChecker.NONE;
-        }
-        checker.check(holder);
     }
     
     protected String render(Throwable thrown) {
         return LangUtil.renderException(thrown);
     }
     
-    static class IMessageHolderChecker {  // XXX export to testing-utils
+    static class MessageHolderChecker {  // XXX export to testing-utils
         /** use as value to ignore results */
         static int IGNORE = Integer.MIN_VALUE;
         
-        static IMessageHolderChecker NONE = 
-            new IMessageHolderChecker(0,0,0,0,0);
+        static MessageHolderChecker NONE = 
+            new MessageHolderChecker(0,0,0,0,0);
         /** any number (0+) of info messages */
-        static IMessageHolderChecker INFOS = 
-            new IMessageHolderChecker(0,0,0,0,IGNORE);
+        static MessageHolderChecker INFOS = 
+            new MessageHolderChecker(0,0,0,0,IGNORE);
         /** one error, any number of info messages */
-        static IMessageHolderChecker ONE_ERROR= 
-            new IMessageHolderChecker(0,0,1,0,IGNORE);
-        static IMessageHolderChecker ONE_ERROR_ONE_ABORT = 
-            new IMessageHolderChecker(1,0,1,0,IGNORE);
+        static MessageHolderChecker ONE_ERROR= 
+            new MessageHolderChecker(0,0,1,0,IGNORE);
+        static MessageHolderChecker ONE_ERROR_ONE_ABORT = 
+            new MessageHolderChecker(1,0,1,0,IGNORE);
         /** one warning, any number of info messages */
-        static IMessageHolderChecker ONE_WARNING = 
-            new IMessageHolderChecker(0,0,0,1,IGNORE);
+        static MessageHolderChecker ONE_WARNING = 
+            new MessageHolderChecker(0,0,0,1,IGNORE);
 
         int aborts, fails, errors, warnings, infos;
-        public IMessageHolderChecker(int aborts, int fails, int errors, int warnings, int infos) {
+        public MessageHolderChecker(int aborts, int fails, int errors, int warnings, int infos) {
             this.aborts = aborts;
             this.fails = fails;
             this.errors = errors;
             this.warnings = warnings;
             this.infos = infos;
         }
-        public void check(IMessageHolder holder) {
+        
+        public boolean expectFail() {
+            return (0 < (aborts + fails + errors));
+        }
+        
+        public void check(IMessageHolder holder, String label) {
             boolean failed = true;
             try {
             	check(holder, aborts, IMessage.ABORT);
@@ -281,7 +356,7 @@ public class AjcTaskTest extends TestCase {
 	            failed = false; 
             } finally {
             	if (failed) {
-            		MessageUtil.print(System.err, holder, "failed?");
+            		MessageUtil.print(System.err, holder, label + "failed?");
             	}
             }
         }
