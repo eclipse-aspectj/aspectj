@@ -9,11 +9,14 @@
 	</para>
         <para>
             The AspectJ Browser can edit program source files,
-            compile using the AspectJ compiler
-            <xref linkend="ajc-ref"/>
+            compile using the AspectJ compiler <literal>ajc</literal>
             run a program,
             and graphically navigate the program's 
             crosscutting structure.
+            For more information on <literal>ajc</literal>, 
+            see <xref linkend="ajc-ref"/>.
+            
+            
         </para>
      
         <para>
@@ -74,7 +77,7 @@
         or selecting the Tools menu item "Options...".  
         This is how to set classpath, aspectpath, etc.
         </para>
-        <para>The following sections walks through a build.
+        <para>The following sections walk through a build.
         </para>
 	    </sect2>
 	    <sect2>
@@ -295,7 +298,7 @@
     be detected and displayed in a dialog.
     </para>
     <para>
-    There GUI does not support killing a running program,
+    The GUI does not support killing a running program,
     so if your program might hang,
     be sure to save your files since you may need to 
     kill the browser itself to kill its child processes.
@@ -355,7 +358,12 @@
 		Editing build configuration files: this is not currently supported.
 		</para></listitem>		
 		<listitem><para>
-		Key bindings: these do not seem to work on some machines.
+		The structure model is incomplete after incremental compiles.
+		To get a complete structure model requires a full build.
+		</para></listitem>		
+		<listitem><para>
+		If you change the output directory, you must do a
+		full build. 
 		</para></listitem>		
 		</itemizedlist>
 		</para>      
