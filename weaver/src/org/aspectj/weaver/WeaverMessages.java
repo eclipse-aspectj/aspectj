@@ -123,6 +123,8 @@ public class WeaverMessages {
 	public static final String REFERENCE_TO_NON_ANNOTATION_TYPE = "referenceToNonAnnotationType";
 	public static final String BINDING_NON_RUNTIME_RETENTION_ANNOTATION = "bindingNonRuntimeRetentionAnnotation";
 	
+	public static final String INCORRECT_TARGET_FOR_DECLARE_ANNOTATION = "incorrectTargetForDeclareAnnotation";
+	
 	public static String format(String key) {
 		return bundle.getString(key);
 	}
