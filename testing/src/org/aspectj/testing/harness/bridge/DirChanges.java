@@ -116,6 +116,12 @@ public class DirChanges {
         result &= exists("at start, expected updated file to exist", EXISTS, spec.updated, doCompare);            
         result &= exists("at start, expected removed file to exist", EXISTS, spec.removed, doCompare);            
         startTime = System.currentTimeMillis();
+        // ensure tests don't complete in < 1 second, otherwise can confuse fast machines.
+        try {
+			Thread.sleep(1000); 
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
         this.handler = oldHandler;
         return result;        
     }
