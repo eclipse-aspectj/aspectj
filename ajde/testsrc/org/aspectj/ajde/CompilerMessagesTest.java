@@ -15,6 +15,7 @@ package org.aspectj.ajde;
 import java.io.IOException;
 import java.util.List;
 
+import org.aspectj.bridge.*;
 import org.aspectj.bridge.IMessage;
 
 /**
@@ -61,11 +62,7 @@ public class CompilerMessagesTest extends AjdeTestCase {
 		List msgs = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
 		IMessage msg = (IMessage)((NullIdeTaskListManager.SourceLineTask)msgs.get(1)).getContainedMessage();
 		assertEquals( "Please don't call setters" , msg.getMessage());
-
-//		assertEquals("extra info", msg.getCorrespondingJoinPoint());
-		
-//		fail();
-
+		assertEquals("field-set(int apackage.SomeClass.x)", msg.getDetails());
 	}
 
 
