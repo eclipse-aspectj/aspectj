@@ -13,6 +13,7 @@
 
 package org.aspectj.weaver.bcel;
 
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 import org.apache.bcel.Constants;
@@ -764,10 +765,34 @@ class BcelClassWeaver implements IClassWeaver {
 		Instruction i = ih.getInstruction();
 		if (i instanceof FieldInstruction) {
 			FieldInstruction fi = (FieldInstruction) i;
+			
+
+			
 			if (i instanceof PUTFIELD || i instanceof PUTSTATIC) {
-				match(
-					BcelShadow.makeFieldSet(world, mg, ih, enclosingShadow),
-					shadowAccumulator);
+				// check for sets of constant fields.  We first check the previous 
+				// instruction.  If the previous instruction is a LD_WHATEVER (push
+				// constant on the stack) then we must resolve the field to determine
+				// if it's final.  If it is final, then we don't generate a shadow.
+				InstructionHandle prevHandle = ih.getPrev();
+				Instruction prevI = prevHandle.getInstruction();
+				if (Utility.isConstantPushInstruction(prevI)) {
+					Member field = world.makeFieldSignature(clazz, (FieldInstruction) i);
+					ResolvedMember resolvedField = field.resolve(world);
+					if (resolvedField == null) {
+						// we can't find the field, so it's not a join point.
+					} else if (Modifier.isFinal(resolvedField.getModifiers())) {
+						// it's final, so it's the set of a final constant, so it's
+						// not a join point according to 1.0.6 and 1.1.
+					} else {
+						match(
+							BcelShadow.makeFieldSet(world, mg, ih, enclosingShadow),
+							shadowAccumulator);
+					}						
+				} else {
+					match(
+						BcelShadow.makeFieldSet(world, mg, ih, enclosingShadow),
+						shadowAccumulator);
+				}
 			} else {
 				match(
 					BcelShadow.makeFieldGet(world, mg, ih, enclosingShadow),

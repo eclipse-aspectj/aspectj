@@ -439,4 +439,7 @@ public class Utility {
 		return ret;
 	}
 
+	public static boolean isConstantPushInstruction(Instruction i) {
+		return (i instanceof ConstantPushInstruction) || (i instanceof LDC);
+	}
 }

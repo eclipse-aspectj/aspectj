@@ -162,9 +162,12 @@ public class BcelShadow extends Shadow {
 			retargetFrom(dupHandle, nextHandle);
 			retargetFrom(endHandle, nextHandle);
 		} else {
-			// XXX we want to fail gracefully here.  This should not be picked out as a join point, 
-			// probably.  So change BcelClassWeaver.match appropriately.
-			throw new RuntimeException("Unhandled kind of new");
+			endHandle = newHandle;
+			nextHandle = endHandle.getNext();
+			retargetFrom(newHandle, nextHandle);
+			// add a POP here... we found a NEW w/o a dup or anything else, so
+			// we must be in statement context.
+			getRange().insert(getFactory().POP, Range.OutsideAfter);
 		}
 		// assert (dupHandle.getInstruction() instanceof DUP);
 
@@ -1669,7 +1672,7 @@ public class BcelShadow extends Shadow {
      * ??? rewrite this to do less array munging, please
      */
     private LazyMethodGen createMethodGen(String newMethodName) {
-        Type[] parameterTypes = world.makeBcelTypes(getSignature().getParameterTypes());
+        Type[] parameterTypes = world.makeBcelTypes(getArgTypes()); 
         int modifiers = Modifier.FINAL;
 
         // XXX some bug

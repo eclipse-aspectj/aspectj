@@ -50,13 +50,19 @@ public abstract class Shadow {
     
     public final boolean hasTarget() {
         return !(getSignature().isStatic() || (getKind() == ConstructorCall)
-        		|| (getKind() == PreInitialization));
+        		  || (getKind() == PreInitialization));
     }
 
     public final TypeX getTargetType() {
         if (!hasTarget()) return ResolvedTypeX.MISSING;
         return getSignature().getDeclaringType();
     }
+    
+    public TypeX[] getArgTypes() {
+    	if (getKind() == FieldSet) return new TypeX[] { getSignature().getReturnType() };
+        return getSignature().getParameterTypes();
+    }
+    
     public TypeX getArgType(int arg) {
     	if (getKind() == FieldSet) return getSignature().getReturnType();
         return getSignature().getParameterTypes()[arg];
