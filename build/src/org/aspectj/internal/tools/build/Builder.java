@@ -15,11 +15,13 @@ package org.aspectj.internal.tools.build;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Properties;
 
 import org.apache.tools.ant.BuildException;
 
@@ -99,6 +101,31 @@ public abstract class Builder {
 	/** disable copy filter semantics */
 	protected static final boolean FILTER_OFF = false;
 
+    private static final String ERROR_KEY = "error loading properties";
+    private static final Properties PROPS;
+    static {
+        PROPS = new Properties();
+        String name = Builder.class.getName().replace('.', '/') + ".properties";
+        try {
+            InputStream in = Builder.class.getClassLoader().getResourceAsStream(name);
+            PROPS.load(in);            
+        } catch (Throwable t) {
+            String m = "unable to load " + name + ": " + t.getClass() + " " + t;
+            PROPS.setProperty(ERROR_KEY, m);
+        }
+    }
+    /**
+     * Map delivered-jar name to created-module name
+     * @param jarName the String (lowercased) of the jar/zip to map
+     */
+    private String moduleAliasFor(String jarName) {
+        String result = PROPS.getProperty("alias." + jarName, jarName);
+        if (verbose && result.equals(jarName)) {
+            String m = "expected alias for " + jarName;
+            handler.error(m + PROPS.getProperty(ERROR_KEY, ""));
+        }
+        return result;
+    }
 	protected final Messager handler;
 	protected boolean buildingEnabled;
 
@@ -487,24 +514,6 @@ public abstract class Builder {
 			}
 		}
 		return (ProductModule[]) results.toArray(new ProductModule[0]);
-	}
-
-	/**
-	 * Map delivered-jar name to created-module name
-	 * @param jarName the String (lowercased) of the jar/zip to map
-	 */
-	protected String moduleAliasFor(String jarName) {
-		if ("aspectjtools.jar".equals(jarName)) { // XXXFileLiteral
-			return "ajbrowser-all.jar";
-		} else if ("aspectjrt.jar".equals(jarName)) {
-			return "runtime.jar";
-        } else if ("aspectjweaver.jar".equals(jarName)) {
-            return "weaver-all.jar";
-        } else if ("aspectjlib.jar".equals(jarName)) {
-            return "org.aspectj.lib.jar";
-		} else {
-			return jarName;
-		}
 	}
 
 	/** 
