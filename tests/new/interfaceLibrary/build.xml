@@ -1,0 +1,83 @@
+
+<project name="interfaceLibrary" default="build" basedir=".">
+
+
+    <target name="build" depends="init">
+       <iajc 
+       	classpath="${aspectjrt.jar}"
+       	outjar="interfaceOnly.jar"
+       	srcdir="."
+       	includes="lib/LibraryInterface.java"/>
+
+       <iajc 
+       	classpath="${aspectjrt.jar}${path.separator}interfaceOnly.jar"
+       	outjar="aspectOnly.jar"
+       	srcdir="."
+       	includes="LibraryAspect.java"/>
+
+       <iajc 
+       	classpath="${aspectjrt.jar}"
+       	aspectpath="aspectOnly.jar"
+       	outjar="aspectedInterfaceOnly.jar"
+       	srcdir="."
+       	includes="lib/LibraryInterface.java"/>
+
+       <iajc 
+       	classpath="${aspectjrt.jar}"
+       	aspectpath="aspectOnly.jar"
+       	injars="interfaceOnly.jar"
+       	outjar="aspectedInterfaceOnlyBinary.jar"/>
+
+    </target>
+    
+    <target name="init"  depends="init.variables,init.taskdefs"/>
+
+    <target name="init.variables" 
+     description="init variables">
+     
+      <!-- required directories - run from examples or predefine -->
+      <property name="interfaceLibrary.dir"
+            location="${basedir}"/> 
+      <property name="aspectj.lib.dir"
+            location="${interfaceLibrary.dir}/../../../aj-build/dist/tools/lib"/> 
+
+      <!-- required libraries - install or predefine -->
+      <property name="aspectjrt.jar"
+            location="${aspectj.lib.dir}/aspectjrt.jar"/> 
+      <property name="aspectjtools.jar"
+            location="${aspectj.lib.dir}/aspectjtools.jar"/> 
+
+      <!-- checking required libraries -->
+      <available file="${aspectjtools.jar}"
+             property="aspectjtools.jar.available"/>
+      <available file="${aspectjrt.jar}"
+             property="aspectjrt.jar.available"/>
+
+    </target>
+
+    <target name="init.taskdefs" depends="init.variables, 
+         aspectjtools.jar.available,
+         aspectjrt.jar.available"
+         unless="taskdefs.init">
+      <!-- sets name of new task to iajc, old task to ajc -->
+      <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+          <classpath> 
+            <pathelement path="${aspectjtools.jar}"/> 
+          </classpath>
+      </taskdef>
+	  <property name="taskdefs.init" value="true"/>
+    </target>
+
+    <!-- targets to fail unless required libraries available -->
+
+    <target name="aspectjrt.jar.available" depends="init.variables" 
+          unless="aspectjrt.jar.available" >
+      <fail message="expecting aspectjrt.jar at ${aspectjrt.jar}"/>
+    </target>
+
+    <target name="aspectjtools.jar.available" depends="init.variables" 
+          unless="aspectjtools.jar.available" >
+      <fail message="expecting aspectjtools.jar at ${aspectjtools.jar}"/>
+    </target>
+
+</project>

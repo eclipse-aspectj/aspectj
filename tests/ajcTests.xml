@@ -6515,4 +6515,88 @@
 		</compile>
 	</ajc-test>
 
+	<ajc-test dir="new/interfaceLibrary"
+		title="aspect-declared interface members in libraries - baseline">
+		<compile files="lib/LibraryInterface.java,
+						Client.java,
+						LibraryAspect.java"/>
+		<run class="Client"/>
+		</ajc-test>
+		
+	<ajc-test dir="new/interfaceLibrary"
+		comment="prove that LibraryAspect is required"
+		title="aspect-declared interface members in libraries - interfaceOnly.jar">
+		<compile 
+			files="Client.java" 
+			aspectpath="interfaceOnly.jar">
+			<message kind="error" line="5"/>
+			</compile>
+		</ajc-test>
+
+	<ajc-test dir="new/interfaceLibrary"
+		title="aspect-declared interface members in libraries - aspectOnly.jar">
+		<compile 
+			files="lib/LibraryInterface.java,
+					Client.java" 
+			aspectpath="aspectOnly.jar"/>
+		<run class="Client"/>
+		</ajc-test>
+		
+	<ajc-test dir="new/interfaceLibrary"
+		title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar"
+		comment="prove aspect is required even if interface is woven"
+		>
+		<compile 
+			files="Client.java" 
+			classpath="aspectedInterfaceOnly.jar">
+			<message kind="error" line="9" text="LibraryInterface"/>
+			</compile>
+		</ajc-test>
+
+	<ajc-test dir="new/interfaceLibrary"
+		title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectOnly.jar"
+		comment="weaving required for implementations of interface? 
+		         XXX Would prefer to support javac compiles of Client here, mimicked with classpath only"
+		>
+		<compile 
+			files="Client.java" 
+			classpath="aspectedInterfaceOnly.jar,aspectOnly.jar">
+			<message kind="error" line="9"/>
+			</compile>
+		</ajc-test>
+
+	<ajc-test dir="new/interfaceLibrary"
+		title="aspect-declared interface members in libraries - aspectedInterfaceOnlyBinary.jar,aspectOnly.jar"
+		comment="works if aspect is only on the classpath?, i.e., no weaving XXX need javac run"
+		>
+		<compile 
+			files="Client.java" 
+			classpath="aspectedInterfaceOnlyBinary.jar,aspectOnly.jar">
+			<message kind="error" line="9"/>
+			</compile>
+		</ajc-test>
+
+	<ajc-test dir="new/interfaceLibrary"
+		title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectpath=aspectOnly.jar"
+		comment="can weave to create library, and then weave clients"
+		>
+		<compile 
+			files="Client.java" 
+			classpath="aspectedInterfaceOnly.jar"
+			aspectpath="aspectOnly.jar"/>
+		<run class="Client"/>
+		</ajc-test>
+
+	<ajc-test dir="new/interfaceLibrary"
+		title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectpath=aspectOnly.jar"
+		comment="works if source aspect and binary classpath woven with aspect? 
+		         should NOT warn about affected type not since affected type is already woven?"
+		>
+		<compile 
+			files="Client.java,LibraryAspect.java" 
+			classpath="aspectedInterfaceOnly.jar"/>
+			
+		<run class="Client"/>
+		</ajc-test>
+		
 </suite>
