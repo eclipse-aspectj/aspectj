@@ -58,8 +58,8 @@ public class BcelObjectType extends ResolvedTypeX.Name {
 	
     
     // IMPORTANT! THIS DOESN'T do real work on the java class, just stores it away.
-    BcelObjectType(String signature, World world, JavaClass javaClass) {
-        super(signature, world);
+    BcelObjectType(String signature, World world, JavaClass javaClass, boolean exposedToWeaver) {
+        super(signature, world, exposedToWeaver);
         this.javaClass = javaClass;
         
         sourceContext = new BcelSourceContext(this);
@@ -146,6 +146,7 @@ public class BcelObjectType extends ResolvedTypeX.Name {
 		List l = BcelAttributes.readAjAttributes(javaClass.getAttributes(), getSourceContext());
 		for (Iterator iter = l.iterator(); iter.hasNext();) {
 			AjAttribute a = (AjAttribute) iter.next();
+			//System.err.println("unpacking: " + this + " and " + a);
 			if (a instanceof AjAttribute.Aspect) {
 				perClause = ((AjAttribute.Aspect)a).reify(this);
 			} else if (a instanceof AjAttribute.PointcutDeclarationAttribute) {
@@ -181,13 +182,7 @@ public class BcelObjectType extends ResolvedTypeX.Name {
         return javaClass;
     }
     
-    /**
-     * Switch to a new JavaClass and clear all caches
-     */
-    void replaceJavaClass(JavaClass jc) {
-    	if (this.javaClass == jc) return;
-    	
-    	this.javaClass = jc;
+    void resetState() {
 		this.interfaces = null;
     	this.superClass = null;
     	this.fields = null;
@@ -199,7 +194,17 @@ public class BcelObjectType extends ResolvedTypeX.Name {
     	
     	isObject = (javaClass.getSuperclassNameIndex() == 0);
         unpackAspectAttributes();
-    	//XXX is clearing these caches sufficient
+    }
+    
+    
+    /**
+     * Switch to a new JavaClass and clear all caches
+     */
+    void replaceJavaClass(JavaClass jc) {
+    	if (this.javaClass == jc) return;
+    	
+    	this.javaClass = jc;
+		resetState();
 	}
 
 	public WeaverStateKind getWeaverState() {
@@ -227,6 +232,7 @@ public class BcelObjectType extends ResolvedTypeX.Name {
     public LazyClassGen getLazyClassGen() {
     	LazyClassGen ret = lazyClassGen;
     	if (ret == null) {
+    		//System.err.println("creating lazy class gen for: " + this);
     		ret = new LazyClassGen(this);
     		if (isAspect()) {
     			lazyClassGen = ret;

@@ -224,6 +224,18 @@ public class BcelWeaver implements IWeaver {
     					"(world=" + needToReweaveWorld + ")", null, null);
     	
     	
+    	//System.err.println("typeMungers: " + typeMungerList);
+    	
+		// clear all state from files we'll be reweaving
+        for (Iterator i = filesToWeave.iterator(); i.hasNext(); ) {
+            UnwovenClassFile classFile = (UnwovenClassFile)i.next();
+	    	String className = classFile.getClassName();
+            BcelObjectType classType = (BcelObjectType) world.resolve(className);
+            classType.resetState();
+        }
+    	
+    	
+    	
     	//XXX this isn't quite the right place for this...
     	for (Iterator i = filesToWeave.iterator(); i.hasNext(); ) {
             UnwovenClassFile classFile = (UnwovenClassFile)i.next();
@@ -290,6 +302,7 @@ public class BcelWeaver implements IWeaver {
 		
 		if (shadowMungers.size() > 0 || typeMungers.size() > 0 || classType.isAspect()) {
 			clazz = classType.getLazyClassGen();
+			//System.err.println("got lazy gen: " + clazz + ", " + clazz.getWeaverState());
 			try {
 				boolean isChanged = BcelClassWeaver.weave(world, clazz, shadowMungers, typeMungers);
 				if (isChanged) {

@@ -170,7 +170,7 @@ public class BcelWorld extends World {
         if (jc == null) {
         	return ResolvedTypeX.MISSING;
         } else {
-        	return new BcelObjectType(ty.getSignature(), this, jc);
+        	return new BcelObjectType(ty.getSignature(), this, jc, false);
         }
 	}
 	
@@ -195,7 +195,7 @@ public class BcelWorld extends World {
 		String signature = TypeX.forName(jc.getClassName()).getSignature();
         BcelObjectType ret = (BcelObjectType)typeMap.get(signature);
         if (ret == null) {
-            ret = new BcelObjectType(signature, this, jc);
+            ret = new BcelObjectType(signature, this, jc, true);
             typeMap.put(signature, ret);
         } else {
             ret.replaceJavaClass(jc);

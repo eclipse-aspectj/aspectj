@@ -25,6 +25,7 @@ import org.aspectj.weaver.patterns.PerClause;
 public abstract class ResolvedTypeX extends TypeX {
 
     protected World world;
+	
 
     ResolvedTypeX(String signature, World world) {
         super(signature);
@@ -508,9 +509,12 @@ public abstract class ResolvedTypeX extends TypeX {
     
     public static abstract class Name extends ResolvedTypeX {
     	protected ISourceContext sourceContext;
+    	protected boolean exposedToWeaver;
+	
 
-        public Name(String signature, World world) {
+        public Name(String signature, World world, boolean exposedToWeaver) {
             super(signature, world);
+            this.exposedToWeaver = exposedToWeaver;
         }
 	        
 	    public final boolean isClass() {
@@ -563,6 +567,10 @@ public abstract class ResolvedTypeX extends TypeX {
 
 		public ISourceContext getSourceContext() {
 			return sourceContext;
+		}
+
+		public boolean isExposedToWeaver() {
+			return exposedToWeaver;
 		}
 
 	}
@@ -1097,4 +1105,5 @@ public abstract class ResolvedTypeX extends TypeX {
 	}
 	
 	public ISourceLocation getSourceLocation() { return null; }
+	public boolean isExposedToWeaver() { return false; }
 }

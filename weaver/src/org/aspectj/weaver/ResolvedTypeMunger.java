@@ -46,7 +46,14 @@ public abstract class ResolvedTypeMunger {
     public boolean matches(ResolvedTypeX matchType) {
     	ResolvedTypeX onType = matchType.getWorld().resolve(signature.getDeclaringType());
     	//System.err.println("matching: " + this + " to " + matchType + " onType = " + onType);
-   		if (matchType.equals(onType)) return true;
+   		if (matchType.equals(onType)) { 
+   			if (!onType.isExposedToWeaver() &&
+   					matchType.getWorld().getLint().typeNotExposedToWeaver.isEnabled())
+   			{
+   				matchType.getWorld().getLint().typeNotExposedToWeaver.signal(matchType.getName(), signature.getSourceLocation());
+   			}
+   			return true;
+   		}
    		//System.err.println("NO MATCH DIRECT");
    		
     	if (onType.isInterface()) {

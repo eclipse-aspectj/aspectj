@@ -34,10 +34,15 @@ public class DeclareParents extends Declare {
 	}
 	
 	public boolean match(ResolvedTypeX typeX) {
-		return child.matchesStatically(typeX);
+		if (!child.matchesStatically(typeX)) return false;
+		if (typeX.getWorld().getLint().typeNotExposedToWeaver.isEnabled() &&
+				!typeX.isExposedToWeaver())
+		{
+			typeX.getWorld().getLint().typeNotExposedToWeaver.signal(typeX.getName(), getSourceLocation());
+		}
+		
+		return true;
 	}
-
-
 	
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
