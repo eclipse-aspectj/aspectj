@@ -1201,7 +1201,12 @@ public class BcelShadow extends Shadow {
         BcelObjectType ot = BcelWorld.getBcelObjectType(declaringType); 
         
 		LazyMethodGen adviceMethod = ot.getLazyClassGen().getLazyMethodGen(mungerSig);
-		if (!adviceMethod.getCanInline()) {
+		//TODO handle the second part of this if by creating a method for the around
+		//     advice rather than going to a full-on closure
+		if (!adviceMethod.getCanInline() ||
+		    isFallsThrough() && adviceMethod.hasExceptionHandlers() // fix for Bug 29665
+			)
+		{
 			weaveAroundClosure(munger, hasDynamicTest);
 			return;
 		}

@@ -81,6 +81,7 @@ public final class LazyMethodGen {
     private int             maxLocals; 
     
     private boolean canInline = true;
+    private boolean hasExceptionHandlers;
     
     /**
      * only used by {@link BcelClassWeaver}
@@ -167,6 +168,7 @@ public final class LazyMethodGen {
         CodeExceptionGen[] exns = gen.getExceptionHandlers();
         if (exns != null) {
             int len = exns.length;
+            if (len > 0) hasExceptionHandlers = true;
             int priority = len - 1;
             for (int i = 0; i < len; i++, priority--) {
                 CodeExceptionGen exn = exns[i];
@@ -1144,6 +1146,9 @@ public final class LazyMethodGen {
 
 	public void setCanInline(boolean canInline) {
 		this.canInline = canInline;
+	}
+	public boolean hasExceptionHandlers() {
+		return hasExceptionHandlers;
 	}
 
 }
