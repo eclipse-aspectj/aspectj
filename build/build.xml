@@ -335,9 +335,15 @@ To use testing client jar in tests,
 	  <echo message="use org.aspectj.ajdt.core-all.jar for eajc.jar"/>
 	</target>
 
-	<target name="ajbrowser-all">
+	<target name="ajbrowser-all" >
 	  <antcall target="build-module-all">
 	    <param name="module.name" value="ajbrowser"/>
+	  </antcall>
+    </target>
+
+	<target name="ajdoc-all">
+	  <antcall target="build-module-all">
+	    <param name="module.name" value="ajdoc"/>
 	  </antcall>
     </target>
 
@@ -352,6 +358,32 @@ To use testing client jar in tests,
 	  <antcall target="build-product">
 	    <param name="product.name" value="tools"/>
 	  </antcall>
+	  <!-- TODO : remove call -->
+	  <antcall target="filter-tools-jar" />
+    </target>
+    
+    <target name="filter-tools-jar">
+    	<!--
+    		TODO : get rid of this!
+    		Temp hack ahoy. Open up the aspectjtools.jar to a temp
+    		location and then do a re-jar of it including only the 
+    		stuff we want to be in there.
+    	-->
+    	<mkdir dir="${aj.dist.dir}/tools_tmp"/>
+    	<unjar dest="${aj.dist.dir}/tools_tmp"
+    		   src="${aj.dist.dir}/tools/lib/aspectjtools.jar"/>
+    	<!-- Ant 1.5.1 doesn't overwrite the jar, even with update set to false -->
+    	<delete file="${aj.dist.dir}/tools/lib/aspectjtools.jar" />
+		<jar manifest="${aj.dist.dir}/tools_tmp/META-INF/MANIFEST.MF" 
+			destfile="${aj.dist.dir}/tools/lib/aspectjtools.jar">
+    		<fileset dir="${aj.dist.dir}/tools_tmp">
+    			<include name="javax/**"/>
+    			<include name="org/**"/>
+    			<include name="copyright.txt"/>
+    			<include name="META-INF/**"/>
+    		</fileset>
+  		</jar>    		   
+    	<delete dir="${aj.dist.dir}/tools_tmp" />
     </target>
 
     <!-- ===================================================================== -->
@@ -376,6 +408,7 @@ To use testing client jar in tests,
 	        todir="${aj.plugin.org.aspectj.ajde.source.dir}/src"/> 
 	  <zip destfile="${aj.plugin.org.aspectj.ajde.source.dir}/src/aspectjsrc.zip">
 	    <fileset dir="${aspectj.modules.dir}/ajbrowser/src" includes="**"/>
+	    <fileset dir="${aspectj.modules.dir}/ajdoc/src" includes="**"/>
 	    <fileset dir="${aspectj.modules.dir}/ajde/src" includes="**"/>
 	    <fileset dir="${aspectj.modules.dir}/asm/src" includes="**"/>
 	    <fileset dir="${aspectj.modules.dir}/bridge/src" includes="**"/>
