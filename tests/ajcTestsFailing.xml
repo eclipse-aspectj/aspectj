@@ -59,4 +59,10 @@
         </compile>
     </ajc-test>
 
+    <ajc-test dir="bugs" pr="33948" 
+    		title="default constructor inter-type declaration">
+        <compile files="ConstructorDeclaration.java"/>
+        <run class="ConstructorDeclaration"/>
+    </ajc-test>
+
 </suite>
