@@ -22,7 +22,6 @@ import java.util.List;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
-import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.testing.util.BridgeUtil;
 import org.aspectj.util.LangUtil;
 
