@@ -244,7 +244,13 @@ public class AjcTaskTest extends TestCase {
         
         private void check(IMessageHolder holder, int num, IMessage.Kind kind) {
             if (num != IGNORE) {
-                assertEquals(num, holder.numMessages(kind, false));
+            	int actual = holder.numMessages(kind, false);
+            	if (num != actual) {
+            		if (actual > 0) {
+	            		MessageUtil.print(System.err, holder, "expected " + num + " got " + actual);
+            		}
+	                assertEquals(num, actual);
+            	}
             }
         }
     }

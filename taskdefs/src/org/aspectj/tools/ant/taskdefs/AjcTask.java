@@ -118,7 +118,7 @@ public class AjcTask extends MatchingTask {
     private boolean verbose;
     private boolean failonerror;
     
-    AjcTask() {
+    public AjcTask() {
     	reset();
     }
 
