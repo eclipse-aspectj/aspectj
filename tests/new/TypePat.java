@@ -76,7 +76,7 @@ aspect A {
         Tester.event("A.before2: " + thisJoinPoint.getSignature().toShortString());
     }
 
-    before(): checkCall() && target(Map.En*) {
+    before(): checkCall() && target(Map.Entry) {
         Tester.event("A.before3: " + thisJoinPoint.getSignature().toShortString());
     }
 }
