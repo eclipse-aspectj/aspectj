@@ -101,6 +101,17 @@
 			<param name="vbl.module.name" value="testing-client"/>
 		</antcall>
 
+		<echo message="fyi, bridge/util changes rarely mean client is invalid"/>
+		<antcall target="verify-boot-lib">
+			<param name="boot.lib"        value="test/testing-client.jar"/>
+			<param name="vbl.module.name" value="util"/>
+		</antcall>
+		
+		<antcall target="verify-boot-lib">
+			<param name="boot.lib"        value="test/testing-client.jar"/>
+			<param name="vbl.module.name" value="bridge"/>
+		</antcall>
+
 		<echo message="all boot libraries verified"/>		
 	</target>
 
@@ -211,7 +222,17 @@
               version="${build.version.long}"
               verbose="true"
           assembleall="true"
-          failonerror="true"/>		
+          failonerror="true"/>
+	</target>
+
+	<target name="build-testing-client" depends="init-taskdefs,init">
+	  <antcall target="build-module-all">
+	    <param name="module.name" value="testing-client"/>
+	  </antcall>
+	  <echo>
+To use testing client jar in tests, 
+  mv ../aj-build/jars/testing-client-all.jar ../lib/tests/testing-client.jar
+</echo>
 	</target>
 	
 	<target name="ajcTests" depends="init,build-testing-drivers">
