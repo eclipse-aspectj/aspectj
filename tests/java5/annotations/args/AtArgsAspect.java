@@ -9,14 +9,14 @@ public aspect AtArgsAspect {
 		System.out.print("@args(*,*,*,*,*): ");
 		System.out.println(TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
-	before() : myMethod() && !@args(*,*,*,*,*) {
+	@org.aspectj.lang.annotation.SuppressAjWarnings before() : myMethod() && !@args(*,*,*,*,*) {
 		System.out.print("@args(*,*,*,*,*): ");
 		System.out.println(!TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
 	
 	// One too few
 	// test 1
-	before() : myMethod() && @args(*,*,*,*) {
+	@org.aspectj.lang.annotation.SuppressAjWarnings before() : myMethod() && @args(*,*,*,*) {
 		System.out.print("@args(*,*,*,*): ");
 		System.out.println(TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
@@ -27,7 +27,7 @@ public aspect AtArgsAspect {
 	
 	// One too many
 	// test 2
-	before() : myMethod() && @args(*,*,*,*,*,*) {
+	@org.aspectj.lang.annotation.SuppressAjWarnings before() : myMethod() && @args(*,*,*,*,*,*) {
 		System.out.print("@args(*,*,*,*,*,*): ");
 		System.out.println(TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
@@ -42,7 +42,7 @@ public aspect AtArgsAspect {
 		System.out.print("@args(*,*,..,*,*,*): ");
 		System.out.println(TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
-	before() : myMethod() && !@args(*,*,..,*,*,*) {
+	@org.aspectj.lang.annotation.SuppressAjWarnings before() : myMethod() && !@args(*,*,..,*,*,*) {
 		System.out.print("@args(*,*,..,*,*,*): ");
 		System.out.println(!TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
@@ -53,7 +53,7 @@ public aspect AtArgsAspect {
 		System.out.print("@args(*,*,*,..): ");
 		System.out.println(TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
-	before() : myMethod() && !@args(*,*,*,..) {
+	@org.aspectj.lang.annotation.SuppressAjWarnings before() : myMethod() && !@args(*,*,*,..) {
 		System.out.print("@args(*,*,*,..): ");
 		System.out.println(!TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
@@ -97,7 +97,7 @@ public aspect AtArgsAspect {
 		System.out.print("@args(..,@MyInheritableAnnotation,*): ");
 		System.out.println(TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
-	before() : myMethod() && !@args(..,@MyInheritableAnnotation,*) {
+	@org.aspectj.lang.annotation.SuppressAjWarnings before() : myMethod() && !@args(..,@MyInheritableAnnotation,*) {
 		System.out.print("@args(..,@MyInheritableAnnotation,*): ");
 		System.out.println(!TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
@@ -107,7 +107,7 @@ public aspect AtArgsAspect {
 		System.out.print("@args(..,@MyInheritableAnnotation,@MyInheritableAnnotation): ");
 		System.out.println(TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
-	before() : myMethod() && !@args(..,@MyInheritableAnnotation,@MyInheritableAnnotation) {
+	@org.aspectj.lang.annotation.SuppressAjWarnings before() : myMethod() && !@args(..,@MyInheritableAnnotation,@MyInheritableAnnotation) {
 		System.out.print("@args(..,@MyInheritableAnnotation,@MyInheritableAnnotation): ");
 		System.out.println(!TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}

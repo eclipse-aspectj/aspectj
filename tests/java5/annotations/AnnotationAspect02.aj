@@ -1,5 +1,5 @@
 public aspect AnnotationAspect02 {
-  before(): call(@SimpleAnnotation * *(..)) {}
+  @org.aspectj.lang.annotation.SuppressAjWarnings before(): call(@SimpleAnnotation * *(..)) {}
 
-  before(): call( * *(..)) {}
+  @org.aspectj.lang.annotation.SuppressAjWarnings before(): call( * *(..)) {}
 }
