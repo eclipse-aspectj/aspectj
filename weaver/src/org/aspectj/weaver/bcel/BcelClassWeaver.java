@@ -576,8 +576,7 @@ class BcelClassWeaver implements IClassWeaver {
 					LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz,fieldMunger);
 					if (doesAlreadyHaveAnnotation(annotationHolder,itdIsActually,decaF,reportedErrors)) continue; // skip this one...
 					annotationHolder.addAnnotation(decaF.getAnnotationX());
-					//FIXME asc you need to add relationships for these things
-					// AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),fields[fieldCounter]);
+					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),itdIsActually.getSourceLocation());
 					isChanged = true;
 					modificationOccured = true;
 					
@@ -596,8 +595,7 @@ class BcelClassWeaver implements IClassWeaver {
 					LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz,fieldMunger);
 					if (doesAlreadyHaveAnnotation(annotationHolder,itdIsActually,decaF,reportedErrors)) continue; // skip this one...
 					annotationHolder.addAnnotation(decaF.getAnnotationX());
-					//FIXME asc you need to add relationships for these things
-					// AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),fields[fieldCounter]);
+					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),itdIsActually.getSourceLocation());
 					isChanged = true;
 					modificationOccured = true;
 					forRemoval.add(decaF);
@@ -632,11 +630,8 @@ class BcelClassWeaver implements IClassWeaver {
 					annotationHolder.addAnnotation(decaMC.getAnnotationX());
 					itdIsActually.addAnnotation(decaMC.getAnnotationX());
 					isChanged=true;
-					//FIXME asc you need to add relationships for these things
-					// AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),fields[fieldCounter]);
-					isChanged = true;
-					modificationOccured = true;
-					
+					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaMC.getSourceLocation(),itdIsActually.getSourceLocation());
+					modificationOccured = true;					
 				} else {
 					if (!decaMC.isStarredAnnotationPattern()) 
 						worthRetrying.add(decaMC); // an annotation is specified that might be put on by a subsequent decaf
@@ -647,16 +642,16 @@ class BcelClassWeaver implements IClassWeaver {
 				modificationOccured = false;
                 List forRemoval = new ArrayList();
                 for (Iterator iter2 = worthRetrying.iterator(); iter.hasNext();) {
-				  DeclareAnnotation decaF = (DeclareAnnotation) iter2.next();
-				  if (decaF.matches(itdIsActually,world)) {
+				  DeclareAnnotation decaMC = (DeclareAnnotation) iter2.next();
+				  if (decaMC.matches(itdIsActually,world)) {
 					LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz,methodctorMunger);
-					if (doesAlreadyHaveAnnotation(annotationHolder,itdIsActually,decaF,reportedErrors)) continue; // skip this one...
-					annotationHolder.addAnnotation(decaF.getAnnotationX());
-					//FIXME asc you need to add relationships for these things
-					// AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),fields[fieldCounter]);
+					if (doesAlreadyHaveAnnotation(annotationHolder,itdIsActually,decaMC,reportedErrors)) continue; // skip this one...
+					annotationHolder.addAnnotation(decaMC.getAnnotationX());
+					itdIsActually.addAnnotation(decaMC.getAnnotationX());
+					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaMC.getSourceLocation(),itdIsActually.getSourceLocation());
 					isChanged = true;
 					modificationOccured = true;
-					forRemoval.add(decaF);
+					forRemoval.add(decaMC);
 				  }
 				  worthRetrying.removeAll(forRemoval);
                 }
