@@ -126,16 +126,22 @@ public class PerTypeWithin extends PerClause {
 				Member.STATIC_INITIALIZATION,
 				ModifiersPattern.ANY,
 				TypePattern.ANY,
-				typePattern,
+				TypePattern.ANY,//typePattern,
 				NamePattern.ANY,
 				TypePatternList.ANY,
 				ThrowsPattern.ANY,
 				AnnotationTypePattern.ANY
 				);
-		Pointcut testPc = new KindedPointcut(Shadow.StaticInitialization,sigpat);
-		Pointcut testPc2= new WithinPointcut(typePattern);
+		
+		Pointcut staticInitStar = new KindedPointcut(Shadow.StaticInitialization,sigpat);
+		Pointcut withinTp= new WithinPointcut(typePattern);
+		Pointcut andPcut = new AndPointcut(staticInitStar,withinTp);
+		// We want the pointcut to be 'staticinitialization(*) && within(<typepattern>' -
+		// we *cannot* shortcut this to staticinitialization(<typepattern>) because it
+		// doesnt mean the same thing.
+
 		// This munger will initialize the aspect instance field in the matched type
-		inAspect.crosscuttingMembers.addConcreteShadowMunger(Advice.makePerTypeWithinEntry(world, testPc, inAspect));
+		inAspect.crosscuttingMembers.addConcreteShadowMunger(Advice.makePerTypeWithinEntry(world, andPcut, inAspect));
 		
 		ResolvedTypeMunger munger = new PerTypeWithinTargetTypeMunger(inAspect, ret);
 		inAspect.crosscuttingMembers.addTypeMunger(world.concreteTypeMunger(munger, inAspect));

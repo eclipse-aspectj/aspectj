@@ -75,4 +75,16 @@ public class Ajc150TestsNoHarness extends TestUtils {
   	CompilationResult cR = ajc(baseDir,new String[]{"PR83303.java"});
   	assertTrue("Should be no errors:"+cR,!cR.hasErrorMessages());
   }
+  
+  public void testPerTypeWithinMissesNamedInnerTypes() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"PR83563_1.java"});
+  	assertTrue("Should be no errors:"+cR,!cR.hasErrorMessages());
+  	RunResult rR = run("PR83563_1");
+  }
+  
+  public void testPerTypeWithinMissesAnonymousInnerTypes() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"PR83563_2.java"});
+  	assertTrue("Should be no errors:"+cR,!cR.hasErrorMessages());
+  	RunResult rR = run("PR83563_2");
+  }
 }

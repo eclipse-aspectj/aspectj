@@ -15,9 +15,9 @@ package org.aspectj.weaver;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.patterns.PerTypeWithin;
 import org.aspectj.weaver.patterns.Pointcut;
-import org.aspectj.weaver.patterns.TypePattern;
 
 // PTWIMPL Target type munger adds the localAspectOf() method
 public class PerTypeWithinTargetTypeMunger extends ResolvedTypeMunger {
@@ -45,8 +45,20 @@ public class PerTypeWithinTargetTypeMunger extends ResolvedTypeMunger {
 		return testPointcut;
 	}
 	
+	// This is a lexical within() so if you say PerTypeWithin(Test) and matchType is an
+	// inner type (e.g. Test$NestedType) then it should match successfully
 	public boolean matches(ResolvedTypeX matchType, ResolvedTypeX aspectType) {
-		return testPointcut.getTypePattern().matches(matchType,TypePattern.STATIC).alwaysTrue();
+		return isWithinType(matchType).alwaysTrue();
+	}
+	
+	private FuzzyBoolean isWithinType(ResolvedTypeX type) {
+		while (type != null) {
+			if (testPointcut.getTypePattern().matchesStatically(type)) {
+				return FuzzyBoolean.YES;
+			}
+			type = type.getDeclaringType();
+		}
+		return FuzzyBoolean.NO;
 	}
 
 }
