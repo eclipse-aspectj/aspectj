@@ -6,6 +6,16 @@
 <suite>
 
 	<ajc-test dir="bugs"
+		title="after returning type incompatible with join point return type"
+		pr="42668"
+		>
+		<compile files="IncompatibleAfterReturningTypeCE.java">
+			<message kind="error" line="20"/>
+			<message kind="error" line="22"/>
+			</compile>
+		</ajc-test>
+		
+	<ajc-test dir="bugs"
 		pr="41888"
 		title="call PCD fails when given subtype of defining type">
 		<compile files="CallReference.java"/>
