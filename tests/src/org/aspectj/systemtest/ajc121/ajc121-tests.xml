@@ -125,3 +125,16 @@
       <compile files="IncorrectXlintOnInterface.java">
       </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs/typeVisibilityProblem" pr="67591"
+      title="invalid warning indicating no match when a match really occurs">
+      <compile files="Main.java">
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs" pr="71273"
+      title="RuntimeException thrown: Could not find instruction: org.apache.bcel.generic.B2I">
+      <compile files="NoByteToInt.java"/>
+      <run class="NoByteToInt"/>
+    </ajc-test>
+    
