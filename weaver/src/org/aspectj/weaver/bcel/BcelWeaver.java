@@ -44,6 +44,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IProgressListener;
 import org.aspectj.bridge.Message;
@@ -888,8 +889,28 @@ public class BcelWeaver implements IWeaver {
 		
 		addedClasses = new ArrayList();
 		deletedTypenames = new ArrayList();
-		requestor.weaveCompleted();
 		
+        
+        // if a piece of advice hasn't matched anywhere and we are in -1.5 mode, put out a warning
+        if (world.behaveInJava5Way && 
+            world.getLint().adviceDidNotMatch.isEnabled()) {
+        	List l = world.getCrosscuttingMembersSet().getShadowMungers();
+        	for (Iterator iter = l.iterator(); iter.hasNext();) {
+        		ShadowMunger element = (ShadowMunger) iter.next();
+        		if (element instanceof BcelAdvice) { // This will stop us incorrectly reporting deow Checkers
+                  BcelAdvice ba = (BcelAdvice)element;
+                  if (!ba.hasMatchedSomething()) {
+                    Annotation[] anns = ((BcelMethod)ba.getSignature()).getAnnotations();
+                    // Check if they want to suppress the warning on this piece of advice
+               	    if (!Utility.isSuppressing(anns,"adviceDidNotMatch")) {
+                      world.getLint().adviceDidNotMatch.signal(ba.getDeclaringAspect().getNameAsIdentifier(),element.getSourceLocation());
+                    }
+                  }
+        		}
+        	}
+        }
+
+        requestor.weaveCompleted();
     	return wovenClassNames;
     }
     
