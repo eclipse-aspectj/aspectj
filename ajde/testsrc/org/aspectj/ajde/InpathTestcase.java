@@ -15,6 +15,7 @@ package org.aspectj.ajde;
 
 import java.io.*;
 import java.util.*;
+import java.util.jar.JarInputStream;
 import java.util.zip.*;
 
 import org.aspectj.util.FileUtil;
@@ -244,13 +245,13 @@ public class InpathTestcase extends AjdeTestCase {
 	public int fetchFromJar(File outjarFile, String filename) {
 		int ret = -1;
 		try {
-			ZipInputStream outjar;
+			JarInputStream outjar;
 
 			outjar =
-				new ZipInputStream(new java.io.FileInputStream(outjarFile));
+				new JarInputStream(new java.io.FileInputStream(outjarFile));
 
 			ZipEntry entry;
-			while (null != (entry = outjar.getNextEntry())) {
+			while (null != (entry = (ZipEntry)outjar.getNextEntry())) {
 				String zipentryname = entry.getName();
 				if (zipentryname.equals(filename)) {
 						byte[] filedata = FileUtil.readAsByteArray(outjar);
@@ -285,8 +286,8 @@ public class InpathTestcase extends AjdeTestCase {
 			// Go through the output jar file, for each element, remove it from
 			// the expectedOutputJarContents - when we finish, the expectedOutputJarContents
 			// set should be empty!
-			ZipInputStream outjar =
-				new ZipInputStream(new java.io.FileInputStream(outjarFile));
+			JarInputStream outjar =
+				new JarInputStream(new java.io.FileInputStream(outjarFile));
 			ZipEntry entry;
 			while (null != (entry = outjar.getNextEntry())) {
 				String fileName = entry.getName();
@@ -319,8 +320,8 @@ public class InpathTestcase extends AjdeTestCase {
 
 		try {
 
-			ZipInputStream outjar =
-				new ZipInputStream(new java.io.FileInputStream(outjarFile));
+			JarInputStream outjar =
+				new JarInputStream(new java.io.FileInputStream(outjarFile));
 			ZipEntry entry;
 			while (null != (entry = outjar.getNextEntry())) {
 				String fileName = entry.getName();

@@ -14,6 +14,7 @@ package org.aspectj.ajde;
 
 import java.io.*;
 import java.util.*;
+import java.util.jar.JarInputStream;
 import java.util.zip.*;
 
 import org.aspectj.util.FileUtil;
@@ -164,7 +165,7 @@ public class ResourceCopyTestCase extends AjdeTestCase {
 	
 		try {	
 
-			ZipInputStream outjar = new ZipInputStream(new java.io.FileInputStream(outjarFile));
+			ZipInputStream outjar = new JarInputStream(new java.io.FileInputStream(outjarFile));
 			ZipEntry entry;
 			while (null != (entry = outjar.getNextEntry())) {
 				String fileName = entry.getName();

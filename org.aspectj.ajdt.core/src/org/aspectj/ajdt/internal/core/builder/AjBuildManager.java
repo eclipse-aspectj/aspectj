@@ -17,8 +17,6 @@ import java.io.*;
 import java.util.*;
 import java.util.jar.*;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 
 import org.aspectj.ajdt.internal.compiler.AjCompilerAdapter;
 import org.aspectj.ajdt.internal.compiler.IIntermediateResultsRequestor;
@@ -45,6 +43,7 @@ import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 
 public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAdapterFactory {
 	private static final String CANT_WRITE_RESULT = "unable to write compilation result";
+	private static final String MANIFEST_NAME = "META-INF/MANIFEST.MF";
 	static final boolean COPY_INPATH_DIR_RESOURCES = false;
     static final boolean FAIL_IF_RUNTIME_NOT_FOUND = false;
 	private IProgressListener progressListener = null;
@@ -52,7 +51,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 	private int compiledCount;
 	private int sourceFileCount;
 
-	private ZipOutputStream zos;
+	private JarOutputStream zos;
 	private boolean batchCompile = true;
 	private INameEnvironment environment;
 	
@@ -198,7 +197,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 	private boolean openOutputStream(File outJar)  {
 		try {
 			OutputStream os = FileUtil.makeOutputStream(buildConfig.getOutputJar());
-			zos = new ZipOutputStream(os);
+			zos = new JarOutputStream(os,bcelWeaver.getManifest(true));
 		} catch (IOException ex) {
 			IMessage message = 
 				new Message("Unable to open outjar " 
@@ -253,12 +252,14 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 				copyResourcesFromFile(from,resource,from);
 			}
 		}
+		
+		writeManifest();
     }
 	
 	private void copyResourcesFromJarFile(File jarFile) throws IOException {
-		ZipInputStream inStream = null;
+		JarInputStream inStream = null;
 		try {
-			inStream = new ZipInputStream(new FileInputStream(jarFile));
+			inStream = new JarInputStream(new FileInputStream(jarFile));
 			while (true) {
 				ZipEntry entry = inStream.getNextEntry();
 				if (entry == null) break;
@@ -333,6 +334,20 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 			fos.close();
 		}
 		state.resources.add(filename);
+	}
+	
+	/*
+	 * If we are writing to an output directory copy the manifest but only
+	 * if we already have one
+	 */    
+	private void writeManifest () throws IOException {
+		Manifest manifest = bcelWeaver.getManifest(false);
+		if (manifest != null && zos == null) {
+			OutputStream fos = 
+				FileUtil.makeOutputStream(new File(buildConfig.getOutputDir(),MANIFEST_NAME));
+			manifest.write(fos);	
+			fos.close();
+		}
 	}
 
 	private boolean acceptResource(String resourceName) {

@@ -25,12 +25,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.Attributes.Name;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -80,7 +82,8 @@ public class BcelWeaver implements IWeaver {
 //    private Map  sourceJavaClasses = new HashMap();   /* String -> UnwovenClassFile */
     private List addedClasses      = new ArrayList(); /* List<UnovenClassFile> */
     private List deletedTypenames  = new ArrayList(); /* List<String> */
-//    private Map  resources         = new HashMap(); /* String -> UnwovenClassFile */ 
+//	private Map  resources         = new HashMap(); /* String -> UnwovenClassFile */ 
+	private Manifest manifest = null;
     private boolean needToReweaveWorld = false;
 
     private List shadowMungerList = null; // setup by prepareForWeave
@@ -142,8 +145,8 @@ public class BcelWeaver implements IWeaver {
 	}
 
 
-	// The ANT copy task should be used to copy resources across.
-	private final static boolean CopyResourcesFromInpathDirectoriesToOutput=false;
+//	// The ANT copy task should be used to copy resources across.
+//	private final static boolean CopyResourcesFromInpathDirectoriesToOutput=false;
 	private Set alreadyConfirmedReweavableState;
 	
 	/**
@@ -197,7 +200,7 @@ public class BcelWeaver implements IWeaver {
 //		System.err.println("? addJarFile(" + inFile + ", " + outDir + ")");
 		List addedClassFiles = new ArrayList();
 		needToReweaveWorld = true;
-		ZipInputStream inStream = null;
+		JarInputStream inStream = null;
 		
 		try {
 			// Is this a directory we are looking at?
@@ -205,7 +208,8 @@ public class BcelWeaver implements IWeaver {
 				addedClassFiles.addAll(addDirectoryContents(inFile,outDir));
 			} else {
 			
-				inStream = new ZipInputStream(new FileInputStream(inFile)); //??? buffered
+				inStream = new JarInputStream(new FileInputStream(inFile)); //??? buffered
+				addManifest(inStream.getManifest());
 			
 				while (true) {
 					ZipEntry entry = inStream.getNextEntry();
@@ -386,6 +390,29 @@ public class BcelWeaver implements IWeaver {
 //    	this.zipOutputStream = zos;
 //    	dumpResourcesToOutJar();
 //    }
+    
+	public void addManifest (Manifest newManifest) {
+		if (manifest == null) {
+			manifest = newManifest;
+		}
+	}
+	
+	private static final String WEAVER_MANIFEST_VERSION = "1.0";
+	private static final Attributes.Name CREATED_BY = new Name("Created-By");
+	private static final String WEAVER_CREATED_BY = "AspectJ Compiler";
+    
+    public Manifest getManifest (boolean shouldCreate) {
+		
+		if (manifest == null && shouldCreate) {
+			manifest = new Manifest();
+
+			Attributes attributes = manifest.getMainAttributes();
+			attributes.put(Name.MANIFEST_VERSION,WEAVER_MANIFEST_VERSION);
+			attributes.put(CREATED_BY,WEAVER_CREATED_BY);
+		}
+		
+		return manifest;
+    }
     
     // ---- weaving
 
