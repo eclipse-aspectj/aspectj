@@ -180,7 +180,6 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 
 	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
 		String name = new String(typeDeclaration.name);
-		//System.err.println("type with name: " + name);
 		ProgramElementNode.Kind kind = ProgramElementNode.Kind.CLASS;
 		if (typeDeclaration instanceof AspectDeclaration) kind = ProgramElementNode.Kind.ASPECT;
 		else if (typeDeclaration.isInterface()) kind = ProgramElementNode.Kind.INTERFACE;
@@ -281,6 +280,7 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 	}	
 	
 	// !!! improve name and type generation
+	// TODO: improve handling of malformed methodDeclaration.binding
 	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {
 		ProgramElementNode.Kind kind = ProgramElementNode.Kind.METHOD;
 		String label = new String(methodDeclaration.selector);
@@ -328,9 +328,18 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 		}
 
 		if (methodDeclaration.binding != null) {
-			Member member = EclipseFactory.makeResolvedMember(methodDeclaration.binding);
-			peNode.setBytecodeName(member.getName());
-			peNode.setBytecodeSignature(member.getSignature());
+			String memberName = "";
+			String memberBytecodeSignature = "";
+			try {
+				Member member = EclipseFactory.makeResolvedMember(methodDeclaration.binding);
+				memberName = member.getName();
+				memberBytecodeSignature = member.getSignature();
+			} catch (NullPointerException npe) {
+				memberName = "<undefined>";
+			}
+
+			peNode.setBytecodeName(memberName);
+			peNode.setBytecodeSignature(memberBytecodeSignature);
 		}
 		((StructureNode)stack.peek()).addChild(peNode);
 		stack.push(peNode);
