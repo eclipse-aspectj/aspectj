@@ -33,13 +33,15 @@ public class UserPreferencesStore implements UserPreferencesAdapter {
     public static final String FILE_NAME = "/.ajbrowser";
     private final String VALUE_SEP = ";";
     private Properties properties = new Properties();
+    private boolean persist = true;
 	
 	public UserPreferencesStore() {
         this(true);
 	}
 
     public UserPreferencesStore(boolean loadDefault) {
-        if (loadDefault) {
+    	persist = loadDefault;
+        if (persist) {
             loadProperties(getPropertiesFilePath());
         }
     }
@@ -123,6 +125,8 @@ public class UserPreferencesStore implements UserPreferencesAdapter {
         }
 	}
     public void saveProperties() {
+    	if (!persist) return;
+    	
         FileOutputStream out = null;
         String path = null;
         try {
