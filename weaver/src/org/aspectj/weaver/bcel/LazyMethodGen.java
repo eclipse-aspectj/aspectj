@@ -594,9 +594,13 @@ public final class LazyMethodGen {
         return prevLine;
     }
 
-    public boolean isStatic() {
-        return Modifier.isStatic(getAccessFlags());
-    }
+	public boolean isStatic() {
+		return Modifier.isStatic(getAccessFlags());
+	}
+    
+	public boolean isAbstract() {
+		return Modifier.isAbstract(getAccessFlags());
+	}
     
     public void addExceptionHandler(
             InstructionHandle start,

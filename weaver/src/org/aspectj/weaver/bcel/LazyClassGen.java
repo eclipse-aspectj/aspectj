@@ -147,7 +147,7 @@ public final class LazyClassGen {
     }
 
     public List getMethodGens() {
-        return Collections.unmodifiableList(methodGens);
+        return methodGens; //???Collections.unmodifiableList(methodGens);
 
     }
 

@@ -5768,4 +5768,11 @@
         <run class="ConvertToUnchecked"/>
     </ajc-test>
     
+    <ajc-test dir="bugs/interAbstract"
+      title="inter-type declaration bug with abstract classes"
+      pr="36046">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
+    
 </suite>

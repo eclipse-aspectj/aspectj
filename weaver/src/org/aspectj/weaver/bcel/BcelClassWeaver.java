@@ -220,7 +220,12 @@ class BcelClassWeaver implements IClassWeaver {
 
 	private boolean alreadyDefined(LazyClassGen clazz, LazyMethodGen mg) {
 		for (Iterator i = clazz.getMethodGens().iterator(); i.hasNext(); ) {
-			if (signaturesMatch(mg, (LazyMethodGen)i.next())) {
+			LazyMethodGen existing = (LazyMethodGen)i.next();
+			if (signaturesMatch(mg, existing)) {
+				if (!mg.isAbstract() && existing.isAbstract()) {
+					i.remove();
+					return false;
+				}
 				return true;
 			}
 		}
