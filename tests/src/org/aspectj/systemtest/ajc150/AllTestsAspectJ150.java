@@ -39,6 +39,7 @@ public class AllTestsAspectJ150 {
 		suite.addTest(AnnotationBinding.suite());
 		
 		suite.addTest(SuppressedWarnings.suite());
+		suite.addTest(DeclareAnnotationTests.suite());
 		//$JUnit-END$
 		return suite;
 	}
