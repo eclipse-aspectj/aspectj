@@ -229,13 +229,17 @@ public class CompilerRun implements IAjcRun {
             FileUtil.getBaseDirFiles(testBaseSrcDir, spec.extdirs);
         final File[] classFiles =
             FileUtil.getBaseDirFiles(testBaseSrcDir, spec.classpath);
+        final File[] xlintFiles = (null == spec.xlintfile ? new File[0]
+            : FileUtil.getBaseDirFiles(testBaseSrcDir, new String[] {spec.xlintfile}));
+            
         // hmm - duplicates validation above, verifying getBaseDirFiles?
         if (!spec.badInput) {
             if (!validator.canRead(argFiles, "argFiles")
                 || !validator.canRead(injarFiles, "injarFiles")
                 || !validator.canRead(inpathFiles, "inpathFiles")
                 || !validator.canRead(aspectFiles, "aspectFiles")
-                || !validator.canRead(classFiles, "classFiles")) {
+                || !validator.canRead(classFiles, "classFiles")
+                || !validator.canRead(xlintFiles, "xlintFiles")) {
                 return false;
             }
         }
@@ -277,12 +281,12 @@ public class CompilerRun implements IAjcRun {
                             spec.sourceroots,
                             sandbox.stagingDir);
                     // delete incremental files in sourceroot after copying // XXX inefficient
+                    // an incremental file has an extra "." in name
+                    // most .java files don't, because they are named after
+                    // the principle type they contain, and simple type names
+                    // have no dots.
                     FileFilter pickIncFiles = new FileFilter() {
-                            // an incremental file has an extra "." in name
-        // most .java files don't, because they are named after
-        // the principle type they contain, and simple type names
-        // have no dots.
-    public boolean accept(File file) {
+                        public boolean accept(File file) {
                             if (file.isDirectory()) {
                                 // continue recursion
                                 return true;
@@ -327,6 +331,11 @@ public class CompilerRun implements IAjcRun {
         }
         arguments.clear();
         
+        if (!LangUtil.isEmpty(xlintFiles)) {
+            arguments.add("-Xlintfile");
+            String sr = FileUtil.flatten(xlintFiles, null);
+            arguments.add(sr);
+        }
         if (!LangUtil.isEmpty(extdirFiles)) {
             arguments.add("-extdirs");
             String sr = FileUtil.flatten(extdirFiles, null);
@@ -718,6 +727,7 @@ public class CompilerRun implements IAjcRun {
 
         /** src path = {suiteParentDir}/{testBaseDirOffset}/{testSrcDirOffset}/{path} */
         protected String testSrcDirOffset;
+        protected String xlintfile;
 
         public Spec() {
             super(XMLNAME);
@@ -815,6 +825,9 @@ public class CompilerRun implements IAjcRun {
             if (!LangUtil.isEmpty(dirs)) {
                 sourceroots = XMLWriter.unflattenList(dirs);
             }
+        }
+        public void setXlintfile(String path) {
+             xlintfile = path;
         }
 
         /** 
