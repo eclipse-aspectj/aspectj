@@ -5814,5 +5814,18 @@
         <compile files="p1/C.java,p2/A2.java" options="-source14"/>
         <run class="p2.A2" vm="1.4"/>
     </ajc-test>
+
+    <ajc-test dir="new" pr="36736"
+      title="implemented abstract pointcut">
+        <compile files="AbstractImplementedPointcut.java">
+            <message kind="error" line="14"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="new/verifyError" pr="36673"
+      title="privileged aspect main verify error">
+        <compile files="Privilege.java"/>
+        <run class="Privilege"/>
+    </ajc-test>
     
 </suite>

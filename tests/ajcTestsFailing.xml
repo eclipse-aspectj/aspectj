@@ -4,16 +4,5 @@
 <!-- contains valid tests that the compiler has never passed -->
 <suite>
 
-    <ajc-test dir="new/verifyError" pr="36673"
-      title="privileged aspect main verify error">
-        <compile files="Privilege.java"/>
-        <run class="Privilege"/>
-    </ajc-test>
 
-    <ajc-test dir="new" pr="36736"
-      title="implemented abstract pointcut">
-        <compile files="AbstractImplementedPointcut.java">
-            <message kind="error" line="14"/>
-        </compile>
-    </ajc-test>
 </suite>
