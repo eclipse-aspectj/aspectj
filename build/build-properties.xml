@@ -1,7 +1,7 @@
 <!-- -*- Mode: SGML; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-     -->
 <!-- ========================================================================= -->
 <!-- Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).        -->
-<!-- Copyright (c) 2003 Contributors.                                          -->
+<!-- Copyright (c) 2003, 2005 Contributors.                                          -->
 <!-- All rights reserved.                                                      -->
 <!-- This program and the accompanying materials are made available            -->
 <!-- under the terms of the Common Public License v1.0                         -->
@@ -30,7 +30,7 @@
         - the same as build.version.long (in major.minor.service form) for releases.
       -->
       <property name="build.version"       value="DEVELOPMENT"/> 
-      <property name="build.version.base"  value="1.1"/> 
+      <property name="build.version.base"  value="1.2"/> 
       <property name="build.version.long"  value="DEVELOPMENT"/> 
       <property name="build.version.short" value="DEVELOPMENT"/> 
       <property name="build.version.eclipse.plugins" value="9.9.9"/>
@@ -49,7 +49,7 @@
 	  
 	  <property name="company.name"         value="aspectj.org"/>
 	  <property name="copyright.allRights.from1998"
-               value="Copyright (c) 1998-2001 Xerox Corporation, 2002 Palo Alto Research Center, Incorporated, 2003-2004 Contributors.  All rights reserved." />
+               value="Copyright (c) 1998-2001 Xerox Corporation, 2002 Palo Alto Research Center, Incorporated, 2003-2005 Contributors.  All rights reserved." />
 
       <!-- callers define basedir as dir of build file? -->
       <property name="aspectj.modules.dir"
