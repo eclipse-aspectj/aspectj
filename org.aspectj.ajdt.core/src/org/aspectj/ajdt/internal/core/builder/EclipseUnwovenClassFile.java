@@ -23,7 +23,6 @@ import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.Message;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
-import sun.misc.MessageUtils;
 
 public class EclipseUnwovenClassFile extends UnwovenClassFile {
 
