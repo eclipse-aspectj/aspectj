@@ -112,7 +112,7 @@ class StubFileGenerator {
 		    	if (!member.getKind().equals(IProgramElement.Kind.POINTCUT)
 		    	    && !member.getKind().equals(IProgramElement.Kind.ADVICE)) {
 		    		signature = member.getSourceSignature();//StructureUtil.genSignature(member);
-		    	} 
+                } 
 		    	
 		    	if (member.getKind().isDeclare()) {
 		    		System.err.println("> Skipping declare (ajdoc limitation): " + member.toLabelString());

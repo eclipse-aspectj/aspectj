@@ -22,20 +22,20 @@ import junit.framework.TestCase;
  */
 public class CoverageTestCase extends TestCase {
 
-	File file0 = new File("testdata/coverage/InDefaultPackage.java");
-	File file1 = new File("testdata/coverage/foo/ClassA.java");
-	File aspect1 = new File("testdata/coverage/foo/UseThisAspectForLinkCheck.aj");
-	File file2 = new File("testdata/coverage/foo/InterfaceI.java");
-	File file3 = new File("testdata/coverage/foo/PlainJava.java");
-	File file4 = new File("testdata/coverage/foo/ModelCoverage.java");
-	File file5 = new File("testdata/coverage/fluffy/Fluffy.java");
-	File file6 = new File("testdata/coverage/fluffy/bunny/Bunny.java");
-	File file7 = new File("testdata/coverage/fluffy/bunny/rocks/Rocks.java");
-	File file8 = new File("testdata/coverage/fluffy/bunny/rocks/UseThisAspectForLinkCheckToo.java");
-	File file9 = new File("testdata/coverage/foo/PkgVisibleClass.java");
-	File file10 = new File("testdata/coverage/foo/NoMembers.java");
+	protected File file0 = new File("testdata/coverage/InDefaultPackage.java");
+	protected File file1 = new File("testdata/coverage/foo/ClassA.java");
+	protected File aspect1 = new File("testdata/coverage/foo/UseThisAspectForLinkCheck.aj");
+	protected File file2 = new File("testdata/coverage/foo/InterfaceI.java");
+	protected File file3 = new File("testdata/coverage/foo/PlainJava.java");
+	protected File file4 = new File("testdata/coverage/foo/ModelCoverage.java");
+	protected File file5 = new File("testdata/coverage/fluffy/Fluffy.java");
+	protected File file6 = new File("testdata/coverage/fluffy/bunny/Bunny.java");
+	protected File file7 = new File("testdata/coverage/fluffy/bunny/rocks/Rocks.java");
+	protected File file8 = new File("testdata/coverage/fluffy/bunny/rocks/UseThisAspectForLinkCheckToo.java");
+	protected File file9 = new File("testdata/coverage/foo/PkgVisibleClass.java");
+	protected File file10 = new File("testdata/coverage/foo/NoMembers.java");
     
-	File outdir = new File("testdata/coverage/doc");
+	protected File outdir = new File("testdata/coverage/doc");
 	
 	public void testOptions() {
 		outdir.delete();

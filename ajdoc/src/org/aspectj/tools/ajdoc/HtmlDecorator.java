@@ -30,6 +30,7 @@ class HtmlDecorator {
     static Hashtable declIDTable = null;
     static SymbolManager symbolManager = null;
     static File rootDir = null;
+    static String docVisibilityModifier;
 
     static void decorateHTMLFromInputFiles(Hashtable table,
                                            File newRootDir,
@@ -39,6 +40,7 @@ class HtmlDecorator {
         rootDir = newRootDir;
         declIDTable = table;
         symbolManager = sm;
+        docVisibilityModifier = docModifier;
         for (int i = 0; i < inputFiles.length; i++) {
             decorateHTMLFromDecls(symbolManager.getDeclarations(inputFiles[i].getCanonicalPath()),
                                   rootDir.getCanonicalPath() + Config.DIR_SEP_CHAR,
@@ -73,11 +75,7 @@ class HtmlDecorator {
         boolean nestedClass = false;
         if ( decl.isType() ) {
             boolean decorateFile = true;
-            if ( (docModifier.equals("private")) || // everything
-                 (docModifier.equals("package") && decl.getModifiers().indexOf( "private" ) == -1) || // package
-                 (docModifier.equals("protected") && (decl.getModifiers().indexOf( "protected" ) != -1 ||
-                                                        decl.getModifiers().indexOf( "public" ) != -1 )) ||
-                 (docModifier.equals("public") && decl.getModifiers().indexOf( "public" ) != -1) ) {
+            if (isAboveVisibility(decl.getNode())) {
                 visibleFileList.add(decl.getSignature());
                 String packageName = decl.getPackageName();
                 String filename    = "";
@@ -192,10 +190,13 @@ class HtmlDecorator {
             } 
         } 
         
-        // Change "Class" to "Aspect", HACK: depends on "affects:"
-        int classStartIndex = fileContents.toString().indexOf("<BR>\nClass");
+        // Change "Class" to "Aspect"
+        // HACK: depends on matching presence of advice or pointcut summary
+        int classStartIndex = fileContents.toString().indexOf("<BR>\nClass ");
+        int pointcutSummaryIndex = fileContents.toString().indexOf("Pointcut Summary");
+        int adviceSummaryIndex = fileContents.toString().indexOf("Advice Summary");
         if (classStartIndex != -1 &&
-        	fileContents.toString().indexOf("Advises:") != -1) {
+        	(adviceSummaryIndex != -1 || pointcutSummaryIndex != -1)) {
             int classEndIndex = fileContents.toString().indexOf("</H2>", classStartIndex);
             if (classStartIndex != -1 && classEndIndex != -1) { 
                 String classLine = fileContents.toString().substring(classStartIndex, classEndIndex);
@@ -211,10 +212,6 @@ class HtmlDecorator {
     }
 
     static void addAspectDocumentation(IProgramElement node, StringBuffer fileBuffer, int index ) {
-//        List relations = AsmManager.getDefault().getRelationshipMap().get(node);
-//        System.err.println("> node: " + node + ", " + "relations: " + relations);
-        
-
     	List pointcuts = new ArrayList();
     	List advice = new ArrayList();
     	for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
@@ -255,6 +252,8 @@ class HtmlDecorator {
                                           List decls,
                                           String        kind,
                                           int           index) {
+        if (!declsAboveVisibilityExist(decls)) return;
+        
         int insertIndex = findSummaryIndex(fileBuffer, index);
 
         // insert the head of the table
@@ -269,58 +268,77 @@ class HtmlDecorator {
         // insert the body of the table
         for ( int i = 0; i < decls.size(); i++ ) {
             IProgramElement decl = (IProgramElement)decls.get(i);
-
-            // insert the table row accordingly
-            String comment = generateSummaryComment(decl);
-            String entry = "";
-            if ( kind.equals( "Advice Summary" ) ) {
-                entry +=
-                        "<TR><TD>" +
-                        "<A HREF=\"#" + generateHREFName(decl) + "\">" +
-                        "<TT>" + generateAdviceSignatures(decl) +
-						"</TT></A><BR>&nbsp;";
-                if (!comment.equals("")) {
-                    entry += comment + "<P>";
+            if (isAboveVisibility(decl)) {                
+                // insert the table row accordingly
+                String comment = generateSummaryComment(decl);
+                String entry = "";
+                if ( kind.equals( "Advice Summary" ) ) {
+                    entry +=
+                            "<TR><TD>" +
+                            "<A HREF=\"#" + generateHREFName(decl) + "\">" +
+                            "<TT>" + generateAdviceSignatures(decl) +
+    						"</TT></A><BR>&nbsp;";
+                    if (!comment.equals("")) {
+                        entry += comment + "<P>";
+                    }
+                    entry +=
+                            generateAffects(decl, false) + "</TD>" +
+                            "</TR><TD>\n";
                 }
-                entry +=
-                        generateAffects(decl, false) + "</TD>" +
-                        "</TR><TD>\n";
-            }
-            else if ( kind.equals( "Pointcut Summary" ) ) {
-                entry +=
-                        "<TR><TD WIDTH=\"1%\">" +
-                        "<FONT SIZE=-1><TT>" + genAccessibility(decl) + "</TT></FONT>" +
-                        "</TD>\n" +
-                        "<TD>" +
-                        "<TT><A HREF=\"#" + generateHREFName(decl) + "\">" +
-                        decl.toLabelString() + "</A></TT><BR>&nbsp;";
-                if (!comment.equals("")) {
-                    entry += comment + "<P>";
+                else if ( kind.equals( "Pointcut Summary" ) ) {
+                    entry +=
+                            "<TR><TD WIDTH=\"1%\">" +
+                            "<FONT SIZE=-1><TT>" + genAccessibility(decl) + "</TT></FONT>" +
+                            "</TD>\n" +
+                            "<TD>" +
+                            "<TT><A HREF=\"#" + generateHREFName(decl) + "\">" +
+                            decl.toLabelString() + "</A></TT><BR>&nbsp;";
+                    if (!comment.equals("")) {
+                        entry += comment + "<P>";
+                    }
+                    entry +=
+                            "</TR></TD>\n";
                 }
-                entry +=
-                        "</TR></TD>\n";
+                else if ( kind.equals( "Introduction Summary" ) ) {
+                    entry +=
+                            "<TR><TD WIDTH=\"1%\">" +
+                            "<FONT SIZE=-1><TT>" + decl.getModifiers() + "</TT></FONT>" +
+                            "</TD>" +
+                            "<TD>" +
+                            "<A HREF=\"#" + generateHREFName(decl) + "\">" +
+                            "<TT>introduction " + decl.toLabelString() + "</TT></A><P>" +
+                            generateIntroductionSignatures(decl, false) +
+                            generateAffects(decl, true);
+                }
+    
+                // insert the entry
+                fileBuffer.insert(insertIndex, entry);
+                insertIndex += entry.length();
             }
-            else if ( kind.equals( "Introduction Summary" ) ) {
-                entry +=
-                        "<TR><TD WIDTH=\"1%\">" +
-                        "<FONT SIZE=-1><TT>" + decl.getModifiers() + "</TT></FONT>" +
-                        "</TD>" +
-                        "<TD>" +
-                        "<A HREF=\"#" + generateHREFName(decl) + "\">" +
-                        "<TT>introduction " + decl.toLabelString() + "</TT></A><P>" +
-                        generateIntroductionSignatures(decl, false) +
-                        generateAffects(decl, true);
-            }
-
-            // insert the entry
-            fileBuffer.insert(insertIndex, entry);
-            insertIndex += entry.length();
         }
 
         // insert the end of the table
         String tableTail = "</TABLE><P>&nbsp;\n";
         fileBuffer.insert(insertIndex, tableTail);
         insertIndex += tableTail.length();
+    }
+    
+    private static boolean declsAboveVisibilityExist(List decls) {
+        boolean exist = false;
+        for (Iterator it = decls.iterator(); it.hasNext();) {
+            IProgramElement element = (IProgramElement) it.next();
+            if (isAboveVisibility(element)) exist = true;
+        }
+        return exist;
+    }
+
+    private static boolean isAboveVisibility(IProgramElement element) {
+        return 
+            (docVisibilityModifier.equals("private")) || // everything
+            (docVisibilityModifier.equals("package") && element.getAccessibility().equals(IProgramElement.Accessibility.PACKAGE)) || // package
+            (docVisibilityModifier.equals("protected") && (element.getAccessibility().equals(IProgramElement.Accessibility.PROTECTED) ||
+                    element.getAccessibility().equals(IProgramElement.Accessibility.PUBLIC))) ||
+            (docVisibilityModifier.equals("public") && element.getAccessibility().equals(IProgramElement.Accessibility.PUBLIC));
     }
 
     private static String genAccessibility(IProgramElement decl) {
@@ -335,6 +353,7 @@ class HtmlDecorator {
                                           List decls,
                                           String        kind,
                                           int           index) {
+        if (!declsAboveVisibilityExist(decls)) return;
         int insertIndex = findDetailsIndex(fileBuffer, index);
 
         // insert the table heading
@@ -353,42 +372,44 @@ class HtmlDecorator {
         // insert the details
         for ( int i = 0; i < decls.size(); i++ ) {
             IProgramElement decl = (IProgramElement)decls.get(i);
-            String entry = "";
-
-            // insert the table row accordingly
-            entry +=  "<A NAME=\"" + generateHREFName(decl) + "\"><!-- --></A>\n";
-            if ( kind.equals( "Advice Detail" ) ) {
-                entry += "<H3>" + decl.getName() + "</H3><P>";
-                entry +=
-                        "<TT>" +
-                        generateAdviceSignatures(decl) + "</TT>\n" + "<P>" +
-                        generateDetailsComment(decl) + "<P>" +
-                        generateAffects(decl, false);
+            if (isAboveVisibility(decl)) {
+                String entry = "";
+    
+                // insert the table row accordingly
+                entry +=  "<A NAME=\"" + generateHREFName(decl) + "\"><!-- --></A>\n";
+                if ( kind.equals( "Advice Detail" ) ) {
+                    entry += "<H3>" + decl.getName() + "</H3><P>";
+                    entry +=
+                            "<TT>" +
+                            generateAdviceSignatures(decl) + "</TT>\n" + "<P>" +
+                            generateDetailsComment(decl) + "<P>" +
+                            generateAffects(decl, false);
+                }
+                else if (kind.equals("Pointcut Detail")) {
+                    entry +=
+                            "<H3>" +
+                            decl.toLabelString() +
+                            "</H3><P>" +
+                            generateDetailsComment(decl);
+                }
+                else if (kind.equals("Introduction Detail")) {
+                	entry += "<H3>introduction " + decl.toLabelString() + "</H3><P>";
+                    entry +=
+                            generateIntroductionSignatures(decl, true) +
+                            generateAffects(decl, true) +
+                            generateDetailsComment(decl);
+                }
+    
+                // insert the entry
+                if (i != decls.size()-1) {
+                    entry += "<P><HR>\n";
+                }
+                else {
+                    entry += "<P>";
+                }
+                fileBuffer.insert(insertIndex, entry);
+                insertIndex += entry.length();
             }
-            else if (kind.equals("Pointcut Detail")) {
-                entry +=
-                        "<H3>" +
-                        decl.toLabelString() +
-                        "</H3><P>" +
-                        generateDetailsComment(decl);
-            }
-            else if (kind.equals("Introduction Detail")) {
-            	entry += "<H3>introduction " + decl.toLabelString() + "</H3><P>";
-                entry +=
-                        generateIntroductionSignatures(decl, true) +
-                        generateAffects(decl, true) +
-                        generateDetailsComment(decl);
-            }
-
-            // insert the entry
-            if (i != decls.size()-1) {
-                entry += "<P><HR>\n";
-            }
-            else {
-                entry += "<P>";
-            }
-            fileBuffer.insert(insertIndex, entry);
-            insertIndex += entry.length();
         }
     }
 
