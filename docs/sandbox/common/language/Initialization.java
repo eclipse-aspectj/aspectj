@@ -60,7 +60,7 @@ class AnotherThing extends Thing {
     }
 }
 
-aspect A {
+aspect InitializationSample {
     // -------- constructor-call picks out the calls
     /**
      * After any call to any constructor, fix up the thing.
