@@ -76,7 +76,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 						"name binding only allowed in @pcds, args, this, and target");
 					return this;
 				}
-				
+				verifyIsAnnotationType(formalBinding.getType(),scope);
 				BindingAnnotationTypePattern binding = new BindingAnnotationTypePattern(formalBinding);
 				binding.copyLocationFrom(this);
 				bindings.register(binding, scope);
@@ -89,17 +89,24 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 			}
 		} else {
 			annotationType = annotationType.resolve(scope.getWorld());
-			if (!annotationType.isAnnotation(scope.getWorld())) {
-				IMessage m = MessageUtil.error(
-						WeaverMessages.format(WeaverMessages.REFERENCE_TO_NON_ANNOTATION_TYPE,annotationType.getName()),
-						getSourceLocation());
-				scope.getWorld().getMessageHandler().handleMessage(m);
-				resolved = false;
-			}
+			verifyIsAnnotationType(annotationType,scope);
 			return this;
 		}
 	}
 	
+	/**
+	 * @param scope
+	 */
+	private void verifyIsAnnotationType(TypeX type,IScope scope) {
+		if (!type.isAnnotation(scope.getWorld())) {
+			IMessage m = MessageUtil.error(
+					WeaverMessages.format(WeaverMessages.REFERENCE_TO_NON_ANNOTATION_TYPE,type.getName()),
+					getSourceLocation());
+			scope.getWorld().getMessageHandler().handleMessage(m);
+			resolved = false;
+		}
+	}
+
 	private static byte VERSION = 1; // rev if serialisation form changes
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(java.io.DataOutputStream)

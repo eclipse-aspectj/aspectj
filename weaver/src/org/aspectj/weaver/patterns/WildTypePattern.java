@@ -507,6 +507,7 @@ public class WildTypePattern extends TypePattern {
     public String toString() {
     	StringBuffer buf = new StringBuffer();
     	if (annotationPattern != AnnotationTypePattern.ANY) {
+    		buf.append('(');
     		buf.append(annotationPattern.toString());
     		buf.append(' ');
     	}
@@ -518,6 +519,9 @@ public class WildTypePattern extends TypePattern {
     			if (i > 0) buf.append(".");
     			buf.append(name.toString());
     		}
+    	}
+    	if (annotationPattern != AnnotationTypePattern.ANY) {
+    		buf.append(')');
     	}
     	return buf.toString();
     }

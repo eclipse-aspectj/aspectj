@@ -71,11 +71,11 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	
 	private void initAnnotationTypePatterns() {
 		PatternParser p = new PatternParser("@Foo");
-		fooTP = p.parseAnnotationTypePattern();
+		fooTP = p.maybeParseAnnotationPattern();
 		fooTP = fooTP.resolveBindings(makeSimpleScope(),new Bindings(3),true);
 		
 		p = new PatternParser("@p.SimpleAnnotation");
-		simpleAnnotationTP = p.parseAnnotationTypePattern();
+		simpleAnnotationTP = p.maybeParseAnnotationPattern();
 		simpleAnnotationTP = simpleAnnotationTP.resolveBindings(makeSimpleScope(),new Bindings(3),true);
 	}
 	
@@ -108,7 +108,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 		
 		MyMessageHandler mh = new MyMessageHandler();
 		world.setMessageHandler(mh);
-		AnnotationTypePattern atp = p.parseAnnotationTypePattern();
+		AnnotationTypePattern atp = p.maybeParseAnnotationPattern();
 		atp = atp.resolveBindings(makeSimpleScope(),new Bindings(3),true);
 		
 		assertTrue("Expected 1 error message but got "+mh.messages.size(),mh.messages.size()==1);
@@ -142,7 +142,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 		ResolvedTypeX rtx = loadType("AnnotatedClass");
 
 		PatternParser p = new PatternParser("@Foo");
-		AnnotationTypePattern fooTP = p.parseAnnotationTypePattern();
+		AnnotationTypePattern fooTP = p.maybeParseAnnotationPattern();
 		try {
 			fooTP.matches(rtx);
 			fail("Should have failed with illegal state exception, fooTP is not resolved");

@@ -504,38 +504,36 @@ public class PatternParser {
 			//int startPos = tokenSource.peek(-1).getStart();
 			//??? we lose source location for true start of !type
 			TypePattern p = new NotTypePattern(parseAtomicTypePattern());
+			p = setAnnotationPatternForTypePattern(p,ap);
 			return p;			
 		}
 		if (maybeEat("(")) {
 			TypePattern p = parseTypePattern();
+			p = setAnnotationPatternForTypePattern(p,ap);
 			eat(")");
 			return p;
 		}
-//		if (maybeEat("@")) {
-//			AnnotationTypePattern ap = null;
-//			if (maybeEat("(")) {
-//				ap = parseAnnotationTypePattern();
-//				eat(")");
-//			} else {
-//				ap = parseSimpleAnnotationName();
-//			}
-//			int startPos = tokenSource.peek().getStart();
-//		    TypePattern p = parseAtomicTypePattern();
-//		    int endPos = tokenSource.peek(-1).getEnd();
-//		    p.setLocation(sourceContext, startPos, endPos);
-//		    if (ap != null) {
-//		    	if (p == TypePattern.ANY) {
-//		    		p = new WildTypePattern(new NamePattern[] {NamePattern.ANY},false,0);
-//		    	}	
-//		    	p.setAnnotationTypePattern(ap);	    	
-//		    }
-//		    return p;
-//		}
 		int startPos = tokenSource.peek().getStart();
 	    TypePattern p = parseSingleTypePattern();
 	    int endPos = tokenSource.peek(-1).getEnd();
+	    p = setAnnotationPatternForTypePattern(p,ap);
 	    p.setLocation(sourceContext, startPos, endPos);
 	    return p;
+	}
+	
+	private TypePattern setAnnotationPatternForTypePattern(TypePattern t, AnnotationTypePattern ap) {
+		TypePattern ret = t;
+		if (ap != AnnotationTypePattern.ANY) {
+			if (t == TypePattern.ANY) {
+				ret = new WildTypePattern(new NamePattern[] {NamePattern.ANY},false,0,false);
+			}
+			if (t.annotationPattern == AnnotationTypePattern.ANY) {
+				ret.setAnnotationTypePattern(ap);				
+			} else {
+				ret.setAnnotationTypePattern(new AndAnnotationTypePattern(ap,t.annotationPattern)); //???
+			}
+		}
+		return ret;
 	}
 	
 	public AnnotationTypePattern maybeParseAnnotationPattern() {
@@ -560,6 +558,7 @@ public class PatternParser {
 				if (maybeEat("(")) {
 					TypePattern p = parseTypePattern();
 					ret = new NotAnnotationTypePattern(new WildAnnotationTypePattern(p));
+					eat(")");
 					return ret;
 				} else {
 					TypePattern p = parseSingleTypePattern();
@@ -575,6 +574,7 @@ public class PatternParser {
 			if (maybeEat("(")) {
 				TypePattern p = parseTypePattern();
 				ret = new WildAnnotationTypePattern(p);
+				eat(")");
 				return ret;
 			} else {
 				TypePattern p = parseSingleTypePattern();
@@ -617,35 +617,35 @@ public class PatternParser {
 	
 
 	
-	private AnnotationTypePattern completeAnnotationPattern(AnnotationTypePattern p) {
-		if (maybeEat("&&")) {
-			return new AndAnnotationTypePattern(p,parseNotOrAnnotationPattern());
-		}
-		if (maybeEat("||")) {
-			return new OrAnnotationTypePattern(p,parseAnnotationTypePattern());
-		}
-		return p;
-	}
-
-	protected AnnotationTypePattern parseAnnotationTypePattern() {
-		AnnotationTypePattern ap = parseAtomicAnnotationPattern();
-		if (maybeEat("&&")) {
-			ap = new AndAnnotationTypePattern(ap, parseNotOrAnnotationPattern());
-		}  
-		
-		if (maybeEat("||")) {
-			ap = new OrAnnotationTypePattern(ap, parseAnnotationTypePattern());
-		}		
-		return ap;
-	}
-
-	private AnnotationTypePattern parseNotOrAnnotationPattern() {
-		AnnotationTypePattern p = parseAtomicAnnotationPattern();
-		if (maybeEat("&&")) {
-			p = new AndAnnotationTypePattern(p,parseAnnotationTypePattern());
-		}
-		return p;
-	}
+//	private AnnotationTypePattern completeAnnotationPattern(AnnotationTypePattern p) {
+//		if (maybeEat("&&")) {
+//			return new AndAnnotationTypePattern(p,parseNotOrAnnotationPattern());
+//		}
+//		if (maybeEat("||")) {
+//			return new OrAnnotationTypePattern(p,parseAnnotationTypePattern());
+//		}
+//		return p;
+//	}
+//
+//	protected AnnotationTypePattern parseAnnotationTypePattern() {
+//		AnnotationTypePattern ap = parseAtomicAnnotationPattern();
+//		if (maybeEat("&&")) {
+//			ap = new AndAnnotationTypePattern(ap, parseNotOrAnnotationPattern());
+//		}  
+//		
+//		if (maybeEat("||")) {
+//			ap = new OrAnnotationTypePattern(ap, parseAnnotationTypePattern());
+//		}		
+//		return ap;
+//	}
+//
+//	private AnnotationTypePattern parseNotOrAnnotationPattern() {
+//		AnnotationTypePattern p = parseAtomicAnnotationPattern();
+//		if (maybeEat("&&")) {
+//			p = new AndAnnotationTypePattern(p,parseAnnotationTypePattern());
+//		}
+//		return p;
+//	}
 	
 	
 	protected AnnotationTypePattern parseAnnotationNameOrVarTypePattern() {
@@ -680,32 +680,32 @@ public class PatternParser {
 		return p;
 	}
 
-	private AnnotationTypePattern parseAtomicAnnotationPattern() {
-		if (maybeEat("!")) {
-			//int startPos = tokenSource.peek(-1).getStart();
-			//??? we lose source location for true start of !type
-			AnnotationTypePattern p = new NotAnnotationTypePattern(parseAtomicAnnotationPattern());
-			return p;			
-		}
-		if (maybeEat("(")) {
-			AnnotationTypePattern p = parseAnnotationTypePattern();
-			eat(")");
-			return p;
-		}
-		int startPos = tokenSource.peek().getStart();
-		eat("@");
-		StringBuffer annotationName = new StringBuffer();
-		annotationName.append(parseIdentifier());
-		while (maybeEat(".")) {
-			annotationName.append('.');
-			annotationName.append(parseIdentifier());
-		}
-		TypeX type = TypeX.forName(annotationName.toString());
-		AnnotationTypePattern p = new ExactAnnotationTypePattern(type);
-	    int endPos = tokenSource.peek(-1).getEnd();
-	    p.setLocation(sourceContext, startPos, endPos);
-	    return p;		
-	}
+//	private AnnotationTypePattern parseAtomicAnnotationPattern() {
+//		if (maybeEat("!")) {
+//			//int startPos = tokenSource.peek(-1).getStart();
+//			//??? we lose source location for true start of !type
+//			AnnotationTypePattern p = new NotAnnotationTypePattern(parseAtomicAnnotationPattern());
+//			return p;			
+//		}
+//		if (maybeEat("(")) {
+//			AnnotationTypePattern p = parseAnnotationTypePattern();
+//			eat(")");
+//			return p;
+//		}
+//		int startPos = tokenSource.peek().getStart();
+//		eat("@");
+//		StringBuffer annotationName = new StringBuffer();
+//		annotationName.append(parseIdentifier());
+//		while (maybeEat(".")) {
+//			annotationName.append('.');
+//			annotationName.append(parseIdentifier());
+//		}
+//		TypeX type = TypeX.forName(annotationName.toString());
+//		AnnotationTypePattern p = new ExactAnnotationTypePattern(type);
+//	    int endPos = tokenSource.peek(-1).getEnd();
+//	    p.setLocation(sourceContext, startPos, endPos);
+//	    return p;		
+//	}
 	
 
 	private boolean isAnnotationPattern(PatternNode p) {

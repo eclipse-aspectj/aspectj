@@ -69,7 +69,7 @@ public class NotAnnotationTypePattern extends AnnotationTypePattern {
 	}
 	
 	public String toString() {
-		return "(!" + negatedPattern.toString() + ")";
+		return "!" + negatedPattern.toString();
 	}
 	
 	public AnnotationTypePattern getNegatedPattern() {

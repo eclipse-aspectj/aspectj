@@ -100,9 +100,6 @@ public class OrTypePattern extends TypePattern {
 		StringBuffer buff = new StringBuffer();
 		if (annotationPattern != AnnotationTypePattern.ANY) {
 			buff.append('(');
-			if (! (annotationPattern instanceof ExactAnnotationTypePattern )) {
-				buff.append('@');
-			}
 			buff.append(annotationPattern.toString());
 			buff.append(' ');
 		}

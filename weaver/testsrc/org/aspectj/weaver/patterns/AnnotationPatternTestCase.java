@@ -21,94 +21,93 @@ public class AnnotationPatternTestCase extends TestCase {
 
 	public void testParseSimpleAnnotationPattern() {
 		PatternParser p = new PatternParser("@Foo");
-		AnnotationTypePattern foo = p.parseAnnotationTypePattern();
+		AnnotationTypePattern foo = p.maybeParseAnnotationPattern();
+		foo = foo.resolveBindings(makeSimpleScope(),new Bindings(3),true);
 		assertTrue("ExactAnnotationTypePattern",foo instanceof ExactAnnotationTypePattern);
 		assertEquals("Foo",TypeX.forName("Foo"),((ExactAnnotationTypePattern)foo).annotationType);
 	}
 	
 	public void testParseAndAnnotationPattern() {
-		PatternParser p = new PatternParser("@Foo && @Goo");
-		AnnotationTypePattern fooAndGoo = p.parseAnnotationTypePattern();
+		PatternParser p = new PatternParser("@Foo @Goo");
+		AnnotationTypePattern fooAndGoo = p.maybeParseAnnotationPattern();
 		assertTrue("AndAnnotationTypePattern",fooAndGoo instanceof AndAnnotationTypePattern);
-		assertEquals("(@Foo && @Goo)",fooAndGoo.toString());
+		assertEquals("@(Foo) @(Goo)",fooAndGoo.toString());
+		fooAndGoo = fooAndGoo.resolveBindings(makeSimpleScope(),new Bindings(3),true);
+		assertEquals("@Foo @Goo",fooAndGoo.toString());
 		AnnotationTypePattern left = ((AndAnnotationTypePattern)fooAndGoo).getLeft();
 		AnnotationTypePattern right = ((AndAnnotationTypePattern)fooAndGoo).getRight();
 		assertEquals("Foo",TypeX.forName("Foo"),((ExactAnnotationTypePattern)left).annotationType);
 		assertEquals("Goo",TypeX.forName("Goo"),((ExactAnnotationTypePattern)right).annotationType);		
 	}
-
-	public void testParseOrAnnotationPattern() {
-		PatternParser p = new PatternParser("@Foo || @Goo");
-		AnnotationTypePattern fooOrGoo = p.parseAnnotationTypePattern();
-		assertTrue("OrAnnotationTypePattern",fooOrGoo instanceof OrAnnotationTypePattern);
-		assertEquals("(@Foo || @Goo)",fooOrGoo.toString());
-		AnnotationTypePattern left = ((OrAnnotationTypePattern)fooOrGoo).getLeft();
-		AnnotationTypePattern right = ((OrAnnotationTypePattern)fooOrGoo).getRight();
-		assertEquals("Foo",TypeX.forName("Foo"),((ExactAnnotationTypePattern)left).annotationType);
-		assertEquals("Goo",TypeX.forName("Goo"),((ExactAnnotationTypePattern)right).annotationType);		
-	}
-	
+//
+//	public void testParseOrAnnotationPattern() {
+//		PatternParser p = new PatternParser("@Foo || @Goo");
+//		AnnotationTypePattern fooOrGoo = p.parseAnnotationTypePattern();
+//		assertTrue("OrAnnotationTypePattern",fooOrGoo instanceof OrAnnotationTypePattern);
+//		assertEquals("(@Foo || @Goo)",fooOrGoo.toString());
+//		AnnotationTypePattern left = ((OrAnnotationTypePattern)fooOrGoo).getLeft();
+//		AnnotationTypePattern right = ((OrAnnotationTypePattern)fooOrGoo).getRight();
+//		assertEquals("Foo",TypeX.forName("Foo"),((ExactAnnotationTypePattern)left).annotationType);
+//		assertEquals("Goo",TypeX.forName("Goo"),((ExactAnnotationTypePattern)right).annotationType);		
+//	}
+//	
 	public void testParseNotAnnotationPattern() {
 		PatternParser p = new PatternParser("!@Foo");
-		AnnotationTypePattern notFoo = p.parseAnnotationTypePattern();
+		AnnotationTypePattern notFoo = p.maybeParseAnnotationPattern();
 		assertTrue("NotAnnotationTypePattern",notFoo instanceof NotAnnotationTypePattern);
-		assertEquals("(!@Foo)",notFoo.toString());
+		notFoo = notFoo.resolveBindings(makeSimpleScope(),new Bindings(3),true);
+		assertEquals("!@Foo",notFoo.toString());
 		AnnotationTypePattern body = ((NotAnnotationTypePattern)notFoo).getNegatedPattern();
 		assertEquals("Foo",TypeX.forName("Foo"),((ExactAnnotationTypePattern)body).annotationType);
 	}
 
 	public void testParseBracketedAnnotationPattern() {
 		PatternParser p = new PatternParser("(@Foo)");
-		AnnotationTypePattern foo = p.parseAnnotationTypePattern();
-		assertTrue("ExactAnnotationTypePattern",foo instanceof ExactAnnotationTypePattern);
-		assertEquals("Foo",TypeX.forName("Foo"),((ExactAnnotationTypePattern)foo).annotationType);		
+		AnnotationTypePattern foo = p.maybeParseAnnotationPattern();
+		// cannot start with ( so, we get ANY
+		assertEquals("ANY",AnnotationTypePattern.ANY,foo);
 	}
 	
 	public void testParseFQAnnPattern() {
 		PatternParser p = new PatternParser("@org.aspectj.Foo");
-		AnnotationTypePattern foo = p.parseAnnotationTypePattern();
-		assertTrue("ExactAnnotationTypePattern",foo instanceof ExactAnnotationTypePattern);
-		assertEquals("org.aspectj.Foo",TypeX.forName("org.aspectj.Foo"),((ExactAnnotationTypePattern)foo).annotationType);				
+		AnnotationTypePattern foo = p.maybeParseAnnotationPattern();
+		assertEquals("@(org.aspectj.Foo)",foo.toString());
 	}
 	
 	public void testParseComboPattern() {
-		PatternParser p = new PatternParser("!((@Foo || @Goo) && !@Boo)");
-		AnnotationTypePattern ap = p.parseAnnotationTypePattern();
-		NotAnnotationTypePattern ntp = (NotAnnotationTypePattern) ap;
-		AndAnnotationTypePattern atp = (AndAnnotationTypePattern) ntp.getNegatedPattern();
+//		PatternParser p = new PatternParser("!((@Foo || @Goo) && !@Boo)");
+		PatternParser p = new PatternParser("@(Foo || Goo)!@Boo");
+		AnnotationTypePattern ap = p.maybeParseAnnotationPattern();
+		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);		
+		AndAnnotationTypePattern atp = (AndAnnotationTypePattern) ap;
 		NotAnnotationTypePattern notBoo = (NotAnnotationTypePattern) atp.getRight();
 		ExactAnnotationTypePattern boo = (ExactAnnotationTypePattern) notBoo.getNegatedPattern();
-		OrAnnotationTypePattern fooOrGoo = (OrAnnotationTypePattern) atp.getLeft();
-		ExactAnnotationTypePattern foo = (ExactAnnotationTypePattern) fooOrGoo.getLeft();
-		ExactAnnotationTypePattern goo = (ExactAnnotationTypePattern) fooOrGoo.getRight();
-		assertEquals("(!((@Foo || @Goo) && (!@Boo)))",ap.toString());
+		WildAnnotationTypePattern fooOrGoo = (WildAnnotationTypePattern) atp.getLeft();
+		assertEquals("@((Foo || Goo)) !@Boo",ap.toString());
 	}
 	
-	public void testParseAndOrPattern() {
-		PatternParser p = new PatternParser("@Foo && @Boo || @Goo");
-		AnnotationTypePattern andOr = p.parseAnnotationTypePattern();
-		assertTrue("Should be or pattern",andOr instanceof OrAnnotationTypePattern);
-	}
-	
+//	public void testParseAndOrPattern() {
+//		PatternParser p = new PatternParser("@Foo && @Boo || @Goo");
+//		AnnotationTypePattern andOr = p.parseAnnotationTypePattern();
+//		assertTrue("Should be or pattern",andOr instanceof OrAnnotationTypePattern);
+//	}
+//	
 	public void testParseBadPattern() {
 		PatternParser p = new PatternParser("@@Foo");
 		try {
-			AnnotationTypePattern bad = p.parseAnnotationTypePattern();
+			AnnotationTypePattern bad = p.maybeParseAnnotationPattern();
 			fail("ParserException expected");
 		} catch(ParserException pEx) {
-			assertEquals("identifier",pEx.getMessage());
+			assertEquals("expected name pattern",pEx.getMessage());
 		}
 	}
 	
 	public void testParseBadPattern2() {
 		PatternParser p = new PatternParser("Foo");
-		try {
-			AnnotationTypePattern bad = p.parseAnnotationTypePattern();
-			fail("ParserException expected");
-		} catch(ParserException pEx) {
-			assertEquals("@",pEx.getMessage());
-		}
+		AnnotationTypePattern bad = p.maybeParseAnnotationPattern();
+		assertEquals("ANY",AnnotationTypePattern.ANY,bad);
 	}
+
 	public void testParseNameOrVarAnnotationPattern() {
 		PatternParser p = new PatternParser("@Foo");
 		AnnotationTypePattern foo = p.parseAnnotationNameOrVarTypePattern();
@@ -143,11 +142,10 @@ public class AnnotationPatternTestCase extends TestCase {
 	}
 
 	public void testParseNameOrVarAnnotationPatternWithAnd() {
-		PatternParser p = new PatternParser("@Foo && @Boo");
+		PatternParser p = new PatternParser("@Foo @Boo");
 		AnnotationTypePattern foo = p.parseAnnotationNameOrVarTypePattern();
 		// rest of pattern not consumed...
-		assertTrue("ExactAnnotationTypePattern",foo instanceof ExactAnnotationTypePattern);
-		assertEquals("Foo",TypeX.forName("Foo"),((ExactAnnotationTypePattern)foo).annotationType);		
+		assertEquals("@Foo",foo.toString());
 	}
 
 	public void testMaybeParseAnnotationPattern() {
@@ -163,27 +161,27 @@ public class AnnotationPatternTestCase extends TestCase {
 		PatternParser p = new PatternParser("@Foo *");
 		TypePattern t = p.parseTypePattern();
 		assertTrue("WildTypePattern",t instanceof WildTypePattern);
-		ExactAnnotationTypePattern etp = (ExactAnnotationTypePattern) t.annotationPattern;
-		assertEquals("@Foo",etp.toString());
-		assertEquals("@Foo *",t.toString());
+		AnnotationTypePattern atp = t.annotationPattern;
+		assertEquals("@(Foo)",atp.toString());
+		assertEquals("(@(Foo) *)",t.toString());
 	}
 	
 	public void testParseTypePatternsWithAnnotationsComplex() {
-		PatternParser p = new PatternParser("(@(@Foo || @Boo) (Foo || Boo))");
+		PatternParser p = new PatternParser("(@(Foo || Boo) (Foo || Boo))");
 		TypePattern t = p.parseTypePattern();
 		assertTrue("OrTypePattern",t instanceof OrTypePattern);
-		OrAnnotationTypePattern etp = (OrAnnotationTypePattern) t.annotationPattern;
-		assertEquals("(@Foo || @Boo)",etp.toString());
-		assertEquals("(@(@Foo || @Boo) (Foo || Boo))",t.toString());
+		WildAnnotationTypePattern wtp = (WildAnnotationTypePattern) t.annotationPattern;
+		assertEquals("@((Foo || Boo))",wtp.toString());
+		assertEquals("(@((Foo || Boo)) (Foo || Boo))",t.toString());
 	}
 	
-	public void testRidiculousNotSyntax() {
-		PatternParser p = new PatternParser("(@(!@Foo) (Foo || Boo))");
+	public void testNotSyntax() {
+		PatternParser p = new PatternParser("!@Foo (Foo || Boo))");
 		TypePattern t = p.parseTypePattern();
 		assertTrue("OrTypePattern",t instanceof OrTypePattern);
 		NotAnnotationTypePattern natp = (NotAnnotationTypePattern) t.annotationPattern;
-		assertEquals("(!@Foo)",natp.toString());
-		assertEquals("(@(!@Foo) (Foo || Boo))",t.toString());		
+		assertEquals("!@(Foo)",natp.toString());
+		assertEquals("(!@(Foo) (Foo || Boo))",t.toString());		
 	}
 
 	public void testParseMethodOrConstructorSigNoAP() {
@@ -199,21 +197,21 @@ public class AnnotationPatternTestCase extends TestCase {
 	public void testParseMethodOrConstructorSigSimpleAP() {
 		PatternParser p = new PatternParser("@Foo * *.*(..)");
 		SignaturePattern s = p.parseMethodOrConstructorSignaturePattern();
-		assertEquals("Exact annotation","@Foo",((ExactAnnotationTypePattern)s.getAnnotationPattern()).toString());
+		assertEquals("@(Foo) annotation","@(Foo)",s.getAnnotationPattern().toString());
 		assertEquals("Any return","*",s.getReturnType().toString());
 		assertEquals("Any dec type","*",s.getDeclaringType().toString());
 		assertEquals("Any name","*",s.getName().toString());
-		assertEquals("@Foo * *.*(..)",s.toString());
+		assertEquals("@(Foo) * *.*(..)",s.toString());
 	}
 	
 	public void testParseMethodOrConstructorSigComplexAP() {
-		PatternParser p = new PatternParser("@(!@Foo || @Goo) * *.*(..)");
+		PatternParser p = new PatternParser("!@(Foo || Goo) * *.*(..)");
 		SignaturePattern s = p.parseMethodOrConstructorSignaturePattern();
-		assertEquals("complex annotation","((!@Foo) || @Goo)",s.getAnnotationPattern().toString());
+		assertEquals("complex annotation","!@((Foo || Goo))",s.getAnnotationPattern().toString());
 		assertEquals("Any return","*",s.getReturnType().toString());
 		assertEquals("Any dec type","*",s.getDeclaringType().toString());
 		assertEquals("Any name","*",s.getName().toString());	
-		assertEquals("@((!@Foo) || @Goo) * *.*(..)",s.toString());		
+		assertEquals("!@((Foo || Goo)) * *.*(..)",s.toString());		
 	}
 	
 	public void testParseMethodFieldSigNoAP() {
@@ -229,26 +227,26 @@ public class AnnotationPatternTestCase extends TestCase {
 	public void testParseFieldSigSimpleAP() {
 		PatternParser p = new PatternParser("@Foo * *.*");
 		SignaturePattern s = p.parseFieldSignaturePattern();
-		assertEquals("Exact annotation","@Foo",((ExactAnnotationTypePattern)s.getAnnotationPattern()).toString());
+		assertEquals("@Foo annotation","@(Foo)",s.getAnnotationPattern().toString());
 		assertEquals("Any field type","*",s.getReturnType().toString());
 		assertEquals("Any dec type","*",s.getDeclaringType().toString());
 		assertEquals("Any name","*",s.getName().toString());
-		assertEquals("@Foo * *.*",s.toString());				
+		assertEquals("@(Foo) * *.*",s.toString());				
 	}
 	
 	public void testParseFieldSigComplexAP() {
-		PatternParser p = new PatternParser("@(!@Foo || @Goo) * *.*");
+		PatternParser p = new PatternParser("!@(Foo || Goo) * *.*");
 		SignaturePattern s = p.parseFieldSignaturePattern();
-		assertEquals("complex annotation","((!@Foo) || @Goo)",s.getAnnotationPattern().toString());
+		assertEquals("complex annotation","!@((Foo || Goo))",s.getAnnotationPattern().toString());
 		assertEquals("Any field type","*",s.getReturnType().toString());
 		assertEquals("Any dec type","*",s.getDeclaringType().toString());
 		assertEquals("Any name","*",s.getName().toString());
-		assertEquals("@((!@Foo) || @Goo) * *.*",s.toString());				
+		assertEquals("!@((Foo || Goo)) * *.*",s.toString());				
 	}
 	
 	public void testExactAnnotationPatternMatching() {
 		PatternParser p = new PatternParser("@Foo");
-		AnnotationTypePattern ap = p.parseAnnotationTypePattern();
+		AnnotationTypePattern ap = p.maybeParseAnnotationPattern();
 		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
 		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[]{"Foo"});
 		assertTrue("matches element with Foo",ap.matches(ae).alwaysTrue());
@@ -267,8 +265,8 @@ public class AnnotationPatternTestCase extends TestCase {
 	}
 	
 	public void testAndAnnotationPatternMatching() {
-		PatternParser p = new PatternParser("@Foo && @Boo");
-		AnnotationTypePattern ap = p.parseAnnotationTypePattern();
+		PatternParser p = new PatternParser("@Foo @Boo");
+		AnnotationTypePattern ap = p.maybeParseAnnotationPattern();
 		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
 		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[] {"Foo","Boo"});
 		assertTrue("matches foo and boo",ap.matches(ae).alwaysTrue());
@@ -279,24 +277,24 @@ public class AnnotationPatternTestCase extends TestCase {
 		ae = new AnnotatedElementImpl(new String[] {"Goo"});
 		assertTrue("does not match goo",ap.matches(ae).alwaysFalse());		
 	}
-	
-	public void testOrAnnotationPatternMatching() {
-		PatternParser p = new PatternParser("@Foo || @Boo");
-		AnnotationTypePattern ap = p.parseAnnotationTypePattern();
-		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
-		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[] {"Foo","Boo"});
-		assertTrue("matches foo and boo",ap.matches(ae).alwaysTrue());
-		ae = new AnnotatedElementImpl(new String[] {"Foo"});
-		assertTrue("matches foo",ap.matches(ae).alwaysTrue());
-		ae = new AnnotatedElementImpl(new String[] {"Boo"});
-		assertTrue("matches boo",ap.matches(ae).alwaysTrue());
-		ae = new AnnotatedElementImpl(new String[] {"Goo"});
-		assertTrue("does not match goo",ap.matches(ae).alwaysFalse());				
-	}
-	
+//	
+//	public void testOrAnnotationPatternMatching() {
+//		PatternParser p = new PatternParser("@Foo || @Boo");
+//		AnnotationTypePattern ap = p.parseAnnotationTypePattern();
+//		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
+//		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[] {"Foo","Boo"});
+//		assertTrue("matches foo and boo",ap.matches(ae).alwaysTrue());
+//		ae = new AnnotatedElementImpl(new String[] {"Foo"});
+//		assertTrue("matches foo",ap.matches(ae).alwaysTrue());
+//		ae = new AnnotatedElementImpl(new String[] {"Boo"});
+//		assertTrue("matches boo",ap.matches(ae).alwaysTrue());
+//		ae = new AnnotatedElementImpl(new String[] {"Goo"});
+//		assertTrue("does not match goo",ap.matches(ae).alwaysFalse());				
+//	}
+//	
 	public void testNotAnnotationPatternMatching() {
 		PatternParser p = new PatternParser("!@Foo");
-		AnnotationTypePattern ap = p.parseAnnotationTypePattern();
+		AnnotationTypePattern ap = p.maybeParseAnnotationPattern();
 		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
 		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[] {"Foo","Boo"});
 		assertTrue("does not match foo and boo",ap.matches(ae).alwaysFalse());		
@@ -314,8 +312,8 @@ public class AnnotationPatternTestCase extends TestCase {
 	
 	public TestScope makeSimpleScope() {
 		BcelWorld bWorld = new BcelWorld(BcweaverTests.TESTDATA_PATH + "/testcode.jar"); // testcode contains Foo/Boo/Goo/etc
-		return new TestScope(new String[] {"int", "java.lang.String","Foo"}, 
-				             new String[] {"a", "b","foo"}, 
+		return new TestScope(new String[] {"int", "java.lang.String","Foo","Boo","Goo"}, 
+				             new String[] {"a", "b","foo","boo","goo"}, 
 							 bWorld);
 	}
 	

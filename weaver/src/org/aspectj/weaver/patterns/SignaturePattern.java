@@ -436,9 +436,6 @@ public class SignaturePattern extends PatternNode {
     	StringBuffer buf = new StringBuffer();
     	
     	if (annotationPattern != AnnotationTypePattern.ANY) {
-			if (! (annotationPattern instanceof ExactAnnotationTypePattern )) {
-				buf.append('@');
-			}
 			buf.append(annotationPattern.toString());
 			buf.append(' ');
     	}

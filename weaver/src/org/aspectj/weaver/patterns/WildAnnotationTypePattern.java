@@ -13,12 +13,14 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverMessages;
 
 /**
  * @author colyer
@@ -29,6 +31,7 @@ import org.aspectj.weaver.TypeX;
 public class WildAnnotationTypePattern extends AnnotationTypePattern {
 
 	private TypePattern typePattern;
+	private boolean resolved = false;
 	
 	/**
 	 * 
@@ -43,6 +46,9 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 	 * @see org.aspectj.weaver.patterns.AnnotationTypePattern#matches(org.aspectj.weaver.AnnotatedElement)
 	 */
 	public FuzzyBoolean matches(AnnotatedElement annotated) {
+		if (!resolved) {
+			throw new IllegalStateException("Can't match on an unresolved annotation type pattern");
+		}
 		// matches if the type of any of the annotations on the AnnotatedElement is
 		// matched by the typePattern.
 		ResolvedTypeX[] annTypes = annotated.getAnnotationTypes();
@@ -61,8 +67,16 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
     								             boolean allowBinding)
     { 
     	this.typePattern = typePattern.resolveBindings(scope,bindings,false,false);
+    	resolved = true;
     	if (typePattern instanceof ExactTypePattern) {
     		ExactTypePattern et = (ExactTypePattern)typePattern;
+			if (!et.getExactType().isAnnotation(scope.getWorld())) {
+				IMessage m = MessageUtil.error(
+						WeaverMessages.format(WeaverMessages.REFERENCE_TO_NON_ANNOTATION_TYPE,et.getExactType().getName()),
+						getSourceLocation());
+				scope.getWorld().getMessageHandler().handleMessage(m);
+				resolved = false;
+			}
     		return new ExactAnnotationTypePattern(et.getExactType());
     	} else {
     		return this;
@@ -91,5 +105,27 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		ret.readLocation(context,s);
 		return ret;		
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object obj) {
+		if (!(obj instanceof WildAnnotationTypePattern)) return false;
+		WildAnnotationTypePattern other = (WildAnnotationTypePattern) obj;
+		return other.typePattern.equals(typePattern);
+	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		return 17 + 37*typePattern.hashCode();
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return "@(" + typePattern.toString() + ")";
+	}
 }
