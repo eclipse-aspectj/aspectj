@@ -8,6 +8,7 @@
  *  
  * Contributors: 
  *     Mik Kersten     initial implementation 
+ *    Andy Clement     incremental support and switch on/off state
  * ******************************************************************/
 
 
@@ -37,6 +38,7 @@ public class AsmManager {
     protected IHierarchy hierarchy;
     private List structureListeners = new ArrayList();
 	private IRelationshipMap mapper;
+	private static boolean creatingModel = false;
 	
 
 	public static boolean attemptIncrementalModelRepairs = false;
@@ -780,6 +782,21 @@ public class AsmManager {
 								 AsmManager.getDefault().getRelationshipMap());
 		}
 	}
+
+    /**
+     * Set to indicate whether we are currently building a structure model, should
+     * be set up front.
+     */
+	public static void setCreatingModel(boolean b) {
+		creatingModel = b;
+	}
+	
+    /**
+     * returns true if we are currently generating a structure model, enables
+     * guarding of expensive operations on an empty/null model.
+     */
+	public static boolean isCreatingModel() { return creatingModel;}
+	
 	
 }
 
