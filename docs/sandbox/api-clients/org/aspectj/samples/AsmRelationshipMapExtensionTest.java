@@ -59,13 +59,16 @@ class DeclareInfoProvider extends AsmRelationshipProvider {
         for (Iterator it = newParents.iterator(); it.hasNext();) {
             ResolvedTypeX superType = (ResolvedTypeX) it.next();
             
-    		String sourceHandle = ProgramElement.createHandleIdentifier(decp.getSourceFile(),decp.getLine(),decp.getColumn());
+    		String sourceHandle = ProgramElement.createHandleIdentifier(
+                    decp.getSourceFile(),decp.getLine(),decp.getColumn(), decp.getOffset());
     		IProgramElement ipe = AsmManager.getDefault().getHierarchy().findElementForHandle(sourceHandle);
-
+  
     		String superHandle = ProgramElement.createHandleIdentifier(
     		        superType.getSourceLocation().getSourceFile(),
     		        superType.getSourceLocation().getLine(),
-    		        superType.getSourceLocation().getColumn());
+    		        superType.getSourceLocation().getColumn(),
+    		        superType.getSourceLocation().getOffset()
+            );
     				
     		if (sourceHandle != null && superHandle != null) {
     			IRelationship foreward = AsmManager.getDefault().getRelationshipMap().get(
