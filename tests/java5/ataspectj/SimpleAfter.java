@@ -13,15 +13,18 @@ public class SimpleAfter {
   public void m() {
   	X.s.append("2");
   }
-}
 
-@Aspect("issingleton")
-class X {
-	
-	public static StringBuffer s = new StringBuffer("");
 
-    @After("execution(* SimpleAfter.m())")
-    public void before() {
-      s.append("a");
+    @Aspect("issingleton")
+    public static class X {
+
+        public static StringBuffer s = new StringBuffer("");
+
+        @After("execution(* SimpleAfter.m())")
+        public void before() {
+          s.append("a");
+        }
     }
+
 }
+

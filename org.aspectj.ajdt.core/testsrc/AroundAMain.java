@@ -15,6 +15,7 @@ import junit.framework.TestCase;
 import org.aspectj.runtime.internal.AroundClosure;
 import org.aspectj.util.Reflection;
 
+// FIXME: who is using this class ?
 public class AroundAMain extends TestCase {
 
 	public AroundAMain(String name) {

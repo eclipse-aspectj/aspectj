@@ -20,9 +20,9 @@
         <pathelement path="../util/bin"/>
     </path>
 
-    <target name="compile" depends="init">
-        <antcall target="bridge.compile"/>
-        <antcall target="util.compile"/>
+    <target name="compile" depends="init,
+                                    bridge.compile,
+                                    util.compile">
         <srccompile project="testing-util" path="testing-util.src.path"/>
     </target>
 

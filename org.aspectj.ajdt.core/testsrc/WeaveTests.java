@@ -17,6 +17,8 @@ import java.io.IOException;
 
 
 /**
+ * FIXME: who is using this class ?
+ * 
  * @author Noel Markham
  */
 public class WeaveTests {

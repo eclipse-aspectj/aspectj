@@ -55,8 +55,8 @@ public class HarnessSelectionTest extends TestCase {
     private static final String TITLE_LIST_PLURAL 
         = INC_HARNESS_DIR + "/titleListPlural.txt";
     
-    private static Hashtable SPECS = new Hashtable();    
-    
+    private static Hashtable SPECS = new Hashtable();
+
     private static AjcTest.Suite.Spec getSpec(String suiteFile) {
         AjcTest.Suite.Spec result = (AjcTest.Suite.Spec) SPECS.get(suiteFile);
         if (null == result) {
@@ -75,11 +75,12 @@ public class HarnessSelectionTest extends TestCase {
             return null; // keep compiler happy
         }
     }
-    
-    private boolean verbose;
+
+    //FIXME: change to true to debug the test failure. Should be easier to configure
+    private boolean verbose = false;
 
 	public HarnessSelectionTest(String name) {
-		super(name);
+        super(name);
 	}
     
     public void testFilesAvailable() {

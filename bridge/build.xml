@@ -2,7 +2,7 @@
 <project name="bridge" default="all" basedir=".">
 
     <import file="../build-common.xml"/>
-    <import file="../util/build.xml"/>
+    <import file="../util/build.xml"/> 
 
     <path id="bridge.test.src.path">
         <fileset dir="${basedir}/../lib">
@@ -15,8 +15,8 @@
         <pathelement path="../util/bin"/>
     </path>
 
-    <target name="compile" depends="init">
-        <antcall target="util.compile"/>
+    <target name="compile" depends="init,
+                                    util.compile">
         <srccompile project="bridge" path="bridge.src.path"/>
     </target>
 

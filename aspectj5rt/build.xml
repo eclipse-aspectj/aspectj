@@ -15,8 +15,8 @@
         <pathelement path="../runtime/bin"/>
     </path>
 
-    <target name="compile" depends="init" if="jdk15">
-        <antcall target="runtime.compile"/>
+    <target name="compile" if="jdk15" depends="init,
+                                               runtime.compile">
         <!-- FIXME: we override compile due to use of java5-src instead of src.. and source/target attrs -->
         <mkdir dir="${basedir}/bin"/>
         <javac debug="on" destdir="${basedir}/bin" source="1.5" target="1.5">

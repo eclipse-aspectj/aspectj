@@ -2,7 +2,7 @@
 <project name="asm" default="all" basedir=".">
 
     <import file="../build-common.xml"/>
-    <import file="../bridge/build.xml"/>
+    <import file="../bridge/build.xml"/> 
 
     <path id="asm.test.src.path">
         <fileset dir="${basedir}/../lib">
@@ -15,8 +15,8 @@
         <pathelement path="../bridge/bin"/>
     </path>
 
-    <target name="compile" depends="init">
-        <antcall target="bridge.compile"/>
+    <target name="compile" depends="init,
+                                    bridge.compile">
         <srccompile project="asm" path="asm.src.path"/>
     </target>
 

@@ -126,6 +126,15 @@ public class AjcTaskCompileCommandTest extends TestCase {
         AjcTaskCompileCommand command =
             new AjcTaskCompileCommand();
         MessageHandler handler = new MessageHandler();
+        handler.setInterceptor(new IMessageHandler() {
+            public boolean handleMessage(IMessage message) throws AbortException {
+                System.out.println("[message] "+ message);
+                return false;
+            }
+            public boolean isIgnoring(IMessage.Kind kind) {
+                return false;
+            }
+        });
         String[] parms = (String[]) args.toArray(new String[0]);
         boolean result = command.runCommand(parms, handler);
         boolean expectPass = (0 == expectedErrors);

@@ -12,9 +12,7 @@
         <property name="test.build.dir" value="bintest"/>
     </target>
 
-    <target name="clean" depends="init">
-        <delete dir="${build.dir}"/>
-        <delete dir="${test.build.dir}"/>
+    <target name="clean" depends="init, cleanall">
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${test.build.dir}"/>
     </target>
@@ -22,6 +20,10 @@
     <target name="cleanall" depends="init">
         <delete dir="${build.dir}"/>
         <delete dir="${test.build.dir}"/>
+        <!-- rather common to have ajcore files produced after a test run -->
+        <delete>
+            <fileset dir="${basedir}" includes="ajcore.*.txt"/>
+        </delete>
     </target>
 
     <macrodef name="srccompile">
@@ -56,8 +58,8 @@
         <attribute name="path"/>
         <attribute name="suite"/>
         <sequential>
-            <!--   showoutput="true" -->
-            <junit fork="on" haltonfailure="on" haltonerror="on" printsummary="on">
+            <!--   showoutput="on" -->
+            <junit showoutput="on" fork="on" haltonfailure="on" haltonerror="on" printsummary="on">
                 <classpath>
                     <pathelement path="../@{project}/${build.dir}"/>
                     <pathelement path="../@{project}/${test.build.dir}"/>

@@ -14,7 +14,13 @@
                                  bcel-builder/build.xml,
                                  testing-util/build.xml,
                                  asm/build.xml,
-                                 weaver/build.xml"/>
+                                 weaver/build.xml,
+                                 org.aspectj.ajdt.core/build.xml,
+                                 ajde/build.xml,
+                                 testing-client/build.xml,
+                                 taskdefs/build.xml,
+                                 testing/build.xml,
+                                 testing-drivers/build.xml"/>
             </subant>
         </sequential>
     </macrodef>

@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
+ * FIXME: who is using this class ?
+ * 
  * @author Noel Markham
  */
 public class RunWeaveTests {

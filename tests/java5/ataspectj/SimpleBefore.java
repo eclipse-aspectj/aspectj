@@ -13,15 +13,17 @@ public class SimpleBefore {
   public void m() {
   	X.s.append("2");
   }
-}
 
-@Aspect("issingleton")
-class X {
-	
-	public static StringBuffer s = new StringBuffer("");
+    @Aspect("issingleton")
+    public static class X {
 
-    @Before("execution(* SimpleBefore.m())")
-    public void before() {
-      s.append("b");
+        public static StringBuffer s = new StringBuffer("");
+
+        @Before("execution(* SimpleBefore.m())")
+        public void before() {
+          s.append("b");
+        }
     }
+
 }
+

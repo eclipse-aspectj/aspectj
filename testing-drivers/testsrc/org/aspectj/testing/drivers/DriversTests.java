@@ -24,8 +24,8 @@ public class DriversTests extends TestCase {
         TestSuite suite = new TestSuite(DriversTests.class.getName());
         // AjcTestsUsingJUnit takes too long to include by default
         //$JUnit-BEGIN$
-        suite.addTestSuite(HarnessSelectionTest.class); 
-        suite.addTest(AjcHarnessTestsUsingJUnit.suite()); 
+        suite.addTestSuite(HarnessSelectionTest.class);
+        suite.addTest(AjcHarnessTestsUsingJUnit.suite());
         //$JUnit-END$
         return suite;
     }

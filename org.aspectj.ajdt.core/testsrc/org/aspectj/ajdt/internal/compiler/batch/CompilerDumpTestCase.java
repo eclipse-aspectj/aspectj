@@ -16,6 +16,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.tools.ajc.CompilationResult;
 import org.aspectj.weaver.Dump;
+import org.aspectj.weaver.DumpTestCase;
 
 public class CompilerDumpTestCase extends AjcTestCase {
 
@@ -76,8 +77,7 @@ public class CompilerDumpTestCase extends AjcTestCase {
 		CompilationResult result = ajc(baseDir,args);
 		String fileName = Dump.dump("DumpTestCase.testDumpWithWarnings()");
 		dumpFile = new File(fileName);
-		// ALEX Andy. Alex commented out this line?
-		org.aspectj.weaver.DumpTestCase.assertContents(dumpFile,"Compiler Messages","warning");
+		DumpTestCase.assertContents(dumpFile,"Compiler Messages","warning");
 	}
 	
 	/**
@@ -96,8 +96,7 @@ public class CompilerDumpTestCase extends AjcTestCase {
 		String fileName = Dump.getLastDumpFileName();
 		assertTrue("Dump file should be created",!fileName.equals(previousFileName));
 		dumpFile = new File(fileName);
-		//ALEX Andy. Alex commented out this line?
-		org.aspectj.weaver.DumpTestCase.assertContents(dumpFile,"Compiler Messages","error");
+		DumpTestCase.assertContents(dumpFile,"Compiler Messages","error");
 	}
 
 }
