@@ -72,6 +72,16 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		super.resolve(upperScope);
 	}
 	public void resolveStatements() {
+        if ((modifiers & AccSemicolonBody) != 0) {
+            if ((declaredModifiers & AccAbstract) == 0)
+                scope.problemReporter().methodNeedingAbstractModifier(this);
+        } else {
+            // the method HAS a body --> abstract native modifiers are forbiden
+            if (((declaredModifiers & AccAbstract) != 0))
+                scope.problemReporter().methodNeedingNoBody(this);
+        }        
+        
+        
 		if (!Modifier.isAbstract(declaredModifiers)) super.resolveStatements();
 		if (Modifier.isStatic(declaredModifiers)) {
 			// Check the target for ITD is not an interface

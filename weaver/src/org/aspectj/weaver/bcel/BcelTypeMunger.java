@@ -232,7 +232,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			BcelWorld.makeBcelTypes(member.getParameterTypes()),
 			TypeX.getNames(member.getExceptions()),
 			gen);
-		ret.makeSynthetic();
+        
+        // 43972 : Static crosscutting makes interfaces unusable for javac
+        // ret.makeSynthetic();    
 		return ret;
 	}
 
@@ -325,7 +327,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		if (onType.equals(gen.getType())) {
 			ResolvedMember introMethod = 
 					AjcMemberMaker.interMethod(signature, aspectType, onInterface);
-			
+            
 			LazyMethodGen mg = makeMethodGen(gen, introMethod);
 
 			if (!onInterface && !Modifier.isAbstract(introMethod.getModifiers())) {
@@ -366,8 +368,6 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					AjcMemberMaker.interMethod(signature, aspectType, false);
 			
 			LazyMethodGen mg = makeMethodGen(gen, introMethod);
-			
-			// 
 						
 			Type[] paramTypes = BcelWorld.makeBcelTypes(introMethod.getParameterTypes());
 			Type returnType = BcelWorld.makeBcelType(introMethod.getReturnType());
@@ -444,7 +444,6 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		ResolvedMember newConstructorMember = newConstructorTypeMunger.getSyntheticConstructor();
 		TypeX          onType = newConstructorMember.getDeclaringType();
 		
-		
 		if (! onType.equals(currentClass.getType())) return false;
 
 		ResolvedMember explicitConstructor = newConstructorTypeMunger.getExplicitConstructor();
@@ -519,7 +518,6 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		body.append(Utility.createInvoke(fact, null, postMethod));
 		
 		// don't forget to return!!
-		
 		body.append(InstructionConstants.RETURN);
 		
 		return true;		

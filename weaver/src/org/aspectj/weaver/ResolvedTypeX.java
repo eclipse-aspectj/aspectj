@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
@@ -928,6 +929,70 @@ public abstract class ResolvedTypeX extends TypeX {
 	public List getInterTypeMungers() {
 		return interTypeMungers;
 	}
+    
+    private List getInterTypeMungersIncludingSupers() {
+        ArrayList ret = new ArrayList();
+        collectInterTypeMungers(ret);
+        return ret;
+    }
+        
+        
+    /**
+     * ??? This method is O(N*M) where N = number of methods and M is number of
+     * inter-type declarations in my super
+     */
+    private void collectInterTypeMungers(List collector) {
+        for (Iterator iter = getDirectSupertypes(); iter.hasNext();) {
+			ResolvedTypeX superType = (ResolvedTypeX) iter.next();
+            superType.collectInterTypeMungers(collector);
+		}
+        
+        outer: for (Iterator iter1 = collector.iterator(); iter1.hasNext(); ) {
+            ConcreteTypeMunger superMunger = (ConcreteTypeMunger) iter1.next();
+            if ( superMunger.getSignature() == null) continue;
+            
+            if ( !superMunger.getSignature().isAbstract()) continue;
+            
+            for (Iterator iter = getInterTypeMungers().iterator(); iter.hasNext();) {
+                ConcreteTypeMunger  myMunger = (ConcreteTypeMunger) iter.next();
+                if (conflictingSignature(myMunger.getSignature(), superMunger.getSignature())) {
+                    iter1.remove();
+                    continue outer;
+                }
+            }
+            
+            if (!superMunger.getSignature().isPublic()) continue;
+            
+            for (Iterator iter = getMethods(); iter.hasNext(); ) {
+                ResolvedMember method = (ResolvedMember)iter.next();
+                if (conflictingSignature(method, superMunger.getSignature())) {
+                    iter1.remove();
+                    continue outer;
+                }
+            }
+        }
+        
+        collector.addAll(getInterTypeMungers());
+    }
+    
+    
+    /**
+     * Check that we don't have any abstract type mungers unless this
+     * type is abstract.
+     */
+    public void checkInterTypeMungers() {
+        if (isAbstract()) return;
+        
+        for (Iterator iter = getInterTypeMungersIncludingSupers().iterator(); iter.hasNext();) {
+			ConcreteTypeMunger element = (ConcreteTypeMunger) iter.next();
+            if (element.getSignature() != null && element.getSignature().isAbstract()) {
+                world.getMessageHandler().handleMessage(
+                    new Message("must implement abstract inter-type declaration: " + element.getSignature(),
+                        "", IMessage.ERROR, getSourceLocation(), null, 
+                        new ISourceLocation[] { element.getSourceLocation() }));
+            }
+		}
+    }
 	
     /**
      * Returns a ResolvedTypeX object representing the declaring type of this type, or
@@ -1277,4 +1342,5 @@ public abstract class ResolvedTypeX extends TypeX {
 	public WeaverStateInfo getWeaverState() {
 		return null;
 	}
+
 }

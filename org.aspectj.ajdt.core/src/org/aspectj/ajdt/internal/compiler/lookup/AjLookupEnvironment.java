@@ -308,6 +308,8 @@ public class AjLookupEnvironment extends LookupEnvironment {
 			}
 		}
 		
+        //???onType.checkInterTypeMungers();
+        onType.checkInterTypeMungers();
 		for (Iterator i = onType.getInterTypeMungers().iterator(); i.hasNext();) {
 			EclipseTypeMunger munger = (EclipseTypeMunger) i.next();
 			//System.out.println("applying: " + munger + " to " + new String(sourceType.sourceName));
