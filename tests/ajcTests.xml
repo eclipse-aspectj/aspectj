@@ -7813,5 +7813,10 @@
           <message kind="error" line="1" text="must implement abstract inter-type declaration: void A.foo()"/>
         </compile>
     </ajc-test>
+  
+   <ajc-test dir="bugs/pr64262"
+      title="ClassCastException at BcelRenderer.java:169" pr="64262">
+        <compile files="PrimitiveCoercionInExactTypePatternMatching.java"/>
+    </ajc-test>
     
 </suite>
