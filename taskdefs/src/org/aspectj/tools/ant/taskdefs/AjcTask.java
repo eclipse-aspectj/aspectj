@@ -249,7 +249,7 @@ public class AjcTask extends MatchingTask {
     static final String[] SOURCE_INPUTS = new String [] 
     { "1.3", "1.4" };
     static final String[] COMPLIANCE_INPUTS = new String [] 
-    { "1.3", "1.4" };
+    { "-1.3", "-1.4" };
 
     private static final ICommandEditor COMMAND_EDITOR;
             
@@ -1604,9 +1604,9 @@ public class AjcTask extends MatchingTask {
         while (in.hasNext()) {
             flag = in.next();
             if ("-1.3".equals(flag)) {
-                setCompliance("1.3");
+                setCompliance(flag);
             } else if ("-1.4".equals(flag)) {
-                setCompliance("1.4");
+            	setCompliance(flag);
 //            } else if ("-1.5".equals(flag)) {
 //                setCompliance("1.5");
             } else if ("-argfile".equals(flag)) {
@@ -1615,6 +1615,8 @@ public class AjcTask extends MatchingTask {
                 setAspectpath(new Path(project, in.next()));
             } else if ("-classpath".equals(flag)) {
                 setClasspath(new Path(project, in.next()));
+			} else if ("-extdirs".equals(flag)) {
+				setExtdirs(new Path(project, in.next()));
             } else if ("-Xcopyinjars".equals(flag)) {
                 setCopyInjars(true); // ignored - will be flagged by setter
             } else if ("-g".equals(flag)) {
