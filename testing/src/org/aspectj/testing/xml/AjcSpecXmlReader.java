@@ -150,7 +150,7 @@ public class AjcSpecXmlReader {
     }
     
     public static void main(String[] a) throws IOException {
-        writeDTD(new File("c:/home/wes/aj/aspectj/modules/tests/ajcTestSuite2.dtd"));
+        writeDTD(new File("../tests/ajcTestSuite2.dtd"));
     }
     /** 
      * Write a DTD to dtdFile.
@@ -297,7 +297,7 @@ public class AjcSpecXmlReader {
             new String[] { "paths", "argfiles"});
         digester.addSetProperties(compileX + "/file");
         digester.addSetProperties(inccompileX, "classes", "paths");
-        digester.addSetProperties(runX, //"class", "className");
+        digester.addSetProperties(runX, 
             new String[] { "class", "vm", "skipTester"},
             new String[] { "className", "javaVersion", "skipTester"});
         digester.addSetProperties(dirchangesX);
@@ -381,10 +381,13 @@ public class AjcSpecXmlReader {
         crunSpec.addWrapFile((AbstractRunSpec.WrapFile) null);
         crunSpec.setOptions((String) null);
         crunSpec.setPaths((String) null);
+        crunSpec.setIncludeClassesDir(false);
+        crunSpec.setReuseCompiler(false);
         
         IncCompilerRun.Spec icrunSpec = new IncCompilerRun.Spec();
         icrunSpec.addMessage((IMessage) null);
         icrunSpec.setTag((String) null);
+        icrunSpec.setFresh(false);
 
         JavaRun.Spec jrunspec = new JavaRun.Spec();
         jrunspec.addMessage((IMessage) null);
