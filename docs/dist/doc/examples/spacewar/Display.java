@@ -155,7 +155,7 @@ class Display  extends Canvas {
             display.noticeSizeChange();
         }
 
-        after(): call(void Game.clockTick()) {
+        after() returning : call(void Game.clockTick()) {
             Enumeration elements = DISPLAYS.elements();
             while ( elements.hasMoreElements() ) {
                 Display display = (Display)elements.nextElement();

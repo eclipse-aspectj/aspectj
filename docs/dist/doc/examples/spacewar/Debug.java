@@ -94,7 +94,7 @@ aspect Debug {
         }
     }
 
-    after(): allConstructorsCut() {
+    after() returning: allConstructorsCut() {
         if (traceConstructors.getState()) {
             infoWin.println("done constructing " + thisJoinPoint.getSignature());
         }
@@ -111,7 +111,7 @@ aspect Debug {
             infoWin.println("begin initializing " + thisJoinPoint.getSignature());
         }
     }
-    after(): allInitializationsCut() {
+    after() returning : allInitializationsCut() {
         if (traceConstructors.getState()) {
             infoWin.println("done initializing " + thisJoinPoint.getSignature());
         }
@@ -128,7 +128,7 @@ aspect Debug {
             infoWin.println("entering " + thisJoinPoint.getSignature());
         }
     }
-    after(): allMethodsCut() {
+    after() returning : allMethodsCut() {
         if (traceMethods.getState()) {
             infoWin.println("exiting " + thisJoinPoint.getSignature());
         }
@@ -137,7 +137,7 @@ aspect Debug {
     /*
      * clock ticks
      */
-    after(Object obj):
+    after(Object obj) returning :
         (target(obj) && (target(Game) ||
 			 target(Registry) ||
 			 target(SpaceObject)))
@@ -149,7 +149,7 @@ aspect Debug {
     /*
      * registry contents
      */
-    after(Registry registry):
+    after(Registry registry) returning :
         target(registry) && (call(void register(..)) ||
 			     call(void unregister(..))) {
         if (traceRegistry.getState())
@@ -160,18 +160,18 @@ aspect Debug {
     /*
      * fire, collide, damage
      */
-    after(): call(void Ship.fire()) {
+    after() returning : call(void Ship.fire()) {
         if (traceFireCollideDamage.getState())
             infoWin.println("firing");
     }
 
-    after(Ship ship, SpaceObject obj):
+    after(Ship ship, SpaceObject obj) returning :
 	call(void Ship.handleCollision(SpaceObject)) && target(ship) && args(obj) {
         if (traceFireCollideDamage.getState())
             infoWin.println(ship + " collides with " + obj);
     }
 
-    after(Ship shipA, Ship shipB):
+    after(Ship shipA, Ship shipB) returning :
         execution(void Ship.bounce(Ship, Ship)) && args(shipA, shipB) {
         if (traceFireCollideDamage.getState())
             infoWin.println(shipA + " bounces with " + shipB);
