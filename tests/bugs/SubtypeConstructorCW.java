@@ -7,8 +7,8 @@ class C implements Runnable { // CW 5
 	}
 }
 class F implements Runnable {
-	F(int i) {// CW 10
-	} 
+	F(int i) {}// CW 10
+	
 	public void run() {
 	}
 }

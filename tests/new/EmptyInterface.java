@@ -20,7 +20,7 @@ aspect Log {
     interface LoggedType {
     }
     declare parents: C implements LoggedType;
-    after() : within(LoggedType+) 
+    after(): within(LoggedType+) 
         //&& !initialization(new(..))
         //&& !preinitialization(new(..)) // 1.1 only  
         {

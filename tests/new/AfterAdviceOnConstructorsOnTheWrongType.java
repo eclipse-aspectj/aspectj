@@ -10,8 +10,8 @@ public class AfterAdviceOnConstructorsOnTheWrongType {
     }
     static {
         Tester.clearEvents();
-        // new(..) for both class and interface
-        Tester.expectEventsInString("after-c,after-c,c,after-d,after-d,d");
+        // new(..) for just class
+        Tester.expectEventsInString("after-c,c,after-d,d");
     }
 }
 

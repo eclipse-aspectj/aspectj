@@ -430,7 +430,6 @@ public class BcelShadow extends Shadow {
 	public static BcelShadow makeIfaceInitialization(
 		BcelWorld world,
 		LazyMethodGen constructor,
-		BcelShadow ifaceCExecShadow,
 		Member interfaceConstructorSignature) 
 	{
 		InstructionList body = constructor.getBody();
@@ -443,43 +442,54 @@ public class BcelShadow extends Shadow {
                 constructor,
                 null);
         s.fallsThrough = true;
-        ShadowRange r = new ShadowRange(body);
-        r.associateWithShadow(s);
-        InstructionHandle start = Range.genStart(body, ifaceCExecShadow.getRange().getStart());
-        InstructionHandle end = Range.genEnd(body, ifaceCExecShadow.getRange().getEnd());
-        
-        r.associateWithTargets(start, end);
+//        ShadowRange r = new ShadowRange(body);
+//        r.associateWithShadow(s);
+//        InstructionHandle start = Range.genStart(body, handle);
+//        InstructionHandle end = Range.genEnd(body, handle);
+//        
+//        r.associateWithTargets(start, end);
         return s;			
+	}
+	
+	public void initIfaceInitializer(InstructionHandle end) {
+		final InstructionList body = enclosingMethod.getBody();
+		ShadowRange r = new ShadowRange(body);
+		r.associateWithShadow(this);
+		InstructionHandle nop = body.insert(end, InstructionConstants.NOP);
+		
+		r.associateWithTargets(
+			Range.genStart(body, nop),
+			Range.genEnd(body, nop));
 	}
 
-	public static BcelShadow makeIfaceConstructorExecution(
-		BcelWorld world,
-		LazyMethodGen constructor,
-		InstructionHandle next,
-		Member interfaceConstructorSignature) 
-	{
-		// final InstructionFactory fact = constructor.getEnclosingClass().getFactory();
-		InstructionList body = constructor.getBody();
-		// TypeX inType = constructor.getEnclosingClass().getType();
-        BcelShadow s =
-            new BcelShadow(
-                world,
-                ConstructorExecution,
-                interfaceConstructorSignature,
-                constructor,
-                null);
-        s.fallsThrough = true;
-        ShadowRange r = new ShadowRange(body);
-        r.associateWithShadow(s);
-		// ??? this may or may not work
-        InstructionHandle start = Range.genStart(body, next);
-        //InstructionHandle end = Range.genEnd(body, body.append(start, fact.NOP));
-        InstructionHandle end = Range.genStart(body, next);
-        //body.append(start, fact.NOP);
-        
-        r.associateWithTargets(start, end);
-        return s;			
-	}
+//	public static BcelShadow makeIfaceConstructorExecution(
+//		BcelWorld world,
+//		LazyMethodGen constructor,
+//		InstructionHandle next,
+//		Member interfaceConstructorSignature) 
+//	{
+//		// final InstructionFactory fact = constructor.getEnclosingClass().getFactory();
+//		InstructionList body = constructor.getBody();
+//		// TypeX inType = constructor.getEnclosingClass().getType();
+//        BcelShadow s =
+//            new BcelShadow(
+//                world,
+//                ConstructorExecution,
+//                interfaceConstructorSignature,
+//                constructor,
+//                null);
+//        s.fallsThrough = true;
+//        ShadowRange r = new ShadowRange(body);
+//        r.associateWithShadow(s);
+//		// ??? this may or may not work
+//        InstructionHandle start = Range.genStart(body, next);
+//        //InstructionHandle end = Range.genEnd(body, body.append(start, fact.NOP));
+//        InstructionHandle end = Range.genStart(body, next);
+//        //body.append(start, fact.NOP);
+//        
+//        r.associateWithTargets(start, end);
+//        return s;			
+//	}
 
     
 	/** Create an initialization join point associated with a constructor, but not

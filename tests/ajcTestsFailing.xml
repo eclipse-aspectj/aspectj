@@ -127,16 +127,6 @@
         <run class="AfterReturningParamMatching"/>
     </ajc-test>
 
-    <ajc-test dir="bugs" 
-		pr="49295"
-		title="declare warning on subtype constructor">
-        <compile files="SubtypeConstructorCW.java" >
-			<message kind="warning" line="5" text="String as first"/>
-			<message kind="warning" line="10" text="String as first"/>
-        </compile>
-        <run class="SubtypeConstructorCW"/>
-    </ajc-test>
-
     <ajc-test dir="bugs/interAbstract" 
 		pr="49784"
 		title="aspect declares interface method (abstract decl, default impl)">
@@ -158,6 +148,12 @@
         <run class="Main"/>
         <compile files="TraceRE.aj"/>
         <run class="Main"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs" pr="36787"
+      title="interface initialization order">
+        <compile files="InterfaceInitializerOrder.java"/>
+        <run class="InterfaceInitializerOrder"/>
     </ajc-test>
 
 </suite>

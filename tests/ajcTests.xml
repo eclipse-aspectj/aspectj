@@ -5197,6 +5197,13 @@
         <compile files="AfterReturningInterfaceConstructor.java"/>
         <run class="AfterReturningInterfaceConstructor"/>
     </ajc-test>
+    
+    <ajc-test dir="new" pr="889"
+      title="after returning advice on interface constructor - error">
+        <compile files="AfterReturningInterfaceConstructorCE.java">
+        	<message kind="error" line="26"/>
+        </compile>
+    </ajc-test>
 
     <ajc-test dir="bugs" pr="900"
       title="after advice on static call join point">
@@ -7118,5 +7125,15 @@
 		  <message kind="error" line="4"/>
         </compile>
   </ajc-test>   
+        
+    <ajc-test dir="bugs" 
+		pr="49295"
+		title="declare warning on subtype constructor">
+        <compile files="SubtypeConstructorCW.java" >
+			<message kind="warning" line="5" text="String as first"/>
+			<message kind="warning" line="10" text="String as first"/>
+        </compile>
+        <run class="SubtypeConstructorCW"/>
+    </ajc-test>
         
 </suite>

@@ -194,6 +194,8 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		
 		
 		if (onTypeBinding.isInterface()) {
+			classScope.problemReporter().signalError(sourceStart, sourceEnd,
+							"can't define constructors on interfaces");
 			ignoreFurtherInvestigation = true;
 			return null;
 		}

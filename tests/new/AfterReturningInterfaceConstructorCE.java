@@ -2,13 +2,12 @@
 import org.aspectj.testing.Tester;
 
 /** @testcase PR#889 after returning advice on interface constructor */
-public class AfterReturningInterfaceConstructor {
+public class AfterReturningInterfaceConstructorCE {
     public static void main (String[] args) {
         Tester.expectEvent("constructor");
         Tester.expectEvent("advice");
         I i = new C();
-        
-        Tester.checkEqual(i.i, 2, "i.i");
+        System.out.println("i.i: " + i.i);
         
         Tester.checkAllEvents();
     }     
@@ -24,10 +23,11 @@ class C implements I {
 
 aspect A {
     int I.i;
-	after(I i) returning: this(i) && initialization(I.new(..)) {
-        i.i = 2;
+    I.new() {
+        i = 2;
+        System.out.println("running I.new()");
     }
-    after() returning: initialization(I.new(..)) {
+    after() returning: execution(I.new()) {    // ERR: can't define constructor on interface
         Tester.event("advice");
     }
 }

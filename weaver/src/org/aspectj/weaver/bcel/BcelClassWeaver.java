@@ -391,7 +391,7 @@ class BcelClassWeaver implements IClassWeaver {
 				Range.genStart(body, body.getStart().getNext()),
 				Range.genEnd(body, call.getPrev()));
 		} else {
-			// assert s.getKind() == Shadow.Initialization	
+			// assert s.getKind() == Shadow.Initialization
 			r.associateWithTargets(
 				Range.genStart(body, call.getNext()),
 				Range.genEnd(body));
@@ -748,50 +748,40 @@ class BcelClassWeaver implements IClassWeaver {
 			
 			// walk the body
 			boolean beforeSuperOrThisCall = true;
-			if (shouldWeaveBody(mg)) { //!mg.isAjSynthetic()) {
-				for (InstructionHandle h = mg.getBody().getStart();
-					h != null;
-					h = h.getNext()) {
-					if (h == superOrThisCall) {
-						beforeSuperOrThisCall = false;
-						continue;
+			if (shouldWeaveBody(mg)) {
+				if (canMatchBodyShadows) {
+					for (InstructionHandle h = mg.getBody().getStart();
+						h != null;
+						h = h.getNext()) {
+						if (h == superOrThisCall) {
+							beforeSuperOrThisCall = false;
+							continue;
+						}
+						match(mg, h, beforeSuperOrThisCall ? null : enclosingShadow, shadowAccumulator);
 					}
-					match(mg, h, beforeSuperOrThisCall ? null : enclosingShadow, shadowAccumulator);
 				}
 				match(enclosingShadow, shadowAccumulator);
 			}
 			
 			// XXX we don't do pre-inits of interfaces
 			
-			// now add interface inits and cexecs
+			// now add interface inits
 			if (superOrThisCall != null && ! isThisCall(superOrThisCall)) {
 				InstructionHandle curr = enclosingShadow.getRange().getStart();
 				for (Iterator i = addedSuperInitializersAsList.iterator(); i.hasNext(); ) {
 					IfaceInitList l = (IfaceInitList) i.next();
-					// generate the cexec jp
+
 					Member ifaceInitSig = AjcMemberMaker.interfaceConstructor(l.onType);
-					BcelShadow cexecShadow =
-						BcelShadow.makeIfaceConstructorExecution(
-							world,
-							mg,
-							curr,
-							ifaceInitSig);
-					if (match(cexecShadow, shadowAccumulator)) {
-						cexecShadow.getRange().getBody().append(
-							cexecShadow.getRange().getStart(),
-							InstructionConstants.NOP);
-					}
-					// generate the init jp around it
+					
 					BcelShadow initShadow =
-						BcelShadow.makeIfaceInitialization(
-							world,
-							mg,
-							cexecShadow,
-							ifaceInitSig);
-					match(initShadow, shadowAccumulator);
+						BcelShadow.makeIfaceInitialization(world, mg, ifaceInitSig);
+					
 					// insert code in place
 					InstructionList inits = genInitInstructions(l.list, false);
-					initShadow.getRange().insert(inits, Range.InsideAfter);
+					if (match(initShadow, shadowAccumulator) || !inits.isEmpty()) {
+						initShadow.initIfaceInitializer(curr);
+						initShadow.getRange().insert(inits, Range.OutsideBefore);
+					}
 				}
 				
 				// now we add our initialization code

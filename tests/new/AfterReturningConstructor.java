@@ -32,8 +32,8 @@ class U {
     static final String afterThrowing = "after() throwing(): ";
     static final String c = "C()";
     static final String i = "I()";
-    static final String cjp = "execution(" + c + ")";
-    static final String ijp = "execution(" + i + ")";
+    static final String cjp = "initialization(" + c + ")";
+    static final String ijp = "initialization(" + i + ")";
 
     static void e(String event) {
         //System.err.println("act event: " + event); // XXX
@@ -46,8 +46,8 @@ class U {
 }
 
 aspect A {
-    /** must pick out both interface and implementor constructor execution */
-    pointcut pc(): execution(new(..)) && !within(A);
+    /** must pick out both interface and implementor initializers */
+    pointcut pc(): initialization(new(..)) && !within(A);
 
     before(): pc() {
         U.e(U.before + thisJoinPoint);
