@@ -210,5 +210,21 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
     		   s.equals(":before:around"));
   }
 
+  public void test039_privilegedAspectAccessingPrivateMethods_pr67579() {
+  	runTest("NPE on privileged aspect error");
+  }
+  
+  public void test040_privilegedAspectAccessingPrivateMethods_pr67579_2() {
+  	runTest("NPE on privileged aspect error (2)");
+  }
+  
+  public void test041_ITDaccessingPrivateMethod_pr67578() {
+  	runTest("Privileged Aspect Access Problem Across Packages");
+  }
+  
+  public void test042_ITDaccessingPrivateMethod_pr67578_2() {
+  	runTest("Privileged Aspect Access Problem Across Packages (2)");
+  }
+
 }
 

@@ -305,3 +305,27 @@
 		<run class="def.PrivateCall_Instance_Package2"/>
 	</ajc-test>
 
+	<ajc-test dir="bugs/privilegedNPE" pr="67579"
+	  	title="NPE on privileged aspect error">
+		<compile files="a\ITD.aj,b\B.aj"/>
+		<run class="b.B"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs/privilegedNPE" pr="67579"
+	  	title="NPE on privileged aspect error (2)">
+		<compile files="b\B.aj,a\ITD.aj"/>
+		<run class="b.B"/>
+	</ajc-test>
+
+    <ajc-test dir="bugs/privilegedAccess" pr="67578"
+	  	title="Privileged Aspect Access Problem Across Packages">
+		<compile files="b\B.aj,a\ITD.aj"/>
+		<run class="b.B"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs/privilegedAccess" pr="67578"
+	  	title="Privileged Aspect Access Problem Across Packages (2)">
+		<compile files="b\B_notPrivileged.aj,a\ITD.aj">
+			<message kind="error" line="7" text="The method returnNothing(Object) from the type ITD is not visible"/>
+		</compile>
+	</ajc-test>
