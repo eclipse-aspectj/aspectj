@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Common Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/cpl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Common Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package answers;
@@ -16,9 +16,9 @@ import figures.SlothfulPoint;
 
 aspect Answer2d {
     after(int newValue, SlothfulPoint p) returning:
-    	    call(void setX(int)) && args(newValue) && target(p) {
-	if (newValue != p.getX()) {
-	    throw new RuntimeException("setter didn't set");
-	}
+            call(void setX(int)) && args(newValue) && target(p) {
+        if (newValue != p.getX()) {
+            throw new RuntimeException("setter didn't set");
+        }
     }
 }

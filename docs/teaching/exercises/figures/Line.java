@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Common Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/cpl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Common Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 
@@ -51,7 +51,7 @@ public class Line extends ShapeFigureElement {
     }
 
     private Line2D getLine2D() {
-	return new Line2D.Float((float)getP1().getX(),
+        return new Line2D.Float((float)getP1().getX(),
                                 (float)getP1().getY(),
                                 (float)getP2().getX(),
                                 (float)getP2().getY());
