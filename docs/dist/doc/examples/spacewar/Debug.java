@@ -166,7 +166,7 @@ aspect Debug {
     }
 
     after(Ship ship, SpaceObject obj) returning :
-	call(void Ship.handleCollision(SpaceObject)) && target(ship) && args(obj) {
+	call(void handleCollision(SpaceObject)) && target(ship) && args(obj) {
         if (traceFireCollideDamage.getState())
             infoWin.println(ship + " collides with " + obj);
     }
