@@ -245,7 +245,7 @@ public class Main {
                 }
         	}
     	} catch (Throwable t) {
-            fail(holder, "thrown?", t);
+            fail(holder, "unexpected exception", t);
         }
     }
     
@@ -405,16 +405,12 @@ public class Main {
          */
         protected String render(IMessage message) {
             IMessage.Kind kind = message.getKind();
-            if (kind.equals(IMessage.ABORT)) {
-                Throwable t = message.getThrown();
-                if (null == t) {
-                    return "abort (no message)";
-                } else {
-                    return Main.renderExceptionForUser(t);
-                }
-            }
+            
             StringBuffer sb = new StringBuffer();
             String text = message.getMessage();
+            if (text.equals(AbortException.NO_MESSAGE_TEXT)) {
+                text = null;
+            }
             boolean toString = (LangUtil.isEmpty(text));
             if (toString) {
                 text = message.toString();
@@ -442,6 +438,12 @@ public class Main {
                 sb.append(LangUtil.EOL);
                 sb.append(context);
             }
+            Throwable thrown = message.getThrown();
+            if (null != thrown) {
+                sb.append(LangUtil.EOL);
+                sb.append(Main.renderExceptionForUser(thrown));
+            }
+            
             return sb.toString();
         }
 
