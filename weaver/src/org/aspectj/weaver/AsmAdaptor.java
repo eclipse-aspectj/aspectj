@@ -150,7 +150,8 @@ public class AsmAdaptor {
 		ProgramElementNode peNode = new ProgramElementNode(
 			shadow.toString(),
 			ProgramElementNode.Kind.CODE,
-			new SourceLocation(enclosingNode.getSourceLocation().getSourceFile(), sl.getLine()),
+//XXX why not use shadow file? new SourceLocation(sl.getSourceFile(), sl.getLine()),
+        new SourceLocation(enclosingNode.getSourceLocation().getSourceFile(), sl.getLine()),
 //			enclosingNode.getSourceLocation(),
 			0,
 			"",
