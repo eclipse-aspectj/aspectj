@@ -682,7 +682,8 @@
       title="Reading inner classes from source and bytecode (1) -- was failing"
       keywords="from-java">
         <compile files="C.java,D.java"/>
-        <compile files="Main.java,C.java"/>
+        <compile files="Main.java,C.java"
+        	includeClassesDir="true"/>
         <run class="Main"/>
     </ajc-test>
 
@@ -697,7 +698,8 @@
       title="Reading inner classes from source and bytecode (3)"
       keywords="from-java">
         <compile files="C.java,D.java"/>
-        <compile files="Main.java,C.java,D.java"/>
+        <compile files="Main.java,C.java,D.java"
+        	includeClassesDir="true"/>
         <run class="Main"/>
     </ajc-test>
 
@@ -1355,7 +1357,8 @@
       title="interfaces with non-explicitly static inner classes"
       keywords="from-java">
         <compile files="InterfaceAndInnerHelper.java"/>
-        <compile files="InterfaceAndInner.java"/>
+        <compile files="InterfaceAndInner.java"
+        	includeClassesDir="true"/>
         <run class="InterfaceAndInner"/>
     </ajc-test>
 
