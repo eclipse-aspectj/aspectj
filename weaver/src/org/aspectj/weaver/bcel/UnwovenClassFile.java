@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.util.FileUtil;
 
 public class UnwovenClassFile {

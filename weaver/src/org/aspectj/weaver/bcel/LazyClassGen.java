@@ -29,24 +29,24 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Attribute;
-import org.apache.bcel.classfile.ConstantUtf8;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.classfile.Unknown;
-import org.apache.bcel.generic.ClassGen;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.FieldGen;
-import org.apache.bcel.generic.InstructionConstants;
-import org.apache.bcel.generic.InstructionFactory;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.PUSH;
-import org.apache.bcel.generic.RETURN;
-import org.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.Attribute;
+import org.aspectj.apache.bcel.classfile.ConstantUtf8;
+import org.aspectj.apache.bcel.classfile.Field;
+import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.Unknown;
+import org.aspectj.apache.bcel.generic.ClassGen;
+import org.aspectj.apache.bcel.generic.ConstantPoolGen;
+import org.aspectj.apache.bcel.generic.FieldGen;
+import org.aspectj.apache.bcel.generic.InstructionConstants;
+import org.aspectj.apache.bcel.generic.InstructionFactory;
+import org.aspectj.apache.bcel.generic.InstructionHandle;
+import org.aspectj.apache.bcel.generic.InstructionList;
+import org.aspectj.apache.bcel.generic.ObjectType;
+import org.aspectj.apache.bcel.generic.PUSH;
+import org.aspectj.apache.bcel.generic.RETURN;
+import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
@@ -487,10 +487,10 @@ public final class LazyClassGen {
 
     public String toShortString() {
         String s =
-            org.apache.bcel.classfile.Utility.accessToString(myGen.getAccessFlags(), true);
+            org.aspectj.apache.bcel.classfile.Utility.accessToString(myGen.getAccessFlags(), true);
         if (s != "")
             s += " ";
-        s += org.apache.bcel.classfile.Utility.classOrInterface(myGen.getAccessFlags());
+        s += org.aspectj.apache.bcel.classfile.Utility.classOrInterface(myGen.getAccessFlags());
         s += " ";
         s += myGen.getClassName();
         return s;
@@ -517,7 +517,7 @@ public final class LazyClassGen {
         out.print(toShortString());
         out.print(" extends ");
         out.print(
-            org.apache.bcel.classfile.Utility.compactClassName(
+            org.aspectj.apache.bcel.classfile.Utility.compactClassName(
                 myGen.getSuperclassName(),
                 false));
 

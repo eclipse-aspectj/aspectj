@@ -13,8 +13,8 @@
 
 package org.aspectj.weaver.bcel;
 
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
+import org.aspectj.apache.bcel.generic.InstructionHandle;
+import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.weaver.TypeX;
 
 /** exceptionRanges are set initially to be low priority.  The various setPriority methods

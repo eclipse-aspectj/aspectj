@@ -17,12 +17,12 @@ import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
-import org.apache.bcel.generic.FieldGen;
-import org.apache.bcel.generic.InstructionConstants;
-import org.apache.bcel.generic.InstructionFactory;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.generic.FieldGen;
+import org.aspectj.apache.bcel.generic.InstructionConstants;
+import org.aspectj.apache.bcel.generic.InstructionFactory;
+import org.aspectj.apache.bcel.generic.InstructionList;
+import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.weaver.AjcMemberMaker;

@@ -16,9 +16,9 @@ package org.aspectj.weaver.bcel;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.bcel.classfile.Attribute;
-import org.apache.bcel.classfile.Unknown;
-import org.apache.bcel.generic.ConstantPoolGen;
+import org.aspectj.apache.bcel.classfile.Attribute;
+import org.aspectj.apache.bcel.classfile.Unknown;
+import org.aspectj.apache.bcel.generic.ConstantPoolGen;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ISourceContext;
 

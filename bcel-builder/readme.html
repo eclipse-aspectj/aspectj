@@ -29,21 +29,26 @@ appropriate bcel.jar file.  Now put it in the appropriate place. </p>
 project, well, then you've got some development to do.  You'll need
 to know some more ant targets.  But before anything, get that
 <strong>bcel-5.1-src.zip</strong> and stick it in this directory.
+<b>NOTE: You should be working on BCEL when the package names are org.aspectj.apache.bcel,
+and *not* when the package names are org.apache.bcel.  If you run the extractAndPatch task
+below, you will be left with a src folder in the correct state for further development.</b>
 </p>
 
 <p> There are five top-level ant targets apart from the usual "clean":</p>
 
 <ul>
-  <li>ant extractAndJar -- this is just the composition of the extract,
+  <li>ant extractAndPatchAndJar -- this is just the composition of the extract,
   jar and srcjar targets, and is the default.  It extracts the source from bcel-5.1-src.zip, 
-  patches it, compiles the patched version into a jar and drops the new archives:
+  patches it, renames the files to start org.aspectj.apache rather than org.apache then
+  compiles the patched version into a jar and drops the new archives:
   bcel.jar and bcel-src.zip, into the project root.  This is the default task, mainly used
   to sanity check the building and make sure we're generating something.
   The bcel.jar and bcel-src.zip generated should be the same as that in ..\lib\bcel\. 
   </li>
   
-  <li>ant extract -- this extracts the source from bcel-5.1-src.zip,
-  patches it, and copies the patched source into the project src directory, 
+  <li>ant extractAndPatch -- this extracts the source from bcel-5.1-src.zip,
+  patches it, renames the files to start org.aspectj.apache rather than org.apache then
+  copies the patched source into the project src directory, 
   there to be visible by eclipse for people to do development on it.
   For the patch file to be applied you need to have a patch.exe on your path,
   this bcel building process was tested with the version from cygwin.
@@ -62,8 +67,19 @@ to know some more ant targets.  But before anything, get that
   
   <li>ant diff -- this creates the patch.txt file, composed of the differences
   between the project src directory and the original bcel-5.1 source. 
+  In order to create the patch, we transform the packages back to org.apache from 
+  org.aspectj.apache.  To continue working on BCEL once you have done this, you might
+  need to run the transformToAJ task to switch the packages back to the AJ prefix.
   For the patch file to be built successfully you need to have a diff.exe on your path,
   this bcel building process was tested with the version from cygwin.
+  </li>
+
+  <li>ant transformToAJ - this changes the packages for the BCEL classes to
+  org.aspectj.apache from org.apache.  This is used by the extractAndPatch task above.
+  </li>
+
+  <li>ant transformFromAJ - this changes the packages for the BCEL classes to
+  org.apache from org.aspectj.apache.  This is used by the diff task.
   </li>
 </ul>
 

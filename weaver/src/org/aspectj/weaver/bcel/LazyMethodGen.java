@@ -26,28 +26,28 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Attribute;
-import org.apache.bcel.classfile.ConstantPool;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.classfile.Synthetic;
-import org.apache.bcel.generic.BranchHandle;
-import org.apache.bcel.generic.BranchInstruction;
-import org.apache.bcel.generic.CPInstruction;
-import org.apache.bcel.generic.ClassGenException;
-import org.apache.bcel.generic.CodeExceptionGen;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.InstructionTargeter;
-import org.apache.bcel.generic.LineNumberGen;
-import org.apache.bcel.generic.LocalVariableGen;
-import org.apache.bcel.generic.LocalVariableInstruction;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.Select;
-import org.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.Attribute;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.Synthetic;
+import org.aspectj.apache.bcel.generic.BranchHandle;
+import org.aspectj.apache.bcel.generic.BranchInstruction;
+import org.aspectj.apache.bcel.generic.CPInstruction;
+import org.aspectj.apache.bcel.generic.ClassGenException;
+import org.aspectj.apache.bcel.generic.CodeExceptionGen;
+import org.aspectj.apache.bcel.generic.ConstantPoolGen;
+import org.aspectj.apache.bcel.generic.Instruction;
+import org.aspectj.apache.bcel.generic.InstructionHandle;
+import org.aspectj.apache.bcel.generic.InstructionList;
+import org.aspectj.apache.bcel.generic.InstructionTargeter;
+import org.aspectj.apache.bcel.generic.LineNumberGen;
+import org.aspectj.apache.bcel.generic.LocalVariableGen;
+import org.aspectj.apache.bcel.generic.LocalVariableInstruction;
+import org.aspectj.apache.bcel.generic.MethodGen;
+import org.aspectj.apache.bcel.generic.ObjectType;
+import org.aspectj.apache.bcel.generic.Select;
+import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
@@ -350,7 +350,7 @@ public final class LazyMethodGen {
 	}
 
     public String toShortString() {
-        String access = org.apache.bcel.classfile.Utility.accessToString(getAccessFlags());
+        String access = org.aspectj.apache.bcel.classfile.Utility.accessToString(getAccessFlags());
         
         StringBuffer buf = new StringBuffer();
         
@@ -359,7 +359,7 @@ public final class LazyMethodGen {
             buf.append(" ");
         }
 		buf.append(
-			org.apache.bcel.classfile.Utility.signatureToString(
+			org.aspectj.apache.bcel.classfile.Utility.signatureToString(
 				getReturnType().getSignature(),
 				true));
         buf.append(" ");
@@ -369,13 +369,13 @@ public final class LazyMethodGen {
 			int len = argumentTypes.length;
 			if (len > 0) {
 				buf.append(
-					org.apache.bcel.classfile.Utility.signatureToString(
+					org.aspectj.apache.bcel.classfile.Utility.signatureToString(
 						argumentTypes[0].getSignature(),
 						true));
 				for (int i = 1; i < argumentTypes.length; i++) {
 					buf.append(", ");
 					buf.append(
-						org.apache.bcel.classfile.Utility.signatureToString(
+						org.aspectj.apache.bcel.classfile.Utility.signatureToString(
 							argumentTypes[i].getSignature(),
 							true));
 				}

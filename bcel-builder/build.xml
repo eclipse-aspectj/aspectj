@@ -1,9 +1,9 @@
-<project default="extractAndJar" basedir=".">
+<project default="extractAndPatchAndJar" basedir=".">
 
   <!-- top-level -->
-  <target name="extractAndJar" depends="extract,jar,srcjar" />
+  <target name="extractAndPatchAndJar" depends="extractAndPatch,jar,srcjar" />
 
-  <target name="extract" depends="unzipSource,createPatchedSource" />
+  <target name="extractAndPatch" depends="unzipSource,createPatchedSource" />
 
   <target name="jar" depends="pack">
     <copy file="../lib/regexp/jakarta-regexp-1.2.jar"
@@ -21,7 +21,7 @@
     <copy file="bcel-src.zip" todir="../lib/bcel" />
   </target>
   
-  <target name="diff" depends="pack">
+  <target name="diff" depends="transformFromAJ,pack">
   
     <!-- Wipe out some of the rubbish that can arise due to doing a 'ant jar' before doing the diff -->
     <delete dir="bcel/bin"/>
@@ -54,7 +54,7 @@
     <unzip src="bcel-5.1-src.zip" dest="." />
   </target>
   
-  <target name="createPatchedSource" depends="patch,unpack" />
+  <target name="createPatchedSource" depends="patch,unpack,transformToAJ" />
 
   <target name="patch">
     <delete dir="bcel" />
@@ -74,8 +74,65 @@
   <target name="unpack">
     <delete dir="src" />
     <copy toDir="src">
-      <fileset dir="bcel/src/java" />
+      <fileset dir="bcel/src/java" >
+      </fileset>
     </copy>
   </target>
+	
+	  <target name="transformFromAJ">
+	    <delete dir="src-temp" />
+	  	
+	  	<echo message="Copying 'src' to 'src-temp' and modifying file names to remove aspectj"/>
+	  	
+	    <copy toDir="src-temp">
+	      <fileset dir="src"/>
+	      <mapper type="regexp" from="^(.*)aspectj\\apache(.*)$" to="\1apache\2"/>
+	    </copy>
+	  	
+	  	<delete dir="src"/>
+	  	
+	  	<echo message="Modifying file contents to change refs from 'org.aspectj.apache.bcel' to 'org.apache.bcel'"/>
+	  	<replaceregexp byline="true" flags="g">
+	  		<regexp pattern="org.aspectj.apache.bcel"/>
+			<substitution expression="org.apache.bcel"/>
+			<fileset dir="src-temp">
+	  			<include name="**/*"/>
+	  		</fileset>			
+	  	</replaceregexp>
+	  	
+	  	<echo message="Copying from 'src-temp' back to 'src'"/>
+	  	<copy toDir="src">
+		   <fileset dir="src-temp"/>
+	  	</copy>
+	  	<delete dir="src-temp"/>
+	  </target>
+	
+	  <target name="transformToAJ">
+	    <delete dir="src-temp" />
+	  	
+	  	<echo message="Copying 'src' to 'src-temp' and modifying file names to include aspectj"/>
+	  	
+	    <copy toDir="src-temp">
+	      <fileset dir="src"/>
+	      <mapper type="regexp" from="^(.*)apache(.*)$" to="\1aspectj\\apache\2"/>
+	    </copy>
+	  	
+	  	<delete dir="src"/>
+	  	
+	  	<echo message="Modifying file contents to change refs from 'org.apache.bcel' to 'org.aspectj.apache.bcel'"/>
+	  	<replaceregexp byline="true" flags="g">
+	  		<regexp pattern="org.apache.bcel"/>
+			<substitution expression="org.aspectj.apache.bcel"/>
+			<fileset dir="src-temp">
+	  			<include name="**/*"/>
+	  		</fileset>			
+	  	</replaceregexp>
+	  	
+	  	<echo message="Copying from 'src-temp' back to 'src'"/>
+	  	<copy toDir="src">
+		   <fileset dir="src-temp"/>
+	  	</copy>
+	  	<delete dir="src-temp"/>
+	  </target>
 
 </project>

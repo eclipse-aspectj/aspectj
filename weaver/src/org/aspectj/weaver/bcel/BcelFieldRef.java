@@ -13,10 +13,10 @@
 
 package org.aspectj.weaver.bcel;
 
-import org.apache.bcel.Constants;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionFactory;
-import org.apache.bcel.generic.InstructionList;
+import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.generic.Instruction;
+import org.aspectj.apache.bcel.generic.InstructionFactory;
+import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.weaver.ResolvedTypeX;
 
 /**

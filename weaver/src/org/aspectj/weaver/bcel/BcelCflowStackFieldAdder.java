@@ -13,13 +13,13 @@
 
 package org.aspectj.weaver.bcel;
 
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.generic.FieldGen;
-import org.apache.bcel.generic.InstructionFactory;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.Field;
+import org.aspectj.apache.bcel.generic.FieldGen;
+import org.aspectj.apache.bcel.generic.InstructionFactory;
+import org.aspectj.apache.bcel.generic.InstructionList;
+import org.aspectj.apache.bcel.generic.ObjectType;
+import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;

@@ -17,8 +17,8 @@ import java.util.*;
 
 import junit.framework.*;
 
-import org.apache.bcel.Constants;
-import org.apache.bcel.generic.*;
+import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.generic.*;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.*;
 import org.aspectj.testing.util.TestUtil;

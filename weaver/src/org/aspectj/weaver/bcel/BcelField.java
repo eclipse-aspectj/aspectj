@@ -16,9 +16,9 @@ package org.aspectj.weaver.bcel;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.bcel.classfile.Attribute;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.Synthetic;
+import org.aspectj.apache.bcel.classfile.Attribute;
+import org.aspectj.apache.bcel.classfile.Field;
+import org.aspectj.apache.bcel.classfile.Synthetic;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ResolvedMember;

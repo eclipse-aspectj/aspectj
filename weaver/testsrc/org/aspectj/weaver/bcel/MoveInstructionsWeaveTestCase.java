@@ -15,7 +15,7 @@ package org.aspectj.weaver.bcel;
 
 import java.io.*;
 
-import org.apache.bcel.generic.InstructionFactory;
+import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.weaver.*;
 
 public class MoveInstructionsWeaveTestCase extends WeaveTestCase {
