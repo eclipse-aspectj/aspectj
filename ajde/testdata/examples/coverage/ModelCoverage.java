@@ -28,6 +28,7 @@ class Point {
 } 
 
 aspect AdvisesRelationCoverage {
+    before(): execution(*..*.new(..)) { }
     before(): get(int *.*) { }
     before(): set(int *.*) { }
     before(): initialization(Point.new(..)) { }

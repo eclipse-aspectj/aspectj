@@ -1,0 +1,524 @@
+(
+(
+(4 . 0) 
+(4 . 0) 
+class 
+"Point" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+(
+(6 . 0) 
+(6 . 0) 
+field 
+"x" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(7 . 0) 
+(7 . 0) 
+field 
+"sx" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(9 . 0) 
+(9 . 0) 
+initializer 
+"..." 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(10 . 0) 
+(10 . 0) 
+initializer 
+"..." 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(12 . 0) 
+(12 . 0) 
+constructor 
+"Point" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(14 . 0) 
+(14 . 0) 
+method 
+"getX" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(16 . 0) 
+(16 . 0) 
+method 
+"setX" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(18 . 0) 
+(18 . 0) 
+method 
+"doIt" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+) 
+t 
+nil 
+nil 
+nil 
+)
+(
+(30 . 0) 
+(30 . 0) 
+aspect 
+"AdvisesRelationCoverage" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+(
+(31 . 0) 
+(31 . 0) 
+advice 
+"before" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(32 . 0) 
+(32 . 0) 
+advice 
+"before" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(33 . 0) 
+(33 . 0) 
+advice 
+"before" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(34 . 0) 
+(34 . 0) 
+advice 
+"before" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(35 . 0) 
+(35 . 0) 
+advice 
+"before" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(36 . 0) 
+(36 . 0) 
+advice 
+"before" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(37 . 0) 
+(37 . 0) 
+advice 
+"before" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(38 . 0) 
+(38 . 0) 
+advice 
+"before" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(39 . 0) 
+(39 . 0) 
+advice 
+"before" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(40 . 0) 
+(40 . 0) 
+advice 
+"before" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(43 . 0) 
+(43 . 0) 
+aspect 
+"InterTypeDecCoverage" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+(
+(45 . 0) 
+(45 . 0) 
+pointcut 
+"illegalNewFigElt" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(47 . 0) 
+(47 . 0) 
+declare error 
+"declare error" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(50 . 0) 
+(50 . 0) 
+declare warning 
+"declare warning" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(53 . 0) 
+(53 . 0) 
+declare parents 
+"declare parents" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(55 . 0) 
+(55 . 0) 
+declare parents 
+"declare parents" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(59 . 0) 
+(59 . 0) 
+introduction 
+"getName" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(61 . 0) 
+(61 . 0) 
+introduction 
+"xxx" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+) 
+nil 
+nil 
+nil 
+nil 
+)
+(
+(64 . 0) 
+(64 . 0) 
+aspect 
+"AdviceCoverage" 
+"C:\\Dev\\workspace-aspectj\\ajde\\testdata\\examples\\coverage\\ModelCoverage.java"
+"" 
+(
+) 
+(
+) 
+(
+) 
+nil 
+nil 
+nil 
+nil 
+)
+) 
