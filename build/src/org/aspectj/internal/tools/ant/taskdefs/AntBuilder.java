@@ -253,6 +253,7 @@ public class AntBuilder extends Builder {
         javac.setClasspath(classpath);
         // misc
         javac.setDebug(true);
+        javac.setTarget("1.1"); // 1.1 class files - Javac in 1.4 uses 1.4
         // compile
         try {
             return executeTask(javac);
