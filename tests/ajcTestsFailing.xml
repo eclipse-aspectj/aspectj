@@ -133,25 +133,4 @@
         <run class="InterfaceInitializerOrder"/>
     </ajc-test>
 
-	<ajc-test dir="bugs/fieldsOnInterfaces"
-		pr="52107"
-		title="declare String field on interface">
-		<compile files="StringFieldOnInterface.java"/>
-		<run class="StringFieldOnInterface"/>
-		</ajc-test>
-
-	<ajc-test dir="bugs/fieldsOnInterfaces"
-		pr="52107"
-		title="declare int field on interface">
-		<compile files="IntFieldOnInterface.java"/>
-		<run class="IntFieldOnInterface"/>
-		</ajc-test>
-	
-	<ajc-test dir="bugs/fieldsOnInterfaces"
-		pr="52107"
-		title="declare Object field on interface">
-		<compile files="ObjectFieldOnInterface.java"/>
-		<run class="ObjectFieldOnInterface"/>
-		</ajc-test>
-
 </suite>

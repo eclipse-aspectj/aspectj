@@ -7236,4 +7236,31 @@
         </compile>
     </ajc-test>
     
+   	<ajc-test dir="bugs/fieldsOnInterfaces"
+		pr="52107"
+		title="declare String field on interface">
+		<compile files="StringFieldOnInterface.java">
+			<message kind="warning" line="16" text="this affected type is not exposed"/>
+         	<message kind="warning" line="17" text="this affected type is not exposed"/>
+		</compile>	   
+	</ajc-test>
+
+	<ajc-test dir="bugs/fieldsOnInterfaces"
+		pr="52107"
+		title="declare int field on interface">
+		<compile files="IntFieldOnInterface.java">
+		<message kind="warning" line="27" text="this affected type is not exposed"/>
+         	<message kind="warning" line="28" text="this affected type is not exposed"/>
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs/fieldsOnInterfaces"
+		pr="52107"
+		title="declare Object field on interface">
+		<compile files="ObjectFieldOnInterface.java">
+			<message kind="warning" line="20" text="this affected type is not exposed"/>
+         	<message kind="warning" line="21" text="this affected type is not exposed"/>
+		</compile>
+	</ajc-test>
+    
 </suite>

@@ -54,7 +54,7 @@ public abstract class ResolvedTypeMunger {
     	//System.err.println("matching: " + this + " to " + matchType + " onType = " + onType);
    		if (matchType.equals(onType)) { 
    			if (!onType.isExposedToWeaver()) {
-   				if (onType.getWeaverState() != null) {
+   				if (onType.getWeaverState() == null) {
 	   				if (matchType.getWorld().getLint().typeNotExposedToWeaver.isEnabled()) {
 	   					matchType.getWorld().getLint().typeNotExposedToWeaver.signal(
 	   						matchType.getName(), signature.getSourceLocation());
