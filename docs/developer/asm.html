@@ -361,7 +361,25 @@
 </ul>
 <p><b>Relationships</b></p>
 <ul>
-	<li>joinpoint ordering</li>
+	<li>joinpoint ordering as a relationship, e.g.<ul>
+	<li>&lt;method&gt;<ul>
+	<li>join point execution ordered by 
+<ul>
+	<li>&lt;declare dominates&gt;</li>
+</ul>
+	</li>
+	<li>advised by<ul>
+	<li>around start</li>
+	<li>&nbsp; before</li>
+	<li>&nbsp;&nbsp;&nbsp; &lt;method&gt;</li>
+	<li>&nbsp; after</li>
+	<li>around end</li>
+</ul>
+	</li>
+</ul>
+	</li>
+</ul>
+	</li>
 </ul>
 <p>Used by:</p><ul>
 	<li>editor &amp; outline assist </li>
@@ -369,7 +387,9 @@
 	<li>debugger </li>
 </ul>
 
-	<p>&nbsp;</p>
+	<p><b>Pointcut Usage Hierarchy</b></p>
+<p>Like Eclipse's Type Hierarchy, but generated with &quot;uses pointcut&quot; 
+association.&nbsp; Shows &quot;advises&quot; relationships inline.</p>
 <p><b>Editor </b></p>
 <ul>
 	<li>create keyword highlighting guideline</li>
