@@ -5142,6 +5142,14 @@
         <compile files="SourceLocationWithinExpr.java"/>
         <run class="SourceLocationWithinExpr"/>
     </ajc-test>
+    
+    
+    <ajc-test dir="new" pr="885" keywords="knownLimitation"
+      comment="this behaves differently in 1.3 from 1.4 for unknown reasons, merge with above when resolved"
+      title="source locations within expressions (hard case of constructor start)">
+        <compile files="SourceLocationWithinExprHard.java"/>
+        <run class="SourceLocationWithinExprHard"/>
+    </ajc-test>
 
     <ajc-test dir="new" pr="888"
       title="crashes given method in declared method">
@@ -5897,5 +5905,12 @@
       title="Error when introducing members of type Class">
         <compile files="Trg.java,Asp.java"/>
         <run class="Trg"/>
+    </ajc-test>
+    
+    <ajc-test dir="new"
+      comment="this is a pureJava test, but we always want to run it"
+      title="arrays via Class.forName()">
+        <compile files="ClassForName.java"/>
+        <run class="ClassForName"/>
     </ajc-test>
 </suite>

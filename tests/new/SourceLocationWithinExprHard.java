@@ -4,10 +4,10 @@ import org.aspectj.lang.*;
 import org.aspectj.lang.reflect.*;
 
 /** @testcase PR#885 call source locations within expression */
-public class SourceLocationWithinExpr {
+public class SourceLocationWithinExprHard {
     public static void main (String[] args) {
-        new C()                 // 9*
-                              // 10
+        new                  // 9*
+            C()              // 10
             .                // 11
             getD()           // 12*
             .                // 13
