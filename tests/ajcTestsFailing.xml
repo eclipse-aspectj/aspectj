@@ -153,4 +153,9 @@
         <run class="Test_AroundVarBug"/>
     </ajc-test>
     
+    <ajc-test dir="bugs150" pr="83645"
+      title="pertypewithin on interface">
+		<compile files="PR83645.java"/>
+		<run class="PR83645"/>
+    </ajc-test>
 </suite>
