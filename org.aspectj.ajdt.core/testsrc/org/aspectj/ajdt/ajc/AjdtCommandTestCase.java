@@ -57,10 +57,10 @@ public class AjdtCommandTestCase extends TestCase {
 		config = command.genBuildConfig(
 			new String[] { "-incremental", "testdata/src1/Hello.java" }, 
 			messageWriter);
-	  
+	  	
 		assertTrue(
 			"specified a file",
-			outputWriter.getContents().indexOf("can not directly specify files") != -1);	;
+			outputWriter.getContents().indexOf("incremental mode only handles source files using -sourceroots") != -1);	;
 	}
 	
 	public void testBadOptionAndUsagePrinting() throws InvalidInputException {

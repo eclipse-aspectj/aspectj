@@ -43,6 +43,7 @@ public class StructureModelTest extends AjdeTestCase {
 		return result;
 	}
 
+//  XXX this should work
 //	public void testFieldInitializerCorrespondence() throws IOException {
 //		File testFile = createFile("testdata/examples/figures-coverage/figures/Figure.java");	
 //		StructureNode node = Ajde.getDefault().getStructureModelManager().getStructureModel().findNodeForSourceLine(

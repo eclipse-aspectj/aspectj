@@ -23,16 +23,16 @@ import org.aspectj.bridge.*;
 public class NullIdeTaskListManager implements TaskListManager {
 
     public void addSourcelineTask(String message, ISourceLocation sourceLocation, IMessage.Kind kind) {
-    	System.out.println("> added sourceline task: " + message + ", file: " + sourceLocation.getSourceFile().getAbsolutePath()
-    		+ ": " +  sourceLocation.getLine());
+//    	System.out.println("> added sourceline task: " + message + ", file: " + sourceLocation.getSourceFile().getAbsolutePath()
+//    		+ ": " +  sourceLocation.getLine());
     }
    
     public void addProjectTask(String message, IMessage.Kind kind) {
-    	System.out.println("> added project task: " + message + ", kind: " + kind);	
+//    	System.out.println("> added project task: " + message + ", kind: " + kind);	
     }
 
     public void clearTasks() {
-    	System.out.println("> cleared tasks");
+//    	System.out.println("> cleared tasks");
     }
 }
   
