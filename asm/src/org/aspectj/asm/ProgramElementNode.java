@@ -405,5 +405,9 @@ public class ProgramElementNode extends StructureNode {
 		this.returnType = returnType;
 	}
 
+	public String getReturnType() {
+		return returnType;
+	}
+
 }
 

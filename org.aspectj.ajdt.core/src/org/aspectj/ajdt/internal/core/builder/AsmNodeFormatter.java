@@ -20,14 +20,55 @@ import org.eclipse.jdt.internal.compiler.ast.*;
 
 public class AsmNodeFormatter {
 
+	public static final String DECLARE_PRECEDENCE = "precedence: ";
+	public static final String DECLARE_SOFT = "soft: ";
+	public static final String DECLARE_PARENTS = "parents: ";
+	public static final String DECLARE_WARNING = "warning: ";
+	public static final String DECLARE_ERROR = "error: ";
+	public static final String DECLARE_UNKNONWN = "<unknown declare>";
+	public static final String POINTCUT_ABSTRACT = "<abstract pointcut>";
+	public static final String POINTCUT_ANONYMOUS = "<anonymous pointcut>";
 	public static final int MAX_MESSAGE_LENGTH = 18;
 	public static final String DEC_LABEL = "declare";
 
 	public void genLabelAndKind(MethodDeclaration methodDeclaration, ProgramElementNode node) {
 		if (methodDeclaration instanceof AdviceDeclaration) { 
+			AdviceDeclaration ad = (AdviceDeclaration)methodDeclaration;
 			node.setKind( ProgramElementNode.Kind.ADVICE);
-			node.setName(translateAdviceName(new String(methodDeclaration.selector)));
-			
+			String label = "";
+			label += ad.kind.toString();
+			label += "(" + genArguments(ad) + "): ";
+
+			if (ad.kind == AdviceKind.Around) {
+				node.setReturnType(ad.returnTypeToString(0));
+			}
+	
+			if (ad.pointcutDesignator != null) {	
+				if (ad.pointcutDesignator.getPointcut() instanceof ReferencePointcut) {
+					ReferencePointcut rp = (ReferencePointcut)ad.pointcutDesignator.getPointcut();
+					label += rp.name + "..";
+				} else if (ad.pointcutDesignator.getPointcut() instanceof AndPointcut) {
+					AndPointcut ap = (AndPointcut)ad.pointcutDesignator.getPointcut();
+					if (ap.getLeft() instanceof ReferencePointcut) {
+						label += ap.getLeft().toString() + "..";	
+					} else {
+						label += POINTCUT_ANONYMOUS + "..";
+					}
+				} else if (ad.pointcutDesignator.getPointcut() instanceof OrPointcut) {
+					OrPointcut op = (OrPointcut)ad.pointcutDesignator.getPointcut();
+					if (op.getLeft() instanceof ReferencePointcut) {
+						label += op.getLeft().toString() + "..";	
+					} else {
+						label += POINTCUT_ANONYMOUS + "..";
+					}
+				} else {
+					label += POINTCUT_ANONYMOUS;
+				}
+			} else {
+				label += POINTCUT_ABSTRACT;
+			}
+			node.setName(label);
+
 		} else if (methodDeclaration instanceof PointcutDeclaration) { 
 			PointcutDeclaration pd = (PointcutDeclaration)methodDeclaration;
 			node.setKind( ProgramElementNode.Kind.POINTCUT);
@@ -43,29 +84,29 @@ public class AsmNodeFormatter {
 				
 				if (deow.isError()) {
 					node.setKind( ProgramElementNode.Kind.DECLARE_ERROR);
-					label += "error: ";
+					label += DECLARE_ERROR;
 				} else {
 					node.setKind( ProgramElementNode.Kind.DECLARE_WARNING);
-					label += "warning: ";
+					label += DECLARE_WARNING;
 				}
-				node.setName(label + genDeclareMessage(deow.getMessage())) ;
+				node.setName(label + "\"" + genDeclareMessage(deow.getMessage()) + "\"") ;
 				 
 			} else if (declare.declare instanceof DeclareParents) {
 				node.setKind( ProgramElementNode.Kind.DECLARE_PARENTS);
 				DeclareParents dp = (DeclareParents)declare.declare;
-				node.setName(label + "parents: " + genTypePatternLabel(dp.getChild()));	
+				node.setName(label + DECLARE_PARENTS + genTypePatternLabel(dp.getChild()));	
 				
 			} else if (declare.declare instanceof DeclareSoft) {
 				node.setKind( ProgramElementNode.Kind.DECLARE_SOFT);
 				DeclareSoft ds = (DeclareSoft)declare.declare;
-				node.setName(label + "soft: " + genTypePatternLabel(ds.getException()));
+				node.setName(label + DECLARE_SOFT + genTypePatternLabel(ds.getException()));
 			} else if (declare.declare instanceof DeclarePrecedence) {
 				node.setKind( ProgramElementNode.Kind.DECLARE_PRECEDENCE);
 				DeclarePrecedence ds = (DeclarePrecedence)declare.declare;
-				node.setName(label + "precedence: " + genPrecedenceListLabel(ds.getPatterns()));
+				node.setName(label + DECLARE_PRECEDENCE + genPrecedenceListLabel(ds.getPatterns()));
 			} else {
 				node.setKind( ProgramElementNode.Kind.ERROR);
-				node.setName("<unknown declare>");
+				node.setName(DECLARE_UNKNONWN);
 			}
 			
 		} else if (methodDeclaration instanceof InterTypeDeclaration) {
@@ -83,10 +124,8 @@ public class AsmNodeFormatter {
 			} else {
 				node.setKind(ProgramElementNode.Kind.ERROR);
 			}
- 
 			node.setName(label);
 			node.setReturnType(itd.returnType.toString());
-			
 			
 		} else {
 			node.setKind(ProgramElementNode.Kind.METHOD);
@@ -112,11 +151,15 @@ public class AsmNodeFormatter {
 			String argName = new String(argArray[i].name);
 			String argType = argArray[i].type.toString();
 //			TODO: fix this way of determing ajc-added arguments, make subtype of Argument with extra info
-			if (!argName.startsWith("ajc$this_")) {   
-				args += argType;
-				if (i < argArray.length-1) args += ", ";
-			}
+			if (!argName.startsWith("ajc$this_") 
+				&& !argType.equals("org.aspectj.lang.JoinPoint.StaticPart")
+				&& !argType.equals("org.aspectj.lang.JoinPoint")
+				&& !argType.equals("org.aspectj.runtime.internal.AroundClosure")) {   
+				args += argType + ", ";
+			}  
 		}
+		int lastSepIndex = args.lastIndexOf(',');
+		if (lastSepIndex != -1 && args.endsWith(", ")) args = args.substring(0, lastSepIndex);
 		return args;
 	}
 
@@ -144,14 +187,14 @@ public class AsmNodeFormatter {
 		}
 	}
 	
-	// !!! move or replace
-	private String translateAdviceName(String label) {
-		if (label.indexOf("before") != -1) return "before";
-		if (label.indexOf("returning") != -1) return "after returning";
-		if (label.indexOf("after") != -1) return "after";
-		if (label.indexOf("around") != -1) return "around";
-		else return "<advice>";
-	}
+//	// TODO: 
+//	private String translateAdviceName(String label) {
+//		if (label.indexOf("before") != -1) return "before";
+//		if (label.indexOf("returning") != -1) return "after returning";
+//		if (label.indexOf("after") != -1) return "after";
+//		if (label.indexOf("around") != -1) return "around";
+//		else return "<advice>";
+//	}
 	
 //	// !!! move or replace
 //	private String translateDeclareName(String name) {
