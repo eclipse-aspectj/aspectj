@@ -1192,11 +1192,13 @@
    <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: dec annotation">
         <compile files="DeclareAnnotation.aj,org/xyz/model/Model.java" options="-1.5">
             <message kind="warning" line="3" text="@BusinessDomain"/>
-            <message kind="warning" line="39" text="@Secured"/>
-            <message kind="warning" line="40" text="@Secured"/>
-            <message kind="warning" line="47" text="@Secured"/>
-            <message kind="warning" line="54" text="@Persisted"/>
-            <message kind="warning" line="60" text="@Persisted"/>
+            <message kind="warning" line="43" text="@Secured"/>
+            <message kind="warning" line="44" text="@Secured"/>
+            <message kind="warning" line="55" text="@Secured"/>
+            <message kind="warning" line="62" text="@Persisted"/>
+            <message kind="warning" line="68" text="@Persisted"/>
+            <message kind="warning" line="41" text="@Secured"/>
+            <message kind="warning" line="51" text="@Secured"/>
         </compile>
         <run class="DeclareAnnotation"/>
     </ajc-test>  

@@ -8,12 +8,16 @@ public aspect DeclareAnnotation {
 	
 	declare @field : * DAO+.* : @Persisted;
 	
+	declare @constructor : BankAccount+.new(..) : @Secured(role="supervisor");
+	
 	declare warning : staticinitialization(@BusinessDomain *)
 	                : "@BusinessDomain";
 	
 	declare warning : execution(@Secured * *(..)) : "@Secured";
 	
 	declare warning : set(@Persisted * *) : "@Persisted";
+	
+	declare warning : initialization(@Secured *.new(..)) : "@Secured";
 	
 	public static void main(String[] args) throws Exception {
 		Class bAcc = BankAccount.class;
@@ -43,6 +47,10 @@ class BankAccount {
 }
 
 class ExecutiveBankAccount extends BankAccount {
+	
+	public ExecutiveBankAccount() {
+		super();
+	}
 	
 	public void interest() {}
 	protected void commission() {}
