@@ -17,7 +17,7 @@ import org.aspectj.asm.*;
 import org.aspectj.asm.IProgramElement.Kind;
 
 
-// TODO: add tests for java kinds
+// TODO: add tests for java kinds, expand coverage
 public class AsmDeclarationsTest extends AjdeTestCase {
 
 	private IHierarchy model = null;
@@ -32,6 +32,19 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 		IProgramElement root = (IProgramElement)model.getRoot();
 		assertNotNull(root);
 		assertEquals(root.toLabelString(), "coverage.lst");	
+	}
+
+	public void testStaticModifiers() {
+		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, "ModifiersCoverage");
+		assertNotNull(aspect);
+
+		IProgramElement staticA = model.findElementForSignature(aspect, IProgramElement.Kind.FIELD, "staticA");
+		assertTrue(staticA.getModifiers().contains(IProgramElement.Modifiers.STATIC));
+
+		IProgramElement finalA = model.findElementForSignature(aspect, IProgramElement.Kind.FIELD, "finalA");
+		assertTrue(!finalA.getModifiers().contains(IProgramElement.Modifiers.STATIC));
+		assertTrue(finalA.getModifiers().contains(IProgramElement.Modifiers.FINAL));
+
 	}
 	
 	public void testFileInPackageAndDefaultPackage() {

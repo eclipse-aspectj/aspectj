@@ -31,7 +31,7 @@ public class AsmRelationshipProvider {
 	public static final String MATCHES_DECLARE = "matches declare";
 
 	public static void checkerMunger(IHierarchy model, Shadow shadow, Checker checker) {
-		if (shadow.getSourceLocation() == null || checker == null) return;
+		if (shadow.getSourceLocation() == null || checker.getSourceLocation() == null) return;
 		
 		String sourceHandle = ProgramElement.createHandleIdentifier(
 			checker.getSourceLocation().getSourceFile(),

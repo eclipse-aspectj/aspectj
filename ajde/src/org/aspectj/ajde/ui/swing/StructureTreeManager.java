@@ -69,9 +69,8 @@ class StructureTreeManager {
     private void highlightNode(SwingTreeViewNode parent, IProgramElement node) {
         for (int i = 0; i < parent.getChildCount(); i++) {
             SwingTreeViewNode currNode = (SwingTreeViewNode)parent.getChildAt(i);
-            IProgramElement sNode = (IProgramElement)currNode.getUserObject();
-            if (sNode instanceof IProgramElement &&
-                ((IProgramElement)sNode).equals(node)) {
+            IProgramElement sNode = (IProgramElement)currNode.getStructureNode();
+            if (sNode != null && sNode.equals(node) && currNode.getKind() != IStructureViewNode.Kind.LINK) {
                 TreePath path = new TreePath(currNode.getPath());
                 structureTree.setSelectionPath(path);
                 int currRow = structureTree.getRowForPath(path);
@@ -156,7 +155,7 @@ class StructureTreeManager {
         for (int i = 0; i < structureTree.getRowCount(); i++) {
             TreePath path = structureTree.getPathForRow(i);
             SwingTreeViewNode node = (SwingTreeViewNode)path.getLastPathComponent();
-            if (path.getPath().length-1 > depth || node.getUserObject() instanceof IRelationship) {
+            if (path.getPath().length-1 > depth || node.getKind() == IStructureViewNode.Kind.RELATIONSHIP) {
                 structureTree.collapsePath(path);
             } else {
                 structureTree.expandPath(path);

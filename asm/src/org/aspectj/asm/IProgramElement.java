@@ -179,6 +179,7 @@ public interface IProgramElement extends Serializable {
 		public static final Kind FILE_JAVA = new Kind("java source file");
 		public static final Kind FILE_ASPECTJ = new Kind("aspect source file");
 		public static final Kind FILE_LST = new Kind("build configuration file");
+		public static final Kind IMPORT_REFERENCE = new Kind("import reference");
 		public static final Kind CLASS = new Kind("class");
 		public static final Kind INTERFACE = new Kind("interface");
 		public static final Kind ASPECT = new Kind("aspect");
@@ -212,6 +213,7 @@ public interface IProgramElement extends Serializable {
 				FILE_LST,
 				CLASS,
 				INTERFACE,
+				IMPORT_REFERENCE,
 				ASPECT,
 				INITIALIZER,
 				INTER_TYPE_FIELD,

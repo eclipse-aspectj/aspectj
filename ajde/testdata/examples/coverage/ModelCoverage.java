@@ -1,9 +1,14 @@
 
 import java.io.*;
-
+import java.util.List;
+ 
 class Point { 
 	int x;
 	static int sx;
+
+	{ 
+		System.out.println(""); 
+	}
 
 	{ x = 0; }
 	static { sx = 1; }
@@ -121,6 +126,18 @@ class SizeException extends Exception { }
 
 aspect AdviceCoverage {
 
+}
+
+abstract class ModifiersCoverage {
+	private int a;
+	protected int b;
+	public int c;
+	int d;
+
+	static int staticA;
+	final int finalA = 0;
+	
+	abstract void abstractM();
 }
 
 

@@ -42,7 +42,7 @@ public class StructureViewProperties {
     private List filteredMemberKinds = new ArrayList();
     private List grouping = new ArrayList();
     private Sorting sorting = Sorting.DECLARATIONAL;
-	private Granularity granularity = Granularity.MEMBER;
+	private Granularity granularity = StructureViewProperties.Granularity.DECLARED_ELEMENTS;
 
     public List getRelations() {
         return relations;

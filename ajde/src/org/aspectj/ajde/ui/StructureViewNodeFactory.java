@@ -81,4 +81,16 @@ public abstract class StructureViewNodeFactory {
 	 * Implementors must override this method in order to create new nodes.
 	 */ 
 	protected abstract IStructureViewNode createDeclaration(IProgramElement node, AbstractIcon icon, List children);
+
+	/**
+	 * Don't show code elements under types since they show under the corresponding initializers.
+	 */
+	public static boolean acceptNode(IProgramElement parent, IProgramElement child) {
+		if (parent.getKind() == IProgramElement.Kind.CLASS 
+			&& child.getKind() == IProgramElement.Kind.CODE) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 }

@@ -81,7 +81,7 @@ public class StructureModelTest extends AjdeTestCase {
 			testFile.getAbsolutePath());
 		assertTrue("find result", node != null) ;	
 		IProgramElement pNode = (IProgramElement)node;
-		String child = ((IProgramElement)pNode.getChildren().get(0)).getName();
+		String child = ((IProgramElement)pNode.getChildren().get(1)).getName();
         assertTrue("expected Figure got child " + child, child.equals("Figure"));
 	}
 
@@ -90,7 +90,7 @@ public class StructureModelTest extends AjdeTestCase {
 		IProgramElement node = Ajde.getDefault().getStructureModelManager().getHierarchy().findElementForSourceFile(
 			testFile.getAbsolutePath());
 		assertTrue("find result", node != null) ;	
-		IProgramElement pNode = (IProgramElement)((IProgramElement)node).getChildren().get(1);
+		IProgramElement pNode = (IProgramElement)((IProgramElement)node).getChildren().get(2);
 		IProgramElement pointcut = (IProgramElement)pNode.getChildren().get(0);
 		assertTrue("kind", pointcut.getKind().equals(IProgramElement.Kind.POINTCUT));
 		assertTrue("found node: " + pointcut.getName(), pointcut.toLabelString().equals("testptct()"));
@@ -101,7 +101,7 @@ public class StructureModelTest extends AjdeTestCase {
 		IProgramElement node = Ajde.getDefault().getStructureModelManager().getHierarchy().findElementForSourceLine(
 			testFile.getCanonicalPath(), 1);
 		assertTrue("find result", node != null) ;	
-		assertEquals("find result has children", 2, node.getChildren().size()) ;	
+		assertEquals("find result has children", 3, node.getChildren().size()) ;	
 		IProgramElement pNode = (IProgramElement)node;
 		assertTrue("found node: " + pNode.getName(), pNode.getKind().equals(IProgramElement.Kind.FILE_JAVA));
 	}

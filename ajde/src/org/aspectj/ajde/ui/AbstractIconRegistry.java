@@ -133,6 +133,8 @@ public abstract class AbstractIconRegistry {
 			return CODE;
 		} else if (kind == IProgramElement.Kind.ERROR) {
 			return ERROR;
+		} else if (kind == IProgramElement.Kind.IMPORT_REFERENCE) {
+			return RELATION_REFERENCE_FORWARD;
 		} else {
 			System.err.println("AJDE Message: unresolved icon kind " + kind);
 			return null;

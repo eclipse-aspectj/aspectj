@@ -218,12 +218,12 @@ public class ProgramElement implements IProgramElement {
 	private static List genModifiers(int modifiers) {
 		List modifiersList = new ArrayList();
 		if ((modifiers & AccStatic) != 0) modifiersList.add(IProgramElement.Modifiers.STATIC);
-		if ((modifiers & AccFinal) != 0) modifiersList.add(IProgramElement.Modifiers.STATIC);
-		if ((modifiers & AccSynchronized) != 0) modifiersList.add(IProgramElement.Modifiers.STATIC);
-		if ((modifiers & AccVolatile) != 0) modifiersList.add(IProgramElement.Modifiers.STATIC);
-		if ((modifiers & AccTransient) != 0) modifiersList.add(IProgramElement.Modifiers.STATIC);
-		if ((modifiers & AccNative) != 0) modifiersList.add(IProgramElement.Modifiers.STATIC);
-		if ((modifiers & AccAbstract) != 0) modifiersList.add(IProgramElement.Modifiers.STATIC);
+		if ((modifiers & AccFinal) != 0) modifiersList.add(IProgramElement.Modifiers.FINAL);
+		if ((modifiers & AccSynchronized) != 0) modifiersList.add(IProgramElement.Modifiers.SYNCHRONIZED);
+		if ((modifiers & AccVolatile) != 0) modifiersList.add(IProgramElement.Modifiers.VOLATILE);
+		if ((modifiers & AccTransient) != 0) modifiersList.add(IProgramElement.Modifiers.TRANSIENT);
+		if ((modifiers & AccNative) != 0) modifiersList.add(IProgramElement.Modifiers.NATIVE);
+		if ((modifiers & AccAbstract) != 0) modifiersList.add(IProgramElement.Modifiers.ABSTRACT);
 		return modifiersList;		  
 	}
 

@@ -90,7 +90,7 @@ public class StructureViewPanel extends JPanel implements StructureViewRenderer 
 
 	public void setActiveNode(IStructureViewNode node, int lineOffset) {
 		if (node == null) return;
- 		if (!(node.getStructureNode() instanceof IProgramElement)) return;
+// 		if (!(node.getStructureNode() instanceof IProgramElement)) return;
 		IProgramElement pNode = (IProgramElement)node.getStructureNode();
  		treeManager.highlightNode(pNode);
  		if (pNode.getSourceLocation() != null) {

@@ -21,6 +21,8 @@ import org.aspectj.asm.*;
 import org.aspectj.asm.internal.*;
 import org.aspectj.asm.internal.ProgramElement;
 
+import sun.security.krb5.internal.crypto.p;
+
 /**
  * @author Mik Kersten
  */
@@ -379,13 +381,22 @@ public class TreeStructureViewBuilder {
 		}		
 	}
 
+	/**
+	 * Does not sort imports alphabetically.
+	 */
     private static final Comparator ALPHABETICAL_COMPARATOR = new Comparator() {
         public int compare(Object o1, Object o2) {  
         	IProgramElement sv1 = ((IStructureViewNode)o1).getStructureNode();
         	IProgramElement sv2 = ((IStructureViewNode)o2).getStructureNode();        
+			
             if (sv1 instanceof IProgramElement && sv2 instanceof IProgramElement) {
+         
             	IProgramElement p1 = (IProgramElement)sv1;
             	IProgramElement p2 = (IProgramElement)sv2;
+            	
+				if (p2.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return 1;
+				if (p1.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return -1;
+            	
 				return p1.getName().compareTo(p2.getName());
             } else {
             	return 0;	
@@ -400,7 +411,9 @@ public class TreeStructureViewBuilder {
             if (sv1 instanceof IProgramElement && sv2 instanceof IProgramElement) {
             	IProgramElement p1 = (IProgramElement)sv1;
             	IProgramElement p2 = (IProgramElement)sv2;
-            	if (p1.getSourceLocation() == null) {
+            	if (p2.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return 1;
+				if (p1.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return -1;
+            	if (p1.getSourceLocation() == null || p2.getSourceLocation() == null) {
             		return 0;
             	} else if (p1.getSourceLocation().getLine() < p2.getSourceLocation().getLine()) {
             		return -1;

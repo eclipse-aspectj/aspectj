@@ -19,7 +19,7 @@ package org.aspectj.ajde.ui;
  */
 public class GlobalViewProperties extends StructureViewProperties {
 
-    private StructureViewProperties.Granularity granularity = StructureViewProperties.Granularity.MEMBER;
+    private StructureViewProperties.Granularity granularity = StructureViewProperties.Granularity.DECLARED_ELEMENTS;
     private StructureViewProperties.Hierarchy hierarchy = StructureViewProperties.Hierarchy.DECLARATION; 
 
 	public GlobalViewProperties(StructureViewProperties.Hierarchy hierarchy) {

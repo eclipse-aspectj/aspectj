@@ -83,6 +83,14 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
                 new ArrayList());
         }
 
+		cuNode.addChild(new ProgramElement(
+			"import declarations",
+			IProgramElement.Kind.IMPORT_REFERENCE,
+			null,
+			0,
+			"",
+			new ArrayList()));		
+
         final IProgramElement addToNode = genAddToNode(unit, structureModel);
         
         // -- remove duplicates before adding (XXX use them instead?)
@@ -172,7 +180,8 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
 			name,
 			kind,
 			makeLocation(typeDeclaration),
-			typeDeclaration.modifiers,			"",
+			typeDeclaration.modifiers,			
+			"",
 			new ArrayList());
 		
 		((IProgramElement)stack.peek()).addChild(peNode);
@@ -307,6 +316,39 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
 
 	public void endVisit(MethodDeclaration methodDeclaration, ClassScope scope) {
 		stack.pop();
+	}
+
+	public boolean visit(ImportReference importRef, CompilationUnitScope scope) {
+		int dotIndex = importRef.toString().lastIndexOf('.');
+		String currPackageImport = "";
+		if (dotIndex != -1) {
+			currPackageImport = importRef.toString().substring(0, dotIndex);
+		}
+		if (!((ProgramElement)stack.peek()).getPackageName().equals(currPackageImport)) {
+		
+			IProgramElement peNode = new ProgramElement(
+				new String(importRef.toString()),
+				IProgramElement.Kind.IMPORT_REFERENCE,	
+				makeLocation(importRef),
+				0,
+				"", 
+				new ArrayList());	
+			
+			ProgramElement imports = (ProgramElement)((ProgramElement)stack.peek()).getChildren().get(0);
+			imports.addChild(0, peNode);
+			stack.push(peNode);
+		}
+		return true;	 
+	}
+	public void endVisit(ImportReference importRef, CompilationUnitScope scope) {
+		int dotIndex = importRef.toString().lastIndexOf('.');
+		String currPackageImport = "";
+		if (dotIndex != -1) {
+			currPackageImport = importRef.toString().substring(0, dotIndex);
+		}
+		if (!((ProgramElement)stack.peek()).getPackageName().equals(currPackageImport)) {
+			stack.pop();
+		}
 	}
 
 	public boolean visit(FieldDeclaration fieldDeclaration, MethodScope scope) {		
@@ -496,4 +538,6 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
 			currCompilationResult.lineSeparatorPositions,
 			td.declarationSourceEnd);
 	}
+
+
 }
