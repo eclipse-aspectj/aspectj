@@ -36,6 +36,24 @@ import java.util.ListIterator;
 
 /**
  * Run the compiler once in non-incremental mode.
+ * The lifecycle is as follows:
+ * <ul>
+ * <li>Spec (specification) is created.</li>
+ * <li>This is created using the Spec.</li>
+ * <li>setupAjcRun(Sandbox, Validator) is invoked,
+ *     at which point this populates the shared sandbox
+ *     with values derived from the spec and also
+ *     sets up internal state based on both the sandbox
+ *     and the spec.</li>
+ * <li>run(IRunStatus) is invoked, and this runs the compiler
+ *     based on internal state, the spec, and the sandbox.</li>
+ * </ul>
+ * Programmer notes:
+ * <ul>
+ * <li>Paths are resolved absolutely, which fails to test the
+ *     compiler's ability to find files relative to a source base</li>
+ * <li>This does not enforce the lifecycle.</li>
+ * </ul>
  */
 public class CompilerRun implements IAjcRun {
 	static final String[] RA_String = new String[0];
@@ -64,12 +82,6 @@ public class CompilerRun implements IAjcRun {
      */
     final List /*String*/ injars;
    
-    /** 
-     * During run, these String are collapsed and passed as the aspectpath option.
-     * The list is set up in setupAjcRun(..).
-     */
-    final List /*String*/ aspectpath;
-
     private CompilerRun(Spec spec) {
         if (null == spec) {
             throw new IllegalArgumentException("null spec");
@@ -77,15 +89,20 @@ public class CompilerRun implements IAjcRun {
         this.spec = spec;
         arguments = new ArrayList();
         injars = new ArrayList();
-        aspectpath = new ArrayList();
     }           
     
     /** 
      * This checks that the spec is reasonable and does setup:
-     * <li>calculate and set sandbox testBaseSrcDir as 
-     *     {Sandbox.testBaseDir}/{Spec.testSrcDirOffset}/<li>
-     * <li>the list of source File to compile as
-     *     {Sandbox.testBaseSrcDir}/{Spec.getPaths..}</li>
+     * <ul>
+     * <li>calculate and set sandbox testBaseSrcDir as {Sandbox.testBaseDir}/
+     * {Spec.testSrcDirOffset}/<li>
+     * <li>get the list of source File to compile as {Sandbox.testBaseSrcDir} /
+     * {Spec.getPaths..}</li>
+     * <li>get the list of extraClasspath entries to add to default classpath as
+     * {Sandbox.testBaseSrcDir} / {Spec.classpath..}</li>
+     * <li>get the list of aspectpath entries to use as the aspectpath as
+     * {Sandbox. testBaseSrcDir} / {Spec.aspectpath..}</li>
+     * </ul>
      * All sources must be readable at this time.
      * @param classesDir the File
 	 * @see org.aspectj.testing.harness.bridge.AjcTest.IAjcRun#setup(File, File)
@@ -99,16 +116,11 @@ public class CompilerRun implements IAjcRun {
             || !validator.nullcheck(spec.compiler, "compilerName")
             || !validator.canRead(Globals.F_aspectjrt_jar, "aspectjrt.jar")
             || !validator.canRead(Globals.F_testingclient_jar, "testing-client.jar")
-            //|| !validator.canRead(Main.F_bridge_jar, "bridge.jar")
             ) {
             return false;
         }
-        
+         
         this.sandbox = sandbox;
-        
-        File[] cp = new File[] 
-            { sandbox.classesDir, Globals.F_aspectjrt_jar, Globals.F_testingclient_jar };
-        sandbox.setClasspath(cp, true, this);
         
         String rdir = spec.testSrcDirOffset;
         File testBaseSrcDir;
@@ -122,12 +134,10 @@ public class CompilerRun implements IAjcRun {
         }
         sandbox.setTestBaseSrcDir(testBaseSrcDir, this);
         
-        arguments.clear();
         
-        // sources come as relative paths - check read, copy if staging
-
-        // this renders paths absolute before run(RunStatusI) is called
-        // for a compile run to support relative paths + source base
+        // Sources come as relative paths - check read, copy if staging.
+        // This renders paths absolute before run(RunStatusI) is called.
+        // For a compile run to support relative paths + source base,
         // change so the run calculates the paths (differently when staging)
 
         final String[] injarPaths; 
@@ -140,7 +150,9 @@ public class CompilerRun implements IAjcRun {
         // validate readable for sources
         if (!validator.canRead(testBaseSrcDir, srcPaths, "sources")
             || !validator.canRead(testBaseSrcDir, injarPaths, "injars")
-            || !validator.canRead(testBaseSrcDir, spec.argfiles, "argfiles")) {
+            || !validator.canRead(testBaseSrcDir, spec.argfiles, "argfiles")
+            || !validator.canRead(testBaseSrcDir, spec.classpath, "classpath")
+            || !validator.canRead(testBaseSrcDir, spec.aspectpath, "aspectpath")) {
             return false;
         }
         int numSources = srcPaths.length + injarPaths.length + spec.argfiles.length;
@@ -149,21 +161,26 @@ public class CompilerRun implements IAjcRun {
             return false;
         }
         
-        File[] srcFiles;
-        File[] argFiles;
-        File[] injarFiles;
-        File[] aspectFiles;
+        final File[] argFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, spec.argfiles);
+        final File[] injarFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, injarPaths);
+        final File[] aspectFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, spec.aspectpath);
+        final File[] classFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, spec.classpath);
+        // hmm - duplicates validation above, verifying getBaseDirFiles?
+        if (!validator.canRead(argFiles, "argFiles")
+            || !validator.canRead(injarFiles, "injarfiles")
+            || !validator.canRead(aspectFiles, "aspectfiles")
+            || !validator.canRead(classFiles, "classfiles")) {
+            return false;
+        }
+
+        final File[] srcFiles;
+
+        // source text files are copied when staging incremental tests
         if (!spec.isStaging()) { // XXX why this? was always? || (testBaseSrcDir != sandbox.stagingDir))) {
             srcFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, srcPaths, CompilerRun.SOURCE_SUFFIXES);
-            argFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, spec.argfiles);
-            injarFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, injarPaths);
-            aspectFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, spec.aspectpath);
         } else { // staging - copy files
             try {
                 srcFiles = FileUtil.copyFiles(testBaseSrcDir, srcPaths, sandbox.stagingDir);
-                argFiles = FileUtil.copyFiles(testBaseSrcDir, spec.argfiles, sandbox.stagingDir);
-                injarFiles = FileUtil.copyFiles(testBaseSrcDir, injarPaths, sandbox.stagingDir);
-                aspectFiles = FileUtil.copyFiles(testBaseSrcDir, spec.aspectpath, sandbox.stagingDir);
             } catch (IllegalArgumentException e) {
                 validator.fail("staging - bad input", e);
                 return false;
@@ -171,23 +188,17 @@ public class CompilerRun implements IAjcRun {
                 validator.fail("staging - operations", e);
                 return false;
             }
-            // validate readable for copied sources
-            if (!validator.canRead(srcFiles, "copied paths")
-                || !validator.canRead(argFiles, "copied argfiles")) {
-                return false;
-            }
+        }
+        if (!validator.canRead(srcFiles, "copied paths")) {
+            return false;
         }
         arguments.clear();
-        injars.clear();
-        aspectpath.clear();
         if (!LangUtil.isEmpty(srcFiles)) {
             arguments.addAll(Arrays.asList(FileUtil.getPaths(srcFiles)));
         }
+        injars.clear();
         if (!LangUtil.isEmpty(injarFiles)) {
             injars.addAll(Arrays.asList(FileUtil.getPaths(injarFiles)));
-        }
-        if (!LangUtil.isEmpty(aspectFiles)) {
-            aspectpath.addAll(Arrays.asList(FileUtil.getPaths(aspectFiles)));
         }
         if (!LangUtil.isEmpty(argFiles)) {
             String[] ra = FileUtil.getPaths(argFiles);
@@ -199,12 +210,21 @@ public class CompilerRun implements IAjcRun {
             }               
         }
 
+        // save classpath and aspectpath in sandbox for this and other clients
+        final boolean checkReadable = true; // hmm - third validation?
+        File[] cp = new File[3 + classFiles.length];
+        System.arraycopy(classFiles, 0, cp, 0, classFiles.length);
+        int index = classFiles.length;
+        cp[index++] = sandbox.classesDir;
+        cp[index++] = Globals.F_aspectjrt_jar;
+        cp[index++] = Globals.F_testingclient_jar;
+        sandbox.setClasspath(cp, checkReadable, this);
+        // set aspectpath
+        if (0 < aspectFiles.length) {
+            sandbox.setAspectpath(aspectFiles, checkReadable, this);
+        }
         return true;
     }
-//        if ((null != spec.dirChanges) && (0 < spec.numMessages(IMessage.ERROR, false))) {
-//            validator.info("CompilerRun warning: when expecting errors, cannot expect dir changes");
-//        }
-
     
     /**
      * Setup result evaluation and command line, run, and evaluate result.
@@ -251,24 +271,28 @@ public class CompilerRun implements IAjcRun {
                 MessageUtil.abort(status, "canonical " + sandbox.classesDir, e);
             }
             argList.add(outputDirPath);
-            argList.add("-classpath");
-            argList.add(sandbox.classpathToString(this));
-            // XXX classpath additions here?
+
+            String path = sandbox.classpathToString(this);
+            if (!LangUtil.isEmpty(path)) {
+                argList.add("-classpath");
+                argList.add(path);
+            }
+
+            path = sandbox.aspectpathToString(this);
+            if (!LangUtil.isEmpty(path)) {
+                argList.add("-aspectpath");
+                argList.add(path);
+            }
 
             if (0 < injars.size()) {
                 argList.add("-injars");
                 argList.add(FileUtil.flatten((String[]) injars.toArray(new String[0]), null));
             }
 
-            if (0 < aspectpath.size()) {
-                argList.add("-aspectpath");
-                argList.add(FileUtil.flatten((String[]) aspectpath.toArray(new String[0]), null));
-            }
-
             // add both java/aspectj and argfiles
             argList.addAll(arguments);
             
-            // hack - do seeking on request as a side effect. reimplement as listener 
+            // XXX hack - seek on request as a side effect. reimplement as listener 
             if (null != setupResult.seek) {
                 String slopPrefix = Spec.SEEK_MESSAGE_PREFIX + " slop - ";
                 PrintStream slop = MessageUtil.handlerPrintStream(
@@ -409,6 +433,7 @@ public class CompilerRun implements IAjcRun {
         
         protected String[] argfiles = new String[0];
         protected String[] aspectpath = new String[0];
+        protected String[] classpath = new String[0];
         
         /** src path = {suiteParentDir}/{testBaseDirOffset}/{testSrcDirOffset}/{path} */
         protected String testSrcDirOffset;
@@ -455,9 +480,22 @@ public class CompilerRun implements IAjcRun {
             addPaths(paths);
         }
         
+        /**
+         * Add to default classpath
+         * (which includes aspectjrt.jar and testing-client.jar).
+         * @param files comma-delimited list of classpath entries - ignored if
+         * null or empty
+         */
+        public void setClasspath(String files) {
+            if (!LangUtil.isEmpty(files)) {
+                classpath = XMLWriter.unflattenList(files);
+            }
+        }
+        
         /** 
          * Set aspectpath, deleting any old ones
-         * @param files comma-delimited list of argfiles - ignored if null or empty
+         * @param files comma-delimited list of aspect jars - ignored if null or
+         * empty
          */        
         public void setAspectpath(String files) {
             if (!LangUtil.isEmpty(files)) {

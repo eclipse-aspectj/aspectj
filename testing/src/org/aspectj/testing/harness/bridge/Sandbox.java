@@ -21,6 +21,7 @@ import org.aspectj.util.LangUtil;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * A sandbox holds state shared by AjcTest sub-runs,
@@ -106,7 +107,10 @@ public class Sandbox {
     private File testBaseSrcDir;
 
     /** directories and libraries on the classpath, set by CompileRun.setup(..)  */
-    private File[] classpath;
+    private File[] compileClasspath;
+
+    /** aspectpath entries, set by CompileRun.setup(..)  */
+    private File[] aspectpath;
 
     /** track whether classpath getter ran */
     private boolean gotClasspath;
@@ -316,36 +320,72 @@ public class Sandbox {
         testBaseSrcDir = dir;
     }
     
-    /** @param readable if true, then throw IllegalArgumentException if not readable */
+    /** 
+     * Set aspectpath.
+     * @param readable if true, then throw IllegalArgumentException if not readable 
+     */
+    void setAspectpath(File[] files, boolean readable, CompilerRun caller) {
+        LangUtil.throwIaxIfNull(files, "files");
+        LangUtil.throwIaxIfNull(caller, "caller");
+        assertState(null == aspectpath, "aspectpath already written");
+        aspectpath = new File[files.length];
+        for (int i = 0; i < files.length; i++) {
+            LangUtil.throwIaxIfNull(files[i], "files[i]");
+            if (readable && !files[i].canRead()) {
+                throw new IllegalArgumentException("bad aspectpath entry: " + files[i]);
+            }
+            aspectpath[i] = files[i];
+        }
+    }
+
+    /** 
+     * Set compile classpath.
+     * @param readable if true, then throw IllegalArgumentException if not readable 
+     */
     void setClasspath(File[] files, boolean readable, CompilerRun caller) {
         LangUtil.throwIaxIfNull(files, "files");
         LangUtil.throwIaxIfNull(caller, "caller");
         assertState(!gotClasspath, "classpath already read");
-        classpath = new File[files.length];
+        compileClasspath = new File[files.length];
         for (int i = 0; i < files.length; i++) {
             LangUtil.throwIaxIfNull(files[i], "files[i]");
             if (readable && !files[i].canRead()) {
                 throw new IllegalArgumentException("bad classpath entry: " + files[i]);
             }
-            classpath[i] = files[i];
+            compileClasspath[i] = files[i];
 		}
     }
 
-    File[] getClasspath(JavaRun caller) {
-        LangUtil.throwIaxIfNull(caller, "caller");
-        assertState(null != classpath, "classpath not set");
-        
-        File[] result = new File[classpath.length];
-        System.arraycopy(classpath, 0, result, 0, result.length);
-        return result;
-    }
+//    /**
+//     * Get run classpath 
+//     * @param caller unused except to restrict usage to non-null JavaRun.
+//     * @throws IllegalStateException if compileClasspath was not set.
+//     * @throws IllegalArgumentException if caller is null
+//     */
+//    File[] getRunClasspath(JavaRun caller) {
+//        LangUtil.throwIaxIfNull(caller, "caller");
+//        assertState(null != compileClasspath, "classpath not set");
+//        int compilePathLength = compileClasspath.length;
+//        int aspectPathLength = (null == aspectpath ? 0 : aspectpath.length);
+//        File[] result = new File[aspectPathLength + compilePathLength];
+//        System.arraycopy(compileClasspath, 0, result, 0, compilePathLength);
+//        if (0 < aspectPathLength) {
+//            System.arraycopy(aspectpath, 0, result, compilePathLength, aspectPathLength);
+//        }
+//        return result;
+//    }
     
-    /** @param readable if true, omit non-readable directories */
+    /** 
+     * Get directories for the run classpath by selecting them
+     * from the compile classpath.
+     * This ignores aspectpath since it may contain only jar files.
+     * @param readable if true, omit non-readable directories 
+     */
     File[] getClasspathDirectories(boolean readable, JavaRun caller) {
         LangUtil.throwIaxIfNull(caller, "caller");
-        assertState(null != classpath, "classpath not set");
+        assertState(null != compileClasspath, "classpath not set");
         ArrayList result = new ArrayList();
-        File[] src = classpath;
+        File[] src = compileClasspath;
         for (int i = 0; i < src.length; i++) {
 			File f = src[i];
             if ((null != f) && (f.isDirectory()) && (!readable || f.canRead())) {
@@ -355,32 +395,44 @@ public class Sandbox {
         return (File[]) result.toArray(new File[0]);
     }
 
-    /** @param readable if true, omit non-readable directories */
+    /** 
+     * Get the jars belonging on the run classpath, including classpath
+     * and aspectpath entries.
+     * @param readable if true, omit non-readable directories 
+     */
     File[] getClasspathJars(boolean readable, JavaRun caller) {
         LangUtil.throwIaxIfNull(caller, "caller");
-        assertState(null != classpath, "classpath not set");
+        assertState(null != compileClasspath, "classpath not set");
         ArrayList result = new ArrayList();
-        File[] src = classpath;
+        File[][] src = new File[][] { compileClasspath, aspectpath };
         for (int i = 0; i < src.length; i++) {
-            File f = src[i];
-            if (FileUtil.hasZipSuffix(f) && (!readable || f.canRead())) {
-                result.add(f);
-            }
+            File[] paths = src[i];
+            int len = (null == paths ? 0 : paths.length);
+            for (int j = 0; j < len; j++) {
+                File f = paths[j];
+                if (FileUtil.hasZipSuffix(f) && (!readable || f.canRead())) {
+                    result.add(f);
+                }
+			}
         }
         return (File[]) result.toArray(new File[0]);
     }
     
-    /** @return String of classpath entries delimited internally by File.pathSeparator */
+    /**
+     * Get the list of aspect jars as a String. 
+     * @return String of classpath entries delimited internally by File.pathSeparator 
+     */
+    String aspectpathToString(CompilerRun caller) {
+        LangUtil.throwIaxIfNull(caller, "caller");
+        return FileUtil.flatten(aspectpath, null);
+    }
+    
+    /** 
+     * Get the compile classpath as a String.
+     * @return String of classpath entries delimited internally by File.pathSeparator 
+     */
     String classpathToString(CompilerRun caller) {
         LangUtil.throwIaxIfNull(caller, "caller");
-        assertState(null != classpath, "classpath not set");
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < classpath.length; i++) {
-          if (i > 0) {
-            sb.append(File.pathSeparator);
-          }
-          sb.append(classpath[i].getAbsolutePath());    
-        }
-        return sb.toString();
+        return FileUtil.flatten(compileClasspath, null);
     }
 }

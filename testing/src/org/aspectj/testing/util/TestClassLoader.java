@@ -31,21 +31,19 @@ import java.util.List;
  */
 public class TestClassLoader extends URLClassLoader {
 
+    /** seek classes in dirs first */
     List /*File*/ dirs;
+
+    /** save URL[] only for toString */
+    private URL[] urlsForDebugString;
     
     public TestClassLoader(URL[] urls, File[] dirs) {
         super(urls);
-        if (null == dirs) {
-            throw new IllegalArgumentException("null dir");
-        }
-        for (int i = 0; i < dirs.length; i++) {
-            if (null == dirs[i]) {
-                throw new IllegalArgumentException("null dir[" + i + "]");
-            }
-		}
+        this.urlsForDebugString = urls;
+        LangUtil.throwIaxIfComponentsBad(dirs, "dirs", null);
         ArrayList dcopy = new ArrayList();
         
-        if ((null != dirs) && (0 < dirs.length)) {
+        if (!LangUtil.isEmpty(dirs)) {
             dcopy.addAll(Arrays.asList(dirs));
         }
         this.dirs = Collections.unmodifiableList(dcopy);
@@ -75,7 +73,6 @@ public class TestClassLoader extends URLClassLoader {
         // and our dirs again (if not maybe test)
         ClassNotFoundException thrown = null;
         final boolean maybeTestClass = maybeTestClassName(name);
-            
         Class result =  findLoadedClass(name);
         if (null != result) {
             resolve = false;
@@ -119,19 +116,16 @@ public class TestClassLoader extends URLClassLoader {
         return result;
     }
     
+    /** @return null if class not found or byte[] of class otherwise */
     private byte[] readClass(String className) throws ClassNotFoundException {
-        byte[] data= null;
         final String fileName = className.replace('.', '/')+".class";
         for (Iterator iter = dirs.iterator(); iter.hasNext();) {
             File file = new File((File) iter.next(), fileName);
             if (file.canRead()) { 
                 return getClassData(file);
             }
-            if (data != null) {
-                return data;
-            }
         }
-        throw new ClassNotFoundException(className); // expensive - fix?
+        return null; 
     }
         
     private byte[] getClassData(File f) {
@@ -149,6 +143,15 @@ public class TestClassLoader extends URLClassLoader {
         } catch (IOException e) {
         }
         return null;
+    }
+    
+    /** @return String with debug info: urls and classes used */
+    public String toString() {
+        return "TestClassLoader(urls=" 
+            + Arrays.asList(urlsForDebugString)
+            + ", dirs="
+            + dirs
+            + ")";
     }
 }
 

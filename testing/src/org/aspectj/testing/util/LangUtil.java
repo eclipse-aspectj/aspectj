@@ -28,6 +28,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.Comparator;
@@ -225,7 +226,42 @@ public class LangUtil {
         }
     }
 	
-	/** @return ((null == ra) || (0 == ra.length)) */
+    /**
+     * Get indexes of any invalid entries in array.
+     * @param ra the Object[] entries to check
+     *  (if null, this returns new int[] { -1 })
+     * @param superType the Class, if any, to verify that
+     *         any entries are assignable.
+     * @return null if all entries are non-null, assignable to superType
+     * or comma-delimited error String, with components 
+     *     <code>"[#] {null || not {superType}"</code>,
+     * e.g., "[3] null, [5] not String"
+     */
+    public static String invalidComponents(Object[] ra, Class superType) {
+        if (null == ra) {
+            return "null input array";
+        } else if (0 == ra.length) {
+            return null;
+        }
+        StringBuffer result = new StringBuffer();
+        final String cname = LangUtil.unqualifiedClassName(superType);
+        int index = 0;
+        for (int i = 0; i < ra.length; i++) {
+			if (null == ra[i]) {
+                result.append(", [" + i + "] null");
+            } else if ((null != superType) 
+                && !superType.isAssignableFrom(ra[i].getClass())) {
+                result.append(", [" + i + "] not " + cname);
+            }
+		}
+        if (0 == result.length()) {
+            return null;
+        } else {
+            return result.toString().substring(2);
+        }
+    }
+	
+    /** @return ((null == ra) || (0 == ra.length)) */
     public static boolean isEmpty(Object[] ra) {
         return ((null == ra) || (0 == ra.length));
     }
@@ -235,6 +271,26 @@ public class LangUtil {
         return ((null == s) || (0 == s.length()));
     }
 
+
+
+    /**
+     * Throw IllegalArgumentException if any component in input array
+     * is null or (if superType is not null) not assignable to superType.
+     * The exception message takes the form 
+     * <code>{name} invalid entries: {invalidEntriesResult}</code>
+     * @throws IllegalArgumentException if any components bad
+     * @see #invalidComponents(Object[], Class)
+     */
+    public static final void throwIaxIfComponentsBad(
+        final Object[] input, 
+        final String name,
+        final Class superType) {
+        String errs = invalidComponents(input, superType);
+        if (null != errs) {
+            String err = name + " invalid entries: " + errs;
+            throw new IllegalArgumentException(err);
+        }
+    }
 	/**
      * Shorthand for "if false, throw IllegalArgumentException"
      * @throws IllegalArgumentException "{message}" if test is false

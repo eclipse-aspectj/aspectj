@@ -18,6 +18,7 @@ import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageUtil;
+import org.aspectj.bridge.SourceLocation;
 import org.aspectj.testing.harness.bridge.AbstractRunSpec;
 import org.aspectj.testing.harness.bridge.AjcTest;
 import org.aspectj.testing.harness.bridge.CompilerRun;
@@ -242,8 +243,11 @@ public class AjcSpecXmlReader {
         }
         AjcTest.Suite.Spec result = holder.spec;
         if (null != result) {
+            file = file.getAbsoluteFile();
+            result.setSourceLocation(new SourceLocation(file, 1));
             File suiteDir = file.getParentFile();
             if (null == suiteDir) {
+                // should not be the case if absolute
                 suiteDir = new File("."); // user.dir?
             }
             result.setSuiteDirFile(suiteDir);
