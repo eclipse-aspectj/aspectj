@@ -23,7 +23,7 @@
        2003 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated November 5, 2003.
+  <para>Last updated November 13, 2003.
   </para>
   <para>
    This FAQ covers AspectJ versions 1.0 and 1.1.
@@ -1333,7 +1333,9 @@ aspect PublicErrorLogging {
           <para>Can I use AspectJ with Generic Java?</para>
         </question>
         <answer>
-          <para>At this time, unfortunately not. The two compilers are just not
+        	<para>We plan to support Generics when Java 1.5 is available.
+        	</para>
+          <para>But at this time, unfortunately not. The two compilers are just not
             at all compatible. In an ideal world, there would be a wonderful
             Open Source extensible compiler framework for Java that both GJ and
             AspectJ would be built on top of, and they would seamlessly
@@ -1352,6 +1354,24 @@ aspect PublicErrorLogging {
             forward to this, because we too would really like to be able to
             write code that includes both aspects and generic types.
           </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:aspectjandj2me"
+            xreflabel="Q:Can I use AspectJ with J2ME?">
+          <para>Can I use AspectJ with J2ME?</para>
+        </question>
+        <answer>
+        	<para>We have not tested with J2ME, but we understand that users
+        		are deploying AspectJ-compiled programs successfully in J2ME.
+        		It should work if your program is otherwise J2ME-compatible
+        		and if you avoid using <literal>cflow</literal>-based pointcuts 
+        		or <literal>thisJoinPoint</literal>.
+        		To ensure that the program is limited to J2ME API's, 
+        		you should supply the runtime on the bootclasspath.
+        		(Fair warning: there was an email about this not working, 
+        		but there has been no bug report.)
+        	</para>
         </answer>
       </qandaentry>
       <qandaentry>
@@ -2652,6 +2672,12 @@ aspect MyMarker extends MarkerExample {
         <answer>
           <para>Some examples are distributed in the documentation release, 
            and you can find other code in the discussions on the users list.
+           In the AspectJ CVS tree, there are prospective code samples in the 
+           <literal>docs</literal> module <literal>sandbox</literal>
+           and <literal>teaching</literal> directories.  
+           (Until they are published, these samples should be used only by 
+           programmers who can determine for themselves whether they
+           are correct.)
           </para>
         </answer>
       </qandaentry>
@@ -3159,9 +3185,11 @@ vmparam -Xmx384m
           </para>
         </question>
         <answer>
-          <para>When advice is not running, it is probably a problem in the
-          pointcut.  
-          Sometimes users specify pointcuts that do not mean what they intend -
+          <para>
+          	When advice is not running,   
+          	there is probably a problem in the pointcut.
+          Sometimes users specify pointcuts that 
+          do not mean what they intend -
 	      most often when they misspell a type name. Run the compiler in
 	      <literal>-Xlint</literal> mode, which will flag some likely mistakes,
 	      like the type name.  
@@ -3172,21 +3200,101 @@ vmparam -Xmx384m
           see if your join points are executing at all by using
               TraceJoinPoints.java from <xref linkend="q:seeingjoinpoints"/>.
           </para>
-          <para>When advice is running more than it should, it may be that your
-          pointcut picks out more join points than you intend.  
+          <para>When advice is running more than it should, either
+          	(1) your advice is in an abstract aspect and the pointcut picks
+          	out the same join point for more than one concrete instantiation
+          	of the aspect, or
+          	(2) your pointcut picks out more join points than you intend.
+          </para>
+          <para>
+          In the case of advice in abstract aspects, the advice will run once
+          for each concrete instance of the aspect. 
+          If the pointcut for that advice picks out the same join point for two 
+          concrete aspects, then the correct behavior is for the advice to run 
+          the advice twice at that join point.
+          </para>
+          <para>
+          To see if your pointcut picks out the join points you intend, you
+          can use IDE support, logging, or declare-warnings.
           If you are using IDE support, you should be able to trace back from
           the pointcut or advice to the join points which can be statically
-          determined to be affected.  To identify advised dynamic join points,
+          determined to be affected.  
+          Without IDE support, you can write
+          declare-warning statements to identify code affected by staticly-
+          determinable pointcuts.
+          To identify advised dynamic join points,
           you can try using <literal>TraceJoinPoints.java</literal> as above, 
           or update the advice to print the source location of the join point.  
-          This will show if the advice applies to code that you did
-          not consider.
-          </para>
+          Doing any of these should show if the advice applies to code that 
+          you did not expect.
+          </para>                
           <para>If you've done this and convinced yourself it's not working,
           it may be a bug.  See <xref linkend="q:bugreports"/>.
           </para>
         </answer>
       </qandaentry>
+      <qandaentry>
+        <question id="q:adviceOnOveriddenMethods"
+            xreflabel="Q:My advice runs for each overridden method!">
+          <para>
+            My advice runs for each overridden method!
+            </para>
+        </question>
+        <answer>
+           <para>Most likely you are advising the method execution join
+           	point and specifying the defining signature.
+           	Since all overriding methods share this signature,
+           	the advice runs for each method executed.
+           	(This happens, e.g., when one method invokes the same method  
+           	in the superclass using <literal>super.{method}(..)</literal>).
+           	This is the correct behavior.
+          </para>
+          <para>To avoid this, use the <literal>call(..)</literal> pointcut
+          	designator, or use <literal>!cflow(..)</literal> to pick
+          	out only the initial method-execution.
+          </para>
+        </answer>
+      </qandaentry> 
+      <qandaentry>
+        <question id="q:tejpsp"
+            xreflabel="Q:I don't understand when thisEnclosingJoinPointStaticPart is available.">
+          <para>
+            I don't understand when thisEnclosingJoinPointStaticPart is available.
+          </para>
+        </question>
+        <answer>
+          <para>
+          	<literal>thisEnclosingJoinPointStaticPart</literal> is a special 
+          	variable available in the context of advice to refer to the
+          	join point, if any, lexically enclosing the current join point:
+          	<table>
+          		<title>thisEnclosingJoinPointStaticPart</title>
+          		<tgroup cols="2">
+          			<tbody>
+          				<row>
+          				<entry>One of these...</entry>
+          				<entry>will be tEJSP for each of these:</entry>
+          				</row>
+          				<row>
+          				<entry>
+						constructor-execution, method-execution, 
+						advice execution, initialization,
+  						pre-initialization, static initialization
+          				</entry>
+          				<entry>
+ 						constructor-call, method-call, handler, 
+ 						field-set, field-get
+       					</entry>
+          				</row>
+          			</tbody>
+          		</tgroup>	
+          	</table>
+			Expressions in the body of handlers have the same
+  			<literal>thisEnclosingJoinPointStaticPart</literal>
+  			as the handler itself.
+          </para>
+        </answer>
+      </qandaentry> 
       <qandaentry>
         <question id="q:packagedeclares"
             xreflabel="Q:I declared a member on a class with package access, but other classes in the package cannot see it.">
@@ -3201,6 +3309,29 @@ vmparam -Xmx384m
 	be able to access the aspect-declared members even if they are in the same package.
 	The only way for classes outside the control of the implementation to access aspect-declared
 	members is to declare them public.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:interfaceDeclarations"
+            xreflabel="Q:I declared a member on a interface, but javac does not see it.">
+          <para>
+          	This is true.  The workaround is to compile all the top-level implementating
+          	classes of the interface using <literal>ajc</literal>.
+            From an email by Jim Hugunin on the requirements for AspectJ 1.1 to 
+            implement members declared by an aspect on an interface:
+          </para>
+          <para>
+            If you introduce non-static fields or non-abstract methods on an interface 
+            from an aspect, then all of the top-most implementors of that interface must 
+            be woven by that same aspect.  
+            (A class C is a top-most implementor of an interface I if C implements I 
+            and the superclass of C does not implement I.)
+          </para>
+        </question>
+        <answer>
+          <para>
+      
           </para>
         </answer>
       </qandaentry>
@@ -3331,6 +3462,41 @@ vmparam -Xmx384m
           to evolve towards load-time or runtime weaving.  The other is that
           it makes it much easier to understand the semantics of advice on
           cflow pointcuts.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:newjoinpoints"
+            xreflabel="Q:Why can't AspectJ pick out local variables (or array elements or ...)?">
+          <para>Why can't AspectJ pick out local variables (or array elements or ...)?
+          </para>
+        </question>
+        <answer>
+          <para>Users have sometimes wanted AspectJ to pick out 
+          	many more join points, including
+          	<itemizedlist>
+          		<listitem><para>method-local field access</para></listitem>	
+          		<listitem><para>array-element access</para></listitem>
+          		<listitem><para>loop iteration</para></listitem>
+          		<listitem><para>method parameter evaluation</para></listitem>
+          	</itemizedlist>
+          	Most of these have turned out not to make sense,
+          	for a variety of reasons:
+          	<itemizedlist>
+          		<listitem><para>it is not a commonly-understood unit for Java programmers</para></listitem>
+          		<listitem><para>there are very few use-cases for advice on the join point</para></listitem>
+          		<listitem><para>a seemingly-insignificant change to the underlying program
+          			      causes a change in the join point</para></listitem>
+          		<listitem><para>pointcuts can't really distinguish the join point in question</para></listitem>	
+          		<listitem><para>the join point would differ too much for different 
+          			implementations of AspectJ, or would only be implementable
+          			in one way
+          			</para></listitem>
+          	</itemizedlist>
+          	We prefer to be very conservative in the join point model for the language,
+          	so a new join point would have to be useful, sensible, and implementable.
+          	The most promising of the new join points proposed are for exception
+          	throws clauses and for synchronized blocks.
           </para>
         </answer>
       </qandaentry>
@@ -3512,16 +3678,81 @@ vmparam -Xmx384m
         </question>
         <answer>
           <para>
-          There are currently no documents describing this process in any detail.  
-          Currently, the best way to understand this is to compile programs and 
-          then inspect the generated source or bytecode.  Many people have found 
-          this very effective for understanding the weaving model.  You also have 
-          access to the source code for a different perspective.  (See 
-          <xref linkend="Developers"/>).
-          We hope to write 
-          a couple of papers on the bytecode weaving model used in AspectJ-1.1 if 
-          we can ever find the free time.
-          </para> 
+          There are currently no documents describing this process in detail.  
+          You can compile programs and inspect the generated source or bytecode,
+          or view the source code (see <xref linkend="Developers"/>).
+          We hope to write papers on the bytecode weaving model used in 
+          AspectJ-1.1 if we can find the time.
+          Erik Hilsdale and Jim Hugunin did draft a paper for AOSD 2004,
+          now available on Jim's web site:
+          <ulink url="http://hugunin.net/papers.html">
+          	http://hugunin.net/papers.html</ulink>
+          Jim summarized advice weaving in the AspectJ 1.1 implementation in the
+          <ulink url="http://dev.eclipse.org/mhonarc/lists/aspectj-dev/msg00519.html">
+          	following mailing-list reply</ulink>:
+          </para>
+          <para>
+			Each piece of advice in an aspect is associated with a pointcut.  
+			This pointcut is stored in an attribute on the methods 
+			corresponding to each piece of advice.  
+			Before weaving, all of these pieces of advice are gathered 
+			into one large list.
+          </para>
+          <para>
+			Each .class file is woven independently.  
+			A .class file is woven by the following steps:
+			<itemizedlist>
+				<listitem><para>
+					Collect all of the joinpoint shadows in the .class file.  
+					For every dynamic joinpoint in the AspectJ language model, 
+					there is a corresponding static shadow of that joinpoint 
+					in the bytecode.  
+					For example, every method call joinpoint has an INVOKE 
+					bytecode as its static shadow.  Some joinpoints 
+					(such as initialization) have much more 
+					complicated static shadows.
+				</para></listitem>
+				<listitem><para>
+					Each piece of advice is matched to each static shadow.  
+					There are three results possible from this match.
+					<itemizedlist>
+						<listitem><para>
+							Never matches,
+							in which case nothing is done to the shadow
+						</para></listitem>
+						<listitem><para>
+							Always matches, 
+							in which case the advice is woven into this joinpoint shadow
+						</para></listitem>
+						<listitem><para>
+							Sometimes matches,
+							in which case the advice is woven into the shadow 
+							along with the minimal dynamic tests to determine 
+							if any particular joinpoint in the actual running 
+							program matches the advice. 
+							The simplest example of sometimes matches is 
+							when the pointcut uses if(test()).
+						</para></listitem>						
+					</itemizedlist>
+				</para></listitem>
+				<listitem><para>
+					If any advice matched any static shadows in the .class file, 
+					then the transformed .class file is written out, 
+					otherwise it is left unchanged.
+				</para></listitem>
+			</itemizedlist>
+		See <literal>BcelClassWeaver</literal> and 
+		<literal>BcelShadow</literal> in the
+		<literal>org.aspectj.weaver.bcel</literal> package
+		for the two primary classes involved in this process.
+
+		</para>
+		<para>
+			Note: This explanation ignores the implementations of inter-type 
+			declarations completely.  
+			It also ignores performance optimizations such as fast-match 
+			that speed up the weaving process.
+		</para>
         </answer>
       </qandaentry>
       <qandaentry>
@@ -3576,11 +3807,9 @@ vmparam -Xmx384m
     <qandadiv id="Developers" xreflabel="AspectJ Project Development">
       <title>AspectJ Project Development</title>
       <qandaentry>
-        <question id="q:contributions"
-            xreflabel="Q:I'm interested in the code implementing AspectJ.
-                How can I get involved with developing the AspectJ project?">
+        <question id="q:howitworks"
+            xreflabel="Q:I'm interested in the code implementing AspectJ.">
           <para>I'm interested in the code implementing AspectJ.
-                How can I get involved with developing the AspectJ project?
           </para>
         </question>
         <answer>
@@ -3589,8 +3818,9 @@ vmparam -Xmx384m
           and tools for writing AspectJ programs.
           </para>
           <para>For people who want to know how the AspectJ technology works,
-          the source code is the best resource.  
-		  There are no white papers or high-level design documents for AspectJ.
+          the source code is the best resource, until we write some 
+          proper white papers
+          (see <xref linkend="q:implementation"/>).
 		  To get and compile the Java source code for the AspectJ 
           distribution, see
                  <xref linkend="q:buildingsource"/>.
@@ -3600,6 +3830,15 @@ vmparam -Xmx384m
 		  might be an initial version of a new architecture (e.g., bytecode
 		  weaving).
 		  </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:contributions"
+            xreflabel="Q:How can I get involved with developing the AspectJ project?">
+          <para>How can I get involved with developing the AspectJ project?
+          </para>
+        </question>
+        <answer>
           <para>For those who want to contribute to the project,
           here's a general list of ways to do so, in no particular order:
           <itemizedlist>
@@ -3614,6 +3853,15 @@ vmparam -Xmx384m
                  Also, the time that experienced users take in answering emails
                  can directly translate to time developers can use (instead)
                  for fixing bugs or adding features.
+              </para>
+            </listitem>
+            <listitem>
+              <para>Write bugs.  Good bugs, especially with test cases, 
+              	are always appreciated.  We especially like proposals for
+              	new <literal>XLint</literal> messages, since they are
+              	sometimes easy to implement and help users learn
+              	AspectJ, and for other implementable features
+              	grounded in a compelling use-case.  
               </para>
             </listitem>
             <listitem>
@@ -3983,13 +4231,17 @@ vmparam -Xmx384m
         </question>
         <answer>
           <para>
-	It is generally most effective to do a google search of the form,
+			It is very effective to do a google search of the form,
             <ulink url="http://www.google.com/search?q=site:eclipse.org+cflowbelow">
               http://www.google.com/search?q=site:eclipse.org+cflowbelow
-            </ulink>
-    but this may not get results inside the mail archives.
-    Be sure to check the old archives available for download from
-    the AspectJ home page. <ulink url="http://eclipse.org/aspectj">
+            </ulink>,
+    		and you can use the eclipse.org search at
+            <ulink url="http://www.eclipse.org/search/search.cgi">
+              http://www.eclipse.org/search/search.cgi
+            </ulink>.
+		    You can also check the old archives available for download from
+    		the AspectJ home page
+    		<ulink url="http://eclipse.org/aspectj">
               http://eclipse.org/aspectj
             </ulink>.
           </para>
@@ -4190,6 +4442,17 @@ vmparam -Xmx384m
             <itemizedlist>
         <listitem><para><xref linkend="q:noaspectbound"/></para></listitem>
         <listitem><para><xref linkend="q:duplicateclass"/></para></listitem>
+        <listitem><para><xref linkend="q:advicenotrunning"/></para></listitem>
+        <listitem><para><xref linkend="q:exampleprograms"/></para></listitem>
+        <listitem><para><xref linkend="q:newjoinpoints"/></para></listitem>
+        <listitem><para><xref linkend="q:whitepapers"/></para></listitem>
+        <listitem><para><xref linkend="q:implementation"/></para></listitem>
+        <listitem><para><xref linkend="q:contributions"/></para></listitem>
+        <listitem><para><xref linkend="q:interfaceDeclarations"/></para></listitem>
+        <listitem><para><xref linkend="q:aspectjandj2me"/></para></listitem>
+        <listitem><para><xref linkend="q:adviceOnOveriddenMethods"/></para></listitem>
+        <listitem><para><xref linkend="q:tejpsp"/></para></listitem>
+        <listitem><para><xref linkend="q:searchingsite"/></para></listitem>
             </itemizedlist>
           </para>
         </answer>
