@@ -37,8 +37,7 @@ public class PartiallyExposedHierarchyTestCase extends AjcTestCase {
 	 */
 	public void testPartiallyExposedHierarchy () {
 		Message warning = new Message(11,"no interface constructor-execution join point");
-		//TODO This line number will change to 15 (from 5) when type mungers remember where they came from!
-		Message error   = new Message(5, "type sample.Base must be accessible for weaving interface inter type declaration from aspect sample.Trace");
+		Message error   = new Message(15, "type sample.Base must be accessible for weaving interface inter type declaration from aspect sample.Trace");
 		CompilationResult result = ajc(baseDir,
 				new String[]{"-classpath","fullBase.jar",
 							 "-injars","base.jar",
