@@ -21,7 +21,7 @@ import junit.framework.TestCase;
 
 public class AjdeTestCase extends TestCase {
 
-	private static final String TEST_DATA_PATH = "testdata";
+	private static final String TEST_DATA_PATH = AjdeTests.TESTDATA_PATH;
 	//private static final String TEST_DATA_PATH = "C:/Dev/aspectj/modules/ajde/testdata";
 
 	protected NullIdeManager ideManager = NullIdeManager.getIdeManager();

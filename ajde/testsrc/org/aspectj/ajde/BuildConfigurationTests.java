@@ -23,6 +23,8 @@ import org.aspectj.ajde.ui.UserPreferencesAdapter;
 import org.aspectj.ajde.ui.internal.AjcBuildOptions;
 import org.aspectj.ajde.ui.internal.UserPreferencesStore;
 import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
+import org.aspectj.bridge.*;
+import org.aspectj.bridge.MessageHandler;
 import org.aspectj.util.LangUtil;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
@@ -38,8 +40,9 @@ public class BuildConfigurationTests extends AjdeTestCase {
 	private AjcBuildOptions buildOptions = null;
 	private UserPreferencesAdapter preferencesAdapter = null;
 	private NullIdeProperties projectProperties = null;
+    private MessageHandler messageHandler;
 	private static final String configFile = 
-		"testdata/examples/figures-coverage/all.lst";
+		AjdeTests.TESTDATA_PATH + "/examples/figures-coverage/all.lst";
 	
 
 	public BuildConfigurationTests( String name ) {
@@ -60,7 +63,8 @@ public class BuildConfigurationTests extends AjdeTestCase {
 	// The tests...
 	public void testCharacterEncoding() {
 		buildOptions.setCharacterEncoding( "12345" );
-		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+		buildConfig = compilerAdapter.genBuildConfig( configFile );
+        assertTrue(configFile + " failed", null != buildConfig);			
 		Map options = buildConfig.getJavaOptions();
 		String encoding = (String) options.get( CompilerOptions.OPTION_Encoding );
 		assertEquals( "character encoding", "12345", encoding );
@@ -69,6 +73,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 	public void testComplianceLevel() {
 		buildOptions.setComplianceLevel( BuildOptionsAdapter.VERSION_14 );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		Map options = buildConfig.getJavaOptions();
 		String compliance = (String) options.get(CompilerOptions.OPTION_Compliance);
 		String sourceLevel = (String) options.get(CompilerOptions.OPTION_Source);		
@@ -80,6 +85,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		buildOptions.setComplianceLevel( BuildOptionsAdapter.VERSION_13);
 		buildOptions.setSourceCompatibilityLevel( BuildOptionsAdapter.VERSION_14);
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		Map options = buildConfig.getJavaOptions();
 		String compliance = (String) options.get(CompilerOptions.OPTION_Compliance);
 		String sourceLevel = (String) options.get(CompilerOptions.OPTION_Source);		
@@ -92,6 +98,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		buildOptions.setComplianceLevel( BuildOptionsAdapter.VERSION_14);
 		buildOptions.setSourceCompatibilityLevel( BuildOptionsAdapter.VERSION_13);
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		Map options = buildConfig.getJavaOptions();
 		String compliance = (String) options.get(CompilerOptions.OPTION_Compliance);
 		String sourceLevel = (String) options.get(CompilerOptions.OPTION_Source);		
@@ -103,6 +110,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 	public void testNullWarnings() {
 		buildOptions.setWarnings( null );	
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		Map options = buildConfig.getJavaOptions();
 		
 		// this should leave us with the default warnings
@@ -204,6 +212,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 
 		buildOptions.setWarnings( warnings );	
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		Map options = buildConfig.getJavaOptions();
 		
 		// this should leave us with all the user specifiable warnings
@@ -249,6 +258,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 	public void testNoDebugOptions() {
 		buildOptions.setDebugLevel( null );	
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		Map options = buildConfig.getJavaOptions();
 		
 		// this should leave us with the default debug settings
@@ -269,6 +279,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 	public void testEmptyDebugOptions() {
 		buildOptions.setDebugLevel( new HashSet() );	
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		Map options = buildConfig.getJavaOptions();
 		
 		// this should leave us with the debug on
@@ -291,6 +302,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		debugOpts.add( BuildOptionsAdapter.DEBUG_ALL );
 		buildOptions.setDebugLevel( debugOpts );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		Map options = buildConfig.getJavaOptions();
 		
 		// this should leave us with all debug on
@@ -315,6 +327,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		debugOpts.add( BuildOptionsAdapter.DEBUG_VARS );
 		buildOptions.setDebugLevel( debugOpts );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		Map options = buildConfig.getJavaOptions();
 		
 		// this should leave us with all debug on
@@ -335,6 +348,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 	public void testNoImport() {
 		buildOptions.setNoImportError( true );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		Map options = buildConfig.getJavaOptions();
 		String noImport = (String) options.get( CompilerOptions.OPTION_ReportInvalidImport );
 		assertEquals( "no import", CompilerOptions.WARNING, noImport );
@@ -344,6 +358,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 	public void testPreserveAllLocals() {
 		buildOptions.setPreserveAllLocals( true );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		Map options = buildConfig.getJavaOptions();
 		String preserve = (String) options.get( CompilerOptions.OPTION_PreserveUnusedLocal );
 		assertEquals( "preserve unused", CompilerOptions.PRESERVE, preserve );
@@ -352,6 +367,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 	public void testNonStandardOptions() {
 		buildOptions.setNonStandardOptions( "-XnoWeave" );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		assertTrue( "XnoWeave", buildConfig.isNoWeave() );
 		buildOptions.setNonStandardOptions( "-XserializableAspects" );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
@@ -376,6 +392,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		// and a few options thrown in at once
 		buildOptions.setNonStandardOptions( "-Xlint -XnoInline -XserializableAspects" );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		assertEquals( "Xlint", AjBuildConfig.AJLINT_DEFAULT, 
 		                       buildConfig.getLintMode());
 		assertTrue( "XnoInline", buildConfig.isXnoInline());
@@ -386,20 +403,23 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		Set roots = new HashSet();
 		projectProperties.setSourceRoots( roots );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		List configRoots = buildConfig.getSourceRoots();	
 		assertTrue( "no source dirs", configRoots.isEmpty() );
 		
-		File f = new File( "testdata/examples/figures/figures-coverage" );
+		File f = new File( AjdeTests.TESTDATA_PATH + "/examples/figures/figures-coverage" );
 		roots.add( f );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		List configRoots2 = buildConfig.getSourceRoots();	
 		assertTrue( "one source dir", configRoots2.size() == 1 );
 		assertTrue( "source dir", configRoots2.contains(f) );
 
 		
-		File f2 = new File( "testdata/examples/figures/figures-demo" );
+		File f2 = new File( AjdeTests.TESTDATA_PATH + "/examples/figures/figures-demo" );
 		roots.add( f2 );		
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		List configRoots3 = buildConfig.getSourceRoots();	
 		assertTrue( "two source dirs", configRoots3.size() == 2 );
 		assertTrue( "source dir 1", configRoots3.contains(f) );
@@ -410,12 +430,14 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		Set jars = new HashSet();
 		projectProperties.setInJars( jars );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		List inJars = buildConfig.getInJars();	
 		assertTrue( "no in jars", inJars.isEmpty() );
 		
 		File f = new File( "jarone.jar" );
 		jars.add( f );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		List inJars2 = buildConfig.getInJars();
 		assertTrue( "one in jar", inJars2.size() == 1 );
 		assertTrue( "in jar", inJars2.contains(f) );
@@ -434,12 +456,14 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		Set aspects = new HashSet();
 		projectProperties.setAspectPath( aspects );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );
+        assertTrue(configFile + " failed", null != buildConfig);            
 		List aPath = buildConfig.getAspectpath();	
 		assertTrue( "no aspect path", aPath.isEmpty() );
 		
 		File f = new File( "jarone.jar" );
 		aspects.add( f );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		List aPath2 = buildConfig.getAspectpath();	
 		assertEquals("aspectpath", 1, aPath2.size());
 		assertTrue( "1 aspectpath", aPath2.contains(f) );
@@ -448,6 +472,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		File f2 = new File( "jartwo.jar" );
 		aspects.add( f2 );		
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		List aPath3 = buildConfig.getAspectpath();	
 		assertTrue( "two jars in path", aPath3.size() == 2 );
 		assertTrue( "1 aspectpath", aPath3.contains(f) );
@@ -458,6 +483,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		String outJar = "mybuild.jar";
 		projectProperties.setOutJar( outJar );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
 		assertNotNull("output jar", buildConfig.getOutputJar());
         assertEquals( "out jar", outJar, buildConfig.getOutputJar().toString() );				
 	}
@@ -467,10 +493,23 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		buildOptions = new AjcBuildOptions(preferencesAdapter);
 		compilerAdapter = new CompilerAdapter();
 		projectProperties = new NullIdeProperties( "" );
+        messageHandler = new MessageHandler(true);
+        ErrorHandler handler = new ErrorHandler() {
+            public void handleWarning(String message) {
+                MessageUtil.warn(messageHandler, message);
+            }
+            public void handleError(String message) {
+                MessageUtil.error(messageHandler, message);
+            }
+            public void handleError(String message, Throwable t) {
+                IMessage m = new Message(message, IMessage.ERROR, t, null);
+                messageHandler.handleMessage(m);
+            }
+        };
         
         try {
             String s = null;
-            Ajde.init(
+            Ajde.init(            
                 null,
                 null,
                 null,
@@ -478,7 +517,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
                 buildOptions,
                 null,
                 null,
-                null);  
+                handler);  
         } catch (Throwable t) {
             String s = "Unable to initialize AJDE "
                 + LangUtil.renderException(t);
@@ -492,6 +531,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
         buildOptions = null;
         compilerAdapter = null;
         projectProperties = null;
+        messageHandler = null;
 	}
 
 	private void assertOptionEquals( String reason, Map options, String optionName, String value) {

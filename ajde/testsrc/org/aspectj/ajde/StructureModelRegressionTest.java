@@ -37,7 +37,7 @@ public class StructureModelRegressionTest extends AjdeTestCase {
 	}
 
 	public void test() {
-		String testLstFile = "testdata/StructureModelRegressionTest/example.lst";
+		String testLstFile = AjdeTests.TESTDATA_PATH + "/StructureModelRegressionTest/example.lst";
         File f = new File(testLstFile);
         assertTrue(testLstFile, f.canRead());
         // TODO: enable when model is verified.

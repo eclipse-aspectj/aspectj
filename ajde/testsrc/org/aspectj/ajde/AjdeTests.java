@@ -18,6 +18,7 @@ import junit.framework.*;
  
 public class AjdeTests extends TestCase {
 
+    public static String TESTDATA_PATH = "../ajde/testdata";
     public static Test suite() { 
         TestSuite suite = new TestSuite(AjdeTests.class.getName());
         //$JUnit-BEGIN$

@@ -51,7 +51,7 @@ public class CompilerMessagesTest extends AjdeTestCase {
 			// we can validate the ending.
 			fullyQualifiedFile = fullyQualifiedFile.replace('\\','/');  // ignore platform differences in slashes
 			assertTrue( "Fully-qualified source file location returned", 
-				fullyQualifiedFile.endsWith("testdata/examples/declare-warning/apackage/SomeClass.java"));
+				fullyQualifiedFile.endsWith("/examples/declare-warning/apackage/SomeClass.java"));
 		} catch (IOException ex) {
 			assertTrue( "Unable to convert source file location: " + task.getContainedMessage().getSourceLocation().getSourceFile(), false);
 		}
