@@ -18,6 +18,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.BetaException;
 import org.aspectj.weaver.ISourceContext;
@@ -118,6 +120,17 @@ public class ArgsPointcut extends NameBindingPointcut {
 				if (type.matchesInstanceof(shadow.getIWorld().resolve(argType)).alwaysTrue()) {
 					continue;
 				}
+			} else {
+			  BindingTypePattern btp = (BindingTypePattern)type;
+			  // Check if we have already bound something to this formal
+			  if (state.get(btp.getFormalIndex())!=null) {
+			  	ISourceLocation isl = getSourceLocation();
+				Message errorMessage = new Message(
+                    "Ambiguous binding of type "+type.getExactType().toString()+
+                    " using args(..) at this line.  Use one args(..) per matched join point,"+"" +                    " see secondary source location for location of extraneous args(..)",
+					shadow.getSourceLocation(),true,new ISourceLocation[]{getSourceLocation()});
+				shadow.getIWorld().getMessageHandler().handleMessage(errorMessage);
+			  }
 			}
 			ret = Test.makeAnd(ret,
 				exposeStateForVar(shadow.getArgVar(i), type, state,shadow.getIWorld()));
