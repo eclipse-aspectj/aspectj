@@ -14,10 +14,10 @@
 
 package org.aspectj.asm;
 
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
-import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.asm.internal.*;
 
 /**
  * @author Mik Kersten
@@ -31,13 +31,13 @@ public class StructureModelManager {
 	private boolean shouldSaveModel = true;
     protected StructureModel model = new StructureModel();
     private List structureListeners = new ArrayList();
-    private List associations = new ArrayList();
+
+	private IRelationshipMapper mapper;
+	private static final IRelationship ADVICE = new Relationship("advises", "advised by", IRelationship.Kind.ADVICE);
+	private static final IRelationship[] ALL = { ADVICE };
 
     protected StructureModelManager() {
-//        associations.add(new AdviceAssociation());
-//        associations.add(new IntroductionAssociation());
-//        associations.add(new InheritanceAssociation());
-//        associations.add(new ReferenceAssociation());
+		mapper = new RelationshipMapper(Arrays.asList(ALL));
     }
 
     public StructureModel getStructureModel() {
@@ -116,12 +116,8 @@ public class StructureModelManager {
 
     private void notifyListeners() {
         for (Iterator it = structureListeners.iterator(); it.hasNext(); ) {
-            ((IStructureModelListener)it.next()).modelUpdated(model);
+            ((IStructureModelListener)it.next()).containmentHierarchyUpdated(model);
         }
-    }
-
-    public List getAssociations() {
-        return associations;
     }
 
 	/**

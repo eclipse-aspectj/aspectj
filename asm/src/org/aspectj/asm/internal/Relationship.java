@@ -23,31 +23,29 @@ import org.aspectj.asm.IRelationship.Kind;
  */
 public class Relationship implements IRelationship {
 	
-	private String name = null;
-	private IProgramElement source = null;
-	private List/*IProgramElement*/ targets = null;
-	private Kind kind = null;
+	private String name;
+	private String reverseName;
+	private Kind kind;
 	
-	public Relationship(String name, IProgramElement source, List targets, Kind kind) {
+	public Relationship(String name, String reverseName, Kind kind) {
 		this.name = name;
-		this.source = source;
-		this.targets = targets;
+		this.reverseName = reverseName;
 		this.kind = kind;
-	}
+	}	
 	
 	public String getName() {
-		return null;
-	}
-	
-	public IProgramElement getSource() {
-		return null;
-	}
-
-	public List getTargets() {
 		return null;
 	}
 
 	public Kind getKind() {
 		return null;
 	}
+	
+	public String getReverseName() {
+		return reverseName;
+	}
+
+	public String toString() {
+		return name + '/' + reverseName;
+	}	
 }

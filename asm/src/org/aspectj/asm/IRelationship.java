@@ -24,26 +24,24 @@ public interface IRelationship extends Serializable {
 
 	public String getName();
 	
+	public String getReverseName();
+	
 	public Kind getKind();
-	
-	public IProgramElement getSource();
-	
-	public List/*IProgramElement*/ getTargets();
 	
 	/**
 	 * Uses "typesafe enum" pattern.
 	 */
 	public static class Kind implements Serializable {
 		
-		public static final Kind ADVICE = new Kind("static");
-		public static final Kind INHERITANCE = new Kind("final");
-		public static final Kind REFERENCE = new Kind("abstract");
-		public static final Kind DECLARE = new Kind("volatile");
-		public static final Kind[] ALL = { ADVICE, INHERITANCE, REFERENCE, DECLARE };
+		public static final Kind ADVICE = new Kind("advice");
+//		public static final Kind INHERITANCE = new Kind("inherits", "inherited by");
+//		public static final Kind REFERENCE = new Kind("reference");
+		public static final Kind DECLARE = new Kind("declare");
+		public static final Kind[] ALL = { ADVICE, DECLARE };
 		private final String name;
 		
 		private Kind(String name) {
-			this.name = name;
+			this.name = name; 
 		}
 		
 		public String toString() {

@@ -1,0 +1,31 @@
+/* *******************************************************************
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ * ******************************************************************/
+ 
+package org.aspectj.asm;
+
+import java.io.Serializable;
+import java.util.List;
+
+import org.aspectj.asm.IRelationship.Kind;
+
+/**
+ * @author Mik Kersten
+ */
+public interface IRelationshipMapper extends Serializable {
+
+//	public List getRelationshipsForElement(String source, IRelationship relationship);
+//	
+//	public void putRelationshipForElement(String source, IRelationship relationship, List targets);
+//
+//	public void putRelationshipForElement(String source, IRelationship kind, String target);
+ 
+	public List getRelationshipsForElement(IProgramElement source, IRelationship relationship);
+	
+	public void putRelationshipForElement(IProgramElement source, IRelationship relationship, List targets);
+
+	public void putRelationshipForElement(IProgramElement source, IRelationship kind, IProgramElement target);
+}

@@ -62,6 +62,7 @@ public interface IProgramElement extends Serializable {
 	public void setName(String name);
 	public void setChildren(List children);
 	public void setModifiers(int i);
+//	public String getSignatureKey();
 	
 	/**
 	 * Uses "typesafe enum" pattern.

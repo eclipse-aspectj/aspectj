@@ -20,20 +20,29 @@ import org.aspectj.asm.internal.*;
 import org.aspectj.bridge.*;
 
 public class AsmAdaptor {
-	public static void noteMunger(StructureModel model, Shadow shadow, ShadowMunger munger) {
+	
+	public static void nodeMunger(StructureModel model, Shadow shadow, ShadowMunger munger) {
 		if (munger instanceof Advice) {
 			Advice a = (Advice)munger;
-			if (a.getKind().isPerEntry() || a.getKind().isCflow()) {
+//			if (a.getKind().isPerEntry() || a.getKind().isCflow()) {
 				// ??? might want to show these in the future
-				return;
-			}
+//				return;
+//			}
 
 //			System.out.println("--------------------------");
 			IProgramElement targetNode = getNode(model, shadow);
 			IProgramElement adviceNode = getNode(model, a);  
 			
+			if (adviceNode != null && targetNode != null) {
+//				mapper.putRelationshipForElement(
+//					adviceNode, 
+//					ADVICE, 
+//					targetNode);
+			}
+				
+//			System.out.println("> target: " + targetNode + ", advice: " + adviceNode);
 //			throw new RuntimeException("unimplemented");
-			IRelationship relation = null;
+//			IRelationship relation = new Relationship();
 //			if (shadow.getKind().equals(Shadow.FieldGet) || shadow.getKind().equals(Shadow.FieldSet)) {
 //				relation = AdviceAssociation.FIELD_ACCESS_RELATION;
 //			} else if (shadow.getKind().equals(Shadow.Initialization) || shadow.getKind().equals(Shadow.StaticInitialization)) {
@@ -55,9 +64,7 @@ public class AsmAdaptor {
 //				System.err.println("> unmatched relation: " + shadow.getKind());
 //				relation = AdviceAssociation.METHOD_RELATION;
 //			}
-//			
-//			System.out.println("> target: " + targetNode + ", advice: " + adviceNode);
-			createAppropriateLinks(targetNode, adviceNode, relation);
+//			createAppropriateLinks(targetNode, adviceNode, relation);
 		}
 	}
 
@@ -189,8 +196,4 @@ public class AsmAdaptor {
 	 	// if we can't find the member, we'll just put it in the class
 		return classNode;
 	}
-
-
-
-
 }

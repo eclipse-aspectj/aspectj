@@ -2,7 +2,6 @@
 import java.io.*;
 
 class Point { 
-
 	int x;
 	static int sx;
 
@@ -36,7 +35,10 @@ class SubPoint extends Point { }
 
 class Line { }
 
-aspect AdvisesRelationCoverage {
+aspect AdvisesRelationshipCoverage {
+	pointcut executionP(): execution(void Point.setX(int));
+	before(): executionP() { }
+	
     before(): execution(*..*.new(..)) { }
     before(): get(int *.*) { }
     before(): set(int *.*) { }

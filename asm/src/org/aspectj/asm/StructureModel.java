@@ -27,7 +27,9 @@ public class StructureModel implements Serializable {
 	
     protected  IProgramElement root = null;
     protected String configFile = null;
+
     private Map fileMap = null;
+    
     public static final IProgramElement NO_STRUCTURE = new ProgramElement("<build to view structure>", IProgramElement.Kind.ERROR, null);
 
     public IProgramElement getRoot() {
@@ -83,6 +85,10 @@ public class StructureModel implements Serializable {
 		}
 		return null;
 	}
+
+	public IProgramElement findNodeForSignatureKey(String signatureKey) {
+		return null;	
+	}	
 
 	/**
 	 * @param packageName	if null default package is searched

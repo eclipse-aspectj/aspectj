@@ -47,7 +47,7 @@ public class BrowserManager {
     private static TopFrame topFrame = null;
     
 	public final IStructureModelListener VIEW_LISTENER = new IStructureModelListener() {
-		public void modelUpdated(StructureModel model) {        	
+		public void containmentHierarchyUpdated(StructureModel model) {        	
 			FileStructureView fsv = Ajde.getDefault().getStructureViewManager().getDefaultFileView();
 			if (fsv != null) {
 				fsv.setSourceFile(BrowserManager.getDefault().getEditorManager().getCurrFile());

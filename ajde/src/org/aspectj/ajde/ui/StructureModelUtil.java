@@ -55,34 +55,34 @@ public class StructureModelUtil {
 				for (Iterator it3 = relations.iterator(); it3.hasNext();) {
 					IRelationship relationNode = (IRelationship) it3.next();
 
-					if (relationNode.getKind().equals("Advice")) {
-						List children = relationNode.getTargets();
-
-						List aspects = new Vector();
-
-						for (Iterator it4 = children.iterator();
-							it4.hasNext();
-							) {
-							Object object = it4.next();
-
-//							if (object instanceof LinkNode) {
-//								IProgramElement pNode =
-//									((LinkNode) object).getProgramElementNode();
+//					if (relationNode.getKind().equals("Advice")) {
+//						List children = relationNode.getTargets();
 //
-//								if (pNode.getProgramElementKind()
-//									== IProgramElement.Kind.ADVICE) {
+//						List aspects = new Vector();
 //
-//									IProgramElement theAspect = pNode.getParent();
+//						for (Iterator it4 = children.iterator();
+//							it4.hasNext();
+//							) {
+//							Object object = it4.next();
 //
-//									aspects.add(theAspect);
-//
-//								}
-//							}
-						}
-						if (!aspects.isEmpty()) {
-							aspectMap.put(key, aspects);
-						}
-					}
+////							if (object instanceof LinkNode) {
+////								IProgramElement pNode =
+////									((LinkNode) object).getProgramElementNode();
+////
+////								if (pNode.getProgramElementKind()
+////									== IProgramElement.Kind.ADVICE) {
+////
+////									IProgramElement theAspect = pNode.getParent();
+////
+////									aspects.add(theAspect);
+////
+////								}
+////							}
+//						}
+//						if (!aspects.isEmpty()) {
+//							aspectMap.put(key, aspects);
+//						}
+//					}
 
 				}
 			}

@@ -36,7 +36,7 @@ public class StructureViewManager {
     private static final List AVAILABLE_RELATIONS;
 	
     public final IStructureModelListener VIEW_LISTENER = new IStructureModelListener() {
-        public void modelUpdated(StructureModel model) {        	
+        public void containmentHierarchyUpdated(StructureModel model) {        	
         	Ajde.getDefault().logEvent("updating structure views: " + structureViews);
 //        	
 //        	if (defaultFileView != null) {
@@ -218,9 +218,9 @@ public class StructureViewManager {
 	static {
 		AVAILABLE_RELATIONS = new ArrayList();
         AVAILABLE_RELATIONS.add(IRelationship.Kind.ADVICE);
-        AVAILABLE_RELATIONS.add(IRelationship.Kind.INHERITANCE);
-        AVAILABLE_RELATIONS.add(IRelationship.Kind.DECLARE);
-        AVAILABLE_RELATIONS.add(IRelationship.Kind.REFERENCE);
+		AVAILABLE_RELATIONS.add(IRelationship.Kind.DECLARE);
+//        AVAILABLE_RELATIONS.add(IRelationship.Kind.INHERITANCE);
+//        AVAILABLE_RELATIONS.add(IRelationship.Kind.REFERENCE);
         
         DEFAULT_VIEW_PROPERTIES = new StructureViewProperties();
         DEFAULT_VIEW_PROPERTIES.setRelations(AVAILABLE_RELATIONS);

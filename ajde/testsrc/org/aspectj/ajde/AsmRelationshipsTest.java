@@ -28,11 +28,23 @@ public class AsmRelationshipsTest extends AjdeTestCase {
 		super(name);
 	}
 
-	public void testPointcuts() {
+	public void testExecution() {
 		IProgramElement node = (IProgramElement)model.getRoot();
 		assertNotNull(node);
-		  
-		System.err.println("> root: " + node);
+	
+		IProgramElement aspect = StructureModelManager.getDefault().getStructureModel().findNodeForClass(null, "AdvisesRelationshipCoverage");
+		assertNotNull(aspect);		
+
+		String beforeExec = "before(): executionP..";
+		IProgramElement beforeExecNode = model.findNode(aspect, IProgramElement.Kind.ADVICE, beforeExec);
+		assertNotNull(beforeExecNode);
+		
+		
+		
+//		System.err.println("> root: " + node);
+	
+				
+//		assertEquals(ptctNode.getName(), ptct);	
 		
 //	
 //		IProgramElement aspect = StructureModelManager.getDefault().getStructureModel().findNodeForClass(null, "AdviceNamingCoverage");
@@ -40,10 +52,7 @@ public class AsmRelationshipsTest extends AjdeTestCase {
 	
 //		fail();
 		
-//		String ptct = "named()";
-//		IProgramElement ptctNode = model.findNode(aspect, IProgramElement.Kind.POINTCUT, ptct);
-//		assertNotNull(ptctNode);		
-//		assertEquals(ptctNode.getName(), ptct);		
+	
 //
 //		String params = "namedWithArgs(int, int)";
 //		IProgramElement paramsNode = model.findNode(aspect, IProgramElement.Kind.POINTCUT, params);

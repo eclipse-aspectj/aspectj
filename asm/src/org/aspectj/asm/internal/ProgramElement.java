@@ -358,12 +358,16 @@ public class ProgramElement implements IProgramElement {
 		walker.process(this);
 		return buffer.toString();
 	}
-	/**
-	 *
-	 */
-
+	
 	public void setModifiers(int i) {
 		this.modifiers = genModifiers(i);
+	}
+
+	public String getSignatureKey() {
+		return packageName + '/' 
+			+ name + ':' 
+			+ sourceLocation.getLine() + ':' 
+			+ sourceLocation.getColumn();
 	}
 
 }

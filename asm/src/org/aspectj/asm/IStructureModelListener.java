@@ -23,5 +23,5 @@ import java.util.EventListener;
  */
 public interface IStructureModelListener extends EventListener {
 
-    public void modelUpdated(StructureModel rootNode);
+    public void containmentHierarchyUpdated(StructureModel rootNode);
 }

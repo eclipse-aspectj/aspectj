@@ -63,8 +63,8 @@ public abstract class AbstractIconRegistry {
 			return RELATION_ADVICE_FORWARD;
 		} else if (relationship == IRelationship.Kind.DECLARE) {
 			return RELATION_ADVICE_FORWARD;
-		} else if (relationship == IRelationship.Kind.INHERITANCE) {
-			return RELATION_INHERITANCE_FORWARD;
+//		} else if (relationship == IRelationship.Kind.INHERITANCE) {
+//			return RELATION_INHERITANCE_FORWARD;
 		} else {
 			return RELATION_REFERENCE_FORWARD;
 		}
