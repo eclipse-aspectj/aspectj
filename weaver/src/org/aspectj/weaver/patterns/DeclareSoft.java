@@ -15,7 +15,10 @@ package org.aspectj.weaver.patterns;
 
 import java.io.*;
 
+import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
 
 public class DeclareSoft extends Declare {
 	private TypePattern exception;
@@ -78,6 +81,17 @@ public class DeclareSoft extends Declare {
 
     public void resolve(IScope scope) {
     	exception = exception.resolveBindings(scope, null, false, true);
+    	TypeX excType = exception.getExactType();
+    	if (excType != ResolvedTypeX.MISSING) {
+    		if (!scope.getWorld().resolve(TypeX.THROWABLE).isAssignableFrom(excType)) {
+    			scope.getWorld().showMessage(IMessage.ERROR,
+    					excType.getName() + " is not a subtype of Throwable",
+    					exception.getSourceLocation(), null);
+    			pointcut = Pointcut.makeMatchesNothing(Pointcut.RESOLVED);
+    			return;
+    		}
+    	}
+    	
     	pointcut = pointcut.resolve(scope); 	
     }
     
