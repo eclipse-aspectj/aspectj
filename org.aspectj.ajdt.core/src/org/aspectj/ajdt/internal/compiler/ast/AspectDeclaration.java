@@ -288,10 +288,38 @@ public class AspectDeclaration extends TypeDeclaration {
 	}
 	
 	private void generateMethod(ClassFile classFile, MethodBinding methodBinding, BodyGenerator gen) {
+		generateMethod(classFile,methodBinding,null,gen);
+	}
+	
+	protected List makeEffectiveSignatureAttribute(ResolvedMember sig,Shadow.Kind kind,boolean weaveBody) {
+		List l = new ArrayList(1);
+		l.add(new EclipseAttributeAdapter(
+				new AjAttribute.EffectiveSignatureAttribute(sig, kind, weaveBody)));
+		return l;
+	}
+	
+	/*
+	 * additionalAttributes allows us to pass some optional attributes we want to attach to the method we generate.
+	 * Currently this is used for inline accessor methods that have been generated to allow private field references or
+	 * private method calls to be inlined (PR71377).  In these cases the optional attribute is an effective signature
+	 * attribute which means calls to these methods are able to masquerade as any join point (a field set, field get or
+	 * method call).  The effective signature attribute is 'unwrapped' in BcelClassWeaver.matchInvokeInstruction()
+	 */
+	private void generateMethod(ClassFile classFile, MethodBinding methodBinding, List additionalAttributes/*ResolvedMember realMember*/, BodyGenerator gen) {
 //		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		classFile.generateMethodInfoHeader(methodBinding);
 		int methodAttributeOffset = classFile.contentsOffset;
-		int attributeNumber = classFile.generateMethodInfoAttribute(methodBinding, AstUtil.getAjSyntheticAttribute());
+		
+		int attributeNumber;
+		if (additionalAttributes!=null) { // mini optimization
+			List attrs = new ArrayList();
+			attrs.addAll(AstUtil.getAjSyntheticAttribute());
+			attrs.addAll(additionalAttributes);
+			attributeNumber = classFile.generateMethodInfoAttribute(methodBinding, attrs);
+		} else {
+			attributeNumber = classFile.generateMethodInfoAttribute(methodBinding, AstUtil.getAjSyntheticAttribute());
+		}
+
 		int codeAttributeOffset = classFile.contentsOffset;
 		classFile.generateCodeAttributeHeader();
 		CodeStream codeStream = classFile.codeStream;
@@ -644,9 +672,11 @@ public class AspectDeclaration extends TypeDeclaration {
 	}
 	
 	private void generateInlineAccessors(ClassFile classFile, final InlineAccessFieldBinding accessField, final ResolvedMember field) {
-		final FieldBinding fieldBinding = factory.makeFieldBinding(field);
-		generateMethod(classFile, accessField.reader, 
-		new BodyGenerator() {
+		final FieldBinding fieldBinding = factory.makeFieldBinding(field);			
+			
+		generateMethod(classFile, accessField.reader,
+		  makeEffectiveSignatureAttribute(field,Shadow.FieldGet,false),
+		  new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here
 				if (field.isStatic()) {
@@ -661,7 +691,8 @@ public class AspectDeclaration extends TypeDeclaration {
 			}});
 			
 		generateMethod(classFile, accessField.writer, 
-		new BodyGenerator() {
+		  makeEffectiveSignatureAttribute(field,Shadow.FieldSet,false),
+		  new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here
 				if (field.isStatic()) {
@@ -681,8 +712,9 @@ public class AspectDeclaration extends TypeDeclaration {
 	
 
 	private void generateInlineAccessMethod(ClassFile classFile, final MethodBinding accessMethod, final ResolvedMember method) {
-		generateMethod(classFile, accessMethod, 
-		new BodyGenerator() {
+		generateMethod(classFile, accessMethod,
+		  makeEffectiveSignatureAttribute(method, Shadow.MethodCall, false),
+		  new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here
 				

@@ -645,7 +645,22 @@ public final class LazyClassGen {
     	if (ret != null) return ret;
     	
 		int modifiers = Modifier.STATIC | Modifier.FINAL;
-		if (getType().isInterface()) {
+		
+		// XXX - Do we ever inline before or after advice? If we do, then we
+		// better include them in the check below. (or just change it to
+		// shadow.getEnclosingMethod().getCanInline())
+		
+		// If the enclosing method is around advice, we could inline the join point
+		// that has led to this shadow.  If we do that then the TJP we are creating
+		// here must be PUBLIC so it is visible to the type in which the 
+		// advice is inlined. (PR71377)
+		LazyMethodGen encMethod = shadow.getEnclosingMethod();
+		boolean shadowIsInAroundAdvice = false;
+		if (encMethod!=null && encMethod.getName().startsWith(NameMangler.PREFIX+"around")) {
+			shadowIsInAroundAdvice = true;
+		}
+		
+		if (getType().isInterface() || shadowIsInAroundAdvice) {
 			modifiers |= Modifier.PUBLIC;
 		}
 		else {

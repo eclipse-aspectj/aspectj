@@ -2,7 +2,7 @@
 
 
    	<ajc-test dir="bugs"
-		pr="62073" title="false ambigous binding error (introduced in 1.2rc2)">
+		pr="62073" title="false ambiguous binding error (introduced in 1.2rc2)">
         <compile files="DisjunctVarBinding_2.java,DisjunctVarBinding_3.java">
         	<message kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type B"/>
         	<message kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type A"/>
@@ -138,3 +138,20 @@
       <run class="NoByteToInt"/>
     </ajc-test>
     
+    <ajc-test dir="bugs/AroundAdviceJPs" pr="71377"
+    	title="Cannot advise private method call in around advice">
+    	<compile files="JoinPointInAroundAdvice.java"/>
+    	<run class="JoinPointInAroundAdvice"/>
+   	</ajc-test>
+    
+   <ajc-test dir="bugs/AroundAdviceJPs" pr="71377"
+    	title="Cannot advise private field sets in around advice">
+    	<compile files="FieldJoinPointsInAroundAdvice.java"/>
+    	<run class="FieldJoinPointsInAroundAdvice"/>
+   	</ajc-test>
+   	
+   	<ajc-test dir="bugs/AroundAdviceJPs" pr="71377"
+    	title="Cannot advise private field gets in around advice">
+    	<compile files="FieldGetJoinPointsInAroundAdvice.java"/>
+    	<run class="FieldGetJoinPointsInAroundAdvice"/>
+   	</ajc-test>

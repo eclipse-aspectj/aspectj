@@ -25,7 +25,7 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 
   public void test001(){
-    runTest("false ambigous binding error (introduced in 1.2rc2)");
+    runTest("false ambiguous binding error (introduced in 1.2rc2)");
   }
 
   public void test002(){
@@ -98,6 +98,21 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   	assertTrue("Expected to find [s1] in this output but didn't:"+output,output.indexOf("[s1]")!=-1);
   	assertTrue("Expected to find [s32767] in this output but didn't:"+output,output.indexOf("[s32767]")!=-1);
   	assertTrue("Expected to find [b0] in this output but didn't:"+output,output.indexOf("[b0]")!=-1);
+  }
+  
+  public void test017_PrivateMethodCallsInAroundAdvice() {
+    runTest("Cannot advise private method call in around advice");
+    System.err.println(getLastRunResult().getStdErr());
+  }
+  
+  public void test018_PrivateFieldSetsInAroundAdvice() {
+    runTest("Cannot advise private field sets in around advice");
+    System.err.println(getLastRunResult().getStdErr());
+  }
+  
+  public void test019_PrivateFieldGetsInAroundAdvice() {
+    runTest("Cannot advise private field gets in around advice");
+    System.err.println(getLastRunResult().getStdErr());
   }
 }
 
