@@ -51,6 +51,8 @@ public class PatternParser {
 				return parsePerCflow(false);
 			} else if (name.equals("percflowbelow")) {
 				return parsePerCflow(true);
+			} else if (name.equals("pertypewithin")) { // PTWIMPL Parse the pertypewithin clause
+				return parsePerTypeWithin();
 			} else {
 				return null;
 			}
@@ -73,6 +75,14 @@ public class PatternParser {
 		Pointcut entry = parsePointcut();
 		eat(")");
 		return new PerObject(entry, isThis);
+	}
+	
+	private PerClause parsePerTypeWithin() {
+		parseIdentifier();
+		eat("(");
+		TypePattern withinTypePattern = parseTypePattern();
+		eat(")");
+		return new PerTypeWithin(withinTypePattern);
 	}
 
 

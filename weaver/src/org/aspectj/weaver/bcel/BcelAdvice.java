@@ -160,6 +160,9 @@ public class BcelAdvice extends Advice {
         	 shadow.weavePerObjectEntry(this, (BcelVar)shadow.getTargetVar());
         } else if (getKind() == AdviceKind.Softener) {
         	 shadow.weaveSoftener(this, ((ExactTypePattern)exceptionType).getType());
+        } else if (getKind() == AdviceKind.PerTypeWithinEntry) {
+             // PTWIMPL Entry to ptw is the static initialization of a type that matched the ptw type pattern
+       	     shadow.weavePerTypeWithinAspectInitialization(this,shadow.getEnclosingType());
         } else {
             throw new BCException("unimplemented kind: " + getKind());
         }

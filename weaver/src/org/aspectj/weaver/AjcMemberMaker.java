@@ -68,6 +68,15 @@ public class AjcMemberMaker {
 				"<init>",
 		"()V");
 	}
+	
+	public static Member noAspectBoundExceptionInit2() {
+		return new ResolvedMember(
+				Member.METHOD,
+				NO_ASPECT_BOUND_EXCEPTION,
+				Modifier.PUBLIC,
+				"<init>",
+		"(Ljava/lang/String;Ljava/lang/Throwable;)V");
+	}
 
 	public static Member noAspectBoundExceptionInitWithCause() {
 		return new ResolvedMember(
@@ -129,6 +138,27 @@ public class AjcMemberMaker {
 			NameMangler.perObjectInterfaceField(aspectType),
 			TypeX.NONE);
 	}
+	
+	// PTWIMPL ResolvedMember for aspect instance field, declared in matched type
+	public static ResolvedMember perTypeWithinField(TypeX declaringType, ResolvedTypeX aspectType) {
+		int modifiers = Modifier.PRIVATE | Modifier.STATIC;
+		if (!TypeX.SERIALIZABLE.isAssignableFrom(aspectType, aspectType.getWorld())) {
+			modifiers |= Modifier.TRANSIENT;
+		}
+		return new ResolvedMember(Member.FIELD, declaringType, modifiers,
+			aspectType,	NameMangler.perTypeWithinFieldForTarget(aspectType), TypeX.NONE);
+	}
+	
+	// PTWIMPL ResolvedMember for type instance field, declared in aspect 
+	// (holds typename for which aspect instance exists)
+	public static ResolvedMember perTypeWithinWithinTypeField(TypeX declaringType, ResolvedTypeX aspectType) {
+		int modifiers = Modifier.PRIVATE;
+		if (!TypeX.SERIALIZABLE.isAssignableFrom(aspectType, aspectType.getWorld())) {
+			modifiers |= Modifier.TRANSIENT;
+		}
+		return new ResolvedMember(Member.FIELD, declaringType, modifiers,
+			TypeX.forSignature("Ljava/lang/String;"), NameMangler.PERTYPEWITHIN_WITHINTYPEFIELD, TypeX.NONE);
+	}
 
 	
 	public static ResolvedMember perObjectBind(TypeX declaringType) {
@@ -138,6 +168,34 @@ public class AjcMemberMaker {
 			PUBLIC_STATIC,
 			NameMangler.PEROBJECT_BIND_METHOD,
 			"(Ljava/lang/Object;)V");
+	}
+	
+	// PTWIMPL ResolvedMember for getInstance() method, declared in aspect
+	public static ResolvedMember perTypeWithinGetInstance(TypeX declaringType) {
+//		private static a.X ajc$getInstance(java.lang.Class) throws java/lang/Exception
+		ResolvedMember rm = new ResolvedMember(
+			Member.METHOD, 
+			declaringType,
+			PRIVATE_STATIC,
+			declaringType, // return value
+			NameMangler.PERTYPEWITHIN_GETINSTANCE_METHOD,
+			new TypeX[]{TypeX.JAVA_LANG_CLASS},
+			new TypeX[]{TypeX.JAVA_LANG_EXCEPTION}
+			);	
+		return rm;
+	}
+	
+	public static ResolvedMember perTypeWithinCreateAspectInstance(TypeX declaringType) {
+		// public static a.X ajc$createAspectInstance(java.lang.String)
+		ResolvedMember rm = new ResolvedMember(
+				Member.METHOD, 
+				declaringType,
+				PUBLIC_STATIC,
+				declaringType, // return value
+				NameMangler.PERTYPEWITHIN_CREATEASPECTINSTANCE_METHOD,
+				new TypeX[]{TypeX.forSignature("Ljava/lang/String;")},new TypeX[]{}
+				);	
+			return rm;
 	}
 
 
@@ -163,8 +221,16 @@ public class AjcMemberMaker {
 			"(" + aspectType.getSignature() + ")V");
 	}
 	
-	
-	
+	// PTWIMPL ResolvedMember for localAspectOf() method, declared in matched type
+	public static ResolvedMember perTypeWithinLocalAspectOf(TypeX shadowType,TypeX aspectType) {
+		return new ResolvedMember(
+			Member.METHOD, 
+			shadowType,//perTypeWithinInterfaceType(aspectType),
+			Modifier.PUBLIC | Modifier.STATIC,
+			NameMangler.perTypeWithinLocalAspectOf(aspectType),
+			"()" + aspectType.getSignature());
+	}
+
 	
 	public static ResolvedMember perSingletonAspectOfMethod(TypeX declaringType) {
 		return new ResolvedMember(Member.METHOD,
@@ -196,6 +262,20 @@ public class AjcMemberMaker {
 		return new ResolvedMember(Member.METHOD,
 			declaringType, PUBLIC_STATIC, "hasAspect", 
 			"(Ljava/lang/Object;)Z");		
+	};
+	
+	// PTWIMPL ResolvedMember for aspectOf(), declared in aspect
+	public static ResolvedMember perTypeWithinAspectOfMethod(TypeX declaringType) {
+		return new ResolvedMember(Member.METHOD,
+				declaringType, PUBLIC_STATIC, "aspectOf", 
+				"(Ljava/lang/Class;)" + declaringType.getSignature());		
+	}
+	
+	// PTWIMPL ResolvedMember for hasAspect(), declared in aspect
+	public static ResolvedMember perTypeWithinHasAspectMethod(TypeX declaringType) {
+		return new ResolvedMember(Member.METHOD,
+			declaringType, PUBLIC_STATIC, "hasAspect", 
+			"(Ljava/lang/Class;)Z");		
 	};
 	
 	// -- privileged accessors

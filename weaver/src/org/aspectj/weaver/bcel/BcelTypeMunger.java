@@ -42,6 +42,7 @@ import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.NewParentTypeMunger;
 import org.aspectj.weaver.PerObjectInterfaceTypeMunger;
+//import org.aspectj.weaver.PerTypeWithinTargetTypeMunger;
 import org.aspectj.weaver.PrivilegedAccessMunger;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeMunger;
@@ -73,6 +74,10 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			changed = mungeNewMethod(weaver, (NewMethodTypeMunger)munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.PerObjectInterface) {
 			changed = mungePerObjectInterface(weaver, (PerObjectInterfaceTypeMunger)munger);
+			worthReporting = false;
+		} else if (munger.getKind() == ResolvedTypeMunger.PerTypeWithinInterface) {
+			// PTWIMPL Transform the target type (add the aspect instance field)
+			changed = mungePerTypeWithinTransformer(weaver);
 			worthReporting = false;
 		} else if (munger.getKind() == ResolvedTypeMunger.PrivilegedAccess) {
 			changed = mungePrivilegedAccess(weaver, (PrivilegedAccessMunger)munger);
@@ -646,7 +651,42 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			return false;
 		}
 	}
+	
+	// PTWIMPL Add field to hold aspect instance and an accessor
+	private boolean mungePerTypeWithinTransformer(BcelClassWeaver weaver) {
+		LazyClassGen gen = weaver.getLazyClassGen();
+			
+		// if (couldMatch(gen.getBcelObjectType(), munger.getTestPointcut())) {
+			
+			// Add (to the target type) the field that will hold the aspect instance
+			// e.g ajc$com_blah_SecurityAspect$ptwAspectInstance
+			FieldGen fg = makeFieldGen(gen, AjcMemberMaker.perTypeWithinField(gen.getType(), aspectType));
+		    gen.addField(fg.getField(),getSourceLocation());
+		    	
+		    // Add an accessor for this new field, the ajc$<aspectname>$localAspectOf() method
+		    // e.g. "public com_blah_SecurityAspect ajc$com_blah_SecurityAspect$localAspectOf()"
+		    Type fieldType = BcelWorld.makeBcelType(aspectType);
+			LazyMethodGen mg = new LazyMethodGen(
+					Modifier.PUBLIC | Modifier.STATIC,fieldType,
+	    			NameMangler.perTypeWithinLocalAspectOf(aspectType),
+					new Type[0], new String[0],gen);
+			InstructionList il = new InstructionList();
+			//PTWIMPL ?? Should check if it is null and throw NoAspectBoundException
+			InstructionFactory fact = gen.getFactory();
+			il.append(fact.createFieldAccess(
+				gen.getClassName(), 
+				fg.getName(),
+				fieldType, Constants.GETSTATIC));
+			il.append(InstructionFactory.createReturn(fieldType));
+			mg.getBody().insert(il);		
+			gen.addMethodGen(mg);
+			return true;
+//		} else {
+//			return false;
+//		}
+	}
 
+	// ??? Why do we have this method? I thought by now we would know if it matched or not
 	private boolean couldMatch(
 		BcelObjectType bcelObjectType,
 		Pointcut pointcut) {

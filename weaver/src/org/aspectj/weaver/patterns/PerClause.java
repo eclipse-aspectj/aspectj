@@ -18,6 +18,7 @@ import java.io.IOException;
 import org.aspectj.util.TypeSafeEnum;
 import org.aspectj.weaver.*;
 
+// PTWIMPL New kind added to this class, can be (de)serialized
 public abstract class PerClause extends Pointcut {
 	protected ResolvedTypeX inAspect;
 
@@ -27,6 +28,7 @@ public abstract class PerClause extends Pointcut {
 		else if (kind == PERCFLOW) return PerCflow.readPerClause(s, context);
 		else if (kind == PEROBJECT) return PerObject.readPerClause(s, context);
 		else if (kind == FROMSUPER) return PerFromSuper.readPerClause(s, context);
+		else if (kind == PERTYPEWITHIN) return PerTypeWithin.readPerClause(s,context);
 			
 		throw new BCException("unknown kind: " + kind);
 	}
@@ -49,6 +51,7 @@ public abstract class PerClause extends Pointcut {
                 case 2: return PERCFLOW;
                 case 3: return PEROBJECT;
                 case 4: return FROMSUPER;
+                case 5: return PERTYPEWITHIN;
             }
             throw new BCException("weird kind " + key);
         }
@@ -62,4 +65,5 @@ public abstract class PerClause extends Pointcut {
 	public static final Kind PERCFLOW  = new Kind("percflow", 2);
 	public static final Kind PEROBJECT  = new Kind("perobject", 3);
 	public static final Kind FROMSUPER  = new Kind("fromsuper", 4);
+	public static final Kind PERTYPEWITHIN = new Kind("pertypewithin",5);
 }

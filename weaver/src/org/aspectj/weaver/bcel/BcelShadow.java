@@ -43,6 +43,7 @@ import org.aspectj.apache.bcel.generic.LoadInstruction;
 import org.aspectj.apache.bcel.generic.MULTIANEWARRAY;
 import org.aspectj.apache.bcel.generic.NEW;
 import org.aspectj.apache.bcel.generic.ObjectType;
+import org.aspectj.apache.bcel.generic.PUSH;
 import org.aspectj.apache.bcel.generic.ReturnInstruction;
 import org.aspectj.apache.bcel.generic.SWAP;
 import org.aspectj.apache.bcel.generic.StoreInstruction;
@@ -1506,6 +1507,32 @@ public class BcelShadow extends Shadow {
 								entrySuccessInstructions.getStart());
 					
 		entryInstructions.append(testInstructions);
+		entryInstructions.append(entrySuccessInstructions);
+		
+		range.insert(entryInstructions, Range.InsideBefore);
+	}
+	
+	// PTWIMPL Create static initializer to call the aspect factory 
+	/**
+	 * Causes the aspect instance to be *set* for later retrievable through localAspectof()/aspectOf()
+	 */
+	public void weavePerTypeWithinAspectInitialization(final BcelAdvice munger,TypeX t) {
+        final InstructionFactory fact = getFactory();        
+
+		InstructionList entryInstructions = new InstructionList();
+		InstructionList entrySuccessInstructions = new InstructionList();
+		
+		BcelObjectType aspectType = BcelWorld.getBcelObjectType(munger.getConcreteAspect());
+		String aspectname = munger.getConcreteAspect().getName();
+		
+		String ptwField = NameMangler.perTypeWithinFieldForTarget(munger.getConcreteAspect());
+		entrySuccessInstructions.append(new PUSH(fact.getConstantPool(),t.getName()));
+		
+		entrySuccessInstructions.append(fact.createInvoke(aspectname,"ajc$createAspectInstance",new ObjectType(aspectname),
+				new Type[]{new ObjectType("java.lang.String")},Constants.INVOKESTATIC));
+		entrySuccessInstructions.append(fact.createPutStatic(t.getName(),ptwField,
+				new ObjectType(aspectname)));
+		
 		entryInstructions.append(entrySuccessInstructions);
 		
 		range.insert(entryInstructions, Range.InsideBefore);

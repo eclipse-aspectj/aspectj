@@ -27,6 +27,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 //import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
+import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.ExceptionLabel;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.Label;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IGenericType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
@@ -194,6 +195,9 @@ public class AspectDeclaration extends TypeDeclaration {
 //					world.makeFieldBinding(
 //						AjcMemberMaker.perCflowField(
 //							typeX)));
+			} else if (perClause.getKind() == PerClause.PERTYPEWITHIN) {
+				//PTWIMPL Add field for storing typename in aspect for which the aspect instance exists
+				binding.addField(factory.makeFieldBinding(AjcMemberMaker.perTypeWithinWithinTypeField(typeX,typeX)));
 			} else {
 				throw new RuntimeException("unimplemented");
 			}
@@ -272,6 +276,14 @@ public class AspectDeclaration extends TypeDeclaration {
 			generatePerObjectAspectOfMethod(classFile, interfaceType);
 			generatePerObjectHasAspectMethod(classFile, interfaceType);
 			generatePerObjectBindMethod(classFile, interfaceType);
+		} else if (perClause.getKind() == PerClause.PERTYPEWITHIN) { 
+		    //PTWIMPL Generate the methods required *in the aspect*
+			generatePerTypeWithinAspectOfMethod(classFile);    //  public static <aspecttype> aspectOf(java.lang.Class)
+			generatePerTypeWithinGetInstanceMethod(classFile); // private static <aspecttype> ajc$getInstance(Class c) throws Exception
+			generatePerTypeWithinHasAspectMethod(classFile);
+			generatePerTypeWithinCreateAspectInstanceMethod(classFile); // generate public static X ajc$createAspectInstance(Class forClass) {
+			// PTWIMPL getWithinType() would need this...
+			// generatePerTypeWithinGetWithinTypeMethod(classFile); // generate public Class getWithinType() {
 		} else {
 			throw new RuntimeException("unimplemented");
 		}
@@ -450,6 +462,46 @@ public class AspectDeclaration extends TypeDeclaration {
 	}
 	
 	
+	// PTWIMPL Generate aspectOf() method
+	private void generatePerTypeWithinAspectOfMethod(ClassFile classFile) {
+			final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
+			generateMethod(classFile, aspectOfMethod, new BodyGenerator() {
+				public void generate(CodeStream codeStream) {
+					
+					Label instanceFound = new Label(codeStream);
+
+					ExceptionLabel anythingGoesWrong = new ExceptionLabel(codeStream,world.makeTypeBinding(TypeX.JAVA_LANG_EXCEPTION));
+					codeStream.aload_0();  
+					codeStream.invokestatic(world.makeMethodBindingForCall(AjcMemberMaker.perTypeWithinGetInstance(typeX)));
+					codeStream.astore_1();
+					codeStream.aload_1();
+					codeStream.ifnonnull(instanceFound);
+					codeStream.new_(world.makeTypeBinding(AjcMemberMaker.NO_ASPECT_BOUND_EXCEPTION));
+					codeStream.dup();
+					
+					codeStream.ldc(typeX.getName());
+					codeStream.aconst_null();
+					
+					codeStream.invokespecial(world.makeMethodBindingForCall(AjcMemberMaker.noAspectBoundExceptionInit2()));
+					codeStream.athrow();
+					instanceFound.place();
+				    codeStream.aload_1();
+					
+					codeStream.areturn();
+					anythingGoesWrong.placeEnd();
+					anythingGoesWrong.place();
+					
+					codeStream.astore_1();
+					codeStream.new_(world.makeTypeBinding(AjcMemberMaker.NO_ASPECT_BOUND_EXCEPTION));
+					
+					codeStream.dup();
+					
+					// Run the simple ctor for NABE
+					codeStream.invokespecial(world.makeMethodBindingForCall(AjcMemberMaker.noAspectBoundExceptionInit()));
+					codeStream.athrow();
+				}});
+		}
+	
 	private void generatePerObjectAspectOfMethod(
 		ClassFile classFile,
 		final TypeBinding interfaceType) 
@@ -513,6 +565,32 @@ public class AspectDeclaration extends TypeDeclaration {
 			}});
 	}
 	
+	// PTWIMPL Generate hasAspect() method
+	private void generatePerTypeWithinHasAspectMethod(ClassFile classFile) {
+			final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
+			generateMethod(classFile, hasAspectMethod, new BodyGenerator() {
+				public void generate(CodeStream codeStream) {
+					   ExceptionLabel goneBang = new ExceptionLabel(codeStream,world.makeTypeBinding(TypeX.JAVA_LANG_EXCEPTION));
+					   Label noInstanceExists = new Label(codeStream);
+					   Label leave = new Label(codeStream);
+					   goneBang.placeStart();
+					   codeStream.aload_0();
+					   codeStream.invokestatic(world.makeMethodBinding(AjcMemberMaker.perTypeWithinGetInstance(typeX)));
+					   codeStream.ifnull(noInstanceExists);
+					   codeStream.iconst_1();
+					   codeStream.goto_(leave);
+					   noInstanceExists.place();
+					   codeStream.iconst_0();
+					   leave.place();
+					   goneBang.placeEnd();
+					   codeStream.ireturn();
+					   goneBang.place();
+					   codeStream.astore_1();
+					   codeStream.iconst_0();
+					   codeStream.ireturn();
+				}});
+		}
+	
 	private void generatePerObjectBindMethod(
 		ClassFile classFile,
 		final TypeBinding interfaceType) 
@@ -547,6 +625,70 @@ public class AspectDeclaration extends TypeDeclaration {
 				wrongType.place();
 				codeStream.return_();
 				// body ends here
+			}});
+	}
+	
+	// PTWIMPL Generate getInstance method 
+	private void generatePerTypeWithinGetInstanceMethod(ClassFile classFile) {
+			final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
+			generateMethod(classFile, AjcMemberMaker.perTypeWithinGetInstance(EclipseFactory.fromBinding(binding)), 
+			new BodyGenerator() {
+				public void generate(CodeStream codeStream) {
+					ExceptionLabel exc = new ExceptionLabel(codeStream,world.makeTypeBinding(TypeX.JAVA_LANG_EXCEPTION));
+					exc.placeStart();
+					codeStream.aload_0();
+					codeStream.ldc(NameMangler.perTypeWithinLocalAspectOf(typeX));
+					codeStream.aconst_null();
+					codeStream.invokevirtual(
+							new MethodBinding(
+									0, 
+									"getDeclaredMethod".toCharArray(), 
+									world.makeTypeBinding(TypeX.forSignature("Ljava/lang/reflect/Method;")), // return type
+									 new TypeBinding[]{world.makeTypeBinding(TypeX.forSignature("Ljava/lang/String;")),
+											           world.makeTypeBinding(TypeX.forSignature("[Ljava/lang/Class;"))},
+									new ReferenceBinding[0],
+									(ReferenceBinding)world.makeTypeBinding(TypeX.JAVA_LANG_CLASS)));
+					codeStream.astore_1();
+					codeStream.aload_1();
+					codeStream.aconst_null();
+					codeStream.aconst_null();
+					codeStream.invokevirtual(
+							new MethodBinding(
+									0,
+									"invoke".toCharArray(),
+									world.makeTypeBinding(TypeX.OBJECT),
+									new TypeBinding[]{world.makeTypeBinding(TypeX.OBJECT),world.makeTypeBinding(TypeX.forSignature("[Ljava/lang/Object;"))},
+									new ReferenceBinding[0],
+									(ReferenceBinding)world.makeTypeBinding(TypeX.JAVA_LANG_REFLECT_METHOD)));
+					codeStream.checkcast(world.makeTypeBinding(typeX));
+					codeStream.astore_2();
+					codeStream.aload_2();
+					exc.placeEnd();
+					codeStream.areturn();
+					exc.place();
+					codeStream.astore_1();
+					codeStream.aload_1();
+					codeStream.athrow();					
+				}});
+		}
+	
+	private void generatePerTypeWithinCreateAspectInstanceMethod(ClassFile classFile) {
+		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
+		generateMethod(classFile, AjcMemberMaker.perTypeWithinCreateAspectInstance(EclipseFactory.fromBinding(binding)), 
+		new BodyGenerator() {
+			public void generate(CodeStream codeStream) {
+				
+				codeStream.new_(world.makeTypeBinding(typeX));
+				codeStream.dup();
+				codeStream.invokespecial(new MethodBinding(0, "<init>".toCharArray(), 
+						BaseTypes.VoidBinding, new TypeBinding[0],
+						new ReferenceBinding[0], binding));
+				codeStream.astore_1();
+				codeStream.aload_1();
+				codeStream.aload_0();
+				codeStream.putfield(world.makeFieldBinding(AjcMemberMaker.perTypeWithinWithinTypeField(typeX,typeX)));
+				codeStream.aload_1();
+				codeStream.areturn();
 			}});
 	}
 	
@@ -785,6 +927,10 @@ public class AspectDeclaration extends TypeDeclaration {
 			} else if (perClause.getKind() == PerClause.PEROBJECT) {
 				aspectOfMethod = AjcMemberMaker.perObjectAspectOfMethod(typeX);
 				hasAspectMethod = AjcMemberMaker.perObjectHasAspectMethod(typeX);
+			} else if (perClause.getKind() == PerClause.PERTYPEWITHIN) {
+			    // PTWIMPL Use these variants of aspectOf()/hasAspect()
+				aspectOfMethod  = AjcMemberMaker.perTypeWithinAspectOfMethod(typeX);
+				hasAspectMethod = AjcMemberMaker.perTypeWithinHasAspectMethod(typeX);
 			} else {
 				throw new RuntimeException("bad per clause: " + perClause);	
 			}

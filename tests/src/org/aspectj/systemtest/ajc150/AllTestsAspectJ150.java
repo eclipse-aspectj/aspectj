@@ -13,12 +13,6 @@ package org.aspectj.systemtest.ajc150;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-/**
- * @author colyer
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 public class AllTestsAspectJ150 {
 
 	public static Test suite() {
@@ -36,6 +30,7 @@ public class AllTestsAspectJ150 {
 		suite.addTestSuite(AnnotationPointcutsTests.class);
 		suite.addTestSuite(VarargsTests.class);
 		suite.addTestSuite(AnnotationRuntimeTests.class);
+		suite.addTestSuite(PerTypeWithinTests.class);
 		
 		
 		//$JUnit-END$

@@ -67,6 +67,13 @@ public abstract class Advice extends ShadowMunger {
     	return ret;
     }
     
+    // PTWIMPL per type within entry advice is what initializes the aspect instance in the matched type
+    public static Advice makePerTypeWithinEntry(World world, Pointcut p, ResolvedTypeX inAspect) {
+    	Advice ret = world.concreteAdvice(AdviceKind.PerTypeWithinEntry,p,null,0,p);
+    	ret.concreteAspect = inAspect;
+    	return ret;
+    }
+    
     public static Advice makeSoftener(World world, Pointcut entry, TypePattern exceptionType,ResolvedTypeX inAspect,IHasSourceLocation loc) {
     	Advice ret = world.concreteAdvice(AdviceKind.Softener, entry, null, 0, loc);  
   

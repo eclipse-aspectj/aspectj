@@ -37,7 +37,12 @@ public class NameMangler {
 	public static final String PERCFLOW_PUSH_METHOD = PREFIX + "perCflowPush";
 
 	public static final String PEROBJECT_BIND_METHOD = PREFIX + "perObjectBind";
-
+	
+	// PTWIMPL Method and field names
+	public static final String PERTYPEWITHIN_GETINSTANCE_METHOD          = PREFIX + "getInstance";
+	public static final String PERTYPEWITHIN_CREATEASPECTINSTANCE_METHOD = PREFIX + "createAspectInstance";
+	public static final String PERTYPEWITHIN_WITHINTYPEFIELD             = PREFIX + "withinType";
+	
 	public static final String AJC_PRE_CLINIT_NAME = PREFIX + "preClinit";
 
 	public static final String AJC_POST_CLINIT_NAME = PREFIX + "postClinit";
@@ -56,6 +61,17 @@ public class NameMangler {
 		return makeName(aspectType.getNameAsIdentifier(), "perObjectField");
 	}
 
+	
+	// PTWIMPL method names that must include aspect type
+	public static String perTypeWithinFieldForTarget(TypeX aspectType) {
+		String s = makeName(aspectType.getNameAsIdentifier(), "ptwAspectInstance");
+		return s;
+	}
+	
+	public static String perTypeWithinLocalAspectOf(TypeX aspectType) {
+		return makeName(aspectType.getNameAsIdentifier(), "localAspectOf");
+	}
+	
 	
 	
 	public static String privilegedAccessMethodForMethod(String name, TypeX objectType, TypeX aspectType) {

@@ -53,6 +53,8 @@ public class AdviceKind extends TypeSafeEnum {
             case 12: return PerTargetEntry;
 
             case 13: return Softener;
+            
+            case 14: return PerTypeWithinEntry;
         }
         throw new RuntimeException("unimplemented kind: " + key);
     }
@@ -75,6 +77,9 @@ public class AdviceKind extends TypeSafeEnum {
     public static final AdviceKind PerTargetEntry         = new AdviceKind("perTargetEntry", 12, 1, false, false); 
 
     public static final AdviceKind Softener         = new AdviceKind("softener", 13, 1, false, false); 
+    
+    // PTWIMPL Advice representing when aspect should be initialized
+    public static final AdviceKind PerTypeWithinEntry   = new AdviceKind("perTypeWithinEntry",14,1,false,false);
    
 
     public static AdviceKind stringToKind(String s) {
@@ -99,8 +104,10 @@ public class AdviceKind extends TypeSafeEnum {
 	}
 
 	public boolean isPerEntry() {
-		return this == PerCflowEntry || this == PerCflowBelowEntry ||
-			this == PerThisEntry || this == PerTargetEntry;
+		return 
+		    this == PerCflowEntry || this == PerCflowBelowEntry ||
+			this == PerThisEntry || this == PerTargetEntry || 
+			this == PerTypeWithinEntry; // PTWIMPL Allow for PTW case
 	}
 	
 	public boolean isPerObjectEntry() {

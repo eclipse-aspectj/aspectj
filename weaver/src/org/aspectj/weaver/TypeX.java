@@ -584,6 +584,9 @@ public class TypeX implements AnnotatedElement {
     public static final TypeX   AT_RETENTION = forSignature("Ljava/lang/annotation/Retention;");
     public static final TypeX   ENUM         = forSignature("Ljava/lang/Enum;");
     public static final TypeX   ANNOTATION   = forSignature("Ljava/lang/annotation/Annotation;");
+    public static final TypeX   JAVA_LANG_CLASS = forSignature("Ljava/lang/Class;");
+    public static final TypeX   JAVA_LANG_EXCEPTION = forSignature("Ljava/lang/Exception;");
+    public static final TypeX   JAVA_LANG_REFLECT_METHOD = forSignature("Ljava/lang/reflect/Method;");
 
     
     // ---- helpers
