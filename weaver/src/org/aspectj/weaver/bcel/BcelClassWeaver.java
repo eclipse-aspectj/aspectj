@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.generic.BranchInstruction;
 import org.aspectj.apache.bcel.generic.CPInstruction;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
@@ -48,16 +49,17 @@ import org.aspectj.apache.bcel.generic.ReturnInstruction;
 import org.aspectj.apache.bcel.generic.Select;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.AsmRelationshipProvider;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.IClassWeaver;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
-import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
@@ -65,8 +67,10 @@ import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.Shadow.Kind;
+import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.FastMatchInfo;
 
 class BcelClassWeaver implements IClassWeaver {
@@ -301,7 +305,6 @@ class BcelClassWeaver implements IClassWeaver {
     // ----
     
     public boolean weave() {
-
         if (clazz.isWoven() && !clazz.isReweavable()) {
         	world.showMessage(IMessage.ERROR, 
         		  WeaverMessages.format(WeaverMessages.ALREADY_WOVEN,clazz.getType().getName()),
@@ -332,6 +335,10 @@ class BcelClassWeaver implements IClassWeaver {
         		if (inReweavableMode) aspectsAffectingType.add(munger.getAspectType().getName());
         	}
         }
+
+        // Weave special half type/half shadow mungers... 
+        isChanged = weaveDeclareAtMethodCtor(clazz) || isChanged;
+        isChanged = weaveDeclareAtField(clazz)      || isChanged;
         
         // XXX do major sort of stuff
         // sort according to:  Major:  type hierarchy
@@ -365,7 +372,6 @@ class BcelClassWeaver implements IClassWeaver {
         }
         if (! isChanged) return false;
         
-        
         // now we weave all but the initialization shadows
 		for (Iterator i = methodGens.iterator(); i.hasNext();) {
 			LazyMethodGen mg = (LazyMethodGen)i.next();
@@ -387,7 +393,7 @@ class BcelClassWeaver implements IClassWeaver {
 		// finally, if we changed, we add in the introduced methods.
         if (isChanged) {
         	clazz.getOrCreateWeaverStateInfo();
-			weaveInAddedMethods();
+			weaveInAddedMethods(); // FIXME asc are these potentially affected by declare annotation?
         }
         
         if (inReweavableMode) {
@@ -402,6 +408,160 @@ class BcelClassWeaver implements IClassWeaver {
         return isChanged;
     }
 
+
+    
+    
+    /**
+     * Weave any declare @method/@ctor statements into the members of the supplied class
+     */
+    private boolean weaveDeclareAtMethodCtor(LazyClassGen clazz) {
+		
+		boolean isChanged = false;
+        List decaMs = getMatchingSubset(world.getDeclareAnnotationOnMethods(),clazz.getType());
+        List members = clazz.getMethodGens();
+		if (!members.isEmpty() && !decaMs.isEmpty()) {
+          // go through all the fields
+          for (int memberCounter = 0;memberCounter<members.size();memberCounter++) {
+            LazyMethodGen mg = (LazyMethodGen)members.get(memberCounter);
+            
+            // Single first pass
+            List worthRetrying = new ArrayList();
+            boolean modificationOccured = false;
+            // go through all the declare @field statements
+            for (Iterator iter = decaMs.iterator(); iter.hasNext();) {
+				DeclareAnnotation decaM = (DeclareAnnotation) iter.next();
+				
+				if (decaM.matches(mg.getMemberView(),world)) {
+	  				if (doesAlreadyHaveAnnotation(mg.getMemberView(),decaM,true)) continue; // skip this one...
+					mg.addAnnotation(decaM.getAnnotationX());
+					//System.err.println("Mloc ("+mg+") ="+mg.getSourceLocation());
+					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaM.getSourceLocation(),clazz.getName(),mg.getMethod());
+					isChanged = true;
+					modificationOccured = true;
+				} else {
+					if (!decaM.isStarredAnnotationPattern()) 
+						worthRetrying.add(decaM); // an annotation is specified that might be put on by a subsequent decaf
+				}
+			}
+			
+            // Multiple secondary passes
+            while (!worthRetrying.isEmpty() && modificationOccured) {
+              modificationOccured = false;
+              // lets have another go
+              List forRemoval = new ArrayList();
+              for (Iterator iter = worthRetrying.iterator(); iter.hasNext();) {
+				DeclareAnnotation decaM = (DeclareAnnotation) iter.next();
+				if (decaM.matches(mg.getMemberView(),world)) {
+					if (doesAlreadyHaveAnnotation(mg.getMemberView(),decaM,false)) continue; // skip this one...
+					mg.addAnnotation(decaM.getAnnotationX());
+					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaM.getSourceLocation(),mg.getSourceLocation());
+					isChanged = true;
+					modificationOccured = true;
+					forRemoval.add(decaM);
+				}
+			  }
+			  worthRetrying.removeAll(forRemoval);
+            }
+          }
+        }
+		return isChanged;
+    }
+    
+	/**
+	 * Looks through a list of declare annotation statements and only returns
+	 * those that could possibly match on a field/method/ctor in type.
+	 */
+	private List getMatchingSubset(List declareAnnotations, ResolvedTypeX type) {
+	    List subset = new ArrayList();
+	    //System.err.println("For type="+type+"\nPrior set: "+declareAnnotations);
+	    for (Iterator iter = declareAnnotations.iterator(); iter.hasNext();) {
+			DeclareAnnotation da = (DeclareAnnotation) iter.next();
+			if (da.couldEverMatch(type)) {
+				subset.add(da);
+			}
+		}
+		//System.err.println("After set: "+subset);
+		return subset;
+	}
+
+	/**
+	 * Weave any declare @field statements into the fields of the supplied class
+	 */
+	private boolean weaveDeclareAtField(LazyClassGen clazz) {
+	  
+        // BUGWARNING not getting enough warnings out on declare @field ?
+        // There is a potential problem here with warnings not coming out - this
+        // will occur if they are created on the second iteration round this loop.
+        // We currently deactivate error reporting for the second time round.
+        // A possible solution is to record what annotations were added by what
+        // decafs and check that to see if an error needs to be reported - this
+        // would be expensive so lets skip it for now
+
+        List decaFs = getMatchingSubset(world.getDeclareAnnotationOnFields(),clazz.getType());
+		boolean isChanged = false;
+		Field[] fields = clazz.getFieldGens();
+		if (fields!=null && !decaFs.isEmpty()) {
+          // go through all the fields
+          for (int fieldCounter = 0;fieldCounter<fields.length;fieldCounter++) {
+            BcelField aBcelField = new BcelField(clazz.getBcelObjectType(),fields[fieldCounter]);
+           
+            // Single first pass
+            List worthRetrying = new ArrayList();
+            boolean modificationOccured = false;
+            // go through all the declare @field statements
+            for (Iterator iter = decaFs.iterator(); iter.hasNext();) {
+				DeclareAnnotation decaF = (DeclareAnnotation) iter.next();
+				if (decaF.matches(aBcelField,world)) {
+					if (doesAlreadyHaveAnnotation(aBcelField,decaF,true)) continue; // skip this one...
+					aBcelField.addAnnotation(decaF.getAnnotationX());
+					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),fields[fieldCounter]);
+					isChanged = true;
+					modificationOccured = true;
+				} else {
+					if (!decaF.isStarredAnnotationPattern()) 
+						worthRetrying.add(decaF); // an annotation is specified that might be put on by a subsequent decaf
+				}
+			}
+			
+            // Multiple secondary passes
+            while (!worthRetrying.isEmpty() && modificationOccured) {
+              modificationOccured = false;
+              // lets have another go
+              List forRemoval = new ArrayList();
+              for (Iterator iter = worthRetrying.iterator(); iter.hasNext();) {
+				DeclareAnnotation decaF = (DeclareAnnotation) iter.next();
+				if (decaF.matches(aBcelField,world)) {
+					if (doesAlreadyHaveAnnotation(aBcelField,decaF,false)) continue; // skip this one...
+					aBcelField.addAnnotation(decaF.getAnnotationX());
+					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),fields[fieldCounter]);
+					isChanged = true;
+					modificationOccured = true;
+					forRemoval.add(decaF);
+				}
+			  }
+			  worthRetrying.removeAll(forRemoval);
+            }
+          }
+        }
+		return isChanged;
+	}
+    
+    /**
+     * Check if a resolved member (field/method/ctor) already has an annotation, if it
+     * does then put out a warning and return true
+     */
+	private boolean doesAlreadyHaveAnnotation(ResolvedMember rm,DeclareAnnotation deca,boolean reportProblems) {
+	  if (rm.hasAnnotation(deca.getAnnotationTypeX())) {
+	    if (reportProblems) {
+        world.getLint().elementAlreadyAnnotated.signal(
+      		new String[]{rm.toString(),deca.getAnnotationTypeX().toString()},
+      		rm.getSourceLocation(),new ISourceLocation[]{deca.getSourceLocation()});
+	    }
+      	return true;
+	  }
+	  return false;
+	}
+	
 	private Set findAspectsForMungers(LazyMethodGen mg) {
 		Set aspectsAffectingType = new HashSet();
 		for (Iterator iter = mg.matchedShadows.iterator(); iter.hasNext();) {
