@@ -222,6 +222,13 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 			methodDeclaration.modifiers,
 			"",
 			new ArrayList());
+
+		if (kind == ProgramElementNode.Kind.METHOD) {
+			if (label.equals("main")) {
+				peNode.setRunnable(true);	
+			}	
+		}
+
 		if (methodDeclaration.binding != null) {
 			Member member = EclipseWorld.makeResolvedMember(methodDeclaration.binding);
 			peNode.setBytecodeName(member.getName());

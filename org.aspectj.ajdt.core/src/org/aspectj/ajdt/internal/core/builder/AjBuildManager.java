@@ -110,8 +110,10 @@ public class AjBuildManager {
             }
 
 			boolean weaved = weaveAndGenerateClassFiles(newState);
-			//XXX more sturucture disabling until it's optional
-			if (false) StructureModelManager.INSTANCE.fireModelUpdated();  
+			
+			if (buildConfig.isGenerateModelMode()) {
+				StructureModelManager.INSTANCE.fireModelUpdated();  
+			}
 			return weaved;
 		} catch (CoreException ce) {
             counter.handleMessage(new Message("core exception", IMessage.ABORT, ce, null));

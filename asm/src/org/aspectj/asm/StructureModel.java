@@ -15,6 +15,7 @@
 package org.aspectj.asm;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
@@ -117,7 +118,7 @@ public class StructureModel implements Serializable {
        	if (!isValid() || sourceFilePath == null) {  
             return StructureModel.NO_STRUCTURE;
         } else {
-            String correctedPath = sourceFilePath.replace('\\', '/');
+            String correctedPath = sourceFilePath;//.replace('\\', '/');
             StructureNode node = (StructureNode)getFileMap().get(correctedPath);//findFileNode(filePath, model);
             if (node != null) {
                 return node;
@@ -135,7 +136,7 @@ public class StructureModel implements Serializable {
 	 * @return		a new structure node for the file if it was not found in the model
 	 */
 	public StructureNode findNodeForSourceLine(String sourceFilePath, int lineNumber) {
-		String correctedPath = sourceFilePath.replace('\\', '/');
+		String correctedPath = sourceFilePath;//.replace('\\', '/');
 		StructureNode node = findNodeForSourceLineHelper(root, correctedPath, lineNumber);
 		if (node != null) {
 			return node;	
@@ -173,16 +174,20 @@ public class StructureModel implements Serializable {
 	}
 
 	private boolean matches(StructureNode node, String sourceFilePath, int lineNumber) {
-		return node != null 
-			&& node.getSourceLocation() != null
-			&& node.getSourceLocation().getSourceFile().getAbsolutePath().equals(sourceFilePath)
-			&& ((node.getSourceLocation().getLine() <= lineNumber
-				&& node.getSourceLocation().getEndLine() >= lineNumber)
-			    ||
-				(lineNumber <= 1
-				 && node instanceof ProgramElementNode 
-				 && ((ProgramElementNode)node).getProgramElementKind().isSourceFileKind())	
-			);
+		try {			
+			return node != null 
+				&& node.getSourceLocation() != null
+				&& node.getSourceLocation().getSourceFile().getCanonicalPath().equals(sourceFilePath)
+				&& ((node.getSourceLocation().getLine() <= lineNumber
+					&& node.getSourceLocation().getEndLine() >= lineNumber)
+				    ||
+					(lineNumber <= 1
+					 && node instanceof ProgramElementNode 
+					 && ((ProgramElementNode)node).getProgramElementKind().isSourceFileKind())	
+				);
+		} catch (IOException ioe) { 
+			return false;
+		} 
 	}
 	
 	private boolean hasMoreSpecificChild(StructureNode node, String sourceFilePath, int lineNumber) {
