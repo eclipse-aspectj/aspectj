@@ -58,6 +58,9 @@ public class Lint {
 
 	public final Kind serialVersionUIDBroken = 
 		new Kind("brokeSerialVersionCompatibility", "serialVersionUID of type {0} is broken because of added field {1}");
+		
+	public final Kind noInterfaceCtorJoinpoint = 
+		new Kind("noInterfaceCtorJoinpoint","no interface constructor-execution join point - use {0}+ for implementing classes");
             
 	public Lint(World world) {
 		this.world = world;

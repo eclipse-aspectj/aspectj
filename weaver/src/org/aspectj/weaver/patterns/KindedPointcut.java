@@ -22,6 +22,7 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Checker;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
@@ -180,6 +181,20 @@ public class KindedPointcut extends Pointcut {
 //					this.getSourceLocation()));
 		}
 		signature = signature.resolveBindings(scope, bindings);
+		
+		
+		if (kind == Shadow.ConstructorExecution) { 		// Bug fix 60936
+		  if (signature.getDeclaringType() != null) {
+			World world = scope.getWorld();
+			TypeX exactType = signature.getDeclaringType().getExactType();
+			if (signature.getKind() == Member.CONSTRUCTOR &&
+				!exactType.equals(ResolvedTypeX.MISSING) &&
+				exactType.isInterface(world) &&
+				!signature.getDeclaringType().isIncludeSubtypes()) {
+					world.getLint().noInterfaceCtorJoinpoint.signal(exactType.toString(), getSourceLocation());
+				}
+		  }
+		}
 	}
 	public Test findResidue(Shadow shadow, ExposedState state) {
 		return match(shadow).alwaysTrue() ? Literal.TRUE : Literal.FALSE;
