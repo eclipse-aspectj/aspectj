@@ -1,0 +1,5 @@
+<project name="ShadowJdtCore" basedir="." default="make.jdtcore.jar">
+    <target name="make.jdtcore.jar">
+    	<echo message="dummy build of jdtcore.jar complete."/>
+    </target>
+</project>
