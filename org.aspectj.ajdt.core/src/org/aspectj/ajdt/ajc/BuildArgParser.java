@@ -359,6 +359,8 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
 				buildConfig.setNoWeave(true);
 			} else if (arg.equals("-XserializableAspects")) {
 				buildConfig.setXserializableAspects(true);
+			} else if (arg.equals("-XnoInline")) {
+				buildConfig.setXnoInline(true);
 			} else if (arg.equals("-Xlintfile")) { 
 				if (args.size() > nextArgIndex) {
 					File lintSpecFile = makeFile(((ConfigParser.Arg)args.get(nextArgIndex)).getValue());

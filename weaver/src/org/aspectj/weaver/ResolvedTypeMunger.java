@@ -45,7 +45,9 @@ public abstract class ResolvedTypeMunger {
     
     public boolean matches(ResolvedTypeX matchType) {
     	ResolvedTypeX onType = matchType.getWorld().resolve(signature.getDeclaringType());
+    	//System.err.println("matching: " + this + " to " + matchType + " onType = " + onType);
    		if (matchType.equals(onType)) return true;
+   		//System.err.println("NO MATCH DIRECT");
    		
     	if (onType.isInterface()) {
     		return matchType.isTopmostImplementor(onType);

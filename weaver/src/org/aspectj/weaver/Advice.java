@@ -21,7 +21,7 @@ import org.aspectj.weaver.patterns.*;
 
 public abstract class Advice extends ShadowMunger {
 
-	AjAttribute.AdviceAttribute attribute; // the pointcut field is ignored
+	protected AjAttribute.AdviceAttribute attribute; // the pointcut field is ignored
 
     protected AdviceKind kind; // alias of attribute.getKind()
     protected Member signature;

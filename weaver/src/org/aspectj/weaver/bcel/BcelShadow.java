@@ -1134,6 +1134,20 @@ public class BcelShadow extends Shadow {
 		 * If only one call to proceed is made, we can re-inline the original shadow.
 		 * We are not doing that presently.
 		 */
+		 
+		// !!! THIS BLOCK OF CODE SHOULD BE IN A METHOD CALLED weaveAround(...);
+        Member mungerSig = munger.getSignature();
+        ResolvedTypeX declaringType = world.resolve(mungerSig.getDeclaringType());
+        //??? might want some checks here to give better errors
+        BcelObjectType ot = (BcelObjectType)declaringType;
+        
+		LazyMethodGen adviceMethod = ot.getLazyClassGen().getLazyMethodGen(mungerSig);
+		if (!adviceMethod.getCanInline()) {
+			weaveAroundClosure(munger, hasDynamicTest);
+			return;
+		}
+		
+		
 		
 		// start by exposing various useful things into the frame
 		final InstructionFactory fact = getFactory();
@@ -1174,22 +1188,22 @@ public class BcelShadow extends Shadow {
         if (! hasDynamicTest) {
             range.append(advice);
         } else {
+        	InstructionList afterThingie = new InstructionList(fact.NOP);
             InstructionList callback = makeCallToCallback(extractedMethod);
             if (terminatesWithReturn()) {
                 callback.append(fact.createReturn(extractedMethod.getReturnType()));
             } else {
-                advice.append(fact.createBranchInstruction(Constants.GOTO, range.getEnd()));
+            	//InstructionHandle endNop = range.insert(fact.NOP, Range.InsideAfter);
+                advice.append(fact.createBranchInstruction(Constants.GOTO, afterThingie.getStart()));
             }
             range.append(munger.getTestInstructions(this, advice.getStart(), callback.getStart(), advice.getStart()));
             range.append(advice);
-            range.append(callback);          
+            range.append(callback);
+            range.append(afterThingie);          
         }        
         
         // now the range contains everything we need.  We now inline the advice method.
-		LazyMethodGen adviceMethod =
-			((BcelObjectType) munger.getConcreteAspect())
-				.getLazyClassGen()
-				.getLazyMethodGen(munger.getSignature());
+
 				
         BcelClassWeaver.inlineMethod(adviceMethod, enclosingMethod, adviceMethodInvocation);
 
@@ -1295,6 +1309,8 @@ public class BcelShadow extends Shadow {
         boolean hasDynamicTest) 
     {
     	InstructionFactory fact = getFactory();
+
+		enclosingMethod.setCanInline(false);
 
         // MOVE OUT ALL THE INSTRUCTIONS IN MY SHADOW INTO ANOTHER METHOD!
         LazyMethodGen callbackMethod = 

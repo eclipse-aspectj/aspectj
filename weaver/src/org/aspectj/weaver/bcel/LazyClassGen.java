@@ -295,6 +295,7 @@ public final class LazyClassGen {
 		myGen.addAttribute(BcelAttributes.bcelAttribute(
 			new AjAttribute.WeaverState(s), 
 			getConstantPoolGen()));
+		myType.setWeaverState(s);
 	}
 
     public InstructionFactory getFactory() {
@@ -484,6 +485,7 @@ public final class LazyClassGen {
 			if (gen.getName().equals(name) && gen.getSignature().equals(signature))
 				return gen;
 		}
+		
 		throw new BCException("Class " + this.getName() + " does not have a method " 	
 			+ name + " with signature " + signature);
 	}

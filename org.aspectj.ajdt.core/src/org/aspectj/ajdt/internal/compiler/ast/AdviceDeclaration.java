@@ -47,6 +47,8 @@ public class AdviceDeclaration extends MethodDeclaration {
 	
 	public MethodBinding proceedMethodBinding;
 	
+	
+	public List proceedCalls = new ArrayList(2);
 	public boolean proceedInInners;
 	public ResolvedMember[] proceedCallSignatures;
 	public boolean[] formalsUnchangedToProceed;
@@ -98,15 +100,9 @@ public class AdviceDeclaration extends MethodDeclaration {
 		pointcutDesignator.finishResolveTypes(this, this.binding, 
 			baseArgumentCount, upperScope.referenceContext.binding);
 		
+		if (binding == null || ignoreFurtherInvestigation) return;
 		
-		if (kind == AdviceKind.Around && binding != null) {
-			//XXX set these correctly
-			proceedInInners = false;
-			proceedCallSignatures = new ResolvedMember[0];
-			formalsUnchangedToProceed = new boolean[baseArgumentCount];
-			declaredExceptions = new TypeX[0];
-			
-			
+		if (kind == AdviceKind.Around) {
 			ReferenceBinding[] exceptions = 
 				new ReferenceBinding[] { upperScope.getJavaLangThrowable() };
 			proceedMethodBinding = new MethodBinding(Modifier.STATIC,
@@ -119,6 +115,44 @@ public class AdviceDeclaration extends MethodDeclaration {
 		
 		super.resolveStatements(upperScope);
 		if (binding != null) determineExtraArgumentFlags();
+		
+		if (kind == AdviceKind.Around) {
+			int n = proceedCalls.size();
+			EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(upperScope);
+						
+			//System.err.println("access to: " + Arrays.asList(handler.getMembers()));
+			
+			//XXX set these correctly
+			formalsUnchangedToProceed = new boolean[baseArgumentCount];
+			proceedCallSignatures = new ResolvedMember[0];
+			proceedInInners = false;
+			declaredExceptions = new TypeX[0];
+			
+			for (int i=0; i < n; i++) {
+				Proceed call = (Proceed)proceedCalls.get(i);
+				if (call.inInner) {
+					//System.err.println("proceed in inner: " + call);
+					proceedInInners = true;
+					//XXX wrong
+					//proceedCallSignatures[i] = world.makeResolvedMember(call.binding);
+				}
+			}
+			
+			// if we have proceed in inners we won't ever be inlined so the code below is unneeded
+			if (!proceedInInners) {
+				PrivilegedHandler handler = (PrivilegedHandler)upperScope.referenceContext.binding.privilegedHandler;
+				//XXX timings is odd here
+				if (handler == null) {
+					handler = new PrivilegedHandler((AspectDeclaration)upperScope.referenceContext);
+					upperScope.referenceContext.binding.privilegedHandler = handler;
+				}
+				
+				this.traverse(new MakeDeclsPublicVisitor(), (ClassScope)null);
+				
+				AccessForInlineVisitor v = new AccessForInlineVisitor(world, handler);
+				this.traverse(v, (ClassScope) null);
+			}
+		}
 	}
 
 

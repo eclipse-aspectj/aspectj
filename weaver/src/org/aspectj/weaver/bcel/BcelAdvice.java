@@ -85,6 +85,17 @@ public class BcelAdvice extends Advice {
         }
     }   
        
+    private boolean canInline(Shadow s) {
+    	if (attribute.isProceedInInners()) return false;
+    	//XXX this guard seems to only be needed for bad test cases
+    	if (concreteAspect == null || concreteAspect == ResolvedTypeX.MISSING) return false;
+
+		if (concreteAspect.getWorld().isXnoInline()) return false;
+    	//System.err.println("isWoven? " + ((BcelObjectType)concreteAspect).getLazyClassGen().getWeaverState());
+    	return ((BcelObjectType)concreteAspect).getLazyClassGen().getWeaverState() 
+    			== WeaverStateKind.Woven;
+    }
+
     public void implementOn(Shadow s) {
         BcelShadow shadow = (BcelShadow) s;       
         if (getKind() == AdviceKind.Before) {
@@ -100,8 +111,11 @@ public class BcelAdvice extends Advice {
         } else if (getKind() == AdviceKind.After) {   
             shadow.weaveAfter(this);
         } else if (getKind() == AdviceKind.Around) {
-            shadow.weaveAroundClosure(this, hasDynamicTests());
-            //shadow.weaveAroundInline(this, hasDynamicTests());
+        	if (!canInline(s)) {
+        		shadow.weaveAroundClosure(this, hasDynamicTests());
+        	} else {
+            	shadow.weaveAroundInline(this, hasDynamicTests());
+        	}
         } else if (getKind() == AdviceKind.InterInitializer) {
         	 shadow.weaveAfterReturning(this);
         } else if (getKind().isCflow()) {

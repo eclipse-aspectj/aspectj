@@ -21,8 +21,8 @@ import org.aspectj.testing.util.TestUtil;
 public class WorkingTestMain {
 
 	public static void main(String[] args1) throws IOException {
-		testExamples();
-		//testOne();
+		//testExamples();
+		testOne();
 	}
 	
 	public static void testOne() throws IOException {
@@ -50,7 +50,8 @@ public class WorkingTestMain {
 		//args.add("../weaver/testdata/megatrace.jar");
 		
 		args.add("testdata/src1/AroundA1.java");
-		//args.add("../tests/new/AroundInnerCalls.java");
+		args.add("-XnoInline");
+		//args.add("../tests/new/Counting1.java");
 		//args.add("-Xlint:error");
 		//args.add("testdata/src1/InterType.java");
 		//args.add("@" + examplesDir + "tjp/files.lst");
@@ -59,12 +60,11 @@ public class WorkingTestMain {
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 		//CommandTestCase.runCompiler(args, new int[] {11, 14, 18, 32, 43});
 		
-//		CommandTestCase.printGenerated("../out", "AdviceOnInheritedMethod");
+		CommandTestCase.printGenerated("../out", "AroundA1");
 //		CommandTestCase.printGenerated("../out", "SuperC");
 //		CommandTestCase.printGenerated("../out", "SubC");
 
-		//TestUtil.runMain("out;../bcweaver/testdata/megatrace.jar", "Privileged");
-		//TestUtil.runMain("out;../lib/test/testing-client.jar", "AroundInnerCalls");
+		TestUtil.runMain("out;../lib/test/testing-client.jar", "AroundA1");
 	}
 	
 	private static String examplesDir = "../docs/dist/doc/examples/";

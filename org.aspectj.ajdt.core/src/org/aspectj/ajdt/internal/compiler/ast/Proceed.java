@@ -22,6 +22,8 @@ import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 
 
 public class Proceed extends MessageSend {
+	public boolean inInner = false;
+	
 	public Proceed(MessageSend parent) {
 		super();
 		
@@ -108,11 +110,14 @@ public class Proceed extends MessageSend {
 			if (context instanceof AdviceDeclaration) {
 				AdviceDeclaration adviceDecl = (AdviceDeclaration)context;
 				if (adviceDecl.kind == AdviceKind.Around) {
+					adviceDecl.proceedCalls.add(this);
 					return adviceDecl;
 				} else {
 					return null;
 				}
 			}
+		} else if (scope instanceof ClassScope) {
+			inInner = true;
 		}
 		
 		return findEnclosingAround(scope.parent);

@@ -239,6 +239,7 @@ public class AjBuildManager {
 		
 	private void initBcelWorld(IMessageHandler handler) throws IOException {
 		bcelWorld = new BcelWorld(buildConfig.getClasspath(), handler);
+		bcelWorld.setXnoInline(buildConfig.isXnoInline());
 		bcelWeaver = new BcelWeaver(bcelWorld);
 		
 		for (Iterator i = buildConfig.getAspectpath().iterator(); i.hasNext();) {
@@ -504,6 +505,7 @@ public class AjBuildManager {
 									pr, nameEnvironment);
 		EclipseWorld ew = new EclipseWorld(le, handler);
 		ew.setLint(bcelWorld.getLint());
+		ew.setXnoInline(buildConfig.isXnoInline());
 		le.world = ew;
 		pr.world = ew;
 		le.world.buildManager = this;

@@ -31,6 +31,8 @@ public abstract class World {
     protected StructureModel model = null;
     
     protected Lint lint = new Lint(this);
+    
+    protected boolean XnoInline;
 	
     protected World() {
         super();
@@ -335,6 +337,14 @@ public abstract class World {
 
 	public void setLint(Lint lint) {
 		this.lint = lint;
+	}
+
+	public boolean isXnoInline() {
+		return XnoInline;
+	}
+
+	public void setXnoInline(boolean xnoInline) {
+		XnoInline = xnoInline;
 	}
 
 }

@@ -33,7 +33,6 @@ public abstract class ResolvedTypeX extends TypeX {
 
     // ---- things that don't require a world
 
-
 	/** returns Iterator&lt;ResolvedTypeX&gt;
 	 */
     public final Iterator getDirectSupertypes() {
@@ -808,7 +807,9 @@ public abstract class ResolvedTypeX extends TypeX {
 	
 	public void addInterTypeMunger(ConcreteTypeMunger munger) {
 		ResolvedMember sig = munger.getSignature();
-		if (sig == null) {
+		if (sig == null || munger.getMunger() == null || 
+				munger.getMunger().getKind() == ResolvedTypeMunger.PrivilegedAccess)
+		{
 			interTypeMungers.add(munger);
 			return;
 		}

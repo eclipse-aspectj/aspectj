@@ -156,7 +156,7 @@ public class BcelWorld extends World {
     }       
 
     // ---- fluf
-	public  ResolvedTypeX resolveObjectType(TypeX ty) {
+	protected ResolvedTypeX resolveObjectType(TypeX ty) {
         String name = ty.getName();
         JavaClass jc = null;
         //UnwovenClassFile classFile = (UnwovenClassFile)sourceJavaClasses.get(name);

@@ -51,6 +51,8 @@ public final class LazyMethodGen {
 
     private int             maxLocals; 
     
+    private boolean canInline = true;
+    
     /**
      * only used by {@link BcelClassWeaver}
      */
@@ -434,7 +436,9 @@ public final class LazyMethodGen {
         String getRangeString(Range r, Map labelMap) {
             if (r instanceof ExceptionRange) {
                 ExceptionRange er = (ExceptionRange) r;
-                return er.toString() + " -> " + labelMap.get(er.getHandler());
+                return er.toString() + " -> " + labelMap.get(er.getHandler()); 
+//                
+//                + " PRI " + er.getPriority();
             } else {
                 return r.toString();
             }
@@ -813,7 +817,11 @@ public final class LazyMethodGen {
         }
     }
 
-    // exception ordering
+    // exception ordering.
+    // What we should be doing is dealing with priority inversions way earlier than we are
+    // and counting on the tree structure.  In which case, the below code is in fact right.
+    
+    // XXX THIS COMMENT BELOW IS CURRENTLY WRONG. 
     // An exception A preceeds an exception B in the exception table iff:
     
     // * A and B were in the original method, and A preceeded B in the original exception table
@@ -824,15 +832,15 @@ public final class LazyMethodGen {
     // but I don't trust the only implementation, TreeSet, to do the right thing.
     
     private static void insertHandler(ExceptionRange fresh, LinkedList l) {
-        for (ListIterator iter = l.listIterator(); iter.hasNext();) {
-            ExceptionRange r = (ExceptionRange) iter.next();
-            if (fresh.getPriority() >= r.getPriority()) {
-                iter.previous();
-                iter.add(fresh);
-                return;
-            }            
-        }
-        l.add(fresh);        
+//        for (ListIterator iter = l.listIterator(); iter.hasNext();) {
+//            ExceptionRange r = (ExceptionRange) iter.next();
+//            if (fresh.getPriority() >= r.getPriority()) {
+//                iter.previous();
+//                iter.add(fresh);
+//                return;
+//            }            
+//        }
+        l.add(0, fresh);        
     }    
 
 
@@ -1062,6 +1070,14 @@ public final class LazyMethodGen {
 
 	public void forcePublic() {
 		accessFlags = Utility.makePublic(accessFlags);
+	}
+
+	public boolean getCanInline() {
+		return canInline;
+	}
+
+	public void setCanInline(boolean canInline) {
+		this.canInline = canInline;
 	}
 
 }

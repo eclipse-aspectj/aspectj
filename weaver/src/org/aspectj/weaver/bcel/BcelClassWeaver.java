@@ -33,6 +33,7 @@ class BcelClassWeaver implements IClassWeaver {
 		List typeMungers) 
 	{
 		boolean b =  new BcelClassWeaver(world, clazz, shadowMungers, typeMungers).weave();
+		//System.err.println(clazz.getClassName() + ", " + clazz.getWeaverState());
 		//clazz.print();
 		return b;
 	}

@@ -27,6 +27,10 @@ public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparab
 
 	//public abstract boolean munge(LazyClassGen gen);
 
+
+	/** returns null for mungers that are used internally, but were not part of a declared
+	 * thing in source code.
+	 */
 	public ResolvedTypeMunger getMunger() {
 		return munger;
 	}

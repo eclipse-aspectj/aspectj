@@ -40,6 +40,7 @@ public class AjBuildConfig {
 	private boolean emacsSymMode = false;
 	private boolean noWeave = false;
 	private boolean XserializableAspects = false;
+	private boolean XnoInline = false;
 	private String lintMode = AJLINT_DEFAULT;
 	private File lintSpecFile = null;
 
@@ -200,6 +201,14 @@ public class AjBuildConfig {
 
 	public void setXserializableAspects(boolean xserializableAspects) {
 		XserializableAspects = xserializableAspects;
+	}
+
+	public boolean isXnoInline() {
+		return XnoInline;
+	}
+
+	public void setXnoInline(boolean xnoInline) {
+		XnoInline = xnoInline;
 	}
 
 }
