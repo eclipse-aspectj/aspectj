@@ -29,6 +29,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 
     private Map fileMap = null;
     private Map handleMap = null;
+    private Map typeMap = null;
     
 	public IProgramElement getElement(String handle) {
 		throw new RuntimeException("unimplemented");
@@ -41,6 +42,7 @@ public class AspectJElementHierarchy implements IHierarchy {
     public void setRoot(IProgramElement root) {
         this.root = root;
         handleMap = new HashMap();
+        typeMap = new HashMap();
     }
 
 	public void addToFileMap( Object key, Object value ){
@@ -106,27 +108,37 @@ public class AspectJElementHierarchy implements IHierarchy {
 	 * @param className 	can't be null
 	 */ 
 	public IProgramElement findElementForType(String packageName, String typeName) {
-		IProgramElement packageNode = null;
-		if (packageName == null) {
-			packageNode = root;
-		} else {
-			for (Iterator it = root.getChildren().iterator(); it.hasNext(); ) {
-				IProgramElement node = (IProgramElement)it.next();
-				if (packageName.equals(node.getName())) {
-					packageNode = node;
-				} 
+		StringBuffer keyb = (packageName == null) ? new StringBuffer() : 
+		                                            new StringBuffer(packageName);
+		keyb.append(".");
+		keyb.append(typeName);
+		String key = keyb.toString();
+		IProgramElement ret = (IProgramElement) typeMap.get(key);
+		if (ret == null) {
+			IProgramElement packageNode = null;
+			if (packageName == null) {
+				packageNode = root;
+			} else {
+				for (Iterator it = root.getChildren().iterator(); it.hasNext(); ) {
+					IProgramElement node = (IProgramElement)it.next();
+					if (packageName.equals(node.getName())) {
+						packageNode = node;
+					} 
+				}
+				if (packageNode == null) return null;
 			}
-			if (packageNode == null) return null;
+			
+			// this searches each file for a class
+			for (Iterator it = packageNode.getChildren().iterator(); it.hasNext(); ) {
+				IProgramElement fileNode = (IProgramElement)it.next();
+				IProgramElement cNode = findClassInNodes(fileNode.getChildren(), typeName);
+				if (cNode != null) {
+					ret = cNode;
+					typeMap.put(key,ret);
+				} 
+			}			
 		}
-		
-		// this searches each file for a class
-		for (Iterator it = packageNode.getChildren().iterator(); it.hasNext(); ) {
-			IProgramElement fileNode = (IProgramElement)it.next();
-			IProgramElement ret = findClassInNodes(fileNode.getChildren(), typeName);
-			if (ret != null) return ret;
-		}
-		
-		return null;
+		return ret;
 	}
 	
 	private IProgramElement findClassInNodes(Collection nodes, String name) {
