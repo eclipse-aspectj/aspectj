@@ -203,7 +203,6 @@
     	<run class="Proceeding3"/>
    	</ajc-test>
 
-
 	<ajc-test dir="bugs" pr="61572"
     	title="ITDs on inner classes should be static context">
     	<compile files="PR61572.aj">
@@ -255,3 +254,24 @@
     	<compile files="Oxford.java"/>
     	<run class="Oxford"/>
    	</ajc-test>
+	
+	<ajc-test dir="bugs" pr="54421"
+		title="Compile time declarations (warning and error) do not accept string concatenation (with +)">
+        <compile files="decwStrings.java">
+        	<message kind="warning" line="5"/>
+			<message kind="warning" line="19" text="hello world"/>
+			<message kind="warning" line="22" text="hello world"/>
+			<message kind="warning" line="25" text="hello world"/>
+			<message kind="warning" line="30" text="hello world"/>
+			<message kind="warning" line="34" text="hello world"/>
+			<message kind="warning" line="39" text="abcdefghijklmnopqrstuvwxyz"/>
+        </compile>
+    </ajc-test>
+	
+	<ajc-test dir="bugs" pr="54421"
+		title="Compile time declarations (warning and error) do not accept string concatenation (with +) (2)">
+        <compile files="decwStringsErroneous.java">
+			<message kind="error" line="22"/>
+        </compile>
+    </ajc-test>
+	

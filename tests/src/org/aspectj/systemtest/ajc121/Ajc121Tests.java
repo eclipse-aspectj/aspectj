@@ -139,7 +139,8 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void test025_proceedInAround3() {
       runTest("proceed used as method name in around advice (3)");
   }
-    public void test026_bindingThisAndTargetToTheSameFormal() {
+  
+  public void test026_bindingThisAndTargetToTheSameFormal() {
   	runTest("ajc crashes when compiling the following program (binding this() and target())");
   }
   
@@ -155,7 +156,7 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
     runTest("Valid but inaccessible type names should not be flagged by XLint:invalidAbsoluteTypeName");
   }
   
-  public void test030_privateITDinitialisersBeingMatched() {
+    public void test030_privateITDinitialisersBeingMatched() {
     runTest("intertype initialisers should match field set pointcuts");
   }
 
@@ -166,6 +167,13 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
     assertTrue("Expected output '"+exp+"' but got "+getLastRunResult().getStdErr(),
     		getLastRunResult().getStdErr().equals(exp));
   }
+  
+  public void test032_stringConcatForDEOW() {
+    runTest("Compile time declarations (warning and error) do not accept string concatenation (with +)");
+  }
 
+  public void test033_stringConcatForDEOWErrorCase() {
+    runTest("Compile time declarations (warning and error) do not accept string concatenation (with +) (2)");
+  }
 }
 

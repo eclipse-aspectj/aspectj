@@ -150,7 +150,7 @@ public class PatternParser {
 	private Declare parseErrorOrWarning(boolean isError) {
 		Pointcut pointcut = parsePointcut();
 		eat(":");
-		String message = parseStringLiteral();
+		String message = parsePossibleStringSequence(true);
 		return new DeclareErrorOrWarning(isError, pointcut, message);
 	}
 
@@ -736,6 +736,32 @@ public class PatternParser {
 		}
 	}
 
+	public String parsePossibleStringSequence(boolean shouldEnd) {
+		StringBuffer result = new StringBuffer();
+		
+		IToken token = tokenSource.next();
+		if (token.getLiteralKind()==null) {
+			throw new ParserException("string",token);
+		}
+		while (token.getLiteralKind().equals("string")) {
+			result.append(token.getString());			
+			boolean plus = maybeEat("+");
+			if (!plus) break;
+			token = tokenSource.next();
+			if (token.getLiteralKind()==null) {
+				throw new ParserException("string",token);
+			}
+		}
+		eatIdentifier(";");
+		IToken t = tokenSource.next();
+		if (shouldEnd && t!=IToken.EOF) {
+			throw new ParserException("<string>;",token);
+		}
+
+		return result.toString();
+		
+	}
+	
 	public String parseStringLiteral() {
 		IToken token = tokenSource.next();
 		String literalKind = token.getLiteralKind();
