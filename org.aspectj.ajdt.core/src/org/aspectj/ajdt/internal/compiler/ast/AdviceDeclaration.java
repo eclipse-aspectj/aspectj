@@ -33,6 +33,7 @@ import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.codegen.CodeStream;
+import org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -202,7 +203,7 @@ public class AdviceDeclaration extends MethodDeclaration {
 		// build the Object[]
 
 		codeStream.generateInlinedValue(nargs-1);
-		codeStream.anewarrayJavaLangObject();
+		codeStream.newArray(classScope, new ArrayBinding(classScope.getType(TypeBinding.JAVA_LANG_OBJECT), 1));
 		
 		int index = 0;
 		for (int i=0; i < nargs-1; i++) {
