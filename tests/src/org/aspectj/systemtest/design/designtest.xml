@@ -92,3 +92,10 @@
         <run class="p1.ScopeIssues"/>
     </ajc-test>
 
+<!-- uncomment this test if we decide to implement 42743 
+	<ajc-test dir="design/soft" pr="42743"
+		title="declare soft limitation">
+		<compile files="DeclareSoft.aj"/>
+		<run class="DeclareSoft"/>
+	</ajc-test>
+-->

@@ -76,5 +76,9 @@ public class DesignTests extends org.aspectj.testing.XMLBasedAjcTestCase {
     runTest("scope issues with introduction (needs more work)");
   }
 
+// uncomment this test if we implement 42743
+//  public void test014_DeclareSoft(){
+//      runTest("declare soft limitation");
+//    }
 }
 
