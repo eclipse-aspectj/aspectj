@@ -55,13 +55,13 @@ public class Annotations extends TestUtils {
   // Deals with the cases where an explicit type is specified and it is an annotation type
   public void test002_decpOnAnnotationNotAllowed_errors() {
   	CompilationResult cR = binaryWeave("testcode.jar","AnnotationAspect04.aj",3,0,true);
-  	IMessage msg = (IMessage)cR.getErrorMessages().get(0);
+  	IMessage msg = (IMessage)cR.getErrorMessages().get(1);
   	assertTrue("Expected a message about can't use decp to alter supertype of an annotation: "+msg,
   			msg.toString().indexOf("to alter supertype of annotation type")!=-1);
-  	msg = (IMessage)cR.getErrorMessages().get(1);
+  	msg = (IMessage)cR.getErrorMessages().get(2);
   	assertTrue("Expected a message about can't use decp to make annotation implement interface: "+msg,
   			msg.toString().indexOf("implement an interface")!=-1);
-  	msg = (IMessage)cR.getErrorMessages().get(2);
+  	msg = (IMessage)cR.getErrorMessages().get(0);
   	assertTrue("Expected a message about can't use decp to make Annotation parent of another type: "+msg,
   			msg.toString().indexOf("the parent of type")!=-1);
   	verifyWeavingMessagesOutput(cR,new String[]{});
