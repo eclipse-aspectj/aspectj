@@ -44,7 +44,7 @@ public class AJInstaller extends MatchingTask {
     static final String MAIN_CLASS = "$installer$.org.aspectj.Main";
     static final String CONTENTS_FILE = "$installer$/org/aspectj/resources/contents.txt";
     private String htmlSrc;
-
+    
     public void setHtmlSrc(String v) { htmlSrc = v; }
 
     private String resourcesSrc;
@@ -91,10 +91,8 @@ public class AJInstaller extends MatchingTask {
     protected void finishZipOutputStream(ZipOutputStream zOut) throws IOException, BuildException {
         writeContents(zOut);
         writeManifest(zOut);
-        File tmpDirF = File.createTempFile("tgz", ".di");
-        File tmpDir = new File(tmpDirF.getAbsolutePath() + "r");
-        tmpDirF.delete();
-        String tmp = tmpDir.getAbsolutePath();
+        File tempDir = setupTempDir();
+        String tmp = tempDir.getAbsolutePath();
 
         // installer class files
         Expand expand = new Expand();
@@ -134,15 +132,16 @@ public class AJInstaller extends MatchingTask {
         cd.execute();
         // now move these files into the jar
         setBasedir(tmp);
-        writeFiles(zOut, getFiles(tmpDir));
+        writeFiles(zOut, getFiles(tempDir));
         // and delete the tmp dir
         Delete dt = (Delete)project.createTask("delete");
         if (null == dt) {
             dt = new Delete();
             dt.setProject(getProject());
         }
-        dt.setDir(new File(tmp));
+        dt.setDir(tempDir);
         dt.execute();
+        tempDir = null;
     }
 
     static final char NEWLINE = '\n';
@@ -277,7 +276,25 @@ public class AJInstaller extends MatchingTask {
             fIn.close();
         }
     }
-
+    private File setupTempDir() throws BuildException {
+        File tmpDirF = null;
+        File tmpDir = null;
+        try {
+            tmpDirF = File.createTempFile("tgz", ".di");
+            tmpDir = new File(tmpDirF.getParentFile(), "AJInstaller");
+            tmpDirF.delete();
+        } catch (IOException e) {
+            // retrying below
+        }
+        if (null == tmpDir || !tmpDir.mkdirs()) {
+            tmpDir = new File("AJInstaller.finishZipOutputStream.tmp");
+            if (!tmpDir.mkdirs()) {
+                throw new BuildException("unable to make temp dir");
+            }
+        }
+        return tmpDir;
+    }
+    
     public void execute() throws BuildException {
         if (installerClassJar == null) {
             throw new BuildException("installerClassJar attribute must be set!");
@@ -313,7 +330,7 @@ public class AJInstaller extends MatchingTask {
             initZipOutputStream(zOut);
             writeDirs(zOut, dirs);
             writeFiles(zOut, files);
-            finishZipOutputStream(zOut);
+            finishZipOutputStream(zOut); // deletes temp dir
         } catch (IOException ioe) {
             String msg = "Problem creating " + archiveType + " " + ioe.getMessage();
             throw new BuildException(msg, ioe, location);
