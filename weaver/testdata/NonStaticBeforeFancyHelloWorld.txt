@@ -10,7 +10,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
   public static void main(String[]):
     method-execution(void FancyHelloWorld.main(java.lang.String[]))
     | field-get(java.io.PrintStream java.lang.System.out)
-    | |             GETSTATIC Aspect.ajc$perSingletonInstance LAspect;
+    | |             INVOKESTATIC Aspect.aspectOf ()LAspect;
     | |             INVOKEVIRTUAL Aspect.ajc_before ()V
     | |             GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 9)
     | field-get(java.io.PrintStream java.lang.System.out)
@@ -76,4 +76,5 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               ARETURN
     method-execution(java.lang.String FancyHelloWorld.getName())
   end public static String getName()
+
 end public abstract class FancyHelloWorld

@@ -329,6 +329,8 @@ public class Aspect {
 	}
 	
 	public static Aspect aspectOf() {
+		if (ajc$perSingletonInstance != null) return ajc$perSingletonInstance;
+		
 		return (Aspect) ajc$perCflowStack.peekInstance();
 	}
 	

@@ -62,10 +62,10 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
                     ALOAD_2
                     ASTORE 4
     method-execution(java.lang.String DynamicHelloWorld.doit(java.lang.String, java.util.List))
-    |               GETSTATIC MyTrace.ajc$perSingletonInstance LMyTrace;
+    |               INVOKESTATIC MyTrace.aspectOf ()LMyTrace;
     |               ALOAD_0
     |               INVOKEVIRTUAL Trace.ajc$before$Trace$51 (Ljava/lang/Object;)V
-    |               GETSTATIC MyTrace.ajc$perSingletonInstance LMyTrace;
+    |               INVOKESTATIC MyTrace.aspectOf ()LMyTrace;
     |               BIPUSH 3
     |               ANEWARRAY java.lang.Object
     |               ASTORE 6
@@ -90,7 +90,7 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
     |               GOTO L0
     |           L0: DUP
     |               ASTORE 7
-    |               GETSTATIC MyTrace.ajc$perSingletonInstance LMyTrace;
+    |               INVOKESTATIC MyTrace.aspectOf ()LMyTrace;
     |               ALOAD_0
     |               ALOAD 7
     |               INVOKEVIRTUAL MyTrace.ajc$afterReturning$MyTrace$6e (Ljava/lang/Object;Ljava/lang/Object;)V
@@ -113,7 +113,7 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
   end static final String doit_aroundBody0(DynamicHelloWorld, String, java.util.List)
 
   static final String doit_aroundBody2(DynamicHelloWorld, String, java.util.List):
-                    GETSTATIC MyTrace.ajc$perSingletonInstance LMyTrace;
+                    INVOKESTATIC MyTrace.aspectOf ()LMyTrace;
                     ALOAD_0
                     BIPUSH 3
                     ANEWARRAY java.lang.Object
