@@ -6,9 +6,12 @@
 This build module contains taskdefs and resources for doing builds
 and checking source licenses.
 
-To do a build, use Ant to run 
-<a href="build.xml">build.xml</a>
-from this directory.  
+To do a build, use Ant to run <a href="build.xml">build.xml</a>
+from this directory.  To run Ant, use <a href="../lib/ant">../lib/ant</a>
+scripts and libraries.  In particular, when running Ant from eclipse,
+do not use the default Eclipse Ant classpath; remove those jars and
+add all the libraries in <a href="../lib/ant/lib">../lib/ant/lib</a>
+as well as in <a href="../lib/junit">../lib/junit</a>.
 
 <p>
 The 
