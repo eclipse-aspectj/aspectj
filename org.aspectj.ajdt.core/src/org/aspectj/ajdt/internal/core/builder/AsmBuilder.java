@@ -321,7 +321,7 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 			new ArrayList());
 
 		if (kind == ProgramElementNode.Kind.METHOD) {
-			// !! should probably discriminate more
+			// TODO: should improve determining what the main method is
 			if (label.equals("main")) {
 				((ProgramElementNode)stack.peek()).setRunnable(true);
 			}	
