@@ -14,9 +14,7 @@
 
 package org.aspectj.ajde.internal;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 import org.aspectj.ajde.*;
 import org.aspectj.util.ConfigParser;
@@ -78,7 +76,9 @@ public class AspectJBuildManager implements BuildManager {
         if (configFile == null) {
             Ajde.getDefault().getErrorHandler().handleWarning("Please select a build configuration file.");
         } else {            
-            this.lastConfigFile = this.configFile;
+            // enforce batch builds after switching configurations
+            // even in incremental mode
+            lastConfigFile = this.configFile;
             this.configFile = configFile;
             if (!fresh && !configFile.equals(lastConfigFile)) {
                 fresh = true;
