@@ -1,6 +1,9 @@
-<project name="extdirs-setup" basedir="." default="injar.jar">
+<project name="extdirs-setup" basedir="." default="jars">
 
-	<target name="injar.jar">
+
+<target name="jars" depends="debugjar,nondebugjar"/>
+
+	<target name="nondebugjar">
 		<property 
 			name="classes.dir" 
 			location="${basedir}/../classes"/>
@@ -13,7 +16,27 @@
 			includes="pack/X.java"
 			srcdir="${basedir}"/>		
 		<zip 
-			destfile="${basedir}/../injar.jar">
+			destfile="${basedir}/../injar-nodebug.jar">
+			<fileset dir="${classes.dir}"/>	
+		</zip>
+		<delete dir="${classes.dir}"/>
+	</target>
+
+	<target name="debugjar">
+		<property 
+			name="classes.dir" 
+			location="${basedir}/../classes"/>
+
+		<mkdir dir="${classes.dir}"/>
+		<delete	dir="${classes.dir}"/>
+		<mkdir dir="${classes.dir}"/>
+		<javac 
+			destdir="${classes.dir}"
+			includes="pack/X.java"
+			debug="on"
+			srcdir="${basedir}"/>		
+		<zip 
+			destfile="${basedir}/../injar-debug.jar">
 			<fileset dir="${classes.dir}"/>	
 		</zip>
 		<delete dir="${classes.dir}"/>
