@@ -43,15 +43,15 @@ public class NullIdeTaskListManager implements TaskListManager {
         if (!hasWarning && IMessage.WARNING.isSameOrLessThan(message.getKind())) {
             hasWarning = true;
         }
-//    	System.out.println("> added sourceline task: " + message + ", file: " + sourceLocation.getSourceFile().getAbsolutePath()
-//    		+ ": " +  sourceLocation.getLine());
+    	System.out.println("> added sourceline task: " + message + ", file: " + message.getISourceLocation().getSourceFile().getAbsolutePath()
+    		+ ": " +  message.getISourceLocation().getLine());
     }
    
     public void addProjectTask(String message, IMessage.Kind kind) {
         if (!hasWarning && IMessage.WARNING.isSameOrLessThan(kind)) {
             hasWarning = true;
         }
-//    	System.out.println("> added project task: " + message + ", kind: " + kind);	
+    	System.out.println("> added project task: " + message + ", kind: " + kind);	
     }
 
     public boolean hasWarning() {

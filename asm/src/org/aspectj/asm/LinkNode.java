@@ -42,7 +42,9 @@ public class LinkNode extends StructureNode {
     public String toString() {
         String name = "";
         if (programElementNode.getProgramElementKind().equals(ProgramElementNode.Kind.ADVICE) ||
-            programElementNode.getProgramElementKind().equals(ProgramElementNode.Kind.INTRODUCTION) ||
+            programElementNode.getProgramElementKind().equals(ProgramElementNode.Kind.INTER_TYPE_FIELD) ||
+			programElementNode.getProgramElementKind().equals(ProgramElementNode.Kind.INTER_TYPE_METHOD) ||
+			programElementNode.getProgramElementKind().equals(ProgramElementNode.Kind.INTER_TYPE_CONSTRUCTOR) ||
             programElementNode.getProgramElementKind().equals(ProgramElementNode.Kind.CODE)) {
             name = programElementNode.parent.toString() + ": " + programElementNode.getName();
 			StructureNode grandparent = programElementNode.parent.parent;

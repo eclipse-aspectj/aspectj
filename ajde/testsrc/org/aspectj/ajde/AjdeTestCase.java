@@ -36,7 +36,7 @@ public class AjdeTestCase extends TestCase {
 	/**
 	 * Waits on the build complete.
 	 */
-	protected void doSynchronousBuild(String configFilePath) {
+	protected boolean doSynchronousBuild(String configFilePath) {
 		testerBuildListener.reset();
 		File configFile = openFile(configFilePath);
 		Ajde.getDefault().getBuildManager().build(configFile.getAbsolutePath());
@@ -45,6 +45,7 @@ public class AjdeTestCase extends TestCase {
 				Thread.sleep(300);
 			} catch (InterruptedException ie) { } 
 		}	
+		return testerBuildListener.getBuildSucceeded();
 	}	
 
 	protected void setUp(String testDataPath) throws Exception {

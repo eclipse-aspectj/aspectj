@@ -63,6 +63,27 @@ public class StructureModel implements Serializable {
         return root != null && fileMap != null;
     }
 
+	/** 
+	 * Returns the first match
+	 * 
+	 * @param parent
+	 * @param kind		not null
+	 * @param decErrLabel
+	 * @return null if not found
+	 */
+	public ProgramElementNode findNode(ProgramElementNode parent, ProgramElementNode.Kind kind, String name) {
+		for (Iterator it = parent.getChildren().iterator(); it.hasNext(); ) {
+			ProgramElementNode node = (ProgramElementNode)it.next();
+			if (node.getProgramElementKind().equals(kind) 
+				&& name.equals(node.getName())) {
+				return node;
+			} else {
+				ProgramElementNode childSearch = findNode(node, kind, name);
+				if (childSearch != null) return childSearch;
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * @param packageName	if null default package is searched

@@ -107,7 +107,11 @@ public abstract class AbstractIconRegistry {
 			return ASPECT;
 		} else if (kind == ProgramElementNode.Kind.INITIALIZER) {
 			return INITIALIZER;
-		} else if (kind == ProgramElementNode.Kind.INTRODUCTION) {
+		} else if (kind == ProgramElementNode.Kind.INTER_TYPE_CONSTRUCTOR) {
+			return INTRODUCTION;
+		} else if (kind == ProgramElementNode.Kind.INTER_TYPE_FIELD) {
+			return INTRODUCTION;
+		} else if (kind == ProgramElementNode.Kind.INTER_TYPE_METHOD) {
 			return INTRODUCTION;
 		} else if (kind == ProgramElementNode.Kind.CONSTRUCTOR) {
 			return CONSTRUCTOR;
@@ -126,6 +130,8 @@ public abstract class AbstractIconRegistry {
 		} else if (kind == ProgramElementNode.Kind.DECLARE_ERROR) {
 			return DECLARE_ERROR;
 		} else if (kind == ProgramElementNode.Kind.DECLARE_SOFT) {
+			return DECLARE_SOFT;
+		} else if (kind == ProgramElementNode.Kind.DECLARE_PRECEDENCE) {
 			return DECLARE_SOFT;
 		} else if (kind == ProgramElementNode.Kind.CODE) {
 			return CODE;

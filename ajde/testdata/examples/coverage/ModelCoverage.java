@@ -15,6 +15,11 @@ class Point {
 	
 	public void setX(int x) { this.x = x; }
 	
+	public int changeX(int x) { 
+		this.x = x;
+		return x;
+	}
+	
 	void doIt() { 
 		try {
 			File f = new File(".");
@@ -26,6 +31,10 @@ class Point {
 		new Point();
 	}
 } 
+
+class SubPoint extends Point { }
+
+class Line { }
 
 aspect AdvisesRelationCoverage {
     before(): execution(*..*.new(..)) { }
@@ -40,26 +49,46 @@ aspect AdvisesRelationCoverage {
     before(): within(*) && execution(Point.new()) { }
 }
 
+aspect AdviceNamingCoverage {
+	pointcut named(): call(* *.mumble());
+	pointcut namedWithOneArg(int i): call(int Point.changeX(int)) && args(i);
+	pointcut namedWithArgs(int i, int j): set(int Point.x) && args(i, j);
+
+	after(): named() { }	
+	after(int i, int j) returning: namedWithArgs(i, j) { }
+	after() throwing: named() { }
+	after(): named() { }
+	
+	before(): named() { }
+	
+	int around(int i): namedWithOneArg(i) { return i;}
+	int around(int i) throws SizeException: namedWithOneArg(i) { return proceed(i); }
+	
+	before(): named() { }	
+	
+	before(): call(* *.mumble()) { }
+  
+}
+  
 aspect InterTypeDecCoverage {
 
     pointcut illegalNewFigElt(): call(Point.new(..)) && !withincode(* *.doIt(..));
 
-    declare error: illegalNewFigElt():
-	    "Illegal figure element constructor call.";
-
-    declare warning: illegalNewFigElt():
-	    "Illegal figure element constructor call.";
+    declare error: illegalNewFigElt(): "Illegal constructor call.";
+    declare warning: illegalNewFigElt(): "Illegal constructor call.";
 
     declare parents: Point extends java.io.Serializable;
+    declare parents: Point+ implements java.util.Observable;
+	declare parents: Point && Line implements java.util.Observable;
+    declare soft: SizeException : call(* Point.getX());
+	declare precedence: AdviceCoverage, InterTypeDecCoverage, *;
 
-    declare parents: Point implements java.util.Observable;
-
-    //declare soft: Point: call(* *(..));
-
-    public String Point.getName() { return "xxx"; }
-
-    public int Point.xxx = 0; 
+	public int Point.xxx = 0;
+    public int Point.check(int i, Line l) { return 1 + i; }
+//	public Line.new(String s) {  }
 }
+
+class SizeException extends Exception { } 
 
 aspect AdviceCoverage {
 

@@ -100,8 +100,12 @@ public class StructureModelTest extends AjdeTestCase {
 		ProgramElementNode pNode = (ProgramElementNode)((ProgramElementNode)node).getChildren().get(1);
 		ProgramElementNode pointcut = (ProgramElementNode)pNode.getChildren().get(0);
 		assertTrue("kind", pointcut.getProgramElementKind().equals(ProgramElementNode.Kind.POINTCUT));
-		assertTrue("found node: " + pointcut.getName(), pointcut.getName().equals("testptct"));
+		assertTrue("found node: " + pointcut.getName(), pointcut.getName().equals("testptct()"));
+	}
 
+	public void testDeclare() {
+		
+		
 	}
 
 	public void testFileNodeFind() throws IOException {

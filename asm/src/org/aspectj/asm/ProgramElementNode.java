@@ -25,7 +25,7 @@ import org.aspectj.bridge.ISourceLocation;
  */
 public class ProgramElementNode extends StructureNode {
 		
-    private List modifiers = new ArrayList();
+	private List modifiers = new ArrayList();
     private List relations = new ArrayList();
 
 	private Kind kind;
@@ -39,7 +39,8 @@ public class ProgramElementNode extends StructureNode {
     
     private String bytecodeName;
     private String bytecodeSignature;
-    
+    private String fullSignature;
+	private String returnType;
     
     /**
      * Used during de-externalization.
@@ -278,7 +279,9 @@ public class ProgramElementNode extends StructureNode {
 		public static final Kind INTERFACE = new Kind("interface");
 		public static final Kind ASPECT = new Kind("aspect");
 		public static final Kind INITIALIZER = new Kind("initializer");
-		public static final Kind INTRODUCTION = new Kind("introduction");
+		public static final Kind INTER_TYPE_FIELD = new Kind("inter-type field");
+		public static final Kind INTER_TYPE_METHOD = new Kind("inter-type method");
+		public static final Kind INTER_TYPE_CONSTRUCTOR = new Kind("inter-type constructor");
 		public static final Kind CONSTRUCTOR = new Kind("constructor");
 		public static final Kind METHOD = new Kind("method");
 		public static final Kind FIELD = new Kind("field");  
@@ -288,13 +291,15 @@ public class ProgramElementNode extends StructureNode {
 		public static final Kind DECLARE_WARNING = new Kind("declare warning");
 		public static final Kind DECLARE_ERROR = new Kind("declare error");
 		public static final Kind DECLARE_SOFT = new Kind("declare soft");
+		public static final Kind DECLARE_PRECEDENCE= new Kind("declare precedence");
 		public static final Kind CODE = new Kind("decBodyElement");
 		public static final Kind ERROR = new Kind("error");
 
 		public static final Kind[] ALL = { PROJECT, PACKAGE, FILE, FILE_JAVA, 
 			FILE_ASPECTJ, FILE_LST, CLASS, INTERFACE, ASPECT,
-			INITIALIZER, INTRODUCTION, CONSTRUCTOR, METHOD, FIELD, POINTCUT, ADVICE, 
-			DECLARE_PARENTS, DECLARE_WARNING, DECLARE_ERROR, DECLARE_SOFT, CODE, ERROR };
+			INITIALIZER, INTER_TYPE_FIELD, INTER_TYPE_METHOD, INTER_TYPE_CONSTRUCTOR, 
+			CONSTRUCTOR, METHOD, FIELD, POINTCUT, ADVICE, DECLARE_PARENTS, 
+			DECLARE_WARNING, DECLARE_ERROR, DECLARE_SOFT, CODE, ERROR };
 		
 		public static Kind getKindForString(String kindString) {
 			for (int i = 0; i < ALL.length; i++) {
@@ -382,6 +387,22 @@ public class ProgramElementNode extends StructureNode {
 
 	public void setBytecodeSignature(String bytecodeSignature) {
 		this.bytecodeSignature = bytecodeSignature;
+	}
+
+	public String getFullSignature() {
+		return fullSignature;
+	}
+
+	public void setFullSignature(String string) {
+		fullSignature = string;
+	}
+	
+	public void setKind(Kind kind) {
+		this.kind = kind;
+	}
+
+	public void setReturnType(String returnType) {
+		this.returnType = returnType;
 	}
 
 }

@@ -21,7 +21,8 @@ import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.asm.*;
 import org.aspectj.bridge.*;
 import org.aspectj.util.LangUtil;
-import org.aspectj.weaver.Member;
+import org.aspectj.weaver.*;
+import org.aspectj.weaver.patterns.*;
 import org.eclipse.jdt.internal.compiler.*;
 import org.eclipse.jdt.internal.compiler.ast.*;
 import org.eclipse.jdt.internal.compiler.lookup.*;
@@ -39,6 +40,7 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 
 	private final Stack stack;
 	private final CompilationResult currCompilationResult;
+	private AsmNodeFormatter formatter = new AsmNodeFormatter();
 	
     protected AsmBuilder(CompilationResult result) {
         LangUtil.throwIaxIfNull(result, "result");
@@ -159,9 +161,10 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 			name,
 			kind,
 			makeLocation(typeDeclaration),
-			typeDeclaration.modifiers,
-			"",
+			typeDeclaration.modifiers,			"",
 			new ArrayList());
+		
+//		peNode.setFullSignature(typeDeclaration.());
 		
 		((StructureNode)stack.peek()).addChild(peNode);
 		stack.push(peNode);
@@ -187,6 +190,8 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 			memberTypeDeclaration.modifiers,
 			"",
 			new ArrayList());
+		
+		peNode.setFullSignature(memberTypeDeclaration.toString());
 		
 		((StructureNode)stack.peek()).addChild(peNode);
 		stack.push(peNode);
@@ -250,54 +255,30 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 		return (StructureNode)stack.peek();
 	}	
 	
-	// !!! improve name and type generation
-	// TODO: improve handling of malformed methodDeclaration.binding
-	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {
-		ProgramElementNode.Kind kind = ProgramElementNode.Kind.METHOD;
-		String label = new String(methodDeclaration.selector);
-		
-		if (methodDeclaration instanceof AdviceDeclaration) { 
-			kind = ProgramElementNode.Kind.ADVICE;
-			label = translateAdviceName(label);
-		} else if (methodDeclaration instanceof PointcutDeclaration) { 
-			kind = ProgramElementNode.Kind.POINTCUT;
-			label = translatePointcutName(label);
-		} else if (methodDeclaration instanceof DeclareDeclaration) { 
-			DeclareDeclaration declare = (DeclareDeclaration)methodDeclaration;
-			label = translateDeclareName(declare.toString());
-			
-			// TODO: fix this horrible way of checking what kind of declare it is
-			if (label.indexOf("warning") != -1) {
-				kind = ProgramElementNode.Kind.DECLARE_WARNING;
-			} else if (label.indexOf("error") != -1) {
-				kind = ProgramElementNode.Kind.DECLARE_ERROR;
-			} else if (label.indexOf("parents") != -1) {
-				kind = ProgramElementNode.Kind.DECLARE_PARENTS;
-			} else if (label.indexOf("soft") != -1) {
-				kind = ProgramElementNode.Kind.DECLARE_SOFT;
-		    } else {
-				kind = ProgramElementNode.Kind.ERROR;	
-			}
-		} else if (methodDeclaration instanceof InterTypeDeclaration) {
-			kind = ProgramElementNode.Kind.INTRODUCTION;
-			label = translateInterTypeDecName(new String(((InterTypeDeclaration)methodDeclaration).selector));
-		}
-		
+	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {		
 		ProgramElementNode peNode = new ProgramElementNode(
-			label,
-			kind,
+			"",
+			ProgramElementNode.Kind.ERROR,
 			makeLocation(methodDeclaration),
 			methodDeclaration.modifiers,
 			"",
 			new ArrayList());
 
-		if (kind == ProgramElementNode.Kind.METHOD) {
-			// TODO: should improve determining what the main method is
-			if (label.equals("main")) {
+		formatter.genLabelAndKind(methodDeclaration, peNode);
+		genBytecodeInfo(methodDeclaration, peNode);
+
+		// TODO: should improve determining what the main method is
+		if (peNode.getProgramElementKind().equals(ProgramElementNode.Kind.METHOD)) {
+			if (peNode.getName().equals("main")) {
 				((ProgramElementNode)stack.peek()).setRunnable(true);
 			}	
 		}
+		
+		stack.push(peNode);
+		return true;
+	}
 
+	private void genBytecodeInfo(MethodDeclaration methodDeclaration, ProgramElementNode peNode) {
 		if (methodDeclaration.binding != null) {
 			String memberName = "";
 			String memberBytecodeSignature = "";
@@ -308,14 +289,11 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 			} catch (NullPointerException npe) {
 				memberName = "<undefined>";
 			}
-
+		
 			peNode.setBytecodeName(memberName);
 			peNode.setBytecodeSignature(memberBytecodeSignature);
 		}
 		((StructureNode)stack.peek()).addChild(peNode);
-		stack.push(peNode);
-		
-		return true;
 	}
 
 	public void endVisit(MethodDeclaration methodDeclaration, ClassScope scope) {
@@ -509,46 +487,4 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 			currCompilationResult.lineSeparatorPositions,
 			td.declarationSourceEnd);
 	}
-	
-
-	// !!! move or replace
-	private String translateAdviceName(String label) {
-		if (label.indexOf("before") != -1) return "before";
-		if (label.indexOf("returning") != -1) return "after returning";
-		if (label.indexOf("after") != -1) return "after";
-		if (label.indexOf("around") != -1) return "around";
-		else return "<advice>";
-	}
-	
-	// !!! move or replace
-	private String translateDeclareName(String name) {
-		int colonIndex = name.indexOf(":");
-		if (colonIndex != -1) {
-			return name.substring(0, colonIndex);
-		} else { 
-			return name;
-		}
-	}
-
-	// !!! move or replace
-	private String translateInterTypeDecName(String name) {
-		int index = name.lastIndexOf('$');
-		if (index != -1) {
-			return name.substring(index+1);
-		} else { 
-			return name;
-		}
-	}
-
-	// !!! move or replace
-	private String translatePointcutName(String name) {
-		int index = name.indexOf("$$")+2;
-		int endIndex = name.lastIndexOf('$');
-		if (index != -1 && endIndex != -1) {
-			return name.substring(index, endIndex);
-		} else { 
-			return name;
-		}
-	}
-
 }

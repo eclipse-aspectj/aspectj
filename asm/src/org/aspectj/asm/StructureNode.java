@@ -188,6 +188,11 @@ public abstract class StructureNode implements Serializable, Comparable {
 //    	StructureNode cloneNode = new StructureNode(name, kind, cloneChildren);
 //    	return cloneNode;
 //	} 
+
+	public void setName(String string) {
+		name = string;
+	}
+
 }
 
 
