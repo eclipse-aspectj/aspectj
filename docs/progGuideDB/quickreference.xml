@@ -682,7 +682,7 @@
         </literal>
       </blockquote>
     where <replaceable>PerClause</replaceable> defines how the aspect is
-    instantiated and associated (<literal>issingleton</literal> by
+    instantiated and associated (<literal>issingleton()</literal> by
     default):
     </para>
 
@@ -699,7 +699,7 @@
         <tbody valign="top">
           <row>
             <entry>
-              [ <literal>issingleton</literal> ]
+              [ <literal>issingleton()</literal> ]
             </entry>
             <entry>
               One instance of the aspect is made.  This is

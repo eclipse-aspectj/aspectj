@@ -2966,11 +2966,11 @@ ModifiersPattern =
 
         <itemizedlist>
           <listitem><literal>aspect <replaceable>Id</replaceable> { ... }</literal></listitem>
-          <listitem><literal>aspect <replaceable>Id</replaceable> issingleton { ... }</literal></listitem>
+          <listitem><literal>aspect <replaceable>Id</replaceable> issingleton() { ... }</literal></listitem>
         </itemizedlist>
 
         <para>
-          By default (or by using the modifier <literal>issingleton</literal>)
+          By default (or by using the modifier <literal>issingleton()</literal>)
           an aspect has exactly one instance that cuts across the entire
           program.  That instance is available at any time during program
           execution with the static method <literal>aspectOf()</literal>
