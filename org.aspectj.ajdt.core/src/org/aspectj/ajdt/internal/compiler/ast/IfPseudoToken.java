@@ -95,15 +95,17 @@ public class IfPseudoToken extends PseudoToken {
 	private Argument[] makeArguments(MethodDeclaration enclosingDec) {
 		Argument[] baseArguments = enclosingDec.arguments;
 		int len = baseArguments.length;
+		if (enclosingDec instanceof AdviceDeclaration) {
+			len = ((AdviceDeclaration)enclosingDec).baseArgumentCount;
+		}
+		
 		Argument[] ret = new Argument[len];
 		for (int i=0; i < len; i ++) {
 			Argument a = baseArguments[i];
 			ret[i] = new Argument(a.name, AstUtil.makeLongPos(a.sourceStart, a.sourceEnd),
 								a.type, Modifier.FINAL);
 		}
-		if (!(enclosingDec instanceof AdviceDeclaration)) {
-			ret = AdviceDeclaration.addTjpArguments(ret);
-		}
+		ret = AdviceDeclaration.addTjpArguments(ret);
 		
 		return ret;
 	}
