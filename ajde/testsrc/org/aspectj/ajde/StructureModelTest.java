@@ -98,8 +98,12 @@ public class StructureModelTest extends AjdeTestCase {
 
 	public void testFileNodeFind() throws IOException {
 		File testFile = openFile("figures-coverage/figures/Main.java");
+		
+//		System.err.println(((IProgramElement)((IProgramElement)Ajde.getDefault().getStructureModelManager().getHierarchy().getRoot().getChildren().get(0)).getChildren().get(3)).getSourceLocation().getSourceFile().getAbsolutePath());
+//		System.err.println(testFile.getAbsolutePath());
+		
 		IProgramElement node = Ajde.getDefault().getStructureModelManager().getHierarchy().findElementForSourceLine(
-			testFile.getCanonicalPath(), 1);
+			testFile.getAbsolutePath(), 1);
 		assertTrue("find result", node != null) ;	
 		assertEquals("find result has children", 3, node.getChildren().size()) ;	
 		IProgramElement pNode = (IProgramElement)node;
@@ -114,7 +118,7 @@ public class StructureModelTest extends AjdeTestCase {
         assertTrue("model exists", model != null);
 		assertTrue("root exists", model.getRoot() != null);
 		File testFile = openFile("figures-coverage/figures/Main.java");
-		IProgramElement node = model.findElementForSourceLine(testFile.getCanonicalPath(), 11);	
+		IProgramElement node = model.findElementForSourceLine(testFile.getAbsolutePath(), 11);	
 		assertTrue("find result", node != null);	
 		IProgramElement pNode = (IProgramElement)((IProgramElement)node).getParent();
         if (null == pNode) {

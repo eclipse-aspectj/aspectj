@@ -30,6 +30,7 @@ public class AjdeTests extends TestCase {
 		suite.addTestSuite(AsmDeclarationsTest.class);
 		suite.addTestSuite(AsmRelationshipsTest.class);
 		suite.addTestSuite(ResourceCopyTestCase.class);
+		suite.addTestSuite(ModelPerformanceTest.class);
 		
         //$JUnit-END$
         return suite;
