@@ -1,0 +1,97 @@
+<html>
+<title>Incremental test of AjcTask Ant task</title>
+<body>
+<h2>Incremental test of AjcTask Ant task</h2>
+This directory contains files for manually testing the
+incremental behavior of the AjcTask Ant task.
+It has an Ant script which builds two input jars
+and runs an incremental test using a tag file.
+<p>
+The results must be verified by hand manually at present;
+This test should be updated to run automatically.
+
+<h3>Sample procedure</h3>
+This shows how to set up the test and check whether
+the incremental tag file and injar-copying features work.
+Throughout, <code>{ant}</code> is assumed to be
+<code>../../../lib/ant/bin/ant</code> and the directory
+is assumed to be this directory, with the Ant build script
+<a href="incTest.xml">incTest.xml</a>.
+The script uses the eclipse classpath rather than aspectjtools.jar,
+so that updates to the sources can be tested without
+rebuilding the distribution.
+
+<ol>
+<li>Set up the output jars
+<pre>  {ant} -f incTest.xml setup</pre>
+    This should produce <code>one.jar</code> and <code>two.jar</code>
+    in the directory <a href="injars">injars/</a>.
+    <p>
+    </li>
+    
+<li>Start the run with the default settings 
+  (use <code>output/tagfile.txt</code> as the tag file
+  and to include the non-.class contents of the input jars
+  in the output jar):
+<pre>  {ant} -f incTest.xml test</pre>
+The task will do an initial compilation and silently wait.
+    <p>
+    </li>
+<li>In another shell, test the classes in the generated output jar:
+<pre>  export CLASSPATH="../../../lib/test/aspectjrt.jar;output/outjar.jar"
+  java packageOne.Main</pre>
+	Inspect the files in the <a href="src">src/</a> and 
+	<a href="injarSrc">injarSrc/</a> directories to find other
+	main classes and to determine the expected result of the aspect.
+	As of this writing,  
+    the aspect <a href="src/TraceMains.java">src/TraceMains.java</a>
+	should emit messages before and after
+	the execution of any static main(String[]) method.
+    <p>
+    </li>
+<li>Also test that the injar files were copied to the output jar.
+    The non-.class files in <a href="injarSrc">injarSrc/</a>
+    should be included in the output jar:
+<pre>  jar tf output/outjar.jar</pre>
+    <p>
+    </li>
+<li>To test incremental compiles,
+    edit the aspect <a href="src/TraceMains.java">src/TraceMains.java</a>
+    to modify the behavior.  You can also modify the input jars or
+    source files.
+    Then touch or edit <a href="output/tagfile.txt">output/tagfile.txt</a>
+    to provoke recompilation.
+    <p>
+    </li>
+<li>Test the generated output jar again
+    to see if the changes are reflected in the runtime behavior
+    and if the non-.class files are being copied correctly.
+    <p>
+    </li>
+<li>Repeat this process until satisfied.  Delete the tagfile to quit:
+<pre>  rm output/tagfile.txt</pre>
+    <p>
+    </li>
+</ol>
+
+To test the <code>-incremental</code> option or to test without
+copying input jar files or using an output jar, edit the 
+<a href="incTest.xml">incTest.xml</a> script and redo the test.
+<p>
+
+<h3>Clean-up</h3>
+Take care to preserve CVS state after running this test.
+It calls on you to edit checked-in files and generates files
+to local repository directories.  The best thing is to delete
+the <code>output</code> and <code>injars</code> directories
+and revert to repository forms for sources (unless fixing them).
+
+<h3>Upgrade</h3>
+This needs to be upgraded to run manually.
+There is a file/tree-comparison utility to revive from the
+aspectj-attic which can be used to compare expected and actual
+results of the jar files.  Setting up the tasks to run incrementally
+might be done using the parallel task, but...
+<hr>
+</body>
+</html>

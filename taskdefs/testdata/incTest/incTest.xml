@@ -1,0 +1,70 @@
+
+<!-- to test incremental task, run setup then test -->
+<project default="test" basedir=".">
+	<target name="init">
+		<property name="td"
+			location="${basedir}/../.."/>
+		<property name="test.dir"
+			location="${td}/testdata/incTest"/>
+      <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+          <classpath> 
+            <pathelement path="${td}/bin"/> 
+            <pathelement path="${td}/src"/> 
+            <pathelement path="${td}/../asm/bin"/> 
+            <pathelement path="${td}/../bridge/bin"/> 
+            <pathelement path="${td}/../org.aspectj.ajdt.core/bin"/> 
+            <pathelement path="${td}/../org.eclipse.jdt.core/bin"/> 
+            <pathelement path="${td}/../util/bin"/> 
+            <pathelement path="${td}/../weaver/bin"/> 
+            <pathelement path="${td}/../lib/eclipse2.0/jdtDepends.jar"/> 
+            <pathelement path="${td}/../lib/bcel/bcel.jar"/> 
+          </classpath>
+      </taskdef>
+	</target>
+
+	<target name="setup" depends="init"
+		description="create input jars">
+		<mkdir dir="${test.dir}/injars"/>
+		<iajc outjar="${test.dir}/injars/oneClasses.jar"
+			classpath="${td}/../lib/test/aspectjrt.jar"
+			sourceroots="${test.dir}/injarSrc/one"/>
+		<iajc outjar="${test.dir}/injars/twoClasses.jar"
+			classpath="${td}/../lib/test/aspectjrt.jar"
+			sourceroots="${test.dir}/injarSrc/two"/>		
+		<zip zipfile="${test.dir}/injars/one.jar">
+			<zipfileset src="${test.dir}/injars/oneClasses.jar"/>
+			<fileset dir="${test.dir}/injarSrc/one"
+				includes="**/*"
+				excludes="**/*.java"/>
+		</zip>
+		<zip zipfile="${test.dir}/injars/two.jar">
+			<zipfileset src="${test.dir}/injars/twoClasses.jar"/>
+			<fileset dir="${test.dir}/injarSrc/two"
+				includes="**/*"
+				excludes="**/*.java"/>
+		</zip>
+		<delete>
+			<fileset dir="${test.dir}/injars"
+				includes="*Classes.jar"/>
+		</delete>
+	</target>
+
+	<target name="test" depends="init">
+		<mkdir dir="${test.dir}/output"/>
+		<property name="tag.file"
+			location="${test.dir}/output/tagFile.txt"/>
+	    <echo message="edit to recompile, delete to quit" 
+	    	file="${tag.file}"/>
+	    <echo message="update to recompile, delete to quit: ${tag.file}"/>
+		<iajc outjar="${test.dir}/output/outjar.jar"
+			injars="${test.dir}/injars/one.jar;${test.dir}/injars/two.jar"
+			classpath="${td}/../lib/test/aspectjrt.jar"
+			sourceroots="${test.dir}/src"
+			xCopyInjars="true"
+			tagFile="${tag.file}"
+            verbose="on"/>      
+            <!--
+			incremental="true"
+			-->
+	</target>
+</project>
