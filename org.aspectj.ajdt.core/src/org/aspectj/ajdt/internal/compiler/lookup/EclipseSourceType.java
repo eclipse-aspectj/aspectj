@@ -209,6 +209,18 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 		return binding.isInterface();
 	}
 
+	// XXXAJ5: Should be constants in the eclipse compiler somewhere, once it supports 1.5
+	public final static short ACC_ANNOTATION   = 0x2000;
+	public final static short ACC_ENUM         = 0x4000;
+	
+	public boolean isEnum() {
+		return (binding.getAccessFlags() & ACC_ENUM)!=0;
+	}
+	
+	public boolean isAnnotation() {
+		return (binding.getAccessFlags() & ACC_ANNOTATION)!=0;
+	}
+
 	public PerClause getPerClause() {
 		//should probably be: ((AspectDeclaration)declaration).perClause;
 		// but we don't need this level of detail, and working with real per clauses
