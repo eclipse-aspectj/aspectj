@@ -1022,16 +1022,7 @@
         </compile>
     </ajc-test>
 
-   <!-- ======================================================================================= -->
-   <!--               declare annotation                                                        -->
-   <!-- ======================================================================================= -->
-
-   <ajc-test dir="java5/annotations/declare" title="basic declare annotation parse test">
-        <compile files="BasicParseTest.aj" options="-1.5">
-        </compile>
-    </ajc-test>
-
-   <!-- ======================================================================================= -->
+ <!-- ======================================================================================= -->
    <!--               ajdk examples                                                             -->
    <!-- ======================================================================================= -->
    <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: annotating aspects chapter">
@@ -1207,7 +1198,7 @@
             <message kind="warning" line="54" text="@Persisted"/>
             <message kind="warning" line="60" text="@Persisted"/>
         </compile>
-        <run class="PrecedenceAnnotations"/>
+        <run class="DeclareAnnotation"/>
     </ajc-test>  
     
     <ajc-test dir="java5/covariance/ajdk" title="ajdk: covariance">
@@ -1252,5 +1243,701 @@
             </stdout>
         </run>
     </ajc-test>
-</suite>
 
+   <!-- ======================================================================================= -->
+   <!--               declare annotation                                                        -->
+   <!-- ======================================================================================= -->
+
+   <ajc-test dir="java5/annotations/declare" title="basic declare annotation parse test">
+        <compile files="BasicParseTest.aj" options="-1.5">
+        </compile>
+    </ajc-test>
+
+   <!-- ======================================================================================= -->
+   <!--               declare annotation (@type)                                                        -->
+   <!-- ======================================================================================= -->
+
+    <ajc-test dir="java5/annotations/declare" title="declare @type 1">
+        <compile files="DecaType1.java" options="-1.5"/>
+        <run class="DecaType1">
+          <stderr>
+        	<line text="annotation is @MyAnnotation()"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations/declare" title="declare @type 2">
+        <compile files="DecaType2.java" options="-1.5,-Xlint:ignore" >
+        </compile>
+        <run class="DecaType2">
+        <stderr>
+        	<line text="annotation on DecaType2 is @MyAnnotation()"/>
+        	<line text="annotation on X is @MyAnnotation()"/>
+        	<line text="annotation on MyAnnotation is @MyAnnotation()"/>
+        </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations/declare" title="declare @type - with matching pointcut">
+        <compile files="DecaType3.java" options="-1.5"/>
+        <run class="DecaType3">
+        	<stderr>
+               <line text="hello world"/>
+               <line text="advice running"/>
+            </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations/declare" title="declare @type - binary weaving">
+        <weave classesFiles="BaseTypes.java"
+               aspectsFiles="DecaTypeBin1.aj,Colored.java"
+               options="-1.5"  xlintfile="ignoreTypeNotExposed.properties">
+        </weave>
+        <run class="BaseTypes">
+        <stderr>
+        	<line text="Color identified on class X"/>
+        	<line text="A.m() running"/>
+        	<line text="A.m() running"/>
+        	<line text="A.m() running"/>
+        </stderr>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/declare" title="declare @type - complex annotation - binary weaving">
+        <weave classesFiles="BaseTypes.java" aspectsFiles="DecaTypeBin2.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="BaseTypes">
+        	<stderr>
+        		<line text="ComplexAnnotation identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="A.m() running"/>
+        		<line text="A.m() running"/>
+        	</stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations/declare" title="declare @type - complex annotation - source weaving">
+        <compile files="BaseTypes.java,DecaTypeBin2.aj" options="-1.5"/>
+        <run class="BaseTypes">
+        	<stderr>
+        		<line text="ComplexAnnotation identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="A.m() running"/>
+        		<line text="A.m() running"/>
+        	</stderr>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/declare" title="declare @type - two annotations hit one type - source weaving">
+        <compile files="BaseTypes.java,DecaTypeBin3.aj" options="-1.5"/>
+        <run class="BaseTypes">
+        	<stderr>
+        		<line text="Color identified on execution(void A.m())"/>
+        		<line text="Fruit identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="A.m() running"/>
+        		<line text="A.m() running"/>
+        	</stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations/declare" title="declare @type - two annotations hit one type - binary weaving">
+        <weave classesFiles="BaseTypes.java" aspectsFiles="DecaTypeBin3.aj" options="-1.5"  xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="BaseTypes">
+        	<stderr>
+        		<line text="Color identified on execution(void A.m())"/>
+        		<line text="Fruit identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="A.m() running"/>
+        		<line text="A.m() running"/>
+        	</stderr>
+        </run> 	 	
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations/declare" title="declare @type - declare parents interactions (order 1) - binary weaving">
+        <weave classesFiles="BaseTypes.java" aspectsFiles="DecaDecpInteractions1.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="BaseTypes">
+        	<stderr>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="Color annotation identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        	</stderr>
+        </run>
+    </ajc-test>
+    <ajc-test dir="java5/annotations/declare" title="declare @type - declare parents interactions (order 1) - source weaving">
+        <compile files="BaseTypes.java,DecaDecpInteractions1.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="BaseTypes">
+        	<stderr>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="Color annotation identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        	</stderr>
+        </run>
+    </ajc-test>
+    
+    
+    <ajc-test dir="java5/annotations/declare" title="declare @type - declare parents interactions (order 2) - binary weaving">
+        <weave classesFiles="BaseTypes.java" aspectsFiles="DecaDecpInteractions2.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="BaseTypes">
+        	<stderr>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="Color annotation identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        	</stderr>
+        </run>
+    </ajc-test>
+    <ajc-test dir="java5/annotations/declare" title="declare @type - declare parents interactions (order 2) - source weaving">
+        <compile files="BaseTypes.java,DecaDecpInteractions2.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="BaseTypes">
+        	<stderr>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="Color annotation identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        	</stderr>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/declare" title="declare @type - declare parents interactions (order 3) - binary weaving">
+        <weave classesFiles="BaseTypes.java" aspectsFiles="DecaDecpInteractions3.aj" options="-1.5,-Xlint:ignore"/>
+        <run class="BaseTypes">
+        	<stderr>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="Color annotation identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="Color annotation identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="Color annotation identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        	</stderr>
+        </run>
+    </ajc-test>
+    <ajc-test dir="java5/annotations/declare" title="declare @type - declare parents interactions (order 3) - source weaving">
+        <compile files="BaseTypes.java,DecaDecpInteractions3.aj" options="-1.5,-Xlint:ignore"/>
+        <run class="BaseTypes">
+        	<stderr>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="Color annotation identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="Color annotation identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="Color annotation identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        	</stderr>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/declare" title="declare @type - declare parents interactions (order 4) - binary weaving">
+        <weave classesFiles="BaseTypes.java" aspectsFiles="DecaDecpInteractions4.aj" options="-1.5,-Xlint:ignore"/>
+        <run class="BaseTypes">
+        	<stderr>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="Color annotation identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="Color annotation identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="Color annotation identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        	</stderr>
+        </run>
+    </ajc-test>
+    <ajc-test dir="java5/annotations/declare" title="declare @type - declare parents interactions (order 4) - source weaving">
+        <compile files="BaseTypes.java,DecaDecpInteractions4.aj" options="-1.5,-Xlint:ignore"/>
+        <run class="BaseTypes">
+        	<stderr>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="Color annotation identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="Color annotation identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="Marker interface identified on execution(void A.m())"/>
+        		<line text="Color annotation identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        	</stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations/declare" title="declare @type - annotating an already annotated type - binary weaving">
+        <weave classesFiles="AnnotatedType.java" aspectsFiles="DecaTypeBin4.aj" options="-1.5,-Xlint:ignore"/>
+        <run class="AnnotatedType">
+        	<stderr>
+        		<line text="Color identified on execution(void AnnotatedType.m())"/>
+        		<line text="Fruit identified on execution(void AnnotatedType.m())"/>
+        		<line text="m() running"/>
+        	</stderr>
+        </run>
+    </ajc-test>
+    <ajc-test dir="java5/annotations/declare" title="declare @type - annotating an already annotated type - source weaving">
+    	<compile files="AnnotatedType.java,DecaTypeBin4.aj" options="-1.5,-Xlint:ignore"/>
+        <run class="AnnotatedType">
+        	<stderr>
+        		<line text="Color identified on execution(void AnnotatedType.m())"/>
+        		<line text="Fruit identified on execution(void AnnotatedType.m())"/>
+        		<line text="m() running"/>
+        	</stderr>
+        </run>
+    </ajc-test>
+    
+    
+    <!--ajc-test dir="java5/annotations/declare" title="declare @type - annotations with different targets - binary weaving">
+        <weave classesFiles="BaseTypes.java" aspectsFiles="DecaTypeBin5.aj" options="-1.5"  xlintfile="ignoreTypeNotExposed.properties">
+            <message kind="error" line="15" text="The annotation @ColorM is disallowed for this location"/>
+            <message kind="error" line="16" text="The annotation @ColorC is disallowed for this location"/>
+            <message kind="error" line="18" text="The annotation @ColorF is disallowed for this location"/>
+            <message kind="error" line="19" text="The annotation @ColorP is disallowed for this location"/>
+            <message kind="error" line="20" text="The annotation @ColorL is disallowed for this location"/>
+            <message kind="error" line="21" text="The annotation @ColorPkg is disallowed for this location"/>
+        </weave>
+        <run class="BaseTypes">
+        	<stderr>
+        		<line text="ColorT identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="A.m() running"/>
+        		<line text="A.m() running"/>
+        	</stderr>
+        </run>
+    </ajc-test-->
+    
+    <ajc-test dir="java5/annotations/declare" title="declare @type - annotations with different targets - source weaving">
+        <compile files="BaseTypes.java,DecaTypeBin5.aj" options="-1.5"  xlintfile="ignoreTypeNotExposed.properties">
+            <message kind="error" line="15" text="The annotation @ColorM is disallowed for this location"/>
+            <message kind="error" line="16" text="The annotation @ColorC is disallowed for this location"/>
+            <message king="error" line="17" text="A is not a valid target for annotation ColorA"/>
+            <message kind="error" line="18" text="The annotation @ColorF is disallowed for this location"/>
+            <message kind="error" line="19" text="The annotation @ColorP is disallowed for this location"/>
+            <message kind="error" line="20" text="The annotation @ColorL is disallowed for this location"/>
+            <message kind="error" line="21" text="The annotation @ColorPkg is disallowed for this location"/>
+        </compile>
+    </ajc-test>
+    
+    <!--ajc-test dir="java5/annotations/declare" title="declare @type - annotations with different targets (using type patterns) - binary weaving">
+        <weave classesFiles="BaseTypes.java" aspectsFiles="DecaTypeBin6.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
+          <message kind="warning" line="15" text="A is not a valid target for annotation ColorM"/>
+          <message kind="warning" line="16" text="A is not a valid target for annotation ColorC"/>        
+          <message kind="warning" line="17" text="A is not a valid target for annotation ColorL"/>
+          <message kind="warning" line="17" text="B is not a valid target for annotation ColorL"/>
+          <message kind="warning" line="17" text="C is not a valid target for annotation ColorL"/>
+        </weave>
+        <run class="BaseTypes">
+        	<stderr>
+        		<line text="ColorT identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="ColorT identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="ColorT identified on execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        	</stderr>
+        </run>
+    </ajc-test-->
+    
+    <ajc-test dir="java5/annotations/declare" title="declare @type - annotations with different targets (using type patterns) - source weaving">
+        <compile files="BaseTypes.java,DecaTypeBin6.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
+          <message kind="error" line="15" text="The annotation @ColorM is disallowed for this location"/>
+          <message kind="error" line="16" text="The annotation @ColorC is disallowed for this location"/>        
+          <message kind="error" line="17" text="The annotation @ColorL is disallowed for this location"/>
+          <message kind="error" line="18" text="The annotation @ColorF is disallowed for this location"/>
+        </compile>
+    </ajc-test>
+    
+    
+    <ajc-test dir="java5/annotations/declare" title="declare @type - complex decp decAtType interactions - binary weaving">
+        <weave classesFiles="BaseTypes.java" aspectsFiles="DecaTypeBin7.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
+        </weave>
+        <run class="BaseTypes">
+        	<stderr>
+        		<line text="Color identified on execution(void A.m())"/>
+        		<line text="Fruit identified on execution(void A.m())"/>
+        		<line text="Chocolate identified on execution(void A.m())"/>
+        		<line text="M1 at execution(void A.m())"/>
+        		<line text="M2 at execution(void A.m())"/>
+        		<line text="M3 at execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="Fruit identified on execution(void B.m())"/>
+        		<line text="Chocolate identified on execution(void B.m())"/>
+        		<line text="M1 at execution(void B.m())"/>
+        		<line text="M2 at execution(void B.m())"/>
+        		<line text="M3 at execution(void B.m())"/>
+        		<line text="B.m() running"/>
+        		<line text="Fruit identified on execution(void C.m())"/>
+        		<line text="Chocolate identified on execution(void C.m())"/>
+        		<line text="M1 at execution(void C.m())"/>
+        		<line text="M2 at execution(void C.m())"/>
+        		<line text="M3 at execution(void C.m())"/>
+        		<line text="C.m() running"/>
+        	</stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations/declare" title="declare @type - complex decp decAtType interactions - source weaving">
+        <compile files="BaseTypes.java,DecaTypeBin7.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="BaseTypes">
+        	<stderr>
+        		<line text="Color identified on execution(void A.m())"/>
+        		<line text="Fruit identified on execution(void A.m())"/>
+        		<line text="Chocolate identified on execution(void A.m())"/>
+        		<line text="M1 at execution(void A.m())"/>
+        		<line text="M2 at execution(void A.m())"/>
+        		<line text="M3 at execution(void A.m())"/>
+        		<line text="A.m() running"/>
+        		<line text="Fruit identified on execution(void B.m())"/>
+        		<line text="Chocolate identified on execution(void B.m())"/>
+        		<line text="M1 at execution(void B.m())"/>
+        		<line text="M2 at execution(void B.m())"/>
+        		<line text="M3 at execution(void B.m())"/>
+        		<line text="B.m() running"/>
+        		<line text="Fruit identified on execution(void C.m())"/>
+        		<line text="Chocolate identified on execution(void C.m())"/>
+        		<line text="M1 at execution(void C.m())"/>
+        		<line text="M2 at execution(void C.m())"/>
+        		<line text="M3 at execution(void C.m())"/>
+        		<line text="C.m() running"/>
+        	</stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations/declare" title="declare @type - trying to put annotation targetting annos on normal types - source weaving">
+        <compile files="BaseTypes.java,DecaTypeBin8.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
+          <message kind="error" line="8" text="A is not a valid target for annotation ColorA"/>        
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations/declare" title="declare @type - trying to put annotation targetting annos on normal types - binary weaving">
+        <weave classesFiles="BaseTypes.java" aspectsFiles="DecaTypeBin8.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
+          <message kind="error" line="8" text="A is not a valid target for annotation ColorA"/>        
+        </weave>
+    </ajc-test>   
+
+    <ajc-test dir="java5/annotations/declare" title="declare @type - trying to put annotation targetting annos on normal types (uses pattern) - source weaving">
+        <compile files="BaseTypes.java,DecaTypeBin9.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
+          <message kind="warning" line="8" text="A is not a valid target for annotation ColorA"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations/declare" title="declare @type - trying to put annotation targetting annos on normal types (uses pattern) - binary weaving">
+        <weave classesFiles="BaseTypes.java" aspectsFiles="DecaTypeBin9.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
+          <message kind="warning" line="8" text="A is not a valid target for annotation ColorA"/>
+        </weave>
+    </ajc-test>   
+    
+    <ajc-test dir="java5/annotations/declare" title="declare @type - covering enum and class element values - source weaving">
+        <compile files="EnumAndClassValues.aj,FunkyAnnotations.java" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="FunkyAnnotations">
+        	<stderr>
+               <line text="hello world"/>
+            </stderr>
+        </run>
+    </ajc-test>
+    
+     <ajc-test dir="java5/annotations/declare" title="declare @type - covering enum and class element values - binary weaving">
+        <weave aspectsFiles="EnumAndClassValues.aj" classesFiles="FunkyAnnotations.java" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="FunkyAnnotations">
+        	<stderr>
+               <line text="advice running: Red"/>
+               <line text="advice running: class java.lang.Integer"/>
+               <line text="method running"/>
+            </stderr>
+        </run>
+    </ajc-test>
+    
+    
+   <!-- ======================================================================================= -->
+   <!--               declare annotation (@field)                                               -->
+   <!-- ======================================================================================= -->
+
+   <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - simple source weaving">
+        <compile files="Base.java,Colored.java,AtField1.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="Base">
+          <stderr>
+          <line text="Colored field access at set(int Base.publicIntField)"/>
+          </stderr>
+        </run>
+   </ajc-test>
+    
+   <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - simple binary weaving">
+        <weave classesFiles="Base.java,Colored.java" aspectsFiles="AtField1.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="Base">
+          <stderr>
+          <line text="Colored field access at set(int Base.publicIntField)"/>
+          </stderr>
+        </run>
+   </ajc-test>   
+   
+   <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - two the same on one - source weaving">
+        <compile files="Base.java,Colored.java,TwoOnOneField.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
+          <message kind="warning" text="int Base.publicIntField - already has an annotation of type Colored"/>
+        </compile>
+        <run class="Base">
+          <stderr>
+          <line text="Colored field access at set(int Base.publicIntField)"/>
+          </stderr>
+        </run>
+   </ajc-test>
+    
+   <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - two the same on one - binary weaving">
+        <weave classesFiles="Base.java,Colored.java" aspectsFiles="TwoOnOneField.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
+          <message kind="warning" text="int Base.publicIntField - already has an annotation of type Colored"/>
+        </weave>
+        <run class="Base">
+          <stderr>
+          <line text="Colored field access at set(int Base.publicIntField)"/>
+          </stderr>
+        </run>
+   </ajc-test> 
+   
+   <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - two different on one - source weaving">
+        <compile files="Base.java,Colored.java,Fruit.java,TwoOnOneField2.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
+        </compile>
+        <run class="Base">
+          <stderr>
+          <line text="Colored field access at set(int Base.publicIntField)"/>
+          <line text="Fruit field access at set(int Base.publicIntField)"/>
+          </stderr>
+        </run>
+   </ajc-test>
+    
+   <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - two different on one - binary weaving">
+        <weave classesFiles="Base.java,Colored.java,Fruit.java" aspectsFiles="TwoOnOneField2.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
+        </weave>
+        <run class="Base">
+          <stderr>
+          <line text="Colored field access at set(int Base.publicIntField)"/>
+          <line text="Fruit field access at set(int Base.publicIntField)"/>
+          </stderr>
+        </run>
+   </ajc-test> 
+   
+   <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - wrong target - source weaving">
+        <compile files="Base.java,Colored.java,WrongTarget.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
+           <message kind="error" line="8" text="The annotation @MethodColoring is disallowed for this location"/>
+           <message kind="error" line="9" text="The annotation @TypeColoring is disallowed for this location"/>
+        </compile>
+   </ajc-test>
+    
+   <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - right target - source weaving">
+        <compile files="Base.java,Colored.java,RightTarget.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="Base">
+          <stderr>
+          <line text="Colored field access at set(int Base.publicIntField)"/>
+          </stderr>
+        </run>
+   </ajc-test>
+    
+   <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - right target - binary weaving">
+        <weave classesFiles="Base.java,Colored.java" aspectsFiles="RightTarget.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="Base">
+          <stderr>
+          <line text="Colored field access at set(int Base.publicIntField)"/>
+          </stderr>
+        </run>
+   </ajc-test> 
+   
+   <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - recursive application - source weaving">
+        <compile files="Base.java,Colored.java,Fruit.java,RecursiveFields.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="Base">
+          <stderr>
+          <line text="Fruit field access at set(int Base.publicIntField)"/>
+          </stderr>
+        </run>
+   </ajc-test>
+    
+   <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - recursive application - binary weaving">
+        <weave classesFiles="Base.java,Colored.java,Fruit.java" aspectsFiles="RecursiveFields.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="Base">
+          <stderr>
+          <line text="Fruit field access at set(int Base.publicIntField)"/>
+          </stderr>
+        </run>
+   </ajc-test>
+   
+   <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - recursive application (other order) - source weaving">
+        <compile files="Base.java,Colored.java,Fruit.java,RecursiveFields2.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="Base">
+          <stderr>
+          <line text="Fruit field access at set(int Base.publicIntField)"/>
+          </stderr>
+        </run>
+   </ajc-test>
+    
+   <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - recursive application (other order) - binary weaving">
+        <weave classesFiles="Base.java,Colored.java,Fruit.java" aspectsFiles="RecursiveFields2.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="Base">
+          <stderr>
+          <line text="Fruit field access at set(int Base.publicIntField)"/>
+          </stderr>
+        </run>
+   </ajc-test>   
+   <!-- incorrect target type for annotation on field -->
+   
+   <!-- incorrect target type for annotation on method -->
+   <!-- two annotations on one method -->
+   <!-- two of the same annotation on one method - error -->
+   <!-- two of the same on one using pattern spec  - lint -->
+   
+<!-- need some incorrect signatures in the declare @statements - e.g. declare @constructor: public Base(int): XXX; will blow things up as it uses Base rather than new -->
+   <!-- incorrect target type for annotation on ctor -->
+   <!-- two annotations on one ctor -->
+   <!-- two of the same annotation on one ctor - error -->
+   <!-- two of the same on one using pattern spec  - lint -->
+   
+   <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @method - simple source weaving">
+        <compile files="Base.java,Colored.java,AtMethod1.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="Base">
+          <stderr>
+          <line text="Colored method invocation at call(void Base.m1())"/>
+          <line text="m1() running"/>
+          <line text="m2() running"/>
+          <line text="m3() running"/>
+          </stderr>
+        </run>
+   </ajc-test>
+    
+   <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @method - simple binary weaving">
+        <weave classesFiles="Base.java,Colored.java" aspectsFiles="AtMethod1.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="Base">
+          <stderr>
+          <line text="Colored method invocation at call(void Base.m1())"/>
+          <line text="m1() running"/>
+          <line text="m2() running"/>
+          <line text="m3() running"/>
+          </stderr>
+        </run>
+   </ajc-test>   
+
+   <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @constructor - simple source weaving">
+        <compile files="Base.java,Colored.java,AtCtor1.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="Base">
+          <stderr>
+          <line text="Colored constructor invocation at call(Base(int))"/>
+          <line text="m1() running"/>
+          <line text="m2() running"/>
+          <line text="m3() running"/>
+          </stderr>
+        </run>
+   </ajc-test>
+    
+   <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @constructor - simple binary weaving">
+        <weave classesFiles="Base.java,Colored.java" aspectsFiles="AtCtor1.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="Base">
+          <stderr>
+          <line text="Colored constructor invocation at call(Base(int))"/>
+          <line text="m1() running"/>
+          <line text="m2() running"/>
+          <line text="m3() running"/>
+          </stderr>
+        </run>
+   </ajc-test>   
+   
+
+  <!-- These tests verify both @method and @ctor behavior - they are so similar it is OK to have them together... -->
+  
+  <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @method @ctor - wrong target - source weaving">
+        <compile files="Base.java,Colored.java,WrongTarget.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
+           <message kind="error" line="8"  text="The annotation @MethodColoring is disallowed for this location"/>
+           <message kind="error" line="9"  text="The annotation @TypeColoring is disallowed for this location"/>
+           <message kind="error" line="10"  text="The annotation @MethodColoring is disallowed for this location"/>
+           <message kind="error" line="11" text="The annotation @TypeColoring is disallowed for this location"/>
+        </compile>
+   </ajc-test>
+    
+   <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @method @ctor - right target - source weaving">
+        <compile files="Base.java,Colored.java,RightTarget.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="Base">
+          <stderr>
+          <line text="Colored ctor call at call(Base(int))"/>
+          <line text="Colored method call at call(void Base.m1())"/>
+          <line text="m1() running"/>
+          <line text="m2() running"/>
+          <line text="m3() running"/>
+          </stderr>
+        </run>
+   </ajc-test>
+    
+   <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @method @ctor - right target - binary weaving">
+        <weave classesFiles="Base.java,Colored.java" aspectsFiles="RightTarget.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <run class="Base">
+          <stderr>
+          <line text="Colored ctor call at call(Base(int))"/>
+          <line text="Colored method call at call(void Base.m1())"/>
+          <line text="m1() running"/>
+          <line text="m2() running"/>
+          <line text="m3() running"/>
+          </stderr>
+        </run>
+   </ajc-test> 
+   
+<!-- check @method/@ctor/@field recursively applying, can only happen if a pattern for one of them includes an annotation -->
+   
+   
+   <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @method @ctor - two the same on one - source weaving">
+        <compile files="Base.java,Colored.java,TwoOnOneMember.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
+          <message kind="warning" text="void Base.m1() - already has an annotation of type Colored"/>
+          <message kind="warning" text="void Base.&lt;init&gt;(int) - already has an annotation of type Colored"/>
+        </compile>
+   </ajc-test>
+    
+   <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @method @ctor - two the same on one - binary weaving">
+        <weave classesFiles="Base.java,Colored.java" aspectsFiles="TwoOnOneMember.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
+          <message kind="warning" text="void Base.m1() - already has an annotation of type Colored"/>
+          <message kind="warning" text="void Base.&lt;init&gt;(int) - already has an annotation of type Colored"/>
+        </weave>
+   </ajc-test> 
+   
+   <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @method @ctor - two different on one - source weaving">
+        <compile files="Base.java,Colored.java,Fruit.java,TwoOnOneMember2.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
+        </compile>
+        <run class="Base">
+          <stderr>
+          <line text="Colored ctor call at Base.java:11"/>
+          <line text="Fruit ctor call at Base.java:11"/>
+          <line text="Colored method call at Base.java:15"/>
+          <line text="Fruit method call at Base.java:15"/>
+          <line text="m1() running"/>
+          <line text="m2() running"/>
+          <line text="m3() running"/>
+          </stderr>
+        </run>
+   </ajc-test>
+    
+   <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @method @ctor - two different on one - binary weaving">
+        <weave classesFiles="Base.java,Colored.java,Fruit.java" aspectsFiles="TwoOnOneMember2.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
+        </weave>
+        <run class="Base">
+          <stderr>
+          <line text="Colored ctor call at Base.java:11"/>
+          <line text="Fruit ctor call at Base.java:11"/>
+          <line text="Colored method call at Base.java:15"/>
+          <line text="Fruit method call at Base.java:15"/>
+          <line text="m1() running"/>
+          <line text="m2() running"/>
+          <line text="m3() running"/>
+          </stderr>
+        </run>
+   </ajc-test> 
+   
+   <ajc-test dir="java5/annotations/declare" title="declare all annotations on one class - source weaving">
+      <compile files="DeathByAnnotations.aj" options="-1.5,-emacssym" xlintfile="ignoreTypeNotExposed.properties"/>
+      <run class="p.q.DeathByAnnotations"/>
+   </ajc-test>
+
+</suite>
