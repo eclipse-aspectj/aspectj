@@ -69,7 +69,7 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 	private final Stack stack;
 	private final CompilationResult currCompilationResult;
 	
-    private AsmBuilder(CompilationResult result) {
+    protected AsmBuilder(CompilationResult result) {
         LangUtil.throwIaxIfNull(result, "result");
         currCompilationResult = result;
         stack = new Stack();
@@ -228,7 +228,13 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 	
 	public boolean visit(LocalTypeDeclaration memberTypeDeclaration, BlockScope scope) {
 		String name = new String(memberTypeDeclaration.name);
-		String fullName = new String(memberTypeDeclaration.binding.constantPoolName());
+		
+		String fullName = "<undefined>";
+		if (memberTypeDeclaration.binding != null
+			&& memberTypeDeclaration.binding.constantPoolName() != null) {
+			fullName = new String(memberTypeDeclaration.binding.constantPoolName());
+		}
+		 
 		int dollar = fullName.indexOf('$');
 		fullName = fullName.substring(dollar+1);
 //		
@@ -428,7 +434,9 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 
 	// ??? handle non-existant files
 	private ISourceLocation makeLocation(AstNode node) {
-		String fileName = new String(currCompilationResult.getFileName());
+		
+		String fileName = "";
+		if (currCompilationResult.getFileName() != null) new String(currCompilationResult.getFileName());
 		// AMC - different strategies based on node kind
 		int startLine = getStartLine(node);
 		int endLine = getEndLine(node);
