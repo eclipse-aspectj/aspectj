@@ -79,8 +79,9 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 	
 	public void check(World world) {
 		if (getSignature().getDeclaringType().isAspect(world)) {
-			world.showMessage(IMessage.ERROR, "can't declare constructor on an aspect",
-						getSignature().getSourceLocation(), null);
+			world.showMessage(IMessage.ERROR, 
+					WeaverMessages.format(WeaverMessages.ITD_CONS_ON_ASPECT),
+					getSignature().getSourceLocation(), null);
 		}
 	}
 

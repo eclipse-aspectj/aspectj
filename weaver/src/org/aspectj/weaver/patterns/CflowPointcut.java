@@ -35,6 +35,7 @@ import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Test;
 
@@ -131,8 +132,8 @@ public class CflowPointcut extends Pointcut {
 		if (isDeclare(bindings.getEnclosingAdvice())) {
 			// Enforce rule about which designators are supported in declare
 			inAspect.getWorld().showMessage(IMessage.ERROR,
-			  "cflow"+(isBelow?"below":"")+"() pointcut designator cannot be used in declare statement",
-			  bindings.getEnclosingAdvice().getSourceLocation(), null);
+					WeaverMessages.format(WeaverMessages.CFLOW_IN_DECLARE,isBelow?"below":""),
+					bindings.getEnclosingAdvice().getSourceLocation(), null);
 			return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 		}
 		//make this remap from formal positions to arrayIndices

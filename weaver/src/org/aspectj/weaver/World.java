@@ -82,7 +82,8 @@ public abstract class World {
             ret = resolveObjectType(ty);
             if (!allowMissing && ret == ResolvedTypeX.MISSING) {
             	//Thread.currentThread().dumpStack();
-                MessageUtil.error(messageHandler, "can't find type " + ty.getName());
+                MessageUtil.error(messageHandler, 
+                		WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,ty.getName()));
                 // + " on classpath " + classPath);
             }
         }

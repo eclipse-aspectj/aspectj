@@ -21,6 +21,7 @@ import java.util.List;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.WeaverMessages;
 
 public class DeclarePrecedence extends Declare {
 	private TypePatternList patterns;
@@ -74,8 +75,8 @@ public class DeclarePrecedence extends Declare {
     		if (pi.isStar()) {
     			if (seenStar) {
     				scope.getWorld().showMessage(IMessage.ERROR,
-    					"circularity in declare precedence, '*' occurs more than once",
-    					pi.getSourceLocation(), null);    				
+    						WeaverMessages.format(WeaverMessages.TWO_STARS_IN_PRECEDENCE),
+							pi.getSourceLocation(), null);    				
     			}
     			seenStar = true;
     			continue;
@@ -86,8 +87,8 @@ public class DeclarePrecedence extends Declare {
     		// Cannot do a dec prec specifying a non-aspect types unless suffixed with a '+'
     		if (!exactType.isAspect() && !pi.isIncludeSubtypes()) {
     			scope.getWorld().showMessage(IMessage.ERROR,
-    				"Non-aspect types can only be specified in a declare precedence statement when subtypes are included.  Non-aspect type is : "+exactType.getName(),
-    				pi.getSourceLocation(),null);
+    					WeaverMessages.format(WeaverMessages.CLASSES_IN_PRECEDENCE,exactType.getName()),
+						pi.getSourceLocation(),null);
     		}
     		
     		for (int j=0; j < patterns.size(); j++) {
@@ -96,8 +97,8 @@ public class DeclarePrecedence extends Declare {
     			if (pj.isStar()) continue;
     			if (pj.matchesStatically(exactType)) {
     				scope.getWorld().showMessage(IMessage.ERROR,
-    					"circularity in declare precedence, '" + exactType.getName() + 
-    						"' matches two patterns", pi.getSourceLocation(), pj.getSourceLocation());
+    						WeaverMessages.format(WeaverMessages.TWO_PATTERN_MATCHES_IN_PRECEDENCE,exactType.getName()), 
+							pi.getSourceLocation(), pj.getSourceLocation());
     			}
     		}
     	}    	
@@ -116,8 +117,8 @@ public class DeclarePrecedence extends Declare {
 				starMatch = i;
 			} else if (p.matchesStatically(a)) {
 				if (knownMatch != -1) {
-					a.getWorld().showMessage(IMessage.ERROR, "multiple matches for " + a + 
-							", matches both " + patterns.get(knownMatch) + " and " + p,
+					a.getWorld().showMessage(IMessage.ERROR,
+							WeaverMessages.format(WeaverMessages.MULTIPLE_MATCHES_IN_PRECEDENCE,a,patterns.get(knownMatch),p),
 							patterns.get(knownMatch).getSourceLocation(), p.getSourceLocation());
 					return -1;
 				} else {

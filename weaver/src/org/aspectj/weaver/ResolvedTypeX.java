@@ -1135,9 +1135,9 @@ public abstract class ResolvedTypeX extends TypeX {
 					} else {
 						//XXX dual errors possible if (this instanceof BcelObjectType) return false;  //XXX ignores separate comp
 						getWorld().getMessageHandler().handleMessage(
-							MessageUtil.error("inter-type declaration from " + munger.getAspectType().getName() +
-											" conflicts with existing member: " + existingMember,
-											munger.getSourceLocation())
+							MessageUtil.error(WeaverMessages.format(WeaverMessages.ITD_MEMBER_CONFLICT,munger.getAspectType().getName(),
+									existingMember),
+							munger.getSourceLocation())
 						);
 					}
 				} else {
@@ -1153,9 +1153,8 @@ public abstract class ResolvedTypeX extends TypeX {
 		//System.err.println("check: " + child.getDeclaringType() + " overrides " + parent.getDeclaringType());
 		if (!parent.getReturnType().equals(child.getReturnType())) {
 			world.showMessage(IMessage.ERROR,
-				"can't override " + parent +
-				" with " + child + " return types don't match",
-				child.getSourceLocation(), parent.getSourceLocation());
+					WeaverMessages.format(WeaverMessages.ITD_RETURN_TYPE_MISMATCH,parent,child),
+					child.getSourceLocation(), parent.getSourceLocation());
 			return false;
 		}		
 		if (parent.getKind() == Member.POINTCUT) {
@@ -1163,18 +1162,16 @@ public abstract class ResolvedTypeX extends TypeX {
 			TypeX[] cTypes = child.getParameterTypes();
 			if (!Arrays.equals(pTypes, cTypes)) {
 				world.showMessage(IMessage.ERROR,
-					"can't override " + parent +
-					" with " + child + " parameter types don't match",
-					child.getSourceLocation(), parent.getSourceLocation());
+						WeaverMessages.format(WeaverMessages.ITD_PARAM_TYPE_MISMATCH,parent,child),
+						child.getSourceLocation(), parent.getSourceLocation());
 				return false;
 			}
 		}		
 		//System.err.println("check: " + child.getModifiers() + " more visible " + parent.getModifiers());
 		if (isMoreVisible(parent.getModifiers(), child.getModifiers())) {
 			world.showMessage(IMessage.ERROR,
-				"can't override " + parent +
-				" with " + child + " visibility is reduced",
-				child.getSourceLocation(), parent.getSourceLocation());
+					WeaverMessages.format(WeaverMessages.ITD_VISIBILITY_REDUCTION,parent,child),
+					child.getSourceLocation(), parent.getSourceLocation());
 			return false;
 		}
 		
@@ -1193,19 +1190,20 @@ public abstract class ResolvedTypeX extends TypeX {
 				if (parentExceptions[j].isAssignableFrom(childExceptions[i])) continue outer;
 			}
 			
-			world.showMessage(IMessage.ERROR, "overriden method doesn't throw " 
-					+ childExceptions[i].getName(), child.getSourceLocation(), null);
+			world.showMessage(IMessage.ERROR,
+					WeaverMessages.format(WeaverMessages.ITD_DOESNT_THROW,childExceptions[i].getName()),
+					child.getSourceLocation(), null);
 						
 			return false;
 		}
 		if (parent.isStatic() && !child.isStatic()) {
 			world.showMessage(IMessage.ERROR,
-			  child.toString()+" cannot override "+parent.toString()+"; overridden method is static",
-			  child.getSourceLocation(),null);
+					WeaverMessages.format(WeaverMessages.ITD_OVERRIDDEN_STATIC,child,parent),
+					child.getSourceLocation(),null);
 		} else if (child.isStatic() && !parent.isStatic()) {
 			world.showMessage(IMessage.ERROR,
-			  child.toString()+" cannot override "+parent.toString()+"; overriding method is static",
-			  child.getSourceLocation(),null);
+					WeaverMessages.format(WeaverMessages.ITD_OVERIDDING_STATIC,child,parent),
+					child.getSourceLocation(),null);
 		}
 		return true;
 		
@@ -1252,13 +1250,9 @@ public abstract class ResolvedTypeX extends TypeX {
 		
 		//System.err.println("conflict at " + m2.getSourceLocation());
 		getWorld().showMessage(IMessage.ERROR,
-			"intertype declaration from "
-				+ m1.getAspectType().getName()
-				+ " conflicts with intertype declaration: "
-				+ m2.getSignature()
-				+ " from "
-				+ m2.getAspectType().getName(),
-			m2.getSourceLocation(), getSourceLocation());
+				WeaverMessages.format(WeaverMessages.ITD_CONFLICT,m1.getAspectType().getName(),
+									m2.getSignature(),m2.getAspectType().getName()),
+						m2.getSourceLocation(), getSourceLocation());
 	}
 	
 	
@@ -1308,9 +1302,8 @@ public abstract class ResolvedTypeX extends TypeX {
 			if (inherited.isAbstract()) {
 				if (!this.isAbstract()) {
 					getWorld().showMessage(IMessage.ERROR,
-						"inherited abstract " + inherited + 
-						" is not made concrete in " + this.getName(),
-						inherited.getSourceLocation(), this.getSourceLocation());
+							WeaverMessages.format(WeaverMessages.POINCUT_NOT_CONCRETE,inherited,this.getName()),
+							inherited.getSourceLocation(), this.getSourceLocation());
 				}
 			}
 		}		
@@ -1340,8 +1333,7 @@ public abstract class ResolvedTypeX extends TypeX {
 					} else {
 						getWorld().showMessage(
 							IMessage.ERROR,
-							"conflicting inherited pointcuts in "
-								+ this.getName() + toAdd.getSignature(),
+							WeaverMessages.format(WeaverMessages.CONFLICTING_INHERITED_POINTCUTS,this.getName() + toAdd.getSignature()),
 							existing.getSourceLocation(),
 							toAdd.getSourceLocation());
 						j.remove();

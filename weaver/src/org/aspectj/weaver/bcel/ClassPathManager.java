@@ -27,6 +27,7 @@ import java.util.zip.ZipFile;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverMessages;
 
 
 public class ClassPathManager {
@@ -48,18 +49,18 @@ public class ClassPathManager {
 		String lc = name.toLowerCase();
 		if (lc.endsWith(".jar") || lc.endsWith(".zip")) {
 			if (!f.isFile()) {
-			MessageUtil.info(handler, "zipfile classpath entry does not exist: " + name);
+			MessageUtil.info(handler, WeaverMessages.format(WeaverMessages.ZIPFILE_ENTRY_MISSING,name));
 			return;
 			}
 			try {
 				entries.add(new ZipFileEntry(f));
 			} catch (IOException ioe) {
-			MessageUtil.warn(handler, "zipfile classpath entry is invalid: " + name + "<" + ioe.getMessage() + ">");
+			MessageUtil.warn(handler, WeaverMessages.format(WeaverMessages.ZIPFILE_ENTRY_INVALID,name,ioe.getMessage()));
 			return;
 			}
 		} else {
 			if (!f.isDirectory()) {
-			MessageUtil.info(handler, "directory classpath entry does not exist: " + name);
+			MessageUtil.info(handler, WeaverMessages.format(WeaverMessages.DIRECTORY_ENTRY_MISSING,name));
 			return;
 			}
 			entries.add(new DirEntry(f));

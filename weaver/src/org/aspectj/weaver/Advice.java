@@ -92,8 +92,8 @@ public abstract class Advice extends ShadowMunger {
 			if (shadow.getKind() == Shadow.ExceptionHandler) {
 				if (kind.isAfter() || kind == AdviceKind.Around) {
 					world.showMessage(IMessage.WARNING,
-	    				"Only before advice is supported on handler join points (compiler limitation)", 
-	    				getSourceLocation(), shadow.getSourceLocation());
+							WeaverMessages.format(WeaverMessages.ONLY_BEFORE_ON_HANDLER),
+							getSourceLocation(), shadow.getSourceLocation());
 					return false;
 				}
 			}
@@ -108,29 +108,27 @@ public abstract class Advice extends ShadowMunger {
     		} else if (kind == AdviceKind.Around) {
     			if (shadow.getKind() == Shadow.PreInitialization) {
 	    			world.showMessage(IMessage.ERROR,
-	    				"around on pre-initialization not supported (compiler limitation)", 
-	    				getSourceLocation(), shadow.getSourceLocation());
+	    					WeaverMessages.format(WeaverMessages.AROUND_ON_PREINIT),
+							getSourceLocation(), shadow.getSourceLocation());
 					return false;
 				} else if (shadow.getKind() == Shadow.Initialization) {
 					world.showMessage(IMessage.ERROR,
-						"around on initialization not supported (compiler limitation)", 
-						getSourceLocation(), shadow.getSourceLocation());
+							WeaverMessages.format(WeaverMessages.AROUND_ON_INIT),
+							getSourceLocation(), shadow.getSourceLocation());
 					return false;
 				} else if (shadow.getKind() == Shadow.StaticInitialization && 
 							shadow.getEnclosingType().isInterface(world))
 				{
 					world.showMessage(IMessage.ERROR,
-						"around on staticinitialization of interface \'" + 
-						shadow.getEnclosingType().getName() +
-						"\' not supported (compiler limitation)", 
-						getSourceLocation(), shadow.getSourceLocation());
+							WeaverMessages.format(WeaverMessages.AROUND_ON_INTERFACE_STATICINIT,shadow.getEnclosingType().getName()),
+							getSourceLocation(), shadow.getSourceLocation());
 					return false;
     			} else {
     				//System.err.println(getSignature().getReturnType() + " from " + shadow.getReturnType());
     				if (getSignature().getReturnType() == ResolvedTypeX.VOID) {
     					if (shadow.getReturnType() != ResolvedTypeX.VOID) {
     						world.showMessage(IMessage.ERROR, 
-    							"applying to join point that doesn't return void: " + shadow,
+    							WeaverMessages.format(WeaverMessages.NON_VOID_RETURN,shadow),	
     							getSourceLocation(), shadow.getSourceLocation());
     						return false;
     					}
@@ -138,8 +136,8 @@ public abstract class Advice extends ShadowMunger {
     					return true;
     				} else if(!shadow.getReturnType().isAssignableFrom(getSignature().getReturnType(), world)) {
     					//System.err.println(this + ", " + sourceContext + ", " + start);
-						world.showMessage(IMessage.ERROR, 
-								"incompatible return type applying to " + shadow,
+						world.showMessage(IMessage.ERROR,
+								WeaverMessages.format(WeaverMessages.INCOMPATIBLE_RETURN_TYPE,shadow),
 								getSourceLocation(), shadow.getSourceLocation());
 	    				return false;
     				}

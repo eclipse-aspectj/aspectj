@@ -30,6 +30,7 @@ import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
@@ -153,9 +154,9 @@ public class IfPointcut extends Pointcut {
 		if (isDeclare(bindings.getEnclosingAdvice())) {
 			// Enforce rule about which designators are supported in declare
 			inAspect.getWorld().showMessage(IMessage.ERROR,
-			  "if() pointcut designator cannot be used in declare statement",
-			  bindings.getEnclosingAdvice().getSourceLocation(),
-			  null);
+					WeaverMessages.format(WeaverMessages.IF_IN_DECLARE),
+					bindings.getEnclosingAdvice().getSourceLocation(),
+					null);
 			return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 		}
 		
@@ -174,8 +175,8 @@ public class IfPointcut extends Pointcut {
 			// Assumption: if() is in a per clause if we say we are directly in advice
 			// but we have no enclosing advice.
 			inAspect.getWorld().showMessage(IMessage.ERROR,
-				"if() pointcut designator cannot be used directly in a per clause (compiler limitation).  Create a named pointcut containing the if() and refer to it",
-				this.getSourceLocation(),null);
+					WeaverMessages.format(WeaverMessages.IF_IN_PERCLAUSE),
+					this.getSourceLocation(),null);
 			return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 		}
 		
@@ -191,8 +192,8 @@ public class IfPointcut extends Pointcut {
 			ResolvedPointcutDefinition def = bindings.peekEnclosingDefinitition();
 			if (def == CflowPointcut.CFLOW_MARKER) {
 				inAspect.getWorld().showMessage(IMessage.ERROR,
-					"if not supported lexically within cflow (compiler limitation)",
-					getSourceLocation(), null);
+						WeaverMessages.format(WeaverMessages.IF_LEXICALLY_IN_CFLOW),
+						getSourceLocation(), null);
 				return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 			}
 			ret.baseArgsCount = def.getParameterTypes().length;
@@ -250,7 +251,7 @@ public class IfPointcut extends Pointcut {
 			if (isDeclare(bindings.getEnclosingAdvice())) {
 				// Enforce rule about which designators are supported in declare
 				inAspect.getWorld().showMessage(IMessage.ERROR,
-				  "if() pointcut designator cannot be used in declare statement",
+				  WeaverMessages.format(WeaverMessages.IF_IN_DECLARE),
 				  bindings.getEnclosingAdvice().getSourceLocation(),
 				  null);
 				return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
@@ -316,9 +317,9 @@ public class IfPointcut extends Pointcut {
 			if (isDeclare(bindings.getEnclosingAdvice())) {
 				// Enforce rule about which designators are supported in declare
 				inAspect.getWorld().showMessage(IMessage.ERROR,
-				  "if() pointcut designator cannot be used in declare statement",
-				  bindings.getEnclosingAdvice().getSourceLocation(),
-				  null);
+						WeaverMessages.format(WeaverMessages.IF_IN_DECLARE),
+						bindings.getEnclosingAdvice().getSourceLocation(),
+						null);
 				return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 			}
 			return makeIfTruePointcut(state);

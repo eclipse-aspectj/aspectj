@@ -24,6 +24,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 
 public class DeclareParents extends Declare {
@@ -115,8 +116,9 @@ public class DeclareParents extends Declare {
 		ResolvedTypeX parentType = iType.resolve(world);
 		
 		if (targetType.equals(world.resolve(TypeX.OBJECT))) {
-			world.showMessage(IMessage.ERROR, "can't change the parents of java.lang.Object",
-			                  this.getSourceLocation(), null);
+			world.showMessage(IMessage.ERROR, 
+					WeaverMessages.format(WeaverMessages.DECP_OBJECT),
+			        this.getSourceLocation(), null);
 			return null;
 		}
 			
@@ -124,7 +126,8 @@ public class DeclareParents extends Declare {
 					
 		if (targetType.isAssignableFrom(parentType)) {
 			world.showMessage(IMessage.ERROR,
-				"type \'" + targetType.getName() + "\'can not extend itself", this.getSourceLocation(), null
+					WeaverMessages.format(WeaverMessages.CANT_EXTEND_SELF,targetType.getName()),
+					this.getSourceLocation(), null
 			);
 			return null;
 		}
@@ -132,8 +135,8 @@ public class DeclareParents extends Declare {
 		if (parentType.isClass()) {
 			if (targetType.isInterface()) {
 				world.showMessage(IMessage.ERROR, 
-					"interface can not extend a class", 
-					this.getSourceLocation(), null
+						WeaverMessages.format(WeaverMessages.INTERFACE_CANT_EXTEND_CLASS),
+						this.getSourceLocation(), null
 				);
 				return null;
 				// how to handle xcutting errors???
@@ -141,10 +144,10 @@ public class DeclareParents extends Declare {
 			
 			if (!targetType.getSuperclass().isAssignableFrom(parentType)) {
 				world.showMessage(IMessage.ERROR,
-									"can only insert a class into hierarchy, but "
-									+ iType.getName() + " is not a subtype of " +
-									targetType.getSuperclass().getName(), 
-									this.getSourceLocation(), null
+						WeaverMessages.format(WeaverMessages.DECP_HIERARCHY_ERROR,
+								iType.getName(),
+								targetType.getSuperclass().getName()), 
+						this.getSourceLocation(), null
 				);
 				return null;
 			} else {

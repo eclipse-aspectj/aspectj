@@ -25,6 +25,7 @@ import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverMessages;
 /**
  *  On creation, type pattern only contains WildTypePattern nodes, not BindingType or ExactType. 
  * 
@@ -169,7 +170,8 @@ public abstract class TypePattern extends PatternNode {
 	}
 	
 	protected TypePattern notExactType(IScope s) {
-		s.getMessageHandler().handleMessage(MessageUtil.error("exact type pattern required", getSourceLocation()));
+		s.getMessageHandler().handleMessage(MessageUtil.error(
+				WeaverMessages.format(WeaverMessages.EXACT_TYPE_PATTERN_REQD), getSourceLocation()));
 		return NO;
 	}
 	

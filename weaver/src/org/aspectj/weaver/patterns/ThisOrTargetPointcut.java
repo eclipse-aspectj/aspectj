@@ -25,6 +25,7 @@ import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.ast.Var;
@@ -130,8 +131,8 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		if (isDeclare(bindings.getEnclosingAdvice())) {
 		  // Enforce rule about which designators are supported in declare
 		  inAspect.getWorld().showMessage(IMessage.ERROR,
-		    (isThis?"this":"target")+"() pointcut designator cannot be used in declare statement",
-		    bindings.getEnclosingAdvice().getSourceLocation(), null);
+		  		WeaverMessages.format(WeaverMessages.THIS_OR_TARGET_IN_DECLARE,isThis?"this":"target"),
+				bindings.getEnclosingAdvice().getSourceLocation(), null);
 		  return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 		}
 		

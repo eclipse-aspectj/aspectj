@@ -54,6 +54,7 @@ import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.FastMatchInfo;
@@ -574,7 +575,9 @@ public class BcelWeaver implements IWeaver {
     
     public void prepareToProcessReweavableState() {
 		if (inReweavableMode)
-			world.showMessage(IMessage.INFO, "weaver operating in reweavable mode.  Need to verify any required types exist.", null, null);
+			world.showMessage(IMessage.INFO,
+					WeaverMessages.format(WeaverMessages.REWEAVABLE_MODE),
+					null, null);
     	 	    	
     	alreadyConfirmedReweavableState = new HashSet();
     }
@@ -583,7 +586,9 @@ public class BcelWeaver implements IWeaver {
 		// If the class is marked reweavable, check any aspects around when it was built are in this world
 		WeaverStateInfo wsi = classType.getWeaverState();		
 		if (wsi!=null && wsi.isReweavable()) { // Check all necessary types are around!
-			world.showMessage(IMessage.INFO,"processing reweavable type "+className+": "+classType.getSourceLocation().getSourceFile(),null,null);
+			world.showMessage(IMessage.INFO,
+					WeaverMessages.format(WeaverMessages.PROCESSING_REWEAVABLE,className,classType.getSourceLocation().getSourceFile()),
+					null,null);
 			Set aspectsPreviouslyInWorld = wsi.getAspectsAffectingType();
 			if (aspectsPreviouslyInWorld!=null) {
 				for (Iterator iter = aspectsPreviouslyInWorld.iterator(); iter.hasNext();) {
@@ -592,13 +597,14 @@ public class BcelWeaver implements IWeaver {
 						ResolvedTypeX rtx = world.resolve(TypeX.forName(requiredTypeName),true);
 						boolean exists = rtx!=ResolvedTypeX.MISSING;
 						if (!exists) {
-							world.showMessage(IMessage.ERROR, "type " + requiredTypeName + 
-								" is needed by reweavable type " + className,
-								classType.getSourceLocation(), null);
+							world.showMessage(IMessage.ERROR, 
+									WeaverMessages.format(WeaverMessages.MISSING_REWEAVABLE_TYPE,requiredTypeName,className),
+								    classType.getSourceLocation(), null);
 						} else {
 							if (!world.getMessageHandler().isIgnoring(IMessage.INFO))
-							  world.showMessage(IMessage.INFO,"successfully verified type "+requiredTypeName+
-		                        " exists.  Originates from "+rtx.getSourceLocation().getSourceFile(),null,null);
+							  world.showMessage(IMessage.INFO,
+							  		WeaverMessages.format(WeaverMessages.VERIFIED_REWEAVABLE_TYPE,requiredTypeName,rtx.getSourceLocation().getSourceFile()),
+									null,null);
 							alreadyConfirmedReweavableState.add(requiredTypeName);
 						}
 					}		
@@ -662,9 +668,8 @@ public class BcelWeaver implements IWeaver {
 					ResolvedTypeX newParent = (ResolvedTypeX)j.next();
 					if (newParent.isClass()) {
 						world.showMessage(IMessage.ERROR,
-							"can't use declare parents to change superclass of binary form \'" +
-							onType.getName() + "\' (implementation limitation)",
-							p.getSourceLocation(), null);
+								WeaverMessages.format(WeaverMessages.DECP_BINARY_LIMITATION,onType.getName()),
+								p.getSourceLocation(), null);
 						continue;
 					}
 					

@@ -58,6 +58,7 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
 
@@ -398,9 +399,7 @@ public final class LazyClassGen {
 			if (hasSourceDebugExtensionAttribute(myGen)) {
 				world.showMessage(
 					IMessage.WARNING,
-					"overwriting JSR45 information for "
-						+ getFileName()
-						+ " (compiler limitation)",
+					WeaverMessages.format(WeaverMessages.OVERWRITE_JSR45,getFileName()),
 					null,
 					null);
 			}

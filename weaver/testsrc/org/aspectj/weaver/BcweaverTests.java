@@ -53,6 +53,7 @@ public class BcweaverTests extends TestCase {
         suite.addTestSuite(MemberTestCase.class); 
 		suite.addTestSuite(TypeXTestCase.class); 
 		suite.addTestSuite(WeavingURLClassLoaderTest.class); 
+		suite.addTestSuite(WeaverMessagesTestCase.class);
         //$JUnit-END$
         return suite;
     }

@@ -83,22 +83,23 @@ public class Lint {
 			InputStream s = new FileInputStream(file);
 			setFromProperties(s);
 		} catch (IOException ioe) {
-			MessageUtil.error(world.getMessageHandler(), "problem loading Xlint properties file: " + 
-					file.getPath() + ", " + ioe.getMessage());
+			MessageUtil.error(world.getMessageHandler(),
+					WeaverMessages.format(WeaverMessages.XLINT_LOAD_ERROR,file.getPath(),ioe.getMessage()));
 		}
 	}
 
 	public void loadDefaultProperties() {
 		InputStream s = getClass().getResourceAsStream("XlintDefault.properties");
 		if (s == null) {
-			MessageUtil.warn(world.getMessageHandler(), "couldn't load XlintDefault.properties");
+			MessageUtil.warn(world.getMessageHandler(), 
+					WeaverMessages.format(WeaverMessages.XLINTDEFAULT_LOAD_ERROR));
 			return;
 		}
 		try {
 			setFromProperties(s);
 		} catch (IOException ioe) {
-			MessageUtil.error(world.getMessageHandler(), "problem loading XlintDefault.properties, " +
-					ioe.getMessage());
+			MessageUtil.error(world.getMessageHandler(),
+					WeaverMessages.format(WeaverMessages.XLINTDEFAULT_LOAD_PROBLEM,ioe.getMessage()));
 		}
 
 	}
@@ -116,7 +117,8 @@ public class Lint {
 			Map.Entry entry = (Map.Entry)i.next();
 			Kind kind = (Kind)kinds.get(entry.getKey());
 			if (kind == null) {
-				MessageUtil.error(world.getMessageHandler(), "invalid Xlint key: " + entry.getKey());
+				MessageUtil.error(world.getMessageHandler(),
+						WeaverMessages.format(WeaverMessages.XLINT_KEY_ERROR,entry.getKey()));
 			} else {
 				kind.setKind(getMessageKind((String)entry.getValue()));
 			}
@@ -129,7 +131,7 @@ public class Lint {
 		else if (v.equals("error")) return IMessage.ERROR;
 		
 		MessageUtil.error(world.getMessageHandler(), 
-			"invalid Xlint message kind (must be one of ignore, warning, error): " + v);
+				WeaverMessages.format(WeaverMessages.XLINT_VALUE_ERROR,v));
 		return null;
 	}
 	

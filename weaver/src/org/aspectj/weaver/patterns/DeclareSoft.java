@@ -21,6 +21,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverMessages;
 
 public class DeclareSoft extends Declare {
 	private TypePattern exception;
@@ -87,7 +88,7 @@ public class DeclareSoft extends Declare {
     	if (excType != ResolvedTypeX.MISSING) {
     		if (!scope.getWorld().resolve(TypeX.THROWABLE).isAssignableFrom(excType)) {
     			scope.getWorld().showMessage(IMessage.ERROR,
-    					excType.getName() + " is not a subtype of Throwable",
+    					WeaverMessages.format(WeaverMessages.NOT_THROWABLE,excType.getName()),
     					exception.getSourceLocation(), null);
     			pointcut = Pointcut.makeMatchesNothing(Pointcut.RESOLVED);
     			return;

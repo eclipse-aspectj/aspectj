@@ -294,9 +294,9 @@ public abstract class Shadow {
 		}
 		
 		if (!isDeclaredException(resolvedTypeX, getSignature())) {
-			getIWorld().showMessage(IMessage.ERROR, "can't throw checked exception \'" + resolvedTypeX +
-							"\' at this join point \'" + this +"\'", // from advice in \'" + munger. + "\'",
-							getSourceLocation(), munger.getSourceLocation());
+			getIWorld().showMessage(IMessage.ERROR,
+					WeaverMessages.format(WeaverMessages.CANT_THROW_CHECKED,resolvedTypeX,this), // from advice in \'" + munger. + "\'",
+					getSourceLocation(), munger.getSourceLocation());
 		}
 		
 		return true;
@@ -332,7 +332,8 @@ public abstract class Shadow {
 			for (Iterator i = mungers.iterator(); i.hasNext(); ) {
 				ShadowMunger m = (ShadowMunger)i.next();
 				getIWorld().getMessageHandler().handleMessage(
-					MessageUtil.error("circular advice dependency at " + this, m.getSourceLocation()));
+					MessageUtil.error(
+							WeaverMessages.format(WeaverMessages.CIRCULAR_DEPENDENCY,this), m.getSourceLocation()));
 			}
 		}
 		mungers = sorted;

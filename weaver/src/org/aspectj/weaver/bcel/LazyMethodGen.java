@@ -54,6 +54,7 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.WeaverMessages;
 
 
 /** 
@@ -324,8 +325,11 @@ public final class LazyMethodGen {
 			return gen.getMethod();
     	} catch (ClassGenException e) {
     		enclosingClass.getBcelObjectType().getResolvedTypeX().getWorld().showMessage(
-    			IMessage.ERROR, "problem generating method " + 
-    			this.getClassName() + "." + this.getName() + ": " + e.getMessage(),
+    			IMessage.ERROR, 
+				WeaverMessages.format(WeaverMessages.PROBLEM_GENERATING_METHOD,
+						              this.getClassName(),
+									  this.getName(),
+									  e.getMessage()),
     			this.getMemberView() == null ? null : this.getMemberView().getSourceLocation(), null);
     		throw e;
     	}

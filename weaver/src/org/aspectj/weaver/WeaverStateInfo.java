@@ -162,8 +162,8 @@ public class WeaverStateInfo {
 			Entry entry = (Entry) i.next();
 			ResolvedTypeX aspectType = world.resolve(entry.aspectType, true);
 			if (aspectType == ResolvedTypeX.MISSING) {
-				world.showMessage(IMessage.ERROR, "aspect " + entry.aspectType + 
-					" is needed when using type " + onType,
+				world.showMessage(IMessage.ERROR,
+					WeaverMessages.format(WeaverMessages.ASPECT_NEEDED,entry.aspectType,onType),
 					onType.getSourceLocation(), null);
 				continue;
 			}

@@ -22,6 +22,7 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.ast.Test;
 
 public class PerFromSuper extends PerClause {
@@ -52,14 +53,12 @@ public class PerFromSuper extends PerClause {
 		PerClause p = lookupConcretePerClause(inAspect.getSuperclass());
 		if (p == null) {
 			inAspect.getWorld().getMessageHandler().handleMessage(
-			  MessageUtil.error("expected per clause on super aspect not found on " + 
-			  					inAspect.getSuperclass(), getSourceLocation())
+			  MessageUtil.error(WeaverMessages.format(WeaverMessages.MISSING_PER_CLAUSE,inAspect.getSuperclass()), getSourceLocation())
 			);
 		}
 		if (p.getKind() != kind) {
 			inAspect.getWorld().getMessageHandler().handleMessage(
-			  MessageUtil.error("wrong kind of per clause on super, expected " + 
-			  					kind + " but found " + p.getKind(),
+			  MessageUtil.error(WeaverMessages.format(WeaverMessages.WRONG_PER_CLAUSE,kind,p.getKind()),
 			  					getSourceLocation())
 			);
 		}

@@ -29,6 +29,7 @@ import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.ast.Test;
 
 /**
@@ -218,7 +219,7 @@ public class ReferencePointcut extends Pointcut {
 		if (concretizing) {
 			//Thread.currentThread().dumpStack();
 			searchStart.getWorld().getMessageHandler().handleMessage(
-				MessageUtil.error("circular pointcut declaration involving: " + this,
+				MessageUtil.error(WeaverMessages.format(WeaverMessages.CIRCULAR_POINTCUT,this),
 									getSourceLocation()));
 			return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 		}
@@ -236,7 +237,7 @@ public class ReferencePointcut extends Pointcut {
 			pointcutDec = searchStart.findPointcut(name);
 			if (pointcutDec == null) {
 				searchStart.getWorld().getMessageHandler().handleMessage(
-					MessageUtil.error("can't find pointcut \'" + name + "\' on " + searchStart.getName(), 
+					MessageUtil.error(WeaverMessages.format(WeaverMessages.CANT_FIND_POINTCUT,name,searchStart.getName()), 
 									getSourceLocation())
 				);
 				return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
@@ -246,9 +247,9 @@ public class ReferencePointcut extends Pointcut {
 				//Thread.currentThread().dumpStack();
 				ShadowMunger enclosingAdvice = bindings.getEnclosingAdvice();
 				searchStart.getWorld().showMessage(IMessage.ERROR,
-					pointcutDec + " is abstract", 
-					getSourceLocation(), 
-					(null == enclosingAdvice) ? null : enclosingAdvice.getSourceLocation());
+						WeaverMessages.format(WeaverMessages.ABSTRACT_POINTCUT,pointcutDec), 
+						getSourceLocation(), 
+						(null == enclosingAdvice) ? null : enclosingAdvice.getSourceLocation());
 				return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 			}
 					

@@ -62,6 +62,7 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.Shadow.Kind;
 import org.aspectj.weaver.patterns.FastMatchInfo;
@@ -288,7 +289,7 @@ class BcelClassWeaver implements IClassWeaver {
 
         if (clazz.isWoven() && !clazz.isReweavable()) {
         	world.showMessage(IMessage.ERROR, 
-				"class \'" + clazz.getType().getName() + "\' is already woven and has not been built with -Xreweavable",
+        		  WeaverMessages.format(WeaverMessages.ALREADY_WOVEN,clazz.getType().getName()),
 				ty.getSourceLocation(), null);
         	return false;
         }

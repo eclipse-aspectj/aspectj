@@ -27,6 +27,7 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverMessages;
 
 //XXX need to use dim in matching
 public class WildTypePattern extends TypePattern {
@@ -348,7 +349,7 @@ public class WildTypePattern extends TypePattern {
 				if (requireExactType) {
 					if (!allowBinding) {
 						scope.getWorld().getMessageHandler().handleMessage(
-							MessageUtil.error("can't bind type name '" + originalName + "'",
+							MessageUtil.error(WeaverMessages.format(WeaverMessages.CANT_BIND_TYPE,originalName),
 											getSourceLocation()));
 					} else if (scope.getWorld().getLint().invalidAbsoluteTypeName.isEnabled()) {
 						scope.getWorld().getLint().invalidAbsoluteTypeName.signal(originalName, getSourceLocation());
@@ -366,7 +367,7 @@ public class WildTypePattern extends TypePattern {
 		} else {
 			if (requireExactType) {
 				scope.getWorld().getMessageHandler().handleMessage(
-					MessageUtil.error("wildcard type pattern not allowed, must use type name",
+					MessageUtil.error(WeaverMessages.format(WeaverMessages.WILDCARD_NOT_ALLOWED),
 										getSourceLocation()));
 				return NO;
 			}
