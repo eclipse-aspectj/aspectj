@@ -151,5 +151,27 @@
         <run class="SubtypeConstructorCW"/>
     </ajc-test>
 
+    <ajc-test dir="bugs/interAbstract" 
+		pr="49784"
+		title="aspect declares interface method (no modifiers)">
+        <compile files="InterfaceMethodDeclarationNone.java" />
+        <run class="InterfaceMethodDeclarationNone"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs/interAbstract" 
+		pr="49784"
+		title="aspect declares interface method (abstract)">
+        <compile files="InterfaceMethodDeclarationAbstract.java" />
+        <run class="InterfaceMethodDeclarationAbstract"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs/interAbstract" 
+		pr="49784"
+		comment="working in 1.1.1 - keep with others?"
+		title="aspect declares interface method (public abstract)">
+        <compile files="InterfaceMethodDeclarationFull.java" />
+        <run class="InterfaceMethodDeclarationFull"/>
+    </ajc-test>
+
 
 </suite>
