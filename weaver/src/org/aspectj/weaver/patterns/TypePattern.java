@@ -60,6 +60,10 @@ public abstract class TypePattern extends PatternNode {
 		this.isVarArgs = isVarArgs;
 	}
 	
+	public boolean isStarAnnotation() {
+		return annotationPattern == AnnotationTypePattern.ANY;
+	}
+	
 	protected TypePattern(boolean includeSubtypes) {
 		this(includeSubtypes,false);
 	}
