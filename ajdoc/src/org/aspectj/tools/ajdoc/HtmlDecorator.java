@@ -421,12 +421,19 @@ class HtmlDecorator {
             	String currHandle = (String)it.next();
             	IProgramElement currDecl = AsmManager.getDefault().getHierarchy().findElementForHandle(currHandle);
             	
+        		String packagePath = "";
+        		if (currDecl.getPackageName() != null && !currDecl.getPackageName().equals("")) {
+        			packagePath = currDecl.getPackageName().replace('.', '/') + Config.DIR_SEP_CHAR;
+        		}
+            	
             	String hrefName = "";  
                 String hrefLink = "";
+                
+                hrefLink = rootDir.getAbsolutePath() + "/" + packagePath;
                 if (currDecl.getPackageName() != null ) {
                    hrefName = currDecl.getPackageName().replace('.', '/');
-                   hrefLink = "";//+ currDecl.getPackageName() + Config.DIR_SEP_CHAR;
-                }
+//                   hrefLink = "";//+ currDecl.getPackageName() + Config.DIR_SEP_CHAR;
+                } 
                 hrefName += Config.DIR_SEP_CHAR +
                               currDecl.getParent().toLinkLabelString()
 							  + "." + currDecl.getName();
@@ -467,99 +474,68 @@ class HtmlDecorator {
             if (currDecl.getKind().equals(IProgramElement.Kind.CODE)) {
             	currDecl = currDecl.getParent(); // promote to enclosing
             }
-        	if (currDecl != null) {
+        	if (currDecl != null && !StructureUtil.isAnonymous(currDecl.getParent())) {
         		String packagePath = "";
         		if (currDecl.getPackageName() != null && !currDecl.getPackageName().equals("")) {
         			packagePath = currDecl.getPackageName().replace('.', '/') + Config.DIR_SEP_CHAR;
         		}
-        		String linkRef = "";
-        		String linkName = rootDir.getAbsolutePath() + "/";
+        		String hrefLink = "";
+        		String hrefName = rootDir.getAbsolutePath() + "/";
         		if (currDecl.getKind().isType()) {
-					// Handling type
-					linkName = packagePath;
-					if (isNestedType(currDecl)) {
-						linkName =
-							getAncestorComponents(
-								currDecl.getParent(),
-								linkName);
+					hrefName = packagePath;
+					if (currDecl.getParent().getKind().isType()) {
+						hrefName =
+							hrefName + currDecl.getParent().getName() + ".";
 					}
-					linkName = linkName + currDecl.getName();
+					hrefName = hrefName + currDecl.getName();
 
-					linkRef = getRelativeComponent(packagePath) + packagePath;
-					if (isNestedType(currDecl)) {
-						linkRef =
-							getAncestorComponents(
-								currDecl.getParent(),
-								linkRef);
+					hrefLink = rootDir.getAbsolutePath() + "/" + packagePath;
+//					hrefLink = getRelativeComponent(packagePath) + packagePath;
+					// XXX: only one level of nested classes
+					if (currDecl.getParent().getKind().isType()) {
+						hrefLink =
+							hrefLink + currDecl.getParent().getName() + ".";
 					}
-					linkRef = linkRef + currDecl.toLabelString() + ".html";
+					hrefLink = hrefLink + currDecl.toLabelString() + ".html";
         		} else {
-					// Handling member 
-					linkName = packagePath;
-					if (isMemberOfNestedType(currDecl)) {
-						linkName =
-							getAncestorComponents(
-								currDecl.getParent().getParent(),
-								linkName);
-					}
-					linkName =
-						linkName
-							+ currDecl.getParent().getName()
-							+ "."
-							+ currDecl.getName();
+					hrefName = packagePath;
+					if (currDecl.getParent().getParent().getKind().isType()) {
+						hrefName += currDecl.getParent().getParent().getName()
+								 + ".";
+					} 
+					hrefName += currDecl.getParent().getName()
+							+ "." + currDecl.getName();
+ 		
+					hrefLink = rootDir.getAbsolutePath() + "/" + packagePath;
+//						getRelativeComponent(packagePath) + packagePath;
 
-					linkRef = getRelativeComponent(packagePath) + packagePath;
-					if (isMemberOfNestedType(currDecl)) {
-						linkRef =
-							getAncestorComponents(
-								currDecl.getParent().getParent(),
-								linkRef);
+					// Constructing the hrefLink string requires a check 
+					// to see if the parent type is actually nested inside 
+					// another type.
+					
+					// XXX: only one level of nested classes
+					if (currDecl.getParent().getParent().getKind().isType()) {
+						hrefLink +=
+								currDecl.getParent().getParent().getName()
+								+ ".";
 					}
-					linkRef =
-						linkRef
-							+ currDecl.getParent().getName()
+					hrefLink +=
+							currDecl.getParent().getName()
 							+ ".html"
 							+ "#"
 							+ currDecl.toLabelString();
         		}
-        		if (!addedNames.contains(linkName)) {
-	                entry += "<A HREF=\"" + linkRef +
-	                             "\"><tt>" + linkName.replace('/', '.') + "</tt></A>";  // !!! don't replace
+        		if (!addedNames.contains(hrefName)) {
+	                entry += "<A HREF=\"" + hrefLink +
+	                             "\"><tt>" + hrefName.replace('/', '.') + "</tt></A>";  // !!! don't replace
 	                if (it.hasNext()) entry += ", ";
-	                addedNames.add(linkName);
+	                addedNames.add(hrefName);
         		}
         	}
         }
         entry += "</B></FONT></TD></TR></TABLE>\n</TR></TD>\n";
         return entry;
     }
-
-	private static boolean isNestedType(IProgramElement currDecl) {
-		return currDecl.getParent().getKind().isType();
-	}
-
-	private static boolean isMemberOfNestedType(IProgramElement currDecl) {
-		return currDecl.getParent().getParent().getKind().isType();
-	}
-
-	/**
-	 * Convenience method for dealing with nested inner types.
-	 * Add the parent types to the link path for the supplied
-	 * <code>IProgramElement</code>.    
-	 * HEALTH WARNING : May contain traces of recursion.
-	 * @param decl
-	 * @param path
-	 * @return
-	 */
-	private static String getAncestorComponents(
-		IProgramElement decl,
-		String path) {
-		String result = path;
-		if (decl.getParent().getKind().isType()) {
-			result = getAncestorComponents(decl.getParent(), result);
-		}
-		return result + decl.getName() + ".";
-	}
 
     /**
      * Generates a relative directory path fragment that can be 

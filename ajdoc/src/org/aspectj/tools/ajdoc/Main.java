@@ -514,10 +514,10 @@ public class Main implements Config {
             } 
             else if ( arg.equals( "-source" ) ) {
                 addNextAsOption = true;
-                addNextToAJCOptions = true;
-                addNextAsClasspath = false;
-                options.addElement(arg);
-                ajcOptions.addElement(arg);
+                addNextToAJCOptions = true; 
+                addNextAsClasspath = true;  
+                options.addElement(arg); 
+                ajcOptions.addElement(arg);  
             }
             else if ( arg.equals( "-classpath" ) ) {
                 addNextAsOption = true;
