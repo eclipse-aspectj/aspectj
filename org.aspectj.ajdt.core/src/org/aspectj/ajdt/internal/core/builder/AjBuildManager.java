@@ -648,7 +648,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 							}
 						} catch (IOException ex) {
 							IMessage message = EclipseAdapterUtils.makeErrorMessage(
-									unitResult.compilationUnit,
+									new String(unitResult.fileName),
 									CANT_WRITE_RESULT,
 									ex);
 							handler.handleMessage(message);

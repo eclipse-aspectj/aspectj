@@ -149,6 +149,13 @@ public class EclipseAdapterUtils {
     	IMessage msg = new Message(text,IMessage.ERROR,ex,loc);
     	return msg;
     }
+
+	public static IMessage makeErrorMessage(String srcFile, String text, Exception ex) {
+		ISourceLocation loc = new SourceLocation(new File(srcFile),
+													0,0,0,"");
+		IMessage msg = new Message(text,IMessage.ERROR,ex,loc);
+		return msg;
+	}
     
 	private EclipseAdapterUtils() {
 	}
