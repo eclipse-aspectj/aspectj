@@ -207,6 +207,18 @@ and before samples are extracted.
 	</li>
 </ul>
 
+If the code is broken (e.g., if it no longer works in the latest
+version of AspectJ), then prefix SAMPLE with BROKEN in the tag:
+
+<pre>
+  {comment} START-<skipParse/>BROKEN-SAMPLE ...
+  ... sample code ...
+  {comment} END-<skipParse/>BROKEN-SAMPLE ...
+  ... more text ...
+</pre>
+
+It will no longer be gathered, but can be fixed and reinstated.
+
 <p>
 Happy coding!
 <hr>
