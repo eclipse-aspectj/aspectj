@@ -1,0 +1,38 @@
+<project name="SecurityManagerTest" default="all" basedir=".">
+
+	<property name="aspectj" value="j:\eclipse\aspectj_ws\aj-build\dist\tools\lib"/>
+	<property name="aspectjrt" value="${aspectj}/aspectjrt.jar" />
+	<property name="aspectjtools" value="${aspectj}/aspectjtools.jar" />
+
+	<taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+		<classpath>
+			<pathelement path="${aspectjtools}"/>
+		</classpath>
+	</taskdef>
+
+	<target name="compile">
+		<iajc
+			srcdir="${basedir}/src"
+			classpath="${aspectjrt}"
+			destdir="${basedir}/bin"
+			verbose="true"
+
+	       	fork="true"
+	       	forkclasspath="${aspectjtools}"
+		>
+		</iajc>
+	</target>
+	
+	<target name="run">
+		<java
+			classname="HelloWorld"
+			classpath="${basedir}/../../../runtime/bin;${basedir}/bin"
+			fork="yes"
+		>
+			<jvmarg value="-Djava.security.manager"/>
+		</java>
+	</target>
+	
+	<target name="all" depends="compile, run"/>
+
+</project>

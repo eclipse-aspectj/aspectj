@@ -50,7 +50,7 @@ public class CFlowCounter {
 	private static ThreadStackFactory getThreadLocalStackFactoryFor11() { return new ThreadStackFactoryImpl11(); }
     
 	private static void selectFactoryForVMVersion() {
-		String override = System.getProperty("aspectj.runtime.cflowstack.usethreadlocal","unspecified");
+		String override = getSystemPropertyWithoutSecurityException("aspectj.runtime.cflowstack.usethreadlocal","unspecified");
 		boolean useThreadLocalImplementation = false;
 		if (override.equals("unspecified")) {
 			String v = System.getProperty("java.class.version","0.0");
@@ -64,6 +64,16 @@ public class CFlowCounter {
 			tsFactory = getThreadLocalStackFactory();
 		} else {
 			tsFactory = getThreadLocalStackFactoryFor11();
+		}
+	}
+	
+	
+	private static String getSystemPropertyWithoutSecurityException (String aPropertyName, String aDefaultValue) {
+		try {
+			return System.getProperty(aPropertyName, aDefaultValue);
+		}
+		catch (SecurityException ex) {
+			return aDefaultValue;
 		}
 	}
 	
