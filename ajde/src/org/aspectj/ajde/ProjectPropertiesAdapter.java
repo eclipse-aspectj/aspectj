@@ -45,7 +45,7 @@ public interface ProjectPropertiesAdapter {
 
     public String getOutputPath();
 
-    public String getAjcWorkingDir();
+//    public String getAjcWorkingDir();
 
 	// @todo: move to build options
     public String getBootClasspath();
