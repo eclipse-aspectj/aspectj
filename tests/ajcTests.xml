@@ -6835,4 +6835,12 @@
  	        <message kind="error" line="6" text="Unhandled exception"/>
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs" pr="47754"
+      title="static method introduction on interfaces, should not be allowed">
+        <compile files="StaticInterfaceMethods.java">
+		  <message kind="error" line="7" text="methods in interfaces cannot be declared static"/>
+        </compile>
+    </ajc-test>
+
 </suite>

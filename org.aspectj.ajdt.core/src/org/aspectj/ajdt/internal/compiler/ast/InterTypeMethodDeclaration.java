@@ -73,6 +73,13 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 	}
 	public void resolveStatements() {
 		if (!Modifier.isAbstract(declaredModifiers)) super.resolveStatements();
+		if (Modifier.isStatic(declaredModifiers)) {
+			// Check the target for ITD is not an interface
+			if (onTypeBinding.isInterface()) {
+				scope.problemReporter().signalError(sourceStart, sourceEnd,
+					"methods in interfaces cannot be declared static");
+			}
+		}
 	}
 	
 	
