@@ -71,6 +71,7 @@
 		<path id="bin.classpath">
           <pathelement location="${modules.dir}/ajde/bin" />
           <pathelement location="${modules.dir}/ajbrowser/bin" />
+          <pathelement location="${modules.dir}/ajdoc/bin" />
           <pathelement location="${modules.dir}/asm/bin" />
           <pathelement location="${modules.dir}/bridge/bin" />
           <pathelement location="${modules.dir}/build/bin" />
@@ -90,6 +91,7 @@
 		<path id="jar.classpath">
           <pathelement location="${jar.dir}/ajde.jar" />
           <pathelement location="${jar.dir}/ajbrowser.jar" />
+          <pathelement location="${jar.dir}/ajdoc.jar" />
           <pathelement location="${jar.dir}/asm.jar" />
           <pathelement location="${jar.dir}/bridge.jar" />
           <pathelement location="${jar.dir}/build.jar" />
@@ -177,6 +179,9 @@
 				<fileset dir="${modules.dir}/ajbrowser/testsrc">
 					<include name="*ModuleTests.java" />
 				</fileset>
+				<fileset dir="${modules.dir}/ajdoc/testsrc">
+					<include name="*ModuleTests.java" />
+				</fileset>
 				<fileset dir="${modules.dir}/asm/testsrc">
 					<include name="*ModuleTests.java" />
 				</fileset>
@@ -235,6 +240,10 @@
 
       <antcall target="run-module-junit-tests">
          <param name="moduleName" value="ajbrowser"/>
+      </antcall>
+
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="ajdoc"/>
       </antcall>
       
       <antcall target="run-module-junit-tests">
@@ -304,6 +313,10 @@
 
       <antcall target="run-module-junit-tests">
          <param name="moduleName" value="ajbrowser"/>
+      </antcall>
+
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="ajdoc"/>
       </antcall>
       
       <antcall target="run-module-junit-tests">
