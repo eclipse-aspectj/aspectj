@@ -18,21 +18,20 @@ import junit.framework.TestCase;
 /**
  * @author Mik Kersten
  */
-public class MainTestCase extends TestCase {
+public class SpacewarTestCase extends TestCase {
 	
 	public void testSimpleExample() {
 		
 //		System.err.println(new File("testdata/figures-demo").exists());
-		File file1 = new File("testdata/simple/foo/ClassA.java");
-		File aspect1 = new File("testdata/simple/foo/AspectA.java");
-		File file2 = new File("testdata/simple/foo/InterfaceI.java");
-		File outdir = new File("testdata/simple/doc");
+		File outdir = new File("testdata/spacewar/doc");
+		File sourcepath = new File("testdata/spacewar");
 		
 		String[] args = { "-d", 
 				outdir.getAbsolutePath(),
-				aspect1.getAbsolutePath(),
-				file1.getAbsolutePath(), 
-				file2.getAbsolutePath() };
+				"-sourcepath",
+				sourcepath.getAbsolutePath(),
+				"spacewar",
+				"coordination" };
 		
 		org.aspectj.tools.ajdoc.Main.main(args);
 		

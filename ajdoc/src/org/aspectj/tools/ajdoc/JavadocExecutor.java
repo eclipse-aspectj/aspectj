@@ -26,6 +26,9 @@ import java.io.StringReader;
 
 import java.util.*;
 
+/**
+ * @author Mik Kersten
+ */
 class JavadocExecutor {
      static void callJavadoc( String[] javadocargs ) {
         final SecurityManager defaultSecurityManager = System.getSecurityManager();

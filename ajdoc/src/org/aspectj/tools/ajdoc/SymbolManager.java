@@ -19,99 +19,16 @@ import java.util.*;
 
 import org.aspectj.asm.*;
 
-
-
-
+/**
+ * @author Mik Kersten
+ */
 public class SymbolManager {
-
-//    public static File mapFilenameToSymbolFile(String filename) {
-//        return mapFilenameToNewExtensionFile(filename, SYMBOL_FILE_EXTENSION);
-//    }
-//
-//    public static File mapFilenameToSourceLinesFile(String filename) {
-//        return mapFilenameToNewExtensionFile(filename, SOURCE_LINES_FILE_EXTENSION);
-//    }
-//
-//    public static File getSourceToOutputFile(String dirname) {
-//        return new File(dirname, ".ajsline");
-//    }
-//
-//    public static File getOutputToSourceFile(String dirname) {
-//        return new File(dirname, ".ajoline");
-//    }
-
-//
-//    private static File mapFilenameToNewExtensionFile(String filename, String ext) {
-//        int lastDot = filename.lastIndexOf('.');
-//        String basename = filename;
-//        if (lastDot != -1) {
-//            basename = basename.substring(0, lastDot);
-//        }
-//
-//        return new File(basename+ext);
-//    }
 
     private static SymbolManager INSTANCE = new SymbolManager();
 
     public static SymbolManager getDefault() {
         return INSTANCE;
     }
-
-    /**
-     * @param   filePath    the full path to the preprocessed source file
-     * @param   lineNumber  line number in the preprocessed source file
-     * @return  the <CODE>SourceLine</CODE> corresponding to the original file/line
-     * @see SourceLine
-     */
-    public SourceLine mapToSourceLine(String filePath, int lineNumber) {
-    	System.err.println("> mapping: " + filePath);
-    	return null;
-//        Map map = lookupOutputToSource(filePath);
-//
-//        if (map == null) return null;
-//
-//        return (SourceLine)map.get(new SourceLine(filePath, lineNumber));
-    }
-
-
-    /**
-     * @param   filePath    the full path to the original source file
-     * @param   lineNumber  line number in the original source file
-     * @return  the <CODE>SourceLine</CODE> corresponding to the preprocessed file/line
-     * @see SourceLine
-     */
-    public SourceLine mapToOutputLine(String filePath, int lineNumber) {
-    	return null;
-//        Map map = lookupSourceToOutput(filePath);
-//
-//        if (map == null) return null;
-//
-//        return (SourceLine)map.get(new SourceLine(filePath, lineNumber));
-    }
-
-
-
-    /****
-    public int mapToOutputLine(String filename, int line) {
-        Vector sourceLines = lookupSourceLines(filename);
-
-        // do linear search here
-        if (sourceLines == null) return -1;
-
-        for(int outputLine = 0; outputLine < sourceLines.size(); outputLine++) {
-            SourceLine sl = (SourceLine)sourceLines.elementAt(outputLine);
-
-            if (sl == null) continue;
-            if (sl.line == line) {
-                String outputRoot = new File(filename).getName();
-                String sourceRoot = new File(sl.filename).getName();
-                if (outputRoot.equals(sourceRoot)) return outputLine + 1;
-            }
-        }
-
-        return -1;
-    }
-    ****/
 
  
 	/**
@@ -133,14 +50,17 @@ public class SymbolManager {
 
 		file.walk(walker);
 		
-    	System.err.println("> got: " + nodes);
+//    	System.err.println("> got: " + nodes);
 		
 		return (Declaration[])nodes.toArray(new Declaration[nodes.size()]);
 //        return lookupDeclarations(filename);
     }
     
 	private boolean accept(IProgramElement node) {
-		return !node.getKind().equals(IProgramElement.Kind.IMPORT_REFERENCE);
+		return 
+			!node.getKind().equals(IProgramElement.Kind.IMPORT_REFERENCE)
+			&& !(node.getKind().isType() &&
+				node.getParent().getKind().equals(IProgramElement.Kind.METHOD));
 	}
 
 	private Declaration buildDecl(IProgramElement node) {
@@ -168,7 +88,16 @@ public class SymbolManager {
 		} 
 		
 		signature += node.toSignatureString();
-//		System.err.println(">>>> " + signature); 
+		  
+		String name = node.getName();
+		if (node.getKind().isType()) {
+			name = genPartiallyQualifiedName(node, node.getName());
+		}
+		
+		String declaringType = node.getParent().getName();
+//		if (!node.getKind().isType()) {
+//			declaringType = node.getParent().getName(); 
+//		}
 		
 		Declaration dec = new Declaration(
 			node.getSourceLocation().getLine(),
@@ -176,7 +105,7 @@ public class SymbolManager {
 			node.getSourceLocation().getColumn(),
 			-1,
 			modifiers,
-			node.getName(),
+			name,
 			signature,
 			"", // crosscut designator
 			node.getDeclaringType(),
@@ -195,7 +124,16 @@ public class SymbolManager {
 //        return getDeclarationAtPoint(filename, line, -1);
 //    }
 
-    public Declaration getDeclarationAtPoint(String filename, int line, int column) {
+    private String genPartiallyQualifiedName(IProgramElement node, String name) {
+//    	if (node.getParent() != null) System.err.println("%%% " + node.getParent());
+		if (node.getParent() != null && node.getParent().getKind().isType()) {
+			name = node.getParent().getName() + '.' + name;
+			genPartiallyQualifiedName(node.getParent(), name);
+		}
+		return name;
+	}
+
+	public Declaration getDeclarationAtPoint(String filename, int line, int column) {
 
         Declaration[] declarations = lookupDeclarations(filename);
         //System.out.println("getting "+filename+", "+line+":"+column);

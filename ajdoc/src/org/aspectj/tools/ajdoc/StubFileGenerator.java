@@ -22,6 +22,9 @@ import java.util.List;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
 
+/**
+ * @author Mik Kersten
+ */
 class StubFileGenerator {
 
     static Hashtable declIDTable = null;
@@ -38,8 +41,6 @@ class StubFileGenerator {
 
     static void processFile(SymbolManager symbolManager, File inputFile, File signatureFile) {
         try {
- //            Declaration[] decls = symbolManager.getDeclarations(inputFile.getCanonicalPath());
-
             PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(signatureFile.getCanonicalPath())));
             
             String packageName = StructureUtil.getPackageDeclarationFromFile(inputFile);
@@ -78,137 +79,64 @@ class StubFileGenerator {
     
     private static void processTypeDeclaration(IProgramElement classNode, PrintWriter writer) throws IOException {
     	
-//        String formalComment = classNode.getFormalComment();
-//        String fullSignature = classNode.getFullSignature();
-//        Declaration[]   ptbs = classNode.getPointedToBy();
-//        Declaration[]   subs = classNode.getDeclarations();
-    	
     	String formalComment = addDeclID(classNode, classNode.getFormalComment());
     	writer.println(formalComment);
     	
-    	String signature = classNode.getSourceSignature();// StructureUtil.genSignature(classNode);
+    	String signature = getnSourcesignature(classNode);// StructureUtil.genSignature(classNode);
+    	
     	writer.println(signature + " {" );
     	processMembers(classNode.getChildren(), writer, classNode.getKind().equals(IProgramElement.Kind.INTERFACE));
     	writer.println();
 		writer.println("}");
     }
       
-    private static void processMembers(List/*IProgramElement*/ members, PrintWriter writer, boolean declaringTypeIsInterface) throws IOException {
+    /**
+     * Translates "aspect" to "class"
+     */
+    private static String getnSourcesignature(IProgramElement classNode) {
+    	String signature = classNode.getSourceSignature();
+    	int index = signature.indexOf("aspect");
+    	if (index != -1) {
+    		signature = signature.substring(0, index) +
+			"class " +
+			signature.substring(index + 6, signature.length());
+    	}
+    	return signature;
+	}
+
+	private static void processMembers(List/*IProgramElement*/ members, PrintWriter writer, boolean declaringTypeIsInterface) throws IOException {
     	for (Iterator it = members.iterator(); it.hasNext();) {
 			IProgramElement member = (IProgramElement) it.next();
 		
-	    	if (member.getKind().isTypeKind()) {
+	    	if (member.getKind().isType()
+	    		&& !member.getParent().getKind().equals(IProgramElement.Kind.METHOD)) {
 				processTypeDeclaration(member, writer);
 			} else {
 		    	String formalComment = addDeclID(member, member.getFormalComment());;
 		    	writer.println(formalComment);
-		    	String signature = member.getSourceSignature();//StructureUtil.genSignature(member);
-		    	writer.print(signature);
 		    	
-		    	if (member.getKind().equals(IProgramElement.Kind.METHOD)) {
+		    	String signature = ""; 
+		    	if (!member.getKind().equals(IProgramElement.Kind.POINTCUT)
+		    	    && !member.getKind().equals(IProgramElement.Kind.ADVICE) ) {
+		    		signature = member.getSourceSignature();//StructureUtil.genSignature(member);
+		    	} 
+		    	if (signature != null && 
+		    		!member.getKind().isInterTypeMember()) {  
+		    		writer.print(signature);
+		    	} else {
+//		    		System.err.println(">> skipping: " + member.getKind());
+		    	}  
+		    	
+		    	if (member.getKind().equals(IProgramElement.Kind.METHOD) ||
+		    		member.getKind().equals(IProgramElement.Kind.CONSTRUCTOR)) {
 		    		writer.println(" { }");
 		    		
 		    	} else if (member.getKind().equals(IProgramElement.Kind.FIELD)) {
-		    		writer.println(";");
+//		    		writer.println(";");
 		    	}
 			}
 		}
     }
-
-//  static void processClassDeclarations(IProgramElement fileNode,
-//  PrintWriter writer,
-//  boolean declaringDeclIsInterface) throws IOException {
-//for (Iterator it = fileNode.getChildren().iterator(); it.hasNext(); ) {
-//IProgramElement node = (IProgramElement)it.next();
-//proc
-//}
-//for (int i = 0; i < decls.length; i++) {
-//Declaration decl = decls[i];
-//
-////System.out.println( ">> sig: " + decl.getSignature() );
-//doDecl(decl, writer, declaringDeclIsInterface);
-//}
-//}
-
-    
-//    	
-//        if (decl.hasSignature()) {
-//            formalComment = addDeclID(decl, formalComment);
-//
-//            writer.println(formalComment);
-//
-//            // HACK: this should be in Declaration
-//            int implementsClauseIndex = fullSignature.indexOf(" implements");
-//            if (implementsClauseIndex != -1) {
-//                String newSignature = "";
-//                StringTokenizer st = new StringTokenizer(fullSignature.substring(implementsClauseIndex, fullSignature.length()));
-//                for (String element = (String)st.nextElement(); st.hasMoreElements(); element = (String)st.nextElement()) {
-//                    if (element.indexOf("$MightHaveAspect") != -1
-//                        && element.indexOf("implements") != -1) {
-//                        newSignature += element;
-//                    }
-//                }
-//                if (!newSignature.equals("")) {
-//                    writer.print(fullSignature.substring(0, implementsClauseIndex)
-//                                 + " implements " + newSignature + " " );
-//                } else {
-//                    writer.print(fullSignature.substring(0, implementsClauseIndex) + " " );
-//                }
-//            } else {
-//                writer.print(fullSignature + " " );
-//            }
-//            
-//            
-//            if ((!decl.hasBody() && !decl.getKind().equals( "interface" ) ||
-//                (decl.getKind().equals( "method" ) && declaringDeclIsInterface)) && // !!! bug in Jim's API?
-//                !(decl.getKind().equals("initializer") && decl.getModifiers().indexOf("static") != -1 ) ) {
-//
-//                if (decl.getModifiers().indexOf("static final") != -1) {
-//                    String fullSig = decl.getFullSignature().trim();
-//                    String stripped = fullSig.substring(0, fullSig.lastIndexOf(' '));
-//                    String type = stripped.substring(stripped.lastIndexOf(' '), stripped.length());
-//
-//                    if (type.equals("boolean")) {
-//                        writer.println(" = false");
-//                    } else if (type.equals("char")) {
-//                        writer.println(" = '0'");
-//                    } else if (type.equals("byte")) {
-//                        writer.println(" = 0");
-//                    } else if (type.equals("short")) {
-//                        writer.println(" = 0");
-//                    } else if (type.equals("int")) {
-//                        writer.println(" = 0");
-//                    } else if (type.equals("long")) {
-//                        writer.println(" = 0");
-//                    } else if (type.equals("float")) {
-//                        writer.println(" = 0");
-//                    } else if (type.equals("double")) {
-//                        writer.println(" = 0");
-//                    } else if (type.equals("String")) {
-//                        writer.println(" = \"\"");
-//                    } else {
-//                        writer.println(" = null");
-//                    }
-//                }
-//                writer.println(";");
-////            } else if ((!decl.hasBody() && !decl.getKind().equals( "interface" ) ||
-////                (decl.getKind().equals( "method" ) && declaringDeclIsInterface)) && // !!! bug in Jim's API?
-////                !(decl.getKind().equals("initializer") && decl.getModifiers().indexOf("static") != -1 ) ) {
-////
-////                writer.println(";");
-//
-//            } else {
-//                if (subs != null) {
-//                   if ( decl.getKind().equals( "interface" ) ) {
-//                        declaringDeclIsInterface = true;
-//                    }
-//                    writer.println("{");
-//                    processDeclarations(subs, writer, declaringDeclIsInterface);
-//                    writer.println("}");
-//                }
-//            }
-//            writer.println();
-//        }
 
     static int nextDeclID = 0;
     static String addDeclID(IProgramElement decl, String formalComment) {
@@ -238,18 +166,10 @@ class StubFileGenerator {
         int atsignPos = formalComment.indexOf('@');
         int    endPos = formalComment.indexOf("*/");
         int periodPos = formalComment.indexOf("/**")+2;
-        //if ( atsignPos == -1 ) {
-        //   periodPos = formalComment.lastIndexOf(".");
-        //} else {
-        //   periodPos = formalComment.substring(0, atsignPos).lastIndexOf(".");
-        //}
         int position  = 0;
         String periodPlaceHolder = "";
         if ( periodPos != -1 ) {
             position = periodPos+1;
-            //if ( appendPeriod ) {
-            //periodPlaceHolder = "#";
-            //}
         }
         else if ( atsignPos != -1 ) {
             string = string + "\n * ";

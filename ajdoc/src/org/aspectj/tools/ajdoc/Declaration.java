@@ -25,6 +25,11 @@ import java.util.*;
 // This lets us generate serialized files which interoperate with other code better
 import java.util.Vector;
 
+import org.aspectj.asm.IProgramElement;
+
+/**
+ * @author Mik Kersten
+ */
 public class Declaration implements Serializable {
     private int beginLine;
     private int endLine;
@@ -246,7 +251,7 @@ public class Declaration implements Serializable {
 
 
     public boolean isType() {
-        return getKind().equals("interface") || getKind().equals("class");
+        return getKind().equals("interface") || getKind().equals("class") || getKind().equals("aspect");
     }
 
     public boolean hasBody() {
@@ -254,7 +259,7 @@ public class Declaration implements Serializable {
         return kind.equals("class") || kind.endsWith("constructor") ||
             (kind.endsWith("method") && getModifiers().indexOf("abstract") == -1 &&
               getModifiers().indexOf("native") == -1);
-    }
+    }  
 
     public boolean isIntroduced() {
         return kind.startsWith("introduced-");

@@ -13,14 +13,33 @@
 
 import java.io.File;
 import java.util.Iterator;
+import java.util.List;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationship;
 
 /**
  * @author Mik Kersten
  */
 public class StructureUtil {
+
+	
+	/**
+	 * @return	null if a relationship of that kind is not found
+	 */
+	public static List/*IProgramElement*/ getTargets(IProgramElement node, IRelationship.Kind kind) {
+	    List relations = AsmManager.getDefault().getRelationshipMap().get(node);
+		List targets = null;
+	    if (relations == null) return null;
+		for (Iterator it = relations.iterator(); it.hasNext(); ) {
+	      	IRelationship rtn = (IRelationship)it.next();
+	      	if (rtn.getKind().equals(kind)) {
+	      		targets = rtn.getTargets();
+	      	}
+	     }
+		return targets;
+	}
 	
 	public static String getPackageDeclarationFromFile(File file) {
     	IProgramElement fileNode = (IProgramElement)AsmManager.getDefault().getHierarchy().findElementForSourceFile(file.getAbsolutePath());

@@ -21,6 +21,10 @@ public abstract class ClassA implements InterfaceI {
 	}
 	
 	public void foo() { }
+	
+	static aspect InnerAspect {
+		String s;
+	}
 }
  
 class SubClass extends ClassA { 

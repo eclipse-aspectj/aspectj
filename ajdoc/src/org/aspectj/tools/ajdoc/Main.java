@@ -108,7 +108,6 @@ public class Main implements Config {
             int i = 0;
             for ( ; i < ajcOptions.size(); i++ ) {
                 argsToCompiler[i] = (String)ajcOptions.elementAt(i);
-                //System.out.println(">>> ajc: " + argsToCompiler[i]);
             }
             for ( int j = 0; j < inputFiles.length; j++) {
                 argsToCompiler[i] = inputFiles[j].getAbsolutePath();
