@@ -36,7 +36,6 @@ class Signal {
     }
     public static final void found(String s) {
         Tester.event(s);
-        //System.err.println(s);
     }
     public static final void checkAll() {
         Tester.checkAllEvents();
@@ -67,7 +66,7 @@ class TargetClass implements Runnable {
           staticString = u.toString();                 
      }
      public void run() {                     // execute - no thisEnclosingJoinPoint when called from Thread.start()
-         boolean doNotOptimize = (TargetClass.class != null);
+         boolean doNotOptimize = (staticString != null);
          if (doNotOptimize) internalRun();
      }
      private void internalRun() {            // execute
@@ -100,8 +99,11 @@ class TargetClass implements Runnable {
 aspect Aspect {
 
     // ------------------------------- pointcuts select logical sets of join points
+    // 1.1 includes StringBuffer calls that weren't in 1.0
     pointcut allTargetJoinPoints() 
-        : within(TargetClass)  ;
+        : within(TargetClass) && 
+        	!call(* StringBuffer.*(..)) && !call(StringBuffer.new(..))
+        	&& !call(* String.valueOf(Object));
 
     /** these have no enclosing join point */
     pointcut noEnclosingJoinPoint() 
@@ -157,6 +159,7 @@ aspect Aspect {
     /** @testcase all join points have non-null thisJoinPoint and thisJoinPointStaticPart */
     before(): allTargetJoinPoints() {
         Signal.found("before AllTargetJoinPoints "  + thisJoinPointStaticPart);
+        //System.err.println(thisJoinPointStaticPart + " at " + thisJoinPointStaticPart.getSourceLocation());
         String test = "all join points have non-null thisJoinPointStaticPart";
         if (null == thisJoinPoint) {
             Signal.failed(test + " failed with null thisJoinPoint: " + thisJoinPointStaticPart);
@@ -279,10 +282,14 @@ class Const {
           "before AllTargetJoinPoints staticinitialization(TargetClass.<clinit>)"
         , "before AllTargetJoinPoints set(String TargetClass.staticString)"
         , "before AllTargetJoinPoints get(String TargetClass.staticString)"
+        , "before AllTargetJoinPoints get(String TargetClass.staticString)"
         , "before AllTargetJoinPoints set(String TargetClass.staticString)"
         , "before AllTargetJoinPoints set(String TargetClass.staticString)"
+        , "before AllTargetJoinPoints preinitialization(TargetClass())"
+        , "before AllTargetJoinPoints initialization(java.lang.Runnable())"
+        , "before AllTargetJoinPoints execution(java.lang.Runnable())"
         , "before AllTargetJoinPoints initialization(TargetClass())"
-        , "before AllTargetJoinPoints execution(TargetClass.<init>)"
+        //, "before AllTargetJoinPoints execution(TargetClass.<init>)"
         , "before AllTargetJoinPoints set(String TargetClass.string)"
         , "before AllTargetJoinPoints execution(TargetClass())"
         , "before AllTargetJoinPoints execution(void TargetClass.run())"
@@ -295,8 +302,11 @@ class Const {
         , "before AllTargetJoinPoints get(String TargetClass.staticString)"
         , "before AllTargetJoinPoints set(String TargetClass.staticString)"
         , "before AllTargetJoinPoints call(TargetClass())"
+        , "before AllTargetJoinPoints preinitialization(TargetClass())"        
         , "before AllTargetJoinPoints initialization(TargetClass())"
-        , "before AllTargetJoinPoints execution(TargetClass.<init>)"
+        , "before AllTargetJoinPoints initialization(java.lang.Runnable())"
+        , "before AllTargetJoinPoints execution(java.lang.Runnable())"
+        //, "before AllTargetJoinPoints execution(TargetClass.<init>)"
         , "before AllTargetJoinPoints set(String TargetClass.string)"
         , "before AllTargetJoinPoints execution(TargetClass())"
         , "before AllTargetJoinPoints call(String java.lang.Object.toString())"
