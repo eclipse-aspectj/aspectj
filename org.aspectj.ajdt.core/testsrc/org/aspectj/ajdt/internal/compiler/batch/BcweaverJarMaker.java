@@ -38,6 +38,8 @@ public class BcweaverJarMaker {
 		makeTestJars();
 
 		makeURLWeavingClassLoaderJars();
+		
+		makeDuplicateManifestTestJars();
 	}
 	
 	public static void makeJar0() throws IOException {
@@ -294,5 +296,33 @@ public class BcweaverJarMaker {
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/LTWPerthis.aj");
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 	}	
+
 	
+	public static void makeDuplicateManifestTestJars() throws IOException {
+		List args = new ArrayList();
+
+		/*
+		 * injar
+		 */
+		args.add("-classpath"); 
+		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar" +
+		   File.pathSeparator + System.getProperty("aspectjrt.path"));
+		args.add("-outjar");
+		args.add("../ajde/testdata/DuplicateManifestTest/injar.jar");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/Hello.java");
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+
+		/*
+		 * aspectjar
+		 */
+		args = new ArrayList();
+		args.add("-classpath"); 
+		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar" +
+		   File.pathSeparator + System.getProperty("aspectjrt.path"));
+		args.add("-outjar");
+		args.add("../ajde/testdata/DuplicateManifestTest/aspectjar.jar");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/Trace.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/TraceHello.java");
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+	}	
 }

@@ -290,6 +290,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 				if (entry == null) break;
 			
 				String filename = entry.getName();
+//				System.out.println("? copyResourcesFromJarFile() filename='" + filename +"'");
 	
 				if (!entry.isDirectory() && acceptResource(filename)) {
 					byte[] bytes = FileUtil.readAsByteArray(inStream);
@@ -380,7 +381,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 				(resourceName.startsWith("CVS/")) ||
 				(resourceName.indexOf("/CVS/") != -1) ||
 				(resourceName.endsWith("/CVS")) ||
-				(resourceName.endsWith(".class")) 
+				(resourceName.endsWith(".class")) ||
+				(resourceName.toUpperCase().equals(MANIFEST_NAME))
 		    )
 		{
 			return false;

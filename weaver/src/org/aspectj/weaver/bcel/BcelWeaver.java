@@ -20,17 +20,21 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -181,7 +185,7 @@ public class BcelWeaver implements IWeaver {
 //		System.err.println("? addJarFile(" + inFile + ", " + outDir + ")");
 		List addedClassFiles = new ArrayList();
 		needToReweaveWorld = true;
-		JarInputStream inStream = null;
+		JarFile inJar = null;
 		
 		try {
 			// Is this a directory we are looking at?
@@ -189,15 +193,17 @@ public class BcelWeaver implements IWeaver {
 				addedClassFiles.addAll(addDirectoryContents(inFile,outDir));
 			} else {
 			
-				inStream = new JarInputStream(new FileInputStream(inFile)); //??? buffered
-				addManifest(inStream.getManifest());
+				inJar = new JarFile(inFile);
+				addManifest(inJar.getManifest());
+				Enumeration entries = inJar.entries();
 			
-				while (true) {
-					ZipEntry entry = inStream.getNextEntry();
-					if (entry == null) break;
-				
+				while (entries.hasMoreElements()) {
+					JarEntry entry = (JarEntry)entries.nextElement();
+					InputStream inStream = inJar.getInputStream(entry);
+					
 					byte[] bytes = FileUtil.readAsByteArray(inStream);
 					String filename = entry.getName();
+//					System.out.println("? addJarFile() filename='" + filename + "'");
 					UnwovenClassFile classFile = new UnwovenClassFile(new File(outDir, filename).getAbsolutePath(), bytes);
 
 					if (filename.endsWith(".class")) {
@@ -210,9 +216,9 @@ public class BcelWeaver implements IWeaver {
 //						addResource(filename,classFile);
 //					}
 
-					inStream.closeEntry();
+					inStream.close();
 				}
-				inStream.close();
+				inJar.close();
 			}
 		} catch (FileNotFoundException ex) {
 			IMessage message = new Message(
@@ -227,8 +233,8 @@ public class BcelWeaver implements IWeaver {
 					true);
 			world.getMessageHandler().handleMessage(message);
 		} finally {
-			if (inStream != null) {
-				try {inStream.close();}
+			if (inJar != null) {
+				try {inJar.close();}
 				catch (IOException ex) {
 					IMessage message = new Message(
 							"Could not close input jar file " + inFile.getPath() + "(" + ex.getMessage() + ")",
@@ -391,10 +397,13 @@ public class BcelWeaver implements IWeaver {
 //    }
     
 	public void addManifest (Manifest newManifest) {
+//		System.out.println("? addManifest() newManifest=" + newManifest);
 		if (manifest == null) {
 			manifest = newManifest;
 		}
 	}
+	
+	public static final String MANIFEST_NAME = "META-INF/MANIFEST.MF";
 	
 	private static final String WEAVER_MANIFEST_VERSION = "1.0";
 	private static final Attributes.Name CREATED_BY = new Name("Created-By");

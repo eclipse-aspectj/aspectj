@@ -37,6 +37,7 @@ public class AjdeTests extends TestCase {
 		suite.addTestSuite(SavedModelConsistencyTest. class);
 		suite.addTestSuite(BuildCancellingTest.class);
 		suite.addTestSuite(JarManifestTest.class);
+		suite.addTestSuite(DuplicateManifestTest.class);
 		
         //$JUnit-END$
         return suite;
