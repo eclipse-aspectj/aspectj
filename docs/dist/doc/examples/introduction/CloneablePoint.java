@@ -30,7 +30,7 @@ public aspect CloneablePoint {
 
       p1.setPolar(Math.PI, 1.0);
       try {
-	 p2 = (Point)p1.clone();
+         p2 = (Point)p1.clone();
       } catch (CloneNotSupportedException e) {}
       System.out.println("p1 =" + p1 );
       System.out.println("p2 =" + p2 );

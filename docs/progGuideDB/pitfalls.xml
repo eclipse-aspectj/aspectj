@@ -1,19 +1,22 @@
 <chapter id="pitfalls" xreflabel="Pitfalls">
   <title>Pitfalls</title>
 
-  <sect1><!-- About this Chapter -->
-    <title>About this Chapter</title>
+  <sect1 id="pitfalls-intro">
+    <title>Introduction</title>
 
-    <para>This chapter consists of aspectj programs that may lead to surprising
-     behaviour and how to understand them. 
+    <para>
+      This chapter consists of a few AspectJ programs that may lead to
+      surprising behavior and how to understand them.
     </para>
 
   </sect1>
 
-  <sect1>
+  <sect1 id="pitfalls-infiniteLoops">
     <title>Infinite loops</title>
 
-    <para>Here is a Java program with peculiar behavior </para>
+    <para>
+      Here is a Java program with peculiar behavior
+    </para>
 
 <programlisting><![CDATA[
 public class Main {
@@ -32,16 +35,21 @@ public class Main {
 }
 ]]></programlisting>
 
-    <para>This program will never reach the println call, but when it aborts
-    will have no stack trace. </para>
+    <para>
+      This program will never reach the println call, but when it aborts
+      may have no stack trace. 
+    </para>
 
-    <para>This silence is caused by multiple StackOverflowExceptions.  First
-    the infinite loop in the body of the method generates one, which the
-    finally clause tries to handle.  But this finally clause also generates an
-    infinite loop which the current JVMs can't handle gracefully leading to the
-    completely silent abort.  </para>
+    <para>
+      This silence is caused by multiple StackOverflowExceptions.  First
+      the infinite loop in the body of the method generates one, which the
+      finally clause tries to handle.  But this finally clause also
+      generates an infinite loop which the current JVMs can't handle
+      gracefully leading to the completely silent abort.
+    </para>
 
-    <para> The following short aspect will also generate this behavior:
+    <para> 
+      The following short aspect will also generate this behavior:
     </para>
 
 <programlisting><![CDATA[
@@ -51,9 +59,11 @@ aspect A {
 }
 ]]></programlisting>
 
-    <para>Why?  Because the call to println is also a call matched by the
-    pointcut <literal>call (* *(..))</literal>. We get no output because we
-    used simple after() advice.  If the aspect were changed to</para>
+    <para>
+      Why?  Because the call to println is also a call matched by the
+      pointcut <literal>call (* *(..))</literal>. We get no output because
+      we used simple after() advice.  If the aspect were changed to
+    </para>
 
 <programlisting><![CDATA[
 aspect A {
@@ -62,13 +72,17 @@ aspect A {
 }
 ]]></programlisting>
 
-    <para>Then at least a StackOverflowException with a stack trace would be
-    seen.  In both cases, though, the overall problem is advice applying within
-    its own body.  </para> 
+    <para>
+      Then at least a StackOverflowException with a stack trace would be
+      seen.  In both cases, though, the overall problem is advice applying
+      within its own body.
+    </para> 
 
-    <para>There's a simple idiom to use if you ever have a worry that your
-    advice might apply in this way.  Just restrict the advice from occurring in
-    join points caused within the aspect.  So: </para>
+    <para>
+      There's a simple idiom to use if you ever have a worry that your
+      advice might apply in this way.  Just restrict the advice from occurring in
+      join points caused within the aspect.  So: 
+    </para>
 
 <programlisting><![CDATA[
 aspect A {
@@ -77,8 +91,10 @@ aspect A {
 }
 ]]></programlisting>
 
-    <para>Other solutions might be to more closely restrict the pointcut in
-    other ways, for example:  </para>
+    <para>
+      Other solutions might be to more closely restrict the pointcut in
+      other ways, for example:  
+    </para>
 
 <programlisting><![CDATA[
 aspect A {
@@ -87,17 +103,10 @@ aspect A {
 }
 ]]></programlisting>
 
-    <para>The moral of the story is that unrestricted generic pointcuts can
-    pick out more join points than intended. </para>
+    <para>
+      The moral of the story is that unrestricted generic pointcuts can
+      pick out more join points than intended. 
+    </para>
 
   </sect1>
 </chapter>
-
-<!--
-Local variables:
-compile-command: "java sax.SAXCount -v progguide.xml && java com.icl.saxon.StyleSheet -w0 progguide.xml progguide.html.xsl"
-fill-column: 79
-sgml-local-ecat-files: "progguide.ced"
-sgml-parent-document:("progguide.xml" "book" "chapter")
-End:
--->

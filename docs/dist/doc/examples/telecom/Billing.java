@@ -1,5 +1,4 @@
 /*
-
 Copyright (c) Xerox Corporation 1998-2002.  All rights reserved.
 
 Use and copying of this software and preparation of derivative works based
@@ -9,11 +8,6 @@ laws.
 
 This software is made available AS IS, and Xerox Corporation makes no warranty
 about the software, its performance or its conformity to any specification.
-
-|<---            this code is formatted to fit into 80 columns             --->|
-|<---            this code is formatted to fit into 80 columns             --->|
-|<---            this code is formatted to fit into 80 columns             --->|
-
 */
 
 package telecom;
@@ -29,12 +23,11 @@ package telecom;
  * it depends only on timing and on the type of the connection.
  */
 public aspect Billing {
-    // domination required to get advice on endtiming in the right order
+    // precedence required to get advice on endtiming in the right order
     declare precedence: Billing, Timing;
 
     public static final long LOCAL_RATE = 3;
     public static final long LONG_DISTANCE_RATE = 10;
-
 
     public Customer Connection.payer;
     public Customer getPayer(Connection conn) { return conn.payer; }

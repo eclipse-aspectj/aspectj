@@ -1,5 +1,4 @@
 /*
-
 Copyright (c) Xerox Corporation 1998-2002.  All rights reserved.
 
 Use and copying of this software and preparation of derivative works based
@@ -9,9 +8,6 @@ laws.
 
 This software is made available AS IS, and Xerox Corporation makes no warranty
 about the software, its performance or its conformity to any specification.
-
-Button.java
-
 */
 
 
@@ -28,18 +24,17 @@ class Button extends java.awt.Button {
     static final String defaultText = "cycle color";
 
     Button(Display display) {
-	super();
-	setLabel(defaultText);
-	setBackground(defaultBackgroundColor);
-	setForeground(defaultForegroundColor);
-	addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    Button.this.click();
-		}
-	    });
-	display.addToFrame(this);
+        super();
+        setLabel(defaultText);
+        setBackground(defaultBackgroundColor);
+        setForeground(defaultForegroundColor);
+        addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    Button.this.click();
+                }
+            });
+        display.addToFrame(this);
     }
 
     public void click() {}
-
 }

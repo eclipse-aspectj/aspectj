@@ -1,5 +1,4 @@
 /*
-
 Copyright (c) Xerox Corporation 1998-2002.  All rights reserved.
 
 Use and copying of this software and preparation of derivative works based
@@ -9,11 +8,6 @@ laws.
 
 This software is made available AS IS, and Xerox Corporation makes no warranty
 about the software, its performance or its conformity to any specification.
-
-|<---            this code is formatted to fit into 80 columns             --->|
-|<---            this code is formatted to fit into 80 columns             --->|
-|<---            this code is formatted to fit into 80 columns             --->|
-
 */
 
 package tracing.version1;
@@ -30,7 +24,7 @@ public class Trace {
     /**
      * There are 3 trace levels (values of TRACELEVEL):
      * 0 - No messages are printed
-     * 1 - Trace messages are printed, but there is no indentation 
+     * 1 - Trace messages are printed, but there is no indentation
      *     according to the call stack
      * 2 - Trace messages are printed, and they are indented
      *     according to the call stack

@@ -1,5 +1,4 @@
 /*
-
 Copyright (c) Xerox Corporation 1998-2002.  All rights reserved.
 
 Use and copying of this software and preparation of derivative works based
@@ -9,9 +8,6 @@ laws.
 
 This software is made available AS IS, and Xerox Corporation makes no warranty
 about the software, its performance or its conformity to any specification.
-
-Display.java
-
 */
 
 package observer;
@@ -34,19 +30,17 @@ class Display extends Panel {
     protected Frame frame = new Frame("Subject/Observer Demo");
 
     Display() {
-	frame.addWindowListener(new WindowAdapter() {
-		public void windowClosing(WindowEvent e) {System.exit(0);}
-	    });
+        frame.addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent e) {System.exit(0);}
+            });
 
-	frame.add(this, BorderLayout.CENTER);
-	frame.pack();
-	frame.setVisible(true);
+        frame.add(this, BorderLayout.CENTER);
+        frame.pack();
+        frame.setVisible(true);
     }
 
     void addToFrame(Component c) {
-	add(c);
-	frame.pack();
-    }    
+        add(c);
+        frame.pack();
+    }
 }
-
-

@@ -10,19 +10,20 @@
  * warranty about the software, its performance or its conformity to any
  * specification.
  */
+
 package bean;
 
 import java.beans.*;
 import java.io.Serializable;
 
 /*
- * Add bound properties and serialization to point objects 
+ * Add bound properties and serialization to point objects
  */
 
 aspect BoundPoint {
   /*
    * privately introduce a field into Point to hold the property
-   * change support object.  `this' is a reference to a Point object. 
+   * change support object.  `this' is a reference to a Point object.
    */
   private PropertyChangeSupport Point.support = new PropertyChangeSupport(this);
 
@@ -34,13 +35,13 @@ aspect BoundPoint {
     support.addPropertyChangeListener(listener);
   }
 
-  public void Point.addPropertyChangeListener(String propertyName, 
+  public void Point.addPropertyChangeListener(String propertyName,
                                               PropertyChangeListener listener){
-	
+
     support.addPropertyChangeListener(propertyName, listener);
   }
 
-  public void Point.removePropertyChangeListener(String propertyName, 
+  public void Point.removePropertyChangeListener(String propertyName,
                                                  PropertyChangeListener listener) {
     support.removePropertyChangeListener(propertyName, listener);
   }
@@ -63,31 +64,31 @@ aspect BoundPoint {
 
   /**
    * Advice to get the property change event fired when the
-   * setters are called. It's around advice because you need 
+   * setters are called. It's around advice because you need
    * the old value of the property.
    */
   void around(Point p): setter(p) {
-	String propertyName = 
+        String propertyName =
       thisJoinPointStaticPart.getSignature().getName().substring("set".length());
-	int oldX = p.getX();
-	int oldY = p.getY();
-	proceed(p);
-	if (propertyName.equals("X")){
+        int oldX = p.getX();
+        int oldY = p.getY();
+        proceed(p);
+        if (propertyName.equals("X")){
       firePropertyChange(p, propertyName, oldX, p.getX());
-	} else {
+        } else {
       firePropertyChange(p, propertyName, oldY, p.getY());
-	} 
+        }
   }
 
   /*
    * Utility to fire the property change event.
    */
-  void firePropertyChange(Point p, 
-                          String property, 
-                          double oldval, 
+  void firePropertyChange(Point p,
+                          String property,
+                          double oldval,
                           double newval) {
-	p.support.firePropertyChange(property, 
-                                 new Double(oldval), 
+        p.support.firePropertyChange(property,
+                                 new Double(oldval),
                                  new Double(newval));
   }
 }

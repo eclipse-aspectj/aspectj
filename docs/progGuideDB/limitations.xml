@@ -3,15 +3,18 @@
   <title>Implementation Limitations</title>
 
   <para> 
-   Certain elements of  AspectJ's semantics are difficult to implement without
-   making modifications to the virtual machine.  One way to deal with this
-   problem would be to specify only the behavior that is easiest to implement.
-   We have chosen a somewhat different approach, which is to specify an ideal
-   language semantics, as well as a clearly defined way in which
-   implementations are allowed to deviate from that semantics.  This makes it
-   possible to develop conforming AspectJ implementations today, while still
-   making it clear what later, and presumably better, implementations should do
-   tomorrow.
+    The initial implementations of AspectJ have all been
+    compiler-based implementations.  Certain elements of AspectJ's
+    semantics are difficult to implement without making modifications
+    to the virtual machine, which a compiler-based implementation
+    cannot do.  One way to deal with this problem would be to specify
+    only the behavior that is easiest to implement.  We have chosen a
+    somewhat different approach, which is to specify an ideal language
+    semantics, as well as a clearly defined way in which
+    implementations are allowed to deviate from that semantics.  This
+    makes it possible to develop conforming AspectJ implementations
+    today, while still making it clear what later, and presumably
+    better, implementations should do tomorrow.
   </para>
 
   <para>
@@ -19,105 +22,85 @@
   </para>
 
 <programlisting><![CDATA[
-before(): get(int Point.x) { System.out.println("got x"); }
+  before(): get(int Point.x) { System.out.println("got x"); }
 ]]></programlisting>
 
   <para>
-   should advise all accesses of a field of type int and name x from instances
-   of type (or subtype of) Point.  It should do this regardless of whether all
-   the source code performing the access was available at the time the aspect
-   containing this advice was compiled, whether changes were made later, etc.
+    should advise all accesses of a field of type int and name x from
+    instances of type (or subtype of) Point.  It should do this
+    regardless of whether all the source code performing the access
+    was available at the time the aspect containing this advice was
+    compiled, whether changes were made later, etc.
   </para>
 
   <para>   
-   But AspectJ implementations are permitted to deviate from this in a
-   well-defined way -- they are permitted to advise only accesses in
-   <emphasis>code the implementation controls</emphasis>.  Each implementation
-   is free within certain bounds to provide its own definition of what it means
-   to control code.
+    But AspectJ implementations are permitted to deviate from this in
+    a well-defined way -- they are permitted to advise only accesses
+    in <emphasis>code the implementation controls</emphasis>.  Each
+    implementation is free within certain bounds to provide its own
+    definition of what it means to control code.
   </para>
 
   <para>
-   In the current AspectJ compiler, ajc, control of the code means having
-   source code for any aspects and all the code they should affect available
-   during the compile. This means that if some class Client contains code with
-   the expression <literal>new Point().x</literal> (which results in a field
-   get join point at runtime), the current AspectJ compiler will fail to advise
-   that access unless Client.java is compiled at the same the aspect is
-   compiled. It also means that join points associated with code in precompiled
-   libraries (such as java.lang), and join points associated with code in
-   native methods (including their execution join points), can not be advised.
+    In the current AspectJ compiler, ajc, control of the code means
+    having bytecode for any aspects and all the code they should
+    affect available during the compile. This means that if some class
+    Client contains code with the expression <literal>new
+    Point().x</literal> (which results in a field get join point at
+    runtime), the current AspectJ compiler will fail to advise that
+    access unless Client.java or Client.class is compiled as well. It
+    also means that join points associated with code in native methods
+    (including their execution join points) cannot be advised.
   </para>
 
   <para>
-   Different join points have different requirements.  Method call join points
-   can be advised only if ajc controls <emphasis>either</emphasis> the code for
-   the caller or the code for the receiver, and some call pointcut designators
-   may require caller context (what the static type of the receiver is, for
-   example) to pick out join points.  Constructor call join points can be
-   advised only if ajc controls the code for the caller.  Field reference or
-   assignment join points can be advised only if ajc controls the code for the
-   "caller", the code actually making the reference or assignment.
-   Initialization join points can be advised only if ajc controls the code of
-   the type being initialized, and execution join points can be advised only if
-   ajc controls the code for the method or constructor body in question.
+    Different join points have different requirements.  Method and
+    constructor call join points can be advised only if ajc controls
+    the bytecode for the caller.  Field reference or assignment join
+    points can be advised only if ajc controls the bytecode for the
+    "caller", the code actually making the reference or assignment.
+    Initialization join points can be advised only if ajc controls the
+    bytecode of the type being initialized, and execution join points
+    can be advised only if ajc controls the bytecode for the method or
+    constructor body in question.
   </para>
 
   <para>
-   Aspects that are defined <literal>perthis</literal> or
-   <literal>pertarget</literal> also have restrictions based on control of the
-   code.  In particular, at a join point where the source code for the
-   currently executing object is not available, an aspect defined
-   <literal>perthis</literal> of that join point will not be associated.  So
-   aspects defined <literal>perthis(Object)</literal> will not create aspect
-   instances for every object, just those whose class the compiler controls.
-   Similar restrictions apply to <literal>pertarget</literal> aspects.
+    Aspects that are defined <literal>perthis</literal> or
+    <literal>pertarget</literal> also have restrictions based on
+    control of the code.  In particular, at a join point where the
+    bytecode for the currently executing object is not available, an
+    aspect defined <literal>perthis</literal> of that join point will
+    not be associated.  So aspects defined
+    <literal>perthis(Object)</literal> will not create aspect
+    instances for every object unless <literal>Object</literal>is part
+    of the compile.  Similar restrictions apply to
+    <literal>pertarget</literal> aspects.
   </para>
 
   <para>
-   Inter-type declarations such as <literal>declare parents</literal> also have
-   restrictions based on control of the code.  If the code for the target of an
-   inter-type declaration is not available, then the inter-type declaration is
-   not made on that target.  So, <literal>declare parents : String implements
-   MyInterface</literal> will not work for
-   <literal>java.lang.String</literal>. 
+    Inter-type declarations such as <literal>declare parents</literal>
+    also have restrictions based on control of the code.  If the
+    bytecode for the target of an inter-type declaration is not
+    available, then the inter-type declaration is not made on that
+    target.  So, <literal>declare parents : String implements
+    MyInterface</literal> will not work for
+    <literal>java.lang.String</literal> unless
+    <literal>java.lang.String</literal> is part of the compile.
   </para> 
 
   <para>
-   Other AspectJ implementations, indeed, future versions of ajc, may define
-   <emphasis>code the implementation controls</emphasis> more liberally.
+    Other AspectJ implementations, indeed, future versions of ajc, may
+    define <emphasis>code the implementation controls</emphasis> more
+    liberally or restrictively.
   </para>
 
   <para>
-   Control may mean that classes need only be available in classfile or jarfile
-   format. So, even if Client.java and Point.java were precompiled, their join
-   points could still be advised. In such a system, though, it might still be
-   the case that join points from code of system libraries such as java.lang
-   could not be advised.
-  </para>
-
-  <para>
-   Or control could even include system libraries, thus allowing a call join
-   point from java.util.Hashmap to java.lang.Object to be advised.
-  </para>
-
-  <para>
-   All AspectJ implementations are required to control the code of the
-   files that the compiler compiles itself.
-  </para>
-
-  <para>
-   The important thing to remember is that core concepts of AspectJ,
-   such as the join point, are unchanged, regardless of which
-   implementation is used. During your development, you will have to
-   be aware of the limitations of the ajc compiler you're using, but
-   these limitations should not drive the design of your aspects.
+    The important thing to remember is that core concepts of AspectJ,
+    such as the join point, are unchanged, regardless of which
+    implementation is used. During your development, you will have to
+    be aware of the limitations of the ajc compiler you're using, but
+    these limitations should not drive the design of your aspects.
   </para>
 
 </appendix>
-
-<!-- Local variables: -->
-<!-- fill-column: 79 -->
-<!-- sgml-local-ecat-files: progguide.ced -->
-<!-- sgml-parent-document:("progguide.sgml" "book" "appendix") -->
-<!-- End: -->

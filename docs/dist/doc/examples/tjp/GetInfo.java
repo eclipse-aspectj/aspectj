@@ -1,4 +1,4 @@
-/* 
+/*
 Copyright (c) Xerox Corporation 1998-2002.  All rights reserved.
 
 Use and copying of this software and preparation of derivative works based
@@ -24,10 +24,10 @@ aspect GetInfo {
    pointcut demoExecs(): within(Demo) && execution(* *(..));
 
    Object around(): demoExecs() && !execution(* go()) && goCut() {
-      println("Intercepted message: " + 
-	  thisJoinPointStaticPart.getSignature().getName());
-      println("in class: " + 
-	  thisJoinPointStaticPart.getSignature().getDeclaringType().getName());
+      println("Intercepted message: " +
+          thisJoinPointStaticPart.getSignature().getName());
+      println("in class: " +
+          thisJoinPointStaticPart.getSignature().getDeclaringType().getName());
       printParameters(thisJoinPoint);
       println("Running original method: \n" );
       Object result = proceed();
@@ -41,9 +41,9 @@ aspect GetInfo {
       String[] names = ((CodeSignature)jp.getSignature()).getParameterNames();
       Class[] types = ((CodeSignature)jp.getSignature()).getParameterTypes();
       for (int i = 0; i < args.length; i++) {
-	 println("  "  + i + ". " + names[i] +
-	     " : " +            types[i].getName() +
-	     " = " +            args[i]);
+         println("  "  + i + ". " + names[i] +
+             " : " +            types[i].getName() +
+             " = " +            args[i]);
       }
    }
 }

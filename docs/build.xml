@@ -296,6 +296,7 @@
             <arg value="${xml-source-dir}/${xml-source-root}"/>
             <arg value="${xsl-source-file}"/>
             <arg value="base.dir=${xml-target-dir}/"/>
+            <arg value="use.id.as.filename=1"/>
         </java>            
     </target>
 

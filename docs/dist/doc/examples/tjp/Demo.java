@@ -14,27 +14,24 @@ about the software, its performance or its conformity to any specification.
 package tjp;
 
 public class Demo {
-
     static Demo d;
 
     public static void main(String[] args){
-	new Demo().go();
+        new Demo().go();
     }
 
     void go(){
-	d = new Demo();
-	d.foo(1,d);
-	System.out.println(d.bar(new Integer(3)));
+        d = new Demo();
+        d.foo(1,d);
+        System.out.println(d.bar(new Integer(3)));
     }
 
     void foo(int i, Object o){
-	System.out.println("Demo.foo(" + i + ", " + o + ")\n");
+        System.out.println("Demo.foo(" + i + ", " + o + ")\n");
     }
-
 
     String bar (Integer j){
-	System.out.println("Demo.bar(" + j + ")\n");
-	return "Demo.bar(" + j  + ")";
+        System.out.println("Demo.bar(" + j + ")\n");
+        return "Demo.bar(" + j  + ")";
     }
-
 }

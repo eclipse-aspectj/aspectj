@@ -1,5 +1,4 @@
 /*
-
 Copyright (c) Xerox Corporation 1998-2002.  All rights reserved.
 
 Use and copying of this software and preparation of derivative works based
@@ -9,12 +8,8 @@ laws.
 
 This software is made available AS IS, and Xerox Corporation makes no warranty
 about the software, its performance or its conformity to any specification.
-
-|<---            this code is formatted to fit into 80 columns             --->|
-|<---            this code is formatted to fit into 80 columns             --->|
-|<---            this code is formatted to fit into 80 columns             --->|
-
 */
+
 package telecom;
 
 /**
@@ -28,9 +23,9 @@ public aspect Timing {
      * Every Customer has a total connection time
      */
     public long Customer.totalConnectTime = 0;
-  
-    public long getTotalConnectTime(Customer cust) { 
-        return cust.totalConnectTime; 
+
+    public long getTotalConnectTime(Customer cust) {
+        return cust.totalConnectTime;
     }
     /**
      * Every connection has a timer
@@ -48,7 +43,7 @@ public aspect Timing {
     /**
      * When to stop the timer
      */
-    pointcut endTiming(Connection c): target(c) && 
+    pointcut endTiming(Connection c): target(c) &&
         call(void Connection.drop());
 
     /**
