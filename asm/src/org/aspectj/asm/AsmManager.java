@@ -176,5 +176,124 @@ public class AsmManager {
 	public void setShouldSaveModel(boolean shouldSaveModel) {
 		this.shouldSaveModel = shouldSaveModel;
 	}
+	
+	// ==== implementation of canonical file path map and accessors ==============
+
+	// a more sophisticated optimisation is left here commented out as the 
+	// performance gains don't justify the disturbance this close to a release...	
+	// can't call prepareForWeave until preparedForCompilation has completed...
+//	public synchronized void prepareForCompilation(List files) {
+//		canonicalFilePathMap.prepopulate(files);
+//	}
+//	
+//	public synchronized void prepareForWeave() {
+//		canonicalFilePathMap.handover();
+//	}
+	
+	public String getCanonicalFilePath(File f) {
+		return canonicalFilePathMap.get(f);
+	}
+	
+	private CanonicalFilePathMap canonicalFilePathMap = new CanonicalFilePathMap();
+	
+	private static class CanonicalFilePathMap {
+		private static final int MAX_SIZE = 4000;
+		
+		private Map pathMap = new HashMap(MAX_SIZE);
+
+//		// guards to ensure correctness and liveness
+//		private boolean cacheInUse = false;
+//		private boolean stopRequested = false;
+//		
+//		private synchronized boolean isCacheInUse() {
+//			return cacheInUse;
+//		}
+//		
+//		private synchronized void setCacheInUse(boolean val) {
+//			cacheInUse = val;
+//			if (val) {
+//				notifyAll();
+//			} 
+//		}
+//		
+//		private synchronized boolean isStopRequested() {
+//			return stopRequested;
+//		}
+//		
+//		private synchronized void requestStop() {
+//			stopRequested = true;
+//		}
+//		
+//		/**
+//		 * Begin prepopulating the map by adding an entry from
+//		 * file.getPath -> file.getCanonicalPath for each file in
+//		 * the list. Do this on a background thread.
+//		 * @param files
+//		 */
+//		public void prepopulate(final List files) {
+//			    stopRequested = false;
+//				setCacheInUse(false);
+//			    if (pathMap.size() > MAX_SIZE) {
+//			    	pathMap.clear();
+//			    }
+//				new Thread() {
+//					public void run() {
+//						System.out.println("Starting cache population: " + System.currentTimeMillis());
+//						Iterator it = files.iterator();
+//						while (!isStopRequested() && it.hasNext()) {
+//							File f = (File)it.next();
+//							if (pathMap.get(f.getPath()) == null) {
+//								// may reuse cache across compiles from ides... 
+//								try {								
+//									pathMap.put(f.getPath(),f.getCanonicalPath());
+//								} catch (IOException ex) {
+//									pathMap.put(f.getPath(),f.getPath());
+//								}
+//							}
+//						}
+//						System.out.println("Cached " + files.size());
+//						setCacheInUse(true);
+//						System.out.println("Cache populated: " + System.currentTimeMillis());
+//					}
+//				}.start();
+//		}
+//		
+//		/**
+//		 * Stop pre-populating the cache - our customers are ready to use it.
+//		 * If there are any cache misses from this point on, we'll populate the
+//		 * cache as we go.
+//		 * The handover is done this way to ensure that only one thread is ever
+//		 * accessing the cache, and that we minimize synchronization.
+//		 */
+//		public synchronized void handover() {
+//			if (!isCacheInUse()) {
+//				requestStop();
+//				try {
+//					while (!isCacheInUse())	wait();
+//				} catch (InterruptedException intEx) { } // just continue
+//			}
+//		}
+		
+		public String get(File f) {
+//			if (!cacheInUse) {  // unsynchronized test - should never be parallel 
+//				                // threads at this point
+//				throw new IllegalStateException(
+//					"Must take ownership of cache before using by calling " +
+//					"handover()");
+//			}
+			String ret = (String) pathMap.get(f.getPath());
+			if (ret == null) {
+				try {
+					ret = f.getCanonicalPath();
+				} catch (IOException ioEx) {
+					ret = f.getPath();
+				}
+				pathMap.put(f.getPath(),ret);
+				if (pathMap.size() > MAX_SIZE) pathMap.clear();
+			}
+			return ret;
+		}
+	};
+	
 }
 
