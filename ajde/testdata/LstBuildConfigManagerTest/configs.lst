@@ -1,0 +1,6 @@
+@A.lst
+@moduleB/moduleB.lst
+@moduleB/moduleC/moduleC.lst
+B.aj
+moduleB/moduleC/moduleD/D.java
+
