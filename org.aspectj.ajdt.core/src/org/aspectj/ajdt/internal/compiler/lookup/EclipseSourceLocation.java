@@ -42,7 +42,13 @@ public class EclipseSourceLocation implements ISourceLocation {
 
 	public File getSourceFile() {
 		if (null == file) {
-            file = new File(new String(result.fileName)); 
+            if ((null == result) 
+                || (null == result.fileName)
+                || (0 == result.fileName.length)) {
+                file = ISourceLocation.NO_FILE;
+            } else {
+                file = new File(new String(result.fileName)); 
+            }
         }
         return file;
 	}
