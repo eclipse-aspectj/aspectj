@@ -109,13 +109,13 @@ public class PatternParser {
 		return ret;
 	}
 
-	public DeclareDominates parseDominates() {
+	public DeclarePrecedence parseDominates() {
 		List l = new ArrayList();
 		do {
 			l.add(parseTypePattern());
 		} while (maybeEat(","));
 		
-		return new DeclareDominates(l);
+		return new DeclarePrecedence(l);
 	}
 
 	private Declare parseParents() {

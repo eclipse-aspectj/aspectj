@@ -20,15 +20,15 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.ResolvedTypeX;
 
-public class DeclareDominates extends Declare {
+public class DeclarePrecedence extends Declare {
 	private TypePatternList patterns;
 	
 
-	public DeclareDominates(List patterns) {
+	public DeclarePrecedence(List patterns) {
 		this(new TypePatternList(patterns));
 	}
 	
-	private DeclareDominates(TypePatternList patterns) {
+	private DeclarePrecedence(TypePatternList patterns) {
 		this.patterns = patterns;
 	}
 	
@@ -41,8 +41,8 @@ public class DeclareDominates extends Declare {
 	}
 	
 	public boolean equals(Object other) { 
-		if (!(other instanceof DeclareDominates)) return false;
-		DeclareDominates o = (DeclareDominates)other;
+		if (!(other instanceof DeclarePrecedence)) return false;
+		DeclarePrecedence o = (DeclarePrecedence)other;
 		return o.patterns.equals(patterns);
 	}
     
@@ -58,7 +58,7 @@ public class DeclareDominates extends Declare {
 	}
 
 	public static Declare read(DataInputStream s, ISourceContext context) throws IOException {
-		Declare ret = new DeclareDominates(TypePatternList.read(s, context));
+		Declare ret = new DeclarePrecedence(TypePatternList.read(s, context));
 		ret.readLocation(context, s);
 		return ret;
 	}

@@ -278,7 +278,7 @@ public abstract class World {
 		//??? This method can be called a large number of times.
 		int order = 0;
 		for (Iterator i = crosscuttingMembersSet.getDeclareDominates().iterator(); i.hasNext(); ) {
-			DeclareDominates d = (DeclareDominates)i.next();
+			DeclarePrecedence d = (DeclarePrecedence)i.next();
 			int thisOrder = d.compare(aspect1, aspect2);
 			//System.out.println("comparing: " + thisOrder + ": " + d);
 			if (thisOrder != 0) {

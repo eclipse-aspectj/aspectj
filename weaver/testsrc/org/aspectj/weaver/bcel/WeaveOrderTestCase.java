@@ -19,7 +19,7 @@ import java.io.*;
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.*;
 import org.aspectj.weaver.patterns.*;
-import org.aspectj.weaver.patterns.DeclareDominates;
+import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.*;
 
 /**.

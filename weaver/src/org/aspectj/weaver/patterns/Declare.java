@@ -29,7 +29,7 @@ public abstract class Declare extends PatternNode {
 			case ERROR_OR_WARNING:
 				return DeclareErrorOrWarning.read(s, context);
 			case DOMINATES:
-				return DeclareDominates.read(s, context);
+				return DeclarePrecedence.read(s, context);
 			case PARENTS:
 				return DeclareParents.read(s, context);
 			case SOFT:

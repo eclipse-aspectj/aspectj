@@ -93,7 +93,7 @@ public class CrosscuttingMembers {
 		if (declare instanceof DeclareErrorOrWarning) {
 			ShadowMunger m = new Checker((DeclareErrorOrWarning)declare);
 			addShadowMunger(m);
-		} else if (declare instanceof DeclareDominates) {
+		} else if (declare instanceof DeclarePrecedence) {
 			declareDominates.add(declare);
 		} else if (declare instanceof DeclareParents) {
 			DeclareParents dp = (DeclareParents)declare;
