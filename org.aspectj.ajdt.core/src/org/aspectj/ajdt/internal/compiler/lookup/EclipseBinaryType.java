@@ -61,10 +61,14 @@ public class EclipseBinaryType extends EclipseObjectType {
 	}
 
 	private ResolvedMember copyResolvedMember(ResolvedMember in) {
-		return new ResolvedMember(
+		ResolvedMember ret = new ResolvedMember(
 			in.getKind(), forceTypeX(in.getDeclaringType()), in.getModifiers(),
 			forceTypeX(in.getReturnType()), in.getName(),
 			forceTypeXs(in.getParameterTypes()));
+		ret.setPosition(in.getStart(), in.getEnd());
+		ret.setSourceContext(in.getSourceContext());
+		ret.setCheckedExceptions(forceTypeXs(in.getExceptions()));
+		return ret;
 	}
 
 	private TypeX forceTypeX(TypeX typeX) {
