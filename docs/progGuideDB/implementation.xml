@@ -105,7 +105,14 @@
   	do not have a superclass that implements the interface).
   	You may weave these separately, but be aware that you will get
   	runtime exceptions if you run the affected top-level classes
-  	without the interface as produced by the same ajc implementation.
+  	without the interface as produced by the same ajc implementation.  	
+  	Any intertype declaration of an abstract method on an interface 
+  	must be specified as public, you will get a compile time error 
+  	message indicating this is a compiler limitation if you do not 
+  	specify public.  A non-abstract method declared on an interface
+  	can use any access modifier except protected.  Note that this is
+  	different to normal Java rules where all members declared in 
+  	an interface are implicitly public.
   	Finally, note that one cannot define static fields or methods 
   	on interfaces.
   </para>
