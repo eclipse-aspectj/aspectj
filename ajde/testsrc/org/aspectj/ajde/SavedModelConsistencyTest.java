@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.HierarchyWalker;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
@@ -49,12 +50,10 @@ public class SavedModelConsistencyTest extends AjdeTestCase {
 		assertTrue(testFile.exists());
 		
 		IProgramElement nodePreBuild = model.findElementForSourceLine(testFile.getAbsolutePath(), 5);	
-		//System.err.println(nodePreBuild.getKind());
-
+		
 		doSynchronousBuild(CONFIG_FILE_PATH);	
-
+		
 		IProgramElement nodePostBuild = model.findElementForSourceLine(testFile.getAbsolutePath(), 5);	
-		//System.err.println(nodePostBuild.getKind());
 		
 		assertTrue("Nodes should be identical: Prebuild kind = "+nodePreBuild.getKind()+
 				   "   Postbuild kind = "+nodePostBuild.getKind(),nodePreBuild.getKind().equals(nodePostBuild.getKind()));
@@ -95,6 +94,14 @@ public class SavedModelConsistencyTest extends AjdeTestCase {
 	  
 	protected void setUp() throws Exception {
 		super.setUp("examples");
+		// In order to get a model on the disk to read in, do a build with the right flag set !
+		try {
+			AsmManager.dumpModelPostBuild=true;
+			doSynchronousBuild(CONFIG_FILE_PATH);
+		} finally {
+			AsmManager.dumpModelPostBuild=false;
+		}
+
 	}
 
 	protected void tearDown() throws Exception {
