@@ -27,6 +27,7 @@ import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.ConstantPushInstruction;
 import org.apache.bcel.generic.INSTANCEOF;
 import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionConstants;
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
@@ -318,13 +319,13 @@ public class Utility {
     		int i) {
 		Instruction inst;
 		switch(i) {
-			case -1: inst =  fact.ICONST_M1; break;
-			case 0: inst =  fact.ICONST_0;	break;			
-			case 1: inst =  fact.ICONST_1; break;
-			case 2: inst =  fact.ICONST_2; break;				
-			case 3: inst =  fact.ICONST_3; break;
-			case 4: inst =  fact.ICONST_4;	break;			
-			case 5: inst =  fact.ICONST_5;	break;	
+			case -1: inst =  InstructionConstants.ICONST_M1; break;
+			case 0: inst =  InstructionConstants.ICONST_0;	break;			
+			case 1: inst =  InstructionConstants.ICONST_1; break;
+			case 2: inst =  InstructionConstants.ICONST_2; break;				
+			case 3: inst =  InstructionConstants.ICONST_3; break;
+			case 4: inst =  InstructionConstants.ICONST_4;	break;			
+			case 5: inst =  InstructionConstants.ICONST_5;	break;	
 		}
 		if (i <= Byte.MAX_VALUE && i >= Byte.MIN_VALUE) {
 	     	inst =  new BIPUSH((byte)i);

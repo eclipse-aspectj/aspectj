@@ -95,14 +95,14 @@ public final class LazyClassGen {
     {
         myGen = new ClassGen(class_name, super_class_name, file_name, access_flags, interfaces);
 		constantPoolGen = myGen.getConstantPool();
-        fact = new InstructionFactory(constantPoolGen);
+        fact = new InstructionFactory(myGen, constantPoolGen);
     }
 
 	//Non child type, so it comes from a real type in the world.
     public LazyClassGen(BcelObjectType myType) {
     	myGen = new ClassGen(myType.getJavaClass());
     	constantPoolGen = myGen.getConstantPool();
-		fact = new InstructionFactory(constantPoolGen);        
+		fact = new InstructionFactory(myGen, constantPoolGen);        
 		this.myType = myType;
 
         Method[] methods = myGen.getMethods();
