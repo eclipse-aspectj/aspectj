@@ -17,6 +17,7 @@ import junit.framework.*;
 
 public class BcweaverTests extends TestCase {
 
+    public static final String TESTDATA_PATH = "../weaver/testdata";
     public static Test suite() { 
         TestSuite suite = new TestSuite(BcweaverTests.class.getName());
         // abstract

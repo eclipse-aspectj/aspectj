@@ -15,6 +15,7 @@ package org.aspectj.testing.util;
 
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
+import org.aspectj.util.*;
 import org.aspectj.util.FileUtil;
 
 import java.io.File;
@@ -33,7 +34,7 @@ public class TestUtilTest extends TestCase {
     
     public void testFileCompareNonClass() throws IOException {
         MessageHandler holder = new MessageHandler();
-        File thisFile = new File("testsrc/org/aspectj/testing/util/TestUtilTest.java");
+        File thisFile = new File(UtilTests.TESTING_UTIL_PATH + "/testsrc/org/aspectj/testing/util/TestUtilTest.java");
         //File thisFile = new File("src/testing-util.lst");
         assertTrue(TestUtil.sameFiles(holder, thisFile, thisFile));
         
@@ -66,7 +67,7 @@ public class TestUtilTest extends TestCase {
 
     public void testFileCompareNonClassStaticPositive() throws IOException {
         MessageHandler holder = new MessageHandler();
-        File basedir = new File("testdata/testCompareTextFiles/sameFile");
+        File basedir = new File(UtilTests.TESTING_UTIL_PATH + "/testdata/testCompareTextFiles/sameFile");
         File expectedBaseDir = new File(basedir, "expected");
         File actualBaseDir = new File(basedir, "actual");
         String filename = "TestUtilTest.java";
@@ -98,7 +99,7 @@ public class TestUtilTest extends TestCase {
             return;
         }
         MessageHandler holder = new MessageHandler();
-        File classBase = new File("testdata/testCompareClassFiles");
+        File classBase = new File(UtilTests.TESTING_UTIL_PATH + "/testdata/testCompareClassFiles");
         String path = "org/aspectj/testing/util/TestCompareClassFile.class";
         File classFile = new File(classBase, path);
         

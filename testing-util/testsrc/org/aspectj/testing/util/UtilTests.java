@@ -18,6 +18,7 @@ import junit.framework.*;
 
 public class UtilTests extends TestCase {
 
+    public static final String TESTING_UTIL_PATH = "../testing-util";
     public static Test suite() { 
         TestSuite suite = new TestSuite(UtilTests.class.getName());
         // for now, do not include SuiteTest because it would take 15 minutes

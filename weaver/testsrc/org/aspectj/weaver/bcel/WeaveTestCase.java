@@ -130,10 +130,10 @@ public abstract class WeaveTestCase extends TestCase {
         if (regenerate) genClass(gen, outDir, expectedFile);
         else realCheckClass(gen, outDir, expectedFile);
     }
-    				
+    static final File TESTDATA_DIR = new File("../weaver/testdata");    				
     void genClass(LazyClassGen gen, String outDir, String expectedFile) throws IOException {
     	//ClassGen b = getJavaClass(outDir, className);
-    	FileOutputStream out = new FileOutputStream(new File("testdata", expectedFile));
+    	FileOutputStream out = new FileOutputStream(new File(TESTDATA_DIR, expectedFile));
     	PrintStream ps = new PrintStream(out);
     	gen.print(ps);
     	ps.flush();
@@ -142,7 +142,7 @@ public abstract class WeaveTestCase extends TestCase {
 
     void realCheckClass(LazyClassGen gen, String outDir, String expectedFile) throws IOException {
     	TestUtil.assertMultiLineStringEquals("classes", 
-    	             FileUtil.readAsString(new File("testdata", expectedFile)),
+    	             FileUtil.readAsString(new File(TESTDATA_DIR, expectedFile)),
     	             gen.toLongString());
     }
 
@@ -263,7 +263,7 @@ public abstract class WeaveTestCase extends TestCase {
 	}
 
 	public String getTraceJar() {
-		return "testdata/tracing.jar";
+		return BcweaverTests.TESTDATA_PATH + "/tracing.jar";
 	}
 
 	// ----

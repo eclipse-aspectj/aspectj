@@ -16,6 +16,8 @@ package org.aspectj.weaver.bcel;
 import java.io.*;
 import java.util.Collection;
 
+import org.aspectj.weaver.BcweaverTests;
+
 import junit.framework.TestCase;
 
 public class ZipTestCase extends TestCase {
@@ -51,7 +53,7 @@ public class ZipTestCase extends TestCase {
 				weaver.addLibraryJarFile(new File(aspectjar));
 			}
 		}
-		weaver.addLibraryJarFile(new File("testdata/Regex.jar")); //???
+		weaver.addLibraryJarFile(new File(BcweaverTests.TESTDATA_PATH + "/Regex.jar")); //???
 		
 		
 		Collection woven = weaver.weave(outFile);
@@ -64,17 +66,19 @@ public class ZipTestCase extends TestCase {
 	}	
 	
 	public void testSmall() throws IOException {
-		zipTest("testdata/Regex.jar", null);
+		zipTest(BcweaverTests.TESTDATA_PATH + "/Regex.jar", null);
 	}
 
 	public void testSmallWithAspects() throws IOException {
 		System.out.println("could take 4 seconds...");
-		zipTest("testdata/Regex.jar", "testdata/megatrace.jar");
+		zipTest(BcweaverTests.TESTDATA_PATH + "/Regex.jar", 
+            BcweaverTests.TESTDATA_PATH + "/megatrace.jar");
 	}
 
 	public void testSmallWithAspectsNoWeave() throws IOException {
 		System.out.println("could take 4 seconds...");
-		zipTest("testdata/Regex.jar", "testdata/megatraceNoweave.jar", true);
+		zipTest(BcweaverTests.TESTDATA_PATH + "/Regex.jar", 
+            BcweaverTests.TESTDATA_PATH + "/megatraceNoweave.jar", true);
 	}
 
 
@@ -86,19 +90,22 @@ public class ZipTestCase extends TestCase {
 	
 	public void testBigWithEasyNoTrace() throws IOException {
 		System.out.println("could take 4 seconds...");
-		zipTest("../lib/bcel/bcel.jar", "testdata/megatrace0easy.jar");
+		zipTest("../lib/bcel/bcel.jar", 
+            BcweaverTests.TESTDATA_PATH + "/megatrace0easy.jar");
 	}
 
 	// this is something we test every now and again.
 	public void xtestBigWithHardNoTrace() throws IOException {
 		System.out.println("could take 24 seconds...");
-		zipTest("../lib/bcel/bcel.jar", "testdata/megatrace0hard.jar");
+		zipTest("../lib/bcel/bcel.jar", 
+            BcweaverTests.TESTDATA_PATH + "/megatrace0hard.jar");
 	}
 
 
 	public void xtestBigWithAspects() throws IOException {
 		System.out.println("could take 40 seconds...");
-		zipTest("../lib/bcel/bcel.jar", "testdata/megatrace.jar");
+		zipTest("../lib/bcel/bcel.jar", 
+            BcweaverTests.TESTDATA_PATH + "/megatrace.jar");
 	}
 
 }
