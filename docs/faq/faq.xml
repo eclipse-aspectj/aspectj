@@ -23,7 +23,7 @@
        2003 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated July 15, 2003.
+  <para>Last updated August 6, 2003.
   </para>
   <para>
    This FAQ covers AspectJ versions 1.0 and 1.1.
@@ -1509,7 +1509,9 @@ aspect PublicErrorLogging {
            If this is too slow, then you can try to make reasonable divisions
            between sets of source files whose aspects do not interact to 
            achieve a shorter compile cycle (particularly for development 
-	       aspects).  However, if you get any problems
+	       aspects).  If you have aspects that apply to different modules,
+	       you can try compiling them into a binary form and using them
+	       to weave each module.  However, if you get any problems
            or if you wish to run tests or do a release, you should recompile
            the entire system.
           </para>
@@ -1870,53 +1872,6 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
         </answer>
       </qandaentry>
       <qandaentry>
-        <question id="q:hybridbuilds"
-            xreflabel="Q:Setting up hybrid builds">
-          <para>I want the aspects for development builds but 
-        remove them for production builds.  How can I set up the build
-        system so they are unpluggable?  And so I use <literal>javac</literal>
-        in my production build?
-          </para>
-        </question>
-        <answer>
-          <para>
-          If you are using development-time-only aspects - aspects that only 
-          exist when you are developing the code, not when you ship it - 
-          you can use implement a hybrid build process by listing
-          the production source files into a javac-compliant argfile,
-          and the development source files in another ajc argfiles:
-          </para>
-          <programlisting>
-     -- file "production.lst":
-     One.java
-     two/Three.java
-     ...
-
-     -- file "tracing.lst":
-     trace/Library.java
-     Trace.java
-
-     -- file "development.lst":
-     @production.lst
-     @tracing.lst
-          </programlisting>
-          <para>
-            Then your development build can use <literal>ajc</literal>:
-          </para>
-          <programlisting>
-            ajc @development.lst
-          </programlisting>
-          <para>
-          And your development build can use 
-          <literal>ajc</literal> or <literal>javac</literal>
-           or <literal>jikes</literal>:
-          </para>
-          <programlisting>
-            jikes @production.lst
-          </programlisting>
-        </answer>
-      </qandaentry>
-      <qandaentry>
         <question id="q:idesupportplans"
             xreflabel="Q:What plans are there to support my IDE?">
           <para>What plans are there to support my IDE?</para>
@@ -1971,7 +1926,173 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
         <answer>
           <para>Yes. The core AJDE API is extensible and the source code is
             available for download. Start by studying the sources
-            for the existing IDE support.
+            for the existing IDE support linked off the AspectJ site
+            <ulink url="http://eclipse.org/aspectj">http://eclipse.org/aspectj</ulink>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:hybridbuilds"
+            xreflabel="Q:Setting up hybrid builds">
+          <para>I want the aspects for development builds but 
+        remove them for production builds.  How can I set up the build
+        system so they are unpluggable?  And so I use <literal>javac</literal>
+        in my production build?
+          </para>
+        </question>
+        <answer>
+          <para>
+          If you are using development-time-only aspects - aspects that only 
+          exist when you are developing the code, not when you ship it - 
+          you can use implement a hybrid build process by listing
+          the production source files into a javac-compliant argfile,
+          and the development source files in another ajc argfiles:
+          </para>
+          <programlisting>
+     -- file "production.lst":
+     One.java
+     two/Three.java
+     ...
+
+     -- file "tracing.lst":
+     trace/Library.java
+     Trace.java
+
+     -- file "development.lst":
+     @production.lst
+     @tracing.lst
+          </programlisting>
+          <para>
+            Then your development build can use <literal>ajc</literal>:
+          </para>
+          <programlisting>
+            ajc @development.lst
+          </programlisting>
+          <para>
+          And your development build can use 
+          <literal>ajc</literal> or <literal>javac</literal>
+           or <literal>jikes</literal>:
+          </para>
+          <programlisting>
+            jikes @production.lst
+          </programlisting>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:stepwiseBuilds"
+            xreflabel="Q:We compile module jars and then assemble them.  Can we continue this with AspectJ?">
+          <para>
+            We compile module jars and then assemble them.  Can we continue this with AspectJ?
+          </para>
+        </question>
+        <answer>
+          <para>
+		Aspects apply to everything in a namespace, as if everything is 
+		compiled together.
+		Sometimes you can break the build down into separate steps without breaking 
+		this model, but we haven't stated exactly where it could break
+		because it depends on the interactions between all types.
+		You can try the approaches below, but remember to rebuild 
+		everything in one go if there are problems.
+		</para>
+		<para>
+		The simplest scenario is when the aspects apply to all modules
+		and the modules compile without the aspects.  In that case,
+		weaving in the aspects is just the final assembly step for
+		the build.
+		</para>
+		<para>
+		Next is the case where the aspects make changes to a common
+		library that are visible to other clients, which themselves
+		are otherwise unaffected by the aspects.  In this case, the
+		common library can be built using ajc, and used on the 
+		classpath for the module builds:
+		<programlisting>
+<![CDATA[
+   ajc -outjar common.jar -sourceroots "aspectj-src:src" ...
+   cd ../otherProject
+   javac -classpath "../common/common.jar:${aspectjrt.jar}" {src}
+]]>
+		</programlisting>
+		</para>
+		<para>
+		Combining these last two, 
+		there's the case where a common set of aspects should
+		affect two or more modules that are in a dependency relationship
+		to one another.  It should work to reuse the aspects 
+		in binary form for each compile, in dependency order:
+		
+		<programlisting>
+<![CDATA[
+   ajc -outjar common-aspects.jar
+       -sourceroots "aspectj-src" ...
+
+   ajc -outjar common.jar
+       -sourceroots "src"
+       -aspectpath common-aspects.jar ...
+
+   cd ../module1
+   ajc -outjar module1.jar
+       -sourceroots "src"
+       -classpath common.jar
+       -aspectpath ../common-aspects.jar ...
+
+   cd ../module2
+   ajc -outjar module2.jar
+       -sourceroots "src"
+       -classpath "common.jar;../module1.jar"
+       -aspectpath ../common-aspects.jar ...
+]]>
+		</programlisting>   
+		</para>
+		<para>
+		If two modules are visibly affected by aspects and
+		mutually-dependent, the only thing to do is compile
+		them together.
+		</para>
+		<para>
+		It's safest to assume that all aspects can affect all
+		types in a namespace; using build boundaries to effect
+		crosscutting limits causes a dangerous dependency on
+		the build process and might cause problems.
+		</para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:incrementalModuleCompiles"
+            xreflabel="Q: We use modules and would like to use incremental compilation.
+                          Is that possible?">
+          <para>We use modules and would like to use incremental compilation.
+                Is that possible?
+          </para>
+        </question>
+        <answer>
+          <para>
+			Just incrementally-compile the whole system.
+			Specify to ajc the modules as multiple source roots  
+			(or input jars if you are weaving libraries).
+			</para>
+			<para>
+			In Eclipse's AJDT, you can create a top-level project with symbolic 
+			links out to the sources:
+			
+			<programlisting>
+<![CDATA[
+   app-assembly/
+	 {link common/aspects}
+	 {link common/src}
+	 {link module1/src}
+	 ...
+]]>
+			</programlisting>   
+			
+			Then everything is part of one huge incremental compile.  Also, you
+			can close this master project and work the others using the Java
+			compiler or AJDT.
+			</para>
+			<para>
+			The links make incremental development possible without affecting
+			the modularized Ant builds.  (Our practice runs along those lines.)
           </para>
         </answer>
       </qandaentry>
@@ -2537,10 +2658,20 @@ aspect MyMarker extends MarkerExample {
         </question>
         <answer>
           <para>Some libraries are distributed in the release under the
-            examples folder in the distribution. 
-            If you develop a library and want to make it available to 
-            other users, join the users mailing list
+            examples folder in the distribution.
+            These are "libraries" in the sense that they are reusable,
+            but they are delivered in source form. 
+            If you develop such a library and want to make it available to 
+            other users, feel to send it to the users mailing list
             <literal>aspectj-users@eclipse.org</literal>.
+          </para>
+          <para>In AspectJ 1.1, ajc supports binary aspects, so
+          	you can distribute aspect libraries without distributing the
+          	source.  For more information, see the 
+          		<literal>-aspectpath</literal>
+          	option in the 
+          		<ulink url="devguide/devguide/ajc-ref.html">
+              				Reference for ajc</ulink>.
           </para>
         </answer>
       </qandaentry>
@@ -4005,7 +4136,7 @@ vmparam -Xmx384m
         <answer>
           <para>
           This revision had still
-          more 1.1-driven changes and updated some process questions.
+          more 1.1-driven changes and updated some process and build questions.
           Entries changed since the earlier June, 2003 version:
             <itemizedlist>
         <listitem><para><xref linkend="q:support"/></para></listitem>
@@ -4017,6 +4148,8 @@ vmparam -Xmx384m
         <listitem><para><xref linkend="q:ajdocneeds13"/></para></listitem>
         <listitem><para><xref linkend="q:differences"/></para></listitem>
         <listitem><para><xref linkend="q:schedule"/></para></listitem>
+        <listitem><para><xref linkend="q:incrementalModuleCompiles"/></para></listitem>
+        <listitem><para><xref linkend="q:stepwiseBuilds"/></para></listitem>
             </itemizedlist>
           </para>
         </answer>
