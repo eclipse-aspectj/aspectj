@@ -161,7 +161,9 @@ abstract class SignatureImpl implements Signature {
             if (loader == null) {
                 return Class.forName(s);
             } else {
-                return loader.loadClass(s);
+            	// used to be 'return loader.loadClass(s)' but that didn't cause
+            	// array types to be created and loaded correctly. (pr70404)
+                return Class.forName(s,false,loader);
             }
         } catch (ClassNotFoundException e) {
             //System.out.println("null for: " + s);
