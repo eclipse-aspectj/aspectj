@@ -43,16 +43,18 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 		this.inAspect = inAspect;
 	}
 
-	public FieldBinding getPrivilegedAccessField(FieldBinding baseField, AstNode location) {
+	public FieldBinding getPrivilegedAccessField(FieldBinding baseField, AstNode location) {		
 		ResolvedMember key = inAspect.factory.makeResolvedMember(baseField);
 		if (accessors.containsKey(key)) return (FieldBinding)accessors.get(key);
 		FieldBinding ret = new PrivilegedFieldBinding(inAspect, baseField);
 		checkWeaveAccess(key.getDeclaringType(), location);
-		accessors.put(key, ret);
+		if (!baseField.alwaysNeedsAccessMethod(true)) accessors.put(key, ret);
 		return ret;
 	}
 
 	public MethodBinding getPrivilegedAccessMethod(MethodBinding baseMethod, AstNode location) {
+		if (baseMethod.alwaysNeedsAccessMethod()) return baseMethod;
+		
 		ResolvedMember key = inAspect.factory.makeResolvedMember(baseMethod);
 		if (accessors.containsKey(key)) return (MethodBinding)accessors.get(key);
 		

@@ -54,6 +54,9 @@ public class PrivilegedFieldBinding extends FieldBinding {
 
 
 	public SyntheticAccessMethodBinding getAccessMethod(boolean isReadAccess) {
+		if (baseField.alwaysNeedsAccessMethod(isReadAccess)) {
+			return baseField.getAccessMethod(isReadAccess);
+		}
 		if (isReadAccess) return reader;
 		else return writer;
 	}
