@@ -30,6 +30,7 @@ import org.aspectj.asm.*;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.*;
 import org.aspectj.util.FileUtil;
+import org.aspectj.weaver.Dump;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.*;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -648,6 +649,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		}
 		
 		List cps = buildConfig.getFullClasspath();
+		Dump.saveFullClasspath(cps);
 		String[] classpaths = new String[cps.size()];
 		for (int i=0; i < cps.size(); i++) {
 			classpaths[i] = (String)cps.get(i);

@@ -20,6 +20,7 @@ import java.util.*;
 import org.aspectj.ajdt.internal.core.builder.*;
 import org.aspectj.bridge.*;
 import org.aspectj.util.*;
+import org.aspectj.weaver.Dump;
 import org.aspectj.weaver.WeaverMessages;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.internal.compiler.batch.Main;
@@ -107,7 +108,8 @@ public class BuildArgParser extends Main {
      * @return AjBuildConfig per args, 
      *         which will be invalid unless there are no handler errors.
      */
-	public AjBuildConfig populateBuildConfig(AjBuildConfig buildConfig, String[] args, boolean setClasspath, File configFile) {		
+	public AjBuildConfig populateBuildConfig(AjBuildConfig buildConfig, String[] args, boolean setClasspath, File configFile) {
+		Dump.saveCommandLine(args);	
 		buildConfig.setConfigFile(configFile);
 		try {
 			// sets filenames to be non-null in order to make sure that file paramters are ignored

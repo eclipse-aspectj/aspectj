@@ -32,6 +32,7 @@ import org.aspectj.bridge.ReflectionFactory;
 import org.aspectj.bridge.Version;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.Dump;
 
 /**
  * Programmatic and command-line interface to AspectJ compiler.
@@ -268,6 +269,7 @@ public class Main {
      * @param holder the MessageHandler sink for messages.
      */
     public void run(String[] args, IMessageHolder holder) {
+    	Dump.saveMessageHolder(holder);
         if (LangUtil.isEmpty(args)) {
             args = new String[] { "-?" };
         }  else if (controller.running()) {

@@ -15,6 +15,7 @@ package org.aspectj.ajdt.ajc;
 
 import org.aspectj.ajdt.internal.core.builder.*;
 import org.aspectj.bridge.*;
+import org.aspectj.weaver.Dump;
 import org.eclipse.jdt.internal.core.builder.MissingSourceFileException;
 
 /**
@@ -105,10 +106,12 @@ public class AjdtCommand implements ICommand {
                 return false;
             }
             //System.err.println("errs: " + counter.hasErrors());          
-            return ((repeat 
-                        ? buildManager.incrementalBuild(config, handler)
-                        : buildManager.batchBuild(config, handler))
-                    && !counter.hasErrors());
+            boolean result = ((repeat 
+                        		? buildManager.incrementalBuild(config, handler)
+                        		: buildManager.batchBuild(config, handler))
+                    		   && !counter.hasErrors());
+			Dump.dumpOnExit();
+			return result;
         } catch (AbortException ae) {
             if (ae.isSilent()) {
                 throw ae;
@@ -119,6 +122,7 @@ public class AjdtCommand implements ICommand {
             MessageUtil.error(handler, t.getMessage());
         } catch (Throwable t) {
             MessageUtil.abort(handler, ABORT_MESSAGE, t);
+			Dump.dumpWithException(t);
         } 
         return false;
     }

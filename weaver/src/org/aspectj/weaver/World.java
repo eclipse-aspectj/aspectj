@@ -13,9 +13,11 @@
 
 package org.aspectj.weaver;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -30,7 +32,7 @@ import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.Pointcut;
 
-public abstract class World {
+public abstract class World implements Dump.INode {
 	protected IMessageHandler messageHandler = IMessageHandler.SYSTEM_ERR;
 	protected ICrossReferenceHandler xrefHandler = null;
 
@@ -44,9 +46,12 @@ public abstract class World {
     
     protected boolean XnoInline;
     protected boolean XlazyTjp;
+    
+    private List dumpState_cantFindTypeExceptions = null;
 	
     protected World() {
         super();
+        Dump.registerNode(this.getClass(),this);
         typeMap.put("B", ResolvedTypeX.BYTE);
         typeMap.put("S", ResolvedTypeX.SHORT);
         typeMap.put("I", ResolvedTypeX.INT);
@@ -56,6 +61,18 @@ public abstract class World {
         typeMap.put("C", ResolvedTypeX.CHAR);
         typeMap.put("Z", ResolvedTypeX.BOOLEAN);
         typeMap.put("V", ResolvedTypeX.VOID);
+    }
+    
+    public void accept (Dump.IVisitor visitor) {
+		visitor.visitString("Shadow mungers:");
+		visitor.visitList(crosscuttingMembersSet.getShadowMungers());
+		visitor.visitString("Type mungers:");
+		visitor.visitList(crosscuttingMembersSet.getTypeMungers());
+        if (dumpState_cantFindTypeExceptions!=null) {
+          visitor.visitString("Cant find type problems:");
+          visitor.visitList(dumpState_cantFindTypeExceptions);
+          dumpState_cantFindTypeExceptions = null;
+        }
     }
 
     public ResolvedTypeX[] resolve(TypeX[] types) {
@@ -110,10 +127,12 @@ public abstract class World {
         } else {
             ret = resolveObjectType(ty);
             if (!allowMissing && ret == ResolvedTypeX.MISSING) {
-            	//Thread.currentThread().dumpStack();
                 MessageUtil.error(messageHandler, 
                 		WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,ty.getName()));
-                // + " on classpath " + classPath);
+                if (dumpState_cantFindTypeExceptions==null) {
+                  dumpState_cantFindTypeExceptions = new ArrayList();   
+                }
+                dumpState_cantFindTypeExceptions.add(new RuntimeException("Can't find type "+ty.getName()));
             }
         }
         //System.out.println("ret: " + ret);
@@ -223,18 +242,18 @@ public abstract class World {
     
     // ---- empty world
     
-    public static final World EMPTY = new World() {
-        public List getShadowMungers() { return Collections.EMPTY_LIST; }
-        public ResolvedTypeX.ConcreteName resolveObjectType(ResolvedTypeX.Name ty) {
-            return null;
-        }
-        public Advice concreteAdvice(AjAttribute.AdviceAttribute attribute, Pointcut p, Member m) {
-            throw new RuntimeException("unimplemented");
-        }
-        public ConcreteTypeMunger concreteTypeMunger(ResolvedTypeMunger munger, ResolvedTypeX aspectType) {
-            throw new RuntimeException("unimplemented");
-        }        
-    };
+//    public static final World EMPTY = new World() {
+//        public List getShadowMungers() { return Collections.EMPTY_LIST; }
+//        public ResolvedTypeX.ConcreteName resolveObjectType(ResolvedTypeX.Name ty) {
+//            return null;
+//        }
+//        public Advice concreteAdvice(AjAttribute.AdviceAttribute attribute, Pointcut p, Member m) {
+//            throw new RuntimeException("unimplemented");
+//        }
+//        public ConcreteTypeMunger concreteTypeMunger(ResolvedTypeMunger munger, ResolvedTypeX aspectType) {
+//            throw new RuntimeException("unimplemented");
+//        }        
+//    };
     
     
     public abstract Advice concreteAdvice(
