@@ -19,10 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.Test;
-
 import org.aspectj.bridge.IMessage;
-import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.tools.ajc.CompilationResult;
 
