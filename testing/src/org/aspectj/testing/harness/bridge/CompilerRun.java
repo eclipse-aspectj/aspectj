@@ -67,8 +67,8 @@ public class CompilerRun implements IAjcRun {
     static final String AJDE_COMPILER = CompileCommand.class.getName();
     static final String AJCTASK_COMPILER 
         = AjcTaskCompileCommand.class.getName();
-    static final String JAVAC_COMPILER 
-        = JavacCompileCommand.class.getName();
+//    static final String JAVAC_COMPILER 
+//        = JavacCompileCommand.class.getName();
 
 	static final String[] RA_String = new String[0];
     
@@ -987,15 +987,15 @@ public class CompilerRun implements IAjcRun {
                 } else {
                     result.result = true;
                 }
-            } else if (JAVAC_COMPILER.equals(result.compilerName)) {
-                // XXX vet
-                badOptions = LangUtil.selectOptions(argList, Spec.INVALID_JAVAC_OPTIONS);
-                if (!LangUtil.isEmpty(badOptions)) {                    
-                    result.failureReason = "no support in javac"
-                        + " for (normally-valid) options " + Arrays.asList(badOptions);
-                } else {
-                    result.result = true;
-                }
+//            } else if (JAVAC_COMPILER.equals(result.compilerName)) {
+//                // XXX vet
+//                badOptions = LangUtil.selectOptions(argList, Spec.INVALID_JAVAC_OPTIONS);
+//                if (!LangUtil.isEmpty(badOptions)) {                    
+//                    result.failureReason = "no support in javac"
+//                        + " for (normally-valid) options " + Arrays.asList(badOptions);
+//                } else {
+//                    result.result = true;
+//                }
             } else {
                 result.failureReason = "unrecognized compiler: " + result.compilerName;
             }
@@ -1036,9 +1036,9 @@ public class CompilerRun implements IAjcRun {
             } else if ("-ajctaskCompiler".equals(arg)) {
                 result.compilerName = AJCTASK_COMPILER;
                 return true;
-            } else if ("-javac".equals(arg)) {
-                result.compilerName = JAVAC_COMPILER;
-                return true;
+//            } else if ("-javac".equals(arg)) {
+//                result.compilerName = JAVAC_COMPILER;
+//                return true;
             } else if ("-eclipse".equals(arg) || "!eclipse".equals(arg) || "^ajc".equals(arg)) {
                 result.compilerName = ReflectionFactory.ECLIPSE;
                 return true;

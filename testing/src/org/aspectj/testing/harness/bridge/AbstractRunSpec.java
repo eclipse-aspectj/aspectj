@@ -13,6 +13,7 @@
 
 package org.aspectj.testing.harness.bridge;
 
+import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +21,7 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.StringTokenizer;
 
 import org.aspectj.bridge.*;
 import org.aspectj.bridge.IMessage;
@@ -78,6 +80,16 @@ import org.aspectj.util.LangUtil;
  */
 abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHandler?
 
+
+	private static final Fork FORK;
+
+	static {
+		String value = 
+			Globals.getSystemProperty(Globals.FORK_NAME, null);
+		FORK = (LangUtil.isEmpty(value) 
+			? Fork.NOFORK 
+			: new Fork(value));
+	}
     /** true if we expect to use a staging directory */
     boolean isStaging;
     
@@ -158,7 +170,6 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
     public String getDescription() {
         return description;
     }
-     
     // ------- source location of the spec
     
     public void setSourceLocation(ISourceLocation sourceLocation) {
@@ -779,6 +790,11 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
         spec.xmlNames = ((AbstractRunSpec.XMLNames) xmlNames.clone());
     }
 
+	protected final Fork getFork() {
+		// spec ignored now, but perhaps not later...
+		return FORK;
+	}     
+
     private static void addListCount(String name, List list, StringBuffer sink) {
         int size = list.size();
         if ((null != list) && (0 < size)) {
@@ -986,4 +1002,125 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
             }
 		}
     }   // class RT
+    
+	protected static class Fork {
+		public static final Fork NOFORK = new Fork();
+		private static final String DELIMITER = ",";
+		private final boolean fork;
+		private final String version;
+		private final String java;
+		private final File javaHome;
+		private final String bootclasspath;
+		private final String errs;
+
+		private Fork() {
+			this(null);
+		}
+
+		/**
+		 * @param spec a String null (no) or of the form
+		 *   <code>1.[12345],{javaHome},{java},{bootclasspath}</code>
+		 *   where {javaHome} is a readable directory and
+		 *   a prefix of {java}.
+		 */
+		private Fork(String spec) {
+			if (null == spec) {
+				fork = false;
+				version = null;
+				java = null;
+				javaHome = null;
+				bootclasspath = null;
+				errs = null;
+				return;
+			}
+			String inputVersion = null;
+			File inputJavaHome = null;
+			String inputJava = null;
+			String inputBootclasspath = null;
+			//
+			// paths should be in system-specific form
+			final String EXPECT = 
+				"{version=1.[12345],{java.home},{java.command},{bootclasspath}";
+			final String EXAMPLE =
+				"1.1,d:/jdk11,d:/jdk11/bin/java,d:/jdk11/lib/classes.zip";
+			if (LangUtil.isEmpty(spec)) {
+				spec = "";
+			}
+			StringBuffer inputErrs = new StringBuffer();
+			StringTokenizer st = new StringTokenizer(spec, DELIMITER);
+			if (4 != st.countTokens()) {
+				inputErrs.append(" expecting 4 tokens.");
+			} else {
+				inputVersion = st.nextToken().trim();
+				String inputJavaHomePath = st.nextToken().trim();
+				inputJava = st.nextToken().trim();
+				inputBootclasspath = st.nextToken().trim();
+				if (!inputVersion.startsWith("1.")
+					|| (3 != inputVersion.length())
+					|| ('1' > inputVersion.charAt(2))
+					|| ('6' < inputVersion.charAt(2)) ) {
+					inputErrs.append(" expecting version 1.[12345]");
+				}
+				inputJavaHome = new File(inputJavaHomePath);
+				if (!inputJavaHome.canRead()
+					|| !inputJavaHome.isDirectory()) {
+					inputErrs.append(" expecting java.home dir: "
+						+ inputJavaHomePath);
+				}
+				if (!inputJava.startsWith(inputJavaHomePath)) {
+					inputErrs.append(" expecting java in java.home.dir: "
+					+ inputJava);
+				}
+				if (LangUtil.isEmpty(inputBootclasspath)) {
+					inputBootclasspath = null;
+				}
+			}
+			String inputErrString = inputErrs.toString();
+			fork = (0 == inputErrString.length());
+			if (fork) {
+				errs = null;
+			} else {
+				errs = "bad fork specification.  Expecting "
+					+ EXPECT
+					+ " - for example, "
+					+ EXAMPLE
+					+ ". Problems: "
+					+ inputErrString;
+			}
+			version = inputVersion;
+			java = inputJava;
+			javaHome = inputJavaHome;
+			bootclasspath = inputBootclasspath;
+		}
+		public boolean fork() {
+			return fork;
+		}
+		public String getJavaExecutablePath() {
+			return java;
+		}
+		public File getJavaHome() {
+			return javaHome;
+		}
+		public String getJavaBootclasspath() {
+			return bootclasspath;
+		}
+		public String getErrors() {
+			return errs;
+		}
+		public String toSpecString() {
+			if (!fork) {
+				return null;
+			}
+			return version
+				+ DELIMITER
+				+ javaHome
+				+ DELIMITER
+				+ java
+				+ DELIMITER
+				+ bootclasspath;
+		}
+		public String toString() {
+			return (fork ? "Fork [true]" : "Fork [false]"); // XXX upgrade
+		}
+	} // class Fork
 }

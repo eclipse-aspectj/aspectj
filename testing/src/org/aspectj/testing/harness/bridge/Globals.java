@@ -23,6 +23,7 @@ import org.aspectj.util.LangUtil;
 /**
  */
 public class Globals {
+	public static final String  FORK_NAME = "harness.fork";  // XXX in testing-drivers/../package.htm
     /** name/key of the System property to set to define library dir */
     public static final String LIBDIR_NAME = "harness.libdir";
 
@@ -76,7 +77,7 @@ public class Globals {
 	 * @param defaultValue the String default value to return value is null or empty
 	 * @return String value or defaultValue if not available.
 	 */
-	private static String getSystemProperty(
+	static String getSystemProperty(
 		String propertyName,
 		String defaultValue) {
         String result = defaultValue;
