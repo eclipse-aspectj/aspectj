@@ -43,6 +43,9 @@ public class AsmRelationshipProvider {
 	public void checkerMunger(IHierarchy model, Shadow shadow, Checker checker) {
 		if (shadow.getSourceLocation() == null || checker.getSourceLocation() == null) return;
 		
+		// Ensure a node for the target exists
+		IProgramElement targetNode = getNode(AsmManager.getDefault().getHierarchy(), shadow);
+
 		String sourceHandle = ProgramElement.createHandleIdentifier(
 			checker.getSourceLocation().getSourceFile(),
 			checker.getSourceLocation().getLine(),
