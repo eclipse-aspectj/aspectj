@@ -7,13 +7,10 @@ import app.Main;
 public privileged aspect MainWarnings {
 
     declare warning : staticinitialization(Main)
-        : "staticinitializtion(Main)";
+        : "staticinitialization(Main)";
         
-    declare warning : initialization(Main.new())
+    declare warning : initialization(Main.new()) // 23
         : "initialization(Main.new())";
-
-    declare warning : execution(Main.new())
-        : "execution(Main.new())";
 
     declare warning : execution(void Main.go(String))
         : "execution(void Main.go(String))";
@@ -24,13 +21,17 @@ public privileged aspect MainWarnings {
     declare warning : call(void Main.go(String))
         : "call(void Main.go(String))";
 
-    declare warning : call(Main.new())
+    declare warning : call(void app.D.go())  // 42 (bug missing)
         && withincode(void Main.stop())
-        : "call(Main.new()) && withincode(void Main.stop())";
+        : "withincode(void Main.stop())";
 
-    declare warning : call(void Main.stop())
+    declare warning : call(void app.D.go()) // 32
     && withincode(void Main.go(String))
-        : "call(void Main.stop()) && withincode(void Main.go(String))";
+        : "D.go withincode(void Main.go(String))";
+
+    declare warning : call(void Main.stop()) // 35
+    && withincode(void Main.go(String))
+        : "Main.stop withincode(void Main.go(String))";
 
     declare warning : get(String Main.s)
         : "get(String Main.s)";

@@ -5,7 +5,7 @@ public class Main {
 
     static String staticString = "hello";
     
-    String s = "me";
+    String s = "me";     // bug 8 initializer picked out as execution
     
     public static void main(String[] args) {
 
@@ -20,7 +20,7 @@ public class Main {
         }
     }
 
-    Main() {                // 23
+    Main() {  s += "pick me, not initializer";   // 23
     }
 
     void go(String s) {  String t = "..".substring(0);   // 26
@@ -29,7 +29,7 @@ public class Main {
             String temp = this.s;  // 29
 
             this.s = temp + ", " + s;  // 31
-
+            D.go();                      // 32 
         } catch (RuntimeException e) {   String u = "..".substring(0);  // 33
             
             stop();                      // 35 
@@ -39,7 +39,7 @@ public class Main {
 
     void stop() {                        // 40
 
-        new Main();                      // 42
+        D.go();                      // 42
 
     }
 }
@@ -53,3 +53,10 @@ class C {
 
 }
 
+class D {
+    
+    static void go() {
+        
+    }
+
+}

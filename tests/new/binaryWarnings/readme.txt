@@ -15,10 +15,6 @@ Bugs: 37020, 37021, 37023
 
 - the message text in MainWarnings.java correspond with 
   warning text values in the test specifications
-
-- all the warnings in MainWarnings.java
-  should resolve to unique lines 
-  (until we verify based on more than line)
   
 - all test specifications should have exactly the same warnings
   as each other as as specified in MainWarnings.java
@@ -36,7 +32,7 @@ Using javac:
   rm -rf classes
 
 Using ajc:
-  ajc -classpath ../../../lib/test/aspectjrt.jar  \
+  ajc -classpath ../../../../lib/test/aspectjrt.jar  \
     -outjar ../injars/app-ajc-1.1.jar app/Main.java
 
 Using ajc in eclipse, from a module directory:
