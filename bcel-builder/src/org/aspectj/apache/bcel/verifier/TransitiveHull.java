@@ -54,9 +54,8 @@ package org.aspectj.apache.bcel.verifier;
  * <http://www.apache.org/>.
  */
 
-import org.aspectj.apache.bcel.verifier.*;
-import org.aspectj.apache.bcel.classfile.*;
-import org.aspectj.apache.bcel.*;
+import org.aspectj.apache.bcel.Repository;
+import org.aspectj.apache.bcel.classfile.JavaClass;
 
 /**
  * This class has a main method implementing a demonstration program
@@ -64,7 +63,7 @@ import org.aspectj.apache.bcel.*;
  * all class files encountered; this may take up a lot of time and,
  * more notably, memory.
  *
- * @version $Id: TransitiveHull.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: TransitiveHull.java,v 1.2 2004/11/18 15:07:05 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class TransitiveHull implements VerifierFactoryObserver{

@@ -54,16 +54,18 @@ package org.aspectj.apache.bcel.verifier;
  * <http://www.apache.org/>.
  */
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
+
 import javax.swing.UIManager;
-import java.awt.*;
-import org.aspectj.apache.bcel.verifier.*;
-import org.aspectj.apache.bcel.generic.*;
+
+import org.aspectj.apache.bcel.generic.Type;
 
 
 /**
  * A graphical user interface application demonstrating JustIce.
  *
- * @version $Id: GraphicalVerifier.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: GraphicalVerifier.java,v 1.2 2004/11/18 15:07:06 aclement Exp $
  * @author Enver Haase
  */
 public class GraphicalVerifier {

@@ -54,10 +54,10 @@ package org.aspectj.apache.bcel.verifier;
  * <http://www.apache.org/>.
  */
 
-import org.aspectj.apache.bcel.*;
-import org.aspectj.apache.bcel.classfile.*;
-import org.aspectj.apache.bcel.verifier.*;
 import java.awt.Color;
+
+import org.aspectj.apache.bcel.Repository;
+import org.aspectj.apache.bcel.classfile.JavaClass;
 
 /**
  * A class for simple graphical class file verification.
@@ -68,7 +68,7 @@ import java.awt.Color;
  * class in your application.
  * [This class was created using VisualAge for Java,
  * but it does not work under VAJ itself (Version 3.02 JDK 1.2)]
- * @version $Id: VerifyDialog.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: VerifyDialog.java,v 1.2 2004/11/18 15:07:05 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #main(String[])
  * @see #VerifyDialog(String)

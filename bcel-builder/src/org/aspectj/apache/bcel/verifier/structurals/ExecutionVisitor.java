@@ -55,19 +55,13 @@ package org.aspectj.apache.bcel.verifier.structurals;
  */
 
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.Repository;
-import org.aspectj.apache.bcel.generic.*;
-import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Constant;
 import org.aspectj.apache.bcel.classfile.ConstantDouble;
 import org.aspectj.apache.bcel.classfile.ConstantFloat;
 import org.aspectj.apache.bcel.classfile.ConstantInteger;
 import org.aspectj.apache.bcel.classfile.ConstantLong;
 import org.aspectj.apache.bcel.classfile.ConstantString;
-import org.aspectj.apache.bcel.verifier.Verifier;
-import org.aspectj.apache.bcel.verifier.exc.*;
-import java.util.ArrayList;
-import java.util.Hashtable;
+import org.aspectj.apache.bcel.generic.*;
 
 /**
  * This Visitor class may be used for a type-based Java Virtual Machine
@@ -92,7 +86,7 @@ import java.util.Hashtable;
  * If a two-slot type is stored into a local variable, the next variable
  * is given the type Type.UNKNOWN.
  *
- * @version $Id: ExecutionVisitor.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: ExecutionVisitor.java,v 1.2 2004/11/18 15:07:05 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #visitDSTORE(DSTORE o)
  * @see InstConstraintVisitor
@@ -754,8 +748,8 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 	public void visitINVOKESPECIAL(INVOKESPECIAL o){
 		if (o.getMethodName(cpg).equals(Constants.CONSTRUCTOR_NAME)){
 			UninitializedObjectType t = (UninitializedObjectType) stack().peek(o.getArgumentTypes(cpg).length);
-			if (t == frame._this){	
-				frame._this = null;
+			if (t == Frame._this){	
+				Frame._this = null;
 			}
 			stack().initializeObject(t);
 			locals().initializeObject(t);

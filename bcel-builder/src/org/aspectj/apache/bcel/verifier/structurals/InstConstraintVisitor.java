@@ -79,7 +79,7 @@ import org.aspectj.apache.bcel.verifier.exc.*;
  * TODO: Currently, the JVM's behaviour concerning monitors (MONITORENTER,
  * MONITOREXIT) is not modeled in JustIce.
  *
- * @version $Id: InstConstraintVisitor.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: InstConstraintVisitor.java,v 1.2 2004/11/18 15:07:05 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see org.aspectj.apache.bcel.verifier.exc.StructuralCodeConstraintException
  * @see org.aspectj.apache.bcel.verifier.exc.LinkingConstraintException
@@ -2576,7 +2576,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	 */
 	public void visitRETURN(RETURN o){
 		if (mg.getName().equals(Constants.CONSTRUCTOR_NAME)){// If we leave an <init> method
-			if ((frame._this != null) && (!(mg.getClassName().equals(Type.OBJECT.getClassName()))) ) {
+			if ((Frame._this != null) && (!(mg.getClassName().equals(Type.OBJECT.getClassName()))) ) {
 				constraintViolated(o, "Leaving a constructor that itself did not call a constructor.");
 			}
 		}

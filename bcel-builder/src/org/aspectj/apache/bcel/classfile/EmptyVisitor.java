@@ -54,8 +54,6 @@ package org.aspectj.apache.bcel.classfile;
  * <http://www.apache.org/>.
  */
 
-import org.aspectj.apache.bcel.classfile.*;
-import org.aspectj.apache.bcel.*;
 
 /**
  * Visitor with empty method bodies, can be extended and used in conjunction with the
@@ -64,7 +62,7 @@ import org.aspectj.apache.bcel.*;
  * By courtesy of David Spencer.
  *
  * @see DescendingVisitor
- * @version $Id: EmptyVisitor.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: EmptyVisitor.java,v 1.2 2004/11/18 15:07:05 aclement Exp $
  * 
  */
 public class EmptyVisitor implements Visitor {
