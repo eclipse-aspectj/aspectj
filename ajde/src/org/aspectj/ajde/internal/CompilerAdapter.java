@@ -85,7 +85,7 @@ public class CompilerAdapter {
 			if (null == buildConfig) {
                 return false;
 			}
-			currNotifier = new BuildNotifierAdapter(progressMonitor);		
+			currNotifier = new BuildNotifierAdapter(progressMonitor, buildManager);		
 			buildManager.setProgressListener(currNotifier);
 			messageHandler.setBuildNotifierAdapter(currNotifier);
 			

@@ -15,18 +15,21 @@ package org.aspectj.ajde.internal;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.BuildProgressMonitor;
+import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
+import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IProgressListener;
 
 public class BuildNotifierAdapter implements IProgressListener {
 
     private BuildProgressMonitor progressMonitor;
+    private AjBuildManager buildManager;
 //    private int numCompilationUnitPasses = 1;
 //    private int completedPasses = 0;
-	private boolean cancelled = false;
+	private boolean cancelRequested = false;
 
-	// ??? get rid of project coupling
-	public BuildNotifierAdapter(BuildProgressMonitor progressMonitor) {
+	public BuildNotifierAdapter(BuildProgressMonitor progressMonitor, AjBuildManager buildManager) {
 		this.progressMonitor = progressMonitor;
+		this.buildManager = buildManager;
 	}
   
 	public void begin() {
@@ -36,7 +39,7 @@ public class BuildNotifierAdapter implements IProgressListener {
 
 	public void cancelBuild() {
 		progressMonitor.setProgressText("cancelling build...");  
-		cancelled = true;
+		cancelRequested = true;
 	}
 
 	public void setProgress(double percentDone) {
