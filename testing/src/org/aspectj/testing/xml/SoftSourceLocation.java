@@ -44,8 +44,9 @@ public class SoftSourceLocation implements ISourceLocation  {
        out.printAttribute("line", "" + sl.getLine());
        // other attributes not supported
        File file = sl.getSourceFile();
-       if (null != file) {
-           out.printAttribute("file", file.getPath());
+       if ((null != file) && !ISourceLocation.NO_FILE.equals(file)) {
+           String value = XMLWriter.attributeValue(file.getPath());
+           out.printAttribute("file", value);
        }
        out.endElement(elementName);
     }

@@ -101,7 +101,7 @@ public class SoftMessage implements IMessage {
 		String value = message.getMessage();
 		if (null != value) {
 			value = XMLWriter.attributeValue(value);
-			out.printAttribute("message", value);
+			out.printAttribute("text", value);
 		}
 		value = message.getDetails();
 		if (null != value) {
