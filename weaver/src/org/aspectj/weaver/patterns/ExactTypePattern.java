@@ -83,7 +83,12 @@ public class ExactTypePattern extends TypePattern {
 			return FuzzyBoolean.YES;
 		}
 		
-		return matchType.isCoerceableFrom(type) ? FuzzyBoolean.MAYBE : FuzzyBoolean.NO;
+		// fix for PR 64262 - shouldn't try to coerce primitives
+		if (type.isPrimitive()) {
+			return FuzzyBoolean.NO;
+		} else {
+		    return matchType.isCoerceableFrom(type) ? FuzzyBoolean.MAYBE : FuzzyBoolean.NO;
+		}
 	}
 	
 	public boolean matchesExactly(Class matchType) {
