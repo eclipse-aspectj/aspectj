@@ -18,32 +18,23 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
 import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
-import org.aspectj.weaver.bcel.LazyClassGen;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
 
 /**
@@ -271,14 +262,15 @@ public class WeavingAdaptor {
 
 		public boolean handleMessage(IMessage message) throws AbortException {
 			if (!isIgnoring(message.getKind())) {
-				if (verbose) System.err.println(message.getMessage());
-				throw new AbortException(message);
+				System.err.println(message.getSourceLocation()+": "+message.getKind()+" "+message.getMessage());
+				if (message.getKind() == IMessage.ERROR) throw new AbortException(message);
 			}
 			return true;
 		}
 
 		public boolean isIgnoring(Kind kind) {
-			return ((kind == IMessage.INFO) || (kind == IMessage.DEBUG));
+			if (verbose) return false;
+			else         return ((kind == IMessage.INFO) || (kind == IMessage.DEBUG));
 		}
 	}
 
