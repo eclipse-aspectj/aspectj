@@ -6897,5 +6897,16 @@
 			</message>
 		</compile>
 	</ajc-test>
-   
+
+	<ajc-test dir="bugs"
+		title="Appropriate message for 'after() thowing(Throwable th)' syntax error"
+		pr="49638"
+		>
+		<compile 
+			files="AfterThrowingAdviceSyntaxError.java" >
+			<message kind="error" line="21" />
+			<message kind="error" line="23" />
+		</compile>
+	</ajc-test>
+    
 </suite>

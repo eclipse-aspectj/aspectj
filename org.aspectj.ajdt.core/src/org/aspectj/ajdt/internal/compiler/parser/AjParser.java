@@ -737,7 +737,12 @@ public class AjParser extends Parser {
 	    } else if (CharOperation.equals(name, "returning".toCharArray())) {
 	    	adviceDecl.kind = AdviceKind.AfterReturning;
 	    } else {
-	    	//XXX illegal name here
+			problemReporter().parseError(
+				start, 
+				end, 
+				name, 
+				String.valueOf(name), 
+				new String[] {"throwing", "returning", ":"}); 
 	    }
 	}
 
