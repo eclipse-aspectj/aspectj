@@ -7210,4 +7210,30 @@
         </compile>
     </ajc-test>
 	
+	 <ajc-test dir="bugs" pr="51320"
+   	 	title="ClasscastException on concretization of if(false)">
+        <compile files="DeclareSoftDynamicPCDs.java">
+        
+         <!-- These are the illegal PCDs against a deow -->
+         <message kind="error" line="27" text="if() pointcut designator cannot be used"/>
+         <message kind="error" line="29" text="if() pointcut designator cannot be used"/>
+         
+         <message kind="error" line="31" text="cflow() pointcut designator cannot be used"/>
+         <message kind="error" line="33" text="cflow() pointcut designator cannot be used"/>
+         
+         <message kind="error" line="35" text="cflowbelow() pointcut designator cannot be used"/>
+         <message kind="error" line="37" text="cflowbelow() pointcut designator cannot be used"/>
+         
+         <message kind="error" line="39" text="this() pointcut designator cannot be used"/>
+         <message kind="error" line="41" text="this() pointcut designator cannot be used"/>
+         
+         <message kind="error" line="43" text="target() pointcut designator cannot be used"/>
+         <message kind="error" line="45" text="target() pointcut designator cannot be used"/>
+         
+         <message kind="error" line="47" text="args() pointcut designator cannot be used"/>
+         <message kind="error" line="49" text="args() pointcut designator cannot be used"/>
+         
+        </compile>
+    </ajc-test>
+    
 </suite>
