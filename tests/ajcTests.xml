@@ -22,6 +22,7 @@
   from-{file}         from original {file}.txt for file in
                       java, bigjava, resolved_1*, 14tests, errors, design, base... 
 
+  incremental-test    uses inc-compile step
   -->
 
 <suite>
