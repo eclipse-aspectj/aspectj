@@ -43,8 +43,7 @@ an introduction to handling compiler messages programmatically.
 <h3>
 Parameters</h3>
 
-<h4>Parameters supported by <code>ajc</code></h4>
-
+<p>
 <table BORDER CELLSPACING=0 CELLPADDING=2 >
 <tr>
 <td VALIGN=TOP><b>Attribute</b></td>
@@ -58,14 +57,22 @@ Parameters</h3>
 <th colspan="3">Specifying source and destination files</th>
 </tr>
 
-<td VALIGN=TOP>sourceroots</td>
+<td VALIGN=TOP>sourceRoots</td>
 
-<td VALIGN=TOP>a list of base directories of the source files.  
+<td VALIGN=TOP>Base directory of the source files.
 All source files (.java and .aj) in the base directories are compiled. 
     May also be specified as a <a href="nestedElements">nested element</a>.
 </td>
+<td rowspan="2" ALIGN=CENTER VALIGN=TOP>Yes, in incremental mode.</td>
+</tr>
 
-<td ALIGN=CENTER VALIGN=TOP>Yes, in incremental mode.</td>
+<td VALIGN=TOP>sourceRootsList</td>
+
+<td VALIGN=TOP>Comma-delimited list of base directories source root
+directories.
+    May also be specified as a <a href="nestedElements">nested element</a>.
+</td>
+
 </tr>
 
 <tr> 
@@ -82,7 +89,7 @@ All source files (.java and .aj) in the base directories are compiled.
 
 <tr>
 <td VALIGN=TOP>classpath</td>
-<td VALIGN=TOP>the classpath required by the source files to compile.
+<td VALIGN=TOP>The classpath required by the source files to compile.
     May also be specified as a <a href="nestedElements">nested element</a>.
 </td>
 <td ALIGN=CENTER VALIGN=TOP>No</td>
@@ -90,7 +97,7 @@ All source files (.java and .aj) in the base directories are compiled.
 
 <tr>
 <td VALIGN=TOP>srcdir</td>
-<td VALIGN=TOP>the nested source base directory to compile,
+<td VALIGN=TOP>The nested source base directory to compile,
     specified as a <a href="nestedElements">nested element</a>.
 </td>
 <td ALIGN=CENTER VALIGN=TOP>No</td>
@@ -98,7 +105,7 @@ All source files (.java and .aj) in the base directories are compiled.
 
 <tr>
 <td VALIGN=TOP>aspectpath</td>
-<td VALIGN=TOP>the aspectpath to use -- like classpath, only for
+<td VALIGN=TOP>The aspectpath to use -- like classpath, only for
 read-only, binary aspect libraries (only accepts jar/zip files, no directories).
 May also be specified as a <a href="nestedElements">nested element</a>.
 </td>
@@ -107,20 +114,20 @@ May also be specified as a <a href="nestedElements">nested element</a>.
 
 <tr>
 <td VALIGN=TOP>bootclasspath</td>
-<td VALIGN=TOP>location of bootstrap class files.</td>
+<td VALIGN=TOP>Location of bootstrap class files.</td>
 <td ALIGN=CENTER VALIGN=TOP>No</td>
 </tr>
 
 <tr>
 <td VALIGN=TOP>classpathref</td>
-<td VALIGN=TOP>the classpath to use, given as a<a href="http://jakarta.apache.org/ant/manual/using.html#references">
+<td VALIGN=TOP>The classpath to use, given as a<a href="http://jakarta.apache.org/ant/manual/using.html#references">
 reference</a> to a PATH defined elsewhere.</td>
 <td ALIGN=CENTER VALIGN=TOP>No</td>
 </tr>
 
 <tr>
 <td VALIGN=TOP>bootclasspathref</td>
-<td VALIGN=TOP>location of bootstrap class files, given as a <a href="http://jakarta.apache.org/ant/manual/using.html#references">reference</a>
+<td VALIGN=TOP>Location of bootstrap class files, given as a <a href="http://jakarta.apache.org/ant/manual/using.html#references">reference</a>
 to a PATH defined elsewhere.</td>
 <td ALIGN=CENTER VALIGN=TOP>No</td>
 </tr>
@@ -138,7 +145,7 @@ defaults to <tt>false</tt>.</td>
 
 <tr>
   <td VALIGN=TOP>incremental</td>
-  <td VALIGN=TOP>build once, then recompile on demand only required files; 
+  <td VALIGN=TOP>Build once, then recompile on demand only required files; 
   defaults to <tt>false</tt>.
   By default, files are recompiled based on input passed to stdin
   (see tagfile)</td>
@@ -167,60 +174,62 @@ defaults to <tt>false</tt>.</td>
 
 <tr>
 <td VALIGN=TOP>emacssym</td>
-<td VALIGN=TOP>whether to emit <tt>.ajesym</tt> symbol files for Emacs support;
+<td VALIGN=TOP>Whether to emit <tt>.ajesym</tt> symbol files for Emacs support;
 defaults to <tt>false</tt>.</td>
 <td ALIGN=CENTER VALIGN=TOP>No</td>
 </tr>
 
 <tr>
 <td VALIGN=TOP>verbose</td>
-<td VALIGN=TOP>whether to emit compiler status messages during the compile;
+<td VALIGN=TOP>Whether to emit compiler status messages during the compile;
 defaults to <tt>false</tt>.</td>
 <td ALIGN=CENTER VALIGN=TOP>No</td>
 </tr>
 
 <tr>
 <td VALIGN=TOP>version</td>
-<td VALIGN=TOP>if true, do not compile - just print AspectJ version;
+<td VALIGN=TOP>If true, do not compile - just print AspectJ version;
 defaults to <tt>false</tt>.</td>
 <td ALIGN=CENTER VALIGN=TOP>No</td>
 </tr>
 
 <tr>
 <td VALIGN=TOP>help</td>
-<td VALIGN=TOP>if true, just print help for the command-line compiler;
+<td VALIGN=TOP>If true, just print help for the command-line compiler;
 defaults to <tt>false</tt>.</td>
 <td ALIGN=CENTER VALIGN=TOP>No</td>
 </tr>
 
 <tr>
-<td VALIGN=TOP>Xlintenabled</td>
-<td VALIGN=TOP>same as <tt>xlint:all</tt>, 
-whether to emit language usage messages during the compile;
+<td VALIGN=TOP>Xlintwarnings</td>
+<td VALIGN=TOP>Same as <tt>xlint:warning</tt> - 
+if enabled, set default level of all language usage messages to warning;
 defaults to <tt>false</tt>.</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>Xlint</td>
+<td VALIGN=TOP>Specify default level of all language usage messages
+to one of (error, warning, ignore).
 <td ALIGN=CENTER VALIGN=TOP>No</td>
 </tr>
 
 <tr>
 <td VALIGN=TOP>Xlintfile</td>
-<td VALIGN=TOP>specify property file containing name:level associations
-for any overrides to the default associations for language usage
-messaged emitted during the compile.</td>
+<td VALIGN=TOP>Specify property file containing name:level 
+associations setting level for language messages emitted
+during compilation.  Any levels set override the default 
+associations in 
+<code>org/aspectj/weaver/XLintDefault.properties</code>.
+</td>
 <td ALIGN=CENTER VALIGN=TOP>No</td>
 </tr>
 
-<!--
-<tr>
-<td VALIGN=TOP>Xlint</td>
-<td VALIGN=TOP>Specify which language usage messages to emit
-during compile, using comma-separated list of entries.
-<td ALIGN=CENTER VALIGN=TOP>No</td>
-</tr>
--->
 
 <tr>
   <td VALIGN=TOP>failonerror</td>
-  <td VALIGN=TOP>whether the build continues notwithstanding compile errors; 
+  <td VALIGN=TOP>Whether the build continues notwithstanding compile errors; 
   defaults to <tt>true</tt>.&nbsp;</td>
   <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>
@@ -241,21 +250,21 @@ interface and having a public no-argument constructor.</td>
 
 <tr>
   <td VALIGN=TOP>nowarn</td>
-  <td VALIGN=TOP>same as <tt>warn:none</tt>; 
+  <td VALIGN=TOP>Same as <tt>warn:none</tt>; 
   defaults to <tt>false</tt>.&nbsp;</td>
   <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>
 
 <tr>
   <td VALIGN=TOP>deprecation</td>
-  <td VALIGN=TOP>same as <tt>warn:deprecation</tt>; 
+  <td VALIGN=TOP>Same as <tt>warn:deprecation</tt>; 
   defaults to <tt>false</tt>.&nbsp;</td>
   <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>
 
 <tr>
   <td VALIGN=TOP>warn</td>
-  <td VALIGN=TOP>one or more comma-separated warning specifications: 
+  <td VALIGN=TOP>One or more comma-separated warning specifications: 
 <tt>constructorName</tt>, 
 <tt>packageDefaultMethod</tt>, 
 <tt>deprecation</tt>, 
@@ -270,13 +279,13 @@ interface and having a public no-argument constructor.</td>
 
 <tr>
   <td VALIGN=TOP>debug</td>
-  <td VALIGN=TOP>same as <tt>debug:lines,vars,source</tt></td>
+  <td VALIGN=TOP>Same as <tt>debug:lines,vars,source</tt></td>
   <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>
 
 <tr>
   <td VALIGN=TOP>debuglevel</td>
-  <td VALIGN=TOP>one or more comma-separated debug specifications:
+  <td VALIGN=TOP>One or more comma-separated debug specifications:
      <tt>lines</tt>, 
      <tt>vars</tt>, or 
      <tt>source</tt>.
@@ -286,21 +295,21 @@ interface and having a public no-argument constructor.</td>
 
 <tr>
   <td VALIGN=TOP>PreserveAllLocals</td>
-  <td VALIGN=TOP>code gen preserves all local variables (for debug purposes); 
+  <td VALIGN=TOP>Code gen preserves all local variables (for debug purposes); 
   defaults to <tt>false</tt>.&nbsp;</td>
   <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>
 
 <tr>
   <td VALIGN=TOP>noimporterror</td>
-  <td VALIGN=TOP>no errors for unresolved imports; 
+  <td VALIGN=TOP>No errors for unresolved imports; 
   defaults to <tt>false</tt>.&nbsp;</td>
   <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>
 
 <tr>
   <td VALIGN=TOP>referenceinfo</td>
-  <td VALIGN=TOP>compute reference info; 
+  <td VALIGN=TOP>Compute reference info; 
   defaults to <tt>false</tt>.&nbsp;</td>
   <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>
@@ -313,27 +322,27 @@ interface and having a public no-argument constructor.</td>
 
 <tr>
   <td VALIGN=TOP>encoding</td>
-  <td VALIGN=TOP>default source encoding format</td>
+  <td VALIGN=TOP>Default source encoding format</td>
   <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>
 
 <tr>
   <td VALIGN=TOP>proceedonerror</td>
-  <td VALIGN=TOP>keep compiling when error, dumping class files with problem methods; 
+  <td VALIGN=TOP>Keep compiling when error, dumping class files with problem methods; 
   defaults to <tt>false</tt>.&nbsp;</td>
   <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>
 
 <tr>
   <td VALIGN=TOP>progress</td>
-  <td VALIGN=TOP>show progress (requires log); 
+  <td VALIGN=TOP>Show progress (requires log); 
   defaults to <tt>false</tt>.&nbsp;</td>
   <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>
 
 <tr>
   <td VALIGN=TOP>time</td>
-  <td VALIGN=TOP>display speed information; 
+  <td VALIGN=TOP>Display speed information; 
   defaults to <tt>false</tt>.&nbsp;</td>
   <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>
@@ -341,7 +350,7 @@ interface and having a public no-argument constructor.</td>
 <!--
 <tr>
   <td VALIGN=TOP>noexit</td>
-  <td VALIGN=TOP>disable System.exit; defaults to <tt>true</tt>.
+  <td VALIGN=TOP>Disable System.exit; defaults to <tt>true</tt>.
   (<em>If false, this kills the Ant process</em>;
        to halt compile gracefully, use <tt>failonerror</tt>);
   &nbsp;</td>
@@ -365,7 +374,7 @@ interface and having a public no-argument constructor.</td>
 
 <tr>
   <td VALIGN=TOP>source</td>
-  <td VALIGN=TOP>source assertion mode ("1.3" or "1.4"); 
+  <td VALIGN=TOP>Source assertion mode ("1.3" or "1.4"); 
   default depends on compliance mode.&nbsp;</td>
   <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>

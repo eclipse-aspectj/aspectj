@@ -61,10 +61,16 @@ public class AjcTask extends MatchingTask {
 	/** valid debugging (-g:[...]) variants */
     private static final List VALID_DEBUG;
 
-	/** -Xlint variants 
+	/** 
+	 * -Xlint variants (error, warning, ignore)
 	 * @see org.aspectj.weaver.Lint 
 	 */
     private static final List VALID_XLINT;
+    
+//	/** -Xlint variants 
+//	 * @see org.aspectj.weaver.Lint 
+//	 */
+//    private static final List VALID_XLINT_TAGS;
     
     static {
         String[] xs = new String[] 
@@ -83,10 +89,13 @@ public class AjcTask extends MatchingTask {
         VALID_DEBUG = Collections.unmodifiableList(Arrays.asList(xs));
         
         
-        xs = new String[] 
-        { "invalidAbsoluteTypeName", "invalidWildcardTypeName",
-        	"unresolvableMember" };
+        xs = new String[] { "error", "warning", "ignore"};
         VALID_XLINT = Collections.unmodifiableList(Arrays.asList(xs));
+        
+//        xs = new String[] 
+//        { "invalidAbsoluteTypeName", "invalidWildcardTypeName",
+//        	"unresolvableMember" };
+//        VALID_XLINT_TAGS = Collections.unmodifiableList(Arrays.asList(xs));
     }
 	// ---------------------------- state and Ant interface thereto
 	
@@ -134,19 +143,35 @@ public class AjcTask extends MatchingTask {
     }
     
 	protected void ignore(String ignored) {
-		this.ignored.add(ignored);
+		this.ignored.add(ignored + " at " + getLocation());
 	}
     protected void addFlagged(String flag, String argument) {
         cmd.addArguments(new String[] {flag, argument});
     }
 
-    protected String validCommaList(String list, List valid) {
+    protected String validCommaList(String list, List valid, String label) {
+    	return validCommaList(list, valid, label, valid.size());
+    }
+    
+    protected String validCommaList(String list, List valid, String label, int max) {
     	StringBuffer result = new StringBuffer();
     	StringTokenizer st = new StringTokenizer(list, ",");
+		int num = 0;
     	while (st.hasMoreTokens()) {
 			String token = st.nextToken().trim();
+			num++;
+			if (num > max) {
+				ignore("too many entries for -" 
+					+ label 
+					+ ": " 
+					+ token); 
+				break;
+			}
 			if (!valid.contains(token)) {
-				ignore("commaList entry: " + token); // XXX weak message
+				ignore("bad commaList entry for -" 
+					+ label 
+					+ ": " 
+					+ token); 
 			} else {
 				if (0 < result.length()) {
 					result.append(",");
@@ -183,45 +208,49 @@ public class AjcTask extends MatchingTask {
     }
 
     public void setWarn(String warnings) {
-    	warnings = validCommaList(warnings, VALID_WARNINGS);
-        addFlag("-g:" + warnings, (null != warnings));
+    	warnings = validCommaList(warnings, VALID_WARNINGS, "warn");
+        addFlag("-warn:" + warnings, (null != warnings));
     }
 
     public void setDebug(boolean debug) {
         addFlag("-g", debug);
     }
     
+    public void setDebugLevel(String level) {
+    	level = validCommaList(level, VALID_DEBUG, "g");
+        addFlag("-g:" + level, (null != level));
+    }
+
     public void setEmacssym(boolean emacssym) {
         addFlag("-emacssym", emacssym);
     }
 
-    public void setDebugLevel(String level) {
-    	level = validCommaList(level, VALID_DEBUG);
-        addFlag("-g:" + level, (null != level));
-    }
-
-	/** -Xlint - enable or disable all forms of -Xlint messages */
-	public void setXlintenabled(boolean xlintenabled) {
-        addFlag("-Xlint", xlintenabled);
+	/** 
+	 * -Xlint - set default level of -Xlint messages to warning
+	 * (same as </code>-Xlint:warning</code>)
+	 */
+	public void setXlintwarnings(boolean xlintwarnings) {
+        addFlag("-Xlint", xlintwarnings);
 	}
 	
-	/** -Xlint:{xlint} - enable or disable specific forms of -Xlint messages
-	 * @param xlint the String with comma-delimited lint 
+	/** -Xlint:{error|warning|info} - set default level for -Xlint messages
+	 * @param xlint the String with one of error, warning, ignored 
 	 */
-    public void setXlint(String xlint) { // XXX confirm form supported
-    	xlint = validCommaList(xlint, VALID_XLINT);
+    public void setXlint(String xlint) {
+    	xlint = validCommaList(xlint, VALID_XLINT, "Xlint", 1);
         addFlag("-Xlint:" + xlint, (null != xlint));
     }
 
 	/** 
-	 * -Xlint:file={xlintFile} - enable or disable specific forms 
+	 * -Xlint:file={lint.properties} - enable or disable specific forms 
 	 * of -Xlint messages based on a lint properties file
+	 *  (default is 
+	 * <code>org/aspectj/weaver/XLintDefault.properties</code>)
 	 * @param xlintFile the File with lint properties
 	 */
-    public void setXlintFile(File xlintFile) { 
-        String flag = "-Xlint:file=" + xlintFile.getAbsolutePath();
-        //addFlag(flag);
-        ignore(flag + "[XXX unimplemented in compiler]");
+    public void setXlintfile(File xlintFile) { 
+        String flag = "-Xlintfile:" + xlintFile.getAbsolutePath();
+        addFlag(flag, true);
     }
 
     public void setPreserveAllLocals(boolean preserveAllLocals) {  
@@ -323,6 +352,23 @@ public class AjcTask extends MatchingTask {
     	}   		
     }
     //---------------------- accumulate these lists
+    public void setSourceRootsList(String commaList) {
+    	StringTokenizer st = new StringTokenizer(commaList, ",");
+    	while (st.hasMoreTokens()) {
+    		String token = st.nextToken().trim();
+    		if (0 == token.length()) {
+    			ignore("empty source root found");
+    		}
+    		File srcRoot = new File(token);
+    		if (srcRoot.canRead() && srcRoot.isDirectory()) {
+    			Path path = new Path(getProject(), srcRoot.getPath());
+    			setSourceRoots(path);
+    		} else {
+    			ignore("source root not found: " + srcRoot);
+    		}
+    	}
+    }
+
     public void setSourceRoots(Path roots) {
         if (this.sourceRoots == null) {
             this.sourceRoots = roots;
