@@ -58,8 +58,8 @@ public class ThrowsPattern extends PatternNode {
     
     public ThrowsPattern resolveBindings(IScope scope, Bindings bindings) {
     	if (this == ANY) return this;
-    	required = required.resolveBindings(scope, bindings, false);
-    	forbidden = forbidden.resolveBindings(scope, bindings, false);
+    	required = required.resolveBindings(scope, bindings, false, false);
+    	forbidden = forbidden.resolveBindings(scope, bindings, false, false);
     	return this;
     }
     

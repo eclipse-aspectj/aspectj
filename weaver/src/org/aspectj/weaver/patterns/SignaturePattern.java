@@ -45,13 +45,13 @@ public class SignaturePattern extends PatternNode {
 	
     public SignaturePattern resolveBindings(IScope scope, Bindings bindings) { 
 		if (returnType != null) {
-			returnType = returnType.resolveBindings(scope, bindings, false);
+			returnType = returnType.resolveBindings(scope, bindings, false, false);
 		} 
 		if (declaringType != null) {
-			declaringType = declaringType.resolveBindings(scope, bindings, false);
+			declaringType = declaringType.resolveBindings(scope, bindings, false, false);
 		}
 		if (parameterTypes != null) {
-			parameterTypes = parameterTypes.resolveBindings(scope, bindings, false);
+			parameterTypes = parameterTypes.resolveBindings(scope, bindings, false, false);
 		}
 		if (throwsPattern != null) {
 			throwsPattern = throwsPattern.resolveBindings(scope, bindings);

@@ -50,7 +50,7 @@ public class WithinPointcut extends Pointcut {
 	}
 
 	public void resolveBindings(IScope scope, Bindings bindings) {
-		type = type.resolveBindings(scope, bindings, false);
+		type = type.resolveBindings(scope, bindings, false, false);
 	}
 
 	public void postRead(ResolvedTypeX enclosingType) {

@@ -64,8 +64,10 @@ public class NotTypePattern extends TypePattern {
 	public TypePattern resolveBindings(
 		IScope scope,
 		Bindings bindings,
-		boolean allowBinding) {
-		pattern = pattern.resolveBindings(scope, bindings, false);
+		boolean allowBinding, boolean requireExactType)
+	{
+		if (requireExactType) return notExactType(scope);
+		pattern = pattern.resolveBindings(scope, bindings, false, false);
 		return this;
 	}
 

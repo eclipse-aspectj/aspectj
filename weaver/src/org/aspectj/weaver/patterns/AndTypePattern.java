@@ -66,9 +66,11 @@ public class AndTypePattern extends TypePattern {
 	public TypePattern resolveBindings(
 		IScope scope,
 		Bindings bindings,
-		boolean allowBinding) {
-		left = left.resolveBindings(scope, bindings, false);
-		right = right.resolveBindings(scope, bindings, false);
+		boolean allowBinding, boolean requireExactType)
+	{
+		if (requireExactType) return notExactType(scope);
+		left = left.resolveBindings(scope, bindings, false, false);
+		right = right.resolveBindings(scope, bindings, false, false);
 		return this;
 	}
 	

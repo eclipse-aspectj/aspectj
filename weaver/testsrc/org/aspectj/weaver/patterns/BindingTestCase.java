@@ -43,7 +43,7 @@ public class BindingTestCase extends TestCase {
 		BindingTypePattern[] b = new BindingTypePattern[] {null, bt};
 		
 		checkBindings("this(b)",b);
-		checkBindings("this(Foo)", none);
+		checkBindings("this(java.lang.String)", none);
 		checkBindings("this(*)", none);
 		checkBindings("this(a)", a);
 		
@@ -65,12 +65,12 @@ public class BindingTestCase extends TestCase {
 		//checkBindingFailure("this(a) && this(b)");
 
 		checkBindingFailure("this(a) || this(b)", "inconsistent");
-		checkBindingFailure("this(A) || this(b)", "inconsistent");
-		checkBindingFailure("this(a) || this(B)", "inconsistent");
+		checkBindingFailure("this(java.lang.String) || this(b)", "inconsistent");
+		checkBindingFailure("this(a) || this(java.lang.String)", "inconsistent");
 		checkBindings("this(a) || this(a)", a);
 		
-		checkBindings("!this(Foo)", none);
-		checkBindings("!this(Foo) && this(a)", a);
+		checkBindings("!this(java.lang.String)", none);
+		checkBindings("!this(java.lang.String) && this(a)", a);
 		checkBindingFailure("!this(a)", "negation");
 		//checkBindingFailure("this(a)");
 	

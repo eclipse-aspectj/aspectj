@@ -78,11 +78,11 @@ public class DeclareParents extends Declare {
 	}
 	
     public void resolve(IScope scope) {
-    	child = child.resolveBindings(scope, Bindings.NONE, false);
-    	parents = parents.resolveBindings(scope, Bindings.NONE, false); 
-    	for (int i=0; i < parents.size(); i++) {
-    		parents.get(i).assertExactType(scope.getMessageHandler());
-		}
+    	child = child.resolveBindings(scope, Bindings.NONE, false, false);
+    	parents = parents.resolveBindings(scope, Bindings.NONE, false, true); 
+//    	for (int i=0; i < parents.size(); i++) {
+//    		parents.get(i).assertExactType(scope.getMessageHandler());
+//		}
     }
 
 	public TypePatternList getParents() {

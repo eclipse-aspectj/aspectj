@@ -69,7 +69,8 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 	}
 
 	public void resolveBindings(IScope scope, Bindings bindings) {
-		type = type.resolveBindings(scope, bindings, true);
+		type = type.resolveBindings(scope, bindings, true, true);
+		
 		// ??? handle non-formal
 	}
 	

@@ -113,7 +113,7 @@ public class TypePatternListTestCase extends TestCase {
             types[i] = world.resolve(names[i]);
         }
         
-        p.resolveBindings(makeTestScope(), Bindings.NONE, false);
+        p.resolveBindings(makeTestScope(), Bindings.NONE, false, false);
 		//System.out.println("type: " + type);
 		FuzzyBoolean result = p.matches(types, TypePattern.STATIC);
 		String msg = "matches statically " + pattern + " to " + Arrays.asList(types);
@@ -127,7 +127,7 @@ public class TypePatternListTestCase extends TestCase {
 	    
     public void stupidCheck(String pattern, boolean[] matches) {
         TypePatternList p = makeArgumentsPattern(pattern);
-        p.resolveBindings(makeTestScope(), Bindings.NONE, false);
+        p.resolveBindings(makeTestScope(), Bindings.NONE, false, false);
         
         int len = matches.length;
         

@@ -140,7 +140,8 @@ public class AjLookupEnvironment extends LookupEnvironment {
 
 	private void addParent(DeclareParents declareParents, ClassScope scope, TypePattern typePattern) {
 		SourceTypeBinding sourceType = scope.referenceContext.binding;
-		if (!typePattern.assertExactType(world.getMessageHandler())) return;
+		//if (!typePattern.assertExactType(world.getMessageHandler())) return;
+		if (typePattern == TypePattern.NO) return;  // already had an error here
 		TypeX iType = typePattern.getExactType();
 //		if (iType == null) {
 //			throw new RuntimeException("yikes: " + typePattern);

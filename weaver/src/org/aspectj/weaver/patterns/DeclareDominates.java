@@ -63,7 +63,7 @@ public class DeclareDominates extends Declare {
 	}
 	
     public void resolve(IScope scope) {
-    	patterns = patterns.resolveBindings(scope, Bindings.NONE, false); 	
+    	patterns = patterns.resolveBindings(scope, Bindings.NONE, false, false); 	
     }
 
 	public TypePatternList getPatterns() {

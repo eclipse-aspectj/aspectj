@@ -162,11 +162,11 @@ public class TypePatternList extends PatternNode {
         }
     }
     
-	public TypePatternList resolveBindings(IScope scope, Bindings bindings, boolean allowBinding) {
+	public TypePatternList resolveBindings(IScope scope, Bindings bindings, boolean allowBinding, boolean requireExactType) {
 		for (int i=0; i<typePatterns.length; i++) {
 			TypePattern p = typePatterns[i];
 			if (p != null) {
-				typePatterns[i] = typePatterns[i].resolveBindings(scope, bindings, allowBinding);
+				typePatterns[i] = typePatterns[i].resolveBindings(scope, bindings, allowBinding, requireExactType);
 			}
 		}
 		return this;

@@ -287,8 +287,10 @@ public class WildTypePattern extends TypePattern {
 	 * 
 	 * We will be replaced by what we return
 	 */
-	public TypePattern resolveBindings(IScope scope, Bindings bindings, boolean allowBinding) {
-		if (isStar()) {
+	public TypePattern resolveBindings(IScope scope, Bindings bindings, 
+    								boolean allowBinding, boolean requireExactType)
+    { 		
+    	if (isStar()) {
 			return TypePattern.ANY;  //??? loses source location
 		}
 
@@ -320,7 +322,16 @@ public class WildTypePattern extends TypePattern {
 				cleanName = cleanName.substring(0, lastDot) + '$' + cleanName.substring(lastDot+1);
 			}
 			if (type == ResolvedTypeX.MISSING) {
-				if (scope.getWorld().getLint().invalidAbsoluteTypeName.isEnabled()) {
+				if (requireExactType) {
+					if (!allowBinding) {
+						scope.getWorld().getMessageHandler().handleMessage(
+							MessageUtil.error("can't bind type name '" + cleanName + "'",
+											getSourceLocation()));
+					} else if (scope.getWorld().getLint().invalidAbsoluteTypeName.isEnabled()) {
+						scope.getWorld().getLint().invalidAbsoluteTypeName.signal(cleanName, getSourceLocation());
+					}
+					return NO;
+				} else if (scope.getWorld().getLint().invalidAbsoluteTypeName.isEnabled()) {
 					scope.getWorld().getLint().invalidAbsoluteTypeName.signal(cleanName, getSourceLocation());
 				}
 			} else {
@@ -330,6 +341,12 @@ public class WildTypePattern extends TypePattern {
 				return ret;
 			}
 		} else {
+			if (requireExactType) {
+				scope.getWorld().getMessageHandler().handleMessage(
+					MessageUtil.error("wildcard type pattern not allowed, must use type name",
+										getSourceLocation()));
+				return NO;
+			}
 			//XXX need to implement behavior for Lint.invalidWildcardTypeName
 		}
 		

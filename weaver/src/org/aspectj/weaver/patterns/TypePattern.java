@@ -41,6 +41,7 @@ public abstract class TypePattern extends PatternNode {
 	
 	public static final TypePattern ELLIPSIS = new EllipsisTypePattern();
 	public static final TypePattern ANY = new AnyTypePattern();
+	public static final TypePattern NO = new NoTypePattern();
 	
 	
 	protected boolean includeSubtypes;
@@ -91,8 +92,8 @@ public abstract class TypePattern extends PatternNode {
 	}
 	
 	public TypeX resolveExactType(IScope scope, Bindings bindings) {
-		TypePattern p = resolveBindings(scope, bindings, false);
-		if (!p.assertExactType(scope.getMessageHandler())) return ResolvedTypeX.MISSING;
+		TypePattern p = resolveBindings(scope, bindings, false, true);
+		if (p == NO) return ResolvedTypeX.MISSING;
 		
 		return ((ExactTypePattern)p).getType();
 	}
@@ -102,18 +103,25 @@ public abstract class TypePattern extends PatternNode {
 		else return ResolvedTypeX.MISSING;
 	}
 	
-	public boolean assertExactType(IMessageHandler m) {
-		if (this instanceof ExactTypePattern) return true;
-		
-		//XXX should try harder to avoid multiple errors for one problem
-		m.handleMessage(MessageUtil.error("exact type pattern required", getSourceLocation()));
-		return false;
+	protected TypePattern notExactType(IScope s) {
+		s.getMessageHandler().handleMessage(MessageUtil.error("exact type pattern required", getSourceLocation()));
+		return NO;
 	}
+	
+//	public boolean assertExactType(IMessageHandler m) {
+//		if (this instanceof ExactTypePattern) return true;
+//		
+//		//XXX should try harder to avoid multiple errors for one problem
+//		m.handleMessage(MessageUtil.error("exact type pattern required", getSourceLocation()));
+//		return false;
+//	}
 
 	/**
 	 * This can modify in place, or return a new TypePattern if the type changes.
 	 */
-    public TypePattern resolveBindings(IScope scope, Bindings bindings, boolean allowBinding) { 
+    public TypePattern resolveBindings(IScope scope, Bindings bindings, 
+    								boolean allowBinding, boolean requireExactType)
+    { 
     	return this;
     }
     
@@ -157,6 +165,7 @@ public abstract class TypePattern extends PatternNode {
 	public static final byte NOT = 6;
 	public static final byte OR = 7;
 	public static final byte AND = 8;
+	public static final byte NO_KEY = 9;
 
 	public static TypePattern read(DataInputStream s, ISourceContext context) throws IOException {
 		byte key = s.readByte();
@@ -166,6 +175,7 @@ public abstract class TypePattern extends PatternNode {
 			case BINDING: return BindingTypePattern.read(s, context);
 			case ELLIPSIS_KEY: return ELLIPSIS;
 			case ANY_KEY: return ANY;
+			case NO_KEY: return NO;
 			case NOT: return NotTypePattern.read(s, context);
 			case OR: return OrTypePattern.read(s, context);
 			case AND: return AndTypePattern.read(s, context);
@@ -259,5 +269,54 @@ class AnyTypePattern extends TypePattern {
 	}
 	
 	public String toString() { return "*"; }
-
 }
+
+class NoTypePattern extends TypePattern {
+	
+	public NoTypePattern() {
+		super(false);
+	}
+
+	/**
+	 * @see org.aspectj.weaver.patterns.TypePattern#matchesExactly(IType)
+	 */
+	protected boolean matchesExactly(ResolvedTypeX type) {
+		return false;
+	}
+
+	/**
+	 * @see org.aspectj.weaver.patterns.TypePattern#matchesInstanceof(IType)
+	 */
+	public FuzzyBoolean matchesInstanceof(ResolvedTypeX type) {
+		return FuzzyBoolean.NO;
+	}
+
+	/**
+	 * @see org.aspectj.weaver.patterns.PatternNode#write(DataOutputStream)
+	 */
+	public void write(DataOutputStream s) throws IOException {
+		s.writeByte(NO_KEY);
+	}
+
+	/**
+	 * @see org.aspectj.weaver.patterns.TypePattern#matches(IType, MatchKind)
+	 */
+//	public FuzzyBoolean matches(IType type, MatchKind kind) {
+//		return FuzzyBoolean.YES;
+//	}
+
+	/**
+	 * @see org.aspectj.weaver.patterns.TypePattern#matchesSubtypes(IType)
+	 */
+	protected boolean matchesSubtypes(ResolvedTypeX type) {
+		return false;
+	}
+	
+	
+	public boolean isStar() {
+		return false;
+	}
+	
+	public String toString() { return "<nothing>"; }
+}
+

@@ -116,7 +116,7 @@ public class ReferencePointcut extends Pointcut {
 		}
 		
 		
-		arguments.resolveBindings(scope, bindings, true);
+		arguments.resolveBindings(scope, bindings, true, true);
 		//XXX ensure that arguments has no ..'s in it
 		
 		// check that I refer to a real pointcut declaration and that I match

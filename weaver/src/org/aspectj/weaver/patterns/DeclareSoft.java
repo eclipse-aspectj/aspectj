@@ -77,7 +77,7 @@ public class DeclareSoft extends Declare {
 	}
 
     public void resolve(IScope scope) {
-    	exception = exception.resolveBindings(scope, null, false);
+    	exception = exception.resolveBindings(scope, null, false, true);
     	pointcut = pointcut.resolve(scope); 	
     }
     

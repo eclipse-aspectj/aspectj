@@ -173,7 +173,7 @@ public class TypePatternTestCase extends TestCase {
 		TestScope scope = makeTestScope();
 		scope.setImportedPrefixes(importedPrefixes);
 		scope.setImportedNames(importedNames);
-		return (WildTypePattern) unresolved.resolveBindings(scope, Bindings.NONE, false);
+		return (WildTypePattern) unresolved.resolveBindings(scope, Bindings.NONE, false, false);
 	}
 
 
@@ -218,7 +218,7 @@ public class TypePatternTestCase extends TestCase {
 		TypePattern p = makeTypePattern(pattern);
 		ResolvedTypeX type = world.resolve(name);
 		
-		p = p.resolveBindings(makeTestScope(), null, false);
+		p = p.resolveBindings(makeTestScope(), null, false, false);
 		
 		
 		//System.out.println("type: " + p);
@@ -238,7 +238,7 @@ public class TypePatternTestCase extends TestCase {
 
 	private void checkMatch(String pattern, String name, boolean shouldMatch) {
 		TypePattern p = makeTypePattern(pattern);
-		p = p.resolveBindings(makeTestScope(), null, false);
+		p = p.resolveBindings(makeTestScope(), null, false, false);
 		checkPatternMatch(p, name, shouldMatch);
 	}
 

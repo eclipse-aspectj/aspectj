@@ -81,7 +81,7 @@ public class HandlerPointcut extends Pointcut {
 	// We want to do something here to make sure we don't sidestep the parameter
 	// list in capturing type identifiers.
 	public void resolveBindings(IScope scope, Bindings bindings) {
-		exceptionType = exceptionType.resolveBindings(scope, bindings, false);
+		exceptionType = exceptionType.resolveBindings(scope, bindings, false, false);
 		//XXX add error if exact binding and not an exception
 	}
 	public Test findResidue(Shadow shadow, ExposedState state) {

@@ -1706,12 +1706,10 @@ public class BcelShadow extends Shadow {
         }
         
         TypeX returnType;
-        if (getKind() == ConstructorCall) {
-        	returnType = getSignature().getDeclaringType();
-        } else if (getKind() == PreInitialization) {
+        if (getKind() == PreInitialization) {
         	returnType = TypeX.OBJECTARRAY;
         } else {
-        	returnType = getSignature().getReturnType();
+        	returnType = getReturnType();
         }
         return
             new LazyMethodGen(

@@ -68,7 +68,7 @@ public class ArgsPointcut extends NameBindingPointcut {
     }
   
 	public void resolveBindings(IScope scope, Bindings bindings) {
-		arguments.resolveBindings(scope, bindings, true);
+		arguments.resolveBindings(scope, bindings, true, true);
 		if (arguments.ellipsisCount > 1) {
 			scope.message(IMessage.ERROR, this,
 					"uses more than one .. in args (compiler limitation)");

@@ -70,11 +70,9 @@ public class ExactTypePattern extends TypePattern {
     	//Thread.currentThread().dumpStack();
     	return "ExactTypePattern(" + type.toString() + (includeSubtypes ? "+" : "") + ")";
     }
-	public TypePattern resolveBindings(
-		IScope scope,
-		Bindings bindings,
-		boolean allowBinding) 
-	{
+	public TypePattern resolveBindings(IScope scope, Bindings bindings, 
+    								boolean allowBinding, boolean requireExactType)
+    { 
 		throw new BCException("trying to re-resolve");
 		
 	}
