@@ -21,22 +21,23 @@ import junit.framework.TestCase;
  * @author Mik Kersten
  */
 public class CoverageTestCase extends TestCase {
+
+	File file0 = new File("testdata/coverage/InDefaultPackage.java");
+	File file1 = new File("testdata/coverage/foo/ClassA.java");
+	File aspect1 = new File("testdata/coverage/foo/UseThisAspectForLinkCheck.aj");
+	File file2 = new File("testdata/coverage/foo/InterfaceI.java");
+	File file3 = new File("testdata/coverage/foo/PlainJava.java");
+	File file4 = new File("testdata/coverage/foo/ModelCoverage.java");
+	File file5 = new File("testdata/coverage/fluffy/Fluffy.java");
+	File file6 = new File("testdata/coverage/fluffy/bunny/Bunny.java");
+	File file7 = new File("testdata/coverage/fluffy/bunny/rocks/Rocks.java");
+	File file8 = new File("testdata/coverage/fluffy/bunny/rocks/UseThisAspectForLinkCheckToo.java");
+	File file9 = new File("testdata/coverage/foo/PkgVisibleClass.java");
+	 
+	File outdir = new File("testdata/coverage/doc");
 	
 	public void testCoverage() {
-		  
-//		System.err.println(new File("testdata/figures-demo").exists());
-		File file0 = new File("testdata/coverage/InDefaultPackage.java");
-		File file1 = new File("testdata/coverage/foo/ClassA.java");
-		File aspect1 = new File("testdata/coverage/foo/UseThisAspectForLinkCheck.aj");
-		File file2 = new File("testdata/coverage/foo/InterfaceI.java");
-		File file3 = new File("testdata/coverage/foo/PlainJava.java");
-		File file4 = new File("testdata/coverage/foo/ModelCoverage.java");
-		File file5 = new File("testdata/coverage/fluffy/Fluffy.java");
-		File file6 = new File("testdata/coverage/fluffy/bunny/Bunny.java");
-		File file7 = new File("testdata/coverage/fluffy/bunny/rocks/Rocks.java");
-		File file8 = new File("testdata/coverage/fluffy/bunny/rocks/UseThisAspectForLinkCheckToo.java");
-		File outdir = new File("testdata/coverage/doc");
-		    
+		outdir.delete();
 		String[] args = { 
 //			"-XajdocDebug",
 			"-source", 
@@ -53,20 +54,31 @@ public class CoverageTestCase extends TestCase {
 			file5.getAbsolutePath(),
 			file6.getAbsolutePath(),
 			file7.getAbsolutePath(),
-			file8.getAbsolutePath()
+			file8.getAbsolutePath(),
+			file9.getAbsolutePath()
 		};
-		
 		org.aspectj.tools.ajdoc.Main.main(args);
 	}
 
+	public void testCoveragePublicMode() {
+		outdir.delete();
+		String[] args = { 
+			"-public",
+			"-source", 
+			"1.4",
+			"-d", 
+			outdir.getAbsolutePath(),
+			file3.getAbsolutePath(),
+			file9.getAbsolutePath() 
+		};
+		org.aspectj.tools.ajdoc.Main.main(args);
+	}
+	
 //	public void testPlainJava() {
-//		File file1 = new File("testdata/coverage/foo/PlainJava.java");
-//		File outdir = new File("testdata/coverage/doc");
-//		
+//		outdir.delete();
 //		String[] args = { "-d", 
 //				outdir.getAbsolutePath(),
-//				file1.getAbsolutePath() };
-//		
+//				file3.getAbsolutePath() };
 //		org.aspectj.tools.ajdoc.Main.main(args);
 //	}
 	

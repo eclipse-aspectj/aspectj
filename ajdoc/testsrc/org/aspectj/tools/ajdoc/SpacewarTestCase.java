@@ -20,9 +20,12 @@ import junit.framework.TestCase;
  */
 public class SpacewarTestCase extends TestCase {
 	
+	protected void setUp() throws Exception {
+		super.setUp();
+		new File("testdata/spacewar/docdir").delete();
+	}
+    
 	public void testSimpleExample() {
-		
-//		System.err.println(new File("testdata/figures-demo").exists());
 		File outdir = new File("testdata/spacewar/docdir");
 		File sourcepath = new File("testdata/spacewar");
 		
@@ -34,12 +37,24 @@ public class SpacewarTestCase extends TestCase {
 				"coordination" };
 		
 		org.aspectj.tools.ajdoc.Main.main(args);
-		
 		assertTrue(true);
 	}
 	
-	protected void setUp() throws Exception {
-		super.setUp();
+	public void testPublicModeExample() {
+		File outdir = new File("testdata/spacewar/docdir");
+		File sourcepath = new File("testdata/spacewar");
+		
+		String[] args = { 
+		        "-public",
+		        "-d", 
+				outdir.getAbsolutePath(),
+				"-sourcepath",
+				sourcepath.getAbsolutePath(),
+				"spacewar",
+				"coordination" };
+		
+		org.aspectj.tools.ajdoc.Main.main(args);
+		assertTrue(true);
 	}
 	
 	protected void tearDown() throws Exception {

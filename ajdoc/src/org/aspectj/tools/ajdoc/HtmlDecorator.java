@@ -112,6 +112,7 @@ class HtmlDecorator {
                     filename = base + decl.getSignature() + ".html";
                 }
                 if (!exceededNestingLevel) {
+                    
                    decorateHTMLFile(new File(filename));
                    
                    decorateHTMLFromDecls(decl.getDeclarations(),
@@ -137,9 +138,16 @@ class HtmlDecorator {
     	}
 	}
 
+    /**
+     * Skips files that are public in the model but not public in the source,
+     * e.g. nested aspects.
+     */
 	static void decorateHTMLFile(File file) throws IOException {
-        System.out.println( "> Decorating " + file.getCanonicalPath() + "..." );
-        BufferedReader reader = new BufferedReader(new FileReader(file));
+	    if (!file.exists()) return;
+	    
+	    System.out.println( "> Decorating " + file.getCanonicalPath() + "..." );
+	    BufferedReader reader = new BufferedReader(new FileReader(file));
+	    
         StringBuffer fileContents = new StringBuffer();
         String line = reader.readLine();
         while( line != null ) {
