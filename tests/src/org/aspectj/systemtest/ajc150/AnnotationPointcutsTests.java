@@ -45,4 +45,11 @@ public class AnnotationPointcutsTests extends TestUtils {
       expectedWarnings.add(new Message("@annotation matched here"));  // L 8
       assertMessages(cR, new MessageSpec(expectedWarnings, new ArrayList()));
   }
+  
+  
+  // TODO extra tests
+  // 1) @within  (matches, does not match, matches inherited annotation)
+  // 2) @withincode (matches, does not match)
+  // 3) @annotation on the different join point kinds, matches with inherited annotation
+  
 }

@@ -43,6 +43,11 @@ public class AnnotationRuntimeTests extends TestUtils {
     }
     
     public void test003_InheritableOrNot() {
-        CompilationResult cR = binaryWeave("TestingAnnotations.jar","ThisOrTargetTests.aj",0,0);                       
+        CompilationResult cR = binaryWeave("TestingAnnotations.jar","ThisOrTargetTests.aj",0,0);   
+        System.out.println(cR);
     }
+    
+    // TODO extra tests
+    // run the result of test003 and validate matches (needs 1.5 runtime)
+    // test inheritable annotation not present on type [should generate runtime test]
 }

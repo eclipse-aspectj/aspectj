@@ -53,4 +53,11 @@ public class Annotations extends TestUtils {
   			msg3_field.toString().indexOf("can't make inter-type field declarations")!=-1);
   	verifyWeavingMessagesOutput(cR,new String[]{});
   }
+
+  // TODO extra tests:
+  // declare parents with annotation pattern
+  // declare soft with annotation pattern
+  // declare warning with annotation pattern
+  // declare precedence with annotation pattern
+  
 }

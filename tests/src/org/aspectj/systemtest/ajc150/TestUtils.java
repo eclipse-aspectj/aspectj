@@ -29,7 +29,7 @@ public abstract class TestUtils extends AjcTestCase {
 	}
 
 	protected CompilationResult binaryWeave(String inpath, String insource,int expErrors,int expWarnings,boolean xlinterror) {
-		return binaryWeave(inpath,insource,expErrors,expWarnings,false,"");
+		return binaryWeave(inpath,insource,expErrors,expWarnings,xlinterror,"");
 	}
 	
 	protected CompilationResult binaryWeave(String inpath, String insource,int expErrors,int expWarnings,String extraOption) {
