@@ -42,9 +42,16 @@ public class NullIdeTaskListManager implements TaskListManager {
     	sourceLineTasks.add(new SourceLineTask(message));
         if (!hasWarning && IMessage.WARNING.isSameOrLessThan(message.getKind())) {
             hasWarning = true;
-        }
-    	System.out.println("NullIde> task: " + message.getMessage() + ", file: " + message.getSourceLocation().getSourceFile().getAbsolutePath()
-    		+ ": " +  message.getSourceLocation().getLine());
+        }        
+		/* Guard against null source locations e.g. JAR file messages */
+		if (null != message.getSourceLocation()) {
+			System.out.println("> added sourceline task: " + message + ", file: " + message.getSourceLocation().getSourceFile().getAbsolutePath()
+				+ ": " +  message.getSourceLocation().getLine());
+		}
+		else {
+			System.out.println("> added sourceline task: " + message);
+		}
+
     }
    
     public void addProjectTask(String message, IMessage.Kind kind) {

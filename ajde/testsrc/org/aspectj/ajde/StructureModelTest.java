@@ -128,6 +128,8 @@ public class StructureModelTest extends AjdeTestCase {
 			
 		assertTrue("find result", node != null);	
 			
+		System.err.println("##### " + node);
+			
 		IProgramElement pNode = (IProgramElement)((IProgramElement)node).getParent();
         if (null == pNode) {
             assertTrue("null parent of " + node, false);

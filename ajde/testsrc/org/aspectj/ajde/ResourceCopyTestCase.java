@@ -22,11 +22,11 @@ public class ResourceCopyTestCase extends AjdeTestCase {
 
 	public static final String PROJECT_DIR = "bug-36071"; 
 	public static final String srcDir = PROJECT_DIR + "/src"; 
-	public static final String binDir = PROJECT_DIR + "/bin"; 
+	public static final String binDir = "bin"; 
 
-	public static final String injar1 = "testdata/bug-40943/input1.jar"; 
-	public static final String injar2 = "testdata/bug-40943/input2.jar"; 
-	public static final String outjar = "testdata/bug-40943/output.jar"; 
+	public static final String injar1Name = "input1.jar"; 
+	public static final String injar2Name = "input2.jar"; 
+	public static final String outjarName = "/bin/output.jar"; 
 
 	/**
 	 * Constructor for JarResourceCopyTestCase.
@@ -41,136 +41,107 @@ public class ResourceCopyTestCase extends AjdeTestCase {
 	 */	
 	protected void setUp() throws Exception {
 		super.setUp(PROJECT_DIR);
-		FileUtil.deleteContents(new File(binDir));
+		FileUtil.deleteContents(openFile(binDir));
 	}
-	
+
 	public void testSrcToBin () {
-		doSynchronousBuild("config.lst");
 		assertTrue(!Ajde.getDefault().getTaskListManager().hasWarning());
-		assertTrue(new java.io.File("testdata/bug-36071").getAbsolutePath(), compareDirs("src", "bin"));
+		assertTrue("Build failed",doSynchronousBuild("config1.lst"));
+		compareDirs("src","bin");
 	}
 	
-//	public void testInjarsToBin () {
-//		List args = new ArrayList();
-//		args.add("-injars");
-//		args.add(injar1);
-//		
-//		args.add("-d");
-//		args.add(binDir);
-//
-//		args.add("-classpath");
-//		args.add("../runtime/bin");
-//	
-//		args.add("testdata/bug-40943/aspects/Logging.java");
-//	
-//		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
-//
-//		assertTrue(new java.io.File("testdata/bug-40943").getAbsolutePath(),compareJarToDirs(injar1,binDir));
-//	}
-//
-//	public void testInjarsToOutjar () {
-//		List args = new ArrayList();
-//		args.add("-injars");
-//		args.add(injar1);
-//		
-//		args.add("-outjar");
-//		args.add(outjar);
-//
-//		args.add("-classpath");
-//		args.add("../runtime/bin");
-//	
-//		args.add("testdata/bug-40943/aspects/Logging.java");
-//	
-//		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
-//
-//		assertTrue(new java.io.File("testdata/bug-40943").getAbsolutePath(),compareJars(injar1,outjar));
-//	}
-//	
-//
-//	public void test2InjarsToOutjar () {
-//		System.err.println("? test2InjarsToOutjar()");
-//		List args = new ArrayList();
-//		args.add("-injars");
-//		args.add(injar1 + ";" + injar2);
-//		
-//		args.add("-outjar");
-//		args.add(outjar);
-//
-//		args.add("-classpath");
-//		args.add("../runtime/bin");
-//	
-//		args.add("testdata/bug-40943/aspects/Logging.java");
-//	
-//		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
-//
-//		assertTrue(new java.io.File("testdata/bug-40943").getAbsolutePath(),compareJars(injar1,outjar));
-//	}
+	public void testInjarsToOutjar () {
+		Set injars = new HashSet();
+		File injar1 = openFile(injar1Name);
+		injars.add(injar1);
+		ideManager.getProjectProperties().setInJars(injars);
+		File outjar = openFile(outjarName);
+		ideManager.getProjectProperties().setOutJar(outjar.getAbsolutePath());
+		assertTrue("Build failed",doSynchronousBuild("config2.lst"));
+		assertFalse("No build warnings",ideManager.getCompilationSourceLineTasks().isEmpty());
+		List msgs = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
+		assertTrue("Wrong message",((NullIdeTaskListManager.SourceLineTask)msgs.get(0)).message.getMessage().startsWith("manifest not copied: "));
+		compareJars(injar1,"src",outjar);
+	}
+	
+	public void testDuplicateResources () {
+		Set injars = new HashSet();
+		File injar1 = openFile(injar1Name);
+		File injar2 = openFile(injar2Name);
+		injars.add(injar1);
+		injars.add(injar2);
+		ideManager.getProjectProperties().setInJars(injars);
+		File outjar = openFile(outjarName);
+		ideManager.getProjectProperties().setOutJar(outjar.getAbsolutePath());
+		assertFalse("Build should have failed",doSynchronousBuild("config2.lst"));
+		assertFalse("No build errors",ideManager.getCompilationSourceLineTasks().isEmpty());
+		List msgs = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
+		assertTrue("Wrong message",((NullIdeTaskListManager.SourceLineTask)msgs.get(1)).message.getMessage().startsWith("duplicate resource: "));
+	}
+	
+	public void testSrcToOutjar () {
+		File outjar = openFile(outjarName);
+		ideManager.getProjectProperties().setOutJar(outjar.getAbsolutePath());
+		assertTrue("Build failed",doSynchronousBuild("config1.lst"));
+		compareSourceToOutjar("src",outjar);
+	}
+	
+	public void testInjarsToBin () {
+		Set injars = new HashSet();
+		File injar1 = openFile(injar1Name);
+		injars.add(injar1);
+		ideManager.getProjectProperties().setInJars(injars);
+		assertTrue("Build failed",doSynchronousBuild("config2.lst"));
+		assertFalse("No build warnings",ideManager.getCompilationSourceLineTasks().isEmpty());
+		List msgs = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
+		assertTrue("Wrong message",((NullIdeTaskListManager.SourceLineTask)msgs.get(0)).message.getMessage().startsWith("manifest not copied: "));
+		compareInjarsToBin(injar1,"src","bin");
+	}
 	
 	/*
-	 * Ensure -outjar conatins all non-Java resouces from injars
+	 * Ensure bin contains all non-Java resouces from source and injars
 	 */
-	public boolean compareDirs (String indirName, String outdirName) {
-		File srcBase = openFile(indirName);
+	public void compareDirs (String indirName, String outdirName) {
 		File binBase = openFile(outdirName);
-		File[] fromResources = FileUtil.listFiles(srcBase,aspectjResourceFileFilter);
 		File[] toResources = FileUtil.listFiles(binBase,aspectjResourceFileFilter);
 
-		HashSet resources = new HashSet();		
-		for (int i = 0; i < fromResources.length; i++) {
-			resources.add(FileUtil.normalizedPath(fromResources[i],srcBase));
-		}
+		HashSet resources = new HashSet();
+		listSourceResources(indirName,resources);		
 		
 		for (int i = 0; i < toResources.length; i++) {
 			String fileName = FileUtil.normalizedPath(toResources[i],binBase);
 			boolean b = resources.remove(fileName);
-			assertTrue(fileName,b);
+			assertTrue("Extraneous resoures:" + fileName,b);
 		}
 		
-		assertTrue(resources.toString(), resources.isEmpty());
-		return true;
+		assertTrue("Missing resources:" + resources.toString(), resources.isEmpty());
 	}	
 	
 	/*
-	 * Ensure -outjar conatins all non-Java resouces from injars
+	 * Ensure -outjar contains all non-Java resouces from injars
 	 */
-	public boolean compareJarToDirs (String injarName , String outdirName) {
-		File baseDir = new File(binDir);
-		System.err.println("? compareJarToDirs() baseDir='" + baseDir + "'");
-		File[] files = FileUtil.listFiles(baseDir,aspectjResourceFileFilter);
-		for (int i = 0; i < files.length; i++) {
-			System.err.println("? compareJarToDirs() name='" + files[i] + "'");
-		}
-		
-		return false;
-	}	
-	
-	/*
-	 * Ensure -outjar conatins all non-Java resouces from injars
-	 */
-	public boolean compareJars (String injarName , String outjarName) {
+	public void compareJars (File injarFile, String indirName, File outjarFile) {
 	
 		HashSet resources = new HashSet();
 	
 		try {	
-			File injarFile = new File(injarName);
-			File outjarFile = new File(outjarName);
 			assertTrue("outjar older than injar",(outjarFile.lastModified() > injarFile.lastModified()));
-			
-			ZipInputStream injar = new ZipInputStream(new java.io.FileInputStream(injarFile));
-			ZipEntry entry;
-			while (null != (entry = injar.getNextEntry())) {
-				String fileName = entry.getName();
-				if (!fileName.endsWith(".class")) {
-					resources.add(fileName);
-				}
-				injar.closeEntry();
-			}
-			injar.close();
+			byte[] inManifest = listJarResources(injarFile,resources);
+			listSourceResources(indirName,resources);		
 
 			ZipInputStream outjar = new ZipInputStream(new java.io.FileInputStream(outjarFile));
+			ZipEntry entry;
 			while (null != (entry = outjar.getNextEntry())) {
 				String fileName = entry.getName();
 				if (!fileName.endsWith(".class")) {
+					
+					/* Ensure we didn't copy any JAR manifests */
+					if (fileName.toLowerCase().startsWith("meta-inf")) {
+						byte[] outManifest = FileUtil.readAsByteArray(outjar);
+//						System.err.println("? compareJars() fileName='" + fileName + "', manifest='" + new String(outManifest) + "'");
+						assertFalse("Manifest has been copied",Arrays.equals(inManifest,outManifest));
+					}
+					
 					boolean b = resources.remove(fileName);
 					assertTrue(fileName,b);
 				}
@@ -183,14 +154,115 @@ public class ResourceCopyTestCase extends AjdeTestCase {
 		catch (IOException ex) {
 			fail(ex.toString());
 		}
-		
-		return true;
 	}
+	
+	/*
+	 * Ensure -outjar conatins all non-Java resouces from source and injars
+	 */
+	public void compareSourceToOutjar (String indirName, File outjarFile) {
+		HashSet resources = new HashSet();		
+		listSourceResources(indirName,resources);		
+	
+		try {	
+
+			ZipInputStream outjar = new ZipInputStream(new java.io.FileInputStream(outjarFile));
+			ZipEntry entry;
+			while (null != (entry = outjar.getNextEntry())) {
+				String fileName = entry.getName();
+				if (!fileName.endsWith(".class")) {
+					boolean b = resources.remove(fileName);
+					assertTrue(fileName,b);
+				}
+				outjar.closeEntry();
+			}
+			outjar.close();
+
+			assertTrue("Missing resources:" + resources.toString(), resources.isEmpty());
+		}
+		catch (IOException ex) {
+			fail(ex.toString());
+		}
+	}
+	
+	/*
+	 * Ensure bin contains all non-Java resouces from source and injars
+	 */
+	public void compareInjarsToBin(File injarFile, String indirName, String outdirName) {
+	
+		HashSet resources = new HashSet();
+	
+		try {	
+			byte[] inManifest = listJarResources(injarFile,resources);
+			listSourceResources(indirName,resources);		
+			
+			File binBase = openFile(outdirName);
+			File[] toResources = FileUtil.listFiles(binBase,aspectjResourceFileFilter);
+			for (int i = 0; i < toResources.length; i++) {
+				String fileName = FileUtil.normalizedPath(toResources[i],binBase);
+
+				/* Ensure we didn't copy any JAR manifests */
+				if (fileName.toLowerCase().startsWith("meta-inf")) {
+					byte[] outManifest = FileUtil.readAsByteArray(toResources[i]);
+//					System.err.println("? compareJars() fileName='" + fileName + "', manifest='" + new String(outManifest) + "'");
+					assertFalse("Manifest has been copied",Arrays.equals(inManifest,outManifest));
+				}
+				boolean b = resources.remove(fileName);
+				assertTrue("Extraneous resoures:" + fileName,b);
+			}
+
+			assertTrue("Missing resources:" + resources.toString(), resources.isEmpty());
+		}
+		catch (IOException ex) {
+			fail(ex.toString());
+		}
+	}
+    
+    private void listSourceResources (String indirName, Set resources) {
+		File srcBase = openFile(indirName);
+		File[] fromResources = FileUtil.listFiles(srcBase,aspectjResourceFileFilter);
+		for (int i = 0; i < fromResources.length; i++) {
+			String name = FileUtil.normalizedPath(fromResources[i],srcBase);
+			if (!name.startsWith("CVS/") && (-1 == name.indexOf("/CVS/")) && !name.endsWith("/CVS")) {
+				resources.add(name);
+			}
+		}
+    }
+    
+    private byte[] listJarResources (File injarFile, Set resources) {
+		byte[] manifest = null;
+	
+		try {
+			ZipInputStream injar = new ZipInputStream(new java.io.FileInputStream(injarFile));
+			ZipEntry entry;
+			while (null != (entry = injar.getNextEntry())) {
+				String fileName = entry.getName();
+				if (!fileName.endsWith(".class")) {
+					
+					/* JAR manifests shouldn't be copied */
+					if (fileName.toLowerCase().startsWith("meta-inf")) {
+						manifest = FileUtil.readAsByteArray(injar);
+//						System.err.println("? compareJars() fileName='" + fileName + "', manifest='" + new String(manifest) + "'");
+					}
+					else {
+						resources.add(fileName);
+					}
+				}
+				injar.closeEntry();
+			}
+			injar.close();
+		}	
+		catch (IOException ex) {
+			fail(ex.toString());
+		}
+		
+		return manifest;
+    }
     
 	public static final FileFilter aspectjResourceFileFilter = new FileFilter() {
 		public boolean accept(File pathname) {
 			String name = pathname.getName().toLowerCase();
-			return !name.endsWith(".class") && !name.endsWith(".java") && !name.endsWith(".aj");
+			return (!name.endsWith(".class") && !name.endsWith(".java") && !name.endsWith(".aj"));
+
 		}
 	};
 

@@ -47,7 +47,7 @@ public class BcelWeaver implements IWeaver {
     private Map  sourceJavaClasses = new HashMap();   /* String -> UnwovenClassFile */
     private List addedClasses      = new ArrayList(); /* List<UnovenClassFile> */
     private List deletedTypenames  = new ArrayList(); /* List<String> */
-    private List resources         = new ArrayList();   /* String -> byte[] */ 
+    private Map  resources         = new HashMap(); /* String -> UnwovenClassFile */ 
     private boolean needToReweaveWorld = false;
 
     private List shadowMungerList = null; // setup by prepareForWeave
@@ -112,6 +112,7 @@ public class BcelWeaver implements IWeaver {
 	/** Adds all class files in the jar
 	 */
 	public void addJarFile(File inFile, File outDir) throws IOException {
+//		System.err.println("? addJarFile(" + inFile + ", " + outDir + ")");
 		needToReweaveWorld = true;
 		ZipInputStream inStream = new ZipInputStream(new FileInputStream(inFile)); //??? buffered
 		
@@ -121,14 +122,22 @@ public class BcelWeaver implements IWeaver {
 			
 			byte[] bytes = FileUtil.readAsByteArray(inStream);
 			String filename = entry.getName();
+			UnwovenClassFile classFile = new UnwovenClassFile(new File(outDir, filename).getAbsolutePath(), bytes);
 
 			if (filename.endsWith(".class")) {
-				UnwovenClassFile classFile = new UnwovenClassFile(new File(outDir, filename).getAbsolutePath(), bytes);
 				this.addClassFile(classFile);
 			}
 			else if (!entry.isDirectory()) {
-				UnwovenClassFile resourceFile = new UnwovenClassFile(filename, bytes);
-				addResource(resourceFile);
+//				System.err.println("? addJarFile() filename='" + filename + "'");
+				
+				/* Don't copy JAR manifests */
+				if (filename.toLowerCase().startsWith("meta-inf")) {
+					world.showMessage(IMessage.WARNING, "manifest not copied: '" + filename + 
+									"' in JAR '" + inFile + "'", null, null);
+				}
+				else {
+					addResource(filename,classFile);
+				}
 			}
 
 			inStream.closeEntry();
@@ -138,12 +147,18 @@ public class BcelWeaver implements IWeaver {
 	}
 
 	public void addResource(String name, File inPath, File outDir) throws IOException {
-		BufferedInputStream inStream = new BufferedInputStream(new FileInputStream(inPath));
-		byte[] bytes = new byte[(int)inPath.length()];
-		inStream.read(bytes);
-		UnwovenClassFile resourceFile = new UnwovenClassFile(new File(outDir, name).getAbsolutePath(), bytes);
-		addResource(resourceFile);
-		inStream.close();
+
+		/* Eliminate CVS files. Relative paths use "/" */
+		if (!name.startsWith("CVS/") && (-1 == name.indexOf("/CVS/")) && !name.endsWith("/CVS")) {
+//			System.err.println("? addResource('" + name + "')");
+//			BufferedInputStream inStream = new BufferedInputStream(new FileInputStream(inPath));
+//			byte[] bytes = new byte[(int)inPath.length()];
+//			inStream.read(bytes);
+//			inStream.close();
+			byte[] bytes = FileUtil.readAsByteArray(inPath);
+			UnwovenClassFile resourceFile = new UnwovenClassFile(new File(outDir, name).getAbsolutePath(), bytes);
+			addResource(name,resourceFile);
+		}
 	}
     
     /** Should be addOrReplace
@@ -163,8 +178,12 @@ public class BcelWeaver implements IWeaver {
     	world.deleteSourceObjectType(TypeX.forName(typename));
     }
 
-	public void addResource (UnwovenClassFile resourceFile) {
-		resources.add(resourceFile);
+	public void addResource (String name, UnwovenClassFile resourceFile) {
+		Object previous = resources.put(name, resourceFile);
+		if (null != previous) {
+			world.showMessage(IMessage.ERROR, "duplicate resource: '" + name + "'",
+				null, null);
+		}
 	}
 
 	// ---- weave preparation
@@ -208,7 +227,7 @@ public class BcelWeaver implements IWeaver {
     	this.zipOutputStream = new ZipOutputStream(os);
     	dumpUnwoven();
 		/* BUG 40943*/
-		dumpResourcesOutJar();
+		dumpResourcesToOutJar();
     	zipOutputStream.close();  //this flushes and closes the acutal file
     }
     
@@ -219,23 +238,25 @@ public class BcelWeaver implements IWeaver {
             UnwovenClassFile classFile = (UnwovenClassFile)i.next();
             dumpUnchanged(classFile);
        	}
-       	dumpResourcesToOutPath();
     }
     
-	private void dumpResourcesToOutPath() throws IOException {
-		Iterator i = resources.iterator();
+	public void dumpResourcesToOutPath() throws IOException {
+//		System.err.println("? dumpResourcesToOutPath() resources=" + resources.keySet());
+		Iterator i = resources.keySet().iterator();
 		while (i.hasNext()) {
-			UnwovenClassFile res = (UnwovenClassFile)i.next();
+			UnwovenClassFile res = (UnwovenClassFile)resources.get(i.next());
 			dumpUnchanged(res);
-		}		
+		}
 	}
 
 	/* BUG #40943 */
-    public void dumpResourcesOutJar() throws IOException {
-		Iterator i = resources.iterator();
+    public void dumpResourcesToOutJar() throws IOException {
+//		System.err.println("? dumpResourcesToOutJar() resources=" + resources.keySet());
+		Iterator i = resources.keySet().iterator();
 		while (i.hasNext()) {
-			UnwovenClassFile res = (UnwovenClassFile)i.next();
-			writeZipEntry(res.getFilename(),res.getBytes());
+			String name = (String)i.next();
+			UnwovenClassFile res = (UnwovenClassFile)resources.get(name);
+			writeZipEntry(name,res.getBytes());
 		}
     }
     
@@ -246,7 +267,7 @@ public class BcelWeaver implements IWeaver {
     	this.zipOutputStream = new ZipOutputStream(os);
     	Collection c = weave();
     	/* BUG 40943*/
-    	dumpResourcesOutJar();
+    	dumpResourcesToOutJar();
     	zipOutputStream.close();  //this flushes and closes the acutal file
     	return c;
     }
@@ -319,8 +340,6 @@ public class BcelWeaver implements IWeaver {
         
         addedClasses = new ArrayList();
     	deletedTypenames = new ArrayList();
-        
-		dumpResourcesToOutPath();
 		
         return wovenClassNames;
     }

@@ -74,4 +74,13 @@ public class NullIdeManager {
 	public List getCompilationSourceLineTasks() {
 		return taskListManager.getSourceLineTasks();
 	}
+	
+	public NullIdeProperties getProjectProperties() {
+		return projectProperties;
+	}
+
+	public void setProjectProperties(NullIdeProperties properties) {
+		projectProperties = properties;
+	}
+
 }
