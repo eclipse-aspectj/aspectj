@@ -6763,4 +6763,16 @@
         <compile files="AdviceInteraction.java"/>
         <run class="AdviceInteraction"/>
     </ajc-test>
+    
+  	<ajc-test dir="bugs/concretizeNpe" pr="43033"
+		title="NPE in concretization error path">
+		<compile files="base/ExceptionHandling.java,model/ModelExceptionHandling.java">
+		  <message line="5" kind="error" text="pointcut base.ExceptionHandling.scope() is abstract"/>
+		  <message line="4" kind="error" text="inherited abstract pointcut base.ExceptionHandling.scope() is not made concrete"/>
+		  <message line="8" kind="error" text="inherited abstract pointcut base.ExceptionHandling.scope() is not made concrete"/>
+		  <message line="12" kind="error" text="Unmatched bracket"/>
+		  <message line="13" kind="error" text="Syntax error on token"/>
+		</compile>
+	</ajc-test>
+
 </suite>

@@ -18,10 +18,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 
-import org.apache.bcel.classfile.JavaClass;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
@@ -240,9 +240,11 @@ public class ReferencePointcut extends Pointcut {
 			
 			if (pointcutDec.isAbstract()) {
 				//Thread.currentThread().dumpStack();
+				ShadowMunger enclosingAdvice = bindings.getEnclosingAdvice();
 				searchStart.getWorld().showMessage(IMessage.ERROR,
 					pointcutDec + " is abstract", 
-					getSourceLocation(), bindings.getEnclosingAdvice().getSourceLocation());
+					getSourceLocation(), 
+					(null == enclosingAdvice) ? null : enclosingAdvice.getSourceLocation());
 				return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 			}
 					
