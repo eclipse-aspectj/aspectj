@@ -49,6 +49,7 @@ import org.aspectj.apache.bcel.generic.MethodGen;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.Select;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute;
@@ -82,6 +83,7 @@ public final class LazyMethodGen {
     private  String[]        declaredExceptions;
     private  InstructionList body; // leaving null for abstracts
     private  Attribute[]     attributes;
+    private AnnotationGen[]  annotations;
     /* private */ final LazyClassGen    enclosingClass;   
     private final BcelMethod      memberView;
     int highestLineNumber = 0;
@@ -188,6 +190,7 @@ public final class LazyMethodGen {
 
 		this.declaredExceptions = gen.getExceptions();
 		this.attributes = gen.getAttributes();
+		this.annotations = gen.getAnnotations();
 		this.maxLocals = gen.getMaxLocals();
         
 //		this.returnType = BcelWorld.makeBcelType(memberView.getReturnType());
@@ -777,8 +780,15 @@ public final class LazyMethodGen {
         for (int i = 0, len = declaredExceptions.length; i < len; i++) {
             gen.addException(declaredExceptions[i]);
         }
+        
         for (int i = 0, len = attributes.length; i < len; i++) {
             gen.addAttribute(attributes[i]);
+        }
+        
+        if (annotations!=null) { 
+          for (int i = 0, len = annotations.length; i < len; i++) {
+            gen.addAnnotation(annotations[i]);
+          }
         }
         
         if (isSynthetic) {

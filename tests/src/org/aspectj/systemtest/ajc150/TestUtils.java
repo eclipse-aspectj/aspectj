@@ -16,6 +16,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.util.ClassPath;
+import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.tools.ajc.CompilationResult;
@@ -119,4 +122,14 @@ public abstract class TestUtils extends AjcTestCase {
 		sb.append("------------------------\n");
 		return sb.toString();
 	}
+	
+	  public SyntheticRepository createRepos(File cpentry) {
+		ClassPath cp = new ClassPath(cpentry+File.pathSeparator+System.getProperty("java.class.path"));
+		return SyntheticRepository.getInstance(cp);
+	  }
+	  
+	  protected JavaClass getClassFrom(File where,String clazzname) throws ClassNotFoundException {
+		SyntheticRepository repos = createRepos(where);
+		return repos.loadClass(clazzname);
+	  }
 }

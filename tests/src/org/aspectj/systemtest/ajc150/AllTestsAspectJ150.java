@@ -29,7 +29,7 @@ public class AllTestsAspectJ150 {
 		suite.addTest(AccBridgeMethods.suite());
 		suite.addTestSuite(CovarianceTests.class);
 		suite.addTestSuite(Enums.class);
-		suite.addTestSuite(Annotations.class);
+		suite.addTestSuite(AnnotationsBinaryWeaving.class);
 		suite.addTestSuite(AnnotationPointcutsTests.class);
 		suite.addTestSuite(VarargsTests.class);
 		suite.addTestSuite(AnnotationRuntimeTests.class);

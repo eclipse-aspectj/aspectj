@@ -23,6 +23,7 @@ public class AllTestsAspectJ150_NeedJava15 {
 		//$JUnit-BEGIN$
 		suite.addTestSuite(Ajc150TestsRequireJava15.class);
 		suite.addTestSuite(Autoboxing.class);		
+		suite.addTestSuite(Annotations.class);
 		
 		//$JUnit-END$
 		return suite;

@@ -14,8 +14,6 @@ import java.io.File;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.util.ClassPath;
-import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.tools.ajc.CompilationResult;
 
 
@@ -76,26 +74,5 @@ public class Ajc150TestsNoHarness extends TestUtils {
   public void testCanOverrideProtectedMethodsViaITDandDecp_pr83303() {
   	CompilationResult cR = ajc(baseDir,new String[]{"PR83303.java"});
   	assertTrue("Should be no errors:"+cR,!cR.hasErrorMessages());
-  }
-  
-  
-  
-  
-  
-  
-  
-  
-  ///////////////////////////////////////// TESTCASE HELPER METHODS BELOW HERE //////////////////////////
-  
-  // Some util methods for accessing .class contents as BCEL objects
-  
-  public SyntheticRepository createRepos(File cpentry) {
-	ClassPath cp = new ClassPath(cpentry+File.pathSeparator+System.getProperty("java.class.path"));
-	return SyntheticRepository.getInstance(cp);
-  }
-  
-  private JavaClass getClassFrom(File where,String clazzname) throws ClassNotFoundException {
-	SyntheticRepository repos = createRepos(where);
-	return repos.loadClass(clazzname);
   }
 }
