@@ -825,7 +825,7 @@ public class FileUtil {
 
 
 	/**
-	 * Reads an int array with our encoding
+	 * Writes an int array with our encoding
 	 */
 	public static void writeIntArray(DataOutputStream s, int[] a) throws IOException {
 		int len = a.length;
@@ -834,6 +834,30 @@ public class FileUtil {
 	}
 
 
+
+	/**
+	 * Reads an int array with our encoding
+	 */
+	public static String[] readStringArray(DataInputStream s) throws IOException {
+		int len = s.readInt();
+		String[] ret = new String[len];
+		for (int i=0; i < len; i++) ret[i] = s.readUTF();
+		return ret;
+	}
+
+
+	/**
+	 * Writes an int array with our encoding
+	 */
+	public static void writeStringArray(DataOutputStream s, String[] a) throws IOException {
+		if (a == null) {
+			s.writeInt(0);
+			return;
+		}
+		int len = a.length;
+		s.writeInt(len);
+		for (int i=0; i < len; i++) s.writeUTF(a[i]);
+	}
 
 
 	/**

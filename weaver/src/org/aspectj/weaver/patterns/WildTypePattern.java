@@ -21,6 +21,8 @@ import org.aspectj.bridge.*;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.util.*;
 
+import com.sun.corba.se.internal.util.Utility;
+
 //XXX need to use dim in matching
 public class WildTypePattern extends TypePattern {
 	NamePattern[] namePatterns;
@@ -74,8 +76,10 @@ public class WildTypePattern extends TypePattern {
 	protected boolean matchesExactly(ResolvedTypeX type) {
 		String targetTypeName = type.getName();
 		
+		//System.err.println("match: " + targetTypeName + ", " + knownMatches); //Arrays.asList(importedPrefixes));
+		
 		//XXX hack
-		if (knownMatches == null) {
+		if (knownMatches == null && importedPrefixes == null) {
 			return innerMatchesExactly(targetTypeName);
 		}
 		
@@ -102,7 +106,9 @@ public class WildTypePattern extends TypePattern {
 		// assumes that prefixes have a dot at the end
 		for (int i=0, len=importedPrefixes.length; i < len; i++) {
 			String prefix = importedPrefixes[i];
+			//System.err.println("prefix match? " + prefix + " to " + targetTypeName);
 			if (targetTypeName.startsWith(prefix)) {
+				
 				if (innerMatchesExactly(targetTypeName.substring(prefix.length()))) {
 					return true;
 				}
@@ -123,8 +129,6 @@ public class WildTypePattern extends TypePattern {
 		//??? doing this everytime is not very efficient
 		char[][] names = splitNames(targetTypeName);
 
-		
-		
         return innerMatchesExactly(names);
 	}
 
@@ -427,6 +431,10 @@ public class WildTypePattern extends TypePattern {
 		}
 		s.writeBoolean(includeSubtypes);
 		s.writeInt(dim);
+		//??? storing this information with every type pattern is wasteful of .class
+		//    file size. Storing it on enclosing types would be more efficient
+		FileUtil.writeStringArray(s, knownMatches);
+		FileUtil.writeStringArray(s, importedPrefixes);
 		writeLocation(s);
 	}
 	
@@ -438,7 +446,9 @@ public class WildTypePattern extends TypePattern {
 		}
 		boolean includeSubtypes = s.readBoolean();
 		int dim = s.readInt();
-		TypePattern ret = new WildTypePattern(namePatterns, includeSubtypes, dim);
+		WildTypePattern ret = new WildTypePattern(namePatterns, includeSubtypes, dim);
+		ret.knownMatches = FileUtil.readStringArray(s);
+		ret.importedPrefixes = FileUtil.readStringArray(s);
 		ret.readLocation(context, s);
 		return ret;
 	}

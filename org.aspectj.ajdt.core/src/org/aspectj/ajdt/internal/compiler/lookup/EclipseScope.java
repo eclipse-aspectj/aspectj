@@ -199,6 +199,7 @@ public class EclipseScope implements IScope {
 
 	public String[] getImportedPrefixes() {
 		computeImports();
+		//System.err.println("prefixes: " + Arrays.asList(importedPrefixes));
 		return importedPrefixes;
 	}
 
