@@ -261,7 +261,7 @@ public final class TestUtil {
      * @param actualFile the File path to the actual file, if any
      * @return true if the input files are the same, based on per-line comparisons
      */
-    static boolean sameFiles (
+    public static boolean sameFiles (
         IMessageHandler handler,
         File expectedFile, 
         File actualFile) {
@@ -280,7 +280,7 @@ public final class TestUtil {
      * @param path the String path offset from the base directories
      * @return true if the input files are the same, based on per-line comparisons
      */
-    static boolean sameFiles (
+    public static boolean sameFiles (
         IMessageHandler handler,
         File expectedBaseDir, 
         File actualBaseDir, 

@@ -14,7 +14,7 @@
 
 // default package
 
-import org.aspectj.testing.util.UtilTests;
+import org.aspectj.testing.testingutil.UtilTests;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

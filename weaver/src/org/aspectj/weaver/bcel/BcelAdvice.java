@@ -227,6 +227,11 @@ public class BcelAdvice extends Advice {
      * @return
      */
     public boolean mustCheckExceptions() {
+        if (getConcreteAspect() == null) {
+            //FIXME Alex: not sure this is good to default to that.
+            // dig when do we reach that ie not yet concretized
+            return true;
+        }
         return !getConcreteAspect().isAnnotationStyleAspect();
     }
 
@@ -471,7 +476,8 @@ public class BcelAdvice extends Advice {
 	public BcelVar[] getExposedStateAsBcelVars() {
         // ATAJ aspect
         // the closure instantiation has the same mapping as the extracted method from wich it is called
-        if (getConcreteAspect().isAnnotationStyleAspect()) {
+        //FIXME Alex, we should not have to check thru the concreteAspect
+        if (getConcreteAspect()!= null && getConcreteAspect().isAnnotationStyleAspect()) {
             return BcelVar.NONE;
         }
 
