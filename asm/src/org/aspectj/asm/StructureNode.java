@@ -33,6 +33,7 @@ public abstract class StructureNode implements Serializable, Comparable {
 	protected StructureNode parent = null;
     protected String name = "";
     protected String kind = "";
+    // children.listIterator() should support remove() operation
     protected List children = new ArrayList();
     protected IMessage message = null;
     protected ISourceLocation sourceLocation = null;
