@@ -29,6 +29,13 @@
                       Accepted limitation of the AjcTaskCompilerCommand wrapper
   knownLimitation-ajdeCompiler
                       Accepted limitation of the AJDE CompileCommand wrapper
+                      
+  Test titles:
+  
+  Titles should be unique and not change, and related tests should have the 
+  same title prefix.  This permits us to automatically compare the test results 
+  from different versions (and suites), and to see related differences together.
+  
   -->
 
 <suite>
@@ -5664,8 +5671,8 @@
     <ajc-test dir="new/declare" pr="31724"
             title="omnibus declare warning context with no initializer/constructor">
         <compile files="DeclareWarningEmpty.java">
-            <message kind="warning" line="3" text="initialization(DeclareWarningEmpty)"/>
-            <message kind="warning" line="3" text="staticinitialization(DeclareWarningEmpty)"/>
+            <message kind="warning" line="3" text="2 - initialization(DeclareWarningEmpty)"/>
+            <message kind="warning" line="3" text="1 - staticinitialization(DeclareWarningEmpty)"/>
         </compile>
     </ajc-test>
     
@@ -6856,13 +6863,17 @@
 		>
 		<compile 
 			files="DeclaringTypeWarning.java" >
-			<!-- Should test for extra source locations lines 12 and 14 -->
-			<message kind="warning" line="6"/>
+			<message kind="warning" line="6" text="declaring type">
+				<source line="12" file="DeclaringTypeWarning.java" />
+			</message>
+			<message kind="warning" line="6"  text="declaring type">
+				<source line="14" file="DeclaringTypeWarning.java" />
+			</message>			
 		</compile>
 		</ajc-test>
 
 	<ajc-test dir="bugs"
-		title="(-Xlint:ignore) XLint warning for call PCD's using subtype of defining type"
+		title="XLint warning for call PCD's using subtype of defining type (-Xlint:ignore)"
 		pr="41952"
 		>
 		<compile
@@ -6870,18 +6881,21 @@
 			files="DeclaringTypeWarning.java" >
 		</compile>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs"
-		title="(-1.4) XLint warning for call PCD's using subtype of defining type"
+		title="XLint warning for call PCD's using subtype of defining type (-1.4)"
 		pr="41952"
 		>
 		<compile
 			options="-1.4" 
 			files="DeclaringTypeWarning.java" >
-			<!-- Should test for extra source locations line 14 -->
-			<message kind="warning" line="6"/>
-			<message kind="error" line="12" />
+			<message kind="warning" line="6" text="declaring type">
+				<source line="14" file="DeclaringTypeWarning.java"/>
+			</message>
+			<message kind="warning" line="12" text="declare warning">
+				<source line="19" file="DeclaringTypeWarning.java"/>
+			</message>
 		</compile>
 	</ajc-test>
-    
+   
 </suite>
