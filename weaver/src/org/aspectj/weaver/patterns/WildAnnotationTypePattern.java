@@ -66,6 +66,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 	 */
 	public void resolve(World world) {
 		// nothing to do...
+	    resolved = true;
 	}
 	
 	/**
