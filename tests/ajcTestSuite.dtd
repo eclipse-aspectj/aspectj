@@ -62,4 +62,5 @@
    <!ATTLIST dir-changes unchanged CDATA #IMPLIED >
    <!ATTLIST dir-changes expDir CDATA #IMPLIED >
    <!ATTLIST dir-changes fastFail CDATA #IMPLIED >
+   <!ATTLIST dir-changes delay CDATA #IMPLIED >
 

@@ -139,7 +139,7 @@ public class DirChanges {
         if (0l == startTime) {
             throw new IllegalStateException("called before start");
         }
-        final long targetTime = startTime + DELAY;
+        final long targetTime = startTime + spec.delayInMilliseconds;
         do {
             long curTime = System.currentTimeMillis();
             if (curTime >= targetTime) {
@@ -463,6 +463,8 @@ public class DirChanges {
         /** relative path of dir with expected files for comparison */        
         String expDir;
         
+        long delayInMilliseconds = DELAY;
+        
         /** if true, fail on first mis-match */
         boolean fastFail;
         
@@ -502,6 +504,16 @@ public class DirChanges {
          */
         public void setExpDir(String expectedDirRelativePath) {
             expDir = expectedDirRelativePath;
+        }
+        
+        public void setDelay(String delay) {
+            if (null != delay) {
+                // let NumberFormatException propogate up
+                delayInMilliseconds = Long.parseLong(delay);
+                if (delayInMilliseconds < 0l) {
+                    delayInMilliseconds = 0l;
+                }
+            }
         }
         
         /**
