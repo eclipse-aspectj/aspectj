@@ -276,6 +276,10 @@ public abstract class World implements Dump.INode {
 	public ConcreteTypeMunger makeCflowStackFieldAdder(ResolvedMember cflowField) {
 		throw new RuntimeException("unimplemented");
 	}
+	
+	public ConcreteTypeMunger makeCflowCounterFieldAdder(ResolvedMember cflowField) {
+		throw new RuntimeException("unimplemented");
+	}
 
     public abstract ConcreteTypeMunger concreteTypeMunger(ResolvedTypeMunger munger, ResolvedTypeX aspectType);
 

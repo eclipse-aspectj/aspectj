@@ -31,13 +31,15 @@ import org.aspectj.weaver.bcel.BcelCflowAccessVar;
 
 
 public class ConcreteCflowPointcut extends Pointcut {
-	private Member cflowStackField;
+	private Member cflowField;
 	List/*Slot*/ slots; // exposed for testing
-
+    boolean usesCounter;
 	
-	public ConcreteCflowPointcut(Member cflowStackField, List slots) {
-		this.cflowStackField = cflowStackField;
-		this.slots = slots;
+    // Can either use a counter or a stack to implement cflow.
+	public ConcreteCflowPointcut(Member cflowField, List slots,boolean usesCounter) {
+		this.cflowField  = cflowField;
+		this.slots       = slots;
+		this.usesCounter = usesCounter;
 	}
     
     public FuzzyBoolean fastMatch(FastMatchInfo type) {
@@ -65,31 +67,39 @@ public class ConcreteCflowPointcut extends Pointcut {
 	public boolean equals(Object other) {
 		if (!(other instanceof ConcreteCflowPointcut)) return false;
 		ConcreteCflowPointcut o = (ConcreteCflowPointcut)other;
-		return o.cflowStackField.equals(this.cflowStackField);
+		return o.cflowField.equals(this.cflowField);
 	}
     public int hashCode() {
         int result = 17;
-        result = 37*result + cflowStackField.hashCode();
+        result = 37*result + cflowField.hashCode();
         return result;
     }
 	public String toString() {
-		return "concretecflow(" + cflowStackField + ")";
+		return "concretecflow(" + cflowField + ")";
 	}
 
 	public Test findResidue(Shadow shadow, ExposedState state) {
 		//System.out.println("find residue: " + this);
-		for (Iterator i = slots.iterator(); i.hasNext();) {
-			Slot slot = (Slot) i.next();
-			//System.out.println("slot: " + slot.formalIndex);
-			state.set(slot.formalIndex, 
-				new BcelCflowAccessVar(slot.formalType, cflowStackField, slot.arrayIndex));
+		if (usesCounter) {
+			return Test.makeFieldGetCall(cflowField, cflowCounterIsValidMethod, Expr.NONE);
+		} else {
+		  if (slots != null) { // null for cflows managed by counters
+		    for (Iterator i = slots.iterator(); i.hasNext();) {
+		 	  Slot slot = (Slot) i.next();
+			  //System.out.println("slot: " + slot.formalIndex);
+			  state.set(slot.formalIndex, 
+				new BcelCflowAccessVar(slot.formalType, cflowField, slot.arrayIndex));
+		    }
+		  }
+		  return Test.makeFieldGetCall(cflowField, cflowStackIsValidMethod, Expr.NONE);
 		}
-		
-		return Test.makeFieldGetCall(cflowStackField, cflowStackIsValidMethod, Expr.NONE);
 	}
 	
 	private static final Member cflowStackIsValidMethod = 
 		Member.method(TypeX.forName(NameMangler.CFLOW_STACK_TYPE), 0, "isValid", "()Z");
+
+	private static final Member cflowCounterIsValidMethod = 
+		Member.method(TypeX.forName(NameMangler.CFLOW_COUNTER_TYPE), 0, "isValid", "()Z");
 
 	
 	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {

@@ -10,11 +10,12 @@
  * Contributors: 
  *    Andy Clement     initial implementation 
  * ******************************************************************/
+
 package org.aspectj.runtime.internal.cflowstack;
 
-public interface ThreadStackFactory {
-	
-  public ThreadStack getNewThreadStack();  
-  public ThreadCounter getNewThreadCounter();
-  
+
+public interface ThreadCounter {
+	  public void          inc();
+	  public void          dec();
+	  public boolean isNotZero();
 }

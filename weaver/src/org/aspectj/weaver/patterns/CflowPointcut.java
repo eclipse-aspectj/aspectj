@@ -127,15 +127,16 @@ public class CflowPointcut extends Pointcut {
 		throw new RuntimeException("unimplemented");
 	}
 	
-	
 	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+
+		// Enforce rule about which designators are supported in declare
 		if (isDeclare(bindings.getEnclosingAdvice())) {
-			// Enforce rule about which designators are supported in declare
 			inAspect.getWorld().showMessage(IMessage.ERROR,
 					WeaverMessages.format(WeaverMessages.CFLOW_IN_DECLARE,isBelow?"below":""),
 					bindings.getEnclosingAdvice().getSourceLocation(), null);
 			return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 		}
+		
 		//make this remap from formal positions to arrayIndices
 		IntMap entryBindings = new IntMap();
 		for (int i=0, len=freeVars.length; i < len; i++) {
@@ -155,7 +156,9 @@ public class CflowPointcut extends Pointcut {
 		CrosscuttingMembers xcut = concreteAspect.crosscuttingMembers;		
 		Collection previousCflowEntries = xcut.getCflowEntries();
 		
+		
 		entryBindings.pushEnclosingDefinition(CFLOW_MARKER);
+		// This block concretizes the pointcut within the cflow pointcut
 		try {
 			concreteEntry = entry.concretize(inAspect, entryBindings);
 		} finally {
@@ -164,42 +167,55 @@ public class CflowPointcut extends Pointcut {
 
 		List innerCflowEntries = new ArrayList(xcut.getCflowEntries());
 		innerCflowEntries.removeAll(previousCflowEntries);
+		
+		if (freeVars.length == 0) { // No state, so don't use a stack, use a counter.
+		  ResolvedMember cflowField = new ResolvedMember(Member.FIELD,concreteAspect,Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL,
+		  		NameMangler.cflowCounter(xcut),TypeX.forName(NameMangler.CFLOW_COUNTER_TYPE).getSignature());
+		  
+		  // Create type munger to add field to the aspect
+		  concreteAspect.crosscuttingMembers.addTypeMunger(world.makeCflowCounterFieldAdder(cflowField));
+		  
+		  // Create shadow munger to push stuff onto the stack
+		  concreteAspect.crosscuttingMembers.addConcreteShadowMunger(
+		  		Advice.makeCflowEntry(world,concreteEntry,isBelow,cflowField,freeVars.length,innerCflowEntries,inAspect));
+		  return new ConcreteCflowPointcut(cflowField, null,true);
+		} else {
+		
+			List slots = new ArrayList();
+			for (int i=0, len=freeVars.length; i < len; i++) {
+				int freeVar = freeVars[i];
+				
+				// we don't need to keep state that isn't actually exposed to advice
+				//??? this means that we will store some state that we won't actually use, optimize this later
+				if (!bindings.hasKey(freeVar)) continue; 
+				
+				int formalIndex = bindings.get(freeVar);
+				ResolvedTypeX formalType =
+					bindings.getAdviceSignature().getParameterTypes()[formalIndex].resolve(world);
+				
+				ConcreteCflowPointcut.Slot slot = 
+					new ConcreteCflowPointcut.Slot(formalIndex, formalType, i);
+				slots.add(slot);
+			}
+			
+			ResolvedMember cflowField = new ResolvedMember(
+				Member.FIELD, concreteAspect, Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL,
+						NameMangler.cflowStack(xcut), 
+						TypeX.forName(NameMangler.CFLOW_STACK_TYPE).getSignature());
+			//System.out.println("adding field to: " + inAspect + " field " + cflowField);
+						
+			// add field and initializer to inAspect
+			//XXX and then that info above needs to be mapped down here to help with
+			//XXX getting the exposed state right
+			concreteAspect.crosscuttingMembers.addConcreteShadowMunger(
+					Advice.makeCflowEntry(world, concreteEntry, isBelow, cflowField, freeVars.length, innerCflowEntries,inAspect));
+			
+			concreteAspect.crosscuttingMembers.addTypeMunger(
+				world.makeCflowStackFieldAdder(cflowField));
 
-		
-		ResolvedMember cflowField = new ResolvedMember(
-			Member.FIELD, concreteAspect, Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL,
-					NameMangler.cflowStack(xcut), 
-					TypeX.forName(NameMangler.CFLOW_STACK_TYPE).getSignature());
-		//System.out.println("adding field to: " + inAspect + " field " + cflowField);
-					
-		// add field and initializer to inAspect
-		//XXX and then that info above needs to be mapped down here to help with
-		//XXX getting the exposed state right
-		concreteAspect.crosscuttingMembers.addConcreteShadowMunger(
-				Advice.makeCflowEntry(world, concreteEntry, isBelow, cflowField, freeVars.length, innerCflowEntries,inAspect));
-		
-		concreteAspect.crosscuttingMembers.addTypeMunger(
-			world.makeCflowStackFieldAdder(cflowField));
-			
-			
-		List slots = new ArrayList();
-		for (int i=0, len=freeVars.length; i < len; i++) {
-			int freeVar = freeVars[i];
-			
-			// we don't need to keep state that isn't actually exposed to advice
-			//??? this means that we will store some state that we won't actually use, optimize this later
-			if (!bindings.hasKey(freeVar)) continue; 
-			
-			int formalIndex = bindings.get(freeVar);
-			ResolvedTypeX formalType =
-				bindings.getAdviceSignature().getParameterTypes()[formalIndex].resolve(world);
-			
-			ConcreteCflowPointcut.Slot slot = 
-				new ConcreteCflowPointcut.Slot(formalIndex, formalType, i);
-			slots.add(slot);
+			return new ConcreteCflowPointcut(cflowField, slots,false);
 		}
 		
-		return new ConcreteCflowPointcut(cflowField, slots);
 	}
 
 }

@@ -357,6 +357,10 @@ public class BcelWorld extends World {
 	public ConcreteTypeMunger makeCflowStackFieldAdder(ResolvedMember cflowField) {
 		return new BcelCflowStackFieldAdder(cflowField);
 	}
+	
+	public ConcreteTypeMunger makeCflowCounterFieldAdder(ResolvedMember cflowField) {
+		return new BcelCflowCounterFieldAdder(cflowField);
+	}
 
 	public static BcelObjectType getBcelObjectType(ResolvedTypeX concreteAspect) {
 		//XXX need error checking

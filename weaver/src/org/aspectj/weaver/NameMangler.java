@@ -25,6 +25,8 @@ public class NameMangler {
 	
 	
 	public static final String CFLOW_STACK_TYPE = "org.aspectj.runtime.internal.CFlowStack";
+	public static final String CFLOW_COUNTER_TYPE="org.aspectj.runtime.internal.CFlowCounter";
+	
 	public static final String SOFT_EXCEPTION_TYPE = "org.aspectj.lang.SoftException";
 
 	public static final String PERSINGLETON_FIELD_NAME =  PREFIX + "perSingletonInstance";
@@ -293,6 +295,9 @@ public class NameMangler {
 	}
 	public static String cflowStack(CrosscuttingMembers xcut) {
 		return makeName("cflowStack", Integer.toHexString(xcut.getCflowEntries().size()));
+	}
+	public static String cflowCounter(CrosscuttingMembers xcut) {
+		return makeName("cflowCounter",Integer.toHexString(xcut.getCflowEntries().size()));
 	}
 
 

@@ -313,5 +313,9 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void test058_npeOnTJPerror() {
     runTest("NPE on thisJoinPoint mistake");
   }
+  
+  public void test059_cflowOptimization_counters() {
+  	runTest("Optimization of cflow - counters");
+  }
 
 }

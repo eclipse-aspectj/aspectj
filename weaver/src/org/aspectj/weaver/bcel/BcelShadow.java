@@ -1415,7 +1415,7 @@ public class BcelShadow extends Shadow {
 	}
     
 	
-	public void weaveCflowEntry(final BcelAdvice munger, final Member cflowStackField) {
+	public void weaveCflowEntry(final BcelAdvice munger, final Member cflowField) {
 		final boolean isPer = munger.getKind() == AdviceKind.PerCflowBelowEntry || 
 								munger.getKind() == AdviceKind.PerCflowEntry;
 		
@@ -1446,30 +1446,40 @@ public class BcelShadow extends Shadow {
 			} else {
 				BcelVar[] cflowStateVars = munger.getExposedStateAsBcelVars();
 	
-				BcelVar arrayVar = genTempVar(TypeX.OBJECTARRAY);
+				if (cflowStateVars.length == 0) {
+					// This should be getting managed by a counter - lets make sure.
+					if (!cflowField.getType().getName().endsWith("CFlowCounter")) 
+						throw new RuntimeException("Oncorrectly attempting counter operation on stacked cflow");
+					entrySuccessInstructions.append(
+			      			Utility.createGet(fact, cflowField));
+					//arrayVar.appendLoad(entrySuccessInstructions, fact);
+					entrySuccessInstructions.append(fact.createInvoke(NameMangler.CFLOW_COUNTER_TYPE,"inc",Type.VOID,new Type[] { },Constants.INVOKEVIRTUAL));
+				} else {
+				    BcelVar arrayVar = genTempVar(TypeX.OBJECTARRAY);
 	
-		        int alen = cflowStateVars.length;
-		        entrySuccessInstructions.append(Utility.createConstant(fact, alen));
-				entrySuccessInstructions.append(
-					(Instruction) fact.createNewArray(Type.OBJECT, (short) 1));
-		        arrayVar.appendStore(entrySuccessInstructions, fact);
+				    int alen = cflowStateVars.length;
+				    entrySuccessInstructions.append(Utility.createConstant(fact, alen));
+				    entrySuccessInstructions.append(
+				    		(Instruction) fact.createNewArray(Type.OBJECT, (short) 1));
+				    arrayVar.appendStore(entrySuccessInstructions, fact);
 		 
-				for (int i = 0; i < alen; i++) {
-					arrayVar.appendConvertableArrayStore(
-						entrySuccessInstructions,
-						fact,
-						i,
-						cflowStateVars[i]);
-				}		
+				    for (int i = 0; i < alen; i++) {
+				    	arrayVar.appendConvertableArrayStore(
+				    			entrySuccessInstructions,
+								fact,
+								i,
+								cflowStateVars[i]);
+				    }		
 	
-	      		entrySuccessInstructions.append(
-	      			Utility.createGet(fact, cflowStackField));
-				arrayVar.appendLoad(entrySuccessInstructions, fact);
+				    entrySuccessInstructions.append(
+				    		Utility.createGet(fact, cflowField));
+				    arrayVar.appendLoad(entrySuccessInstructions, fact);
 
-	      		entrySuccessInstructions.append(
-	      			fact.createInvoke(NameMangler.CFLOW_STACK_TYPE, "push", Type.VOID, 
+				    entrySuccessInstructions.append(
+				    		fact.createInvoke(NameMangler.CFLOW_STACK_TYPE, "push", Type.VOID, 
 	      						new Type[] { objectArrayType }, 
-	      						Constants.INVOKEVIRTUAL));
+	      					Constants.INVOKEVIRTUAL));
+				}
 			}
 
 			
@@ -1496,7 +1506,20 @@ public class BcelShadow extends Shadow {
 							Constants.IFEQ,
 							ifNoAdvice));
 				}
-				exitInstructions.append(Utility.createGet(fact, cflowStackField));
+				exitInstructions.append(Utility.createGet(fact, cflowField));
+				if (munger.getKind() != AdviceKind.PerCflowEntry &&
+					munger.getKind() != AdviceKind.PerCflowBelowEntry &&
+					munger.getExposedStateAsBcelVars().length==0) {
+					exitInstructions
+					.append(
+						fact
+						.createInvoke(
+							NameMangler.CFLOW_COUNTER_TYPE,
+							"dec",
+							Type.VOID,
+							new Type[] {
+				}, Constants.INVOKEVIRTUAL));
+				} else {
 				exitInstructions
 					.append(
 						fact
@@ -1506,6 +1529,7 @@ public class BcelShadow extends Shadow {
 							Type.VOID,
 							new Type[] {
 				}, Constants.INVOKEVIRTUAL));
+				}
 				return exitInstructions;
 			}
 		});

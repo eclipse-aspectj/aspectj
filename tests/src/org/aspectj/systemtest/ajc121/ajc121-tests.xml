@@ -465,3 +465,11 @@
         	<message kind="error" line="22"/>
         </compile>
     </ajc-test>
+
+	<ajc-test 
+    	dir="cflow" 
+    	pr="76030"
+		title="Optimization of cflow - counters">
+        <compile files="CounterTest01.java"/>
+		<run class="CounterTest01"/>
+    </ajc-test>
