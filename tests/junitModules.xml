@@ -436,7 +436,7 @@
     <target name="ajc-tests" depends="init-taskdefs">
        <mkdir dir="${junitModules.output.dir}/ajc"/>
    	   <java classname="org.aspectj.testing.drivers.Harness"
-	            classpathref="test.classpath"
+	            classpathref="${test.classpath}"
 	            output="${ajc.tests.output.file}"
 	            fork="true">
 	            <arg value="-cruisecontrol"/>
@@ -448,7 +448,7 @@
        <mkdir dir="${junitModules.output.dir}/ajc"/>
        <copy file="${ajc.tests.xml.file}" tofile="${ajc.tests.emacssym.xml.file}"/>
    	   <java classname="org.aspectj.testing.drivers.Harness"
-	            classpathref="test.classpath"
+	            classpathref="${test.classpath}"
 	            output="${ajc.tests.emacssym.output.file}"
 	            fork="true">
 	            <arg value="-cruisecontrol"/>
