@@ -83,7 +83,7 @@ public class SignaturePattern extends PatternNode {
 	
 	public boolean matches(Member member, World world) {
 		//XXX performance gains would come from matching on name before resolving
-		//    to fail fast
+		//    to fail fast		
 		ResolvedMember sig = member.resolve(world);
 		if (sig == null) {
 			//XXX

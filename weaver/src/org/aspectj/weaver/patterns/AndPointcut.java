@@ -34,6 +34,10 @@ public class AndPointcut extends Pointcut {
 		setLocation(left.getSourceContext(), left.getStart(), right.getEnd());
 	}
 
+	public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+		return left.fastMatch(type).and(right.fastMatch(type));
+	}
+
 	public FuzzyBoolean match(Shadow shadow) {
 		return left.match(shadow).and(right.match(shadow));
 	}

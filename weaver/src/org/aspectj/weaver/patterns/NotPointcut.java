@@ -31,20 +31,16 @@ public class NotPointcut extends Pointcut {
 		this.body = left;
 	}
 
-	/**
-	 * Constructor NotPointcut.
-	 * @param pointcut
-	 * @param startPos
-	 */
 	public NotPointcut(Pointcut pointcut, int startPos) {
 		this(pointcut);
 		setLocation(pointcut.getSourceContext(), startPos, pointcut.getEnd());		
 	}
 
 
-	/**
-	 * @see org.aspectj.weaver.patterns.Pointcut#match(BcelShadow)
-	 */
+	public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+		return body.fastMatch(type).not();
+	}
+
 	public FuzzyBoolean match(Shadow shadow) {
 		return body.match(shadow).not();
 	}

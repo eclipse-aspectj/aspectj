@@ -32,6 +32,10 @@ public class WithincodePointcut extends Pointcut {
 		this.signature = signature;
 	}
     
+	public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+		return FuzzyBoolean.MAYBE;
+	}
+    
 	public FuzzyBoolean match(Shadow shadow) {
 		//This will not match code in local or anonymous classes as if
 		//they were withincode of the outer signature

@@ -55,10 +55,11 @@ public class ReferencePointcut extends Pointcut {
 		this.arguments = arguments;
 	}
 	
-	/**
-	 * Could I match any shadows in this JavaClass
-	 */
-	public boolean fastMatch(JavaClass jc) { return true; }
+
+	//??? do either of these match methods make any sense???
+	public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+		return FuzzyBoolean.MAYBE;
+	}
 	
 	/**
 	 * Do I really match this shadow?

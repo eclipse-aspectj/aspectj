@@ -51,6 +51,7 @@ public class ZipTestCase extends TestCase {
 				weaver.addLibraryJarFile(new File(aspectjar));
 			}
 		}
+		weaver.addLibraryJarFile(new File("testdata/Regex.jar")); //???
 		
 		
 		Collection woven = weaver.weave(outFile);
@@ -76,11 +77,24 @@ public class ZipTestCase extends TestCase {
 		zipTest("testdata/Regex.jar", "testdata/megatraceNoweave.jar", true);
 	}
 
-	// this is something we test every now and again.
+
 	public void testBig() throws IOException {
 		System.out.println("could take 4 seconds...");
 		zipTest("../lib/bcel/bcel.jar", null);
 	}
+	
+	
+	public void testBigWithEasyNoTrace() throws IOException {
+		System.out.println("could take 4 seconds...");
+		zipTest("../lib/bcel/bcel.jar", "testdata/megatrace0easy.jar");
+	}
+
+	// this is something we test every now and again.
+	public void xtestBigWithHardNoTrace() throws IOException {
+		System.out.println("could take 24 seconds...");
+		zipTest("../lib/bcel/bcel.jar", "testdata/megatrace0hard.jar");
+	}
+
 
 	public void xtestBigWithAspects() throws IOException {
 		System.out.println("could take 40 seconds...");

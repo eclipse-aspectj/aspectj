@@ -28,6 +28,10 @@ public class BcweaverJarMaker {
 		makeJar1a();
 		makeJar2();
 		
+		makeJarObviousNothing();
+		makeJarHardNothing();
+		
+		
 		makeTestJars();
 	}
 	
@@ -55,6 +59,35 @@ public class BcweaverJarMaker {
 		
 		args.add("testdata/src1/trace/MegaTrace.java");
 		args.add("testdata/src1/trace/ExecTrace.java");
+		
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+	}
+	
+	
+	public static void makeJarObviousNothing() throws IOException {
+		List args = new ArrayList();
+		args.add("-outjar");
+		args.add("../weaver/testdata/megatrace0easy.jar");
+
+		args.add("-classpath");
+		args.add("../runtime/bin");
+		
+		args.add("testdata/src1/trace/MegaTrace.java");
+		args.add("testdata/src1/trace/ObviousTraceNothing.java");
+		
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+	}
+	
+	public static void makeJarHardNothing() throws IOException {
+		List args = new ArrayList();
+		args.add("-outjar");
+		args.add("../weaver/testdata/megatrace0hard.jar");
+
+		args.add("-classpath");
+		args.add("../runtime/bin");
+		
+		args.add("testdata/src1/trace/MegaTrace.java");
+		args.add("testdata/src1/trace/HardTraceNothing.java");
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 	}

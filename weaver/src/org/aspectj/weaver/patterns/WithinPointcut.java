@@ -27,31 +27,34 @@ import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 
 public class WithinPointcut extends Pointcut {
-	TypePattern type;
+	TypePattern typePattern;
 	
 	public WithinPointcut(TypePattern type) {
-		this.type = type;
+		this.typePattern = type;
+	}
+	
+	private FuzzyBoolean isWithinType(ResolvedTypeX type) {
+		while (type != null) {
+			if (typePattern.matchesStatically(type)) {
+				return FuzzyBoolean.YES;
+			}
+			type = type.getDeclaringType();
+		}
+		return FuzzyBoolean.NO;
+	}
+	
+	public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+		return isWithinType(type);
 	}
     
 	public FuzzyBoolean match(Shadow shadow) {
 		ResolvedTypeX enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType());
-		//System.err.println("enclosingType: " + enclosingType);
-//		if (shadow.getKind() == Shadow.FieldSet) {
-//			System.err.println("within?" + type  + " matches " + enclosingType + " on " + shadow);
-//		}
-		
-		while (enclosingType != null) {
-			if (type.matchesStatically(enclosingType)) {
-				return FuzzyBoolean.YES;
-			}
-			enclosingType = enclosingType.getDeclaringType();
-		}
-		return FuzzyBoolean.NO;
+		return isWithinType(enclosingType);
 	}
 
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.WITHIN);
-		type.write(s);
+		typePattern.write(s);
 		writeLocation(s);
 	}
 	public static Pointcut read(DataInputStream s, ISourceContext context) throws IOException {
@@ -62,26 +65,26 @@ public class WithinPointcut extends Pointcut {
 	}
 
 	public void resolveBindings(IScope scope, Bindings bindings) {
-		type = type.resolveBindings(scope, bindings, false, false);
+		typePattern = typePattern.resolveBindings(scope, bindings, false, false);
 	}
 
 	public void postRead(ResolvedTypeX enclosingType) {
-		type.postRead(enclosingType);
+		typePattern.postRead(enclosingType);
 	}
 
 	public boolean equals(Object other) {
 		if (!(other instanceof WithinPointcut)) return false;
 		WithinPointcut o = (WithinPointcut)other;
-		return o.type.equals(this.type);
+		return o.typePattern.equals(this.typePattern);
 	}
     public int hashCode() {
         int result = 43;
-        result = 37*result + type.hashCode();
+        result = 37*result + typePattern.hashCode();
         return result;
     }
 
 	public String toString() {
-		return "within(" + type + ")";
+		return "within(" + typePattern + ")";
 	}
 
 	public Test findResidue(Shadow shadow, ExposedState state) {

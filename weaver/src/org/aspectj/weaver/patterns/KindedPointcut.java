@@ -13,16 +13,10 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 
-import org.apache.bcel.classfile.JavaClass;
 import org.aspectj.util.FuzzyBoolean;
-import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.IntMap;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.*;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 
@@ -37,8 +31,9 @@ public class KindedPointcut extends Pointcut {
 		this.signature = signature;
 	}
 	
-	public boolean fastMatch(JavaClass jc) { return true; }
-	
+    public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+		return FuzzyBoolean.MAYBE;
+	}	
 	public FuzzyBoolean match(Shadow shadow) {
 		if (shadow.getKind() != kind) return FuzzyBoolean.NO;
 		

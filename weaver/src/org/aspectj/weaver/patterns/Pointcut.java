@@ -61,9 +61,9 @@ public abstract class Pointcut extends PatternNode {
 	
 
 	/**
-	 * Could I match any shadows in this JavaClass
+	 * Could I match any shadows in the code defined within this type?
 	 */
-	public boolean fastMatch(JavaClass jc) { return true; }
+	public abstract FuzzyBoolean fastMatch(ResolvedTypeX type);
 	
 	/**
 	 * Do I really match this shadow?
@@ -195,6 +195,10 @@ public abstract class Pointcut extends PatternNode {
 			return Literal.FALSE; // can only get here if an earlier error occurred
 		}
 
+		public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+			return FuzzyBoolean.NO;
+		}
+		
 		public FuzzyBoolean match(Shadow shadow) {
 			return FuzzyBoolean.NO;
 		}

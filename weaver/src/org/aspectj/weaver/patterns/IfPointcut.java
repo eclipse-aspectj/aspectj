@@ -49,6 +49,10 @@ public class IfPointcut extends Pointcut {
 		this.testMethod = testMethod;
 		this.extraParameterFlags = extraParameterFlags;
 	}
+	
+    public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+		return FuzzyBoolean.MAYBE;
+	}
     
 	public FuzzyBoolean match(Shadow shadow) {
 		//??? this is not maximally efficient

@@ -40,6 +40,10 @@ public class PerObject extends PerClause {
 	}
 	
 	// -----
+	public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+		return FuzzyBoolean.MAYBE;
+	}
+	
 	
     public FuzzyBoolean match(Shadow shadow) {
     	//System.err.println("matches " + this + " ? " + shadow + ", " + shadow.hasTarget());

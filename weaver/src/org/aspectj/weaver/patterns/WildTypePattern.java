@@ -39,7 +39,6 @@ public class WildTypePattern extends TypePattern {
 	WildTypePattern(NamePattern[] namePatterns, boolean includeSubtypes, int dim) {
 		super(includeSubtypes);
 		this.namePatterns = namePatterns;
-		this.ellipsisCount = ellipsisCount;
 		this.dim = dim;
 		ellipsisCount = 0;
 		for (int i=0; i<namePatterns.length; i++) {

@@ -30,6 +30,10 @@ public class PerSingleton extends PerClause {
 	public PerSingleton() {
 	}
 	
+	public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+		return FuzzyBoolean.YES;
+	}
+	
     public FuzzyBoolean match(Shadow shadow) {
         return FuzzyBoolean.YES;
     }

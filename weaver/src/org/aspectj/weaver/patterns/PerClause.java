@@ -17,10 +17,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 import org.aspectj.util.TypeSafeEnum;
-import org.aspectj.weaver.BCException;
-import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.IntMap;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.*;
 
 public abstract class PerClause extends Pointcut {
 	protected ResolvedTypeX inAspect;
@@ -41,9 +38,7 @@ public abstract class PerClause extends Pointcut {
 
 	public abstract PerClause concretize(ResolvedTypeX inAspect);
 	
-	
 	public abstract PerClause.Kind getKind();
-	
 	
 	public static class Kind extends TypeSafeEnum {
         public Kind(String name, int key) { super(name, key); }

@@ -26,9 +26,7 @@ import org.aspectj.weaver.ast.Test;
 
 public class OrPointcut extends Pointcut {
 	private Pointcut left, right;
-	/**
-	 * Constructor for AndPointcut.
-	 */
+
 	public OrPointcut(Pointcut left, Pointcut right) {
 		super();
 		this.left = left;
@@ -36,9 +34,11 @@ public class OrPointcut extends Pointcut {
 		setLocation(left.getSourceContext(), left.getStart(), right.getEnd());
 	}
 
-	/**
-	 * @see org.aspectj.weaver.patterns.Pointcut#match(BcelShadow)
-	 */
+
+	public FuzzyBoolean fastMatch(ResolvedTypeX type) {
+		return left.fastMatch(type).or(right.fastMatch(type));
+	}
+
 	public FuzzyBoolean match(Shadow shadow) {
 		return left.match(shadow).or(right.match(shadow));
 	}

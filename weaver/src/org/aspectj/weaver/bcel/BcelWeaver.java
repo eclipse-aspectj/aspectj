@@ -13,34 +13,16 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
+import java.io.*;
+import java.util.*;
+import java.util.zip.*;
 
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.util.FileUtil;
-import org.aspectj.weaver.ConcreteTypeMunger;
-import org.aspectj.weaver.CrosscuttingMembersSet;
-import org.aspectj.weaver.IWeaver;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.*;
+import org.aspectj.weaver.patterns.Pointcut;
 
 public class BcelWeaver implements IWeaver {
     private BcelWorld world;
@@ -327,8 +309,8 @@ public class BcelWeaver implements IWeaver {
 		}
 		
 		JavaClass javaClass = classType.getJavaClass();
-		List shadowMungers = fastMatch(shadowMungerList, javaClass);
-		List typeMungers = fastMatch(classType.getResolvedTypeX().getInterTypeMungers(), javaClass);
+		List shadowMungers = fastMatch(shadowMungerList, classType.getResolvedTypeX());
+		List typeMungers = classType.getResolvedTypeX().getInterTypeMungers();
 
 		LazyClassGen clazz = null;
 		
@@ -406,26 +388,17 @@ public class BcelWeaver implements IWeaver {
 		zipOutputStream.closeEntry();
 	}
 
-	// ---- fast matching
-
-//	boolean fastMatch(JavaClass jc) {
-//		ConstantPool pool = jc.getConstantPool();
-//		for (int i=0, len=pool.getLength(); i < len; i++) {
-//			Constant c = pool.getConstant(i);
-//			if (c instanceof ConstantNameAndType) {
-//				ConstantNameAndType nt = (ConstantNameAndType)c;
-//				if (nt.getName(pool).equals("toShortString")) {
-//					//System.out.println("found in " + jc);
-//					return true;
-//				}
-//			}
-//		}
-//		return false;
-//	}
-
-	//XXX need to implement a real fast-match here
-	private List fastMatch(List list, JavaClass javaClass) {
+	private List fastMatch(List list, ResolvedTypeX type) {
 		if (list == null) return Collections.EMPTY_LIST;
-		return list;
+
+		List result = new ArrayList();
+		Iterator iter = list.iterator();
+		while (iter.hasNext()) {
+			ShadowMunger munger = (ShadowMunger)iter.next();
+			if (munger.getPointcut().fastMatch(type).maybeTrue()) {
+				result.add(munger);
+			}
+		}
+		return result;
 	}
 }
