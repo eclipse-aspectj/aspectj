@@ -32,12 +32,12 @@ aspect TopAdvice {
         return result+10;
     }
 
-    int around(): target(p1.*) && call(int *()) {
+    int around(): call(int p1.*.*()) {
         int result = proceed();
         return result+100;
     }
 
-    int around(): target(p1..*) && call(int *()) {
+    int around(): call(int p1..*.*()) {
         int result = proceed();
         return result+1000;
     }
