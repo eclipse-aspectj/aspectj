@@ -254,15 +254,15 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		assertOptionEquals( "debug source",
 							options, 
 						    CompilerOptions.OPTION_SourceFileAttribute,
-						    CompilerOptions.DO_NOT_GENERATE);
+						    CompilerOptions.GENERATE);
 		assertOptionEquals( "debug lines",
 							options, 
 						    CompilerOptions.OPTION_LineNumberAttribute,
-						    CompilerOptions.DO_NOT_GENERATE);
+						    CompilerOptions.GENERATE);
 		assertOptionEquals( "debug vars",
 							options, 
 						    CompilerOptions.OPTION_LocalVariableAttribute,
-						    CompilerOptions.DO_NOT_GENERATE);						    						
+						    CompilerOptions.GENERATE);						    						
 	}
 	
 	public void testEmptyDebugOptions() {
@@ -270,19 +270,19 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
 		Map options = buildConfig.getJavaOptions();
 		
-		// this should leave us with the debug off
+		// this should leave us with the debug on
 		assertOptionEquals( "debug source",
 							options, 
 						    CompilerOptions.OPTION_SourceFileAttribute,
-						    CompilerOptions.DO_NOT_GENERATE);
+						    CompilerOptions.GENERATE);
 		assertOptionEquals( "debug lines",
 							options, 
 						    CompilerOptions.OPTION_LineNumberAttribute,
-						    CompilerOptions.DO_NOT_GENERATE);
+						    CompilerOptions.GENERATE);
 		assertOptionEquals( "debug vars",
 							options, 
 						    CompilerOptions.OPTION_LocalVariableAttribute,
-						    CompilerOptions.DO_NOT_GENERATE);						    								
+						    CompilerOptions.GENERATE);						    								
 	}
 	
 	public void testDebugAll() {
@@ -324,7 +324,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		assertOptionEquals( "debug lines",
 							options, 
 						    CompilerOptions.OPTION_LineNumberAttribute,
-						    CompilerOptions.DO_NOT_GENERATE);
+						    CompilerOptions.GENERATE);
 		assertOptionEquals( "debug vars",
 							options, 
 						    CompilerOptions.OPTION_LocalVariableAttribute,
