@@ -291,6 +291,26 @@
         <compile files="input-path-classes" sourceroots="aspectsrc"/>
         <run class="Main"/>
     </ajc-test>
+    
+    <ajc-test dir="harness"
+      title="pass 2 compound warning">
+        <compile files="CompoundMessage.java">
+            <message kind="warning" line="6">
+            	<source line="14" file="CompoundMessage.java"/>
+            </message>
+            <message kind="warning" line="6">
+            	<source line="12" file="CompoundMessage.java"/>
+            </message>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness"
+      title="fail 2 error, but expecting more details">
+        <compile files="ErrorTest.java">
+            <message kind="error" line="5" details="expecting more"/>
+            <message kind="error" line="6" details="details"/>
+        </compile>
+    </ajc-test>
 
 </suite>
 
