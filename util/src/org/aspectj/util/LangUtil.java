@@ -1094,6 +1094,7 @@ public class LangUtil {
         private FileUtil.Pipe outStream;
         private FileUtil.Pipe inStream;
         private ByteArrayOutputStream errSnoop;
+        private ByteArrayOutputStream outSnoop;
 
         private int result;
         private Thrown thrown;     
@@ -1176,6 +1177,13 @@ public class LangUtil {
             }
         }
         
+        public final void setOutSnoop(ByteArrayOutputStream snoop) {        
+            outSnoop = snoop;
+            if (null != outStream) {
+                outStream.setSnoop(outSnoop);
+            }
+        }
+
         /** 
          * Start running the process and pipes asynchronously.
          * @return Thread started or null if unable to start thread
