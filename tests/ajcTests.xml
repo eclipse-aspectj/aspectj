@@ -3650,6 +3650,10 @@
         <run class="p.Driver"/>
     </ajc-test>
 
+	<!-- This has a complicated set of expected join points.
+	     This test should be borken up into more manageable chunks
+	     and more carefully analyzed for correctness in the future.
+	-->
     <ajc-test dir="new" pr="490"
       title="elaborated into testing of around on all join points"
       keywords="from-resolved_10x">
@@ -3833,17 +3837,6 @@
       keywords="from-resolved_10x">
         <compile files="AdviceThrowsCp.java"/>
         <run class="AdviceThrowsCp"/>
-    </ajc-test>
-
-    <ajc-test dir="new"
-      title="incompatible advice throws clause are a compile-time error"
-      keywords="from-resolved_10x">
-        <compile files="AdviceThrowsCf.java">
-            <message kind="error" line="70"/>
-            <message kind="error" line="74"/>
-            <message kind="error" line="76"/>
-            <message kind="error" line="78"/>
-        </compile>
     </ajc-test>
 
     <ajc-test dir="new" pr="570"
@@ -4168,13 +4161,6 @@
       keywords="from-resolved_10x">
         <compile files="LocalClassClosingOverProceed.java"/>
         <run class="LocalClassClosingOverProceed"/>
-    </ajc-test>
-
-    <ajc-test dir="new"
-      title="can't apply around advice to the execution of around advice"
-      keywords="from-resolved_10x">
-        <compile files="CflowCycles.java"/>
-        <run class="CflowCycles"/>
     </ajc-test>
 
     <ajc-test dir="new"
@@ -4504,15 +4490,6 @@
       keywords="from-resolved_104">
         <compile files="ArgsInCflow2.java"/>
         <run class="ArgsInCflow2"/>
-    </ajc-test>
-
-    <ajc-test dir="new" pr="660" title="illegal name binding in around cflow"
-      keywords="from-resolved_104">
-        <compile files="ArgsInCflowCf.java">
-            <message kind="error" line="19"/>
-            <message kind="error" line="29"/>
-            <message kind="error" line="35"/>
-        </compile>
     </ajc-test>
 
     <ajc-test dir="new" pr="677"

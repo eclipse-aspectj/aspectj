@@ -1,84 +1,13 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 <suite>
-    <ajc-test dir="new" title="various declared exception permutations"
-      keywords="from-resolved_10x">
-        <compile files="DeclaredExcs.java"/>
-        <run class="DeclaredExcs"/>
-    </ajc-test>
 
-       <!--
-    <ajc-test dir="base/test129"
-      title="DEPRECATED: introduce of abstract methods works"
-      keywords="from-base">
-        <compile files="Driver.java"/>
-        <run class="Driver"/>
-    </ajc-test>
-
-    <ajc-test dir="new" title="advising field get/sets when accessing via super"
-      keywords="from-resolved_105">
-        <compile files="SuperField.java"/>
-        <run class="SuperField"/>
-    </ajc-test>
-    
-    <ajc-test dir="new" pr="568" title="cyclic pointcut definitions"
-      keywords="from-resolved_10rc3">
-        <compile files="CyclicPointcuts.java">
-            <message kind="error" line="11"/>
-            <message kind="error" line="14"/>
-            <message kind="error" line="18"/>
-            <message kind="error" line="32"/>
-            <message kind="error" line="43"/>
-        </compile>
-    </ajc-test>
-
-
-
-   <ajc-test dir="new" pr="457"
-      title="Compiler should suggest using aspect when advice, pointcuts, or introduction is in a class"
-      keywords="from-errors">
-        <compile files="RecognizeAspectCE.java">
-            <message kind="error" line="6"  text="RecognizeAspectCE.java:6"/>
-        </compile>
-    </ajc-test>
-
-
-    <ajc-test dir="new/privilegedAspects" pr="555"
-      title="access to private members from privileged aspect"
-      keywords="from-resolved_10rc3">
-        <compile
-          files="driver/PR555.java,util/Util.java,pack/DefaultTarget.java"/>
-        <run class="driver.PR555"/>
-    </ajc-test>
-    
-
-    <ajc-test dir="new/packageAccessPR556" pr="556"
-      title="aspects should get package access outside the file"
-      keywords="from-resolved_10rc3">
-        <compile files="base1/p/C1.java,base2/p/C2.java"/>
-        <run class="p.C1"/>
-    </ajc-test>
-    
-    <ajc-test dir="new" pr="560"
-      title="compile fails for aspect derived from percflow base aspect unless pointcut excludes base aspect and subaspects"
-      keywords="from-resolved_10rc3">
-        <compile files="PR560.java"/>
-        <run class="PR560"/>
-    </ajc-test>
-    
     <ajc-test dir="new"
-      title="Does the matrix coverage thing for the new method signatures"
-      keywords="from-resolved_10x">
-        <compile files="MethodSignatures.java"/>
-        <run class="MethodSignatures"/>
+      title="unmatched type name in a declare parents should result in a warning in -Xlint mode"
+      keywords="tofix">
+        <compile options="-Xlint" files="MissingTypeInDeclareParents.java">
+            <message kind="warning" line="20"/>
+        </compile>
+        <run class="MissingTypeInDeclareParents"/>
     </ajc-test>
-    
-    <ajc-test dir="base/test117" title="DEPRECATED: introduce of variables"
-      keywords="from-base">
-        <compile files="Driver.java"/>
-        <run class="Driver"/>
-    </ajc-test>
-
-
-    -->
 
 </suite>

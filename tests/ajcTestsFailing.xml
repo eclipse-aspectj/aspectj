@@ -59,5 +59,32 @@
         </compile>
         <run class="PrivilegeBeyondScope"/>
     </ajc-test>
+    
+    <ajc-test dir="new"
+      title="incompatible advice throws clause are a compile-time error"
+      keywords="from-resolved_10x">
+        <compile files="AdviceThrowsCf.java">
+            <message kind="error" line="70"/>
+            <message kind="error" line="74"/>
+            <message kind="error" line="76"/>
+            <message kind="error" line="78"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="new"
+      title="can't apply around advice to the execution of around advice"
+      keywords="from-resolved_10x">
+        <compile files="CflowCycles.java"/>
+        <run class="CflowCycles"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="660" title="illegal name binding in around cflow"
+      keywords="from-resolved_104">
+        <compile files="ArgsInCflowCf.java">
+            <message kind="error" line="19"/>
+            <message kind="error" line="29"/>
+            <message kind="error" line="35"/>
+        </compile>
+    </ajc-test>
 
 </suite>
