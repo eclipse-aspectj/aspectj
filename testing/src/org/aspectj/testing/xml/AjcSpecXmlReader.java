@@ -1,6 +1,7 @@
 /* *******************************************************************
  * Copyright (c) 1999-2001 Xerox Corporation, 
- *               2002 Palo Alto Research Center, Incorporated (PARC).
+ *               2002 Palo Alto Research Center, Incorporated (PARC),
+ *               2003 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -9,16 +10,13 @@
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
+ *     Wes Isberg     resolver
  * ******************************************************************/
 
 package org.aspectj.testing.xml;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
+import java.util.Vector;
 
 import org.apache.commons.digester.Digester;
 import org.aspectj.bridge.AbortException;
@@ -26,14 +24,10 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.SourceLocation;
-import org.aspectj.testing.harness.bridge.AbstractRunSpec;
-import org.aspectj.testing.harness.bridge.AjcTest;
-import org.aspectj.testing.harness.bridge.CompilerRun;
-import org.aspectj.testing.harness.bridge.DirChanges;
-import org.aspectj.testing.harness.bridge.IncCompilerRun;
-import org.aspectj.testing.harness.bridge.JavaRun;
+import org.aspectj.testing.harness.bridge.*;
 import org.aspectj.testing.util.RunUtils;
 import org.aspectj.util.LangUtil;
+import org.xml.sax.*;
 import org.xml.sax.SAXException;
 
 /** 
@@ -73,7 +67,10 @@ public class AjcSpecXmlReader {
     public static final String FILE_LEADER
         = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
 
-    /** @return a String suitable as an inlined DOCTYPE statement */
+    /** 
+     * @deprecated
+     * @return a String suitable as an inlined DOCTYPE statement 
+     */
     public static String inlineDocType() {
         return "<!DOCTYPE " 
             + AjcTest.Suite.Spec.XMLNAME 
@@ -83,6 +80,7 @@ public class AjcSpecXmlReader {
     }
 
     /** 
+     * @deprecated
      * @return the elements of a document type as a String,
      * using EOL as a line delimiter
      */
@@ -152,8 +150,10 @@ public class AjcSpecXmlReader {
     public static void main(String[] a) throws IOException {
         writeDTD(new File("../tests/ajcTestSuite2.dtd"));
     }
+    
     /** 
      * Write a DTD to dtdFile.
+     * @deprecated
      * @param dtdFile the File to write to
      */
     public static void writeDTD(File dtdFile) throws IOException {
@@ -211,8 +211,7 @@ public class AjcSpecXmlReader {
         }
         return null;
     }
-    
-    
+        
     /** 
      * Read the specifications for a suite of AjcTest from an XML file.
      * This also sets the suite dir in the specification.
@@ -225,9 +224,7 @@ public class AjcSpecXmlReader {
         System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog"); // XXX
         System.setProperty("org.apache.commons.logging.simplelog.defaultlog", LOG[logLevel]); // trace debug XXX
 
-        final Digester digester = new Digester();
-        setupDigester(digester);
-        
+        final Digester digester = makeDigester(file);
         SuiteHolder holder = new SuiteHolder();
         digester.push(holder);
         FileInputStream input = new FileInputStream(file);
@@ -258,10 +255,34 @@ public class AjcSpecXmlReader {
         return result;
     }
    
+   private Digester makeDigester(final File suiteFile) {
+       // implement EntityResolver directly; set is failing
+       Digester result = new Digester() {
+           final SuiteResolver resolver = new SuiteResolver(suiteFile);
+           public InputSource resolveEntity(
+                   String publicId, 
+                   String systemId)
+                   throws SAXException {
+               return resolver.resolveEntity(publicId, systemId);
+           }
+      };
+      setupDigester(result);
+      return result;
+   }
+   
     /** set up the mapping between the xml and Java. */
     private void setupDigester(Digester digester) {
         // XXX supply sax parser to ignore white space?
         digester.setValidating(true);
+//        try {
+//            // this is the correct approach, but the commons parser
+//            // fails to accept a second, overriding registration - see
+//            // http://lists.xml.org/archives/xml-dev/200111/msg00959.html
+//            digester.getXMLReader().setEntityResolver(new SuiteResolver(suiteFile));
+//        } catch (SAXException e) {
+//            System.err.println("unable to set entity resolver");
+//            e.printStackTrace(System.err);
+//        }
 
         // element names come from the element components
         final String suiteX = AjcTest.Suite.Spec.XMLNAME;
@@ -436,6 +457,116 @@ public class AjcSpecXmlReader {
             this.props = props;
         }
     }
+        
+    /**
+     * Find file NAME=="ajcTestSuite.dtd" from some reasonably-local
+     * relative directories.
+     * XXX bug: commons parser doesn't accept second registration,
+     * so we override Digester's implementation instead.
+     * XXX cannot JUnit test SuiteResolver since they run from 
+     * local directory with valid reference
+     * XXX does not fix JDK 1.4 parser message "unable to resolve without base URI"
+     * XXX should be able to just set BaseURI instead...
+     */
+    static class SuiteResolver implements EntityResolver {
+        public static final String NAME = "ajcTestSuite.dtd";
+        private static boolean isDir(File dir) {
+            return ((null != dir) && dir.canRead() && dir.isDirectory());
+        }
+        private final File suiteFile;
+        public SuiteResolver(File suiteFile) {
+            this.suiteFile = suiteFile;
+        }
+        
+
+        private String getPath(String id) {
+            // first, try id relative to suite file
+            final File suiteFileDir = suiteFile.getParentFile();
+            if (isDir(suiteFileDir)) {
+                String path = suiteFileDir.getPath()
+                    + "/" + id;
+                File result = new File(path);
+                if (result.canRead() && result.isFile()) {
+                    return result.getPath();
+                }
+            }
+            // then try misc paths relative to suite file or current dir            
+            final File[] baseDirs = new File[]
+            { suiteFileDir, new File(".")
+            };
+            final String[] locations = new String[]
+            {  ".", "..", "../tests", "../../tests", 
+                "../../../tests", "tests", "modules/tests"
+            };
+            File baseDir;
+            for (int j = 0; j < baseDirs.length; j++) {
+                baseDir = baseDirs[j];
+                if (!isDir(baseDir)) {
+                    continue;
+                }
+                for (int i = 0; i < locations.length; i++) {
+                    File dir = new File(baseDir, locations[i]);
+                    if (isDir(dir)) {
+                        File temp = new File(dir, NAME);
+                        if (temp.isFile() && temp.canRead()) {
+                            return temp.getPath();
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+        public InputSource resolveEntity(
+                String publicId, 
+                String systemId)
+                throws SAXException {
+            if ((null != systemId) && 
+                systemId.endsWith(NAME)) {
+                String path = getPath(systemId);
+                if (null != path) {
+                    return new InputSource(path);
+                }
+            }
+            return null;
+        }
+    }
 }
 
+//private String getDocTypePath() {
+//  String result = null;
+//  if (null != suiteFile) {
+//      FileReader fr = null;
+//      try {
+//          fr = new FileReader(suiteFile);
+//          BufferedReader reader = new BufferedReader(fr);
+//          String line;
+//          while (null != (line = reader.readLine())) {
+//              String upper = line.trim();
+//              line = upper.toLowerCase();
+//              if (line.startsWith("<")) {
+//                  if (line.startsWith("<!doctype ")) {
+//                      int start = line.indexOf("\"");
+//                      int end = line.lastIndexOf(NAME + "\"");
+//                      if ((0 < start) && (start < end)) {
+//                          return upper.substring(start+1, 
+//                              end + NAME.length());                                    
+//                      }
+//                  } else if (!line.startsWith("<?xml")) {
+//                      break; // something else...
+//                  }
+//              }
+//          }
+//      } catch (IOException e) {
+//          // ignore
+//      } finally {
+//          if (null != fr) {
+//              try {
+//                  fr.close();
+//              } catch (IOException e1) { // ignore
+//              }
+//          }
+//      }
+//  }
+//  return null;
+//}
 
