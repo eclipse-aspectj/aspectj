@@ -14,29 +14,31 @@ package org.aspectj.ajde;
 import java.util.List;
 
 import org.aspectj.asm.*;
+import org.aspectj.asm.internal.ProgramElement;
 
 
 // TODO: check for return types
 public class AsmRelationshipsTest extends AjdeTestCase {
   
-	private StructureModelManager manager = null;
+	private AsmManager manager = null;
 	private static final String CONFIG_FILE_PATH = "../examples/coverage/coverage.lst";
 
 	public AsmRelationshipsTest(String name) {
 		super(name);
 	}
   
-	public void testAdvice() {
-		IProgramElement node = (IProgramElement)manager.getModel().getRoot();
-		assertNotNull(node);
-	
+//	public void testInterTypeDeclarations() {		
+//		checkMapping("InterTypeDecCoverage", "Point", "Point.xxx:", "xxx");	
+//	}
+
+	public void testAdvice() {	
 		checkMapping("AdvisesRelationshipCoverage", "Point", "before(): methodExecutionP..", "setX(int)");
 		checkUniDirectionalMapping("AdvisesRelationshipCoverage", "Point", "before(): getP..", "field-get(int Point.x)");
 		checkUniDirectionalMapping("AdvisesRelationshipCoverage", "Point", "before(): setP..", "field-set(int Point.xxx)");	
 	}
 
 	private void checkUniDirectionalMapping(String fromType, String toType, String from, String to) {
-		IProgramElement aspect = StructureModelManager.getDefault().getModel().findNodeForType(null, fromType);
+		IProgramElement aspect = AsmManager.getDefault().getModel().findNodeForType(null, fromType);
 		assertNotNull(aspect);		
 		String beforeExec = from;
 		IProgramElement beforeExecNode = manager.getModel().findNode(aspect, IProgramElement.Kind.ADVICE, beforeExec);
@@ -46,7 +48,7 @@ public class AsmRelationshipsTest extends AjdeTestCase {
 	}
 
 	private void checkMapping(String fromType, String toType, String from, String to) {
-		IProgramElement aspect = StructureModelManager.getDefault().getModel().findNodeForType(null, fromType);
+		IProgramElement aspect = AsmManager.getDefault().getModel().findNodeForType(null, fromType);
 		assertNotNull(aspect);		
 		String beforeExec = from;
 		IProgramElement beforeExecNode = manager.getModel().findNode(aspect, IProgramElement.Kind.ADVICE, beforeExec);
@@ -54,7 +56,7 @@ public class AsmRelationshipsTest extends AjdeTestCase {
 		IRelationship rel = manager.getMapper().get(beforeExecNode);
 		assertEquals(((IProgramElement)rel.getTargets().get(0)).getName(), to);
 
-		IProgramElement clazz = StructureModelManager.getDefault().getModel().findNodeForType(null, toType);
+		IProgramElement clazz = AsmManager.getDefault().getModel().findNodeForType(null, toType);
 		assertNotNull(clazz);
 		String set = to;
 		IProgramElement setNode = manager.getModel().findNode(clazz, IProgramElement.Kind.METHOD, set);
@@ -66,7 +68,7 @@ public class AsmRelationshipsTest extends AjdeTestCase {
 	protected void setUp() throws Exception {
 		super.setUp("examples");
 		assertTrue("build success", doSynchronousBuild(CONFIG_FILE_PATH));	
-		manager =	StructureModelManager.getDefault();
+		manager = AsmManager.getDefault();
 	}
 
 	protected void tearDown() throws Exception {

@@ -479,8 +479,6 @@ public class BuildConfigurationTests extends AjdeTestCase {
                 null,
                 null,
                 null);  
-                
-            //Ajde.getDefault().enableLogging( System.out );
         } catch (Throwable t) {
             String s = "Unable to initialize AJDE "
                 + LangUtil.renderException(t);

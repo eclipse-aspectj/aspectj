@@ -32,11 +32,11 @@ public class EmacsStructureModelManager {
     }
 
     public void externalizeModel() {
-    	if (!StructureModelManager.getDefault().getModel().isValid()) return;
+    	if (!AsmManager.getDefault().getModel().isValid()) return;
         
         try {
             //Set fileSet = StructureModelManager.INSTANCE.getStructureModel().getFileMap().entrySet(); 
-			Set fileSet = StructureModelManager.getDefault().getModel().getFileMapEntrySet(); 
+			Set fileSet = AsmManager.getDefault().getModel().getFileMapEntrySet(); 
             for (Iterator it = fileSet.iterator(); it.hasNext(); ) {
                 IProgramElement peNode = (IProgramElement)((Map.Entry)it.next()).getValue();
                 dumpStructureToFile(peNode);
@@ -142,7 +142,7 @@ public class EmacsStructureModelManager {
             } else {
                 print("nil");
             }
-            if (node.getSignature() != null) {
+            if (node.getName() != null) {
                 print("\"" + node.getDeclaringType() + "\" ");         //5
             } else {
                 print("nil");
@@ -154,18 +154,18 @@ public class EmacsStructureModelManager {
                 print("nil");
             } else {
                 print("(");
-                if (node instanceof IProgramElement) {
-                    java.util.List relations = ((IProgramElement)node).getRelations();
-                    if (relations != null) {
-                        for (Iterator it = relations.iterator(); it.hasNext(); ) {
-							IRelationship relNode = (IRelationship)it.next();
-                            if (relNode.getKind() == IRelationship.Kind.ADVICE ||
-								relNode.getKind() == IRelationship.Kind.DECLARE) {
-                                printDecls(relNode);                                   // 6
-                            }
-                        }
-                    }
-                }
+//                if (node instanceof IProgramElement) {
+//                    java.util.List relations = ((IProgramElement)node).getRelations();
+//                    if (relations != null) {
+//                        for (Iterator it = relations.iterator(); it.hasNext(); ) {
+//							IRelationship relNode = (IRelationship)it.next();
+//                            if (relNode.getKind() == IRelationship.Kind.ADVICE ||
+//								relNode.getKind() == IRelationship.Kind.DECLARE) {
+//                                printDecls(relNode);                                   // 6
+//                            }
+//                        }
+//                    }
+//                }
                 print(") ");
                 print("(");
                 print(") ");

@@ -45,27 +45,22 @@ public class StructureModelUtilTest extends AjdeTestCase {
 		List packages = StructureModelUtil.getPackagesInModel(); 
 		assertTrue("packages list not null", packages != null);
         assertTrue("packages list not empty", !packages.isEmpty());
-		// System.err.println("> packages: " + packages);
 	
 		IProgramElement packageNode = (IProgramElement)((Object[])packages.get(0))[0];
 		assertTrue("package node not null", packageNode != null);
-		// System.err.println("> package node: " + packageNode);
 		
 		List files = StructureModelUtil.getFilesInPackage(packageNode);
 		assertTrue("fle list not null", files != null);
-		// System.err.println("> file list: " + files);
 		
 		// TODO: re-enable
 //		Map lineAdviceMap = StructureModelUtil.getLinesToAspectMap(
 //			((IProgramElement)files.get(0)).getSourceLocation().getSourceFile().getAbsolutePath()
 //		);
 //		
-//		assertTrue("line->advice map not null", lineAdviceMap != null);
-//		// System.err.println("> line->advice map: " + lineAdviceMap);			
+//		assertTrue("line->advice map not null", lineAdviceMap != null);			
 //		
 //		Set aspects = StructureModelUtil.getAspectsAffectingPackage(packageNode);
-//		assertTrue("aspect list not null", aspects != null);
-//		// System.err.println("> aspects affecting package: " + aspects);			
+//		assertTrue("aspect list not null", aspects != null);			
 	}
 
   

@@ -37,7 +37,7 @@ public abstract class StructureViewNodeFactory {
 		AbstractIcon icon = iconRegistry.getStructureIcon(node.getKind(), node.getAccessibility());
 
 		IStructureViewNode svNode = createDeclaration(node, icon, children);		
-		IRelationship rel = StructureModelManager.getDefault().getMapper().get(node);
+		IRelationship rel = AsmManager.getDefault().getMapper().get(node);
 		if (rel != null && rel.getTargets().size() > 0) {
 			IStructureViewNode relNode = createRelationship(
 				rel, 
@@ -48,8 +48,8 @@ public abstract class StructureViewNodeFactory {
 			for (Iterator it = rel.getTargets().iterator(); it.hasNext(); ) {
 				IProgramElement link = (IProgramElement)it.next();
 				IStructureViewNode linkNode = createLink(
-					link, 
-					iconRegistry.getIcon(link.getKind())
+					link,   
+					iconRegistry.getStructureIcon(link.getKind(), link.getAccessibility())  
 				);	
 				relNode.add(linkNode);
 					

@@ -14,14 +14,12 @@
 
 package org.aspectj.ajde.ui;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import org.aspectj.asm.StructureModel;
+import java.io.IOException;
+import java.util.*;
 
 /**
+ * TODO: we have schitzophrenia between BuildConfigNode(s) and IProgramElement(s), fix.
+ * 
  * @author Mik Kersten
  */
 public class BuildConfigModel {
@@ -103,6 +101,53 @@ public class BuildConfigModel {
 
 	public void setRoot(BuildConfigNode node) {
 		root = node;
+	}
+	
+	public BuildConfigNode findNodeForSourceLine(String sourceFilePath, int lineNumber) {
+		BuildConfigNode node = findNodeForSourceLineHelper(root, sourceFilePath, lineNumber);
+		return node;	
+	}
+	
+	private BuildConfigNode findNodeForSourceLineHelper(BuildConfigNode node, String sourceFilePath, int lineNumber) {
+		if (matches(node, sourceFilePath, lineNumber) 
+			&& !hasMoreSpecificChild(node, sourceFilePath, lineNumber)) {
+			return node;	
+		} 
+		
+		if (node != null && node.getChildren() != null) {
+			for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
+				BuildConfigNode foundNode = findNodeForSourceLineHelper(
+					(BuildConfigNode)it.next(), 
+					sourceFilePath, 
+					lineNumber); 		
+				if (foundNode != null) return foundNode;
+			}
+		}
+		return null;		
+	}
+
+	private boolean matches(BuildConfigNode node, String sourceFilePath, int lineNumber) {
+		try {			
+			return node != null 
+				&& node.getSourceLocation() != null
+				&& node.getSourceLocation().getSourceFile().getCanonicalPath().equals(sourceFilePath)
+				&& ((node.getSourceLocation().getLine() <= lineNumber
+					&& node.getSourceLocation().getEndLine() >= lineNumber)
+					||
+					(lineNumber <= 1
+					 && node instanceof BuildConfigNode)	
+				);
+		} catch (IOException ioe) { 
+			return false;
+		} 
+	}
+	
+	private boolean hasMoreSpecificChild(BuildConfigNode node, String sourceFilePath, int lineNumber) {
+		for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
+			BuildConfigNode child = (BuildConfigNode)it.next();
+			if (matches(child, sourceFilePath, lineNumber)) return true;
+		}
+		return false;
 	}
 
 }

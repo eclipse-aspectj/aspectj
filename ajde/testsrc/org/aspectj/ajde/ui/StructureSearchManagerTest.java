@@ -47,7 +47,6 @@ public class StructureSearchManagerTest extends AjdeTestCase {
 			"Point",
 			null
 		);
-		System.err.println(matches);
 		assertTrue("non existent node", true);
 	}
 
@@ -56,7 +55,6 @@ public class StructureSearchManagerTest extends AjdeTestCase {
 			"Point",
 			IProgramElement.Kind.CONSTRUCTOR
 		);
-		System.err.println(matches);
 		assertTrue("non existent node", true);
 	}
 

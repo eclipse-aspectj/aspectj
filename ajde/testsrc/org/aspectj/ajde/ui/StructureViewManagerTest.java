@@ -77,12 +77,10 @@ public class StructureViewManagerTest extends AjdeTestCase {
 		renderer.setHasBeenNotified(false);
 		String modelPath = genStructureModelExternFilePath(CONFIG_FILE_PATH);
 		openFile(modelPath).delete();
-		//System.err.println("> path: " + modelPath);
 		
 		Ajde.getDefault().getStructureModelManager().readStructureModel(CONFIG_FILE_PATH);
 		
 		assertTrue("notified", renderer.getHasBeenNotified());	
-		//System.err.println(">>>>>> " + currentView.getRootNode().getIProgramElement());
 		// AMC should this be currentView, or should we recreate the root... do the latter	
 		//IProgramElement n = currentView.getRootNode().getIProgramElement();
 		IProgramElement n = Ajde.getDefault().getStructureModelManager().getModel().getRoot();
@@ -146,7 +144,6 @@ public class StructureViewManagerTest extends AjdeTestCase {
 	}
 	
 //	public void testViewListenerRegistrations() {
-//		System.err.println("> starting...");
 //		Ajde.getDefault().getBuildManager().build("C:/Dev/aspectj/tests/ajde/examples/coverage-figures/src/AllFiles.lst");
 //		while(!testerBuildListener.getBuildFinished()) {
 //			try {
@@ -154,7 +151,6 @@ public class StructureViewManagerTest extends AjdeTestCase {
 //			} catch (InterruptedException ie) { } 
 //		}
 //		List renderers = Ajde.getDefault().getStructureViewManager().getDefaultFileStructureView().getRenderers();
-//		System.err.println("> renderers (1): " + renderers);
 //		
 //		testerBuildListener.reset();
 //		Ajde.getDefault().getBuildManager().build("C:/Dev/aspectj/tests/ajde/examples/coverage-figures/src/AllFiles.lst");
@@ -163,7 +159,6 @@ public class StructureViewManagerTest extends AjdeTestCase {
 //				Thread.sleep(300);
 //			} catch (InterruptedException ie) { } 
 //		}  
-//		System.err.println("> renderers (2): " + renderers);
 //		assertTrue("checking renderers", true);
 //	} 
 }

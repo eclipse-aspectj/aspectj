@@ -13,7 +13,7 @@ class Point {
 	public int getX() { return x;	}
 	
 	public void setX(int x) { this.x = x; }
-	
+	 
 	public int changeX(int x) { 
 		this.x = x;
 		return x;
@@ -94,6 +94,11 @@ abstract aspect AbstractAspect {
 }
   
 aspect InterTypeDecCoverage {
+    public int Point.xxx = 0;
+    public int Point.check(int i, Line l) { return 1 + i; }
+}
+
+aspect DeclareCoverage {
 
     pointcut illegalNewFigElt(): call(Point.new(..)) && !withincode(* *.doIt(..));
 
@@ -105,9 +110,6 @@ aspect InterTypeDecCoverage {
 	declare parents: Point && Line implements java.util.Observable;
     declare soft: SizeException : call(* Point.getX());
 	declare precedence: AdviceCoverage, InterTypeDecCoverage, *;
-
-	public int Point.xxx = 0;
-    public int Point.check(int i, Line l) { return 1 + i; }
 //	public Line.new(String s) {  }
 }
 

@@ -141,7 +141,6 @@ public class ResourceCopyTestCase extends AjdeTestCase {
 					/* Ensure we didn't copy any JAR manifests */
 					if (fileName.toLowerCase().startsWith("meta-inf")) {
 						byte[] outManifest = FileUtil.readAsByteArray(outjar);
-//						System.err.println("? compareJars() fileName='" + fileName + "', manifest='" + new String(outManifest) + "'");
 						assertFalse("Manifest has been copied",Arrays.equals(inManifest,outManifest));
 					}
 					
@@ -206,7 +205,6 @@ public class ResourceCopyTestCase extends AjdeTestCase {
 				/* Ensure we didn't copy any JAR manifests */
 				if (fileName.toLowerCase().startsWith("meta-inf")) {
 					byte[] outManifest = FileUtil.readAsByteArray(toResources[i]);
-//					System.err.println("? compareJars() fileName='" + fileName + "', manifest='" + new String(outManifest) + "'");
 					assertFalse("Manifest has been copied",Arrays.equals(inManifest,outManifest));
 				}
 				boolean b = resources.remove(fileName);
@@ -244,7 +242,6 @@ public class ResourceCopyTestCase extends AjdeTestCase {
 					/* JAR manifests shouldn't be copied */
 					if (fileName.toLowerCase().startsWith("meta-inf")) {
 						manifest = FileUtil.readAsByteArray(injar);
-//						System.err.println("? compareJars() fileName='" + fileName + "', manifest='" + new String(manifest) + "'");
 					}
 					else {
 						resources.add(fileName);

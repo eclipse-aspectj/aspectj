@@ -15,7 +15,7 @@ package org.aspectj.ajde;
 public class NullIdeProgressMonitor implements BuildProgressMonitor {
 
 	public void start(String configFile) {
-//		System.out.println("> compiling: " + configFile);
+		
 	}
 
 	public void setProgressText(String text) {

@@ -37,7 +37,7 @@ public class AsmAdapter {
 				// TODO: might want to show these in the future
 				return;
 			}
-			IRelationshipMapper mapper = StructureModelManager.getDefault().getMapper();
+			IRelationshipMapper mapper = AsmManager.getDefault().getMapper();
 
 			IProgramElement targetNode = getNode(model, shadow);
 			IProgramElement adviceNode = getNode(model, a);  

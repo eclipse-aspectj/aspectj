@@ -20,7 +20,7 @@ import java.io.PrintWriter;
 import junit.framework.TestCase;
 
 import org.aspectj.ajdt.ajc.BuildArgParser;
-import org.aspectj.asm.StructureModelManager;
+import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageWriter;
@@ -73,7 +73,7 @@ public class AjBuildManagerTest extends TestCase {
 				 }, messageWriter);
         String err = parser.getOtherMessages(true);		
         assertTrue(err, null == err);
-        manager.setStructureModel(StructureModelManager.getDefault().getModel());
+        manager.setStructureModel(AsmManager.getDefault().getModel());
 		MessageHandler handler = new MessageHandler();
         manager.batchBuild(buildConfig, handler);
         assertCompileMessagesValid(handler);	

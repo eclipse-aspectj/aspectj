@@ -55,7 +55,7 @@ public class StructureViewManager {
 	public StructureViewManager(StructureViewNodeFactory nodeFactory) {
 		treeViewBuilder = new TreeStructureViewBuilder(nodeFactory);
 				
-		StructureModelManager.getDefault().addListener(VIEW_LISTENER);			
+		AsmManager.getDefault().addListener(VIEW_LISTENER);			
 	}
 	
 	public void fireNavigateBackAction(StructureView view) {
@@ -127,7 +127,7 @@ public class StructureViewManager {
 			if (defaultFileView.getSourceFile() != null
 				&& !defaultFileView.getSourceFile().equals(newFilePath)) {
 				defaultFileView.setSourceFile(newFilePath);
-				treeViewBuilder.buildView(defaultFileView, StructureModelManager.getDefault().getModel());
+				treeViewBuilder.buildView(defaultFileView, AsmManager.getDefault().getModel());
 			}
 		}
 		   
@@ -195,7 +195,7 @@ public class StructureViewManager {
 		if (properties == null) properties = DEFAULT_VIEW_PROPERTIES;
 		FileStructureView view = new FileStructureView(properties);
 		view.setSourceFile(sourceFilePath);
-		treeViewBuilder.buildView(view, StructureModelManager.getDefault().getModel()); 
+		treeViewBuilder.buildView(view, AsmManager.getDefault().getModel()); 
 		structureViews.add(view);
 		return view; 
 	}

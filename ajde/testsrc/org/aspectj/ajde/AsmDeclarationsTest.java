@@ -47,7 +47,7 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 		IProgramElement node = (IProgramElement)model.getRoot();
 		assertNotNull(node);
 	
-		IProgramElement aspect = StructureModelManager.getDefault().getModel().findNodeForType(null, "InterTypeDecCoverage");
+		IProgramElement aspect = AsmManager.getDefault().getModel().findNodeForType(null, "DeclareCoverage");
 		assertNotNull(aspect);
 		
 		String decErrMessage = "declare error: \"Illegal construct..\"";
@@ -90,7 +90,7 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 		IProgramElement node = (IProgramElement)model.getRoot();
 		assertNotNull(node);
 	
-		IProgramElement aspect = StructureModelManager.getDefault().getModel().findNodeForType(null, "InterTypeDecCoverage");
+		IProgramElement aspect = AsmManager.getDefault().getModel().findNodeForType(null, "InterTypeDecCoverage");
 		assertNotNull(aspect);
 		
 		String fieldMsg = "Point.xxx";
@@ -114,7 +114,7 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 		IProgramElement node = (IProgramElement)model.getRoot();
 		assertNotNull(node);
 	
-		IProgramElement aspect = StructureModelManager.getDefault().getModel().findNodeForType(null, "AdviceNamingCoverage");
+		IProgramElement aspect = AsmManager.getDefault().getModel().findNodeForType(null, "AdviceNamingCoverage");
 		assertNotNull(aspect);		
 	
 		String ptct = "named()";
@@ -134,7 +134,7 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 		IProgramElement node = (IProgramElement)model.getRoot();
 		assertNotNull(node);
 	
-		IProgramElement aspect = StructureModelManager.getDefault().getModel().findNodeForType(null, "AbstractAspect");
+		IProgramElement aspect = AsmManager.getDefault().getModel().findNodeForType(null, "AbstractAspect");
 		assertNotNull(aspect);	
 		
 		String abst = "abPtct()";
@@ -147,7 +147,7 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 		IProgramElement node = (IProgramElement)model.getRoot();
 		assertNotNull(node);
 	
-		IProgramElement aspect = StructureModelManager.getDefault().getModel().findNodeForType(null, "AdviceNamingCoverage");
+		IProgramElement aspect = AsmManager.getDefault().getModel().findNodeForType(null, "AdviceNamingCoverage");
 		assertNotNull(aspect);	
 
 		String anon = "before(): <anonymous pointcut>";
@@ -189,7 +189,7 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 	protected void setUp() throws Exception {
 		super.setUp("examples");
 		assertTrue("build success", doSynchronousBuild(CONFIG_FILE_PATH));	
-		model =	StructureModelManager.getDefault().getModel();
+		model =	AsmManager.getDefault().getModel();
 	}
 
 	protected void tearDown() throws Exception {

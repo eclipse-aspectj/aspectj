@@ -46,13 +46,10 @@ public class StructureModelRegressionTest extends AjdeTestCase {
 	public boolean verifyAgainstSavedModel(String lstFile) {
 		File modelFile = new File(genStructureModelExternFilePath(lstFile));
 		StructureModel model = getModelForFile(lstFile);
-		System.out.println(">> model: " + model.getRoot());	
 		
 		if (modelFile.exists()) {
 			Ajde.getDefault().getStructureModelManager().readStructureModel(lstFile);
 			StructureModel savedModel = Ajde.getDefault().getStructureModelManager().getModel();
-			//System.err.println( savedModel.getRoot().getClass() + ", " +  savedModel.getRoot());
-			
 			// AMC This test will not pass as written until IProgramElement defines
 			// equals. The equals loic is commented out in the IProgramElement
 			// class - adding it back in could have unforeseen system-wide

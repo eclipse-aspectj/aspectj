@@ -37,23 +37,23 @@ public class StructureModelUtil {
 	public static Map getLinesToAspectMap(String sourceFilePath) {
 
 		Map annotationsMap =
-			StructureModelManager.getDefault().getInlineAnnotations(
+			AsmManager.getDefault().getInlineAnnotations(
 				sourceFilePath,
 				true,
 				true);
 
 		Map aspectMap = new HashMap();
 		Set keys = annotationsMap.keySet();
-		for (Iterator it = keys.iterator(); it.hasNext();) {
-			Object key = it.next();
-			List annotations = (List) annotationsMap.get(key);
-			for (Iterator it2 = annotations.iterator(); it2.hasNext();) {
-				IProgramElement node = (IProgramElement) it2.next();
+//		for (Iterator it = keys.iterator(); it.hasNext();) {
+//			Object key = it.next();
+//			List annotations = (List) annotationsMap.get(key);
+//			for (Iterator it2 = annotations.iterator(); it2.hasNext();) {
+//				IProgramElement node = (IProgramElement) it2.next();
 
-				List relations = node.getRelations();
-
-				for (Iterator it3 = relations.iterator(); it3.hasNext();) {
-					IRelationship relationNode = (IRelationship) it3.next();
+//				List relations = node.getRelations();
+//
+//				for (Iterator it3 = relations.iterator(); it3.hasNext();) {
+//					IRelationship relationNode = (IRelationship) it3.next();
 
 //					if (relationNode.getKind().equals("Advice")) {
 //						List children = relationNode.getTargets();
@@ -83,10 +83,10 @@ public class StructureModelUtil {
 //							aspectMap.put(key, aspects);
 //						}
 //					}
-
-				}
-			}
-		}
+//
+//				}
+//			}
+//		}
 		return aspectMap;
 	}
 

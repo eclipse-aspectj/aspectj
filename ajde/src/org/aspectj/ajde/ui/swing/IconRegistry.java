@@ -112,7 +112,7 @@ public class IconRegistry extends AbstractIconRegistry {
 		return convertToSwingIcon(getIcon(relation));	
     }
     
-	protected AbstractIcon getStructureIcon(IProgramElement.Kind kind, IProgramElement.Accessibility accessibility) {
+	public AbstractIcon getStructureIcon(IProgramElement.Kind kind, IProgramElement.Accessibility accessibility) {
 		return getIcon(kind);	
 	}
     

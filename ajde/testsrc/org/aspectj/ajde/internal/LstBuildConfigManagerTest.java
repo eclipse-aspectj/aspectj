@@ -96,9 +96,7 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 		Iterator it = list.iterator();
 		while (st.hasMoreElements()) {
 			String s1 = (String)st.nextElement();
-			System.out.print("comparing: " + s1 + " <-> ");
 			String s2 = (String)it.next();
-			System.out.println(s2);
 			if (!s1.equals(s2)) return false;
 		}
 		if (it.hasNext()) {

@@ -97,14 +97,14 @@ public class TreeStructureViewBuilder {
 		if (node == null) return null;
 		List children = new ArrayList();
 //		IProgramElement pNode = node;
-		if (node.getRelations() != null) {
-			for (Iterator it = node.getRelations().iterator(); it.hasNext(); ) {
-				IProgramElement IProgramElement = (IProgramElement)it.next();
-				if (acceptNode(IProgramElement, properties)) {
-					children.add(createViewNode(IProgramElement, properties));
-				}
-			}	
-		}
+//		if (node.getRelations() != null) {
+//			for (Iterator it = node.getRelations().iterator(); it.hasNext(); ) {
+//				IProgramElement IProgramElement = (IProgramElement)it.next();
+//				if (acceptNode(IProgramElement, properties)) {
+//					children.add(createViewNode(IProgramElement, properties));
+//				}
+//			}	
+//		}
 		if (node.isRunnable() && node.getParent() != null) {
 			IProgramElement parent = node.getParent();
 			if (parent.getKind().equals(IProgramElement.Kind.CLASS)
@@ -166,7 +166,7 @@ public class TreeStructureViewBuilder {
 			IProgramElement pNode = (IProgramElement)node;
 			if (!acceptGranularity(pNode.getKind(), properties.getGranularity())) {
 				return false;
-			} else if (pNode.isMemberKind()) {
+			} else if (pNode.getKind().isMemberKind()) {
 				if (properties.getFilteredMemberAccessibility().contains(pNode.getAccessibility())) {
 					return false;	
 				}
@@ -259,7 +259,7 @@ public class TreeStructureViewBuilder {
     private IStructureViewNode getInheritanceChildren(IProgramElement node, List associations) {
     	IStructureViewNode treeNode = nodeFactory.createNode(node);
         //StructureViewNode treeNode = new StructureViewNodeAdapter(node);
-        List relations = ((IProgramElement)node).getRelations();
+//        List relations = ((IProgramElement)node).getRelations();
         throw new RuntimeException("unimplemented");
 //        if (relations != null) {
 //            for (Iterator it = relations.iterator(); it.hasNext(); ) {
@@ -282,8 +282,8 @@ public class TreeStructureViewBuilder {
 
     private IStructureViewNode getCrosscuttingChildren(IProgramElement node) {
         //StructureViewNodeAdapter treeNode = new StructureViewNodeAdapter(node);
-        IStructureViewNode treeNode = nodeFactory.createNode(node);
-        List relations = ((IProgramElement)node).getRelations();
+//        IStructureViewNode treeNode = nodeFactory.createNode(node);
+//        List relations = ((IProgramElement)node).getRelations();
         throw new RuntimeException("unimplemented");
 //        if (relations != null) {
 //            for (Iterator it = relations.iterator(); it.hasNext(); ) {
@@ -336,7 +336,7 @@ public class TreeStructureViewBuilder {
                     IProgramElement child = (IProgramElement)itt.next();
                     if (child instanceof IProgramElement) {
                         IProgramElement progNode = (IProgramElement)child;
-                        if (!progNode.isCode()) {
+                        if (progNode.getKind() != IProgramElement.Kind.CODE) {
                             childList.add(buildTree(child, associations));
                         }
                     } else {

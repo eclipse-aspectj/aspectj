@@ -15,15 +15,15 @@ package org.aspectj.ajde;
 public class NullIdeErrorHandler implements ErrorHandler {
 
 	public void handleWarning(String message) {
-		System.out.println("NullIde warning: " + message);
+		System.out.println("NullIde> warning: " + message);
 	}
 
 	public void handleError(String message) {
-		System.out.println("NullIde error: " + message);
+		System.out.println("NullIde> error: " + message);
 	}
 
 	public void handleError(String message, Throwable t) {
-		System.out.println("NullIde error: " + message);
+		System.out.println("NullIde> error: " + message);
 		t.printStackTrace(System.out);
 	}
 }

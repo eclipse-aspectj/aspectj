@@ -35,7 +35,6 @@ public class VersionTest extends AjdeTestCase {
 	public void testVersionMatch() {
 		String ajdeVersion = Ajde.getDefault().getVersion();
 		String compilerVersion = Version.text;
-		System.out.println("> ajde version: " + ajdeVersion + " <-> compiler version: " + compilerVersion);
 		assertTrue("version check", ajdeVersion.equals(compilerVersion));
 	}
 	

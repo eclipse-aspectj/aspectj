@@ -20,7 +20,7 @@ import org.aspectj.ajde.ui.IdeUIAdapter;
 import org.aspectj.ajde.ui.StructureSearchManager;
 import org.aspectj.ajde.ui.StructureViewManager;
 import org.aspectj.ajde.ui.StructureViewNodeFactory;
-import org.aspectj.asm.StructureModelManager;
+import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.Version;
 import org.aspectj.util.LangUtil;
 import org.aspectj.util.Reflection;
@@ -175,8 +175,8 @@ public class Ajde {
 	 * use should be avoided.  Used <CODE>getStructureViewManager()</CODE>
 	 * instead.
 	 */
-	public StructureModelManager getStructureModelManager() {
-		return StructureModelManager.getDefault();	
+	public AsmManager getStructureModelManager() {
+		return AsmManager.getDefault();	
 	}
 	
 	public void logEvent(String message) {
@@ -307,7 +307,7 @@ public class Ajde {
         public void compileFinished(String buildConfig, int buildTime, boolean succeeded, boolean warnings) { 
         	String configFilePath = projectProperties.getDefaultBuildConfigFile();
         	if (!succeeded) {
-	        	StructureModelManager.getDefault().fireModelUpdated();	
+	        	AsmManager.getDefault().fireModelUpdated();	
     	    }
         }
         
