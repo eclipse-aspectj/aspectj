@@ -145,7 +145,7 @@
 		<compile files="common/org/aspectj/langlib/Pointcuts.java,
 			            testsrc/org/aspectj/langlib/PointcutsCW.java">
 			            
-			<message kind="warning" line="159" text="anyConstructorExecution" file="Pointcuts.java"/>
+			<message kind="warning" line="172" text="anyConstructorExecution" file="Pointcuts.java"/>
 
 			<message kind="warning" line="20" text="anyConstructorExecution"/>
 			<message kind="warning" line="20" text="anyPublicConstructorExecution"/>
@@ -230,9 +230,15 @@
 			<message kind="warning" line="173" text="anySystemProcessSpawningCalls"/>
 			<message kind="warning" line="177" text="mostThrowableReadCalls"/>
 			<message kind="warning" line="179" text="mostThrowableReadCalls"/>
-			<message kind="warning" line="190" text="anyConstructorExecution"/>
-			<message kind="warning" line="190" text="anyNonPrivateConstructorExecution"/>
-		</compile>
+			<message kind="warning" line="184" text="anyCollectionWriteCalls"/>
+			<message kind="warning" line="187" text="anyCollectionWriteCalls"/>
+			<message kind="warning" line="189" text="anyCollectionWriteCalls"/>	
+			<message kind="warning" line="189" text="anyNonPrivateFieldGet"/>	
+			<message kind="warning" line="189" text="anyPublicFieldGet"/>	
+			<message kind="warning" line="191" text="anyCollectionWriteCalls"/>
+			<message kind="warning" line="201" text="anyConstructorExecution"/>
+			<message kind="warning" line="201" text="anyNonPrivateConstructorExecution"/>
+			</compile>
 		<run class="org.aspectj.langlib.PointcutsCW"/>
 	</ajc-test>
 

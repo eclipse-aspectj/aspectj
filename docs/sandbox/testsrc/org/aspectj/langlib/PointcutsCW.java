@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.lang.reflect.Method;
-
+import java.util.*;
 import javax.swing.*;
 import javax.swing.Action;
 
@@ -53,7 +53,7 @@ public aspect PointcutsCW {
     declare warning: Pointcuts.anySystemProcessSpawningCalls() : "anySystemProcessSpawningCalls";
     declare warning: Pointcuts.mostThrowableReadCalls() : "mostThrowableReadCalls";
     declare warning: Pointcuts.exceptionWrappingCalls() : "exceptionWrappingCalls";
-
+    declare warning: Pointcuts.anyCollectionWriteCalls() : "anyCollectionWriteCalls";
     //  CW anyMethodExecution, anyPublicMethodExecution, anyNonPrivateMethodExecution
     public static void main(String[] list) {
         new MemberTests(0).toString(); // RT cflowMainExecution
@@ -180,9 +180,20 @@ class MemberTests {
 
         e.getClass(); // not mostThrowableReadCalls b/c getClass() is Object
         
+        List list = new ArrayList();
+        list.add("one"); // CW anyCollectionWriteCalls
+        
+        // actually not writing, but staticly might
+        list.remove("two"); // CW anyCollectionWriteCalls
+        
+        list.removeAll(Collections.EMPTY_LIST); // CW anyCollectionWriteCalls, anyPublicFieldGet, anyNonPrivateFieldGet
+        
+        list.retainAll(list); // CW anyCollectionWriteCalls
+
     }
     
 }
+
 
 aspect DynamicTests {
     DynamicTests() {
