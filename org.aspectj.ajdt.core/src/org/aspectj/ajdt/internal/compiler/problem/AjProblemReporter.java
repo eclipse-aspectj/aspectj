@@ -31,6 +31,7 @@ import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
 import org.eclipse.jdt.internal.compiler.IProblemFactory;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
@@ -41,6 +42,7 @@ import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 import org.eclipse.jdt.core.compiler.CharOperation;
+import org.eclipse.jdt.core.compiler.IProblem;
 
 /**
  * Extends problem reporter to support compiler-side implementation of declare soft. 
@@ -220,6 +222,23 @@ public class AjProblemReporter extends ProblemReporter {
         if (arg.name!=null && new String(arg.name).startsWith("ajc$")) reportIt = false;
         if (reportIt) 
         	super.javadocMissingParamTag(arg, modifiers);
+    }
+    
+    public void abstractMethodInAbstractClass(SourceTypeBinding type, AbstractMethodDeclaration methodDecl) {
+
+    	String abstractMethodName = new String(methodDecl.selector);
+    	if (abstractMethodName.startsWith("ajc$pointcut")) {
+    		// This will already have been reported, see: PointcutDeclaration.postParse()
+    		return;
+    	}
+    	String[] arguments = new String[] {new String(type.sourceName()), abstractMethodName};
+    	super.handle(
+    		IProblem.AbstractMethodInAbstractClass,
+    		arguments,
+    		arguments,
+    		methodDecl.sourceStart,
+    		methodDecl.sourceEnd,this.referenceContext, 
+			this.referenceContext == null ? null : this.referenceContext.compilationResult());
     }
 
 }

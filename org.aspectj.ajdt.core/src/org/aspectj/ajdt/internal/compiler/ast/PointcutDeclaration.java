@@ -76,14 +76,21 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 		selector = CharOperation.concat(mangledPrefix, '$', selector, '$',
 				Integer.toHexString(sourceStart).toCharArray());
 				
-		if (Modifier.isAbstract(this.declaredModifiers) && 
-			!(typeDec instanceof AspectDeclaration))
-		{
-			typeDec.scope.problemReporter().signalError(sourceStart, sourceEnd, 
-				"The abstract pointcut " + new String(declaredName) +
-				" can only be defined in an aspect");
-			ignoreFurtherInvestigation = true;
-			return;
+		if (Modifier.isAbstract(this.declaredModifiers)) {
+			if (!(typeDec instanceof AspectDeclaration)) {
+				typeDec.scope.problemReporter().signalError(sourceStart, sourceEnd, 
+						"The abstract pointcut " + new String(declaredName) +
+						" can only be defined in an aspect");
+				ignoreFurtherInvestigation = true;
+				return;
+			} else if (!Modifier.isAbstract(typeDec.modifiers)) {
+				typeDec.scope.problemReporter().signalError(sourceStart, sourceEnd, 
+						"The abstract pointcut " + new String(declaredName) +
+						" can only be defined in an abstract aspect");
+
+				ignoreFurtherInvestigation = true;
+				return;
+			}
 		}
 		
 		if (pointcutDesignator != null) {
