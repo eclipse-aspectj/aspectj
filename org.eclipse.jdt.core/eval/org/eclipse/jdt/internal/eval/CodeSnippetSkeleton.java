@@ -55,7 +55,7 @@ public class CodeSnippetSkeleton implements IBinaryType, EvaluationConstants {
 			this.selector = selector;
 			this.methodDescriptor = methodDescriptor;
 			this.exceptionTypeNames = exceptionTypeNames;
-			this.isConstructor = this.isConstructor;
+			this.isConstructor = isConstructor;
 		}
 		
 		public char[][] getExceptionTypeNames() {

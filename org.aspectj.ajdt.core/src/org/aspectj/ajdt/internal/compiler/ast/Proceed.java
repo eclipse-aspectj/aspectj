@@ -35,7 +35,7 @@ public class Proceed extends MessageSend {
 
 		this.nameSourcePosition = parent.nameSourcePosition;
 		this.receiverType = parent.receiverType;
-		this.qualifyingType = qualifyingType;
+		this.qualifyingType = parent.qualifyingType;
 		
 		this.sourceStart = parent.sourceStart;
 		this.sourceEnd = parent.sourceEnd;
