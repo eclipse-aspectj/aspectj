@@ -204,16 +204,12 @@ public class AntBuilder extends Builder {
         return copy;
     }
 
-    protected boolean compile(Module module, File classesDir, List errors) {
-        // XXX  test whether build.compiler property takes effect automatically
-        // I suspect it requires the proper adapter setup.
-        Javac javac = new Javac(); 
-        setupTask(javac, "javac");
-        javac.setDestdir(classesDir);
-        if (!classesDir.mkdirs()) {
-            errors.add("unable to create classes directory");
-            return false;
-        }
+    protected boolean compile(
+        Module module, 
+        File classesDir,
+        boolean useExistingClasses, 
+        List errors) {
+        
         // -- source paths
         Path path = new Path(project);
         boolean hasSourceDirectories = false;
@@ -224,18 +220,36 @@ public class AntBuilder extends Builder {
                 hasSourceDirectories = true;
             }
         }
+        if (!classesDir.exists() && !classesDir.mkdirs()) {
+            errors.add("compile - unable to create " + classesDir);
+            return false;
+        }
         if (!hasSourceDirectories) { // none - dump minimal file and exit
             File minFile = new File(classesDir, module.name);
+            FileWriter fw = null;
             try {
-                FileWriter fw = new FileWriter(minFile);
+                fw = new FileWriter(minFile);
                 fw.write(module.name);
-                fw.close();
             } catch (IOException e) {
-                // ignore
+                errors.add("IOException writing " 
+                    + module.name
+                    + " to "
+                    + minFile
+                    + ": "
+                    + Util.renderException(e));
+            } finally {
+                Util.close(fw);
             }
-            // XXX signal?
             return true; // nothing to compile - ok
         }
+        if (useExistingClasses) {
+            return true;
+        }
+        // XXX  test whether build.compiler property takes effect automatically
+        // I suspect it requires the proper adapter setup.
+        Javac javac = new Javac(); 
+        setupTask(javac, "javac");
+        javac.setDestdir(classesDir);
         javac.setSrcdir(path);
         path = null;
         
@@ -360,7 +374,10 @@ public class AntBuilder extends Builder {
 
         try {
             handler.log("assembling " + module  + " in " + module.getModuleJar());
-            return executeTask(zip);
+            return executeTask(zip)
+                // zip returns true when it doesn't create zipfile
+                // because there are no entries to add, so verify done
+                && Util.canReadFile(module.getModuleJar());
         } catch (BuildException e) {
             errors.add("BuildException zipping " + module + ": " + e.getMessage());
             return false;
@@ -622,7 +639,7 @@ class ProductBuilder extends AntBuilder {
         
         if (!targDir.canWrite() && !targDir.mkdirs()) {
             if (buildSpec.verbose) {
-                handler.log("unable to create " + targDir);
+                handler.log("buildProduct unable to create " + targDir);
             }
             return false;
         }
