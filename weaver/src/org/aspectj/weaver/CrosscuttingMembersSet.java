@@ -37,6 +37,9 @@ public class CrosscuttingMembersSet {
 	private List typeMungers = null;
 	private List declareSofts = null;
 	private List declareParents = null;
+	private List declareAnnotationOnTypes   = null;
+	private List declareAnnotationOnFields = null; 
+	private List declareAnnotationOnMethods= null; // includes ctors
 	private List declareDominates = null;
 	
 	public CrosscuttingMembersSet(World world) {
@@ -136,6 +139,43 @@ public class CrosscuttingMembersSet {
 			declareParents = ret;
 		}
 		return declareParents;
+	}
+	
+	// DECAT Merge multiple together
+	public List getDeclareAnnotationOnTypes() {
+		if (declareAnnotationOnTypes == null) {
+			ArrayList ret = new ArrayList();
+			for (Iterator i = members.values().iterator(); i.hasNext(); ) {
+				ret.addAll(((CrosscuttingMembers)i.next()).getDeclareAnnotationOnTypes());
+			}
+			declareAnnotationOnTypes = ret;
+		}
+		return declareAnnotationOnTypes;
+	}
+	
+	public List getDeclareAnnotationOnFields() {
+		if (declareAnnotationOnFields == null) {
+			ArrayList ret = new ArrayList();
+			for (Iterator i = members.values().iterator(); i.hasNext(); ) {
+				ret.addAll(((CrosscuttingMembers)i.next()).getDeclareAnnotationOnFields());
+			}
+			declareAnnotationOnFields = ret;
+		}
+		return declareAnnotationOnFields;
+	}
+	
+	/**
+	 * Return an amalgamation of the declare @method/@constructor statements.
+	 */
+	public List getDeclareAnnotationOnMethods() {
+		if (declareAnnotationOnMethods == null) {
+			ArrayList ret = new ArrayList();
+			for (Iterator i = members.values().iterator(); i.hasNext(); ) {
+				ret.addAll(((CrosscuttingMembers)i.next()).getDeclareAnnotationOnMethods());
+			}
+			declareAnnotationOnMethods = ret;
+		}
+		return declareAnnotationOnMethods;
 	}
 	
 	public List getDeclareDominates() {

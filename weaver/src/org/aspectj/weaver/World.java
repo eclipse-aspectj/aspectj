@@ -400,6 +400,18 @@ public abstract class World implements Dump.INode {
 	public List getDeclareParents() {
 		return crosscuttingMembersSet.getDeclareParents();
 	}
+	
+	public List getDeclareAnnotationOnTypes() {
+		return crosscuttingMembersSet.getDeclareAnnotationOnTypes();
+	}
+	
+	public List getDeclareAnnotationOnFields() {
+		return crosscuttingMembersSet.getDeclareAnnotationOnFields();
+	}
+	
+	public List getDeclareAnnotationOnMethods() {
+		return crosscuttingMembersSet.getDeclareAnnotationOnMethods();
+	}
 
 	public List getDeclareSoft() {
 		return crosscuttingMembersSet.getDeclareSofts();

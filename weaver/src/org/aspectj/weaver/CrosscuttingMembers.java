@@ -53,6 +53,10 @@ public class CrosscuttingMembers {
 	private List declareSofts = new ArrayList(0);
 	private List declareDominates = new ArrayList(4);
 	
+	// These are like declare parents type mungers
+	private List declareAnnotationsOnType    = new ArrayList();
+	private List declareAnnotationsOnField   = new ArrayList();
+	private List declareAnnotationsOnMethods = new ArrayList(); // includes ctors
 	
 	public CrosscuttingMembers(ResolvedTypeX inAspect) {
 		this.inAspect = inAspect;
@@ -116,7 +120,16 @@ public class CrosscuttingMembers {
 			declareSofts.add(new DeclareSoft(d.getException(), concretePointcut));
 			addConcreteShadowMunger(m);
 		} else if (declare instanceof DeclareAnnotation) {
-			System.err.println("Need to implement CrosscuttingMembers.addDeclare for annotations");
+		    // FIXME asc perf Possible Improvement. Investigate why this is called twice in a weave ?
+			DeclareAnnotation da = (DeclareAnnotation)declare;
+			da.setAspect(this.inAspect);
+			if (da.isDeclareAtType()) {
+				declareAnnotationsOnType.add(da);	
+			} else if (da.isDeclareAtField()) {
+				declareAnnotationsOnField.add(da);
+			} else if (da.isDeclareAtMethod() || da.isDeclareAtConstuctor()) {
+				declareAnnotationsOnMethods.add(da);
+			}
 		} else {
 			throw new RuntimeException("unimplemented");
 		}
@@ -199,6 +212,22 @@ public class CrosscuttingMembers {
 			declareSofts = other.declareSofts;
 		}
 		
+		// DECAT for when attempting to replace an aspect
+		if (!declareAnnotationsOnType.equals(other.declareAnnotationsOnType)) {
+			changed = true;
+			declareAnnotationsOnType = other.declareAnnotationsOnType;
+		}
+		
+		if (!declareAnnotationsOnField.equals(other.declareAnnotationsOnField)) {
+			changed = true;
+			declareAnnotationsOnField = other.declareAnnotationsOnField;
+		}
+		
+		if (!declareAnnotationsOnMethods.equals(other.declareAnnotationsOnMethods)) {
+			changed = true;
+			declareAnnotationsOnMethods = other.declareAnnotationsOnMethods;
+		}
+		
 		return changed;
 	}
 
@@ -228,6 +257,21 @@ public class CrosscuttingMembers {
 
 	public List getTypeMungers() {
 		return typeMungers;
+	}
+	
+	public List getDeclareAnnotationOnTypes() {
+		return declareAnnotationsOnType;
+	}
+	
+	public List getDeclareAnnotationOnFields() {
+		return declareAnnotationsOnField;
+	}
+	
+    /**
+     * includes declare @method and @constructor
+     */
+	public List getDeclareAnnotationOnMethods() {
+		return declareAnnotationsOnMethods;
 	}
 
 }
