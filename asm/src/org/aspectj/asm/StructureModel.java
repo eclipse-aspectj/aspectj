@@ -146,7 +146,7 @@ public class StructureModel implements Serializable {
 	/**
 	 * Never returns null 
 	 * 
-	 * @param		sourceFilePath	modified to '/' delimited path for consistency
+	 * @param		sourceFilePath	canonicalized path for consistency
 	 * @param 		lineNumber		if 0 or 1 the corresponding file node will be returned
 	 * @return		a new structure node for the file if it was not found in the model
 	 */
