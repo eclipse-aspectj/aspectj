@@ -17,10 +17,10 @@ public class ConstructorExecInit {
 
 /** @testcase after returning from initialization and after executing constructor */
 aspect A {
-    after (Object target) : execution(*.new(..)) && target(target) { 
+    after (Object target) : execution(*.new(..)) && target(target) && !within(A) { 
         Tester.event("execution");
     }
-    after () returning (Object target) : initialization(new(..)) { 
+    after () returning (Object target) : initialization(new(..)) && !this(A) { 
         Tester.event("initialization");
     }
 }
