@@ -48,7 +48,7 @@ public class ProgramElement implements IProgramElement {
     
 	private String bytecodeName;
 	private String bytecodeSignature;
-	private String fullSignature;
+//	private String fullSignature;
 	private String returnType;
 	
 	private List parameterNames = null;
@@ -248,9 +248,9 @@ public class ProgramElement implements IProgramElement {
 	private static int AccVolatile = 0x0040;
 	private static int AccTransient = 0x0080;
 	private static int AccNative = 0x0100;
-	private static int AccInterface = 0x0200;
+//	private static int AccInterface = 0x0200;
 	private static int AccAbstract = 0x0400;
-	private static int AccStrictfp = 0x0800;
+//	private static int AccStrictfp = 0x0800;
 	
 	
 	public String getBytecodeName() {

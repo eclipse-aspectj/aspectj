@@ -35,7 +35,7 @@ public class AsmManager {
 
     protected AsmManager() {
     	hierarchy = new AspectJElementHierarchy();
-    	List relationships = new ArrayList();
+//    	List relationships = new ArrayList();
 		mapper = new RelationshipMap(hierarchy);
     }
 

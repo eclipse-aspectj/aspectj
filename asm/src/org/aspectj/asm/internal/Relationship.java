@@ -15,9 +15,9 @@ package org.aspectj.asm.internal;
 
 import java.util.List;
 
-import org.aspectj.asm.*;
+//import org.aspectj.asm.*;
 import org.aspectj.asm.IRelationship;
-import org.aspectj.asm.IRelationship.Kind;
+//import org.aspectj.asm.IRelationship.Kind;
 
 
 /**

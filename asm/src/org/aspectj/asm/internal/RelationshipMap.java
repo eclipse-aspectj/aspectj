@@ -82,7 +82,7 @@ public class RelationshipMap extends HashMap implements IRelationshipMap {
 	}
 
 	public void removeAll(String source) {
-		List list = (List)super.remove(source);	
+		super.remove(source);	
 	}
 	
 	public void put(String source, IRelationship relationship) {

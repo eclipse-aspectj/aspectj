@@ -15,7 +15,7 @@ package org.aspectj.asm;
 
 import java.util.EventListener;
 
-import org.aspectj.asm.internal.*;
+//import org.aspectj.asm.internal.*;
 
 /**
  * Compiler listeners get notified of structure model update events.

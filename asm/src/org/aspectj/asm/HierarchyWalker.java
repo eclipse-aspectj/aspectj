@@ -13,8 +13,8 @@
 
 package org.aspectj.asm;
 
-import org.aspectj.asm.internal.*;
-import org.aspectj.asm.internal.*;
+//import org.aspectj.asm.internal.*;
+//import org.aspectj.asm.internal.*;
 
 /**
  * @author Mik Kersten

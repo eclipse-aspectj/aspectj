@@ -15,7 +15,7 @@ package org.aspectj.asm;
 import java.io.Serializable;
 import java.util.List;
 
-import org.aspectj.asm.IRelationship.Kind;
+//import org.aspectj.asm.IRelationship.Kind;
 
 /**
  * Maps from a program element handles to a list of relationships between that element

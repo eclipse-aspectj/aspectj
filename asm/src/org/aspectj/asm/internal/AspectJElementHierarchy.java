@@ -296,7 +296,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 		StringTokenizer st = new StringTokenizer(handle, ProgramElement.ID_DELIM);
 		String file = st.nextToken();
 		int line = new Integer(st.nextToken()).intValue();
-		int col = new Integer(st.nextToken()).intValue();
+//		int col = new Integer(st.nextToken()).intValue();
 		// TODO: use column number when available
 		ret = findElementForSourceLine(file, line);
 		if (ret != null) { 
