@@ -27,7 +27,7 @@ public class BuildModuleTests extends TestCase {
     /** if true, then replace old headers with new first */
     private static final boolean replacing = false; // XXX never to enable again...
     
-    /** if any replace failed, halt all */
+    /** replace commented out below - if any replace failed, halt all */
     private static boolean replaceFailed = false;
     
     private static final String BASE_DIR = "../";
@@ -132,9 +132,9 @@ public class BuildModuleTests extends TestCase {
         int fails = Checklics.runDirect(moduleDir.getPath(), license);
         if (0 != fails) {
             if (replacing) {
-                replaceFailed = true;
+                BuildModuleTests.replaceFailed = true;
             }
-            assertTrue(label + " fails", false);
+            assertTrue(label + " fails", !BuildModuleTests.replaceFailed);
         }
     }
 
