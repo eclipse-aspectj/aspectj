@@ -1,8 +1,8 @@
 
 <!-- ========================================================================= -->
-<!-- Copyright (c) 1999-2001 Xerox Corporation,                                -->    
+<!-- Copyright (c) 1999-2001 Xerox Corporation,                                -->
 <!--               2002 Palo Alto Research Center, Incorporated (PARC).        -->
-<!-- All rights reserved.                                -->
+<!-- All rights reserved.                                                      -->
 <!-- This program and the accompanying materials are made available            -->
 <!-- under the terms of the Common Public License v1.0                         -->
 <!-- which accompanies this distribution and is available at                   -->
@@ -23,10 +23,11 @@
      all             build and run each example
      {example}       build and run any {example} 
                      (use -projecthelp to list {example} names)
+     tracing-bc      use AspectJ 1.1 bytecode weaving to build tracing example
 
   Setup:
-     - Just run from the doc/examples directory in your AspectJ distribution;
-       the tasks are in ../../lib/aspectjtools.jar 
+     - Run from the doc/examples directory in your AspectJ distribution.
+       The tasks in ../../lib/aspectjtools.jar are used automatically.
 
   Variants:
      - To avoid running (i.e., compile only), define variable "norun"
@@ -42,12 +43,14 @@
     <!-- ============================================================= -->
 
     <target name="clean" depends="init"
-     description="clean and create classes dir">
+     description="clean and create classes/jar dir, .ajesym files">
       <delete quiet="on" dir="${classes.dir}"/>
+      <delete quiet="on" dir="${jar.dir}"/>
       <delete quiet="on">
         <fileset dir="${example.dir}" includes="**/*.ajesym"/>
       </delete>
       <mkdir dir="${classes.dir}"/>
+      <mkdir dir="${jar.dir}"/>
     </target>
 
     <target name="init"  depends="init.variables,init.taskdefs"/>
@@ -62,8 +65,6 @@
             location="${basedir}/../../lib"/> 
 
       <!-- required libraries - install or predefine -->
-      <property name="aspectj-ant.jar"
-            location="${aspectj.lib.dir}/aspectj-ant.jar"/> 
       <property name="aspectjrt.jar"
             location="${aspectj.lib.dir}/aspectjrt.jar"/> 
       <property name="aspectjtools.jar"
@@ -72,14 +73,14 @@
       <!-- created directories -->
       <property name="classes.dir"
             location="${example.dir}/classes"/> 
+      <property name="jar.dir"
+            location="${example.dir}/jars"/> 
 
       <!-- checking required libraries -->
       <available file="${aspectjtools.jar}"
              property="aspectjtools.jar.available"/>
       <available file="${aspectjrt.jar}"
              property="aspectjrt.jar.available"/>
-      <available file="${aspectj-ant.jar}"
-             property="aspectj-ant.jar.available"/>
 
       <property name="example.packages"
                value="bean, coordination, evolution, figures, figures.gui,
@@ -158,116 +159,190 @@
                   telecom,telecom-timing,tracing-none,tracing-1,
                   tracing-2,tracing-3,tjp"/>
 
-    <target name="bean">
+    <target name="bean"
+     description="build bean example">
       <antcall target="Ajx">
         <param name="list"    value="bean/files.lst"/>
         <param name="class"   value="bean.Demo"/>
       </antcall>
     </target>
 
-    <target name="intro">
+    <target name="intro"
+     description="build inter-type declaration example">
       <antcall target="Ajx">
         <param name="list"    value="introduction/files.lst"/>
         <param name="class"   value="introduction.Point"/>
       </antcall>
     </target>
 
-    <target name="intro-clone">
+    <target name="intro-clone"
+     description="build inter-type declaration (clone) example">
       <antcall target="Ajx">
         <param name="list"    value="introduction/files.lst"/>
         <param name="class"   value="introduction.CloneablePoint"/>
       </antcall>
     </target>
 
-    <target name="intro-compare">
+    <target name="intro-compare"
+     description="build inter-type declaration (Comparable) example">
       <antcall target="Ajx">
         <param name="list"    value="introduction/files.lst"/>
         <param name="class"   value="introduction.ComparablePoint"/>
       </antcall>
     </target>
 
-    <target name="intro-hash">
+    <target name="intro-hash"
+     description="build inter-type declaration (hashcode) example">
       <antcall target="Ajx">
         <param name="list"    value="introduction/files.lst"/>
         <param name="class"   value="introduction.HashablePoint"/>
       </antcall>
     </target>
 
-    <target name="observer">
+    <target name="observer"
+     description="build observer example">
       <antcall target="Ajx">
         <param name="list"    value="observer/files.lst"/>
         <param name="class"   value="observer.Demo"/>
       </antcall>
     </target>
 
-    <target name="spacewar">
+    <target name="spacewar"
+     description="build spacewar debug example">
       <antcall target="Ajx">
         <param name="list"    value="spacewar/debug.lst"/>
         <param name="class"   value="spacewar.Game"/>
       </antcall>
     </target>
 
-    <target name="spacewar-demo">
+    <target name="spacewar-demo"
+     description="build spacewar demo (no debug) example">
       <antcall target="Ajx">
         <param name="list"    value="spacewar/demo.lst"/>
         <param name="class"   value="spaceware.Game"/>
       </antcall>
     </target>
 
-    <target name="telecom">
+    <target name="telecom"
+     description="build telecom basic example">
       <antcall target="Ajx">
         <param name="list"    value="telecom/basic.lst"/>
         <param name="class"   value="telecom.BasicSimulation"/>
       </antcall>
     </target>
 
-    <target name="telecom-billing">
+    <target name="telecom-billing"
+     description="build telecom billing example">
       <antcall target="Ajx">
         <param name="list"    value="telecom/billing.lst"/>
         <param name="class"   value="telecom.BillingSimulation"/>
       </antcall>
     </target>
 
-    <target name="telecom-timing">
+    <target name="telecom-timing"
+     description="build telecome timing example">
       <antcall target="Ajx">
         <param name="list"    value="telecom/timing.lst"/>
         <param name="class"   value="telecom.TimingSimulation"/>
       </antcall>
     </target>
 
-    <target name="tjp">
+    <target name="tjp"
+     description="build thisJoinPoint example">
       <antcall target="Ajx">
         <param name="list"    value="tjp/files.lst"/>
         <param name="class"   value="tjp.Demo"/>
       </antcall>
     </target>
 
-    <target name="tracing-none">
+    <target name="tracing-none"
+     description="build tracing (base) example">
       <antcall target="Ajx">
         <param name="list"    value="tracing/notrace.lst"/>
         <param name="class"   value="tracing.ExampleMain"/>
       </antcall>
     </target>
 
-    <target name="tracing-1">
+    <target name="tracing-1"
+     description="build tracing (version 1) example">
       <antcall target="Ajx">
         <param name="list"    value="tracing/tracev1.lst"/>
-        <param name="class"   value="tracing.ExampleMain"/>
+        <param name="class"   value="tracing.version1.TraceMyClasses"/>
       </antcall>
     </target>
 
-    <target name="tracing-2">
+    <target name="tracing-2"
+     description="build tracing (version 2) example">
       <antcall target="Ajx">
         <param name="list"    value="tracing/tracev2.lst"/>
-        <param name="class"   value="tracing.ExampleMain"/>
+        <param name="class"   value="tracing.version2.TraceMyClasses"/>
       </antcall>
     </target>
 
-    <target name="tracing-3">
+    <target name="tracing-3"
+     description="build tracing (version 3) example">
       <antcall target="Ajx">
         <param name="list"    value="tracing/tracev3.lst"/>
-        <param name="class"   value="tracing.ExampleMain"/>
+        <param name="class"   value="tracing.version3.TraceMyClasses"/>
       </antcall>
+    </target>
+
+    <!-- ============================================================= -->
+    <!-- do tracing example with 1.1 bytecode weaving (binary aspects) -->
+    <!-- ============================================================= -->
+    <target name="tracing-bc" depends="init"
+     description="tracing example with bytecode weaving (binary aspects)">
+       <antcall target="clean" />
+
+       <!-- build application classes -->
+       <iajc outjar="${jar.dir}/tracingApp.jar"
+          classpath="${aspectjrt.jar}"
+            verbose="off">
+         <src path="${example.dir}"/>
+         <include name="tracing/*.java" />
+       </iajc>
+
+       <!-- test standalone application by running without tracing -->
+       <echo message="---------- running without tracing - START"/>
+       <java classname="tracing.ExampleMain">
+         <classpath>
+            <pathelement path="${aspectjrt.jar}"/> 
+            <pathelement path="${jar.dir}/tracingApp.jar"/> 
+         </classpath>
+       </java>
+       <echo message="---------- running without tracing - FINISH "/>
+
+       <!-- Build a read-only tracing library -->
+       <iajc outjar="${jar.dir}/tracingLib.jar"
+          classpath="${aspectjrt.jar}"
+            verbose="off">
+         <src path="${example.dir}"/>
+         <include name="tracing/version3/Trace.java" />
+       </iajc>
+
+       <!-- weave them -->
+       <!-- This example uses a concrete aspect in source form, -->
+       <!-- but the aspects could be written to be binary only. -->
+       <iajc outjar="${jar.dir}/tracedApp.jar"
+             injars="${jar.dir}/tracingApp.jar"
+         aspectpath="${jar.dir}/tracingLib.jar" 
+          classpath="${aspectjrt.jar}"
+            verbose="off">
+         <src path="${example.dir}"/>
+         <include name="tracing/version3/TraceMyClasses.java" />
+       </iajc>
+
+       <!-- run with tracing -->
+       <echo message="---------- running with tracing - START"/>
+       <java classname="tracing.version3.TraceMyClasses">
+         <classpath>
+            <pathelement path="${aspectjrt.jar}"/> 
+            <pathelement path="${jar.dir}/tracingLib.jar"/> 
+            <pathelement path="${jar.dir}/tracedApp.jar"/> 
+         </classpath>
+       </java>
+       <echo message="---------- running with tracing - FINISH"/>
+
     </target>
 
 </project>
