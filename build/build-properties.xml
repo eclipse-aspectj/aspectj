@@ -1,6 +1,7 @@
 <!-- -*- Mode: SGML; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-     -->
 <!-- ========================================================================= -->
 <!-- Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).        -->
+<!-- Copyright (c) 2003 Contributors.                                          -->
 <!-- All rights reserved.                                                      -->
 <!-- This program and the accompanying materials are made available            -->
 <!-- under the terms of the Common Public License v1.0                         -->
@@ -8,7 +9,8 @@
 <!-- http://www.eclipse.org/legal/cpl-v10.html                                 -->
 <!--                                                                           -->
 <!-- Contributors:                                                             -->
-<!--     Xerox/PARC     initial implementation                                 -->
+<!--     Xerox/PARC             initial implementation                         -->
+<!--     A Colyer / G Harley    eclipse plugin dirs                            -->
 <!-- ========================================================================= -->
 
 <!-- include as common entity for module build scripts -->
@@ -24,11 +26,14 @@
       	  they should be (e.g.,) 1.1b3 or 1.1beta3
       	- Changing version here causes org/aspectj/bridge/Version.java to be updated
         - also change org.aspectj.ajdt.core/src/org/aspectj/ajdt/ajc/messages.properties
+        - build.version.eclipse.plugins should be set to "9.9.9" for "DEVELOPMENT", and
+        - the same as build.version.long (in major.minor.service form) for releases.
       -->
       <property name="build.version"       value="DEVELOPMENT"/> 
       <property name="build.version.base"  value="1.1"/> 
       <property name="build.version.long"  value="DEVELOPMENT"/> 
       <property name="build.version.short" value="DEVELOPMENT"/> 
+      <property name="build.version.eclipse.plugins" value="9.9.9"/>
 
       <!-- formats comply with SimpleDateFormat -->
       <property name="build.time.format"   value="MM/dd/yy 'at' hh:mm:ss z"/> 
@@ -64,6 +69,12 @@
             location="${aj.build.dir}/dist"/>
       <property name="aj.webDeploy.dir" 
             location="${aj.build.dir}/webDeploy"/>
+      <property name="aj.plugin.org.aspectj.ajde.dir" 
+            location="${aj.dist.dir}/ide/eclipse/org.aspectj.ajde"/>
+      <property name="aj.plugin.org.aspectj.ajde.source.dir" 
+            location="${aj.dist.dir}/ide/eclipse/org.aspectj.ajde.source"/>
+      <property name="aj.plugin.org.aspectj.ajde.doc.dir" 
+            location="${aj.dist.dir}/ide/eclipse/org.aspectj.ajde.doc"/>
 
 	  <!-- aspectj... names are sources, not to be mutated -->
       <property name="aspectj.modules.lib.dir"
@@ -108,6 +119,9 @@
       <mkdir dir="${aj.temp.dir}" />
       <mkdir dir="${aj.jar.dir}" />
       <mkdir dir="${aj.dist.dir}" />
+      <mkdir dir="${aj.plugin.org.aspectj.ajde.dir}" />
+      <mkdir dir="${aj.plugin.org.aspectj.ajde.source.dir}" />
+      <mkdir dir="${aj.plugin.org.aspectj.ajde.doc.dir}" />
       <property name="init-directories.done" value="done"/>
     </target>
 

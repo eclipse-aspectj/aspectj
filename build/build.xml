@@ -1,7 +1,8 @@
 <!-- -*- Mode: SGML; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- -->
 
 <!-- ========================================================================= -->
-<!-- Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).        -->
+<!-- Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC),        -->
+<!-- 2003 Contributors                                                         -->
 <!-- All rights reserved.                                                      -->
 <!-- This program and the accompanying materials are made available            -->
 <!-- under the terms of the Common Public License v1.0                         -->
@@ -10,6 +11,7 @@
 <!--                                                                           -->
 <!-- Contributors:                                                             -->
 <!--     Xerox/PARC     initial implementation                                 -->
+<!--     Adrian Colyer / George Harley eclipse plugin targets                  -->
 <!-- ========================================================================= -->
 
 <!DOCTYPE project [
@@ -17,7 +19,7 @@
 ]>
 <project name="build" default="all" basedir=".">
 
-    <target name="all"     depends="aspectj"/>
+    <target name="all"     depends="aspectj,eclipse.plugins"/>
     <target name="rebuild" depends="clean,all"/>
     <target name="clean"   depends="clean-directories"/>
 
@@ -352,6 +354,78 @@ To use testing client jar in tests,
 	    <param name="product.name" value="tools"/>
 	  </antcall>
     </target>
+
+    <!-- ===================================================================== -->
+    <!-- eclipse plugins                                                       -->
+    <!-- ===================================================================== -->
+
+	<target name="eclipse.plugins" depends="org.aspectj.ajde.source,
+	                                        org.aspectj.ajde.doc,
+	                                        org.aspectj.ajde"
+     	    description="create the Eclipse distribution plugins"/>	  
+
+	<target name="org.aspectj.ajde.source" depends="init"
+	  description="build the AspectJ source distribution plugin">
+	  <copy todir="${aj.plugin.org.aspectj.ajde.source.dir}">
+	    <fileset dir="${aspectj.modules.dir}/eclipse.plugins/org.aspectj.ajde.source"/>
+	  </copy>	  
+	  <replace file="${aj.plugin.org.aspectj.ajde.source.dir}/plugin.xml"
+	           token="build.version.eclipse.plugins"
+	           value="${build.version.eclipse.plugins}"/>
+	  <copy file="${aspectj.modules.dir}/org.eclipse.jdt.core/jdtcore-for-aspectj-src.zip"
+	        todir="${aj.plugin.org.aspectj.ajde.source.dir}/src"/> 
+	  <zip destfile="${aj.plugin.org.aspectj.ajde.source.dir}/src/aspectjsrc.zip">
+	    <fileset dir="${aspectj.modules.dir}/ajbrowser/src" includes="**"/>
+	    <fileset dir="${aspectj.modules.dir}/ajde/src" includes="**"/>
+	    <fileset dir="${aspectj.modules.dir}/asm/src" includes="**"/>
+	    <fileset dir="${aspectj.modules.dir}/bridge/src" includes="**"/>
+	    <fileset dir="${aspectj.modules.dir}/org.aspectj.ajdt.core/src" includes="**"/>
+	    <fileset dir="${aspectj.modules.dir}/runtime/src" includes="**"/>
+	    <fileset dir="${aspectj.modules.dir}/taskdefs/src" includes="**"/>
+	    <fileset dir="${aspectj.modules.dir}/util/src" includes="**"/>
+	    <fileset dir="${aspectj.modules.dir}/weaver/src" includes="**"/>
+	  </zip>
+	  <jar destfile="${aj.plugin.org.aspectj.ajde.source.dir}/../org.aspectj.ajde.source_${build.version.eclipse.plugins}.jar">
+	    <fileset dir="${aj.plugin.org.aspectj.ajde.source.dir}" includes="**"/>	    
+	  </jar>
+	</target>
+
+	<target name="org.aspectj.ajde.doc" depends="init,docs-dist"
+	  description="build the AspectJ documentation plugin for Eclipse">
+	  <copy todir="${aj.plugin.org.aspectj.ajde.doc.dir}">
+	    <fileset dir="${aspectj.modules.dir}/eclipse.plugins/org.aspectj.ajde.doc"/>
+	  </copy>
+	  <copy todir="${aj.plugin.org.aspectj.ajde.doc.dir}/doc">
+	    <fileset dir="${aj.dist.dir}/docs/doc" includes="**"/>	    	  
+	  </copy>
+	  <replace file="${aj.plugin.org.aspectj.ajde.doc.dir}/plugin.xml"
+	           token="build.version.eclipse.plugins"
+	           value="${build.version.eclipse.plugins}"/>
+	  <jar destfile="${aj.plugin.org.aspectj.ajde.doc.dir}/../org.aspectj.ajde.doc_${build.version.eclipse.plugins}.jar">
+	    <fileset dir="${aj.plugin.org.aspectj.ajde.doc.dir}" includes="**"/>	    
+	  </jar>
+	</target>
+
+	<target name="org.aspectj.ajde" depends="init,aspectj"
+	  description="build the AspectJ library plugin for Eclipse">
+	  <copy todir="${aj.plugin.org.aspectj.ajde.dir}">
+	    <fileset dir="${aspectj.modules.dir}/eclipse.plugins/org.aspectj.ajde"/>
+	  </copy>	  
+	  <replace file="${aj.plugin.org.aspectj.ajde.dir}/plugin.xml"
+	           token="build.version.eclipse.plugins"
+	           value="${build.version.eclipse.plugins}"/>
+	  <copy file="${aj.dist.dir}/tools/lib/aspectjrt.jar"
+	        todir="${aj.plugin.org.aspectj.ajde.dir}"/> 
+	  <copy file="${aj.dist.dir}/tools/lib/aspectjtools.jar"
+	        todir="${aj.plugin.org.aspectj.ajde.dir}"/>
+	  <jar destfile="${aj.plugin.org.aspectj.ajde.dir}/ajde.jar">
+	  	<zipfileset src="${aj.dist.dir}/tools/lib/aspectjtools.jar"
+	  	   includes="org/aspectj/**"/>
+	  </jar> 	  
+	  <jar destfile="${aj.plugin.org.aspectj.ajde.dir}/../org.aspectj.ajde_${build.version.eclipse.plugins}.jar">
+	    <fileset dir="${aj.plugin.org.aspectj.ajde.dir}" includes="**"/>	    
+	  </jar>
+	</target>
 
 </project>
 
