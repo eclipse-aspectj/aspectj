@@ -29,7 +29,7 @@ public class InterfaceMethodDeclarationAbstract {
 interface I {}
 
 aspect A {
-    abstract int I.getInt();  // implicitly public 
+    abstract int I.getInt();  // Error expected: Needs to be public
     before() : execution(int getInt()) && target(I) {
         Tester.event("before-execution");
     }

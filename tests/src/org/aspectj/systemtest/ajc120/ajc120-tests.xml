@@ -145,7 +145,7 @@
 		pr="49784"
 		title="aspect declares interface method (abstract)">
         <compile files="InterfaceMethodDeclarationAbstract.java">
-        	<message kind="error" line="40" text="must implement" />
+        	<message kind="error" line="40" text="abstract intertype method declaration 'int I.getInt()' on interface I must be declared public (compiler limitation)" />
         </compile>
     </ajc-test>
 
