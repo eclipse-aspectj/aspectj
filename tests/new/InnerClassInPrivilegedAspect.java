@@ -39,6 +39,7 @@ class Util {
 }
 
 class Target {
+	private Target(String foo) {}
     private static int privateStaticInt = 1;
     private int privateInt = 1;
     public static void main(String args[]) { }
@@ -97,6 +98,7 @@ privileged aspect PrivilegedAspectAround {
 
     /** @testcase privileged access to target private static variables from inner class in  introduced constructor */
     Target.new() {
+    	    this("hi");
             int i = privateStaticInt;
             Runnable p = new Runnable() { 
                     public void run() { Util.event("new"+Target.privateStaticInt); }
