@@ -281,6 +281,13 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			&& memberTypeDeclaration.allocation.type != null) {
 			// Create a name something like 'new Runnable() {..}'
 			fullName = "new "+memberTypeDeclaration.allocation.type.toString()+"() {..}";
+		} else if (memberTypeDeclaration.binding != null
+			&& memberTypeDeclaration.binding.constantPoolName() != null) {
+			// If we couldn't find a nice name like 'new Runnable() {..}' then use the number after the $
+			fullName = new String(memberTypeDeclaration.binding.constantPoolName());
+			 
+			int dollar = fullName.indexOf('$');
+			fullName = fullName.substring(dollar+1);
 		}
 
 		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
