@@ -294,9 +294,6 @@ public class Ajde {
     	 * Writes the default configuration file if it has been selected for compilation
     	 */
     	public void compileStarted(String buildConfig) { 
-    		// TODO: implement incremental policy
-    		AsmManager.getDefault().getRelationshipMap().clear();
-    		
     		String configFilePath = projectProperties.getDefaultBuildConfigFile();
     		if (buildConfig.equals(configFilePath)) {
 	    		configurationManager.writePaths(configFilePath, projectProperties.getProjectSourceFiles());	

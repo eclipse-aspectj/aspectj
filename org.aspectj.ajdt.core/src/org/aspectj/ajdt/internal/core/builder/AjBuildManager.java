@@ -166,9 +166,17 @@ public class AjBuildManager {
         }
     }
      
+    /**
+     * Responsible for managing the ASM model between builds.  Contains the policy for
+     * maintaining the persistance of elements in the model.
+     * 
+     * TODO: implement incremental policy.
+     */
     private void setupModel() {
-        String rootLabel = "<root>";
+        String rootLabel = "<root>"; 
 		IHierarchy model = AsmManager.getDefault().getHierarchy();
+		AsmManager.getDefault().getRelationshipMap().clear();
+		
         IProgramElement.Kind kind = IProgramElement.Kind.FILE_JAVA;
         if (buildConfig.getConfigFile() != null) {
             rootLabel = buildConfig.getConfigFile().getName();
