@@ -35,7 +35,8 @@ public class EmacsStructureModelManager {
     	if (!StructureModelManager.INSTANCE.getStructureModel().isValid()) return;
         
         try {
-            Set fileSet = StructureModelManager.INSTANCE.getStructureModel().getFileMap().entrySet(); 
+            //Set fileSet = StructureModelManager.INSTANCE.getStructureModel().getFileMap().entrySet(); 
+			Set fileSet = StructureModelManager.INSTANCE.getStructureModel().getFileMapEntrySet(); 
             for (Iterator it = fileSet.iterator(); it.hasNext(); ) {
                 ProgramElementNode peNode = (ProgramElementNode)((Map.Entry)it.next()).getValue();
                 dumpStructureToFile(peNode);
