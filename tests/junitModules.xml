@@ -396,6 +396,7 @@
            	haltonfailure="${haltOnTestFailure}" >
            <classpath>
            	<path refid="${test.classpath}"/>
+           	<pathelement location="${aspectjrt.path}"/>
            </classpath>
 
 		<!-- AMC added this next line, needed when testing release builds,
