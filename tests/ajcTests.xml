@@ -3792,7 +3792,7 @@
     <ajc-test dir="new" pr="525"
       title="validate (enclosing) join point and source locations"
       keywords="from-resolved_10x">
-        <compile files="NegativeSourceLocation.java"/>
+        <compile files="NegativeSourceLocation.java" options="-Xlint:ignore"/>
         <run class="NegativeSourceLocation"/>
     </ajc-test>
 
@@ -3958,7 +3958,7 @@
     <ajc-test dir="new" pr="590"
       title="after advice on static method with pcd if() using result through pointcut"
       keywords="from-resolved_10x">
-        <compile files="PR590a.java">
+        <compile files="PR590a.java" options="-Xlint:ignore">
             <message kind="error" line="29"/>
             <message kind="error" line="31"/>
         </compile>
