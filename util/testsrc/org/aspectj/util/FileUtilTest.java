@@ -13,11 +13,15 @@
 
 package org.aspectj.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.StringBufferInputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +38,7 @@ import junit.textui.TestRunner;
  */
 public class FileUtilTest extends TestCase {
     public static final String[] NONE = new String[0];
-    public static boolean log = true;
+    public static boolean log = false;
 
     public static void main(String[] args) {
         TestRunner.main(new String[] {"org.aspectj.util.FileUtilTest"});
@@ -564,6 +568,114 @@ public class FileUtilTest extends TestCase {
             assertTrue(filenames[i], f.createNewFile());
 		}
         return d;
+    }
+
+    public void testPipeEmpty() {
+        checkPipe("");
+    }
+    
+    public void testPipeMin() {
+        checkPipe("0");
+    }
+    
+    public void testPipe() {
+        String str = "The quick brown fox jumped over the lazy dog";
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < 4096; i++) {
+            sb.append(str);
+        }
+        checkPipe(sb.toString());
+    }
+    
+    void checkPipe(String data) {
+        StringBufferInputStream in = new StringBufferInputStream(data);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        FileUtil.Pipe pipe = new FileUtil.Pipe(in, out);
+        pipe.run();
+        assertTrue(data.equals(out.toString()));
+        assertTrue(null == pipe.getThrown());
+        assertEquals("totalWritten", data.length(), pipe.totalWritten());
+    }
+    
+    public void testPipeThrown() {
+        final String data = "The quick brown fox jumped over the lazy dog";
+        final IOException thrown = new IOException("test");
+        StringBufferInputStream in = new StringBufferInputStream(data);
+        OutputStream out = new OutputStream() {
+            public void write(int b) throws IOException {
+                throw thrown;
+            }
+        };
+        
+        FileUtil.Pipe pipe = new FileUtil.Pipe(in, out);
+        pipe.run();
+        assertEquals("totalWritten", 0, pipe.totalWritten());
+        assertTrue(thrown == pipe.getThrown());
+    }
+    
+    public void testPipeHalt() {
+        final long MAX = 1000000;
+        InputStream in = new InputStream() {
+            long max = 0;
+            public int read() throws IOException {
+                if (max++ > MAX) {
+                    throw new IOException("test failed");
+                }
+                return 1; 
+            }
+
+        };
+        final int minWritten  = 20;
+        class Flag {
+            boolean hit;
+        }
+        final Flag flag = new Flag();
+        OutputStream out = new OutputStream() {
+            long max = 0;
+            public void write(int b) throws IOException {
+                if (max++ > MAX) {
+                    throw new IOException("test failed");
+                } else if (max > minWritten) {
+                    if (!flag.hit) {
+                        flag.hit = true;
+                    }
+                }
+            }
+        };
+        class Result {
+            long totalWritten;
+            Throwable thrown;
+            boolean set;
+        }
+        final Result result = new Result();
+        FileUtil.Pipe pipe = new FileUtil.Pipe(in, out) {
+            protected void completing(
+                long totalWritten,
+                Throwable thrown) {
+                 result.totalWritten = totalWritten;
+                 result.thrown = thrown;
+                 result.set = true;
+            }
+        };
+        // start it up
+        new Thread(pipe).start();
+        // wait for minWritten input
+        while (!flag.hit) {
+            try {
+                Thread.sleep(5l);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+        }
+        // halt
+        assertTrue(pipe.halt(true, true));
+        assertTrue(result.set);
+        assertTrue(null == result.thrown);
+        assertTrue(null == pipe.getThrown());
+        assertEquals("total written", result.totalWritten, pipe.totalWritten());
+        if (minWritten > pipe.totalWritten()) {
+            assertTrue("written: " + pipe.totalWritten(), false);
+        }
     }
 
 }
