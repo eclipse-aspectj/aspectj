@@ -3,6 +3,11 @@
 
 <!-- contains valid tests that the compiler has never passed -->
 <suite>
-
+    <ajc-test dir="bugs/cflowAndJar" pr="39462"
+   	 title="Compiler crashes in jar and cflow"
+   	 comment="make lib.jar with ajc -outjar lib.jar AbstractAspect.aj">
+        <compile files="lib.jar,TestAspect.aj,Test.java"/>
+        <run class="Test"/>
+    </ajc-test>
 
 </suite>
