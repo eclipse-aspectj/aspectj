@@ -47,4 +47,13 @@
         <run class="app.Main"/>
     </ajc-test>
 
+    <ajc-test dir="bugs/handlers" pr="37898"
+		title="advice on handler join points should not throw unpermitted checked exceptions">
+        <compile files="ExceptionCheckCE.java">
+			<message kind="warning" line="8" text="expected"/>
+			<message kind="error" line="25" text="throw checked exception" />
+			<message kind="error" line="8" text="throw checked exception" />
+        </compile>
+    </ajc-test>
+
 </suite>
