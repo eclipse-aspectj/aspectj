@@ -14,13 +14,23 @@
 <suite>
 		
 	<ajc-test dir="api-clients" title="api-ajde-modelWalker"
-		comment="function unvalidated, only that it compiles and runs">
+		comment="BROKEN - function unvalidated, only that it compiles and runs">
 		<compile files="org/aspectj/samples/JoinPointCollector.java"
 			classpath="../../../aj-build/dist/tools/lib/aspectjtools.jar"/>
 		<run class="org/aspectj/samples/JoinPointCollector"
 			options="-help"/>
 		</ajc-test>
 
+	<ajc-test dir="api-clients" title="api-asm-listAffectedFiles"
+		comment="function unvalidated; note run paths are relative to harness cwd">
+		<compile files="org/aspectj/samples/AffectedFilesReporter.java"
+			classpath="../../../aj-build/dist/tools/lib/aspectjtools.jar"/>
+		<run class="org/aspectj/samples/AffectedFilesReporter"
+            outStreamIsError="true"
+			options="-emacssym,@../aj-build/dist/docs/doc/examples/tracing/notrace.lst"/>
+		<run class="org/aspectj/samples/AffectedFilesReporter"
+			options="-emacssym,@../aj-build/dist/docs/doc/examples/tracing/tracev3.lst"/>
+		</ajc-test>
 </suite>
 
 	
