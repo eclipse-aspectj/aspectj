@@ -36,6 +36,7 @@ public class AspectJBuildManager implements BuildManager {
     private String lastConfigFile = null;
     private int lastCompileTime = 50;
     private boolean buildStructureOnly = false;
+	private boolean buildModelMode = true;
 
     public AspectJBuildManager(
     	TaskListManager compilerMessages, 
@@ -161,7 +162,7 @@ public class AspectJBuildManager implements BuildManager {
        			Ajde.getDefault().logEvent("building with options: " 
        				+ getFormattedOptionsString(buildOptions, Ajde.getDefault().getProjectProperties()));
                 
-                succeeded = compilerAdapter.compile(configFile, progressMonitor);
+                succeeded = compilerAdapter.compile(configFile, progressMonitor, buildModelMode);
                 
                 long timeEnd = System.currentTimeMillis();
                 lastCompileTime = (int)(timeEnd - timeStart);
@@ -225,5 +226,10 @@ public class AspectJBuildManager implements BuildManager {
 			else { return s; }
 		}
     }
+    
+	public void setBuildModelMode(boolean b) {
+		buildModelMode = b;
+	}
+
 }
 

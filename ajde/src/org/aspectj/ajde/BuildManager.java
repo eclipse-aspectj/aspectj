@@ -58,11 +58,11 @@ public interface BuildManager {
 
 	public BuildOptionsAdapter getBuildOptions();
 
-//    public CompilerAdapter getCurrCompiler();
-
     public boolean isStructureDirty();
 
     public void setStructureDirty(boolean structureDirty);
+
+	public void setBuildModelMode(boolean mode);
 
     public void addListener(BuildListener compilerListener);
 

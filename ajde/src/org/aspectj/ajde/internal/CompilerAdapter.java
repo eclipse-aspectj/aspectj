@@ -72,10 +72,11 @@ public class CompilerAdapter {
 		this.structureDirty = structureDirty;
 	}
 
-	public boolean compile(String configFile, BuildProgressMonitor progressMonitor) {
+	public boolean compile(String configFile, BuildProgressMonitor progressMonitor, boolean buildModel) {
 		init();
 		try { 
 			AjBuildConfig buildConfig = genBuildConfig(configFile);
+			buildConfig.setGenerateModelMode(buildModel);
 			if (null == buildConfig) {
                 return false;
 			}
