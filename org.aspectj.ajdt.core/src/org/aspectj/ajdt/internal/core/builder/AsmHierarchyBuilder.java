@@ -537,15 +537,21 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		}
 	}
 
-	public boolean visit(FieldDeclaration fieldDeclaration, MethodScope scope) {		
-		IProgramElement peNode = new ProgramElement(
-			new String(fieldDeclaration.name),
-			IProgramElement.Kind.FIELD,	
-			makeLocation(fieldDeclaration),
-			fieldDeclaration.modifiers,
-			"",
-			new ArrayList());
-		peNode.setCorrespondingType(fieldDeclaration.type.toString());
+	public boolean visit(FieldDeclaration fieldDeclaration, MethodScope scope) {
+	    IProgramElement peNode = null;
+	    if (fieldDeclaration.type == null) { // The field represents an enum value
+	      peNode = new ProgramElement(
+			new String(fieldDeclaration.name),IProgramElement.Kind.ENUM_VALUE,	
+			makeLocation(fieldDeclaration),   fieldDeclaration.modifiers,
+			"", new ArrayList());
+		  peNode.setCorrespondingType(fieldDeclaration.binding.type.debugName());
+		} else {		
+		  peNode = new ProgramElement(
+			new String(fieldDeclaration.name),IProgramElement.Kind.FIELD,	
+			makeLocation(fieldDeclaration),   fieldDeclaration.modifiers,
+			"", new ArrayList());
+		  peNode.setCorrespondingType(fieldDeclaration.type.toString());
+		}
 		peNode.setSourceSignature(genSourceSignature(fieldDeclaration));
 		peNode.setFormalComment(generateJavadocComment(fieldDeclaration));
 		
@@ -599,7 +605,11 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	protected String genSourceSignature(FieldDeclaration fieldDeclaration) {
 		StringBuffer output = new StringBuffer();
 		FieldDeclaration.printModifiers(fieldDeclaration.modifiers, output);
-		fieldDeclaration.type.print(0, output).append(' ').append(fieldDeclaration.name); 
+		if (fieldDeclaration.type == null) { // This is an enum value
+			output.append(fieldDeclaration.binding.type.debugName()).append(" ").append(fieldDeclaration.name);
+		} else {
+			fieldDeclaration.type.print(0, output).append(' ').append(fieldDeclaration.name);
+		}
 		
 		if (fieldDeclaration.initialization != null
 			&& !(fieldDeclaration.initialization instanceof QualifiedAllocationExpression)) {

@@ -16,6 +16,9 @@ import junit.framework.Test;
 
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
+/**
+ * These are tests that will run on Java 1.4 and use the old harness format for test specification.
+ */
 public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  
   public static Test suite() {

@@ -220,6 +220,7 @@ public interface IProgramElement extends Serializable {
 		public static final Kind INTERFACE = new Kind("interface");
 		public static final Kind ASPECT = new Kind("aspect");
 		public static final Kind ENUM = new Kind("enum");
+		public static final Kind ENUM_VALUE = new Kind("enumvalue");
 		public static final Kind ANNOTATION = new Kind("annotation");
 		public static final Kind INITIALIZER = new Kind("initializer");
 		public static final Kind INTER_TYPE_FIELD = new Kind("inter-type field");
@@ -254,6 +255,7 @@ public interface IProgramElement extends Serializable {
 				INTERFACE,
 				ASPECT,
 				ENUM,
+				ENUM_VALUE,
 				ANNOTATION,
 				INITIALIZER,
 				INTER_TYPE_FIELD,
@@ -295,6 +297,7 @@ public interface IProgramElement extends Serializable {
 		public static List getNonAJMemberKinds() {
 			List list = new ArrayList();
 			list.add(METHOD);
+			list.add(ENUM_VALUE);
 			list.add(FIELD);
 			list.add(CONSTRUCTOR);
 			return list;
@@ -305,7 +308,8 @@ public interface IProgramElement extends Serializable {
 				|| this == METHOD
 				|| this == CONSTRUCTOR
 				|| this == POINTCUT
-				|| this == ADVICE;
+				|| this == ADVICE
+				|| this == ENUM_VALUE;
 		}
 
 		public boolean isInterTypeMember() {
@@ -317,7 +321,9 @@ public interface IProgramElement extends Serializable {
 		public boolean isType() {
 			return this == CLASS
 				|| this == INTERFACE
-				|| this == ASPECT;	
+				|| this == ASPECT
+				|| this == ANNOTATION 
+				|| this == ENUM;
 		}
 
 		public boolean isSourceFile() {

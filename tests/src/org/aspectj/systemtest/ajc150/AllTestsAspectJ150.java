@@ -13,6 +13,9 @@ package org.aspectj.systemtest.ajc150;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+/**
+ * This pulls together tests we have written for AspectJ 1.5.0 that don't need Java 1.5 to run
+ */
 public class AllTestsAspectJ150 {
 
 	public static Test suite() {

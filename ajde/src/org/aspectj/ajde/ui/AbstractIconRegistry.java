@@ -48,6 +48,7 @@ public abstract class AbstractIconRegistry {
 	
 	protected final AbstractIcon METHOD = createIcon(STRUCTURE_PATH + "method.gif");
 	protected final AbstractIcon FIELD = createIcon(STRUCTURE_PATH + "field.gif");
+	protected final AbstractIcon ENUM_VALUE = createIcon(STRUCTURE_PATH + "field.gif");//???Change to an enum value icon...
 	protected final AbstractIcon CLASS = createIcon(STRUCTURE_PATH + "class.gif");
 	protected final AbstractIcon INTERFACE = createIcon(STRUCTURE_PATH + "interface.gif");
 
@@ -115,6 +116,8 @@ public abstract class AbstractIconRegistry {
 			return METHOD;
 		} else if (kind == IProgramElement.Kind.FIELD) {
 			return FIELD;
+		} else if (kind == IProgramElement.Kind.ENUM_VALUE) {
+			return ENUM_VALUE;
 		} else if (kind == IProgramElement.Kind.POINTCUT) {
 			return POINTCUT;
 		} else if (kind == IProgramElement.Kind.ADVICE) {

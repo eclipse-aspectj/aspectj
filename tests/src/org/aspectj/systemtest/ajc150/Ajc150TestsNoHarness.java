@@ -20,6 +20,8 @@ import org.aspectj.tools.ajc.CompilationResult;
 
 
 /**
+ * These are tests that run on Java 1.4 and use the new ajctestcase format.
+ * If you have a test that *needs* to run on Java 1.5 then look in Ajc150TestsRequireJava15.java
  */
 public class Ajc150TestsNoHarness extends TestUtils {
 
