@@ -172,6 +172,9 @@ public class Clinit extends AbstractMethodDeclaration {
 				}
 			}
 		}
+		
+		generatePostSyntheticCode(classScope, codeStream);
+		
 		if (codeStream.position == 0) {
 			// do not need to output a Clinit if no bytecodes
 			// so we reset the offset inside the byte array contents.
@@ -212,6 +215,12 @@ public class Clinit extends AbstractMethodDeclaration {
 			codeStream.putstatic(this.assertionSyntheticFieldBinding);
 		}
 	}
+	
+	protected void generatePostSyntheticCode(
+		ClassScope classScope,
+		CodeStream codeStream) {
+		}
+
 
 	public boolean isClinit() {
 
