@@ -13,6 +13,8 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
+import java.lang.reflect.Modifier;
+
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
 import org.aspectj.weaver.AjAttribute;
@@ -77,12 +79,14 @@ public class PointcutDeclaration extends MethodDeclaration {
 	public void resolveStatements() {
 		if (isAbstract()) {
 			this.modifiers |= AccSemicolonBody;
-			if (pointcutDesignator != null) {
-				scope.problemReporter().signalError(sourceStart, sourceEnd, "abstract pointcut can't have body");
-			}
-		} 
+		}
+
 		
 		if (binding == null || ignoreFurtherInvestigation) return;
+
+		if (Modifier.isAbstract(this.declaredModifiers)&& (pointcutDesignator != null)) {
+			scope.problemReporter().signalError(sourceStart, sourceEnd, "abstract pointcut can't have body");
+		} 
 		
 		if (pointcutDesignator != null) {
 			pointcutDesignator.finishResolveTypes(this, this.binding, arguments.length, 
