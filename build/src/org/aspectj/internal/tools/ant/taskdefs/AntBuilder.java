@@ -46,10 +46,17 @@ public class AntBuilder extends Builder {
      * which in some cases causes the tasks to fail.
      */
 
-    /** @return a Builder for this project and configuration */
+    /**
+     * Factory for a Builder.
+     * @param config the String configuration, where only substrings
+     *        "verbose" and "useEclipseCompiles" are significant
+     * @param project the owning Project for all tasks (not null)
+     * @param tempDir the File path to a temporary dir for side effects (may be null)
+     * @return a Builder for this project and configuration 
+     */
     public static Builder getBuilder(String config, Project project, File tempDir) {
         boolean useEclipseCompiles = false;
-        boolean verbose = false;
+        boolean verbose = false;        
         if (null != config) {
             if (-1 != config.indexOf("useEclipseCompiles")) {
                 useEclipseCompiles = true;
