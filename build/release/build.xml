@@ -42,6 +42,7 @@
  Properties to consider setting on the command-line:
 
     -- required 
+    java11.home           JAVA_HOME for latest JDK 1.1
     java13.home           JAVA_HOME for latest J2SE 1.3
     java14.home           JAVA_HOME for latest J2SE 1.4
     
@@ -107,6 +108,7 @@
 		<property name="version" value="DEVELOPMENT"/>
 		<property name="ant.verbose" value=""/>
 		<property name="failonerror" value="true"/>
+		<property name="harness.jvmline" value="-Dignore=me"/>
 
 		<property name="aspectj.workspace"
 			location="${basedir}/aspectj-workspace"/>
@@ -311,6 +313,9 @@
 		<antcall target="do-14-target">
 			<param name="do.target" value="do-test-install-sequence"/>
 		</antcall>
+		<antcall target="test-doc-links"/>
+		<echo message="TODO: Run test-examples-11 manually - AWT not exiting?"/>
+		<!-- antcall target="test-examples-11"/ -->
 	</target>
 	
 	<target name="do-test-install-sequence" 
@@ -322,12 +327,52 @@
 	<target name="test-build-examples" 
 		depends="init-variables,init-aspectj-available">
 		<antcall target="do-build-installed-example">
-			<param name="example.target" value="nonGui"/>
+			<param name="example.target" value="bean"/>
+		</antcall>
+		<antcall target="do-build-installed-example">
+			<param name="example.target" value="intro"/>
+		</antcall>
+		<antcall target="do-build-installed-example">
+			<param name="example.target" value="intro-clone"/>
+		</antcall>
+		<antcall target="do-build-installed-example">
+			<param name="example.target" value="intro-compare"/>
+		</antcall>
+		<antcall target="do-build-installed-example">
+			<param name="example.target" value="intro-hash"/>
+		</antcall>
+		<!-- observer uses GUI -->
+		<antcall target="do-build-installed-example">
+			<param name="example.target" value="telecom"/>
+		</antcall>
+		<antcall target="do-build-installed-example">
+			<param name="example.target" value="telecom-billing"/>
+		</antcall>
+		<antcall target="do-build-installed-example">
+			<param name="example.target" value="telecom-timing"/>
+		</antcall>
+		<antcall target="do-build-installed-example">
+			<param name="example.target" value="tjp"/>
+		</antcall>
+		<antcall target="do-build-installed-example">
+			<param name="example.target" value="tracing-none"/>
+		</antcall>
+		<antcall target="do-build-installed-example">
+			<param name="example.target" value="tracing-1"/>
+		</antcall>
+		<antcall target="do-build-installed-example">
+			<param name="example.target" value="tracing-2"/>
+		</antcall>
+		<antcall target="do-build-installed-example">
+			<param name="example.target" value="tracing-3"/>
 		</antcall>
 		<antcall target="do-build-installed-example">
 			<param name="example.target" value="tracing-bc"/>
 		</antcall>
-		<echo message="Also setup and run compiler adapter example"/>
+		<antcall target="do-build-installed-example">
+			<param name="example.target" value="nonGui"/>
+		</antcall>
+		<echo message="TODO: setup and run compiler adapter example"/>
 	</target>
 
 	<target name="test-ajc-aspectj" 
@@ -381,6 +426,54 @@
 		<move todir="${tjm.copy.todir}" >
 		 	<fileset dir="${xmlSrcDir}"	includes="**/*"/>
 		</move>
+	</target>
+
+	<target name="test-doc-links" 
+		depends="init-aspectj-available,init-harness-available"
+		description="run link check against distribution">
+		<antcall target="do-java13-setup"/>
+		<property file="${java.home.file}"/>
+		<fail unless="build.java.home" 
+		     message="failed to read ${build.java.home} from ${java.home.file}"/>
+
+		<property name="doclink.output.file"
+			location="${aj.build.log.dir}/test-doc-links"/>
+		<property name="doclink.start.file"
+			location="${aj.build.install.dir}/README-AspectJ.html"/>
+		<echo>
+  test-doc-links ${doclink.start.file}
+              to ${doclink.output.file}-[out|messages].txt
+  WARNING: verify manually if result code is not 0...
+</echo>
+		<java 
+			classname="org.aspectj.testing.util.LinkCheck"
+			fork="true"
+			dir="${aj.build.install.dir}"
+			classpath="${harness.jar}" 
+			jvm="${build.java.command}"
+			output="${doclink.output.file}-out.txt">
+			<arg value="${doclink.start.file}"/>
+			<arg value="-printInfo"/>
+			<arg value="-log"/>
+			<arg value="${doclink.output.file}-messages.txt"/>
+		</java>
+	</target>
+	
+	<target name="test-examples-11" depends="init-harness-available"
+		description="run examples under JDK 1.1">
+		<property name="j11.home"
+			location="${java11.home}"/>
+		<property name="java11.command"
+			location="${java11.home}/bin/java"/>
+		<property name="java11.classes.zip"
+			location="${java11.home}/lib/classes.zip"/>
+		<antcall target="do-run-harness">
+			<param name="suite.filename" value="ajcTestsExamples"/>
+			<param name="harness.args" value="-1.1"/>
+			<param name="harness.suffix" value="-run11"/>
+			<param name="harness.jvmline" 
+				value="-Djavarun.fork=true -Djavarun.java=${java11.command} -Djavarun.java.home=${j11.home} -Djavarun.bootclasspath=${java11.classes.zip}"/>
+		</antcall>
 	</target>
 
 	<target name="test-harness-tests" depends="init-harness-available">
@@ -480,6 +573,7 @@
 			jvm="${build.java.command}"
 			maxmemory="250m" 
 			output="${harness.output.file}">
+			<jvmarg line="${harness.jvmline}"/>
 			<arg value="${suite.filename}.xml"/>
 			<arg line="${drho.default.options} ${harness.args}"/>			
 		</java>
