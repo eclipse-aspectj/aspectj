@@ -1,0 +1,1067 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.1beta1 -- Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<p align="right"><small>
+&copy; Copyright 2002 Palo Alto Research Center, Incorporated.
+All rights reserved.
+</small></p>
+
+<h1>AspectJ Readme</h1>
+
+<p align="right"><i>Version 1.1beta1</i></p>
+
+<p> This is an early-access release of AspectJ 1.1.  It includes a small
+number of new language features as well as major improvements to the
+functionality of the tools.   </p>
+
+<p> This document is intended to completely describe the 1.1 language
+and tools in relation to AspectJ 1.0.6.  With that in mind, many
+features are documented sketchily with the flag "not working in
+1.1beta1", but we believe it to include some description of all the
+features of 1.1 that are different from those in 1.0.6.
+</p>
+
+<p>The full documentation package for the 1.1 release is not yet
+ready, so this document goes into a bit more detail than usual changes
+documents.  All descriptions here should be read as changes to the
+<a href="http://aspectj.org/documentation/dist">The AspectJ 1.0.6
+documentation</a>.  </p>
+
+<p> The changes from the 1.1alpha release are:
+</p>
+
+
+<ul>
+  <li>More 1.0 features have been implemented: <code>perthis</code>,
+  <code>pertarget</code>, <code>percflow</code>,
+  <code>withincode</code>, <code>if</code>, <code>cflow</code>,
+  <code>cflowbelow</code>, <code>privileged aspects</code>, and
+  <code>declare soft</code>. </li>
+
+  <li>Two new compiler flags, <a href="#NO_WEAVE">-noweave</a> and
+  <a href="#BINARY_ASPECTS">-aspectpath</a>, are supported.</li>
+
+  <li>The <a href="#XLINT">-Xlint</a> option is now partially supported.</li>
+
+  <li>Source information is better maintained.</li>
+
+  <li><code>declare soft</code> and inter-type field declarations have
+  additional <a href="#NEW_LIMITATIONS">restrictions</a> that were not
+  present in 1.0.  </li>
+
+  <li>The status of <a href="#tools">ajdoc</a> is under consideration.</li>
+
+  <li>Eclipse 2.0 will be supported by an upcoming AJDT release</li>
+
+  <li>Netbeans 3.4 is supported, and compiler message output is better
+  integrated.</li>
+
+  <li>Method executions now show up in the tools' structure model.</li>
+</ul>
+
+<p> This document begins with short descriptions of changes from the
+1.0 release.
+</p>
+
+<ul>
+  <li><a href="#language">the language</a>,</li>
+  <li><a href="#compiler">the compiler</a>,</li>
+  <li><a href="#tools">the support tools</a>,</li>
+  <li><a href="#runtime">the runtime</a>,</li>
+  <li><a href="#devenv">the development environment support</a>, and</li>
+  <li><a href="#sources">the sources</a>,</li>
+</ul>
+
+<p> followed by <a href="#details">details</a> of many of the changes.
+</p>
+
+<!-- ============================== -->
+<hr>
+<h2><a name="language">The Language</a></h2>
+
+  <p> AspectJ 1.1 is a slightly different language than AspectJ 1.0.
+  In all but a few cases, programs written in AspectJ 1.0 should
+  compile correctly in AspectJ 1.1.  In many cases, there are
+  new or preferred forms in AspectJ 1.1.  However, some AspectJ 1.0
+  features are not yet implemented in 1.1, so many 1.0 programs
+  will not compile in this release.
+  </p>
+
+  <p>
+  Most changes to the language are additions to expressibility
+  requested by our users:
+  </p>
+
+  <ul>
+    <li><a href="#THROWS_PATTERN">Matching based on throws</a>: You can
+    now make finer discriminations between methods based on declared
+    exceptions. </li>
+
+    <li><a href="#NEW_PCDS">New kinded pointcut designators</a>: Now
+    every kind of pointcut has a corresponding kinded pointcut
+    designator. </li>
+
+    <li><a href="#PER_TYPE">New pertype aspect specifier</a>: This
+    is a potential feature whose status is still uncertain. </li>
+  </ul>
+
+  <p> Some are have different behavior in edge cases but offer
+  improved power and clarity: </p>
+
+  <ul>
+    <li><a href="#ASPECT_PRECEDENCE">New aspect precedence form</a>:
+    AspectJ 1.1 has a new declare form, declare dominates, that is
+    intended to replace the "dominates" clause on aspects.  </li>
+  </ul>
+
+  <p> But in order to support weaving into bytecode effectively,
+  several incompatible changes had to be made to the language: </p>
+
+  <ul>
+    <li><a href="#CALLEE_SIDE_CALLS">Different callee-side call join
+    points</a></li>
+
+    <li><a href="#SINGLE_INTERCLASS_TARGET">One target for intertype
+    declarations</a></li>
+
+    <li><a href="#UNAVAILABLE_JOIN_POINTS">No initializer execution join
+    points</a></li>
+
+    <li><a href="#CONSTRUCTOR_EXECUTION_IS_BIGGER">Initializers run
+    inside constructor execution join points</a></li>
+
+    <li><a href="#WITHIN_MEMBER_TYPES">Small limitations of the within
+    pointcut</a></li>
+
+    <li><a href="#WITHIN_CODE">Small limitations of the withincode
+    pointcut</a></li>
+
+    <li><a href="#INSTANCEOF_ON_WILD">Can't do instanceof matching on
+        type patterns with wildcards</a></li>
+
+    <li><a href="#NO_SOURCE_COLUMN">SourceLocation.getColumn() is
+        deprecated and will always return 0</a></li>
+
+  </ul>
+
+  <p><a name="NEW_LIMITATIONS">There</a> are a couple of language
+  limitations for things that are rarely used that make the
+  implementation simpler.  If no one speaks up in defense of these,
+  they will probably become official simplifications of the language.
+  If defenders speak up, then they will be listed as limitations of
+  the current compiler implementation. </p>
+
+  <ul>
+    <li>'declare soft: TYPE: POINTCUT;' In 1.0 a TYPE_PATTERN was
+    allowed rather than a TYPE.  This limitation makes declare soft
+    much easier to implement efficiently.</li>
+
+    <li>Inter-type field declarations only allow a single field per
+    line, i.e. this is now illegal 'int C.field1, D.field2;' This must
+    instead be, 'int C.field1; int D.field2;'</li>
+  </ul>
+
+  <p>Finally, there are several AspectJ-1.0 language features that are
+  unimplemented in 1.1beta1 because we didn't have the time.  These
+  features should all be available in 1.1rc1.</p>
+
+  <ul>
+    <li><a href="#MISSING_LANGUAGE">Language features unimplemented in
+    1.1beta1</a>: initialization, preinitialization and handler
+    pcds/join points; args pcd with multiple ..'s; inter-type
+    constructor declarations.  </li>
+  </ul>
+
+<!-- ============================== -->
+<hr>
+<h2><a name="compiler">The Compiler</a></h2>
+
+  <p> The compiler for AspectJ 1.1 is different than the compiler for
+  AspectJ 1.0.  While this document describes the differences in the
+  compiler, it's worthwhile noting that much effort has been made to
+  make sure that the interface to ajc 1.1 is, as much as possible, the
+  same as the interface to ajc 1.0.  There are two important changes
+  under the hood, however. </p>
+
+  <p> First, The 1.1 compiler is implemented on top of IBM's
+  open-source Eclipse compiler.  This has two benefits: It allows us
+  to concentrate on the AspectJ extensions to Java and let the Eclipse
+  team worry about making sure the Java edge cases work, and it allows
+  us to piggyback on Eclipse's already mature incremental compilation
+  facilities.  </p>
+
+  <p> Second, ajc now cleanly deliniates compilation of source code
+  from assembly (or "weaving") of bytecode.  The compiler still
+  accepts source code, but internally it transforms it into bytecode
+  format before weaving. </p>
+
+  <p> This new architecture, and other changes to the compiler, allows
+  us to implement some features that were defined in the AspectJ 1.0
+  language but not implementable in the 1.1 compiler (after returning
+  advice on handler join points will probably be one of those
+  features, when handler join points are finished).  It also makes
+  some new features available: </p>
+
+  <ul>
+    <li><a href="#SOURCEROOT">The -sourceroots option</a>: This option
+    takes one or more directories, and indicates that all the source
+    files in those directories should be passed to the compiler. </li>
+
+    <li><a href="#BYTECODE_WEAVING">The -injars option</a>: This option
+    takes one or more jar files, and indicates that all the classfiles
+    in the jar files should be woven into.  </li>
+
+    <li><a href="#NO_WEAVE">-noweave, a compiler option to suppress
+    weaving</a></li>
+
+    <li><a href="#BINARY_ASPECTS">-aspectpath, working with aspects in
+    .class/.jar form</a></li>
+
+    <li><a href="#OUTJAR">The -outjar option</a>: This option indicates
+    that the result classfiles of compiling and weaving should be placed
+    in the specified jar file. </li>
+
+    <li><a href="#XLINT">The -Xlint option is partially implemented in
+    1.1beta1.</a></li>
+
+    <li><a href="#INCREMENTAL">Incremental compilation</a>: The AspectJ
+    1.1 compiler supports incremental compilation. </li>
+  </ul>
+
+  <p> Some other features we plan to support for 1.1, but did not make
+  it into this beta release: </p>
+
+  <ul>
+    <li><a href="#NO_AROUND_OPTIMIZATION">Inlining around advice</a>: The
+    implementation of around advice is not optimized at all in the
+    beta, and so will result in slower generated code than that
+    generated by ajc 1.0.  </a></li>
+
+    <li><a href="#NO_CALLEE_SIDE_CALL">Callee-side call join points</a>:
+    The beta compiler does not expose call join points unless it is
+    given the calling code. </li>
+
+    <li><a href="#EXCEPTION_CHECKING">Exception checking is not
+        handled completely during weaving</a></li>
+
+    <li><a href="#ERROR_MESSAGES">Error messages will sometimes be scary</a></li>
+
+    <li><a href="#OTHER_X_OPTIONS">Various -X options</a></li>
+
+    <li><a href="#MISSING_LANGUAGE">Several language features are unimplemented in
+    1.1beta1</a></li>
+  </ul>
+
+  <p> But some features of the 1.0 compiler are not supported in the
+  1.1 compiler: </p>
+
+  <ul>
+    <li><a href="#NO_SOURCE">Source-specific options</a>: The -source,
+    -usejavac, -nocomment and -workingdir options are no longer
+    supported</li>
+
+    <li><a href="#NO_STRICT_LENIENT">The -strict and -lenient options</a>
+    </li>
+
+    <li><a href="#NO_PORTING">The -porting option</a></li>
+
+    <li><a href="#13_REQUIRED">J2SE 1.2 is not supported;
+    J2SE 1.3 or later is required;.</a></li>
+  </ul>
+
+  <p> A short description of the options ajc accepts is available with
+  "ajc -help".  </p>
+  <p> </p>
+
+<!-- ============================== -->
+<hr>
+<h2><a name="tools">Support Tools</a></h2>
+
+
+  <p>This release includes two new experimental Ant variants,
+     a CompilerAdapter to support running <tt>ajc</tt> with the Javac task
+     by setting the build.compiler property and a task that supports
+     incremental mode by watching a file.
+  </p>
+
+  <p>This release does not include <tt>ajdoc</tt>, the documentation tool for
+     AspectJ sources, and its 1.1 release will trail the others' by weeks.
+     <tt>Ajdoc</tt> is deeply dependent on the abstract syntax tree
+     classes from the old compiler, so it needs a bottom-up rewrite.
+     We think it best to use this opportunity to implement more general
+     API's for publishing and rendering static structure.  Because those API's
+     are last to settle in the new architecture, and because the compiler itself
+     is a higher priority, we are delaying work on <tt>ajdoc</tt> until
+     after the 1.1 release.</p>
+
+  <p>AspectJ 1.1 will not include <tt>ajdb</tt>, the AspectJ stand-alone debugger.
+  It is no longer necessary because more third-party debuggers are starting
+  to work according to JSR 45, "Debugging support for other languages",
+  which we plan to support in AspectJ 1.1. </p>
+
+<!-- ============================== -->
+<hr>
+<h2><a name="runtime">The Runtime Library</a></h2>
+
+  <p>This release has minor additions to the runtime library classes.
+     As with any release, you should compile and run with the runtime
+     library that came with your compiler, and you may run with
+     a later version of the library without recompiling your code.</p>
+
+  <p> In one instance, however, they behave differently this release.
+  Because the AspectJ 1.1 compiler does its weaving through
+  bytecode, column numbers of source locations are not available.
+  Therefore, <code>thisJoinPoint.getSourceLocation().getColumn()</code>
+  is deprecated and will always return 0. </p>
+
+<!-- ============================== -->
+<hr>
+<h2><a name="devenv">The AJDE Tools</a></h2>
+
+  <p> AJDE for JBuilder, AJDE for Netbeans, and AJDE for Emacs and the
+  AJBrowser have not changed much.  They use the batch-build mode of
+  the new compiler.  The beta compiler does not yet produce
+  crosscutting structure (for anything but method executions) so there are no inline
+  annotations in JBuilder or Emacs support and you only see a
+  declaration tree in the structure views.  Incremental building and
+  bytecode weaving are not available in the AJDE tools in the beta
+  release, but will be in a future release.</p>
+
+  <p> Of note for the beta is that NetBeans 3.4 is supported, and there is now
+  better integration for the compiler messages output window.</p>
+
+<!-- ============================== -->
+<hr>
+<h2><a name="sources">The Sources and the Licences</a></h2>
+
+  <p> The AspectJ tools sources are available under the
+  <a href="http://eclipse.org/legal/cpl-v10.html">Common Public
+  Licence</a> in the CVS repository
+  at <a href="http://eclipse.org">http://eclipse.org</a>.
+  </p>
+
+  <p> More information about the sources can be found in their
+  respective README files.  </p>
+
+<!-- ============================== -->
+<hr>
+<hr>
+<h2><a name="details">Details</a></h2>
+
+  <h3><a name="THROWS_PATTERN">Matching based on throws</a></h3>
+
+    <p> Type patterns may now be used to pick out methods and
+    constructors based on their throws clauses.  This allows the
+    following two kinds of extremely wildcarded pointcuts: </p>
+
+    <pre>    pointcut throwsMathlike():
+      // each call to a method with a throws clause containing at least
+      // one exception exception with "Math" in its name.
+      call(* *(..) throws *..*Math*);
+
+    pointcut doesNotThrowMathlike():
+      // each call to a method with a throws clause containing no
+      // exceptions with "Math" in its name.
+      call(* *(..) throws !*..*Math*);
+    </pre>
+
+    <p> The longwinded rules are that a method or constructor pattern
+    can have a "throws clause pattern".  Throws clause patterns look
+    like: </p>
+
+    <pre>    ThrowsClausePattern:
+        ThrowsClausePatternItem ("," ThrowsClausePatternItem)*
+
+    ThrowsClausePatternItem:
+        ["!"] TypeNamePattern
+    </pre>
+
+    <p> A ThrowsClausePattern matches the ThrowsClause of any code
+    member signature. To match, each ThrowsClausePatternItem must
+    match the throws clause of the member in question. If any item
+    doesn't match, then the whole pattern doesn't match. This rule is
+    unchanged from AspectJ 1.0.  </p>
+
+    <p> If a ThrowsClausePatternItem begins with "!", then it matches
+    a particular throws clause if and only if <em>none</em> of the
+    types named in the throws clause is matched by the
+    TypeNamePattern. </p>
+
+    <p> If a ThrowsClausePatternItem does not begin with "!", then it
+    matches a throws clause if and only if <em>any</em> of the types
+    named in the throws clause is matched by the TypeNamePattern.</p>
+
+    <p> These rules are completely backwards compatible with
+    AspectJ 1.0. The rule for "!" matching has one potentially
+    surprising property, in that the two PCDs shown below will have
+    different matching rules. </p>
+
+    <pre>    [1] call(* *(..) throws !IOException)
+    [2] call(* *(..) throws (!IOException))
+
+    void m() throws RuntimeException, IOException {}
+    </pre>
+
+    <p> [1] will NOT match the method m(), because method m's throws
+    clause declares that it throws IOException. [2] WILL match the
+    method m(), because method m's throws clause declares the it
+    throws some exception which does not match IOException,
+    i.e. RuntimeException. </p>
+
+  <h3><a name="NEW_PCDS">New kinded pointcut designators</a></h3>
+
+    <p> AspectJ 1.0 does not provide kinded pointcut designators for
+    two (rarely used) join points: preinitialization (the code that
+    runs before a super constructor call is made) and advice
+    execution.  AspectJ 1.1 does not change the meaning of the join
+    points, but will provide two new pointcut designators to pick out
+    these join points, thus making join points and pointcut
+    designators more parallel.  </p>
+
+    <p> <code>adviceexectuion()</code> will pick out advice execution
+    join points.  You will usually want to use <code>adviceexecution()
+    && within(Aspect)</code> to restrict it to only those pieces of
+    advice defined in a particular aspect.  preinitialization join
+    points are not yet available in AspectJ 1.1beta1. </p>
+
+  <h3><a name="PER_TYPE">New pertype aspect specifier</a></h3>
+
+    <p>We're strongly considering adding a pertype aspect kind to 1.1.
+    This is somewhat motivated by the new <a
+    href="#SINGLE_INTERCLASS_TARGET">restrictions on inter-type
+    declarations<a>.  This is also motivated by many previous request
+    to support a common logging idiom.  Here's what pertype would look
+    like:</p>
+
+    <pre>    /** One instance of this aspect will be created for each class,
+     * interface or aspect in the com.bigboxco packages.
+     */
+    aspect Logger pertype(com.bigboxco..*) {
+        /* This field holds a logger for the class. */
+        Log log;
+
+        /* This advice will run for every public execution defined by
+         * a type for which a Logger aspect has been created, i.e.
+         * any type in com.bigboxco..*
+         */
+        before(): execution(public * *(..)) {
+            log.enterMethod(thisJoinPoint.getSignature().getName());
+        }
+
+        /* We can use a special constructor to initialize the log field */
+        public Logger(Class myType) {
+            this.log = new Log(myType);
+        }
+    }
+
+        /** External code could use aspectOf to get at the log, i.e. */
+        Log l = Logger.aspectOf(com.bigboxco.Foo.class).log;
+    </pre>
+
+    <p>The one open question that I see is how this should interact
+    with inner types.  If a pertype aspect is created for an outer
+    type should advice in that aspect run for join points in inner
+    types?  That is the behavior of the most common uses of this idiom.
+    </p>
+
+  <h3><a name="CALLEE_SIDE_CALLS">Different callee-side call join
+  points</a></h3>
+
+    <p> Much effort was made in AspectJ 1.0 to be able to advise as
+    many call join points as possible.  When the code for the call was
+    passed to the compiler, ajc would allow call pointcuts could pick
+    out the corresponding call join point.  When only the code for the
+    called method or constructor was passed to the compiler, however,
+    ajc would allow only certain call pointcuts to pick out the
+    corresponding join point, using an implementation technique called
+    "callee-side call join points".  </p>
+
+    <p> Because this was dependent on an implementation technique, it
+    was highlighted in the implementation limitations section of the
+    AspectJ documentation.  The AspectJ 1.1 must make different
+    implementation decisions, and so will pick out different
+    callee-side call join points.  </p>
+
+    <p> For this release, however, the question is moot:
+    <a href="#NO_CALLEE_SIDE_CALL">No handling</a> of callee-side call
+    join points are implemented for AspectJ 1.1beta1.  </p>
+
+  <h3><a name="SINGLE_INTERCLASS_TARGET">One target for intertype
+  declarations</a></h3>
+
+    <p> Intertype declarations (once called "introductions") in
+    AspectJ 1.1 can only have one target type.  So the following code
+    intended to declare that there is a void doStuff() method on all
+    subtypes of Target is not legal AspectJ 1.1 code.
+    </p>
+
+    <pre>    aspect A {
+        public void Target+.doStuff() { ... }
+    }
+    </pre>
+
+    <p> The functionality of "multi-intertype declarations" can be
+    recovered by using a helper interface.
+    </p>
+
+    <pre>    aspect A {
+        private interface MyTarget {}
+        declare parents:  Target+ implements MyTarget;
+        public void MyTarget.doStuff() { ... }
+    }
+    </pre>
+
+    <p> We believe this is better style in AspectJ 1.0 as well, as it
+    makes clear the static type of "this" inside the method body.
+    </p>
+
+    <p> The one piece of functionality that can not be easily
+    recovered is the ability to add static fields to many classes.  We
+    believe that the <a href="#PER_TYPE">pertype proposal</a> provides
+    this functionality in a much more usable form.</p>
+
+  <h3><a name="UNAVAILABLE_JOIN_POINTS">No initializer execution join
+    points</a></h3>
+
+    <p> AspectJ 1.1 does not consider initializer execution as a
+    principled join point.  The collection of initializer code (the
+    code that sets fields with initializers and the code in non-static
+    initializer blocks) is something that makes sense only in Java
+    source code, not in Java bytecode.  </p>
+
+  <h3><a name="CONSTRUCTOR_EXECUTION_IS_BIGGER">Initializers run
+    inside constructor execution join points</a></h3>
+
+    <p> The code generated by the initializers in Java source code now
+    runs inside of constructor execution join points.  This changes
+    how before advice runs on constructor execution join points.
+    Consider: </p>
+
+    <pre>    class C {
+        C() { }
+        String id = "identifier"; // this assignment
+                                  // has to happen sometime
+    }
+    aspect A {
+        before(C c) this(c) && execution(C.new()) {
+            System.out.println(c.id.length());
+        }
+    }
+    </pre>
+
+    <p> In AspectJ 1.0, this will print "10", since id is assigned its
+    initial value prior to the before advice's execution.  However, in
+    AspectJ 1.1, this will throw a NullPointerExcception, since "id"
+    does not have a value prior to the before advice's execution.
+    </p>
+
+    <p> Note that the various flavors of after returning advice are
+    unchanged in this respect in AspectJ 1.1.  Also note that this
+    only matters for the execution of constructors that call a
+    super-constructor.  Execution of constructors that call a
+    this-constructor are the same in AspectJ 1.1 as in AspectJ 1.0.
+    </p>
+
+    <p> We believe this difference should be minimal to real programs,
+    since programmers using before advice on constructor execution
+    must always assume incomplete object initialization, since the
+    constructor has not yet run.  </p>
+
+  <h3><a name="WITHIN_MEMBER_TYPES">Small limitations of the within
+    pointcut</a></h3>
+
+    <p> Becuase of the guarantees made (and not made) by the Java
+    classfile format, there are cases where AspectJ 1.1 cannot
+    guarantee that the within pointcut designator will pick out all
+    code that was originally within the source code of a certain
+    type.
+    </p>
+
+    <p> The non-guarantee applies to code inside of anonymous and
+    local types inside member types.  While the within pointcut
+    designator behaves exactly as it did in AspectJ 1.0 when given a
+    package-level type (like C, below), if given a member-type (like
+    C.InsideC, below), it is not guaranteed to capture code in
+    contained local and anonymous types.  For example: </p>
+
+    <pre>    class C {
+        Thread t;
+        class InsideC {
+            void setupOuterThread() {
+                t = new Thread(
+                        new Runnable() {
+                            public void run() {
+                                // join points with code here
+                                // might not be captured by
+                                // within(C.InsideC), but are
+                                // captured by within(C)
+                                System.out.println("hi");
+                            }
+                        });
+            }
+        }
+    }
+    </pre>
+
+    <p> We believe the non-guarantee is small, and we haven't verified
+    that it is a problem in practice.  </p>
+
+  <h3><a name="WITHIN_CODE">Small limitations of the withincode
+    pointcut</a></h3>
+
+    <p>The withincode pointcut has similar issues to those described
+    above for within.  We still need to do some hard thinking about
+    how anonymous and local classes can be handled by this pointcut.
+    <b>beta</b>: This pointcut is unimplementd in the beta1 release.
+    </p>
+
+  <h3><a name="INSTANCEOF_ON_WILD">Can't do instanceof matching on
+        type patterns with wildcard</a></h3>
+
+    <p>The pointcut designators this, target and args specify a
+    dynamic test on their argument.  These tests can not be performed
+    on type patterns with wildcards in them.  The following code that
+    compiled under 1.0 will be an error in AspectJ-1.1:</p>
+
+    <pre>    pointcut oneOfMine(): this(com.bigboxco..*);
+    </pre>
+
+    <p>The only way to implement this kind of matching in a modular
+    way would be to use the reflection API at runtime on the Class of
+    the object.  This would have a very high performance cost and
+    possible security issues.  There are two good work-arounds.  If
+    you control the source or bytecode to the type you want to match
+    then you can use declare parents, i.e.:</p>
+
+    <pre>    private interface OneOfMine {}
+    declare parents: com.bigboxco..* implements OneOfMine;
+    pointcut oneOfMine(): this(OneOfMine);
+    </pre>
+
+    <p>If you want the more dynamic matching and are willing to pay
+    for the performance, then you should use the Java reflection API
+    combinded with if.  That would look something like:</p>
+
+    <pre>    pointcut oneOfMine(): this(Object) &&
+        if(classMatches("com.bigboxco..*",
+                        thisJoinPoint.getTarget().getClass()));
+
+    static boolean classMatches(String pattern, Class _class) {
+        if (patternMatches(pattern, _class.getName())) return true;
+        ...
+    }
+    </pre>
+
+    <p>Note: wildcard type matching still works in all other pcds that
+    match based on static types.  So, you can use
+    'within(com.bigboxco..*+)' to match any code lexically within one
+    of your classes or a subtype thereof.  This is often a good
+    choice.</p>
+    </p>
+
+
+  <h3><a name="NO_SOURCE_COLUMN">SourceLocation.getColumn()</a></h3>
+
+    <p>The Java .class file format contains information about the
+    source file and line numbers of its contents; however, it has not
+    information about source columns.  As a result, we can not
+    effectively support the accesss of column information in the
+    reflection API.  So, any calls to
+    thisJoinPoint.getSourceLocation().getColumn() will be marked as
+    deprecated by the compiler, and will always return 0.</p>
+
+  <h3><a name="ASPECT_PRECEDENCE">Aspect precedence</a></h3>
+
+    <p> AspectJ 1.1 has a new declare form:
+    </p>
+
+    <pre>    declare dominates ":"  TypePatternList ";"
+    </pre>
+
+    <p> This is used to declare advice ordering constraints on join
+    points.  For example, the constraints that (1) aspects that have
+    Security as part of their name should dominate all other aspects, and
+    (2) the Logging aspect (and any aspect that extends it) should
+    dominate all non-security aspects, can be expressed by: </p>
+
+    <pre>    declare dominates: *..*Security*, Logging+, *;
+    </pre>
+
+    <p> In the TypePatternList, the wildcard * means "any type not matched
+    by another type in the declare dominates".  </p>
+
+    <h4>Various cycles</h4>
+
+      <p> It is an error for any aspect to be matched by more than one
+      TypePattern in a single decare dominates, so: </p>
+
+      <pre>      declare dominates:  A, B, A ;  // error
+      </pre>
+
+      <p> However, multiple declare dominates forms may legally have this
+      kind of circularity.  For example, each of these declare dominates is
+      perfectly legal:
+      </p>
+
+      <pre>      declare dominates: B, A;
+      declare dominates: A, B;
+      </pre>
+
+      <p> And a system in which both constraints are active may also be
+      legal, so long as advice from A and B don't share a join point.  So
+      this is an idiom that can be used to enforce that A and B are strongly
+      independent.  </p>
+
+    <h4>Applies to concrete aspects</h4>
+
+      <p> Consider the following library aspects:
+      </p>
+
+      <pre>      abstract aspect Logging {
+          abstract pointcut logged();
+
+          before(): logged() {
+              System.err.println("thisJoinPoint: " + thisJoinPoint);
+          }
+      }
+
+      aspect aspect MyProfiling {
+          abstract pointcut profiled();
+
+          Object around(): profiled() {
+              long beforeTime = System.currentTimeMillis();
+              try {
+                  return proceed();
+              } finally {
+                  long afterTime = System.currentTimeMillis();
+                  addToProfile(thisJoinPointStaticPart,
+                               afterTime - beforeTime);
+              }
+          }
+          abstract void addToProfile(
+              org.aspectj.JoinPoint.StaticPart jp,
+              long elapsed);
+      }
+      </pre>
+
+      <p> In order to use either aspect, they must be extended with
+      concrete aspects, say, MyLogging and MyProfiling.  In AspectJ
+      1.0, it was not possible to express that Logging's advice (when
+      concerned with the concrete aspect MyLogging) dominated
+      Profiling's advice (when concerned with the concrete aspect
+      MyProfiling) without adding a dominates clause to Logging
+      itself.  In AspectJ 1.1, we can express that constraint with a
+      simple: </p>
+
+      <pre>      declare dominates: MyLogging, MyProfiling;
+      </pre>
+
+    <h4>Changing order of advice for sub-aspects</h4>
+
+      <p> By default, advice in a sub-aspect has more precedence than
+      advice in a super-aspect.  One use of the AspectJ 1.0 dominates
+      form was to change this precedence:
+      </p>
+
+      <pre>      abstract aspect SuperA dominates SubA {
+          pointcut foo(): ... ;
+
+          before(): foo() {
+              // in AspectJ 1.0, runs before the advice in SubA
+              // because of the dominates clause
+          }
+      }
+
+      aspect SubA extends SuperA {
+          before(): foo() {
+              // in AspectJ 1.0, runs after the advice in SuperA
+              // because of the dominates clause
+          }
+      }
+      </pre>
+
+      <p> This no longer works in AspectJ 1.1, since declare dominates only
+      matters for concrete aspects.  Thus, if you want to regain this kind
+      of precedence change, you will need to refactor your aspects.
+      </p>
+
+  <h3><a name="MISSING_LANGUAGE">Language features unimplemented in
+    1.1beta1</a></h3>
+
+    <p>All of these language features should be implemented in
+    1.1beta1.</p>
+
+    <ul>
+      <li>per's: perthis, pertarget, percflow</li>
+      <li>pointcut designators: withincode, if, cflow, and cflowbelow</li>
+      <li>joinpoints and corresponding pcds:
+        initialization, preinitialization and handler</li>
+      <li>args pcd with multiple ..'s</li>
+      <li>privileged aspects</li>
+      <li>declare soft</li>
+      <li>inter-type constructor declarations</li>
+    </ul>
+
+  <h3><a name="SOURCEROOT">The -sourceroots option</a></h3>
+
+    <p> The AspectJ 1.1 compiler now accepts a -sourceroots option used to
+    pass all .java files in particular directories to the compiler.  It
+    takes either a single directory name, or a list of directory names
+    separated with the CLASSPATH separator character (":" for various
+    Unices, ";" for various Windows). </p>
+
+    <p> So, if you have your project separated into a gui module and a
+    base module, each of which is stored in a directory tree, you might
+    use one of
+    </p>
+
+    <pre>    ajc -sourceroots /myProject/gui:/myProject/base
+    ajc -sourceroots d:\myProject\gui;d:\myProject\base
+    </pre>
+
+    <p> This option may be used in conjunction with lst files, listing
+    .java files on the command line, and the -injars option.
+    </p>
+
+    <p> <strong>ALPHA:</strong> In the beta release of the compiler,
+    only one directory can be passed to the -sourceroots option.
+    </p>
+
+  <h3><a name="BYTECODE_WEAVING">The -injars option</a></h3>
+
+    <p> The AspectJ 1.1 compiler now accepts an -injars option used to
+    pass all .class files in a particular jar file to the compiler.  It
+    takes either a single directory name, or a list of directory names
+    separated with the CLASSPATH separator character (":" for various
+    Unices, ";" for various Windows). </p>
+
+    <p> So, if MyTracing.java defines a trace aspect that you want to
+    apply to all the classes in myBase.jar and myGui.jar, you would use
+    one of: </p>
+
+    <pre>    ajc -injars /bin/myBase.jar:/bin/myGui.jar MyTracing.java
+    ajc -injars d:\bin\myBase.jar;d:\bin\myGui.jar MyTracing.java
+    </pre>
+
+    <p> The class files in the input jars must not have had advice woven
+    into them, since AspectJ enforces the requirement that advice is woven
+    into a particular classfile only once.  So if the classfiles in the
+    jar file are to be created with the ajc compiler (as opposed to a pure
+    Java compiler), they should not be compiled with any non-abstract
+    aspects.  </p>
+
+    <p> This option may be used in conjunction with lst files, listing
+    .java files on the command line, and the -sourceroots option.
+    </p>
+
+  <h3><a name="OUTJAR">The -outjar option</a></h3>
+
+    <p> The -outjar option takes the name of a jar file into which the
+    results of the compilation should be put.  For example:
+
+    <pre>    ajc -injars myBase.jar MyTracing.java -outjar myTracedBase.jar
+    </pre>
+
+    <p> No meta information is placed in the output jar file </p>
+
+  <h3><a name="INCREMENTAL">Incremental compilation</a></h3>
+
+    <p> The AspectJ 1.1 compiler now supports incremental compilation.
+    For the final release, this will work from the various IDE plugins we
+    ship, but for the Alpha release, it is only supported on the
+    command-line compiler.
+    </p>
+
+    <p> When ajc is called with the -incremental option, it must also be
+    passed a -sourceroots option specifying a directory to incrementally
+    compile.  Once the initial compile is done, ajc waits for console
+    input.  Every time it reads a new line, (i.e., every time the user
+    hits return) ajc recompiles those input files that need recompiling.
+    </p>
+
+    <h4>Limitations for 1.1beta1</h4>
+
+    <p> some changes to classes should force re-weaving, but are not
+    noticed</p>
+
+    <p> inter-type declarations, declare parents are not tracked
+    correctly</p>
+
+
+  <h3><a name="NO_WEAVE">-noweave, a compiler option to suppress
+  weaving</a></h3>
+
+    <p> The -noweave option suppresses weaving, and generates
+    classfiles and that can be passed to ajc again (through the
+    -injars option) to generate final, woven classfiles. </p>
+
+  <h3><a name="BINARY_ASPECTS">-aspectpath, working with aspects in .class/.jar
+  form</a> </h3>
+
+    <p> When aspects are compiled into classfiles, they include all
+    information necessary for the ajc compiler to weave their advice
+    and deal with their inter-type declarations.  In order for these
+    aspects to have an effect on a compilation process, they must be
+    passed to the compiler on the -aspectpath.  Every .jar file on
+    this path will be searched for aspects and any aspects that are
+    found will be enabled during the compilation.  The binary forms of
+    this aspects will be untouched. </p>
+
+  <h3><a name="NO_AROUND_OPTIMIZATION">Inlining around advice</a></h3>
+
+    <p> In the beta release of the compiler, around advice was
+    implemented in the safest way for all uses of around advice.  However,
+    many (if not most) case of around advice do not involve, for example,
+    inner classes capturing proceed, and can (and will) be implemented in
+    more efficient styles.  </p>
+
+  <h3><a name="NO_CALLEE_SIDE_CALL">Callee-side call join
+  points</a></h3>
+
+    <p> The 1.0 implementation of AspectJ, when given:
+    </p>
+
+    <pre>    class MyRunnable implements Runnable {
+        public void run() { ... }
+    }
+
+    aspect A {
+        call(): (void run()) && target(MyRunnable) {
+            // do something here
+        }
+    }
+    </pre>
+
+    <p> would cause A's advice to execute even when, say, java.lang.Thread
+    called run() on a MyRunnable instance.  The beta release of AspectJ
+    1.1, however, does not expose any call join point unless it is given
+    the calling code.  And the final release of AspectJ 1.1 may have
+    <a href="#CALLEE_SIDE_CALLS">different callee-side call behavior</a>
+    than the 1.0.6 release.  </p>
+
+  <h3><a name="OTHER_X_OPTIONS">Various -X options</a></h3>
+
+    <p> The AspectJ 1.0 compiler supported a number of options that
+    started with X, for "experimantal".  Some of them will not be
+    supported in 1.1, either because the "experiment" succeeded (in
+    which case it's part of the normal functionality) or failed.
+    Others will be supported as is (or nearly so) in 1.1:
+    </p>
+
+    <ul>
+      <li>-XOcodeSize: Not supported in 1.1beta1, since we're not
+      doing <em>any</em> <a href="#NO_AROUND_OPTIMIZATION">inlining of
+      around advice</a> in beta.  This may or may not be supported in
+      1.1 final: bytecode weaving gives us more leeway in inlining
+      anyway, so this may be the default. </li>
+
+      <li>-XtargetNearSource: Not suppoted in 1.1beta1, but will be
+      supported in 1.1 final. </li>
+
+      <li>-XserializableAspects: Since perthis and pertarget aspects
+      are not implemented in 1.1beta1, this option has no meaning in
+      1.1beta1.  The intention is for 1.1 final to implement this
+      option just like the 1.0.6 compiler.  </li>
+
+      <li>-XaddSafePrefix: This option will not be supported in 1.1 at
+      all because we're now always using (what we believe to be) safe
+      prefixes. </li>
+
+      <li>-Xlint: <a href="#XLINT">Will be more useful in
+      1.1</a>. </li>
+    </ul>
+
+  <h3><a name="ERROR_MESSAGES">Many confusing error messages in
+  1.1beta1</a></h3>
+
+    <p>Building on the eclipse compiler has given us access to a very
+    sophisticated problem reporting system as well as highly optimized
+    error messages for pure Java code.  Often this leads to noticably
+    better error messages than from ajc-1.0.6.  However, when we don't
+    handle errors correctly this can sometimes lead to cascading error
+    messages where a single small syntax error will produce dozens of
+    other messages.</p>
+
+    <p>Many error condition in beta1 are signalled by exception.  You
+    shouldn't be surprised to see RuntimeException("unimplemented")
+    produced from perfectly reasonable programs that use features we
+    just haven't implemented yet.</p>
+
+
+  <h3><a name="EXCEPTION_CHECKING">No exception checking during
+  weaving in 1.1beta1</a></h3>
+
+    <p>Advice that has an explicit throws clause needs to have that
+    throws clause checked during weaving for each join point that is
+    matched.  This checking is not implemented in 1.1beta1 which can
+    lead to checked exceptions being thrown from places they are not
+      allowed by the Java language.</p>
+
+    <pre>    before() throws IOException : execution (void m()) {
+        InputStream s = new FileInputStream("m.out");
+        ...
+    }
+    ...
+    public void m() { ... }
+    </pre>
+
+    <p>This code should result in a link-time weaving error that the
+    throws clause in the advice is incompatible with the checked
+    exceptions which can be legally thrown from the matched join
+    point.  In beta1 this will just silently weave in the advice and
+    it will be possible for an IOException to be thrown from m().</p>
+
+  <h3><a name="XLINT">-Xlint option partially supported in
+  1.1beta1</a></h3>
+
+    <p>-Xlint:ignore,error,warning will set the level for all Xlint
+    warnings.  -Xlintfile:lint.properties allows fine-grained control.
+    In tools.jar, see org/aspectj/weaver/XlintDefault.properties for
+    the default behavior and a template to copy. </p>
+
+    <p> In 1.1beta1, only two cases will signal Xlint warnings.  We
+    expect this list to become much larger before 1.1final.  Because
+    the configurability allows users to turn off warnings, we will
+    also be able to warn about more potentially dangerous situations,
+    such as the potentially unsafe casts used by very polymorphic uses
+    of proceed in around advice.
+    </p>
+
+  <h3><a name="NO_SOURCE">Source-specific options</a></h3>
+
+    <p> Because AspectJ 1.1beta1 does not generate source code after
+    weaving, the source-code-specific options -source, -usejavac,
+    -nocomment and -workingdir options are meaningless and so not
+    supported.  </p>
+
+  <h3><a name="NO_STRICT_LENIENT">The -strict and -lenient
+  options</a></h3>
+
+    <p> Because AspectJ 1.1 uses the Eclipse compiler, which has its
+    own mechanism for changing strictness, we no longer support the
+    -strict and -lenient options. </p>
+
+  <h3><a name="NO_PORTING">The -porting option</a></h3>
+
+    <p> AspectJ 1.1 does not have a -porting option.  We believe that
+    many useful porting information will be presented by the -Xlint
+    option when it is enabled. </p>
+
+  <h3><a name="13_REQUIRED">J2SE 1.3 required</a></h3>
+    <p>Because we build on Eclipse, the compiler will no longer run under J2SE 1.2.
+    You must run the compiler (and all tools based on the compiler)
+    using J2SE 1.3 or later. </p>
+
+</body> </html>

@@ -1,0 +1,18 @@
+<html>
+<body>
+<p>Contains interfaces that extend <code>Signature</code> to provide
+additional information about each possible join point signature.  This
+additional information can be accessed by casting a Signature object
+to the appropriate type, i.e.</p>
+<pre>
+  before(): call(* *(..)) {
+      MethodSignature sig = (MethodSignature)thisJoinPoint.getSignature();
+      ...
+  }
+</pre>
+
+<p>This package also contains <code>SourceLocation</code> that provides
+information about the location in source code that corresponds to a 
+particular join point.</p>
+</body>
+</html>

@@ -1,0 +1,19 @@
+
+rem sample local setup, e.g., for quicklook.bat
+rem set values and change filename to localSetup.bat
+
+rem -- picked up by ant scripts
+set JAVA_HOME=c:\apps\jdk1.3.1
+
+rem -- quicklook.bat adds the following to command line 
+
+rem setup from/to for result email 
+set userEmail=isberg@parc.com
+set mailHost=dagobah.parc.xerox.com
+
+rem setup ant cvs task, which execs cvs
+set HOME=c:\home\wes
+set CVSROOT=:ext:isberg@aspectj.org:/aspectj-home/cvsroot
+set CVS_RSH=c:\apps\ssh\ssh
+set PATH=c:\home\apps\cygwin\bin;c:\WIN2000\system32;c:\WIN2000
+
