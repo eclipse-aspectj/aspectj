@@ -3024,7 +3024,7 @@
     <ajc-test dir="new"
       title="Introducing methods on classes that implements inner-interfaces with +implements."
       keywords="from-resolved_10x">
-        <compile files="IntroducingMethodsOnPlusImplementedInterfaces.java"/>
+        <compile files="IntroducingMethodsOnPlusImplementedInterfaces.java" options="-Xlint:ignore"/>
         <run class="IntroducingMethodsOnPlusImplementedInterfaces"/>
     </ajc-test>
 
