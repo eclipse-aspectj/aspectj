@@ -29,13 +29,13 @@ import org.aspectj.ajdt.internal.compiler.InterimCompilationResult;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.SourceLocation;
-import org.aspectj.util.FileUtil;
-import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFormatException;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.ReferenceCollection;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.StringSet;
+import org.aspectj.util.FileUtil;
+import org.aspectj.weaver.bcel.UnwovenClassFile;
 
 
 /**
@@ -43,6 +43,9 @@ import org.aspectj.org.eclipse.jdt.internal.core.builder.StringSet;
  */
 public class AjState {
 	AjBuildManager buildManager;
+	
+	// static so beware of multi-threading bugs...
+	public static IStateListener stateListener = null;
 	
 	long lastSuccessfulBuildTime = -1;
 	long currentBuildTime = -1;
@@ -100,6 +103,7 @@ public class AjState {
 		    // coming - otherwise a file that has been deleted from an inpath jar 
 		    // since the last build will not be deleted from the output directory.
 		    removeAllResultsOfLastBuild();
+			if (stateListener!=null) stateListener.pathChangeDetected();
 		    return false;
 		}
 		
@@ -180,7 +184,9 @@ public class AjState {
 		});
 		for (int i = 0; i < classFiles.length; i++) {
 			long modTime = classFiles[i].lastModified();
-			if (modTime + 1000 >= lastSuccessfulBuildTime) return true;
+			if (modTime + 1000 >= lastSuccessfulBuildTime) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -189,20 +195,21 @@ public class AjState {
 		boolean changed = false;
 		List oldClasspath = oldConfig.getClasspath();
 		List newClasspath = newConfig.getClasspath();
-		if (changed(oldClasspath,newClasspath,true)) return true;
+		if (stateListener!=null) stateListener.aboutToCompareClasspaths(oldClasspath,newClasspath);
+		if (changed(oldClasspath,newClasspath,true,oldConfig.getOutputDir())) return true;
 		List oldAspectpath = oldConfig.getAspectpath();
 		List newAspectpath = newConfig.getAspectpath();
-		if (changed(oldAspectpath,newAspectpath,true)) return true;
+		if (changed(oldAspectpath,newAspectpath,true,oldConfig.getOutputDir())) return true;
 		List oldInJars = oldConfig.getInJars();
 		List newInJars = newConfig.getInJars();
-		if (changed(oldInJars,newInJars,false)) return true;
+		if (changed(oldInJars,newInJars,false,oldConfig.getOutputDir())) return true;
 		List oldInPath = oldConfig.getInpath();
 		List newInPath = newConfig.getInpath();
-		if (changed(oldInPath, newInPath,false)) return true;
+		if (changed(oldInPath, newInPath,false,oldConfig.getOutputDir())) return true;
 		return changed;
 	}
 	
-	private boolean changed(List oldPath, List newPath, boolean checkClassFiles) {
+	private boolean changed(List oldPath, List newPath, boolean checkClassFiles, File oldOutputLocation) {
 		if (oldPath == null) oldPath = new ArrayList();
 		if (newPath == null) newPath = new ArrayList();
 		if (oldPath.size() != newPath.size()) {
@@ -222,8 +229,10 @@ public class AjState {
 			if (f.exists() && !f.isDirectory() && (f.lastModified() >= lastSuccessfulBuildTime)) {
 				return true;
 			}
-			if (f.exists() && f.isDirectory() && checkClassFiles) {
-				return classFileChangedInDirSinceLastBuild(f);
+			if (f.exists() && f.isDirectory() && checkClassFiles && !(f.equals(oldOutputLocation))) {
+				boolean b= classFileChangedInDirSinceLastBuild(f);
+				if (b && stateListener!=null) stateListener.detectedClassChangeInThisDir(f);
+				if (b) return true;
 			}
 		}
 		return false;
@@ -639,4 +648,5 @@ public class AjState {
 			addDependentsOf(intRes.unwovenClassFiles()[i].getClassName());
 		}
 	}
+
 }

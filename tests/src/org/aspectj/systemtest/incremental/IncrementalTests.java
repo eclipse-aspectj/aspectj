@@ -10,9 +10,12 @@
 package org.aspectj.systemtest.incremental;
 
 import java.io.File;
+import java.util.List;
 
 import junit.framework.Test;
 
+import org.aspectj.ajdt.internal.core.builder.AjState;
+import org.aspectj.ajdt.internal.core.builder.IStateListener;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
@@ -100,6 +103,28 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
     nextIncrement(false);
     copyFileAndDoIncrementalBuild("changes/Main.20.java","src/app/Main.java");
     run("app.Main");
+  }
+  
+  /**
+   * See bug report 85297.  We plugged a hole so that we check whether the contents of
+   * directories on the classpath have changed when deciding whether we can do an
+   * incremental build or not - the implementation didn't allow for the output location
+   * being on the classpath.  This test verifies the fix is OK
+   */
+  public void testIncrementalOKWithOutputPathOnClasspath() throws Exception {
+	  class MyStateListener implements IStateListener {
+  	    public boolean pathChange = false;
+		public void pathChangeDetected() {pathChange = true;}
+		public void aboutToCompareClasspaths(List oldClasspath, List newClasspath) {}
+		public void detectedClassChangeInThisDir(File f) {}
+	  };
+	  MyStateListener sl = new MyStateListener();
+	  AjState.stateListener = sl;
+	  runTest("change source");
+	  nextIncrement(false);
+	  copyFileAndDoIncrementalBuild("changes/Main.20.java","src/app/Main.java");
+	  assertTrue("Did not expect a path change to be detected ",!sl.pathChange);
+	  run("app.Main");
   }
 
   public void test009() throws Exception {
