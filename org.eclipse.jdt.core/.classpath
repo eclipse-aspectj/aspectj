@@ -2,5 +2,6 @@
 <classpath>
     <classpathentry exported="true" kind="lib"
         path="jdtcore-for-aspectj.jar" sourcepath="/org.eclipse.jdt.core/jdtcore-for-aspectj-src.zip"/>
+    <classpathentry kind="src" path="/shadows.org.eclipse.jdt.core"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
