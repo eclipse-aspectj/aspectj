@@ -117,6 +117,48 @@
 <sect1>
   <title>Bytecode Notes</title>
 
+  <sect2>
+    <title>The .class expression and String +</title>
+
+    <para> The java language form <literal>Foo.class</literal> is
+    implemented in bytecode with a call to
+    <literal>Class.forName</literal> guarded by an exception
+    handler catching a <literal>ClassNotFoundException</literal>.
+    </para>
+
+    <para> The java language + operator, when applied to String
+    arguments, is implemented in bytecode by calls to
+    <literal>StringBuffer.append</literal>.
+    </para>
+
+    <para> In both of these cases, the current AspectJ compiler
+    operates on the bytecode implementation of these language
+    features; in short, it operates on what is really happening rather
+    than what was written in source code.  This means that there may
+    be call join points to <literal>Class.forName</literal> or
+    <literal>StringBuffer.append</literal> from programs that do not,
+    at first glance, appear to contain such calls:
+    </para>
+
+<programlisting><![CDATA[
+  class Test {
+      void main(String[] args) {
+          System.out.println(Test.class);        // calls Class.forName
+          System.out.println(args[0] + args[1]); // calls StringBuffer.append
+      }
+  }
+]]></programlisting>
+
+    <para>In short, the join point model of the current AspectJ
+    compiler considers these as valid join points.
+    </para>
+
+  </sect2>
+
+  <sect2>
+    <title>The Handler join point</title>
+
+
   <para>The end of exception handlers cannot reliably be found in Java
   bytecode.  Instead of removing the handler join point entirely, the
   current AspectJ compiler restricts what can be done with the handler
@@ -172,6 +214,8 @@
     able to detect the endpoint of a handler join point, and as such
     will likely have fewer such restrictions.
   </para>
+
+  </sect2>
 
 </sect1>
 
