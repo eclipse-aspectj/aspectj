@@ -149,5 +149,9 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void test027_itdsOnInnerClassesAsStatic() {
       runTest("ITDs on inner classes should be static context");
   }
+  
+//  public void test028_itdsAndInitializers() {
+//    runTest("resolution of IT field inits");
+//  }
 }
 

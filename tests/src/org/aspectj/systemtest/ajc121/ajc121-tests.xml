@@ -223,3 +223,11 @@
 			<message kind="error" line="15" text="Ambiguous binding of type Test"/>
 		</compile>
 	</ajc-test>
+<!--
+	 <ajc-test dir="bugs/oxford" pr="62475"
+	  	title="resolution of IT field inits">
+		<compile files="PR62475.java">
+			<message kind="error" line="14" />
+		</compile>
+	</ajc-test>
+-->	
