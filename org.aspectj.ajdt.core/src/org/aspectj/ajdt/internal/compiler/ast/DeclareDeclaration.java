@@ -19,6 +19,7 @@ import org.aspectj.ajdt.internal.compiler.lookup.EclipseScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
@@ -33,9 +34,9 @@ public class DeclareDeclaration extends AjMethodDeclaration {
 	/**
 	 * Constructor for IntraTypeDeclaration.
 	 */
-	static int counter = 0; //XXX evil
 	public DeclareDeclaration(CompilationResult result, Declare symbolicDeclare) {
 		super(result);
+		
 		this.declareDecl = symbolicDeclare;
 		if (declareDecl != null) {
 			// AMC added init of declarationSourceXXX fields which are used
@@ -44,22 +45,7 @@ public class DeclareDeclaration extends AjMethodDeclaration {
 			declarationSourceEnd = sourceEnd = declareDecl.getEnd();
 		}
 		//??? we might need to set parameters to be empty
-		this.returnType = TypeReference.baseTypeReference(T_void, 0);
-		
-        StringBuffer sb = new StringBuffer();
-        sb.append("ajc$declare");
-        // Declares can choose to provide a piece of the name - to enable
-        // them to be easily distinguised at weave time (e.g. see declare annotation)
-        if (symbolicDeclare!=null) {
-          String suffix = symbolicDeclare.getNameSuffix();
-          if (suffix.length()!=0) {
-        	sb.append("_");
-        	sb.append(suffix);
-          }
-        }
-        sb.append("_");
-        sb.append(counter++);
-        this.selector = sb.toString().toCharArray();
+		this.returnType = TypeReference.baseTypeReference(T_void, 0);       
 	}
 
 
@@ -132,4 +118,23 @@ public class DeclareDeclaration extends AjMethodDeclaration {
 		return super.generateInfoAttributes(classFile,true);
 	}
 
+	public void postParse(TypeDeclaration typeDec) {
+		super.postParse(typeDec);
+		int declareSequenceNumberInType = ((AspectDeclaration)typeDec).declareCounter++;
+		//FIXME asc the name should perhaps include the hashcode of the pattern (type/sig) for binary compatibility reasons!
+		StringBuffer sb = new StringBuffer();
+	    sb.append("ajc$declare");
+        // Declares can choose to provide a piece of the name - to enable
+        // them to be easily distinguised at weave time (e.g. see declare annotation)
+        if (declareDecl!=null) {
+          String suffix = declareDecl.getNameSuffix();
+          if (suffix.length()!=0) {
+        	sb.append("_");
+        	sb.append(suffix);
+          }
+        }
+        sb.append("_");
+        sb.append(declareSequenceNumberInType);
+        this.selector = sb.toString().toCharArray();
+	}
 }

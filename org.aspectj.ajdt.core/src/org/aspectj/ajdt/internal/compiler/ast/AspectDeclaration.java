@@ -57,7 +57,8 @@ public class AspectDeclaration extends TypeDeclaration {
 	public EclipseFactory factory;  //??? should use this consistently
 
     public int adviceCounter = 1; // Used as a part of the generated name for advice methods
-
+    public int declareCounter= 1; // Used as a part of the generated name for methods representing declares
+	
 	// for better error messages in 1.0 to 1.1 transition
 	public TypePattern dominatesPattern;
 

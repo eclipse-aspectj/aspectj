@@ -15,6 +15,7 @@ package org.aspectj.ajdt.internal.compiler.ast;
 
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.flow.FlowInfo;
 import org.aspectj.org.eclipse.jdt.internal.compiler.flow.InitializationFlowContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
@@ -32,7 +33,7 @@ public class DeclareAnnotationDeclaration extends DeclareDeclaration {
  	  addAnnotation(annotation);
  	  if (symbolicDeclare==null) return; // there is an error that will already be getting reported (e.g. incorrect pattern on decaf/decac)
  	  symbolicDeclare.setAnnotationString(annotation.toString());
- 	  symbolicDeclare.setAnnotationMethod(new String(selector));
+	  
    }
    
    public void analyseCode(ClassScope classScope,
@@ -76,5 +77,10 @@ public class DeclareAnnotationDeclaration extends DeclareDeclaration {
    	}
 	this.annotations[0] = ann;
    }
+   
+	public void postParse(TypeDeclaration typeDec) {
+		super.postParse(typeDec);
+	    ((DeclareAnnotation)declareDecl).setAnnotationMethod(new String(selector));
+	}
 	
 }
