@@ -53,19 +53,22 @@
    </para>
 
   	<programlisting><![CDATA[
-  	 public aspect InstanceTracking pertypewithin(org.xyz..*) {
+     import java.util.*;
+     
+     public aspect InstanceTracking pertypewithin(org.xyz..*) {
+     
+       // use WeakHashMap for auto-garbage collection of keys  	 
+       private Map<Object,Boolean> instances = new WeakHashMap<Object,Boolean>();
 
-	   // use WeakHashMap for auto-garbage collection of keys  	 
-  	   private Map<?,Boolean> instances = new WeakHashMap<?,Boolean>();
-  	   
-  	   after(Object o) returning : execution(new(..)) {
-  	     instances.put(o,true);
-  	   }
-  	 
-  	   public Set<?> getInstances() {
-  	      return instances.keySet();
-  	   }
-  	 }
+       after(Object o) returning() : execution(new(..)) && this(o) {
+         instances.put(o,true);
+       }
+
+       public Set<?> getInstances() {
+         return instances.keySet();
+       }
+       
+     } 
 	]]></programlisting>
 	
 	<para>
@@ -93,7 +96,7 @@
 	   // use WeakHashMap for auto-garbage collection of keys  	 
   	   private Map<T, Boolean> instances = new WeakHashMap<T, Boolean>();
   	   
-  	   after(T t) returning : execution(new(..)) {
+  	   after(T t) returning : execution(new(..)) && this(t) {
   	     instances.put(t, true);
   	   }
   	 
