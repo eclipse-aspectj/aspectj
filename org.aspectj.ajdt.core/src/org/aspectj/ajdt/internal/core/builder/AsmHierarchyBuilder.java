@@ -55,13 +55,6 @@ import org.aspectj.weaver.patterns.*;
  * @author Mik Kersten
  */
 public class AsmHierarchyBuilder extends ASTVisitor {
-	
-//    public static void build(    
-//        CompilationUnitDeclaration unit,
-//		IHierarchy structureModel, AjBuildConfig buildConfig) {
-//        LangUtil.throwIaxIfNull(unit, "unit");
-//        new AsmHierarchyBuilder(unit., ).;
-//    }
 
 	protected AsmElementFormatter formatter = new AsmElementFormatter();
 	
@@ -242,7 +235,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// ??? share impl with visit(TypeDeclaration, ..) ?
 	public boolean visit(TypeDeclaration memberTypeDeclaration, ClassScope scope) {
 		String name = new String(memberTypeDeclaration.name);
-		//System.err.println("member type with name: " + name);
 		
 		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
 		if (memberTypeDeclaration instanceof AspectDeclaration) kind = IProgramElement.Kind.ASPECT;
@@ -266,9 +258,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		stack.pop();
 	}
 	
-	public boolean visit(TypeDeclaration memberTypeDeclaration, BlockScope scope) {
-//		String name = new String(memberTypeDeclaration.name);
-		
+	public boolean visit(TypeDeclaration memberTypeDeclaration, BlockScope scope) {		
 		String fullName = "<undefined>";
 		if (memberTypeDeclaration.allocation != null
 			&& memberTypeDeclaration.allocation.type != null) {
@@ -349,9 +339,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		formatter.genLabelAndKind(methodDeclaration, peNode);
 		genBytecodeInfo(methodDeclaration, peNode);
 		List namedPointcuts = genNamedPointcuts(methodDeclaration);
-//		System.err.println(">>>>>>>>>>>>>>>>> " + methodDeclaration.);
 		addUsesPointcutRelationsForNode(peNode, namedPointcuts, methodDeclaration);
-//		System.err.println("> named: " + namedPointcuts);
 		
 		if (methodDeclaration.returnType!=null) {
 		  peNode.setCorrespondingType(methodDeclaration.returnType.toString());
@@ -413,8 +401,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
     private List genNamedPointcuts(MethodDeclaration methodDeclaration) {
         List pointcuts = new ArrayList();
         if (methodDeclaration instanceof AdviceDeclaration) {
-//            ((AdviceDeclaration)methodDeclaration).
-//            System.err.println(">>>>>>>> got advice: " + new String(methodDeclaration.selector));
             if (((AdviceDeclaration)methodDeclaration).pointcutDesignator != null) 
                 addAllNamed(((AdviceDeclaration)methodDeclaration).pointcutDesignator.getPointcut(), pointcuts);
 		} else if (methodDeclaration instanceof PointcutDeclaration) { 
@@ -569,7 +555,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				if (curr == '/' && sb.length() > 2 && sb.charAt(sb.length()-1) == '*') completed = true; // found */
 				sb.append(currCompilationResult.compilationUnit.getContents()[i]);
 			} 
-//			System.err.println(">> " + sb.toString());
 			return sb.toString();
 		} else {
 			return null;
