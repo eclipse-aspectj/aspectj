@@ -39,16 +39,26 @@ public class StructureModel implements Serializable {
         this.root = root;
     }
 
-	public Map getFileMap() {
+	private Map getFileMap() {
         return fileMap;
     }
 
+	public void addToFileMap( Object key, Object value ){
+		fileMap.put( key, value );
+	}
+	
+	public Object findInFileMap( Object key ) {
+		return fileMap.get(key);
+	}
 
 	public void setFileMap(HashMap fileMap) {
         this.fileMap = fileMap;
     }
 
-
+	public Set getFileMapEntrySet() {
+		return fileMap.entrySet();
+	}
+	
 	public boolean isValid() {
         return root != null && fileMap != null;
     }
@@ -120,7 +130,8 @@ public class StructureModel implements Serializable {
 	            return StructureModel.NO_STRUCTURE;
 	        } else {
 	            String correctedPath = new File(sourceFile).getCanonicalPath();//.replace('\\', '/');
-	            StructureNode node = (StructureNode)getFileMap().get(correctedPath);//findFileNode(filePath, model);
+	            //StructureNode node = (StructureNode)getFileMap().get(correctedPath);//findFileNode(filePath, model);
+				StructureNode node = (StructureNode)findInFileMap(correctedPath);//findFileNode(filePath, model);
 	            if (node != null) {
 	                return node;
 	            } else {
