@@ -1,0 +1,222 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>AJDT Project Proposal</title>
+<STYLE TYPE="text/css">
+<!--
+ 
+   /* FOR THE SDA PAGE */
+ 
+	/*
+	BODY {margin-top: 15px; margin-left: 15px; margin-right: 15px;}
+	*/
+
+	A:link {
+		color:#4756AC;
+	}
+	A:visited {
+		color:#60657B;
+	}
+	A:hover {
+		color:red
+	}
+	
+	INPUT {font:12px "Courier New", sans-serif;}
+	
+	H2 {
+		font:18px/18px Verdana, Arial, Helvetica, sans-serif; 
+		color:black; 
+		font-weight:bold; 
+		margin-left: 10px;
+		line-height:110%; 
+	}
+	H3 {
+		font:18px/18px Verdana, Arial, Helvetica, sans-serif; 
+		color:black; 
+		font-weight:bold; 
+		margin-left: 10px;
+		line-height:110%; 
+	}
+	H4 {
+		font:15px/16px Verdana, Arial, Helvetica, sans-serif; 
+		color:black; 
+		font-weight:bold; 
+		margin-left: 10px;
+		line-height:140%;
+	}
+	P {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif; 
+		margin-right: 10px;
+		margin-left: 10px;
+		line-height:130%; 
+	}
+	.paragraph {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif; 
+		margin-right: 10px;
+		margin-left: 10px;
+		line-height:130%; 
+	}
+	.smallParagraph {
+		font:11px/11px Verdana, Arial, Helvetica, sans-serif; 
+		margin-right: 10px;
+		margin-left: 10px;
+		line-height:130%; 
+	}
+	LI {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif;
+		text-align:justify; 
+		margin-right: 10px;
+		margin-left: 15px;
+		line-height:120%; 
+	}
+	/*
+	UL {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif;
+		text-align:justify; 
+		margin-right: 10px;
+		margin-left: 15px;
+		line-height:120%; 
+	}*/
+	
+	DL {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif;
+		text-align:justify; 
+		margin-right: 10px;
+		margin-left: 15px;
+		line-height:120%; 
+	}
+	B { font:13px/13px Verdana, Arial, Helvetica, sans-serif; 
+		font-weight:bold; 
+		line-height:140%;
+	}
+	.footer {
+		font:10px/10px Verdana, Arial, Helvetica, sans-serif;  
+		color:#888888; 
+		text-align:left
+	}
+	.figureTitle {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif; 
+		text-align:justify; 
+		text-align:center
+	}
+	.copyrightNotice {
+		font:10px/10px Verdana, Arial, Helvetica, sans-serif; 
+		color:#999999; 
+		line-height:110%;
+	}
+	.smallHeading {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif; 
+		font-weight:bold;
+		line-height:110%;
+	}
+	.tinyHeading {
+		font:11px/11px Verdana, Arial, Helvetica, sans-serif; 
+		font-weight:bold;
+		line-height:120%;
+	}
+	.newsText {
+		font:11px/11px Verdana, Arial, Helvetica, sans-serif; 
+		line-height:130%;
+	}
+	.smallParagraph {
+		font:11px/11px Verdana, Arial, Helvetica, sans-serif; 
+		line-height:130%;
+	}
+	.fancyHeading {
+		font:20px/20px Chantilly, Arial, Helvetica, sans-serif; 
+		margin-right: 10px;
+		color:#6f7a92;
+		margin-left: 10px;
+		line-height:130%;
+	}
+ 
+-->
+</STYLE>
+</head>
+
+<BODY BGCOLOR="white">
+
+<h3 align="center">AspectJ Modules</h3>
+
+<p>There are a number of different structures [Parnas] : the module structure, 
+the uses structure, the runtime structure,… We focus first on the module 
+structure as found in the org.aspectj and org.eclipse.ajdt cvs roots.<br>
+<br>
+The CVS modules are all rooted at dev.eclipse.org:/home/technology. </p>
+<ul>
+	<li>aspectj-home contains the AspectJ project web site on eclipse.org</li>
+	<li>org.aspectj contains the AspectJ project source code</li>
+	<li>org.eclipse.ajdt contains the AJDT project web site and the AJDT source 
+	code</li>
+</ul>
+<h4>Core Modules</h4>
+<h4 class="paragraph"><b>ajbrowser</b></h4>
+<h4 class="paragraph">This module contains the ajbrowser application. It depends on the ajde module 
+for access to the aspectj compiler, and also for the swing user interface 
+components that ajde provides.</h4>
+<h4 class="paragraph"><b>ajde</b></h4>
+<p>This module hides the details of accessing the aspectj compiler and interpreting 
+compilation results (error messages, structure model etc.) from other 
+applications (typically IDEs) that need to invoke it programmatically. <br>
+<br>
+It also contains a library of common swing user interface components that can be 
+used by any swing based IDE. Ajbrowser and the non-eclipse IDE integration 
+projects use this library (except for the emacs support).<br>
+<br>
+Note: we need to separate the ajde component into two – ajde.core and ajde.ui. 
+The core should be independent of the ui component (currently this isn’t quite 
+true). This will allow non-swing based applications that need to integrate with 
+the aspectj compiler to do so without needing to provide a swing environment. 
+The issue is most pressing on Mac OS X where AJDT fails to load due to conflicts 
+between Eclipse’s SWT and swing<br>
+<br>
+Changing any public interface in ajde can break all the IDE integration projects 
+and should be done with care. </p>
+<p><b>asm</b></p>
+<p>This module contains the Abstract Structure Model which represents the result of 
+an aspectj compilation. Clients of ajde are returned an instance of the 
+structure model which allows them to navigate and interpret the structure of a 
+compiled aspectj program.</p>
+<p><b>bridge</b></p>
+<p>...</p>
+<p><b>org.aspectj.ajdt.core</b></p>
+<p>...</p>
+<p><b>org.eclipse.jdt.core</b></p>
+<p>...</p>
+<p><b>runtime</b></p>
+<p>...</p>
+<p><b>taskdefs</b></p>
+<p>...</p>
+<p><b>util</b></p>
+<p>...</p>
+<p><b>weaver</b></p>
+<h4>...<br>
+<br>
+Supporting Modules</h4>
+<p><b>build</b></p>
+<p>...</p>
+<p><b>docs</b></p>
+<p>...</p>
+<p><b>lib</b></p>
+<p>...</p>
+<p><b>releases</b></p>
+<p>...</p>
+<p><b>testing</b></p>
+<p>...</p>
+<p><b>testing-client</b></p>
+<p>...</p>
+<p><b>testing-drivers</b></p>
+<p>...</p>
+<p><b>testing-util</b></p>
+<p>...</p>
+<p><b>tests</b></p>
+<p>...<br>
+&nbsp;</p>
+
+</body>
+
+</html>
