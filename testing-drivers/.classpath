@@ -4,7 +4,7 @@
     <classpathentry kind="src" path="testsrc"/>
     <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
     <classpathentry kind="src" path="/bridge"/>
-    <classpathentry kind="src" path="/bcweaver"/>
+    <classpathentry kind="src" path="/weaver"/>
     <classpathentry kind="src" path="/testing"/>
     <classpathentry kind="src" path="/testing-client"/>
     <classpathentry kind="src" path="/util"/>
