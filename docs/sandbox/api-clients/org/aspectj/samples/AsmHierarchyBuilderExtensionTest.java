@@ -19,9 +19,9 @@ import org.aspectj.ajdt.internal.core.builder.AsmHierarchyBuilder;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.internal.ProgramElement;
-import org.eclipse.jdt.internal.compiler.ast.MessageSend;
-import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
-
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MessageSend;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
+  
 /**
  * This test demonstrates how hierarchy building in the ASM can be extended
  * to put additional information in the model, for example method call sites.
