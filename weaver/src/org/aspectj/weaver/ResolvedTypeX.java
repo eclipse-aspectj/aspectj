@@ -550,7 +550,7 @@ public abstract class ResolvedTypeX extends TypeX {
             }            
             // ??? needs to be Methods, not just declared methods? JLS 5.5 unclear
             ResolvedMember[] a = getDeclaredMethods();
-            ResolvedMember[] b = ((Name)other).getDeclaredMethods();  //??? is this cast always safe
+            ResolvedMember[] b = other.getDeclaredMethods();  //??? is this cast always safe
             for (int ai = 0, alen = a.length; ai < alen; ai++) {
                 for (int bi = 0, blen = b.length; bi < blen; bi++) {
                     if (! b[bi].isCompatibleWith(a[ai])) return false;
