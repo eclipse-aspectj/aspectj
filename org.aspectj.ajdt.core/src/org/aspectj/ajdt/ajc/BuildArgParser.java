@@ -355,7 +355,9 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
 			} else if (arg.equals("-emacssym")) {
 				buildConfig.setEmacsSymMode(true);
 				buildConfig.setGenerateModelMode(true);
-			} else if (arg.equals("-noweave")) {
+			//AMC - added -XnoWeave to options that match, in line with
+			// AspectJ 1.1 release notes documentation.	
+			} else if (arg.equals("-noweave") || arg.equals( "-XnoWeave")) {
 				buildConfig.setNoWeave(true);
 			} else if (arg.equals("-XserializableAspects")) {
 				buildConfig.setXserializableAspects(true);

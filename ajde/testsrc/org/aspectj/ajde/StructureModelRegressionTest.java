@@ -14,10 +14,12 @@
 package org.aspectj.ajde; 
 
 import java.io.File;
+import java.util.List;
 
 import junit.framework.TestSuite;
 
 import org.aspectj.asm.StructureModel;
+import org.aspectj.asm.StructureNode;
 
 public class StructureModelRegressionTest extends AjdeTestCase {
 
@@ -36,7 +38,7 @@ public class StructureModelRegressionTest extends AjdeTestCase {
 	}
 
 	public void test() {
-		String testLstFile = "StructureModelRegressionTest/example.lst";
+		String testLstFile = "testdata/StructureModelRegressionTest/example.lst";
         File f = new File(testLstFile);
         assertTrue(testLstFile, f.canRead());
         assertTrue("saved model: " + testLstFile, verifyAgainstSavedModel(testLstFile));    
@@ -52,12 +54,43 @@ public class StructureModelRegressionTest extends AjdeTestCase {
 			StructureModel savedModel = Ajde.getDefault().getStructureModelManager().getStructureModel();
 			//System.err.println( savedModel.getRoot().getClass() + ", " +  savedModel.getRoot());
 			
-			return savedModel.getRoot().equals(model.getRoot());
+			// AMC This test will not pass as written until StructureNode defines
+			// equals. The equals loic is commented out in the StructureNode
+			// class - adding it back in could have unforeseen system-wide
+			// consequences, so I've defined a structureNodesEqual( ) helper
+			// method here instead.
+			StructureNode rootNode = model.getRoot();
+			StructureNode savedRootNode = savedModel.getRoot();
+			return structureNodesEqual( rootNode, savedRootNode );
 		} else {
 			Ajde.getDefault().getStructureModelManager().writeStructureModel(lstFile);
 			return true;
 		}
 		//return true;
+	}
+
+	private boolean structureNodesEqual( StructureNode s1, StructureNode s2 ) {
+	  final boolean equal = true;
+	  	if ( s1 == s2 ) return equal;
+	  	if ( null == s1 || null == s2 ) return !equal;
+
+		if (!s1.getName( ).equals(s2.getName())) return !equal;
+		if (!s1.getKind( ).equals(s2.getKind())) return !equal;
+		
+		// check child nodes
+		List s1Kids = s1.getChildren();
+		List s2Kids = s2.getChildren();
+		
+		if ( s1Kids != null && s2Kids != null ) {
+			if (s1Kids == null || s2Kids == null) return !equal;			
+			if (s1Kids.size() != s2Kids.size() ) return !equal;
+			for ( int k=0; k<s1Kids.size(); k++ ) {
+				StructureNode k1 = (StructureNode) s1Kids.get(k);
+				StructureNode k2 = (StructureNode) s2Kids.get(k);	
+				if (!structureNodesEqual( k1, k2 )) return !equal;
+			}
+		}
+	  return equal;		
 	}
 
 	private StructureModel getModelForFile(String lstFile) {

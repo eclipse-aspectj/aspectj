@@ -83,6 +83,7 @@ public class StructureViewManagerTest extends AjdeTestCase {
 		
 		assertTrue("notified", renderer.getHasBeenNotified());	
 		//System.err.println(">>>>>> " + currentView.getRootNode().getStructureNode());	
+		StructureNode n = currentView.getRootNode().getStructureNode();
 		assertTrue(
 			"no structure", 
 			currentView.getRootNode().getStructureNode().getChildren().get(0) 

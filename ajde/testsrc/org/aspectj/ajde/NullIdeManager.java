@@ -44,6 +44,8 @@ public class NullIdeManager {
 				new IconRegistry(),
 				nullFrame,
 				true);	
+				
+			//Ajde.getDefault().enableLogging( System.out );
 		} catch (Throwable t) {
 			t.printStackTrace();
 			Ajde.getDefault().getErrorHandler().handleError(

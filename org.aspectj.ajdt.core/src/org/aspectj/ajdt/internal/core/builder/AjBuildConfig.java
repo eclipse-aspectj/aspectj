@@ -8,6 +8,9 @@
  *  
  * Contributors: 
  *     PARC     initial implementation 
+ *     Adrian Colyer  added constructor to populate javaOptions with
+ * 					  default settings - 01.20.2003
+ * 					  Bugzilla #29768, 29769
  * ******************************************************************/
 
 
@@ -16,12 +19,14 @@ package org.aspectj.ajdt.internal.core.builder;
 import java.io.File;
 import java.util.*;
 
+import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+
 /**
  * All configuration information needed to run the AspectJ compiler.
  */
 public class AjBuildConfig {
 	
-	public static final String AJLINT_INGORE = "ignore";
+	public static final String AJLINT_IGNORE = "ignore";
 	public static final String AJLINT_WARN = "warn";
 	public static final String AJLINT_ERROR = "error";
 	public static final String AJLINT_DEFAULT = "default";
@@ -43,6 +48,72 @@ public class AjBuildConfig {
 	private boolean XnoInline = false;
 	private String lintMode = AJLINT_DEFAULT;
 	private File lintSpecFile = null;
+
+	/**
+	 * Intialises the javaOptions Map to hold the default 
+	 * JDT Compiler settings. Added by AMC 01.20.2003 in reponse
+	 * to bug #29768 and enh. 29769.
+	 * The settings here are duplicated from those set in
+	 * org.eclipse.jdt.internal.compiler.batch.Main, but I've elected to
+	 * copy them rather than refactor the JDT class since this keeps
+	 * integration with future JDT releases easier (?).
+	 */
+	public AjBuildConfig( ) {
+		javaOptions.put(
+			CompilerOptions.OPTION_LocalVariableAttribute,
+			CompilerOptions.DO_NOT_GENERATE);
+		javaOptions.put(
+			CompilerOptions.OPTION_LineNumberAttribute,
+			CompilerOptions.DO_NOT_GENERATE);
+		javaOptions.put(
+			CompilerOptions.OPTION_SourceFileAttribute,
+			CompilerOptions.DO_NOT_GENERATE);
+		javaOptions.put(
+			CompilerOptions.OPTION_PreserveUnusedLocal,
+			CompilerOptions.OPTIMIZE_OUT);
+		javaOptions.put(
+			CompilerOptions.OPTION_ReportUnreachableCode,
+			CompilerOptions.ERROR);
+		javaOptions.put(
+			CompilerOptions.OPTION_ReportInvalidImport, 
+			CompilerOptions.ERROR);
+		javaOptions.put(
+			CompilerOptions.OPTION_ReportOverridingPackageDefaultMethod,
+			CompilerOptions.WARNING);
+		javaOptions.put(
+			CompilerOptions.OPTION_ReportMethodWithConstructorName,
+			CompilerOptions.WARNING);
+		javaOptions.put(
+			CompilerOptions.OPTION_ReportDeprecation, 
+				CompilerOptions.WARNING);
+		javaOptions.put(
+			CompilerOptions.OPTION_ReportHiddenCatchBlock,
+			CompilerOptions.WARNING);
+		javaOptions.put(
+			CompilerOptions.OPTION_ReportUnusedLocal, 
+			CompilerOptions.IGNORE);
+		javaOptions.put(
+			CompilerOptions.OPTION_ReportUnusedParameter,
+			CompilerOptions.IGNORE);
+		javaOptions.put(
+			CompilerOptions.OPTION_ReportSyntheticAccessEmulation,
+			CompilerOptions.IGNORE);
+		javaOptions.put(
+			CompilerOptions.OPTION_ReportNonExternalizedStringLiteral,
+			CompilerOptions.IGNORE);
+		javaOptions.put(
+			CompilerOptions.OPTION_ReportAssertIdentifier,
+			CompilerOptions.IGNORE);
+		javaOptions.put(
+			CompilerOptions.OPTION_Compliance,
+			CompilerOptions.VERSION_1_3);
+		javaOptions.put(
+			CompilerOptions.OPTION_Source,
+			CompilerOptions.VERSION_1_3);
+		javaOptions.put(
+			CompilerOptions.OPTION_TargetPlatform,
+			CompilerOptions.VERSION_1_1);				
+	}
 
 	/**
 	 * returned files includes <ul>

@@ -238,19 +238,49 @@ public class AspectJBuildManager implements BuildManager {
             notifyCompileFinished(configFile, lastCompileTime, succeeded, warnings);
         }
   
+  		// AMC - updated for AspectJ 1.1 options
 		private String getFormattedOptionsString(BuildOptionsAdapter buildOptions, ProjectPropertiesAdapter properties) {
 			return "Building with settings: "
 				+ "\n-> output path: " + properties.getOutputPath()
 				+ "\n-> classpath: " + properties.getClasspath()
 				+ "\n-> bootclasspath: " + properties.getBootClasspath()
+				+ "\n-> -injars " + formatSet(properties.getInJars())
+				+ "\n-> -outjar " + formatOptionalString(properties.getOutJar())
+				+ "\n-> -sourceroots " + formatSet(properties.getSourceRoots())
+				+ "\n-> -aspectpath " + formatSet(properties.getAspectPath())
+				+ "\n-> -" + buildOptions.getComplianceLevel()
+				+ "\n-> -source " + buildOptions.getSourceCompatibilityLevel()
+				+ "\n-> -g:" + formatSet(buildOptions.getDebugLevel())
+				+ "\n-> -warn:" + formatSet(buildOptions.getWarnings())
+				+ "\n-> noImportError: " + buildOptions.getNoImportError()
+				+ "\n-> preserveAllLocals:" + buildOptions.getPreserveAllLocals()
 				+ "\n-> non-standard options: " + buildOptions.getNonStandardOptions()
-				+ "\n-> porting mode: " + buildOptions.getPortingMode()
-				+ "\n-> source 1.4 mode: " + buildOptions.getSourceOnePointFourMode()
-				+ "\n-> strict spec mode: " + buildOptions.getStrictSpecMode()
-				+ "\n-> lenient spec mode: " + buildOptions.getLenientSpecMode()
-				+ "\n-> use javac mode: " + buildOptions.getUseJavacMode()
-				+ "\n-> preprocess mode: " + buildOptions.getPreprocessMode()
-				+ "\n-> working dir: " + buildOptions.getWorkingOutputPath();
+				+ "\n-> [ignored-deprecated in AspectJ1.1] porting mode: " + buildOptions.getPortingMode()
+				+ "\n-> [ignored-deprecated in AspectJ1.1] source 1.4 mode: " + buildOptions.getSourceOnePointFourMode()
+				+ "\n-> [ignored-deprecated in AspectJ1.1] strict spec mode: " + buildOptions.getStrictSpecMode()
+				+ "\n-> [ignored-deprecated in AspectJ1.1] lenient spec mode: " + buildOptions.getLenientSpecMode()
+				+ "\n-> [ignored-deprecated in AspectJ1.1] use javac mode: " + buildOptions.getUseJavacMode()
+				+ "\n-> [ignored-deprecated in AspectJ1.1] preprocess mode: " + buildOptions.getPreprocessMode()
+				+ "\n-> [ignored-deprecated in AspectJ1.1] working dir: " + buildOptions.getWorkingOutputPath();
+		}
+		
+		private String formatSet( Set options ) {
+			if ( options == null ) return "<default>";
+			if ( options.isEmpty() ) return "none";
+			
+			StringBuffer formattedOptions = new StringBuffer();
+			Iterator it = options.iterator();
+			while (it.hasNext()) {
+				String o = it.next().toString();
+				if (formattedOptions.length() > 0) formattedOptions.append(", ");
+				formattedOptions.append( o );
+			}
+			return formattedOptions.toString();
+		}
+		
+		private String formatOptionalString( String s ) {
+			if ( s == null ) { return ""	; }
+			else { return s; }
 		}
     }
 

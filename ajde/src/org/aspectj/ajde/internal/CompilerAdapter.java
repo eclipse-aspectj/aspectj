@@ -7,7 +7,9 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC      initial implementation 
+ *     AMC 01.20.2003  extended to support new AspectJ 1.1 options,
+ * 				       bugzilla #29769
  * ******************************************************************/
 
 
@@ -17,10 +19,12 @@ import java.io.File;
 import java.util.*;
 
 import org.aspectj.ajde.*;
+import org.aspectj.ajdt.ajc.BuildArgParser;
 import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
 import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
 import org.aspectj.bridge.*;
 import org.aspectj.util.ConfigParser;
+import org.aspectj.util.LangUtil;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
@@ -99,36 +103,263 @@ public class CompilerAdapter {
 			buildConfig.setConfigFile(config);
         }
 		
+		// AMC refactored into two methods to populate buildConfig from buildOptions and
+		// project properties - bugzilla 29769.
+		configureBuildOptions(buildConfig, Ajde.getDefault().getBuildManager().getBuildOptions());
+		configureProjectOptions(buildConfig, Ajde.getDefault().getProjectProperties());
+		
+		buildConfig.setGenerateModelMode(true);		
+		return buildConfig;
+	}
+
+	/**
+	 * Populate options in a build configuration, using the Ajde BuildOptionsAdapter.
+	 * Added by AMC 01.20.2003, bugzilla #29769
+	 */
+	private void configureBuildOptions( AjBuildConfig config, BuildOptionsAdapter options ) {
+
+		Map javaOptions = config.getJavaOptions();
+
+		if (options.getSourceOnePointFourMode()) {
+			javaOptions.put(CompilerOptions.OPTION_Compliance, CompilerOptions.VERSION_1_4);	 
+			javaOptions.put(CompilerOptions.OPTION_Source, CompilerOptions.VERSION_1_4);
+		} 
+		
+		String enc = options.getCharacterEncoding();
+		if ( enc != null & (enc.length() > 0)) {
+			javaOptions.put(CompilerOptions.OPTION_Encoding, enc );
+		}
+
+		String compliance = options.getComplianceLevel();
+		if ( compliance != null && (compliance.length() > 0) ) {
+			String version = CompilerOptions.VERSION_1_4;
+			if ( compliance.equals( BuildOptionsAdapter.VERSION_13 ) ) {
+				version = CompilerOptions.VERSION_1_3;
+			}
+			javaOptions.put(CompilerOptions.OPTION_Compliance, version );	
+			javaOptions.put(CompilerOptions.OPTION_Source, version );
+		}
+				
+		String sourceLevel = options.getSourceCompatibilityLevel();
+		if ( null != sourceLevel && ( sourceLevel.length() > 0 )) {
+			String slVersion = CompilerOptions.VERSION_1_4;
+			if ( sourceLevel.equals( BuildOptionsAdapter.VERSION_13 ) ) {
+				slVersion = CompilerOptions.VERSION_1_3;
+			}
+			// never set a lower source level than compliance level
+			String setCompliance = (String) javaOptions.get( CompilerOptions.OPTION_Compliance);
+			if ( ! (setCompliance.equals( CompilerOptions.VERSION_1_4 )
+			         && slVersion.equals(CompilerOptions.VERSION_1_3)) ) {
+				javaOptions.put(CompilerOptions.OPTION_Source, slVersion);							
+			}
+		}
+	
+		Set warnings = options.getWarnings();
+		if ( warnings != null ) {
+			// turn off all warnings	
+			disableWarnings( javaOptions );
+			// then selectively enable those in the set
+			enableWarnings( javaOptions, warnings );
+		}
+
+		Set debugOptions = options.getDebugLevel();
+		if ( debugOptions != null ) {
+			// default is all options off, so just need to selectively
+			// enable
+			Iterator it = debugOptions.iterator();
+			while (it.hasNext()){
+				String debug = (String) it.next();
+				if ( debug.equals( BuildOptionsAdapter.DEBUG_ALL )) {
+					javaOptions.put( CompilerOptions.OPTION_LineNumberAttribute,
+									 CompilerOptions.GENERATE);
+					javaOptions.put( CompilerOptions.OPTION_SourceFileAttribute,
+									 CompilerOptions.GENERATE);
+					javaOptions.put( CompilerOptions.OPTION_LocalVariableAttribute,
+									 CompilerOptions.GENERATE);									 
+				} else if ( debug.equals( BuildOptionsAdapter.DEBUG_LINES )) {
+					javaOptions.put( CompilerOptions.OPTION_LineNumberAttribute,
+									 CompilerOptions.GENERATE);					
+				}  else if ( debug.equals( BuildOptionsAdapter.DEBUG_SOURCE )) {
+					javaOptions.put( CompilerOptions.OPTION_SourceFileAttribute,
+									 CompilerOptions.GENERATE);					
+				}  else if ( debug.equals( BuildOptionsAdapter.DEBUG_VARS)) {
+					javaOptions.put( CompilerOptions.OPTION_LocalVariableAttribute,
+									 CompilerOptions.GENERATE);					
+				}
+			}
+		}
+
+		if ( options.getNoImportError() ) {
+			javaOptions.put( CompilerOptions.OPTION_ReportInvalidImport,
+				CompilerOptions.WARNING);	
+		}
+				
+		if ( options.getPreserveAllLocals() ) {
+			javaOptions.put( CompilerOptions.OPTION_PreserveUnusedLocal,
+				CompilerOptions.PRESERVE);		
+		}
+				
+		config.setJavaOptions( javaOptions );
+		
+		configureNonStandardOptions( config, options );
+	}
+	
+	/**
+	 * Helper method for configureBuildOptions
+	 */
+	private void disableWarnings( Map options ) {
+		options.put(
+			CompilerOptions.OPTION_ReportOverridingPackageDefaultMethod,
+			CompilerOptions.IGNORE);
+		options.put(
+			CompilerOptions.OPTION_ReportMethodWithConstructorName,
+			CompilerOptions.IGNORE);
+		options.put(
+			CompilerOptions.OPTION_ReportDeprecation, 
+			CompilerOptions.IGNORE);
+		options.put(
+			CompilerOptions.OPTION_ReportHiddenCatchBlock,
+			CompilerOptions.IGNORE);
+		options.put(
+			CompilerOptions.OPTION_ReportUnusedLocal, 
+			CompilerOptions.IGNORE);
+		options.put(
+			CompilerOptions.OPTION_ReportUnusedParameter,
+			CompilerOptions.IGNORE);
+		options.put(
+			CompilerOptions.OPTION_ReportSyntheticAccessEmulation,
+			CompilerOptions.IGNORE);
+		options.put(
+			CompilerOptions.OPTION_ReportNonExternalizedStringLiteral,
+			CompilerOptions.IGNORE);
+		options.put(
+			CompilerOptions.OPTION_ReportAssertIdentifier,
+			CompilerOptions.IGNORE);
+		options.put(
+			CompilerOptions.OPTION_ReportUnusedImport,
+			CompilerOptions.IGNORE);		
+	}
+
+	/**
+	 * Helper method for configureBuildOptions
+	 */
+	private void enableWarnings( Map options, Set warnings ) {
+		Iterator it = warnings.iterator();
+		while (it.hasNext() ) {
+			String thisWarning = (String) it.next();
+			if ( thisWarning.equals( BuildOptionsAdapter.WARN_ASSERT_IDENITIFIER )) {
+				options.put( CompilerOptions.OPTION_ReportAssertIdentifier,
+							 CompilerOptions.WARNING );				
+			} else if ( thisWarning.equals( BuildOptionsAdapter.WARN_CONSTRUCTOR_NAME )) {
+				options.put( CompilerOptions.OPTION_ReportMethodWithConstructorName,
+							 CompilerOptions.WARNING );								
+			} else if ( thisWarning.equals( BuildOptionsAdapter.WARN_DEPRECATION )) {
+				options.put( CompilerOptions.OPTION_ReportDeprecation,
+							 CompilerOptions.WARNING );					
+			} else if ( thisWarning.equals( BuildOptionsAdapter.WARN_MASKED_CATCH_BLOCKS )) {
+				options.put( CompilerOptions.OPTION_ReportHiddenCatchBlock,
+							 CompilerOptions.WARNING );	
+			} else if ( thisWarning.equals( BuildOptionsAdapter.WARN_PACKAGE_DEFAULT_METHOD )) {
+				options.put( CompilerOptions.OPTION_ReportOverridingPackageDefaultMethod,
+							 CompilerOptions.WARNING );					
+			} else if ( thisWarning.equals( BuildOptionsAdapter.WARN_SYNTHETIC_ACCESS )) {
+				options.put( CompilerOptions.OPTION_ReportSyntheticAccessEmulation,
+							 CompilerOptions.WARNING );					
+			} else if ( thisWarning.equals( BuildOptionsAdapter.WARN_UNUSED_ARGUMENTS )) {
+				options.put( CompilerOptions.OPTION_ReportUnusedParameter,
+							 CompilerOptions.WARNING );					
+			} else if ( thisWarning.equals( BuildOptionsAdapter.WARN_UNUSED_IMPORTS )) {
+				options.put( CompilerOptions.OPTION_ReportUnusedImport,
+							 CompilerOptions.WARNING );					
+			} else if ( thisWarning.equals( BuildOptionsAdapter.WARN_UNUSED_LOCALS )) {
+				options.put( CompilerOptions.OPTION_ReportUnusedLocal,
+							 CompilerOptions.WARNING );					
+			}  else if ( thisWarning.equals( BuildOptionsAdapter.WARN_NLS )) {
+				options.put( CompilerOptions.OPTION_ReportNonExternalizedStringLiteral,
+							 CompilerOptions.WARNING );					
+			}
+		}		
+	}
+
+
+	/**
+	 * Helper method for configure build options
+	 */
+	private void configureNonStandardOptions( AjBuildConfig config, BuildOptionsAdapter options ) {
+		String nonStdOptions = options.getNonStandardOptions();
+		if ( null == nonStdOptions || (nonStdOptions.length() == 0)) return;
+		
+		StringTokenizer tok = new StringTokenizer( nonStdOptions );
+		String[] args = new String[ tok.countTokens() ];
+		int argCount = 0;
+		while ( tok.hasMoreTokens() ) {
+			args[argCount++] = tok.nextToken();	
+		}
+
+		// set the non-standard options in an alternate build config
+		// (we don't want to lose the settings we already have)
+		BuildArgParser argParser = new BuildArgParser();
+		AjBuildConfig altConfig = argParser.genBuildConfig( args, messageHandler );
+		
+		// copy the answers across
+		config.setNoWeave( altConfig.isNoWeave() );
+		config.setXnoInline( altConfig.isXnoInline() );
+		config.setXserializableAspects( altConfig.isXserializableAspects());
+		config.setLintMode( altConfig.getLintMode() );
+		config.setLintSpecFile( altConfig.getLintSpecFile() );		
+	}
+	/**
+	 * Populate options in a build configuration, using the ProjectPropertiesAdapter.
+	 * Added by AMC 01.20.2003, bugzilla #29769
+	 */
+	private void configureProjectOptions( AjBuildConfig config, ProjectPropertiesAdapter properties ) {
+
+		// set the classpath
 		String classpathString = 
-			Ajde.getDefault().getProjectProperties().getBootClasspath()
+			properties.getBootClasspath()
 			+ File.pathSeparator
-			+ Ajde.getDefault().getProjectProperties().getClasspath();
+			+ properties.getClasspath();
 			
 		StringTokenizer st = new StringTokenizer(
 			classpathString,
 			File.pathSeparator
 		);
+		
 		List classpath = new ArrayList();
 		while (st.hasMoreTokens()) classpath.add(st.nextToken());
-		buildConfig.setClasspath(classpath);  
+		config.setClasspath(classpath);  
 		Ajde.getDefault().logEvent("building with classpath: " + classpath);
 
-		if (Ajde.getDefault().getBuildManager().getBuildOptions().getSourceOnePointFourMode()) {
-			buildConfig.getJavaOptions().put(CompilerOptions.OPTION_Compliance, CompilerOptions.VERSION_1_4);	 
-		} 
-
-		// XXX problematic restriction, support multiple source roots
-		List sourceRoots = new ArrayList();
-		sourceRoots.add(new File(configFile).getParentFile());
-		buildConfig.setSourceRoots(sourceRoots);
-
-		buildConfig.setOutputDir(
-			new File(Ajde.getDefault().getProjectProperties().getOutputPath())
+		config.setOutputDir(
+			new File(properties.getOutputPath())
 		);
+
+		// new 1.1 options added by AMC
+
+		Set roots = properties.getSourceRoots();
+		if ( null != roots && !roots.isEmpty() ) {		
+			List sourceRoots = new ArrayList( roots );
+			config.setSourceRoots(sourceRoots);
+		}
 		
-		buildConfig.setGenerateModelMode(true);
+		Set jars = properties.getInJars();
+		if ( null != jars && !jars.isEmpty() ) {		
+			List inJars = new ArrayList( jars );
+			config.setInJars(inJars);
+		}
 		
-		return buildConfig;
+		String outJar = properties.getOutJar();
+		if ( null != outJar && (outJar.length() > 0) ) {
+			config.setOutputJar( new File( outJar ) );	
+		}
+
+		Set aspects = properties.getAspectPath();
+		if ( null != aspects && !aspects.isEmpty() ) {		
+			List aPath = new ArrayList( aspects );
+			config.setAspectpath( aPath);
+		}
+
+					
 	}
 
 	private void init() {

@@ -335,7 +335,7 @@ public class BuildArgParserTestCase extends TestCase {
 		config = parser.genBuildConfig(new String[] {"-Xlint:error"}, messageWriter);
 		assertTrue("", config.getLintMode().equals(AjBuildConfig.AJLINT_ERROR));
 		config = parser.genBuildConfig(new String[] {"-Xlint:ignore"}, messageWriter);
-		assertTrue("", config.getLintMode().equals(AjBuildConfig.AJLINT_INGORE));
+		assertTrue("", config.getLintMode().equals(AjBuildConfig.AJLINT_IGNORE));
 	}
 
 	public void testXlintfile() throws InvalidInputException {

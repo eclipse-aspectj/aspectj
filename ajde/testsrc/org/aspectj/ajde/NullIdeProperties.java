@@ -8,6 +8,7 @@
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
+ * 	   AMC 01.20.2003 extended to support AspectJ 1.1 options
  * ******************************************************************/
 
 
@@ -23,6 +24,11 @@ public class NullIdeProperties implements ProjectPropertiesAdapter {
 
 	private String testProjectPath = "";
 	private List buildConfigFiles = new ArrayList();
+
+	private Set inJars;
+	private Set sourceRoots;
+	private Set aspectPath;
+	private String outJar;
 
 	public NullIdeProperties(String testProjectPath) {
 		this.testProjectPath = testProjectPath;
@@ -58,7 +64,10 @@ public class NullIdeProperties implements ProjectPropertiesAdapter {
 
     public String getClasspath() {
     	//XXX
-    	return testProjectPath + System.getProperty("sun.boot.class.path") + File.pathSeparator +  "../../../runtime/bin";	
+    	// AMC - added in path separator since absence was causing
+    	// build failures with invalid classpath
+    	return testProjectPath + File.pathSeparator +
+    		System.getProperty("sun.boot.class.path") + File.pathSeparator +  "../runtime/bin";	
     }
 
     public String getOutputPath() {
@@ -83,5 +92,29 @@ public class NullIdeProperties implements ProjectPropertiesAdapter {
 
     public String getVmArgs() {
     	return null;	
+    }
+    
+    public void setInJars( Set jars ) { this.inJars = jars; }
+    
+    public Set getInJars( ) {
+    	return inJars;
+    }
+
+	public void setOutJar( String jar ){ this.outJar = jar; }
+
+    public String getOutJar() {
+    	return outJar;
+    }
+    
+    public void setSourceRoots( Set roots ) { this.sourceRoots = roots; }
+
+    public Set getSourceRoots() {
+    	return sourceRoots;
+    }
+
+	public void setAspectPath( Set path ) { this.aspectPath = path; }
+	    
+    public Set getAspectPath() {
+    	return aspectPath;
     }
 }

@@ -8,6 +8,7 @@
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
+ *     AMC 21.01.2003 fixed for new source location in eclipse.org
  * ******************************************************************/
 
 package org.aspectj.ajde;
@@ -43,7 +44,7 @@ public class StructureModelTest extends AjdeTestCase {
 	}
 
 	public void testFieldInitializerCorrespondence() throws IOException {
-		File testFile = createFile("../examples/figures-coverage/figures/Figure.java");	
+		File testFile = createFile("testdata/examples/figures-coverage/figures/Figure.java");	
 		StructureNode node = Ajde.getDefault().getStructureModelManager().getStructureModel().findNodeForSourceLine(
 			testFile.getCanonicalPath(), 28);
 		assertTrue("find result", node != null) ;	
@@ -65,7 +66,7 @@ public class StructureModelTest extends AjdeTestCase {
 		
 		assertTrue("find associated node", foundNode != null) ;
 		
-		File pointFile = createFile("../examples/figures-coverage/figures/primitives/planar/Point.java");	
+		File pointFile = createFile("testdata/examples/figures-coverage/figures/primitives/planar/Point.java");	
 		StructureNode fieldNode = Ajde.getDefault().getStructureModelManager().getStructureModel().findNodeForSourceLine(
 			pointFile.getCanonicalPath(), 12);		
 		assertTrue("find result", fieldNode != null);
@@ -74,7 +75,7 @@ public class StructureModelTest extends AjdeTestCase {
 	}
 
 	public void testFileNodeFind() throws IOException {
-		File testFile = createFile("../examples/figures-coverage/figures/Main.java");	
+		File testFile = createFile("testdata/examples/figures-coverage/figures/Main.java");	
 		StructureNode node = Ajde.getDefault().getStructureModelManager().getStructureModel().findNodeForSourceLine(
 			testFile.getCanonicalPath(), 1);
 		assertTrue("find result", node != null) ;	
@@ -87,7 +88,7 @@ public class StructureModelTest extends AjdeTestCase {
   	 */ 
 	public void testMainClassNodeInfo() throws IOException {
 		assertTrue("root exists", Ajde.getDefault().getStructureModelManager().getStructureModel().getRoot() != null);
-		File testFile = createFile("../examples/figures-coverage/figures/Main.java");	
+		File testFile = createFile("testdata/examples/figures-coverage/figures/Main.java");	
 		StructureNode node = Ajde.getDefault().getStructureModelManager().getStructureModel().findNodeForSourceLine(
 			testFile.getCanonicalPath(), 11);
 		assertTrue("find result", node != null);	

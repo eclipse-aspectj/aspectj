@@ -1,7 +1,7 @@
 
 package figures;
 
-//import figures.primitives.planar.Point;
+import figures.primitives.planar.Point;
 
 import java.awt.Canvas;
 
@@ -73,7 +73,9 @@ aspect Figure {
 
     declare parents: Point implements java.util.Observable;
 
-    declare soft: Point: call(* *(..));
+	// AMC - this next line doesn't make sense!! Can these tests ever
+	// have been run???
+    //declare soft: Point: call(* *(..));
 }
 
 aspect Checks {

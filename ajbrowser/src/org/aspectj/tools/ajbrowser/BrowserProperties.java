@@ -9,6 +9,7 @@
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
+ * 	   AMC 01.20.2003 extended for new AspectJ 1.1 project options
  * ******************************************************************/
 
 
@@ -143,4 +144,21 @@ public class BrowserProperties implements ProjectPropertiesAdapter {
     public void setAjcWorkingDir(String path) {
         preferencesAdapter.setProjectPreference("build.workingdir", path);
     }
+    
+    // 1.1 options
+    public Set getInJars( ) {
+    	return null;
+    }
+    
+    public String getOutJar( ) {
+    	return null;
+    }
+    
+	public Set getSourceRoots( ) {
+		return null;
+	}    
+	
+	public Set getAspectPath( ) {
+		return null;
+	}
 }

@@ -22,6 +22,7 @@ public class AjdeTests extends TestCase {
         TestSuite suite = new TestSuite(AjdeTests.class.getName());
         //$JUnit-BEGIN$
         suite.addTestSuite(BuildOptionsTest.class); 
+        suite.addTestSuite(BuildConfigurationTests.class);
         suite.addTestSuite(StructureModelRegressionTest.class); 
         suite.addTestSuite(StructureModelTest.class); 
         suite.addTestSuite(VersionTest.class); 
