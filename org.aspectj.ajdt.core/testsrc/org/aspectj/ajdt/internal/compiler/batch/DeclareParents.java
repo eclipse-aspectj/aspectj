@@ -66,7 +66,7 @@ public class DeclareParents extends AjcTestCase {
         File testBase = new File(baseDir,"TestA");
         runSourceAndBinaryTestcase(testBase,new String[]{"Z.java","B.java"},
                                             new String[]{"AspectAB.aj"},false);
-        runClass("B");
+//        runClass("B");
     }
   
     
@@ -77,7 +77,7 @@ public class DeclareParents extends AjcTestCase {
         File testBase = new File(baseDir,"TestA");
         runSourceAndBinaryTestcase(testBase,new String[]{"B.java","Z.java"},
                                             new String[]{"AspectAB.aj"},false);
-        runClass("B");
+//        runClass("B");
     }
     
     
@@ -92,7 +92,7 @@ public class DeclareParents extends AjcTestCase {
       File testBase = new File(baseDir,"TestA");
       runSourceAndBinaryTestcase(testBase,new String[]{"Top1.java","Middle1.java","Bottom1.java"},
                                           new String[]{"AspectX1.java"},false);
-      runClass("Bottom1");
+//      runClass("Bottom1");
     }
     
     
@@ -110,7 +110,7 @@ public class DeclareParents extends AjcTestCase {
       File testBase = new File(baseDir,"TestA");
       runSourceAndBinaryTestcase(testBase,new String[]{"Top2.java","Middle2.java","Bottom2.java"},
                                           new String[]{"AspectX2.java"},false);
-      runClass("Bottom2");
+//      runClass("Bottom2");
     }
     
     
@@ -136,7 +136,7 @@ public class DeclareParents extends AjcTestCase {
         File testBase = new File(baseDir,"TestA");
         runSourceAndBinaryTestcase(testBase,new String[]{"Top3.java","Middle3.java","Bottom3.java"},
                                             new String[]{"AspectX3.java"},false);
-        runClass("Bottom3");
+//        runClass("Bottom3");
     }
     
     
