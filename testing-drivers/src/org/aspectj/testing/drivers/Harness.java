@@ -547,16 +547,14 @@ class FeatureHarness extends Harness {
             "-hideCompilerStreams" 
             + OPTION_DELIM + "-hideRunStreams",
           "-jim", 
-            "!eclipse" 
-            + OPTION_DELIM + "-logMinFail"   
+            "-logMinFail"   
             + OPTION_DELIM + "-hideStreams",
           "-loud", 
             "-verboseHarness",
           "-baseline", 
             "-verboseHarness" 
             + OPTION_DELIM + "-traceTestsMin" 
-            + OPTION_DELIM + "-hideStreams" 
-            + OPTION_DELIM + "!eclipse",
+            + OPTION_DELIM + "-hideStreams",
           "-release", 
               "-baseline" 
               + OPTION_DELIM + "-ajctestSkipKeywords=knownLimitation,purejava" 
