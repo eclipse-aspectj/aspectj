@@ -12,6 +12,7 @@
 
 package org.aspectj.ajdt.internal.compiler.batch;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.ArrayList;
@@ -41,7 +42,8 @@ public class BcweaverJarMaker {
 		args.add("../weaver/testdata/tracing.jar");
 
 		args.add("-classpath");
-		args.add("../runtime/bin");
+		args.add("../runtime/bin" + File.pathSeparator + 
+			System.getProperty("aspectjrt.path"));
 		
 		args.add("testdata/src1/Trace.java");
 		args.add("testdata/src1/MyTrace.java");
@@ -55,7 +57,8 @@ public class BcweaverJarMaker {
 		args.add("../weaver/testdata/megatrace.jar");
 
 		args.add("-classpath");
-		args.add("../runtime/bin");
+		args.add("../runtime/bin" + File.pathSeparator + 
+			System.getProperty("aspectjrt.path"));
 		
 		args.add("testdata/src1/trace/MegaTrace.java");
 		args.add("testdata/src1/trace/ExecTrace.java");
@@ -70,7 +73,8 @@ public class BcweaverJarMaker {
 		args.add("../weaver/testdata/megatrace0easy.jar");
 
 		args.add("-classpath");
-		args.add("../runtime/bin");
+		args.add("../runtime/bin" + File.pathSeparator + 
+			System.getProperty("aspectjrt.path"));
 		
 		args.add("testdata/src1/trace/MegaTrace.java");
 		args.add("testdata/src1/trace/ObviousTraceNothing.java");
@@ -84,7 +88,8 @@ public class BcweaverJarMaker {
 		args.add("../weaver/testdata/megatrace0hard.jar");
 
 		args.add("-classpath");
-		args.add("../runtime/bin");
+		args.add("../runtime/bin" + File.pathSeparator + 
+			System.getProperty("aspectjrt.path"));
 		
 		args.add("testdata/src1/trace/MegaTrace.java");
 		args.add("testdata/src1/trace/HardTraceNothing.java");
@@ -101,7 +106,8 @@ public class BcweaverJarMaker {
 		args.add("-noweave");
 
 		args.add("-classpath");
-		args.add("../runtime/bin");
+		args.add("../runtime/bin" + File.pathSeparator + 
+			System.getProperty("aspectjrt.path"));
 		
 		args.add("testdata/src1/trace/MegaTrace.java");
 		args.add("testdata/src1/trace/ExecTrace.java");
@@ -116,7 +122,8 @@ public class BcweaverJarMaker {
 		args.add("../weaver/testdata/dummyAspect.jar");
 
 		args.add("-classpath");
-		args.add("../runtime/bin");
+		args.add("../runtime/bin" + File.pathSeparator + 
+			System.getProperty("aspectjrt.path"));
 		
 		args.add("testdata/src1/DummyAspect.java");
 		
@@ -126,7 +133,9 @@ public class BcweaverJarMaker {
 	public static void makeTestJars() throws IOException {
 		List args = new ArrayList();
 
-		args.add("-classpath"); args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar");
+		args.add("-classpath"); 
+		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar" +
+			File.pathSeparator + System.getProperty("aspectjrt.path"));
 		args.add("-outjar");
 		args.add("../tests/new/options11/aspectlib1.jar");		
 		args.add("../tests/new/options11/library1/*.java");
@@ -135,7 +144,9 @@ public class BcweaverJarMaker {
 		
 		args = new ArrayList();
 
-		args.add("-classpath"); args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar");
+		args.add("-classpath"); 
+		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar" +
+		   File.pathSeparator + System.getProperty("aspectjrt.path"));
 		args.add("-outjar");
 		args.add("../tests/new/options11/aspectlib2.jar");		
 		args.add("../tests/new/options11/library2/*.java");
@@ -144,7 +155,9 @@ public class BcweaverJarMaker {
 		
 		args = new ArrayList();
 
-		args.add("-classpath"); args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar");
+		args.add("-classpath"); 
+		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar"  +
+			File.pathSeparator + System.getProperty("aspectjrt.path"));
 		args.add("-outjar");
 		args.add("../tests/new/options11/injar.jar");		
 		args.add("../tests/new/options11/injar/*.java");

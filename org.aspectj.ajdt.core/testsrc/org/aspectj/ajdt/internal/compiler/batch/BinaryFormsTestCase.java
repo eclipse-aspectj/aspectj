@@ -12,6 +12,7 @@
 
 package org.aspectj.ajdt.internal.compiler.batch;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,8 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		args.add("out/lib.jar");
 
 		args.add("-classpath");
-		args.add("../runtime/bin");
+		args.add("../runtime/bin" 
+			+ File.pathSeparator + System.getProperty("aspectjrt.path"));
 		
 		args.add("-d");
 		args.add("out");
@@ -47,7 +49,8 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		args.add("out/lib.jar");
 
 		args.add("-classpath");
-		args.add("../runtime/bin");
+		args.add("../runtime/bin" 
+			+ File.pathSeparator + System.getProperty("aspectjrt.path"));
 		
 		args.add("-d");
 		args.add("out");
@@ -65,7 +68,8 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		args.add("out/lib.jar");
 
 		args.add("-classpath");
-		args.add("../runtime/bin");
+		args.add("../runtime/bin" 
+			+ File.pathSeparator + System.getProperty("aspectjrt.path"));
 		
 		args.add("-d");
 		args.add("out");
@@ -82,7 +86,8 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		args.add("out/lib.jar");
 
 		args.add("-classpath");
-		args.add("../runtime/bin");
+		args.add("../runtime/bin" 
+			+ File.pathSeparator + System.getProperty("aspectjrt.path"));
 		
 		args.add("-d");
 		args.add("out");
@@ -94,7 +99,8 @@ public class BinaryFormsTestCase extends CommandTestCase {
 
 		args = new ArrayList();
 		args.add("-classpath");
-		args.add("../runtime/bin;out/lib.jar");
+		args.add("../runtime/bin;out/lib.jar"
+			+ File.pathSeparator + System.getProperty("aspectjrt.path"));
 		
 		args.add("-d");
 		args.add("out");
@@ -105,7 +111,8 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		
 		args = new ArrayList();
 		args.add("-classpath");
-		args.add("../runtime/bin;out/lib.jar");
+		args.add("../runtime/bin;out/lib.jar" + 
+			File.pathSeparator + System.getProperty("aspectjrt.path"));
 		args.add("-Xlint:error");
 		
 		args.add("-d");

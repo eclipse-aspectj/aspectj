@@ -12,6 +12,7 @@
 
 package org.aspectj.ajdt.internal.compiler.batch;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
@@ -40,7 +41,7 @@ public class WorkingTestMain {
 		args.add("out");
 		
 		args.add("-classpath");
-		args.add("../runtime/bin;../lib/junit/junit.jar;../testing-client/bin");
+		args.add("../runtime/bin;" + System.getProperty("aspectjrt.path") +			";../lib/junit/junit.jar;../testing-client/bin");
 		//args.add("../runtime/bin;../lib/junit/junit.jar");
 		
 //		args.add("-injars");
@@ -76,7 +77,7 @@ public class WorkingTestMain {
 		args.add("out");
 		
 		args.add("-classpath");
-		args.add("../runtime/bin");
+		args.add("../runtime/bin" + File.pathSeparator + System.getProperty("aspectjrt.path"));
 		
 		for (int i=0; i < argfiles.length; i++) {
 			args.add("@" + examplesDir + argfiles[i]);

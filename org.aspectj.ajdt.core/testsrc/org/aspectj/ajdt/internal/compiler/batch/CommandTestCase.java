@@ -20,6 +20,7 @@ import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.weaver.bcel.LazyClassGen;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,8 +50,10 @@ public abstract class CommandTestCase extends TestCase {
 		args.add("-d");
 		args.add("out");
 		
-		args.add("-classpath");
-		args.add("../runtime/bin;../lib/junit/junit.jar");
+		args.add("-classpath");		
+
+		args.add(getRuntimeClasspath() + File.pathSeparator + 
+			"../lib/junit/junit.jar");
 		
 		args.add("-g");  //XXX need this to get sourcefile and line numbers, shouldn't
 		
@@ -67,7 +70,7 @@ public abstract class CommandTestCase extends TestCase {
 		args.add("out");
 		
 		args.add("-classpath");
-		args.add("../runtime/bin");
+		args.add(getRuntimeClasspath());
 		
 		args.add("testdata/" + source);
 		
@@ -152,4 +155,13 @@ public abstract class CommandTestCase extends TestCase {
 
     }
 
+	/** get the location of the org.aspectj.lang & runtime classes */
+	protected static String getRuntimeClasspath() {
+		return "../runtime/bin" + File.pathSeparator + 
+			   System.getProperty("aspectjrt.path");
+		
+	}
+
 }
+
+

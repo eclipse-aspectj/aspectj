@@ -97,7 +97,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 		args.add("out");
 		
 		args.add("-classpath");
-		args.add("../runtime/bin;../lib/junit/junit.jar;../testing-client/bin");
+		args.add(getRuntimeClasspath() + File.pathSeparator +			"../lib/junit/junit.jar;../testing-client/bin");
 		args.add("-Xlint:error");
 		args.add("testdata/src1/Xlint.java");
 		
@@ -110,7 +110,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 		args.add("out");
 		
 		args.add("-classpath");
-		args.add("../runtime/bin;../lib/junit/junit.jar;../testing-client/bin;not_found_anywhere.jar");
+		args.add(getRuntimeClasspath() + File.pathSeparator +			"../lib/junit/junit.jar;../testing-client/bin;not_found_anywhere.jar");
 		args.add("testdata/src1/ThisAndModifiers.java");
 		
 		ICommand command = new AjdtCommand();
@@ -145,7 +145,8 @@ public class BasicCommandTestCase extends CommandTestCase {
 		List args = new ArrayList();
 		
 		args.add("-classpath");
-		args.add("../runtime/bin;../lib/junit/junit.jar;../testing-client/bin");
+		args.add(getRuntimeClasspath() + File.pathSeparator +
+			"../lib/junit/junit.jar;../testing-client/bin");
 		
 		File f1 = new File("testdata/src1/p1/Foo.class");
 		File f2 = new File("testdata/src1/WrongPackage.class");
@@ -180,7 +181,8 @@ public class BasicCommandTestCase extends CommandTestCase {
 		args.add("out");
 		
 		args.add("-classpath");
-		args.add("../runtime/bin;../lib/junit/junit.jar;../testing-client/bin");
+		args.add(getRuntimeClasspath() + File.pathSeparator +
+			"../lib/junit/junit.jar;../testing-client/bin");
 		
 		args.add("testdata/src1/SizeIssuesAspect.java");		
 		args.add("testdata/src1/SizeIssues.java");
