@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<!DOCTYPE suite [
+   <!ELEMENT suite (ajc-test+)>
+   <!ATTLIST suite file CDATA #IMPLIED >
+   <!ELEMENT ajc-test (compile*,inc-compile*,run*)>
+   <!ATTLIST ajc-test title CDATA #REQUIRED >
+   <!ATTLIST ajc-test dir CDATA #REQUIRED >
+   <!ATTLIST ajc-test pr CDATA #IMPLIED >
+   <!ATTLIST ajc-test keywords CDATA #IMPLIED >
+
+   <!ELEMENT compile (file*,message*)>
+   <!ATTLIST compile files CDATA #IMPLIED >
+   <!ATTLIST compile options CDATA #IMPLIED >
+   <!ATTLIST compile staging (true | false) #IMPLIED >
+
+   <!ELEMENT inc-compile (message*)>
+   <!ATTLIST inc-compile tag CDATA #REQUIRED >
+   <!ATTLIST inc-compile changedFiles CDATA #IMPLIED >
+
+   <!ELEMENT run (message*)>
+   <!ATTLIST run class CDATA #REQUIRED >
+   <!ATTLIST run skipTester CDATA #IMPLIED >
+   <!ATTLIST run options CDATA #IMPLIED >
+
+   <!ELEMENT file (#PCDATA)>
+   <!ATTLIST file path CDATA #IMPLIED >
+   <!ELEMENT message (#PCDATA)>
+   <!ATTLIST message kind (error | warning | Xlint) #REQUIRED >
+   <!ATTLIST message line CDATA #REQUIRED >
+   <!ATTLIST message text CDATA #IMPLIED >
+   <!ATTLIST message file CDATA #IMPLIED >
+   ]>
+
+<suite file="defaultSuite.xml">
+
+    <ajc-test dir="incremental/java/static" 
+            title="minimal incremental test"
+         keywords="incremental" >
+        <compile staging="true" files="Main.java,Target.java"/>
+        <inc-compile tag="20" changedFiles="Main.java">
+            <message kind="error" line="6" file="Main.java"/>
+        </inc-compile>
+        <inc-compile tag="30"/>
+        <inc-compile tag="40"/>
+    </ajc-test>
+
+    <ajc-test dir="incremental/java/delete" 
+            title="minimal incremental test with delete operation"
+         keywords="incremental" >
+        <compile staging="true" files="Main.java,Target.java,DeleteMe.java"/>
+        <inc-compile tag="20">
+            <message kind="error" line="7" file="Target.java" text="*DeleteMe.main*"/>
+        </inc-compile>
+        <inc-compile tag="30"/>
+    </ajc-test>
+
+</suite>

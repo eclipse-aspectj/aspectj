@@ -1,0 +1,194 @@
+<html>
+<body>
+These harnesses drive ajc compiler tests.  Following is information on how to use them.
+<p>
+
+Use <code>Harness.main(String[])</code> from the command-line,
+or <code>Harness.getHarness()</code> programmatically.
+<code>Harness.runMain(String[])</code> takes arguments that
+each component in the chain may accept and interpret.
+<p>
+<table cellpadding="1" border="1">
+<tr><th>Component</th><th>Options</th></tr>
+
+<tr><td rowspan="5" valign="top">Harness 
+    <p>suite files, harness verbosity, temp files, option variants
+    </td></tr>
+  <tr><td><u>suite files</u>: ajcTest-compliant .txt or .xml files are accepted.
+     <!-- XXX link to ajcTestSuite.dtd and .txt definitions -->
+     </td></tr>
+  <tr><td><u><code>-verboseHarness</code>, <code>-quietHarness</code></u>: 
+      Log accepted options and skipped tests,
+      or do not print even info messages.
+     </td></tr>
+  <tr><td><u><code>-keepTemp</code></u>: Normally the harness saves temp files until
+     the end of the run, and deletes them.  If you abort the run or specify
+     <code>-keepTemp</code>, then temporary (sandbox) directories will remain for analysis.
+     </td></tr>
+  <tr><td><u>*- variants</u>: Options with a trailing "-" cause two sets of
+      option lists to be produced, one with and one without the corresponding
+      option.  E.g., "-usejavac-" will run the suite twice, once with and
+      once without the "-usejavac" flag.
+      That means if you use this on each of three options, you will
+      get 8 variant sets (1 with no options, 1 with all 3 options, 
+      3 with 2 options, and 3 with 1 option). 
+     </td></tr>
+    
+<tr><td rowspan="5" valign="top">FeatureHarness 
+    <p>output and logging options
+    </td></tr>
+  <tr><td><u>tracing</u>: 
+     <code>-progressDots</code> will print "." for every passed
+     test completed and "!" for every test completed but not passed.
+     <code>-traceTests</code> will print a one-line summary for each test
+     of the time and space taken and whether the test passed.
+     <code>-traceTestsMin</code> will print only the test and whether it passed.
+     <code>-baseline</code> is an alias for
+     <code>-traceTestsMin</code> 
+     <code>-hideStreams</code> and 
+     <code>!eclipse</code>, used to emit tests results in a form
+     comparable by <code>org.aspectj.testing.util.TestDiffs</code>.     
+     </td></tr>
+     
+  <tr><td><u>output</u>: <code>-hide{Compiler|Run}Streams</code> will prevent output and
+     error streams from being printed to System.err and System.out, 
+     optionally only for run or compile steps.
+     </td></tr>
+  <tr><td><u>logging</u>: 
+     Log variants take the form <code>-log{Min|Xml}[Fail|Pass|All]</code>.
+     The suffix {All|Pass|Fail} selects all tests or only passing or failing tests.
+     The infix {Min} means to log with minimal information, typically only any
+     fail messages.
+     The infix {Xml} means to log the XML form of the test definition, so that
+     you can inspect the input or re-run arbitrary tests.  (For the latter, consider
+     also using keywords, under <code>-ajctestsRequireKeywords=...</code> below.)
+     Finally, the experimental option <code>-XlogPublicType</code> will 
+      log the XML test definition for 
+  	  any test run that emits any ERROR messages containing the text "public type".
+     </td></tr>
+  <tr><td><u>interaction of output streams and logging</u>: 
+     Streams will be emitted before the test is logged, unless streams are hidden.
+     When logging in normal (non-Min or -XML) form, the log will emit the streams
+     with the test report, so e.g., you can use -hideStreams -logFail to 
+     hide streams for passing tests but emit them for failing tests.
+     </td></tr>
+    
+<tr><td rowspan="3" valign="top">AjcTest
+    <p>selection options for keywords, bugID (PR)
+    </td></tr>
+  <tr><td><u>keywords</u>: <code>-ajctest[Require|Skip]Keywords=one{,two}</code>
+     will either require or skip tests that have the specified keywords.
+     </td></tr>
+  <tr><td><u>Bugs</u>: <code>-ajctestPR=101{,102}</code>
+     will run only tests that are associated with one of the bug id's listed.
+     </td></tr>
+    
+<tr><td rowspan="6" valign="top">CompilerRun
+<p>compiler options and side-effects
+    </td></tr>
+  <tr><td><u>supported options</u>: Options given on the command-line have
+     the same meaning as the options in the test specification.
+     Only one-word options are supported; for this reason, <code>-source 1.4</code> is
+     specified as <code>-source14</code> and converted by CompilerRun back 
+     to <code>-source 1.4</code>. Unsupported options include
+     <code>-argfile</code>,
+     <code>-d</code>,
+     <code>-classpath</code>,
+     <code>-outjar</code>, and
+     <code>-sourceroot</code>.
+     </td></tr>
+  <tr><td><u>compiler selectors</u>: Use <code>-ajc</code> or <code>-eclipse</code> to select the old
+     (ajc 1.0) or new (eajc 1.1) compilers.  
+     </td></tr>
+  <tr><td><u>option dominance <code>-!^</code></u>: 
+     Some tests require or prohibit certain options; 
+     likewise, sometime the person running the tests wants to require that all tests
+     run with or without an option specified on the command-line.  CompilerRun supports encodings and
+     conflict resolution for these, so an option may be specified as
+      <code>-option</code>,
+      <code>!option</code>, or 
+      <code>^option</code>.
+     <ul>
+     <li><u>- set</u>: If the leading character of an option is "-", then it is set unless forced-off.</li>
+     <li><u>^ force-off</u>: If the leading character of an option is "^", then it is forced off.</li>
+     <li><u>! force-on</u>: If the leading character of an option is "!", then it is forced on.</li>
+     <li><u>force conflict</u>: If local and global forces oppose, the test is skipped.</li>
+     <li><u>compiler conflicts</u>: compiler selectors may be forced (e.g., 
+     	<code>!ajc</code> or <code>^eclipse</code>), and conflicts are resolved
+         in the same way, so a local-global set conflict resolves in favor of the 
+         global specification. (e.g., local <code>-eclipse</code> and global
+         <code>-ajc</code> will use the ajc compiler)</li>
+     <ul><p>
+     </td></tr>
+  <tr><td><u>auto-skip</u>: After collation of global and local options, there may be
+     conflicting or impossible options, which cause the test to be skipped:
+     <ul>
+     <li><u>semantic conflicts</u>: two options may conflict in meaning 
+           - e.g., <code>-lenient</code> and <code>-strict</code></li>
+     <li><u>impossible option</u>: It may not be possible in the current configuration to 
+         implement an option - e.g., <code>-usejavac</code> or <code>-eclipse</code> 
+         when javac or the eclipse implementation is not on the classpath</li>
+     <ul><p>
+     </td></tr>
+     
+  <tr><td><u>source searching</u>: Given <code>-seek:{literal}</code>,  
+  	  as a side-effect, 
+  	  CompilerRun will search source files for {literal},
+      emitting for each instance an INFO message of the form: 
+     <tt>found: {file}:{line}:{column}</tt>
+      (Note that the harness does not display INFO messages unless <tt>-verboseHarness</tt>
+      or <tt>-loud</tt> is used.) 
+     </td></tr>
+    
+</table>
+<p>
+Following are some sample configurations:
+<ul>
+<li><code>java {harness} -hideStreams {suiteFile}</code>
+ <p>Use this to output only a 1-line summary of the test results
+    (tests skipped, incomplete, failed, passed).<p>
+  </li>
+  
+<li><code>java {harness} -hideStreams -logMinFail {suiteFile}</code>
+ <p>Use this when running tests mainly to see if they pass or
+    if the failure messages are typically enough information
+    to indicate why the test is failing.  It produces only minimal
+    output for failed tests.<p>
+  </li>
+  
+<li><code>java {harness} -hideStreams -verboseHarness -logFail {suiteFile}</code>
+ <p>When it's not clear at first glance why a test is failing, before
+    looking at the test code you can run it and print any harness or test
+    setup failures and all the associated messages from the test components.<p>
+  </li>
+
+<li><code>java {harness} -hideStreams -usejavac- -ajc -Xlint- {suiteFile}</code>
+ <p>This would do four complete runs with the old (Ajc 1.0) compiler: one with
+    no options, one with -lenient, one with -Xlint, and one with both.<p>
+  </li>
+  
+
+<li><code>java {harness} --ajctestPR=101,102 -Xlint- ^usejavac !eclipse {suiteFile}</code>
+ <p>Run any tests associated with bugs 101 and 102, with and without -Xlint,
+    forcing off -usejavac and forcing the use of the new eclipse-based compiler.<p>
+  </li>
+  
+</ul>
+
+If you have a set of options you use often, you can define a single-word
+option alias for it; see <code>Harness.optionAliases</code>.
+
+<p><u>Configuration</u>: most tests use the library jars in 
+<code>aspectj/modules/lib/test</code>, defined in 
+<code>org.aspectj.testing.harness.bridge.Globals</code>.  
+Normally the harness finds these by relative path 
+<code>../lib/tests/*.jar</code>, which works whenever the tests are
+run from a peer module directory.  When running tests elsewhere,
+define the environment variable <code>harness.libdir</code> - e.g., 
+<pre>
+    $ cd aspectj/tests
+    $ java -Dharness.libdir=../modules/lib/test -jar eajctesting.jar ajcTests.xml
+</pre>
+
+</body>
+</html>

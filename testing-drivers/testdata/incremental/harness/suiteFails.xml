@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<!DOCTYPE suite [
+   <!ELEMENT suite (ajc-test+)>
+   <!ATTLIST suite suiteDir CDATA #IMPLIED >
+   <!ATTLIST suite verbose CDATA #IMPLIED >
+
+   <!ELEMENT ajc-test (compile, (compile | inc-compile | run )*)>
+   <!ATTLIST ajc-test title CDATA #REQUIRED >
+   <!ATTLIST ajc-test dir CDATA #REQUIRED >
+   <!ATTLIST ajc-test pr CDATA #IMPLIED >
+   <!ATTLIST ajc-test keywords CDATA #IMPLIED >
+
+   <!ELEMENT compile (dir-changes*,file*,message*)>
+   <!ATTLIST compile files CDATA #IMPLIED >
+   <!ATTLIST compile options CDATA #IMPLIED >
+   <!ATTLIST compile staging (true | false) #IMPLIED >
+
+   <!ELEMENT inc-compile (dir-changes*,message*)> <!-- 0-1? -->
+   <!ATTLIST inc-compile tag CDATA #REQUIRED >
+   <!ATTLIST inc-compile changedFiles CDATA #IMPLIED >
+   <!ATTLIST inc-compile classesAdded CDATA #IMPLIED >
+   <!ATTLIST inc-compile classesRemoved CDATA #IMPLIED >
+   <!ATTLIST inc-compile classesUpdated CDATA #IMPLIED >
+
+   <!ELEMENT run (dir-changes*,message*)>
+   <!ATTLIST run class CDATA #REQUIRED >
+   <!ATTLIST run skipTester CDATA #IMPLIED >
+   <!ATTLIST run options CDATA #IMPLIED >
+
+   <!ELEMENT file (#PCDATA)>
+   <!ATTLIST file path CDATA #IMPLIED >
+
+   <!ELEMENT dir-changes (#PCDATA)>
+   <!ATTLIST dir-changes dirToken (classes | run) #IMPLIED >
+   <!ATTLIST dir-changes defaultSuffix CDATA #IMPLIED >
+   <!ATTLIST dir-changes added CDATA #IMPLIED >
+   <!ATTLIST dir-changes removed CDATA #IMPLIED >
+   <!ATTLIST dir-changes updated CDATA #IMPLIED >
+   <!ATTLIST dir-changes unchanged CDATA #IMPLIED >
+
+   <!ELEMENT message (#PCDATA)>
+   <!ATTLIST message kind (error | warning | info | Xlint) #REQUIRED >
+   <!ATTLIST message line CDATA #REQUIRED >
+   <!ATTLIST message text CDATA #IMPLIED >
+   <!ATTLIST message file CDATA #IMPLIED >
+   ]>
+
+<suite suiteDir="."  verbose="true">    
+	<!-- 
+	      Using OldAjc (no inc-compile), get two errors (updated file not found (b/c cleared?), 
+	      deleted file not found.
+	 -->
+
+    <!-- 
+         test harness ability to update and delete source files to prep for a compile
+     -->
+    <!-- 
+         test harness ability to detect directory changes
+     -->
+    <ajc-test title="report dir-changes fail when expected added class not added"
+    	dir="classAdded" keywords="incremental" >
+        <compile staging="true" files="main/Main.java"/>
+        <run class="main.Main"/>
+        <inc-compile tag="20" >
+            <dir-changes added="main.ExpectNotAdded"/>
+        </inc-compile>
+    </ajc-test>
+
+    <ajc-test title="report dir-changes fail when expected added class exists at start"
+    	dir="classAdded" keywords="incremental" >
+        <compile staging="true" files="main/Main.java"/>
+        <run class="main.Main"/>
+        <inc-compile tag="20" >
+            <dir-changes added="main.Main"/>
+        </inc-compile>
+    </ajc-test>
+
+    <ajc-test title="report dir-changes fail when expected unchanged class changed"
+    	dir="classAdded" keywords="incremental" >
+        <compile staging="true" files="main/Main.java"/>
+        <run class="main.Main"/>
+        <inc-compile tag="20" >
+            <dir-changes unchanged="main.Main"/>
+        </inc-compile>
+    </ajc-test>
+
+    <ajc-test title="report dir-changes fail when expected unchanged class does not exist at start"
+    	dir="classAdded" keywords="incremental" >
+        <compile staging="true" files="main/Main.java"/>
+        <run class="main.Main"/>
+        <inc-compile tag="20" >
+            <dir-changes unchanged="main.DoesNotExistAtStart"/>
+        </inc-compile>
+    </ajc-test>
+
+    <ajc-test title="report dir-changes fail when expected updated class is not updated"
+    	dir="classUnchanged" keywords="incremental" >
+        <compile staging="true" files="main/Main.java"/>
+        <run class="main.Main"/>
+        <inc-compile tag="20" >
+            <dir-changes updated="main.Target"/>
+        </inc-compile>
+    </ajc-test>
+
+    <ajc-test title="report dir-changes fail when expected updated class does not exist at start"
+    	dir="classAdded" keywords="incremental" >
+        <compile staging="true" files="main/Main.java"/>
+        <run class="main.Main"/>
+        <inc-compile tag="20" >
+            <dir-changes updated="main.DoesNotExistAtStart"/>
+        </inc-compile>
+    </ajc-test>
+
+
+    <ajc-test title="report dir-changes fail when expected deleted class not deleted"
+    	dir="classAdded" keywords="incremental" >
+        <compile staging="true" files="main/Main.java"/>
+        <run class="main.Main"/>
+        <inc-compile tag="20" >
+            <dir-changes removed="main.Main"/>
+        </inc-compile>
+    </ajc-test>
+
+    <ajc-test title="report dir-changes fail when expected deleted class does not exist at start"
+    	dir="classAdded" keywords="incremental" >
+        <compile staging="true" files="main/Main.java"/>
+        <run class="main.Main"/>
+        <inc-compile tag="20" >
+            <dir-changes removed="main.DoesNotExistAtStart"/>
+        </inc-compile>
+    </ajc-test>
+
+</suite>
