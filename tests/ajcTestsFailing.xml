@@ -143,4 +143,24 @@
         <run class="False_InvalidAbsoluteTypeName"/>
     </ajc-test>
   
+   <ajc-test dir="pureJava" title="assert coverage tests [requires 1.4]"
+      keywords="from-14tests,purejava">
+        <compile options="-source,1.4" files="AssertsCv.java"/>
+        <run class="AssertsCv" vm="1.4"/>
+    </ajc-test>
+    
+    <ajc-test dir="pureJava"
+      title="assert coverage tests in one package [requires 1.4]"
+      keywords="from-14tests,purejava,fail-unimplemented">
+        <compile options="-source,1.4" files="AssertInOnePackage.java"/>
+        <run class="AssertInOnePackage" vm="1.4"/>
+    </ajc-test>
+    
+    <ajc-test dir="new/pr456" pr="456" title="advice on advice in usejavac mode"
+      keywords="from-resolved_10x">
+        <compile
+          files="Test_AroundVarBug.java,AroundVarBug.java"/>
+        <run class="Test_AroundVarBug"/>
+    </ajc-test>
+    
 </suite>
