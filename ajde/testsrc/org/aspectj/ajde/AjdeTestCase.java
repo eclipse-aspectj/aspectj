@@ -28,6 +28,10 @@ public class AjdeTestCase extends TestCase {
 	protected TestBuildListener testerBuildListener = new TestBuildListener();
 	protected String currTestDataPath;
 
+	public AjdeTestCase() {
+		super("");
+	}
+	
 	public AjdeTestCase(String name) {
 		super(name);
 	}
