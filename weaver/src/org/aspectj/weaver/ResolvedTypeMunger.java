@@ -130,7 +130,7 @@ public abstract class ResolvedTypeMunger {
 	
 	
 	public static class Kind extends TypeSafeEnum {
-		private Kind(String name, int key) {
+		/* private */ Kind(String name, int key) {
 			super(name, key);
 		}
 		

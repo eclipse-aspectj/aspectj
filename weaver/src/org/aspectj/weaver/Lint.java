@@ -29,8 +29,8 @@ import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 
 public class Lint {
-	private Map kinds = new HashMap();
-	private World world;
+	/* private */ Map kinds = new HashMap();
+	/* private */ World world;
 
 	public final Kind invalidAbsoluteTypeName =
 		new Kind("invalidAbsoluteTypeName", "no match for this type name: {0}");

@@ -195,7 +195,7 @@ public class ClassPathManager {
 	}
 
 
-	private static boolean hasClassExtension(String name) {
+	/* private */ static boolean hasClassExtension(String name) {
 		return name.toLowerCase().endsWith((".class"));
 	}
 }

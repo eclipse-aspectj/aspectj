@@ -73,7 +73,7 @@ public class ArgsWeaveTestCase extends WeaveTestCase {
         weaveTest("HelloWorld", "ArgsBeforeAfterHelloWorld", addLexicalOrder(l));        
     }    
 
-	private InstructionList getArgsAdviceTag(BcelShadow shadow, String where) {
+	/* private */ InstructionList getArgsAdviceTag(BcelShadow shadow, String where) {
 		String methodName =
 			"ajc_" + where + "_" + shadow.getKind().toLegalJavaIdentifier();
 		InstructionFactory fact = shadow.getFactory();

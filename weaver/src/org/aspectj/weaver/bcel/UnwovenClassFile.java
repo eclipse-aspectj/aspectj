@@ -131,7 +131,7 @@ public class UnwovenClassFile {
 
 
 
-	private static boolean unchanged(byte[] b1, byte[] b2) {
+	/* private */ static boolean unchanged(byte[] b1, byte[] b2) {
 		int len = b1.length;
 		if (b2.length != len) return false;
 		for (int i=0; i < len; i++) {

@@ -81,7 +81,7 @@ public final class LazyMethodGen {
     private final String[]        declaredExceptions;
     private final InstructionList body; // leaving null for abstracts
     private final Attribute[]     attributes;
-    private final LazyClassGen    enclosingClass;   
+    /* private */ final LazyClassGen    enclosingClass;   
     private final BcelMethod      memberView;
 
     private int             maxLocals; 
@@ -967,7 +967,7 @@ public final class LazyMethodGen {
     // we implement this with a LinkedList.  We could possibly implement this with a java.util.SortedSet,
     // but I don't trust the only implementation, TreeSet, to do the right thing.
     
-    private static void insertHandler(ExceptionRange fresh, LinkedList l) {
+    /* private */ static void insertHandler(ExceptionRange fresh, LinkedList l) {
 //        for (ListIterator iter = l.listIterator(); iter.hasNext();) {
 //            ExceptionRange r = (ExceptionRange) iter.next();
 //            if (fresh.getPriority() >= r.getPriority()) {
