@@ -1,3 +1,4 @@
+WARNING: these product tests have not been used since AspectJ 1.0.
 
 This directory is for "product" tests, which validate the product as delivered 
 to users, i.e., as installed from an installer in relevant combinations. This
@@ -57,3 +58,30 @@ cd ../aj-build/temp/aspectj{version}/product-test-output/ajx-output
 - file differencer on all packages after install
 - source-build tests
 - file differencer as regression test for emitted output
+
+-------- updates needed for 1.1
+- change licenses in scripts to CPL
+- reintegrate comparefiles (see aspectj-attic?)
+- 
+-------- tests needed for 1.1
+- version checking
+  - warn when no aspectjrt.jar on classpath.
+  - warn when bad aspectjrt.jar on classpath
+  - warn when aspectjrt.jar on classpath has the wrong version number
+  - no exception printed for any warning
+  - no warning when correct aspectjrt.jar on classpath
+    (ant doc/examples/build.xml)
+    
+---- ajbrowser command-line
+- ajbrowser on no arguments or only .lst args
+- compiler on arguments other than .lst
+- compiler help on -help (confusing)
+
+---- compiler command-line
+- sources
+- binary
+  [injars|not] X [aspectpath|not] X [sources|not]
+
+---- ant tasks
+- all compiler variants
+-   
