@@ -190,6 +190,10 @@ public class AjcTask extends MatchingTask {
     public void setDebug(boolean debug) {
         addFlag("-g", debug);
     }
+    
+    public void setEmacssym(boolean emacssym) {
+        addFlag("-emacssym", emacssym);
+    }
 
     public void setDebugLevel(String level) {
     	level = validCommaList(level, VALID_DEBUG);

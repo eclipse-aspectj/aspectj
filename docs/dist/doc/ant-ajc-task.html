@@ -166,6 +166,13 @@ defaults to <tt>false</tt>.</td>
 </tr>
 
 <tr>
+<td VALIGN=TOP>emacssym</td>
+<td VALIGN=TOP>whether to emit <tt>.ajesym</tt> symbol files for Emacs support;
+defaults to <tt>false</tt>.</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
 <td VALIGN=TOP>verbose</td>
 <td VALIGN=TOP>whether to emit compiler status messages during the compile;
 defaults to <tt>false</tt>.</td>
@@ -249,15 +256,15 @@ interface and having a public no-argument constructor.</td>
 <tr>
   <td VALIGN=TOP>warn</td>
   <td VALIGN=TOP>one or more comma-separated warning specifications: 
-constructorName, 
-packageDefaultMethod, 
-deprecation, 
-maskedCatchBlocks, 
-unusedLocals, 
-unusedArguments, 
-unusedImports, 
-syntheticAccess, or
-assertIdentifier.</td>
+<tt>constructorName</tt>, 
+<tt>packageDefaultMethod</tt>, 
+<tt>deprecation</tt>, 
+<tt>maskedCatchBlocks</tt>, 
+<tt>unusedLocals</tt>, 
+<tt>unusedArguments</tt>, 
+<tt>unusedImports</tt>, 
+<tt>syntheticAccess</tt>, or
+<tt>assertIdentifier</tt>.</td>
   <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>
 
@@ -269,15 +276,17 @@ assertIdentifier.</td>
 
 <tr>
   <td VALIGN=TOP>debuglevel</td>
-  <td VALIGN=TOP>comma-separated list lines, vars, or source,
-     indicating to add debugging information for lines, 
-     variables, or source</tt></td> <!-- XXX weak -->
+  <td VALIGN=TOP>one or more comma-separated debug specifications:
+     <tt>lines</tt>, 
+     <tt>vars</tt>, or 
+     <tt>source</tt>.
+     </td>
   <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>
 
 <tr>
   <td VALIGN=TOP>PreserveAllLocals</td>
-  <td VALIGN=TOP>code gen preserve all local variables (for debug purposes); 
+  <td VALIGN=TOP>code gen preserves all local variables (for debug purposes); 
   defaults to <tt>false</tt>.&nbsp;</td>
   <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>
@@ -329,13 +338,16 @@ assertIdentifier.</td>
   <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>
 
+<!--
 <tr>
   <td VALIGN=TOP>noexit</td>
-  <td VALIGN=TOP>disable System.exit (kills Ant -- use failonerror); 
-  defaults to <tt>true</tt>.&nbsp;</td>
+  <td VALIGN=TOP>disable System.exit; defaults to <tt>true</tt>.
+  (<em>If false, this kills the Ant process</em>;
+       to halt compile gracefully, use <tt>failonerror</tt>);
+  &nbsp;</td>
   <td ALIGN=CENTER VALIGN=TOP>No</td>
   </tr>
-
+-->
 <tr>
   <td VALIGN=TOP>target</td>
   <td VALIGN=TOP>Specify target class file format (must be "1.1" or "1.2"); 
