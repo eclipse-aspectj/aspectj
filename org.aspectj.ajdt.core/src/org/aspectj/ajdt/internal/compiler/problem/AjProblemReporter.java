@@ -30,7 +30,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
@@ -43,6 +42,7 @@ import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareSoft;
 
 /**
@@ -231,10 +231,17 @@ public class AjProblemReporter extends ProblemReporter {
 				long metaTagBits = annotation.resolvedType.getAnnotationTagBits(); // could be forward reference
 				if (name.indexOf("interField") != -1) {
 					if ((metaTagBits & TagBits.AnnotationForField) != 0) return;
-				} else if (name.indexOf("InterConstructor") != -1) {
+				} else if (name.indexOf("InterConstructor") != -1) { // ??? Should that be Upper case 'I'?
 					if ((metaTagBits & TagBits.AnnotationForConstructor) != 0) return;
 				} else if (name.indexOf("interMethod") != -1) {
 					if ((metaTagBits & TagBits.AnnotationForMethod) != 0) return;
+				} else if (name.indexOf("declare_"+DeclareAnnotation.AT_TYPE+"_")!=-1) {
+					if ((metaTagBits & TagBits.AnnotationForAnnotationType)!=0 ||
+						(metaTagBits & TagBits.AnnotationForType)!=0) return;
+				} else if (name.indexOf("declare_"+DeclareAnnotation.AT_FIELD+"_")!=-1) {
+					if ((metaTagBits & TagBits.AnnotationForField)!=0) return;
+				} else if (name.indexOf("declare_"+DeclareAnnotation.AT_CONSTRUCTOR+"_")!=-1) {
+					if ((metaTagBits & TagBits.AnnotationForConstructor)!=0) return;
 				}
 			}
 		}
