@@ -49,15 +49,17 @@ public class Annotations extends XMLBasedAjcTestCase {
    */
   public void testBugWithAnnotationsLostOnWovenMethods() throws ClassNotFoundException {
   	runTest("losing annotations...");
-  	
-  	JavaClass jc = getClassFrom(ajc.getSandboxDirectory(),"Program");
-    Method[] meths = jc.getMethods();
-    for (int i = 0; i < meths.length; i++) {
-		Method method = meths[i];
-		if (method.getName().equals("m1")) {
-			assertTrue("Didn't have annotations - were they lost? method="+method.getName(),method.getAnnotations().length==1);
+  	if (getCurrentTest().canRunOnThisVM()) {
+	  	
+	  	JavaClass jc = getClassFrom(ajc.getSandboxDirectory(),"Program");
+	    Method[] meths = jc.getMethods();
+	    for (int i = 0; i < meths.length; i++) {
+			Method method = meths[i];
+			if (method.getName().equals("m1")) {
+				assertTrue("Didn't have annotations - were they lost? method="+method.getName(),method.getAnnotations().length==1);
+			}
 		}
-	}
+  	}
   }
   
   public void testAnnotatedAnnotations() {
