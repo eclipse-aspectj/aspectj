@@ -54,7 +54,7 @@ public class Ajc {
         // (like Eclipse projects in one workspace) in IDEA, so all will be build there.
 		+ File.pathSeparator+ ".."+File.separator+"_IDE"
         + File.pathSeparator+ ".."+File.separator+"lib"+File.separator+"junit"+File.separator+"junit.jar"
-        + File.pathSeparator+".."+File.separator+"java5"+File.separator+"runtime-bin";
+        + File.pathSeparator+".."+File.separator+"aspectj5rt"+File.separator+"bin";
 
 
 

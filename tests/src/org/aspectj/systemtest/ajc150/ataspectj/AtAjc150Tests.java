@@ -35,14 +35,14 @@ public class AtAjc150Tests extends TestUtils {
     }
 
     public void testSingletonAspectBindingNoInline() {
-        CompilationResult cR = ajc(baseDir, new String[]{"ataspectj/SingletonAspectBindingsTest.java", "-1.5", "-XnoInline"});
+        CompilationResult cR = ajc(baseDir, new String[]{"ataspectj/SingletonAspectBindingsTest.java", "ataspectj"+File.separator+"TestHelper.java", "-1.5", "-XnoInline"});
         MessageSpec ms = new MessageSpec(null, null); // Could assert certain warnings/errors came out
         assertMessages(cR, ms);
         RunResult rR = run("ataspectj.SingletonAspectBindingsTest"); // Could assert output of this, but if an exception is thrown the test will fail
     }
 
     public void testSingletonAspectBindingLazyTjp() {
-        CompilationResult cR = ajc(baseDir, new String[]{"ataspectj/SingletonAspectBindingsTest.java", "-1.5", "-XlazyTjp"});
+        CompilationResult cR = ajc(baseDir, new String[]{"ataspectj/SingletonAspectBindingsTest.java", "ataspectj"+File.separator+"TestHelper.java", "-1.5", "-XlazyTjp"});
         MessageSpec ms = new MessageSpec(null, null); // Could assert certain warnings/errors came out
         assertMessages(cR, ms);
         RunResult rR = run("ataspectj.SingletonAspectBindingsTest"); // Could assert output of this, but if an exception is thrown the test will fail
@@ -80,7 +80,7 @@ public class AtAjc150Tests extends TestUtils {
 //    }
 
     private void runDefaultConfig(String klassName) {
-        CompilationResult cR = ajc(baseDir, new String[]{klassName.replace('.','/')+".java", "-1.5"});
+        CompilationResult cR = ajc(baseDir, new String[]{klassName.replace('.','/')+".java", "ataspectj"+File.separator+"TestHelper.java", "-1.5"});
         MessageSpec ms = new MessageSpec(null, null);
         assertMessages(cR, ms);
         RunResult rR = run(klassName);
