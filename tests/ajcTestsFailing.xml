@@ -4,9 +4,18 @@
 <!-- contains valid tests that the compiler has never passed -->
 
 <suite>
-	<ajc-test dir="bugs" 
-		title="interface call signatures when declaring method in aspect"
-		pr="40805">
+	<ajc-test dir="bugs"
+		pr="40814"
+		title="compile error expected for interface pointcuts">
+		<compile files="InterfacePointcutCE.java">
+			<message kind="error" line="5"/>
+			<message kind="error" line="6"/>
+			</compile>
+		</ajc-test>
+
+	<ajc-test dir="bugs"
+		pr="40805" 
+		title="interface call signatures when declaring method in aspect">
 		<compile files="DeclareWarningAndInterfaceMethodCW.java">
 			<message kind="warning" line="27" text="call getSomething"/>
 			<message kind="warning" line="27" text="call ICanGetSomething.getSomething"/>
