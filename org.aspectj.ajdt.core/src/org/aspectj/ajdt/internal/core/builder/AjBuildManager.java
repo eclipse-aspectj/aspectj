@@ -271,7 +271,13 @@ public class AjBuildManager {
 		String defaultEncoding = (String) buildConfig.getJavaOptions().get(CompilerOptions.OPTION_Encoding);
 		if ("".equals(defaultEncoding)) //$NON-NLS-1$
 			defaultEncoding = null; //$NON-NLS-1$	
-		return new FileSystem(classpaths, filenames, defaultEncoding);
+		// Bug 46671: We need an array as long as the number of elements in the classpath - *even though* not every
+		// element of the classpath is likely to be a directory.  If we ensure every element of the array is set to
+		// only look for BINARY, then we make sure that for any classpath element that is a directory, we won't build
+		// a classpathDirectory object that will attempt to look for source when it can't find binary.
+		int[] classpathModes = new int[classpaths.length];
+		for (int i =0 ;i<classpaths.length;i++) classpathModes[i]=ClasspathDirectory.BINARY;
+		return new FileSystem(classpaths, filenames, defaultEncoding,classpathModes);
 	}
 	
 	public IProblemFactory getProblemFactory() {
