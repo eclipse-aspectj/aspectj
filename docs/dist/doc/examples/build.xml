@@ -128,7 +128,9 @@
        <echo message="##### Ajx list=${list} class=${class}" />
        <antcall target="clean" />
        <!-- can use ajc or iajc here -->
-       <iajc destdir="${classes.dir}" argfiles="${list}" fork="true"
+       <iajc destdir="${classes.dir}" argfiles="${list}" 
+       		fork="true"
+       		forkclasspath="${aspectjtools.jar}"
           classpath="${aspectjrt.jar}"/>
 
        <antcall target="Ajx-run" >
