@@ -14,7 +14,6 @@
 package org.aspectj.weaver;
 
 import java.util.*;
-import java.util.List;
 
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.patterns.*;
