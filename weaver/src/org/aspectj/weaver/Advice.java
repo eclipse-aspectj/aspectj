@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -67,9 +68,8 @@ public abstract class Advice extends ShadowMunger {
     	return ret;
     }
     
-    public static Advice makeSoftener(World world, Pointcut entry, TypePattern exceptionType,ResolvedTypeX inAspect) {
-    	Advice ret = world.concreteAdvice(AdviceKind.Softener,
-    	      entry, null, 0, entry);  
+    public static Advice makeSoftener(World world, Pointcut entry, TypePattern exceptionType,ResolvedTypeX inAspect,IHasSourceLocation loc) {
+    	Advice ret = world.concreteAdvice(AdviceKind.Softener, entry, null, 0, loc);  
   
     	ret.exceptionType = exceptionType;
     	ret.concreteAspect = inAspect;
