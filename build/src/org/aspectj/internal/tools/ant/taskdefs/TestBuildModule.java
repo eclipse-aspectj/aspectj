@@ -51,7 +51,7 @@ public class TestBuildModule {
         }
         File jarDir = new File(baseDir, "aj-build-jars");
         if (!(Util.canReadDir(jarDir) || jarDir.mkdirs())) {
-            System.err.println("unable to create " + jarDir); 
+            System.err.println("createModule unable to create " + jarDir); 
             return;
         }
         
