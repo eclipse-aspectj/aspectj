@@ -20,40 +20,6 @@
 					 before main packageOne.Main"/>
     </ajc-test>
 
-    <ajc-test dir="new/binaryWarnings/src" pr="37020"
-   	 title="declare warnings on main - constructor execution">
-        <compile files="aspects/ConstructorExecutionWarning.java,app/Main.java">
-        	<message kind="warning" file="app/Main.java"
-        	  line="23" text="execution(Main.new())"/>
-        </compile>
-        <run class="app.Main"/>
-    </ajc-test>
 
-    <ajc-test dir="new/binaryWarnings/src" pr="37020"
-   	 title="declare warnings on binary javac 1.4 main - constructor execution">
-        <compile files="aspects/ConstructorExecutionWarning.java,../injars/app-javac-1.4.jar">
-        	<message kind="warning" file="app/Main.java"
-        	  line="23" text="execution(Main.new())"/>
-        </compile>
-        <run class="app.Main"/>
-    </ajc-test>
-
-    <ajc-test dir="new/binaryWarnings/src" pr="37020"
-   	 title="declare warnings on binary ajc 1.1 main - constructor execution">
-        <compile files="aspects/ConstructorExecutionWarning.java,../injars/app-ajc-1.1.jar">
-        	<message kind="warning" file="app/Main.java"
-        	  line="23" text="execution(Main.new())"/>
-        </compile>
-        <run class="app.Main"/>
-    </ajc-test>
-
-    <ajc-test dir="bugs/handlers" pr="37898"
-		title="advice on handler join points should not throw unpermitted checked exceptions">
-        <compile files="ExceptionCheckCE.java">
-			<message kind="warning" line="8" text="expected"/>
-			<message kind="error" line="25" text="throw checked exception" />
-			<message kind="error" line="8" text="throw checked exception" />
-        </compile>
-    </ajc-test>
 
 </suite>
