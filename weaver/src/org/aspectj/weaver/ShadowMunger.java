@@ -15,6 +15,7 @@ package org.aspectj.weaver;
 
 import java.util.Collection;
 
+import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.weaver.patterns.PerClause;
@@ -38,6 +39,8 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 	// these three fields hold the source location of this munger
 	protected int start, end;
 	protected ISourceContext sourceContext;
+	private ISourceLocation sourceLocation;
+	private String handle = null;
 
 	
 	public ShadowMunger(Pointcut pointcut, int start, int end, ISourceContext sourceContext) {
@@ -72,13 +75,26 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 	}
 	
     public ISourceLocation getSourceLocation() {
-    	//System.out.println("get context: " + this + " is " + sourceContext);
-    	if (sourceContext == null) {
-    		//System.err.println("no context: " + this);
-    		return null;
+    	if (sourceLocation == null) {
+	    	if (sourceContext != null) {
+				sourceLocation = sourceContext.makeSourceLocation(this);
+	    	}
     	}
-    	return sourceContext.makeSourceLocation(this);
+    	return sourceLocation;
     }
+
+	public String getHandle() {
+		if (null == handle) {
+			ISourceLocation sl = getSourceLocation();
+			if (sl != null) {
+				handle = ProgramElement.createHandleIdentifier(
+				            sl.getSourceFile(),
+				            sl.getLine(),
+				            sl.getColumn());
+			}
+		}
+		return handle;
+	}
 
 	// ---- fields
 	

@@ -15,7 +15,6 @@ package org.aspectj.weaver;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
 import org.aspectj.asm.*;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.ISourceLocation;
@@ -61,12 +60,13 @@ public class AsmRelationshipProvider {
 				return;
 			}
 			IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
-			IProgramElement targetNode = getNode(AsmManager.getDefault().getHierarchy(), shadow);
-			if (advice.getSourceLocation() != null && targetNode != null) {
-				String adviceHandle = ProgramElement.createHandleIdentifier(
-					advice.getSourceLocation().getSourceFile(),
-					advice.getSourceLocation().getLine(),
-					advice.getSourceLocation().getColumn());
+			IProgramElement targetNode = getNode(AsmManager.getDefault().getHierarchy(), shadow);			
+			String adviceHandle = advice.getHandle(); 
+			if (adviceHandle != null && targetNode != null) {
+//				ProgramElement.createHandleIdentifier(
+//					advice.getSourceLocation().getSourceFile(),
+//					advice.getSourceLocation().getLine(),
+//					advice.getSourceLocation().getColumn());
 		
 				if (targetNode != null) {
 					String targetHandle = targetNode.getHandleIdentifier();	
