@@ -13,6 +13,7 @@
 
 package org.aspectj.testing.util;
 
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,6 +27,11 @@ import org.aspectj.bridge.MessageUtil;
 /** result struct for expected/actual diffs for Collection */
 public class Diffs {
 
+    public static final Filter ACCEPT_ALL = new Filter() {
+        public boolean accept(Object o) {
+            return true;
+        }
+    };
      // XXX List -> Collection b/c comparator orders 
     public static final Diffs NONE 
         = new Diffs("NONE", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
@@ -50,7 +56,21 @@ public class Diffs {
                       || (0 != this.unexpected.size()));
     }
 
-    public Diffs(String label, List expected, List actual, Comparator comparator) {
+    public Diffs(
+        String label, 
+        List expected, 
+        List actual, 
+        Comparator comparator) {
+        this(label, expected, actual, comparator, ACCEPT_ALL, ACCEPT_ALL);
+    }
+    
+    public Diffs(
+        String label, 
+        List expected, 
+        List actual, 
+        Comparator comparator,
+        Filter missingFilter,
+        Filter unexpectedFilter) {
         label = label.trim();
         if (null == label) {
             label = ": ";
@@ -62,7 +82,21 @@ public class Diffs {
         ArrayList unexpect = new ArrayList();
         
         org.aspectj.testing.util.LangUtil.makeSoftDiffs(expected, actual, miss, unexpect, comparator);
+        if (null != missingFilter) {
+            for (ListIterator iter = miss.listIterator(); iter.hasNext();) {
+                if (!missingFilter.accept(iter.next())) {
+                    iter.remove();
+                }
+            }
+        }
         missing = Collections.unmodifiableList(miss);
+        if (null != unexpectedFilter) {
+            for (ListIterator iter = unexpect.listIterator(); iter.hasNext();) {
+                if (!unexpectedFilter.accept(iter.next())) {
+                    iter.remove();
+                }
+            }
+        }
         unexpected = Collections.unmodifiableList(unexpect);
         different = ((0 != this.missing.size()) 
                       || (0 != this.unexpected.size()));
@@ -98,6 +132,10 @@ public class Diffs {
     public String toString() {
         return label + "(unexpected=" + unexpected.size() 
             + ", missing=" + missing.size() + ")";
+    }
+    public static interface Filter {
+        /** @return true to keep input in list of messages */
+        boolean accept(Object input);
     }
 }
 
