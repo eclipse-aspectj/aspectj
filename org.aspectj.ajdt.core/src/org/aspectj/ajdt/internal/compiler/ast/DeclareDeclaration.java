@@ -50,10 +50,12 @@ public class DeclareDeclaration extends AjMethodDeclaration {
         sb.append("ajc$declare");
         // Declares can choose to provide a piece of the name - to enable
         // them to be easily distinguised at weave time (e.g. see declare annotation)
-        String suffix = symbolicDeclare.getNameSuffix();
-        if (suffix.length()!=0) {
+        if (symbolicDeclare!=null) {
+          String suffix = symbolicDeclare.getNameSuffix();
+          if (suffix.length()!=0) {
         	sb.append("_");
         	sb.append(suffix);
+          }
         }
         sb.append("_");
         sb.append(counter++);
