@@ -81,13 +81,13 @@ class MyException extends Exception {
 }
 
 aspect A {
-    before (): this(*) && execution(* *(..)) || execution(new(..)) {
+    before (): (this(*) && execution(* *(..)) || execution(new(..))) && !within(A) {
 	//System.out.println("entering: "+thisJoinPoint);
     }
-    after (): this(*) && execution(* *(..)) || execution(new(..)) {
+
+    after (): (this(*) && execution(* *(..)) || execution(new(..))) && !within(A) {
 	//System.out.println("exiting: "+thisJoinPoint);
-    }
-    
+    }  
     Object around(): this(*) && call(* *(..)) {    
 	//System.out.println("start around: "+thisJoinPoint);
 	Object ret = proceed();
