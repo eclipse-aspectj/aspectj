@@ -13,6 +13,7 @@
 
 package org.aspectj.weaver.patterns;
 
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Test;
@@ -33,7 +34,13 @@ public abstract class NameBindingPointcut extends Pointcut {
 	protected Test exposeStateForVar(Var var,TypePattern type, ExposedState state, World world) {
 		if (type instanceof BindingTypePattern) {
 			BindingTypePattern b = (BindingTypePattern)type;
-			state.set(b.getFormalIndex(), var);
+			if (state.get(b.getFormalIndex())!=null) {
+				world.getMessageHandler().handleMessage(MessageUtil.error(
+                  "Ambiguous binding of type "+type.getExactType().toString()+".  Use one args(..) per matched join point",
+                  getSourceLocation()));
+			} else {
+				state.set(b.getFormalIndex(), var);
+			}
 		}
 		TypeX myType = type.getExactType(); //should have failed earlier 
 		

@@ -35,6 +35,7 @@ public class ExposedState {
 
 	public void set(int i, Var var) {
 		//XXX add sanity checks
+		// Check (1) added to call of set(), verifies we aren't binding twice to the same formal
 		vars[i] = var;
 	}
     public Var get(int i) {
