@@ -106,9 +106,15 @@ public class WeaverMessages {
 	public static final String ITDC_ON_ENUM_NOT_ALLOWED = "itdcOnEnumNotAllowed";
 	public static final String ITDM_ON_ENUM_NOT_ALLOWED = "itdmOnEnumNotAllowed";
 	public static final String ITDF_ON_ENUM_NOT_ALLOWED = "itdfOnEnumNotAllowed";
+	public static final String CANT_DECP_ON_ENUM_TO_IMPL_INTERFACE = "cantDecpOnEnumToImplInterface";
+	public static final String CANT_DECP_ON_ENUM_TO_EXTEND_CLASS = "cantDecpOnEnumToExtendClass";
+	public static final String CANT_DECP_TO_MAKE_ENUM_SUPERTYPE = "cantDecpToMakeEnumSupertype";
 	public static final String ITDC_ON_ANNOTATION_NOT_ALLOWED = "itdcOnAnnotationNotAllowed";
 	public static final String ITDM_ON_ANNOTATION_NOT_ALLOWED = "itdmOnAnnotationNotAllowed";
 	public static final String ITDF_ON_ANNOTATION_NOT_ALLOWED = "itdfOnAnnotationNotAllowed";
+	public static final String CANT_DECP_ON_ANNOTATION_TO_IMPL_INTERFACE = "cantDecpOnAnnotationToImplInterface";
+	public static final String CANT_DECP_ON_ANNOTATION_TO_EXTEND_CLASS = "cantDecpOnAnnotationToExtendClass";
+	public static final String CANT_DECP_TO_MAKE_ANNOTATION_SUPERTYPE = "cantDecpToMakeAnnotationSupertype";
 	public static final String REFERENCE_TO_NON_ANNOTATION_TYPE = "referenceToNonAnnotationType";
 	public static final String BINDING_NON_RUNTIME_RETENTION_ANNOTATION = "bindingNonRuntimeRetentionAnnotation";
 	
