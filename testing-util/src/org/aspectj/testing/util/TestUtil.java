@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -209,7 +208,18 @@ public final class TestUtil {
     /**
      * If there is an expected dir, expect each file in its subtree
      * to match a corresponding actual file in the base directory.
-     * @return boolean
+     * This does NOT check that all actual files have corresponding
+     * expected files.
+     * This ignores directory paths containing "CVS".
+     * @param handler the IMessageHandler sink for error messages
+     * @param expectedBaseDir the File path to the directory
+     *         containing expected files, all of which are compared
+     *         with any corresponding actual files
+     * @param actualBaseDir the File path to the base directory
+     *         from which to find any actual files corresponding
+     *         to expected files.
+     * @return true if all files in the expectedBaseDir directory tree
+     *          have matching files in the actualBaseDir directory tree.
      */
     public static boolean sameDirectoryContents(
         final IMessageHandler handler, 
@@ -217,7 +227,6 @@ public final class TestUtil {
         final File actualBaseDir,
         final boolean fastFail) {
         LangUtil.throwIaxIfNull(handler, "handler");
-        FileUtil.throwIaxUnlessCanReadDir(actualBaseDir, "actualBaseDir");
         if (!FileUtil.canReadDir(expectedBaseDir)) {
             MessageUtil.fail(handler, " expected dir not found: " + expectedBaseDir);
             return false;
@@ -229,7 +238,10 @@ public final class TestUtil {
         String[] paths = FileUtil.listFiles(expectedBaseDir);
         boolean result = true;
         for (int i = 0; i < paths.length; i++) {
-            if (!sameFiles(handler, expectedBaseDir, actualBaseDir, paths[i]) && !result) {
+            if (-1 != paths[i].indexOf("CVS")) {
+                continue;
+            }
+            if (!sameFiles(handler, expectedBaseDir, actualBaseDir, paths[i]) && result) {
                 result = false;
                 if (fastFail) {
                     break;
@@ -241,14 +253,15 @@ public final class TestUtil {
     
     //------------ File-comparison utilities (XXX need their own class...)
     /**
-     * Compare two files, line by line, and report differences as one FAIL message
+     * Test interface to
+     * compare two files, line by line, and report differences as one FAIL message
      * if a handler is supplied.  This preprocesses .class files by disassembling.
      * @param handler the IMessageHandler for any FAIL messages (null to ignore)
      * @param expectedFile the File path to the canonical file
      * @param actualFile the File path to the actual file, if any
      * @return true if the input files are the same, based on per-line comparisons
      */
-    public static boolean sameFiles (
+    static boolean sameFiles (
         IMessageHandler handler,
         File expectedFile, 
         File actualFile) {
@@ -256,7 +269,8 @@ public final class TestUtil {
     }
 
     /**
-     * Compare two files, line by line, and report differences as one FAIL message
+     * Test interface to
+     * compare two files, line by line, and report differences as one FAIL message
      * if a handler is supplied.  This preprocesses .class files by disassembling.
      * This method assumes that the files are at the same offset from two
      * respective base directories.
@@ -266,7 +280,7 @@ public final class TestUtil {
      * @param path the String path offset from the base directories
      * @return true if the input files are the same, based on per-line comparisons
      */
-    public static boolean sameFiles (
+    static boolean sameFiles (
         IMessageHandler handler,
         File expectedBaseDir, 
         File actualBaseDir, 
@@ -279,7 +293,7 @@ public final class TestUtil {
     /**
      * This does the work, selecting a lineator subclass and converting public
      * API's to JDiff APIs for comparison.
-     * Currently, all jdiff interfaces are method-local, so this class with load 
+     * Currently, all jdiff interfaces are method-local, so this class will load 
      * without it; if we do use it, we can avoid the duplication.
      */
     private static boolean doSameFile(

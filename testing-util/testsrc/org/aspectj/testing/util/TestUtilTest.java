@@ -13,7 +13,6 @@
 
 package org.aspectj.testing.util;
 
-import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FileUtil;

@@ -16,10 +16,8 @@ package org.aspectj.testing.drivers;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
-import org.aspectj.testing.drivers.Harness.RunResult;
 import org.aspectj.testing.harness.bridge.AbstractRunSpec;
 import org.aspectj.testing.harness.bridge.AjcTest;
-import org.aspectj.testing.harness.bridge.AjcTest.Spec;
 import org.aspectj.testing.run.IRunStatus;
 import org.aspectj.testing.run.RunValidator;
 import org.aspectj.testing.util.BridgeUtil;
@@ -30,7 +28,6 @@ import org.aspectj.util.LangUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
