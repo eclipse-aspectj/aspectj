@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html> <head>
-<title>AspectJ 1.1beta2 -- Readme</title>
+<title>AspectJ 1.1beta3 -- Readme</title>
 <style type="text/css">
 <!--
   P   { margin-left:  20px; }
@@ -20,7 +20,7 @@ All rights reserved.
 
 <h1>AspectJ Readme</h1>
 
-<p align="right"><i>Version 1.1beta2</i></p>
+<p align="right"><i>Version 1.1beta3</i></p>
 
 <p> This is an early-access release of AspectJ 1.1.  It includes a small
 number of new language features as well as major improvements to the
@@ -30,70 +30,20 @@ functionality of the tools.   </p>
 and tools in relation to AspectJ 1.0.6.
 </p>
 
-<p>The information in this document will be folded into the main line
-of AspectJ documentation but has not yet.  All descriptions here
-should be read as changes to the AspectJ documentation.  </p>
+<p>The information in this document has been folded into the semantics
+appendix of the AspectJ programming guide, but has not yet been folded
+into the rest of the main line of AspectJ documentation.  All
+descriptions here should be read as changes to the AspectJ
+documentation.  </p>
 
 <p> The main body of this document describes the differences between
-the 1.1beta2 release and the 1.0.6 release.  For those following our
-release schedule closely, however, these are the changes since the
-1.1beta1 release: </p>
+the 1.1beta3 release and the 1.0.6 release.  For those following our
+release schedule closely, however, these are the changes (other than
+bugfixes) since the 1.1beta2 release: </p>
 
 <ul>
-  <li>The documentation, core tools and ant tasks are now part of a
-  single downloadable distribution from
-  <a href="http://eclipse.org/aspectj">eclipse.org</a>.  Ajde for
-  <a href="http://aspectj4emacs.sourceforge.net/">Emacs</a>,
-  <a href="http://aspectj4netbean.sourceforge.net/">NetBeans</a> and
-  <a href="http://aspectj4jbuildr.sourceforge.net/">JBuilder</a> are
-  now available from individual SourceForge projects. </li>
-
-  <li>More 1.0 features have been implemented: inter-type constructor
-  definitions, instance initialization and pre-initialization join
-  points, exception handler join points, advice execution join
-  points, and the -XserializableAspects experimental option. </li>
-
-  <li><a href="#VOID_FIELD_SET">Field set join points now have a
-  <code>void</code> return type.</a> This will require porting of code
-  that uses the <code>set</code> PCD in conjunction with <code>after
-  returning</code> or <code>around</code> advice.</li>
-
-  <li>Various <a href="#STRINGBUFFER">StringBuffer</a> methods and
-  constructors resulting from the Java Language string concatenation
-  operator <code>+</code> now result in join points. </li>
-
-  <li>Users now have more control over the <a href="#XLINT">-Xlint</a>
-  option. </li>
-
-  <li>AspectJ 1.1 will not pick out
-  <a href="#NO_CALLEE_SIDE_CALL">callee-side call join
-  points</a>. </li>
-       
-  <li>The <code>-noweave</code> option is now the
-  <code><a href="#XNOWEAVE">-XnoWeave</a></code> option.</li>
-
-  <li>A new option, <code><a href="#XNOINLINE">-XnoInline</a></code>,
-  is now supported to control some compiler behavior.</li>
-
-  <li>A class's default constructor may
-  <a href="#DEFAULT_CONSTRUCTOR_CONFLICT">conflict</a> with an
-  inter-type constructor. </li>
-
-  <li><a href="#INTER_TYPE_FIELD_INITIALIZERS">inter-type field
-  initializers</a> run before class-local field initializers. </li>
-
-  <li>Some of the treatment of
-  <a href="#SUPER_IFACE_INITS">initialization join points for
-  super-interfaces</a> have been clarified. </li>
-
-  <li>The behavior of the compiler in
-  <a href="#TARGET_TYPES_MADE_PUBLIC">lifting the visibility</a> of
-  the target types of some declares and pointcuts to public has been
-  clarified. </li>
-
-  <li>The <a href="#PER_TYPE">new pertype aspect specifier</a> has
-  been taken off the table for 1.1rc, though it may well be in a
-  future release. </li>
+  <li>The interaction between aspect instantiation and advice has been
+  <a href="#ASPECT_INSTANTIATION_AND_ADVICE">clarified</a>. </li>
 </ul>
 
 <p> This document begins with short descriptions of changes from the
@@ -111,6 +61,15 @@ release schedule closely, however, these are the changes since the
 
 <p> followed by <a href="#details">details</a> of many of the changes.
 </p>
+
+<p> Apart from these changes, the major change from the 1.0 series of
+releases is distribution.  The documentation, core tools and ant tasks
+are now part of a single downloadable distribution from
+<a href="http://eclipse.org/aspectj">eclipse.org</a>.  Ajde for
+<a href="http://aspectj4emacs.sourceforge.net/">Emacs</a>,
+<a href="http://aspectj4netbean.sourceforge.net/">NetBeans</a> and
+<a href="http://aspectj4jbuildr.sourceforge.net/">JBuilder</a> are now
+available from individual SourceForge projects. </p>
 
 <!-- ============================== -->
 <hr>
@@ -214,7 +173,10 @@ release schedule closely, however, these are the changes since the
   <p>Finally, we did not implement the handling of multiple
   <code>..</code> wildcards in args PCDs (rarely encountered in the
   wild) because we didn't have the time.  It should be available in
-  1.1rc1.</p>
+  1.1rc1.  Also, we did not implement the <a href="#PER_TYPE">new
+  pertype aspect specifier</a>.  It has been taken off the table for
+  1.1rc, though it may well be in a future release.</p>
+  
 
 <!-- ============================== -->
 <hr>
@@ -903,7 +865,7 @@ release schedule closely, however, these are the changes since the
 
     <p> The AspectJ 1.1 compiler now supports incremental compilation.
     For the final release, this will work from the various IDE plugins we
-    ship, but for the 1.1beta2 release, it is only supported on the
+    ship, but for the beta release, it is only supported on the
     command-line compiler.
     </p>
 
@@ -914,7 +876,7 @@ release schedule closely, however, these are the changes since the
     hits return) ajc recompiles those input files that need recompiling.
     </p>
 
-    <h4>Limitations for 1.1beta2</h4>
+    <h4>Limitations for beta</h4>
 
     <p> Some changes to classes should force re-weaving, but are not
     noticed</p>
@@ -1101,7 +1063,7 @@ release schedule closely, however, these are the changes since the
     </p>
 
     <ul>
-      <li>-XOcodeSize: Though 1.1beta2 does not turn
+      <li>-XOcodeSize: Though the beta does not turn
       <a href="#NO_AROUND_OPTIMIZATION">inlining of around advice</a>
       on, we expect that it will be on by default in the final, and so
       <code>-XOcodeSize</code> is no longer necessary.  We will be
@@ -1112,7 +1074,7 @@ release schedule closely, however, these are the changes since the
       <li><a href="#XNOWEAVE">-XnoWeave, a compiler option to suppress
            weaving</a></li>
 
-      <li>-XtargetNearSource: Not suppoted in 1.1beta2, may not be
+      <li>-XtargetNearSource: Not suppoted in 1.1beta3, may not be
       supported in 1.1 final. </li>
 
       <li>-XserializableAspects: Supported. </li>
@@ -1126,7 +1088,7 @@ release schedule closely, however, these are the changes since the
     </ul>
 
   <h3><a name="ERROR_MESSAGES">Some confusing error messages in
-  1.1beta2</a></h3>
+  1.1beta</a></h3>
 
     <p>Building on the eclipse compiler has given us access to a very
     sophisticated problem reporting system as well as highly optimized
