@@ -463,6 +463,9 @@ public class AjcTest extends RunSpecIterator {
         }
 
         public static AjcTest.Spec[] getTests(Suite.Spec spec) {
+            if (null == spec) {
+                return new AjcTest.Spec[0];
+            }
             return (AjcTest.Spec[]) spec.children.toArray(new AjcTest.Spec[0]);
         }
 
