@@ -41,6 +41,8 @@ public class ClassPathManager {
 		}
 	}
 
+	protected ClassPathManager() {};
+	
 	public void addPath (String name, IMessageHandler handler) {
 		File f = new File(name);
 		String lc = name.toLowerCase();
