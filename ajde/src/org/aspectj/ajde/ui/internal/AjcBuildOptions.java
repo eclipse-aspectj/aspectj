@@ -41,7 +41,8 @@ public class AjcBuildOptions implements BuildOptionsAdapter {
 	private static final String VERBOSE_MODE = AJC + ".verboseMode";
 	private static final String NONSTANDARD_OPTIONS = AJC + ".nonStandardOptions";
 	// 1.1 constants added by AMC
-	private static final String COMPLIANCE_LEVEL = AJC + ".complianceLevel";
+    private static final String INCREMENTAL_MODE = AJC + ".incrementalMode";
+    private static final String COMPLIANCE_LEVEL = AJC + ".complianceLevel";
 	private static final String SOURCE_LEVEL = AJC + ".sourceLevel";
 	private static final String WARNINGS = AJC + ".warnings";
 	private static final String DEBUG_OPTIONS = AJC + ".debugOptions";
@@ -102,6 +103,14 @@ public class AjcBuildOptions implements BuildOptionsAdapter {
 		setBooleanOptionVal(SOURCE_ONE_POINT_FOUR_MODE, value);	
 	}
 	
+    public boolean getIncrementalMode() {
+        return getBooleanOptionVal(INCREMENTAL_MODE);
+    }
+
+    public void setIncrementalMode(boolean value) {
+        setBooleanOptionVal(INCREMENTAL_MODE, value);
+    }
+
 	/** @deprecated */
 	public boolean getLenientSpecMode() {
 		return getBooleanOptionVal(LENIENT_MODE);
