@@ -14,10 +14,6 @@ package org.aspectj.ajdt.internal.compiler.batch;
 
 import java.io.*;
 
-import org.aspectj.weaver.bcel.*;
-
-import junit.framework.*;
-
 public class MultipleCompileTestCase extends CommandTestCase {
 
 	/**

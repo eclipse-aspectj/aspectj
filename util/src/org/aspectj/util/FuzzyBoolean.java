@@ -14,8 +14,6 @@
 
 package org.aspectj.util;
 
-import java.util.*;
-
 
 /** This class implements boolean that include a "maybe"
  */

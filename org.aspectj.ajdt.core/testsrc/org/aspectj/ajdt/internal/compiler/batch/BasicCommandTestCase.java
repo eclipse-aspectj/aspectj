@@ -12,12 +12,8 @@
 
 package org.aspectj.ajdt.internal.compiler.batch;
 
-import java.util.*;
-
-import org.aspectj.ajdt.ajc.*;
-import org.aspectj.bridge.*;
-
-import junit.framework.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author hugunin

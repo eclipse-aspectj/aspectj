@@ -17,7 +17,6 @@ import java.util.*;
 
 import junit.framework.TestCase;
 import org.aspectj.ajdt.ajc.BuildArgParser;
-import org.aspectj.asm.*;
 import org.aspectj.asm.StructureModelManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageHandler;
@@ -29,7 +28,6 @@ import org.eclipse.core.internal.events.ResourceDelta;
 import org.eclipse.core.resources.*;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.*;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.internal.core.builder.*;
 import org.eclipse.jdt.internal.core.builder.SimpleLookupTable;
 

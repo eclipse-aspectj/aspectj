@@ -12,12 +12,7 @@
 
 package org.aspectj.ajdt.ajc;
 
-import java.io.PrintWriter;
-
 import junit.framework.TestCase;
-import org.aspectj.bridge.*;
-import org.aspectj.bridge.Message;
-import org.aspectj.util.StreamPrintWriter;
 
 /**
  * @author Mik Kersten 

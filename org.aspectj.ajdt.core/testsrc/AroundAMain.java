@@ -10,8 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-import java.util.Arrays;
-
 import junit.framework.TestCase;
 
 import org.aspectj.runtime.internal.AroundClosure;

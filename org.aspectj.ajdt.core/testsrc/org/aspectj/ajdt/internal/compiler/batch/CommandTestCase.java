@@ -16,24 +16,17 @@ import org.aspectj.ajdt.ajc.AjdtCommand;
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
+import org.aspectj.weaver.bcel.LazyClassGen;
 
-import java.io.*;
-import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.aspectj.ajdt.ajc.*;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.bcel.LazyClassGen;
-import org.aspectj.bridge.*;
-
-import junit.framework.*;
-import org.aspectj.weaver.*;
+import junit.framework.TestCase;
 
 public abstract class CommandTestCase extends TestCase {
 

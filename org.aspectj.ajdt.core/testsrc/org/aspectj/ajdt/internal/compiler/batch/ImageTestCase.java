@@ -12,23 +12,22 @@
 
 package org.aspectj.ajdt.internal.compiler.batch;
 
-import java.io.*;
-import java.io.File;
-import java.util.*;
-
 import junit.framework.*;
 
-import org.aspectj.ajdt.internal.core.builder.*;
-import org.aspectj.bridge.*;
-import org.aspectj.util.*;
-import org.aspectj.workbench.resources.*;
-import org.eclipse.core.internal.resources.*;
-import org.eclipse.core.resources.*;
-import org.eclipse.core.runtime.*;
-import org.eclipse.jdt.core.compiler.*;
-import org.eclipse.jdt.internal.compiler.*;
-import org.eclipse.jdt.internal.compiler.Compiler;
-import org.eclipse.jdt.internal.core.builder.*;
+//import java.io.*;
+//import java.io.File;
+//import java.util.*;
+//import org.aspectj.ajdt.internal.core.builder.*;
+//import org.aspectj.bridge.*;
+//import org.aspectj.util.*;
+//import org.aspectj.workbench.resources.*;
+//import org.eclipse.core.internal.resources.*;
+//import org.eclipse.core.resources.*;
+//import org.eclipse.core.runtime.*;
+//import org.eclipse.jdt.core.compiler.*;
+//import org.eclipse.jdt.internal.compiler.*;
+//import org.eclipse.jdt.internal.compiler.Compiler;
+//import org.eclipse.jdt.internal.core.builder.*;
 
 public class ImageTestCase extends TestCase {
 
