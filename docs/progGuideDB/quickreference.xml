@@ -55,6 +55,15 @@
                 <replaceable>Signature</replaceable>
               </entry>
             </row>
+            <row>
+              <entry>
+                <literal>preinitialization(<replaceable>Signature</replaceable>)</literal>
+              </entry>
+              <entry>
+                Object pre-initialization join point when the first constructor
+                called in the type matches <replaceable>Signature</replaceable>
+              </entry>
+            </row>
 
             <row>
               <entry spanname="hspan">
@@ -72,6 +81,20 @@
                 <replaceable>TypePattern</replaceable> are executed.
                 The exception object can be accessed with an
                 <literal>args</literal> pointcut.
+              </entry>
+            </row>
+            <row>
+              <entry spanname="hspan">
+                <emphasis role="bold">Advice</emphasis>
+              </entry>
+            </row>
+
+            <row rowsep="1">
+              <entry>
+                <literal>adviceexecution()</literal>
+              </entry>
+              <entry>
+                All advice execution join points. 
               </entry>
             </row>
 
@@ -127,46 +150,34 @@
 
             <row>
               <entry>
-                <literal>this(<replaceable>TypePattern</replaceable>)</literal>
+                <literal>this(<replaceable>Type</replaceable>)</literal>
               </entry>
               <entry>
                 Join points when the currently executing object is an
-                instance of a type in <replaceable>TypePattern</replaceable>
+                instance of <replaceable>Type</replaceable>
               </entry>
             </row>
 
             <row>
               <entry>
-                <literal>target(<replaceable>TypePattern</replaceable>)</literal>
+                <literal>target(<replaceable>Type</replaceable>)</literal>
               </entry>
               <entry>
                 Join points when the target object is an instance
-                of a type in <replaceable>TypePattern</replaceable>
+                of <replaceable>Type</replaceable>
               </entry>
             </row>
 
             <row>
               <entry>
-                <literal>args(<replaceable>TypePattern</replaceable>, ...)</literal>
+                <literal>args(<replaceable>Type</replaceable>, ...)</literal>
               </entry>
               <entry>
                 Join points when the argument objects are instances of
-                the <replaceable>TypePattern</replaceable>s
+                the <replaceable>Type</replaceable>s
               </entry>
             </row>
 
-<!--
-            <row rowsep="1">
-              <entry>
-                <literal>hasaspect(<replaceable>TypePattern</replaceable>)</literal>
-              </entry>
-              <entry>
-                Join points where an aspect instance of a type in
-                <replaceable>TypePattern</replaceable> is associated
-                with the join point
-              </entry>
-            </row>
--->
             <row>
               <entry spanname="hspan">
                 <emphasis role="bold">Lexical Extents</emphasis>
@@ -441,12 +452,12 @@
     </sect1>
 
     <sect1>
-      <title>Static Crosscutting</title>
-
-      <para></para>
+      <title>Inter-type declarations</title>
+      <para>
+      </para>
 
       <table frame="all" id="qrintroduction">
-        <title>Introduction</title>
+        <title>Inter-type declarations</title>
 
         <tgroup cols="2" colsep="1" rowsep="0">
 
@@ -454,42 +465,49 @@
 
             <row>
               <entry>
-                <replaceable>Modifiers Type TypePattern.Id(Formals) { Body }</replaceable>
+                <replaceable>Modifiers ReturnType OnType . Id(Formals) { Body }</replaceable>
               </entry>
               <entry>
-                Defines a method on the types in <replaceable>TypePattern</replaceable>.
-              </entry>
-            </row>
-
-            <row>
-              <entry>
-                <literal>abstract <replaceable>Modifiers Type TypePattern.Id(Formals)</replaceable>;</literal>
-              </entry>
-              <entry>
-                Defines an abstract method on the types in <replaceable>TypePattern</replaceable>.
+                Defines a method on <replaceable>OnType</replaceable>.
               </entry>
             </row>
 
             <row>
               <entry>
-                <literal><replaceable>Modifiers TypePattern</replaceable>.new<replaceable>(Formals) { Body }</replaceable></literal>
+                <literal>abstract <replaceable>Modifiers ReturnType OnType . Id(Formals)</replaceable>;</literal>
               </entry>
               <entry>
-                Defines a a constructor on the types in <replaceable>TypePattern</replaceable>.
+                Defines an abstract method on <replaceable>OnType</replaceable>.
               </entry>
             </row>
 
             <row>
               <entry>
-                <replaceable>Modifiers Type TypePattern.Id [ = Expression ];</replaceable>
+                <literal><replaceable>Modifiers OnType</replaceable>.new<replaceable>(Formals) { Body }</replaceable></literal>
               </entry>
               <entry>
-                Defines a field on the types in <replaceable>TypePattern</replaceable>.
+                Defines a a constructor on <replaceable>OnType</replaceable>.
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <replaceable>Modifiers Type OnType.Id [ = Expression ];</replaceable>
+              </entry>
+              <entry>
+                Defines a field on <replaceable>OnType</replaceable>.
               </entry>
             </row>
           </tbody>
         </tgroup>
       </table>
+
+    </sect1>
+
+    <sect1>
+      <title>Other declarations</title>
+      <para>
+      </para>
 
       <table frame="all" id="qrotherdeclarations">
         <title>Other declarations</title>
@@ -552,6 +570,17 @@
                 thrown at any join point picked out by
                 <replaceable>Pointcut</replaceable> will be wrapped in
                 <literal>org.aspectj.lang.SoftException</literal>.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <literal>declare precedence:
+                <replaceable>TypePatternList</replaceable> ; </literal>
+              </entry>
+              <entry>
+                Declares that at any join point where multiple pieces of advice
+                apply, the advice precedence at that join point is in 
+                <replaceable>TypePatternList</replaceable> order. 
               </entry>
             </row>
 
