@@ -68,8 +68,6 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 			return;
 		}
 		
-		if (concreteName != null) concreteName.checkPointcutDeclarations();
-		
 		super.resolve();
 	}
 	

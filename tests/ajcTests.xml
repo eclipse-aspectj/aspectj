@@ -6802,4 +6802,24 @@
         <compile files="concern/ContextUser.java,concern/BaseTarget.java,core/Base.java" /> 
     </ajc-test> 
 
+    <ajc-test dir="bugs" pr="49457"
+   	 title="No error on overloaded pointcuts in class">
+        <compile files="OverloadedPointcutsInClass.java">
+        	<message kind="error" line="3" text="duplicate pointcut name: pc1"/>
+        	<message kind="error" line="4" text="duplicate pointcut name: pc1"/>
+        	<message kind="error" line="6" text="duplicate pointcut name: pc2"/>
+        	<message kind="error" line="7" text="duplicate pointcut name: pc2"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs" pr="49457"
+   	 title="No error on overloaded pointcuts unless binding variables">
+        <compile files="OverloadedPointcutsInAspect.java">
+        	<message kind="error" line="15" text="duplicate pointcut name: pc"/>
+        	<message kind="error" line="16" text="duplicate pointcut name: pc"/>
+        	<message kind="error" line="18" text="incompatible type"/>
+        	<message kind="error" line="20" text="incompatible type"/>
+        </compile>
+    </ajc-test>
+
 </suite>

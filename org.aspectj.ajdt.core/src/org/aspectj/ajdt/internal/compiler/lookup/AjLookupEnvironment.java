@@ -176,12 +176,13 @@ public class AjLookupEnvironment extends LookupEnvironment {
     private void resolvePointcutDeclarations(ClassScope s) {
         TypeDeclaration dec = s.referenceContext;
         SourceTypeBinding sourceType = s.referenceContext.binding;
-        
+        boolean hasPointcuts = false;
         AbstractMethodDeclaration[] methods = dec.methods;
         boolean initializedMethods = false;
         if (methods != null) {
             for (int i=0; i < methods.length; i++) {
                 if (methods[i] instanceof PointcutDeclaration) {
+                	hasPointcuts = true;
                     if (!initializedMethods) {
                         sourceType.methods(); //force initialization
                         initializedMethods = true;
@@ -190,7 +191,13 @@ public class AjLookupEnvironment extends LookupEnvironment {
                 }
             }
         }
-        
+
+		if (hasPointcuts || dec instanceof AspectDeclaration) {
+        	ResolvedTypeX.Name name = (ResolvedTypeX.Name)factory.fromEclipse(sourceType);
+        	EclipseSourceType eclipseSourceType = (EclipseSourceType)name.getDelegate();
+        	eclipseSourceType.checkPointcutDeclarations();
+		}
+		
         ReferenceBinding[] memberTypes = sourceType.memberTypes;
         for (int i = 0, length = memberTypes.length; i < length; i++) {
             resolvePointcutDeclarations(((SourceTypeBinding) memberTypes[i]).scope);
