@@ -353,10 +353,12 @@ public class ProgramElement implements IProgramElement {
 //	}
 
 	public IProgramElement walk(HierarchyWalker walker) {
+		if (children!=null) {
 		for (Iterator it = children.iterator(); it.hasNext(); ) {
 			IProgramElement child = (IProgramElement)it.next();
 			walker.process(child);	
 		} 
+		}
 		return this;
 	}
 	
