@@ -260,7 +260,7 @@ public class Main {
      */
     public void run(String[] args, IMessageHolder holder) {
         if (LangUtil.isEmpty(args)) {
-            args = new String[] { "-help" };
+            args = new String[] { "-?" };
         }  else if (controller.running()) {
             fail(holder, "already running with controller: " + controller, null);
             return;

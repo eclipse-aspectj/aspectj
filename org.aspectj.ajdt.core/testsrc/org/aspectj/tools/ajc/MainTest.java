@@ -20,14 +20,16 @@ import junit.framework.TestCase;
  * 
  */
 public class MainTest extends TestCase {
-
+	
     public void testMainbare() {
         ArrayList list = new ArrayList();
-        Main.bareMain(new String[] {"-help"}, false, list, null, null, null);
-        assertTrue(1 == list.size());
-        Object o = list.get(0);
+// Usage now printed by Eclipse compiler so doesn't appear here in our message list
+//        Main.bareMain(new String[] {"-help"}, false, list, null, null, null);
+//        assertTrue(1 == list.size());
+        Main.bareMain(new String[] {"-X"}, false, list, null, null, null);
+        assertTrue(1 == list.size());        Object o = list.get(0);
         assertTrue(o instanceof String);
-        assertTrue(-1 != ((String)o).indexOf("-aspectpath"));
-        assertTrue(-1 != ((String)o).indexOf("-incremental"));
+//        assertTrue(-1 != ((String)o).indexOf("-aspectpath"));
+//        assertTrue(-1 != ((String)o).indexOf("-incremental"));
     }
 }

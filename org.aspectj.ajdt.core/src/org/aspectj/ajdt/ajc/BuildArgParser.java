@@ -50,6 +50,10 @@ public class BuildArgParser extends Main {
         return Main.bind("misc.usage");
     }
     
+    public static String getXOptionUsage() {
+    	return Main.bind("xoption.usage");
+    }
+    
     /** 
      * StringWriter sink for some errors.
      * This only captures errors not handled by any IMessageHandler parameter
@@ -557,7 +561,7 @@ public class BuildArgParser extends Main {
 			handler.handleMessage(errorMessage);
 //            MessageUtil.warn(handler, message);
         }
-
+		
 		protected File makeFile(File dir, String name) {
 			name = name.replace('/', File.separatorChar);
 			File ret = new File(name);
