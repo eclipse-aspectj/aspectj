@@ -3,16 +3,40 @@
 <body>
 <h1>AspectJ docs</h1>
 
-The AspectJ docs include native sources (html and word files)
-and XML DocBook files used to produce the FAQ and guides.
-The <a href="dist">dist</a> directory contains the native files
-as they are delivered with the distribution, and the 
-docbook directories 
- <a href="faq">faq</a>,
- <a href="progGuideDB">progGuideDB</a>, and
- <a href="devGuideDB">devGuideDB</a>
-contain sources for the FAQ and the Programming and Development Guides,
-generated using the Ant <a href="build.xml">build.xml</a> script.
+This module contains the sources for the documentation
+delivered with the AspectJ distribution and 
+for various internal, teaching, and online works:
+<ul>
+    <li><a href="devGuideDB">devGuideDB</a>: DocBook sources
+        for the AspectJ Development Environment Guide</li>
+
+    <li><a href="progGuideDB">progGuideDB</a>: DocBook sources
+        for the AspectJ Programming Language Guide</li>
+
+    <li><a href="faq">faq</a>: DocBook sources
+        for the AspectJ Frequently Asked Questions</li>
+
+    <li><a href="sandbox">sandbox</a>: a collection of sample
+        AspectJ programs, tools built on the AspectJ API's,
+        script snippets, and instructional trails, all intended
+        to serve as sources for documentation.
+        See <a href="sandbox/readme-sandbox.html">
+                     sandbox/readme-sandbox.html</a></li>
+
+    <li><a href="teaching">teaching</a>: Teaching materials, esp.
+        for the AspectJ tutorials.</li>
+
+    <li><a href="quick.doc">quick.doc</a>: The Microsoft Word
+        source file for the .pdf Quick Reference guides
+		<a href="dist/doc/quick.pdf">dist/doc/quick.pdf</a> and
+		<a href="dist/doc/quickA4.pdf">dist/doc/quickA4.pdf</a>.</li>
+
+    <li><a href="build.xml">build.xml</a>: Ant build script for 
+        the doc distribution</li>
+
+    <li><a href="developer">developer</a>: Docs for AspectJ developers.
+       See the <a href="developer/overview.html">overview.html</a></li>
+</ul>
 
 <p>
 <u>Build</u>: <a href="build.xml">build.xml</a> assembles a local
