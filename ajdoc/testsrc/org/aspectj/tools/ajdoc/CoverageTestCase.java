@@ -22,24 +22,25 @@ import junit.framework.TestCase;
  */
 public class CoverageTestCase extends TestCase {
 	
-	public void testSimpleExample() {
+	public void testCoverage() {
 		  
 //		System.err.println(new File("testdata/figures-demo").exists());
-		File file1 = new File("testdata/simple/foo/ClassA.java");
-		File aspect1 = new File("testdata/simple/foo/UseThisAspectForLinkCheck.java");
-		File file2 = new File("testdata/simple/foo/InterfaceI.java");
-		File file3 = new File("testdata/simple/foo/PlainJava.java");
-		File file4 = new File("testdata/simple/foo/ModelCoverage.java");
-		File file5 = new File("testdata/simple/fluffy/Fluffy.java");
-		File file6 = new File("testdata/simple/fluffy/bunny/Bunny.java");
-		File file7 = new File("testdata/simple/fluffy/bunny/rocks/Rocks.java");
-		File file8 = new File("testdata/simple/fluffy/bunny/rocks/UseThisAspectForLinkCheckToo.java");
-		File outdir = new File("testdata/simple/doc");
+		File file1 = new File("testdata/coverage/foo/ClassA.java");
+		File aspect1 = new File("testdata/coverage/foo/UseThisAspectForLinkCheck.java");
+		File file2 = new File("testdata/coverage/foo/InterfaceI.java");
+		File file3 = new File("testdata/coverage/foo/PlainJava.java");
+		File file4 = new File("testdata/coverage/foo/ModelCoverage.java");
+		File file5 = new File("testdata/coverage/fluffy/Fluffy.java");
+		File file6 = new File("testdata/coverage/fluffy/bunny/Bunny.java");
+		File file7 = new File("testdata/coverage/fluffy/bunny/rocks/Rocks.java");
+		File file8 = new File("testdata/coverage/fluffy/bunny/rocks/UseThisAspectForLinkCheckToo.java");
+		File outdir = new File("testdata/coverage/doc");
 		
 		String[] args = { 
 //			"-XajdocDebug",
-			"-source",
+			"-source", 
 			"1.4",
+			"-private",
 			"-d", 
 			outdir.getAbsolutePath(),
 			aspect1.getAbsolutePath(),
@@ -57,8 +58,8 @@ public class CoverageTestCase extends TestCase {
 	}
 
 //	public void testPlainJava() {
-//		File file1 = new File("testdata/simple/foo/PlainJava.java");
-//		File outdir = new File("testdata/simple/doc");
+//		File file1 = new File("testdata/coverage/foo/PlainJava.java");
+//		File outdir = new File("testdata/coverage/doc");
 //		
 //		String[] args = { "-d", 
 //				outdir.getAbsolutePath(),
