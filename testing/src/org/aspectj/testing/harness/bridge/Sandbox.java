@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.testing.taskdefs.AjcTaskCompileCommand;
 import org.aspectj.testing.util.Diffs;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
@@ -186,7 +187,10 @@ public class Sandbox {
     /** When test is completed, clear the compiler to avoid memory leaks */
     void clearCommand(AjcTest caller) {
         LangUtil.throwIaxIfNull(caller, "caller"); 
-        if (null != command) {
+        if (null != command) { // need to add ICommand.quit()
+            if (command instanceof AjcTaskCompileCommand) { // XXX urk!
+                ((AjcTaskCompileCommand) command).quit();
+            }
             command = null;
         }
         // also try to clear sandbox/filesystem.  
