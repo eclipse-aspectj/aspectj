@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Main-Class: org.aspectj.tools.ajbrowser.Main
+
+Name: org/aspectj/tools/
+Specification-Title: AspectJ Tools Classes
+Specification-Version: @build.version.short@
+Specification-Vendor: @company.name@
+Implementation-Title: org.aspectj.tools
+Implementation-Version: @build.version.short@
+Implementation-Vendor: @company.name@
+
