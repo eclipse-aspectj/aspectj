@@ -35,8 +35,8 @@ public class WorldTestCase extends AbstractWorldTestCase {
 
 	// XXX fix the various XXXs before expecting this test to work
     public void xtestTraceJar() {
-        ResolvedTypeX trace = world.resolve(TypeX.forName("Trace"));
-
+        ResolvedTypeX trace = world.resolve(TypeX.forName("Trace"),true);
+        assertTrue("Couldnt find type Trace",trace!=ResolvedTypeX.MISSING);
         fieldsTest(trace, Member.NONE);
         /*Member constr = */Member.methodFromString("void Trace.<init>()"); 
         //XXX need attribute fix - 
@@ -68,7 +68,8 @@ public class WorldTestCase extends AbstractWorldTestCase {
             					Advice.ExtraArgument),
             });
         
-        ResolvedTypeX myTrace = world.resolve(TypeX.forName("MyTrace"));
+        ResolvedTypeX myTrace = world.resolve(TypeX.forName("MyTrace"),true);
+        assertTrue("Couldnt find type MyTrace",myTrace!=ResolvedTypeX.MISSING);
 
         interfacesTest(myTrace, ResolvedTypeX.NONE);
         superclassTest(myTrace, trace);
@@ -95,7 +96,7 @@ public class WorldTestCase extends AbstractWorldTestCase {
 
     public void testIterator() {
         int abstractPublic = Modifier.ABSTRACT | Modifier.PUBLIC;
-        ResolvedTypeX iter = world.resolve(TypeX.forName("java.util.Iterator"));
+        ResolvedTypeX iter = world.getCoreType(TypeX.forName("java.util.Iterator"));
       
         modifiersTest(iter, abstractPublic | Modifier.INTERFACE);
         fieldsTest(iter, ResolvedMember.NONE);

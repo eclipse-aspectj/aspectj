@@ -76,7 +76,9 @@ public abstract class AbstractWorldTestCase extends TestCase {
     }
     private void primAssignTest(String sig, String[] lowers) {
     	ResolvedTypeX[] primitives = getWorld().resolve(primitiveTypeXs);
-        ResolvedTypeX ty = getWorld().resolve(TypeX.forSignature(sig));
+    	TypeX tx = TypeX.forSignature(sig);
+        ResolvedTypeX ty = getWorld().resolve(tx,true);
+        assertTrue("Couldnt find type "+tx,ty!=ResolvedTypeX.MISSING);
         ResolvedTypeX[] lowerTyArray = 
             getWorld().resolve(TypeX.forSignatures(lowers));
         List lowerTys = new ArrayList(Arrays.asList(lowerTyArray));
@@ -99,13 +101,15 @@ public abstract class AbstractWorldTestCase extends TestCase {
     	ResolvedTypeX[] primitives = getWorld().resolve(primitiveTypeXs);
         for(int i = 0, len = primitives.length; i < len; i++) {
             ResolvedTypeX ty = primitives[i];
-            ResolvedTypeX aty = getWorld().resolve(TypeX.forSignature("[" + ty.getSignature()));
+            TypeX tx = TypeX.forSignature("["+ty.getSignature());
+            ResolvedTypeX aty = getWorld().resolve(tx,true);
+            assertTrue("Couldnt find type "+tx,aty!=ResolvedTypeX.MISSING);
             modifiersTest(aty, Modifier.PUBLIC | Modifier.FINAL);
             fieldsTest(aty, ResolvedMember.NONE);
             methodsTest(aty, ResolvedMember.NONE);
             interfacesTest(aty, new ResolvedTypeX[] {
-                                    getWorld().resolve(TypeX.CLONEABLE),
-                                    getWorld().resolve(TypeX.SERIALIZABLE) });
+                                    getWorld().getCoreType(TypeX.CLONEABLE),
+                                    getWorld().getCoreType(TypeX.SERIALIZABLE) });
             superclassTest(aty, TypeX.OBJECT);
 
             pointcutsTest(aty, ResolvedMember.NONE);
@@ -115,7 +119,9 @@ public abstract class AbstractWorldTestCase extends TestCase {
             for (int j = 0; j < len; j++) {
                 ResolvedTypeX ty1 = primitives[j];
                 isCoerceableFromTest(aty, ty1, false);
-                ResolvedTypeX aty1 = getWorld().resolve(TypeX.forSignature("[" + ty1.getSignature()));  
+                tx = TypeX.forSignature("[" + ty1.getSignature());
+                ResolvedTypeX aty1 = getWorld().resolve(tx,true);
+                assertTrue("Couldnt find type "+tx,aty1!=ResolvedTypeX.MISSING);
                 if (ty.equals(ty1)) {
                     isCoerceableFromTest(aty, aty1, true);
                     isAssignableFromTest(aty, aty1, true);

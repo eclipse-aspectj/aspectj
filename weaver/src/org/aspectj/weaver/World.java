@@ -69,6 +69,15 @@ public abstract class World {
     public ResolvedTypeX resolve(TypeX ty) {
     	return resolve(ty, false);
     }
+    
+    public ResolvedTypeX getCoreType(TypeX tx) {
+    	ResolvedTypeX coreTy = resolve(tx,true);
+    	if (coreTy == ResolvedTypeX.MISSING) {
+    		 MessageUtil.error(messageHandler, 
+            	WeaverMessages.format(WeaverMessages.CANT_FIND_CORE_TYPE,tx.getName()));
+    	}
+    	return coreTy;
+    }
 
     public ResolvedTypeX resolve(TypeX ty, boolean allowMissing) {
     	//System.out.println("resolve: " + ty + " world " + typeMap.keySet());

@@ -70,6 +70,7 @@ public class WeaverMessages {
 	public static final String ASPECT_NEEDED = "aspectNeeded";
 	
 	public static final String CANT_FIND_TYPE = "cantFindType";
+	public static final String CANT_FIND_CORE_TYPE = "cantFindCoreType";
 	
 	public static final String DECP_BINARY_LIMITATION = "decpBinaryLimitation";
 	public static final String OVERWRITE_JSR45 = "overwriteJSR45";

@@ -16,9 +16,12 @@ package org.aspectj.weaver.bcel;
 import java.io.IOException;
 import java.util.Arrays;
 
+import javax.print.attribute.ResolutionSyntax;
+
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 
 public class TjpWeaveTestCase extends WeaveTestCase {
@@ -74,19 +77,21 @@ public class TjpWeaveTestCase extends WeaveTestCase {
     } 
 
     public void testAround2Tjp() throws IOException {
+    	ResolvedTypeX rtx = world.resolve(TypeX.forName("Aspect"),true);
+    	assertTrue("Couldnt find type Aspect",rtx!=ResolvedTypeX.MISSING);
     	BcelAdvice munger1 = new BcelAdvice(
     		AdviceKind.stringToKind("around"),
     		makePointcutAll(), 
       		Member.methodFromString("static java.lang.Object Aspect.ajc_around(org.aspectj.runtime.internal.AroundClosure, org.aspectj.lang.JoinPoint)"),
     		Advice.ThisJoinPoint | Advice.ExtraArgument, -1, -1, null, 
-    		world.resolve(TypeX.forName("Aspect")));
+    		rtx);
     	
     	BcelAdvice munger2 = new BcelAdvice(
     		AdviceKind.stringToKind("around"),
     		makePointcutAll(), 
       		Member.methodFromString("static java.lang.Object Aspect.ajc_around(org.aspectj.runtime.internal.AroundClosure, org.aspectj.lang.JoinPoint)"),
     		Advice.ThisJoinPoint | Advice.ExtraArgument, -1, -1, null, 
-    		world.resolve(TypeX.forName("Aspect")));
+    		rtx);
     	
         weaveTest("HelloWorld", "TjpAround2HelloWorld", Arrays.asList(new BcelAdvice[] {munger1, munger2}));
     } 
