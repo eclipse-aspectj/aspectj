@@ -82,7 +82,6 @@ public class Ajctest extends Task implements PropertyChangeListener {
     private Path internalclasspath;
     private File destdir;
     private File dir;
-    private File errordir;
     private File errorfile;
     private List testclasses = new Vector();
     private boolean nocompile;
@@ -226,10 +225,6 @@ public class Ajctest extends Task implements PropertyChangeListener {
 
     public void setDir(File dir) {
         this.dir = dir;
-    }
-
-    public void setErrordir(File dir) {
-        this.errordir = errordir;
     }
 
     public void setErrorfile(File errorfile) {
