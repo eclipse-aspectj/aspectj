@@ -806,18 +806,18 @@ public class LangUtil {
     public static Throwable unwrapException(Throwable t) {
         Throwable current = t;
         Throwable next = null;
-        while (current != null) {
+        while (current != null) {   
             // Java 1.2 exceptions that carry exceptions
             if (current instanceof InvocationTargetException) {
-                next = ((InvocationTargetException) t).getTargetException();
-            } else if (t instanceof ClassNotFoundException) {
-                next = ((ClassNotFoundException) t).getException();
-            } else if (t instanceof ExceptionInInitializerError) {
-                next = ((ExceptionInInitializerError) t).getException();
-            } else if (t instanceof PrivilegedActionException) {
-                next = ((PrivilegedActionException) t).getException();
-            } else if (t instanceof SQLException) {
-                next = ((SQLException) t).getNextException();
+                next = ((InvocationTargetException) current).getTargetException();
+            } else if (current instanceof ClassNotFoundException) {
+                next = ((ClassNotFoundException) current).getException();
+            } else if (current instanceof ExceptionInInitializerError) {
+                next = ((ExceptionInInitializerError) current).getException();
+            } else if (current instanceof PrivilegedActionException) {
+                next = ((PrivilegedActionException) current).getException();
+            } else if (current instanceof SQLException) {
+                next = ((SQLException) current).getNextException();
             }
             // ...getException():
             // javax.naming.event.NamingExceptionEvent
