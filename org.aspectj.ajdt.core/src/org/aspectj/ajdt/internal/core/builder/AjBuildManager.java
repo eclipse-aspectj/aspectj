@@ -66,6 +66,7 @@ import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 import org.eclipse.jdt.internal.compiler.util.HashtableOfObject;
 
 public class AjBuildManager {
+    static final boolean FAIL_IF_RUNTIME_NOT_FOUND = false;
 	private IProgressListener progressListener = null;
 	
 	private int compiledCount;
@@ -103,9 +104,12 @@ public class AjBuildManager {
 			
 			String check = checkRtJar(buildConfig);
 			if (check != null) {
-                IMessage message = new Message(check, Message.WARNING, null, null);
-                // give delegate a chance to implement different message (abort)?
-                handler.handleMessage(message); 
+                if (FAIL_IF_RUNTIME_NOT_FOUND) {
+                    MessageUtil.error(check);
+                    return false;
+                } else {
+                    MessageUtil.warn(check);
+                }
             }
 
 			setupModel();
