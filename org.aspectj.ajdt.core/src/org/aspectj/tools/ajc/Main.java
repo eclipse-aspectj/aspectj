@@ -450,6 +450,13 @@ public class Main {
                 sb.append(LangUtil.EOL);
                 sb.append(context);
             }
+            
+            String details = message.getDetails();
+            if (details != null) {
+            	sb.append(LangUtil.EOL);
+            	sb.append('\t');
+            	sb.append(details);
+            }
             Throwable thrown = message.getThrown();
             if (null != thrown) {
                 sb.append(LangUtil.EOL);
