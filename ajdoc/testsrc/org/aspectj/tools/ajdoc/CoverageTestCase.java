@@ -36,6 +36,24 @@ public class CoverageTestCase extends TestCase {
 	 
 	File outdir = new File("testdata/coverage/doc");
 	
+	public void testOptions() {
+		outdir.delete();
+		String[] args = { 
+			"-private",
+			"-encoding",
+			"EUCJIS",
+			"-docencoding",
+			"EUCJIS",
+			"-charset",
+			"UTF-8",
+			"-d", 
+			outdir.getAbsolutePath(),
+			file0.getAbsolutePath(), 
+		};
+		org.aspectj.tools.ajdoc.Main.main(args);
+	    assertTrue(true);
+	}
+	
 	public void testCoverage() {
 		outdir.delete();
 		String[] args = { 
@@ -59,7 +77,7 @@ public class CoverageTestCase extends TestCase {
 		};
 		org.aspectj.tools.ajdoc.Main.main(args);
 	}
-
+	
 	public void testCoveragePublicMode() {
 		outdir.delete();
 		String[] args = { 

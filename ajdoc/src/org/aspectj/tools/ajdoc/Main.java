@@ -495,6 +495,21 @@ public class Main implements Config {
                 options.addElement( arg );
                 ajcOptions.addElement( arg );
             }
+            else if ( arg.equals( "-encoding" ) ) {
+                addNextAsOption = true;
+                addNextToAJCOptions = false;
+                options.addElement( arg );
+            }
+            else if ( arg.equals( "-docencoding" ) ) {
+                addNextAsOption = true;
+                addNextToAJCOptions = false;
+                options.addElement( arg );
+            }
+            else if ( arg.equals( "-charset" ) ) {
+                addNextAsOption = true;
+                addNextToAJCOptions = false;
+                options.addElement( arg );
+            }
             else if ( arg.equals( "-sourcepath" ) ) {
                 addNextAsSourcePath = true;
                 //options.addElement( arg );
