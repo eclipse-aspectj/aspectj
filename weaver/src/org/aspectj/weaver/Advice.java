@@ -112,13 +112,21 @@ public abstract class Advice extends ShadowMunger {
 	    				getSourceLocation(), shadow.getSourceLocation());
 					return false;
     			} else {
-    				if (!getSignature().getReturnType().isConvertableFrom(shadow.getReturnType(), world)) {
+    				//System.err.println(getSignature().getReturnType() + " from " + shadow.getReturnType());
+    				if (getSignature().getReturnType() == ResolvedTypeX.VOID) {
+    					if (shadow.getReturnType() != ResolvedTypeX.VOID) {
+    						world.showMessage(IMessage.ERROR, 
+    							"applying to join point that doesn't return void: " + shadow,
+    							getSourceLocation(), shadow.getSourceLocation());
+    						return false;
+    					}
+    				} else if (getSignature().getReturnType().equals(TypeX.OBJECT)) {
+    					return true;
+    				} else if(!shadow.getReturnType().isAssignableFrom(getSignature().getReturnType(), world)) {
     					//System.err.println(this + ", " + sourceContext + ", " + start);
-    					
-    					world.getMessageHandler().handleMessage(
-	    				MessageUtil.error("incompatible return type applying to " + shadow,
-	    					getSourceLocation()));
-	    				//XXX need a crosscutting error message here
+						world.showMessage(IMessage.ERROR, 
+								"incompatible return type applying to " + shadow,
+								getSourceLocation(), shadow.getSourceLocation());
 	    				return false;
     				}
     			}
