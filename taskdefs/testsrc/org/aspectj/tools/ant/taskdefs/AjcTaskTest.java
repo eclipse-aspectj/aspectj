@@ -47,6 +47,7 @@ public class AjcTaskTest extends TestCase {
     private static final File tempDir;
     private static final String aspectjtoolsJar;
     private static final String testdataDir;
+    private static final StringBuffer MESSAGES = new StringBuffer();
     
     static {
         tempDir = new File("IncrementalAjcTaskTest-temp");            
@@ -109,6 +110,10 @@ public class AjcTaskTest extends TestCase {
          }
      }
      
+     public static void collectMessage(String s) {
+         MESSAGES.append(s);
+     }
+     
      private static void deleteTempDir() {
         if ((null != tempDir) && tempDir.exists()) {
             FileUtil.deleteContents(tempDir);
@@ -125,6 +130,7 @@ public class AjcTaskTest extends TestCase {
 
     public void tearDown() {
         deleteTempDir();
+        MESSAGES.setLength(0);
     }
     
     public void testLimitTo() {
@@ -216,6 +222,30 @@ public class AjcTaskTest extends TestCase {
         return task;
     }
     
+    /** used in testMessageHolderClassName */
+    public static class Holder extends MessageHandler {
+        public Holder() {}
+        public boolean handleMessage(IMessage message) {
+            IMessage.Kind kind = message.getKind();
+            if (IMessage.ERROR.isSameOrLessThan(kind)) {
+                String m = kind.toString();
+                AjcTaskTest.collectMessage(m.substring(0,1));
+            }
+            return true;
+        }
+    }
+    
+    public void testMessageHolderClassName() {
+        AjcTask task = getTask("compileError.lst");
+        task.setFailonerror(false);
+        MESSAGES.setLength(0);
+        runTest(task, null, MessageHolderChecker.ONE_ERROR,
+            Holder.class.getName());
+        String result = MESSAGES.toString();
+        MESSAGES.setLength(0);
+        assertEquals("messages", "e", result);        
+    }
+
     public void testDefaultListForkedNoTools() {
         AjcTask task = getTask("default.lst");
         task.setFork(true);
@@ -284,7 +314,7 @@ public class AjcTaskTest extends TestCase {
         assertTrue("expecting aspectj in classpath", 
             (-1 != classpath.indexOf("aspectjrt.jar")));
     }
-
+    
     // ---------------------------------------- sourcefile
     // XXX need to figure out how to specify files directly programmatically
 //    public void testDefaultFile() {
@@ -298,9 +328,6 @@ public class AjcTaskTest extends TestCase {
         runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR_ONE_ABORT);
     }
     
-
-    // XXX find out how to feed files into MatchingTask
-
     public void testCompileErrorFile() {
         AjcTask task = getTask("compileError.lst");
         task.setFailonerror(false);
@@ -342,10 +369,27 @@ public class AjcTaskTest extends TestCase {
     protected void runTest(
         AjcTask task, 
         Class exceptionType, 
+        MessageHolderChecker checker,
+        String messageHolderClass) {
+        task.setMessageHolderClass(messageHolderClass);
+        runTest(task, exceptionType, checker, (MessageHandler) null);
+    }
+    
+    protected void runTest(
+        AjcTask task, 
+        Class exceptionType, 
         MessageHolderChecker checker) {
-        Throwable thrown = null;
         MessageHandler holder = new MessageHandler();
         task.setMessageHolder(holder);
+        runTest(task, exceptionType, checker, holder);
+    }    
+
+    protected void runTest(
+        AjcTask task, 
+        Class exceptionType, 
+        MessageHolderChecker checker,
+        MessageHandler holder) {     
+        Throwable thrown = null;
         // re-run forked iff tools.jar and expect to pass
         boolean rerunForked 
             = ((null != aspectjtoolsJar)
@@ -370,10 +414,12 @@ public class AjcTaskTest extends TestCase {
                 assertTrue(label + "expected " + exceptionType.getName()
                     + " got " + render(thrown), false);
             }
-            if (null == checker) {
-                checker = MessageHolderChecker.NONE;
+            if (null != holder) {
+                if (null == checker) {
+                    checker = MessageHolderChecker.NONE;
+                }
+                checker.check(holder, label);
             }
-            checker.check(holder, label);
             if (!rerunForked) {
                 break;
             } else {
