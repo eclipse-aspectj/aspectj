@@ -17,6 +17,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
@@ -43,6 +44,10 @@ public class WithincodePointcut extends Pointcut {
 			signature.matches(shadow.getEnclosingCodeSignature(), shadow.getIWorld()));
 	}
 
+	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart encJP) {
+		return FuzzyBoolean.fromBoolean(signature.matches(encJP));
+	}
+	
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.WITHINCODE);
 		signature.write(s);
@@ -57,6 +62,10 @@ public class WithincodePointcut extends Pointcut {
 
 	public void resolveBindings(IScope scope, Bindings bindings) {
 		signature = signature.resolveBindings(scope, bindings);
+	}
+	
+	public void resolveBindingsFromRTTI() {
+		signature = signature.resolveBindingsFromRTTI();
 	}
 
 	public void postRead(ResolvedTypeX enclosingType) {

@@ -66,6 +66,12 @@ public class ThrowsPattern extends PatternNode {
     	return this;
     }
     
+    public ThrowsPattern resolveBindingsFromRTTI() {
+    	required = required.resolveBindingsFromRTTI(false,false);
+    	forbidden = forbidden.resolveBindingsFromRTTI(false,false);
+    	return this;
+    }
+    
 	public boolean matches(TypeX[] tys, World world) {
 		if (this == ANY) return true;
 		
@@ -85,11 +91,37 @@ public class ThrowsPattern extends PatternNode {
 		}
 		return true;
 	}
+	
+	public boolean matches(Class[] onTypes) {
+		if (this == ANY) return true;
+		
+		//System.out.println("matching: " + this + " with " + Arrays.asList(tys));
+		
+		for (int j=0, lenj = required.size(); j < lenj; j++) {
+			if (! matchesAny(required.get(j), onTypes)) {
+				return false;
+			}
+		}
+		for (int j=0, lenj = forbidden.size(); j < lenj; j++) {
+			if (matchesAny(forbidden.get(j), onTypes)) {
+				return false;
+			}
+		}
+		return true;
+		
+	}
 
 	private boolean matchesAny(
 		TypePattern typePattern,
 		ResolvedTypeX[] types) 
 	{
+		for (int i = types.length - 1; i >= 0; i--) {
+			if (typePattern.matchesStatically(types[i])) return true;	
+		}
+		return false;
+	}
+	
+	private boolean matchesAny(TypePattern typePattern, Class[] types) {
 		for (int i = types.length - 1; i >= 0; i--) {
 			if (typePattern.matchesStatically(types[i])) return true;	
 		}

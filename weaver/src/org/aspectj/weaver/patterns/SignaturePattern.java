@@ -16,9 +16,19 @@ package org.aspectj.weaver.patterns;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.Signature;
+import org.aspectj.lang.reflect.AdviceSignature;
+import org.aspectj.lang.reflect.ConstructorSignature;
+import org.aspectj.lang.reflect.FieldSignature;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
@@ -66,6 +76,23 @@ public class SignaturePattern extends PatternNode {
 		}
 		
     	return this;
+    }
+    
+    public SignaturePattern resolveBindingsFromRTTI() {
+		if (returnType != null) {
+			returnType = returnType.resolveBindingsFromRTTI(false, false);
+		} 
+		if (declaringType != null) {
+			declaringType = declaringType.resolveBindingsFromRTTI(false, false);
+		}
+		if (parameterTypes != null) {
+			parameterTypes = parameterTypes.resolveBindingsFromRTTI(false, false);
+		}
+		if (throwsPattern != null) {
+			throwsPattern = throwsPattern.resolveBindingsFromRTTI();
+		}
+		
+    	return this;    	
     }
     
     
@@ -134,6 +161,57 @@ public class SignaturePattern extends PatternNode {
 		return false;
 	}
 
+	// for dynamic join point matching
+	public boolean matches(JoinPoint.StaticPart jpsp) {
+		Signature sig = jpsp.getSignature();
+	    if (kind == Member.ADVICE && !(sig instanceof AdviceSignature)) return false;
+	    if (kind == Member.CONSTRUCTOR && !(sig instanceof ConstructorSignature)) return false;
+	    if (kind == Member.FIELD && !(sig instanceof FieldSignature)) return false;
+	    if (kind == Member.METHOD && !(sig instanceof MethodSignature)) return false;
+	    if (kind == Member.STATIC_INITIALIZATION && !(jpsp.getKind().equals(JoinPoint.STATICINITIALIZATION))) return false;
+	    if (kind == Member.POINTCUT) return false;
+			
+	    if (kind == Member.ADVICE) return true;
+
+	    if (!modifiers.matches(sig.getModifiers())) return false;
+		
+		if (kind == Member.STATIC_INITIALIZATION) {
+			//System.err.println("match static init: " + sig.getDeclaringType() + " with " + this);
+			return declaringType.matchesStatically(sig.getDeclaringType());
+		} else if (kind == Member.FIELD) {
+			Class returnTypeClass = ((FieldSignature)sig).getFieldType();
+			if (!returnType.matchesStatically(returnTypeClass)) return false;
+			if (!name.matches(sig.getName())) return false;
+			boolean ret = declaringTypeMatch(sig);
+			//System.out.println("   ret: " + ret);
+			return ret;
+		} else if (kind == Member.METHOD) {
+			MethodSignature msig = ((MethodSignature)sig);
+			Class returnTypeClass = msig.getReturnType();
+			Class[] params = msig.getParameterTypes();
+			Class[] exceptionTypes = msig.getExceptionTypes();
+			if (!returnType.matchesStatically(returnTypeClass)) return false;
+			if (!name.matches(sig.getName())) return false;
+			if (!parameterTypes.matches(params, TypePattern.STATIC).alwaysTrue()) {
+				return false;
+			}
+			if (!throwsPattern.matches(exceptionTypes)) return false;
+			return declaringTypeMatch(sig);
+		} else if (kind == Member.CONSTRUCTOR) {
+			ConstructorSignature csig = (ConstructorSignature)sig;
+			Class[] params = csig.getParameterTypes();
+			Class[] exceptionTypes = csig.getExceptionTypes();
+			if (!parameterTypes.matches(params, TypePattern.STATIC).alwaysTrue()) {
+				return false;
+			}
+			if (!throwsPattern.matches(exceptionTypes)) return false;
+			return declaringType.matchesStatically(sig.getDeclaringType());
+			//return declaringTypeMatch(member.getDeclaringType(), member, world);			
+		}
+			    
+		return false;
+	}
+	
 	private boolean declaringTypeMatch(TypeX onTypeUnresolved, Member member, World world) {
 		ResolvedTypeX onType = onTypeUnresolved.resolve(world);
 		
@@ -149,7 +227,50 @@ public class SignaturePattern extends PatternNode {
 		return false;
 	}
 
-
+	private boolean declaringTypeMatch(Signature sig) {
+		Class onType = sig.getDeclaringType();
+		if (declaringType.matchesStatically(onType)) return true;
+		
+		Collection declaringTypes = getDeclaringTypes(sig);
+		
+		for (Iterator it = declaringTypes.iterator(); it.hasNext(); ) {
+			Class pClass = (Class) it.next();
+			if (declaringType.matchesStatically(pClass)) return true;
+		}
+		
+		return false;
+	}
+	
+	private Collection getDeclaringTypes(Signature sig) {
+		List l = new ArrayList();
+		Class onType = sig.getDeclaringType();
+		String memberName = sig.getName();
+		if (sig instanceof FieldSignature) {
+			Class fieldType = ((FieldSignature)sig).getFieldType();
+			Class superType = onType;
+			while(superType != null) {
+				try {
+					Field f =  (superType.getDeclaredField(memberName));
+					if (f.getType() == fieldType) {
+						l.add(superType);
+					}
+				} catch (NoSuchFieldException nsf) {}
+				superType = superType.getSuperclass();
+			}
+		} else if (sig instanceof MethodSignature) {
+			Class[] paramTypes = ((MethodSignature)sig).getParameterTypes();
+			Class superType = onType;
+			while(superType != null) {
+				try {
+					Method m =  (superType.getDeclaredMethod(memberName,paramTypes));
+					l.add(superType);
+				} catch (NoSuchMethodException nsm) {}
+				superType = superType.getSuperclass();
+			}
+		}
+		return l;
+	}
+	
     public NamePattern getName() { return name; }
     public TypePattern getDeclaringType() { return declaringType; }
     

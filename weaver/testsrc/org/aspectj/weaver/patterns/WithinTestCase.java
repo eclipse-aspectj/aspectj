@@ -19,6 +19,8 @@ import junit.framework.TestCase;
 
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.bcel.BcelWorld;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.runtime.reflect.Factory;
 import org.aspectj.util.FuzzyBoolean;
 
 public class WithinTestCase extends TestCase {		
@@ -67,6 +69,29 @@ public class WithinTestCase extends TestCase {
 
 	}
 
+	
+	public void testMatchJP() {
+		Factory f = new Factory("WithinTestCase.java",WithinTestCase.class);
+		
+		JoinPoint.StaticPart inString = f.makeSJP(JoinPoint.CONSTRUCTOR_EXECUTION,f.makeConstructorSig(0,String.class,new Class[] {String.class},new String[]{"s"},new Class[0]),1);
+		JoinPoint.StaticPart inObject = f.makeSJP(JoinPoint.CONSTRUCTOR_EXECUTION,f.makeConstructorSig(0,Object.class,new Class[] {},new String[]{},new Class[0]),1);
+
+		Pointcut withinString = new PatternParser("within(String)").parsePointcut().resolve();
+		Pointcut withinObject = new PatternParser("within(Object)").parsePointcut().resolve();
+		Pointcut withinObjectPlus = new PatternParser("within(Object+)").parsePointcut().resolve();
+		
+		checkMatches(withinString,inString,FuzzyBoolean.YES);
+		checkMatches(withinString,inObject,FuzzyBoolean.NO);
+		checkMatches(withinObject,inString,FuzzyBoolean.NO);
+		checkMatches(withinObject,inObject, FuzzyBoolean.YES);
+		checkMatches(withinObjectPlus,inString,FuzzyBoolean.YES);
+		checkMatches(withinObjectPlus,inObject,FuzzyBoolean.YES);
+	}
+	
+	private void checkMatches(Pointcut p, JoinPoint.StaticPart jpsp, FuzzyBoolean expected) {
+		assertEquals(expected,p.match(null,jpsp));
+	}
+	
 	public Pointcut makePointcut(String pattern) {
 		Pointcut pointcut0 = Pointcut.fromString(pattern);
 		

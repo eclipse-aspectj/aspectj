@@ -15,6 +15,10 @@ package org.aspectj.weaver.patterns;
 
 import java.io.*;
 
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.Signature;
+import org.aspectj.runtime.reflect.Factory;
+import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.bcel.*;
 
 import junit.framework.TestCase;
@@ -65,6 +69,31 @@ public class AndOrNotTestCase extends TestCase {
 		checkEquals("!!this(Foo)", new NotPointcut(new NotPointcut(foo)));
 		
 	}
+	
+	public void testJoinPointMatch() {
+		Pointcut foo = makePointcut("this(org.aspectj.weaver.patterns.AndOrNotTestCase.Foo)").resolve();
+		Pointcut bar = makePointcut("this(org.aspectj.weaver.patterns.AndOrNotTestCase.Bar)").resolve();
+		Pointcut c   = makePointcut("this(org.aspectj.weaver.patterns.AndOrNotTestCase.C)").resolve();
+		
+		Factory f = new Factory("AndOrNotTestCase.java",AndOrNotTestCase.class);
+		
+		Signature methodSig = f.makeMethodSig("void aMethod()");
+		JoinPoint.StaticPart jpsp = f.makeSJP(JoinPoint.METHOD_EXECUTION,methodSig,1);
+		JoinPoint jp = Factory.makeJP(jpsp,new Foo(),new Foo());
+		
+		checkMatches(new AndPointcut(foo,bar),jp,null,FuzzyBoolean.NO);
+		checkMatches(new AndPointcut(foo,foo),jp,null,FuzzyBoolean.YES);
+		checkMatches(new AndPointcut(bar,foo),jp,null,FuzzyBoolean.NO);
+		checkMatches(new AndPointcut(bar,c),jp,null,FuzzyBoolean.NO);
+		
+		checkMatches(new OrPointcut(foo,bar),jp,null,FuzzyBoolean.YES);
+		checkMatches(new OrPointcut(foo,foo),jp,null,FuzzyBoolean.YES);
+		checkMatches(new OrPointcut(bar,foo),jp,null,FuzzyBoolean.YES);
+		checkMatches(new OrPointcut(bar,c),jp,null,FuzzyBoolean.NO);
+		
+		checkMatches(new NotPointcut(foo),jp,null,FuzzyBoolean.NO);
+		checkMatches(new NotPointcut(bar),jp,null,FuzzyBoolean.YES);
+	}
 
 	private Pointcut makePointcut(String pattern) {
 		return new PatternParser(pattern).parsePointcut();
@@ -75,6 +104,9 @@ public class AndOrNotTestCase extends TestCase {
 		checkSerialization(pattern);
 	}
 
+	private void checkMatches(Pointcut p, JoinPoint jp, JoinPoint.StaticPart jpsp, FuzzyBoolean expected) {
+		assertEquals(expected,p.match(jp,jpsp));
+	}
 	
 //	private void checkMatch(Pointcut p, Signature[] matches, boolean shouldMatch) {
 //		for (int i=0; i<matches.length; i++) {
@@ -115,5 +147,9 @@ public class AndOrNotTestCase extends TestCase {
 		
 		assertEquals("write/read", p, newP);	
 	}
+	
+	private static class Foo{};
+	private static class Bar{};
+	private static class C{};
 	
 }

@@ -15,6 +15,9 @@ package org.aspectj.weaver.patterns;
 
 import java.io.*;
 
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.runtime.reflect.Factory;
+import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.bcel.*;
 
 import junit.framework.TestCase;
@@ -45,6 +48,46 @@ public class ThisOrTargetTestCase extends TestCase {
 		
 
 		
+	}
+	
+	public void testMatchJP() {
+		Factory f = new Factory("ThisOrTargetTestCase.java",ThisOrTargetTestCase.class);
+		
+		Pointcut thisEx = new PatternParser("this(Exception)").parsePointcut().resolve();
+		Pointcut thisIOEx = new PatternParser("this(java.io.IOException)").parsePointcut().resolve();
+
+		Pointcut targetEx = new PatternParser("target(Exception)").parsePointcut().resolve();
+		Pointcut targetIOEx = new PatternParser("target(java.io.IOException)").parsePointcut().resolve();
+
+		JoinPoint.StaticPart jpsp1 = f.makeSJP(JoinPoint.EXCEPTION_HANDLER,f.makeCatchClauseSig(HandlerTestCase.class,Exception.class,"ex"),1);
+		JoinPoint thisExJP = Factory.makeJP(jpsp1,new Exception(),this);
+		JoinPoint thisIOExJP = Factory.makeJP(jpsp1,new IOException(),this);
+		JoinPoint targetExJP = Factory.makeJP(jpsp1,this,new Exception());
+		JoinPoint targetIOExJP = Factory.makeJP(jpsp1,this,new IOException());
+		
+		checkMatches(thisEx,thisExJP,null,FuzzyBoolean.YES);
+		checkMatches(thisIOEx,thisExJP,null,FuzzyBoolean.NO);
+		checkMatches(targetEx,thisExJP,null,FuzzyBoolean.NO);
+		checkMatches(targetIOEx,thisExJP,null,FuzzyBoolean.NO);
+
+		checkMatches(thisEx,thisIOExJP,null,FuzzyBoolean.YES);
+		checkMatches(thisIOEx,thisIOExJP,null,FuzzyBoolean.YES);
+		checkMatches(targetEx,thisIOExJP,null,FuzzyBoolean.NO);
+		checkMatches(targetIOEx,thisIOExJP,null,FuzzyBoolean.NO);
+
+		checkMatches(thisEx,targetExJP,null,FuzzyBoolean.NO);
+		checkMatches(thisIOEx,targetExJP,null,FuzzyBoolean.NO);
+		checkMatches(targetEx,targetExJP,null,FuzzyBoolean.YES);
+		checkMatches(targetIOEx,targetExJP,null,FuzzyBoolean.NO);
+
+		checkMatches(thisEx,targetIOExJP,null,FuzzyBoolean.NO);
+		checkMatches(thisIOEx,targetIOExJP,null,FuzzyBoolean.NO);
+		checkMatches(targetEx,targetIOExJP,null,FuzzyBoolean.YES);
+		checkMatches(targetIOEx,targetIOExJP,null,FuzzyBoolean.YES);
+	}
+	
+	private void checkMatches(Pointcut p, JoinPoint jp, JoinPoint.StaticPart jpsp, FuzzyBoolean expected) {
+		assertEquals(expected,p.match(jp,jpsp));
 	}
 
 //	private Pointcut makePointcut(String pattern) {

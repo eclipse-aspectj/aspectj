@@ -18,6 +18,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.BetaException;
 import org.aspectj.weaver.ISourceContext;
@@ -34,7 +37,7 @@ import org.aspectj.weaver.ast.Test;
  * @author Erik Hilsdale
  * @author Jim Hugunin
  */
-public class ArgsPointcut extends NameBindingPointcut {
+public class ArgsPointcut extends NameBindingPointcut { 
 	TypePatternList arguments;
 	
 	public ArgsPointcut(TypePatternList arguments) {
@@ -49,6 +52,10 @@ public class ArgsPointcut extends NameBindingPointcut {
 		FuzzyBoolean ret =
 			arguments.matches(shadow.getIWorld().resolve(shadow.getArgTypes()), TypePattern.DYNAMIC);
 		return ret;
+	}
+	
+	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart jpsp) {
+		return arguments.matches(jp.getArgs(),TypePattern.DYNAMIC);
 	}
 
 	public void write(DataOutputStream s) throws IOException {
@@ -80,6 +87,13 @@ public class ArgsPointcut extends NameBindingPointcut {
 			scope.message(IMessage.ERROR, this,
 					"uses more than one .. in args (compiler limitation)");
 		}
+	}
+	
+	public void resolveBindingsFromRTTI() {
+		arguments.resolveBindingsFromRTTI(true, true);
+		if (arguments.ellipsisCount > 1) {
+			throw new UnsupportedOperationException("uses more than one .. in args (compiler limitation)");
+		}		
 	}
 	
 	public void postRead(ResolvedTypeX enclosingType) {
@@ -118,6 +132,17 @@ public class ArgsPointcut extends NameBindingPointcut {
 				if (type.matchesInstanceof(shadow.getIWorld().resolve(argType)).alwaysTrue()) {
 					continue;
 				}
+			} else {
+			  BindingTypePattern btp = (BindingTypePattern)type;
+			  // Check if we have already bound something to this formal
+			  if (state.get(btp.getFormalIndex())!=null) {
+			  	ISourceLocation isl = getSourceLocation();
+				Message errorMessage = new Message(
+                    "Ambiguous binding of type "+type.getExactType().toString()+
+                    " using args(..) at this line.  Use one args(..) per matched join point,"+"" +                    " see secondary source location for location of extraneous args(..)",
+					shadow.getSourceLocation(),true,new ISourceLocation[]{getSourceLocation()});
+				shadow.getIWorld().getMessageHandler().handleMessage(errorMessage);
+			  }
 			}
 			ret = Test.makeAnd(ret,
 				exposeStateForVar(shadow.getArgVar(i), type, state,shadow.getIWorld()));

@@ -47,10 +47,22 @@ public class NotTypePattern extends TypePattern {
 		return !pattern.matchesExactly(type);
 	}
 	
-	public boolean matchesStatically(ResolvedTypeX type) {
+	public boolean matchesStatically(Class type) {
 		return !pattern.matchesStatically(type);
 	}
 
+	public FuzzyBoolean matchesInstanceof(Class type) {
+		return pattern.matchesInstanceof(type).not();
+	}
+
+	protected boolean matchesExactly(Class type) {
+		return !pattern.matchesExactly(type);
+	}
+	
+	public boolean matchesStatically(ResolvedTypeX type) {
+		return !pattern.matchesStatically(type);
+	}
+	
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(TypePattern.NOT);
 		pattern.write(s);
@@ -70,6 +82,12 @@ public class NotTypePattern extends TypePattern {
 	{
 		if (requireExactType) return notExactType(scope);
 		pattern = pattern.resolveBindings(scope, bindings, false, false);
+		return this;
+	}
+	
+	public TypePattern resolveBindingsFromRTTI(boolean allowBinding, boolean requireExactType) {
+		if (requireExactType) return TypePattern.NO;
+		pattern = pattern.resolveBindingsFromRTTI(allowBinding,requireExactType);
 		return this;
 	}
 

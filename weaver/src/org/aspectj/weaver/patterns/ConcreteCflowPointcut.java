@@ -58,6 +58,9 @@ public class ConcreteCflowPointcut extends Pointcut {
 		throw new RuntimeException("unimplemented");
 	}
 	
+	public void resolveBindingsFromRTTI() {
+		throw new RuntimeException("unimplemented");
+	}
 	
 	public boolean equals(Object other) {
 		if (!(other instanceof ConcreteCflowPointcut)) return false;

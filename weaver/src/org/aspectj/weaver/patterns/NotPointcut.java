@@ -17,6 +17,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
@@ -43,6 +44,14 @@ public class NotPointcut extends Pointcut {
 
 	public FuzzyBoolean match(Shadow shadow) {
 		return body.match(shadow).not();
+	}
+
+	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart encJP) {
+		return body.match(jp,encJP).not();
+	}
+
+	public FuzzyBoolean match(JoinPoint.StaticPart jpsp) {
+		return body.match(jpsp).not();
 	}
 	
 	public String toString() {
@@ -71,6 +80,10 @@ public class NotPointcut extends Pointcut {
 		//newBindings.checkEmpty(scope, "negation does not allow binding");
 		//bindings.checkEquals(old, scope);
 		
+	}
+	
+	public void resolveBindingsFromRTTI() {
+		body.resolveBindingsFromRTTI();
 	}
 	
 

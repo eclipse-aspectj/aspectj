@@ -17,6 +17,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
@@ -51,6 +52,18 @@ public class HandlerPointcut extends Pointcut {
 				shadow.getSignature().getParameterTypes()[0].resolve(shadow.getIWorld()), 
 				TypePattern.STATIC);
 	}
+	
+ 	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart jpsp) {
+		if (!jp.getKind().equals(JoinPoint.EXCEPTION_HANDLER)) return FuzzyBoolean.NO;
+		if (jp.getArgs().length > 0) {
+			Object caughtException = jp.getArgs()[0];
+			return exceptionType.matches(caughtException,TypePattern.STATIC);
+		} else {
+			return FuzzyBoolean.NO;
+		}
+	}
+	
+
 	
 	public boolean equals(Object other) {
 		if (!(other instanceof HandlerPointcut)) return false;
@@ -92,6 +105,11 @@ public class HandlerPointcut extends Pointcut {
 		exceptionType = exceptionType.resolveBindings(scope, bindings, false, false);
 		//XXX add error if exact binding and not an exception
 	}
+	
+	public void resolveBindingsFromRTTI() {
+		exceptionType = exceptionType.resolveBindingsFromRTTI(false,false);
+	}
+	
 	public Test findResidue(Shadow shadow, ExposedState state) {
 		return match(shadow).alwaysTrue() ? Literal.TRUE : Literal.FALSE;
 	}
