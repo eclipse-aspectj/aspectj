@@ -62,7 +62,7 @@
       <!-- default value for xml-html copying (copy all graphics) -->
       <property name="xml-html-copy" value="*.gif,*.png" />
       <property name="binary.pattern" 
-               value="**/*.gif,**/*.png,**/*,**/*.doc,**/*.pdf"/>
+               value="**/*.gif,**/*.png,**/*.doc,**/*.pdf"/>
       <uptodate property="local.dist.uptodate"
               targetfile="${docs.dist.dir}/doc/faq.html"> <!-- use faq as tag file -->
          <srcfiles dir="${docs.src.dir}" includes="${docs.src.pattern}"/>  
