@@ -17,8 +17,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AnnotatedElement;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
@@ -144,12 +147,27 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.Pointcut#findResidue(org.aspectj.weaver.Shadow, org.aspectj.weaver.patterns.ExposedState)
 	 */
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
+
+		if (shadow.getKind()!=Shadow.MethodCall &&
+			shadow.getKind()!=Shadow.MethodExecution) {
+			IMessage lim = MessageUtil.error("Binding not supported in @pcds (1.5.0 M2 limitation) for "+shadow.getKind()+" join points, see: " +
+						getSourceLocation());
+			shadow.getIWorld().getMessageHandler().handleMessage(lim);
+			throw new BCException("Binding not supported in @pcds (1.5.0 M2 limitation) for "+shadow.getKind()+" join points, see: " +
+			getSourceLocation());
+		}
+
 		
 		if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
 			BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern)annotationTypePattern;
 			TypeX annotationType = btp.annotationType;
 			Var var = shadow.getKindedAnnotationVar(annotationType);
-			if (var == null) return Literal.FALSE;
+			
+			// This should not happen, we shouldn't have gotten this var 
+			// if we weren't going to find the annotation
+			if (var == null) throw new BCException("Impossible! annotation=["+annotationType+
+					                               "]  shadow=["+shadow+" at "+shadow.getSourceLocation()+
+												   "]    pointcut is at ["+getSourceLocation()+"]");//return Literal.FALSE;
 			// Check if we have already bound something to this formal
 			if ((state.get(btp.getFormalIndex())!=null) &&(lastMatchedShadowId == shadow.shadowId)) {
 //				ISourceLocation pcdSloc = getSourceLocation(); 
