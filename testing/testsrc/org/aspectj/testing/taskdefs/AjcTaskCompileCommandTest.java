@@ -127,10 +127,11 @@ public class AjcTaskCompileCommandTest extends TestCase {
         MessageHandler handler = new MessageHandler();
         String[] parms = (String[]) args.toArray(new String[0]);
         boolean result = command.runCommand(parms, handler);
-        final boolean fail = (result  == (0 == expectedErrors));
-        if (fail) {
-            String m = "expected " + (fail ? "fail" : "pass");
-            assertTrue(m + ": " + args, false);
+        boolean expectPass = (0 == expectedErrors);
+        final boolean pass = (result == expectPass);
+        if (!pass) {
+            String m = expectPass ? "pass" : "fail";
+            assertTrue("expected " + m + ": " + args, false);
         }
     }
 
