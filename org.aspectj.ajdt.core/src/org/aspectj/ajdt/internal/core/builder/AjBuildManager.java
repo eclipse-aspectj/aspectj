@@ -50,7 +50,7 @@ public class AjBuildManager {
 	public AjBuildConfig buildConfig;
     
 	private BcelWeaver bcelWeaver;
-	private BcelWorld bcelWorld;
+	public BcelWorld bcelWorld;
 	
     /** temp handler for callbacks */
     private IMessageHandler currentHandler; // XXX wrong lifecyle, used for callbacks
@@ -271,6 +271,12 @@ public class AjBuildManager {
 		if (buildConfig.getLintSpecFile() != null) {
 			bcelWorld.getLint().setFromProperties(buildConfig.getLintSpecFile());
 		}
+		
+		//??? incremental issues
+		for (Iterator i = buildConfig.getInJars().iterator(); i.hasNext(); ) {
+			File inJar = (File)i.next();
+			bcelWeaver.addJarFile(inJar, buildConfig.getOutputDir());
+		}
 	}
 	
 	//??? do this well
@@ -319,10 +325,6 @@ public class AjBuildManager {
 	
 	void addAspectClassFilesToWeaver() throws IOException {
 		//System.out.println("added or changed: " + classFileCache.getAddedOrChanged());
-		for (Iterator i = buildConfig.getInJars().iterator(); i.hasNext(); ) {
-			File inJar = (File)i.next();
-			bcelWeaver.addJarFile(inJar, buildConfig.getOutputDir());
-		}
 		
 		for (Iterator i = classFileCache.getAddedOrChanged().iterator(); i.hasNext(); ) {
 			UnwovenClassFile classFile = (UnwovenClassFile) i.next();

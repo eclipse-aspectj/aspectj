@@ -13,21 +13,15 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
-import java.io.*;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 
-import org.apache.bcel.classfile.AccessFlags;
 import org.aspectj.ajdt.internal.compiler.lookup.*;
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
 import org.aspectj.weaver.*;
-import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.patterns.*;
 import org.eclipse.jdt.internal.compiler.*;
 import org.eclipse.jdt.internal.compiler.ast.*;
 import org.eclipse.jdt.internal.compiler.codegen.*;
-import org.eclipse.jdt.internal.compiler.codegen.CodeStream;
 import org.eclipse.jdt.internal.compiler.lookup.*;
-import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 
 
 // making all aspects member types avoids a nasty hierarchy pain
@@ -42,7 +36,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 	
 	public boolean isPrivileged;
 	
-	public EclipseObjectType typeX;
+	public EclipseSourceType typeX;
 	public EclipseWorld world;  //??? should use this consistently
 
 
@@ -630,7 +624,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 		if (ignoreFurtherInvestigation) return;
 		
 		world = EclipseWorld.fromScopeLookupEnvironment(scope);
-		typeX = (EclipseObjectType)world.fromEclipse(binding);
+		typeX = (EclipseSourceType)world.fromEclipse(binding);
 		
 		if (isPrivileged) {
 			binding.privilegedHandler = new PrivilegedHandler(this);

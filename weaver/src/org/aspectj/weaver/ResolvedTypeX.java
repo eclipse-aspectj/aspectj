@@ -1065,7 +1065,7 @@ public abstract class ResolvedTypeX extends TypeX {
 			if (inherited.isAbstract()) {
 				if (!this.isAbstract()) {
 					getWorld().showMessage(IMessage.ERROR,
-						"inherited abstract pointcut " + inherited.getSignature() + 
+						"inherited abstract " + inherited + 
 						" is not made concrete in " + this.getName(),
 						inherited.getSourceLocation(), this.getSourceLocation());
 				}
@@ -1080,6 +1080,7 @@ public abstract class ResolvedTypeX extends TypeX {
 		for (Iterator i = added.iterator(); i.hasNext();) {
 			ResolvedPointcutDefinition toAdd =
 				(ResolvedPointcutDefinition) i.next();
+				//System.err.println("adding: " + toAdd);
 			for (Iterator j = acc.iterator(); j.hasNext();) {
 				ResolvedPointcutDefinition existing =
 					(ResolvedPointcutDefinition) j.next();

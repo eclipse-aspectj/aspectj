@@ -27,13 +27,23 @@ import org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.util.CharOperation;
 
+/**
+ * This holds unique ResolvedTypeXs for each type known to the compiler
+ * or looked up on the class path.  For types which are compiled from 
+ * source code, it will hold an EclipseObjectType.  Types that 
+ * come from bytecode will be delegated to buildManager.bcelWorld.
+ * 
+ * @author Jim Hugunin
+ */
 public class EclipseWorld extends World {
 	public static boolean DEBUG = false;
 	
 	public AjBuildManager buildManager;
 	private LookupEnvironment lookupEnvironment;
 	
-	private Map addedTypeBindings = new HashMap();
+	private Map/*TypeX, TypeBinding*/ typexToBinding = new HashMap();
+	//XXX currently unused
+	private Map/*TypeBinding, ResolvedTypeX*/ bindingToResolvedTypeX = new HashMap();
 	
 	public static EclipseWorld forLookupEnvironment(LookupEnvironment env) {
 		AjLookupEnvironment aenv = (AjLookupEnvironment)env;
@@ -55,7 +65,6 @@ public class EclipseWorld extends World {
     	Pointcut pointcut,
         Member signature)
     {
-    	//System.err.println("concrete advice: " + signature + " context " + sourceContext);
         return new EclipseAdvice(attribute, pointcut, signature);
     }
 
@@ -63,26 +72,40 @@ public class EclipseWorld extends World {
 		ResolvedTypeMunger munger, ResolvedTypeX aspectType)
 	{
 		return null;
-		//throw new RuntimeException("unimplemented");
 	}
 
-	protected ResolvedTypeX resolveObjectType(TypeX ty) {
-		String n = ty.getName();
-		//n = n.replace('$', '.');
-		char[][] name = CharOperation.splitOn('.', n.toCharArray()); //ty.getName().toCharArray());
-		ReferenceBinding ret = lookupEnvironment.getType(name);
-		//System.out.println("name: " + ty.getName() + ", " + ret);
-		if (ret == null || ret instanceof ProblemReferenceBinding) return ResolvedTypeX.MISSING;
-		return new EclipseObjectType(ty.getSignature(), this, ret);
+	protected ResolvedTypeX resolveObjectType(TypeX typeX) {
+		TypeBinding binding = makeTypeBinding(typeX);
+		
+//		System.err.println("resolvedObjectType: " + typeX + 
+//						" found " + 
+//						(binding == null ? "null" : binding.getClass().getName()));
+		
+		if (!(binding instanceof SourceTypeBinding)) {
+			//System.err.println("missing: " + binding);
+			return ResolvedTypeX.MISSING;
+		}
+		
+		if (binding instanceof BinaryTypeBinding) {
+			//System.err.println("binary: " + typeX);
+			return new EclipseBinaryType(
+					buildManager.bcelWorld.resolve(typeX), 
+					this,
+					(BinaryTypeBinding)binding);
+		}
+		
+		return new EclipseSourceType(typeX.getSignature(), this, 
+							(SourceTypeBinding)binding);
 	}
+			
 
 
 	public ResolvedTypeX fromEclipse(ReferenceBinding binding) {
 		if (binding == null) return ResolvedTypeX.MISSING;
 		//??? this seems terribly inefficient
-		//System.out.println("resolving: " + binding + ", name = " + getName(binding));
+		//System.err.println("resolving: " + binding.getClass() + ", name = " + getName(binding));
 		ResolvedTypeX ret = resolve(fromBinding(binding));
-		//System.out.println("      got: " + ret);
+		//System.err.println("      got: " + ret);
 		return ret;
 	}	
 	
@@ -113,16 +136,13 @@ public class EclipseWorld extends World {
 
 	//??? going back and forth between strings and bindings is a waste of cycles
 	public static TypeX fromBinding(TypeBinding binding) {
-//		if (binding instanceof ReferenceBinding) {
-//			return fromEclipse( (ReferenceBinding)binding);
-//		} else {
-
 		if (binding instanceof HelperInterfaceBinding) {
-			return ((HelperInterfaceBinding)binding).getTypeX();
+			return ((HelperInterfaceBinding) binding).getTypeX();
 		}
-	if (binding.qualifiedSourceName() == null) return ResolvedTypeX.MISSING;
-			return TypeX.forName(getName(binding));
-//		}
+		if (binding.qualifiedSourceName() == null) {
+			return ResolvedTypeX.MISSING;
+		}
+		return TypeX.forName(getName(binding));
 	}
 
 	public static TypeX[] fromBindings(TypeBinding[] bindings) {
@@ -165,10 +185,15 @@ public class EclipseWorld extends World {
 	}
 	
 	public TypeBinding makeTypeBinding(TypeX typeX) {
-		//System.out.println("in: " + typeX.getSignature() + " have: " + addedTypeBindings);
-		TypeBinding ret = (TypeBinding)addedTypeBindings.get(typeX);
-		if (ret != null) return ret;
-		
+		TypeBinding ret = (TypeBinding)typexToBinding.get(typeX);
+		if (ret == null) {
+			ret = makeTypeBinding1(typeX);
+			typexToBinding.put(typeX, ret);
+		}
+		return ret;
+	}
+	
+	private TypeBinding makeTypeBinding1(TypeX typeX) {
 		if (typeX.isPrimitive()) {
 			if (typeX == ResolvedTypeX.BOOLEAN) return BaseTypes.BooleanBinding;
 			if (typeX == ResolvedTypeX.BYTE) return BaseTypes.ByteBinding;
@@ -188,14 +213,13 @@ public class EclipseWorld extends World {
 			}
 			return lookupEnvironment.createArrayType(makeTypeBinding(typeX), dim);
 		} else {
-			ResolvedTypeX rt = typeX.resolve(this);
-			//System.out.println("typex: " + typeX + ", " + rt);
-			if (rt == ResolvedTypeX.MISSING) {
-				throw new RuntimeException("shouldn't be missing: " + typeX);
-			}
-			return ((EclipseObjectType)rt).getBinding();
+			String n = typeX.getName();
+			char[][] name = CharOperation.splitOn('.', n.toCharArray());
+			return lookupEnvironment.getType(name);
 		}
 	}
+	
+	
 	
 	public TypeBinding[] makeTypeBindings(TypeX[] types) {
 		int len = types.length;
@@ -207,7 +231,7 @@ public class EclipseWorld extends World {
 		return ret;
 	}
 	
-	
+	// just like the code above except it returns an array of ReferenceBindings
 	private ReferenceBinding[] makeReferenceBindings(TypeX[] types) {
 		int len = types.length;
 		ReferenceBinding[] ret = new ReferenceBinding[len];
@@ -256,22 +280,15 @@ public class EclipseWorld extends World {
 
 
 	public void addTypeBinding(TypeBinding binding) {
-		addedTypeBindings.put(fromBinding(binding), binding);
+		typexToBinding.put(fromBinding(binding), binding);
 	}
 
-	public Shadow makeShadow(
-		AstNode location,
-		ReferenceContext context)
-	{
+
+	public Shadow makeShadow(AstNode location, ReferenceContext context) {
 		return EclipseShadow.makeShadow(this, location, context);
 	}
 	
-	public Shadow makeShadow(
-		ReferenceContext context)
-	{
-		return EclipseShadow.makeShadow(this, (AstNode)context, context);
+	public Shadow makeShadow(ReferenceContext context) {
+		return EclipseShadow.makeShadow(this, (AstNode) context, context);
 	}
-
-
-
 }
