@@ -327,7 +327,10 @@ public class AjcTask extends MatchingTask {
     
     /** non-null if copying all source root files but the filtered ones */
     private String sourceRootCopyFilter;
-    
+
+    /** non-null if copying all inpath dir files but the filtered ones */
+    private String inpathDirCopyFilter;
+
     /** directory sink for classes */
     private File destDir;
     
@@ -394,6 +397,7 @@ public class AjcTask extends MatchingTask {
         messageHolder = null;
         outjar = null;
         sourceRootCopyFilter = null;
+        inpathDirCopyFilter = null;
         sourceRoots = null;
         srcdir = null;
         tmpOutjar = null;
@@ -679,6 +683,28 @@ public class AjcTask extends MatchingTask {
      */
     public void setSourceRootCopyFilter(String filter){
         this.sourceRootCopyFilter = filter;
+    }
+    /**
+     * Option to copy all files from
+     * all inpath directories
+     * except the files specified here.
+     * If this is specified and inpath directories are specified,
+     * then this will copy all files except 
+     * those specified in the filter pattern.
+     * Requires inpath.
+     * If the input does not contain "**\/*.class", then
+     * this prepends it, to avoid overwriting woven classes
+     * with unwoven input.
+     * @param filter a String acceptable as an excludes
+     *        filter for an Ant Zip fileset.
+     */
+    public void setInpathDirCopyFilter(String filter){
+        if (null != filter) {
+            if (-1 == filter.indexOf("**/*.class")) {
+                filter = "**/*.class," + filter;
+            }
+        }
+        this.inpathDirCopyFilter = filter;
     }
 
     public void setX(String input) {  // ajc-only eajc-also docDone
@@ -1004,7 +1030,8 @@ public class AjcTask extends MatchingTask {
         // when copying resources, use temp jar for class output
         // then copy temp jar contents and resources to output jar
         if ((null != outjar) && !outjarFixedup) {
-            if (copyInjars || copyInpath || (null != sourceRootCopyFilter)) {
+            if (copyInjars || copyInpath || (null != sourceRootCopyFilter)
+                    || (null != inpathDirCopyFilter)) {
                 String path = outjar.getAbsolutePath();
                 int len = FileUtil.zipSuffixLength(path);
                 if (len < 1) {
@@ -1103,10 +1130,16 @@ public class AjcTask extends MatchingTask {
         if (fork && isInIncrementalMode() && !isInIncrementalFileMode()) {
             sb.append("can fork incremental only using tag file.\n");
         }
-        if ((null != sourceRootCopyFilter) && (null == outjar) 
-        	&& (DEFAULT_DESTDIR == destDir)) {        	
-            final String REQ = " requires dest dir or output jar.\n";            sb.append("sourceRootCopyFilter");
-            sb.append(REQ);
+        if (((null != inpathDirCopyFilter) || (null != sourceRootCopyFilter)) 
+                && (null == outjar) && (DEFAULT_DESTDIR == destDir)) {        	
+            final String REQ = " requires dest dir or output jar.\n";
+            if (null == inpathDirCopyFilter) {
+                sb.append("sourceRootCopyFilter");
+            } else if (null == sourceRootCopyFilter) {
+                sb.append("inpathDirCopyFilter");
+            } else {
+                sb.append("sourceRootCopyFilter and inpathDirCopyFilter");
+            }            sb.append(REQ);
         }
         if (0 < sb.length()) {
             throw new BuildException(sb.toString());
@@ -1475,7 +1508,8 @@ public class AjcTask extends MatchingTask {
      * (if XCopyInjars is enabled).
      */
     private void completeDestdir() {
-        if (!copyInjars && (null == sourceRootCopyFilter)) {
+        if (!copyInjars && (null == sourceRootCopyFilter)
+                && (null == inpathDirCopyFilter)) {
             return;
         } else if ((destDir == DEFAULT_DESTDIR)
                     || !destDir.canWrite()) {
@@ -1521,6 +1555,31 @@ public class AjcTask extends MatchingTask {
                 copy.execute();
             }
         }        
+        if ((null != inpathDirCopyFilter) && (null != inpath)) {
+            String[] paths = inpath.list();
+            if (!LangUtil.isEmpty(paths)) {
+                Copy copy = new Copy();
+                copy.setProject(project);
+                copy.setTodir(destDir);
+                boolean gotDir = false;
+                for (int i = 0; i < paths.length; i++) {
+                    File inpathDir = new File(paths[i]);
+                    if (inpathDir.isDirectory() && inpathDir.canRead()) {
+                        if (!gotDir) {
+                            gotDir = true;
+                        }
+                        FileSet fileSet = new FileSet();
+                        fileSet.setDir(inpathDir);
+                        fileSet.setIncludes("**/*");
+                        fileSet.setExcludes(inpathDirCopyFilter);  
+                        copy.addFileset(fileSet);
+                    }
+                }
+                if (gotDir) {
+                    copy.execute();
+                }
+            }
+        }        
     }
     
     /** 
@@ -1531,7 +1590,8 @@ public class AjcTask extends MatchingTask {
      */
     private void completeOutjar() {
         if (((null == tmpOutjar) || !tmpOutjar.canRead()) 
-            || (!copyInjars && (null == sourceRootCopyFilter))) {
+            || (!copyInjars && (null == sourceRootCopyFilter)
+                    && (null == inpathDirCopyFilter))) {
             return;
         }
         Zip zip = new Zip();
@@ -1569,6 +1629,22 @@ public class AjcTask extends MatchingTask {
                     fileset.setIncludes("**/*");
                     fileset.setExcludes(sourceRootCopyFilter);  
                     zip.addFileset(fileset);
+                }
+            }
+        }        
+        if ((null != inpathDirCopyFilter) && (null != inpath)) {
+            String[] paths = inpath.list();
+            if (!LangUtil.isEmpty(paths)) {
+                for (int i = 0; i < paths.length; i++) {
+                    File inpathDir = new File(paths[i]);
+                    if (inpathDir.isDirectory() && inpathDir.canRead()) {
+                        FileSet fileset = new FileSet();
+                        fileset.setProject(project);
+                        fileset.setDir(inpathDir);
+                        fileset.setIncludes("**/*");
+                        fileset.setExcludes(inpathDirCopyFilter);  
+                        zip.addFileset(fileset);
+                    }
                 }
             }
         }        
