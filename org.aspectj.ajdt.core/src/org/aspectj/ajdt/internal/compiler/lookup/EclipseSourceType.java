@@ -221,6 +221,14 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 		return (binding.getAccessFlags() & ACC_ANNOTATION)!=0;
 	}
 	
+	public boolean isAnnotationWithRuntimeRetention() {
+	    if (!isAnnotation()) {
+	        return false;
+	    } else {
+			throw new RuntimeException("How to implement this?  Needs to ask eclipse!");	        
+	    }
+	}
+	
 	public boolean hasAnnotation(TypeX ofType) {
 		throw new RuntimeException("How to implement this?  Needs to ask eclipse!");
 	}

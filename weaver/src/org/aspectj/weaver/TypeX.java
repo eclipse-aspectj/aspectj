@@ -427,6 +427,13 @@ public class TypeX implements AnnotatedElement {
     public final boolean isAnnotation(World world) {
     	return world.resolve(this).isAnnotation();
     }
+    
+    /**
+     * Determine if this class represents an annotation type that has runtime retention 
+     */
+    public final boolean isAnnotationWithRuntimeRetention(World world) {
+        return world.resolve(this).isAnnotationWithRuntimeRetention();
+    }
 
 
     /**
@@ -572,7 +579,9 @@ public class TypeX implements AnnotatedElement {
     public static final TypeX   SERIALIZABLE = forSignature("Ljava/io/Serializable;");
     public static final TypeX   THROWABLE    = forSignature("Ljava/lang/Throwable;");
     public static final TypeX   RUNTIME_EXCEPTION    = forSignature("Ljava/lang/RuntimeException;");
-    public static final TypeX   ERROR    = forSignature("Ljava/lang/Error;");
+    public static final TypeX   ERROR    = forSignature("Ljava/lang/Error;");    
+    public static final TypeX   AT_INHERITED = forSignature("Ljava/lang/annotation/Inherited;");
+    public static final TypeX   AT_RETENTION = forSignature("Ljava/lang/annotation/Retention;");
     
     // ---- helpers
     

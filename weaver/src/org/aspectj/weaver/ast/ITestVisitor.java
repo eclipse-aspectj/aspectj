@@ -23,5 +23,6 @@ public interface ITestVisitor {
 	void visit(Literal literal);
 	void visit(Call call);
 	void visit(FieldGetCall fieldGetCall);
+	void visit(HasAnnotation hasAnnotation);
 
 }

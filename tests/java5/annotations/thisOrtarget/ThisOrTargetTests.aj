@@ -12,10 +12,6 @@ public aspect ThisOrTargetTests {
   	System.out.println("@this(@MyAnnotation): " + thisJoinPointStaticPart);
   }
   
-  before() : doSomethingExecution() && @this(@MyClassRetentionAnnotation) {
-  	// should be compile-time error!
-  }
-  
   before() : doSomethingExecution() && @this(@MyInheritableAnnotation) {
   	// should match:
   	// c.doSomething()
@@ -24,15 +20,11 @@ public aspect ThisOrTargetTests {
   	System.out.println("@this(@MyInheritableAnnotation): " + thisJoinPointStaticPart);
   }
   
-  after() returning : doSomthingCall() && @target(@MyAnnotation) {
+  after() returning : doSomethingCall() && @target(@MyAnnotation) {
   	// should match:
   	// b.doSomething(), reallyB.doSomething() [with test],
   	// c.doSomething()
   	System.out.println("@target(@MyAnnotation): " + thisJoinPointStaticPart);
-  }
-  
-  after() returning : doSomethingCall() && @target(@MyClassRetentionAnnotation) {
-  	// should be compile-time error!
   }
   
   after() returning : doSomethingCall() && @target(@MyInheritableAnnotation) {
@@ -42,9 +34,5 @@ public aspect ThisOrTargetTests {
   	// reallyD.doSomething()
   	System.out.println("@target(@MyInheritableAnnotation): " + thisJoinPointStaticPart);
   }
-  
-  after(MyAnnotation ann) returning : @target(ann) {
-  	// should be compile time error (limitation)
-  }
-	
+  	
 }

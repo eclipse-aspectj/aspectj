@@ -55,6 +55,17 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 			world.getMessageHandler().handleMessage(m);
 			resolved = false;
 		}
+		if (!annotationType.hasAnnotation(TypeX.AT_RETENTION)) {
+		    // default is class visibility
+			IMessage m = MessageUtil.error(
+					WeaverMessages.format(WeaverMessages.BINDING_NON_RUNTIME_RETENTION_ANNOTATION,annotationType.getName()),
+					getSourceLocation());
+			world.getMessageHandler().handleMessage(m);
+			resolved = false;		    
+		} else {
+		    // TO DO... get the retention policy annotation, and check the value is 
+		    // RetentionPolicy.RUNTIME;
+		}
 		return this;
 	}
 	

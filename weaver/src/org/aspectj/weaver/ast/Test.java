@@ -81,6 +81,10 @@ public abstract class Test extends ASTNode {
         return e;
     }
     
+    public static Test makeHasAnnotation(Var v, ResolvedTypeX annTy) {
+        return new HasAnnotation(v,annTy);
+    }
+    
     public static Test makeCall(Member m, Expr[] args) {
     	return new Call(m, args);
     }

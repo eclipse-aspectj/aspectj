@@ -61,7 +61,7 @@ public abstract class AnnotationTypePattern extends PatternNode {
 		byte key = s.readByte();
 		switch(key) {
 			case EXACT: return ExactAnnotationTypePattern.read(s, context);
-//			case BINDING: return BindingAnnotationTypePattern.read(s, context);
+			case BINDING: return BindingAnnotationTypePattern.read(s, context);
 			case NOT: return NotAnnotationTypePattern.read(s, context);
 			case OR: return OrAnnotationTypePattern.read(s, context);
 			case AND: return AndAnnotationTypePattern.read(s, context);

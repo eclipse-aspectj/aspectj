@@ -1,0 +1,48 @@
+/*******************************************************************************
+ * Copyright (c) 2004 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.aspectj.systemtest.ajc150;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.aspectj.tools.ajc.CompilationResult;
+
+/**
+* Tests for @this, @target, @args
+*/
+public class AnnotationRuntimeTests extends TestUtils {
+
+    protected void setUp() throws Exception {
+        super.setUp();
+    	baseDir = new File("../tests/java5/annotations/thisOrtarget");
+    }
+    
+    public void test001_NoBinding() {
+        CompilationResult cR = binaryWeave("TestingAnnotations.jar","BindingLimitation.aj",1,0);
+        List errors = cR.getErrorMessages();
+        assertTrue("Binding not supported",errors.get(0).toString().startsWith("error Binding not supported"));
+    }
+    
+    public void test002_MustHaveRuntimeRetention() {
+        CompilationResult cR = binaryWeave("TestingAnnotations.jar","NotRuntimeRetention.aj",2,0);
+        List errors = new ArrayList();
+        errors.add(new Message(7,"Annotation type MyClassRetentionAnnotation does not have runtime retention"));
+        errors.add(new Message(13,"Annotation type MyClassRetentionAnnotation does not have runtime retention"));
+        
+        MessageSpec messageSpec = new MessageSpec(new ArrayList(), errors);
+        assertMessages(cR, messageSpec);
+    }
+    
+    public void test003_InheritableOrNot() {
+        CompilationResult cR = binaryWeave("TestingAnnotations.jar","ThisOrTargetTests.aj",0,0);                       
+    }
+}

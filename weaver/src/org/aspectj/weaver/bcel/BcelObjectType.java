@@ -25,6 +25,8 @@ import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
@@ -291,6 +293,28 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 	
 	public boolean isAnnotation() {
 		return javaClass.isAnnotation();
+	}
+	
+	public boolean isAnnotationWithRuntimeRetention() {
+	    if (!isAnnotation()) {
+	        return false;
+	    } else {
+	        Annotation[] annotationsOnThisType = javaClass.getAnnotations();
+	        for (int i = 0; i < annotationsOnThisType.length; i++) {
+	            Annotation a = annotationsOnThisType[i];
+	            if (a.getTypeName().equals(TypeX.AT_RETENTION.getName())) {
+	                List values = a.getValues();
+	                boolean isRuntime = false;
+	                for (Iterator it = values.iterator(); it.hasNext();) {
+                        ElementNameValuePair element = (ElementNameValuePair) it.next();
+                        ElementValue v = element.getValue();
+                        isRuntime = v.stringifyValue().equals("RUNTIME");
+                    }
+	                return isRuntime;
+	            }
+	        }
+		}
+	    return false;
 	}
 	
 	public boolean isSynthetic() {

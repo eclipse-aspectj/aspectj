@@ -469,6 +469,12 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
     	return false;
     }
     
+    /**
+     * Note: Only overridden by Name subtype.
+     */
+    public boolean isAnnotationWithRuntimeRetention() {
+        return false;
+    }
     
     public boolean isSynthetic() {
     	return signature.indexOf("$ajc") != -1;
@@ -578,6 +584,10 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 	    
 	    public boolean isAnnotation() {
 	    	return delegate.isAnnotation();
+	    }
+	    
+	    public boolean isAnnotationWithRuntimeRetention() {
+	        return delegate.isAnnotationWithRuntimeRetention();
 	    }
 	     
         public final boolean needsNoConversionFrom(TypeX o) {
@@ -724,6 +734,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 	    public abstract boolean isInterface();
 	    public abstract boolean isEnum();
 	    public abstract boolean isAnnotation();
+	    public abstract boolean isAnnotationWithRuntimeRetention();
 	    
 	    public abstract boolean hasAnnotation(TypeX ofType);
 	    public abstract ResolvedTypeX[] getAnnotationTypes();

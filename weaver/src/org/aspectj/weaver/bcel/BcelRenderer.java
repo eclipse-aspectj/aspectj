@@ -17,16 +17,19 @@ import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
+import org.aspectj.apache.bcel.generic.LDC_W;
 import org.aspectj.apache.bcel.generic.ReferenceType;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.ast.And;
 import org.aspectj.weaver.ast.Call;
 import org.aspectj.weaver.ast.CallExpr;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.FieldGet;
 import org.aspectj.weaver.ast.FieldGetCall;
+import org.aspectj.weaver.ast.HasAnnotation;
 import org.aspectj.weaver.ast.IExprVisitor;
 import org.aspectj.weaver.ast.ITestVisitor;
 import org.aspectj.weaver.ast.Instanceof;
@@ -171,6 +174,27 @@ public class BcelRenderer implements ITestVisitor, IExprVisitor {
         i.getVar().accept(this);
     }
 
+    public void visit(HasAnnotation hasAnnotation) {
+        instructions.insert(createJumpBasedOnBooleanOnStack());
+        // now insert the instructions that leave a boolean on the stack
+        // in Java:
+        // foo.class.isAnnotationPresent(annotationClass);
+        // in bytecode:
+        // load var onto the stack  (done for us later)
+        // invokevirtual java/lang/Object.getClass:()Ljava/lang/Class
+        // ldc_w annotationClass
+        // invokevirtual java/lang/Class.isAnnotationPresent:(Ljava/lang/Class;)Z
+        Member getClass = Member.method(TypeX.OBJECT, 0, "getClass", "()Ljava/lang/Class;");
+        instructions.insert(Utility.createInvoke(fact, world, getClass));
+        // aload annotationClass
+        int annClassIndex = fact.getConstantPool().addClass(hasAnnotation.getAnnotationType().getSignature());
+        instructions.insert(new LDC_W(annClassIndex));
+        Member isAnnotationPresent = Member.method(TypeX.forName("Ljava/lang/Class"),0,
+                "isAnnotationPresent","(Ljava/lang/Class;)Z");
+        instructions.insert(Utility.createInvoke(fact,world,isAnnotationPresent));
+        hasAnnotation.getVar().accept(this);
+    }
+    
 	private InstructionList createJumpBasedOnBooleanOnStack() {
 		InstructionList il = new InstructionList();
         if (sk == fk) {
