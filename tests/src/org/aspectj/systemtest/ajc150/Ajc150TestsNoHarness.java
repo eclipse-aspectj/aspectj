@@ -12,6 +12,10 @@ package org.aspectj.systemtest.ajc150;
 
 import java.io.File;
 
+import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.util.ClassPath;
+import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.tools.ajc.CompilationResult;
 
 
@@ -31,10 +35,60 @@ public class Ajc150TestsNoHarness extends TestUtils {
   	if (verbose) {System.err.println(rR.getStdErr());}
   }
   
+  
   public void testIncorrectExceptionTableWhenReturnInMethod_pr79554() {
 	CompilationResult cR=ajc(baseDir,new String[]{"PR79554.java"});
 	if (verbose) { System.err.println(cR); System.err.println(cR.getStandardError());}
   	RunResult rR = run("PR79554");
   	if (verbose) {System.err.println(rR.getStdErr());}
+  }
+  
+  
+  public void testMissingDebugInfoForGeneratedMethods_pr82570() throws ClassNotFoundException {
+  	boolean f = false;
+    CompilationResult cR = ajc(baseDir,new String[]{"PR82570_1.java"});
+    System.err.println(cR.getStandardError());
+    assertTrue("Expected no compile problem:"+cR,!cR.hasErrorMessages());
+    JavaClass jc = getClassFrom(ajc.getSandboxDirectory(),"PR82570_1");
+    Method[] meths = jc.getMethods();
+    for (int i = 0; i < meths.length; i++) {
+		Method method = meths[i];
+		if (f) System.err.println("Line number table for "+method.getName()+method.getSignature()+" = "+method.getLineNumberTable());
+		assertTrue("Didn't find a line number table for method "+method.getName()+method.getSignature(),
+				method.getLineNumberTable()!=null);
+	}
+
+    // This test would determine the info isn't there if you pass -g:none ...
+//    cR = ajc(baseDir,new String[]{"PR82570_1.java","-g:none"});
+//    assertTrue("Expected no compile problem:"+cR,!cR.hasErrorMessages());
+//    System.err.println(cR.getStandardError());
+//    jc = getClassFrom(ajc.getSandboxDirectory(),"PR82570_1");
+//    meths = jc.getMethods();
+//    for (int i = 0; i < meths.length; i++) {
+//		Method method = meths[i];
+//		assertTrue("Found a line number table for method "+method.getName(),
+//				method.getLineNumberTable()==null);
+//	}
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  ///////////////////////////////////////// TESTCASE HELPER METHODS BELOW HERE //////////////////////////
+  
+  // Some util methods for accessing .class contents as BCEL objects
+  
+  public SyntheticRepository createRepos(File cpentry) {
+	ClassPath cp = new ClassPath(cpentry+File.pathSeparator+System.getProperty("java.class.path"));
+	return SyntheticRepository.getInstance(cp);
+  }
+  
+  private JavaClass getClassFrom(File where,String clazzname) throws ClassNotFoundException {
+	SyntheticRepository repos = createRepos(where);
+	return repos.loadClass(clazzname);
   }
 }

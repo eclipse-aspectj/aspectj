@@ -970,7 +970,14 @@ public final class LazyMethodGen {
                 (InstructionHandle) localVariableStarts.get(tag),
                 (InstructionHandle) localVariableEnds.get(tag));
         }
-
+        
+        // JAVAC adds line number tables (with just one entry) to generated accessor methods - this
+        // keeps some tools that rely on finding at least some form of linenumbertable happy.
+        // Let's check if we have one - if we don't then let's add one.
+        // TODO Could be made conditional on whether line debug info is being produced
+        if (gen.getLineNumbers().length==0) { 
+        	gen.addLineNumber(gen.getInstructionList().getStart(),1);
+        }
     }
 
 	/** This procedure should not currently be used.
