@@ -177,6 +177,7 @@ public abstract class Scope
 		MethodBinding exactMethod = receiverType.getExactMethod(selector, argumentTypes);
 		if (exactMethod != null) {
 			compilationUnitScope().recordTypeReferences(exactMethod.thrownExceptions);
+			compilationUnitScope().recordTypeReference(exactMethod.declaringClass); // for inter-type decls
 			if (receiverType.isInterface() || exactMethod.canBeSeenBy(receiverType, invocationSite, this)) {
 				return exactMethod;
 			} else {
