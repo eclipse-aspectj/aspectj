@@ -120,6 +120,7 @@ public class StructureModelTest extends AjdeTestCase {
 		assertTrue("find result", node != null);	
 			
 		ProgramElementNode pNode = (ProgramElementNode)((ProgramElementNode)node).getParent();
+        assertTrue("null parent", pNode != null);    
 		assertTrue("found node: " + pNode.getName(), pNode.isRunnable());
 	}  
 	
