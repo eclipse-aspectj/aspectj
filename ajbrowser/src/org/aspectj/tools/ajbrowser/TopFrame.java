@@ -43,6 +43,7 @@ import javax.swing.border.Border;
 import javax.swing.filechooser.FileFilter;
 
 import org.aspectj.ajde.Ajde;
+import org.aspectj.ajde.ui.EditorManager;
 import org.aspectj.ajde.ui.swing.AJButtonMenuCombo;
 import org.aspectj.ajde.ui.swing.AjdeUIManager;
 import org.aspectj.ajde.ui.swing.BuildConfigPopupMenu;
@@ -203,7 +204,11 @@ public class TopFrame extends JFrame {
             public void keyPressed(KeyEvent e) {
                 if (e.getModifiers() == java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()) {
                     if (e.getKeyCode() == KeyEvent.VK_F11) {
-                        Ajde.getDefault().getBuildManager().build();
+                        if (e.isShiftDown()) {
+                            Ajde.getDefault().getBuildManager().buildFresh();
+                        } else {
+                            Ajde.getDefault().getBuildManager().build();
+                        }
                     } else if (e.getKeyCode() == KeyEvent.VK_S) {
                         Ajde.getDefault().getEditorManager().saveContents();
                     } else if (e.getKeyCode() == KeyEvent.VK_P) {
@@ -466,7 +471,11 @@ public class TopFrame extends JFrame {
 
     void projectBuild_menuItem_actionPerformed(ActionEvent e) {
         BrowserManager.getDefault().saveAll();
-        Ajde.getDefault().getBuildManager().build();
+        if (EditorManager.isShiftDown(e.getModifiers())) {
+            Ajde.getDefault().getBuildManager().buildFresh();
+        } else {
+            Ajde.getDefault().getBuildManager().build();
+        }
     }
 
     void run_button_actionPerformed(ActionEvent e) {
@@ -479,7 +488,11 @@ public class TopFrame extends JFrame {
 
     void build_button_actionPerformed(ActionEvent e) {
         BrowserManager.getDefault().saveAll();
-        Ajde.getDefault().getBuildManager().build();
+        if (EditorManager.isShiftDown(e.getModifiers())) {
+            Ajde.getDefault().getBuildManager().buildFresh();
+        } else {
+            Ajde.getDefault().getBuildManager().build();
+        }
 	}
 
     void options_button_actionPerformed(ActionEvent e) {

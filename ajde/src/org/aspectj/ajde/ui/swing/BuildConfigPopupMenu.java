@@ -24,6 +24,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.aspectj.ajde.Ajde;
+import org.aspectj.ajde.ui.EditorManager;
 import org.aspectj.asm.ProgramElementNode;
 
 public class BuildConfigPopupMenu extends JPopupMenu {
@@ -38,7 +39,11 @@ public class BuildConfigPopupMenu extends JPopupMenu {
 	    		new ActionListener() {
 		    		public void actionPerformed(ActionEvent e) {
 		    			Ajde.getDefault().getConfigurationManager().setActiveConfigFile(buildConfig);
-				        Ajde.getDefault().getBuildManager().build();
+                        if (EditorManager.isShiftDown(e.getModifiers())) {
+                            Ajde.getDefault().getBuildManager().buildFresh();
+                        } else {
+                            Ajde.getDefault().getBuildManager().build();
+                        }
 				        action.actionPerformed(e);
 					}
 	    		});
