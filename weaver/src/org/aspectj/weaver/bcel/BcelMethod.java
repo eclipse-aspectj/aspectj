@@ -201,7 +201,7 @@ final class BcelMethod extends ResolvedMember {
 	 }
 	 
 	 private void ensureAnnotationTypesRetrieved() {
-		if (annotationTypes == null) {
+		if (annotationTypes == null || method.getAnnotations().length!=annotations.length) { // sometimes the list changes underneath us!
     		Annotation annos[] = method.getAnnotations();
     		annotationTypes = new ResolvedTypeX[annos.length];
     		annotations = new AnnotationX[annos.length];
