@@ -1,12 +1,26 @@
 <html>
 <body>
-These harnesses drive ajc compiler tests.  Following is information on how to use them.
+This harness drives ajc compiler tests.  
+You can run it from the command-line or programmatically.
+It works through a chain of responsibility roughly mapped to
+the schematic of a test definition:
+<pre>
+   general harness
+      subclass feature harness
+        ajc-test run component
+          compile {sub-} run component
+          inc-compile {sub-} run component
+          run {sub-} run component
+          ...
+</pre>
+This tells you how to run the harness and which options are supported
+by each component.  
 <p>
 
 Use <code>Harness.main(String[])</code> from the command-line,
 or <code>Harness.getHarness()</code> programmatically.
 <code>Harness.runMain(String[])</code> takes arguments that
-each component in the chain may accept and interpret.
+each component in the chain may accept and interpret:
 <p>
 <table cellpadding="1" border="1">
 <tr><th>Component</th><th>Options</th></tr>
@@ -27,8 +41,8 @@ each component in the chain may accept and interpret.
      </td></tr>
   <tr><td><u>*- variants</u>: Options with a trailing "-" cause two sets of
       option lists to be produced, one with and one without the corresponding
-      option.  E.g., "-usejavac-" will run the suite twice, once with and
-      once without the "-usejavac" flag.
+      option.  E.g., "-emacssym-" will run the suite twice, once with and
+      once without the "-emacssym" flag.
       That means if you use this on each of three options, you will
       get 8 variant sets (1 with no options, 1 with all 3 options, 
       3 with 2 options, and 3 with 1 option). 
@@ -99,6 +113,8 @@ each component in the chain may accept and interpret.
      </td></tr>
   <tr><td><u>compiler selectors</u>: Use <code>-ajc</code> or <code>-eclipse</code> to select the old
      (ajc 1.0) or new (eajc 1.1) compilers.  
+      Note that the old compiler is not
+      available in the CVS source tree at eclipse.org.
      </td></tr>
   <tr><td><u>option dominance <code>-!^</code></u>: 
      Some tests require or prohibit certain options; 
@@ -178,7 +194,7 @@ Following are some sample configurations:
 If you have a set of options you use often, you can define a single-word
 option alias for it; see <code>Harness.optionAliases</code>.
 
-<p><u>Configuration</u>: most tests use the library jars in 
+<p><u>Configuration</u>: Most tests use the library jars in 
 <code>aspectj/modules/lib/test</code>, defined in 
 <code>org.aspectj.testing.harness.bridge.Globals</code>.  
 Normally the harness finds these by relative path 
@@ -189,6 +205,7 @@ define the environment variable <code>harness.libdir</code> - e.g.,
     $ cd aspectj/tests
     $ java -Dharness.libdir=../modules/lib/test -jar eajctesting.jar ajcTests.xml
 </pre>
+<p>
 
 </body>
 </html>
