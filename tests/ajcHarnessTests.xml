@@ -265,6 +265,26 @@
         <run class="app.Main"/>
     </ajc-test>
     
+    <ajc-test dir="harness/systemExit" 
+        title="pass System exit 0">
+        <compile files="SystemExit.java"/>
+        <run class="SystemExit"/>
+    </ajc-test>
+
+    <ajc-test dir="harness/systemExit" 
+    	keywords="expect-fail"
+        title="fail System exit 1">
+        <compile files="SystemExit.java"/>
+        <run class="SystemExit" options="1"/>
+    </ajc-test>
+    
+    <ajc-test dir="harness/systemExit" 
+    	keywords="expect-fail"
+        title="fail System exit -1">
+        <compile files="SystemExit.java"/>
+        <run class="SystemExit" options="-1"/>
+    </ajc-test>
+    
 </suite>
 
 
