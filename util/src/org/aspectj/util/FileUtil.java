@@ -1216,4 +1216,164 @@ public class FileUtil {
 
     private FileUtil() { throw new Error("utility class"); }
 
+
+    /**
+     * A pipe when run reads from an input stream to an output stream,
+     * optionally sleeping between reads.
+     * @see #copyStream(InputStream, OutputStream)
+     */
+    public static class Pipe implements Runnable {
+        private final InputStream in;
+        private final OutputStream out;
+        private final long sleep;
+        private long totalWritten;
+        private Throwable thrown;
+        private boolean halt;
+        /** 
+         * Seem to be unable to detect erroroneous closing of System.out...
+         */
+        private final boolean closeInput;
+        private final boolean closeOutput;
+
+        /** 
+         * If true, then continue processing stream until
+         *  no characters are returned when halting.
+         */
+        private boolean finishStream;
+        
+        private boolean done; // true after completing() completes
+
+        /** 
+         * alias for <code>Pipe(in, out, 100l, false, false)</code>
+         * @param in the InputStream source to read
+         * @param out the OutputStream sink to write
+         */
+        Pipe(
+            InputStream in, 
+            OutputStream out) {
+            this(in, out, 100l, false, false);
+        }
+        
+        /** 
+         * @param in the InputStream source to read
+         * @param out the OutputStream sink to write
+         * @param tryClosingStreams if true, then try closing both streams when done
+         * @param sleep milliseconds to delay between reads (pinned to 0..1 minute)
+         */
+        Pipe(
+            InputStream in, 
+            OutputStream out, 
+            long sleep, 
+            boolean closeInput, 
+            boolean closeOutput) {
+            LangUtil.throwIaxIfNull(in, "in");
+            LangUtil.throwIaxIfNull(out, "out");
+            this.in = in;
+            this.out = out;
+            this.closeInput = closeInput;
+            this.closeOutput = closeOutput;
+            this.sleep = Math.min(0l, Math.max(60l*1000l, sleep));
+        }
+    
+        /**
+         * Run the pipe.
+         * This halts on the first Throwable thrown or when a read returns
+         * -1 (for end-of-file) or on demand.
+         */
+        public void run() {
+            totalWritten = 0;
+            if (halt) {
+                return;
+            }
+            try {
+                final int MAX = 4096;
+                byte[] buf = new byte[MAX];
+                int count = in.read(buf, 0, MAX);
+                while ((halt && finishStream && (0 < count))
+                    || (!halt && (-1 != count))) {
+                    out.write(buf, 0, count);
+                    totalWritten += count;
+                    if (halt && !finishStream) { 
+                        break; 
+                    }
+                    if (!halt && (0 < sleep)) {
+                        Thread.sleep(sleep);
+                    }
+                    if (halt && !finishStream) { 
+                        break; 
+                    }
+                    count = in.read(buf, 0, MAX);
+                }
+            } catch (Throwable e) {
+                thrown = e;
+            } finally {
+                halt = true;
+                if (closeInput) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        // ignore
+                    }
+                }
+                if (closeOutput) {
+                    try {
+                        out.close();
+                    } catch (IOException e) {
+                        // ignore
+                    }
+                }
+                done = true;
+                completing(totalWritten, thrown);
+            }
+            
+        }    
+
+        /**
+         * Tell the pipe to halt the next time it gains control.
+         * @param wait if true, this waits synchronously until pipe is done
+         * @param finishStream if true, then continue until 
+         *        a read from the input stream returns no bytes, then halt.
+         * @return true if <code>run()</code> will return the next time it gains control
+         */
+        public boolean halt(boolean wait, boolean finishStream) {
+            if (!halt) {
+                halt = true;
+            }
+            if (wait) {
+                while (!done) {
+                    synchronized (this) {
+                        notifyAll();
+                    }
+                    if (!done) {
+                        try {
+                            Thread.sleep(5l);
+                        } catch (InterruptedException e) {
+                            break;
+                        }
+                    }
+                }
+            }
+            return halt;
+        }
+
+        /** @return the total number of bytes written */
+        public long totalWritten() {
+            return totalWritten;
+        }
+
+        /** @return any exception thrown when reading/writing */
+        public Throwable getThrown() {
+            return thrown;
+        }
+        
+        /**
+         * This is called when the pipe is completing.
+         * This implementation does nothing.
+         * Subclasses implement this to get notice.
+         * Note that halt(true, true) might or might not have completed
+         * before this method is called.
+         */
+        protected void completing(long totalWritten, Throwable thrown) {
+        }
+    }
 }
