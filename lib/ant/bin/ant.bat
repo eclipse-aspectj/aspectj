@@ -80,7 +80,7 @@ if not "%JIKESPATH%"=="" goto runAntWithJikes
 
 :runAnt
 REM aspectJ increased max heap size for test purposes.
-"%_JAVACMD%" -classpath "%LOCALCLASSPATH%" "-Dant.home=%ANT_HOME%" -Xmx768M %ANT_OPTS% org.apache.tools.ant.Main %*
+"%_JAVACMD%" -classpath "%LOCALCLASSPATH%" "-Dant.home=%ANT_HOME%" -Xmx1024M %ANT_OPTS% org.apache.tools.ant.Main %*
 goto end
 
 :runAntWithJikes
