@@ -65,6 +65,14 @@ public class AnnotationBinding extends TestUtils {
   	RunResult rR = run("CallAnnBinding6");
   }
   
+
+  // 'call() && @annotation()' using named pointcut
+  public void testCallAnnotationBinding7() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"CallAnnBinding7.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("CallAnnBinding7");
+  }
+  
   
   
 
@@ -100,7 +108,81 @@ public class AnnotationBinding extends TestUtils {
   }
   
   
-  // need to instantiate some types but have runtime types being diff
+  ///////////////////////////////////// @THIS
+  
+  // 'call() && @this()'
+  public void testAtThisAnnotationBinding1() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"AtThis1.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("AtThis1");
+  }
+  
+  // 'call() && @this() && @this'
+  public void testAtThisAnnotationBinding2() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"AtThis2.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("AtThis2");
+  }
+  
+  // 'call() && @this()' - using a type hierarchy where some levels are missing annotations
+  public void testAtThisAnnotationBinding3() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"AtThis3.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("AtThis3");
+  }
+  
+  // 'call() && @this()' - using a type hierarchy where some levels are missing annotations 
+  // but the annotation is inherited
+  public void testAtThisAnnotationBinding4() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"AtThis4.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("AtThis4");
+  }
+  
+  // '@this() and @target()' used together
+  public void testAtThisAtTargetAnnotationBinding() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"AtThis5.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("AtThis5");
+  }
+  
+  ///////////////////////////////////// @ARGS
+  
+  // complex case when there are 3 parameters
+  public void testAtArgs1() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"AtArgs1.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("AtArgs1");
+  }
+  
+  // simple case when there is only one parameter
+  public void testAtArgs2() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"AtArgs2.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("AtArgs2");
+  }
+  
+  // simple case when there is only one parameter and no binding
+  public void testAtArgs3() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"AtArgs3.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("AtArgs3");
+  }
+  
+  // complex case binding different annotation kinds
+  public void testAtArgs4() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"AtArgs4.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("AtArgs4");
+  }
+  
+  // check @args and execution()
+  public void testAtArgs5() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"AtArgs5.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("AtArgs5");
+  }
+  
 
   ///////////////////////////////////// @ANNOTATION and EXECUTION
   
