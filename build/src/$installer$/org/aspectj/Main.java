@@ -189,10 +189,15 @@ class Options {
     }
 }
 
+/** tools installer installs the entire 1.1+ distribution */
 class ToolsInstaller extends Installer {
     public String getTitle() { return "Installer for AspectJ(TM)"; }
 
     public String getPrefix() { return "tools"; }
+
+    public String getReadmeFilename() {
+        return "README-AspectJ.html";
+    }
 
     public ToolsInstaller() {
         InstallPane installPane = new InstallPane(true);
@@ -404,6 +409,10 @@ abstract class Installer {
 
     public abstract String getPrefix();
 
+    public String getReadmeFilename() {
+        return "README-" + getPrefix().toUpperCase()+".html";
+    }
+
     public void setContext(InstallContext context) {
         this.context = context;
         context.installer = this;
@@ -591,7 +600,7 @@ class InstallContext {
         properties.put("installer.output.dir.bin", new File(outputDir, "bin").getAbsolutePath());
         properties.put("installer.output.dir.doc", new File(outputDir, "doc").getAbsolutePath());
         properties.put("installer.output.aspectjrt", new File(new File(outputDir, "lib"), "aspectjrt.jar").getAbsolutePath());
-        properties.put("installer.output.readme", new File(outputDir, "README-" + installer.getPrefix().toUpperCase()+".html").getAbsolutePath());
+        properties.put("installer.output.readme", new File(outputDir, installer.getReadmeFilename()).getAbsolutePath());
     }
 
     public File getOutputDir() {
