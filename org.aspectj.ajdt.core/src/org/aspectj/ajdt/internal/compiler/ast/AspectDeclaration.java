@@ -23,6 +23,7 @@ import org.eclipse.jdt.internal.compiler.ClassFile;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 //import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Clinit;
+import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 //import org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.codegen.CodeStream;
@@ -294,8 +295,15 @@ public class AspectDeclaration extends TypeDeclaration {
 		int codeAttributeOffset = classFile.contentsOffset;
 		classFile.generateCodeAttributeHeader();
 		CodeStream codeStream = classFile.codeStream;
-		codeStream.init(classFile);
-		codeStream.initializeMaxLocals(methodBinding);
+		
+		// Use reset() rather than init()
+		// XXX We need a scope to keep reset happy, initializerScope is *not* the right one, but it works !
+//		 codeStream.init(classFile);
+//		 codeStream.initializeMaxLocals(methodBinding);
+		MethodDeclaration md = AstUtil.makeMethodDeclaration(methodBinding);
+		md.scope = initializerScope;
+		codeStream.reset(md,classFile);
+		
 		// body starts here
 		gen.generate(codeStream);
 		// body ends here
