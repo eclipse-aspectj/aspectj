@@ -14,11 +14,7 @@
 
 package org.aspectj.ajde.ui;
 
-import org.aspectj.asm.AdviceAssociation;
-import org.aspectj.asm.InheritanceAssociation;
-import org.aspectj.asm.IntroductionAssociation;
-import org.aspectj.asm.ProgramElementNode;
-import org.aspectj.asm.Relation;
+import org.aspectj.asm.*;
 
 /**
  * Uses the factory pattern.
@@ -62,12 +58,12 @@ public abstract class AbstractIconRegistry {
     protected final AbstractIcon RELATION_REFERENCE_FORWARD = createIcon(STRUCTURE_PATH + "referenceForward.gif");
     protected final AbstractIcon RELATION_REFERENCE_BACK = createIcon(STRUCTURE_PATH + "referenceBack.gif");
 
-	public AbstractIcon getRelationIcon(Relation relation) {
-		if (relation.getAssociationName().equals(AdviceAssociation.NAME)) {
+	public AbstractIcon getRelationIcon(IRelationship.Kind relationship) {
+		if (relationship == IRelationship.Kind.ADVICE) {
 			return RELATION_ADVICE_FORWARD;
-		} else if (relation.getAssociationName().equals(IntroductionAssociation.NAME)) {
+		} else if (relationship == IRelationship.Kind.DECLARE) {
 			return RELATION_ADVICE_FORWARD;
-		} else if (relation.getAssociationName().equals(InheritanceAssociation.NAME)) {
+		} else if (relationship == IRelationship.Kind.INHERITANCE) {
 			return RELATION_INHERITANCE_FORWARD;
 		} else {
 			return RELATION_REFERENCE_FORWARD;
@@ -77,8 +73,8 @@ public abstract class AbstractIconRegistry {
 	/**
 	 * @return	null if the kind could not be resolved
 	 */
-	protected AbstractIcon getStructureIcon(ProgramElementNode.Kind kind, ProgramElementNode.Accessibility accessibility) {
-		return getStructureIcon(kind, ProgramElementNode.Accessibility.PUBLIC);
+	protected AbstractIcon getStructureIcon(IProgramElement.Kind kind, IProgramElement.Accessibility accessibility) {
+		return getStructureIcon(kind, IProgramElement.Accessibility.PUBLIC);
 	}	
 	
 	/**
@@ -86,56 +82,56 @@ public abstract class AbstractIconRegistry {
 	 * 
 	 * @return	null if the kind could not be resolved
 	 */
-	public AbstractIcon getStructureIcon(ProgramElementNode.Kind kind) { 
-		if (kind == ProgramElementNode.Kind.PROJECT) {
+	public AbstractIcon getStructureIcon(IProgramElement.Kind kind) { 
+		if (kind == IProgramElement.Kind.PROJECT) {
 			return PROJECT;
-		} else if (kind == ProgramElementNode.Kind.PACKAGE) {
+		} else if (kind == IProgramElement.Kind.PACKAGE) {
 			return PACKAGE;
-		} else if (kind == ProgramElementNode.Kind.FILE) {
+		} else if (kind == IProgramElement.Kind.FILE) {
 			return FILE;
-		} else if (kind == ProgramElementNode.Kind.FILE_JAVA) {
+		} else if (kind == IProgramElement.Kind.FILE_JAVA) {
 			return FILE_JAVA;
-		} else if (kind == ProgramElementNode.Kind.FILE_ASPECTJ) {
+		} else if (kind == IProgramElement.Kind.FILE_ASPECTJ) {
 			return FILE_ASPECTJ;
-		} else if (kind == ProgramElementNode.Kind.FILE_LST) {
+		} else if (kind == IProgramElement.Kind.FILE_LST) {
 			return FILE_LST;
-		} else if (kind == ProgramElementNode.Kind.CLASS) {
+		} else if (kind == IProgramElement.Kind.CLASS) {
 			return CLASS;
-		} else if (kind == ProgramElementNode.Kind.INTERFACE) {
+		} else if (kind == IProgramElement.Kind.INTERFACE) {
 			return INTERFACE;
-		} else if (kind == ProgramElementNode.Kind.ASPECT) {
+		} else if (kind == IProgramElement.Kind.ASPECT) {
 			return ASPECT;
-		} else if (kind == ProgramElementNode.Kind.INITIALIZER) {
+		} else if (kind == IProgramElement.Kind.INITIALIZER) {
 			return INITIALIZER;
-		} else if (kind == ProgramElementNode.Kind.INTER_TYPE_CONSTRUCTOR) {
+		} else if (kind == IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR) {
 			return INTRODUCTION;
-		} else if (kind == ProgramElementNode.Kind.INTER_TYPE_FIELD) {
+		} else if (kind == IProgramElement.Kind.INTER_TYPE_FIELD) {
 			return INTRODUCTION;
-		} else if (kind == ProgramElementNode.Kind.INTER_TYPE_METHOD) {
+		} else if (kind == IProgramElement.Kind.INTER_TYPE_METHOD) {
 			return INTRODUCTION;
-		} else if (kind == ProgramElementNode.Kind.CONSTRUCTOR) {
+		} else if (kind == IProgramElement.Kind.CONSTRUCTOR) {
 			return CONSTRUCTOR;
-		} else if (kind == ProgramElementNode.Kind.METHOD) {
+		} else if (kind == IProgramElement.Kind.METHOD) {
 			return METHOD;
-		} else if (kind == ProgramElementNode.Kind.FIELD) {
+		} else if (kind == IProgramElement.Kind.FIELD) {
 			return FIELD;
-		} else if (kind == ProgramElementNode.Kind.POINTCUT) {
+		} else if (kind == IProgramElement.Kind.POINTCUT) {
 			return POINTCUT;
-		} else if (kind == ProgramElementNode.Kind.ADVICE) {
+		} else if (kind == IProgramElement.Kind.ADVICE) {
 			return ADVICE;
-		} else if (kind == ProgramElementNode.Kind.DECLARE_PARENTS) {
+		} else if (kind == IProgramElement.Kind.DECLARE_PARENTS) {
 			return DECLARE_PARENTS;
-		} else if (kind == ProgramElementNode.Kind.DECLARE_WARNING) {
+		} else if (kind == IProgramElement.Kind.DECLARE_WARNING) {
 			return DECLARE_WARNING;
-		} else if (kind == ProgramElementNode.Kind.DECLARE_ERROR) {
+		} else if (kind == IProgramElement.Kind.DECLARE_ERROR) {
 			return DECLARE_ERROR;
-		} else if (kind == ProgramElementNode.Kind.DECLARE_SOFT) {
+		} else if (kind == IProgramElement.Kind.DECLARE_SOFT) {
 			return DECLARE_SOFT;
-		} else if (kind == ProgramElementNode.Kind.DECLARE_PRECEDENCE) {
+		} else if (kind == IProgramElement.Kind.DECLARE_PRECEDENCE) {
 			return DECLARE_SOFT;
-		} else if (kind == ProgramElementNode.Kind.CODE) {
+		} else if (kind == IProgramElement.Kind.CODE) {
 			return CODE;
-		} else if (kind == ProgramElementNode.Kind.ERROR) {
+		} else if (kind == IProgramElement.Kind.ERROR) {
 			return ERROR;
 		} else {
 			System.err.println("AJDE Message: unresolved icon kind " + kind);

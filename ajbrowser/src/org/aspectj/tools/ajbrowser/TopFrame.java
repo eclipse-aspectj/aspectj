@@ -24,7 +24,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.ui.swing.*;
-import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.IProgramElement;
 
 /**
  * UI for standalone operation.
@@ -123,7 +123,7 @@ public class TopFrame extends JFrame {
             projectDebug_menuItem.setIcon(AjdeUIManager.getDefault().getIconRegistry().getDebugIcon());
 
             this.setJMenuBar(menuBar);
-            this.setIconImage(((ImageIcon)AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.ADVICE)).getImage());
+            this.setIconImage(((ImageIcon)AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.ADVICE)).getImage());
             this.setLocation(75, 10);
             this.setSize(900, 650);
             this.setTitle(BrowserManager.TITLE);
@@ -381,7 +381,7 @@ public class TopFrame extends JFrame {
                 editConfig_button_actionPerformed(e);
             }
         });
-        editConfig_button.setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.FILE_LST));
+        editConfig_button.setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.FILE_LST));
         editConfig_button.setText("Edit Config");
         editConfig_button.setToolTipText("Edit Config...");
         editConfig_button.setPreferredSize(new Dimension(80, 20));

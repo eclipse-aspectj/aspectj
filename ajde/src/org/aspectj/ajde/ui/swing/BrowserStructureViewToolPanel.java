@@ -14,29 +14,16 @@
 
 package org.aspectj.ajde.ui.swing;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.Iterator;
 
-import javax.swing.ButtonGroup;
-import javax.swing.Icon;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JSeparator;
+import javax.swing.*;
 import javax.swing.border.Border;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.GlobalStructureView;
-import org.aspectj.ajde.ui.StructureView;
-import org.aspectj.ajde.ui.StructureViewProperties;
-import org.aspectj.asm.ProgramElementNode;
-import org.aspectj.asm.Relation;
+import org.aspectj.ajde.ui.*;
+import org.aspectj.asm.*;
 
 public class BrowserStructureViewToolPanel extends JPanel {
 
@@ -112,7 +99,7 @@ public class BrowserStructureViewToolPanel extends JPanel {
 
 	private JPopupMenu createFilterMenu() {
 		JPopupMenu filterMenu = new JPopupMenu();
-		ProgramElementNode.Accessibility[] accessibility = ProgramElementNode.Accessibility.ALL;
+		IProgramElement.Accessibility[] accessibility = IProgramElement.Accessibility.ALL;
 		for (int i = 0; i < accessibility.length; i++) {
 			CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(accessibility[i]);
 			menuItem.setIcon(AjdeUIManager.getDefault().getIconRegistry().getAccessibilitySwingIcon(accessibility[i]));
@@ -120,7 +107,7 @@ public class BrowserStructureViewToolPanel extends JPanel {
 		}
 		filterMenu.add(new JSeparator());
 
-		ProgramElementNode.Kind[] kinds = ProgramElementNode.Kind.ALL;
+		IProgramElement.Kind[] kinds = IProgramElement.Kind.ALL;
 		for (int i = 0; i < kinds.length; i++) {
 			if (kinds[i].isMemberKind()) {
 				CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(kinds[i]);
@@ -130,7 +117,7 @@ public class BrowserStructureViewToolPanel extends JPanel {
 		}
 		filterMenu.add(new JSeparator());
 
-		ProgramElementNode.Modifiers[] modifiers = ProgramElementNode.Modifiers.ALL;
+		IProgramElement.Modifiers[] modifiers = IProgramElement.Modifiers.ALL;
 		for (int i = 0; i < modifiers.length; i++) {
 			CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(modifiers[i]);
 			filterMenu.add(menuItem);
@@ -143,7 +130,7 @@ public class BrowserStructureViewToolPanel extends JPanel {
 
 		java.util.List relations = Ajde.getDefault().getStructureViewManager().getAvailableRelations();
 		for (Iterator it = relations.iterator(); it.hasNext(); ) {
-			Relation relation = (Relation)it.next();
+			IRelationship.Kind relation = (IRelationship.Kind)it.next();
 			CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(relation);
 			menuItem.setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getRelationIcon(relation).getIconResource());
 			relationsMenu.add(menuItem);
@@ -198,17 +185,17 @@ public class BrowserStructureViewToolPanel extends JPanel {
 			//super.setSelected(true);
 		}
 
-		public CheckBoxSelectionMenuButton(ProgramElementNode.Accessibility accessibility) {
+		public CheckBoxSelectionMenuButton(IProgramElement.Accessibility accessibility) {
 			this(accessibility.toString());
 			this.addActionListener(new CheckBoxSelectionMenuActionListener(accessibility));
 		}
 
-		public CheckBoxSelectionMenuButton(ProgramElementNode.Kind kind) {
+		public CheckBoxSelectionMenuButton(IProgramElement.Kind kind) {
 			this(kind.toString());
 			this.addActionListener(new CheckBoxSelectionMenuActionListener(kind));
 		}
 
-		public CheckBoxSelectionMenuButton(ProgramElementNode.Modifiers modifiers) {
+		public CheckBoxSelectionMenuButton(IProgramElement.Modifiers modifiers) {
 			this(modifiers.toString());
 			this.addActionListener(new CheckBoxSelectionMenuActionListener(modifiers));
 		}
@@ -218,7 +205,7 @@ public class BrowserStructureViewToolPanel extends JPanel {
 			this.addActionListener(new CheckBoxSelectionMenuActionListener(sorting));
 		}
 
-		public CheckBoxSelectionMenuButton(Relation relation) {
+		public CheckBoxSelectionMenuButton(IRelationship.Kind relation) {
 			this(relation.toString());
 			this.addActionListener(new CheckBoxSelectionMenuActionListener(relation));
 		}
@@ -228,21 +215,21 @@ public class BrowserStructureViewToolPanel extends JPanel {
 	 * Ewwwwww!
 	 */
 	private class CheckBoxSelectionMenuActionListener implements ActionListener {
-		private ProgramElementNode.Accessibility accessibility = null;
-		private ProgramElementNode.Kind kind = null;
-		private ProgramElementNode.Modifiers modifiers = null;
+		private IProgramElement.Accessibility accessibility = null;
+		private IProgramElement.Kind kind = null;
+		private IProgramElement.Modifiers modifiers = null;
 		private StructureViewProperties.Sorting sorting = null;
-		private Relation relation = null;
+		private IRelationship.Kind relation = null;
 
-		public CheckBoxSelectionMenuActionListener(ProgramElementNode.Accessibility accessibility) {
+		public CheckBoxSelectionMenuActionListener(IProgramElement.Accessibility accessibility) {
 			this.accessibility = accessibility;
 		}
 
-		public CheckBoxSelectionMenuActionListener(ProgramElementNode.Kind kind) {
+		public CheckBoxSelectionMenuActionListener(IProgramElement.Kind kind) {
 			this.kind = kind;
 		}
 
-		public CheckBoxSelectionMenuActionListener(ProgramElementNode.Modifiers modifiers) {
+		public CheckBoxSelectionMenuActionListener(IProgramElement.Modifiers modifiers) {
 			this.modifiers = modifiers;
 		}
 
@@ -250,8 +237,8 @@ public class BrowserStructureViewToolPanel extends JPanel {
 			this.sorting = sorting;
 		}
 
-		public CheckBoxSelectionMenuActionListener(Relation relation) {
-			this.relation = relation;
+		public CheckBoxSelectionMenuActionListener(IRelationship.Kind relationKind) {
+			this.relation = relationKind;
 		}
 
 		public void actionPerformed(ActionEvent e) {

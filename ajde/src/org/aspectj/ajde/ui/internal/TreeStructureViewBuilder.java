@@ -14,24 +14,11 @@
 
 package org.aspectj.ajde.ui.internal;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
-import org.aspectj.ajde.ui.FileStructureView;
-import org.aspectj.ajde.ui.GlobalStructureView;
-import org.aspectj.ajde.ui.StructureView;
-import org.aspectj.ajde.ui.StructureViewNode;
-import org.aspectj.ajde.ui.StructureViewNodeFactory;
-import org.aspectj.ajde.ui.StructureViewProperties;
-import org.aspectj.asm.LinkNode;
-import org.aspectj.asm.ProgramElementNode;
-import org.aspectj.asm.Relation;
-import org.aspectj.asm.RelationNode;
-import org.aspectj.asm.StructureModel;
-import org.aspectj.asm.StructureNode;
+import org.aspectj.ajde.ui.*;
+import org.aspectj.asm.*;
+import org.aspectj.asm.internal.ProgramElement;
 
 /**
  * @author Mik Kersten
@@ -49,7 +36,7 @@ public class TreeStructureViewBuilder {
 	 */
 	public void buildView(StructureView view, StructureModel model) {
 		StructureViewProperties properties = view.getViewProperties();
-		StructureNode modelRoot = null;
+		IProgramElement modelRoot = null;
 		boolean noStructure = false;
 		if (isFileView(view)) {
 			FileStructureView fileView = (FileStructureView)view;
@@ -62,7 +49,7 @@ public class TreeStructureViewBuilder {
 		} else {
 			modelRoot = model.getRoot();
 		}
-	
+		
 		StructureViewNode viewRoot = null;
 		if (!isFileView(view)) {
 			StructureViewProperties.Hierarchy hierarchy 
@@ -90,53 +77,50 @@ public class TreeStructureViewBuilder {
 
 	private void addPackageNode(StructureView view, StructureViewNode viewRoot) {
 		if (isFileView(view)) {
-			ProgramElementNode fileNode = (ProgramElementNode)viewRoot.getStructureNode();
-			
-			StructureNode parentNode = fileNode.getParent();
-			if (parentNode instanceof ProgramElementNode 
-				&& ((ProgramElementNode)parentNode).getProgramElementKind().equals(ProgramElementNode.Kind.PACKAGE)) {
-				String name = ((ProgramElementNode)parentNode).getName();
-				ProgramElementNode packageNode = new ProgramElementNode(name, ProgramElementNode.Kind.PACKAGE, null);
-				packageNode.setSourceLocation(fileNode.getSourceLocation());
-				StructureViewNode packageViewNode = createViewNode(
-					packageNode, 
-					view.getViewProperties()
-				);
-				viewRoot.getChildren().add(0, packageViewNode);
-			};
+//			IProgramElement fileNode = viewRoot.getStructureNode();
+//			IProgramElement parentNode = fileNode.getParent();
+//			
+//			if (parentNode.getKind() == IProgramElement.Kind.PACKAGE) {
+//				String name = parentNode.getName();
+//				IProgramElement packageNode = new ProgramElement(name, IProgramElement.Kind.PACKAGE, null);
+//				packageNode.setSourceLocation(fileNode.getSourceLocation());
+//				StructureViewNode packageViewNode = createViewNode(
+//					packageNode, 
+//					view.getViewProperties()
+//				);
+//				viewRoot.getChildren().add(0, packageViewNode);
+//			};
 		}
 	}
 	
-	private StructureViewNode createViewNode(StructureNode node, StructureViewProperties properties) {
+	private StructureViewNode createViewNode(IProgramElement node, StructureViewProperties properties) {
 		if (node == null) return null;
 		List children = new ArrayList();
-		if (node instanceof ProgramElementNode) {
-			ProgramElementNode pNode = (ProgramElementNode)node;
-			if (pNode.getRelations() != null) {
-				for (Iterator it = pNode.getRelations().iterator(); it.hasNext(); ) {
-					StructureNode structureNode = (StructureNode)it.next();
-					if (acceptNode(structureNode, properties)) {
-						children.add(createViewNode(structureNode, properties));
-					}
-				}	
-			}
-			if (pNode.isRunnable() && pNode.getParent() != null) {
-				ProgramElementNode parent = (ProgramElementNode)pNode.getParent();
-				if (parent.getProgramElementKind().equals(ProgramElementNode.Kind.CLASS)
-					|| parent.getProgramElementKind().equals(ProgramElementNode.Kind.ASPECT)) {
-					parent.setRunnable(true);	
-					pNode.setRunnable(false);
-				}
-			}
-		}
-		if (node.getChildren() != null) {
-			for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
-				StructureNode structureNode = (StructureNode)it.next();
-				if (acceptNode(structureNode, properties)) {
-					children.add(createViewNode(structureNode, properties));
+//		IProgramElement pNode = node;
+		if (node.getRelations() != null) {
+			for (Iterator it = node.getRelations().iterator(); it.hasNext(); ) {
+				IProgramElement IProgramElement = (IProgramElement)it.next();
+				if (acceptNode(IProgramElement, properties)) {
+					children.add(createViewNode(IProgramElement, properties));
 				}
 			}	
 		}
+		if (node.isRunnable() && node.getParent() != null) {
+			IProgramElement parent = node.getParent();
+			if (parent.getKind().equals(IProgramElement.Kind.CLASS)
+				|| parent.getKind().equals(IProgramElement.Kind.ASPECT)) {
+				parent.setRunnable(true);	
+				node.setRunnable(false);
+			}
+		}
+//		if (node.getChildren() != null) {
+//			for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
+//				IProgramElement IProgramElement = (IProgramElement)it.next();
+//				if (acceptNode(IProgramElement, properties)) {
+//					children.add(createViewNode(IProgramElement, properties));
+//				}
+//			}	
+//		}
 		StructureViewNode viewNode = nodeFactory.createNode(node, children);//new TreeViewNode(root, null, children);
 		return viewNode;	
 	}
@@ -149,43 +133,43 @@ public class TreeStructureViewBuilder {
 			&& !(view instanceof GlobalStructureView);
 	}
 	
-	private boolean acceptGranularity(ProgramElementNode.Kind kind, StructureViewProperties.Granularity granularity) {
+	private boolean acceptGranularity(IProgramElement.Kind kind, StructureViewProperties.Granularity granularity) {
 		
 		if (granularity == StructureViewProperties.Granularity.DECLARED_ELEMENTS) {
 			return true;
 		} else if (granularity == StructureViewProperties.Granularity.MEMBER && 
-			(kind != ProgramElementNode.Kind.CODE)) {
+			(kind != IProgramElement.Kind.CODE)) {
 			return true;
 		} else if (granularity == StructureViewProperties.Granularity.TYPE
-			&& (kind == ProgramElementNode.Kind.PROJECT
-				|| kind == ProgramElementNode.Kind.PACKAGE
+			&& (kind == IProgramElement.Kind.PROJECT
+				|| kind == IProgramElement.Kind.PACKAGE
 				|| kind.isSourceFileKind()
 				|| kind.isTypeKind())) {
 			return true;			
 		} else if (granularity == StructureViewProperties.Granularity.FILE
-			&& (kind == ProgramElementNode.Kind.PROJECT
-				|| kind == ProgramElementNode.Kind.PACKAGE
+			&& (kind == IProgramElement.Kind.PROJECT
+				|| kind == IProgramElement.Kind.PACKAGE
 				|| kind.isSourceFileKind())) {
 			return true;			
 		} else if (granularity == StructureViewProperties.Granularity.PACKAGE
-			&& (kind == ProgramElementNode.Kind.PROJECT
-				|| kind == ProgramElementNode.Kind.PACKAGE)) {
+			&& (kind == IProgramElement.Kind.PROJECT
+				|| kind == IProgramElement.Kind.PACKAGE)) {
 			return true;			
 		} else {
 			return false;
 		}
 	}
 	
-	private boolean acceptNode(StructureNode node, StructureViewProperties properties) {
-		if (node instanceof ProgramElementNode) {
-			ProgramElementNode pNode = (ProgramElementNode)node;
-			if (!acceptGranularity(pNode.getProgramElementKind(), properties.getGranularity())) {
+	private boolean acceptNode(IProgramElement node, StructureViewProperties properties) {
+		if (node instanceof IProgramElement) {
+			IProgramElement pNode = (IProgramElement)node;
+			if (!acceptGranularity(pNode.getKind(), properties.getGranularity())) {
 				return false;
 			} else if (pNode.isMemberKind()) {
 				if (properties.getFilteredMemberAccessibility().contains(pNode.getAccessibility())) {
 					return false;	
 				}
-				if (properties.getFilteredMemberKinds().contains(pNode.getProgramElementKind())) {
+				if (properties.getFilteredMemberKinds().contains(pNode.getKind())) {
 					return false;	
 				}
 				for (Iterator it = pNode.getModifiers().iterator(); it.hasNext(); ) {
@@ -194,8 +178,8 @@ public class TreeStructureViewBuilder {
 					}	
 				}
 			}
-		} else if (node instanceof RelationNode) {
-			Relation relation = ((RelationNode)node).getRelation();
+		} else if (node instanceof IRelationship) {
+			IRelationship relation = (IRelationship)node;
 			return properties.getRelations().contains(relation);
 		} else {
 			return true;
@@ -213,7 +197,7 @@ public class TreeStructureViewBuilder {
 	}
 
     private StructureViewNode buildCustomTree(GlobalStructureView view, StructureModel model) {
-        StructureNode rootNode = model.getRoot();
+        IProgramElement rootNode = model.getRoot();
         StructureViewNode treeNode = nodeFactory.createNode(rootNode);
 
         List rootNodes = new ArrayList();
@@ -221,10 +205,10 @@ public class TreeStructureViewBuilder {
 		
         for (Iterator it = rootNodes.iterator(); it.hasNext(); ) {
             if (view.getGlobalViewProperties().getHierarchy().equals(StructureViewProperties.Hierarchy.CROSSCUTTING)) {
-                treeNode.add(getCrosscuttingChildren((StructureNode)it.next()));
+                treeNode.add(getCrosscuttingChildren((IProgramElement)it.next()));
             } else if (view.getGlobalViewProperties().getHierarchy().equals(StructureViewProperties.Hierarchy.INHERITANCE)) {
                 treeNode.add(getInheritanceChildren(
-                	(StructureNode)it.next(),
+                	(IProgramElement)it.next(),
                 	view.getViewProperties().getRelations())	
                 );
             }
@@ -232,123 +216,125 @@ public class TreeStructureViewBuilder {
         return treeNode;
     }
 
-    private void getRoots(StructureNode rootNode, List roots, StructureViewProperties.Hierarchy hierarchy) {
-        if (rootNode != null && rootNode.getChildren() != null) {
-            for (Iterator it = rootNode.getChildren().iterator(); it.hasNext(); ) {
-                StructureNode node = (StructureNode)it.next();
-                if (node instanceof ProgramElementNode) {
-                    if (acceptNodeAsRoot((ProgramElementNode)node, hierarchy)) {
-                        ProgramElementNode pNode = (ProgramElementNode)node;
-                        List relations = pNode.getRelations();
-                        String delimiter = "";
-                        if (hierarchy.equals(StructureViewProperties.Hierarchy.CROSSCUTTING)) {
-                            delimiter = "uses pointcut";
-                        } else if (hierarchy.equals(StructureViewProperties.Hierarchy.INHERITANCE)) {
-                            delimiter = "inherits";
-                        } 
-                        if (relations != null && relations.toString().indexOf(delimiter) == -1) {
-                            boolean found = false;
-                            for (Iterator it2 = roots.iterator(); it2.hasNext(); ) {
-                                if (((ProgramElementNode)it2.next()).equals(pNode)) found = true;
-                            }
-                            if (!found) roots.add(pNode);
-                        } 
-                    } 
-                }
-                getRoots(node, roots, hierarchy);
-            }
-        }
+    private void getRoots(IProgramElement rootNode, List roots, StructureViewProperties.Hierarchy hierarchy) {
+//        if (rootNode != null && rootNode.getChildren() != null) {
+//            for (Iterator it = rootNode.getChildren().iterator(); it.hasNext(); ) {
+//                IProgramElement node = (IProgramElement)it.next();
+//                if (node instanceof IProgramElement) {
+//                    if (acceptNodeAsRoot((IProgramElement)node, hierarchy)) {
+//                        IProgramElement pNode = (IProgramElement)node;
+//                        List relations = pNode.getRelations();
+//                        String delimiter = "";
+//                        if (hierarchy.equals(StructureViewProperties.Hierarchy.CROSSCUTTING)) {
+//                            delimiter = "uses pointcut";
+//                        } else if (hierarchy.equals(StructureViewProperties.Hierarchy.INHERITANCE)) {
+//                            delimiter = "inherits";
+//                        } 
+//                        if (relations != null && relations.toString().indexOf(delimiter) == -1) {
+//                            boolean found = false;
+//                            for (Iterator it2 = roots.iterator(); it2.hasNext(); ) {
+//                                if (((IProgramElement)it2.next()).equals(pNode)) found = true;
+//                            }
+//                            if (!found) roots.add(pNode);
+//                        } 
+//                    } 
+//                }
+//                getRoots(node, roots, hierarchy);
+//            }
+//        }
     }
 
-    public boolean acceptNodeAsRoot(ProgramElementNode node, StructureViewProperties.Hierarchy hierarchy) {
+    public boolean acceptNodeAsRoot(IProgramElement node, StructureViewProperties.Hierarchy hierarchy) {
         if (hierarchy.equals(StructureViewProperties.Hierarchy.CROSSCUTTING)) {
-            return node.getProgramElementKind().equals(ProgramElementNode.Kind.ADVICE)
-                || node.getProgramElementKind().equals(ProgramElementNode.Kind.POINTCUT);
+            return node.getKind().equals(IProgramElement.Kind.ADVICE)
+                || node.getKind().equals(IProgramElement.Kind.POINTCUT);
         } else if (hierarchy.equals(StructureViewProperties.Hierarchy.INHERITANCE)) {
-            return node.getProgramElementKind().equals(ProgramElementNode.Kind.CLASS);
+            return node.getKind().equals(IProgramElement.Kind.CLASS);
         } else {	
             return false;
         }
     }
 
-    private StructureViewNode getInheritanceChildren(StructureNode node, List associations) {
+    private StructureViewNode getInheritanceChildren(IProgramElement node, List associations) {
     	StructureViewNode treeNode = nodeFactory.createNode(node);
         //StructureViewNode treeNode = new StructureViewNodeAdapter(node);
-        List relations = ((ProgramElementNode)node).getRelations();
-        if (relations != null) {
-            for (Iterator it = relations.iterator(); it.hasNext(); ) {
-                RelationNode relation = (RelationNode)it.next();
-                if (relation.getName().equals("is inherited by")) {
-                    for (Iterator it2 = relation.getChildren().iterator(); it2.hasNext(); ) {
-                        ProgramElementNode pNode = ((LinkNode)it2.next()).getProgramElementNode();
-                        StructureViewNode newNode = getInheritanceChildren(pNode, associations);
-                        StructureViewNode typeChildren = buildTree(newNode.getStructureNode(), associations);
-                        for (int i = 0; i < typeChildren.getChildren().size(); i++) {
-                            newNode.add((StructureViewNode)typeChildren.getChildren().get(i));
-                        }
-						treeNode.add(newNode);
-                    }
-                }
-            }
-        }
-        return treeNode;
+        List relations = ((IProgramElement)node).getRelations();
+        throw new RuntimeException("unimplemented");
+//        if (relations != null) {
+//            for (Iterator it = relations.iterator(); it.hasNext(); ) {
+//				IRelationship relation = (IRelationship)it.next();
+//                if (relation.getName().equals("is inherited by")) {
+//                    for (Iterator it2 = relation.getTargets().iterator(); it2.hasNext(); ) {
+////                        IProgramElement pNode = ((LinkNode)it2.next()).getProgramElementNode();
+////                        StructureViewNode newNode = getInheritanceChildren(pNode, associations);
+//                        StructureViewNode typeChildren = buildTree(newNode.getStructureNode(), associations);
+//                        for (int i = 0; i < typeChildren.getChildren().size(); i++) {
+//                            newNode.add((StructureViewNode)typeChildren.getChildren().get(i));
+//                        }
+//						treeNode.add(newNode);
+//                    }
+//                }
+//            }
+//        }
+//        return treeNode;
     }
 
-    private StructureViewNode getCrosscuttingChildren(StructureNode node) {
+    private StructureViewNode getCrosscuttingChildren(IProgramElement node) {
         //StructureViewNodeAdapter treeNode = new StructureViewNodeAdapter(node);
         StructureViewNode treeNode = nodeFactory.createNode(node);
-        List relations = ((ProgramElementNode)node).getRelations();
-        if (relations != null) {
-            for (Iterator it = relations.iterator(); it.hasNext(); ) {
-                RelationNode relation = (RelationNode)it.next();
-                if (relation.getName().equals("pointcut used by")) {
-                    for (Iterator it2 = relation.getChildren().iterator(); it2.hasNext(); ) {
-                        ProgramElementNode pNode = ((LinkNode)it2.next()).getProgramElementNode();
-                        StructureViewNode newNode = getCrosscuttingChildren(pNode);
-                        for (Iterator it3 = pNode.getRelations().iterator(); it3.hasNext(); ) {
-                            RelationNode relationNode = (RelationNode)it3.next();
-                            if (relationNode.getName().indexOf("pointcut") == -1) {
-                                newNode.add(getRelations(relationNode));
-                            }
-                        }
-                        treeNode.add(newNode);
-                    }
-                } else if (relations.toString().indexOf("uses pointcut") == -1) {
-                    for (Iterator it4 = relations.iterator(); it4.hasNext(); ) {
-                        RelationNode relationNode = (RelationNode)it4.next();
-                        if (relationNode.getName().indexOf("pointcut") == -1) {
-                            treeNode.add(getRelations(relationNode));
-                        }
-                    }
-                }
-            }
-        }
-        return treeNode;
+        List relations = ((IProgramElement)node).getRelations();
+        throw new RuntimeException("unimplemented");
+//        if (relations != null) {
+//            for (Iterator it = relations.iterator(); it.hasNext(); ) {
+//				IRelationship relation = (IRelationship)it.next();
+//                if (relation.getName().equals("pointcut used by")) {
+//                    for (Iterator it2 = relation.getTargets().iterator(); it2.hasNext(); ) {
+//                        IProgramElement pNode = ((LinkNode)it2.next()).getProgramElementNode();
+//                        StructureViewNode newNode = getCrosscuttingChildren(pNode);
+//                        for (Iterator it3 = pNode.getRelations().iterator(); it3.hasNext(); ) {
+//							IRelationship relationNode = (IRelation)it3.next();
+//                            if (relationNode.getName().indexOf("pointcut") == -1) {
+//                                newNode.add(getRelations(relationNode));
+//                            }
+//                        }
+//                        treeNode.add(newNode);
+//                    }
+//                } else if (relations.toString().indexOf("uses pointcut") == -1) {
+//                    for (Iterator it4 = relations.iterator(); it4.hasNext(); ) {
+//                        IRelation relationNode = (IRelationship)it4.next();
+//                        if (relationNode.getName().indexOf("pointcut") == -1) {
+//                            treeNode.add(getRelations(relationNode));
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        return treeNode;
     }
 
-    private StructureViewNode buildTree(StructureNode node, List associations) {
+    private StructureViewNode buildTree(IProgramElement node, List associations) {
         //StructureViewNode treeNode = new StructureViewNodeAdapter(node);
         StructureViewNode treeNode = nodeFactory.createNode(node);
-        if (node instanceof ProgramElementNode) {
-            List relations = ((ProgramElementNode)node).getRelations();
-            if (relations != null) {
-                for (Iterator it = relations.iterator(); it.hasNext(); ) {
-                    RelationNode relationNode = (RelationNode)it.next();
-                    if (associations.contains(relationNode.getRelation().toString())) {
-                        treeNode.add(buildTree(relationNode, associations));
-                    }
-                }
-            }
-        }
+//        if (node instanceof IProgramElement) {
+//            List relations = ((IProgramElement)node).getRelations();
+//            if (relations != null) {
+//                for (Iterator it = relations.iterator(); it.hasNext(); ) {
+//					IRelationship relationNode = (IRelationship)it.next();
+//                    if (associations.contains(relationNode.toString())) {
+//                        treeNode.add(buildTree(relationNode, associations));
+//                    }
+//                }
+//            }
+//        }
         if (node != null) {
             List children = null;
             children = node.getChildren();
             if (children != null) {
                 List childList = new ArrayList();
                 for (Iterator itt = children.iterator(); itt.hasNext(); ) {
-                    StructureNode child = (StructureNode)itt.next();
-                    if (child instanceof ProgramElementNode) {
-                        ProgramElementNode progNode = (ProgramElementNode)child;
+                    IProgramElement child = (IProgramElement)itt.next();
+                    if (child instanceof IProgramElement) {
+                        IProgramElement progNode = (IProgramElement)child;
                         if (!progNode.isCode()) {
                             childList.add(buildTree(child, associations));
                         }
@@ -366,12 +352,12 @@ public class TreeStructureViewBuilder {
         return treeNode;
     }
 
-    private StructureViewNode getRelations(RelationNode node) {
+    private StructureViewNode getRelations(IRelationship node) {
         //StructureViewNode treeNode = new StructureViewNode(node);
         StructureViewNode treeNode = nodeFactory.createNode(node);
-        for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
+        for (Iterator it = node.getTargets().iterator(); it.hasNext(); ) {
             treeNode.add(
-            	nodeFactory.createNode((StructureNode)it.next())
+            	nodeFactory.createNode((IProgramElement)it.next())
             );
         }
         return treeNode;
@@ -392,11 +378,11 @@ public class TreeStructureViewBuilder {
 
     private static final Comparator ALPHABETICAL_COMPARATOR = new Comparator() {
         public int compare(Object o1, Object o2) {  
-        	StructureNode sv1 = ((StructureViewNode)o1).getStructureNode();
-        	StructureNode sv2 = ((StructureViewNode)o2).getStructureNode();        
-            if (sv1 instanceof ProgramElementNode && sv2 instanceof ProgramElementNode) {
-            	ProgramElementNode p1 = (ProgramElementNode)sv1;
-            	ProgramElementNode p2 = (ProgramElementNode)sv2;
+        	IProgramElement sv1 = ((StructureViewNode)o1).getStructureNode();
+        	IProgramElement sv2 = ((StructureViewNode)o2).getStructureNode();        
+            if (sv1 instanceof IProgramElement && sv2 instanceof IProgramElement) {
+            	IProgramElement p1 = (IProgramElement)sv1;
+            	IProgramElement p2 = (IProgramElement)sv2;
 				return p1.getName().compareTo(p2.getName());
             } else {
             	return 0;	
@@ -406,11 +392,11 @@ public class TreeStructureViewBuilder {
     
     private static final Comparator DECLARATIONAL_COMPARATOR = new Comparator() {
         public int compare(Object o1, Object o2) {            
-        	StructureNode sv1 = ((StructureViewNode)o1).getStructureNode();
-        	StructureNode sv2 = ((StructureViewNode)o2).getStructureNode();        
-            if (sv1 instanceof ProgramElementNode && sv2 instanceof ProgramElementNode) {
-            	ProgramElementNode p1 = (ProgramElementNode)sv1;
-            	ProgramElementNode p2 = (ProgramElementNode)sv2;
+        	IProgramElement sv1 = ((StructureViewNode)o1).getStructureNode();
+        	IProgramElement sv2 = ((StructureViewNode)o2).getStructureNode();        
+            if (sv1 instanceof IProgramElement && sv2 instanceof IProgramElement) {
+            	IProgramElement p1 = (IProgramElement)sv1;
+            	IProgramElement p2 = (IProgramElement)sv2;
             	if (p1.getSourceLocation() == null) {
             		return 0;
             	} else if (p1.getSourceLocation().getLine() < p2.getSourceLocation().getLine()) {

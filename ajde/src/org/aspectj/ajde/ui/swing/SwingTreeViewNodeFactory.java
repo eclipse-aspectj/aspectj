@@ -16,10 +16,9 @@ package org.aspectj.ajde.ui.swing;
 
 import java.util.List;
 
-import org.aspectj.ajde.ui.AbstractIcon;
-import org.aspectj.ajde.ui.StructureViewNode;
-import org.aspectj.ajde.ui.StructureViewNodeFactory;
-import org.aspectj.asm.StructureNode;
+import org.aspectj.ajde.ui.*;
+import org.aspectj.asm.*;
+import org.aspectj.asm.IProgramElement;
 
 /**
  * @author Mik Kersten
@@ -30,7 +29,14 @@ public class SwingTreeViewNodeFactory extends StructureViewNodeFactory {
 		super(iconRegistry);	
 	}
 	
-	protected StructureViewNode createConcreteNode(StructureNode node, AbstractIcon icon, List children) {
+	protected StructureViewNode createConcreteNode(IProgramElement node, AbstractIcon icon, List children) {
 		return new SwingTreeViewNode(node, icon, children);
 	}
+
+	protected StructureViewNode createConcreteNode(
+		IRelationship relationship,
+		AbstractIcon icon) {
+		return new SwingTreeViewNode(relationship, icon);
+	}
+
 }

@@ -60,7 +60,7 @@ public class AsmBuilderTest extends TestCase {
 		BlockScope scope = null;
 		
 		try { 
-			new AsmBuilder(new CompilationResult(cu, 0, 0, 0)).visit(local, scope);
+			new AsmHierarchyBuilder(new CompilationResult(cu, 0, 0, 0)).visit(local, scope);
 		} catch (Exception e) {
 			assertTrue(e instanceof EmptyStackException);
 		}

@@ -14,27 +14,24 @@
 
 package org.aspectj.ajde.ui.swing;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.aspectj.ajde.ui.AbstractIcon;
-import org.aspectj.ajde.ui.StructureViewNode;
-import org.aspectj.asm.StructureNode;
+import org.aspectj.ajde.ui.*;
+import org.aspectj.asm.*;
 
 /**
  * @author Mik Kersten
  */
 public class SwingTreeViewNode extends DefaultMutableTreeNode implements StructureViewNode {
 
-	private StructureNode structureNode;
+	private IProgramElement programElement;
 	private AbstractIcon icon;
 	
-	public SwingTreeViewNode(StructureNode structureNode, AbstractIcon icon, List children) {
-		super(structureNode, true);
-		this.structureNode = structureNode;
+	public SwingTreeViewNode(IProgramElement programElement, AbstractIcon icon, List children) {
+		super(programElement, true);
+		this.programElement = programElement;
 		this.icon = icon;
 		
 		if (children != null) {
@@ -43,9 +40,22 @@ public class SwingTreeViewNode extends DefaultMutableTreeNode implements Structu
 			}
 		}
 	}
+
+	public SwingTreeViewNode(IRelationship relationship, AbstractIcon icon) {
+//		super(IProgramElement, true);
+		throw new RuntimeException("unimplemented");
+//		this.IProgramElement = IProgramElement;
+//		this.icon = icon;
+//		
+//		if (children != null) {
+//			for (Iterator it = children.iterator(); it.hasNext(); ) { 
+//				super.add((SwingTreeViewNode)it.next());	
+//			}
+//		}
+	}
 	
-	public StructureNode getStructureNode() {
-		return structureNode;	
+	public IProgramElement getStructureNode() {
+		return programElement;	
 	}
 	
 	public AbstractIcon getIcon() {

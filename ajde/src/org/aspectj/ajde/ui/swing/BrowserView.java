@@ -37,7 +37,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.border.Border;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.IProgramElement;
 
 /**
  * @author Mik Kersten
@@ -215,7 +215,7 @@ class BrowserView extends JPanel {
                 joinpointProbe_button_actionPerformed(e);
             }
         });
-        joinpointProbe_button.setIcon(icons.getStructureSwingIcon(ProgramElementNode.Kind.POINTCUT));
+        joinpointProbe_button.setIcon(icons.getStructureSwingIcon(IProgramElement.Kind.POINTCUT));
         joinpointProbe_button.setToolTipText("Create joinpoint probe");
         joinpointProbe_button.setPreferredSize(new Dimension(20, 20));
         joinpointProbe_button.setMinimumSize(new Dimension(20, 20));

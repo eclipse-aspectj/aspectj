@@ -13,33 +13,24 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
+import java.util.jar.*;
 
 import org.aspectj.ajdt.internal.compiler.AjCompiler;
-import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
+import org.aspectj.ajdt.internal.compiler.lookup.*;
 import org.aspectj.ajdt.internal.compiler.parser.AjParser;
 import org.aspectj.ajdt.internal.compiler.problem.AjProblemReporter;
-import org.aspectj.asm.ProgramElementNode;
-import org.aspectj.asm.StructureModel;
-import org.aspectj.asm.StructureModelManager;
+import org.aspectj.asm.*;
+import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.*;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.bcel.BcelWeaver;
-import org.aspectj.weaver.bcel.BcelWorld;
-import org.aspectj.weaver.bcel.UnwovenClassFile;
-import org.eclipse.jdt.core.compiler.CharOperation;
-import org.eclipse.jdt.core.compiler.IProblem;
+import org.aspectj.weaver.bcel.*;
+import org.eclipse.jdt.core.compiler.*;
 import org.eclipse.jdt.internal.compiler.*;
-import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
+import org.eclipse.jdt.internal.compiler.batch.*;
 import org.eclipse.jdt.internal.compiler.batch.FileSystem;
-import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
-import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
+import org.eclipse.jdt.internal.compiler.env.*;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 import org.eclipse.jdt.internal.compiler.util.HashtableOfObject;
@@ -177,15 +168,15 @@ public class AjBuildManager {
     private void setupModel() {
         String rootLabel = "<root>";
         StructureModel model = StructureModelManager.getDefault().getStructureModel();
-        ProgramElementNode.Kind kind = ProgramElementNode.Kind.FILE_JAVA;
+        IProgramElement.Kind kind = IProgramElement.Kind.FILE_JAVA;
         if (buildConfig.getConfigFile() != null) {
             rootLabel = buildConfig.getConfigFile().getName();
             model.setConfigFile(
                 buildConfig.getConfigFile().getAbsolutePath()
             );
-            kind = ProgramElementNode.Kind.FILE_LST;  
+            kind = IProgramElement.Kind.FILE_LST;  
         }
-        model.setRoot(new ProgramElementNode(rootLabel, kind, new ArrayList()));
+        model.setRoot(new ProgramElement(rootLabel, kind, new ArrayList()));
                 
         HashMap modelFileMap = new HashMap();
         model.setFileMap(new HashMap());

@@ -14,23 +14,14 @@
      
 package org.aspectj.ajde.ui.swing;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.event.*;
+import java.util.*;
 
-import javax.swing.AbstractAction;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
+import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.tree.TreePath;
 
-import org.aspectj.asm.LinkNode;
-import org.aspectj.asm.ProgramElementNode;
-import org.aspectj.asm.StructureNode;
+import org.aspectj.asm.IProgramElement;
 
 /**
  * @author  Mik Kersten
@@ -61,20 +52,21 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
     public void singleClickNavigation(MouseEvent e) {
         SwingTreeViewNode treeNode = (SwingTreeViewNode)tree.getLastSelectedPathComponent();
         if (treeNode != null && !e.isControlDown() && !e.isShiftDown() && e.getModifiers() != 4) {
-            StructureNode currNode = (StructureNode)treeNode.getUserObject();
-            if (currNode instanceof ProgramElementNode && !e.isControlDown()
+            IProgramElement currNode = (IProgramElement)treeNode.getUserObject();
+            if (currNode instanceof IProgramElement && !e.isControlDown()
                 && !e.isShiftDown() && e.getModifiers() != 4) {
                 //AjdeUIManager.getDefault().getViewManager().showNodeInMasterView((ProgramElementNode)currNode);
                 //if (AjdeUIManager.getDefault().getViewManager().isSplitViewMode()) {
                 //    AjdeUIManager.getDefault().getViewManager().showNodeInSlaveView((ProgramElementNode)currNode);
                 //}
-            } else if (currNode instanceof LinkNode) {
+            } 
+//            	else if (currNode instanceof LinkNode) {
                 //if (!AjdeUIManager.getDefault().getViewManager().isSplitViewMode()) {
                 //    AjdeUIManager.getDefault().getViewManager().showNodeInMasterView((LinkNode)currNode);
                 //} else {
                 //    AjdeUIManager.getDefault().getViewManager().showNodeInSlaveView(((LinkNode)currNode).getProgramElementNode());
                 //}
-           }
+//           }
         }
     }
 
@@ -82,18 +74,19 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
             int clickCount = e.getClickCount();
             SwingTreeViewNode treeNode = (SwingTreeViewNode)tree.getLastSelectedPathComponent();
             if (treeNode != null) {
-                StructureNode currNode = (StructureNode)treeNode.getUserObject();
-                if (currNode instanceof ProgramElementNode && !e.isControlDown() && !e.isShiftDown()
+                IProgramElement currNode = (IProgramElement)treeNode.getUserObject();
+                if (currNode instanceof IProgramElement && !e.isControlDown() && !e.isShiftDown()
                     && e.getModifiers() != 4) {
                     //AjdeUIManager.getDefault().getViewManager().showNodeInMasterView(((LinkNode)currNode).getProgramElementNode());
                     //AjdeUIManager.getDefault().getViewManager().showNodeInSlaveView(((LinkNode)currNode).getProgramElementNode());
-                } else if (currNode instanceof LinkNode) {
-                    if (clickCount == 1) {
-                        //AjdeUIManager.getDefault().getViewManager().showLink((LinkNode)currNode);
-                    } else if (clickCount == 2) {
-                        //navigationAction((ProgramElementNode)((LinkNode)currNode).getProgramElementNode(), true, true);
-                    }
-                }
+                } 
+//                else if (currNode instanceof LinkNode) {
+//                    if (clickCount == 1) {
+//                        //AjdeUIManager.getDefault().getViewManager().showLink((LinkNode)currNode);
+//                    } else if (clickCount == 2) {
+//                        //navigationAction((ProgramElementNode)((LinkNode)currNode).getProgramElementNode(), true, true);
+//                    }
+//                }
             }
         }
 
@@ -107,14 +100,14 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
             TreePath[] selectionPaths = tree.getSelectionPaths();
             final List signatures = new ArrayList();
             for (int i = 0; i < selectionPaths.length; i++) {
-                StructureNode currNode = (StructureNode)((SwingTreeViewNode)selectionPaths[i].getLastPathComponent()).getUserObject();
-                if (currNode instanceof LinkNode || currNode instanceof ProgramElementNode) {
-                    signatures.add(currNode);
-                }
+                IProgramElement currNode = (IProgramElement)((SwingTreeViewNode)selectionPaths[i].getLastPathComponent()).getUserObject();
+//                if (currNode instanceof LinkNode || currNode instanceof IProgramElement) {
+//                    signatures.add(currNode);
+//                }
             }
 
             JPopupMenu popup = new JPopupMenu();
-            JMenuItem showSourcesItem = new JMenuItem("Display sources", AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.CODE));
+            JMenuItem showSourcesItem = new JMenuItem("Display sources", AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.CODE));
             showSourcesItem.setFont(new java.awt.Font("Dialog", 0, 11));
             showSourcesItem.addActionListener(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
@@ -123,11 +116,11 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
 //					public void showSourcesNodes(java.util.List nodes) {
 //						for (Iterator it = nodes.iterator(); it.hasNext(); ) {
 //							ProgramElementNode currNode = null;
-//							StructureNode structureNode = (StructureNode)it.next();
-//							if (structureNode instanceof LinkNode) {
-//								currNode = ((LinkNode)structureNode).getProgramElementNode();
+//							IProgramElement IProgramElement = (IProgramElement)it.next();
+//							if (IProgramElement instanceof LinkNode) {
+//								currNode = ((LinkNode)IProgramElement).getProgramElementNode();
 //							} else {
-//								currNode = (ProgramElementNode)structureNode;
+//								currNode = (ProgramElementNode)IProgramElement;
 //							}
 //							ISourceLocation sourceLoc = currNode.getSourceLocation();
 //							if (null != sourceLoc) {
@@ -143,7 +136,7 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
             popup.add(showSourcesItem);
 
             popup.addSeparator();
-            JMenuItem generatePCD = new JMenuItem("Pointcut Wizard (alpha)...", AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.POINTCUT));
+            JMenuItem generatePCD = new JMenuItem("Pointcut Wizard (alpha)...", AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.POINTCUT));
             generatePCD.setFont(new java.awt.Font("Dialog", 0, 11));
             generatePCD.addActionListener(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {

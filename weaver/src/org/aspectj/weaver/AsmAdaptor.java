@@ -13,17 +13,11 @@
 
 package org.aspectj.weaver;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 
-import org.aspectj.asm.AdviceAssociation;
-import org.aspectj.asm.LinkNode;
-import org.aspectj.asm.ProgramElementNode;
-import org.aspectj.asm.Relation;
-import org.aspectj.asm.RelationNode;
-import org.aspectj.asm.StructureModel;
-import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.SourceLocation;
+import org.aspectj.asm.*;
+import org.aspectj.asm.internal.*;
+import org.aspectj.bridge.*;
 
 public class AsmAdaptor {
 	public static void noteMunger(StructureModel model, Shadow shadow, ShadowMunger munger) {
@@ -35,89 +29,89 @@ public class AsmAdaptor {
 			}
 
 //			System.out.println("--------------------------");
-			ProgramElementNode targetNode = getNode(model, shadow);
-			ProgramElementNode adviceNode = getNode(model, a);  
+			IProgramElement targetNode = getNode(model, shadow);
+			IProgramElement adviceNode = getNode(model, a);  
 			
-			Relation relation;
-			if (shadow.getKind().equals(Shadow.FieldGet) || shadow.getKind().equals(Shadow.FieldSet)) {
-				relation = AdviceAssociation.FIELD_ACCESS_RELATION;
-			} else if (shadow.getKind().equals(Shadow.Initialization) || shadow.getKind().equals(Shadow.StaticInitialization)) {
-				relation = AdviceAssociation.INITIALIZER_RELATION;
-			} else if (shadow.getKind().equals(Shadow.ExceptionHandler)) {
-				relation = AdviceAssociation.HANDLER_RELATION;
-			} else if (shadow.getKind().equals(Shadow.MethodCall)) {
-				relation = AdviceAssociation.METHOD_CALL_SITE_RELATION;
-			} else if (shadow.getKind().equals(Shadow.ConstructorCall)) {
-				relation = AdviceAssociation.CONSTRUCTOR_CALL_SITE_RELATION;
-			} else if (shadow.getKind().equals(Shadow.MethodExecution) || shadow.getKind().equals(Shadow.AdviceExecution)) {
-				relation = AdviceAssociation.METHOD_RELATION;
-			} else if (shadow.getKind().equals(Shadow.ConstructorExecution)) {
-				relation = AdviceAssociation.CONSTRUCTOR_RELATION;
-			} else if (shadow.getKind().equals(Shadow.PreInitialization)) {
-				// TODO: someone should check that this behaves reasonably in the IDEs
-				relation = AdviceAssociation.INITIALIZER_RELATION;
-			} else {
-				System.err.println("> unmatched relation: " + shadow.getKind());
-				relation = AdviceAssociation.METHOD_RELATION;
-			}
-			
+//			throw new RuntimeException("unimplemented");
+			IRelationship relation = null;
+//			if (shadow.getKind().equals(Shadow.FieldGet) || shadow.getKind().equals(Shadow.FieldSet)) {
+//				relation = AdviceAssociation.FIELD_ACCESS_RELATION;
+//			} else if (shadow.getKind().equals(Shadow.Initialization) || shadow.getKind().equals(Shadow.StaticInitialization)) {
+//				relation = AdviceAssociation.INITIALIZER_RELATION;
+//			} else if (shadow.getKind().equals(Shadow.ExceptionHandler)) {
+//				relation = AdviceAssociation.HANDLER_RELATION;
+//			} else if (shadow.getKind().equals(Shadow.MethodCall)) {
+//				relation = AdviceAssociation.METHOD_CALL_SITE_RELATION;
+//			} else if (shadow.getKind().equals(Shadow.ConstructorCall)) {
+//				relation = AdviceAssociation.CONSTRUCTOR_CALL_SITE_RELATION;
+//			} else if (shadow.getKind().equals(Shadow.MethodExecution) || shadow.getKind().equals(Shadow.AdviceExecution)) {
+//				relation = AdviceAssociation.METHOD_RELATION;
+//			} else if (shadow.getKind().equals(Shadow.ConstructorExecution)) {
+//				relation = AdviceAssociation.CONSTRUCTOR_RELATION;
+//			} else if (shadow.getKind().equals(Shadow.PreInitialization)) {
+//				// TODO: someone should check that this behaves reasonably in the IDEs
+//				relation = AdviceAssociation.INITIALIZER_RELATION;
+//			} else {
+//				System.err.println("> unmatched relation: " + shadow.getKind());
+//				relation = AdviceAssociation.METHOD_RELATION;
+//			}
+//			
 //			System.out.println("> target: " + targetNode + ", advice: " + adviceNode);
 			createAppropriateLinks(targetNode, adviceNode, relation);
 		}
 	}
 
 	private static void createAppropriateLinks(
-		ProgramElementNode target,
-		ProgramElementNode advice,
-		Relation relation)
+		IProgramElement target,
+		IProgramElement advice,
+		IRelationship relation)
 	{
 		if (target == null || advice == null) return;
 		
 		
-		addLink(target, new LinkNode(advice),  relation, true);
-		addLink(advice, new LinkNode(target),  relation, false);
-		
-//		System.out.println(">> added target: " + target.getProgramElementKind() + ", advice: " + advice);
-//		System.out.println(">> target: " + target + ", advice: " + target.getSourceLocation());
+//		addLink(target, new LinkNode(advice),  relation, true);
+//		addLink(advice, new LinkNode(target),  relation, false);
 	}
 
 	private static void addLink(
-		ProgramElementNode onNode,
-		LinkNode linkNode,
-		Relation relation,
+		IProgramElement onNode,
+//		LinkNode linkNode,
+		IRelationship relation,
 		boolean isBack)
 	{
-		RelationNode node = null;
-		String relationName = isBack ? relation.getBackNavigationName() : relation.getForwardNavigationName();
+		IRelationship node = null;
+		String relationName = relation.getName();
+//		isBack ? relation() : relation.getForwardNavigationName();
 		
 		//System.err.println("on: " + onNode + " relationName: " + relationName + " existin: " + onNode.getRelations());
 		
 		for (Iterator i = onNode.getRelations().iterator(); i.hasNext();) {
-			RelationNode relationNode = (RelationNode) i.next();
+			IRelationship relationNode = (IRelationship) i.next();
 			if (relationName.equals(relationNode.getName())) {
 				node = relationNode;
 				break;
 			}
 		}	
 		if (node == null) {
-			node = new RelationNode(relation,  relationName, new ArrayList());
-			onNode.getRelations().add(node);
+			throw new RuntimeException("unimplemented");
+//			node = new Relationship(relation,  relationName, new ArrayList());
+//			onNode.getRelations().add(node);
 		}
-		node.getChildren().add(linkNode);
+//		node.getTargets().add(linkNode);
 		
 	}
 
-	private static ProgramElementNode getNode(StructureModel model, Advice a) {
+	private static IProgramElement getNode(StructureModel model, Advice a) {
 		//ResolvedTypeX inAspect = a.getConcreteAspect();
 		Member member = a.getSignature();
 		if (a.getSignature() == null) return null;
 		return lookupMember(model, member);
 	}
 	
-	private static ProgramElementNode getNode(StructureModel model, Shadow shadow) {
+	private static IProgramElement getNode(StructureModel model, Shadow shadow) {
 		Member enclosingMember = shadow.getEnclosingCodeSignature();
 		
-		ProgramElementNode enclosingNode = lookupMember(model, enclosingMember);
+		IProgramElement enclosingNode = lookupMember(model, enclosingMember);
 		if (enclosingNode == null) {
 			Lint.Kind err = shadow.getIWorld().getLint().shadowNotInStructure;
 			if (err.isEnabled()) {
@@ -128,19 +122,19 @@ public class AsmAdaptor {
 		
 		Member shadowSig = shadow.getSignature();
 		if (!shadowSig.equals(enclosingMember)) {
-			ProgramElementNode bodyNode = findOrCreateBodyNode(enclosingNode, shadowSig, shadow);
+			IProgramElement bodyNode = findOrCreateBodyNode(enclosingNode, shadowSig, shadow);
 			return bodyNode;
 		} else {
 			return enclosingNode;
 		}
 	}
 
-	private static ProgramElementNode findOrCreateBodyNode(
-		ProgramElementNode enclosingNode,
+	private static IProgramElement findOrCreateBodyNode(
+		IProgramElement enclosingNode,
 		Member shadowSig, Shadow shadow)
 	{
 		for (Iterator it = enclosingNode.getChildren().iterator(); it.hasNext(); ) {
-			ProgramElementNode node = (ProgramElementNode)it.next();
+			IProgramElement node = (IProgramElement)it.next();
 			if (shadowSig.getName().equals(node.getBytecodeName()) &&
 				shadowSig.getSignature().equals(node.getBytecodeSignature()))
 			{
@@ -150,9 +144,9 @@ public class AsmAdaptor {
 		
 		ISourceLocation sl = shadow.getSourceLocation();
 		
-		ProgramElementNode peNode = new ProgramElementNode(
+		IProgramElement peNode = new ProgramElement(
 			shadow.toString(),
-			ProgramElementNode.Kind.CODE,
+			IProgramElement.Kind.CODE,
 //XXX why not use shadow file? new SourceLocation(sl.getSourceFile(), sl.getLine()),
         new SourceLocation(enclosingNode.getSourceLocation().getSourceFile(), sl.getLine()),
 //			enclosingNode.getSourceLocation(),
@@ -171,20 +165,20 @@ public class AsmAdaptor {
 	
 	
 	
-	public static ProgramElementNode lookupMember(StructureModel model, Member member) {
+	public static IProgramElement lookupMember(StructureModel model, Member member) {
 		TypeX declaringType = member.getDeclaringType();
-		ProgramElementNode classNode =
+		IProgramElement classNode =
 			model.findNodeForClass(declaringType.getPackageName(), declaringType.getClassName());
 		return findMemberInClass(classNode, member);
 	}
 
-	private static ProgramElementNode findMemberInClass(
-		ProgramElementNode classNode,
+	private static IProgramElement findMemberInClass(
+		IProgramElement classNode,
 		Member member)
 	{
 		if (classNode == null) return null; // XXX remove this check
 		for (Iterator it = classNode.getChildren().iterator(); it.hasNext(); ) {
-			ProgramElementNode node = (ProgramElementNode)it.next();
+			IProgramElement node = (IProgramElement)it.next();
 			//System.err.println("checking: " + member.getName() + " with " + node.getBytecodeName() + ", " + node.getBytecodeSignature());
 			if (member.getName().equals(node.getBytecodeName()) &&
 				member.getSignature().equals(node.getBytecodeSignature()))

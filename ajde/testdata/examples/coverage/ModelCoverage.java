@@ -65,7 +65,7 @@ aspect AdviceNamingCoverage {
 	int around(int i) throws SizeException: namedWithOneArg(i) { return proceed(i); }
 	
 	before(): named() { }	
-	before(int i): call(* XXX.mumble()) && named() && namedWithOneArg(i) { }	
+	before(int i): call(* *.mumble()) && named() && namedWithOneArg(i) { }	
 	before(int i): named() && call(* *.mumble()) && namedWithOneArg(i) { }	
 	
 	before(): call(* *.mumble()) { }

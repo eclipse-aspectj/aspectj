@@ -14,11 +14,10 @@
 
 package org.aspectj.asm;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 
+import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.SourceLocation;
 
 /**
@@ -26,16 +25,16 @@ import org.aspectj.bridge.SourceLocation;
  */
 public class StructureModel implements Serializable {
 	
-    protected  StructureNode root = null;
+    protected  IProgramElement root = null;
     protected String configFile = null;
     private Map fileMap = null;
-    public static final ProgramElementNode NO_STRUCTURE = new ProgramElementNode("<build to view structure>", ProgramElementNode.Kind.ERROR, null);
+    public static final IProgramElement NO_STRUCTURE = new ProgramElement("<build to view structure>", IProgramElement.Kind.ERROR, null);
 
-    public StructureNode getRoot() {
+    public IProgramElement getRoot() {
         return root;
     }
 
-    public void setRoot(StructureNode root) {
+    public void setRoot(IProgramElement root) {
         this.root = root;
     }
 
@@ -71,14 +70,14 @@ public class StructureModel implements Serializable {
 	 * @param decErrLabel
 	 * @return null if not found
 	 */
-	public ProgramElementNode findNode(ProgramElementNode parent, ProgramElementNode.Kind kind, String name) {
+	public IProgramElement findNode(IProgramElement parent, IProgramElement.Kind kind, String name) {
 		for (Iterator it = parent.getChildren().iterator(); it.hasNext(); ) {
-			ProgramElementNode node = (ProgramElementNode)it.next();
-			if (node.getProgramElementKind().equals(kind) 
+			IProgramElement node = (IProgramElement)it.next();
+			if (node.getKind().equals(kind) 
 				&& name.equals(node.getName())) {
 				return node;
 			} else {
-				ProgramElementNode childSearch = findNode(node, kind, name);
+				IProgramElement childSearch = findNode(node, kind, name);
 				if (childSearch != null) return childSearch;
 			}
 		}
@@ -89,13 +88,13 @@ public class StructureModel implements Serializable {
 	 * @param packageName	if null default package is searched
 	 * @param className 	can't be null
 	 */ 
-	public ProgramElementNode findNodeForClass(String packageName, String className) {
-		StructureNode packageNode = null;
+	public IProgramElement findNodeForClass(String packageName, String className) {
+		IProgramElement packageNode = null;
 		if (packageName == null) {
 			packageNode = root;
 		} else {
 			for (Iterator it = root.getChildren().iterator(); it.hasNext(); ) {
-				StructureNode node = (StructureNode)it.next();
+				IProgramElement node = (IProgramElement)it.next();
 				if (packageName.equals(node.getName())) {
 					packageNode = node;
 				} 
@@ -105,15 +104,15 @@ public class StructureModel implements Serializable {
 		
 		// this searches each file for a class
 		for (Iterator it = packageNode.getChildren().iterator(); it.hasNext(); ) {
-			ProgramElementNode fileNode = (ProgramElementNode)it.next();
-			ProgramElementNode ret = findClassInNodes(fileNode.getChildren(), className);
+			IProgramElement fileNode = (IProgramElement)it.next();
+			IProgramElement ret = findClassInNodes(fileNode.getChildren(), className);
 			if (ret != null) return ret;
 		}
 		
 		return null;
 	}
 	
-	private ProgramElementNode findClassInNodes(Collection nodes, String name) {
+	private IProgramElement findClassInNodes(Collection nodes, String name) {
 		String baseName;
 		String innerName;
 		int dollar = name.indexOf('$');
@@ -127,7 +126,7 @@ public class StructureModel implements Serializable {
 		
 		
 		for (Iterator j = nodes.iterator(); j.hasNext(); ) {
-			ProgramElementNode classNode = (ProgramElementNode)j.next();
+			IProgramElement classNode = (IProgramElement)j.next();
 //			System.err.println("checking: " + classNode + " for " + baseName);	
 //			System.err.println("children: " + classNode.getChildren());
 			if (baseName.equals(classNode.getName())) {
@@ -145,14 +144,14 @@ public class StructureModel implements Serializable {
 	 * @param		sourceFilePath	modified to '/' delimited path for consistency
 	 * @return		a new structure node for the file if it was not found in the model
 	 */
-	public StructureNode findRootNodeForSourceFile(String sourceFile) {
+	public IProgramElement findRootNodeForSourceFile(String sourceFile) {
        	try {
 	       	if (!isValid() || sourceFile == null) {   
 	            return StructureModel.NO_STRUCTURE;
 	        } else {
 	            String correctedPath = new File(sourceFile).getCanonicalPath();//.replace('\\', '/');
 	            //StructureNode node = (StructureNode)getFileMap().get(correctedPath);//findFileNode(filePath, model);
-				StructureNode node = (StructureNode)findInFileMap(correctedPath);//findFileNode(filePath, model);
+				IProgramElement node = (IProgramElement)findInFileMap(correctedPath);//findFileNode(filePath, model);
 	            if (node != null) {
 	                return node;
 	            } else {
@@ -171,9 +170,9 @@ public class StructureModel implements Serializable {
 	 * @param 		lineNumber		if 0 or 1 the corresponding file node will be returned
 	 * @return		a new structure node for the file if it was not found in the model
 	 */
-	public StructureNode findNodeForSourceLine(String sourceFilePath, int lineNumber) {
+	public IProgramElement findNodeForSourceLine(String sourceFilePath, int lineNumber) {
 		String correctedPath = sourceFilePath;//.replace('\\', '/');
-		StructureNode node = findNodeForSourceLineHelper(root, correctedPath, lineNumber);
+		IProgramElement node = findNodeForSourceLineHelper(root, correctedPath, lineNumber);
 		if (node != null) {
 			return node;	
 		} else {
@@ -181,16 +180,16 @@ public class StructureModel implements Serializable {
 		}
 	}
 
-	private StructureNode createFileStructureNode(String sourceFilePath) {
+	private IProgramElement createFileStructureNode(String sourceFilePath) {
 		String fileName = new File(sourceFilePath).getName();
-		ProgramElementNode fileNode = new ProgramElementNode(fileName, ProgramElementNode.Kind.FILE_JAVA, null);
+		IProgramElement fileNode = new ProgramElement(fileName, IProgramElement.Kind.FILE_JAVA, null);
 		fileNode.setSourceLocation(new SourceLocation(new File(sourceFilePath), 1, 1));
 		fileNode.addChild(NO_STRUCTURE);
 		return fileNode;
 	}
 
 
-	private StructureNode findNodeForSourceLineHelper(StructureNode node, String sourceFilePath, int lineNumber) {
+	private IProgramElement findNodeForSourceLineHelper(IProgramElement node, String sourceFilePath, int lineNumber) {
 		if (matches(node, sourceFilePath, lineNumber) 
 			&& !hasMoreSpecificChild(node, sourceFilePath, lineNumber)) {
 			return node;	
@@ -198,8 +197,8 @@ public class StructureModel implements Serializable {
 		
 		if (node != null && node.getChildren() != null) {
 			for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
-				StructureNode foundNode = findNodeForSourceLineHelper(
-					(StructureNode)it.next(), 
+				IProgramElement foundNode = findNodeForSourceLineHelper(
+					(IProgramElement)it.next(), 
 					sourceFilePath, 
 					lineNumber); 		
 				if (foundNode != null) return foundNode;
@@ -209,7 +208,7 @@ public class StructureModel implements Serializable {
 		return null;		
 	}
 
-	private boolean matches(StructureNode node, String sourceFilePath, int lineNumber) {
+	private boolean matches(IProgramElement node, String sourceFilePath, int lineNumber) {
 		try {			
 //			if (node != null && node.getSourceLocation() != null)
 //				System.err.println("====\n1: " + 
@@ -224,17 +223,17 @@ public class StructureModel implements Serializable {
 					&& node.getSourceLocation().getEndLine() >= lineNumber)
 				    ||
 					(lineNumber <= 1
-					 && node instanceof ProgramElementNode 
-					 && ((ProgramElementNode)node).getProgramElementKind().isSourceFileKind())	
+					 && node instanceof IProgramElement 
+					 && ((IProgramElement)node).getKind().isSourceFileKind())	
 				);
 		} catch (IOException ioe) { 
 			return false;
 		} 
 	}
 	
-	private boolean hasMoreSpecificChild(StructureNode node, String sourceFilePath, int lineNumber) {
+	private boolean hasMoreSpecificChild(IProgramElement node, String sourceFilePath, int lineNumber) {
 		for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
-			ProgramElementNode child = (ProgramElementNode)it.next();
+			IProgramElement child = (IProgramElement)it.next();
 			if (matches(child, sourceFilePath, lineNumber)) return true;
 		}
 		return false;

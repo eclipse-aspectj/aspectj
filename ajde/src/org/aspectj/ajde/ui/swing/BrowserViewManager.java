@@ -35,7 +35,7 @@ public class BrowserViewManager {
   
     private Stack backHistory = new Stack();
     private Stack forwardHistory = new Stack();
-    private ProgramElementNode currNode = null;
+    private IProgramElement currNode = null;
 
 	private final GlobalStructureView DECLARATION_VIEW;
 	private final GlobalStructureView CROSSCUTTING_VIEW;
@@ -68,17 +68,19 @@ public class BrowserViewManager {
    		CROSSCUTTING_VIEW_PROPERTIES = new GlobalViewProperties(StructureViewProperties.Hierarchy.CROSSCUTTING);
     	INHERITANCE_VIEW_PROPERTIES = new GlobalViewProperties(StructureViewProperties.Hierarchy.INHERITANCE);  
     
-        CROSSCUTTING_VIEW_PROPERTIES.addRelation(AdviceAssociation.METHOD_RELATION);
-        CROSSCUTTING_VIEW_PROPERTIES.addRelation(AdviceAssociation.METHOD_CALL_SITE_RELATION);
-        CROSSCUTTING_VIEW_PROPERTIES.addRelation(AdviceAssociation.CONSTRUCTOR_RELATION);
-        CROSSCUTTING_VIEW_PROPERTIES.addRelation(AdviceAssociation.CONSTRUCTOR_CALL_SITE_RELATION);
-        CROSSCUTTING_VIEW_PROPERTIES.addRelation(AdviceAssociation.HANDLER_RELATION);
-        CROSSCUTTING_VIEW_PROPERTIES.addRelation(AdviceAssociation.INITIALIZER_RELATION);
-        CROSSCUTTING_VIEW_PROPERTIES.addRelation(AdviceAssociation.FIELD_ACCESS_RELATION);
-
-        INHERITANCE_VIEW_PROPERTIES.addRelation(InheritanceAssociation.IMPLEMENTS_RELATION);
-        INHERITANCE_VIEW_PROPERTIES.addRelation(InheritanceAssociation.INHERITS_MEMBERS_RELATION);
-        INHERITANCE_VIEW_PROPERTIES.addRelation(InheritanceAssociation.INHERITS_RELATION);
+//        CROSSCUTTING_VIEW_PROPERTIES.addRelation(IRelationship.Kind.ADVICE);
+//		CROSSCUTTING_VIEW_PROPERTIES.addRelation(IRelationship.Kind.ADVICE);
+//		CROSSCUTTING_VIEW_PROPERTIES.addRelation(IRelationship.Kind.ADVICE);
+//        CROSSCUTTING_VIEW_PROPERTIES.addRelation(AdviceAssociation.METHOD_CALL_SITE_RELATION);
+//        CROSSCUTTING_VIEW_PROPERTIES.addRelation(AdviceAssociation.CONSTRUCTOR_RELATION);
+//        CROSSCUTTING_VIEW_PROPERTIES.addRelation(AdviceAssociation.CONSTRUCTOR_CALL_SITE_RELATION);
+//        CROSSCUTTING_VIEW_PROPERTIES.addRelation(AdviceAssociation.HANDLER_RELATION);
+//        CROSSCUTTING_VIEW_PROPERTIES.addRelation(AdviceAssociation.INITIALIZER_RELATION);
+//        CROSSCUTTING_VIEW_PROPERTIES.addRelation(AdviceAssociation.FIELD_ACCESS_RELATION);
+//
+//        INHERITANCE_VIEW_PROPERTIES.addRelation(InheritanceAssociation.IMPLEMENTS_RELATION);
+//        INHERITANCE_VIEW_PROPERTIES.addRelation(InheritanceAssociation.INHERITS_MEMBERS_RELATION);
+//        INHERITANCE_VIEW_PROPERTIES.addRelation(InheritanceAssociation.INHERITS_RELATION);
      	
      	DECLARATION_VIEW_PROPERTIES.setRelations(Ajde.getDefault().getStructureViewManager().getAvailableRelations());
 

@@ -20,8 +20,7 @@ import junit.framework.TestSuite;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.AjdeTestCase;
-import org.aspectj.asm.StructureModel;
-import org.aspectj.asm.StructureNode;
+import org.aspectj.asm.*;
 
 /**
  * @author Mik Kersten
@@ -63,6 +62,7 @@ public class StructureViewManagerTest extends AjdeTestCase {
 		renderer.setHasBeenNotified(false);
 		Ajde.getDefault().getConfigurationManager().setActiveConfigFile("MumbleDoesNotExist.lst");			
 		assertTrue("notified", renderer.getHasBeenNotified());		
+		
 		assertTrue(
 			"no structure", 
 			currentView.getRootNode().getStructureNode().getChildren().get(0) 
@@ -82,20 +82,20 @@ public class StructureViewManagerTest extends AjdeTestCase {
 		Ajde.getDefault().getStructureModelManager().readStructureModel(CONFIG_FILE_PATH);
 		
 		assertTrue("notified", renderer.getHasBeenNotified());	
-		//System.err.println(">>>>>> " + currentView.getRootNode().getStructureNode());
+		//System.err.println(">>>>>> " + currentView.getRootNode().getIProgramElement());
 		// AMC should this be currentView, or should we recreate the root... do the latter	
-		//StructureNode n = currentView.getRootNode().getStructureNode();
-		StructureNode n = Ajde.getDefault().getStructureModelManager().getStructureModel().getRoot();
+		//IProgramElement n = currentView.getRootNode().getIProgramElement();
+		IProgramElement n = Ajde.getDefault().getStructureModelManager().getStructureModel().getRoot();
 		assertTrue(
 			"no structure", 
-			//currentView.getRootNode().getStructureNode().getChildren().get(0) 
+			//currentView.getRootNode().getIProgramElement().getChildren().get(0) 
 			n == StructureModel.NO_STRUCTURE
 		);	
 	}
 
 	public void testModelIntegrity() {
 		doSynchronousBuild(CONFIG_FILE_PATH);
-		StructureNode modelRoot = Ajde.getDefault().getStructureModelManager().getStructureModel().getRoot();
+		IProgramElement modelRoot = Ajde.getDefault().getStructureModelManager().getStructureModel().getRoot();
 		assertTrue("root exists", modelRoot != null);	
 		
 		try {
@@ -105,9 +105,9 @@ public class StructureViewManagerTest extends AjdeTestCase {
 		}
 	}
 
-	private void testModelIntegrityHelper(StructureNode node) throws Exception {
+	private void testModelIntegrityHelper(IProgramElement node) throws Exception {
 		for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
-			StructureNode child = (StructureNode)it.next();
+			IProgramElement child = (IProgramElement)it.next();
 			if (node == child.getParent()) {
 				testModelIntegrityHelper(child);
 			} else {

@@ -14,13 +14,11 @@
 
 package org.aspectj.ajde.ui.swing;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
+import javax.swing.*;
 
-import org.aspectj.ajde.ui.AbstractIcon;
-import org.aspectj.ajde.ui.AbstractIconRegistry;
-import org.aspectj.asm.ProgramElementNode;
-import org.aspectj.asm.Relation;
+import org.aspectj.ajde.ui.*;
+import org.aspectj.asm.*;
+import org.aspectj.asm.IProgramElement;
 
 /**
  * Default icons.  Override behavior for custom icons.
@@ -110,32 +108,32 @@ public class IconRegistry extends AbstractIconRegistry {
     public Icon getMergeStructureViewIcon() { return MERGE_STRUCTURE_VIEW; }
 	public Icon getStructureViewIcon() { return STRUCTURE_VIEW; }
 
-    public Icon getAssociationSwingIcon(Relation relation) {
+    public Icon getAssociationSwingIcon(IRelationship.Kind relation) {
 		return convertToSwingIcon(getRelationIcon(relation));	
     }
     
-	protected AbstractIcon getStructureIcon(ProgramElementNode.Kind kind, ProgramElementNode.Accessibility accessibility) {
+	protected AbstractIcon getStructureIcon(IProgramElement.Kind kind, IProgramElement.Accessibility accessibility) {
 		return getStructureIcon(kind);	
 	}
     
-    public Icon getStructureSwingIcon(ProgramElementNode.Kind kind, ProgramElementNode.Accessibility accessibility) { 
+    public Icon getStructureSwingIcon(IProgramElement.Kind kind, IProgramElement.Accessibility accessibility) { 
 		return convertToSwingIcon(getStructureIcon(kind, accessibility));    	
     }
 	
-	public Icon getStructureSwingIcon(ProgramElementNode.Kind kind) {
+	public Icon getStructureSwingIcon(IProgramElement.Kind kind) {
 		return convertToSwingIcon(getStructureIcon(kind));
 	}
 
-	public Icon getAccessibilitySwingIcon(ProgramElementNode.Accessibility accessibility) {
-		if (accessibility == ProgramElementNode.Accessibility.PUBLIC) {
+	public Icon getAccessibilitySwingIcon(IProgramElement.Accessibility accessibility) {
+		if (accessibility == IProgramElement.Accessibility.PUBLIC) {
 			return ACCESSIBILITY_PUBLIC;
-		} else if (accessibility == ProgramElementNode.Accessibility.PACKAGE) {
+		} else if (accessibility == IProgramElement.Accessibility.PACKAGE) {
 			return ACCESSIBILITY_PACKAGE;
-		} else if (accessibility == ProgramElementNode.Accessibility.PROTECTED) {
+		} else if (accessibility == IProgramElement.Accessibility.PROTECTED) {
 			return ACCESSIBILITY_PROTECTED;
-		} else if (accessibility == ProgramElementNode.Accessibility.PRIVATE) {
+		} else if (accessibility == IProgramElement.Accessibility.PRIVATE) {
 			return ACCESSIBILITY_PRIVATE;
-		} else if (accessibility == ProgramElementNode.Accessibility.PRIVILEGED) {
+		} else if (accessibility == IProgramElement.Accessibility.PRIVILEGED) {
 			return ACCESSIBILITY_PRIVILEGED;
 		} else {
 			return null;

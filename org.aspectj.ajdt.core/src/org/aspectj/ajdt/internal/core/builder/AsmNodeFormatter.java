@@ -13,7 +13,7 @@ package org.aspectj.ajdt.internal.core.builder;
 import java.util.Iterator;
 
 import org.aspectj.ajdt.internal.compiler.ast.*;
-import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.IProgramElement;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.*;
 import org.eclipse.jdt.internal.compiler.ast.*;
@@ -31,10 +31,10 @@ public class AsmNodeFormatter {
 	public static final int MAX_MESSAGE_LENGTH = 18;
 	public static final String DEC_LABEL = "declare";
 
-	public void genLabelAndKind(MethodDeclaration methodDeclaration, ProgramElementNode node) {
+	public void genLabelAndKind(MethodDeclaration methodDeclaration, IProgramElement node) {
 		if (methodDeclaration instanceof AdviceDeclaration) { 
 			AdviceDeclaration ad = (AdviceDeclaration)methodDeclaration;
-			node.setKind( ProgramElementNode.Kind.ADVICE);
+			node.setKind( IProgramElement.Kind.ADVICE);
 			String label = "";
 			label += ad.kind.toString();
 			label += "(" + genArguments(ad) + "): ";
@@ -66,12 +66,12 @@ public class AsmNodeFormatter {
 				}
 			} else {
 				label += POINTCUT_ABSTRACT;
-			}
+			} 
 			node.setName(label);
 
 		} else if (methodDeclaration instanceof PointcutDeclaration) { 
 			PointcutDeclaration pd = (PointcutDeclaration)methodDeclaration;
-			node.setKind( ProgramElementNode.Kind.POINTCUT);
+			node.setKind( IProgramElement.Kind.POINTCUT);
 			String label = translatePointcutName(new String(methodDeclaration.selector));
 			label += "(" + genArguments(pd) + ")";
 			node.setName(label); 
@@ -83,29 +83,29 @@ public class AsmNodeFormatter {
 				DeclareErrorOrWarning deow = (DeclareErrorOrWarning)declare.declare;
 				
 				if (deow.isError()) {
-					node.setKind( ProgramElementNode.Kind.DECLARE_ERROR);
+					node.setKind( IProgramElement.Kind.DECLARE_ERROR);
 					label += DECLARE_ERROR;
 				} else {
-					node.setKind( ProgramElementNode.Kind.DECLARE_WARNING);
+					node.setKind( IProgramElement.Kind.DECLARE_WARNING);
 					label += DECLARE_WARNING;
 				}
 				node.setName(label + "\"" + genDeclareMessage(deow.getMessage()) + "\"") ;
 				 
 			} else if (declare.declare instanceof DeclareParents) {
-				node.setKind( ProgramElementNode.Kind.DECLARE_PARENTS);
+				node.setKind( IProgramElement.Kind.DECLARE_PARENTS);
 				DeclareParents dp = (DeclareParents)declare.declare;
 				node.setName(label + DECLARE_PARENTS + genTypePatternLabel(dp.getChild()));	
 				
 			} else if (declare.declare instanceof DeclareSoft) {
-				node.setKind( ProgramElementNode.Kind.DECLARE_SOFT);
+				node.setKind( IProgramElement.Kind.DECLARE_SOFT);
 				DeclareSoft ds = (DeclareSoft)declare.declare;
 				node.setName(label + DECLARE_SOFT + genTypePatternLabel(ds.getException()));
 			} else if (declare.declare instanceof DeclarePrecedence) {
-				node.setKind( ProgramElementNode.Kind.DECLARE_PRECEDENCE);
+				node.setKind( IProgramElement.Kind.DECLARE_PRECEDENCE);
 				DeclarePrecedence ds = (DeclarePrecedence)declare.declare;
 				node.setName(label + DECLARE_PRECEDENCE + genPrecedenceListLabel(ds.getPatterns()));
 			} else {
-				node.setKind( ProgramElementNode.Kind.ERROR);
+				node.setKind( IProgramElement.Kind.ERROR);
 				node.setName(DECLARE_UNKNONWN);
 			}
 			
@@ -113,23 +113,29 @@ public class AsmNodeFormatter {
 			InterTypeDeclaration itd = (InterTypeDeclaration)methodDeclaration;
 			String label = itd.onType.toString() + "." + new String(itd.getDeclaredSelector()); 
 			if (methodDeclaration instanceof InterTypeFieldDeclaration) {
-				node.setKind(ProgramElementNode.Kind.INTER_TYPE_FIELD);				
+				node.setKind(IProgramElement.Kind.INTER_TYPE_FIELD);				
 			} else if (methodDeclaration instanceof InterTypeMethodDeclaration) {
-				node.setKind(ProgramElementNode.Kind.INTER_TYPE_METHOD);
+				node.setKind(IProgramElement.Kind.INTER_TYPE_METHOD);
 				InterTypeMethodDeclaration itmd = (InterTypeMethodDeclaration)methodDeclaration;			
 				label += "(" + genArguments(itd) + ")";
 			} else if (methodDeclaration instanceof InterTypeConstructorDeclaration) {
-				node.setKind(ProgramElementNode.Kind.INTER_TYPE_CONSTRUCTOR);
+				node.setKind(IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR);
 				InterTypeConstructorDeclaration itcd = (InterTypeConstructorDeclaration)methodDeclaration;				
 			} else {
-				node.setKind(ProgramElementNode.Kind.ERROR);
+				node.setKind(IProgramElement.Kind.ERROR);
 			}
 			node.setName(label);
 			node.setReturnType(itd.returnType.toString());
 			
 		} else {
-			node.setKind(ProgramElementNode.Kind.METHOD);
-			node.setName(new String(methodDeclaration.selector));	
+			if (methodDeclaration.isConstructor()) {
+				node.setKind(IProgramElement.Kind.CONSTRUCTOR);
+			} else {
+				node.setKind(IProgramElement.Kind.METHOD);
+			} 
+			String label = new String(methodDeclaration.selector);
+			label += "(" + genArguments(methodDeclaration) + ")";
+			node.setName(label); 
 		}
 	}
 

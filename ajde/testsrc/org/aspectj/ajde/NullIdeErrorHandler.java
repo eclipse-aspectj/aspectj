@@ -5,23 +5,25 @@
  * under the terms of the Common Public License v1.0 
  * which accompanies this distribution and is available at 
  * http://www.eclipse.org/legal/cpl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
  * ******************************************************************/
-
 
 package org.aspectj.ajde;
 
-import org.aspectj.ajde.ui.*;
+/**
+ * @author Mik Kersten
+ */
+public class NullIdeErrorHandler implements ErrorHandler {
 
-public class NullIdeUIAdapter implements IdeUIAdapter {
-	
-	public void displayStatusInformation(String message) {
-		System.out.println("NullIde> " + message);
+	public void handleWarning(String message) {
+		System.out.println("NullIde warning: " + message);
 	}
-	
-    public void resetGUI() {
-        // not implemented
-    }
+
+	public void handleError(String message) {
+		System.out.println("NullIde error: " + message);
+	}
+
+	public void handleError(String message, Throwable t) {
+		System.out.println("NullIde error: " + message);
+		t.printStackTrace(System.out);
+	}
 }

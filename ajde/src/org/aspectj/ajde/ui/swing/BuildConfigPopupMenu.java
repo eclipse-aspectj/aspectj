@@ -24,7 +24,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.IProgramElement;
 
 public class BuildConfigPopupMenu extends JPopupMenu {
 
@@ -47,7 +47,7 @@ public class BuildConfigPopupMenu extends JPopupMenu {
 				        action.actionPerformed(e);
 					}
 	    		});
-	    	buildItem.setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getStructureIcon(ProgramElementNode.Kind.FILE_LST).getIconResource());
+	    	buildItem.setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getStructureIcon(IProgramElement.Kind.FILE_LST).getIconResource());
 	    	this.add(buildItem);
 		}
 	}

@@ -14,20 +14,12 @@
  
 package org.aspectj.ajde.internal;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
+import java.io.*;
 import java.util.*;
 
-import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.BuildConfigListener;
-import org.aspectj.ajde.BuildConfigManager;
-import org.aspectj.ajde.ui.BuildConfigModel;
-import org.aspectj.ajde.ui.BuildConfigNode;
-import org.aspectj.asm.StructureNode;
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.Message;
-import org.aspectj.bridge.SourceLocation;
+import org.aspectj.ajde.*;
+import org.aspectj.ajde.ui.*;
+import org.aspectj.bridge.*;
 import org.aspectj.util.ConfigParser;
 
 /**
@@ -247,7 +239,7 @@ public class LstBuildConfigManager implements BuildConfigManager {
 		}
 		
 		for (Iterator it = nodesToRemove.iterator(); it.hasNext(); ) {
-			StructureNode currNode = (StructureNode)it.next();
+			BuildConfigNode currNode = (BuildConfigNode)it.next();
 			node.removeChild(currNode);	
 		}
 		return node.getChildren().size() > 0;

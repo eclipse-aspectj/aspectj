@@ -19,21 +19,11 @@ import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.AbstractIcon;
-import org.aspectj.ajde.ui.GlobalStructureView;
-import org.aspectj.ajde.ui.StructureView;
-import org.aspectj.ajde.ui.StructureViewProperties;
-import org.aspectj.asm.ProgramElementNode;
-import org.aspectj.asm.RelationNode;
-import org.aspectj.asm.StructureModel;
-import org.aspectj.asm.StructureNode;
+import org.aspectj.ajde.ui.*;
+import org.aspectj.asm.*;
 
 /**
  * @author  Mik Kersten
@@ -64,24 +54,24 @@ class StructureTreeManager {
         structureTree.addMouseListener((MouseListener)treeListener);
     }
 
-	public void highlightNode(ProgramElementNode node) {
+	public void highlightNode(IProgramElement node) {
 		highlightNode((SwingTreeViewNode)structureTree.getModel().getRoot(), node);
 	}
 
-    public StructureNode getSelectedStructureNode() {
-        return (StructureNode)((SwingTreeViewNode)structureTree.getLastSelectedPathComponent()).getUserObject();
+    public IProgramElement getSelectedIProgramElement() {
+        return (IProgramElement)((SwingTreeViewNode)structureTree.getLastSelectedPathComponent()).getUserObject();
     }
 
     public void scrollToHighlightedNode() {
         structureTree.scrollPathToVisible(structureTree.getSelectionPath());
     }
 
-    private void highlightNode(SwingTreeViewNode parent, ProgramElementNode node) {
+    private void highlightNode(SwingTreeViewNode parent, IProgramElement node) {
         for (int i = 0; i < parent.getChildCount(); i++) {
             SwingTreeViewNode currNode = (SwingTreeViewNode)parent.getChildAt(i);
-            StructureNode sNode = (StructureNode)currNode.getUserObject();
-            if (sNode instanceof ProgramElementNode &&
-                ((ProgramElementNode)sNode).equals(node)) {
+            IProgramElement sNode = (IProgramElement)currNode.getUserObject();
+            if (sNode instanceof IProgramElement &&
+                ((IProgramElement)sNode).equals(node)) {
                 TreePath path = new TreePath(currNode.getPath());
                 structureTree.setSelectionPath(path);
                 int currRow = structureTree.getRowForPath(path);
@@ -146,11 +136,11 @@ class StructureTreeManager {
         for (int i = 0; i < structureTree.getRowCount(); i++) {
             TreePath path = structureTree.getPathForRow(i);
             SwingTreeViewNode node = (SwingTreeViewNode)path.getLastPathComponent();
-            if (node.getUserObject() instanceof ProgramElementNode) {
-	            ProgramElementNode pNode = (ProgramElementNode)node.getUserObject();
-	            ProgramElementNode.Kind kind = pNode.getProgramElementKind();
-	            if (kind == ProgramElementNode.Kind.PROJECT
-					|| kind == ProgramElementNode.Kind.PACKAGE) {
+            if (node.getUserObject() instanceof IProgramElement) {
+	            IProgramElement pNode = (IProgramElement)node.getUserObject();
+	            IProgramElement.Kind kind = pNode.getKind();
+	            if (kind == IProgramElement.Kind.PROJECT
+					|| kind == IProgramElement.Kind.PACKAGE) {
 	                structureTree.expandPath(path);
 	            } else {
 	                structureTree.collapsePath(path);
@@ -166,7 +156,7 @@ class StructureTreeManager {
         for (int i = 0; i < structureTree.getRowCount(); i++) {
             TreePath path = structureTree.getPathForRow(i);
             SwingTreeViewNode node = (SwingTreeViewNode)path.getLastPathComponent();
-            if (path.getPath().length-1 > depth || node.getUserObject() instanceof RelationNode) {
+            if (path.getPath().length-1 > depth || node.getUserObject() instanceof IRelationship) {
                 structureTree.collapsePath(path);
             } else {
                 structureTree.expandPath(path);
@@ -371,7 +361,7 @@ class StructureTreeManager {
 //                }
 
 //    public ProgramElementNode getRootProgramElementNode() {
-//        StructureNode node = (StructureNode)((SwingTreeViewNode)structureTree.getModel().getRoot()).getUserObject();
+//        IProgramElement node = (IProgramElement)((SwingTreeViewNode)structureTree.getModel().getRoot()).getUserObject();
 //        if (node instanceof ProgramElementNode) {
 //            return (ProgramElementNode)node;
 //        } else {
@@ -383,7 +373,7 @@ class StructureTreeManager {
 //     * @todo    HACK: this is a workaround and can break
 //     */
 //    private static ProgramElementNode mapResult = null;
-//    private ProgramElementNode getNodeForLink(LinkNode node, StructureNode rootNode) {
+//    private ProgramElementNode getNodeForLink(LinkNode node, IProgramElement rootNode) {
 //        ProgramElementNode result = null;
 //        if (rootNode instanceof ProgramElementNode &&
 //            ((ProgramElementNode)rootNode).getName().equals(node.getProgramElementNode().getName())) {
@@ -391,7 +381,7 @@ class StructureTreeManager {
 //        } else {
 //            ProgramElementNode linkedNode = node.getProgramElementNode();
 //            for (Iterator it = rootNode.getChildren().iterator(); it.hasNext(); ) {
-//                StructureNode child = (StructureNode)it.next();
+//                IProgramElement child = (IProgramElement)it.next();
 //                getNodeForLink(node, child);
 //            }
 //        }
@@ -400,14 +390,14 @@ class StructureTreeManager {
 
 //    private void sortNodes(List nodes) {
 //        if (sortNodes) {
-//            Collections.sort(nodes, structureNodeComparator);
+//            Collections.sort(nodes, IProgramElementComparator);
 //        }
 //    }
     
-//	private class StructureNodeComparator implements Comparator {
+//	private class IProgramElementComparator implements Comparator {
 //		public int compare(Object o1, Object o2) {
-//			StructureNode t1 = (StructureNode) ((SwingTreeViewNode) o1).getUserObject();
-//			StructureNode t2 = (StructureNode) ((SwingTreeViewNode) o2).getUserObject();
+//			IProgramElement t1 = (IProgramElement) ((SwingTreeViewNode) o1).getUserObject();
+//			IProgramElement t2 = (IProgramElement) ((SwingTreeViewNode) o2).getUserObject();
 //			if (t1 instanceof ProgramElementNode && t2 instanceof ProgramElementNode) {
 //				ProgramElementNode p1 = (ProgramElementNode) t1;
 //				ProgramElementNode p2 = (ProgramElementNode) t2;

@@ -24,7 +24,9 @@ import org.aspectj.asm.StructureModel;
 /**
  * @author Mik Kersten
  */
-public class BuildConfigModel extends StructureModel {
+public class BuildConfigModel {
+
+	private BuildConfigNode root = null;
 
 	private String sourceFile; 
 	 
@@ -94,6 +96,15 @@ public class BuildConfigModel extends StructureModel {
 	public void setSourceFile(String sourceFile) {
 		this.sourceFile = sourceFile;
 	}
+
+	public BuildConfigNode getRoot() {
+		return root;
+	}
+
+	public void setRoot(BuildConfigNode node) {
+		root = node;
+	}
+
 }
 
 

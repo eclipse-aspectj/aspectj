@@ -16,14 +16,14 @@ package org.aspectj.ajde.ui;
 
 import java.util.List;
 
-import org.aspectj.asm.StructureNode;
+import org.aspectj.asm.IProgramElement;
 
 /**
  * @author Mik Kersten
  */ 
 public interface StructureViewNode {
 	
-	public StructureNode getStructureNode();
+	public IProgramElement getStructureNode();
 	
 	public AbstractIcon getIcon();
 	

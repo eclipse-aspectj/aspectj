@@ -14,23 +14,15 @@
 
 package org.aspectj.ajde.ui.swing;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.*;
 import java.util.Iterator;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
+import javax.swing.*;
+import javax.swing.border.*;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.FileStructureView;
-import org.aspectj.ajde.ui.StructureView;
-import org.aspectj.ajde.ui.StructureViewNode;
-import org.aspectj.ajde.ui.StructureViewRenderer;
-import org.aspectj.asm.ProgramElementNode;
-import org.aspectj.asm.StructureNode;
+import org.aspectj.ajde.ui.*;
+import org.aspectj.asm.IProgramElement;
 
 /**
  * Represents the configuration of a structure view of the system, rendered
@@ -98,8 +90,8 @@ public class StructureViewPanel extends JPanel implements StructureViewRenderer 
 
 	public void setActiveNode(StructureViewNode node, int lineOffset) {
 		if (node == null) return;
- 		if (!(node.getStructureNode() instanceof ProgramElementNode)) return;
-		ProgramElementNode pNode = (ProgramElementNode)node.getStructureNode();
+ 		if (!(node.getStructureNode() instanceof IProgramElement)) return;
+		IProgramElement pNode = (IProgramElement)node.getStructureNode();
  		treeManager.highlightNode(pNode);
  		if (pNode.getSourceLocation() != null) {
 	 		Ajde.getDefault().getEditorAdapter().showSourceLine(
@@ -112,9 +104,9 @@ public class StructureViewPanel extends JPanel implements StructureViewRenderer 
 
  	public void highlightActiveNode() {
  		if (currentView.getActiveNode() == null) return;
- 		StructureNode node = currentView.getActiveNode().getStructureNode();
- 		if (node instanceof ProgramElementNode) {
- 			treeManager.highlightNode((ProgramElementNode)node);
+ 		IProgramElement node = currentView.getActiveNode().getStructureNode();
+ 		if (node instanceof IProgramElement) {
+ 			treeManager.highlightNode((IProgramElement)node);
  		}
  	}
 

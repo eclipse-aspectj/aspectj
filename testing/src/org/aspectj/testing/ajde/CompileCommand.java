@@ -16,15 +16,14 @@ import java.awt.Frame;
 import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.List;
 
 import org.aspectj.ajde.*;
 import org.aspectj.ajde.ui.*;
 import org.aspectj.ajde.ui.internal.*;
 import org.aspectj.ajde.ui.swing.*;
-import org.aspectj.asm.StructureNode;
+import org.aspectj.asm.*;
+import org.aspectj.asm.IProgramElement;
 import org.aspectj.bridge.*;
-import org.aspectj.util.*;
 import org.aspectj.util.FileUtil;
 
 /**
@@ -147,12 +146,17 @@ public class CompileCommand implements ICommand {
         };
         StructureViewNodeFactory structureViewNodeFactory =
             new StructureViewNodeFactory(iconRegistry) {
-            protected StructureViewNode createConcreteNode(
-                StructureNode node,
-                AbstractIcon icon,
-                List children) {
-                return new SwingTreeViewNode(node, icon, children);
-            }
+	            protected StructureViewNode createConcreteNode(
+	                IProgramElement node,
+	                AbstractIcon icon,
+	                List children) {
+	                return new SwingTreeViewNode(node, icon, children);
+	            }
+				protected StructureViewNode createConcreteNode(
+					IRelationship node,
+					AbstractIcon icon) {
+					return new SwingTreeViewNode(node, icon);
+				}	            
         };
 
         Ajde.init(

@@ -17,23 +17,23 @@ package org.aspectj.asm;
 /**
  * @author Mik Kersten
  */
-public class ModelWalker {
+public class HierarchyWalker {
 
 	private StructureModel model;
 
-	public ModelWalker() {
+	public HierarchyWalker() {
 		super();
 	}
 	
-	public ModelWalker(StructureModel model) {
+	public HierarchyWalker(StructureModel model) {
 		this.model = model;
     }
 
-    protected void preProcess(StructureNode node) { }
+    protected void preProcess(IProgramElement node) { }
     
-    protected void postProcess(StructureNode node) { }
+    protected void postProcess(IProgramElement node) { }
 
-    public StructureNode process(StructureNode node) {
+    public IProgramElement process(IProgramElement node) {
 		preProcess(node);
         node.walk(this);
         postProcess(node);

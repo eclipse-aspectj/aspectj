@@ -32,9 +32,9 @@ import javax.swing.border.Border;
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.ui.StructureView;
 import org.aspectj.ajde.ui.StructureViewProperties;
-import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.StructureModel;
-import org.aspectj.asm.StructureModelListener;
+import org.aspectj.asm.IStructureModelListener;
 
 public class SimpleStructureViewToolPanel extends JPanel {
 
@@ -60,7 +60,7 @@ public class SimpleStructureViewToolPanel extends JPanel {
     BorderLayout borderLayout3 = new BorderLayout();
     BorderLayout borderLayout4 = new BorderLayout();
 
-    public final StructureModelListener MODEL_LISTENER = new StructureModelListener() {
+    public final IStructureModelListener MODEL_LISTENER = new IStructureModelListener() {
         public void modelUpdated(StructureModel model) {
 			String path = Ajde.getDefault().getConfigurationManager().getActiveConfigFile();
 			String fileName = "<no active config>";
@@ -218,7 +218,7 @@ public class SimpleStructureViewToolPanel extends JPanel {
 			hideNonAJ_button.setBorder(AjdeWidgetStyles.LOWERED_BEVEL_BORDER);
 			hideNonAJEnabled = true;
 			currentView.getViewProperties().setFilteredMemberKinds(
-				ProgramElementNode.Kind.getNonAJMemberKinds()
+				IProgramElement.Kind.getNonAJMemberKinds()
 			);
 		}
 		Ajde.getDefault().getStructureViewManager().refreshView(currentView);

@@ -14,17 +14,14 @@
 
 package org.aspectj.asm;
 
-import java.util.List;
+import java.util.EventListener;
 
-/**  
+/**
+ * Compiler listeners get notified of structure model update events.
+ *
  * @author Mik Kersten
  */
-public interface Association {
+public interface IStructureModelListener extends EventListener {
 
-    public List getRelations();
-
-	// XXX used ASTObject parameter
-    public List getRelationNodes();
-
-    public String getName();
+    public void modelUpdated(StructureModel rootNode);
 }

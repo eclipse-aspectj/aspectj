@@ -15,11 +15,9 @@
 package org.aspectj.ajde.ui;
 
 import java.io.ObjectStreamException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import org.aspectj.asm.ProgramElementNode;
-import org.aspectj.asm.Relation;
+import org.aspectj.asm.*;
 
 /** 
  * Nested properties use the typesafe enum pattern.
@@ -54,12 +52,12 @@ public class StructureViewProperties {
     	this.relations = relations;	
     }
 
-    public void addRelation(Relation relation) {
-        relations.add(relation);
+    public void addRelation(IRelationship.Kind kind) {
+        relations.add(kind);
     }
 
-    public void removeRelation(Relation relation) {
-        relations.remove(relation);
+    public void removeRelation(IRelationship.Kind kind) {
+        relations.remove(kind);
     }
 
     public void setFilteredMemberAccessibility(List memberVisibility) {
@@ -70,11 +68,11 @@ public class StructureViewProperties {
         return filteredMemberAccessibility;
     }
 
-    public void addFilteredMemberAccessibility(ProgramElementNode.Accessibility accessibility) {
+    public void addFilteredMemberAccessibility(IProgramElement.Accessibility accessibility) {
  	   	this.filteredMemberAccessibility.add(accessibility);
 	}
 	
-	public void removeFilteredMemberAccessibility(ProgramElementNode.Accessibility accessibility) {
+	public void removeFilteredMemberAccessibility(IProgramElement.Accessibility accessibility) {
 		this.filteredMemberAccessibility.remove(accessibility);	
 	}
 
@@ -86,11 +84,11 @@ public class StructureViewProperties {
         this.filteredMemberModifiers = memberModifiers;
     }
     
-    public void addFilteredMemberModifiers(ProgramElementNode.Modifiers modifiers) {
+    public void addFilteredMemberModifiers(IProgramElement.Modifiers modifiers) {
  	   	this.filteredMemberModifiers.add(modifiers);
 	}
 	
-	public void removeFilteredMemberModifiers(ProgramElementNode.Modifiers modifiers) {
+	public void removeFilteredMemberModifiers(IProgramElement.Modifiers modifiers) {
 		this.filteredMemberModifiers.remove(modifiers);	
 	}
     
@@ -110,11 +108,11 @@ public class StructureViewProperties {
 		this.filteredMemberKinds = memberKinds;
 	}
 	
-    public void addFilteredMemberKind(ProgramElementNode.Kind kind) {
+    public void addFilteredMemberKind(IProgramElement.Kind kind) {
  	   	this.filteredMemberKinds.add(kind);
 	}
 	
-	public void removeFilteredMemberKind(ProgramElementNode.Kind kind) {
+	public void removeFilteredMemberKind(IProgramElement.Kind kind) {
 		this.filteredMemberKinds.remove(kind);	
 	}
 	

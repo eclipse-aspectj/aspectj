@@ -19,7 +19,7 @@ import junit.framework.TestSuite;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.AjdeTestCase;
-import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.IProgramElement;
 
 /**
  * @author Mik Kersten
@@ -54,7 +54,7 @@ public class StructureSearchManagerTest extends AjdeTestCase {
 	public void testFindPatternAndKindMatch() {
 		List matches = Ajde.getDefault().getStructureSearchManager().findMatches(
 			"Point",
-			ProgramElementNode.Kind.CONSTRUCTOR
+			IProgramElement.Kind.CONSTRUCTOR
 		);
 		System.err.println(matches);
 		assertTrue("non existent node", true);

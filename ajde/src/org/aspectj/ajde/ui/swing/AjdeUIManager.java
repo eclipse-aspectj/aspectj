@@ -47,6 +47,28 @@ public class AjdeUIManager {
 	private Frame rootFrame = null;
 	private StructureViewPanel fileStructurePanel = null;
 
+	public void init(
+		EditorAdapter editorAdapter,
+		TaskListManager taskListManager,
+		ProjectPropertiesAdapter projectProperties,
+		UserPreferencesAdapter userPreferencesAdapter,
+		IdeUIAdapter ideUIAdapter,
+		IconRegistry iconRegistry,
+		Frame rootFrame,
+		boolean useFileView) {
+			
+		init(editorAdapter,
+			taskListManager,
+			projectProperties,
+			userPreferencesAdapter,
+			ideUIAdapter,
+			iconRegistry,
+			rootFrame,
+			new DefaultBuildProgressMonitor(rootFrame),
+			new AjdeErrorHandler(),
+			useFileView);
+	}
+
 	/**
 	 * Order of initialization is critical here.
 	 */
@@ -58,10 +80,10 @@ public class AjdeUIManager {
 		IdeUIAdapter ideUIAdapter,
 		IconRegistry iconRegistry,
 		Frame rootFrame,
+		BuildProgressMonitor progressMonitor,
+		ErrorHandler errorHandler, 
 		boolean useFileView) {
 		try {	
-			BuildProgressMonitor compileProgress = new DefaultBuildProgressMonitor(rootFrame);
-			ErrorHandler errorHandler = new AjdeErrorHandler();
 			this.iconRegistry = iconRegistry;
 			//ConfigurationManager configManager = new LstConfigurationManager();
 			this.ideUIAdapter = ideUIAdapter;
@@ -72,7 +94,7 @@ public class AjdeUIManager {
 			Ajde.init(
 				editorAdapter,
 				taskListManager,
-				compileProgress,
+				progressMonitor,
 				projectProperties,
 				buildOptionsAdapter,
 				new SwingTreeViewNodeFactory(iconRegistry),

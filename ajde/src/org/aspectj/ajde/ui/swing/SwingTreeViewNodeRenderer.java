@@ -14,20 +14,13 @@
 
 package org.aspectj.ajde.ui.swing;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
+import java.awt.*;
 
-import javax.swing.Icon;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import org.aspectj.asm.LinkNode;
-import org.aspectj.asm.ProgramElementNode;
-import org.aspectj.asm.RelationNode;
-import org.aspectj.asm.StructureNode;
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.asm.*;
+import org.aspectj.bridge.*;
 
 /**
  * @author Mik Kersten
@@ -43,19 +36,19 @@ class SwingTreeViewNodeRenderer extends DefaultTreeCellRenderer {
                                                     boolean hasFocus) {
         if (treeNode == null) return null;        
         SwingTreeViewNode viewNode = (SwingTreeViewNode)treeNode;
-        StructureNode node = viewNode.getStructureNode();
+        IProgramElement node = viewNode.getStructureNode();
 
-        if (node instanceof LinkNode) {
-            ISourceLocation sourceLoc = ((LinkNode)node).getProgramElementNode().getSourceLocation();
-            if ((null != sourceLoc) 
-                && (null != sourceLoc.getSourceFile().getAbsolutePath())) {
-                setTextNonSelectionColor(AjdeWidgetStyles.LINK_NODE_COLOR);
-            } else {
-                setTextNonSelectionColor(AjdeWidgetStyles.LINK_NODE_NO_SOURCE_COLOR);
-            }
-        } else {
+//        if (node instanceof LinkNode) {
+//            ISourceLocation sourceLoc = ((LinkNode)node).getProgramElementNode().getSourceLocation();
+//            if ((null != sourceLoc) 
+//                && (null != sourceLoc.getSourceFile().getAbsolutePath())) {
+//                setTextNonSelectionColor(AjdeWidgetStyles.LINK_NODE_COLOR);
+//            } else {
+//                setTextNonSelectionColor(AjdeWidgetStyles.LINK_NODE_NO_SOURCE_COLOR);
+//            }
+//        } else {
         	setTextNonSelectionColor(new Color(0, 0, 0));	
-        }
+//        }
         
         super.getTreeCellRendererComponent(tree, treeNode, sel, expanded, leaf, row, hasFocus);
         this.setFont(StructureTree.DEFAULT_FONT);
@@ -66,29 +59,30 @@ class SwingTreeViewNodeRenderer extends DefaultTreeCellRenderer {
 			setIcon(null);
 		}
         
-        if (node instanceof ProgramElementNode) {
-        	ProgramElementNode pNode = (ProgramElementNode)node;
-        	if (pNode.isRunnable()) {
-        		//setIcon(AjdeUIManager.getDefault().getIconRegistry().getExecuteIcon());
-        	}	 
-        	if (pNode.isImplementor()) {
-        		//this.setText("<implementor>");
-        	}
-        	if (pNode.isOverrider()) {
-        		//this.setText("<overrider>");
-        	}
-        } else if (node instanceof RelationNode) {
-        	this.setFont(new Font(this.getFont().getName(), Font.ITALIC, this.getFont().getSize()));
-        }
+        if (node instanceof IProgramElement) {
+        	IProgramElement pNode = (IProgramElement)node;
+//        	if (pNode.isRunnable()) {
+//        		//setIcon(AjdeUIManager.getDefault().getIconRegistry().getExecuteIcon());
+//        	}	 
+//        	if (pNode.isImplementor()) {
+//        		//this.setText("<implementor>");
+//        	}
+//        	if (pNode.isOverrider()) {
+//        		//this.setText("<overrider>");
+//        	}
+        	
+			if (node.getMessage() != null) {
+				if (node.getMessage().getKind().equals(IMessage.WARNING)) {
+					setIcon(AjdeUIManager.getDefault().getIconRegistry().getWarningIcon());
+				} else if (node.getMessage().getKind().equals(IMessage.ERROR)) {
+					setIcon(AjdeUIManager.getDefault().getIconRegistry().getErrorIcon());
+				} else {
+					setIcon(AjdeUIManager.getDefault().getIconRegistry().getInfoIcon());
+				}
+			}
 
-        if (node.getMessage() != null) {
-        	if (node.getMessage().getKind().equals(IMessage.WARNING)) {
-        		setIcon(AjdeUIManager.getDefault().getIconRegistry().getWarningIcon());
-        	} else if (node.getMessage().getKind().equals(IMessage.ERROR)) {
-        		setIcon(AjdeUIManager.getDefault().getIconRegistry().getErrorIcon());
-        	} else {
-        		setIcon(AjdeUIManager.getDefault().getIconRegistry().getInfoIcon());
-        	}
+        } else if (node instanceof IRelationship) {
+        	this.setFont(new Font(this.getFont().getName(), Font.ITALIC, this.getFont().getSize()));
         }
 		
         return this;

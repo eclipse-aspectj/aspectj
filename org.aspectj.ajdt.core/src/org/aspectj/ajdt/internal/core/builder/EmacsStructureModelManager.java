@@ -14,20 +14,10 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 
-import org.aspectj.asm.AdviceAssociation;
-import org.aspectj.asm.IntroductionAssociation;
-import org.aspectj.asm.LinkNode;
-import org.aspectj.asm.ProgramElementNode;
-import org.aspectj.asm.RelationNode;
-import org.aspectj.asm.StructureModelManager;
+import org.aspectj.asm.*;
 //import org.aspectj.ajde.compiler.AjdeCompiler;
 
 /** 
@@ -48,7 +38,7 @@ public class EmacsStructureModelManager {
             //Set fileSet = StructureModelManager.INSTANCE.getStructureModel().getFileMap().entrySet(); 
 			Set fileSet = StructureModelManager.getDefault().getStructureModel().getFileMapEntrySet(); 
             for (Iterator it = fileSet.iterator(); it.hasNext(); ) {
-                ProgramElementNode peNode = (ProgramElementNode)((Map.Entry)it.next()).getValue();
+                IProgramElement peNode = (IProgramElement)((Map.Entry)it.next()).getValue();
                 dumpStructureToFile(peNode);
             }
         } catch (IOException ioe) {
@@ -64,10 +54,10 @@ public class EmacsStructureModelManager {
 //        writer.flush();
 //    }
 
-    private void dumpStructureToFile(ProgramElementNode node) throws IOException {
-        String s = node.getKind();
-        if (!  (s.equals(ProgramElementNode.Kind.FILE_ASPECTJ.toString())
-                || s.equals(ProgramElementNode.Kind.FILE_JAVA.toString()))) {
+    private void dumpStructureToFile(IProgramElement node) throws IOException {
+        String s = node.getKind().toString();
+        if (!  (s.equals(IProgramElement.Kind.FILE_ASPECTJ.toString())
+                || s.equals(IProgramElement.Kind.FILE_JAVA.toString()))) {
             throw new IllegalArgumentException("externalize file, not " + node);
         }
         // source files have source locations
@@ -98,43 +88,46 @@ public class EmacsStructureModelManager {
             this.writer = writer;
         }
 
-        private void printDecls(ProgramElementNode node) {
+        private void printDecls(IProgramElement node) {
             print("(");
             for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
                 // this ignores relations on the compile unit
                 Object nodeObject = it.next();
-                if (nodeObject instanceof ProgramElementNode) {
-                    ProgramElementNode child = (ProgramElementNode)nodeObject;
+//				throw new RuntimeException("unimplemented");
+//                if (nodeObject instanceof IProgramElement) {
+                    IProgramElement child = (IProgramElement)nodeObject;
                     printDecl(child, true);
-                } else if (nodeObject instanceof LinkNode) {
-                    LinkNode child = (LinkNode)nodeObject;
-                    printDecl(child.getProgramElementNode(), false);
-                }
+//                } 
+//                else if (nodeObject instanceof LinkNode) {
+//                    LinkNode child = (LinkNode)nodeObject;
+//                    printDecl(child.getProgramElementNode(), false);
+//                }
             }
             print(") ");
         }
 
-        private void printDecls(RelationNode node) {
-            for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
+        private void printDecls(IRelationship node) {
+            for (Iterator it = node.getTargets().iterator(); it.hasNext(); ) {
                 // this ignores relations on the compile unit
                 Object nodeObject = it.next();
-                if (nodeObject instanceof LinkNode) {
-                    LinkNode child = (LinkNode)nodeObject;
-                    if (//!child.getProgramElementNode().getKind().equals("stmnt") &&
-                        !child.getProgramElementNode().getKind().equals("<undefined>")) {
-                        printDecl(child.getProgramElementNode(), false);
+                throw new RuntimeException("unimplemented");
+//                if (nodeObject instanceof LinkNode) {
+//                    LinkNode child = (LinkNode)nodeObject;
+//                    if (//!child.getProgramElementNode().getKind().equals("stmnt") &&
+//                        !child.getProgramElementNode().getKind().equals("<undefined>")) {
 //                        printDecl(child.getProgramElementNode(), false);
-                    }
-                }
+////                        printDecl(child.getProgramElementNode(), false);
+//                    }
+//                }
             }
         }
 
         /**
          * @param   structureNode   can be a ProgramElementNode or a LinkNode
          */
-        private void printDecl(ProgramElementNode node, boolean recurse) {
+        private void printDecl(IProgramElement node, boolean recurse) {
         	if (node == null || node.getSourceLocation() == null) return;
-            String kind = node.getKind().toLowerCase();
+            String kind = node.getKind().toString().toLowerCase();
             print("(");
             print("(" + node.getSourceLocation().getLine() + " . " + node.getSourceLocation().getColumn() + ") ");
             print("(" + node.getSourceLocation().getLine() + " . " + node.getSourceLocation().getColumn() + ") ");
@@ -161,13 +154,13 @@ public class EmacsStructureModelManager {
                 print("nil");
             } else {
                 print("(");
-                if (node instanceof ProgramElementNode) {
-                    java.util.List relations = ((ProgramElementNode)node).getRelations();
+                if (node instanceof IProgramElement) {
+                    java.util.List relations = ((IProgramElement)node).getRelations();
                     if (relations != null) {
                         for (Iterator it = relations.iterator(); it.hasNext(); ) {
-                            RelationNode relNode = (RelationNode)it.next();
-                            if (relNode.getRelation().getAssociationName().equals(AdviceAssociation.NAME) ||
-                                relNode.getRelation().getAssociationName().equals(IntroductionAssociation.NAME)) {
+							IRelationship relNode = (IRelationship)it.next();
+                            if (relNode.getKind() == IRelationship.Kind.ADVICE ||
+								relNode.getKind() == IRelationship.Kind.DECLARE) {
                                 printDecls(relNode);                                   // 6
                             }
                         }
@@ -182,8 +175,8 @@ public class EmacsStructureModelManager {
                     while (it3.hasNext()) {
                         // this ignores relations on the compile unit
                         Object nodeObject = it3.next();
-                        if (nodeObject instanceof ProgramElementNode) {
-                            ProgramElementNode currNode = (ProgramElementNode)nodeObject;
+                        if (nodeObject instanceof IProgramElement) {
+                            IProgramElement currNode = (IProgramElement)nodeObject;
                             if (//!currNode.isStmntKind() &&
                                 !currNode.getKind().equals("<undefined>")) {
                                 printDecl(currNode, true);

@@ -16,7 +16,7 @@ package org.aspectj.ajde.ui;
 
 import java.util.Iterator;
 
-import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.IProgramElement;
 
 /**
  * @author Mik Kersten
@@ -57,7 +57,7 @@ public abstract class StructureView {
 	 */
 	public StructureViewNode getActiveNode() {
 		if (activeNode != null 
-			&& activeNode.getStructureNode() instanceof ProgramElementNode) {
+			&& activeNode.getStructureNode() instanceof IProgramElement) {
 			return activeNode;
 		} else {
 			return null;
@@ -69,11 +69,11 @@ public abstract class StructureView {
 	 * 
 	 * @return		the first match
 	 */
-	public StructureViewNode findCorrespondingViewNode(ProgramElementNode node) {
+	public StructureViewNode findCorrespondingViewNode(IProgramElement node) {
 		return findCorrespondingViewNodeHelper(rootNode, node);
 	}
 
-	private StructureViewNode findCorrespondingViewNodeHelper(StructureViewNode node, ProgramElementNode pNode) {
+	private StructureViewNode findCorrespondingViewNodeHelper(StructureViewNode node, IProgramElement pNode) {
 		
 		if (node != null
 			&& node.getStructureNode() != null 

@@ -15,19 +15,16 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 
 import java.util.*;
 
-import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
-import org.aspectj.ajdt.internal.compiler.ast.AstUtil;
-import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
-import org.aspectj.ajdt.internal.core.builder.AsmBuilder;
+import org.aspectj.ajdt.internal.compiler.ast.*;
+import org.aspectj.ajdt.internal.core.builder.*;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.weaver.*;
-import org.eclipse.jdt.internal.compiler.ast.*;
-import org.eclipse.jdt.internal.compiler.impl.Constant;
-import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
-import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.core.compiler.CharOperation;
-
+import org.eclipse.jdt.internal.compiler.ast.*;
+import org.eclipse.jdt.internal.compiler.impl.*;
+import org.eclipse.jdt.internal.compiler.lookup.*;
+ 
 /**
  * 
  * @author Jim Hugunin
@@ -300,7 +297,7 @@ public class EclipseFactory {
 
 	public void finishedCompilationUnit(CompilationUnitDeclaration unit) {
 		if (buildManager.doGenerateModel()) {
-			AsmBuilder.build(unit, buildManager.getStructureModel());
+			AsmHierarchyBuilder.build(unit, buildManager.getStructureModel());
 		}
 	}
 

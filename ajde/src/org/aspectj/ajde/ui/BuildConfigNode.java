@@ -14,31 +14,141 @@
 
 package org.aspectj.ajde.ui;
 
-import java.io.ObjectStreamException;
-import java.io.Serializable;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
-import org.aspectj.asm.StructureNode;
+import org.aspectj.bridge.*;
 
 /**
  * @author Mik Kersten
+ * 
+ * TODO: clean-up after merging of org.aspectj.asm.StructureNode
  */
-public class BuildConfigNode extends StructureNode {
+public class BuildConfigNode {
 
-	private String resourcePath;
-	private Kind kind;
-	private boolean isActive = true;
-		
+
+
+	protected BuildConfigNode parent = null;
+	protected String name = "";
+	protected Kind kind;
+	// children.listIterator() should support remove() operation
+	protected List children = new ArrayList();
+	protected IMessage message = null;
+	protected ISourceLocation sourceLocation = null;
+
+	/**
+	 * Used during serialization.
+	 */
+	public BuildConfigNode() { }
+
+//	public BuildConfigNode(String name, String kind, String resourcePath, List children) {
+//		this(name, kind, children);
+//		this.resourcePath = resourcePath;
+//	}
+
 	public BuildConfigNode(String name, Kind kind, String resourcePath) {	
-		super(name, kind.toString());
+		this(name, kind);
 		this.kind = kind;
 		this.resourcePath = resourcePath;	
 	}
 
-	public BuildConfigNode(String name, String kind, String resourcePath, List children) {
-		super(name, kind, children);
-		this.resourcePath = resourcePath;
+//	public BuildConfigNode(String name, Kind kind, List children) {
+//		this.name = name;
+//		this.kind = kind;
+//		if (children != null) {
+//			this.children = children;
+//		}
+//		setParents();
+//	}
+
+	public BuildConfigNode(String name, Kind kind) {
+		this.name = name;
+		this.kind = kind;
 	}
+
+	public String toString() {
+		return  name;
+	}
+
+	public List getChildren() {
+		return children;
+	}
+
+	public void addChild(BuildConfigNode child) {
+		if (children == null) {
+			children = new ArrayList();
+		}
+		children.add(child);
+		child.setParent(this);
+	}
+    
+	public void addChild(int position, BuildConfigNode child) {
+		if (children == null) {
+			children = new ArrayList();
+		}
+		children.add(position, child);
+		child.setParent(this);
+	}
+    
+	public boolean removeChild(BuildConfigNode child) {
+		child.setParent(null);
+		return children.remove(child);	
+	}
+
+	/**
+	 * Comparison is string-name based only.
+	 */
+	public int compareTo(Object o) throws ClassCastException {
+		if (this == o) {
+			return 0;
+		} else {
+			BuildConfigNode sn = (BuildConfigNode)o;
+			return this.getName().compareTo(sn.getName());
+		}
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public ISourceLocation getSourceLocation() {
+		return sourceLocation;
+	}
+
+	public void setSourceLocation(ISourceLocation sourceLocation) {
+		this.sourceLocation = sourceLocation;
+	}
+
+	public IMessage getMessage() {
+		return message;
+	}
+
+	public void setMessage(IMessage message) {
+		this.message = message;
+	}
+
+	public BuildConfigNode getParent() {
+		return parent;
+	}
+
+	public void setParent(BuildConfigNode parent) {
+		this.parent = parent;
+	}
+
+	private void setParents() {
+		if (children == null) return;
+		for (Iterator it = children.iterator(); it.hasNext(); ) {
+			((BuildConfigNode)it.next()).setParent(this);	
+		}	
+	}
+
+	public void setName(String string) {
+		name = string;
+	}
+	
+
+	private String resourcePath;
+	private boolean isActive = true;
 	
 	public String getResourcePath() {
 		return resourcePath;

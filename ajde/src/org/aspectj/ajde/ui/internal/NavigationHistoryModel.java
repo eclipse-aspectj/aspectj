@@ -16,41 +16,41 @@ package org.aspectj.ajde.ui.internal;
 
 import java.util.Stack;
 
-import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.IProgramElement;
 
 /**
  * @author Mik Kersten
  */
 public class NavigationHistoryModel {
     
-    private ProgramElementNode currNode = null;
+    private IProgramElement currNode = null;
     private Stack backHistory = new Stack();
     private Stack forwardHistory = new Stack();
     
     /**
      * @return 	null if the history is empty
      */
-	public ProgramElementNode navigateBack() {
+	public IProgramElement navigateBack() {
 		if (backHistory.isEmpty() || currNode == null) return null;
 		
 		forwardHistory.push(currNode);
-		currNode = (ProgramElementNode)backHistory.pop();
+		currNode = (IProgramElement)backHistory.pop();
 		return currNode;
 	}
 
     /**
      * @return 	null if the history is empty
      */ 
-	public ProgramElementNode navigateForward() {
+	public IProgramElement navigateForward() {
 		if (forwardHistory.isEmpty() || currNode == null) return null;
 		
 		backHistory.push(currNode);
-		currNode = (ProgramElementNode)forwardHistory.pop();
+		currNode = (IProgramElement)forwardHistory.pop();
 		return currNode;
 	}
 
     
-    public void navigateToNode(ProgramElementNode toNode) {
+    public void navigateToNode(IProgramElement toNode) {
     	if (currNode != null) backHistory.push(currNode);
     	currNode = toNode; 
     }

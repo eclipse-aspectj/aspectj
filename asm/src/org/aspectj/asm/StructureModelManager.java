@@ -34,10 +34,10 @@ public class StructureModelManager {
     private List associations = new ArrayList();
 
     protected StructureModelManager() {
-        associations.add(new AdviceAssociation());
-        associations.add(new IntroductionAssociation());
-        associations.add(new InheritanceAssociation());
-        associations.add(new ReferenceAssociation());
+//        associations.add(new AdviceAssociation());
+//        associations.add(new IntroductionAssociation());
+//        associations.add(new InheritanceAssociation());
+//        associations.add(new ReferenceAssociation());
     }
 
     public StructureModel getStructureModel() {
@@ -59,62 +59,64 @@ public class StructureModelManager {
     	boolean showSubMember, 
     	boolean showMemberAndType) { 
         
-        if (!model.isValid()) return null;
-		
-        HashMap annotations = new HashMap();
-        StructureNode node = model.findRootNodeForSourceFile(sourceFile);
-        if (node == StructureModel.NO_STRUCTURE) {
-            return null;
-        } else {
-            ProgramElementNode fileNode = (ProgramElementNode)node;
-            ArrayList peNodes = new ArrayList();
-            getAllStructureChildren(fileNode, peNodes, showSubMember, showMemberAndType);
-            for (Iterator it = peNodes.iterator(); it.hasNext(); ) {
-                ProgramElementNode peNode = (ProgramElementNode)it.next();
-                List entries = new ArrayList();
-                entries.add(peNode);
-                ISourceLocation sourceLoc = peNode.getSourceLocation();
-                if (null != sourceLoc) {
-                    Integer hash = new Integer(sourceLoc.getLine());
-                    List existingEntry = (List)annotations.get(hash);
-                    if (existingEntry != null) {
-                        entries.addAll(existingEntry);
-                    }
-                    annotations.put(hash, entries);
-                }
-            }
-            return annotations;
-        }
+        throw new RuntimeException("unimplemented");
+        
+//        if (!model.isValid()) return null;
+//		
+//        HashMap annotations = new HashMap();
+//        IProgramElement node = model.findRootNodeForSourceFile(sourceFile);
+//        if (node == StructureModel.NO_STRUCTURE) {
+//            return null;
+//        } else {
+//            IProgramElement fileNode = (IProgramElement)node;
+//            ArrayList peNodes = new ArrayList();
+//            getAllStructureChildren(fileNode, peNodes, showSubMember, showMemberAndType);
+//            for (Iterator it = peNodes.iterator(); it.hasNext(); ) {
+//                IProgramElement peNode = (IProgramElement)it.next();
+//                List entries = new ArrayList();
+//                entries.add(peNode);
+//                ISourceLocation sourceLoc = peNode.getSourceLocation();
+//                if (null != sourceLoc) {
+//                    Integer hash = new Integer(sourceLoc.getLine());
+//                    List existingEntry = (List)annotations.get(hash);
+//                    if (existingEntry != null) {
+//                        entries.addAll(existingEntry);
+//                    }
+//                    annotations.put(hash, entries);
+//                }
+//            }
+//            return annotations;
+//        }
     }
 
-    private void getAllStructureChildren(ProgramElementNode node, List result, boolean showSubMember, boolean showMemberAndType) {
-        List children = node.getChildren();
-        for (Iterator it = children.iterator(); it.hasNext(); ) {
-            StructureNode next = (StructureNode)it.next();
-            if (next instanceof ProgramElementNode) {
-                ProgramElementNode pNode = (ProgramElementNode)next;
-                if (pNode != null
-                	&& ((pNode.isCode() && showSubMember) || (!pNode.isCode() && showMemberAndType))
-                	&& pNode.getRelations() != null 
-                	&& pNode.getRelations().size() > 0) {
-                    result.add(next);
-                }
-                getAllStructureChildren((ProgramElementNode)next, result, showSubMember, showMemberAndType);
-            }
-        }
-    }
+//    private void getAllStructureChildren(IProgramElement node, List result, boolean showSubMember, boolean showMemberAndType) {
+//        List children = node.getChildren();
+//        for (Iterator it = children.iterator(); it.hasNext(); ) {
+//			IProgramElement next = (IProgramElement)it.next();
+//            if (next instanceof IProgramElement) {
+//                IProgramElement pNode = (IProgramElement)next;
+//                if (pNode != null
+//                	&& ((pNode.isCode() && showSubMember) || (!pNode.isCode() && showMemberAndType))
+//                	&& pNode.getRelations() != null 
+//                	&& pNode.getRelations().size() > 0) {
+//                    result.add(next);
+//                }
+//                getAllStructureChildren((IProgramElement)next, result, showSubMember, showMemberAndType);
+//            }
+//        }
+//    }
 
-    public void addListener(StructureModelListener listener) {
+    public void addListener(IStructureModelListener listener) {
         structureListeners.add(listener);
     }
 
-    public void removeStructureListener(StructureModelListener listener) {
+    public void removeStructureListener(IStructureModelListener listener) {
         structureListeners.remove(listener);
     }
 
     private void notifyListeners() {
         for (Iterator it = structureListeners.iterator(); it.hasNext(); ) {
-            ((StructureModelListener)it.next()).modelUpdated(model);
+            ((IStructureModelListener)it.next()).modelUpdated(model);
         }
     }
 

@@ -21,7 +21,7 @@ import java.util.*;
 import javax.swing.*;
 
 import org.aspectj.ajde.ui.*;
-import org.aspectj.asm.InheritanceAssociation;
+import org.aspectj.asm.IRelationship;
 
 /**
  * @author Mik Kersten
@@ -69,7 +69,7 @@ class PointcutWizard extends JFrame {
     private Map getViewProperties() {
         Map views = new HashMap();
         GlobalViewProperties INHERITANCE_VIEW = new GlobalViewProperties(StructureViewProperties.Hierarchy.INHERITANCE);
-        INHERITANCE_VIEW.addRelation(InheritanceAssociation.INHERITS_RELATION);
+        INHERITANCE_VIEW.addRelation(IRelationship.Kind.INHERITANCE);
         views.put(INHERITANCE_VIEW.toString(), INHERITANCE_VIEW);
         return views;
     }

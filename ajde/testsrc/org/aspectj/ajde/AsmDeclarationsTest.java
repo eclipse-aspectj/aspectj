@@ -1,4 +1,3 @@
-
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
  * All rights reserved. 
@@ -15,10 +14,10 @@ import java.util.Iterator;
 
 import org.aspectj.ajdt.internal.core.builder.AsmNodeFormatter;
 import org.aspectj.asm.*;
-import org.aspectj.asm.ProgramElementNode.Kind;
+import org.aspectj.asm.IProgramElement.Kind;
 
 
-// TODO: check for return types
+// TODO: add tests for java kinds
 public class AsmDeclarationsTest extends AjdeTestCase {
 
 	private StructureModel model = null;
@@ -26,66 +25,81 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 	private static final int DEC_MESSAGE_LENGTH = AsmNodeFormatter.MAX_MESSAGE_LENGTH;
 
 	public AsmDeclarationsTest(String name) {
-		super(name);
+		super(name);  
 	}
 
+	public void testRoot() {
+		IProgramElement root = (IProgramElement)model.getRoot();
+		assertNotNull(root);
+		assertEquals(root.getName(), "coverage.lst");	
+	}
+	
+	public void testFileInPackageAndDefaultPackage() {
+		IProgramElement root = model.getRoot();
+		assertEquals(root.getName(), "coverage.lst");	
+		IProgramElement pkg = (IProgramElement)root.getChildren().get(1);
+		assertEquals(pkg.getName(), "pkg");	
+		assertEquals(((IProgramElement)pkg.getChildren().get(0)).getName(), "InPackage.java"); 	
+		assertEquals(((IProgramElement)root.getChildren().get(0)).getName(), "ModelCoverage.java"); 
+	}  
+
 	public void testDeclares() {
-		ProgramElementNode node = (ProgramElementNode)model.getRoot();
+		IProgramElement node = (IProgramElement)model.getRoot();
 		assertNotNull(node);
 	
-		ProgramElementNode aspect = StructureModelManager.getDefault().getStructureModel().findNodeForClass(null, "InterTypeDecCoverage");
+		IProgramElement aspect = StructureModelManager.getDefault().getStructureModel().findNodeForClass(null, "InterTypeDecCoverage");
 		assertNotNull(aspect);
 		
 		String decErrMessage = "declare error: \"Illegal construct..\"";
-		ProgramElementNode decErrNode = model.findNode(aspect, ProgramElementNode.Kind.DECLARE_ERROR, decErrMessage);
+		IProgramElement decErrNode = model.findNode(aspect, IProgramElement.Kind.DECLARE_ERROR, decErrMessage);
 		assertNotNull(decErrNode);
 		assertEquals(decErrNode.getName(), decErrMessage);
 		
 		String decWarnMessage = "declare warning: \"Illegal construct..\"";
-		ProgramElementNode decWarnNode = model.findNode(aspect, ProgramElementNode.Kind.DECLARE_WARNING, decWarnMessage);
+		IProgramElement decWarnNode = model.findNode(aspect, IProgramElement.Kind.DECLARE_WARNING, decWarnMessage);
 		assertNotNull(decWarnNode);
 		assertEquals(decWarnNode.getName(), decWarnMessage);	
 		
 		String decParentsMessage = "declare parents: Point";
-		ProgramElementNode decParentsNode = model.findNode(aspect, ProgramElementNode.Kind.DECLARE_PARENTS, decParentsMessage);
+		IProgramElement decParentsNode = model.findNode(aspect, IProgramElement.Kind.DECLARE_PARENTS, decParentsMessage);
 		assertNotNull(decParentsNode);		
 		assertEquals(decParentsNode.getName(), decParentsMessage);	
 			
 		String decParentsPtnMessage = "declare parents: Point+";
-		ProgramElementNode decParentsPtnNode = model.findNode(aspect, ProgramElementNode.Kind.DECLARE_PARENTS, decParentsPtnMessage);
+		IProgramElement decParentsPtnNode = model.findNode(aspect, IProgramElement.Kind.DECLARE_PARENTS, decParentsPtnMessage);
 		assertNotNull(decParentsPtnNode);		
 		assertEquals(decParentsPtnNode.getName(), decParentsPtnMessage);			
 
 		String decParentsTPMessage = "declare parents: <type pattern>";
-		ProgramElementNode decParentsTPNode = model.findNode(aspect, ProgramElementNode.Kind.DECLARE_PARENTS, decParentsTPMessage);
+		IProgramElement decParentsTPNode = model.findNode(aspect, IProgramElement.Kind.DECLARE_PARENTS, decParentsTPMessage);
 		assertNotNull(decParentsTPNode);		
 		assertEquals(decParentsTPNode.getName(), decParentsTPMessage);
 		
 		String decSoftMessage = "declare soft: SizeException";
-		ProgramElementNode decSoftNode = model.findNode(aspect, ProgramElementNode.Kind.DECLARE_SOFT, decSoftMessage);
+		IProgramElement decSoftNode = model.findNode(aspect, IProgramElement.Kind.DECLARE_SOFT, decSoftMessage);
 		assertNotNull(decSoftNode);		
 		assertEquals(decSoftNode.getName(), decSoftMessage);		
 
 		String decPrecMessage = "declare precedence: AdviceCoverage, InterTypeDecCoverage, <type pattern>";
-		ProgramElementNode decPrecNode = model.findNode(aspect, ProgramElementNode.Kind.DECLARE_PRECEDENCE, decPrecMessage);
+		IProgramElement decPrecNode = model.findNode(aspect, IProgramElement.Kind.DECLARE_PRECEDENCE, decPrecMessage);
 		assertNotNull(decPrecNode);		
 		assertEquals(decPrecNode.getName(), decPrecMessage);	
 	} 
 
 	public void testInterTypeMemberDeclares() {
-		ProgramElementNode node = (ProgramElementNode)model.getRoot();
+		IProgramElement node = (IProgramElement)model.getRoot();
 		assertNotNull(node);
 	
-		ProgramElementNode aspect = StructureModelManager.getDefault().getStructureModel().findNodeForClass(null, "InterTypeDecCoverage");
+		IProgramElement aspect = StructureModelManager.getDefault().getStructureModel().findNodeForClass(null, "InterTypeDecCoverage");
 		assertNotNull(aspect);
 		
 		String fieldMsg = "Point.xxx";
-		ProgramElementNode fieldNode = model.findNode(aspect, ProgramElementNode.Kind.INTER_TYPE_FIELD, fieldMsg);
+		IProgramElement fieldNode = model.findNode(aspect, IProgramElement.Kind.INTER_TYPE_FIELD, fieldMsg);
 		assertNotNull(fieldNode);		
 		assertEquals(fieldNode.getName(), fieldMsg);
 
 		String methodMsg = "Point.check(int, Line)";
-		ProgramElementNode methodNode = model.findNode(aspect, ProgramElementNode.Kind.INTER_TYPE_METHOD, methodMsg);
+		IProgramElement methodNode = model.findNode(aspect, IProgramElement.Kind.INTER_TYPE_METHOD, methodMsg);
 		assertNotNull(methodNode);		
 		assertEquals(methodNode.getName(), methodMsg);
 
@@ -97,19 +111,19 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 	}
 
 	public void testPointcuts() {
-		ProgramElementNode node = (ProgramElementNode)model.getRoot();
+		IProgramElement node = (IProgramElement)model.getRoot();
 		assertNotNull(node);
 	
-		ProgramElementNode aspect = StructureModelManager.getDefault().getStructureModel().findNodeForClass(null, "AdviceNamingCoverage");
+		IProgramElement aspect = StructureModelManager.getDefault().getStructureModel().findNodeForClass(null, "AdviceNamingCoverage");
 		assertNotNull(aspect);		
 	
 		String ptct = "named()";
-		ProgramElementNode ptctNode = model.findNode(aspect, ProgramElementNode.Kind.POINTCUT, ptct);
+		IProgramElement ptctNode = model.findNode(aspect, IProgramElement.Kind.POINTCUT, ptct);
 		assertNotNull(ptctNode);		
 		assertEquals(ptctNode.getName(), ptct);		
 
 		String params = "namedWithArgs(int, int)";
-		ProgramElementNode paramsNode = model.findNode(aspect, ProgramElementNode.Kind.POINTCUT, params);
+		IProgramElement paramsNode = model.findNode(aspect, IProgramElement.Kind.POINTCUT, params);
 		assertNotNull(paramsNode);		
 		assertEquals(paramsNode.getName(), params);	
 
@@ -117,57 +131,57 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 	}
 
 	public void testAbstract() {
-		ProgramElementNode node = (ProgramElementNode)model.getRoot();
+		IProgramElement node = (IProgramElement)model.getRoot();
 		assertNotNull(node);
 	
-		ProgramElementNode aspect = StructureModelManager.getDefault().getStructureModel().findNodeForClass(null, "AbstractAspect");
+		IProgramElement aspect = StructureModelManager.getDefault().getStructureModel().findNodeForClass(null, "AbstractAspect");
 		assertNotNull(aspect);	
 		
 		String abst = "abPtct()";
-		ProgramElementNode abstNode = model.findNode(aspect, ProgramElementNode.Kind.POINTCUT, abst);
+		IProgramElement abstNode = model.findNode(aspect, IProgramElement.Kind.POINTCUT, abst);
 		assertNotNull(abstNode);		
 		assertEquals(abstNode.getName(), abst);			
 	}
 
 	public void testAdvice() {
-		ProgramElementNode node = (ProgramElementNode)model.getRoot();
+		IProgramElement node = (IProgramElement)model.getRoot();
 		assertNotNull(node);
 	
-		ProgramElementNode aspect = StructureModelManager.getDefault().getStructureModel().findNodeForClass(null, "AdviceNamingCoverage");
+		IProgramElement aspect = StructureModelManager.getDefault().getStructureModel().findNodeForClass(null, "AdviceNamingCoverage");
 		assertNotNull(aspect);	
 
 		String anon = "before(): <anonymous pointcut>";
-		ProgramElementNode anonNode = model.findNode(aspect, ProgramElementNode.Kind.ADVICE, anon);
+		IProgramElement anonNode = model.findNode(aspect, IProgramElement.Kind.ADVICE, anon);
 		assertNotNull(anonNode);		
 		assertEquals(anonNode.getName(), anon);			
 
 		String named = "before(): named..";
-		ProgramElementNode namedNode = model.findNode(aspect, ProgramElementNode.Kind.ADVICE, named);
+		IProgramElement namedNode = model.findNode(aspect, IProgramElement.Kind.ADVICE, named);
 		assertNotNull(namedNode);		
 		assertEquals(namedNode.getName(), named);		
 
 		String namedWithOneArg = "around(int): namedWithOneArg..";
-		ProgramElementNode namedWithOneArgNode = model.findNode(aspect, ProgramElementNode.Kind.ADVICE, namedWithOneArg);
+		IProgramElement namedWithOneArgNode = model.findNode(aspect, IProgramElement.Kind.ADVICE, namedWithOneArg);
 		assertNotNull(namedWithOneArgNode);		
 		assertEquals(namedWithOneArgNode.getName(), namedWithOneArg);		
 
 		String afterReturning = "afterReturning(int, int): namedWithArgs..";
-		ProgramElementNode afterReturningNode = model.findNode(aspect, ProgramElementNode.Kind.ADVICE, afterReturning);
+		IProgramElement afterReturningNode = model.findNode(aspect, IProgramElement.Kind.ADVICE, afterReturning);
 		assertNotNull(afterReturningNode);		
 		assertEquals(afterReturningNode.getName(), afterReturning);
 
 		String around = "around(int): namedWithOneArg..";
-		ProgramElementNode aroundNode = model.findNode(aspect, ProgramElementNode.Kind.ADVICE, around);
+		IProgramElement aroundNode = model.findNode(aspect, IProgramElement.Kind.ADVICE, around);
 		assertNotNull(aroundNode);		
 		assertEquals(aroundNode.getName(), around);
 
 		String compAnon = "before(int): <anonymous pointcut>..";
-		ProgramElementNode compAnonNode = model.findNode(aspect, ProgramElementNode.Kind.ADVICE, compAnon);
+		IProgramElement compAnonNode = model.findNode(aspect, IProgramElement.Kind.ADVICE, compAnon);
 		assertNotNull(compAnonNode);		
 		assertEquals(compAnonNode.getName(), compAnon);
 
 		String compNamed = "before(int): named()..";
-		ProgramElementNode compNamedNode = model.findNode(aspect, ProgramElementNode.Kind.ADVICE, compNamed);
+		IProgramElement compNamedNode = model.findNode(aspect, IProgramElement.Kind.ADVICE, compNamed);
 		assertNotNull(compNamedNode);		
 		assertEquals(compNamedNode.getName(), compNamed);
 	}

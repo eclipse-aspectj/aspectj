@@ -14,23 +14,11 @@
  
 package org.aspectj.ajde.ui;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.internal.NavigationHistoryModel;
-import org.aspectj.ajde.ui.internal.TreeStructureViewBuilder;
-import org.aspectj.asm.AdviceAssociation;
-import org.aspectj.asm.InheritanceAssociation;
-import org.aspectj.asm.IntroductionAssociation;
-import org.aspectj.asm.LinkNode;
-import org.aspectj.asm.ProgramElementNode;
-import org.aspectj.asm.ReferenceAssociation;
-import org.aspectj.asm.StructureModel;
-import org.aspectj.asm.StructureModelListener;
-import org.aspectj.asm.StructureModelManager;
-import org.aspectj.asm.StructureNode;
+import org.aspectj.ajde.ui.internal.*;
+import org.aspectj.asm.*;
 
 /**
  * @author	Mik Kersten
@@ -47,7 +35,7 @@ public class StructureViewManager {
     private static final StructureViewProperties DEFAULT_VIEW_PROPERTIES; 
     private static final List AVAILABLE_RELATIONS;
 	
-    public final StructureModelListener VIEW_LISTENER = new StructureModelListener() {
+    public final IStructureModelListener VIEW_LISTENER = new IStructureModelListener() {
         public void modelUpdated(StructureModel model) {        	
         	Ajde.getDefault().logEvent("updating structure views: " + structureViews);
 //        	
@@ -71,7 +59,7 @@ public class StructureViewManager {
 	}
 	
 	public void fireNavigateBackAction(StructureView view) {
-		ProgramElementNode backNode = historyModel.navigateBack();
+		IProgramElement backNode = historyModel.navigateBack();
 		
 		if (backNode == null) {
 			Ajde.getDefault().getIdeUIAdapter().displayStatusInformation("No node to navigate back to in history");	
@@ -81,7 +69,7 @@ public class StructureViewManager {
 	}
   
 	public void fireNavigateForwardAction(StructureView view) {
-		ProgramElementNode forwardNode = historyModel.navigateForward();
+		IProgramElement forwardNode = historyModel.navigateForward();
 		
 		if (forwardNode == null) {
 			Ajde.getDefault().getIdeUIAdapter().displayStatusInformation("No node to navigate forward to in history");	
@@ -96,26 +84,27 @@ public class StructureViewManager {
      * @param newFilePath the canonicalized path to the new file
 	 */
 	public void fireNavigationAction(String newFilePath, int lineNumber) {				
-		StructureNode currNode = Ajde.getDefault().getStructureModelManager().getStructureModel().findNodeForSourceLine(
+		IProgramElement currNode = Ajde.getDefault().getStructureModelManager().getStructureModel().findNodeForSourceLine(
 			newFilePath,
 			lineNumber);
 		
-		if (currNode instanceof ProgramElementNode) {
-			navigationAction((ProgramElementNode)currNode, true);	
+		if (currNode instanceof IProgramElement) {
+			navigationAction((IProgramElement)currNode, true);	
 		}
 	} 
 		
 	/**
 	 * History is recorded for {@link LinkNode} navigations.
 	 */
-	public void fireNavigationAction(StructureNode structureNode) {
-		ProgramElementNode node = null;
+	public void fireNavigationAction(IProgramElement IProgramElement) {
+		IProgramElement node = null;
 		boolean recordHistory = false;
-		if (structureNode instanceof LinkNode) {
-			node = ((LinkNode)structureNode).getProgramElementNode();
-			recordHistory = true;
-		} else if (structureNode instanceof ProgramElementNode) {
-			node = (ProgramElementNode)structureNode;
+//		if (IProgramElement instanceof LinkNode) {
+//			node = ((LinkNode)IProgramElement).getProgramElementNode();
+//			recordHistory = true;
+//		} else 
+		if (IProgramElement instanceof IProgramElement) {
+			node = (IProgramElement)IProgramElement;
 		}
 		if (node != null) navigationAction(node, recordHistory);
 	}
@@ -125,7 +114,7 @@ public class StructureViewManager {
 	 * and as such is below the granularity visible in the view the parent is highlighted,
 	 * along with the corresponding sourceline.
 	 */ 
-	private void navigationAction(ProgramElementNode node, boolean recordHistory) { 
+	private void navigationAction(IProgramElement node, boolean recordHistory) { 
 		if (node == null 
 			|| node == StructureModel.NO_STRUCTURE) {
 			Ajde.getDefault().getIdeUIAdapter().displayStatusInformation("Source not available for node: " + node.getName());
@@ -145,8 +134,8 @@ public class StructureViewManager {
 	    for (Iterator it = structureViews.iterator(); it.hasNext(); ) {
     		StructureView view = (StructureView)it.next();
     		if (!(view instanceof GlobalStructureView) || !recordHistory || defaultFileView == null) {
-	    		if (node.getProgramElementKind().equals(ProgramElementNode.Kind.CODE)) {
-	    			ProgramElementNode parentNode = (ProgramElementNode)node.getParent();
+	    		if (node.getKind().equals(IProgramElement.Kind.CODE)) {
+	    			IProgramElement parentNode = (IProgramElement)node.getParent();
 	    			if (parentNode != null) {
 		    			StructureViewNode currNode = view.findCorrespondingViewNode(parentNode);
 		    			int lineOffset = node.getSourceLocation().getLine() - parentNode.getSourceLocation().getLine();
@@ -160,11 +149,11 @@ public class StructureViewManager {
     	}
 	}
 	
-	private ProgramElementNode getProgramElementNode(StructureViewNode node) {
-		if (node.getStructureNode() instanceof ProgramElementNode) {
-			return (ProgramElementNode)node.getStructureNode();	
-		} else if (node.getStructureNode() instanceof LinkNode) {
-			return ((LinkNode)node.getStructureNode()).getProgramElementNode();	
+	private IProgramElement getProgramElementNode(StructureViewNode node) {
+		if (node.getStructureNode() instanceof IProgramElement) {
+			return (IProgramElement)node.getStructureNode();	
+//		} else if (node.getStructureNode() instanceof LinkNode) {
+//			return ((LinkNode)node.getStructureNode()).getProgramElementNode();	
 		} else {
 			return null;
 		}	
@@ -228,20 +217,10 @@ public class StructureViewManager {
 
 	static {
 		AVAILABLE_RELATIONS = new ArrayList();
-        AVAILABLE_RELATIONS.add(AdviceAssociation.METHOD_CALL_SITE_RELATION);
-        AVAILABLE_RELATIONS.add(AdviceAssociation.METHOD_RELATION);
-        AVAILABLE_RELATIONS.add(AdviceAssociation.CONSTRUCTOR_CALL_SITE_RELATION);
-        AVAILABLE_RELATIONS.add(AdviceAssociation.CONSTRUCTOR_RELATION);
-        AVAILABLE_RELATIONS.add(AdviceAssociation.FIELD_ACCESS_RELATION);
-        AVAILABLE_RELATIONS.add(AdviceAssociation.INITIALIZER_RELATION);
-        AVAILABLE_RELATIONS.add(AdviceAssociation.HANDLER_RELATION);
-        AVAILABLE_RELATIONS.add(AdviceAssociation.INTRODUCTION_RELATION);
-        AVAILABLE_RELATIONS.add(IntroductionAssociation.INTRODUCES_RELATION);
-        AVAILABLE_RELATIONS.add(InheritanceAssociation.IMPLEMENTS_RELATION);
-        AVAILABLE_RELATIONS.add(InheritanceAssociation.INHERITS_RELATION);
-        AVAILABLE_RELATIONS.add(InheritanceAssociation.INHERITS_MEMBERS_RELATION);
-        AVAILABLE_RELATIONS.add(ReferenceAssociation.USES_POINTCUT_RELATION);
-        AVAILABLE_RELATIONS.add(ReferenceAssociation.IMPORTS_RELATION);
+        AVAILABLE_RELATIONS.add(IRelationship.Kind.ADVICE);
+        AVAILABLE_RELATIONS.add(IRelationship.Kind.INHERITANCE);
+        AVAILABLE_RELATIONS.add(IRelationship.Kind.DECLARE);
+        AVAILABLE_RELATIONS.add(IRelationship.Kind.REFERENCE);
         
         DEFAULT_VIEW_PROPERTIES = new StructureViewProperties();
         DEFAULT_VIEW_PROPERTIES.setRelations(AVAILABLE_RELATIONS);

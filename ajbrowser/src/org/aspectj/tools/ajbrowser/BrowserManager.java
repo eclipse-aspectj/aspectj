@@ -46,7 +46,7 @@ public class BrowserManager {
     
     private static TopFrame topFrame = null;
     
-	public final StructureModelListener VIEW_LISTENER = new StructureModelListener() {
+	public final IStructureModelListener VIEW_LISTENER = new IStructureModelListener() {
 		public void modelUpdated(StructureModel model) {        	
 			FileStructureView fsv = Ajde.getDefault().getStructureViewManager().getDefaultFileView();
 			if (fsv != null) {

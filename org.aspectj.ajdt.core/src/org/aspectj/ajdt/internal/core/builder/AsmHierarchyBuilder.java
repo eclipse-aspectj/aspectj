@@ -16,33 +16,32 @@ package org.aspectj.ajdt.internal.core.builder;
 import java.io.*;
 import java.util.*;
 
-import org.aspectj.ajdt.internal.compiler.ast.*;
+import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.asm.*;
+import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.*;
 import org.aspectj.util.LangUtil;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.patterns.*;
+import org.aspectj.weaver.Member;
 import org.eclipse.jdt.internal.compiler.*;
 import org.eclipse.jdt.internal.compiler.ast.*;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.problem.ProblemHandler;
 
-public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
+public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
 	
-    public static void build(
+    public static void build(    
         CompilationUnitDeclaration unit,
         StructureModel structureModel) {
         LangUtil.throwIaxIfNull(unit, "unit");
-          
-        new AsmBuilder(unit.compilationResult()).internalBuild(unit, structureModel);
+        new AsmHierarchyBuilder(unit.compilationResult()).internalBuild(unit, structureModel);
     }
 
 	private final Stack stack;
 	private final CompilationResult currCompilationResult;
 	private AsmNodeFormatter formatter = new AsmNodeFormatter();
 	
-    protected AsmBuilder(CompilationResult result) {
+    protected AsmHierarchyBuilder(CompilationResult result) {
         LangUtil.throwIaxIfNull(result, "result");
         currCompilationResult = result;
         stack = new Stack();
@@ -55,7 +54,7 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
     private void internalBuild(
         CompilationUnitDeclaration unit, 
         StructureModel structureModel) {
-        LangUtil.throwIaxIfNull(structureModel, "structureModel");
+        LangUtil.throwIaxIfNull(structureModel, "structureModel");        
         if (!currCompilationResult.equals(unit.compilationResult())) {
             throw new IllegalArgumentException("invalid unit: " + unit);
         }
@@ -67,67 +66,27 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
         
         // -- create node to add
         final File file = new File(new String(unit.getFileName()));
-        final ProgramElementNode cuNode;
+        final IProgramElement cuNode;
         {
             // AMC - use the source start and end from the compilation unit decl
             int startLine = getStartLine(unit);
             int endLine = getEndLine(unit);     
             ISourceLocation sourceLocation 
                 = new SourceLocation(file, startLine, endLine);
-            cuNode = new ProgramElementNode(
+            cuNode = new ProgramElement(
                 new String(file.getName()),
-                ProgramElementNode.Kind.FILE_JAVA,
+                IProgramElement.Kind.FILE_JAVA,
                 sourceLocation,
                 0,
                 "",
                 new ArrayList());
         }
 
-        // -- get node (package or root) to add to
-        final StructureNode addToNode;
-        {
-            ImportReference currentPackage = unit.currentPackage;
-            if (null == currentPackage) {
-                addToNode = structureModel.getRoot();
-            } else {
-                String pkgName;
-                {
-                    StringBuffer nameBuffer = new StringBuffer();
-                    final char[][] importName = currentPackage.getImportName();
-                    final int last = importName.length-1;
-                    for (int i = 0; i < importName.length; i++) {
-                        nameBuffer.append(new String(importName[i]));
-                        if (i < last) {
-                            nameBuffer.append('.');
-                        } 
-                    }
-                    pkgName = nameBuffer.toString();
-                }
-            
-                ProgramElementNode pkgNode = null;
-                for (Iterator it = structureModel.getRoot().getChildren().iterator(); 
-                    it.hasNext(); ) {
-                    ProgramElementNode currNode = (ProgramElementNode)it.next();
-                    if (pkgName.equals(currNode.getName())) {
-                        pkgNode = currNode;
-                        break; // any reason not to quit when found?
-                    } 
-                }
-                if (pkgNode == null) {
-                    // note packages themselves have no source location
-                    pkgNode = new ProgramElementNode(
-                        pkgName, 
-                        ProgramElementNode.Kind.PACKAGE, 
-                        new ArrayList());
-                    structureModel.getRoot().addChild(pkgNode);
-                }
-                addToNode = pkgNode;
-            }
-        }
+        final IProgramElement addToNode = genAddToNode(unit, structureModel);
         
         // -- remove duplicates before adding (XXX use them instead?)
         for (ListIterator itt = addToNode.getChildren().listIterator(); itt.hasNext(); ) {
-            ProgramElementNode child = (ProgramElementNode)itt.next();
+            IProgramElement child = (IProgramElement)itt.next();
             ISourceLocation childLoc = child.getSourceLocation();
             if (null == childLoc) {
                 // XXX ok, packages have null source locations
@@ -149,15 +108,66 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
                 + " creating path for " + file );
             // XXX signal IOException when canonicalizing file path
         }
-    }
+        
+	}
+
+	/**
+	 * Get/create teh node (package or root) to add to.
+	 */
+	private IProgramElement genAddToNode(
+		CompilationUnitDeclaration unit,
+		StructureModel structureModel) {
+		final IProgramElement addToNode;
+		{
+		    ImportReference currentPackage = unit.currentPackage;
+		    if (null == currentPackage) {
+		        addToNode = structureModel.getRoot();
+		    } else {
+		        String pkgName;
+		        {
+		            StringBuffer nameBuffer = new StringBuffer();
+		            final char[][] importName = currentPackage.getImportName();
+		            final int last = importName.length-1;
+		            for (int i = 0; i < importName.length; i++) {
+		                nameBuffer.append(new String(importName[i]));
+		                if (i < last) {
+		                    nameBuffer.append('.');
+		                } 
+		            }
+		            pkgName = nameBuffer.toString();
+		        }
+		    
+		        IProgramElement pkgNode = null;
+		        for (Iterator it = structureModel.getRoot().getChildren().iterator(); 
+		            it.hasNext(); ) {
+		            IProgramElement currNode = (IProgramElement)it.next();
+		            if (pkgName.equals(currNode.getName())) {
+		                pkgNode = currNode;
+		                break; 
+		            } 
+		        }
+		        if (pkgNode == null) {
+		            // note packages themselves have no source location
+		            pkgNode = new ProgramElement(
+		                pkgName, 
+		                IProgramElement.Kind.PACKAGE, 
+		                new ArrayList()
+		            );
+		            structureModel.getRoot().addChild(pkgNode);
+		        }
+		        addToNode = pkgNode;
+		    }
+		}
+		return addToNode;
+	}
 
 	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
 		String name = new String(typeDeclaration.name);
-		ProgramElementNode.Kind kind = ProgramElementNode.Kind.CLASS;
-		if (typeDeclaration instanceof AspectDeclaration) kind = ProgramElementNode.Kind.ASPECT;
-		else if (typeDeclaration.isInterface()) kind = ProgramElementNode.Kind.INTERFACE;
+		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
+		if (typeDeclaration instanceof AspectDeclaration) kind = IProgramElement.Kind.ASPECT;
+		else if (typeDeclaration.isInterface()) kind = IProgramElement.Kind.INTERFACE;
 
-		ProgramElementNode peNode = new ProgramElementNode(
+		IProgramElement peNode = new ProgramElement(
 			name,
 			kind,
 			makeLocation(typeDeclaration),
@@ -166,7 +176,7 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 		
 //		peNode.setFullSignature(typeDeclaration.());
 		
-		((StructureNode)stack.peek()).addChild(peNode);
+		((IProgramElement)stack.peek()).addChild(peNode);
 		stack.push(peNode);
 		return true;
 	}
@@ -179,11 +189,11 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 		String name = new String(memberTypeDeclaration.name);
 		//System.err.println("member type with name: " + name);
 		
-		ProgramElementNode.Kind kind = ProgramElementNode.Kind.CLASS;
-		if (memberTypeDeclaration instanceof AspectDeclaration) kind = ProgramElementNode.Kind.ASPECT;
-		else if (memberTypeDeclaration.isInterface()) kind = ProgramElementNode.Kind.INTERFACE;
+		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
+		if (memberTypeDeclaration instanceof AspectDeclaration) kind = IProgramElement.Kind.ASPECT;
+		else if (memberTypeDeclaration.isInterface()) kind = IProgramElement.Kind.INTERFACE;
 
-		ProgramElementNode peNode = new ProgramElementNode(
+		IProgramElement peNode = new ProgramElement(
 			name,
 			kind,
 			makeLocation(memberTypeDeclaration),
@@ -193,7 +203,7 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 		
 		peNode.setFullSignature(memberTypeDeclaration.toString());
 		
-		((StructureNode)stack.peek()).addChild(peNode);
+		((IProgramElement)stack.peek()).addChild(peNode);
 		stack.push(peNode);
 		return true;
 	}
@@ -216,10 +226,10 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 //		System.err.println("member type with name: " + name + ", " + 
 //				new String(fullName));
 		
-		ProgramElementNode.Kind kind = ProgramElementNode.Kind.CLASS;
-		if (memberTypeDeclaration.isInterface()) kind = ProgramElementNode.Kind.INTERFACE;
+		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
+		if (memberTypeDeclaration.isInterface()) kind = IProgramElement.Kind.INTERFACE;
 
-		ProgramElementNode peNode = new ProgramElementNode(
+		IProgramElement peNode = new ProgramElement(
 			fullName,
 			kind,
 			makeLocation(memberTypeDeclaration),
@@ -244,21 +254,21 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 		stack.pop();
 	}
 	
-	private StructureNode findEnclosingClass(Stack stack) {
+	private IProgramElement findEnclosingClass(Stack stack) {
 		for (int i = stack.size()-1; i >= 0; i--) {
-			ProgramElementNode pe = (ProgramElementNode)stack.get(i);
-			if (pe.getProgramElementKind() == ProgramElementNode.Kind.CLASS) {
+			IProgramElement pe = (IProgramElement)stack.get(i);
+			if (pe.getKind() == IProgramElement.Kind.CLASS) {
 				return pe;
 			}
 			
 		}
-		return (StructureNode)stack.peek();
+		return (IProgramElement)stack.peek();
 	}	
 	
 	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {		
-		ProgramElementNode peNode = new ProgramElementNode(
+		IProgramElement peNode = new ProgramElement(
 			"",
-			ProgramElementNode.Kind.ERROR,
+			IProgramElement.Kind.ERROR,
 			makeLocation(methodDeclaration),
 			methodDeclaration.modifiers,
 			"",
@@ -268,9 +278,9 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 		genBytecodeInfo(methodDeclaration, peNode);
 
 		// TODO: should improve determining what the main method is
-		if (peNode.getProgramElementKind().equals(ProgramElementNode.Kind.METHOD)) {
+		if (peNode.getKind().equals(IProgramElement.Kind.METHOD)) {
 			if (peNode.getName().equals("main")) {
-				((ProgramElementNode)stack.peek()).setRunnable(true);
+				((IProgramElement)stack.peek()).setRunnable(true);
 			}	
 		}
 		
@@ -278,7 +288,7 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 		return true;
 	}
 
-	private void genBytecodeInfo(MethodDeclaration methodDeclaration, ProgramElementNode peNode) {
+	private void genBytecodeInfo(MethodDeclaration methodDeclaration, IProgramElement peNode) {
 		if (methodDeclaration.binding != null) {
 			String memberName = "";
 			String memberBytecodeSignature = "";
@@ -293,7 +303,7 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 			peNode.setBytecodeName(memberName);
 			peNode.setBytecodeSignature(memberBytecodeSignature);
 		}
-		((StructureNode)stack.peek()).addChild(peNode);
+		((IProgramElement)stack.peek()).addChild(peNode);
 	}
 
 	public void endVisit(MethodDeclaration methodDeclaration, ClassScope scope) {
@@ -301,14 +311,14 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 	}
 
 	public boolean visit(FieldDeclaration fieldDeclaration, MethodScope scope) {		
-		ProgramElementNode peNode = new ProgramElementNode(
+		IProgramElement peNode = new ProgramElement(
 			new String(fieldDeclaration.name),
-			ProgramElementNode.Kind.FIELD,	
+			IProgramElement.Kind.FIELD,	
 			makeLocation(fieldDeclaration),
 			fieldDeclaration.modifiers,
 			"",
 			new ArrayList());	
-		((StructureNode)stack.peek()).addChild(peNode);
+		((IProgramElement)stack.peek()).addChild(peNode);
 		stack.push(peNode);
 		return true;		
 	}
@@ -325,7 +335,7 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 //			0,
 //			"",
 //			new ArrayList());	
-//		((StructureNode)stack.peek()).addChild(0, peNode);
+//		((IProgramElement)stack.peek()).addChild(0, peNode);
 //		stack.push(peNode);
 //		return true;	
 //	}
@@ -338,14 +348,14 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 			stack.push(null); // a little wierd but does the job
 			return true;	
 		}
-		ProgramElementNode peNode = new ProgramElementNode(
+		IProgramElement peNode = new ProgramElement(
 			new String(constructorDeclaration.selector),
-			ProgramElementNode.Kind.CONSTRUCTOR,	
+			IProgramElement.Kind.CONSTRUCTOR,	
 			makeLocation(constructorDeclaration),
 			constructorDeclaration.modifiers,
 			"",
 			new ArrayList());	
-		((StructureNode)stack.peek()).addChild(peNode);
+		((IProgramElement)stack.peek()).addChild(peNode);
 		stack.push(peNode);
 		return true;	
 	}
@@ -361,7 +371,7 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 //			clinit.modifiers,
 //			"",
 //			new ArrayList());	
-//		((StructureNode)stack.peek()).addChild(peNode);
+//		((IProgramElement)stack.peek()).addChild(peNode);
 //		stack.push(peNode);  
 //		return false;	
 //	}
@@ -376,14 +386,14 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 		if (initializer == inInitializer) return false;
 		inInitializer = initializer;
 		
-		ProgramElementNode peNode = new ProgramElementNode(
+		IProgramElement peNode = new ProgramElement(
 			"...",
-			ProgramElementNode.Kind.INITIALIZER,	
+			IProgramElement.Kind.INITIALIZER,	
 			makeLocation(initializer),
 			initializer.modifiers,
 			"",
 			new ArrayList());	
-		((StructureNode)stack.peek()).addChild(peNode);
+		((IProgramElement)stack.peek()).addChild(peNode);
 		stack.push(peNode);
 		initializer.block.traverse(this, scope);
 		stack.pop();

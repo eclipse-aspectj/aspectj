@@ -46,7 +46,7 @@ import org.aspectj.ajde.ui.BuildConfigEditor;
 import org.aspectj.ajde.ui.BuildConfigModel;
 import org.aspectj.ajde.ui.BuildConfigNode;
 import org.aspectj.ajde.ui.InvalidResourceException;
-import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.IProgramElement;
 /**
  * UI for editing build configuration (".lst") files via a graphical tree-based
  * representation.
@@ -246,15 +246,15 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
             //}
             BuildConfigNode.Kind kind = ctn.getModelNode().getBuildConfigNodeKind();
             if (kind.equals(BuildConfigNode.Kind.FILE_ASPECTJ)) {
-            	setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.FILE_ASPECTJ));	
+            	setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.FILE_ASPECTJ));	
             } else if (kind.equals(BuildConfigNode.Kind.FILE_JAVA)) {
-            	setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.FILE_JAVA));	
+            	setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.FILE_JAVA));	
             } else if (kind.equals(BuildConfigNode.Kind.FILE_LST)) {
-            	setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.FILE_LST));	
+            	setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.FILE_LST));	
             } else if (kind.equals(BuildConfigNode.Kind.DIRECTORY)) {
-            	setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.PACKAGE));	
+            	setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.PACKAGE));	
             } else {
-            	setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getStructureIcon(ProgramElementNode.Kind.ERROR).getIconResource());	
+            	setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getStructureIcon(IProgramElement.Kind.ERROR).getIconResource());	
             	p.remove(cbox);
             }
            

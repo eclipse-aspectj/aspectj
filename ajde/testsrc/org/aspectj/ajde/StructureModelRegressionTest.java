@@ -18,8 +18,7 @@ import java.util.List;
 
 import junit.framework.TestSuite;
 
-import org.aspectj.asm.StructureModel;
-import org.aspectj.asm.StructureNode;
+import org.aspectj.asm.*;
 
 public class StructureModelRegressionTest extends AjdeTestCase {
 
@@ -54,14 +53,14 @@ public class StructureModelRegressionTest extends AjdeTestCase {
 			StructureModel savedModel = Ajde.getDefault().getStructureModelManager().getStructureModel();
 			//System.err.println( savedModel.getRoot().getClass() + ", " +  savedModel.getRoot());
 			
-			// AMC This test will not pass as written until StructureNode defines
-			// equals. The equals loic is commented out in the StructureNode
+			// AMC This test will not pass as written until IProgramElement defines
+			// equals. The equals loic is commented out in the IProgramElement
 			// class - adding it back in could have unforeseen system-wide
-			// consequences, so I've defined a structureNodesEqual( ) helper
+			// consequences, so I've defined a IProgramElementsEqual( ) helper
 			// method here instead.
-			StructureNode rootNode = model.getRoot();
-			StructureNode savedRootNode = savedModel.getRoot();
-			return structureNodesEqual( rootNode, savedRootNode );
+			IProgramElement rootNode = model.getRoot();
+			IProgramElement savedRootNode = savedModel.getRoot();
+			return IProgramElementsEqual( rootNode, savedRootNode );
 		} else {
 			Ajde.getDefault().getStructureModelManager().writeStructureModel(lstFile);
 			return true;
@@ -69,7 +68,7 @@ public class StructureModelRegressionTest extends AjdeTestCase {
 		//return true;
 	}
 
-	private boolean structureNodesEqual( StructureNode s1, StructureNode s2 ) {
+	private boolean IProgramElementsEqual( IProgramElement s1, IProgramElement s2 ) {
 	  final boolean equal = true;
 	  	if ( s1 == s2 ) return equal;
 	  	if ( null == s1 || null == s2 ) return !equal;
@@ -85,9 +84,9 @@ public class StructureModelRegressionTest extends AjdeTestCase {
 			if (s1Kids == null || s2Kids == null) return !equal;			
 			if (s1Kids.size() != s2Kids.size() ) return !equal;
 			for ( int k=0; k<s1Kids.size(); k++ ) {
-				StructureNode k1 = (StructureNode) s1Kids.get(k);
-				StructureNode k2 = (StructureNode) s2Kids.get(k);	
-				if (!structureNodesEqual( k1, k2 )) return !equal;
+				IProgramElement k1 = (IProgramElement) s1Kids.get(k);
+				IProgramElement k2 = (IProgramElement) s2Kids.get(k);	
+				if (!IProgramElementsEqual( k1, k2 )) return !equal;
 			}
 		}
 	  return equal;		

@@ -14,25 +14,10 @@
 
 package org.aspectj.ajde.ui;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.asm.LinkNode;
-import org.aspectj.asm.ProgramElementNode;
-import org.aspectj.asm.RelationNode;
-import org.aspectj.asm.StructureModel;
-import org.aspectj.asm.StructureModelManager;
-import org.aspectj.asm.StructureNode;
+import org.aspectj.asm.*;
 
 /**
  * Prototype functionality for package view clients.
@@ -63,15 +48,15 @@ public class StructureModelUtil {
 			Object key = it.next();
 			List annotations = (List) annotationsMap.get(key);
 			for (Iterator it2 = annotations.iterator(); it2.hasNext();) {
-				ProgramElementNode node = (ProgramElementNode) it2.next();
+				IProgramElement node = (IProgramElement) it2.next();
 
 				List relations = node.getRelations();
 
 				for (Iterator it3 = relations.iterator(); it3.hasNext();) {
-					RelationNode relationNode = (RelationNode) it3.next();
+					IRelationship relationNode = (IRelationship) it3.next();
 
 					if (relationNode.getKind().equals("Advice")) {
-						List children = relationNode.getChildren();
+						List children = relationNode.getTargets();
 
 						List aspects = new Vector();
 
@@ -80,19 +65,19 @@ public class StructureModelUtil {
 							) {
 							Object object = it4.next();
 
-							if (object instanceof LinkNode) {
-								ProgramElementNode pNode =
-									((LinkNode) object).getProgramElementNode();
-
-								if (pNode.getProgramElementKind()
-									== ProgramElementNode.Kind.ADVICE) {
-
-									StructureNode theAspect = pNode.getParent();
-
-									aspects.add(theAspect);
-
-								}
-							}
+//							if (object instanceof LinkNode) {
+//								IProgramElement pNode =
+//									((LinkNode) object).getProgramElementNode();
+//
+//								if (pNode.getProgramElementKind()
+//									== IProgramElement.Kind.ADVICE) {
+//
+//									IProgramElement theAspect = pNode.getParent();
+//
+//									aspects.add(theAspect);
+//
+//								}
+//							}
 						}
 						if (!aspects.isEmpty()) {
 							aspectMap.put(key, aspects);
@@ -111,11 +96,11 @@ public class StructureModelUtil {
 	 * 
 	 * @return		the set of aspects with advice that affects the specified package
 	 */
-	public static Set getAspectsAffectingPackage(ProgramElementNode packageNode) {
+	public static Set getAspectsAffectingPackage(IProgramElement packageNode) {
 		List files = StructureModelUtil.getFilesInPackage(packageNode);
 		Set aspects = new HashSet();
 		for (Iterator it = files.iterator(); it.hasNext();) {
-			ProgramElementNode fileNode = (ProgramElementNode) it.next();
+			IProgramElement fileNode = (IProgramElement) it.next();
 			Map adviceMap =
 				getLinesToAspectMap(
 					fileNode.getSourceLocation().getSourceFile().getAbsolutePath());
@@ -135,20 +120,20 @@ public class StructureModelUtil {
 			return null;
 		} else {
 			return getPackagesHelper(
-				(ProgramElementNode) model.getRoot(),
-				ProgramElementNode.Kind.PACKAGE,
+				(IProgramElement) model.getRoot(),
+				IProgramElement.Kind.PACKAGE,
 				null,
 				packages);
 		}
 	}
 
 	private static List getPackagesHelper(
-		ProgramElementNode node,
-		ProgramElementNode.Kind kind,
+		IProgramElement node,
+		IProgramElement.Kind kind,
 		String prename,
 		List matches) {
 
-		if (kind == null || node.getProgramElementKind().equals(kind)) {
+		if (kind == null || node.getKind().equals(kind)) {
 			if (prename == null) {
 				prename = new String(node.toString());
 			} else {
@@ -162,10 +147,10 @@ public class StructureModelUtil {
 		}
 
 		for (Iterator it = node.getChildren().iterator(); it.hasNext();) {
-			StructureNode nextNode = (StructureNode) it.next();
-			if (nextNode instanceof ProgramElementNode) {
+			IProgramElement nextNode = (IProgramElement) it.next();
+			if (nextNode instanceof IProgramElement) {
 				getPackagesHelper(
-					(ProgramElementNode) nextNode,
+					(IProgramElement) nextNode,
 					kind,
 					prename,
 					matches);
@@ -202,8 +187,8 @@ public class StructureModelUtil {
 
 	private class SortingComparator implements Comparator {
 		public int compare(Object o1, Object o2) {
-			ProgramElementNode p1 = (ProgramElementNode) o1;
-			ProgramElementNode p2 = (ProgramElementNode) o2;
+			IProgramElement p1 = (IProgramElement) o1;
+			IProgramElement p2 = (IProgramElement) o2;
 
 			String name1 = p1.getName();
 			String name2 = p2.getName();
@@ -217,8 +202,8 @@ public class StructureModelUtil {
 			Object[] array1 = (Object[]) o1;
 			Object[] array2 = (Object[]) o2;
 
-			ProgramElementNode p1 = (ProgramElementNode) array1[1];
-			ProgramElementNode p2 = (ProgramElementNode) array2[1];
+			IProgramElement p1 = (IProgramElement) array1[1];
+			IProgramElement p2 = (IProgramElement) array2[1];
 
 			String name1 = p1.getName();
 			String name2 = p2.getName();
@@ -230,7 +215,7 @@ public class StructureModelUtil {
 	/**
 	 * @return		all of the AspectJ and Java source files in a package
 	 */ 
-	public static List getFilesInPackage(ProgramElementNode packageNode) {
+	public static List getFilesInPackage(IProgramElement packageNode) {
 		List packageContents;
 		if (packageNode == null) {
 			return null;
@@ -239,9 +224,9 @@ public class StructureModelUtil {
 		}
 		List files = new ArrayList();
 		for (Iterator it = packageContents.iterator(); it.hasNext(); ) {
-			ProgramElementNode packageItem = (ProgramElementNode)it.next();
-			if (packageItem.getProgramElementKind() == ProgramElementNode.Kind.FILE_JAVA 
-				|| packageItem.getProgramElementKind() == ProgramElementNode.Kind.FILE_ASPECTJ) {
+			IProgramElement packageItem = (IProgramElement)it.next();
+			if (packageItem.getKind() == IProgramElement.Kind.FILE_JAVA 
+				|| packageItem.getKind() == IProgramElement.Kind.FILE_ASPECTJ) {
 				files.add(packageItem);
 			}
 		} 

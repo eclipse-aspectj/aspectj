@@ -5,23 +5,41 @@
  * under the terms of the Common Public License v1.0 
  * which accompanies this distribution and is available at 
  * http://www.eclipse.org/legal/cpl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
  * ******************************************************************/
-
 
 package org.aspectj.ajde;
 
-import org.aspectj.ajde.ui.*;
+/**
+ * @author Mik Kersten
+ */
+public class NullIdeProgressMonitor implements BuildProgressMonitor {
 
-public class NullIdeUIAdapter implements IdeUIAdapter {
-	
-	public void displayStatusInformation(String message) {
-		System.out.println("NullIde> " + message);
+	public void start(String configFile) {
+//		System.out.println("> compiling: " + configFile);
 	}
-	
-    public void resetGUI() {
-        // not implemented
-    }
+
+	public void setProgressText(String text) {
+
+	}
+
+	public void setProgressBarVal(int newVal) {
+
+	}
+
+	public void incrementProgressBarVal() {
+
+	}
+
+	public void setProgressBarMax(int maxVal) {
+
+	}
+
+	public int getProgressBarMax() {
+		return 0;
+	}
+
+	public void finish() {
+
+	}
+
 }

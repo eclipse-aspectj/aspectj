@@ -14,14 +14,10 @@
  
 package org.aspectj.ajde.ui;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.asm.ProgramElementNode;
-import org.aspectj.asm.StructureModel;
-import org.aspectj.asm.StructureNode;
+import org.aspectj.asm.*;
 
 /**
  * @author	Mik Kersten
@@ -35,35 +31,35 @@ public class StructureSearchManager {
 	 */
 	public List findMatches(
 		String pattern, 
-		ProgramElementNode.Kind kind) {
+		IProgramElement.Kind kind) {
 		
 		List matches = new ArrayList();
 		StructureModel model = Ajde.getDefault().getStructureModelManager().getStructureModel();
 		if (model.equals(StructureModel.NO_STRUCTURE)) {
 			return null;
 		} else {
-			return findMatchesHelper((ProgramElementNode)model.getRoot(), pattern, kind, matches);
+			return findMatchesHelper((IProgramElement)model.getRoot(), pattern, kind, matches);
 		}
 	}					
 	
 	
 	private List findMatchesHelper(
-		ProgramElementNode node, 
+		IProgramElement node, 
 		String pattern, 
-		ProgramElementNode.Kind kind,
+		IProgramElement.Kind kind,
 		List matches) {
 			
 		if (node != null && node.getName().indexOf(pattern) != -1) {
-			if (kind == null || node.getProgramElementKind().equals(kind)) {
+			if (kind == null || node.getKind().equals(kind)) {
 				matches.add(node);	
 			} 
 		}
 		
 		for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
-			StructureNode nextNode = (StructureNode)it.next();
-			if (nextNode instanceof ProgramElementNode) {
+			IProgramElement nextNode = (IProgramElement)it.next();
+			if (nextNode instanceof IProgramElement) {
 				findMatchesHelper(
-					(ProgramElementNode)nextNode, 
+					(IProgramElement)nextNode, 
 					pattern, 
 					kind,
 					matches); 		
