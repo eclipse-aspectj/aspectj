@@ -72,7 +72,7 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedTypeX aspectType) {
 		ResolvedMember ret = getSyntheticConstructor();
 		if (ResolvedTypeX.matches(ret, member)) return getSignature();
-		return null;
+		return super.getMatchingSyntheticMember(member, aspectType);
 	}
 
 }

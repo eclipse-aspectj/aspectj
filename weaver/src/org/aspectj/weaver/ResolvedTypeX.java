@@ -975,14 +975,14 @@ public abstract class ResolvedTypeX extends TypeX {
 		if (this instanceof BcelObjectType) return;
 		
 		//System.err.println("conflict at " + m2.getSourceLocation());
-		getWorld().getMessageHandler().handleMessage(MessageUtil.error(
+		getWorld().showMessage(IMessage.ERROR,
 			"intertype declaration from "
 				+ m1.getAspectType().getName()
 				+ " conflicts with intertype declaration: "
 				+ m2.getSignature()
 				+ " from "
 				+ m2.getAspectType().getName(),
-			m2.getSourceLocation()));
+			m2.getSourceLocation(), getSourceLocation());
 	}
 	
 	

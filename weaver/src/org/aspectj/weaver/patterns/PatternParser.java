@@ -618,6 +618,7 @@ public class PatternParser {
 	
 	
 	public SignaturePattern parseMethodOrConstructorSignaturePattern() {
+		int startPos = tokenSource.peek().getStart();
 		ModifiersPattern modifiers = parseModifiersPattern();
 		TypePattern returnType = parseTypePattern();
 		
@@ -659,8 +660,10 @@ public class PatternParser {
 		TypePatternList parameterTypes = parseArgumentsPattern();
 		
 		ThrowsPattern throwsPattern = parseOptionalThrowsPattern();
-		
-		return new SignaturePattern(kind, modifiers, returnType, declaringType, name, parameterTypes, throwsPattern);
+		SignaturePattern ret = new SignaturePattern(kind, modifiers, returnType, declaringType, name, parameterTypes, throwsPattern);
+	    int endPos = tokenSource.peek(-1).getEnd();
+	    ret.setLocation(sourceContext, startPos, endPos);
+		return ret;
 	}
 
 	private boolean maybeEatNew(TypePattern returnType) {
@@ -680,6 +683,7 @@ public class PatternParser {
 
 	
 	public SignaturePattern parseFieldSignaturePattern() {
+		int startPos = tokenSource.peek().getStart();
 		ModifiersPattern modifiers = parseModifiersPattern();
 		TypePattern returnType = parseTypePattern();
 		TypePattern declaringType = parseTypePattern();
@@ -693,8 +697,12 @@ public class PatternParser {
 	    		declaringType = declaringType.ANY;
 	    	}
 		}
-		return new SignaturePattern(Member.FIELD, modifiers, returnType,
+		SignaturePattern ret = new SignaturePattern(Member.FIELD, modifiers, returnType,
 					declaringType, name, TypePatternList.ANY, ThrowsPattern.ANY);
+					
+		int endPos = tokenSource.peek(-1).getEnd();
+	    ret.setLocation(sourceContext, startPos, endPos);
+		return ret;
 	}
 	
 	

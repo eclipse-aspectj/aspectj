@@ -156,6 +156,10 @@ public abstract class ResolvedTypeMunger {
 	// ---- 
 
 	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedTypeX aspectType) {
+		if ((getSignature() != null) && getSignature().isPublic() && member.equals(getSignature())) { 
+			return getSignature();
+		}
+			
 		return null;
 	}
 
