@@ -15,10 +15,11 @@ package org.aspectj.weaver;
 
 import java.io.File;
 
-import org.aspectj.util.FileUtil;
-import org.aspectj.weaver.tools.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
-import junit.framework.*;
+import org.aspectj.util.FileUtil;
 
 public class BcweaverTests extends TestCase {
 

@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Test;
