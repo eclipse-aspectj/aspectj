@@ -190,6 +190,7 @@ public class AspectJBuildManager implements BuildManager {
             } catch (Throwable e) {
                 Ajde.getDefault().getErrorHandler().handleError("Compile error, caught Throwable: " + e.toString(), e);
             } finally {
+                warnings = compilerMessages.hasWarning();
 				progressMonitor.finish();
             }
             notifyCompileFinished(configFile, lastCompileTime, succeeded, warnings);
