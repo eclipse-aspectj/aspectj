@@ -49,6 +49,7 @@ public class AjState {
 	Map/*<File, ReferenceCollection>*/ references = new HashMap();
 	Map/*File, List<UnwovenClassFile>*/ binarySourceFiles = new HashMap();
 	Map/*<String, UnwovenClassFile>*/ classesFromName = new HashMap();
+	List/*File*/ compiledSourceFiles = new ArrayList();
 	
 	ArrayList/*<String>*/ qualifiedStrings;
 	ArrayList/*<String>*/ simpleStrings;
@@ -78,6 +79,8 @@ public class AjState {
 		if (lastSuccessfulBuildTime == -1 || buildConfig == null) {
 			return false;
 		}
+		
+//		if (newBuildConfig.getOutputJar() != null) return false;
 		
 		simpleStrings = new ArrayList();
 		qualifiedStrings = new ArrayList();
@@ -117,27 +120,29 @@ public class AjState {
 
 
 	public List getFilesToCompile(boolean firstPass) {
-		List sourceFiles = new ArrayList();
+		List thisTime = new ArrayList();
 		if (firstPass) {
+			compiledSourceFiles = new ArrayList();
 			Collection modifiedFiles = getModifiedFiles();
 			//System.out.println("modified: " + modifiedFiles);
-			sourceFiles.addAll(modifiedFiles);
+			thisTime.addAll(modifiedFiles);
 			//??? eclipse IncrementalImageBuilder appears to do this
 	//		for (Iterator i = modifiedFiles.iterator(); i.hasNext();) {
 	//			File file = (File) i.next();
 	//			addDependentsOf(file);
 	//		}
 			
-			sourceFiles.addAll(addedFiles);	
+			thisTime.addAll(addedFiles);	
 			
 			deleteClassFiles();
 			
-			addAffectedSourceFiles(sourceFiles);
+			addAffectedSourceFiles(thisTime,thisTime);
 		} else {
 			
-			addAffectedSourceFiles(sourceFiles);
+			addAffectedSourceFiles(thisTime,compiledSourceFiles);
 		}
-		return sourceFiles;
+		compiledSourceFiles = thisTime;
+		return thisTime;
 	}
 
 	private void deleteClassFiles() {
@@ -321,7 +326,7 @@ public class AjState {
 		
 	
 	
-	protected void addAffectedSourceFiles(List sourceFiles) {
+	protected void addAffectedSourceFiles(List addTo, List lastTimeSources) {
 		if (qualifiedStrings.isEmpty() && simpleStrings.isEmpty()) return;
 
 		// the qualifiedStrings are of the form 'p1/p2' & the simpleStrings are just 'X'
@@ -343,8 +348,8 @@ public class AjState {
 			if (refs != null && refs.includes(qualifiedNames, simpleNames)) {
 				File file = (File)entry.getKey();
 				if (file.exists()) {
-					if (!sourceFiles.contains(file)) {  //??? O(n**2)
-						sourceFiles.add(file);
+					if (!lastTimeSources.contains(file)) {  //??? O(n**2)
+						addTo.add(file);
 					}
 				}
 			}
