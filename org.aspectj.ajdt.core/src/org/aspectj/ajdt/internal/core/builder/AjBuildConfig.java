@@ -26,10 +26,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.aspectj.util.FileUtil;
-import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 /**
  * All configuration information needed to run the AspectJ compiler.
+ * Compiler options (as opposed to path information) are held in an AjCompilerOptions instance
  */
 public class AjBuildConfig { // XXX needs bootclasspath?
 	
@@ -50,20 +50,12 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 	private Map/*String->File*/ sourcePathResources = new HashMap();
 	private List/*File*/ aspectpath = new ArrayList();
 	private List/*String*/ classpath = new ArrayList();
-	private Map javaOptions = new HashMap();
-	private Map ajOptions = new HashMap();
+	
 	private File configFile;
-	private boolean generateModelMode = false;
-	private boolean generateJavadocsInModelMode = false;
-	private boolean emacsSymMode = false;
-	private boolean noWeave = false;
-	private boolean XserializableAspects = false;
-	private boolean XlazyTjp = false;
-	private boolean XnoInline = false;
-	private boolean Xreweavable = false;
-	private boolean XreweavableCompressClasses = false;
 	private String lintMode = AJLINT_DEFAULT;
 	private File lintSpecFile = null;
+	
+	private AjCompilerOptions options;
     
     /** if true, then global values override local when joining */
     private boolean override = true;
@@ -103,63 +95,7 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 	 * integration with future JDT releases easier (?).
 	 */
 	public AjBuildConfig( ) {
-		javaOptions.put(
-			CompilerOptions.OPTION_LocalVariableAttribute,
-			//CompilerOptions.DO_NOT_GENERATE);
-			CompilerOptions.GENERATE);
-		javaOptions.put(
-			CompilerOptions.OPTION_LineNumberAttribute,
-			//CompilerOptions.DO_NOT_GENERATE);
-			CompilerOptions.GENERATE);
-		javaOptions.put(
-			CompilerOptions.OPTION_SourceFileAttribute,
-			//CompilerOptions.DO_NOT_GENERATE);
-			CompilerOptions.GENERATE);
-		javaOptions.put(
-			CompilerOptions.OPTION_PreserveUnusedLocal,
-			CompilerOptions.OPTIMIZE_OUT);
-//		javaOptions.put(
-//			CompilerOptions.OPTION_ReportUnreachableCode,
-//			CompilerOptions.IGNORE);
-//		javaOptions.put(
-//			CompilerOptions.OPTION_ReportInvalidImport, 
-//			CompilerOptions.ERROR);
-		javaOptions.put(
-			CompilerOptions.OPTION_ReportOverridingPackageDefaultMethod,
-			CompilerOptions.WARNING);
-		javaOptions.put(
-			CompilerOptions.OPTION_ReportMethodWithConstructorName,
-			CompilerOptions.WARNING);
-		javaOptions.put(
-			CompilerOptions.OPTION_ReportDeprecation, 
-				CompilerOptions.WARNING);
-		javaOptions.put(
-			CompilerOptions.OPTION_ReportHiddenCatchBlock,
-			CompilerOptions.WARNING);
-		javaOptions.put(
-			CompilerOptions.OPTION_ReportUnusedLocal, 
-			CompilerOptions.IGNORE);
-		javaOptions.put(
-			CompilerOptions.OPTION_ReportUnusedParameter,
-			CompilerOptions.IGNORE);
-		javaOptions.put(
-			CompilerOptions.OPTION_ReportSyntheticAccessEmulation,
-			CompilerOptions.IGNORE);
-		javaOptions.put(
-			CompilerOptions.OPTION_ReportNonExternalizedStringLiteral,
-			CompilerOptions.IGNORE);
-		javaOptions.put(
-			CompilerOptions.OPTION_ReportAssertIdentifier,
-			CompilerOptions.IGNORE);
-		javaOptions.put(
-			CompilerOptions.OPTION_Compliance,
-			CompilerOptions.VERSION_1_3);
-		javaOptions.put(
-			CompilerOptions.OPTION_Source,
-			CompilerOptions.VERSION_1_3);
-		javaOptions.put(
-			CompilerOptions.OPTION_TargetPlatform,
-			CompilerOptions.VERSION_1_1);				
+		options = new AjCompilerOptions();
 	}
 
 	/**
@@ -196,25 +132,10 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 		this.outputDir = outputDir;
 	}
 
-	public Map getAjOptions() {
-		return ajOptions;
+	public AjCompilerOptions getOptions() {
+		return options;
 	}
 
-	/**
-	 * @return the Map expected by org.eclipse.jdt.core.internal.Compiler.
-	 */
-	public Map getJavaOptions() {
-		return javaOptions;
-	}
-
-	public void setAjOptions(Map ajOptions) {
-		this.ajOptions = ajOptions;
-	}
-
-	public void setJavaOptions(Map javaOptions) {
-		this.javaOptions = javaOptions;
-	}
-	
 	/**
 	 * This includes all entries from -bootclasspath, -extdirs, -classpath, 
 	 */
@@ -287,22 +208,6 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 		this.configFile = configFile;
 	}
 
-	public boolean isEmacsSymMode() {
-		return emacsSymMode;
-	}
-
-	public void setEmacsSymMode(boolean emacsSymMode) {
-		this.emacsSymMode = emacsSymMode;
-	}
-
-	public boolean isGenerateModelMode() {
-		return generateModelMode;
-	}
-
-	public void setGenerateModelMode(boolean structureModelMode) {
-		this.generateModelMode = structureModelMode;
-	}
-	
     public void setIncrementalMode(boolean incrementalMode) {
         this.incrementalMode = incrementalMode;
     }
@@ -344,54 +249,22 @@ public class AjBuildConfig { // XXX needs bootclasspath?
         return full;
     }
     
-	public String getLintMode() {
-		return lintMode;
-	}
-
 	public File getLintSpecFile() {
 		return lintSpecFile;
-	}
-
-	public List getAspectpath() {
-		return aspectpath;
-	}
-
-	public boolean isNoWeave() {
-		return noWeave;
-	}
-
-	public void setLintMode(String lintMode) {
-		this.lintMode = lintMode;
 	}
 
 	public void setLintSpecFile(File lintSpecFile) {
 		this.lintSpecFile = lintSpecFile;
 	}
 
+	public List getAspectpath() {
+		return aspectpath;
+	}
+
 	public void setAspectpath(List aspectpath) {
 		this.aspectpath = aspectpath;
 	}
 
-	public void setNoWeave(boolean noWeave) {
-		this.noWeave = noWeave;
-	}
-
-	public boolean isXserializableAspects() {
-		return XserializableAspects;
-	}
-
-	public void setXserializableAspects(boolean xserializableAspects) {
-		XserializableAspects = xserializableAspects;
-	}
-
-	public boolean isXnoInline() {
-		return XnoInline;
-	}
-
-	public void setXnoInline(boolean xnoInline) {
-		XnoInline = xnoInline;
-	}
-    
     /** @return true if any config file, sourceroots, sourcefiles, injars or inpath */
     public boolean hasSources() {
         return ((null != configFile)
@@ -426,18 +299,21 @@ public class AjBuildConfig { // XXX needs bootclasspath?
      * @param global the AjBuildConfig to read globals from
      */
     public void installGlobals(AjBuildConfig global) { // XXX relies on default values
-        join(ajOptions, global.ajOptions);
+    	// don't join the options - they already have defaults taken care of.
+//        Map optionsMap = options.getMap();
+//        join(optionsMap,global.getOptions().getMap());
+//        options.set(optionsMap);
         join(aspectpath, global.aspectpath);
         join(classpath, global.classpath);
         if (null == configFile) {
             configFile = global.configFile; // XXX correct?
         }
-        if (!emacsSymMode && global.emacsSymMode) {
-            emacsSymMode = true;
+        if (!isEmacsSymMode() && global.isEmacsSymMode()) {
+            setEmacsSymMode(true);
         }
         join(files, global.files);
-        if (!generateModelMode && global.generateModelMode) {
-            generateModelMode = true;
+        if (!isGenerateModelMode() && global.isGenerateModelMode()) {
+            setGenerateModelMode(true);
         }
         if (null == incrementalFile) {
             incrementalFile = global.incrementalFile;
@@ -447,16 +323,15 @@ public class AjBuildConfig { // XXX needs bootclasspath?
         }
         join(inJars, global.inJars);
         join(inPath, global.inPath);
-        join(javaOptions, global.javaOptions);
         if ((null == lintMode) 
             || (AJLINT_DEFAULT.equals(lintMode))) {
-            lintMode = global.lintMode;
+            setLintMode(global.lintMode);
         }
         if (null == lintSpecFile) {
             lintSpecFile = global.lintSpecFile;
         }
-        if (!noWeave && global.noWeave) {
-            noWeave = true;
+        if (!isNoWeave() && global.isNoWeave()) {
+            setNoWeave(true);
         }
         if ((null == outputDir) && (null == outputJar)) {
             if (null != global.outputDir) {
@@ -467,11 +342,11 @@ public class AjBuildConfig { // XXX needs bootclasspath?
             }
         }        
         join(sourceRoots, global.sourceRoots);
-        if (!XnoInline && global.XnoInline) {
-            XnoInline = true;
+        if (!isXnoInline() && global.isXnoInline()) {
+            setXnoInline(true);
         }
-        if (!XserializableAspects && global.XserializableAspects) {
-            XserializableAspects = true;
+        if (!isXserializableAspects() && global.isXserializableAspects()) {
+            setXserializableAspects(true);
         }
     }
 
@@ -510,36 +385,109 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 		shouldProceed = false;
 	}
 
+	public String getLintMode() {
+		return lintMode;
+	}
+	
+	// options...
+
+	public void setLintMode(String lintMode) {
+		this.lintMode = lintMode;
+		String lintValue = null;
+		if (AJLINT_IGNORE.equals(lintMode)) {
+			lintValue = AjCompilerOptions.IGNORE;
+		} else if (AJLINT_WARN.equals(lintMode)) {
+			lintValue = AjCompilerOptions.WARNING;
+		} else if (AJLINT_ERROR.equals(lintMode)) {
+			lintValue = AjCompilerOptions.ERROR;
+		}
+		
+		if (lintValue != null) {
+			Map lintOptions = new HashMap();
+			lintOptions.put(AjCompilerOptions.OPTION_ReportInvalidAbsoluteTypeName,lintValue);
+			lintOptions.put(AjCompilerOptions.OPTION_ReportInvalidWildcardTypeName,lintValue);
+			lintOptions.put(AjCompilerOptions.OPTION_ReportUnresolvableMember,lintValue);
+			lintOptions.put(AjCompilerOptions.OPTION_ReportTypeNotExposedToWeaver,lintValue);
+			lintOptions.put(AjCompilerOptions.OPTION_ReportShadowNotInStructure,lintValue);
+			lintOptions.put(AjCompilerOptions.OPTION_ReportUnmatchedSuperTypeInCall,lintValue);
+			lintOptions.put(AjCompilerOptions.OPTION_ReportCannotImplementLazyTJP,lintValue);
+			lintOptions.put(AjCompilerOptions.OPTION_ReportNeedSerialVersionUIDField,lintValue);
+			lintOptions.put(AjCompilerOptions.OPTION_ReportIncompatibleSerialVersion,lintValue);
+			options.set(lintOptions);
+		}
+	}
+	
+	public boolean isNoWeave() {
+		return options.noWeave;
+	}
+
+	public void setNoWeave(boolean noWeave) {
+		options.noWeave = noWeave;
+	}
+
+	public boolean isXserializableAspects() {
+		return options.xSerializableAspects;
+	}
+
+	public void setXserializableAspects(boolean xserializableAspects) {
+		options.xSerializableAspects = xserializableAspects;
+	}
+
+	public boolean isXnoInline() {
+		return options.xNoInline;
+	}
+
+	public void setXnoInline(boolean xnoInline) {
+		options.xNoInline = xnoInline;
+	}
+    
 	public boolean isXlazyTjp() {
-		return XlazyTjp;
+		return options.xLazyThisJoinPoint;
 	}
 
 	public void setXlazyTjp(boolean b) {
-		XlazyTjp = b;
+		options.xLazyThisJoinPoint = b;
 	}
 
 	public void setXreweavable(boolean b) {
-		Xreweavable = true;
+		options.xReweavable = b;
 	}
 	
 	public boolean isXreweavable() {
-		return Xreweavable;
+		return options.xReweavable;
 	}
 	
 	public void setXreweavableCompressClasses(boolean b) {
-		XreweavableCompressClasses = true;
+		options.xReweavableCompress = b;
 	}
 	
 	public boolean getXreweavableCompressClasses() {
-		return XreweavableCompressClasses;
+		return options.xReweavableCompress;
 	}
 
 	public boolean isGenerateJavadocsInModelMode() {
-		return generateJavadocsInModelMode;
+		return options.generateJavaDocsInModel;
 	}
 	
 	public void setGenerateJavadocsInModelMode(
 			boolean generateJavadocsInModelMode) {
-		this.generateJavadocsInModelMode = generateJavadocsInModelMode;
+		options.generateJavaDocsInModel = generateJavadocsInModelMode;
 	}
+	
+	public boolean isEmacsSymMode() {
+		return options.generateEmacsSymFiles;
+	}
+
+	public void setEmacsSymMode(boolean emacsSymMode) {
+		options.generateEmacsSymFiles = emacsSymMode;
+	}
+
+	public boolean isGenerateModelMode() {
+		return options.generateModel;
+	}
+
+	public void setGenerateModelMode(boolean structureModelMode) {
+		options.generateModel = structureModelMode;
+	}
+	
 }
