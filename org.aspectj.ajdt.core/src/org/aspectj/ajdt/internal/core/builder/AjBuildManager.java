@@ -193,21 +193,20 @@ public class AjBuildManager {
      
     private void setupModel() {
         String rootLabel = "<root>";
+        StructureModel model = StructureModelManager.INSTANCE.getStructureModel();
+        ProgramElementNode.Kind kind = ProgramElementNode.Kind.FILE_JAVA;
         if (buildConfig.getConfigFile() != null) {
             rootLabel = buildConfig.getConfigFile().getName();
-            StructureModelManager.INSTANCE.getStructureModel().setConfigFile(
+            model.setConfigFile(
                 buildConfig.getConfigFile().getAbsolutePath()
-            );  
+            );
+            kind = ProgramElementNode.Kind.FILE_LST;  
         }
-        StructureModelManager.INSTANCE.getStructureModel().setRoot(
-            new ProgramElementNode(
-                rootLabel,
-                ProgramElementNode.Kind.FILE_JAVA,
-                new ArrayList()));
+        model.setRoot(new ProgramElementNode(rootLabel, kind, new ArrayList()));
                 
         HashMap modelFileMap = new HashMap();
-        StructureModelManager.INSTANCE.getStructureModel().setFileMap(new HashMap());
-        setStructureModel(StructureModelManager.INSTANCE.getStructureModel());            
+        model.setFileMap(new HashMap());
+        setStructureModel(model);            
     }
     
     /** init only on initial batch compile? no file-specific options */
