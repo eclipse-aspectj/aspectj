@@ -277,8 +277,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 //		String name = new String(memberTypeDeclaration.name);
 		
 		String fullName = "<undefined>";
-		if (memberTypeDeclaration.binding != null
-			&& memberTypeDeclaration.binding.constantPoolName() != null) {
+		if (memberTypeDeclaration.allocation != null
+			&& memberTypeDeclaration.allocation.type != null) {
 			// Create a name something like 'new Runnable() {..}'
 			fullName = "new "+memberTypeDeclaration.allocation.type.toString()+"() {..}";
 		}
