@@ -14,7 +14,7 @@ public class CallNotTarget {
     static {
         Tester.expectEvent("A.before");
         Tester.expectEvent("A.before-not");
-        Tester.expectEvent("A*.before-not");
+        Tester.expectEvent("Aspect.before-not");
         Tester.expectEvent("go");
     }
 
@@ -43,8 +43,8 @@ aspect Aspect {
     before () : pc() && !target (A) { // change to !target(String) to avoid bug
         Tester.event("A.before-not");
     }
-    before () : pc() && !target (A*) { // change to !target(String) to avoid bug
-        Tester.event("A*.before-not");
+    before () : pc() && !target (Aspect) { // change to !target(String) to avoid bug
+        Tester.event("Aspect.before-not");
     }
 
 //     before(): call(void doit(I)) && !args(A) {
