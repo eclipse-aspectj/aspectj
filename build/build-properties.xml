@@ -96,8 +96,8 @@
       <!-- run directly from classes in bin when debugging.
       <taskdef resource="org/aspectj/internal/tools/ant/taskdefs/taskdefs.properties"
          classpath="${aspectj.modules.dir}/build/bin"/>
-      <property name="init-taskdefs.done" value="done"/>
         -->
+      <property name="init-taskdefs.done" value="done"/>
     </target>
 
     <target name="init-directories" 
