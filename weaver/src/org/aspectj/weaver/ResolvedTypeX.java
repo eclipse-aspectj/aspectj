@@ -954,6 +954,10 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
             if (index > 6 || ((Primitive)other).index > 6) return false;
             return true;
         }
+        public ResolvedTypeX resolve(World world) {
+            this.world = world;
+            return super.resolve(world);
+        }
         public final boolean needsNoConversionFrom(TypeX other) {
             if (! other.isPrimitive()) return false;
             return noConvertTable[((Primitive)other).index][index];
