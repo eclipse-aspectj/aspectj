@@ -10,9 +10,7 @@
 package org.aspectj.systemtest.ajc121;
 
 import java.io.File;
-
 import junit.framework.Test;
-
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
@@ -141,8 +139,7 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void test025_proceedInAround3() {
       runTest("proceed used as method name in around advice (3)");
   }
-  
-  public void test026_bindingThisAndTargetToTheSameFormal() {
+    public void test026_bindingThisAndTargetToTheSameFormal() {
   	runTest("ajc crashes when compiling the following program (binding this() and target())");
   }
   
@@ -157,5 +154,18 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void test029_falseInvalidAbsoluteTypeName() {
     runTest("Valid but inaccessible type names should not be flagged by XLint:invalidAbsoluteTypeName");
   }
+  
+  public void test030_privateITDinitialisersBeingMatched() {
+    runTest("intertype initialisers should match field set pointcuts");
+  }
+
+  public void test031_privateITDinitialisersBeingMatched_OxfordTest() {
+    runTest("intertype initialisers should match field set pointcuts (oxford testcase)");
+    //System.err.println(">"+getLastRunResult().getStdErr());
+    String exp = ":set field set(int C.n):set field set(int C.m):get field get(int C.n):set field set(int C.n)";
+    assertTrue("Expected output '"+exp+"' but got "+getLastRunResult().getStdErr(),
+    		getLastRunResult().getStdErr().equals(exp));
+  }
+
 }
 

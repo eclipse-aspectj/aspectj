@@ -99,12 +99,23 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 				new ReturnStatement(null, 0, 0),
 			};
 		} else if (!onTypeBinding.isInterface()) {
-			FieldBinding interField = world.makeFieldBinding(
-				AjcMemberMaker.interFieldClassField(sig, aspectType));
-			Reference ref = new KnownFieldReference(interField, 0);
-			this.statements = new Statement[] {
-				new Assignment(ref, initialization, initialization.sourceEnd),
-			};
+			MethodBinding writeMethod = world.makeMethodBinding(
+					AjcMemberMaker.interFieldSetDispatcher(sig,aspectType));
+			// For the body of an intertype field initalizer, generate a call to the inter field set dispatcher
+			// method as that casts the shadow of a field set join point.
+			if (Modifier.isStatic(declaredModifiers)) {
+					this.statements = new Statement[] {
+						new KnownMessageSend(writeMethod, 
+								AstUtil.makeNameReference(writeMethod.declaringClass),
+								new Expression[] {initialization}),
+					};
+			} else {
+				this.statements = new Statement[] {
+						new KnownMessageSend(writeMethod, 
+								AstUtil.makeNameReference(writeMethod.declaringClass),
+								new Expression[] {AstUtil.makeLocalVariableReference(arguments[0].binding),initialization}),
+					};
+			}
 		} else {
 			//XXX something is broken about this logic.  Can we write to static interface fields?
 			MethodBinding writeMethod = world.makeMethodBinding(

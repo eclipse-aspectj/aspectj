@@ -203,6 +203,7 @@
     	<run class="Proceeding3"/>
    	</ajc-test>
 
+
 	<ajc-test dir="bugs" pr="61572"
     	title="ITDs on inner classes should be static context">
     	<compile files="PR61572.aj">
@@ -242,3 +243,15 @@
         </compile>
         <run class="False_InvalidAbsoluteTypeName"/>
     </ajc-test>
+
+   	<ajc-test dir="bugs/PR68991" pr="68991"
+    	title="intertype initialisers should match field set pointcuts">
+    	<compile files="Simple.java"/>
+    	<run class="Simple"/>
+   	</ajc-test>
+   	 	
+   	<ajc-test dir="bugs/PR68991" pr="68991"
+    	title="intertype initialisers should match field set pointcuts (oxford testcase)">
+    	<compile files="Oxford.java"/>
+    	<run class="Oxford"/>
+   	</ajc-test>
