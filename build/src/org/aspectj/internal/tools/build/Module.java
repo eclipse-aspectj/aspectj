@@ -86,58 +86,59 @@ public class Module {
             }
         }
     }
+    private static void addIfNew(List source, List sink) {
+        for (Iterator iter = source.iterator(); iter.hasNext();) {
+            Object item = iter.next();
+            if (!sink.contains(item)) {
+                sink.add(item);
+            }
+        }
+    }
 
     /** 
      * Recursively find antecedant jars. 
      * @see findKnownJarAntecedants()
      */
-    private static void doFindKnownJarAntecedants(Module module, ArrayList known) {
+    private static void doFindKnownJarAntecedants(Module module, List known) {
         Util.iaxIfNull(module, "module");
         Util.iaxIfNull(known, "known");
-        for (Iterator iter = module.getLibJars().iterator(); iter.hasNext();) {
-            File libJar = (File) iter.next();
-            if (!skipLibraryJarAntecedant(module, libJar)
-                && !known.contains(libJar)) { // XXX what if same referent, diff path...
-                known.add(libJar);
-            }
-        }
+        addIfNew(module.getLibJars(), known);
         for (Iterator iter = module.getRequired().iterator(); iter.hasNext();) {
             Module required = (Module) iter.next();
             File requiredJar = required.getModuleJar();
-            if (!skipModuleJarAntecedant(requiredJar)
-                && !known.contains(requiredJar)) {
+            if (!known.contains(requiredJar)) {
                 known.add(requiredJar);
                 doFindKnownJarAntecedants(required, known);
             }
         }
     }
     
-    /** XXX gack explicitly skip Ant, sun tools.jar except for testing... modules */
-    private static boolean skipLibraryJarAntecedant(Module module, File libJar) {
-        if (null == libJar) {
-            return true;
-        }
-        if (!module.name.startsWith("testing")) {
-            String path = libJar.getPath().replace('\\', '/');
-            path = path.replace(File.separatorChar, '/');
-            if (-1 != path.indexOf("/lib/ant/lib/")) {
-                return true;
-            } else if (-1 != path.indexOf("/tools.jar")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /** XXX gack explicitly skip runtime */
-    private static boolean skipModuleJarAntecedant(File requiredJar) {
-        if (null == requiredJar) {
-            return true;
-        } else {
-            //return "runtime.jar".equals(requiredJar.getName());
-        	return false;
-        }
-    }
+//    /** XXX gack explicitly skip Ant, sun tools.jar except for testing... modules */
+//    private static boolean skipLibraryJarAntecedant(Module module, File libJar) {
+//        if (null == libJar) {
+//            return true;
+//        }
+//        if (!module.name.startsWith("testing")) {
+//            String path = libJar.getPath().replace('\\', '/');
+//            path = path.replace(File.separatorChar, '/');
+//            if (-1 != path.indexOf("/lib/ant/lib/")) {
+//                return true;
+//            } else if (-1 != path.indexOf("/tools.jar")) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+//
+//    /** XXX gack explicitly skip runtime */
+//    private static boolean skipModuleJarAntecedant(File requiredJar) {
+//        if (null == requiredJar) {
+//            return true;
+//        } else {
+//            //return "runtime.jar".equals(requiredJar.getName());
+//        	return false;
+//        }
+//    }
 
     /**@return true if this is a source file */
     private static boolean isSourceFile(File file) {
@@ -398,6 +399,7 @@ public class Module {
     private boolean update(XMLEntry entry) {
         String kind = entry.attributes[getATTSIndex("kind")];
         String path = entry.attributes[getATTSIndex("path")];
+        String libPath = null;
         if ("src".equals(kind)) {
             if (path.startsWith("/")) { // module
                 String moduleName = path.substring(1);
@@ -420,21 +422,25 @@ public class Module {
                 }
             }
         } else if ("lib".equals(kind)) {
-             String fullPath = getFullPath(path);
-             File libJar= new File(fullPath);
-             if (libJar.canRead() && libJar.isFile()) {
-                libJars.add(libJar);
-                String exp = entry.attributes[getATTSIndex("exported")];
-                if ("true".equals(exp)) {
-                    exportedLibJars.add(libJar);
-                }
-                return true;
-             } else {
-                messager.error("no such library jar " + libJar + " from " + entry);                
-             }
+            libPath = path;
         } else if ("var".equals(kind)) {
-            warnVariable(path, entry);
-            classpathVariables.add(path);
+            final String JAVA_HOME = "JAVA_HOME/";
+            if (path.startsWith(JAVA_HOME)) {
+                path = path.substring(JAVA_HOME.length());
+                String home = System.getProperty("java.home");
+                if (null != home) {
+                    libPath = home + File.separator + path;
+                    File f = new File(libPath);
+                    if (!f.exists() && home.endsWith("jre")) {
+                        f = new File(home).getParentFile();
+                        libPath = f.getPath() + File.separator + path;
+                    }
+                }
+            }
+            if (null == libPath) {
+                warnVariable(path, entry);
+                classpathVariables.add(path);                
+            }
         } else if ("con".equals(kind)) {
             if (-1 == path.indexOf("JRE")) { // warn non-JRE containers
                 messager.log("cannot handle con yet: " + entry);
@@ -443,6 +449,22 @@ public class Module {
             // ignore output entries
         } else {
             messager.log("unrecognized kind " + kind + " in " + entry);
+        }
+        if (null != libPath) {
+            File libJar= new File(libPath);
+            if (!libJar.exists()) {
+                libJar = new File(getFullPath(libPath));
+            }
+            if (libJar.canRead() && libJar.isFile()) {
+               libJars.add(libJar);
+               String exp = entry.attributes[getATTSIndex("exported")];
+               if ("true".equals(exp)) {
+                   exportedLibJars.add(libJar);
+               }
+               return true;
+            } else {
+               messager.error("no such library jar " + libJar + " from " + entry);                
+            }
         }
         return false;
     }
