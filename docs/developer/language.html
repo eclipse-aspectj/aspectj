@@ -171,7 +171,7 @@ support composition and abstraction. The fact that someone can write:</p>
 	pointcut stateChange(): call(void FigureElement+.set*(*));<br>
 	<br>
 	/* compose pointcuts to get other pointcuts */<br>
-	pointcut topLevelStateChange(): stateChange() <br>
+	pointcut topLevelStateChange(): stateChange() `<br>
 	&amp;&amp; !cflowbelow(stateChange());</font></p>
 </blockquote>
 <p>is what makes it possible for people to really work with crosscutting 
