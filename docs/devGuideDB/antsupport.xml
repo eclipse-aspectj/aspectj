@@ -124,9 +124,10 @@
 		be specified on the classpath, and that some sources be
 		be specified
 	    (using one or more of 
-	    <literal>sourceroots</literal>
-	    <literal>injars</literal>
-	    <literal>argfiles</literal> and 
+	    <literal>sourceroots</literal>,
+	    <literal>injars</literal>,
+	    <literal>inpath</literal>,
+	    <literal>argfiles</literal>, and/or 
 	    <literal>srcdir</literal> (with patterns)).
 	    When in incremental mode, only
 	    <literal>sourceroots</literal> may be specified.
@@ -182,7 +183,18 @@
 				(<xref linkend="antTasks-iajc-paths"/>)
 				</para></entry>
 				<entry><para>
-				Input zip files with .class file entries for bytecode weaving.					
+				Deprecated - use inpath instead.
+				Read .class files for bytecode weaving
+				from zip files (only).
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>inpath, inpathRef
+				(<xref linkend="antTasks-iajc-paths"/>)
+				</para></entry>
+				<entry><para>
+				Read .class files for bytecode weaving
+				from directories or zip files (like classpath).					
 				</para></entry>
 			</row>
 			<row>
@@ -362,7 +374,7 @@
 				</para></entry>
 				<entry><para>		
 				Experimental option to produce binaries that can only be used as input 
-				for the <literal>-injars</literal> option.
+				for the <literal>-injars</literal> or <literal>-inpath</literal> option.
 				Usually aspects are compiled normally and put on the
 				<literal>aspectpath</literal>.
 				</para></entry>
@@ -636,6 +648,7 @@
 	<literal>sourceroots</literal>,
 	<literal>argfiles</literal>,
 	<literal>injars</literal>,
+	<literal>inpath</literal>,
 	<literal>classpath</literal>,
 	<literal>bootclasspath</literal>,
 	<literal>forkclasspath</literal>, and
@@ -891,6 +904,7 @@
 		<listitem><para>
 		<literal>-Xcopyinjars</literal>: 
 			copy resources from any input jars to output
+			(default behavior since 1.1.1)
 		</para></listitem>
 		<listitem><para>
 		<literal>-Xsourcerootcopyfilter {filter}</literal>: 

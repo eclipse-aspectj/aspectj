@@ -27,7 +27,8 @@
       </para>
 
     <para> The arguments after the options specify the source file(s) to compile.
-        (Specify source classes using the <parameter>-injars</parameter> option, below.)
+        (Specify source classes using the <parameter>-injars</parameter> or
+        <parameter>-inpath</parameter> options, below.)
         Files may be listed directly on the command line, or listed in a file.
         The <parameter>-argfile <replaceable>file</replaceable></parameter> 
         and <parameter>@<replaceable>file</replaceable></parameter> forms
@@ -60,12 +61,21 @@
       <varlistentry>
         <term>-injars <replaceable>JarList</replaceable></term>
         <listitem><para>
-        Accept as source bytecode any .class files inside the 
-        specified .jar files.  The output will include these
+        deprecated: since 1.2, use -inpath, which also takes
+        directories.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-inpath <replaceable>Path</replaceable></term>
+        <listitem><para>
+        Accept as source bytecode any .class files in the 
+        .jar files or directories on Path.  
+        The output will include these
         classes, possibly as woven with any applicable aspects.
-        JarList, like classpath, is a single argument containing
-        a list of paths to jar files, delimited by the platform-
-        specific classpath delimiter.
+        Path is a single argument containing
+        a list of paths to zip files or directories, 
+        delimited by the platform-specific path delimiter.
         </para></listitem>
       </varlistentry>
 

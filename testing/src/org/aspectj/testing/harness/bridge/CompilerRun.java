@@ -82,6 +82,13 @@ public class CompilerRun implements IAjcRun {
     final List /*String*/
     injars;
 
+    /** 
+     * During run, these String are collapsed and passed as the inpath option.
+     * The list is set up in setupAjcRun(..),
+     * which extracts only directories from the files attribute.
+     */
+    final List inpaths;
+
     private CompilerRun(Spec spec) {
         if (null == spec) {
             throw new IllegalArgumentException("null spec");
@@ -89,6 +96,7 @@ public class CompilerRun implements IAjcRun {
         this.spec = spec;
         arguments = new ArrayList();
         injars = new ArrayList();
+        inpaths = new ArrayList();
     }
 
     /** 
@@ -147,6 +155,7 @@ public class CompilerRun implements IAjcRun {
         // For a compile run to support relative paths + source base,
         // change so the run calculates the paths (differently when staging)
 
+        final String[] inpathPaths;
         final String[] injarPaths;
         final String[] srcPaths;
         {
@@ -158,11 +167,20 @@ public class CompilerRun implements IAjcRun {
                     true);
             injarPaths =
                 LangUtil.endsWith(paths, CompilerRun.JAR_SUFFIXES, true);
+            inpathPaths =
+                LangUtil.selectDirectories(paths, testBaseSrcDir);
+            if (!spec.badInput) {
+                int found = inpathPaths.length + injarPaths.length + srcPaths.length;
+                if (paths.length !=  found) {
+                    validator.fail("found " + found + " of " + paths.length + " sources");
+                }
+            }
         }
         // validate readable for sources
         if (!spec.badInput) {
             if (!validator.canRead(testBaseSrcDir, srcPaths, "sources")
                 || !validator.canRead(testBaseSrcDir, injarPaths, "injars")
+                || !validator.canRead(testBaseSrcDir, inpathPaths, "inpaths")
                 || !validator.canRead(
                     testBaseSrcDir,
                     spec.argfiles,
@@ -190,6 +208,7 @@ public class CompilerRun implements IAjcRun {
         int numSources =
             srcPaths.length
                 + injarPaths.length
+                + inpathPaths.length
                 + spec.argfiles.length
                 + spec.sourceroots.length;
         if (!spec.badInput && (numSources < 1)) {
@@ -202,6 +221,8 @@ public class CompilerRun implements IAjcRun {
             FileUtil.getBaseDirFiles(testBaseSrcDir, spec.argfiles);
         final File[] injarFiles =
             FileUtil.getBaseDirFiles(testBaseSrcDir, injarPaths);
+        final File[] inpathFiles =
+            FileUtil.getBaseDirFiles(testBaseSrcDir, inpathPaths);
         final File[] aspectFiles =
             FileUtil.getBaseDirFiles(testBaseSrcDir, spec.aspectpath);
         final File[] extdirFiles =
@@ -211,9 +232,10 @@ public class CompilerRun implements IAjcRun {
         // hmm - duplicates validation above, verifying getBaseDirFiles?
         if (!spec.badInput) {
             if (!validator.canRead(argFiles, "argFiles")
-                || !validator.canRead(injarFiles, "injarfiles")
-                || !validator.canRead(aspectFiles, "aspectfiles")
-                || !validator.canRead(classFiles, "classfiles")) {
+                || !validator.canRead(injarFiles, "injarFiles")
+                || !validator.canRead(inpathFiles, "inpathFiles")
+                || !validator.canRead(aspectFiles, "aspectFiles")
+                || !validator.canRead(classFiles, "classFiles")) {
                 return false;
             }
         }
@@ -321,6 +343,10 @@ public class CompilerRun implements IAjcRun {
         injars.clear();
         if (!LangUtil.isEmpty(injarFiles)) {
             injars.addAll(Arrays.asList(FileUtil.getPaths(injarFiles)));
+        }
+        inpaths.clear();
+        if (!LangUtil.isEmpty(inpathFiles)) {
+            inpaths.addAll(Arrays.asList(FileUtil.getPaths(inpathFiles)));
         }
         if (!LangUtil.isEmpty(argFiles)) {
             String[] ra = FileUtil.getPaths(argFiles);
@@ -433,6 +459,14 @@ public class CompilerRun implements IAjcRun {
                 argList.add(
                     FileUtil.flatten(
                         (String[]) injars.toArray(new String[0]),
+                        null));
+            }
+
+            if (0 < inpaths.size()) {
+                argList.add("-inpath");
+                argList.add(
+                    FileUtil.flatten(
+                        (String[]) inpaths.toArray(new String[0]),
                         null));
             }
 

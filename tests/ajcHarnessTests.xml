@@ -286,6 +286,12 @@
         <run class="SystemExit" options="-1"/>
     </ajc-test>
   
+    <ajc-test dir="harness/inpath"
+      title="pass test inpath option - valid">
+        <compile files="input-path-classes" sourceroots="aspectsrc"/>
+        <run class="Main"/>
+    </ajc-test>
+
 </suite>
 
 

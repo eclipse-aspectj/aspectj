@@ -586,7 +586,7 @@ public class FileUtil {
         }
         String context = "FileUtil.copyFile(src, dest, err)"; 
         boolean report = report(err, context, label, throwable); 
-        return (result && report);
+        return (result && !report);
     }
 
     /** 

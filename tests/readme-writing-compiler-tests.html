@@ -455,8 +455,9 @@ The <code>compile</code> element has the following attributes
 which handle most of the other compiler arguments:
 <ul>
         <li><code>files</code>: .aj and .java files are treated as source files,
-            but .jar files are extracted and passed to the compiler
+            but .jar/zip files are extracted and passed to the compiler
             as <code>-injars</code>
+            and readable directories are passed as <code>-inpath</code>.
    </li><li><code>classpath</code>: directories and jar files for the classpath
    </li><li><code>aspectpath</code>: binary aspects in jar files
    </li><li><code>argfiles</code>: argument list files
@@ -469,7 +470,7 @@ multiple entries are separated with commas.
 Here is a cooked example that uses all <code>compiler</code> attributes:
 <pre>
     &lt;ajc-test dir="new" title="attributes test">
-        &lt;compile files="Main.java,injar.jar" 
+        &lt;compile files="Main.java,injar.jar,some-directory" 
                staging="true"
                options="-Xlint,-g:none"
               argfiles="debug.lst,aspects/test.lst"
@@ -479,11 +480,34 @@ Here is a cooked example that uses all <code>compiler</code> attributes:
     &lt;/ajc-test>
 </pre>
 
+<h5>Test-only compiler attributes</h5>
+The following attributes of the compiler entity dictate harness behavior:
+
+<ul>
+<li><u>badInput</u>:
+To test invalid input, set the compiler <code>badInput</code> attribute
+to "</code>true</code>".  This prevents the harness from aborting a test
+because a specified input file was not found.  (However, there is no way
+to specify bad input for a directory in the files attribute intended for
+-inpath, because the harness selects readable directories.)
+</li>
+
+
+<li><u>includeClassesDir</u>:
+Set this in order to include the output classes directory explicitly
+on the classpath.
+</li>
+<li><u>reuseCompiler</u>:
+Set this to re-use a compiler from a previous compiler run.
+(This tests statefulness of a compiler across non-incremental runs.)
+</li>
+</ul>
 
 <h5>Unsupported compiler options</h5>
 The harness does not support the following AspectJ compiler
 options: <code>-target {version}, -outjar {file}, -log {file}</code>.
 (<code>-d {dir}</code> is used but specification is not supported.)
+
  
 
 <a name="background"></a>

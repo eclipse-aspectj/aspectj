@@ -1,0 +1,11 @@
+
+<project name="inpath-test" default="all" basedir=".">
+
+
+    <target name="all" description="build classes">
+	<property name="dest.dir" location="${basedir}/input-path-classes"/>
+	<property name="src.dir" location="${basedir}/input-path-src"/>
+        <javac destdir="${dest.dir}" srcdir="${src.dir}"/>
+    </target>
+
+</project>

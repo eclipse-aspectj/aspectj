@@ -1034,6 +1034,9 @@ public class AjcTask extends MatchingTask {
            if (null != injars) {
                throw new BuildException("weaveDir incompatible with injars now"); 
            }
+           if (null != inpath) {
+               throw new BuildException("weaveDir incompatible with inpath now"); 
+           }
            
            File injar = zipDirectory(xweaveDir);
            setInjars(new Path(getProject(), injar.getAbsolutePath()));
@@ -1439,9 +1442,12 @@ public class AjcTask extends MatchingTask {
             throw new BuildException(s);
         }
         final Project project = getProject();
-        if (copyInjars) {
+        if (copyInjars) { // XXXX remove as unused since 1.1.1
+            if (null != inpath) {
+                log("copyInjars does not support inpath.\n", Project.MSG_WARN);
+            }
             String taskName = getTaskName() + " - unzip";
-            String[] paths = injars.list();
+            String[] paths = injars.list();            
             if (!LangUtil.isEmpty(paths)) {
                 PatternSet patternSet = new PatternSet();
                 patternSet.setProject(project);        
