@@ -31,6 +31,7 @@ public class AllTestsJava5_binaryWeaving {
 		suite.addTestSuite(Annotations.class);
 		suite.addTestSuite(AnnotationPointcutsTests.class);
 		suite.addTestSuite(VarargsTests.class);
+		suite.addTestSuite(AnnotationRuntimeTests.class);
 		//$JUnit-END$
 		return suite;
 	}
