@@ -50,20 +50,20 @@
 		    <listitem>The signature pattern (exactly) matches at least one 
 		    signature of the join point</listitem>
 		    <listitem>The modifiers pattern matches the modifiers of the
-		    join point</listitem>
+		    subject of the join point</listitem>
 		</orderedlist>
         
         <para>These rules make it very easily to quickly determine whether a 
         given pointcut matches a given join point. In the next two sections,
         we describe what the signature(s) of a join point are, and what the
-        modifiers of a join point are.</para>
+        subjects of join points are.</para>
         
     </sect1>
   
       <sect1 id="join-point-signatures">
         <title>Join Point Signatures</title>
         
-        <para>Call and execution join points may potentially have multiple
+        <para>Call, execution, get, and set join points may potentially have multiple
         signatures. All other join points have exactly one signature. The
         following table summarizes the constituent parts of a join point
         signature for the different kinds of join point.</para>
@@ -192,14 +192,16 @@
         signature.</para>
         
         <para>The signatures for most of the join point kinds should be
-        self-explanatory, except for method call and execution
+        self-explanatory, except for field get and set, and method call and execution
         join points, which can have multiple signatures. Each signature of 
         a method call or execution join point has the same id and parameter
         types, but the declaring type and return type (with covariance) may vary.
+        Each signature of a field get or set join point has the same id and field
+        type, but the declaring type may vary.
         </para>
         
-        <para>The following sections examine signatures for method call and
-        execution join points in more detail.</para>
+        <para>The following sections examine signatures for these join points 
+        in more detail.</para>
         
         <sect2>
             <title>Method call join point signatures</title>
@@ -322,7 +324,54 @@
         the method.</para>
 
       </sect2>
-      
+
+       <sect2>
+            <title>Field get and set join point signatures</title>
+
+        <para>
+            For a field get join point where an access is made to a field
+            <literal>f</literal> of type <literal>F</literal> 
+            on a object with declared type <literal>T</literal>, then
+            <literal>F T.f</literal> is a signature of the get join point.  
+        </para>
+        
+        <para>
+            If <literal>T</literal> does not directly declare a member
+            <literal>f</literal>, then for each super type <literal>S</literal>
+            of <literal>T</literal>, up to and including the most specific
+            super type of <literal>T</literal> that does declare the member
+            <literal>f</literal>, <literal>F S.f</literal> is a signature
+            of the join point. For example, given the hierarchy:
+        </para>
+
+        <programlisting><![CDATA[        
+        class P  {
+          F f;        
+        }
+        
+        class S extends P {
+          F f;
+        }
+        
+        class T extends S { }                
+		]]></programlisting>
+		
+		<para>
+		    Then the join point signatures for a field get join point of
+		    the field <literal>f</literal> on an object with declared type
+		    <literal>T</literal> are:
+		</para>
+
+        <programlisting><![CDATA[
+        F S.f
+        F T.f
+		]]></programlisting>
+
+        <para>The signatures for a field set join point are derived in an
+            identical manner.</para>
+            
+       </sect2>
+             
       </sect1>
       
       <sect1 id="join-point-modifiers">
@@ -331,73 +380,76 @@
           <para>Every join point has a single set of modifiers - these include
           the standard Java modifiers such as <literal>public, private,
           static, abstract</literal> etc., any annotations, and the throws
-          clauses of methods and constructors.</para>
+          clauses of methods and constructors. These modifiers are the
+          modifiers of the <emphasis>subject</emphasis> of the join point.</para>
           
           <para>
-          For the different join point kinds, the modifiers are:
+          The following table defines the join point subject for each kind
+          of join point.
           </para>
 
-          <informaltable>
+             <informaltable>
            <tgroup cols="2">
                <thead>
                    <row>
                        <entry>Join Point Kind</entry>
-                       <entry>Join Point Modifiers</entry>
+                       <entry>Subject</entry>
                    </row>
                </thead>
                <tbody>
                    <row>
                        <entry>Method call</entry>
-                       <entry>The modifiers of the method picked out by Java as
+                       <entry>The method picked out by Java as
                        the static target of the method call.</entry>
                    </row>
                    <row>
                        <entry>Method execution</entry>
-                       <entry>The modifiers of the method that is executing.</entry>
+                       <entry>The method that is executing.</entry>
                    </row>
                    <row>
                        <entry>Constructor call</entry>
-                       <entry>The modifiers of the constructor being called.</entry>
+                       <entry>The constructor being called.</entry>
                    </row>
                    <row>
                        <entry>Constructor execution</entry>
-                       <entry>The modifiers of the constructor executing.</entry>
+                       <entry>The constructor executing.</entry>
                    </row>
                    <row>
                        <entry>Field get</entry>
-                       <entry>The modifiers of the field being accessed.</entry>
+                       <entry>The field being accessed.</entry>
                    </row>
                    <row>
                        <entry>Field set</entry>
-                       <entry>The modifiers of the field being set.</entry>
+                       <entry>The field being set.</entry>
                    </row>
                    <row>
                        <entry>Pre-initialization</entry>
-                       <entry>The modifiers of the first constructor executing in
+                       <entry>The first constructor executing in
                        this constructor chain.</entry>
                    </row>
                    <row>
                        <entry>Initialization</entry>
-                       <entry>The modifiers of the first constructor executing in
+                       <entry>The first constructor executing in
                        this constructor chain.</entry>
                    </row>
                    <row>
                        <entry>Static initialization</entry>
-                       <entry>The modifiers of the type being initialized.</entry>
+                       <entry>The type being initialized.</entry>
                    </row>
                    <row>
                        <entry>Handler</entry>
-                       <entry>No modifiers.</entry>
+                       <entry>The declared type of the
+                       exception being handled.</entry>
                    </row>
                    <row>
                        <entry>Advice execution</entry>
-                       <entry>The modifiers of the advice being executed.</entry>
+                       <entry>The advice being executed.</entry>
                    </row>
                </tbody>
            </tgroup>
           </informaltable>          
-          
-          <para>For example, given the following types</para>
+
+             <para>For example, given the following types</para>
 
         <programlisting><![CDATA[
         public class X {        
@@ -431,7 +483,7 @@
 		    <listitem>The signature pattern (exactly) matches at least one 
 		    signature of the join point</listitem>
 		    <listitem>The modifiers pattern matches the modifiers of the
-		    join point</listitem>
+		    subject of the join point</listitem>
 		</orderedlist>
 
         <para>Given the hierarchy</para>

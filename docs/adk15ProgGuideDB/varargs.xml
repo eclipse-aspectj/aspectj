@@ -75,38 +75,21 @@
             <title>Matching signatures based on variable length argument types</title>
             
             <para>
-            Building on the definition of signature patterns given in the chapter on
-            annotations (<xref linkend="signaturePatterns"/>), <literal>MethodPattern</literal>
+            Recall from the definition of signature patterns given in the chapter on
+            annotations (<xref linkend="signaturePatterns"/>), that <literal>MethodPattern</literal>
             and <literal>ConstructorPattern</literal> are extended to allow a <literal>varargs</literal>
             pattern in the last argument position of a method or constructor signature.
             </para>
             
        	<programlisting><![CDATA[  	
-  		MethodPattern := 
-  		    AnnotationPattern? ModifiersPattern? TypePattern 
-  		                       (TypePattern '.')? SimpleNamePattern '(' FormalsPattern ')'
-  		                       ThrowsPattern?
-
-  		ConstructorPattern := 
-  		    AnnotationPattern? ModifiersPattern?  
-  		                       (TypePattern '.')? 'new' '(' FormalsPattern ')'
-  		                       ThrowsPattern?
-
-		ModifiersPattern := Modifier*
-		
-		Modifier := 'public' | 'private' | 'protected' | 'static' | 
-		            'synchronized' | 'final' 
-		            		      
-		FormalsPattern := TypePattern '...' |
-		                  '..' (',' FormalsPatternAfterDotDot)* |
-		                  OptionalParensTypePattern (',' FormalsPattern)*
+ 		FormalsPattern := '..' (',' FormalsPatternAfterDotDot)? |
+		                  OptionalParensTypePattern (',' FormalsPattern)* |
+		                  TypePattern '...'
 		                  
-		FormalsPatternAfterDotDot := OptionalParensTypePattern (',' FormalsPatternAfterDotDot)*                  
-		                  
-		ThrowsPattern := 'throws' TypePatternList
-		
-		TypePatternList := TypePattern (',' TypePattern)*
-		            					            
+		FormalsPatternAfterDotDot := 
+		        OptionalParensTypePattern (',' FormalsPatternAfterDotDot)* |
+		        TypePattern '...'
+
     	]]></programlisting>
     
             <para>

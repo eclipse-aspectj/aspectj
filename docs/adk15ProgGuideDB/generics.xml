@@ -2,5 +2,53 @@
 
   <title>Generics</title>
   
+  <sect1 id="generics-inJava5">
+    <title>Generics in Java 5</title>
+
+	<para>
+		This section provides the essential information about generics in
+		Java 5 needed to understand how generics are treated in AspectJ 5.
+		For a full introduction to generics in Java, please see the
+		documentation for the Java 5 SDK.
+	</para>
+
+	<sect2>
+		<title>Declaring Parameterized Types</title>
+		
+	</sect2>
+	
+	<sect2>
+	    <title>Using Parameterized Types</title>
+	</sect2>
+	
+	<sect2>
+	    <title>Assignments and Wildcards</title>
+	</sect2>
+	
+	<sect2>
+	    <title>Generic Methods</title>
+	</sect2>
+  </sect1>
+	
+  <sect1 id="generics-inAspectJ5">
+      
+      <sect2>
+          <title>Parameterized Aspect Types</title>
+      </sect2>
+      
+      <sect2>
+          <title></title>
+      </sect2>
+
+      <sect2>
+          <title></title>
+      </sect2>
+
+      <sect2>
+          <title></title>
+      </sect2>
+      
+  </sect1>
+  
 </chapter>
 
