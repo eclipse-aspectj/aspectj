@@ -142,6 +142,12 @@ public class ReferencePointcut extends Pointcut {
 			return;
 		}
 		
+		// check visibility
+		if (!pointcutDef.isVisible(scope.getEnclosingType())) {
+			scope.message(IMessage.ERROR, this, "pointcut declaration " + pointcutDef + " is not accessible");
+			return;
+		}
+		
 		if (Modifier.isAbstract(pointcutDef.getModifiers())) {
 			if (onType != null) {
 				scope.message(IMessage.ERROR, this, 
@@ -174,7 +180,9 @@ public class ReferencePointcut extends Pointcut {
 								"bad parameter to pointcut reference");
 				return;
 			}
-			if (!p.matchesSubtypes(parameterTypes[i])) {
+			if (!p.matchesSubtypes(parameterTypes[i]) && 
+				!p.getExactType().equals(TypeX.OBJECT))
+			{
 				scope.message(IMessage.ERROR, p, "incompatible type, expected " +
 						parameterTypes[i].getName() + " found " + p);
 				return;
@@ -220,7 +228,6 @@ public class ReferencePointcut extends Pointcut {
 				);
 				return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 			}
-			//??? error if we don't find
 					
 			//System.err.println("start: " + searchStart);
 			ResolvedTypeX[] parameterTypes = searchStart.getWorld().resolve(pointcutDec.getParameterTypes());
@@ -231,7 +238,9 @@ public class ReferencePointcut extends Pointcut {
 			for (int i=0,len=arguments.size(); i < len; i++) {
 				TypePattern p = arguments.get(i);
 				//we are allowed to bind to pointcuts which use subtypes as this is type safe
-				if (!p.matchesSubtypes(parameterTypes[i])) {
+				if (!p.matchesSubtypes(parameterTypes[i])  && 
+					!p.getExactType().equals(TypeX.OBJECT))
+				{
 					throw new BCException("illegal change to pointcut declaration: " + this);
 				}
 				

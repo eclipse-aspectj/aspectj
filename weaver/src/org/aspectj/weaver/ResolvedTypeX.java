@@ -885,7 +885,7 @@ public abstract class ResolvedTypeX extends TypeX {
 					} else {
 						if (this instanceof BcelObjectType) return false;  //XXX ignores separate comp
 						getWorld().getMessageHandler().handleMessage(
-							MessageUtil.error("inter-type declaration from " + munger.getAspectType() +
+							MessageUtil.error("inter-type declaration from " + munger.getAspectType().getName() +
 											" conflicts with existing member: " + existingMember,
 											munger.getSourceLocation())
 						);
@@ -957,11 +957,11 @@ public abstract class ResolvedTypeX extends TypeX {
 		//System.err.println("conflict at " + m2.getSourceLocation());
 		getWorld().getMessageHandler().handleMessage(MessageUtil.error(
 			"intertype declaration from "
-				+ m1.getAspectType().getClassName()
+				+ m1.getAspectType().getName()
 				+ " conflicts with intertype declaration: "
 				+ m2.getSignature()
 				+ " from "
-				+ m2.getAspectType().getClassName(),
+				+ m2.getAspectType().getName(),
 			m2.getSourceLocation()));
 	}
 	

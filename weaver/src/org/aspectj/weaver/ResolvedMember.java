@@ -161,5 +161,10 @@ public class ResolvedMember extends Member implements IHasPosition {
 		return Modifier.isAbstract(modifiers);
 	}
 
+	public boolean isVisible(ResolvedTypeX fromType) {
+		World world = fromType.getWorld();
+		return ResolvedTypeX.isVisible(getModifiers(), getDeclaringType().resolve(world),
+					fromType);
+	}
 }
    
