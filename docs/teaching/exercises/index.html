@@ -468,85 +468,43 @@ they're stuck somewhere, see if you can help them.  </p>
 <hr />
 <!-- page break -->
 
-<h2>3.  Tracing</h2>
+<h2>3. Logging</h2>
 
 <p> The crosscutting feature you will be adding in part (4) will be
 support for caching the bound objects of <code>Group</code> figure
 elements, which may be costly to compute.  On the way to that, though,
 it's useful to explore the system with some tracing aspects.  </p>
 
-<h3>a. Simple tracing</h3>
+<h3>a. Simple logging</h3>
 
-<p> Write an aspect to trace whenever a <code>Point</code> is moved.
-To do this, use the utility class <code>Log</code> (with an import
-from <code>support.Log</code>) and call </p>
+<p> <strong>Problem:</strong> Pass <code>tests.Test3a</code>.</p>
 
-<blockquote><PRE>
-Log.log("moving")
-</PRE></blockquote>
-
-<p> This will write the string "moving", followed by a semicolon
-terminator, to the Log. For example, with your aspect enabled,
+<p> <strong>Tools:</strong> <code>Log.log(String)</code>, 
+		<code>thisJoinPoint.toString()</code>, <code>execution</code>,
+		<code>within</code>
 </p>
 
-<blockquote><PRE>
-Point p1 = new Point(10, 100);
-p1.move(37, 8);
-System.out.println(Log.getString());
-</PRE></blockquote>
+<p> Write an aspect to log the execution of all public methods
+in the figures package.  To do this, use the utility class
+<code>Log</code> (with an import from <code>support.Log</code>) 
+and call <code>Log.log(String)</code></p>
 
-<p> should print out "moving;".  
+<h3>b. Simple logging</h3>
+
+<p> <strong>Problem:</strong> Pass <code>tests.Test3b</code>.</p>
+
+<p> <strong>Tools:</strong> <code>target</code>
 </p>
 
-<p> Test this with the JUnit test case <code>tests.Test3a</code>.
-Without adding any aspects, this test should fail: </p>
 
-<blockquote><PRE>
-$ ajc -Xlint -argfile base.lst 
-$ java tests.Test3a
-..F.......
-Time: 0.07
-There was 1 failure:
-1) testMovePointLog(tests.Test3a)junit.framework.AssertionFailedError: expected:&lt;set;&gt; but was:&lt;&gt;
-        at tests.Test3a.testMovePointLog(Test1a.java:30)
-        at tests.Test3a.main(Test1a.java:16)
+<h3>c. More specialized logging</h3>
 
-FAILURES!!!
-Tests run: 9,  Failures: 1,  Errors: 0
-</PRE></blockquote>
+<p> <strong>Problem:</strong> Pass <code>tests.Test3c</code>.</p>
 
-<p> But with the proper aspect added to the compilation, (in this
-case, <code>answers/Answer3a.java</code>, but you should feel free to
-use more evocative names), the test should pass </p>
-
-<blockquote><PRE>
-$ ajc -Xlint -argfile base.lst answers/Answer3a.java
-$ java tests.Test3a
-.........
-Time: 0.089
-
-OK (9 tests)
-</PRE></blockquote>
-
-<p> <strong>Answer: </strong>
+<p> <strong>Tools:</strong>
 </p>
 
-<blockquote><PRE>
-package answers;
-
-import support.Log;
-import figures.*;
-
-aspect Answer3a {
-    before(): execution(void Point.move(int, int)) {
-        Log.log("moving");
-    }
-}
-</PRE></blockquote>
-
-<h3>b. More complex tracing</h3>
-
-<p> Write an aspect to trace whenever a <code>Point</code> is added to
+<p> Write an aspect to log whenever a <code>Point</code> is added to
 a group (including initially).  To do this, use the utility class
 <code>Log</code> (with an import from <code>support.Log</code>) and
 call </p>
@@ -572,8 +530,26 @@ System.out.println(Log.getString());
 <p> <em>Hint: The <code>args</code> pointcut allows you to select join points
 based on the type of a parameter to a method call. </em> </p>
 
-<p> Test this with the JUnit test case <code>tests.Test3b</code>.
+<h3>d. Logging extended to checking an invariant</h3>
 
+<p> <strong>Problem:</strong> Pass <code>tests.Test3d</code>.</p>
+
+<p> <strong>Tools:</strong> <code>inter-type field declaration</code>
+</p>
+
+<p>Make sure that a Point is never added to more than one Group.</p>
+
+
+<h3>e. Better error messages for 3d</h3>
+
+<p> <strong>Problem:</strong> Pass <code>tests.Test3e</code>.</p>
+
+<p> <strong>Tools:</strong>
+</p>
+
+<p>Make sure that a Point is never added to more than one Group.
+Include the Group that the Point was previously a part of in the
+thrown exception.</p>
 
 <h3>c. Keeping track of state</h3>
 
