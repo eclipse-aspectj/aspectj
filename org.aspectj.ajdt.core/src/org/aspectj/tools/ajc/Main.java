@@ -116,7 +116,7 @@ public class Main {
     private IMessageHolder clientHolder;
     
     /** internally-set message sink */
-    private final MessageHandler ourHandler;
+    protected final MessageHandler ourHandler;
     
     private int lastFails;
     private int lastErrors;
