@@ -2,5 +2,19 @@
 
   <title>The pertypewithin Aspect Instantiation Model</title>
   
+  <para>This is a placeholder to stimulate discussion around a possible new
+  instantiation model : <literal>pertypewithin(OptionalParensTypePattern)</literal>.
+  The semantics of <literal>pertypewithin</literal> are that a new aspect
+  instance will be created at the <literal>staticinitialization</literal>
+  join point of each type matching the given type pattern.</para>
+  
+  <para>Discussion must include motivating use cases. Raise the issue that
+  pertypewithin takes a type pattern, not a pointcut.</para>
+  
+  <para>We will only do this if we believe we can generate an implementation
+  that is significantly more efficient than hand-coded alternatives.</para>
+
+  <para>Need to define aspectOf(Class), hasAspect(Class).</para>
+  
 </chapter>
 

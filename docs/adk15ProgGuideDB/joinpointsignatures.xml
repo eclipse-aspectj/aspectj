@@ -1,0 +1,131 @@
+<chapter id="jpsigs" xreflabel="Join Point Signatures">
+
+  <title>Join Point Signatures</title>
+  
+      <para>To understand join point matching for annotations, generics, and
+      covariance, it is first necessary to understand the concepts of
+      join point signatures and join point signature matching, for call and
+      execution join points.</para>
+  
+      <sect1>
+        <title>Join Point Signatures for Call Join Points</title>
+        
+        <para>A call join point can have more than one signature. For a
+        call pointcut expression to match a given call join point, at
+        least one of the join point signatures must be matched by the
+        pointcut's signature pattern.</para>
+        
+        <para>
+          For a call join point where a call is made to a method
+          <literal>m(args)</literal> on a target type <literal>T</literal> (where
+          <literal>T</literal> is the static type of the target):
+        </para>
+
+		<programlisting><![CDATA[
+		T t = new T(); 
+		t.m("hello");  <= call join point occurs when this line is executed
+		]]></programlisting>
+        
+        <para>
+            Then the signature <literal>R(T) T.m(args)</literal> is a signature
+            of the call join point, where <literal>R(T)</literal> is the return
+            type of <literal>m</literal> in <literal>T</literal>, and 
+            <literal>args</literal> represents the types of the arguments to
+            <literal>m</literal>. If <literal>T</literal> itself does not
+            declare a definition of <literal>m(args)</literal>, then 
+            <literal>R(T)</literal> is the return type in the definition of 
+            <literal>m</literal> that <literal>T</literal> inherits. Given the
+            call above, and the definition of <literal>T.m</literal>:                      
+        </para>
+        
+        <programlisting><![CDATA[
+        interface Q {
+          R m(String s);
+        }
+        
+        class P implements Q {
+          R m(String s) {...}        
+        }
+        
+        class S extends P {
+          R' m(String s) {...}
+        }
+        
+		class T extends S { 
+		
+		]]></programlisting>
+        
+        <para>Then <literal>R' T.m(String)</literal> is a signature of the
+        call join point for <literal>t.m("hello")</literal></para>.
+        
+        <para>
+            For each ancestor (super-type) <literal>A</literal> of <literal>T</literal>, 
+            if <literal>m(args)</literal> is defined for that super-type, then
+            <literal>R(A) A.m(args)</literal> is a signature of the call join
+            point, where <literal>R(A)</literal> is the return type of <literal>
+            m(args)</literal> as defined in <literal>A</literal>, or as inherited
+            by <literal>A</literal> if <literal>A</literal> itself does not
+            provide a definition of <literal>m(args)</literal>.            
+        </para>
+        
+        <para>
+            Continuing the example from above,we can deduce that
+        </para>
+
+        <programlisting><![CDATA[
+        R' S.m(String)
+        R  P.m(String)
+        R  Q.m(String)
+		]]></programlisting>
+        
+        <para>are all additional signatures for the call join point arising
+        from the call <literal>t.m("hello")</literal>. Thus the call
+        join point has four signatures in total. Amongst these signatures,
+        we say that the <emphasis>most-specific signature</emphasis> is the
+        signature with the most-specific declaring type - that is, the 
+        signature of the static type of the target of the call 
+        (<literal>R' T.m(String)</literal>) in this case.</para>
+        
+      </sect1>
+      
+      <sect1>
+          <title>Join Point Signatures for Execution Join Points</title>
+          
+          <para>Join point signatures for execution join points are defined
+          in a similar manner to signatures for call join points. Given the
+          same hierarchy as in the call example in the previous section:
+          </para>
+
+
+        <programlisting><![CDATA[
+        interface Q {
+          R m(String s);
+        }
+        
+        class P implements Q {
+          R m(String s) {...}        
+        }
+        
+        class S extends P {
+          R' m(String s) {...}
+        }
+        
+		class T extends S { 
+		
+		]]></programlisting>
+        
+        <para>Then the execution join point signatures arising as a result
+        of the call to <literal>t.m("hello")</literal> are: </para>
+
+
+      </sect1>
+      
+      <sect1>
+          <title>Pointcut matching based on Join Point Signatures</title>
+          
+          <para>Explain signature + modifiers split, plus notion of "most-specific"
+          join point.</para>
+      </sect1>
+      
+  
+</chapter>

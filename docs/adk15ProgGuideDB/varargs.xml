@@ -2,7 +2,7 @@
 
   <title>Varargs</title>
   
-    <sect1 id="varargs-inJava5">
+    <sect1 id="varargs-inJava5" xreflabel="Varargs in Java 5">
         <title>Variable-length Argument Lists in Java 5</title>
         
         <para>
@@ -169,21 +169,56 @@
             <literal>execution(* *.*(String[]))</literal> matches the execution join point
             for <literal>bar</literal> but not <literal>foo</literal>.
         </para>
-        
-        <para>
-            The <literal>args</literal> pointcut designator can also now take a <literal>varargs</literal>
-            pattern as the last argument in the list. For example, you can write:
-        </para>
-
-    	<programlisting><![CDATA[
-    	args(int, String...)
-    	]]></programlisting>
-        
+               
         </sect2>
         
         <sect2>
             <title>Exposing variable-length arguments as context in pointcuts and advice</title>
+            
+            <para>
+            When a varargs parameter is used within the body of a method, it has
+            an array type, as discussed in the introduction to this section. We follow the
+            same convention when binding a varargs parameter via the <literal>args</literal>
+            pointcut designator. Given a method
+            </para>
+
+		<programlisting><![CDATA[
+		public void foo(int i, String... strings) { 
+		}
+		]]></programlisting>
+
+            <para>
+            The call or execution join points for <literal>foo</literal> will be matched
+            by the pointcut <literal>args(int,String[])</literal>. It is not permitted
+            to use the varargs syntax within an args pointcut designator - so you
+            <emphasis>cannot</emphasis> write <literal>args(int,String...)</literal>.
+            </para>
+            
+            <para>
+            Binding of a varargs parameter in an advice statement is straightforward:
+            </para>
+            
+		<programlisting><![CDATA[
+		before(int i, String[] ss) : call(* foo(int,String...)) && args(i,ss) {
+		  // varargs String... argument is accessible in advice body through ss
+		  // ...
+		}
+		]]></programlisting>
+         
+             <para>Since you cannot use the varargs syntax in the <literal>args</literal>
+             pointcut designator, you also cannot use the varargs syntax to declare
+             advice parameters.</para>   
+            
+            <para>Note: the proposal in this section does not allow you to 
+            distinguish between a join point with a signature (int, String...)
+            and a join point with a signature (int, String[]) based 
+            <emphasis>solely</emphasis> on the use of the <literal>args</literal>
+            pointcut designator. If this distinction is required, <literal>args</literal>
+            can always be coupled with <literal>call</literal> or 
+            <literal>execution</literal>.</para>
+
         </sect2>
+        
     </sect1>
   
 </chapter>

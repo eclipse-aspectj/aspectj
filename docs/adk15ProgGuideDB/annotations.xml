@@ -639,132 +639,19 @@
 
   </sect2>
 
-  <sect2>
-      <title>Package and Parameter Annotations</title>
-
-      <para>
-          <emphasis>Note: A previous design allowed package annotation patterns to be specified
-          directly in type patterns, and parameter annotation patterns to be
-          specified directly in method and constructor signature patterns. Because
-          this made some pointcut expressions hard to read and understand, we moved
-          in favour of the design presented below, which also has its drawbacks. 
-          Matching on package and parameter annotations is one feature likely to be
-          deferred until after the 1.5.0 release so that we can gain more understanding
-          of the kinds of uses AspectJ users are making of annotations in pointcut
-          expressions before commiting to any one approach.</emphasis>
-      </para>
-      
-      <para>
-          Java 5 allows both packages and parameters to be annotated. To allow matching on package and parameter annotations,
-          AspectJ 1.5 introduces the <literal>@package</literal> and <literal>@parameters</literal> pointcut designators. 
-          <emphasis>Note: we could consider deferring implementation of these to a dot release after 1.5.0?</emphasis>
-      </para>
-      
-  	<programlisting><![CDATA[  	
-  		PackageAnnotationPointcut := '@package' '(' AnnotationPattern ')'
-	]]></programlisting>
-	
-	<para>The <literal>@package</literal> pointcut matches any join point 
-	occuring within the scope of a package with
-	annotations matching the giving <literal>AnnotationPattern</literal>. For
-	example:
-	 </para>
-    
-  	<programlisting><![CDATA[  	
-  		@package(@Model)
-	]]></programlisting>
-    
-    <para>
-        Matches any join point occuring within the scope of a package with the
-        <literal>@Model</literal> annotation.
-    </para>
-    
-    <para>
-    <emphasis>
-        Note: we added @package as a result of a conscious decision not to allow the
-        specification of package annotation patterns within a general TypePattern. A 
-        consequence of this decision is that we lose the ability to say the following
-        things: "a call to a method defined in a type in a package with annotations
-        matching..." ; "the set of a field defined in a type in a package with annotations
-        matching..." ; "the get of a field defined in a type in a package with annotations
-        matching...". As well as the package of the target at these join points, there is
-        also the package of the runtime type of the target (call/target difference). So
-        there are at least three possible sets of package annotations you could theoretically
-        want to match on at a call, get, or set join point. We have chosen to provide the
-        means to express the simplest of these, and could consider extending the language
-        to allow for the others in the future when we better understanding how users will
-        really use both package annotations and these features.
-    </emphasis>
-    </para>  
-    
-    <para>
-        The <literal>@parameter</literal> pointcut designator acts in a similar manner to
-        <literal>args</literal> in that it matches based on number and position of arguments
-        at a join point (and supports the same wildcard options of <literal>*</literal> and
-        <literal>..</literal>.    
-    </para>
-
-  	<programlisting><![CDATA[  	
-  		ParamsAnnotationPointcut := '@parameters' '(' ParamsAnnotationPattern ')'
-  		
-  		ParamsAnnotationPattern := AnnotationPattern (',' ParamsAnnotationPattern)? |
-  		                         '*' (',' ParamsAnnotationPattern)? |
-  		                         '..' (',' SingleParamsAnnotationPattern)* 
-  		
-  		SingleParamsAnnotationPattern := AnnotationPattern (',' SingleParamsAnnotationPattern)? |
-  		                               '*' (',' SingleParamsAnnotationPattern)?  		
-	]]></programlisting>
-    
-    <para>The <literal>*</literal> wildcard matches a single parameter regardless of its annotations. 
-    The <literal>..</literal> wildcard matches zero or more parameters with any annotations. An
-    annotation pattern in a given parameter position matches a parameter in that position with annotations
-    matching the given annotation pattern. For example, the method signature</para>
-
-  	<programlisting><![CDATA[
-  	    public void foo(@Immutable int i, String s, @Cached Object o);  	
-	]]></programlisting>
-
-    <para>
-    Is matched by:
-    </para>
-
-  	<programlisting><![CDATA[
-  	    @parameters(@Immutable, *, @Cached);
-  	    
-  	    and,
-  	    
-  	    @parameters(..,@Cached);
-  	    
-  	    and,
-  	    
-  	    @parameters(@Immutable, *, *); 	
-	]]></programlisting>
-
-    <para>
-     It is not matched by:
-    </para>
-
-  	<programlisting><![CDATA[
-  	    @parameters(@Immutable, *);
-  	    
-  	    or,
-  	    
-  	    @parameters(*,@Immutable);
-  	    
-  	    or,
-  	    
-  	    @parameters(*, int, @Cached); 	
-	]]></programlisting>
-    
-    <para>
-    This last example will result in a compilation error since <literal>int</literal> is not a 
-    valid annotation pattern.
-    </para>
-    
-  </sect2>
-
    <sect2>
   	<title>Runtime type matching and context exposure</title>
+
+    <para>AspectJ 1.5 supports a set of "@" pointcut designators which
+    can be used both to match based on the presence of an annotation at
+    runtime, and to expose the annotation value as context in a pointcut or
+    advice definition. These designators are <literal>@args, @this, @target,
+    @within, @withincode, @call, @execution, @adviceexecution, @get, @set, 
+    @staticinitialization, @initialization,</literal>, and <literal>@preinitialization</literal>
+    </para>
+    
+    <para>It is a compilation error to attempt to match on an annotation type 
+    that does not have runtime retention using one of these pointcut designators.</para>
 
     <para>
         The <literal>this()</literal>, <literal>target()</literal>, and
@@ -896,7 +783,154 @@
         library to Java 5. A sub-interface and downcast solution could be used
         if these helpers were felt to be sufficiently important.</emphasis>
     </para>
+
+    <para>
+    The <literal>@within</literal> and <literal>@withincode</literal> pointcut designators
+    match any join point where the enclosing type (<literal>@within</literal>), or
+    method/constructor (<literal>@withincode</literal>) has an annotation of the specified 
+    type. The form of these designators is:
+    </para>
     
+  	<programlisting><![CDATA[  	
+  		WithinAnnotation := '@within' '(' AnnotationNameOrVar ')'
+  		
+  		WithinCodeAnnotation := '@withincode' '(' AnnotationNameOrVar ')'
+    ]]></programlisting>  		
+
+    <para>Some examples of using these designators follow:</para>
+
+   <variablelist>
+
+        <varlistentry>
+          <term>@within(@Foo)</term>
+          <listitem>
+            <para>
+            	Matches any join point where the enclosing type
+            	has an annotation of type <literal>Foo</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>pointcut insideCriticalMethod(Critical c) : 
+                  @withincode(c);</term>
+          <listitem>
+            <para>
+            	Matches any join point whose shadow is lexically enclosed
+            	in a method which has an annotation of type <literal>@Critical</literal>,
+            	and exposes the value of the annotation in the parameter 
+            	<literal>c</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+    </variablelist>
+    
+    <para>The remaining annotation-based pointcut designators are defined in a 
+    similar fashion:</para>
+
+  	<programlisting><![CDATA[  	
+  		CallAnnotation := '@call' '(' AnnotationNameOrVar ')'
+  		
+  		ExecutionAnnotation := '@execution' '(' AnnotationNameOrVar ')'
+  		
+  		AdviceExecution := '@adviceexecution' '(' AnnotationNameOrVar ')'
+
+  		GetAnnotation := '@set' '(' AnnotationNameOrVar ')'
+  		
+  		SetAnnotation := '@get' '(' AnnotationNameOrVar ')'
+  		
+  		InitializationAnnotation := '@initialization' '(' AnnotationNameOrVar ')'
+
+        PreInitializationAnnotation := '@preinitialization' '(' AnnotationNameOrVar ')'
+        
+        StaticInitializationAnnotation := '@staticinitialization' '(' AnnotationNameOrVar ')'
+    ]]></programlisting>  		
+
+   <variablelist>
+
+        <varlistentry>
+          <term>@call(@Foo)</term>
+          <listitem>
+            <para>
+            	Matches any call join point where the most specific join point
+            	signature has an annotation of type <literal>@Foo</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>@execution(@Foo)</term>
+          <listitem>
+            <para>
+            	Matches any execution join point where the most specific join point
+            	signature has an annotation of type <literal>@Foo</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>@adviceexecution(@Foo)</term>
+          <listitem>
+            <para>
+            	Matches any advice execution join point where the advice 
+            	has an annotation of type <literal>@Foo</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>@get(@Foo)</term>
+          <listitem>
+            <para>
+            	Matches any get join point where the target field
+            	has an annotation of type <literal>@Foo</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>@set(@Foo)</term>
+          <listitem>
+            <para>
+            	Matches any set join point where the target field
+            	has an annotation of type <literal>@Foo</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>@initialization(@Foo)</term>
+          <listitem>
+            <para>
+            	Matches any initialization join point where the initiating
+            	constructor an annotation of type <literal>@Foo</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>@preinitialization(@Foo)</term>
+          <listitem>
+            <para>
+            	Matches any preinitialization join point where the initiating
+            	constructor an annotation of type <literal>@Foo</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>@staticinitialization(@Foo)</term>
+          <listitem>
+            <para>
+            	Matches any staticinitialization join point where the type being
+            	initialized has an annotation of type <literal>@Foo</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+    </variablelist>
+
     <para>
       Access to annotation information on members at a matched join point is available
       through the <literal>getSignature</literal> method of the <literal>JoinPoint</literal>
@@ -922,17 +956,133 @@
         to Java 5.</emphasis>
     </para>
     
-    <para>
-        <emphasis>Note: the use case of matching call/execution/get/set join points based
-        on member annotations is expected to be a common one. If it is also common 
-        practice to want to access the annotation value in the advice body, then the
-        route via thisJoinPointStaticPart and the Signature interface will be too
-        cumbersome. In this case we need to find a form of context-exposing pcd
-        that will allow the annotation value to be directly exposed as an advice
-        parameter. What form should this take, and what join points should it match?
-        </emphasis>
-    </para>
   </sect2>
+
+  <sect2>
+      <title>Package and Parameter Annotations</title>
+
+      <para>
+          <emphasis>Note: A previous design allowed package annotation patterns to be specified
+          directly in type patterns, and parameter annotation patterns to be
+          specified directly in method and constructor signature patterns. Because
+          this made some pointcut expressions hard to read and understand, we moved
+          in favour of the design presented below, which also has its drawbacks. 
+          Matching on package and parameter annotations is one feature likely to be
+          deferred until after the 1.5.0 release so that we can gain more understanding
+          of the kinds of uses AspectJ users are making of annotations in pointcut
+          expressions before commiting to any one approach.</emphasis>
+      </para>
+      
+      <para>
+          Java 5 allows both packages and parameters to be annotated. To allow matching on package and parameter annotations,
+          AspectJ 1.5 introduces the <literal>@package</literal> and <literal>@parameters</literal> pointcut designators. 
+          <emphasis>Note: we could consider deferring implementation of these to a dot release after 1.5.0?</emphasis>
+      </para>
+      
+  	<programlisting><![CDATA[  	
+  		PackageAnnotationPointcut := '@package' '(' AnnotationPattern ')'
+	]]></programlisting>
+	
+	<para>The <literal>@package</literal> pointcut matches any join point 
+	occuring within the scope of a package with
+	annotations matching the giving <literal>AnnotationPattern</literal>. For
+	example:
+	 </para>
+    
+  	<programlisting><![CDATA[  	
+  		@package(@Model)
+	]]></programlisting>
+    
+    <para>
+        Matches any join point occuring within the scope of a package with the
+        <literal>@Model</literal> annotation.
+    </para>
+    
+    <para>
+    <emphasis>
+        Note: we added @package as a result of a conscious decision not to allow the
+        specification of package annotation patterns within a general TypePattern. A 
+        consequence of this decision is that we lose the ability to say the following
+        things: "a call to a method defined in a type in a package with annotations
+        matching..." ; "the set of a field defined in a type in a package with annotations
+        matching..." ; "the get of a field defined in a type in a package with annotations
+        matching...". As well as the package of the target at these join points, there is
+        also the package of the runtime type of the target (call/target difference). So
+        there are at least three possible sets of package annotations you could theoretically
+        want to match on at a call, get, or set join point. We have chosen to provide the
+        means to express the simplest of these, and could consider extending the language
+        to allow for the others in the future when we better understanding how users will
+        really use both package annotations and these features.
+    </emphasis>
+    </para>  
+    
+    <para>
+        The <literal>@parameter</literal> pointcut designator acts in a similar manner to
+        <literal>args</literal> in that it matches based on number and position of arguments
+        at a join point (and supports the same wildcard options of <literal>*</literal> and
+        <literal>..</literal>.    
+    </para>
+
+  	<programlisting><![CDATA[  	
+  		ParamsAnnotationPointcut := '@parameters' '(' ParamsAnnotationPattern ')'
+  		
+  		ParamsAnnotationPattern := AnnotationPattern (',' ParamsAnnotationPattern)? |
+  		                         '*' (',' ParamsAnnotationPattern)? |
+  		                         '..' (',' SingleParamsAnnotationPattern)* 
+  		
+  		SingleParamsAnnotationPattern := AnnotationPattern (',' SingleParamsAnnotationPattern)? |
+  		                               '*' (',' SingleParamsAnnotationPattern)?  		
+	]]></programlisting>
+    
+    <para>The <literal>*</literal> wildcard matches a single parameter regardless of its annotations. 
+    The <literal>..</literal> wildcard matches zero or more parameters with any annotations. An
+    annotation pattern in a given parameter position matches a parameter in that position with annotations
+    matching the given annotation pattern. For example, the method signature</para>
+
+  	<programlisting><![CDATA[
+  	    public void foo(@Immutable int i, String s, @Cached Object o);  	
+	]]></programlisting>
+
+    <para>
+    Is matched by:
+    </para>
+
+  	<programlisting><![CDATA[
+  	    @parameters(@Immutable, *, @Cached);
+  	    
+  	    and,
+  	    
+  	    @parameters(..,@Cached);
+  	    
+  	    and,
+  	    
+  	    @parameters(@Immutable, *, *); 	
+	]]></programlisting>
+
+    <para>
+     It is not matched by:
+    </para>
+
+  	<programlisting><![CDATA[
+  	    @parameters(@Immutable, *);
+  	    
+  	    or,
+  	    
+  	    @parameters(*,@Immutable);
+  	    
+  	    or,
+  	    
+  	    @parameters(*, int, @Cached); 	
+	]]></programlisting>
+    
+    <para>
+    This last example will result in a compilation error since <literal>int</literal> is not a 
+    valid annotation pattern.
+    </para>
+    
+  </sect2>
+
+
 
   <sect2>
   	<title>Annotation Inheritance and pointcut matching</title>

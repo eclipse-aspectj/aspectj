@@ -3,6 +3,7 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
                       "../../lib/docbook/docbook-dtd/docbookx.dtd"
 [
+<!ENTITY jpsigs             SYSTEM "joinpointsignatures.xml">
 <!ENTITY annotations        SYSTEM "annotations.xml">
 <!ENTITY generics		    SYSTEM "generics.xml">
 <!ENTITY enumeratedtypes    SYSTEM "enumeratedtypes.xml">
@@ -55,6 +56,7 @@
     </abstract>
   </bookinfo>
 
+  &jpsigs;
   &annotations;
   &generics;
   &enumeratedtypes;
