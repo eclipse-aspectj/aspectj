@@ -42,7 +42,7 @@ public class Call {
         } else {
 	    c = new LongDistance(caller, receiver);
         }
-        connections.add(c);
+        connections.addElement(c);
     }
 
     /**
@@ -90,7 +90,7 @@ public class Call {
     public void merge(Call other){
 	for(Enumeration e = other.connections.elements(); e.hasMoreElements();){
 	    Connection conn = (Connection)e.nextElement();
-	    other.connections.remove(conn);
+	    other.connections.removeElement(conn);
 	    connections.addElement(conn);
 	}
     }
