@@ -137,7 +137,9 @@ public abstract class Pointcut extends PatternNode {
 	 * @param bindings a Map from formal index in the current lexical context
 	 *                               -> formal index in the concrete advice that will run
 	 * 
-	 * ??? does this return a new pointcut
+	 * This must always return a new Pointcut object (even if the concretized
+	 * Pointcut is identical to the resolved one).  That behavior is
+	 * assumed in many places.
 	 * XXX fix implementors to handle state
 	 */
 	protected abstract Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings);
@@ -212,7 +214,7 @@ public abstract class Pointcut extends PatternNode {
 		public Pointcut concretize1(
 			ResolvedTypeX inAspect,
 			IntMap bindings) {
-			return this;
+			return makeMatchesNothing(state);
 		}
 
 

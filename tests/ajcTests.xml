@@ -5872,4 +5872,10 @@
         </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs" pr="36803"
+      title="cflow concretization causing assertion failure">
+        <compile files="CflowConcrete.java"/>
+        <run class="CflowConcrete"/>
+    </ajc-test>
+    
 </suite>

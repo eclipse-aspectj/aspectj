@@ -84,6 +84,6 @@ public class WithincodePointcut extends Pointcut {
 	
 	
 	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
-		return this; //??? no pointers out of here so we're okay
+		return new WithincodePointcut(signature);
 	}
 }
