@@ -70,7 +70,8 @@ public aspect AroundDoubleAssignmentC {
 
 class FieldInit {
     /** @testcase PR#687 around all execution with double assignment in initializer (fieldinit) */
-    String s = s = getString();
+    String s = getString();
+    { s = s; }
     String getString() { return "test".toString(); }
 }
 
