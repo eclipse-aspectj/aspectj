@@ -43,14 +43,10 @@ public class VersionTest extends TestCase {
 	}
         
     public void testVersion() {
-        if (Version.DEVELOPMENT.equals(Version.text)) {
-            assertEquals(Version.time, Version.NOTIME);
-        } else {
-            Date date = new Date(Version.time);
-            SimpleDateFormat format = new SimpleDateFormat(Version.SIMPLE_DATE_FORMAT, Locale.US);
-            format.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
-            String timeString = format.format(date);
-            assertEquals(Version.time_text, timeString);
-        }
+        Date date = new Date(Version.time);
+        SimpleDateFormat format = new SimpleDateFormat(Version.SIMPLE_DATE_FORMAT, Locale.UK);
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        String timeString = format.format(date);
+        assertEquals(Version.time_text, timeString);
     }
 }
