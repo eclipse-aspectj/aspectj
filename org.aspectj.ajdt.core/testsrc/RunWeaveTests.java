@@ -124,7 +124,7 @@ public class RunWeaveTests {
 	}
 	
 	/* Compatibility with JDK 1.3.1 */
-	private static String[] split (String s) {
+	public static String[] split (String s) {
 		List list = new ArrayList();
 		StringTokenizer st = new StringTokenizer(s," ");
 		while (st.hasMoreTokens()) {

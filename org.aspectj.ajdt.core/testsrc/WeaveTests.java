@@ -485,7 +485,7 @@ public class WeaveTests {
 			"-argfile " + OUTPUT_PACKAGE + File.separatorChar + "build.lst";
 
 		// split method creates a String array delimited on a space
-		String[] parsedArgs = ajcargs.split(" "); 
+		String[] parsedArgs = RunWeaveTests.split(ajcargs); 
 
 		
 		long start = System.currentTimeMillis();
@@ -496,6 +496,7 @@ public class WeaveTests {
 		
 		return stop - start;
 	}
+	
 	
 	public static void weaveAspects(String adviceType) throws IOException {
 
@@ -583,7 +584,7 @@ public class WeaveTests {
 			"-outjar " + OUTPUT_PACKAGE + File.separatorChar + adviceName + ".jar " + 
 			OUTPUT_PACKAGE + File.separatorChar + adviceName + ".aj";
 			
-		String[] parsedArgs = ajcargs.split(" ");
+		String[] parsedArgs = RunWeaveTests.split(ajcargs);
 		
 		long start = System.currentTimeMillis();
 		
