@@ -19,6 +19,7 @@ import java.io.IOException;
 //import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 //import java.util.Collections;
 //import java.util.List;
 
@@ -105,43 +106,14 @@ public class IncCompilerRun implements IAjcRun {
             final String fromSuffix = "." + spec.tag + toSuffix;
             // copy our tagged generation of files to the staging directory,
             // deleting any with ChangedFilesCollector.DELETE_SUFFIX
-            class intHolder {
-                int numCopies;
-                int numDeletes;
-                int numFails;
-            }
             // sigh - delay until after last last-mod-time
-            final ArrayList copied = new ArrayList();
-            final intHolder holder = new intHolder();
-            FileFilter deleteOrCount = new FileFilter() {
-                final String clip = ".delete" + toSuffix;
-                /** do copy unless file should be deleted */
-				public boolean accept(File file) {
-                    boolean doCopy = true;
-                    String path = file.getAbsolutePath();
-                    if (!path.endsWith(clip)) {
-                        holder.numCopies++;
-                        validator.info("copying file: " + path);
-                        copied.add(file);
-                    } else {
-                        doCopy = false;
-                        path = path.substring(0, path.length()-clip.length()) + toSuffix;
-                        File toDelete = new File(path);
-                        if (toDelete.delete()) {
-                            validator.info("deleted file: " + path);
-                            holder.numDeletes++;
-                        } else {
-                            validator.fail("unable to delete file: " + path);
-                            holder.numFails++;
-                        }
-                    }
-					return doCopy;
-				}
-
-            };
-            File srcDir = sandbox.getTestBaseSrcDir(this);
-            File destDir = sandbox.stagingDir;
-            FileUtil.copyDir(srcDir, destDir, fromSuffix, toSuffix, deleteOrCount);
+            intHolder holder = new intHolder();
+            List copied = new ArrayList();
+            doStaging(validator,".java",holder,copied);
+            doStaging(validator,".jar",holder,copied);
+            doStaging(validator,".class",holder,copied);
+            doStaging(validator,".properties",holder,copied); // arbitrary resource extension
+            doStaging(validator,".xml",holder,copied); // arbitrary resource extension
             if ((0 == holder.numCopies) && (0 == holder.numDeletes)) {
                 validator.fail("no files changed??");
             } else {
@@ -158,7 +130,50 @@ public class IncCompilerRun implements IAjcRun {
         }
         return result;
     }
+
     
+    private void doStaging(final Validator validator, final String toSuffix,  
+    					   final intHolder holder,final List copied)
+	throws IOException
+	{
+    	final String fromSuffix = "." + spec.tag + toSuffix;
+        final String clip = ".delete" + toSuffix;
+        FileFilter deleteOrCount = new FileFilter() {
+            /** do copy unless file should be deleted */
+			public boolean accept(File file) {
+                boolean doCopy = true;
+                String path = file.getAbsolutePath();
+                if (!path.endsWith(clip)) {
+                    holder.numCopies++;
+                    validator.info("copying file: " + path);
+                    copied.add(file);
+                } else {
+                    doCopy = false;
+                    path = path.substring(0, path.length()-clip.length()) + toSuffix;
+                    File toDelete = new File(path);
+                    if (toDelete.delete()) {
+                        validator.info("deleted file: " + path);
+                        holder.numDeletes++;
+                    } else {
+                        validator.fail("unable to delete file: " + path);
+                        holder.numFails++;
+                    }
+                }
+				return doCopy;
+			}
+
+        };
+        File srcDir = sandbox.getTestBaseSrcDir(this);
+        File destDir = sandbox.stagingDir;
+        FileUtil.copyDir(srcDir, destDir, fromSuffix, toSuffix, deleteOrCount);
+    }
+    
+    private static class intHolder {
+        int numCopies;
+        int numDeletes;
+        int numFails;
+    }
+
 	/**
 	 * @see org.aspectj.testing.run.IRun#run(IRunStatus)
 	 */
