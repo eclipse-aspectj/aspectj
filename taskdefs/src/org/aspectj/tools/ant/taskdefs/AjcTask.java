@@ -255,7 +255,7 @@ public class AjcTask extends MatchingTask {
             
     static {
         String[] xs = new String[] 
-            {   "serializableAspects", "incrementalFile"
+            {   "serializableAspects", "incrementalFile", "lazyTjp"
             	//, "targetNearSource", "OcodeSize",
                  };
         VALID_XOPTIONS = Collections.unmodifiableList(Arrays.asList(xs));
@@ -310,6 +310,8 @@ public class AjcTask extends MatchingTask {
     private List ignored;
     private Path sourceRoots;
     private File xweaveDir;
+    private String xdoneSignal;
+    
     // ----- added by adapter - integrate better?
     private List /* File */ adapterFiles;
     private String[] adapterArguments;
@@ -396,6 +398,7 @@ public class AjcTask extends MatchingTask {
         tmpOutjar = null;
         verbose = false;
         xweaveDir = null;
+        xdoneSignal = null;
     }
 
     protected void ignore(String ignored) {
@@ -454,7 +457,7 @@ public class AjcTask extends MatchingTask {
     public void setXNoweave(boolean noweave) {  
         cmd.addFlag("-XnoWeave", noweave);
     }
-    
+
     public void setXReweavable(boolean reweavable) {
     	cmd.addFlag("-Xreweavable",reweavable);
     }
@@ -685,6 +688,10 @@ public class AjcTask extends MatchingTask {
                 }
             }
         }
+    }
+
+    public void setXDoneSignal(String doneSignal) {
+        this.xdoneSignal = doneSignal;
     }
 
     /** direct API for testing */
@@ -1427,6 +1434,9 @@ public class AjcTask extends MatchingTask {
             completeOutjar();
         } else {
             completeDestdir();
+        }
+        if (null != xdoneSignal) {
+            MessageUtil.info(messageHolder, xdoneSignal);
         }
     }
     
