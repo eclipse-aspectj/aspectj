@@ -18,6 +18,7 @@ import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.LDC_W;
+import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.ReferenceType;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.weaver.BCException;
@@ -186,8 +187,9 @@ public class BcelRenderer implements ITestVisitor, IExprVisitor {
         Member getClass = Member.method(TypeX.OBJECT, 0, "getClass", "()Ljava/lang/Class;");
         il.append(Utility.createInvoke(fact, world, getClass));
         // aload annotationClass
-        int annClassIndex = fact.getConstantPool().addClass(hasAnnotation.getAnnotationType().getSignature());
-        il.append(new LDC_W(annClassIndex));
+        il.append(fact.createConstant(new ObjectType(hasAnnotation.getAnnotationType().getClassName())));
+//        int annClassIndex = fact.getConstantPool().addClass(hasAnnotation.getAnnotationType().getSignature());
+//        il.append(new LDC_W(annClassIndex));
         Member isAnnotationPresent = Member.method(TypeX.forName("java/lang/Class"),0,
                 "isAnnotationPresent","(Ljava/lang/Class;)Z");
         il.append(Utility.createInvoke(fact,world,isAnnotationPresent));
