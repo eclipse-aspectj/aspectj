@@ -721,14 +721,13 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 
 
 	public void buildInterTypeAndPerClause(ClassScope classScope) {
-		checkSpec(classScope);
-		if (ignoreFurtherInvestigation) return;
-		
 		factory = EclipseFactory.fromScopeLookupEnvironment(scope);
-		
 		if (isPrivileged) {
 			binding.privilegedHandler = new PrivilegedHandler(this);
 		}
+		
+		checkSpec(classScope);
+		if (ignoreFurtherInvestigation) return;
 		
 		buildPerClause(scope);
 		
