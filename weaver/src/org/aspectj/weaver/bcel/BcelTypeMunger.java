@@ -33,6 +33,7 @@ import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.AnnotationOnTypeMunger;
 import org.aspectj.weaver.AsmRelationshipProvider;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.Member;
@@ -86,6 +87,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			changed = mungeNewConstructor(weaver, (NewConstructorTypeMunger)munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.Parent) {
 			changed = mungeNewParent(weaver, (NewParentTypeMunger)munger);
+		} else if (munger.getKind() == ResolvedTypeMunger.AnnotationOnType) {
+			changed = mungeNewAnnotationOnType(weaver,(AnnotationOnTypeMunger)munger);
 		} else {
 			throw new RuntimeException("unimplemented");
 		}
@@ -151,6 +154,12 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			takefrom = path.lastIndexOf('\\');
 		}
 		return path.substring(takefrom+1);
+	}
+	
+	private boolean mungeNewAnnotationOnType(BcelClassWeaver weaver,AnnotationOnTypeMunger munger) {
+		// FIXME asc this has already been done up front, need to do it here too?
+		weaver.getLazyClassGen().addAnnotation(munger.getNewAnnotation().getBcelAnnotation());
+		return true;
 	}
 
 	/** 
