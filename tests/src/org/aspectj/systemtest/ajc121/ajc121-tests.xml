@@ -490,3 +490,8 @@
         <compile files="CounterTest05.java"/>
 		<run class="CounterTest05"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs/pr76096" pr="76096" title="Anonymous classes unaware of introductions into abstract classes">
+        <compile files="ConcreteClassA.java"/>
+        <run class="ConcreteClassA"/>
+    </ajc-test>

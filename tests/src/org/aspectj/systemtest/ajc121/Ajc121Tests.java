@@ -334,4 +334,8 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   	runTest("Optimization of cflow - counters with abstract pointcuts (5)");
   }
 
+  public void test064() {
+  	runTest("Anonymous classes unaware of introductions into abstract classes");
+  }
+
 }

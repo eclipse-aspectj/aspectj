@@ -15,6 +15,7 @@
 
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
+import java.util.List;
 
 import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
@@ -156,7 +157,17 @@ public class AjProblemReporter extends ProblemReporter {
 		
 		// if we implemented this method by an inter-type declaration, then there is no error
 		//??? be sure this is always right
-		ResolvedTypeX onTypeX = factory.fromEclipse(type); //abstractMethod.declaringClass);
+		ResolvedTypeX onTypeX = null;
+		
+		// If the type is anonymous, look at its supertype
+		if (!type.isAnonymousType()) {
+			onTypeX = factory.fromEclipse(type);
+		} else {
+			// Hmmm. If the ITD is on an interface that is being 'instantiated' using an anonymous type,
+			// we sort it out elsewhere and don't come into this method - 
+			// so we don't have to worry about interfaces, just the superclass.
+		    onTypeX = factory.fromEclipse(type.superclass()); //abstractMethod.declaringClass);
+		}
 		for (Iterator i = onTypeX.getInterTypeMungersIncludingSupers().iterator(); i.hasNext(); ) {
 			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
 			ResolvedMember sig = m.getSignature();
