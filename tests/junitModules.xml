@@ -1,0 +1,214 @@
+<!-- -*- Mode: SGML; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-     -->
+<!--                                                                                -->
+<!-- This file is part of the compiler and core tools for the AspectJ(tm)           -->
+<!-- programming language; see http://aspectj.org                                   -->
+<!--                                                                                -->
+<!-- The contents of this file are subject to the Mozilla Public License            -->
+<!-- Version 1.1 (the "License"); you may not use this file except in               -->
+<!-- compliance with the License. You may obtain a copy of the License at           -->
+<!-- either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.                 -->
+<!--                                                                                -->
+<!-- Software distributed under the License is distributed on an "AS IS" basis,     -->
+<!-- WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License       -->
+<!-- for the specific language governing rights and limitations under the           -->
+<!-- License.                                                                       -->
+<!--                                                                                -->
+<!-- The Original Code is AspectJ.                                                  -->
+<!--                                                                                -->
+<!-- The Initial Developer of the Original Code is Xerox Corporation. Portions      -->
+<!-- created by Xerox Corporation are Copyright (C) 2002 Xerox Corporation.         -->
+<!-- All Rights Reserved.                                                           -->
+
+<!-- ============================================================================== -->
+<!-- This assumes a complete pre-built eclipse workspace                            -->
+<!-- ============================================================================== -->
+
+<project name="junitModules" default="test-all" basedir=".">
+  <property name="project.name" value="junitModules"/>
+
+    <target name="init">
+      <property name="haltOnTestFailure" value="false"/>
+      <property name="modules.dir"
+            location="${basedir}/.."/>
+      <property name="tests.module.dir"
+            location="${modules.dir}/tests"/>
+      <property name="aspectj.modules.lib.dir"
+            location="${modules.dir}/lib"/>
+      <property name="junitModules.output.dir"
+            location="${tests.module.dir}/bin/junitXmlOutput" />
+      <mkdir dir="${junitModules.output.dir}"/>
+    </target>
+
+    <target name="clean" depends="init">
+      <delete dir="${junitModules.output.dir}"/>
+    </target>
+    
+
+    <target name="jdepend" depends="init"
+     description="run jdepend">
+	  <jdepend format="xml">
+	    <sourcespath>
+	        <pathelement location="${tests.module.dir}/../testing/src" />
+	    </sourcespath>
+	    <classpath>
+	        <pathelement location="${tests.module.dir}/../bin" />
+	    </classpath>
+      </jdepend>
+    </target>
+
+    <target name="redirect-test-all" depends="init"
+     description="run from another Ant process to redirect output">
+      <antcall target="clean"/>
+      <mkdir dir="${junitModules.output.dir}"/>
+      <ant dir="${basedir}" 
+       antfile="junitModules.xml"
+        target="run-test-all" 
+    inheritAll="false"
+        output="${junitModules.output.dir}/output.txt"/>
+      <echo message="View log in ${junitModules.output.dir}/output.txt"/>
+      <property name="fileUrl"
+            location="${junitModules.output.dir}/html/index.html"/>
+      <echo message="View results in file:${fileUrl}"/>
+    </target>
+
+    <target name="test-all" depends="init"
+     description="run all module tests (except IDE integrations)">
+      <!-- not running bridgeImpl, compiler, netbeans, jbuilder tests -->
+     
+      <mkdir dir="${junitModules.output.dir}"/>
+      <delete dir="${junitModules.output.dir}"/>
+      <mkdir dir="${junitModules.output.dir}"/>
+ 
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="ajbrowser"/>
+      </antcall>
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="ajde"/>
+      </antcall>
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="asm"/>
+      </antcall>
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="weaver"/>
+      </antcall>
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="bridge"/>
+      </antcall>
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="build"/>
+      </antcall>
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="org.aspectj.ajdt.core"/>
+      </antcall>
+      <!-- no JUnit testsrc in org.eclipse.jdt.core -->
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="testing"/>
+      </antcall>
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="runtime"/>
+      </antcall>
+
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="taskdefs"/>
+      </antcall>
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="testing"/>
+      </antcall>
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="testing-client"/>
+      </antcall>
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="testing-drivers"/>
+      </antcall>
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="testing-util"/>
+      </antcall>
+      <antcall target="run-module-junit-tests">
+         <param name="moduleName" value="util"/>
+      </antcall>   
+
+      <antcall target="report-tests"/>
+
+    </target>
+
+    <target name="init-taskdefs" depends="init"
+     description="define junit taskdefs" >    
+        <property name="aj.taskdef.package"
+                  value="org.aspectj.internal.tools.ant.taskdefs"/>
+
+        <taskdef name="junit"             
+            classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+            <classpath>
+              <pathelement location="${aspectj.modules.lib.dir}/ant/xlib/optional.jar" />
+              <pathelement location="${aspectj.modules.lib.dir}/junit/junit.jar" />
+            </classpath>
+        </taskdef>
+        <taskdef name="junitreport"             
+            classname="org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator">
+            <classpath>
+              <pathelement location="${aspectj.modules.lib.dir}/ant/xlib/optional.jar" />
+              <pathelement location="${aspectj.modules.lib.dir}/junit/junit.jar" />
+            </classpath>
+        </taskdef>
+
+    </target>
+
+    <target name="run-module-junit-tests" depends="init-taskdefs" 
+     description="run all junit tests for a module">
+      <mkdir dir="${junitModules.output.dir}/${moduleName}"/>
+      <!-- fork to load classes, include AntRuntime to get taskdef classes junit.jar -->
+      <echo message="Starting ${moduleName} tests..."/>
+      <junit fork="on" includeAntRuntime="on" dir="${modules.dir}/${moduleName}"
+           printsummary="yes" haltonfailure="${haltOnTestFailure}" >
+        <classpath>
+          <pathelement location="${modules.dir}/ajde/bin" />
+          <pathelement location="${modules.dir}/ajbrowser/bin" />
+          <pathelement location="${modules.dir}/asm/bin" />
+          <pathelement location="${modules.dir}/bridge/bin" />
+          <pathelement location="${modules.dir}/build/bin" />
+          <pathelement location="${modules.dir}/org.aspectj.ajdt.core/bin" />
+          <pathelement location="${modules.dir}/org.eclipse.jdt.core/bin" />
+          <pathelement location="${modules.dir}/runtime/bin" />
+          <pathelement location="${modules.dir}/taskdefs/bin" />
+          <pathelement location="${modules.dir}/testing/bin" />
+          <pathelement location="${modules.dir}/testing-client/bin" />
+          <pathelement location="${modules.dir}/testing-drivers/bin" />
+          <pathelement location="${modules.dir}/testing-util/bin" />
+          <pathelement location="${modules.dir}/util/bin" />
+          <pathelement location="${modules.dir}/weaver/bin" />
+          <pathelement location="${aspectj.modules.lib.dir}/eclipse2.0/jdtDepends.jar" />
+          <pathelement location="${aspectj.modules.lib.dir}/bcel/bcel.jar" />
+          <pathelement location="${aspectj.modules.lib.dir}/jdiff/jdiff.jar" />
+          <pathelement location="${aspectj.modules.lib.dir}/commons/commons.jar" />
+          <pathelement location="${aspectj.modules.lib.dir}/ant/lib/ant.jar" />
+          <pathelement location="${aspectj.modules.lib.dir}/ant/lib/xml-apis.jar" />
+          <pathelement location="${aspectj.modules.lib.dir}/ant/lib/xercesImpl.jar" />
+          <pathelement location="${aspectj.modules.lib.dir}/test/aspectjrt.jar" />
+        </classpath>
+
+        <formatter type="xml"/>
+
+        <batchtest todir="${junitModules.output.dir}/${moduleName}">
+          <formatter type="xml"/>
+          <fileset dir="${modules.dir}/${moduleName}/testsrc">
+            <include name="*ModuleTests.java" />
+          </fileset>
+        </batchtest>        
+      </junit>        
+    </target>
+
+    <target name="report-tests" depends="init-taskdefs">
+      <mkdir dir="${junitModules.output.dir}/html"/>
+      <junitreport todir="${junitModules.output.dir}/html"
+                  tofile="results.html">
+        <fileset dir="${junitModules.output.dir}/">
+          <include name="**/TEST-*.xml"/>
+        </fileset>
+        <report format="frames" 
+                 todir="${junitModules.output.dir}/html"/>
+      </junitreport>     
+      <property name="fileUrl"
+            location="${junitModules.output.dir}/html/index.html"/>
+      <echo message="View results in file:${fileUrl}"/>
+    </target>
+</project>
