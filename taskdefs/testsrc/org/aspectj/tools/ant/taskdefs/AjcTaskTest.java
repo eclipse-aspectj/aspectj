@@ -131,18 +131,19 @@ public class AjcTaskTest extends TestCase {
 
     public void testNoSuchFileList() {
         AjcTask task = getTask("testdata/NoSuchFile.lst");
-        runTest(task, NO_EXCEPTION, IMessageHolderChecker.ONE_ERROR);
+        runTest(task, NO_EXCEPTION, IMessageHolderChecker.ONE_ERROR_ONE_ABORT);
     }
 
     // ---------------------------------------- sourcefile
-    public void testDefaultFile() {
-        AjcTask task = getTask("testdata/Default.java");
-        runTest(task, NO_EXCEPTION, IMessageHolderChecker.INFOS);
-    }
+    // XXX need to figure out how to specify files directly programmatically
+//    public void testDefaultFile() {
+//        AjcTask task = getTask("testdata/Default.java");
+//        runTest(task, NO_EXCEPTION, IMessageHolderChecker.INFOS);
+//    }
 
     public void testNoFile() {
         AjcTask task = getTask(NOFILE);
-        runTest(task, NO_EXCEPTION, IMessageHolderChecker.ONE_ERROR);
+        runTest(task, NO_EXCEPTION, IMessageHolderChecker.ONE_ERROR_ONE_ABORT);
     }
     
 // -------- comment-disabled tests
@@ -237,6 +238,8 @@ public class AjcTaskTest extends TestCase {
         /** one error, any number of info messages */
         static IMessageHolderChecker ONE_ERROR= 
             new IMessageHolderChecker(0,0,1,0,IGNORE);
+        static IMessageHolderChecker ONE_ERROR_ONE_ABORT = 
+            new IMessageHolderChecker(1,0,1,0,IGNORE);
         /** one warning, any number of info messages */
         static IMessageHolderChecker ONE_WARNING = 
             new IMessageHolderChecker(0,0,0,1,IGNORE);
@@ -270,9 +273,9 @@ public class AjcTaskTest extends TestCase {
             	int actual = holder.numMessages(kind, false);
             	if (num != actual) {
             		if (actual > 0) {
-	            		MessageUtil.print(System.err, holder, "expected " + num + " got " + actual);
+	            		MessageUtil.print(System.err, holder, kind + " expected " + num + " got " + actual);
             		}
-	                assertEquals(num, actual);
+	                assertEquals(kind.toString(), num, actual);
             	}
             }
         }
