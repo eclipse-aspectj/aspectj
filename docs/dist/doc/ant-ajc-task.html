@@ -104,7 +104,7 @@ array and may include another argfile by reference.
     This uses the Ant process for matching .java files
     and is not compatible with incremental mode.
     Unless using filters to limit the sources included,
-    use <code>sourceroots</code> instead.
+    use <code>sourceroots</code> instead.    
 </td>
 <td ALIGN=CENTER VALIGN=TOP>No</td>
 </tr>
@@ -205,6 +205,30 @@ Conflicts with <code>destdir</code>.
 <tr>
 <th colspan="3">Specifying compiler behavior</th>
 </tr>
+
+<tr> 
+  <td VALIGN=TOP>fork</td>
+  <td VALIGN=TOP>run process in another VM
+    (usually to specify memory or avoid locking any
+     jar files used on the classpath).
+     When set, this requires aspectjtools.jar be on the 
+     system/Ant classpath, and only uses the aspectjtools.jar
+     to invoke the compiler (so nothing else on the 
+     system/Ant classpath is included implicitly in 
+     the compiler/user classpath).
+     Defaults to <tt>false</tt>.
+      </td>
+   <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr> 
+  <td VALIGN=TOP>maxmem</td>
+  <td VALIGN=TOP>The maximum memory to use for the new VM
+      when fork is true.  Values should have the same form
+      as accepted by the VM, e.g., "128m".
+      </td>
+   <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
 
 <tr>
   <td VALIGN=TOP>incremental</td>
