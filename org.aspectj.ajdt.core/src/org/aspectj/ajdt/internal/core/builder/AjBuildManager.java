@@ -444,9 +444,10 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
      * Responsible for managing the ASM model between builds.  Contains the policy for
      * maintaining the persistance of elements in the model.
      * 
-     * TODO: implement incremental policy.
      */
      private void setupModel(AjBuildConfig config) {
+     	AsmManager.setCreatingModel(config.isEmacsSymMode() || config.isGenerateModelMode());
+     	if (!AsmManager.isCreatingModel()) return;
 		IHierarchy model = AsmManager.getDefault().getHierarchy();
         	String rootLabel = "<root>";
         	
