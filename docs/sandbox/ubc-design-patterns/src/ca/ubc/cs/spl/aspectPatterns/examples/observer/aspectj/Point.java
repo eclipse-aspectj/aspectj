@@ -29,7 +29,7 @@ import java.awt.Color;
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
- * @version 1.1, 02/13/04
+ * @version 1.11, 04/01/04
  */
   
 public class Point {
@@ -68,7 +68,9 @@ public class Point {
      * @return the current x-coordinate
      */
 
-    public int getX() { return x; }
+    public int getX() { 
+    	return x; 
+    }
 
     /**
      * Returns the point's current y-coordinate.
@@ -76,7 +78,9 @@ public class Point {
      * @return the current y-coordinate
      */
 
-    public int getY() { return y; }
+    public int getY() { 
+    	return y; 
+    }
     
     /**
      * Sets the current x-coordinate.
@@ -84,7 +88,9 @@ public class Point {
      * @param x the new x-coordinate
      */
 
-    public void setX(int x) { this.x=x; }
+    public void setX(int x) { 
+    	this.x = x; 
+    }
 
     /**
      * Sets the current y-coordinate.
@@ -92,7 +98,9 @@ public class Point {
      * @param y the new y-coordinate
      */
 
-    public void setY(int y) { this.y=y; }
+    public void setY(int y) { 
+    	this.y = y;
+    }
 
     /**
      * Returns the point's current color.
@@ -100,7 +108,9 @@ public class Point {
      * @return the current color
      */
 
-    public Color getColor() { return color; }
+    public Color getColor() { 
+    	return color; 
+    }
 
     /**
      * Sets the current color.
@@ -108,5 +118,7 @@ public class Point {
      * @param color the new color
      */
 
-    public void setColor(Color color) { this.color=color; }
+    public void setColor(Color color) { 
+    	this.color=color; 
+    }
 }

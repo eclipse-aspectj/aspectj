@@ -75,12 +75,7 @@ import java.awt.Color;
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
- * @version 1.1, 02/13/04
- *
- * @see Point
- * @see Adaptee
- * @see Observer
- * @see Subject
+ * @version 1.11, 04/01/04
  */
  
 public class Main {               
@@ -119,14 +114,14 @@ public class Main {
         System.out.println("- s3 and s4 observe coordinate changes to p");
         System.out.println("- s5 observes s2's and s4's display() method");
  
-    	p.attach(s1); 
-    	p.attach(s2);
+    	p.addObserver(s1); 
+    	p.addObserver(s2);
     	
-    	p.attach(s3); 
-    	p.attach(s4);
+    	p.addObserver(s3); 
+    	p.addObserver(s4);
             	
-        s2.attach(s5);
-        s4.attach(s5);
+        s2.addObserver(s5);
+        s4.addObserver(s5);
         
         System.out.println("Changing p's color:");    	
 

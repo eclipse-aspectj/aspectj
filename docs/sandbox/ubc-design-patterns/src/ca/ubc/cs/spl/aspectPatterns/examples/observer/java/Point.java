@@ -31,7 +31,7 @@ import java.util.Iterator;
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
- * @version 1.1, 02/13/04
+ * @version 1.11, 04/01/04
  */
  
 public class Point implements ChangeSubject { 
@@ -65,8 +65,8 @@ public class Point implements ChangeSubject {
      */
     
     public Point(int x, int y, Color color) {
-    	this.x=x;
-	    this.y=y;
+    	this.x = x;
+	    this.y = y;
     	this.color=color; 
     	this.observers = new HashSet();
     }
@@ -77,7 +77,9 @@ public class Point implements ChangeSubject {
      * @return the current x-coordinate
      */
 
-    public int getX() { return x; }
+    public int getX() { 
+    	return x; 
+    }
 
     /**
      * Returns the point's current y-coordinate.
@@ -85,7 +87,9 @@ public class Point implements ChangeSubject {
      * @return the current y-coordinate
      */
 
-    public int getY() { return y; }
+    public int getY() { 
+    	return y; 
+    }
     
     /**
      * Sets the current x-coordinate.
@@ -94,7 +98,7 @@ public class Point implements ChangeSubject {
      */
 
     public void setX(int x) { 
-        this.x=x; 
+        this.x = x; 
         notifyObservers();
     }
 
@@ -105,7 +109,7 @@ public class Point implements ChangeSubject {
      */
 
     public void setY(int y) { 
-        this.y=y; 
+        this.y = y; 
         notifyObservers();
     }
 
@@ -124,7 +128,7 @@ public class Point implements ChangeSubject {
      */
 
     public void setColor(Color color) { 
-        this.color=color; 
+        this.color = color; 
         notifyObservers();
     }      
     
@@ -135,7 +139,7 @@ public class Point implements ChangeSubject {
 	 * @param o the <i>Observer</i> to attach
 	 */
      
-    public void attach(ChangeObserver o) {
+    public void addObserver(ChangeObserver o) {
         this.observers.add(o);
     }
     
@@ -145,7 +149,7 @@ public class Point implements ChangeSubject {
 	 * @param o the <i>Observer</i> to detach
 	 */
      
-    public void detach(ChangeObserver o) {
+    public void removeObserver(ChangeObserver o) {
         this.observers.remove(o);
     }
     
@@ -155,7 +159,7 @@ public class Point implements ChangeSubject {
    
     public void notifyObservers() {
         for (Iterator e = observers.iterator() ; e.hasNext() ;) {
-            ((ChangeObserver)e.next()).update(this);
+            ((ChangeObserver)e.next()).refresh(this);
         }
     }
 }

@@ -30,7 +30,7 @@ import ca.ubc.cs.spl.aspectPatterns.patternLibrary.ObserverProtocol;
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
- * @version 1.1, 02/13/04
+ * @version 1.11, 04/01/04
  */
 
 public aspect CoordinateObserver extends ObserverProtocol{

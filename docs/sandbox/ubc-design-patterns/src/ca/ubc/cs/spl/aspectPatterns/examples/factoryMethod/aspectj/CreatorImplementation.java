@@ -34,6 +34,7 @@ import java.awt.Point;
  * method <code>showFrame()</code>. The implementation is attached to the 
  * <code>GUIComponentCreator</code> interface. With this approach, 
  * <i>GUIComponentCreator</i> does not have to be an abstract class.
+ * 
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales

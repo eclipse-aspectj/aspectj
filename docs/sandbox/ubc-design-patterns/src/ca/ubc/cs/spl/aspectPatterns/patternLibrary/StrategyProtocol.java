@@ -32,7 +32,7 @@ import java.util.Hashtable;
  * given <i>Context</i>. 
  * 
  * It is also possible (although not shown here) to provide abstract 
- * pointcust for setting or removing <i>Strategy</i>s from 
+ * pointcuts for setting or removing <i>Strategy</i>s from 
  * <i>Context</>s. This would allow <i>Client</i> implementations 
  * to be free of pattern code. For an example of how to do that, 
  * see the implementation of the abstract CommandProtocol aspect. 

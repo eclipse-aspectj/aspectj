@@ -31,7 +31,7 @@ import java.util.Iterator;
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
- * @version 1.1, 02/13/04
+ * @version 1.11, 04/01/04
  */
   
 public class Screen implements ChangeSubject, ChangeObserver {
@@ -79,7 +79,7 @@ public class Screen implements ChangeSubject, ChangeObserver {
 	 * @param o the <i>Observer</i> to attach
 	 */
 
-    public void attach(ChangeObserver o) {
+    public void addObserver(ChangeObserver o) {
         this.observers.add(o);
     }
     
@@ -89,7 +89,7 @@ public class Screen implements ChangeSubject, ChangeObserver {
 	 * @param o the <i>Observer</i> to detach
 	 */
 
-    public void detach(ChangeObserver o) {
+    public void removeObserver(ChangeObserver o) {
         this.observers.remove(o);
     }
     
@@ -99,7 +99,7 @@ public class Screen implements ChangeSubject, ChangeObserver {
    
     public void notifyObservers() {
         for (Iterator e = observers.iterator() ; e.hasNext() ;) {
-            ((ChangeObserver)e.next()).update(this);
+            ((ChangeObserver)e.next()).refresh(this);
         }
     }
 
@@ -113,7 +113,7 @@ public class Screen implements ChangeSubject, ChangeObserver {
 	 * @param s the <i>Subject</i> triggering the update
 	 */
 
-    public void update(ChangeSubject s) { 
+    public void refresh(ChangeSubject s) { 
     	String subjectTypeName = s.getClass().getName();
     	subjectTypeName = subjectTypeName.substring(
     		subjectTypeName.lastIndexOf(".")+1, subjectTypeName.length());

@@ -59,10 +59,12 @@ package ca.ubc.cs.spl.aspectPatterns.examples.adapter.aspectj;
 public class Main { 
 	
     /**
-     * the Adaptee in the scenario
+     * the Adaptee in the scenario. Note that our adaptee can be used as a 
+     * Writer because of the <code>declare parents</code> statement in the 
+     * aspect.
      */
      	
-	private static SystemOutPrinter adaptee; 
+	private static Writer adaptee; 
 
 	/**
 	 * Implements the driver. 

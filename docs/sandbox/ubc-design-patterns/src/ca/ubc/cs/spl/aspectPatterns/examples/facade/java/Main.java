@@ -39,13 +39,15 @@ package ca.ubc.cs.spl.aspectPatterns.examples.facade.java;
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
- * @version 1.1, 02/11/04
+ * @version 1.11, 04/29/04
  */
  
 public class Main {
     
     /**
      * Tests the higher-level interface of <code>OutputFacade</code>.
+     * 
+     * @param args Command-line parameters, ignored here
      */  
      
     public static void main(String[] args) {

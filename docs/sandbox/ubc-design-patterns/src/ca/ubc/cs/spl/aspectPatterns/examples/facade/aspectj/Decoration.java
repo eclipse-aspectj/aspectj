@@ -1,4 +1,4 @@
-package ca.ubc.cs.spl.aspectPatterns.examples.observer.aspectj;
+package ca.ubc.cs.spl.aspectPatterns.examples.facade.aspectj;
 
 /* -*- Mode: Java; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
  *
@@ -21,43 +21,24 @@ package ca.ubc.cs.spl.aspectPatterns.examples.observer.aspectj;
  *
  * Contributor(s):   
  */
- 
-/** 
- * Provides a means to output messages. Objects of this class act as
- * output devices. 
+
+/**
+ * Implements a static method that returns a decorator string.
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
- * @version 1.11, 04/01/04
+ * @version 1.11, 03/29/04
  */
-  
-public class Screen {
-    
-    /**
-     * the individual name of this screen object
-     */
+ 
+public class Decoration {
 
-    private String name;
-    
     /**
-     * creates a new <code>Screen</code> object with the provided name.
+     * Provides a decorator string consisting of stars ("*").
      *
-     * @param name the name for the new <code>Screen</code> object 
+     * @returns a decorator string made up of stars 
      */
-    
-    public Screen(String s) {
-        this.name = s;
-    }
 
-
-    /**
-     * Prints the name of the <code>Screen</code> object and the argument 
-     * string to stdout.
-     *
-     * @param s the string to print
-     */
-     
-    public void display (String s) {
-	    System.out.println(name + ": " + s);
+    public static String getDecoration() {
+        return "*******************************************";
     }
 }

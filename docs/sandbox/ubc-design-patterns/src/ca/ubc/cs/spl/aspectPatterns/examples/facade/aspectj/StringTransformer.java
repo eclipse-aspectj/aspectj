@@ -1,4 +1,4 @@
-package ca.ubc.cs.spl.aspectPatterns.examples.observer.aspectj;
+package ca.ubc.cs.spl.aspectPatterns.examples.facade.aspectj;
 
 /* -*- Mode: Java; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
  *
@@ -21,43 +21,36 @@ package ca.ubc.cs.spl.aspectPatterns.examples.observer.aspectj;
  *
  * Contributor(s):   
  */
- 
-/** 
- * Provides a means to output messages. Objects of this class act as
- * output devices. 
+
+/**
+ * Implements basic string manipulation facilities.
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
- * @version 1.11, 04/01/04
+ * @version 1.11, 03/29/04
  */
-  
-public class Screen {
-    
+ 
+public class StringTransformer {
+
     /**
-     * the individual name of this screen object
+     * Transforms a string to upper case
+     *
+     * @param s the string to transform
+     * @returns the transformed string
      */
 
-    private String name;
-    
-    /**
-     * creates a new <code>Screen</code> object with the provided name.
-     *
-     * @param name the name for the new <code>Screen</code> object 
-     */
-    
-    public Screen(String s) {
-        this.name = s;
+    public static String transformToUpper(String s) {
+        return s.toUpperCase();
     }
-
-
+                        
     /**
-     * Prints the name of the <code>Screen</code> object and the argument 
-     * string to stdout.
+     * Transforms a string to lower case
      *
-     * @param s the string to print
+     * @param s the string to transform
+     * @returns the transformed string
      */
-     
-    public void display (String s) {
-	    System.out.println(name + ": " + s);
+
+    public static String transformToLower(String s) {
+        return s.toLowerCase();
     }
 }

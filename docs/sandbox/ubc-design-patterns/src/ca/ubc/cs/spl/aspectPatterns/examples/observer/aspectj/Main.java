@@ -50,7 +50,7 @@ import java.awt.Color;
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
- * @version 1.1, 02/13/04
+ * @version 1.11, 04/01/04
  */
   
 public class Main {               

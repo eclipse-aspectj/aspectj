@@ -1,4 +1,4 @@
-package ca.ubc.cs.spl.aspectPatterns.examples.observer.aspectj;
+package ca.ubc.cs.spl.aspectPatterns.examples.facade.aspectj;
 
 /* -*- Mode: Java; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
  *
@@ -21,43 +21,32 @@ package ca.ubc.cs.spl.aspectPatterns.examples.observer.aspectj;
  *
  * Contributor(s):   
  */
- 
-/** 
- * Provides a means to output messages. Objects of this class act as
- * output devices. 
+
+/**
+ * Implements a low-level interface for printing to System.out.
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
- * @version 1.11, 04/01/04
+ * @version 1.11, 03/29/04
  */
-  
-public class Screen {
-    
+ 
+public class RegularScreen {
+
     /**
-     * the individual name of this screen object
+     * Prints a string to System.out.
+     *
+     * @param s the string to print 
      */
 
-    private String name;
-    
-    /**
-     * creates a new <code>Screen</code> object with the provided name.
-     *
-     * @param name the name for the new <code>Screen</code> object 
-     */
-    
-    public Screen(String s) {
-        this.name = s;
+    public static void print(String s) {
+        System.out.print(s);
     }
-
-
+                        
     /**
-     * Prints the name of the <code>Screen</code> object and the argument 
-     * string to stdout.
-     *
-     * @param s the string to print
+     * Prints a newline to System.out.
      */
-     
-    public void display (String s) {
-	    System.out.println(name + ": " + s);
+
+    public static void newline() {
+        System.out.println();
     }
 }

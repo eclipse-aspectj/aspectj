@@ -27,7 +27,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.observer.java;
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
- * @version 1.1, 02/13/04
+ * @version 1.11, 04/01/04
  */
   
 public interface ChangeObserver {
@@ -39,5 +39,5 @@ public interface ChangeObserver {
      * @param s the <i>Subject</i> triggering the update
      */
      
-    public void update(ChangeSubject s);
+    public void refresh(ChangeSubject s);
 }
