@@ -116,6 +116,12 @@
   	Finally, note that one cannot define static fields or methods 
   	on interfaces.
   </para>
+  <para>
+	When declaring methods on target types, only methods declared 
+	public are recognizable in the bytecode, so methods must be 
+	declared public to be overridden in any subtype or to be called 
+	from code in a later compile using the target type as a library.
+  </para>
   
   <para>
     Other AspectJ implementations, indeed, future versions of ajc, may
