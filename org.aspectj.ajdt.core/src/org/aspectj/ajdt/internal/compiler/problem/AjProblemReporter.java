@@ -32,6 +32,7 @@ import org.eclipse.jdt.internal.compiler.ast.AstNode;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
@@ -71,6 +72,13 @@ public class AjProblemReporter extends ProblemReporter {
 			
 			for (Iterator i = world.getWorld().getDeclareSoft().iterator(); i.hasNext(); ) {
 				DeclareSoft d = (DeclareSoft)i.next();
+				// We need the exceptionType to match the type in the declare soft statement
+				// This means it must either be the same type or a subtype
+				ResolvedTypeX throwException = world.fromEclipse((ReferenceBinding)exceptionType);
+				FuzzyBoolean isExceptionTypeOrSubtype = 
+					d.getException().matchesInstanceof(throwException);
+				if (!isExceptionTypeOrSubtype.alwaysTrue() ) continue;
+
 				if (callSite != null) {
 					FuzzyBoolean match = d.getPointcut().match(callSite);
 					if (match.alwaysTrue()) {

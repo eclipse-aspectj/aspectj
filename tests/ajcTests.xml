@@ -6821,5 +6821,18 @@
         	<message kind="error" line="20" text="incompatible type"/>
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs" pr="49250"
+      title="alias getCause for getWrappedThrowable in SoftException">
+        <compile files="GetCauseOnSoftException.java" options="-Xlint:warning">
+        </compile>
+        <run vm="1.3" class="GetCauseOnSoftException"/>
+    </ajc-test>
 
+    <ajc-test dir="bugs" pr="48522"
+      title="Declare soft softening other exception types">
+        <compile files="SofteningTooMuch.java">
+ 	        <message kind="error" line="6" text="Unhandled exception"/>
+        </compile>
+    </ajc-test>
 </suite>
