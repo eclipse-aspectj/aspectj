@@ -68,15 +68,19 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
     | |             IFEQ L0
     | |             ALOAD 4
     | |             CHECKCAST java.util.ArrayList
-    | |             BIPUSH 2
+    | |             BIPUSH 3
     | |             ANEWARRAY java.lang.Object
     | |             ASTORE 5
     | |             ALOAD 5
     | |             BIPUSH 0
-    | |             ALOAD 4
+    | |             ALOAD_0
     | |             AASTORE
     | |             ALOAD 5
     | |             BIPUSH 1
+    | |             ALOAD 4
+    | |             AASTORE
+    | |             ALOAD 5
+    | |             BIPUSH 2
     | |             ALOAD_3
     | |             AASTORE
     | |             NEW DynamicHelloWorld$AjcClosure1
@@ -85,9 +89,10 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
     | |             INVOKESPECIAL DynamicHelloWorld$AjcClosure1.<init> ([Ljava/lang/Object;)V
     | |             INVOKESTATIC Aspect.ajc_around0 (Ljava/util/ArrayList;Lorg/aspectj/runtime/internal/AroundClosure;)Z
     | |             GOTO L1
-    | |         L0: ALOAD 4
+    | |         L0: ALOAD_0
+    | |             ALOAD 4
     | |             ALOAD_3
-    | |             INVOKESTATIC DynamicHelloWorld.add_aroundBody0 (Ljava/util/List;Ljava/lang/Object;)Z
+    | |             INVOKESTATIC DynamicHelloWorld.add_aroundBody0 (LDynamicHelloWorld;Ljava/util/List;Ljava/lang/Object;)Z
     | |         L1: NOP
     | method-call(boolean java.util.List.add(java.lang.Object))
     |               POP
@@ -99,12 +104,12 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
     method-execution(java.lang.String DynamicHelloWorld.doit(java.lang.String, java.util.List))
   end String doit(String, java.util.List)
 
-  static final boolean add_aroundBody0(java.util.List, Object):
-                    ALOAD_0
+  static final boolean add_aroundBody0(DynamicHelloWorld, java.util.List, Object):
                     ALOAD_1
+                    ALOAD_2
                     INVOKEINTERFACE java.util.List.add (Ljava/lang/Object;)Z   (line 21)
                     IRETURN
-  end static final boolean add_aroundBody0(java.util.List, Object)
+  end static final boolean add_aroundBody0(DynamicHelloWorld, java.util.List, Object)
 end public class DynamicHelloWorld
 
 public class DynamicHelloWorld$AjcClosure1 extends org.aspectj.runtime.internal.AroundClosure:
@@ -119,14 +124,18 @@ public class DynamicHelloWorld$AjcClosure1 extends org.aspectj.runtime.internal.
                     ALOAD_0
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST DynamicHelloWorld
                     ALOAD_1
                     BIPUSH 0
                     AALOAD
                     CHECKCAST java.util.List
                     ALOAD_2
-                    BIPUSH 1
+                    BIPUSH 2
                     AALOAD
-                    INVOKESTATIC DynamicHelloWorld.add_aroundBody0 (Ljava/util/List;Ljava/lang/Object;)Z
+                    INVOKESTATIC DynamicHelloWorld.add_aroundBody0 (LDynamicHelloWorld;Ljava/util/List;Ljava/lang/Object;)Z
                     INVOKESTATIC org.aspectj.runtime.internal.Conversions.booleanObject (Z)Ljava/lang/Object;
                     ARETURN
   end public Object run(Object[])

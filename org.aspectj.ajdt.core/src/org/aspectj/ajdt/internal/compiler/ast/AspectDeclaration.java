@@ -59,7 +59,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 	}
 	
 	public void resolve() {
-		if (binding == null || ignoreFurtherInvestigation) {
+		if (binding == null) {
 			ignoreFurtherInvestigation = true;
 			return;
 		}

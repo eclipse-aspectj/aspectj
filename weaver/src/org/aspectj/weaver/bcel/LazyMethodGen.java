@@ -700,8 +700,11 @@ public final class LazyMethodGen {
                 if (r instanceof ExceptionRange) {
                     ExceptionRange er = (ExceptionRange) r;
                     if (er.getStart() == ih) {
-                        // order is important, insert handlers in order of start
-                        insertHandler(er, exnList);
+                    	//System.err.println("er " + er);
+                    	if (!er.isEmpty()){
+                        	// order is important, insert handlers in order of start
+                        	insertHandler(er, exnList);
+                    	}
                     }
                 } else {
                     // we must be a shadow range or something equally useless, 

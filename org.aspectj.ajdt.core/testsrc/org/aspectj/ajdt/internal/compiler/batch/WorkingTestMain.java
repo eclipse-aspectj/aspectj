@@ -35,6 +35,7 @@ public class WorkingTestMain {
 		List args = new ArrayList();
 		args.add("-verbose");
 		
+		//args.add("-1.3");
 		args.add("-d");
 		args.add("out");
 		
@@ -48,8 +49,8 @@ public class WorkingTestMain {
 		//args.add("-aspectpath");
 		//args.add("../weaver/testdata/megatrace.jar");
 		
-		//args.add("testdata/src1/AroundA1.java");
-		args.add("../tests/new/StrictFPAdvice.java");
+		args.add("testdata/src1/AroundA1.java");
+		//args.add("../tests/new/AroundInnerCalls.java");
 		//args.add("-Xlint:error");
 		//args.add("testdata/src1/InterType.java");
 		//args.add("@" + examplesDir + "tjp/files.lst");
@@ -58,11 +59,12 @@ public class WorkingTestMain {
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 		//CommandTestCase.runCompiler(args, new int[] {11, 14, 18, 32, 43});
 		
-		CommandTestCase.printGenerated("../out", "StrictFPAdvice");
-		CommandTestCase.printGenerated("../out", "A");
+//		CommandTestCase.printGenerated("../out", "AdviceOnInheritedMethod");
+//		CommandTestCase.printGenerated("../out", "SuperC");
+//		CommandTestCase.printGenerated("../out", "SubC");
 
 		//TestUtil.runMain("out;../bcweaver/testdata/megatrace.jar", "Privileged");
-		TestUtil.runMain("out;../lib/test/testing-client.jar", "StrictFPAdvice");
+		//TestUtil.runMain("out;../lib/test/testing-client.jar", "AroundInnerCalls");
 	}
 	
 	private static String examplesDir = "c:/aspectj/examples/";

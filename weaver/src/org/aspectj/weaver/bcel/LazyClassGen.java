@@ -318,6 +318,25 @@ public final class LazyClassGen {
         return clinit;
     }
     
+    public LazyMethodGen getAjcClinit() {
+        for (Iterator i = methodGens.iterator(); i.hasNext();) {
+            LazyMethodGen gen = (LazyMethodGen) i.next();
+			if (gen.getName().equals(NameMangler.AJC_CLINIT_NAME)) return gen;
+        } 
+        throw new RuntimeException("unimplemented");
+//        LazyMethodGen clinit = new LazyMethodGen(
+//        	Modifier.STATIC,
+//        	Type.VOID,
+//        	"<clinit>",
+//        	new Type[0],
+//        	CollectionUtil.NO_STRINGS,
+//        	this);
+//       	clinit.getBody().insert(getFactory().RETURN);
+//        methodGens.add(clinit);
+//        return clinit;
+    }
+    
+    
     
     // reflective thisJoinPoint support
     Map/*BcelShadow, Field*/ tjpFields = new HashMap();

@@ -23,20 +23,9 @@ import junit.framework.TestCase;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.weaver.*;
 
-/**
- * @author hugunin
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
- */
 public class BindingTestCase extends TestCase {
 
-	/**
-	 * Constructor for ParserTestCase.
-	 * @param arg0
-	 */
+
 	public BindingTestCase(String arg0) {
 		super(arg0);
 	}
@@ -58,8 +47,12 @@ public class BindingTestCase extends TestCase {
 		checkBindings("this(*)", none);
 		checkBindings("this(a)", a);
 		
-		checkBindings("args(.., a,..,b)", all);
-		checkBindings("args(a,..,b, ..)", all);
+		try {checkBindings("args(.., a,..,b)", all);
+			//checkBindings("args(a,..,b, ..)", all);
+			fail("shouldn't be implemented yet");
+		} catch (AbortException ae) {
+			// not implemented yet
+		}
 		
 		checkBindings("args(a,..,b)", all);
 		checkBindings("args(b)", b);

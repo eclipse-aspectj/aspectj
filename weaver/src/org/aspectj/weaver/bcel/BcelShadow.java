@@ -309,6 +309,13 @@ public class BcelShadow extends Shadow {
             LazyMethodGen enclosingMethod) 
     {
         InstructionList body = enclosingMethod.getBody();
+        InstructionHandle ih = body.getStart();
+        if (ih.getInstruction() instanceof InvokeInstruction) {
+        	InvokeInstruction ii = (InvokeInstruction)ih.getInstruction();
+        	if (ii.getName(enclosingMethod.getEnclosingClass().getConstantPoolGen()).equals(NameMangler.AJC_CLINIT_NAME)) {
+        		ih = ih.getNext();
+        	}
+        }
         BcelShadow s =
             new BcelShadow(
                 world,
@@ -319,7 +326,7 @@ public class BcelShadow extends Shadow {
         ShadowRange r = new ShadowRange(body);
         r.associateWithShadow(s);
         r.associateWithTargets(
-            Range.genStart(body),
+            Range.genStart(body, ih),
             Range.genEnd(body));
         return s;
     }
@@ -654,7 +661,7 @@ public class BcelShadow extends Shadow {
         //???return TypeX.forName(getEnclosingClass().getClassName());      
     }
 
-    public boolean hasRealTarget() {
+    public boolean isTargetDifferentFromThis() {
         return hasTarget() && isExpressionKind();
     }
 
@@ -690,9 +697,9 @@ public class BcelShadow extends Shadow {
         if (!hasTarget()) {
             throw new IllegalStateException("no target");
         }
-        initializeTargetVar();
-        return targetVar;
-    }
+	    initializeTargetVar();
+	    return targetVar;
+        }
     public Var getArgVar(int i) {
         initializeArgVars();
         return argVars[i];
@@ -700,8 +707,8 @@ public class BcelShadow extends Shadow {
 
     // reflective thisJoinPoint support
     private BcelVar thisJoinPointVar = null;
-    private BcelVar thisJoinPointStaticPartVar = null;  //XXX should be field
-    private BcelVar thisEnclosingJoinPointStaticPartVar = null;  //XXX should be field
+    private BcelVar thisJoinPointStaticPartVar = null;  
+    private BcelVar thisEnclosingJoinPointStaticPartVar = null;  
     
 	public final Var getThisJoinPointVar() {
 		return getThisJoinPointBcelVar();
@@ -800,6 +807,7 @@ public class BcelShadow extends Shadow {
     private void initializeThisVar() {
         if (thisVar != null) return;
         thisVar = new BcelVar(getThisType().resolve(world), 0);
+        thisVar.setPositionInAroundState(0);
     }
     public void initializeTargetVar() {
     	InstructionFactory fact = getFactory();    	
@@ -812,14 +820,15 @@ public class BcelShadow extends Shadow {
             TypeX type = getTargetType();
             targetVar = genTempVar(type, "ajc$target");
             range.insert(targetVar.createStore(fact), Range.OutsideBefore); 
+	        targetVar.setPositionInAroundState(hasThis() ? 1 : 0);            
         }
-        targetVar.setPositionInAroundState(0);
     }
     public void initializeArgVars() {
         if (argVars != null) return;
     	InstructionFactory fact = getFactory();
         int len = getArgCount();
         argVars = new BcelVar[len];
+        int positionOffset = (hasTarget() ? 0 : 1) + (hasThis() ? 0 : 1);
                      
         if (getKind().argsOnStack()) {
             // we move backwards because we're popping off the stack
@@ -828,20 +837,21 @@ public class BcelShadow extends Shadow {
                 BcelVar tmp = genTempVar(type, "ajc$arg" + i);
                 range.insert(tmp.createStore(getFactory()), Range.OutsideBefore);
                 int position = i;
-                if (hasTarget()) position += 1;
+                if (hasTarget()) position += positionOffset;
                 tmp.setPositionInAroundState(position);
                 argVars[i] = tmp;
             }
         } else {
             int index = 0;
             if (hasThis()) index++;
+            
             for (int i = 0; i < len; i++) {
                 TypeX type = getArgType(i); 
                 BcelVar tmp = genTempVar(type, "ajc$arg" + i);
                 range.insert(tmp.createCopyFrom(fact, index), Range.OutsideBefore);
                 argVars[i] = tmp;
                 int position = i;
-                if (hasTarget()) position += 1;
+                if (hasTarget()) position += positionOffset;
                 tmp.setPositionInAroundState(position);
                 index += type.getSize();
             }       
@@ -850,6 +860,7 @@ public class BcelShadow extends Shadow {
     public void initializeForAroundClosure() {
         initializeArgVars();
         if (hasTarget()) initializeTargetVar();
+        if (hasThis()) initializeThisVar();
     }
 
             
@@ -925,6 +936,10 @@ public class BcelShadow extends Shadow {
     }
     
     public void weaveAfterThrowing(BcelAdvice munger, TypeX catchType) {
+    	// a good optimization would be not to generate anything here
+    	// if the shadow is GUARANTEED empty (i.e., there's NOTHING, not even
+    	// a shadow, inside me).
+    	if (getRange().getStart().getNext() == getRange().getEnd()) return;
         InstructionFactory fact = getFactory();        
         InstructionList handler = new InstructionList();        
         BcelVar exceptionVar = genTempVar(catchType);
@@ -1352,14 +1367,21 @@ public class BcelShadow extends Shadow {
         }
     }
     
-    // XXX only used for testing
+    // exposed for testing
     InstructionList makeCallToCallback(LazyMethodGen callbackMethod) {
     	InstructionFactory fact = getFactory();
         InstructionList callback = new InstructionList();
-        if (targetVar != null) {
+        if (thisVar != null) {
+        	callback.append(fact.ALOAD_0); 
+        }
+        if (targetVar != null && targetVar != thisVar) {
             callback.append(BcelRenderer.renderExpr(fact, world, targetVar));
         }
         callback.append(BcelRenderer.renderExprs(fact, world, argVars));
+        // remember to render tjps
+        if (thisJoinPointVar != null) {
+        	callback.append(BcelRenderer.renderExpr(fact, world, thisJoinPointVar));
+        }
         callback.append(Utility.createInvoke(fact, callbackMethod));
         return callback;
     }
@@ -1372,13 +1394,20 @@ public class BcelShadow extends Shadow {
         BcelVar arrayVar = genTempVar(TypeX.OBJECTARRAY);
         //final Type objectArrayType = new ArrayType(Type.OBJECT, 1);
         final InstructionList il = new InstructionList();
-        int alen = getArgCount() + (targetVar == null ? 0 : 1) + (thisJoinPointVar == null ? 0 : 1);
+        int alen = getArgCount() + (thisVar == null ? 0 : 1) + 
+        			((targetVar != null && targetVar != thisVar) ? 1 : 0) + 
+        			(thisJoinPointVar == null ? 0 : 1);
         il.append(Utility.createConstant(fact, alen));
         il.append((Instruction)fact.createNewArray(Type.OBJECT, (short)1));
         arrayVar.appendStore(il, fact);
 
         int stateIndex = 0;     
-        if (targetVar != null) {
+        if (thisVar != null) {
+            arrayVar.appendConvertableArrayStore(il, fact, stateIndex, thisVar);
+			thisVar.setPositionInAroundState(stateIndex);
+            stateIndex++;
+        }       	
+        if (targetVar != null && targetVar != thisVar) {
             arrayVar.appendConvertableArrayStore(il, fact, stateIndex, targetVar);
 			targetVar.setPositionInAroundState(stateIndex);
             stateIndex++;
@@ -1599,7 +1628,10 @@ public class BcelShadow extends Shadow {
     private IntMap makeRemap() {
         IntMap ret = new IntMap(5);
         int reti = 0;
-        if (targetVar != null) {
+		if (thisVar != null) {
+			ret.put(0, reti++);  // thisVar guaranteed to be 0
+		}
+        if (targetVar != null && targetVar != thisVar) {
             ret.put(targetVar.getSlot(), reti++);
         }            
         for (int i = 0, len = argVars.length; i < len; i++) {
@@ -1613,21 +1645,28 @@ public class BcelShadow extends Shadow {
         // aliases, which we so helpfully put into temps at the beginning of this join 
         // point.
         if (! getKind().argsOnStack()) {
-		    int index = 0;
-	        if (hasThis()) { ret.put(0, 0); index++; }
+        	int oldi = 0;
+        	int newi = 0;
+        	// if we're passing in a this and we're not argsOnStack we're always 
+        	// passing in a target too
+	        if (hasThis()) { ret.put(0, 0); oldi++; newi+=1; }
+	        //assert targetVar == thisVar
 	        for (int i = 0; i < getArgCount(); i++) {
 	            TypeX type = getArgType(i); 
-				ret.put(index, index);
-	            index += type.getSize();
+				ret.put(oldi, newi);
+	            oldi += type.getSize();
+	            newi += type.getSize();
 	        }   
         }      
         return ret;
     }
 
     /**
-     * The new method is nonStatic iff we're from nonExpression advice
-     * with an enclosing non-static method.
-     * Otherwise, it's static
+     * The new method always static.
+     * It may take some extra arguments:  this, target.
+     * If it's argsOnStack, then it must take both this/target
+     * If it's argsOnFrame, it shares this and target.
+     * ??? rewrite this to do less array munging, please
      */
     private LazyMethodGen createMethodGen(String newMethodName) {
         Type[] parameterTypes = world.makeBcelTypes(getSignature().getParameterTypes());
@@ -1638,9 +1677,22 @@ public class BcelShadow extends Shadow {
 //            modifiers |= Modifier.STRICT;
 //        }
         modifiers |= Modifier.STATIC;
-        if (hasTarget()) {
+        if (targetVar != null && targetVar != thisVar) {
             TypeX targetType = getTargetType();
+            ResolvedMember resolvedMember = getSignature().resolve(world);
+            if (resolvedMember != null && Modifier.isProtected(resolvedMember.getModifiers()) && 
+            	!samePackage(targetType.getPackageName(), getThisType().getPackageName()))
+            {
+            	if (!targetType.isAssignableFrom(getThisType(), world)) {
+            		throw new BCException("bad bytecode");
+            	}
+            	targetType = getThisType();
+            }
             parameterTypes = addType(world.makeBcelType(targetType), parameterTypes);
+        }
+        if (thisVar != null) {
+        	TypeX thisType = getThisType();
+        	parameterTypes = addType(world.makeBcelType(thisType), parameterTypes);
         }
         
         // We always want to pass down thisJoinPoint in case we have already woven
@@ -1669,6 +1721,13 @@ public class BcelShadow extends Shadow {
 //                TypeX.getNames(getSignature().getExceptions(world)),
                 getEnclosingClass());
     }
+
+	private boolean samePackage(String p1, String p2) {
+		if (p1 == null) return p2 == null;
+		if (p2 == null) return false;
+		return p1.equals(p2);
+	}
+
    
     private Type[] addType(Type type, Type[] types) {
         int len = types.length;

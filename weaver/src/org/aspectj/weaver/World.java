@@ -144,7 +144,9 @@ public abstract class World {
     }
 
     protected int getModifiers(Member member) {
-        return resolve(member).getModifiers();
+    	ResolvedMember r = resolve(member);
+    	if (r == null) throw new BCException("bad resolve of " + member);
+        return r.getModifiers();
     }
 
     protected String[] getParameterNames(Member member) {

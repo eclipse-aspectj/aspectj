@@ -50,7 +50,9 @@ abstract class Range implements InstructionTargeter {
 
     boolean isEmpty() {
         InstructionHandle ih = start;
+        //System.err.println("  looking for " + end);
         while (ih != end) {
+        	//System.err.println("    ih " + ih);
             if (! Range.isRangeHandle(ih)) return false;
             ih = ih.getNext();
         }

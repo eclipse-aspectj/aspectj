@@ -36,7 +36,7 @@ public class BcelCflowStackFieldAdder extends BcelTypeMunger {
     		gen.getConstantPoolGen()).getField();
     	gen.addField(f);
 
-		LazyMethodGen clinit = gen.getStaticInitializer();
+		LazyMethodGen clinit = gen.getAjcClinit(); //StaticInitializer();
 		InstructionList setup = new InstructionList();
 		InstructionFactory fact = gen.getFactory();
 
