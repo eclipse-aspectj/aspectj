@@ -21,6 +21,7 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 import org.aspectj.bridge.IMessage;
+import org.aspectj.util.LangUtil;
 
 /**
  * @author  Mik Kersten
@@ -33,18 +34,30 @@ public class CompilerMessagesCellRenderer extends JLabel implements ListCellRend
 		int index,
 		boolean isSelected,
 		boolean cellHasFocus) {
-			if (value != null) {
-				setText(value.toString());
-			} else {
-				setText("");	
-			} 
-			IMessage.Kind kind = ((CompilerMessage)value).kind;
+            String label = "<no message>";
+            String detail = null;
+            IMessage.Kind kind = IMessage.INFO;
+            if (value instanceof CompilerMessage) {
+                CompilerMessage cm = (CompilerMessage) value;
+                label = cm.message.getMessage();
+                if (LangUtil.isEmpty(label)) {
+                    label = cm.message.toString();
+                }
+                kind = cm.message.getKind();
+                Throwable thrown = cm.message.getThrown();
+                if (null != thrown) {
+                    detail = LangUtil.renderException(thrown);
+                }
+            } else if (null != value) {
+                label = value.toString();
+            }
+			setText(label);
 			if (kind.equals(IMessage.WARNING)) {
 				setIcon(AjdeUIManager.getDefault().getIconRegistry().getWarningIcon());
-			} else if (kind.equals(IMessage.INFO)) {
-				setIcon(null);
+			} else if (IMessage.ERROR.isSameOrLessThan(kind)) {
+                setIcon(AjdeUIManager.getDefault().getIconRegistry().getErrorIcon());
 			} else {
-				setIcon(AjdeUIManager.getDefault().getIconRegistry().getErrorIcon());
+                setIcon(null);
 			}
 			if (isSelected) {
 				setBackground(list.getSelectionBackground());
@@ -56,6 +69,9 @@ public class CompilerMessagesCellRenderer extends JLabel implements ListCellRend
 			setEnabled(list.isEnabled());
 			setFont(list.getFont());
 			setOpaque(true);
+            if (null != detail) {
+                setToolTipText(detail);
+            }
 			return this;
 	}
 }
