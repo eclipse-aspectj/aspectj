@@ -14,9 +14,6 @@
 
 package org.aspectj.bridge;
 
-import java.util.*;
-
-
 
 /**
  * Command wrapper with collecting parameter for messages.
