@@ -4,7 +4,119 @@
 <!-- contains valid tests that the compiler has never passed -->
 <suite>
 
+	<!-- expected messages the same for these tests. note:
+	     - that pointcut-and not supported in message text TODO 
+	     - no test on adviceexecution()
+	     - only verifying by line number now
+	       (not flagging error in filename.  Binary filenames are 
+	        listed as, e.g., app.Main.class.  
+	        Should get from filename attribute)
+	  -->
+    <ajc-test dir="new/binaryWarnings/src" pr="37020"
+   	 title="declare warnings on main">
+        <compile files="aspects/MainWarnings.java,app/Main.java">
+        	<message kind="warning" file="app/Main.java"
+        	  line="6" text="set(String Main.staticString)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="8" text="set(String Main.s)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="12" text="get(String Main.staticString)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="14" text="set(String Main.staticString)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="16" text="call(Main.new())"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="19" text="call(void Main.go(String))"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="23" text="execution(Main.new())"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="26" text="execution(void Main.go(String))"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="29" text="get(String Main.s)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="31" text="set(String Main.s)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="33" text="handler(RuntimeException)"/>        	  
+        	<message kind="warning" file="app/Main.java"
+        	  line="35" text="withincode(void Main.go(String))"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="42" text="withincode(void Main.stop())"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="50" text="preinitialization(app.C.new())"/>
+        </compile>
+        
+        <run class="app.Main"/>
+    </ajc-test>
 
+    <ajc-test dir="new/binaryWarnings/src"  pr="37020"
+   	title="declare warnings on binary javac 1.4 classes">
+        <compile files="aspects/MainWarnings.java,../injars/app-javac-1.4.jar">
+        	<message kind="warning" file="app/Main.java"
+        	  line="6" text="set(String Main.staticString)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="8" text="set(String Main.s)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="12" text="get(String Main.staticString)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="14" text="set(String Main.staticString)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="16" text="call(Main.new())"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="19" text="call(void Main.go(String))"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="23" text="execution(Main.new())"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="26" text="execution(void Main.go(String))"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="29" text="get(String Main.s)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="31" text="set(String Main.s)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="33" text="handler(RuntimeException)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="35" text="withincode(void Main.go(String))"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="42" text="withincode(void Main.stop())"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="50" text="preinitialization(app.C.new())"/>
+        </compile>
+        <run class="app.Main"/>
+    </ajc-test>
+   <ajc-test dir="new/binaryWarnings/src" pr="37023"
+   	title="declare warnings on binary ajc 1.1 classes">
+        <compile files="aspects/MainWarnings.java,../injars/app-ajc-1.1.jar">
+        	<message kind="warning" file="app/Main.java"
+        	  line="6" text="set(String Main.staticString)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="8" text="set(String Main.s)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="12" text="get(String Main.staticString)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="14" text="set(String Main.staticString)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="16" text="call(Main.new())"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="19" text="call(void Main.go(String))"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="23" text="execution(Main.new())"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="26" text="execution(void Main.go(String))"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="29" text="get(String Main.s)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="31" text="set(String Main.s)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="33" text="handler(RuntimeException)"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="35" text="withincode(void Main.go(String))"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="42" text="withincode(void Main.stop())"/>
+        	<message kind="warning" file="app/Main.java"
+        	  line="50" text="preinitialization(app.C.new())"/>
+        	  
+        </compile>
+        <run class="app.Main"/>
+    </ajc-test>
 
 
 </suite>
