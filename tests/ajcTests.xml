@@ -5418,7 +5418,7 @@
     
     <ajc-test dir="bugs" pr="28703" title="assert and pertarget crashes compiler">
         <compile files="EnsureOverriding.java" options="-1.4"/>
-        <run class="EnsureOverriding"/>
+        <run class="EnsureOverriding" vm="1.4"/>
     </ajc-test>
     
     <ajc-test dir="bugs" pr="28852"
