@@ -48,7 +48,9 @@ public class AsmRelationshipProvider {
 			foreward.getTargets().add(targetHandle);
 				
 			IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE, MATCHES_DECLARE);
-			back.getTargets().add(sourceHandle);  
+			if (back != null && back.getTargets() != null) {
+				back.getTargets().add(sourceHandle);   
+			}
 		}
 	}
 	
