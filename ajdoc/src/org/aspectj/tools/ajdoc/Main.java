@@ -554,8 +554,7 @@ public class Main implements Config {
                 // check if this is a file or a package
 //            	System.err.println(">>>>>>>> " + );
             	String entryName = arg.substring(arg.lastIndexOf(File.separator)+1);
-                if ((arg.endsWith(".java") && entryName.indexOf('.') == entryName.length()-5) 
-                	|| (arg.endsWith(".aj") && entryName.indexOf('.') == entryName.length()-3) 	
+                if (FileUtil.hasSourceSuffix(arg)
                 	|| arg.endsWith(".lst") 
 					&& arg != null ) {
                     File f = new File(arg);
