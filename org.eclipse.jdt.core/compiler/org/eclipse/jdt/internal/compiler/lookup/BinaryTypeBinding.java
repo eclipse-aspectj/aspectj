@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Palo Alto Research Center, Incorporated - AspectJ adaptation
  ******************************************************************************/
 package org.eclipse.jdt.internal.compiler.lookup;
 
@@ -28,15 +29,15 @@ Non-public fields have accessors which should be used everywhere you expect the 
 
 null is NOT a valid value for a non-public field... it just means the field is not initialized.
 */
-
-public final class BinaryTypeBinding extends ReferenceBinding {
+//XXX extending SourceTypeBinding is a HORRIBLE hack
+public final class BinaryTypeBinding extends SourceTypeBinding {
 	// all of these fields are ONLY guaranteed to be initialized if accessed using their public accessor method
-	private ReferenceBinding superclass;
+//	private ReferenceBinding superclass;
 	private ReferenceBinding enclosingType;
-	private ReferenceBinding[] superInterfaces;
-	private FieldBinding[] fields;
-	private MethodBinding[] methods;
-	private ReferenceBinding[] memberTypes;
+//	private ReferenceBinding[] superInterfaces;
+//	private FieldBinding[] fields;
+//	private MethodBinding[] methods;
+//	private ReferenceBinding[] memberTypes;
 
 	// For the link with the principle structure
 	private LookupEnvironment environment;
@@ -285,7 +286,7 @@ public MethodBinding getExactConstructor(TypeBinding[] argumentTypes) {
 // NOTE: the return type, arg & exception types of each method of a binary type are resolved when needed
 // searches up the hierarchy as long as no potential (but not exact) match was found.
 
-public MethodBinding getExactMethod(char[] selector, TypeBinding[] argumentTypes) {
+public MethodBinding getExactMethodBase(char[] selector, TypeBinding[] argumentTypes) {
 	int argCount = argumentTypes.length;
 	int selectorLength = selector.length;
 	boolean foundNothing = true;
@@ -316,7 +317,7 @@ public MethodBinding getExactMethod(char[] selector, TypeBinding[] argumentTypes
 }
 // NOTE: the type of a field of a binary type is resolved when needed
 
-public FieldBinding getField(char[] fieldName) {
+public FieldBinding getFieldBase(char[] fieldName) {
 	int fieldLength = fieldName.length;
 	for (int f = fields.length; --f >= 0;) {
 		char[] name = fields[f].name;
@@ -327,7 +328,7 @@ public FieldBinding getField(char[] fieldName) {
 }
 // NOTE: the return type, arg & exception types of each method of a binary type are resolved when needed
 
-public MethodBinding[] getMethods(char[] selector) {
+public MethodBinding[] getMethodsBase(char[] selector) {
 	int count = 0;
 	int lastIndex = -1;
 	int selectorLength = selector.length;
@@ -386,7 +387,7 @@ private FieldBinding resolveTypeFor(FieldBinding field) {
 	field.type = resolveType(field.type);
 	return field;
 }
-private MethodBinding resolveTypesFor(MethodBinding method) {
+public MethodBinding resolveTypesFor(MethodBinding method) {
 	if ((method.modifiers & AccUnresolved) == 0)
 		return method;
 
