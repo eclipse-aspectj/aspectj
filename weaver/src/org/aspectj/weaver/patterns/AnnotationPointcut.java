@@ -173,7 +173,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 			TypeX annotationType = btp.annotationType;
 			Var var = shadow.getKindedAnnotationVar(annotationType);
 			
-			// This should not happen, we shouldn't have gotten this var 
+			// This should not happen, we shouldn't have gotten this far 
 			// if we weren't going to find the annotation
 			if (var == null) throw new BCException("Impossible! annotation=["+annotationType+
 					                               "]  shadow=["+shadow+" at "+shadow.getSourceLocation()+
