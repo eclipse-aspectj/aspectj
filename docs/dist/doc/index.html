@@ -16,9 +16,6 @@
     code that runs in JDK 1.1 and later VM's. 
     For the latest materials, see
     <a href="http://eclipse.org/aspectj">http://eclipse.org/aspectj</a>.
-    <!--
-    especially the <a href="http://eclipse.org/aspectj/faq">FAQ</a>.
-    -->
 <p>
 
 <table>
@@ -28,11 +25,9 @@
        <a href="quick.pdf">Quick Reference</a>, 
        <a href="progguide/index.html">programming</a> and 
        <a href="devguide/index.html">development</a> guides, 
+       <a href="ant-tasks.html">ant task summary</a>, 
        <a href="api/overview-summary.html">API</a> and
-       <!-- start strip -->
-       (<a href="examples/">local</a>) 
-       <!-- end strip -->
-       examples
+       <a href="examples/">example code</a>.
     <tr><td><a href="#distributions">distributions</a></td><td>  
         <a href="http://eclipse.org/aspectj">AspectJ</a> itself
         and development environment support for 
@@ -45,7 +40,7 @@
     <tr><td><a href="#resources">resources</a></td><td>
        <a href="http://aosd.net">aosd.net</a>;
        <a href="http://eclipse.org/aspectj">AspectJ project</a>
-       the bug <a href="http://dev.eclipse.org">db</a>,
+       the bug <a href="http://dev.eclipse.org/bugs">db</a>,
        and mailing lists for 
        <a href="mailto:aspectj-users@eclipse.org">users</a> and
        <a href="mailto:aspectj-dev@eclipse.org">developers</a>.
@@ -61,7 +56,7 @@
 
 <tr> <td><a href="quick.pdf"> AspectJ Quick Reference</a>
        <!-- start strip -->
-<!--          (<a href="quick.pdf.org/aspectj/doc/dist/quick.pdf">web</a>) -->
+<!--          (<a href="http://eclipse.org/aspectj/doc/dist/quick.pdf">web</a>) -->
        <!-- end strip -->
      </td>
      <td>This is a two-page quick reference for the AspectJ language. 
@@ -101,15 +96,19 @@
        <!-- end strip -->
        )
      </td>
-     <td>Find here a guide to the command-line compiler <u><tt>ajc</tt></u> 
-     and API doc tool <u><tt>ajdoc</tt></u>, as well as
-     the <u>AspectJ Development Environment (AJDE)</u> for managing crosscutting
-     structure in JBuilder, Forte, Emacs, and the stand-alone <tt>ajbrowser</tt>.
-     (For using <tt>ajc</tt> and <tt>ajdoc</tt> in 
-     <a href="http://jakarta.apache.org/ant">Ant</a> builds,
-     see the <code>taskdefs</code> distribution.)
+     <td>Find here a guide to the command-line compiler 
+     <a href="devguide/rn01re01.html">ajc</a> 
+     and the <u>AspectJ Development Environment (AJDE)</u> 
+     for managing crosscutting structure, shown in the stand-alone 
+     <a href="devguide/rn01re02.html">AspectJ Browser</a>. 
      </td>
      </tr>
+
+<tr> <td><a href="ant-tasks.html">AspectJ Ant tasks</a> 
+     </td>
+     <td>This shows how to use the tasks included
+         in the <code>aspectjtools.jar</code>.
+     </td> </tr>
 
 <tr> <td><a href="api/overview-summary.html">AspectJ API</a> 
        <!-- start strip -->
@@ -166,15 +165,23 @@
      <td>The AspectJ distribution contains binaries for the
          compiler, structure browser, and Ant taskdefs,
          as well as the documentation and examples.
-         (Source code for AspectJ is available from the CVS
-         repositories for the AspectJ project.)
+         </td>
+     </tr>
+<tr> <td><a href="http://eclipse.org/aspectj">AspectJ</a> source code
+     </td>
+     <td>Source code for AspectJ is available 
+         under the open-source 
+         <a href="http://www.eclipse.org/legal/cpl-v10.html">CPL 1.0</a>
+         license from the CVS
+         repositories for the AspectJ project.  See the
+         <a href="faq.html#q:buildingsource">FAQ entry</a>.
          </td>
      </tr>
 
 <tr> <td><a href="http://eclipse.org/ajdt">AspectJ for Eclipse</a>
      </td>
      <td>AspectJ Development Environment support for
-         Eclipse is available under the Common Public License 1.0
+         Eclipse is available under CPL 1.0
          from the eclipse.org project site
          <a href="http://eclipse.org/ajdt">
                   http://eclipse.org/ajdt</a>
@@ -239,16 +246,29 @@
          (<tt>aspectj-announce@dev.eclipse.org</tt>) 
          to get occasional emails about AspectJ releases
          and relevant events.
+         Only those subscribed to the list may post to it.
+         Go to 
+         <a href="http://eclipse.org/aspectj">
+                 the AspectJ home page</a>
+         to view list archives or subscribe to the list.
 
-<tr> <td><a href="http://dev.eclipse.org">Bug database</a>
+<tr> <td><a href="http://dev.eclipse.org/bugs">Bug database</a>
      </td>
-     <td>Use Bugzilla to submit bugs against the AspectJ
-     product components 
-     <tt>compiler</tt> (for the ajc compiler)
-     <tt>ide</tt> (for AJBrowser and AJDE bugs),
-     <tt>ant</tt> (for Ant tasks)
+     <td>Use the Eclipse project's Bugzilla database
+     to view and submit bugs against the AspectJ product components
+     <a href="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler">
+         Compiler</a> (for the AspectJ compiler, ajc)
+     <a href="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=IDE">
+         IDE</a> (for AJBrowser and AJDE bugs),
+     <a href="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Ant">
+         Ant</a> (for the Ant tasks),
      and
-     <tt>docs</tt> (for the documentation).
+     <a href="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Docs">
+         Docs</a> (for the documentation).
+     See the 
+     <a href="faq.html#q:ajcbugs">
+     	FAQ entry</a> for instructions on submitting bugs.
+     
      </td> </tr>
 
 <tr> <td> <a href="http://aosd.net">http://aosd.net</a> - the AOSD web site
@@ -279,15 +299,13 @@
     <a href="progguide/index.html">Programming Guide</a>.
     View and navigate the crosscutting structure using 
     the <code>ajbrowser</code> structure viewer, as described in
-    the <a href="devguide/rn02re04.html">ajbrowser</a> section of
+    the <a href="devguide/rn01re02.html">AspectJ Browser</a> section of
     the <a href="devguide/index.html">Development Environment Guide</a>.
 <p>
     To start using AspectJ with your own code, 
     modify the example aspects to apply to your classes.
-    The <a href="devguide/index.html">Development Environment Guide</a>
-    shows how to build using the command-line tools. 
     As you learn,
-    use the compiler's <code>-Xlint</code> flag to catch some common 
+    use the compiler's <code>-Xlint</code> flags to catch some common 
     mistakes.  (Understand that the 
     <a href="progguide/apc.html">current implementation</a>
     is limited to code the compiler controls.)
