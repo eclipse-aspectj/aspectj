@@ -102,6 +102,7 @@ public final class LazyMethodGen {
      * only used by {@link BcelClassWeaver}
      */
     List /*ShadowMungers*/ matchedShadows;
+    List /*Test*/ matchedShadowTests;
     
     // Used for interface introduction
     // this is the type of the interface the method is technically on

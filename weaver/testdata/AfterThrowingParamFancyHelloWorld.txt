@@ -26,17 +26,13 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     | | catch java.lang.Exception -> E0
     | | |           ALOAD_1     // java.io.PrintStream out   (line 11)
     | | |           LDC "bye"
-    | | | method-call(void java.io.PrintStream.println(java.lang.String))
-    | | | |         INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
-    | | | method-call(void java.io.PrintStream.println(java.lang.String))
+    | | |           INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
     | | |           GOTO L1
     | | catch java.lang.Exception -> E0
     | |         E0: ASTORE_2   (line 12)
     | |             ALOAD_1     // java.io.PrintStream out   (line 13)
     | |             ALOAD_2     // java.lang.Exception e
-    | | method-call(void java.io.PrintStream.println(java.lang.Object))
-    | | |           INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/Object;)V
-    | | method-call(void java.io.PrintStream.println(java.lang.Object))
+    | |             INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/Object;)V
     | finally -> E1
     |               GOTO L1
     |           E1: ASTORE 4   (line 14)
@@ -48,9 +44,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |           L2: ASTORE_3
     |               ALOAD_1     // java.io.PrintStream out   (line 15)
     |               LDC "finally"
-    | method-call(void java.io.PrintStream.println(java.lang.String))
-    | |             INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
-    | method-call(void java.io.PrintStream.println(java.lang.String))
+    |               INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
     |               RET 3   (line 10)
     |           L3: RETURN   (line 17)
     method-execution(void FancyHelloWorld.main(java.lang.String[]))
@@ -62,24 +56,16 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               ISTORE_0
     |               ILOAD_0     // int x   (line 21)
     |               LDC "name"
-    | method-call(int java.lang.String.hashCode())
-    | |             INVOKEVIRTUAL java.lang.String.hashCode ()I
-    | method-call(int java.lang.String.hashCode())
+    |               INVOKEVIRTUAL java.lang.String.hashCode ()I
     |               IADD
     |               ISTORE_0     // int x
     |               NEW java.lang.StringBuffer   (line 22)
     |               DUP
     |               LDC "name"
-    | constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
-    | |             INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
-    | constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
+    |               INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
     |               ILOAD_0     // int x
-    | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(int))
-    | |             INVOKEVIRTUAL java.lang.StringBuffer.append (I)Ljava/lang/StringBuffer;
-    | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(int))
-    | method-call(java.lang.String java.lang.StringBuffer.toString())
-    | |             INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;
-    | method-call(java.lang.String java.lang.StringBuffer.toString())
+    |               INVOKEVIRTUAL java.lang.StringBuffer.append (I)Ljava/lang/StringBuffer;
+    |               INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;
     |               ARETURN
     method-execution(java.lang.String FancyHelloWorld.getName())
   end public static String getName()

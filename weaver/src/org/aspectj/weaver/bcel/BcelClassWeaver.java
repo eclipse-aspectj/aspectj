@@ -114,8 +114,6 @@ class BcelClassWeaver implements IClassWeaver {
     
     private BcelShadow clinitShadow = null;
     
-   
-    
     /**
      * This holds the initialization and pre-initialization shadows for this class
      * that were actually matched by mungers (if no match, then we don't even create the
@@ -148,22 +146,35 @@ class BcelClassWeaver implements IClassWeaver {
     private boolean canMatchBodyShadows = false;
     private boolean canMatchInitialization = false;
     private void fastMatchShadowMungers(List shadowMungers) {
-    	perKindShadowMungers = new List[Shadow.MAX_SHADOW_KIND+1];
-    	for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
-			Shadow.Kind kind = Shadow.SHADOW_KINDS[i];
+    	// beware the annoying property that SHADOW_KINDS[i].getKey == (i+1) !
+    	
+    	perKindShadowMungers = new List[Shadow.MAX_SHADOW_KIND + 1];
+    	for (int i = 0; i < perKindShadowMungers.length; i++) {
 			ArrayList mungers = new ArrayList(0);
-			perKindShadowMungers[kind.getKey()] = mungers;
-			fastMatchShadowMungers(shadowMungers, mungers, kind);
-			if (mungers.isEmpty()) {
-				perKindShadowMungers[kind.getKey()] = null;
-			} else {
-				if (kind == Shadow.Initialization) {
-					canMatchInitialization = true;
-				} else if (!kind.isEnclosingKind()) {
-					canMatchBodyShadows = true;
-				}
+			perKindShadowMungers[i] = new ArrayList(0);
+    	}
+    	for (Iterator iter = shadowMungers.iterator(); iter.hasNext();) {
+			ShadowMunger munger = (ShadowMunger) iter.next();
+			Set couldMatchKinds = munger.getPointcut().couldMatchKinds();
+			for (Iterator kindIterator = couldMatchKinds.iterator(); 
+			     kindIterator.hasNext();) {
+				Shadow.Kind aKind = (Shadow.Kind) kindIterator.next();
+				perKindShadowMungers[aKind.getKey()].add(munger);
 			}
 		}
+    	
+    	if (!perKindShadowMungers[Shadow.Initialization.getKey()].isEmpty())
+    		canMatchInitialization = true;
+    	
+    	for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
+			Shadow.Kind kind = Shadow.SHADOW_KINDS[i];
+			if (!kind.isEnclosingKind() && !perKindShadowMungers[i+1].isEmpty()) {
+				canMatchBodyShadows = true;
+			}
+			if (perKindShadowMungers[i+1].isEmpty()) {
+				perKindShadowMungers[i+1] = null;
+			}
+    	}
     }
     
     private boolean canMatch(Shadow.Kind kind) {
@@ -827,8 +838,10 @@ class BcelClassWeaver implements IClassWeaver {
 					match(mg, h, enclosingShadow, shadowAccumulator);
 				}
 			}
-			if (match(enclosingShadow, shadowAccumulator)) {
-				enclosingShadow.init();
+			if (canMatch(enclosingShadow.getKind())) {
+				if (match(enclosingShadow, shadowAccumulator)) {
+					enclosingShadow.init();
+				}
 			}
 			mg.matchedShadows = shadowAccumulator;
 			return !shadowAccumulator.isEmpty();
@@ -859,7 +872,8 @@ class BcelClassWeaver implements IClassWeaver {
 					match(mg, h, beforeSuperOrThisCall ? null : enclosingShadow, shadowAccumulator);
 				}
 			}
-			match(enclosingShadow, shadowAccumulator);
+			if (canMatch(Shadow.ConstructorExecution))
+				match(enclosingShadow, shadowAccumulator);
 		}
 		
 		// XXX we don't do pre-inits of interfaces
@@ -943,7 +957,9 @@ class BcelClassWeaver implements IClassWeaver {
 		List shadowAccumulator) 
 	{
 		Instruction i = ih.getInstruction();
-		if (i instanceof FieldInstruction) {
+		if ((i instanceof FieldInstruction) && 
+			(canMatch(Shadow.FieldGet) || canMatch(Shadow.FieldSet))
+		) {
 			FieldInstruction fi = (FieldInstruction) i;
 						
 			if (fi instanceof PUTFIELD || fi instanceof PUTSTATIC) {
@@ -962,20 +978,24 @@ class BcelClassWeaver implements IClassWeaver {
 						// it's final, so it's the set of a final constant, so it's
 						// not a join point according to 1.0.6 and 1.1.
 					} else {
-						matchSetInstruction(mg, ih, enclosingShadow, shadowAccumulator);
+						if (canMatch(Shadow.FieldSet))
+							matchSetInstruction(mg, ih, enclosingShadow, shadowAccumulator);
 					}						
 				} else {
-					matchSetInstruction(mg, ih, enclosingShadow, shadowAccumulator);
+					if (canMatch(Shadow.FieldSet))
+						matchSetInstruction(mg, ih, enclosingShadow, shadowAccumulator);
 				}
 			} else {
-				matchGetInstruction(mg, ih, enclosingShadow, shadowAccumulator);
+				if (canMatch(Shadow.FieldGet))
+					matchGetInstruction(mg, ih, enclosingShadow, shadowAccumulator);
 			}
 		} else if (i instanceof InvokeInstruction) {
 			InvokeInstruction ii = (InvokeInstruction) i;
 			if (ii.getMethodName(clazz.getConstantPoolGen()).equals("<init>")) {
-				match(
-					BcelShadow.makeConstructorCall(world, mg, ih, enclosingShadow),
-					shadowAccumulator);
+				if (canMatch(Shadow.ConstructorCall))
+					match(
+							BcelShadow.makeConstructorCall(world, mg, ih, enclosingShadow),
+							shadowAccumulator);
 			} else if (ii instanceof INVOKESPECIAL) {
 				String onTypeName = ii.getClassName(cpg);
 				if (onTypeName.equals(mg.getEnclosingClass().getName())) {
@@ -991,6 +1011,7 @@ class BcelClassWeaver implements IClassWeaver {
 		// performance optimization... we only actually care about ASTORE instructions, 
 		// since that's what every javac type thing ever uses to start a handler, but for
 		// now we'll do this for everybody.
+		if (!canMatch(Shadow.ExceptionHandler)) return;
 		if (Range.isRangeHandle(ih)) return;
 		InstructionTargeter[] targeters = ih.getTargeters();
 		if (targeters != null) {
@@ -1099,23 +1120,26 @@ class BcelClassWeaver implements IClassWeaver {
 					kind = Shadow.FieldGet;
 				}
 				
-				match(BcelShadow.makeShadowForMethodCall(world, mg, ih, enclosingShadow,
-						kind, declaredSig),
-					shadowAccumulator);
+				if (canMatch(Shadow.FieldGet) || canMatch(Shadow.FieldSet))
+					match(BcelShadow.makeShadowForMethodCall(world, mg, ih, enclosingShadow,
+							kind, declaredSig),
+							shadowAccumulator);
 			} else {
 				AjAttribute.EffectiveSignatureAttribute effectiveSig =
 					declaredSig.getEffectiveSignature();
 				if (effectiveSig == null) return;
 				//System.err.println("call to inter-type member: " + effectiveSig);
 				if (effectiveSig.isWeaveBody()) return;
-				match(BcelShadow.makeShadowForMethodCall(world, mg, ih, enclosingShadow,
-						effectiveSig.getShadowKind(), effectiveSig.getEffectiveSignature()),
-					shadowAccumulator);
+				if (canMatch(effectiveSig.getShadowKind()))
+					match(BcelShadow.makeShadowForMethodCall(world, mg, ih, enclosingShadow,
+							effectiveSig.getShadowKind(), effectiveSig.getEffectiveSignature()),
+							shadowAccumulator);
 			}
 		} else {
-			match(
-				BcelShadow.makeMethodCall(world, mg, ih, enclosingShadow),
-				shadowAccumulator);
+			if (canMatch(Shadow.MethodCall))
+				match(
+						BcelShadow.makeMethodCall(world, mg, ih, enclosingShadow),
+						shadowAccumulator);
 		}
 	}
 	

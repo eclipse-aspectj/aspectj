@@ -19,9 +19,7 @@ public class HelloWorld extends java.lang.Object:
     | | |       L0: GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 8)
     | | field-get(java.io.PrintStream java.lang.System.out)
     | |             LDC "hello world"   (line 9)
-    | | method-call(void java.io.PrintStream.println(java.lang.String))
-    | | |           INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
-    | | method-call(void java.io.PrintStream.println(java.lang.String))
+    | |             INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
     | |             GOTO L1   (line 11)
     | catch java.lang.Throwable -> E0
     |           E0: ASTORE_2

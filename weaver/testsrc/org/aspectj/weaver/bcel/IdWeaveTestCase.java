@@ -40,7 +40,7 @@ public class IdWeaveTestCase extends WeaveTestCase {
 	            	return false;
 	            }
 	        };
-        weaveTest(new String[] {"FancyHelloWorld"}, "Id", p);
+        weaveTest(new String[] {"FancyHelloWorld"}, "Id2", p);
         
         checkShadowSet(l, new String[] {
             "method-call(void java.io.PrintStream.println(java.lang.Object))",
@@ -57,6 +57,7 @@ public class IdWeaveTestCase extends WeaveTestCase {
         });
     }   
 
+
     public void testId() throws IOException {
         final List l = new ArrayList();
         BcelAdvice p = new BcelAdvice(null, makePointcutAll(), null, 0, -1, -1, null, null) {
@@ -64,7 +65,7 @@ public class IdWeaveTestCase extends WeaveTestCase {
                 l.add(shadow);
             }
         };
-        weaveTest(new String[] {"HelloWorld"}, "Id", p);
+        weaveTest(new String[] {"HelloWorld"}, "Id2", p);
         
         checkShadowSet(l, new String[] {
             "method-execution(void HelloWorld.main(java.lang.String[]))",

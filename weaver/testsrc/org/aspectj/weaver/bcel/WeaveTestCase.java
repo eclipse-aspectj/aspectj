@@ -104,6 +104,7 @@ public abstract class WeaveTestCase extends TestCase {
                 TestUtil.runMain(makeClassPath(outDirPath), name);
 			}
 		} catch (Error e) {
+			System.err.println("Comparing to " + outName + ".txt");
 			gen.print(System.err);
 			throw e;
 		} catch (RuntimeException e) {

@@ -9,9 +9,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
 
   public static void main(String[]):
     method-execution(void FancyHelloWorld.main(java.lang.String[]))
-    | field-get(java.io.PrintStream java.lang.System.out)
-    | |             GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 9)
-    | field-get(java.io.PrintStream java.lang.System.out)
+    |               GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 9)
     |               ASTORE_1
     | finally -> E1
     | | catch java.lang.Exception -> E0
@@ -61,9 +59,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               NEW java.lang.StringBuffer   (line 22)
     |               DUP
     |               LDC "name"
-    | constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
-    | |             INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
-    | constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
+    |               INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
     |               ILOAD_0     // int x
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(int))
     | |             INVOKEVIRTUAL java.lang.StringBuffer.append (I)Ljava/lang/StringBuffer;
@@ -74,4 +70,5 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               ARETURN
     method-execution(java.lang.String FancyHelloWorld.getName())
   end public static String getName()
+
 end public abstract class FancyHelloWorld

@@ -30,14 +30,10 @@ public class MultiArgHelloWorld extends java.lang.Object:
 
   static void foo(Object, Object):
     method-execution(void MultiArgHelloWorld.foo(java.lang.Object, java.lang.Object))
-    | field-get(java.io.PrintStream java.lang.System.out)
-    | |             GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 10)
-    | field-get(java.io.PrintStream java.lang.System.out)
+    |               GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 10)
     |               NEW java.lang.StringBuffer
     |               DUP
-    | constructor-call(void java.lang.StringBuffer.<init>())
-    | |             INVOKESPECIAL java.lang.StringBuffer.<init> ()V
-    | constructor-call(void java.lang.StringBuffer.<init>())
+    |               INVOKESPECIAL java.lang.StringBuffer.<init> ()V
     |               ALOAD_0     // java.lang.Object s
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))
     | |             INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/Object;)Ljava/lang/StringBuffer;
@@ -46,7 +42,7 @@ public class MultiArgHelloWorld extends java.lang.Object:
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.String))
     | |             INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/String;)Ljava/lang/StringBuffer;
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.String))
-    |               ALOAD_1     // java.lang.Object arg1
+    |               ALOAD_1     // java.lang.Object t
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))
     | |             INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/Object;)Ljava/lang/StringBuffer;
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))

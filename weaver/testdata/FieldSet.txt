@@ -3,9 +3,7 @@ public class FieldyHelloWorld extends java.lang.Object:
   static void <clinit>():
     staticinitialization(void FieldyHelloWorld.<clinit>())
     |               LDC "Hello"   (line 3)
-    | field-set(java.lang.String FieldyHelloWorld.str)
-    | |             PUTSTATIC FieldyHelloWorld.str Ljava/lang/String;
-    | field-set(java.lang.String FieldyHelloWorld.str)
+    |               PUTSTATIC FieldyHelloWorld.str Ljava/lang/String;
     |               RETURN   (line 1)
     staticinitialization(void FieldyHelloWorld.<clinit>())
   end static void <clinit>()
@@ -47,9 +45,7 @@ public class FieldyHelloWorld extends java.lang.Object:
     | |             INVOKESTATIC Aspect.ajc_before_method_call ()V
     | |             INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;
     | method-call(java.lang.String java.lang.StringBuffer.toString())
-    | field-set(java.lang.String FieldyHelloWorld.str)
-    | |             PUTSTATIC FieldyHelloWorld.str Ljava/lang/String;
-    | field-set(java.lang.String FieldyHelloWorld.str)
+    |               PUTSTATIC FieldyHelloWorld.str Ljava/lang/String;
     | field-get(java.io.PrintStream java.lang.System.out)
     | |             INVOKESTATIC Aspect.ajc_before_field_get ()V
     | |             GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 8)

@@ -12,9 +12,7 @@ public class HelloWorld extends java.lang.Object:
                     ASTORE_3
     method-execution(void HelloWorld.main(java.lang.String[]))
     | catch java.lang.Throwable -> E1
-    | | field-get(java.io.PrintStream java.lang.System.out)
-    | | |           GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 8)
-    | | field-get(java.io.PrintStream java.lang.System.out)
+    | |             GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 8)
     | |             LDC "hello world"   (line 9)
     | |             ASTORE_1
     | | method-call(void java.io.PrintStream.println(java.lang.String))
@@ -39,4 +37,5 @@ public class HelloWorld extends java.lang.Object:
     |               ATHROW
     method-execution(void HelloWorld.main(java.lang.String[]))
   end public static void main(String[])
+
 end public class HelloWorld
