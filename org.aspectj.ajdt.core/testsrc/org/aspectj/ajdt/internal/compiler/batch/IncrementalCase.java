@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
-import java.util.Enumeration;
+//import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -49,7 +49,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 	public static void main(String[] args) throws IOException {
     	IncrementalCase me = new IncrementalCase();
 		MessageHandler h = new MessageHandler();
-		boolean result;
+//		boolean result;
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < args.length; i++) {
 			sb.append("\n###### results for " + args[i]);
@@ -99,7 +99,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 		boolean result = true;
 
 		final String toSuffix = ".java";
-		final String canonicalFrom = srcBase.getCanonicalPath();
+//		final String canonicalFrom = srcBase.getCanonicalPath();
 		final Definition[] defs = getDefinitions(srcBase);
 		if ((null == defs) || (defs.length < 9)) {
 			throw new Error("did not get definitions");
@@ -439,7 +439,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 		String[] eclipseErrors;
 		String[] eclipseWarnings;
 		Definition(String prefix, Properties props) {
-			Enumeration keys = props.keys();
+//			Enumeration keys = props.keys();
 			this.prefix = prefix;
 			files = get(props, prefix + ".files");
 			recompiled = get(props, prefix + ".recompiled");

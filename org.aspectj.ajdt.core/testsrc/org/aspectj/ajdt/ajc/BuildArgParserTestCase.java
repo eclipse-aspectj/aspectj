@@ -49,7 +49,7 @@ public class BuildArgParserTestCase extends TestCase {
             System.setProperty("java.class.path", ENTRY); // see finally below
             BuildArgParser parser = new BuildArgParser(messageWriter);
     		AjBuildConfig config = parser.genBuildConfig(new String[] { });
-            String err = parser.getOtherMessages(true);       
+            /*String err = */parser.getOtherMessages(true);       
             //!!!assertTrue(err, null == err);
             assertTrue(
     			config.getClasspath().toString(),
@@ -71,7 +71,7 @@ public class BuildArgParserTestCase extends TestCase {
     
 			parser = new BuildArgParser(messageWriter);
     		config = parser.genBuildConfig(new String[] { "-1.3" });
-            err = parser.getOtherMessages(true);       
+            /*err = */parser.getOtherMessages(true);       
             //!!!assertTrue(err, null == err);
     		assertTrue(
     			config.getClasspath().toString(),
@@ -157,7 +157,7 @@ public class BuildArgParserTestCase extends TestCase {
 
 	public void testBadPathToSourceFiles() {
 		CountingMessageHandler countingHandler = new CountingMessageHandler(messageWriter);
-		AjBuildConfig config = genBuildConfig(new String[]{ "inventedDir/doesntexist/*.java"},countingHandler);
+		/*AjBuildConfig config = */genBuildConfig(new String[]{ "inventedDir/doesntexist/*.java"},countingHandler);
 		assertTrue("Expected an error for the invalid path.",countingHandler.numMessages(IMessage.ERROR,false)==1);	
 	}
 
@@ -368,7 +368,7 @@ public class BuildArgParserTestCase extends TestCase {
 	}
 
 	public void testXlint() throws InvalidInputException {
-		AjdtCommand command = new AjdtCommand();
+//		AjdtCommand command = new AjdtCommand();
 		AjBuildConfig config = genBuildConfig(new String[] {"-Xlint"}, messageWriter);
 		assertTrue("", config.getLintMode().equals(AjBuildConfig.AJLINT_DEFAULT));
 		config = genBuildConfig(new String[] {"-Xlint:warn"}, messageWriter);
@@ -381,14 +381,14 @@ public class BuildArgParserTestCase extends TestCase {
 
 	public void testXlintfile() throws InvalidInputException {
 		String lintFile = AjdtAjcTests.TESTDATA_PATH + "/lintspec.properties"; 
-		String badLintFile = "lint.props";
+//		String badLintFile = "lint.props";
 		AjBuildConfig config = genBuildConfig(new String[] {"-Xlintfile", lintFile}, messageWriter);
 		assertTrue(new File(lintFile).exists());
 		assertEquals(getCanonicalPath(new File(lintFile)),config.getLintSpecFile().getAbsolutePath());	
 	}
 
 	public void testOptions() throws InvalidInputException {
-		AjdtCommand command = new AjdtCommand();
+//		AjdtCommand command = new AjdtCommand();
 		String TARGET = "1.4";
 		AjBuildConfig config = genBuildConfig(new String[] {"-target", TARGET, "-source", TARGET}, messageWriter);
 		assertTrue(
@@ -404,7 +404,7 @@ public class BuildArgParserTestCase extends TestCase {
 		String SOURCE_PATH_1 = "A.java";
 		String SOURCE_PATH_2 = "B.java";
 
-        File f = new File(FILE_PATH);
+//        File f = new File(FILE_PATH);
 		
 		AjBuildConfig config = genBuildConfig(new String[] { "@" + FILE_PATH }, messageWriter);
 		List resultList = config.getFiles();

@@ -13,7 +13,7 @@
 package org.aspectj.ajdt.internal.core.builder;
 
 import java.io.File;
-import java.io.FileOutputStream;
+//import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -352,11 +352,11 @@ public class AjBuildManagerTest extends TestCase {
 //		}
 //	}
 
-	private void touch(File file, boolean isAppend) throws IOException {
-		FileOutputStream s = new FileOutputStream(file.getAbsolutePath(), isAppend);
-		s.write(new byte[] {1,2,3});
-		s.close();
-	}
+//	private void touch(File file, boolean isAppend) throws IOException {
+//		FileOutputStream s = new FileOutputStream(file.getAbsolutePath(), isAppend);
+//		s.write(new byte[] {1,2,3});
+//		s.close();
+//	}
 
 
 	/*

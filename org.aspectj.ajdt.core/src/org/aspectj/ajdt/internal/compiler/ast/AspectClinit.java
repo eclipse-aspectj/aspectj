@@ -55,7 +55,7 @@ public class AspectClinit extends Clinit {
 
 			codeStream.invokestatic(world.makeMethodBindingForCall(
 				AjcMemberMaker.ajcPreClinitMethod(
-					world.fromBinding(classScope.referenceContext.binding)
+					EclipseFactory.fromBinding(classScope.referenceContext.binding)
 				)));
 		}
 		super.generateSyntheticCode(classScope, codeStream);
@@ -71,7 +71,7 @@ public class AspectClinit extends Clinit {
 
 			codeStream.invokestatic(world.makeMethodBindingForCall(
 				AjcMemberMaker.ajcPostClinitMethod(
-					world.fromBinding(classScope.referenceContext.binding)
+					EclipseFactory.fromBinding(classScope.referenceContext.binding)
 				)));
 		}
 		

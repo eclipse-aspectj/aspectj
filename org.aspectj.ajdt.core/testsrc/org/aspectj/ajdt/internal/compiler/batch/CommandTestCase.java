@@ -83,7 +83,7 @@ public abstract class CommandTestCase extends TestCase {
 
 	public void rerunCompiler(ICommand command) {
 		MessageHandler myHandler = new MessageHandler();
-		List recompiledFiles = new ArrayList();
+//		List recompiledFiles = new ArrayList();
 	    if (!command.repeatCommand(myHandler)) {
             assertTrue("recompile failed", false);
         }

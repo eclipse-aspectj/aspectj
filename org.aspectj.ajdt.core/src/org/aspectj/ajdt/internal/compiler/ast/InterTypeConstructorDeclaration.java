@@ -92,7 +92,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		
 		pre.binding = world.makeMethodBinding(
 			AjcMemberMaker.preIntroducedConstructor(aspectTypeX, targetTypeX, 
-					world.fromBindings(binding.parameters)));
+					EclipseFactory.fromBindings(binding.parameters)));
 		
 		pre.bindArguments();
 		pre.bindThrownExceptions();
@@ -140,7 +140,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 			
 			Expression arg = explicitConstructorCall.arguments[i];
 			ResolvedMember conversionMethod = 
-				AjcMemberMaker.toObjectConversionMethod(world.fromBinding(explicitConstructorCall.binding.parameters[i]));
+				AjcMemberMaker.toObjectConversionMethod(EclipseFactory.fromBinding(explicitConstructorCall.binding.parameters[i]));
 			if (conversionMethod != null) {
 				arg = new KnownMessageSend(world.makeMethodBindingForCall(conversionMethod),
 					new CastExpression(new NullLiteral(0, 0), 
@@ -154,7 +154,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 			LocalVariableBinding binding = pre.arguments[i].binding;
 			Expression arg = AstUtil.makeResolvedLocalVariableReference(binding);
 			ResolvedMember conversionMethod = 
-				AjcMemberMaker.toObjectConversionMethod(world.fromBinding(binding.type));
+				AjcMemberMaker.toObjectConversionMethod(EclipseFactory.fromBinding(binding.type));
 			if (conversionMethod != null) {
 				arg = new KnownMessageSend(world.makeMethodBindingForCall(conversionMethod),
 					new CastExpression(new NullLiteral(0, 0), 
@@ -208,7 +208,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		ResolvedTypeX declaringTypeX = world.fromEclipse(onTypeBinding);
 		ResolvedTypeX aspectType = world.fromEclipse(classScope.referenceContext.binding);
 		
-		ResolvedMember bindingAsMember = world.makeResolvedMember(binding);
+		ResolvedMember bindingAsMember = EclipseFactory.makeResolvedMember(binding);
 		
 		ResolvedMember signature =
 			new ResolvedMember(Member.CONSTRUCTOR, declaringTypeX, declaredModifiers, 
@@ -240,7 +240,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 			
 			
 			((NewConstructorTypeMunger)munger).setExplicitConstructor(
-				world.makeResolvedMember(explicitConstructor));
+				EclipseFactory.makeResolvedMember(explicitConstructor));
 		} else {
 			((NewConstructorTypeMunger)munger).setExplicitConstructor(
 				new ResolvedMember(Member.CONSTRUCTOR, 

@@ -233,13 +233,13 @@ public class InterTypeMemberFinder implements IMemberFinder {
 //		}
 //	}
 
-	private ReferenceBinding getTargetType(MethodBinding m2) {
-		if (m2 instanceof InterTypeMethodBinding) {
-			return ((InterTypeMethodBinding)m2).getTargetType();
-		}
-		
-		return m2.declaringClass;
-	}
+//	private ReferenceBinding getTargetType(MethodBinding m2) {
+//		if (m2 instanceof InterTypeMethodBinding) {
+//			return ((InterTypeMethodBinding)m2).getTargetType();
+//		}
+//		
+//		return m2.declaringClass;
+//	}
 
 
 	

@@ -16,11 +16,11 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 import java.util.*;
 
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
-import org.aspectj.ajdt.internal.compiler.ast.DeclareDeclaration;
+//import org.aspectj.ajdt.internal.compiler.ast.DeclareDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
-import org.aspectj.asm.*;
-import org.aspectj.asm.IProgramElement;
-import org.aspectj.asm.internal.Relationship;
+//import org.aspectj.asm.*;
+//import org.aspectj.asm.IProgramElement;
+//import org.aspectj.asm.internal.Relationship;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.*;

@@ -45,7 +45,7 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 	}
 
 	public FieldBinding getPrivilegedAccessField(FieldBinding baseField, ASTNode location) {		
-		ResolvedMember key = inAspect.factory.makeResolvedMember(baseField);
+		ResolvedMember key = EclipseFactory.makeResolvedMember(baseField);
 		if (accessors.containsKey(key)) return (FieldBinding)accessors.get(key);
 		FieldBinding ret = new PrivilegedFieldBinding(inAspect, baseField);
 		checkWeaveAccess(key.getDeclaringType(), location);

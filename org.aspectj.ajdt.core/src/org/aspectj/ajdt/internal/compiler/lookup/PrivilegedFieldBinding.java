@@ -35,11 +35,11 @@ public class PrivilegedFieldBinding extends FieldBinding {
 		this.reader = new SimpleSyntheticAccessMethodBinding(
 			inAspect.factory.makeMethodBinding(
 				AjcMemberMaker.privilegedAccessMethodForFieldGet(
-					inAspect.typeX, inAspect.factory.makeResolvedMember(baseField)
+					inAspect.typeX, EclipseFactory.makeResolvedMember(baseField)
 			)));
 		this.writer = new SimpleSyntheticAccessMethodBinding(inAspect.factory.makeMethodBinding(
 				AjcMemberMaker.privilegedAccessMethodForFieldSet(
-					inAspect.typeX, inAspect.factory.makeResolvedMember(baseField)
+					inAspect.typeX, EclipseFactory.makeResolvedMember(baseField)
 			)));
 			
 		this.constant = ASTNode.NotAConstant;

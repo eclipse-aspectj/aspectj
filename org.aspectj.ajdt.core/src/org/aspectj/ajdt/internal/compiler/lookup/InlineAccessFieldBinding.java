@@ -46,11 +46,11 @@ public class InlineAccessFieldBinding extends FieldBinding {
 		this.reader = new SimpleSyntheticAccessMethodBinding(
 			inAspect.factory.makeMethodBinding(
 				AjcMemberMaker.inlineAccessMethodForFieldGet(
-					inAspect.typeX, inAspect.factory.makeResolvedMember(baseField)
+					inAspect.typeX, EclipseFactory.makeResolvedMember(baseField)
 			)));
 		this.writer = new SimpleSyntheticAccessMethodBinding(inAspect.factory.makeMethodBinding(
 				AjcMemberMaker.inlineAccessMethodForFieldSet(
-					inAspect.typeX, inAspect.factory.makeResolvedMember(baseField)
+					inAspect.typeX, EclipseFactory.makeResolvedMember(baseField)
 			)));
 			
 		this.constant = ASTNode.NotAConstant;

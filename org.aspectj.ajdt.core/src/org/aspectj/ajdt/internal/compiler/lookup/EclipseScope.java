@@ -69,7 +69,7 @@ public class EclipseScope implements IScope {
 		
 		//System.err.println("binding: " + b);
 		//  Binding(tokens, bits & RestrictiveFlagMASK, this)
-		return world.fromBinding(b);
+		return EclipseFactory.fromBinding(b);
 		
 		/*
 		computeImports();
@@ -114,12 +114,12 @@ public class EclipseScope implements IScope {
 	}
 	
 	
-	private ResolvedTypeX resolveVisible(String name) {
-		ResolvedTypeX found = world.getWorld().resolve(TypeX.forName(name), true);
-		if (found == ResolvedTypeX.MISSING) return found;
-		if (ResolvedTypeX.isVisible(found.getModifiers(), found, enclosingType)) return found;
-		return ResolvedTypeX.MISSING; 
-	}
+//	private ResolvedTypeX resolveVisible(String name) {
+//		ResolvedTypeX found = world.getWorld().resolve(TypeX.forName(name), true);
+//		if (found == ResolvedTypeX.MISSING) return found;
+//		if (ResolvedTypeX.isVisible(found.getModifiers(), found, enclosingType)) return found;
+//		return ResolvedTypeX.MISSING; 
+//	}
 	
 
 //	public TypeX lookupType(String name, IHasPosition location) {

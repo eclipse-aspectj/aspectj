@@ -131,7 +131,7 @@ public class AdviceDeclaration extends MethodDeclaration {
 		
 		if (kind == AdviceKind.Around) {
 			int n = proceedCalls.size();
-			EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(upperScope);
+//			EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(upperScope);
 						
 			//System.err.println("access to: " + Arrays.asList(handler.getMembers()));
 			

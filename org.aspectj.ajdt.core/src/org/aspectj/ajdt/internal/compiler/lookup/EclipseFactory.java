@@ -37,7 +37,7 @@ public class EclipseFactory {
 	
 	private Map/*TypeX, TypeBinding*/ typexToBinding = new HashMap();
 	//XXX currently unused
-	private Map/*TypeBinding, ResolvedTypeX*/ bindingToResolvedTypeX = new HashMap();
+//	private Map/*TypeBinding, ResolvedTypeX*/ bindingToResolvedTypeX = new HashMap();
 	
 	public static EclipseFactory fromLookupEnvironment(LookupEnvironment env) {
 		AjLookupEnvironment aenv = (AjLookupEnvironment)env;

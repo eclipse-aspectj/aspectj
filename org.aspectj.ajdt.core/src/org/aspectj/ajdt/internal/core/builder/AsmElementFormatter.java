@@ -71,7 +71,7 @@ public class AsmElementFormatter {
 			setParameters(methodDeclaration, node);
 
 		} else if (methodDeclaration instanceof PointcutDeclaration) { 
-			PointcutDeclaration pd = (PointcutDeclaration)methodDeclaration;
+//			PointcutDeclaration pd = (PointcutDeclaration)methodDeclaration;
 			node.setKind(IProgramElement.Kind.POINTCUT);
 			node.setName(translatePointcutName(new String(methodDeclaration.selector)));
 			setParameters(methodDeclaration, node);
@@ -123,10 +123,10 @@ public class AsmElementFormatter {
 				node.setKind(IProgramElement.Kind.INTER_TYPE_FIELD);				
 			} else if (methodDeclaration instanceof InterTypeMethodDeclaration) {
 				node.setKind(IProgramElement.Kind.INTER_TYPE_METHOD);
-				InterTypeMethodDeclaration itmd = (InterTypeMethodDeclaration)methodDeclaration;
+//				InterTypeMethodDeclaration itmd = (InterTypeMethodDeclaration)methodDeclaration;
 			} else if (methodDeclaration instanceof InterTypeConstructorDeclaration) {
 				node.setKind(IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR);
-				InterTypeConstructorDeclaration itcd = (InterTypeConstructorDeclaration)methodDeclaration;				
+//				InterTypeConstructorDeclaration itcd = (InterTypeConstructorDeclaration)methodDeclaration;				
 			} else {
 				node.setKind(IProgramElement.Kind.ERROR);
 			}

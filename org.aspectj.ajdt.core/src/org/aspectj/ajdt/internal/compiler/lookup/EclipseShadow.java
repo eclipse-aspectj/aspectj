@@ -50,9 +50,9 @@ public class EclipseShadow extends Shadow {
 
 	public TypeX getEnclosingType() {
 		if (context instanceof TypeDeclaration) {
-			return world.fromBinding(((TypeDeclaration)context).binding);
+			return EclipseFactory.fromBinding(((TypeDeclaration)context).binding);
 		} else if (context instanceof AbstractMethodDeclaration) {
-			return world.fromBinding(((AbstractMethodDeclaration)context).binding.declaringClass);
+			return EclipseFactory.fromBinding(((AbstractMethodDeclaration)context).binding.declaringClass);
 		} else {
 			return ResolvedTypeX.MISSING;
 		}
@@ -68,7 +68,7 @@ public class EclipseShadow extends Shadow {
 			return new Member(Member.STATIC_INITIALIZATION, getEnclosingType(), 0, 
 						ResolvedTypeX.VOID, "<clinit>", TypeX.NONE);
 		} else if (context instanceof AbstractMethodDeclaration) {
-			return world.makeResolvedMember(((AbstractMethodDeclaration)context).binding);
+			return EclipseFactory.makeResolvedMember(((AbstractMethodDeclaration)context).binding);
 		} else {
 			return null;
 		}
@@ -110,12 +110,12 @@ public class EclipseShadow extends Shadow {
 		if (astNode instanceof AllocationExpression) {
 			AllocationExpression e = (AllocationExpression)astNode;
 			return new EclipseShadow(world, Shadow.ConstructorCall,
-					world.makeResolvedMember(e.binding), astNode, context);
+					EclipseFactory.makeResolvedMember(e.binding), astNode, context);
 		} else if (astNode instanceof MessageSend) {
 			MessageSend e = (MessageSend)astNode;
 			if (e.isSuperAccess()) return null;  // super calls don't have shadows
 			return new EclipseShadow(world, Shadow.MethodCall,
-					world.makeResolvedMember(e.binding), astNode, context);
+					EclipseFactory.makeResolvedMember(e.binding), astNode, context);
 		} else if (astNode instanceof ExplicitConstructorCall) {
 			//??? these should be ignored, they don't have shadows
 			return null;				
@@ -143,11 +143,11 @@ public class EclipseShadow extends Shadow {
 				//throw new RuntimeException("unimplemented: " + e);
 			}
 			return new EclipseShadow(world, kind,
-					world.makeResolvedMember(e.binding), astNode, context);
+					EclipseFactory.makeResolvedMember(e.binding), astNode, context);
 		} else if (astNode instanceof TypeDeclaration) {
 			return new EclipseShadow(world, Shadow.StaticInitialization,
 							new Member(Member.STATIC_INITIALIZATION, 
-								world.fromBinding(((TypeDeclaration)astNode).binding), 0, 
+								EclipseFactory.fromBinding(((TypeDeclaration)astNode).binding), 0, 
 								ResolvedTypeX.VOID, "<clinit>", TypeX.NONE),
 							astNode, context);
 		} else {

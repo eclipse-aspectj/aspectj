@@ -23,7 +23,7 @@ import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.codegen.CodeStream;
-import org.eclipse.jdt.internal.compiler.flow.FlowContext;
+//import org.eclipse.jdt.internal.compiler.flow.FlowContext;
 import org.eclipse.jdt.internal.compiler.flow.FlowInfo;
 import org.eclipse.jdt.internal.compiler.flow.InitializationFlowContext;
 import org.eclipse.jdt.internal.compiler.lookup.*;
@@ -177,7 +177,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 			else
 				resolvedPosition++;
 		}
-		TypeBinding type;
+//		TypeBinding type;
 		if (methodBinding.isStatic())
 			codeStream.invokestatic(methodBinding);
 		else {

@@ -13,7 +13,7 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
-import java.util.Arrays;
+//import java.util.Arrays;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.InlineAccessFieldBinding;
@@ -167,7 +167,7 @@ public class AccessForInlineVisitor extends ASTVisitor {
 		}
 
 		
-		ResolvedMember m = world.makeResolvedMember(binding);
+		ResolvedMember m = EclipseFactory.makeResolvedMember(binding);
 		if (inAspect.accessForInline.containsKey(m)) return (MethodBinding)inAspect.accessForInline.get(m);
 		MethodBinding ret = world.makeMethodBinding(
 			AjcMemberMaker.inlineAccessMethodForMethod(inAspect.typeX, m)
@@ -186,7 +186,7 @@ public class AccessForInlineVisitor extends ASTVisitor {
 	}
 	
 	private MethodBinding getSuperAccessMethod(MethodBinding binding) {
-		ResolvedMember m = world.makeResolvedMember(binding);
+		ResolvedMember m = EclipseFactory.makeResolvedMember(binding);
 		ResolvedMember superAccessMember = AjcMemberMaker.superAccessMethod(inAspect.typeX, m);
 		if (inAspect.superAccessForInline.containsKey(superAccessMember)) {
 			return ((SuperAccessMethodPair)inAspect.superAccessForInline.get(superAccessMember)).accessMethod;

@@ -1768,12 +1768,12 @@ public static class GuardedCommand {
         }
     }
     
-    private void addFile(File file) {
-        if (null != file) {
-            String path = file.getAbsolutePath();
-            addFlag(path, true);
-        }
-    }
+//    private void addFile(File file) {
+//        if (null != file) {
+//            String path = file.getAbsolutePath();
+//            addFlag(path, true);
+//        }
+//    }
     
     List extractArguments() {
         ArrayList result = new ArrayList();

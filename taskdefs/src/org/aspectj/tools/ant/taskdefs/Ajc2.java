@@ -490,7 +490,7 @@ public class Ajc2 extends Javac {
                     line = line.substring(0, isharp);
                 }
 
-                int istar = -1;
+//                int istar = -1;
 
                 // Argument
                 if (line.startsWith("-")) {
@@ -498,7 +498,7 @@ public class Ajc2 extends Javac {
                 }
 
                 // If there are stars we'll try to resolve the file here
-                else if ((istar = line.indexOf("*")) != -1) {
+                else if (line.indexOf("*") != -1) {
                     log("The argfile line '" + line + "' is invalid",
                         Project.MSG_WARN);
                 }

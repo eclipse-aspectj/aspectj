@@ -175,7 +175,7 @@ public class AjProblemReporter extends ProblemReporter {
 		CompilationResult unitResult)
 	{
 		if (severity != Ignore && DUMP_STACK) {
-			Thread.currentThread().dumpStack();
+			Thread.dumpStack();
 		}
 		super.handle(
 			problemId,

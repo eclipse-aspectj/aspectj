@@ -14,13 +14,13 @@ package org.aspectj.ajdt.internal.compiler.batch;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
+//import java.util.Arrays;
 import java.util.List;
 
 import org.aspectj.ajdt.ajc.*;
 import org.aspectj.ajdt.ajc.AjdtCommand;
 import org.aspectj.bridge.ICommand;
-import org.aspectj.bridge.IMessage;
+//import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageHandler;
 
 /**
@@ -117,7 +117,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 		ICommand command = new AjdtCommand();
 		MessageHandler myHandler = new MessageHandler();
 		//myHandler.setInterceptor(org.aspectj.tools.ajc.Main.MessagePrinter.TERSE);
-		boolean result = command.runCommand((String[])args.toArray(new String[args.size()]), myHandler);
+		/*boolean result = */command.runCommand((String[])args.toArray(new String[args.size()]), myHandler);
 
 		//System.err.println("messages: " + Arrays.asList(myHandler.getMessages(IMessage.INFO, true)));
 		// DON'T yet have a way of testing that we actually got a particular info message
@@ -137,7 +137,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 		ICommand command = new AjdtCommand();
 		MessageHandler myHandler = new MessageHandler();
 		myHandler.setInterceptor(org.aspectj.tools.ajc.Main.MessagePrinter.TERSE);
-		boolean result = command.runCommand((String[])args.toArray(new String[args.size()]), myHandler);
+		/*boolean result = */command.runCommand((String[])args.toArray(new String[args.size()]), myHandler);
 
 		assertEquals("error for org.aspectj.lang.JoinPoint not found", 1, myHandler.getErrors().length);
 	}

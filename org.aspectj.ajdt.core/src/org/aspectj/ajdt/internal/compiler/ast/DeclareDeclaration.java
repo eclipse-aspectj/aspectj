@@ -13,7 +13,7 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
-import java.util.List;
+//import java.util.List;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseScope;
 import org.aspectj.weaver.AjAttribute;

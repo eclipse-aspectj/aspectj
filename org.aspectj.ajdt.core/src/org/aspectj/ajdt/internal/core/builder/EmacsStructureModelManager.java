@@ -106,21 +106,21 @@ public class EmacsStructureModelManager {
             print(") ");
         }
 
-        private void printDecls(IRelationship node) {
-//            for (Iterator it = node.getTargets().iterator(); it.hasNext(); ) {
-//                // this ignores relations on the compile unit
-//                Object nodeObject = it.next();
-//                throw new RuntimeException("unimplemented");
-////                if (nodeObject instanceof LinkNode) {
-////                    LinkNode child = (LinkNode)nodeObject;
-////                    if (//!child.getProgramElementNode().getKind().equals("stmnt") &&
-////                        !child.getProgramElementNode().getKind().equals("<undefined>")) {
-////                        printDecl(child.getProgramElementNode(), false);
+//        private void printDecls(IRelationship node) {
+////            for (Iterator it = node.getTargets().iterator(); it.hasNext(); ) {
+////                // this ignores relations on the compile unit
+////                Object nodeObject = it.next();
+////                throw new RuntimeException("unimplemented");
+//////                if (nodeObject instanceof LinkNode) {
+//////                    LinkNode child = (LinkNode)nodeObject;
+//////                    if (//!child.getProgramElementNode().getKind().equals("stmnt") &&
+//////                        !child.getProgramElementNode().getKind().equals("<undefined>")) {
 //////                        printDecl(child.getProgramElementNode(), false);
-////                    }
-////                }
-//            }
-        }
+////////                        printDecl(child.getProgramElementNode(), false);
+//////                    }
+//////                }
+////            }
+//        }
 
         /**
          * @param   structureNode   can be a ProgramElementNode or a LinkNode
@@ -216,12 +216,12 @@ public class EmacsStructureModelManager {
                    subst(n, o, (in.substring(pos + o.length())));
         }
 
-        private void lose(Error e) {
-            try {
-                print("(ERROR \"" + e.toString() + "\")");
-            }
-            catch(Error ex) { }
-        }
+//        private void lose(Error e) {
+//            try {
+//                print("(ERROR \"" + e.toString() + "\")");
+//            }
+//            catch(Error ex) { }
+//        }
     }
 }
 

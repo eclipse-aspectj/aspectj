@@ -40,7 +40,7 @@ import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.Literal;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
-import org.eclipse.jdt.internal.compiler.ast.OperatorExpression;
+//import org.eclipse.jdt.internal.compiler.ast.OperatorExpression;
 import org.eclipse.jdt.internal.compiler.ast.OperatorIds;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
@@ -223,8 +223,8 @@ public class AjParser extends Parser {
 		// handle modifiers, only without privileged for now
 		if (isPrivileged) {
 			pos = eatIdentifier(); // eat the privileged
-			int end = (int) pos;
-		    int start = (int) (pos >>> 32);
+//			int end = (int) pos;
+//		    int start = (int) (pos >>> 32);
 		    aspectDecl.isPrivileged = true;
 			//problemReporter().signalError(start, end, "privileged is unimplemented in 1.1alpha1");
 		}
@@ -292,7 +292,7 @@ public class AjParser extends Parser {
 		
 		//the name
 		long pos = identifierPositionStack[identifierPtr];
-		int sourceEnd = (int) pos;
+//		int sourceEnd = (int) pos;
 		ret.sourceStart = (int) (pos >>> 32);
 		ret.selector = identifierStack[identifierPtr--];
 		identifierLengthPtr--;

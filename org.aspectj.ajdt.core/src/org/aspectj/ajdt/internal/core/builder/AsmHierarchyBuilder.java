@@ -19,7 +19,7 @@ import java.util.*;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.asm.*;
-import org.aspectj.asm.internal.*;
+//import org.aspectj.asm.internal.*;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.*;
 import org.aspectj.util.LangUtil;
@@ -218,7 +218,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	}
 	
 	public boolean visit(TypeDeclaration memberTypeDeclaration, BlockScope scope) {
-		String name = new String(memberTypeDeclaration.name);
+//		String name = new String(memberTypeDeclaration.name);
 		
 		String fullName = "<undefined>";
 		if (memberTypeDeclaration.binding != null
@@ -481,11 +481,11 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// AMC - overloaded set of methods to get start and end lines for
 	// various ASTNode types. They have no common ancestor in the
 	// hierarchy!!
-	private int getStartLine( AbstractVariableDeclaration avd ) {
-		return ProblemHandler.searchLineNumber(
-			currCompilationResult.lineSeparatorPositions,
-			avd.declarationSourceStart);
-	}
+//	private int getStartLine( AbstractVariableDeclaration avd ) {
+//		return ProblemHandler.searchLineNumber(
+//			currCompilationResult.lineSeparatorPositions,
+//			avd.declarationSourceStart);
+//	}
 	
 	// AMC - overloaded set of methods to get start and end lines for
 	// various ASTNode types. They have no common ancestor in the
@@ -499,11 +499,11 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// AMC - overloaded set of methods to get start and end lines for
 	// various ASTNode types. They have no common ancestor in the
 	// hierarchy!!
-	private int getStartLine( AbstractMethodDeclaration amd ){
-		return ProblemHandler.searchLineNumber(
-			currCompilationResult.lineSeparatorPositions,
-			amd.declarationSourceStart);
-	}
+//	private int getStartLine( AbstractMethodDeclaration amd ){
+//		return ProblemHandler.searchLineNumber(
+//			currCompilationResult.lineSeparatorPositions,
+//			amd.declarationSourceStart);
+//	}
 	
 	// AMC - overloaded set of methods to get start and end lines for
 	// various ASTNode types. They have no common ancestor in the
@@ -517,11 +517,11 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// AMC - overloaded set of methods to get start and end lines for
 	// various ASTNode types. They have no common ancestor in the
 	// hierarchy!!
-	private int getStartLine( TypeDeclaration td ){
-		return ProblemHandler.searchLineNumber(
-			currCompilationResult.lineSeparatorPositions,
-			td.declarationSourceStart);
-	}
+//	private int getStartLine( TypeDeclaration td ){
+//		return ProblemHandler.searchLineNumber(
+//			currCompilationResult.lineSeparatorPositions,
+//			td.declarationSourceStart);
+//	}
 	
 	// AMC - overloaded set of methods to get start and end lines for
 	// various ASTNode types. They have no common ancestor in the

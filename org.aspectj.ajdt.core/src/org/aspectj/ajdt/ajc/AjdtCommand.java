@@ -26,7 +26,7 @@ public class AjdtCommand implements ICommand {
     /** Message String for any AbortException thrown from ICommand API's */
     public static final String ABORT_MESSAGE = "ABORT";
     
-    private boolean canRepeatCommand = true;
+//    private boolean canRepeatCommand = true;
 	
 	AjBuildManager buildManager = null;
 	String[] savedArgs = null;

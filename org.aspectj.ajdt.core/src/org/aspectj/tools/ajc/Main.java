@@ -17,10 +17,10 @@ package org.aspectj.tools.ajc;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.List;
-
-import org.aspectj.ajdt.ajc.BuildArgParser;
+//import java.util.Arrays;
+//import java.util.List;
+//
+//import org.aspectj.ajdt.ajc.BuildArgParser;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
@@ -225,12 +225,12 @@ public class Main {
             return;
         }      
         try {
-            boolean verbose = (-1 != ("" + Arrays.asList(args)).indexOf("-verbose"));
+//            boolean verbose = (-1 != ("" + Arrays.asList(args)).indexOf("-verbose"));
             outer:
             while (true) {
                 boolean passed = command.runCommand(args, holder);
                 if (report(passed, holder) && controller.incremental()) {
-                    final boolean onCommandLine = controller.commandLineIncremental();
+//                    final boolean onCommandLine = controller.commandLineIncremental();
                     while (controller.doRepeatCommand()) {
                         holder.clearMessages();
                         if (controller.buildFresh()) {
@@ -406,7 +406,7 @@ public class Main {
          * @return String rendering IMessage (never null)
          */
         protected String render(IMessage message) {
-            IMessage.Kind kind = message.getKind();
+//            IMessage.Kind kind = message.getKind();
             
             StringBuffer sb = new StringBuffer();
             String text = message.getMessage();
@@ -521,10 +521,10 @@ public class Main {
          */
         public String[] init(String[] args, IMessageHandler sink) {
             running = true;
-            String[] unused;
+//            String[] unused;
             if (!LangUtil.isEmpty(args)) {
                 String[][] options = LangUtil.copyStrings(OPTIONS);
-                unused = LangUtil.extractOptions(args, options);
+                /*unused = */LangUtil.extractOptions(args, options);
                 incremental = (null != options[0][0]);
                 if (null != options[1][0]) {
                     File file = new File(options[1][1]);
@@ -588,7 +588,7 @@ public class Main {
                     }
                     System.out.println(" press enter to recompile, r to rebuild, q to quit: ");
                     System.out.flush();
-                    boolean doMore = false;
+//                    boolean doMore = false;
                     // seek for one q or a series of [\n\r]...
                     do {
                         int input = System.in.read();
@@ -628,10 +628,10 @@ public class Main {
         
         /** delay between filesystem checks, returning if quit is set */
         protected void fileCheckDelay() {
-            final Thread thread = Thread.currentThread();
+//            final Thread thread = Thread.currentThread();
             long targetTime = System.currentTimeMillis() + delay;
-            long curTime;
-            while (targetTime > (curTime = System.currentTimeMillis())) {
+//            long curTime;
+            while (targetTime > System.currentTimeMillis()) {
                 if (quit) {
                     return;
                 }

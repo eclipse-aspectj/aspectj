@@ -22,7 +22,7 @@ import org.aspectj.ajdt.internal.compiler.lookup.*;
 import org.aspectj.ajdt.internal.compiler.parser.AjParser;
 import org.aspectj.ajdt.internal.compiler.problem.AjProblemReporter;
 import org.aspectj.asm.*;
-import org.aspectj.asm.internal.*;
+//import org.aspectj.asm.internal.*;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.*;
 import org.aspectj.weaver.World;
@@ -34,7 +34,7 @@ import org.eclipse.jdt.internal.compiler.batch.FileSystem;
 import org.eclipse.jdt.internal.compiler.env.*;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
-import org.eclipse.jdt.internal.compiler.util.HashtableOfObject;
+//import org.eclipse.jdt.internal.compiler.util.HashtableOfObject;
 
 public class AjBuildManager {
     static final boolean FAIL_IF_RUNTIME_NOT_FOUND = false;
@@ -153,7 +153,7 @@ public class AjBuildManager {
             // have to tell state we succeeded or next is not incremental
             state.successfulCompile(buildConfig);
 
-            boolean weaved = weaveAndGenerateClassFiles();
+            /*boolean weaved = */weaveAndGenerateClassFiles();
             // if not weaved, then no-op build, no model changes
             // but always returns true
             // XXX weaved not in Mik's incremental
@@ -194,7 +194,7 @@ public class AjBuildManager {
 			bcelWeaver.addLibraryJarFile(f);
 		}
 		
-		String lintMode = buildConfig.getLintMode();
+//		String lintMode = buildConfig.getLintMode();
 		
 		if (buildConfig.getLintMode().equals(AjBuildConfig.AJLINT_DEFAULT)) {
 			bcelWorld.getLint().loadDefaultProperties();
@@ -290,7 +290,7 @@ public class AjBuildManager {
 	public CompilationUnit[] getCompilationUnits(String[] filenames, String[] encodings) {
 		int fileCount = filenames.length;
 		CompilationUnit[] units = new CompilationUnit[fileCount];
-		HashtableOfObject knownFileNames = new HashtableOfObject(fileCount);
+//		HashtableOfObject knownFileNames = new HashtableOfObject(fileCount);
 
 		String defaultEncoding = (String) buildConfig.getJavaOptions().get(CompilerOptions.OPTION_Encoding);
 		if ("".equals(defaultEncoding)) //$NON-NLS-1$

@@ -13,7 +13,7 @@
 
 package org.aspectj.ajdt.ajc;
 
-import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
+//import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
 import org.aspectj.bridge.*;
 import org.aspectj.util.*;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
@@ -30,7 +30,7 @@ public class AjdtCommandTestCase extends TestCase {
 
     private ArrayList tempFiles = new ArrayList();
 	private StreamPrintWriter outputWriter = new StreamPrintWriter(new PrintWriter(System.out));
-	private AjdtCommand command = new AjdtCommand();	
+//	private AjdtCommand command = new AjdtCommand();	
 	private MessageWriter messageWriter = new MessageWriter(outputWriter, false);
 	private CountingMessageHandler counter 
         = new CountingMessageHandler(messageWriter);
@@ -118,7 +118,7 @@ public class AjdtCommandTestCase extends TestCase {
     }
 
 	public void testIncrementalOption() throws InvalidInputException {
-		AjBuildConfig config = command.genBuildConfig(
+		AjdtCommand.genBuildConfig(
             new String[] {  "-incremental" }, 
             counter);
 		
@@ -127,7 +127,7 @@ public class AjdtCommandTestCase extends TestCase {
 			outputWriter.getContents().indexOf("specify a source root") != -1);	
 		
 		outputWriter.flushBuffer();		
-		config = command.genBuildConfig(
+		AjdtCommand.genBuildConfig(
 			new String[] { "-incremental", "-sourceroots", 
                     AjdtAjcTests.TESTDATA_PATH + "/src1" }, 
 			counter);
@@ -137,7 +137,7 @@ public class AjdtCommandTestCase extends TestCase {
 			outputWriter.getContents().equals(""));			
 
 		outputWriter.flushBuffer();		
-		config = command.genBuildConfig(
+		AjdtCommand.genBuildConfig(
 			new String[] { "-incremental", "testdata/src1/Hello.java" }, 
 			counter);
 	  	
@@ -148,7 +148,7 @@ public class AjdtCommandTestCase extends TestCase {
 	
 	public void testBadOptionAndUsagePrinting() throws InvalidInputException {
 		try {
-			command.genBuildConfig(
+			AjdtCommand.genBuildConfig(
                 new String[] { "-mubleBadOption" }, 
                 counter);		
 		} catch (AbortException ae) { }
@@ -170,7 +170,7 @@ public class AjdtCommandTestCase extends TestCase {
 		try {
 			try {
 				
-				command.genBuildConfig(
+				AjdtCommand.genBuildConfig(
 	                args, 
 	                counter);
 			} catch (AbortException  ae) { }
@@ -195,7 +195,7 @@ public class AjdtCommandTestCase extends TestCase {
 		try {
 			try {
 				
-				command.genBuildConfig(
+				AjdtCommand.genBuildConfig(
 					args, 
 					counter);
 			} catch (AbortException  ae) { }
@@ -211,7 +211,7 @@ public class AjdtCommandTestCase extends TestCase {
 	}
 	
 	public void testNonExistingLstFile() {
-		command.genBuildConfig(
+		AjdtCommand.genBuildConfig(
             new String[] { "@mumbleDoesNotExist" }, 
             counter);
 		

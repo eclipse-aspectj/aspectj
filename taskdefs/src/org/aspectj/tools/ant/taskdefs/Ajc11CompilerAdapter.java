@@ -19,9 +19,9 @@ import org.apache.tools.ant.taskdefs.compilers.CompilerAdapter;
 import org.aspectj.util.FileUtil;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FileWriter;
-import java.io.IOException;
+//import java.io.FileFilter;
+//import java.io.FileWriter;
+//import java.io.IOException;
 
 /**
  * Adapt ajc to javac commands.

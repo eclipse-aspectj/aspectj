@@ -12,7 +12,7 @@
  
 package org.aspectj.ajdt.internal.compiler.lookup;
 
-import java.io.IOException;
+//import java.io.IOException;
 
 import org.aspectj.asm.*;
 import org.aspectj.asm.internal.ProgramElement;
@@ -30,16 +30,16 @@ public class AsmInterTypeRelationshipProvider {
 		ResolvedTypeX onType,
 		EclipseTypeMunger munger) {
 			
-		IProgramElement.Kind kind = IProgramElement.Kind.ERROR;
-		if (munger.getMunger().getKind() == ResolvedTypeMunger.Field) {
-			kind = IProgramElement.Kind.INTER_TYPE_FIELD;
-		} else if (munger.getMunger().getKind() == ResolvedTypeMunger.Constructor) {
-			kind = IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR;
-		} else if (munger.getMunger().getKind() == ResolvedTypeMunger.Method) {
-			kind = IProgramElement.Kind.INTER_TYPE_METHOD;
-		} else if (munger.getMunger().getKind() == ResolvedTypeMunger.Parent) {
-			kind = IProgramElement.Kind.INTER_TYPE_PARENT;
-		}  	 
+//		IProgramElement.Kind kind = IProgramElement.Kind.ERROR;
+//		if (munger.getMunger().getKind() == ResolvedTypeMunger.Field) {
+//			kind = IProgramElement.Kind.INTER_TYPE_FIELD;
+//		} else if (munger.getMunger().getKind() == ResolvedTypeMunger.Constructor) {
+//			kind = IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR;
+//		} else if (munger.getMunger().getKind() == ResolvedTypeMunger.Method) {
+//			kind = IProgramElement.Kind.INTER_TYPE_METHOD;
+//		} else if (munger.getMunger().getKind() == ResolvedTypeMunger.Parent) {
+//			kind = IProgramElement.Kind.INTER_TYPE_PARENT;
+//		}  	 
 	
 		if (munger.getSourceLocation() != null
 			&& munger.getSourceLocation() != null) {

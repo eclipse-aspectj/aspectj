@@ -204,7 +204,7 @@ public class ProceedVisitor extends ASTVisitor {
 	}
 
 	private void removeParameter(int indexToRemove) {
-		TypeBinding[] parameters = method.binding.parameters;
+//		TypeBinding[] parameters = method.binding.parameters;
 		method.scope.locals = removeLocalBinding(indexToRemove, method.scope.locals);
 		method.binding.parameters = removeParameter(indexToRemove, method.binding.parameters);
 	}

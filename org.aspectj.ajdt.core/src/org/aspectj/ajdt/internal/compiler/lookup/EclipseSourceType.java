@@ -18,7 +18,7 @@ import java.util.*;
 import org.aspectj.ajdt.internal.compiler.ast.*;
 import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
 import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.ISourceLocation;
+//import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.PerSingleton;
@@ -107,7 +107,7 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 					continue;
 				} else {
 					if (amd.binding == null || !amd.binding.isValidBinding()) continue;
-					declaredMethods.add(eclipseWorld().makeResolvedMember(amd.binding));
+					declaredMethods.add(EclipseFactory.makeResolvedMember(amd.binding));
 				}
 			}
 		}
@@ -115,7 +115,7 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 		FieldBinding[] fields = binding.fields();
 		for (int i=0, len=fields.length; i < len; i++) {
 			FieldBinding f = fields[i];
-			declaredFields.add(eclipseWorld().makeResolvedMember(f));
+			declaredFields.add(EclipseFactory.makeResolvedMember(f));
 		}
 			
 		this.declaredPointcuts = (ResolvedPointcutDefinition[])

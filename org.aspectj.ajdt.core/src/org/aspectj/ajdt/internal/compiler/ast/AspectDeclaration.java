@@ -21,14 +21,14 @@ import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.*;
 import org.eclipse.jdt.internal.compiler.ClassFile;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+//import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Clinit;
-import org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
+//import org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.codegen.CodeStream;
 import org.eclipse.jdt.internal.compiler.codegen.Label;
 import org.eclipse.jdt.internal.compiler.lookup.*;
-import org.eclipse.jdt.internal.compiler.parser.Parser;
+//import org.eclipse.jdt.internal.compiler.parser.Parser;
 
 
 // (we used to...) making all aspects member types avoids a nasty hierarchy pain
@@ -286,7 +286,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	}
 	
 	private void generateMethod(ClassFile classFile, MethodBinding methodBinding, BodyGenerator gen) {
-		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
+//		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		classFile.generateMethodInfoHeader(methodBinding);
 		int methodAttributeOffset = classFile.contentsOffset;
 		int attributeNumber = classFile.generateMethodInfoAttribute(methodBinding, AstUtil.getAjSyntheticAttribute());
@@ -346,7 +346,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	{
 		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, world.makeMethodBinding(AjcMemberMaker.perCflowPush(
-				world.fromBinding(binding))), 
+				EclipseFactory.fromBinding(binding))), 
 		new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here
@@ -378,7 +378,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	{
 		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, world.makeMethodBinding(AjcMemberMaker.ajcPreClinitMethod(
-				world.fromBinding(binding))), 
+				EclipseFactory.fromBinding(binding))), 
 		new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here
@@ -480,7 +480,7 @@ public class AspectDeclaration extends TypeDeclaration {
 		final TypeBinding interfaceType) 
 	{
 		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
-		generateMethod(classFile, AjcMemberMaker.perObjectBind(world.fromBinding(binding)), 
+		generateMethod(classFile, AjcMemberMaker.perObjectBind(EclipseFactory.fromBinding(binding)), 
 		new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here
@@ -563,7 +563,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	{
 		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, world.makeMethodBinding(AjcMemberMaker.ajcPostClinitMethod(
-				world.fromBinding(binding))), 
+				EclipseFactory.fromBinding(binding))), 
 		new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here
