@@ -2,7 +2,7 @@
 <!-- element-component mappings are in org.aspectj.testing.xml.AjcSpecXmlReader -->
 <!-- element names are determined by the component XMLNAME static variable -->
 
-   <!ELEMENT suite (ajc-test+)>
+   <!ELEMENT suite (ajc-test*)>
    <!ATTLIST suite suiteDir CDATA #IMPLIED >
 
    <!ELEMENT ajc-test (compile, (compile | inc-compile | run)*)>
