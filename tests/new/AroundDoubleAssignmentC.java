@@ -32,7 +32,8 @@ public aspect AroundDoubleAssignmentC {
 
         // instance initializer
         Tester.expectEvent("init");
-        Tester.expectEvent("proceed-init");
+        //XXX see below
+        //Tester.expectEvent("proceed-init");
         String s = new Init().string;
         Tester.check("test".equals(s),
                            "\"test\".equals(new Init().string)");
@@ -62,10 +63,11 @@ public aspect AroundDoubleAssignmentC {
     }
 
     // instance initializer
-    Object around() : initialization(Init.new(..)) {
-        Tester.event("proceed-init");
-        return proceed();
-    }
+    //XXX not implemented in 1.1
+//    Object around() : initialization(Init.new(..)) {
+//        Tester.event("proceed-init");
+//        return proceed();
+//    }
 }
 
 class FieldInit {

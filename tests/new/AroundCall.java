@@ -20,7 +20,7 @@ aspect TestAspect {
     /** @testcase PR#666 name binding in around cflow */
     void around(final int n) : // no bug if before advice
         cflow(execution(void AroundCall.a(int)) && args(n))  // no bug if no args
-        && target(AroundCall)
+        && target(AroundCall) && !initialization(new(..))
         { 
             Tester.event("around");
             if (n > 100) proceed(n);  // some bugs hidden without call to proceed

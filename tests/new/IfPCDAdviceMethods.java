@@ -68,6 +68,8 @@ public class IfPCDAdviceMethods {
         for (int i = 0; i < cuts.length; i++) {
             for (int j = 0; j < kinds.length; j++) {
 				for (int k = 0; k < ifs.length; k++) {
+					//XXX no around on initialization yet
+					if (kinds[j].equals("around") && cuts[i].equals("initialization_pc")) continue;
 					TestContext.expectSignal(kinds[j] + "." + cuts[i] + "." + ifs[k]);
 				}
             }
@@ -77,7 +79,8 @@ public class IfPCDAdviceMethods {
 
 		// Aspect namedIf delegate should have been called this many times
         // (todo: only checks for at-least, not for extra calls)
-		final int namedIfCalls = 2*cuts.length * (ifs.length-1); // -1 for anonymous, 2* for two calls
+         // -1 for anonymous, 2* for two calls, -1 for around initialization
+		final int namedIfCalls = 2*cuts.length * (ifs.length-1) - 1;
         for (int i = 0; i < namedIfCalls; i++) {
 			TestContext.expectSignal("executedNamedIf:"+i);
 		}
@@ -196,14 +199,14 @@ aspect Aspect {
     void around() : call_pc     () { a("around.call_pc.if(true)");      proceed(); }
     void around() : callType_pc() { a("around.callType_pc.if(true)"); proceed(); }
     void around() : execution_pc() { a("around.execution_pc.if(true)"); proceed(); }
-    void around() : initialization_pc() { a("around.initialization_pc.if(true)"); proceed(); }
+    //XXXvoid around() : initialization_pc() { a("around.initialization_pc.if(true)"); proceed(); }
 
     Object around() : named_set_pc     () { a("around.set_pc.namedIf()"); return proceed(); }
     int around() : named_get_pc     () { a("around.get_pc.namedIf()"); return proceed(); }
     void around() : named_call_pc     () { a("around.call_pc.namedIf()");      proceed(); }
     void around() : named_callType_pc() { a("around.callType_pc.namedIf()"); proceed(); }
     void around() : named_execution_pc() { a("around.execution_pc.namedIf()"); proceed(); }
-    void around() : named_initialization_pc() { a("around.initialization_pc.namedIf()"); proceed(); }
+    //XXXvoid around() : named_initialization_pc() { a("around.initialization_pc.namedIf()"); proceed(); }
 
 	// ------------------------------------- after 
     after(): set_pc     () { a("after.set_pc.if(true)");      }
@@ -280,10 +283,11 @@ aspect Aspect2 {
 		proceed();
 	}
 	/** @testTarget ifpcd.compile.pcds.unnamed.initialization.around */
-    void around() : if(true) && initialization(BaseApp.new(..)) {
-		a("around.initialization_pc.anonymous");
-		proceed();
-	}
+	//XXX
+//    void around() : if(true) && initialization(BaseApp.new(..)) {
+//		a("around.initialization_pc.anonymous");
+//		proceed();
+//	}
 
 	/** @testTarget ifpcd.compile.pcds.unnamed.set.after */
     after() : if(true) && set(int BaseApp.i) {

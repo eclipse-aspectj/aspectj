@@ -3678,9 +3678,10 @@
         <run class="CallTypesI" vm="1.4"/>
     </ajc-test>
 
+	<!-- around advice not implemented on initializer join points -->
     <ajc-test dir="new" pr="490"
       title="PR#458 Compiler was incorrectly flagging error in advice on initialization and static initialization"
-      keywords="from-resolved_10x">
+      keywords="from-resolved_10x,knownLimitation">
         <compile files="StaticInitCE.java"/>
         <run class="StaticInitCE"/>
     </ajc-test>

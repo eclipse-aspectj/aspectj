@@ -20,7 +20,8 @@ aspect Filteraspect {
     //pointcut goCut(): cflow(!within(FilterAspect));
     //pointcut goCut(): cflow(within(FilterAspect));
     //pointcut goCut(): cflow(within(testclass1));
-    pointcut goCut(): !within(Filteraspect) && cflow(within(testclass1)) && !preinitialization(new(..));
+    pointcut goCut(): !within(Filteraspect) && cflow(within(testclass1)) 
+    		&& !preinitialization(new(..)) && !initialization(new(..));
     // works ok
     //pointcut goCut(): within(Filteraspect);
     Object around(): goCut() { i++; return proceed(); }

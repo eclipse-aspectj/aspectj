@@ -32,7 +32,8 @@ public class PR559 {
 }
 
 interface AspectMarker {
-    pointcut notInAspect()   : ! within(AspectMarker+) && !preinitialization(new(..));
+    pointcut notInAspect()   : ! within(AspectMarker+) && 
+    				!preinitialization(new(..)) && !initialization(new(..));
     pointcut allTarget()     : execution(* Target.*(..)) ;
     pointcut allTargetFlow() : cflow(allTarget()); 
     pointcut inTarget()      : notInAspect() && allTarget();

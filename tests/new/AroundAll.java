@@ -145,16 +145,20 @@ aspect A {
     }
 
     static boolean test() { return true; }
+    
+    // one minimal version
+//    before(): this(Runnable) && call(* intValue()) {
+//      
+//    }
 
-    //before(): initialization(C.new(String)) { }
 
-    void around(String s): initialization(C.new(String)) && args(s) && if(s.equals("9")) {
-        log("C.new(9)");
-        proceed(s+"1");
-    }
+//    void around(String s): initialization(C.new(String)) && args(s) && if(s.equals("9")) {
+//        log("C.new(9)");
+//        proceed(s+"1");
+//    }
 
     Object around(): //initialization(C.new(String)) { 
-                    if(test()) && !within(A) && !call(* A.*(..)) && !preinitialization(new(..)) {
+                    if(test()) && !within(A) && !call(* A.*(..)) && !initialization(new(..)) && !preinitialization(new(..)) {
        A.log("enter " + thisJoinPoint);
        Object ret = proceed();
        A.log("exit " + thisJoinPoint);
