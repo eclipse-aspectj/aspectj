@@ -175,7 +175,8 @@ public class AspectJElementHierarchy implements IHierarchy {
 	       	if (!isValid() || sourceFile == null) {   
 	            return IHierarchy.NO_STRUCTURE;
 	        } else {
-	            String correctedPath = new File(sourceFile).getAbsolutePath();//.replace('\\', '/');
+	            String correctedPath = 
+	            	AsmManager.getDefault().getCanonicalFilePath(new File(sourceFile));
 	            //StructureNode node = (StructureNode)getFileMap().get(correctedPath);//findFileNode(filePath, model);
 				IProgramElement node = (IProgramElement)findInFileMap(correctedPath);//findFileNode(filePath, model);
 	            if (node != null) {
@@ -194,7 +195,10 @@ public class AspectJElementHierarchy implements IHierarchy {
 	 */
 	public IProgramElement findElementForSourceLine(ISourceLocation location) {
 		try {
-			return findElementForSourceLine(location.getSourceFile().getAbsolutePath(), location.getLine());
+			return findElementForSourceLine(
+				AsmManager.getDefault().getCanonicalFilePath(
+					                     location.getSourceFile()), 
+				location.getLine());
 		} catch (Exception e) {
 			return null;
 		}
@@ -208,7 +212,9 @@ public class AspectJElementHierarchy implements IHierarchy {
 	 * @return		a new structure node for the file if it was not found in the model
 	 */
 	public IProgramElement findElementForSourceLine(String sourceFilePath, int lineNumber) {
-		IProgramElement node = findNodeForSourceLineHelper(root, sourceFilePath, lineNumber);
+		String canonicalSFP = AsmManager.getDefault().getCanonicalFilePath(
+									new File(sourceFilePath));
+		IProgramElement node = findNodeForSourceLineHelper(root, canonicalSFP, lineNumber);
 		if (node != null) {
 			return node;	
 		} else {
