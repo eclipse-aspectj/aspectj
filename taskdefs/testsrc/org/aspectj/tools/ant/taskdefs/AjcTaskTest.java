@@ -13,6 +13,7 @@
 
 package org.aspectj.tools.ant.taskdefs;
 
+import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.selectors.FilenameSelector;
@@ -88,6 +89,31 @@ public class AjcTaskTest extends TestCase {
     }
     
     // ---------------------------------------- argfile
+    public void testDefaultListForked() {
+        AjcTask task = getTask("testdata/default.lst");
+        task.setFork(true);
+        runTest(task, NO_EXCEPTION, IMessageHolderChecker.NONE);
+    }
+
+    public void testCompileErrorListForked() {
+        AjcTask task = getTask("testdata/compileError.lst");
+        task.setFork(true);
+        runTest(task, NO_EXCEPTION, IMessageHolderChecker.NONE);
+    }
+
+    public void testCompileErrorListForkedFailonerror() {
+        AjcTask task = getTask("testdata/compileError.lst");
+        task.setFork(true);
+        task.setFailonerror(true);
+        runTest(task, BuildException.class, IMessageHolderChecker.NONE);
+    }
+    
+    public void testDefaultFileForked() {
+        AjcTask task = getTask("testdata/Default.java");
+        task.setFork(true);
+        runTest(task, NO_EXCEPTION, IMessageHolderChecker.NONE);
+    }
+
     public void testDefaultList() {
         AjcTask task = getTask("testdata/default.lst");
         runTest(task, NO_EXCEPTION, IMessageHolderChecker.INFOS);
@@ -108,15 +134,6 @@ public class AjcTaskTest extends TestCase {
         runTest(task, NO_EXCEPTION, IMessageHolderChecker.ONE_ERROR);
     }
 
-    // ---------------------------------------- ant drivers?
-    // doesn't work..
-//    public void testAntScript() {
-//    	Ant ant = new Ant();
-//    	ant.setProject(new Project());
-//    	ant.setDir(new File("."));
-//    	ant.setAntfile("test-build.xml");
-//		ant.execute();
-//    }
     // ---------------------------------------- sourcefile
     public void testDefaultFile() {
         AjcTask task = getTask("testdata/Default.java");
@@ -128,6 +145,16 @@ public class AjcTaskTest extends TestCase {
         runTest(task, NO_EXCEPTION, IMessageHolderChecker.ONE_ERROR);
     }
     
+// -------- comment-disabled tests
+    // ---------------------------------------- ant drivers?
+    // doesn't work..
+//    public void testAntScript() {
+//      Ant ant = new Ant();
+//      ant.setProject(new Project());
+//      ant.setDir(new File("."));
+//      ant.setAntfile("test-build.xml");
+//      ant.execute();
+//    }
     // XXX find out how to feed files into MatchingTask
 //    public void testCompileErrorFile() {
 //        AjcTask task = getTask("testdata/CompilerError.java");
