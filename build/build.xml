@@ -217,23 +217,24 @@
     <!-- ===================================================================== -->
 	<target name="build-testing-drivers" depends="init-taskdefs,init"
 	      unless="testing.drivers.all.available"> 
-      <ajbuild module="testing-drivers"
-              baseDir="${aspectj.modules.dir}"
-               jarDir="${aj.jar.dir}"
-          trimTesting="false"
-          buildConfig="${build.config}" 
-              version="${build.version.long}"
-              verbose="true"
-          assembleall="true"
-          failonerror="true"/>
+		<antcall target="any-module-all">
+			<param name="module.name" value="testing-drivers"/>
+		</antcall>
 	</target>
 
 	<target name="build-testing-jars" 
-		depends="aspectjrt,
-				build,
-				ajbrowser-all,
-				build-testing-drivers"/>
-
+		depends="aspectjrt,build,ajbrowser-all"
+		description="build testing jars.
+		Use -Dtrim.testing.default=false to build junit tests">
+		<antcall target="any-module">
+			<param name="module.name" value="testing"/>
+		</antcall>
+		<antcall target="any-module">
+			<param name="module.name" value="testing-drivers"/>
+		</antcall>
+		<antcall target="build-testing-drivers"/>
+	</target>
+	
 	<target name="build-testing-client" depends="init-taskdefs,init">
 	  <antcall target="build-module-all">
 	    <param name="module.name" value="testing-client"/>
@@ -244,6 +245,7 @@ To use testing client jar in tests,
 </echo>
 	</target>
 	
+	<!-- remove as unused - see release/build.xml test-sources -->
 	<target name="ajcTests" depends="init,build-testing-drivers">
       <java fork="true" jar="${aj.jar.dir}/testing-drivers-all.jar"
             dir="${aspectj.modules.tests.dir}"
