@@ -523,19 +523,18 @@ public class BcelWeaver implements IWeaver {
 	private void dump(UnwovenClassFile classFile, LazyClassGen clazz) throws IOException {
 		if (zipOutputStream != null) {
 			String mainClassName = classFile.getJavaClass().getClassName();
-			
 			writeZipEntry(getEntryName(mainClassName),
-							clazz.getJavaClass().getBytes());
-			if (!clazz.getChildClasses().isEmpty()) {
-				for (Iterator i = clazz.getChildClasses().iterator(); i.hasNext();) {
+							clazz.getJavaClass(world).getBytes());
+			if (!clazz.getChildClasses(world).isEmpty()) {
+				for (Iterator i = clazz.getChildClasses(world).iterator(); i.hasNext();) {
 					UnwovenClassFile.ChildClass c = (UnwovenClassFile.ChildClass) i.next();
 					writeZipEntry(getEntryName(mainClassName + "$" + c.name), c.bytes);
 				}
 			}
 		} else {
 			classFile.writeWovenBytes(
-				clazz.getJavaClass().getBytes(), 
-				clazz.getChildClasses()
+				clazz.getJavaClass(world).getBytes(), 
+				clazz.getChildClasses(world)
 			);
 		}
 	}

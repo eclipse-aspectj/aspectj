@@ -83,6 +83,14 @@ public final class LazyMethodGen {
     private final Attribute[]     attributes;
     /* private */ final LazyClassGen    enclosingClass;   
     private final BcelMethod      memberView;
+    int highestLineNumber = 0;
+
+	/** This is nonnull if this method is the result of an "inlining".  We currently
+	 * copy methods into other classes for around advice.  We add this field so
+	 * we can get JSR45 information correct.  If/when we do _actual_ inlining, 
+	 * we'll need to subtype LineNumberTag to have external line numbers.
+	 */
+	String fromFilename = null;
 
     private int             maxLocals; 
     
@@ -220,8 +228,7 @@ public final class LazyMethodGen {
 				return ih;
 			}
 		}
-	}    
-
+	}
 
     private void unpackLineNumbers(MethodGen gen) {
         LineNumberTag lr = null;
@@ -233,7 +240,9 @@ public final class LazyMethodGen {
                     if (targeter instanceof LineNumberGen) {
                         LineNumberGen lng = (LineNumberGen) targeter;
                         lng.updateTarget(ih, null);
-                        lr = new LineNumberTag(lng.getSourceLine());
+                        int lineNumber = lng.getSourceLine();
+                        if (highestLineNumber < lineNumber) highestLineNumber = lineNumber;
+                        lr = new LineNumberTag(lineNumber);
                     }
                 }
             }
@@ -830,13 +839,17 @@ public final class LazyMethodGen {
                 // now deal with line numbers 
                 // and store up info for local variables
                 InstructionTargeter[] targeters = ih.getTargeters();
+				int lineNumberOffset =
+					(fromFilename == null)
+						? 0
+						: getEnclosingClass().getSourceDebugExtensionOffset(fromFilename);
                 if (targeters != null) {
                     for (int k = targeters.length - 1; k >= 0; k--) {
                         InstructionTargeter targeter = targeters[k];
                         if (targeter instanceof LineNumberTag) {
                             int line = ((LineNumberTag)targeter).getLineNumber();
                             if (line != currLine) {
-                                gen.addLineNumber(jh, line);
+                                gen.addLineNumber(jh, line + lineNumberOffset);
                                 currLine = line;
                             }
                         } else if (targeter instanceof LocalVariableTag) {

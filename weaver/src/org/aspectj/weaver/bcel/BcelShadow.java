@@ -1189,8 +1189,8 @@ public class BcelShadow extends Shadow {
 				return exitInstructions;
 			}
 		});
-
-
+		
+		
 		range.insert(entryInstructions, Range.InsideBefore);
 	}
     
@@ -1325,9 +1325,19 @@ public class BcelShadow extends Shadow {
 						parameterTypes,
 						new String[0],
 						getEnclosingClass());
+ 
+		String donorFileName = adviceMethod.getEnclosingClass().getInternalFileName();
+		String recipientFileName = getEnclosingClass().getInternalFileName();
+//		System.err.println("donor " + donorFileName);
+//		System.err.println("recip " + recipientFileName);
+		if (! donorFileName.equals(recipientFileName)) {
+			localAdviceMethod.fromFilename = donorFileName;
+			getEnclosingClass().addInlinedSourceFileInfo(
+				donorFileName,
+				adviceMethod.highestLineNumber);
+		}
     
 		getEnclosingClass().addMethodGen(localAdviceMethod);
-		
 		
 		// create a map that will move all slots in advice method forward by extraParamOffset
 		// in order to make room for the new proceed-required arguments that are added at
@@ -1341,6 +1351,8 @@ public class BcelShadow extends Shadow {
 		localAdviceMethod.getBody().insert(
 			BcelClassWeaver.genInlineInstructions(adviceMethod, 
 					localAdviceMethod, varMap, fact, true));
+
+
 					
 		localAdviceMethod.setMaxLocals(nVars);
 					

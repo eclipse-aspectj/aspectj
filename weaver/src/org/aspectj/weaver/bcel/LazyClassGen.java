@@ -25,11 +25,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Unknown;
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldGen;
@@ -41,6 +46,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.PUSH;
 import org.apache.bcel.generic.RETURN;
 import org.apache.bcel.generic.Type;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.util.CollectionUtil;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
@@ -51,7 +57,120 @@ import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverStateInfo;
 
 public final class LazyClassGen {
+	
+	// ---- JSR 45 info
+	int highestLineNumber = 0;
+	
+	private SortedMap /* <String, InlinedSourceFileInfo> */ inlinedFiles = new TreeMap();
+	
+	static class InlinedSourceFileInfo {
+		int highestLineNumber;
+		int offset;	// calculated
+		
+		InlinedSourceFileInfo(int highestLineNumber) {
+			this.highestLineNumber = highestLineNumber;
+		}
+	}	
+	
+	void addInlinedSourceFileInfo(String fullpath, int highestLineNumber) {
+		Object o = inlinedFiles.get(fullpath);
+		if (o != null) {
+			InlinedSourceFileInfo info = (InlinedSourceFileInfo) o;
+			if (info.highestLineNumber < highestLineNumber) {
+				info.highestLineNumber = highestLineNumber;
+			}
+		} else {
+			inlinedFiles.put(fullpath, new InlinedSourceFileInfo(highestLineNumber));
+		}
+	}
+	
+	void calculateSourceDebugExtensionOffsets() {
+		int i = roundUpToHundreds(highestLineNumber);
+		for (Iterator iter = inlinedFiles.values().iterator(); iter.hasNext();) {
+			InlinedSourceFileInfo element = (InlinedSourceFileInfo) iter.next();
+			element.offset = i;
+			i = roundUpToHundreds(i + element.highestLineNumber);
+		}
+	}
 
+	private static int roundUpToHundreds(int i) {
+		return ((i / 100) + 1) * 100;
+	}
+	
+	int getSourceDebugExtensionOffset(String fullpath) {
+		return ((InlinedSourceFileInfo) inlinedFiles.get(fullpath)).offset;
+	}
+	
+	private Unknown getSourceDebugExtensionAttribute() {
+		int nameIndex = constantPoolGen.addUtf8("SourceDebugExtension");
+		String data = getSourceDebugExtensionString();
+		System.err.println(data);
+		byte[] bytes = Utility.stringToUTF(data);
+		int length = bytes.length;
+
+		return new Unknown(nameIndex, length, bytes, constantPoolGen.getConstantPool());		
+	}	
+
+//	private LazyClassGen() {}
+//	public static void main(String[] args) {
+//		LazyClassGen m = new LazyClassGen();
+//		m.highestLineNumber = 37;
+//		m.inlinedFiles.put("boo/baz/foo.java", new InlinedSourceFileInfo( 83));
+//		m.inlinedFiles.put("boo/barz/foo.java", new InlinedSourceFileInfo(292));
+//		m.inlinedFiles.put("boo/baz/moo.java", new InlinedSourceFileInfo(128));	
+//		m.calculateSourceDebugExtensionOffsets();
+//		System.err.println(m.getSourceDebugExtensionString());			
+//	}
+	
+	// For the entire pathname, we're using package names.  This is probably wrong.
+	private String getSourceDebugExtensionString() {
+		StringBuffer out = new StringBuffer();
+		String myFileName = getFileName();
+		// header section
+		out.append("SMAP\n");
+		out.append(myFileName);
+		out.append("\nAspectJ\n");
+		// stratum section
+		out.append("*S AspectJ\n");
+		// file section
+		out.append("*F\n");
+		out.append("1 ");
+		out.append(myFileName);
+		out.append("\n");
+		int i = 2;
+		for (Iterator iter = inlinedFiles.keySet().iterator(); iter.hasNext();) {
+			String element = (String) iter.next(); 
+			int ii = element.lastIndexOf('/');
+			if (ii == -1) {
+				out.append(i++); out.append(' '); 
+				out.append(element); out.append('\n');				
+			} else {
+				out.append("+ "); out.append(i++); out.append(' '); 
+				out.append(element.substring(ii+1)); out.append('\n');
+				out.append(element); out.append('\n');							
+			}
+		}
+		// emit line section
+		out.append("*L\n");
+		out.append("1#1,");
+		out.append(highestLineNumber);
+		out.append(":1,1\n");
+		i = 2;	
+		for (Iterator iter = inlinedFiles.values().iterator(); iter.hasNext();) {
+			InlinedSourceFileInfo element = (InlinedSourceFileInfo) iter.next();
+			out.append("1#"); 
+			out.append(i++); out.append(',');
+			out.append(element.highestLineNumber); out.append(":");
+			out.append(element.offset + 1); out.append(",1\n");
+		}	
+		// end section
+		out.append("*E\n");
+		// and finish up...
+		return out.toString();
+	}
+	
+	// ---- end JSR45-related stuff
+	
     /** Emit disassembled class and newline to out */
     public static void disassemble(String path, String name, PrintStream out) 
         throws IOException {
@@ -123,6 +242,17 @@ public final class LazyClassGen {
 
     }
 
+	public String getInternalFileName() {
+		String str = getInternalClassName();
+		int index = str.lastIndexOf('/');
+		if (index == -1) {
+			return getFileName(); 
+		} else {
+			return str.substring(0, index + 1) + getFileName();
+		}	
+	}
+
+
     public File getPackagePath(File root) {
         String str = getInternalClassName();
         int index = str.lastIndexOf('/');
@@ -143,6 +273,7 @@ public final class LazyClassGen {
     public void addMethodGen(LazyMethodGen gen) {
         //assert gen.getClassName() == super.getClassName();
         methodGens.add(gen);
+        if (highestLineNumber < gen.highestLineNumber) highestLineNumber = gen.highestLineNumber;
     }
 
     public List getMethodGens() {
@@ -150,7 +281,7 @@ public final class LazyClassGen {
 
     }
 
-    private void writeBack() {
+    private void writeBack(BcelWorld world) {
     	if (myType != null && myType.getWeaverState() != null) {
 			myGen.addAttribute(BcelAttributes.bcelAttribute(
 				new AjAttribute.WeaverState(myType.getWeaverState()), 
@@ -161,16 +292,42 @@ public final class LazyClassGen {
     	
         int len = methodGens.size();
         myGen.setMethods(new Method[0]);
+        
+        calculateSourceDebugExtensionOffsets();
         for (int i = 0; i < len; i++) {
             LazyMethodGen gen = (LazyMethodGen) methodGens.get(i);
             // we skip empty clinits
             if (isEmptyClinit(gen)) continue;
             myGen.addMethod(gen.getMethod());
         }
+		if (inlinedFiles.size() != 0) {
+			if (hasSourceDebugExtensionAttribute(myGen)) {
+				world.showMessage(
+					IMessage.WARNING,
+					"overwriting JSR45 information for "
+						+ getFileName()
+						+ " (compiler limitation)",
+					null,
+					null);
+			}
+			myGen.addAttribute(getSourceDebugExtensionAttribute());
+		}
     }
 
-    public JavaClass getJavaClass() {
-        writeBack();
+	private static boolean hasSourceDebugExtensionAttribute(ClassGen gen) {
+		ConstantPoolGen pool = gen.getConstantPool();
+		Attribute[] attrs = gen.getAttributes();
+		for (int i = 0; i < attrs.length; i++) {
+			if ("SourceDebugExtension"
+				.equals(((ConstantUtf8) pool.getConstant(attrs[i].getNameIndex())).getBytes())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+    public JavaClass getJavaClass(BcelWorld world) {
+        writeBack(world);
         return myGen.getJavaClass();
     }
 
@@ -197,12 +354,12 @@ public final class LazyClassGen {
     }
 
 
-	public List getChildClasses() {
+	public List getChildClasses(BcelWorld world) {
 		if (classGens.isEmpty()) return Collections.EMPTY_LIST;
 		List ret = new ArrayList();
 		for (Iterator i = classGens.iterator(); i.hasNext();) {
 			LazyClassGen clazz = (LazyClassGen) i.next();
-			byte[] bytes = clazz.getJavaClass().getBytes();
+			byte[] bytes = clazz.getJavaClass(world).getBytes();
 			String name = clazz.getName();
 			int index = name.lastIndexOf('$');
 			// XXX this could be bad, check use of dollar signs.

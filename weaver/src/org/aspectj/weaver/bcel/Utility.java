@@ -14,6 +14,8 @@
 package org.aspectj.weaver.bcel;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 
@@ -151,6 +153,17 @@ public class Utility {
             Type.getReturnType(newMethod.getSignature()),
             Type.getArgumentTypes(newMethod.getSignature()),
             kind);
+	}
+	
+	public static byte[] stringToUTF(String s) {
+		try {
+			ByteArrayOutputStream out0 = new ByteArrayOutputStream();
+			DataOutputStream out1 = new DataOutputStream(out0);
+			out1.writeUTF(s);
+			return out0.toByteArray();
+		} catch (IOException e) {
+			throw new RuntimeException("sanity check");
+		}
 	}
 
     public static Instruction createInstanceof(InstructionFactory fact, ReferenceType t) {
