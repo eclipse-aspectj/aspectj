@@ -704,25 +704,53 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
     
     /** @return String of the form (# [options|paths|locations|messages]).. */
     protected String containedSummary() {
-        int nOptions = options.size();
-        int nPaths = paths.size();
-        int nLoc = sourceLocations.size();
-        int nMssg = messages.numMessages(null, true);
-        return 
-            ( (nOptions == 0 ? "" : nOptions + " options " )
-            + (nPaths == 0 ? "" : nPaths + " paths " )
-            + (nLoc == 0 ? "" : nLoc + " locations " )
-            + (nMssg == 0 ? "" : nMssg + " messages" )).trim();
+        StringBuffer result = new StringBuffer();
+        addListCount("options", options, result);
+        addListCount("paths", paths, result);
+        addListCount("sourceLocations", sourceLocations, result);
+        List messagesList = messages.getUnmodifiableListView();
+        addListCount("messages", messagesList, result);
+        
+        return result.toString().trim();
     }
+
     
     public String toLongString() { 
         String mssg = "";
         if (0 < messages.numMessages(null, true)) {
             mssg = " expected messages (" + MessageUtil.renderCounts(messages) + ")";
         }
-        return getPrintName() + containedSummary() + mssg.trim();
+        return getPrintName() + containedToLongString() + mssg.trim();
     }
     
+    /** @return String of the form (# [options|paths|locations|messages]).. */
+    protected String containedToLongString() {
+        StringBuffer result = new StringBuffer();
+        addListEntries("options", options, result);
+        addListEntries("paths", paths, result);
+        addListEntries("sourceLocations", sourceLocations, result);
+        List messagesList = messages.getUnmodifiableListView();
+        addListEntries("messages", messagesList, result);
+        
+        return result.toString();
+    }
+
+    private static void addListCount(String name, List list, StringBuffer sink) {
+        int size = list.size();
+        if ((null != list) && (0 < size)) {
+            sink.append(" " + size + " ");
+            sink.append(name);
+        }
+    }
+
+    private static void addListEntries(String name, List list, StringBuffer sink) {
+        if ((null != list) && (0 < list.size())) {
+            sink.append(" " + list.size() + " ");
+            sink.append(name);
+            sink.append(": ");
+            sink.append(list.toString());
+        }
+    }
     private ArrayList makeList(List list) {
         ArrayList result = new ArrayList();
         if (null != list) {
