@@ -142,10 +142,22 @@ public class BcelWeaver implements IWeaver {
 
 
 	public void addLibraryJarFile(File inFile) throws IOException  {
+		List addedAspects = null;
+		if (inFile.isDirectory()) {
+			addedAspects = addAspectsFromDirectory(inFile);
+		} else {
+			addedAspects = addAspectsFromJarFile(inFile);
+		}
+		
+		for (Iterator i = addedAspects.iterator(); i.hasNext();) {
+			ResolvedTypeX aspectX = (ResolvedTypeX) i.next();
+			xcutSet.addOrReplaceAspect(aspectX);
+		}
+	}
+
+	private List addAspectsFromJarFile(File inFile) throws FileNotFoundException, IOException {
 		ZipInputStream inStream = new ZipInputStream(new FileInputStream(inFile)); //??? buffered
-		
 		List addedAspects = new ArrayList();
-		
 		while (true) {
 			ZipEntry entry = inStream.getNextEntry();
 			if (entry == null) break;
@@ -154,25 +166,38 @@ public class BcelWeaver implements IWeaver {
 				continue;
 			}
 			
-			ClassParser parser = new ClassParser(new ByteArrayInputStream(FileUtil.readAsByteArray(inStream)), entry.getName());
-	        JavaClass jc = parser.parse();
-			inStream.closeEntry();
-			
-			ResolvedTypeX type = world.addSourceObjectType(jc).getResolvedTypeX();
-    		if (type.isAspect()) {
-    			addedAspects.add(type);
-    		}
-			
+			addIfAspect(FileUtil.readAsByteArray(inStream), entry.getName(), addedAspects);
+			inStream.closeEntry();						
 		}
-		
 		inStream.close();
-		
-		for (Iterator i = addedAspects.iterator(); i.hasNext();) {
-			ResolvedTypeX aspectX = (ResolvedTypeX) i.next();
-			xcutSet.addOrReplaceAspect(aspectX);
-		}
+		return addedAspects;
 	}
 
+	private List addAspectsFromDirectory(File dir) throws FileNotFoundException, IOException{
+		List addedAspects = new ArrayList();
+		File[] classFiles = FileUtil.listFiles(dir,new FileFilter(){
+		
+			public boolean accept(File pathname) {
+				return pathname.getName().endsWith(".class");
+			}
+		
+		});
+		for (int i = 0; i < classFiles.length; i++) {
+			FileInputStream fis = new FileInputStream(classFiles[i]);
+			byte[] bytes = FileUtil.readAsByteArray(fis);
+			addIfAspect(bytes,classFiles[i].getAbsolutePath(),addedAspects);
+		}
+		return addedAspects;
+	}
+	
+	private void addIfAspect(byte[] bytes, String name, List toList) throws IOException {
+		ClassParser parser = new ClassParser(new ByteArrayInputStream(bytes),name);
+		JavaClass jc = parser.parse();
+		ResolvedTypeX type = world.addSourceObjectType(jc).getResolvedTypeX();
+		if (type.isAspect()) {
+			toList.add(type);
+		}		
+	}
 
 //	// The ANT copy task should be used to copy resources across.
 //	private final static boolean CopyResourcesFromInpathDirectoriesToOutput=false;

@@ -145,6 +145,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("varargs in constructor sig");
   }
   
+  public void testAspectpathdirs() {
+	  runTest("dirs on aspectpath");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

@@ -91,5 +91,17 @@
 		
       
   </sect1>
+  
+   <sect1>
+      <title>Tools</title>
+      
+      <sect2>
+          <title>Aspectpath</title>
+          
+          <para>AspectJ 5 allows the specification of directories (containing .class files) on the aspectpath in
+              addition to jar/zip files.</para>
+      </sect2>
+      
+    </sect1>
 </chapter>
 

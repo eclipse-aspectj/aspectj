@@ -170,24 +170,39 @@ public class AjState {
 		return ret;
 	}
 	
+	private boolean classFileChangedInDirSinceLastBuild(File dir) {
+		File[] classFiles = FileUtil.listFiles(dir, new FileFilter(){
+		
+			public boolean accept(File pathname) {
+				return pathname.getName().endsWith(".class");
+			}
+		
+		});
+		for (int i = 0; i < classFiles.length; i++) {
+			long modTime = classFiles[i].lastModified();
+			if (modTime + 1000 >= lastSuccessfulBuildTime) return true;
+		}
+		return false;
+	}
+	
 	private boolean pathChange(AjBuildConfig oldConfig, AjBuildConfig newConfig) {
 		boolean changed = false;
 		List oldClasspath = oldConfig.getClasspath();
 		List newClasspath = newConfig.getClasspath();
-		if (changed(oldClasspath,newClasspath)) return true;
+		if (changed(oldClasspath,newClasspath,true)) return true;
 		List oldAspectpath = oldConfig.getAspectpath();
 		List newAspectpath = newConfig.getAspectpath();
-		if (changed(oldAspectpath,newAspectpath)) return true;
+		if (changed(oldAspectpath,newAspectpath,true)) return true;
 		List oldInJars = oldConfig.getInJars();
 		List newInJars = newConfig.getInJars();
-		if (changed(oldInJars,newInJars)) return true;
+		if (changed(oldInJars,newInJars,false)) return true;
 		List oldInPath = oldConfig.getInpath();
 		List newInPath = newConfig.getInpath();
-		if (changed(oldInPath, newInPath)) return true;
+		if (changed(oldInPath, newInPath,false)) return true;
 		return changed;
 	}
 	
-	private boolean changed(List oldPath, List newPath) {
+	private boolean changed(List oldPath, List newPath, boolean checkClassFiles) {
 		if (oldPath == null) oldPath = new ArrayList();
 		if (newPath == null) newPath = new ArrayList();
 		if (oldPath.size() != newPath.size()) {
@@ -206,6 +221,9 @@ public class AjState {
 			}
 			if (f.exists() && !f.isDirectory() && (f.lastModified() >= lastSuccessfulBuildTime)) {
 				return true;
+			}
+			if (f.exists() && f.isDirectory() && checkClassFiles) {
+				return classFileChangedInDirSinceLastBuild(f);
 			}
 		}
 		return false;

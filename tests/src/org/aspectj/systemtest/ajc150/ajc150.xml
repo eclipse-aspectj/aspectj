@@ -312,7 +312,7 @@
         <compile files="HandlerBinding.aj" options="-1.5"/>
         <run class="HandlerBinding"/>    
     </ajc-test>
-    
+        
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="@withincode() and call(* println(..))">
        <compile files="WithinCodeBinding1.aj" options="-1.5"/>
        <run class="WithinCodeBinding1"/>
@@ -2018,5 +2018,15 @@
       <compile files="DeathByAnnotations.aj" options="-1.5,-emacssym" xlintfile="ignoreTypeNotExposed.properties"/>
       <run class="p.q.DeathByAnnotations"/>
    </ajc-test>
+
+
+    <!-- ============================================================== -->
+    
+    <ajc-test dir="options/aspectpath" title="dirs on aspectpath">
+        <compile files="MyAspect.aj" options="-d out"/>
+        <compile files="MyClass.java" options="-aspectpath out">
+            <message kind="warning" line="3" text="a method"/>
+        </compile>
+    </ajc-test>
 
 </suite>

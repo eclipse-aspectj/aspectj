@@ -441,7 +441,7 @@ public class BuildArgParser extends Main {
 		            while (st.hasMoreTokens()) {
 		            	String filename = st.nextToken();
 		            	File jarFile = makeFile(filename);
-                        if (jarFile.exists() && FileUtil.hasZipSuffix(filename)) {
+                        if (jarFile.exists() && (FileUtil.hasZipSuffix(filename) || jarFile.isDirectory())) {
 			            	buildConfig.getAspectpath().add(jarFile);    
 		            	} else {
                             showError("bad aspectpath: " + filename);
