@@ -23,7 +23,7 @@
        2003-2005 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated March 10, 2005
+  <para>Last updated March 13, 2005
   </para>
   <para>
    For a list of recently-updated FAQ entries, see <xref linkend="q:faqchanges"/>
@@ -751,10 +751,8 @@
             particular to AOP, and past programming language innovations also
             do that, as will future developments.
           </para>
-          <para>Slides for a long talk on this topic are at
-            <ulink url="http://www.cs.ubc.ca/~gregor/vinst-2-17-01.zip">
-              http://www.cs.ubc.ca/~gregor/vinst-2-17-01.zip
-            </ulink>.
+          <para>(Slides for a long talk on this topic were once available at
+              http://www.cs.ubc.ca/~gregor/vinst-2-17-01.zip.)
           </para>
         </answer>
       </qandaentry>
@@ -3998,18 +3996,18 @@ vmparam -Xmx384m
            with the 1.0 downloads.  It contains instructions for building
            from sources.
           </para>
-          <para>AspectJ 1.1 source code is available through CVS using the CVS Root 
-           <literal>dev.eclipse.org:/home/technology</literal>.  For more information
-           on accessing the CVS tree at eclipse.org, see the documentation 
-           from <ulink url="http://eclipse.org">http://eclipse.org</ulink>.
-           Find specific instructions in the AspectJ tree at
-           <ulink url="http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/readme-build-and-test-aspectj.html?rev=HEAD&amp;content-type=text/html&amp;cvsroot=Technology_Project">
-           org.aspectj/modules/build/readme-build-and-test-aspectj.html</ulink>.
-		   If you would like to use Ant to checkout the sources,
-		   build the distribution, and test everything, see
-           <ulink url="http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/release/build.xml?rev=HEAD&amp;content-type=text/xml&amp;cvsroot=Technology_Project">
-           org.aspectj/modules/build/release/build.xml</ulink>.		   
-          </para>
+			<para>AspectJ 1.1+ source code is available through CVS using the 
+				CVS Root <literal>dev.eclipse.org:/home/technology</literal>. 
+				For more information on accessing the CVS tree at eclipse.org, 
+				see the documentation from <ulink 
+				url="http://eclipse.org">http://eclipse.org</ulink>. Find 
+				specific instructions in the AspectJ tree at <ulink 
+				url="http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/readme-build-and-test-aspectj.html?rev=HEAD&amp;content-type=text/html&amp;cvsroot=Technology_Project"> 
+				org.aspectj/modules/build/readme-build-and-test-aspectj.html</ulink>. 
+				If you would like to use Ant to checkout the sources, build the 
+				distribution, and test everything, see <ulink 
+				url="http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/release/build.xml?rev=HEAD&amp;content-type=text/xml&amp;cvsroot=Technology_Project"> 
+				org.aspectj/modules/build/release/build.xml</ulink>. </para>
           <para>The AspectJ tree is organized into modules as follows:
           <programlisting>
   org.aspectj/
@@ -4043,9 +4041,13 @@ vmparam -Xmx384m
             and runtime.
             </para></listitem>
             <listitem><para>For ajbrowser: the compiler modules, plus
-            ajbrowser, taskdefs, and ajde.
+            ajbrowser, ajdoc, taskdefs, and ajde.
             </para></listitem>
-            <listitem><para>For the test harness: the ajbrowser modules, plus
+            <listitem><para>For the AspectJ distribution, the ajbrowser modules, 
+				plus aspectj5rt and org.aspectj.lib.
+            </para></listitem>
+            <listitem><para>For the test harness (or to run the release build
+				scripts and tests): the ajbrowser modules, plus
             testing, testing-client, and testing-drivers.
             </para></listitem>
             <listitem><para>To run the test suite: the test harness modules, plus
@@ -4518,6 +4520,7 @@ vmparam -Xmx384m
             <itemizedlist>
         <listitem><para><xref linkend="q:java5"/></para></listitem>
         <listitem><para><xref linkend="q:dynamicaop"/></para></listitem>
+        <listitem><para><xref linkend="q:buildingsource"/></para></listitem>
             </itemizedlist>
           </para>
         </answer>
