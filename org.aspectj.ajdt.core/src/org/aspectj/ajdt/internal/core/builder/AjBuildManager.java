@@ -185,7 +185,7 @@ public class AjBuildManager {
     
     /** init only on initial batch compile? no file-specific options */
 	private void initBcelWorld(IMessageHandler handler) throws IOException {
-		bcelWorld = new BcelWorld(buildConfig.getClasspath(), handler);
+		bcelWorld = new BcelWorld(buildConfig.getClasspath(), handler, null);
 		bcelWorld.setXnoInline(buildConfig.isXnoInline());
 		bcelWeaver = new BcelWeaver(bcelWorld);
 		

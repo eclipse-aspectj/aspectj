@@ -15,6 +15,7 @@ package org.aspectj.weaver;
 
 import java.util.*;
 
+import org.aspectj.asm.IRelationship;
 import org.aspectj.bridge.*;
 import org.aspectj.weaver.patterns.*;
 
@@ -54,7 +55,13 @@ public class Checker extends ShadowMunger {
                 new ISourceLocation[]{this.getSourceLocation()});
 			world.getMessageHandler().handleMessage(message);
 			
-			AsmRelationshipProvider.checkerMunger(world.getModel(), shadow, this);
+			if (world.xrefHandler != null) {
+				world.xrefHandler.addCrossReference(this.getSourceLocation(),shadow.getSourceLocation(),IRelationship.Kind.DECLARE);
+			}
+			
+			if (world.getModel() != null) {
+				AsmRelationshipProvider.checkerMunger(world.getModel(), shadow, this);
+			}
 		}
 		return false;
 	}

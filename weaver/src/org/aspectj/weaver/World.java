@@ -30,6 +30,7 @@ import org.aspectj.weaver.patterns.Pointcut;
 
 public abstract class World {
 	protected IMessageHandler messageHandler = IMessageHandler.SYSTEM_ERR;
+	protected ICrossReferenceHandler xrefHandler = null;
 
     protected Map typeMap = new HashMap(); // Signature to ResolvedType
     
@@ -239,6 +240,10 @@ public abstract class World {
 
 	public void setMessageHandler(IMessageHandler messageHandler) {
 		this.messageHandler = messageHandler;
+	}
+	
+	public void setXRefHandler(ICrossReferenceHandler xrefHandler) {
+		this.xrefHandler = xrefHandler;
 	}
 	
 	public void showMessage(

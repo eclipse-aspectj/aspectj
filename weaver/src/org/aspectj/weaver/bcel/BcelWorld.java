@@ -38,6 +38,7 @@ import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ConcreteTypeMunger;
+import org.aspectj.weaver.ICrossReferenceHandler;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeMunger;
@@ -61,7 +62,7 @@ public class BcelWorld extends World {
 	}
 	
 	public BcelWorld(String cp) {
-		this(makeDefaultClasspath(cp), IMessageHandler.THROW);
+		this(makeDefaultClasspath(cp), IMessageHandler.THROW, null);
 	}
 	
 	private static List makeDefaultClasspath(String cp) {
@@ -82,10 +83,11 @@ public class BcelWorld extends World {
       	return ret;
 	}
 	
-	public BcelWorld(List classPath, IMessageHandler handler) {
+	public BcelWorld(List classPath, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
 		//this.aspectPath = new ClassPathManager(aspectPath, handler);
 		this.classPath = new ClassPathManager(classPath, handler);
 		setMessageHandler(handler);	
+		setXRefHandler(xrefHandler);
 	}
 	
 	public void addPath (String name) {

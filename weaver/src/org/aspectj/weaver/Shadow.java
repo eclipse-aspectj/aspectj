@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.aspectj.asm.IRelationship;
 import org.aspectj.bridge.*;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.lang.JoinPoint;
@@ -338,6 +339,11 @@ public abstract class Shadow {
 		for (Iterator iter = mungers.iterator(); iter.hasNext();) {
 			ShadowMunger munger = (ShadowMunger) iter.next();
 			munger.implementOn(this);
+			
+			if (world.xrefHandler != null) {
+				world.xrefHandler.addCrossReference(munger.getSourceLocation(),this.getSourceLocation(),IRelationship.Kind.ADVICE);
+			}
+			
 			if (world.getModel() != null) {
 				//System.err.println("munger: " + munger + " on " + this);
 				AsmRelationshipProvider.adviceMunger(world.getModel(), this, munger);
