@@ -19,7 +19,6 @@ about the software, its performance or its conformity to any specification.
 
 package spacewar;
 
-import java.util.Enumeration;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 

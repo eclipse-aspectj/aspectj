@@ -22,8 +22,6 @@ Part of the Spacewar system.
 package spacewar;
 
 
-import java.util.Vector;
-import java.util.Enumeration;
 import java.awt.Graphics;
 import java.awt.Color;
 

@@ -26,7 +26,6 @@ import java.util.Enumeration;
 import java.awt.Graphics;
 import java.awt.Canvas;
 import java.awt.Image;
-import java.awt.event.KeyListener;
 
 /**
  * The display aspects capture the look and feel of the Game in modular
