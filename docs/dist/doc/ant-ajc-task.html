@@ -131,6 +131,27 @@ array and may include another argfile by reference.
 </tr>
 
 <tr>
+<td VALIGN=TOP>Xbootclasspath
+</td>
+<td VALIGN=TOP><code>ajc</code> does not support a -bootclasspath option,
+but this tries to fake it by adding these Path entries
+to the start of the classpath.
+</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>Xextdirs
+</td>
+<td VALIGN=TOP><code>ajc</code> does not support a -extdirs option,
+but this tries to fake it by adding all .jar or .zip files in
+the Path entries to the classpath after the so-call bootclasspath
+and before the user classpath.
+</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
 <td VALIGN=TOP>aspectpath, aspectpathref
  <br>(<a href="#nestedElements">Path</a>)
 </td>
@@ -243,6 +264,14 @@ defaults to <tt>false</tt>.</td>
 <td VALIGN=TOP>verbose</td>
 <td VALIGN=TOP>Whether to emit compiler status messages during the compile;
 defaults to <tt>false</tt>.</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>Xlistfileargs</td>
+<td VALIGN=TOP>Whether to emit list of file arguments during the compile
+(but behaves now like verbose); 
+defaults to <tt>false</tt></td>
 <td ALIGN=CENTER VALIGN=TOP>No</td>
 </tr>
 
