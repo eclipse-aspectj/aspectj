@@ -1,6 +1,8 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 <suite>
 
+
+
     <!--
     
     <ajc-test dir="new" pr="885"

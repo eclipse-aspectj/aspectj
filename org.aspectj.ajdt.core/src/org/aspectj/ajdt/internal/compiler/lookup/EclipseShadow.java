@@ -13,25 +13,12 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
-import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
-import org.aspectj.ajdt.internal.compiler.ast.InterTypeConstructorDeclaration;
-import org.aspectj.ajdt.internal.compiler.ast.InterTypeDeclaration;
-import org.aspectj.ajdt.internal.compiler.ast.InterTypeFieldDeclaration;
-import org.aspectj.ajdt.internal.compiler.ast.InterTypeMethodDeclaration;
+
+import org.aspectj.ajdt.internal.compiler.ast.*;
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.SourceLocation;
-import org.aspectj.weaver.Member;
-import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
-import org.aspectj.weaver.World;
+import org.aspectj.weaver.*;
 import org.aspectj.weaver.ast.Var;
-import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
-import org.eclipse.jdt.internal.compiler.ast.AstNode;
-import org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
-import org.eclipse.jdt.internal.compiler.ast.MessageSend;
-import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.*;
 import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 
 /**
@@ -44,8 +31,8 @@ import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 public class EclipseShadow extends Shadow {
 	EclipseFactory world;
 	AstNode astNode;
-	//XXXReferenceContext context;
-	AbstractMethodDeclaration enclosingMethod;
+	ReferenceContext context;
+	//AbstractMethodDeclaration enclosingMethod;
 
 	public EclipseShadow(EclipseFactory world, Kind kind, Member signature, AstNode astNode, 
 							ReferenceContext context)
@@ -53,8 +40,7 @@ public class EclipseShadow extends Shadow {
 		super(kind, signature, null);
 		this.world = world;
 		this.astNode = astNode;
-		//XXX can this fail in practice?
-		this.enclosingMethod = (AbstractMethodDeclaration)context;
+		this.context = context;
 	}
 
 	public World getIWorld() {
@@ -63,7 +49,13 @@ public class EclipseShadow extends Shadow {
 
 
 	public TypeX getEnclosingType() {
-		return world.fromBinding(enclosingMethod.binding.declaringClass);
+		if (context instanceof TypeDeclaration) {
+			return world.fromBinding(((TypeDeclaration)context).binding);
+		} else if (context instanceof AbstractMethodDeclaration) {
+			return world.fromBinding(((AbstractMethodDeclaration)context).binding.declaringClass);
+		} else {
+			return ResolvedTypeX.MISSING;
+		}
 	}
 	
 	public ISourceLocation getSourceLocation() {
@@ -72,7 +64,14 @@ public class EclipseShadow extends Shadow {
 	}
 
 	public Member getEnclosingCodeSignature() {
-		return world.makeResolvedMember(enclosingMethod.binding);
+		if (context instanceof TypeDeclaration) {
+			return new Member(Member.STATIC_INITIALIZATION, getEnclosingType(), 0, 
+						ResolvedTypeX.VOID, "<clinit>", TypeX.NONE);
+		} else if (context instanceof AbstractMethodDeclaration) {
+			return world.makeResolvedMember(((AbstractMethodDeclaration)context).binding);
+		} else {
+			return null;
+		}
 	}
 
 	// -- all below here are only used for implementing, not in matching
@@ -114,14 +113,12 @@ public class EclipseShadow extends Shadow {
 					world.makeResolvedMember(e.binding), astNode, context);
 		} else if (astNode instanceof MessageSend) {
 			MessageSend e = (MessageSend)astNode;
+			if (e.isSuperAccess()) return null;  // super calls don't have shadows
 			return new EclipseShadow(world, Shadow.MethodCall,
 					world.makeResolvedMember(e.binding), astNode, context);
 		} else if (astNode instanceof ExplicitConstructorCall) {
-			//??? these need to be ignored, they don't have shadows
-			return null;
-//			ExplicitConstructorCall e = (ExplicitConstructorCall)astNode;
-//			return new EclipseShadow(world, Shadow.MethodCall,
-//					world.makeResolvedMember(e.binding), astNode, context);					
+			//??? these should be ignored, they don't have shadows
+			return null;				
 		} else if (astNode instanceof AbstractMethodDeclaration) {
 			AbstractMethodDeclaration e = (AbstractMethodDeclaration)astNode;
 			Shadow.Kind kind;
@@ -139,13 +136,23 @@ public class EclipseShadow extends Shadow {
 				kind = Shadow.MethodExecution;
 			} else if (e instanceof ConstructorDeclaration) {
 				kind = Shadow.ConstructorExecution;
+			} else if (e instanceof Clinit) {
+				kind = Shadow.StaticInitialization; 
 			} else {
-				throw new RuntimeException("unimplemented: " + e);
+				return null;
+				//throw new RuntimeException("unimplemented: " + e);
 			}
 			return new EclipseShadow(world, kind,
 					world.makeResolvedMember(e.binding), astNode, context);
+		} else if (astNode instanceof TypeDeclaration) {
+			return new EclipseShadow(world, Shadow.StaticInitialization,
+							new Member(Member.STATIC_INITIALIZATION, 
+								world.fromBinding(((TypeDeclaration)astNode).binding), 0, 
+								ResolvedTypeX.VOID, "<clinit>", TypeX.NONE),
+							astNode, context);
 		} else {
-			throw new RuntimeException("unimplemented: " + astNode);
+			return null;
+			//throw new RuntimeException("unimplemented: " + astNode);
 		}		
 	}
 

@@ -65,31 +65,31 @@ public class AjProblemReporter extends ProblemReporter {
 	{
 		if (!world.getWorld().getDeclareSoft().isEmpty()) {
 			Shadow callSite = world.makeShadow(location, referenceContext);
-			if (callSite == null) {
-				super.unhandledException(exceptionType, location);
-				return;
-			}
 			Shadow enclosingExec = world.makeShadow(referenceContext);
-	//		System.err.println("about to show error for unhandled exception: "  + exceptionType + 
-	//				" at " + location + " in " + referenceContext);
-			
+//			System.err.println("about to show error for unhandled exception: "  + new String(exceptionType.sourceName()) + 
+//					" at " + location + " in " + referenceContext);		
 			
 			for (Iterator i = world.getWorld().getDeclareSoft().iterator(); i.hasNext(); ) {
 				DeclareSoft d = (DeclareSoft)i.next();
-				FuzzyBoolean match = d.getPointcut().match(callSite);
-				if (match.alwaysTrue()) {
-					//System.err.println("matched callSite: "  + callSite + " with " + d);
-					return;
-				} else if (!match.alwaysFalse()) {
-					throw new RuntimeException("unimplemented, shouldn't have fuzzy match here");
+				if (callSite != null) {
+					FuzzyBoolean match = d.getPointcut().match(callSite);
+					if (match.alwaysTrue()) {
+						//System.err.println("matched callSite: "  + callSite + " with " + d);
+						return;
+					} else if (!match.alwaysFalse()) {
+						//!!! need this check to happen much sooner
+						//throw new RuntimeException("unimplemented, shouldn't have fuzzy match here");
+					}
 				}
-				
-				match = d.getPointcut().match(enclosingExec);
-				if (match.alwaysTrue()) {
-					//System.err.println("matched enclosingExec: "  + enclosingExec + " with " + d);
-					return;
-				} else if (!match.alwaysFalse()) {
-					throw new RuntimeException("unimplemented, shouldn't have fuzzy match here");
+				if (enclosingExec != null) {
+					FuzzyBoolean match = d.getPointcut().match(enclosingExec);
+					if (match.alwaysTrue()) {
+						//System.err.println("matched enclosingExec: "  + enclosingExec + " with " + d);
+						return;
+					} else if (!match.alwaysFalse()) {
+						//!!! need this check to happen much sooner
+						//throw new RuntimeException("unimplemented, shouldn't have fuzzy match here");
+					}
 				}
 			}
 		}

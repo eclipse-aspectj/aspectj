@@ -5762,4 +5762,10 @@
         <run class="AspectInitError"/>
     </ajc-test>
     
+    <ajc-test dir="bugs" pr="34925"
+      title="declare soft and throw statements">
+        <compile files="ConvertToUnchecked.java"/>
+        <run class="ConvertToUnchecked"/>
+    </ajc-test>
+    
 </suite>
