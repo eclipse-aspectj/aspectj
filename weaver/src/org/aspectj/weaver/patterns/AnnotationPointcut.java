@@ -105,9 +105,9 @@ public class AnnotationPointcut extends NameBindingPointcut {
 
 		Shadow.Kind kind = shadow.getKind();
 		if (kind == Shadow.StaticInitialization) {
-			toMatchAgainst = rMember.getType();
+			toMatchAgainst = rMember.getDeclaringType().resolve(shadow.getIWorld());
 		} else if ( (kind == Shadow.ExceptionHandler)) {
-			toMatchAgainst = TypeX.forName(rMember.getSignature()).resolve(shadow.getIWorld());
+			toMatchAgainst = rMember.getParameterTypes()[0].resolve(shadow.getIWorld());
 		} else {
 			toMatchAgainst = rMember;
 		}
@@ -149,7 +149,17 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 
 		if (shadow.getKind()!=Shadow.MethodCall &&
-			shadow.getKind()!=Shadow.MethodExecution) {
+			shadow.getKind()!=Shadow.ConstructorCall &&
+			shadow.getKind()!=Shadow.ConstructorExecution &&
+			shadow.getKind()!=Shadow.MethodExecution &&
+			shadow.getKind()!=Shadow.FieldSet &&
+			shadow.getKind()!=Shadow.FieldGet &&
+			shadow.getKind()!=Shadow.StaticInitialization &&
+			shadow.getKind()!=Shadow.PreInitialization &&
+			shadow.getKind()!=Shadow.AdviceExecution &&
+			shadow.getKind()!=Shadow.Initialization &&
+			shadow.getKind()!=Shadow.ExceptionHandler
+			) {
 			IMessage lim = MessageUtil.error("Binding not supported in @pcds (1.5.0 M2 limitation) for "+shadow.getKind()+" join points, see: " +
 						getSourceLocation());
 			shadow.getIWorld().getMessageHandler().handleMessage(lim);
