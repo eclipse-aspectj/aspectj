@@ -99,7 +99,7 @@ public class CFlowStack {
     public CFlow peekTopCFlow() {
         Stack stack = getThreadStack();
         if (stack.isEmpty()) return null;
-        return (CFlow)stack.get(0);
+        return (CFlow)stack.elementAt(0);
     }
 
     public boolean isValid() {
