@@ -962,7 +962,7 @@ public class LangUtil {
         String classpath, 
         String mainClass, 
         String[] args) {
-        File java = LangUtil.getJavaExecutable(classpath);
+        File java = LangUtil.getJavaExecutable();
         ArrayList cmd = new ArrayList();
         cmd.add(java.getAbsolutePath());
         cmd.add("-classpath");
@@ -998,10 +998,9 @@ public class LangUtil {
     
     /**
      * Find java executable File path from java.home system property.
-     * @param classpath ignored for now
      * @return File associated with the java command, or null if not found.
      */
-    public static File getJavaExecutable(String classpath) { // XXX weak
+    public static File getJavaExecutable() { 
         String javaHome = null;
         File result = null;
         //java.home
@@ -1155,7 +1154,7 @@ public class LangUtil {
                 String classpath, 
                 String mainClass, 
                 String[] args) {
-            init(LangUtil.getJavaExecutable(classpath),
+            init(LangUtil.getJavaExecutable(),
                     classpath, mainClass, args);
         }
 
