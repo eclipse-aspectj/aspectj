@@ -65,7 +65,8 @@ public abstract class WeaveTestCase extends TestCase {
         weaveTest(name, outName, l);
     }
     
-    static String classDir = "../weaver/bin";
+    //static String classDir = "../weaver/bin";
+	static String classDir = BcweaverTests.TESTDATA_PATH + File.separator + "bin";
     
     
 	public void weaveTest(String name, String outName, List planners) throws IOException {
