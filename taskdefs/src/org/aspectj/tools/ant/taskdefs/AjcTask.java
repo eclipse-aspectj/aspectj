@@ -30,10 +30,9 @@ import org.aspectj.util.*;
 /**
  * This runs the AspectJ 1.1 compiler, 
  * supporting all the command-line options.
- * In 1.1.1, ajc started copying resources from the
- * source directory as javac does, but users might
- * want to copy additional resources using
- * sourceRootCopyFilter.
+ * In 1.1.1, ajc copies resources from input jars, 
+ * but you can copy resources from the source directories
+ * using sourceRootCopyFilter.
  * When not forking, things will be copied as needed 
  * for each iterative compile,
  * but when forking things are only copied at the 
@@ -138,6 +137,8 @@ public class AjcTask extends MatchingTask {
         // ignore srcDir -- all files picked up in recalculated file list
 //      ajc.setSrcDir(javac.getSrcdir());        
         ajc.addFiles(javac.getFileList());
+        // mimic Javac task's behavior in copying resources,
+        ajc.setSourceRootCopyFilter("**/CVS/*,**/*.java,**/*.aj");
         // arguments can override the filter, add to paths, override options
         ajc.readArguments(javac.getCurrentCompilerArgs());
         
@@ -216,7 +217,7 @@ public class AjcTask extends MatchingTask {
     
     private static final File DEFAULT_DESTDIR = new File(".") {
         public String toString() {
-            return "AjcTask.DEFAULT_DESTDIR";
+            return "(no destination dir specified)";
         }
     };
     
@@ -632,7 +633,9 @@ public class AjcTask extends MatchingTask {
      * @param doCopy
      */
     public void setCopyInjars(boolean doCopy){
-        this.copyInjars = doCopy;
+        ignore("copyInJars");
+        log("copyInjars not required since 1.1.1.\n", Project.MSG_WARN);
+        //this.copyInjars = doCopy;
     }
     /**
      * Option to copy all files from
@@ -950,7 +953,7 @@ public class AjcTask extends MatchingTask {
                 String path = outjar.getAbsolutePath();
                 int len = FileUtil.zipSuffixLength(path);
                 if (len < 1) {
-                    log("not copying injars - weird outjar: " + path);
+                    log("not copying resources - weird outjar: " + path);
                 } else {
                     path = path.substring(0, path.length()-len) + ".tmp.jar";
                     tmpOutjar = new File(path);
@@ -980,30 +983,15 @@ public class AjcTask extends MatchingTask {
      * @throw BuildException if options conflict
      */
     protected void verifyOptions() {
-        // log warnings - should be able to disable entirely,
-        // after they verify that this is indeed always working
-        if (null != sourceRootCopyFilter) {
-            log("sourceRootCopyFilter not required in 1.1.1", Project.MSG_WARN);
-        }
-        if (copyInjars) {
-            log("copyInjars not required in 1.1.1.\n", Project.MSG_WARN);
-        }
-
-        // throw BuildException for conflicting options
         StringBuffer sb = new StringBuffer();
         if (fork && isInIncrementalMode() && !isInIncrementalFileMode()) {
             sb.append("can fork incremental only using tag file.\n");
         }
         
-        if ((null == outjar) && (DEFAULT_DESTDIR == destDir)) { 
-            final String REQ = " requires dest dir or output jar.\n";            if (copyInjars) {
-                sb.append("copyInjars");
-                sb.append(REQ);
-            }
-            if (null != sourceRootCopyFilter) {
-                sb.append("sourceRootCopyFilter");
-                sb.append(REQ);
-            }
+        if ((null != sourceRootCopyFilter) && (null == outjar) 
+        	&& (DEFAULT_DESTDIR == destDir)) {        	
+            final String REQ = " requires dest dir or output jar.\n";            sb.append("sourceRootCopyFilter");
+            sb.append(REQ);
         }
         if (0 < sb.length()) {
             throw new BuildException(sb.toString());
@@ -1520,7 +1508,7 @@ public class AjcTask extends MatchingTask {
             } else if ("-classpath".equals(flag)) {
                 setClasspath(new Path(project, in.next()));
             } else if ("-Xcopyinjars".equals(flag)) {
-                setCopyInjars(true);
+                setCopyInjars(true); // ignored - will be flagged by setter
             } else if ("-g".equals(flag)) {
                 setDebug(true);
             } else if (flag.startsWith("-g:")) {
