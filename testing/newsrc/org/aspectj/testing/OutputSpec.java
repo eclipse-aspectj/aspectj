@@ -27,11 +27,13 @@ public class OutputSpec {
 	
 	public void matchAgainst(String output) {
 		boolean matches = false;
+		int lineNo = 0;
 		StringTokenizer strTok = new StringTokenizer(output,"\n");
 		if (strTok.countTokens() == expectedOutputLines.size()) {
 			matches = true;
 			for (Iterator iter = expectedOutputLines.iterator(); iter.hasNext();) {
 				String line = (String) iter.next();
+				lineNo++;
 				String outputLine = strTok.nextToken().trim();
 				if (!line.equals(outputLine)) {
 					matches = false;
@@ -49,6 +51,8 @@ public class OutputSpec {
 			}
 			failMessage.append("But found output:\n");
 			failMessage.append(output);
+			failMessage.append("\n");
+			failMessage.append("First difference is on line " + lineNo);
 			failMessage.append("\n");
 			AjcTestCase.fail(failMessage.toString());
 		}
