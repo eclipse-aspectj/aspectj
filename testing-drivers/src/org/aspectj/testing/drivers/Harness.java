@@ -39,6 +39,7 @@ import org.aspectj.testing.run.Runner;
 import org.aspectj.testing.util.BridgeUtil;
 import org.aspectj.testing.util.RunUtils;
 import org.aspectj.testing.util.StreamsHandler;
+import org.aspectj.testing.util.StreamsHandler.Result;
 import org.aspectj.testing.xml.AjcSpecXmlReader;
 import org.aspectj.testing.xml.XMLWriter;
 import org.aspectj.util.FileUtil;
@@ -50,7 +51,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -167,6 +170,9 @@ public class Harness {
     
     /** be extra quiet if true */
     private boolean quietHarness;
+    
+    /** just don't say anything! */
+    protected boolean silentHarness;
 
     /** map of feature names to features */
     private HashMap features;
@@ -257,9 +263,10 @@ public class Harness {
                 boolean skip = !spec.adoptParentValues(runtime, holder);                
                 // awful/brittle assumption about number of skips == number of skip messages
                 final List skipList = MessageUtil.getMessages(holder, IMessage.INFO, false, "skip");
-                if (verboseHarness || skip || (0 < skipList.size())) {
+                if ((verboseHarness || skip || (0 < skipList.size()))) {
                     final List curArgs = Arrays.asList(globalOptionVariants[i]);
 					logln("runMain(" + suiteFile + ", " + curArgs + ")");
+					doStartSuite(suiteFile);			
                     if (verboseHarness) {
                         String format = "yyyy.MM.dd G 'at' hh:mm:ss a zzz";
                         SimpleDateFormat formatter = new SimpleDateFormat (format);
@@ -269,7 +276,7 @@ public class Harness {
                         logln("Java version: " + JAVA_VERSION);
                         logln("AspectJ version: " + ASPECTJ_VERSION);
                     }
-                    if (!quietHarness && holder.hasAnyMessage(null, true)) {
+                    if (!(quietHarness || silentHarness) && holder.hasAnyMessage(null, true)) {
                         MessageUtil.print(getLogStream(), holder, "skip - ");
                         MessageUtil.printMessageCounts(getLogStream(), holder, "skip - ");
                     }
@@ -281,13 +288,43 @@ public class Harness {
                         resultList.add(result);
                     }
                     final long elapsed = System.currentTimeMillis() - startTime; 
-                    report(result.status, skipList.size(), result.numIncomplete, elapsed);
+                    doEndSuite(suiteFile,elapsed);
+                    report(result.status, skipList.size(), result.numIncomplete, elapsed);                   
                 }
             }
 		}
     }   
     
-    /** Run the test suite specified by the spec */
+
+	/**
+	 * Tell all IRunListeners that we are about to start a test suite
+	 * @param suiteFile
+	 * @param elapsed
+	 */
+	private void doEndSuite(File suiteFile, long elapsed) {
+		Collection c = features.values();
+		for (Iterator iter = c.iterator(); iter.hasNext();) {
+			Feature element = (Feature) iter.next();
+			if (element.listener instanceof TestCompleteListener) {
+				((TestCompleteListener)element.listener).doEndSuite(suiteFile,elapsed);
+			}
+		}					
+	}
+
+	/**
+	 * @param suiteFile
+	 */
+	private void doStartSuite(File suiteFile) {
+		Collection c = features.values();
+		for (Iterator iter = c.iterator(); iter.hasNext();) {
+			Feature element = (Feature) iter.next();
+			if (element.listener instanceof TestCompleteListener) {
+				((TestCompleteListener)element.listener).doStartSuite(suiteFile);
+			}
+		}		
+	}
+
+	/** Run the test suite specified by the spec */
     protected RunResult run(AjcTest.Suite.Spec spec) {
         LangUtil.throwIaxIfNull(spec, "spec");
         /*
@@ -353,17 +390,22 @@ public class Harness {
         long msElapsed ) {
     	if (logResults) {
             RunUtils.AJCSUITE_PRINTER.printRunStatus(getLogStream(), status);
-        } else if (!quietHarness && (0 < status.numMessages(null, true))) {
-            MessageUtil.print(getLogStream(), status, "");    
+        } else if (!(quietHarness || silentHarness) && (0 < status.numMessages(null, true))) {
+        	if (!silentHarness) {
+            	MessageUtil.print(getLogStream(), status, "");    
+        	}
         }
         
-        logln(BridgeUtil.childString(status, numSkipped, numIncomplete) 
+       	logln(BridgeUtil.childString(status, numSkipped, numIncomplete) 
             + " " + (msElapsed/1000) + " seconds");
+        
     }
 
     // --------------- delegate methods
     protected void logln(String s) {
-        getLogStream().println(s);
+    	if (!silentHarness) {
+        	getLogStream().println(s);
+    	}
     }
     
     protected PrintStream getLogStream() {
@@ -406,8 +448,10 @@ public class Harness {
             return true; // skip bad input
         } else if ("-verboseHarness".equals(option)) {
             verboseHarness = true;
-        } else if ("-quietHarness".equals(option)) {
-            quietHarness = true;
+		} else if ("-quietHarness".equals(option)) {
+			quietHarness = true;
+		} else if ("-silentHarness".equals(option)) {
+			silentHarness = true;
         } else if ("-keepTemp".equals(option)) {
             keepTemp = true; 
         } else if ("-killTemp".equals(option)) {
@@ -568,7 +612,12 @@ class FeatureHarness extends Harness {
             + OPTION_DELIM + "-hideStreams",
           "-release", 
               "-baseline" 
-              + OPTION_DELIM + "-ajctestSkipKeywords=knownLimitation,purejava" 
+              + OPTION_DELIM + "-ajctestSkipKeywords=knownLimitation,purejava",
+          "-junit",
+          	  "-silentHarness" + OPTION_DELIM + "-logJUnit" + OPTION_DELIM +
+          	  "-hideStreams", 
+          "-cruisecontrol",
+          	  "-junit" + OPTION_DELIM + "-ajctestSkipKeywords=knownLimitation,purejava"
         };
     static {
         Properties optionAliases = Harness.getOptionAliases();
@@ -610,7 +659,8 @@ class FeatureHarness extends Harness {
      * @see org.aspectj.testing.drivers.Harness#log(String)
 	 */
 	protected void logln(String s) {
-        streamsHandler.lnlog(s);
+		if (!silentHarness)
+        	streamsHandler.lnlog(s);
 	}
 
     /**
@@ -635,6 +685,7 @@ class FeatureHarness extends Harness {
         out.println("  -logXMLFail       log XML definition for each failed AjcTest");
         out.println("  -logXMLPass       log XML definition for each passed AjcTest");
         out.println("  -logXMLAll        log XML definition for each AjcTest");
+        out.println("  -logJUnit         log all tests in JUnit XML report style");
         out.println("  -hideRunStreams   hide err/out streams during java runs");
         out.println("  -hideCompilerStreams   hide err/out streams during compiler runs");
         out.println("  -traceTests       log pass|fail, /time/memory taken after each test");
@@ -680,6 +731,9 @@ class FeatureHarness extends Harness {
         } else if (option.startsWith("-logXML")) {
             feature = new Feature(option, AjcTest.class, 
                 new XmlLogger(option, streams, validator));
+        } else if (option.startsWith("-logJUnit")) {
+        	feature = new Feature(option, AjcTest.class,
+        		new JUnitXMLLogger(option,streams,validator));
         } else if (option.startsWith("-log")) {
             feature = new Feature(option, AjcTest.class, 
                 new RunLogger(option, SKIPSTREAMS, streams, validator, verbose));
@@ -1076,8 +1130,17 @@ abstract class TestCompleteListener extends RunListener {
         }
     }
     
-    /** subclasses implement this to do some initialization */
+    /** subclasses implement this to do some per-test initialization */
     protected void doRunStarted(IRunStatus run) {
+    }
+    
+    
+    /** subclasses implement this to do some per-suite initialization */
+    protected void doStartSuite(File suite) {
+    }
+    
+    /** subclasses implement this to do end-of-suite processing */
+    protected void doEndSuite(File suite, long duration) {
     }
 
     public final void runCompleted(IRunStatus run) {
@@ -1153,6 +1216,95 @@ class XmlLogger extends TestCompleteListener {
         out.flush();
     }
     
+}
+
+/**
+ * Write junit style XML output (for incorporation into html test results and
+ * cruise control reports
+ * format is...
+ * <?xml version="1.0" encoding="UTF-8" ?>
+ * <testsuite errors="x" failures="x" name="suite-name" tests="xx" time="ss.ssss">
+ * <properties/>
+ * <testcase name="passingTest" time="s.hh"></testcase>
+ * <testcase name="failingTest" time="s.hh">
+ *   <failure message="failureMessage" type="ExceptionType">free text</failure>
+ * </testcase>
+ * </testsuite>
+ */
+class JUnitXMLLogger extends TestCompleteListener {
+
+  private File suite;
+  private StringBuffer junitOutput;
+  private long startTimeMillis;
+  private int numTests = 0;
+  private int numFails = 0;
+  private DecimalFormat timeFormatter = new DecimalFormat("#.##");
+
+  public JUnitXMLLogger(        
+  	String label,
+  	StreamsHandler streamsHandler, 
+  	IRunValidator runValidator) {
+  		super(label + ALL, runValidator, streamsHandler);
+  		junitOutput = new StringBuffer();	
+  }
+  
+	/* (non-Javadoc)
+	 * @see org.aspectj.testing.drivers.TestCompleteListener#doRunCompleted(org.aspectj.testing.run.IRunStatus, org.aspectj.testing.util.StreamsHandler.Result)
+	 */
+	public void doRunCompleted(IRunStatus run, Result result) {		
+		long duration = System.currentTimeMillis()  - startTimeMillis;
+		numTests++;
+		junitOutput.append("<testcase name=\"" + run.getIdentifier() + "\" ");
+		junitOutput.append("time=\"" + timeFormatter.format(((float)duration)/1000.0) + "\"");
+		junitOutput.append(">");
+		if (!run.runResult())  {
+			numFails++;
+			junitOutput.append("\n");
+			junitOutput.append("<failure message=\"test failed\" type=\"unknown\">\n");
+//			junitOutput.println(result.junitOutput);
+//			junitOutput.println(result.err);
+			junitOutput.append("</failure>\n");
+		}
+		junitOutput.append("</testcase>\n");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.aspectj.testing.drivers.TestCompleteListener#runStarted(org.aspectj.testing.run.IRunStatus)
+	 */
+	public void runStarting(IRunStatus run) {
+		 super.runStarting(run);		
+		 startTimeMillis = System.currentTimeMillis();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.aspectj.testing.drivers.TestCompleteListener#doEndSuite(java.io.File, long)
+	 */
+	protected void doEndSuite(File suite, long duration) {
+		super.doEndSuite(suite, duration);
+		String suiteName = suite.getName();
+		// junit reporter doesn't like ".xml" on the end
+		suiteName = suiteName.substring(0,suiteName.indexOf('.'));
+		PrintStream out = streamsHandler.getLogStream();
+		out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		String timeStr = new DecimalFormat("#.##").format(duration/1000.0);					
+		out.print("<testsuite errors=\"0\" failures=\"" + numFails + "\" ");
+		out.print("name=\"" + suite.getName() + "\" " );
+		out.println("tests=\"" + numTests + "\" time=\"" + timeStr + "\">");
+		out.print(junitOutput.toString());
+		out.println("</testsuite>");	
+	}
+
+	/* (non-Javadoc)
+	 * @see org.aspectj.testing.drivers.TestCompleteListener#doStartSuite(java.io.File)
+	 */
+	protected void doStartSuite(File suite) {
+		super.doStartSuite(suite);
+		this.suite = suite;
+		numTests = 0;
+		numFails = 0;
+		junitOutput = new StringBuffer();
+	}
+
 }
 
 /** log pass and/or failed runs */
