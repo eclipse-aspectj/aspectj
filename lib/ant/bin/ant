@@ -170,6 +170,11 @@ if $usejikes; then
   ANT_OPTS="$ANT_OPTS -Dbuild.compiler=jikes"
 fi
 
+# defined to be able to test taskdefs immediately
+if [ -n "$USE_TASKDEFS" ] ; then
+	LOCALCLASSPATH="$ANT_HOME/../../taskdefs/bin;$LOCALCLASSPATH"
+fi
+
 # For Cygwin, switch paths to Windows format before running java
 if $cygwin; then
   ANT_HOME=`cygpath --path --windows "$ANT_HOME"`
