@@ -1,0 +1,141 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+<!-- ../ path when running, ../../ when editing? -->
+
+
+<!-- Notes
+	
+	- test titles should be prefixed with the corresponding 
+	  sample anchor/label, and suffixed to be unique.
+	  
+	- take care to keep error line numbers in sync with sources	
+	
+	TODO
+	- verify that RunTime and RuntimeWrites throw Errors	
+	- harness bug: errStreamIsError not false when not forked; fork?
+	- check output/error stream against expected
+	- verify api-clients, using access to aspectjtools.jar...
+	   
+-->
+<suite>
+		
+	<ajc-test dir="common" title="declares-* default declares">
+		<compile 
+			argfiles="company.lst"
+			files="declares/Declares.java">
+			<message 
+				kind="error" 
+				file="Main.java"
+				line="15" 
+				text="Factory"/>
+			<message 
+				kind="warning" 
+				file="Main.java"
+				line="30" 
+				text="throw"/>
+			<message 
+				kind="warning" 
+				file="Main.java"
+				line="31" 
+				text="handles"/>
+			</compile>
+		</ajc-test>
+
+	<ajc-test dir="common" 
+		title="ensure company compiles and runs without aspects">
+		<compile argfiles="company.lst"/>
+		<run class="com.company.app.Main"/>
+	</ajc-test>
+
+	<ajc-test dir="common" title="language-initialization">
+		<compile files="language/Initialization.java"/>
+		<run class="language.Initialization" 
+			errStreamIsError="true"/>
+		</ajc-test>
+	
+	<ajc-test dir="common" title="language-*Context">
+		<compile files="language/Context.java"/>
+		<run class="language.Context" />
+		</ajc-test>
+
+	<ajc-test dir="common" title="language-cflowRecursionBasic">
+		<compile files="language/ControlFlow.java"/>
+		<run class="language.ControlFlow"/>
+		</ajc-test>
+
+
+	<ajc-test dir="common" title="tracing-simpleLogging">
+		<compile 
+			argfiles="company.lst"
+			files="tracing/Logging.java"/>
+		<run class="com.company.app.Main"/>
+		</ajc-test>
+
+	<ajc-test dir="common" title="tracing-traceJoinPoints">
+		<compile 
+			argfiles="company.lst"
+			files="tracing/TraceJoinPoints.java,
+					tracing/TraceJoinPointsBase.java,
+					tracing/TraceMyJoinPoints.java"/>
+		<run class="com.company.app.Main"/>
+		</ajc-test>
+
+	<ajc-test dir="inoculated/src" title="declares-inoculated-*">
+		<compile files="com/xerox/printing/CompileTime.java">
+			<message line="20" kind="warning"/>
+			<message line="24" kind="warning"/>
+			<message line="33" kind="error"/>
+			<message line="39" kind="error"/>
+			</compile>
+		</ajc-test>
+
+	<ajc-test dir="inoculated/src" title="testing-inoculated-roundTrip">
+		<compile files="com/xerox/printing/RoundTrip.java"/>
+		<run class="com.xerox.printing.RoundTrip"/>
+		</ajc-test>
+
+	<ajc-test dir="inoculated/src" title="testing-inoculated-roundTrip">
+		<compile files="BufferTest.java"/>
+		<run class="BufferTest"/>
+		</ajc-test>
+
+	<ajc-test dir="inoculated/src" title="testing-inoculated-roundTrip">
+		<compile files="BufferTest.java"/>
+		<run class="BufferTest"/>
+		</ajc-test>
+
+	<ajc-test dir="inoculated/src" title="testing-inoculated-injectIOException">
+		<compile files="Injection.java"/>
+		<run class="Injection"/>
+		</ajc-test>
+
+	<ajc-test dir="inoculated/src" title="testing-inoculated-injectIOException">
+		<compile files="MainFailure.java"/>
+		<run class="MainFailure"/>
+		</ajc-test>
+
+	<ajc-test dir="inoculated/src" title="testing-inoculated-runtimeFactories">
+		<compile files="RunTime.java"/>
+		</ajc-test>
+
+	<ajc-test dir="inoculated/src" title="testing-inoculated-runtimeWrites">
+		<compile files="RuntimeWrites.java"/>
+		</ajc-test>
+
+	<ajc-test dir="inoculated/src" title="testing-inoculated-{proxies}">
+		<compile files="StubReplace.java"/>
+		<run class="StubReplace"/>
+		</ajc-test>
+
+</suite>
+
+<!--
+	TODO XXX verify api-clients using aspectjtools.jar?
+
+	<ajc-test dir="api-clients" title="api-ajde-modelWalker">
+		<compile files="org/aspectj/samples/JoinPointCollector.java"
+			classpath="../aj-build/dist/tools/lib/aspectjtools.jar;"/>
+		<run ... />
+		</ajc-test>
+
+-->
+	
