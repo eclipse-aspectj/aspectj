@@ -320,6 +320,7 @@ public class BuildArgParser extends Main {
             	if (args.size() > nextArgIndex) {
 					buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_Inpath, CompilerOptions.PRESERVE);
 					
+					List inPath = buildConfig.getInpath();
 					StringTokenizer st = new StringTokenizer(
 						((ConfigParser.Arg)args.get(nextArgIndex)).getValue(), 
 						File.pathSeparator);
@@ -327,16 +328,16 @@ public class BuildArgParser extends Main {
 						String filename = st.nextToken();
 						File file = makeFile(filename);
 						if (file.exists() && FileUtil.hasZipSuffix(filename)) {
-							buildConfig.getInpath().add(file);    
+							inPath.add(file);    
 						} else {
 							if (file.isDirectory()) {
-								buildConfig.getInpath().add(file);
+								inPath.add(file);
 							} else 
 		            		
 							showError("bad inpath component: " + filename);  
 						}
 					}
-					
+					buildConfig.setInPath(inPath);
 					args.remove(args.get(nextArgIndex));            		
             	}
             } else if (arg.equals("-injars")) {;

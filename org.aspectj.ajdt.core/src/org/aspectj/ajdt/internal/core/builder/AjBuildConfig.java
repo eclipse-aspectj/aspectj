@@ -17,6 +17,7 @@
 package org.aspectj.ajdt.internal.core.builder;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.aspectj.util.FileUtil;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 /**
@@ -37,11 +39,12 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 	public static final String AJLINT_WARN = "warn";
 	public static final String AJLINT_ERROR = "error";
 	public static final String AJLINT_DEFAULT = "default";
-
+	
 	private File outputDir;
 	private File outputJar;
 	private List/*File*/ sourceRoots = new ArrayList();
 	private List/*File*/ files = new ArrayList();
+	private List /*File*/ binaryFiles = new ArrayList();  // .class files in indirs...
 	private List/*File*/ inJars = new ArrayList();
 	private List/*File*/ inPath = new ArrayList();
 	private Map/*String->File*/ sourcePathResources = new HashMap();
@@ -67,6 +70,27 @@ public class AjBuildConfig { // XXX needs bootclasspath?
     // incremental variants handled by the compiler client, but parsed here
     private boolean incrementalMode;
     private File incrementalFile;
+    
+	public static class BinarySourceFile {
+		public BinarySourceFile(File dir, File src) {
+			this.fromInPathDirectory = dir;
+			this.binSrc = src;
+		}
+		public File fromInPathDirectory;
+		public File binSrc;
+		
+		public boolean equals(Object obj) {
+			if ((obj instanceof BinarySourceFile) &&
+				(obj != null)) {
+				BinarySourceFile other = (BinarySourceFile)obj;
+				return(binSrc.equals(other.binSrc));
+			}
+			return false;
+		}
+		public int hashCode() {
+			return binSrc != null ? binSrc.hashCode() : 0; 
+		}
+	}
     
 	/**
 	 * Intialises the javaOptions Map to hold the default 
@@ -150,6 +174,15 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 		return files;
 	}
 
+	/**
+	 * returned files includes all .class files found in
+	 * a directory on the inpath, but does not include
+	 * .class files contained within jars.
+	 */
+	public List/*BinarySourceFile*/ getBinaryFiles() {
+		return binaryFiles;
+	}
+	
 	public File getOutputDir() {  
 		return outputDir;
 	}
@@ -219,6 +252,22 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 	
 	public void setInPath(List dirsOrJars) {
 		inPath = dirsOrJars;
+		
+		// remember all the class files in directories on the inpath
+		binaryFiles = new ArrayList();
+		FileFilter filter = new FileFilter() {
+			public boolean accept(File pathname) {
+				return pathname.getPath().endsWith(".class");
+			}};
+		for (Iterator iter = dirsOrJars.iterator(); iter.hasNext();) {
+			File inpathElement = (File) iter.next();
+			if (inpathElement.isDirectory()) {
+			    File[] files = FileUtil.listFiles(inpathElement, filter);
+				for (int i = 0; i < files.length; i++) {
+					binaryFiles.add(new BinarySourceFile(inpathElement,files[i]));
+				}
+			}			
+		}
 	}
 
 	public List getSourceRoots() {

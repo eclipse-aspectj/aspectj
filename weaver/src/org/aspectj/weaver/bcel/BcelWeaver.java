@@ -167,27 +167,7 @@ public class BcelWeaver implements IWeaver {
 		
 		// For each file, add it either as a real .class file or as a resource
 		for (int i = 0; i < files.length; i++) {
-			
-			FileInputStream fis = new FileInputStream(files[i]);
-			byte[] bytes = FileUtil.readAsByteArray(fis);
-			// String relativePath = files[i].getPath();
-			
-			// ASSERT: files[i].getAbsolutePath().startsWith(inFile.getAbsolutePath()
-			// or we are in trouble...
-			String filename = files[i].getAbsolutePath().substring(
-			                    inFile.getAbsolutePath().length()+1);
-			UnwovenClassFile classFile = new UnwovenClassFile(new File(outDir,filename).getAbsolutePath(),bytes);
-			if (filename.endsWith(".class")) {
-				// System.err.println("BCELWeaver: processing class from input directory "+classFile);
-				this.addClassFile(classFile);
-				addedClassFiles.add(classFile);
-//			} else {
-//			  if (CopyResourcesFromInpathDirectoriesToOutput) {
-//				// System.err.println("BCELWeaver: processing resource from input directory "+filename);
-//				addResource(filename,classFile);
-//			  }
-			}
-			fis.close();
+			addedClassFiles.add(addClassFile(files[i],inFile,outDir));
 		}
 		
 		return addedClassFiles;
@@ -288,6 +268,24 @@ public class BcelWeaver implements IWeaver {
 ////    		throw new RuntimeException(classFile.getClassName());
 //    	}
     	world.addSourceObjectType(classFile.getJavaClass());
+    }
+    
+    public UnwovenClassFile addClassFile(File classFile, File inPathDir, File outDir) throws IOException {
+		FileInputStream fis = new FileInputStream(classFile);
+		byte[] bytes = FileUtil.readAsByteArray(fis);
+		// String relativePath = files[i].getPath();
+		
+		// ASSERT: files[i].getAbsolutePath().startsWith(inFile.getAbsolutePath()
+		// or we are in trouble...
+		String filename = classFile.getAbsolutePath().substring(
+		                    inPathDir.getAbsolutePath().length()+1);
+		UnwovenClassFile ucf = new UnwovenClassFile(new File(outDir,filename).getAbsolutePath(),bytes);
+		if (filename.endsWith(".class")) {
+			// System.err.println("BCELWeaver: processing class from input directory "+classFile);
+			this.addClassFile(ucf);
+		}
+		fis.close();
+		return ucf;
     }
 
 

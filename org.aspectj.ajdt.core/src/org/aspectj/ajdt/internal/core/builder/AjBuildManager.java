@@ -19,6 +19,7 @@ import java.util.jar.*;
 import java.util.zip.ZipEntry;
 
 import org.aspectj.ajdt.internal.compiler.AjCompilerAdapter;
+import org.aspectj.ajdt.internal.compiler.IBinarySourceProvider;
 import org.aspectj.ajdt.internal.compiler.IIntermediateResultsRequestor;
 import org.aspectj.ajdt.internal.compiler.IOutputClassFileNameProvider;
 import org.aspectj.ajdt.internal.compiler.InterimCompilationResult;
@@ -43,11 +44,18 @@ import org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 //import org.eclipse.jdt.internal.compiler.util.HashtableOfObject;
 
-public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAdapterFactory {
+public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourceProvider,ICompilerAdapterFactory {
 	private static final String CANT_WRITE_RESULT = "unable to write compilation result";
 	private static final String MANIFEST_NAME = "META-INF/MANIFEST.MF";
 	static final boolean COPY_INPATH_DIR_RESOURCES = false;
     static final boolean FAIL_IF_RUNTIME_NOT_FOUND = false;
+    
+    private static final FileFilter binarySourceFilter = 
+		new FileFilter() {
+			public boolean accept(File f) {
+				return f.getName().endsWith(".class");
+			}};
+			
 	private IProgressListener progressListener = null;
 	
 	private int compiledCount;
@@ -56,6 +64,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 	private JarOutputStream zos;
 	private boolean batchCompile = true;
 	private INameEnvironment environment;
+	
+	private Map /* String -> List<UCF>*/ binarySourcesForTheNextCompile = new HashMap();
 	
 	private IHierarchy structureModel;
 	public AjBuildConfig buildConfig;
@@ -146,6 +156,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
                     bcelWorld.setModel(AsmManager.getDefault().getHierarchy());
                     // in incremental build, only get updated model?
                 }
+                binarySourcesForTheNextCompile = state.getBinaryFilesToCompile();
                 performCompilation(buildConfig.getFiles());
                 if (handler.hasErrors()) {
                     return false;
@@ -157,13 +168,17 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 //                }
                 // System.err.println("XXXX start inc ");
                 List files = state.getFilesToCompile(true);
-                for (int i = 0; (i < 5) && !files.isEmpty(); i++) {
+                binarySourcesForTheNextCompile = state.getBinaryFilesToCompile();
+                boolean hereWeGoAgain = !(files.isEmpty() && binarySourcesForTheNextCompile.isEmpty());
+                for (int i = 0; (i < 5) && hereWeGoAgain; i++) {
                     // System.err.println("XXXX inc: " + files);
                     performCompilation(files);
                     if (handler.hasErrors() || (progressListener!=null && progressListener.isCancelledRequested())) {
                         return false;
                     } 
                     files = state.getFilesToCompile(false);
+                    binarySourcesForTheNextCompile = state.getBinaryFilesToCompile();
+                    hereWeGoAgain = !(files.isEmpty() && binarySourcesForTheNextCompile.isEmpty());
                 }
                 if (!files.isEmpty()) {
                     return batchBuild(buildConfig, baseHandler);
@@ -425,19 +440,26 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 		
 		for (Iterator i = buildConfig.getInpath().iterator(); i.hasNext(); ) {
 			File inPathElement = (File)i.next();
-			List unwovenClasses = bcelWeaver.addJarFile(inPathElement,buildConfig.getOutputDir(),true);
-			state.binarySourceFiles.put(inPathElement.getPath(),unwovenClasses); // good enough for ajc to lump these together
+			if (!inPathElement.isDirectory()) {
+				// its a jar file on the inpath
+				// the weaver method can actually handle dirs, but we don't call it, see next block
+				List unwovenClasses = bcelWeaver.addJarFile(inPathElement,buildConfig.getOutputDir(),true);
+				state.binarySourceFiles.put(inPathElement.getPath(),unwovenClasses);
+			} else {
+				// add each class file in an in-dir individually, this gives us the best error reporting
+				// (they are like 'source' files then), and enables a cleaner incremental treatment of
+				// class file changes in indirs.
+				File[] binSrcs = FileUtil.listFiles(inPathElement, binarySourceFilter);
+				for (int j = 0; j < binSrcs.length; j++) {
+					UnwovenClassFile ucf = 
+						bcelWeaver.addClassFile(binSrcs[j], inPathElement, buildConfig.getOutputDir());
+					List ucfl = new ArrayList();
+					ucfl.add(ucf);
+					state.binarySourceFiles.put(binSrcs[j].getPath(),ucfl);
+				}
+			}
 		}
 		
-//		if (buildConfig.getSourcePathResources() != null) {
-//			// XXX buildConfig.getSourcePathResources always returns null (CompileCommand.java)
-//			for (Iterator i = buildConfig.getSourcePathResources().keySet().iterator(); i.hasNext(); ) {
-//	//			File resource = (File)i.next();
-//				String resource = (String)i.next();
-//				bcelWeaver.addResource(resource, (File)buildConfig.getSourcePathResources().get(resource), buildConfig.getOutputDir());
-//	//			bcelWeaver.addResource(resource, buildConfig.getOutputDir());
-//			}
-//		}
 		
 		bcelWeaver.setReweavableMode(buildConfig.isXreweavable(),buildConfig.getXreweavableCompressClasses());
 
@@ -575,7 +597,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 		options.produceReferenceInfo(true); //TODO turn off when not needed
 		
 		try {
-			compiler.compile(getCompilationUnits(filenames, encodings));
+		 	compiler.compile(getCompilationUnits(filenames, encodings));
 		} catch (OperationCanceledException oce) {
 			handler.handleMessage(new Message("build cancelled:"+oce.getMessage(),IMessage.WARNING,null,null));
 		}
@@ -865,10 +887,18 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 						factory,
 						getInterimResultRequestor(),
 						progressListener,
-						this,
+						this,  // IOutputFilenameProvider
+						this,  // IBinarySourceProvider
 						state.binarySourceFiles,
 						state.resultsFromFile.values(),
 						buildConfig.isNoWeave());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.aspectj.ajdt.internal.compiler.IBinarySourceProvider#getBinarySourcesForThisWeave()
+	 */
+	public Map getBinarySourcesForThisWeave() {
+		return binarySourcesForTheNextCompile;
 	}
 	
 }   // class AjBuildManager

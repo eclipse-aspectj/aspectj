@@ -26,6 +26,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.ajdt.internal.compiler.InterimCompilationResult;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
+import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -59,6 +62,8 @@ public class AjState {
 	
 	Set addedFiles;
 	Set deletedFiles;
+	Set /*BinarySourceFile*/addedBinaryFiles;
+	Set /*BinarySourceFile*/deletedBinaryFiles;
 	
 	List addedClassFiles;
 	
@@ -101,6 +106,14 @@ public class AjState {
 		deletedFiles = new HashSet(oldFiles);
 		deletedFiles.removeAll(newFiles);
 		
+		Set oldBinaryFiles = new HashSet(buildConfig.getBinaryFiles());
+		Set newBinaryFiles = new HashSet(newBuildConfig.getBinaryFiles());
+		
+		addedBinaryFiles = new HashSet(newBinaryFiles);
+		addedBinaryFiles.removeAll(oldBinaryFiles);
+		deletedBinaryFiles = new HashSet(oldBinaryFiles);
+		deletedBinaryFiles.removeAll(newBinaryFiles);
+		
 		this.newBuildConfig = newBuildConfig;
 		
 		return true;
@@ -126,6 +139,27 @@ public class AjState {
 		return ret;
 	}
 
+	private Collection getModifiedBinaryFiles() {		
+		return getModifiedBinaryFiles(lastSuccessfulBuildTime);
+	}
+
+	Collection getModifiedBinaryFiles(long lastBuildTime) {
+		List ret = new ArrayList();
+		//not our job to account for new and deleted files
+		for (Iterator i = buildConfig.getBinaryFiles().iterator(); i.hasNext(); ) {
+			AjBuildConfig.BinarySourceFile bsfile = (AjBuildConfig.BinarySourceFile)i.next();
+			File file = bsfile.binSrc;
+			if (!file.exists()) continue;
+			
+			long modTime = file.lastModified();
+			//System.out.println("check: " + file + " mod " + modTime + " build " + lastBuildTime);			
+			if (modTime >= lastBuildTime) {
+				ret.add(bsfile);
+			} 
+		}
+		return ret;
+	}
+	
 	private boolean pathChange(AjBuildConfig oldConfig, AjBuildConfig newConfig) {
 		boolean changed = false;
 		List oldClasspath = oldConfig.getClasspath();
@@ -153,7 +187,13 @@ public class AjState {
 			if (!oldPath.get(i).equals(newPath.get(i))) {
 				return true;
 			}
-			File f = new File((String)oldPath.get(i));
+			Object o = oldPath.get(i);  // String on classpath, File on other paths
+			File f = null;
+			if (o instanceof String) {
+				f = new File((String)o);
+			} else {
+				f = (File) o;
+			}
 			if (f.exists() && !f.isDirectory() && (f.lastModified() >= lastSuccessfulBuildTime)) {
 				return true;
 			}
@@ -188,6 +228,28 @@ public class AjState {
 		return thisTime;
 	}
 
+	public Map /* String -> List<ucf> */ getBinaryFilesToCompile() {
+		if (lastSuccessfulBuildTime == -1 || buildConfig == null) {
+			return binarySourceFiles;
+		}
+		// else incremental...
+		Map toWeave = new HashMap();
+		List addedOrModified = new ArrayList();
+		addedOrModified.addAll(addedBinaryFiles);
+		addedOrModified.addAll(getModifiedBinaryFiles());
+		for (Iterator iter = addedOrModified.iterator(); iter.hasNext();) {
+			AjBuildConfig.BinarySourceFile bsf = (AjBuildConfig.BinarySourceFile) iter.next();
+			UnwovenClassFile ucf = createUnwovenClassFile(bsf);
+			if (ucf == null) continue;
+			List ucfs = new ArrayList();
+			ucfs.add(ucf);
+			binarySourceFiles.put(bsf.binSrc.getPath(),ucfs);
+			toWeave.put(bsf.binSrc.getPath(),ucfs);
+		}
+		deleteBinaryClassFiles();
+		return toWeave;
+	}
+	
 	private void deleteClassFiles() {
 		for (Iterator i = deletedFiles.iterator(); i.hasNext(); ) {
 			File deletedFile = (File)i.next();
@@ -200,6 +262,16 @@ public class AjState {
 			for (int j=0; j<intRes.unwovenClassFiles().length; j++ ) {
 				deleteClassFile(intRes.unwovenClassFiles()[j]);
 			}
+		}
+	}
+	
+	private void deleteBinaryClassFiles() {
+		// range of bsf is ucfs, domain is files (.class and jars) in inpath/jars
+		for (Iterator iter = deletedBinaryFiles.iterator(); iter.hasNext();) {
+			AjBuildConfig.BinarySourceFile deletedFile = (AjBuildConfig.BinarySourceFile) iter.next();
+			List ucfs = (List) binarySourceFiles.get(deletedFile.binSrc.getPath());
+			binarySourceFiles.remove(deletedFile.binSrc.getPath());
+			deleteClassFile((UnwovenClassFile)ucfs.get(0));
 		}
 	}
 	
@@ -263,7 +335,8 @@ public class AjState {
 		}				
 	}
 
-	private void deleteClassFile(UnwovenClassFile classFile) {
+	
+	private void deleteClassFile(UnwovenClassFile classFile) {		
 		classesFromName.remove(classFile.getClassName());
 		
 		buildManager.bcelWeaver.deleteClassFile(classFile.getClassName());
@@ -272,6 +345,18 @@ public class AjState {
 		} catch (IOException e) {
 			//!!! might be okay to ignore
 		}
+	}
+	
+	private UnwovenClassFile createUnwovenClassFile(AjBuildConfig.BinarySourceFile bsf) {
+		UnwovenClassFile ucf = null;
+		try {
+			ucf = buildManager.bcelWeaver.addClassFile(bsf.binSrc, bsf.fromInPathDirectory, buildConfig.getOutputDir());
+		} catch(IOException ex) {
+			IMessage msg = new Message("can't read class file " + bsf.binSrc.getPath(),
+									   new SourceLocation(bsf.binSrc,0),false);
+			buildManager.handler.handleMessage(msg);
+		}
+		return ucf;
 	}
 	
 	public void noteResult(InterimCompilationResult result) {

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +48,9 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 	private IIntermediateResultsRequestor intermediateResultsRequestor;
 	private IProgressListener progressListener;
 	private IOutputClassFileNameProvider outputFileNameProvider;
+	private IBinarySourceProvider binarySourceProvider;
 	private WeaverMessageHandler weaverMessageHandler;
-	private List /* InterimCompilationResult */ binarySources = new ArrayList();
+	private Map /* fileName |-> List<UnwovenClassFile> */ binarySourceSetForFullWeave = new HashMap();
 	private Collection /*InterimCompilationResult*/ resultSetForFullWeave = Collections.EMPTY_LIST;
 
 	
@@ -77,7 +79,8 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 							 IIntermediateResultsRequestor intRequestor,
 							 IProgressListener progressListener,
 							 IOutputClassFileNameProvider outputFileNameProvider,
-							 Map binarySourceEntries, /* fileName |-> List<UnwovenClassFile> */
+							 IBinarySourceProvider binarySourceProvider,
+							 Map fullBinarySourceEntries, /* fileName |-> List<UnwovenClassFile> */
 							 Collection /* InterimCompilationResult */ resultSetForFullWeave,
 							 boolean isXNoWeave) {
 		this.compiler = compiler;
@@ -86,15 +89,15 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 		this.intermediateResultsRequestor = intRequestor;
 		this.progressListener = progressListener;
 		this.outputFileNameProvider = outputFileNameProvider;
+		this.binarySourceProvider = binarySourceProvider;
 		this.isXNoWeave = isXNoWeave;
+		this.binarySourceSetForFullWeave = fullBinarySourceEntries;
 		this.resultSetForFullWeave = resultSetForFullWeave;
 		this.eWorld = eFactory;
 		
 		IMessageHandler msgHandler = world.getMessageHandler();
 		weaverMessageHandler = new WeaverMessageHandler(msgHandler, compiler);
 		world.setMessageHandler(weaverMessageHandler);
-		
-		addBinarySource(binarySourceEntries);
 	}
 	
 	public void beforeCompiling(ICompilationUnit[] sourceUnits) {
@@ -134,7 +137,6 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 		} else {
 			resultsPendingWeave.add(intRes);
 		}
-		
 	}
 	
 	public void beforeResolving(CompilationUnitDeclaration unit, ICompilationUnit sourceUnit, boolean verifyMethods, boolean analyzeCode, boolean generateCode) {
@@ -178,8 +180,9 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 		}
 	}
 	
-	private void addBinarySource(Map binarySourceEntries) {
+	private List getBinarySourcesFrom(Map binarySourceEntries) {
 		// Map is fileName |-> List<UnwovenClassFile>
+		List ret = new ArrayList();
 		for (Iterator binIter = binarySourceEntries.keySet().iterator(); binIter.hasNext();) {
 			String sourceFileName = (String) binIter.next();
 			List unwovenClassFiles = (List) binarySourceEntries.get(sourceFileName);
@@ -188,8 +191,9 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 			result.noSourceAvailable();
 			InterimCompilationResult binarySource = 
 				new InterimCompilationResult(result,unwovenClassFiles);
-			binarySources.add(binarySource);
+			ret.add(binarySource);
 		}
+		return ret;
 	}
 	
 	private void notifyRequestor() {
@@ -209,13 +213,21 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 		}
 
 		weaver.prepareForWeave();
-
-		if (isBatchCompile) {
-			resultsPendingWeave.addAll(binarySources);  
-			// passed into the compiler, the set of classes in injars and inpath...
-		} else if (weaver.needToReweaveWorld()) {
-			addAllKnownClassesToWeaveList();
+		if (weaver.needToReweaveWorld()) {
+			if (!isBatchCompile) addAllKnownClassesToWeaveList(); // if it's batch, they're already on the list...
+			resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourceSetForFullWeave));
+		} else {
+			Map binarySourcesToAdd = binarySourceProvider.getBinarySourcesForThisWeave();
+			resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourcesToAdd));
 		}
+
+//		if (isBatchCompile) {
+//			resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourceSetForFullWeave));  
+//			// passed into the compiler, the set of classes in injars and inpath...
+//		} else if (weaver.needToReweaveWorld()) {
+//			addAllKnownClassesToWeaveList();
+//			resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourceSetForFullWeave));
+//		}
 
 		weaver.weave(new WeaverAdapter(this,weaverMessageHandler,progressListener));
 	}
