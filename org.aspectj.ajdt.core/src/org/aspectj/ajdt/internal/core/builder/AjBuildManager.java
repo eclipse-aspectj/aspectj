@@ -981,5 +981,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
     public static void setAsmHierarchyBuilder(AsmHierarchyBuilder newBuilder) {
         asmHierarchyBuilder = newBuilder;
     }
+    
+    public AjState getState() {
+        return state;
+    }
 }   // class AjBuildManager
 
