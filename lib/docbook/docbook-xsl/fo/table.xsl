@@ -108,7 +108,7 @@ to be incomplete. Don't forget to read the source, too :-)</para>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
-
+  
   <xsl:variable name="colspecs">
     <xsl:choose>
       <xsl:when test="$use.extensions != 0
@@ -124,10 +124,12 @@ to be incomplete. Don't forget to read the source, too :-)</para>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
-
-  <xsl:attribute name="width">
-    <xsl:value-of select="$table.width"/>
-  </xsl:attribute>
+  
+  <xsl:if test="position() = 1">
+  	<xsl:attribute name="width">
+      <xsl:value-of select="$table.width"/>
+  	</xsl:attribute>
+  </xsl:if>
 
   <xsl:choose>
     <xsl:when test="$use.extensions != 0

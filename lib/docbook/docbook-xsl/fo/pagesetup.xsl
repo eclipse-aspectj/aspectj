@@ -163,25 +163,25 @@
     <!-- setup for title-page, 1 column -->
     <fo:page-sequence-master master-name="titlepage1">
       <fo:repeatable-page-master-alternatives>
-        <fo:conditional-page-master-reference master-name="first1"/>
+        <fo:conditional-page-master-reference master-reference="first1"/>
       </fo:repeatable-page-master-alternatives>
     </fo:page-sequence-master>
 
     <!-- setup for single-sided, 1 column -->
     <fo:page-sequence-master master-name="oneside1">
       <fo:repeatable-page-master-alternatives>
-        <fo:conditional-page-master-reference master-name="simple1"/>
+        <fo:conditional-page-master-reference master-reference="simple1"/>
       </fo:repeatable-page-master-alternatives>
     </fo:page-sequence-master>
 
     <!-- setup for double-sided, 1 column -->
     <fo:page-sequence-master master-name="twoside1">
       <fo:repeatable-page-master-alternatives>
-        <fo:conditional-page-master-reference master-name="blank"
+        <fo:conditional-page-master-reference master-reference="blank"
                                               blank-or-not-blank="blank"/>
-        <fo:conditional-page-master-reference master-name="right1"
+        <fo:conditional-page-master-reference master-reference="right1"
                                               odd-or-even="odd"/>
-        <fo:conditional-page-master-reference master-name="left1"
+        <fo:conditional-page-master-reference master-reference="left1"
                                               odd-or-even="even"/>
       </fo:repeatable-page-master-alternatives>
     </fo:page-sequence-master>
@@ -189,25 +189,25 @@
     <!-- setup for title-page, 2 column -->
     <fo:page-sequence-master master-name="titlepage2">
       <fo:repeatable-page-master-alternatives>
-        <fo:conditional-page-master-reference master-name="first2"/>
+        <fo:conditional-page-master-reference master-reference="first2"/>
       </fo:repeatable-page-master-alternatives>
     </fo:page-sequence-master>
 
     <!-- setup for single-sided, 2 column -->
     <fo:page-sequence-master master-name="oneside2">
       <fo:repeatable-page-master-alternatives>
-        <fo:conditional-page-master-reference master-name="simple2"/>
+        <fo:conditional-page-master-reference master-reference="simple2"/>
       </fo:repeatable-page-master-alternatives>
     </fo:page-sequence-master>
 
     <!-- setup for double-sided, 2 column -->
     <fo:page-sequence-master master-name="twoside2">
       <fo:repeatable-page-master-alternatives>
-        <fo:conditional-page-master-reference master-name="blank"
+        <fo:conditional-page-master-reference master-reference="blank"
                                               blank-or-not-blank="blank"/>
-        <fo:conditional-page-master-reference master-name="right2"
+        <fo:conditional-page-master-reference master-reference="right2"
                                               odd-or-even="odd"/>
-        <fo:conditional-page-master-reference master-name="left2"
+        <fo:conditional-page-master-reference master-reference="left2"
                                               odd-or-even="even"/>
       </fo:repeatable-page-master-alternatives>
     </fo:page-sequence-master>

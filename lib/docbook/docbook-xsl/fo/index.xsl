@@ -40,7 +40,7 @@
 
   <fo:page-sequence id="{$id}"
                     hyphenate="{$hyphenate}"
-                    master-name="{$master-name}">
+                    master-reference="{$master-name}">
     <xsl:attribute name="language">
       <xsl:call-template name="l10n.language"/>
     </xsl:attribute>
@@ -49,10 +49,10 @@
     </xsl:if>
 
     <xsl:apply-templates select="." mode="running.head.mode">
-      <xsl:with-param name="master-name" select="$master-name"/>
+      <xsl:with-param name="master-reference" select="$master-name"/>
     </xsl:apply-templates>
     <xsl:apply-templates select="." mode="running.foot.mode">
-      <xsl:with-param name="master-name" select="$master-name"/>
+      <xsl:with-param name="master-reference" select="$master-name"/>
     </xsl:apply-templates>
 
     <fo:flow flow-name="xsl-region-body">
