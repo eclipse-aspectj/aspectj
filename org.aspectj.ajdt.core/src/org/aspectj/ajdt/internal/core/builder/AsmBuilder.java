@@ -13,47 +13,18 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.ListIterator;
-import java.util.Stack;
+import java.io.*;
+import java.util.*;
 
-import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
-import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
-import org.aspectj.ajdt.internal.compiler.ast.DeclareDeclaration;
-import org.aspectj.ajdt.internal.compiler.ast.InterTypeDeclaration;
-import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.*;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
-import org.aspectj.asm.ProgramElementNode;
-import org.aspectj.asm.StructureModel;
-import org.aspectj.asm.StructureModelManager;
-import org.aspectj.asm.StructureNode;
-import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.SourceLocation;
-import org.aspectj.util.FileUtil;
+import org.aspectj.asm.*;
+import org.aspectj.bridge.*;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.Member;
-import org.eclipse.jdt.internal.compiler.AbstractSyntaxTreeVisitorAdapter;
-import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.AnonymousLocalTypeDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.AstNode;
-import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.ImportReference;
-import org.eclipse.jdt.internal.compiler.ast.Initializer;
-import org.eclipse.jdt.internal.compiler.ast.LocalTypeDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.MemberTypeDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
-import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
-import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
-import org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
-import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
+import org.eclipse.jdt.internal.compiler.*;
+import org.eclipse.jdt.internal.compiler.ast.*;
+import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.problem.ProblemHandler;
 
 public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
@@ -442,10 +413,11 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 	}
 
 	// ??? handle non-existant files
-	private ISourceLocation makeLocation(AstNode node) {
-		
+	private ISourceLocation makeLocation(AstNode node) {		
 		String fileName = "";
-		if (currCompilationResult.getFileName() != null) new String(currCompilationResult.getFileName());
+		if (currCompilationResult.getFileName() != null) {
+			fileName = new String(currCompilationResult.getFileName());
+		}
 		// AMC - different strategies based on node kind
 		int startLine = getStartLine(node);
 		int endLine = getEndLine(node);
@@ -458,7 +430,7 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 		}
 		return loc;
 	}
-
+  
 
 	// AMC - overloaded set of methods to get start and end lines for
 	// various ASTNode types. They have no common ancestor in the
