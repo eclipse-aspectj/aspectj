@@ -1,0 +1,6 @@
+<!DOCTYPE suite [
+     <!ELEMENT suite (ajc-test+)>
+     <!ELEMENT ajc-test (compile+,run+)>
+     <!ELEMENT compile (#PCDATA)>
+     <!ELEMENT run (#PCDATA)>
+     ]>

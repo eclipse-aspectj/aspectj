@@ -1,0 +1,287 @@
+/* *******************************************************************
+ * Copyright (c) 1999-2001 Xerox Corporation, 
+ *               2002 Palo Alto Research Center, Incorporated (PARC).
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Xerox/PARC     initial implementation 
+ * ******************************************************************/
+
+
+package org.aspectj.testing.xml;
+
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.MessageUtil;
+import org.aspectj.bridge.SourceLocation;
+import org.aspectj.util.LangUtil;
+
+import java.io.File;
+import java.util.Iterator;
+import java.util.List;
+
+
+/**
+ * Implement messages.
+ * This implementation is immutable if ISourceLocation is immutable.
+ */
+public class SoftMessage implements IMessage { // XXX mutable dup of Message
+    public static String XMLNAME = "message";
+    public static final File NO_FILE = ISourceLocation.NO_FILE;
+    private String message;
+    private IMessage.Kind kind;
+    private Throwable thrown;
+    private ISourceLocation sourceLocation;
+    
+
+	//private ISourceLocation pseudoSourceLocation;  // set directly
+    // collapse enclosed source location for shorter, property-based xml
+    private String file;
+    private int line = Integer.MAX_VALUE;
+    
+    /** convenience for constructing failure messages */
+    public static SoftMessage fail(String message, Throwable thrown) {
+        return new SoftMessage(message, IMessage.FAIL, thrown, null);
+    }
+
+    /** 
+     * Print messages. 
+     * @param messages List of IMessage
+     */
+    public static void writeXml(XMLWriter out, List messages) {
+        if ((null == out) || (null == messages)) {
+            return;
+        }
+        for (Iterator iter = messages.iterator(); iter.hasNext();) {
+            writeXml(out, (IMessage) iter.next());
+            
+        }
+    }
+
+    /** 
+     * Print messages. 
+     * @param messages IMessage[] 
+     */
+    public static void writeXml(XMLWriter out, IMessage[] messages) {
+        if ((null == out) || (null == messages)) {
+            return;
+        }
+        for (int i = 0; i < messages.length; i++) {
+            writeXml(out, messages[i]);            
+        }
+    }
+
+    /** print message as an element */
+    public static void writeXml(XMLWriter out, IMessage message) { // XXX short form only, no files
+       if ((null == out) || (null == message)) {
+            return;
+       }
+       final String elementName = XMLNAME;
+       String kindStr = message.getKind().toString();
+       String kindAttr = out.makeAttribute("kind",kindStr);
+       String mStr = message.getMessage();
+       if ((null != mStr) && (0 == mStr.length())) {
+            mStr = null;
+       }
+       String mAttr = (null == mStr ? " " : " " + out.makeAttribute("text", mStr));
+       int mAttrLen = (null == mStr ? 0 : mAttr.length());
+       ISourceLocation sl = message.getISourceLocation();
+       String lineStr = (null == sl ? null : "" + sl.getLine());
+       String lineAttr = (null == lineStr ? " " : " " + out.makeAttribute("line", lineStr));
+       int lineAttrLen = (null == lineStr ? 0 : lineAttr.length());
+       int len = (kindAttr.length() + mAttrLen + lineAttrLen);
+       if (len < 65) {
+            String s = kindAttr + " "
+                        + ((null == lineStr ? "" : lineAttr)
+                           + (null == mStr ? "" : " " + mAttr)).trim();
+            out.printElement(elementName, s);
+       } else {
+            out.startElement(elementName, kindAttr + lineAttr, false);
+            if (0 < mStr.length()) {
+                out.printAttribute("text", mStr);
+            }
+            out.endAttributes();
+            out.endElement(elementName);
+       }
+    }
+
+
+    
+    public SoftMessage() {} // XXX programmatic only
+    
+    /**
+     * Create a (compiler) error or warning message
+     * @param message the String used as the underlying message
+     * @param sourceLocation the ISourceLocation, if any, associated with this message
+     * @param isError if true, use IMessage.ERROR; else use IMessage.WARNING
+     */
+    public SoftMessage(String message, ISourceLocation location, boolean isError) {
+        this(message, (isError ? IMessage.ERROR : IMessage.WARNING), null,
+            location);
+    }
+    
+    /**
+     * Create a message, handling null values for message and kind
+     * if thrown is not null.
+     * @param message the String used as the underlying message
+     * @param kind the IMessage.Kind of message - not null
+     * @param thrown the Throwable, if any, associated with this message
+     * @param sourceLocation the ISourceLocation, if any, associated with this message
+     * @throws IllegalArgumentException if message is null and
+     * thrown is null or has a null message, or if kind is null
+     * and thrown is null.
+     */
+    public SoftMessage(String message, IMessage.Kind kind, Throwable thrown,
+                    ISourceLocation sourceLocation) {
+        this.message = message;
+        this.kind = kind;
+        this.thrown = thrown;
+        this.sourceLocation = sourceLocation;
+        if (null == message) {
+            if (null != thrown) {
+                message = thrown.getMessage();
+            } 
+            if (null == message) {
+                throw new IllegalArgumentException("null message");
+            }
+        }
+        if (null == kind) {
+             throw new IllegalArgumentException("null kind");
+        }
+    }
+    
+    /** @return the kind of this message */
+    public IMessage.Kind getKind() {
+        return kind;
+    }
+
+    /** @return true if kind == IMessage.ERROR */
+    public boolean isError() {
+        return kind == IMessage.ERROR;
+    }
+    
+    /** @return true if kind == IMessage.WARNING */
+    public boolean isWarning() {
+        return kind == IMessage.WARNING;
+    }
+
+    /** @return true if kind == IMessage.DEBUG */
+    public boolean isDebug() {
+        return kind == IMessage.DEBUG;
+    }
+
+    /** 
+     * @return true if kind == IMessage.INFO  
+     */
+    public boolean isInfo() {
+        return kind == IMessage.INFO;
+    }
+    
+    /** @return true if  kind == IMessage.ABORT  */
+    public boolean isAbort() {
+        return kind == IMessage.ABORT;
+    }    
+    
+    /** 
+     * @return true if kind == IMessage.FAIL
+     */
+    public boolean isFailed() {
+        return kind == IMessage.FAIL;
+    }
+    
+    /** @return non-null String with simple message */
+    final public String getMessage() {
+        return message;
+    }
+    
+    /** @return Throwable associated with this message, or null if none */
+    final public Throwable getThrown() {
+        return thrown;
+    }
+
+    /** 
+     * This returns any ISourceLocation set or a mock-up
+     * if file and/or line were set.
+     * @return ISourceLocation associated with this message, 
+     * a mock-up if file or line is available, or null if none 
+     */
+    final public ISourceLocation getISourceLocation() {
+        if ((null == sourceLocation) 
+            && ((null != file) || (line != Integer.MAX_VALUE))) {
+            File f = (null == file ? NO_FILE : new File(file));
+            int line = (this.line == Integer.MAX_VALUE ? 0 : this.line);
+            sourceLocation = new SourceLocation(f, line);
+        }
+        return sourceLocation;
+    }
+    
+    /** set the kind of this message */
+    public void setMessageKind(IMessage.Kind kind) {
+        this.kind = (null == kind ? IMessage.ERROR : kind);
+    }
+
+
+    /** set the file for the underlying source location of this message
+     * @throws IllegalStateException if source location was set directly
+     *          or indirectly by calling getSourceLocation after setting
+     *          file or line.
+     */
+    public void setFile(String path) {
+        LangUtil.throwIaxIfFalse(!LangUtil.isEmpty(path), "empty path");
+        if (null != sourceLocation) {
+            throw new IllegalStateException("cannot set line after creating source location");
+        }
+        this.file = path;
+    }
+
+    /** set the kind of this message */
+    public void setKindAsString(String kind) {
+        setMessageKind(MessageUtil.getKind(kind));
+    }
+
+    public void setSourceLocation(ISourceLocation sourceLocation) {
+        this.sourceLocation = sourceLocation;
+    }
+    
+    /** 
+     * Set the line for the underlying source location.
+     * @throws IllegalStateException if source location was set directly
+     *          or indirectly by calling getSourceLocation after setting
+     *          file or line.
+     */
+    public void setLineAsString(String line) {
+        if (null != sourceLocation) {
+            throw new IllegalStateException("cannot set line after creating source location");
+        }
+        this.line = Integer.valueOf(line).intValue();
+        SourceLocation.validLine(this.line);
+    }
+
+    public void setText(String text) {
+        this.message = (null == text ? "" : text);
+    }
+    
+    public String toString() {
+        StringBuffer result = new StringBuffer();
+        
+        result.append(getKind().toString());
+        
+        String messageString = getMessage();
+        if (!LangUtil.isEmpty(messageString)) {
+            result.append(messageString);
+        }
+
+        ISourceLocation loc = getISourceLocation();
+        if ((null != loc) && (loc != ISourceLocation.NO_FILE)) {
+            result.append(" at " + loc);
+        }
+        if (null != thrown) {
+            result.append(" -- " + LangUtil.renderExceptionShort(thrown));
+        }
+        return result.toString();
+    }    
+}

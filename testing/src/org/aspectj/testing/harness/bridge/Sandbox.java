@@ -1,0 +1,386 @@
+/* *******************************************************************
+ * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Xerox/PARC     initial implementation 
+ * ******************************************************************/
+
+package org.aspectj.testing.harness.bridge;
+
+import org.aspectj.bridge.ICommand;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.testing.util.Diffs;
+import org.aspectj.util.FileUtil;
+import org.aspectj.util.LangUtil;
+
+import java.io.File;
+import java.util.ArrayList;
+
+/**
+ * A sandbox holds state shared by AjcTest sub-runs,
+ * mostly directories relevant to testing.
+ * It permits a limited amount of coordination and
+ * setup/cleanup operations (todo XXX).
+ * <p>
+ * AjcTest creates the Sandbox and initializes the final fields.
+ * To coordinate with each other, run components may set and get values, 
+ * with the sources running first and the sinks second.  
+ * To make the interactions clear 
+ * (and to avoid accidentally violating these semantics),
+ * setters/getters for a coordinated property are constrained two ways:
+ * <li>Both have an extra (typed) "caller" parameter which must not
+ *     be null, authenticating that the caller is known & valid.</li>
+ * <li>A getter throws IllegalStateException if called before the setter</li>
+ * <li>A setter throws IllegalStateException if called after the getter<li>
+ * XXX subclass more general sandbox?
+ */
+public class Sandbox {
+    /** classes directory token for DirChanges.Spec */
+    public static final String RUN_DIR = "run";
+    
+    /** run directory token for DirChanges.Spec */
+    public static final String CLASSES_DIR = "classes";
+    
+    private static boolean canRead(File dir) {
+        return ((null != dir) && dir.isDirectory() && dir.canRead());
+    }
+
+    private static boolean canWrite(File dir) {
+        return ((null != dir) && dir.isDirectory() && dir.canWrite());
+    }
+
+    private static void iaxWrite(File dir, String label) {
+        if (!canWrite(dir)) {
+            throw new IllegalArgumentException(label + " - " + dir);
+        }
+    }
+
+    private static void iaxRead(File dir, String label) {
+        if (!canRead(dir)) {
+            throw new IllegalArgumentException(label + " - " + dir);
+        }
+    }
+    
+    /** @throws IllegalStateException(message) if test */
+    private static void assertState(boolean test, String message) {
+        if (!test) {
+            throw new IllegalStateException(message);
+        }
+    }
+    
+    /** 
+     * The (read-only) base of the test sources (which may or may not
+     * be the base of the java sources)
+     */
+    public final File testBaseDir;
+    
+    /** the parent of a temporary workspace, probably includes some others */
+    public final File sandboxDir;
+
+    /** a shared working dir */
+    public final File workingDir;
+
+    /** a shared classes dir */
+    public final File classesDir;
+
+    /** a run dir (which will be ignored in non-forking runs) */
+    public final File runDir;
+    
+    /** staging directory for IAjcRun requiring files be copied, deleted, etc. */
+    public final File stagingDir;
+    
+    /** 
+     * This manages creation and deletion of temporary directories.
+     * We hold a reference so that our clients can signal whether 
+     * this should be deleted.
+     */
+    private final Validator validator; // XXX required after completing tests? 
+    
+    /** original base of the original java sources, set by CompileRun.setup(..) */
+    private File testBaseSrcDir;
+
+    /** directories and libraries on the classpath, set by CompileRun.setup(..)  */
+    private File[] classpath;
+
+    /** track whether classpath getter ran */
+    private boolean gotClasspath;
+        
+    /** command shared between runs using sandbox - i.e., compiler */
+    private ICommand command;
+
+    /** track whether command getter ran */
+    private boolean gotCommand;
+        
+    /** cache results of rendering final fields */
+    private transient String toStringLeader;
+    
+    /** @throws IllegalArgumentException unless validator validates
+     *           testBaseDir as readable
+     */
+    public Sandbox(File testBaseDir, Validator validator) {
+        LangUtil.throwIaxIfNull(validator, "validator");
+        this.validator = validator;
+        Sandbox.iaxRead(testBaseDir, "testBaseDir");
+        this.testBaseDir = testBaseDir;
+        
+        sandboxDir = FileUtil.getTempDir("Sandbox");
+        Sandbox.iaxWrite(sandboxDir, "sandboxDir"); // XXX not really iax
+
+        workingDir = FileUtil.makeNewChildDir(sandboxDir, "workingDir");
+        Sandbox.iaxWrite(workingDir, "workingDir");             
+
+        classesDir = FileUtil.makeNewChildDir(sandboxDir, "classes");
+        Sandbox.iaxWrite(classesDir, "classesDir");             
+
+        runDir = FileUtil.makeNewChildDir(sandboxDir, "run");
+        Sandbox.iaxWrite(runDir, "runDir"); 
+
+        stagingDir = FileUtil.makeNewChildDir(sandboxDir, "staging");
+        Sandbox.iaxWrite(stagingDir, "stagingDir"); 
+
+        validator.registerSandbox(this);        
+    }
+
+    private String getToStringLeader() {
+        if (null == toStringLeader) {
+            toStringLeader = "Sandbox(" + sandboxDir.getName() 
+                + ", " + testBaseSrcDir.getName(); 
+        }
+        return toStringLeader;
+    }
+    
+    /** @return "Sandbox(sandbox, src, classes)" with names only */
+    public String toString() {
+        return getToStringLeader() + ", " + classesDir.getName() + ")";
+    }
+    
+    /** @return "Sandbox(sandbox, src, classes)" with paths */
+    public String toLongString() {
+        return getToStringLeader() + ", " + classesDir.getPath()
+            + (null == command ? ", (null command)" : ", " + command) + ")";
+    }
+    
+    void setCommand(ICommand command, CompilerRun caller) {
+        LangUtil.throwIaxIfNull(caller, "caller"); 
+        LangUtil.throwIaxIfNull(command, "command"); 
+        LangUtil.throwIaxIfFalse(!gotCommand, "no command"); 
+        this.command = command;
+    }
+    
+    /** When test is completed, clear the compiler to avoid memory leaks */
+    void clearCommand(AjcTest caller) {
+        LangUtil.throwIaxIfNull(caller, "caller"); 
+        if (null != command) {
+            command = null;
+        }
+    }
+    
+//    /** 
+//     * Populate the staging directory by copying any files in the
+//     * source directory ending with fromSuffix 
+//     * to the staging directory, after renaming them with toSuffix.
+//     * If the source file name starts with "delete", then the
+//     * corresponding file in the staging directory is deleting.
+//     * @return a String[] of the files copied or deleted
+//     *          (path after suffix changes and relative to staging dir)
+//     * @throws Error if no File using fromSuffix are found
+//     */
+//    String[] populateStagingDir(String fromSuffix, String toSuffix, IAjcRun caller) {
+//        LangUtil.throwIaxIfNull(fromSuffix, "fromSuffix");
+//        LangUtil.throwIaxIfNull(toSuffix, "toSuffix");
+//        LangUtil.throwIaxIfNull(caller, "caller");
+//
+//        ArrayList result = new ArrayList();
+//        FileUtil.copyDir(
+//            srcBase,
+//            targetSrc,
+//            fromSuffix,
+//            toSuffix,
+//            collector);
+//
+//        final String canonicalFrom = srcBase.getCanonicalPath();
+//        final Definition[] defs = getDefinitions(srcBase);
+//        if ((null == defs) || (defs.length < 9)) {
+//            throw new Error("did not get definitions");
+//        }
+//        MessageHandler compilerMessages = new MessageHandler();
+//        StringBuffer commandLine = new StringBuffer();
+//        for (int i = 1; result && (i < 10); i++) { 
+//            String fromSuffix = "." + i + "0.java";
+//            // copy files, collecting as we go...
+//            files.clear();
+//            if (0 == files.size()) { // XXX detect incomplete?
+//                break;
+//            }
+//
+//        
+//        return (String[]) result.toArray(new String[0]);        
+//    }
+        
+    // XXX move to more general in FileUtil
+    void reportClassDiffs(
+        final IMessageHandler handler, 
+        IncCompilerRun caller,
+        long classesDirStartTime,
+        String[] expectedSources) {
+        LangUtil.throwIaxIfFalse(0 < classesDirStartTime, "0 >= " + classesDirStartTime);
+        boolean acceptPrefixes = true;
+        Diffs diffs = org.aspectj.testing.util.FileUtil.dirDiffs(
+            "classes", 
+            classesDir, 
+            classesDirStartTime, 
+            ".class", 
+            expectedSources, 
+            acceptPrefixes);
+        diffs.report(handler, IMessage.ERROR);
+    }
+
+//    // XXX replace with IMessage-based implementation
+//    // XXX move to more general in FileUtil
+//    void reportClassesDirDiffs(final IMessageHandler handler, IncCompilerRun caller,
+//                               String[] expectedSources) {
+//        // normalize sources to ignore
+//        final ArrayList sources = new ArrayList();
+//        if (!LangUtil.isEmpty(expectedSources)) {
+//            for (int i = 0; i < expectedSources.length; i++) {
+//                String srcPath = expectedSources[i];
+//                int clip = FileUtil.sourceSuffixLength(srcPath);
+//                if (0 != clip) {
+//                    srcPath = srcPath.substring(0, srcPath.length() - clip);
+//                    sources.add(FileUtil.weakNormalize(srcPath));
+//                } else if (srcPath.endsWith(".class")) {
+//                    srcPath = srcPath.substring(0, srcPath.length() - 6);
+//                    sources.add(FileUtil.weakNormalize(srcPath));
+//                } else {
+//                    MessageUtil.info(handler, "not source file: " + srcPath);
+//                }
+//			}
+//        }
+//        
+//        // gather, normalize paths changed
+//        final ArrayList changed = new ArrayList();
+//        FileFilter touchedCollector = new FileFilter() {
+//			public boolean accept(File file) {
+//                if (file.lastModified() > classesDirTime) {
+//                    String path = file.getPath();
+//                    if (!path.endsWith(".class")) {
+//                        MessageUtil.info(handler, "changed file not a class: " + file);
+//                    } else {
+//                        String classPath = path.substring(0, path.length() - 6);
+//                        classPath = FileUtil.weakNormalize(classPath);
+//                        if (sources.contains(classPath)) {
+//                            sources.remove(classPath);
+//                        } else {
+//                            changed.add(classPath);
+//                        }                      
+//                    }
+//                }
+//                return false;
+//			}
+//        };      
+//        classesDir.listFiles(touchedCollector);
+//        
+//        // report any unexpected changes
+//        Diffs diffs = new Diffs("classes", sources, changed, String.CASE_INSENSITIVE_ORDER);
+//        diffs.report(handler, IMessage.ERROR);
+//    }
+    
+    ICommand getCommand(IncCompilerRun caller) {
+        LangUtil.throwIaxIfNull(caller, "caller");
+        assertState(null != command, "command never set"); 
+        return command;
+    }
+
+    File getTestBaseSrcDir(IncCompilerRun caller) {
+        LangUtil.throwIaxIfNull(caller, "caller");
+        return testBaseSrcDir;
+    }
+    
+    File getTestBaseSrcDir(JavaRun caller) {
+        LangUtil.throwIaxIfNull(caller, "caller");
+        return testBaseSrcDir;
+    }
+    
+    /** @throws IllegalArgumentException unless a readable directory */
+    void setTestBaseSrcDir(File dir, CompilerRun caller) {
+        LangUtil.throwIaxIfNull(caller, "caller");
+        if ((null == dir) || !dir.isDirectory() || !dir.canRead()) {
+            throw new IllegalArgumentException("bad test base src dir: " + dir);
+        }
+        testBaseSrcDir = dir;
+    }
+    
+    /** @param readable if true, then throw IllegalArgumentException if not readable */
+    void setClasspath(File[] files, boolean readable, CompilerRun caller) {
+        LangUtil.throwIaxIfNull(files, "files");
+        LangUtil.throwIaxIfNull(caller, "caller");
+        assertState(!gotClasspath, "classpath already read");
+        classpath = new File[files.length];
+        for (int i = 0; i < files.length; i++) {
+            LangUtil.throwIaxIfNull(files[i], "files[i]");
+            if (readable && !files[i].canRead()) {
+                throw new IllegalArgumentException("bad classpath entry: " + files[i]);
+            }
+            classpath[i] = files[i];
+		}
+    }
+
+    File[] getClasspath(JavaRun caller) {
+        LangUtil.throwIaxIfNull(caller, "caller");
+        assertState(null != classpath, "classpath not set");
+        
+        File[] result = new File[classpath.length];
+        System.arraycopy(classpath, 0, result, 0, result.length);
+        return result;
+    }
+    
+    /** @param readable if true, omit non-readable directories */
+    File[] getClasspathDirectories(boolean readable, JavaRun caller) {
+        LangUtil.throwIaxIfNull(caller, "caller");
+        assertState(null != classpath, "classpath not set");
+        ArrayList result = new ArrayList();
+        File[] src = classpath;
+        for (int i = 0; i < src.length; i++) {
+			File f = src[i];
+            if ((null != f) && (f.isDirectory()) && (!readable || f.canRead())) {
+                result.add(f);
+            }
+		}
+        return (File[]) result.toArray(new File[0]);
+    }
+
+    /** @param readable if true, omit non-readable directories */
+    File[] getClasspathJars(boolean readable, JavaRun caller) {
+        LangUtil.throwIaxIfNull(caller, "caller");
+        assertState(null != classpath, "classpath not set");
+        ArrayList result = new ArrayList();
+        File[] src = classpath;
+        for (int i = 0; i < src.length; i++) {
+            File f = src[i];
+            if (FileUtil.hasZipSuffix(f) && (!readable || f.canRead())) {
+                result.add(f);
+            }
+        }
+        return (File[]) result.toArray(new File[0]);
+    }
+    
+    /** @return String of classpath entries delimited internally by File.pathSeparator */
+    String classpathToString(CompilerRun caller) {
+        LangUtil.throwIaxIfNull(caller, "caller");
+        assertState(null != classpath, "classpath not set");
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < classpath.length; i++) {
+          if (i > 0) {
+            sb.append(File.pathSeparator);
+          }
+          sb.append(classpath[i].getAbsolutePath());    
+        }
+        return sb.toString();
+    }
+}
