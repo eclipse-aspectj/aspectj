@@ -98,8 +98,9 @@ public class AjBuildManager {
                 return false;
             }
 
-			//XXX disabling structure building until Mik can make it optional
-			if (buildConfig.isEmacsSymMode())  bcelWorld.setModel(StructureModelManager.INSTANCE.getStructureModel());
+			if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {  
+				bcelWorld.setModel(StructureModelManager.INSTANCE.getStructureModel());
+			}
 			BatchBuilder builder = new BatchBuilder(javaBuilder, counter);
 			State newState = builder.run();
 			if (buildConfig.isEmacsSymMode()) {

@@ -54,6 +54,7 @@ public class CompilerAdapter {
 		init();
 		try {	 
 			AjBuildConfig buildConfig = genBuildConfig(configFile);
+			buildConfig.setGenerateModelMode(true);
 			currNotifier = new BuildNotifierAdapter(
 				AjBuildManager.DEFAULT_PROJECT,
 				progressMonitor,
