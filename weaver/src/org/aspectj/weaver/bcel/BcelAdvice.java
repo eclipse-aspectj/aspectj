@@ -13,25 +13,15 @@
 
 package org.aspectj.weaver.bcel;
 
-import org.apache.bcel.generic.InstructionFactory;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
-import org.aspectj.weaver.Advice;
-import org.aspectj.weaver.AdviceKind;
-import org.aspectj.weaver.AjAttribute;
-import org.aspectj.weaver.BCException;
-import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.Member;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
-import org.aspectj.weaver.WeaverStateKind;
-import org.aspectj.weaver.World;
+import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+
+import org.apache.bcel.generic.*;
+import org.aspectj.weaver.*;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
-import org.aspectj.weaver.patterns.ExactTypePattern;
-import org.aspectj.weaver.patterns.ExposedState;
-import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.*;
 
 /**
  * Advice implemented for bcel.
@@ -53,13 +43,14 @@ public class BcelAdvice extends Advice {
 		this.concreteAspect = concreteAspect;
 	}
 
-	// !!! only used for testing
+	// !!! must only be used for testing
 	public BcelAdvice(AdviceKind kind, Pointcut pointcut, Member signature,
 		int extraArgumentFlags,
         int start, int end, ISourceContext sourceContext, ResolvedTypeX concreteAspect)
     {
 		this(new AjAttribute.AdviceAttribute(kind, pointcut, extraArgumentFlags, start, end, sourceContext), 
 			pointcut, signature, concreteAspect);
+		thrownExceptions = Collections.EMPTY_LIST;  //!!! interaction with unit tests
 	}
 
     // ---- implementations of ShadowMunger's methods
@@ -147,6 +138,46 @@ public class BcelAdvice extends Advice {
     }
 
     // ---- implementations
+	
+	private Collection collectCheckedExceptions(TypeX[] excs) {
+		if (excs == null || excs.length == 0) return Collections.EMPTY_LIST;
+		
+		Collection ret = new ArrayList();
+		World world = concreteAspect.getWorld();
+		ResolvedTypeX runtimeException = world.resolve(TypeX.RUNTIME_EXCEPTION);
+		ResolvedTypeX error = world.resolve(TypeX.ERROR);
+		
+		for (int i=0, len=excs.length; i < len; i++) {
+			ResolvedTypeX t = world.resolve(excs[i]);
+			if (!(runtimeException.isAssignableFrom(t) || error.isAssignableFrom(t))) {
+				ret.add(t);
+			}
+		}
+			
+		return ret;
+	}
+
+	private Collection thrownExceptions = null;
+	public Collection getThrownExceptions() {
+		if (thrownExceptions == null) {
+			//??? can we really lump in Around here, how does this interact with Throwable
+			if (concreteAspect != null && concreteAspect.getWorld() != null && // null tests for test harness
+				  (getKind().isAfter() || getKind() == AdviceKind.Before || getKind() == AdviceKind.Around))
+			{
+				World world = concreteAspect.getWorld();
+				ResolvedMember m = world.resolve(signature);
+				if (m == null) {
+					thrownExceptions = Collections.EMPTY_LIST;
+				} else {
+					thrownExceptions = collectCheckedExceptions(m.getExceptions());
+				}
+			} else {
+				thrownExceptions = Collections.EMPTY_LIST;
+			}
+		}
+		return thrownExceptions;
+	}
+
 
     // only call me after prepare has been called
     public boolean hasDynamicTests() {

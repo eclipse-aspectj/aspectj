@@ -13,6 +13,8 @@
 
 package org.aspectj.weaver;
 
+import java.util.Collection;
+
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.weaver.patterns.PerClause;
@@ -88,4 +90,10 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		return pointcut;
 	}
 
+
+	/**
+	 * @return a Collection of ResolvedTypeX for all checked exceptions that
+	 *          might be thrown by this munger
+	 */
+	public abstract Collection getThrownExceptions();
 }

@@ -541,6 +541,8 @@ public class TypeX {
     public static final TypeX   CLONEABLE    = forSignature("Ljava/lang/Cloneable;");
     public static final TypeX   SERIALIZABLE = forSignature("Ljava/io/Serializable;");
     public static final TypeX   THROWABLE    = forSignature("Ljava/lang/Throwable;");
+    public static final TypeX   RUNTIME_EXCEPTION    = forSignature("Ljava/lang/RuntimeException;");
+    public static final TypeX   ERROR    = forSignature("Ljava/lang/Error;");
     
     // ---- helpers
     

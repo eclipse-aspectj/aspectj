@@ -77,4 +77,17 @@ aspect A {
     }
     before() throws CheckedExc: staticinitialization(C) { //ERR: can't throw
     }
+    
+    void around() throws CheckedExc: canThrowChecked() {
+    	proceed();
+    }
+    
+    void around() throws CheckedExc: canThrowUnchecked() {  // ERR: can't throw
+    	proceed();
+    }
+    
+    void around() throws UncheckedExc: canThrowUnchecked() || set(int C.x) { 
+    	proceed();
+    }
+
 }

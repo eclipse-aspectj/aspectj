@@ -268,8 +268,42 @@ public abstract class Shadow {
 		}		
 	}
 	
+	protected boolean checkMunger(ShadowMunger munger) {
+		for (Iterator i = munger.getThrownExceptions().iterator(); i.hasNext(); ) {
+			if (!checkCanThrow(munger,  (ResolvedTypeX)i.next() )) return false;
+		}
+		return true;
+	}
+
+	protected boolean checkCanThrow(ShadowMunger munger, ResolvedTypeX resolvedTypeX) {
+		if (getKind() == ExceptionHandler) {
+			//XXX much too lenient rules here, need to walk up exception handlers
+			return true;
+		}
+		
+		if (!isDeclaredException(resolvedTypeX, getSignature())) {
+			getIWorld().showMessage(IMessage.ERROR, "can't throw checked exception \'" + resolvedTypeX +
+							"\' at this join point \'" + this +"\'", // from advice in \'" + munger. + "\'",
+							getSourceLocation(), munger.getSourceLocation());
+		}
+		
+		return true;
+	}
+
+	private boolean isDeclaredException(
+		ResolvedTypeX resolvedTypeX,
+		Member member)
+	{
+		ResolvedTypeX[] excs = getIWorld().resolve(member.getExceptions(getIWorld()));
+		for (int i=0, len=excs.length; i < len; i++) {
+			if (excs[i].isAssignableFrom(resolvedTypeX)) return true;
+		}
+		return false;
+	}
+	
+	
     public void addMunger(ShadowMunger munger) {
-    	this.mungers.add(munger);
+    	if (checkMunger(munger)) this.mungers.add(munger);
     }
  
     public final void implement() {
@@ -323,16 +357,4 @@ public abstract class Shadow {
     public String toString() {
         return getKind() + "(" + getSignature() + ")"; // + getSourceLines();
     }
-
-
-
-
-
-
-
-
-	// ---- type access methods
-  
-      
-
 }

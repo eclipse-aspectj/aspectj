@@ -5666,4 +5666,23 @@
         <compile files="CflowCycles.java"/>
         <run class="CflowCycles"/>
     </ajc-test>
+    
+    <ajc-test dir="new"
+      title="incompatible advice throws clause are a compile-time error"
+      keywords="from-resolved_10x">
+        <compile files="AdviceThrowsCf.java">
+            <message kind="error" line="13"/>
+            <message kind="error" line="28"/>
+            <message kind="error" line="47"/>
+            <message kind="error" line="48"/>
+            <message kind="error" line="50"/>
+            
+            <message kind="error" line="70"/>
+            <message kind="error" line="74"/>
+            <message kind="error" line="76"/>
+            <message kind="error" line="78"/>
+            
+            <message kind="error" line="85"/>
+        </compile>
+    </ajc-test>
 </suite>

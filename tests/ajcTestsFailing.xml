@@ -2,18 +2,6 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 
 <suite>
-
-    <ajc-test dir="new"
-      title="incompatible advice throws clause are a compile-time error"
-      keywords="from-resolved_10x">
-        <compile files="AdviceThrowsCf.java">
-            <message kind="error" line="70"/>
-            <message kind="error" line="74"/>
-            <message kind="error" line="76"/>
-            <message kind="error" line="78"/>
-        </compile>
-    </ajc-test>
-
     <ajc-test dir="new" pr="660" title="illegal name binding in around cflow"
       keywords="from-resolved_104">
         <compile files="ArgsInCflowCf.java">

@@ -13,6 +13,9 @@
 
 package org.aspectj.weaver;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
@@ -58,5 +61,7 @@ public class Checker extends ShadowMunger {
 	public int compareTo(Object other) {
 		return 0;
 	}
+	
+	public Collection getThrownExceptions() { return Collections.EMPTY_LIST; }
 
 }
