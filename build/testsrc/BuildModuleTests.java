@@ -60,22 +60,12 @@ public class BuildModuleTests extends TestCase {
     public void testLicense_asm() {
         checkLicense("asm");    
     }
-    public void testLicense_bcweaver() {
-        String module = "bcweaver";
-        checkSourceDirectory("../" + module + "/src", module);
-        checkSourceDirectory("../" + module + "/testsrc/org", module);
-    }
+
     public void testLicense_bridge() {
         checkLicense("bridge");    
     }
     public void testLicense_build() {
         checkLicense("build");    
-    }
-    public void testLicense_jbuilder() {
-        checkLicense("jbuilder");    
-    }
-    public void testLicense_netbeans() {
-        checkLicense("netbeans");    
     }
     public void testLicense_org_aspectj_ajdt_core() {
         checkLicense("org.aspectj.ajdt.core");    
@@ -97,17 +87,22 @@ public class BuildModuleTests extends TestCase {
     public void testLicense_testing() {
         checkLicense("testing");    
     }
-    public void testLicense_testing_drivers() {
-        checkLicense("testing-drivers");    
-    }
     public void testLicense_testing_client() {
         checkLicense("testing-client");    
+    }
+    public void testLicense_testing_drivers() {
+        checkLicense("testing-drivers");    
     }
     public void testLicense_testing_util() {
         checkLicense("testing-util");    
     }
     public void testLicense_util() {
         checkLicense("util");    
+    }
+    public void testLicense_weaver() {
+        String module = "weaver";
+        checkSourceDirectory("../" + module + "/src", module);
+        checkSourceDirectory("../" + module + "/testsrc/org", module);
     }
     
     void checkLicense(String module) {
