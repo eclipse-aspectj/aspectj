@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2005 
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     PARC     initial implementation 
+ *     Andy Clement   initial implementation 
  * ******************************************************************/
 
 
@@ -19,37 +19,25 @@ import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.Type;
-import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 
 /**
+ * Used for @this() @target() @args() - represents accessing an annotated
+ * 'thing'.  Main use is to create the instructions that retrieve the
+ * annotation from the 'thing' - see createLoadInstructions()
  */
 public class TypeAnnotationAccessVar extends BcelVar {
 
-
-	private Member stackField;
-	private int index;
-	BcelVar target;
-
-	/**
-	 * @param type The type to convert to from Object
-	 * @param stackField the member containing the CFLOW_STACK_TYPE
-	 * @param index yeah yeah
-	 */
-	public TypeAnnotationAccessVar(ResolvedTypeX type, Member stackField, int index) {
-		super(type, 0);
-		this.stackField = stackField;
-		this.index = index;
-	}
+	private BcelVar target;
 	
-	public TypeAnnotationAccessVar(ResolvedTypeX type,BcelVar theTargetIsStoredHere) {
+	public TypeAnnotationAccessVar(ResolvedTypeX type,BcelVar theAnnotatedTargetIsStoredHere) {
 		super(type,0);
-		target = theTargetIsStoredHere;
+		target = theAnnotatedTargetIsStoredHere;
 	}
 
 	public String toString() {
-		return "TypeAnnotationAccessVar(" + getType() + " " + stackField + "." + index + ")";
+		return "TypeAnnotationAccessVar(" + getType() + ")";
 	}
 
     public Instruction createLoad(InstructionFactory fact) {
@@ -71,7 +59,7 @@ public class TypeAnnotationAccessVar extends BcelVar {
 		InstructionList il = new InstructionList();
 		Type jlClass = BcelWorld.makeBcelType(TypeX.JAVA_LANG_CLASS);
 		Type jlaAnnotation = BcelWorld.makeBcelType(TypeX.forSignature("Ljava.lang.annotation.Annotation;"));
-		il.append(target.createLoad(fact));
+		il.append(target.createLoad(fact)); 
         il.append(fact.createInvoke("java/lang/Object","getClass",jlClass,new Type[]{},Constants.INVOKEVIRTUAL));
 		il.append(fact.createConstant(new ObjectType(toType.getClassName())));
 		il.append(fact.createInvoke("java/lang/Class","getAnnotation",jlaAnnotation,new Type[]{jlClass},Constants.INVOKEVIRTUAL));

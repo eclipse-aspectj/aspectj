@@ -29,6 +29,7 @@ import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
+import org.aspectj.weaver.ast.Var;
 
 /**
  * @author colyer
@@ -136,15 +137,22 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 	                    WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_ARG_TYPE,argType.getName()),
 	                    "",IMessage.ERROR,shadow.getSourceLocation(),null,new ISourceLocation[]{getSourceLocation()});
 	            }
-				if (ap.matches(rArgType).alwaysTrue()) {
+				if (ap.matches(rArgType).alwaysTrue()) { // !!! ASC Can we ever take this branch?
 					argsIndex++;
 					continue;
 				} else {
 					// we need a test...
-					// TODO: binding
 					ResolvedTypeX rAnnType = ap.annotationType.resolve(shadow.getIWorld());
-					ret = Test.makeAnd(ret,Test.makeHasAnnotation(shadow.getArgVar(argsIndex),rAnnType));
-					argsIndex++;
+					if (ap instanceof BindingAnnotationTypePattern) {
+						BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern)ap;
+						Var annvar = shadow.getArgAnnotationVar(argsIndex,rAnnType);
+						state.set(argsIndex,annvar);
+						ret = Test.makeAnd(ret,Test.makeHasAnnotation(shadow.getArgVar(argsIndex),rAnnType));
+						argsIndex++;
+					} else {
+						ret = Test.makeAnd(ret,Test.makeHasAnnotation(shadow.getArgVar(argsIndex),rAnnType));
+						argsIndex++;
+					}
 				}				
 			}
 		}   	

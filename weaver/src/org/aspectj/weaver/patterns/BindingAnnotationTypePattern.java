@@ -58,8 +58,14 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 			world.getMessageHandler().handleMessage(m);
 			resolved = false;		    
 		} else {
-		    // TO DO... get the retention policy annotation, and check the value is 
-		    // RetentionPolicy.RUNTIME;
+		    // Get the retention policy annotation, and check the value is RetentionPolicy.RUNTIME;
+			// FIXME invention required, implement this !
+//			if (!annotationType.hasRuntimeRetention()) {
+//			ResolvedTypeX[] allAs = annotationType.getAnnotationTypes();
+//			for (int i = 0; i < allAs.length; i++) {
+//				ResolvedTypeX  ann = allAs[i];
+//				if ()
+//			}
 		}
 	}
 	

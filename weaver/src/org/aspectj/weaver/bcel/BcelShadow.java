@@ -889,8 +889,12 @@ public class BcelShadow extends Shadow {
         if (!hasThis()) {
             throw new IllegalStateException("no this");
         }
-        initializeThisAnnotationVars();
-        return (Var) thisAnnotationVars.get(forAnnotationType);
+        initializeThisAnnotationVars(); // FIXME ASC Why bother with this if we always return one?
+        // Even if we can't find one, we have to return one as we might have this annotation at runtime
+        Var v = (Var) thisAnnotationVars.get(forAnnotationType);
+	    if (v==null)
+	      v = new TypeAnnotationAccessVar(forAnnotationType.resolve(world),(BcelVar)getThisVar()); 
+        return v;
 	}
     public Var getTargetVar() {
         if (!hasTarget()) {
@@ -903,7 +907,7 @@ public class BcelShadow extends Shadow {
         if (!hasTarget()) {
             throw new IllegalStateException("no target");
         }
-	    initializeTargetAnnotationVars();
+	    initializeTargetAnnotationVars(); // FIXME ASC why bother with this if we always return one?
 	    Var v  =(Var) targetAnnotationVars.get(forAnnotationType);
 	    // Even if we can't find one, we have to return one as we might have this annotation at runtime
 	    if (v==null)
@@ -916,7 +920,11 @@ public class BcelShadow extends Shadow {
    }
    public Var getArgAnnotationVar(int i,TypeX forAnnotationType) {
 		initializeArgAnnotationVars();
-		return (Var) argAnnotationVars[i].get(forAnnotationType);
+		
+		Var v= (Var) argAnnotationVars[i].get(forAnnotationType);
+		if (v==null) 
+		      v = new TypeAnnotationAccessVar(forAnnotationType.resolve(world),(BcelVar)getArgVar(i)); 
+		return v;
    }   
    public Var getKindedAnnotationVar(TypeX forAnnotationType) {
    		initializeKindedAnnotationVars();
@@ -1296,6 +1304,7 @@ public class BcelShadow extends Shadow {
     	argAnnotationVars = new Map[numArgs];
     	for (int i = 0; i < argAnnotationVars.length; i++) {
 			argAnnotationVars[i] = new HashMap();
+			//FIXME ASC Fill this in
 			// populate
 		}
     }
