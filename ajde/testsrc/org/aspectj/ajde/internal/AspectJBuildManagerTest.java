@@ -32,36 +32,22 @@ public class AspectJBuildManagerTest extends AjdeTestCase {
 		return result;
 	}
 
-	public void testInit() {
+	public void testSequence() {
 		assertTrue("initialization", ideManager != null);
-	}
-	
-	public void testCompileNonExistingConfig() {
-		assertTrue("compile of non-existing build config success", !testerBuildListener.getBuildSucceeded());	
-	}
-	
-	public void testCompileEmptyConfig() {
+        assertTrue("compile of non-existing build config success", !testerBuildListener.getBuildSucceeded());   
         // XXX should fail? empty configs fail b/c no sources specified
-		doSynchronousBuild("empty.lst");
-		assertTrue("compile of empty build config", testerBuildListener.getBuildSucceeded());	
-	}  
-	
-	public void testCompileSuccess() {
-		doSynchronousBuild("../examples/figures-coverage/all.lst");
-		assertTrue("compile success", testerBuildListener.getBuildSucceeded());
-	}
-
-	public void testCompileOutput() {
+        doSynchronousBuild("empty.lst");
+        assertTrue("compile of empty build config", testerBuildListener.getBuildSucceeded());   
+        doSynchronousBuild("../examples/figures-coverage/all.lst");
+        assertTrue("compile success", testerBuildListener.getBuildSucceeded());
 		File file = new File(Ajde.getDefault().getProjectProperties().getOutputPath() + "/figures/Main.class");
         if (file.exists()) {
             file.delete();
         } else {
             assertTrue("expected class " + file, false);
 		}			
-	}
-
-	public void testSymbolFileGenerated() {
-		File file = openFile("../examples/figures-coverage/all.ajsym");
+        
+		file = openFile("../examples/figures-coverage/all.ajsym");
         if (file.exists()) {
             file.delete();
         } else {
