@@ -7657,5 +7657,13 @@
           
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs"
+    	pr="59440"
+		title="NPE when binary weaving a ctor ITD">
+        <compile files="CtorITD.aj">
+        	<message kind="error" line="2"/>
+        </compile>
+    </ajc-test>
 	
 </suite>
