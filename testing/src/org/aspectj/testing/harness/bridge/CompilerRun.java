@@ -21,6 +21,7 @@ import org.aspectj.testing.ajde.CompileCommand;
 import org.aspectj.testing.run.IRunIterator;
 import org.aspectj.testing.run.IRunStatus;
 import org.aspectj.testing.run.WrappedRunIterator;
+import org.aspectj.testing.taskdefs.AjcTaskCompileCommand;
 import org.aspectj.testing.xml.SoftMessage;
 import org.aspectj.testing.xml.XMLWriter;
 import org.aspectj.util.FileUtil;
@@ -62,6 +63,8 @@ import java.util.ListIterator;
  */
 public class CompilerRun implements IAjcRun {
     static final String AJDE_COMPILER = CompileCommand.class.getName();
+    static final String AJCTASK_COMPILER 
+        = AjcTaskCompileCommand.class.getName();
 
 	static final String[] RA_String = new String[0];
     
@@ -472,7 +475,7 @@ public class CompilerRun implements IAjcRun {
                 "-usejavac", "-preprocess",          
                 "-Xlint",  "-lenient", "-strict", 
                 "-source14", "-verbose", "-emacssym", 
-                "-ajc", "-eclipse", "-ajdeCompiler", 
+                "-ajc", "-eclipse", "-ajdeCompiler", "-ajctaskCompiler", 
                 "-ignoreWarnings",
                 // XXX consider adding [!^]ajdeCompiler
                 "!usejavac", "!preprocess",          
@@ -915,10 +918,9 @@ public class CompilerRun implements IAjcRun {
                 } else {
                     result.result = true;
                 }
-            } else if (!ReflectionFactory.ECLIPSE.equals(result.compilerName)
-                && !AJDE_COMPILER.equals(result.compilerName)) {
-                result.failureReason = "unrecognized compiler: " + result.compilerName;
-            } else {
+            } else if (ReflectionFactory.ECLIPSE.equals(result.compilerName)
+                || AJDE_COMPILER.equals(result.compilerName)
+                || AJCTASK_COMPILER.equals(result.compilerName)) {
                 badOptions = LangUtil.selectOptions(argList, Spec.INVALID_ECLIPSE_OPTIONS);
                 if (!LangUtil.isEmpty(badOptions)) {                    
                     result.failureReason = "no support in eclipse-based compiler"
@@ -926,6 +928,8 @@ public class CompilerRun implements IAjcRun {
                 } else {
                     result.result = true;
                 }
+            } else {
+                result.failureReason = "unrecognized compiler: " + result.compilerName;
             }
             if (result.result) {
                 result.commandOptions = argList;
@@ -957,6 +961,9 @@ public class CompilerRun implements IAjcRun {
         protected boolean testFlag(String arg, TestSetup result) {
             if ("-ajdeCompiler".equals(arg)) {
                 result.compilerName = AJDE_COMPILER;
+                return true;
+            } else if ("-ajctaskCompiler".equals(arg)) {
+                result.compilerName = AJCTASK_COMPILER;
                 return true;
             } else if ("-eclipse".equals(arg) || "!eclipse".equals(arg) || "^ajc".equals(arg)) {
                 result.compilerName = ReflectionFactory.ECLIPSE;
