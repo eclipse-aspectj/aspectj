@@ -1,9 +1,15 @@
-/*
- * Created on 27-Mar-2003
- *
- * To change this generated comment go to 
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
+/* *******************************************************************
+ * Copyright (c) 2003 Contributors.
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     AMC 2003     initial version
+ * ******************************************************************/
+
 package org.aspectj.ajde;
 
 import java.io.IOException;
