@@ -309,5 +309,9 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void test057_decSoftWithSuper() {
       runTest("declare soft can cause programs with invalid exception behaviour to be generated");
     }
-}
 
+  public void test058_npeOnTJPerror() {
+    runTest("NPE on thisJoinPoint mistake");
+  }
+
+}

@@ -152,14 +152,5 @@
           files="Test_AroundVarBug.java,AroundVarBug.java"/>
         <run class="Test_AroundVarBug"/>
     </ajc-test>
-
-    <ajc-test 
-    	dir="bugs" 
-    	pr="75129"
-		title="NPE on thisJoinPoint mistake">
-        <compile files="TjpMistake.java">
-        	<message kind="error" line="22"/>
-        </compile>
-    </ajc-test>
     
 </suite>

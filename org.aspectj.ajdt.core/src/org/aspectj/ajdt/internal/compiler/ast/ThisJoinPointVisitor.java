@@ -158,6 +158,10 @@ public class ThisJoinPointVisitor extends ASTVisitor {
 
 	private void replaceEffectivelyStaticRef(MessageSend call) {
 		NameReference receiver = (NameReference) call.receiver;
+		
+		// Don't continue if the call binding is null, as we are going to report an error about this line of code!
+		if (call.binding==null) return;	
+		
 		//System.err.println("replace static ref: " + receiver + " is " + System.identityHashCode(receiver));
 		receiver.binding = thisJoinPointStaticPartDecLocal; //thisJoinPointStaticPartDec;
 		receiver.codegenBinding = thisJoinPointStaticPartDecLocal;

@@ -456,3 +456,12 @@
  	      <message kind="error" line="13" text="Unhandled"/>
 		</compile>
 	</ajc-test>
+	
+	<ajc-test 
+    	dir="bugs" 
+    	pr="75129"
+		title="NPE on thisJoinPoint mistake">
+        <compile files="TjpMistake.java">
+        	<message kind="error" line="22"/>
+        </compile>
+    </ajc-test>
