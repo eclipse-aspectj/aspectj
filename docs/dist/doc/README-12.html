@@ -107,7 +107,9 @@ together with <a href="porting.html">porting.html</a>.
   <li>Although not part of <code>aspectjrt.jar</code> this release also provides a new set of
   tools APIs in the <a href="#LTW2"><code>org.aspectj.weaver.tools</code></a> that provide a weaving class loader
   and an adapter that can be used to integrate load-time weaving into an existing class loader
-  hierarchy.<li>
+  hierarchy.</li>
+  <li>Cflow stack management has been modified to use thread local storage on JVMs that support this feature.
+  This improves performance in terms of heap usage for multi-threaded applications that use cflow.
   </ul>
 
 <!-- ============================== -->

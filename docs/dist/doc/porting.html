@@ -172,6 +172,27 @@ For more information, see bug
 	<a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=47754">47754</a>.
 </p>
 
+<p><b>Watch for problems due to incompatible BCEL versions.</b>
+AspectJ 1.2 includes a different version of BCEL than AspectJ 1.1.  If you have the older
+version of BCEL available earlier on your classpath than the version included in the 
+1.2 aspectjtools.jar then you will see errors like:
+
+<pre>
+C:\work\test\TestAspect.aj error Internal compiler error
+java.lang.NoSuchMethodError: org.apache.bcel.generic.InstructionFactory.
+createNewArray(Lorg/apache/bcel/generic/Type;S)Lorg/apache/bcel/generic/Instruction;
+</pre>
+
+This typically happens because the old version of BCEL has been included as a standard
+extension in your JVM configuration.  Ensure you have removed it from jre/lib/ext
+under your JDK installation.
+
+<p>For more information, see bugs including
+	<a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=60389">60389</a>,
+	<a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=59921">59921</a>.
+</p>
+
+
 <h2><a name="pre-1.1">Porting pre-1.1 code to AspectJ 1.1</a></h2>
 <a href="README-11.html">README-11.html</a> contains a discussion 
 of the language changes from 1.0 to 1.1.  The high points:

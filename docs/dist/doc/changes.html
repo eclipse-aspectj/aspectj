@@ -144,7 +144,7 @@ All rights reserved.
 <h2>Changes in AspectJ</h2>
 
 <ul>
-  <li> <a href="#1.2">1.2</a> (released 2004-04) 
+  <li> <a href="#1.2">1.2</a> (released 2004-05) 
   </li>
   <li> <a href="#1.1.1">1.1.1</a> (released 2003-09) 
   </li>
@@ -342,7 +342,11 @@ Some of the more significant bug fixes and enhancements include:
      <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=47910">47910</a>
      An output jar file created by AspectJ when using the -outjar option does not contain a 
      valid manifest file. 
-     </li>     
+     </li>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=59909">59909</a>
+     Thread local storage used to manage cflow stacks when available - improves cflow performance
+     when working with a multi-threaded application.
+     </li>    
   </ul>
 
 <h2><a name="1.1.1">1.1.1</a></h2>
