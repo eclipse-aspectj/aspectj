@@ -20,6 +20,7 @@ import junit.framework.TestCase;
 /**
  * Test various advice and JoinPoint + binding, without pc ref
  *
+ * test commit..
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class SingletonAspectBindingsTest extends TestCase {
