@@ -658,12 +658,14 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 
 	
 	private PerClause.Kind lookupPerClauseKind(ReferenceBinding binding) {
-		if (binding instanceof SourceTypeBinding && !(binding instanceof BinaryTypeBinding)) {
+        PerClause perClause;
+        if (binding instanceof BinaryTypeBinding) {
+            ResolvedTypeX superTypeX = factory.fromEclipse(binding);
+            perClause = superTypeX.getPerClause();
+        } else if (binding instanceof SourceTypeBinding ) {
 			SourceTypeBinding sourceSc = (SourceTypeBinding)binding;
 			if (sourceSc.scope.referenceContext instanceof AspectDeclaration) {
-				PerClause perClause = ((AspectDeclaration)sourceSc.scope.referenceContext).perClause;
-				if (perClause == null) return lookupPerClauseKind(binding.superclass());
-				else return perClause.getKind();
+				perClause = ((AspectDeclaration)sourceSc.scope.referenceContext).perClause;
 			} else {
 				return null;
 			}
@@ -671,7 +673,12 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 			//XXX need to handle this too
 			return null;
 		}
-	}
+        if (perClause == null) {
+            return lookupPerClauseKind(binding.superclass()); 
+        } else {
+            return perClause.getKind();
+	    }
+    }
 	
 
 	private void buildPerClause(ClassScope scope) {

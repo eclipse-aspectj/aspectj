@@ -6705,4 +6705,19 @@
 		    <message kind="error" line="3"/>
 		</compile>
 	</ajc-test>
+	
+	<ajc-test dir="bugs/perCflowAndJar"
+		pr="41359"
+		title="percflow aspects compiled from jars share one instance for all entry points">
+		<compile files="PerCFlowCompileFromJar.java,PerCFlowCompileFromJarTest.java"/>
+		<run class="PerCFlowCompileFromJarTest"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs/perCflowAndJar"
+		pr="41359"
+		title="(using aspectpath) percflow aspects compiled from jars share one instance for all entry points">
+		<compile files="PerCFlowCompileFromJarTest.java"
+				aspectpath="lib.jar"/>
+		<run class="PerCFlowCompileFromJarTest"/>
+	</ajc-test>
 </suite>
