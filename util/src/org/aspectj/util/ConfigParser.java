@@ -126,15 +126,16 @@ public class ConfigParser {
         
         if (!dir.isDirectory()) {
             showError("can't find " + dir.getPath());
-        }
+        } else {
 
-        File[] files = dir.listFiles(filter);
-        if (files.length == 0) {
+          File[] files = dir.listFiles(filter);
+          if (files.length == 0) {
             showWarning("no matching files found in: " + dir);
-        }
+          }
 
-        for (int i = 0; i < files.length; i++) {
+          for (int i = 0; i < files.length; i++) {
             addFile(files[i]);
+          }
         }
     }
 

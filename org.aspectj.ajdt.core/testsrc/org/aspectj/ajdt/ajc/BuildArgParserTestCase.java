@@ -18,6 +18,8 @@ import java.util.*;
 import junit.framework.TestCase;
 
 import org.aspectj.ajdt.internal.core.builder.*;
+import org.aspectj.bridge.CountingMessageHandler;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageWriter;
 import org.aspectj.testing.util.TestUtil;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
@@ -145,6 +147,12 @@ public class BuildArgParserTestCase extends TestCase {
 			"-injars", SOURCE_JARS }, 
 			messageWriter);
 		assertTrue("size: " + config.getInJars().size(), config.getInJars().size() == 1);
+	}
+
+	public void testBadPathToSourceFiles() {
+		CountingMessageHandler countingHandler = new CountingMessageHandler(messageWriter);
+		AjBuildConfig config = parser.genBuildConfig(new String[]{ "inventedDir/doesntexist/*.java"},countingHandler);
+		assertTrue("Expected an error for the invalid path.",countingHandler.numMessages(IMessage.ERROR,false)==1);	
 	}
 
 	public void testMultipleSourceRoots() throws InvalidInputException, IOException {
