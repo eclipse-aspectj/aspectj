@@ -387,6 +387,7 @@ public final int sourceEnd() {
 }
 public AbstractMethodDeclaration sourceMethod() {
 	SourceTypeBinding sourceType;
+	if (declaringClass instanceof BinaryTypeBinding) return null;
 	try {
 		sourceType = (SourceTypeBinding) declaringClass;
 	} catch (ClassCastException e) {
