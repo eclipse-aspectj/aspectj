@@ -1,40 +1,36 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Common Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/cpl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Common Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
 package org.aspectj.ajde.ui.swing;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
 import java.io.IOException;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
 import org.aspectj.ajde.Ajde;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * @author Mik Kersten
  */
 public class BuildOptionsPanel extends OptionsPanel {
+
+	private static String INCREMENTAL_NOTE = "Please note that this release offers an early access integration of the incremental\n"
+		+ "AspectJ compiler.  The Document Outline View will fail to refresh correctly when\n"
+		+ "incremental mode is enabled.  Submit any other bugs at http://eclipse.org/aspectj";
 
 	protected static BuildOptionsPanel INSTANCE = new BuildOptionsPanel();
 
@@ -57,17 +53,11 @@ public class BuildOptionsPanel extends OptionsPanel {
 	private BorderLayout borderLayout8 = new BorderLayout();
 	private Box options_box1 = Box.createVerticalBox();
 	private BorderLayout borderLayout5 = new BorderLayout();
-	private JLabel spacer_label = new JLabel();
 	private JTextField workingDir_field = new JTextField();
 	private JPanel jPanel2 = new JPanel();
 	private JPanel jPanel1 = new JPanel();
-	private Box options_box = Box.createVerticalBox();
 	private JPanel build_panel = new JPanel();
 	private JTextField nonStandard_field = new JTextField();
-	private JCheckBox incremental_checkBox = new JCheckBox();
-	private JCheckBox assertions_checkBox = new JCheckBox();
-	private JCheckBox useJavac_checkBox = new JCheckBox();
-	private JCheckBox preprocess_checkBox = new JCheckBox();
 	private JPanel compileOptions_panel = new JPanel();
 	private JLabel workingDir_label = new JLabel();
 	private JLabel nonStandard_label = new JLabel();
@@ -77,6 +67,15 @@ public class BuildOptionsPanel extends OptionsPanel {
 	private Box fields_box = Box.createVerticalBox();
 	private BorderLayout borderLayout1 = new BorderLayout();
 	private BorderLayout borderLayout7 = new BorderLayout();
+  Box options_box2 = Box.createVerticalBox();
+  JTextArea incrementalNote = new JTextArea();
+  JLabel spacer_label = new JLabel();
+  JCheckBox assertions_checkBox = new JCheckBox();
+  Box options_box = Box.createVerticalBox();
+  JCheckBox incremental_checkBox = new JCheckBox();
+  JCheckBox useJavac_checkBox = new JCheckBox();
+  JCheckBox preprocess_checkBox = new JCheckBox();
+  JLabel spacer_label1 = new JLabel();
 
 	public BuildOptionsPanel() {
 		try {
@@ -86,7 +85,7 @@ public class BuildOptionsPanel extends OptionsPanel {
 //			compilerMode_buttonGroup.add(normal_radioButton);
 //			compilerMode_buttonGroup.add(strict_radioButton);
 //			compilerMode_buttonGroup.add(lenient_radioButton);
-			
+
 			preprocess_checkBox.setEnabled(false);
 			useJavac_checkBox.setEnabled(false);
 			workingDir_field.setEnabled(false);
@@ -201,7 +200,6 @@ public class BuildOptionsPanel extends OptionsPanel {
 //		lenient_radioButton.setText(
 //			"Be lenient in interpreting the Java specification");
 //		lenient_radioButton.setFont(new java.awt.Font("Dialog", 0, 11));
-		spacer_label.setText("   ");
 		workingDir_field.setFont(new java.awt.Font("SansSerif", 0, 11));
 		workingDir_field.setMinimumSize(new Dimension(200, 21));
 		workingDir_field.setPreferredSize(new Dimension(350, 21));
@@ -212,16 +210,6 @@ public class BuildOptionsPanel extends OptionsPanel {
 		nonStandard_field.setFont(new java.awt.Font("SansSerif", 0, 11));
 		nonStandard_field.setMinimumSize(new Dimension(200, 21));
 		nonStandard_field.setPreferredSize(new Dimension(350, 21));
-		incremental_checkBox.setText("Incremental compile");
-		incremental_checkBox.setToolTipText("Only recompile necessary sources.");
-		incremental_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
-		assertions_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
-		assertions_checkBox.setText("Support assertions from 1.4 Java specification");
-		useJavac_checkBox.setText("Use javac to generate .class files");
-		useJavac_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
-		preprocess_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
-		preprocess_checkBox.setToolTipText("");
-		preprocess_checkBox.setText("Only preprocess and generate .java source files");
 		compileOptions_panel.setLayout(borderLayout1);
 		nonStandard_label.setText("Other compiler options:");
 		nonStandard_label.setFont(new java.awt.Font("Dialog", 0, 11));
@@ -231,20 +219,40 @@ public class BuildOptionsPanel extends OptionsPanel {
 		workingDir_label.setFont(new java.awt.Font("Dialog", 0, 11));
 		workingDir_label.setPreferredSize(new Dimension(80, 16));
 		workingDir_label.setText("Working directory: ");
-		this.add(jPanel3, BorderLayout.NORTH);
+    incrementalNote.setBackground(AjdeWidgetStyles.DEFAULT_BACKGROUND_COLOR);
+    incrementalNote.setFont(new java.awt.Font("Dialog", 0, 11));
+    incrementalNote.setEditable(false);
+    incrementalNote.setText(INCREMENTAL_NOTE);
+    spacer_label.setText("   ");
+    assertions_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
+    assertions_checkBox.setText("Support assertions from 1.4 Java specification");
+    incremental_checkBox.setText("Incremental compile");
+    incremental_checkBox.setToolTipText("Only recompile necessary sources.");
+    incremental_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
+    useJavac_checkBox.setText("Use javac to generate .class files");
+    useJavac_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
+    preprocess_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
+    preprocess_checkBox.setToolTipText("");
+    preprocess_checkBox.setText("Only preprocess and generate .java source files");
+    spacer_label1.setText("   ");
+    this.add(jPanel3, BorderLayout.NORTH);
 		jPanel2.add(workingDir_label, BorderLayout.CENTER);
 		jPanel2.add(workingDir_field, BorderLayout.EAST);
+    compileOptions_panel.add(options_box2, BorderLayout.CENTER);
+    options_box2.add(incrementalNote, null);
+    options_box2.add(spacer_label1, null);
+    compileOptions_panel.add(options_box, BorderLayout.NORTH);
+    options_box.add(assertions_checkBox, null);
+    options_box.add(preprocess_checkBox, null);
+    options_box.add(useJavac_checkBox, null);
+    options_box.add(incremental_checkBox, null);
+    options_box.add(spacer_label, null);
 		fields_box.add(jPanel1, null);
 		fields_box.add(jPanel2, null);
 		jPanel1.add(nonStandard_label, BorderLayout.CENTER);
 		jPanel1.add(nonStandard_field, BorderLayout.EAST);
-		compileOptions_panel.add(options_box, BorderLayout.NORTH);
 		compileOptions_panel.add(fields_box, BorderLayout.SOUTH);
-		options_box.add(assertions_checkBox, null);
-		options_box.add(preprocess_checkBox, null);
-		options_box.add(useJavac_checkBox, null);
-		options_box.add(incremental_checkBox, null);
-		options_box.add(spacer_label, null);
+
 		jPanel3.add(build_panel, BorderLayout.CENTER);
 		build_panel.add(compileOptions_panel, BorderLayout.NORTH);
 		jPanel3.add(build_panel1, BorderLayout.SOUTH);
