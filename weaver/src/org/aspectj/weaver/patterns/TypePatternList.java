@@ -232,16 +232,11 @@ public class TypePatternList extends PatternNode {
         return typePatterns;
     }
 
-	public Collection collectAccessTypeMungers(World world) {
+	public Collection getExactTypes() {
 		ArrayList ret = new ArrayList();
 		for (int i=0; i<typePatterns.length; i++) {
 			TypeX t = typePatterns[i].getExactType();
-			ResolvedTypeX rt = t.resolve(world);
-			if (!Modifier.isPublic(rt.getModifiers())) {
-				ret.add(new PrivilegedAccessMunger(new ResolvedMember(
-					Member.STATIC_INITIALIZATION, rt, 0, ResolvedTypeX.VOID, "", TypeX.NONE
-				)));
-			}
+			if (t != ResolvedTypeX.MISSING) ret.add(t);
 		}
 		return ret;
 	}

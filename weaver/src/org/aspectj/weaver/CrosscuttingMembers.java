@@ -96,9 +96,7 @@ public class CrosscuttingMembers {
 			declareDominates.add(declare);
 		} else if (declare instanceof DeclareParents) {
 			DeclareParents dp = (DeclareParents)declare;
-			for (Iterator i = dp.getParents().collectAccessTypeMungers(world).iterator(); i.hasNext(); ) {
-				addTypeMunger(world.concreteTypeMunger((PrivilegedAccessMunger)i.next(), inAspect));
-			}
+			exposeTypes(dp.getParents().getExactTypes());
 			declareParents.add(dp);
 		} else if (declare instanceof DeclareSoft) {
 			DeclareSoft d = (DeclareSoft)declare;
@@ -109,6 +107,21 @@ public class CrosscuttingMembers {
 		} else {
 			throw new RuntimeException("unimplemented");
 		}
+	}
+	
+	public void exposeTypes(Collection typesToExpose) {
+		for (Iterator i = typesToExpose.iterator(); i.hasNext(); ) {
+			exposeType((TypeX)i.next());
+		}
+	}
+	
+	public void exposeType(TypeX typeToExpose) {
+		if (typeToExpose == ResolvedTypeX.MISSING) return;
+		
+		ResolvedMember member = new ResolvedMember(
+			Member.STATIC_INITIALIZATION, typeToExpose, 0, ResolvedTypeX.VOID, "", TypeX.NONE);
+		addTypeMunger(world.concreteTypeMunger(
+			new PrivilegedAccessMunger(member), inAspect));
 	}
 	
 	public void addPrivilegedAccesses(Collection accessedMembers) {

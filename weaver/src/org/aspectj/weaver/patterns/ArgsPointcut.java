@@ -34,13 +34,8 @@ public class ArgsPointcut extends NameBindingPointcut {
 	}
 
 	public FuzzyBoolean match(Shadow shadow) {
-		int n = shadow.getArgCount();
-		TypeX[] argTypes = new TypeX[n];
-		for (int i=0; i < n; i++) {
-			argTypes[i] = shadow.getArgType(i);
-		}
 		FuzzyBoolean ret =
-			arguments.matches(shadow.getIWorld().resolve(argTypes), TypePattern.DYNAMIC);
+			arguments.matches(shadow.getIWorld().resolve(shadow.getArgTypes()), TypePattern.DYNAMIC);
 		return ret;
 	}
 
@@ -81,15 +76,18 @@ public class ArgsPointcut extends NameBindingPointcut {
 
 
 	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
-		return new ArgsPointcut(arguments.resolveReferences(bindings));
+		TypePatternList args = arguments.resolveReferences(bindings);
+		if (inAspect.crosscuttingMembers != null) {
+			inAspect.crosscuttingMembers.exposeTypes(args.getExactTypes());
+		}
+		return new ArgsPointcut(args);
 	}
 
 	private Test findResidueNoEllipsis(Shadow shadow, ExposedState state, TypePattern[] patterns) {
 		int len = shadow.getArgCount();
 		//System.err.println("boudn to : " + len + ", " + patterns.length);
 		if (patterns.length != len) {
-			throw new RuntimeException("this should never happen");
-			//return Literal.FALSE;  //??? this should never happen
+			return Literal.FALSE;
 		}
 		
 		Test ret = Literal.TRUE;
@@ -110,6 +108,9 @@ public class ArgsPointcut extends NameBindingPointcut {
 	}
 
 	public Test findResidue(Shadow shadow, ExposedState state) {
+		if (arguments.matches(shadow.getIWorld().resolve(shadow.getArgTypes()), TypePattern.DYNAMIC).alwaysFalse()) {
+			return Literal.FALSE;
+		}
 		int ellipsisCount = arguments.ellipsisCount;
 		if (ellipsisCount == 0) {
 			return findResidueNoEllipsis(shadow, state, arguments.getTypePatterns());		

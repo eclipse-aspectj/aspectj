@@ -103,7 +103,12 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 	}
 
 	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
-		return new ThisOrTargetPointcut(isThis, type.remapAdviceFormals(bindings));
+		TypePattern newType = type.remapAdviceFormals(bindings);
+		if (inAspect.crosscuttingMembers != null) {
+			inAspect.crosscuttingMembers.exposeType(newType.getExactType());
+		}
+		
+		return new ThisOrTargetPointcut(isThis, newType);
 	}
 
 }
