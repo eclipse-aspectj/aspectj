@@ -289,7 +289,7 @@ public class PointcutRewriterTest extends TestCase {
 			}
 		}
 		// + @
-		p = getPointcut("@this(@Foo)");
+		p = getPointcut("@this(Foo)");
 		matches = p.couldMatchKinds();
 		for (Iterator iter = matches.iterator(); iter.hasNext();) {
 			Shadow.Kind kind = (Shadow.Kind) iter.next();
@@ -315,7 +315,7 @@ public class PointcutRewriterTest extends TestCase {
 			}
 		}
 		// + @
-		p = getPointcut("@target(@Foo)");
+		p = getPointcut("@target(Foo)");
 		matches = p.couldMatchKinds();
 		for (Iterator iter = matches.iterator(); iter.hasNext();) {
 			Shadow.Kind kind = (Shadow.Kind) iter.next();
@@ -337,7 +337,7 @@ public class PointcutRewriterTest extends TestCase {
 	}
 	
 	public void testKindSetOfAnnotation() {
-		Pointcut p = getPointcut("@annotation(@Foo)");
+		Pointcut p = getPointcut("@annotation(Foo)");
 		assertTrue("All kinds",p.couldMatchKinds().containsAll(Shadow.ALL_SHADOW_KINDS));		
 	}
 	
@@ -345,7 +345,7 @@ public class PointcutRewriterTest extends TestCase {
 		Pointcut p = getPointcut("within(*)");
 		assertTrue("All kinds",p.couldMatchKinds().containsAll(Shadow.ALL_SHADOW_KINDS));
 		// + @
-		p = getPointcut("@within(@Foo)");
+		p = getPointcut("@within(Foo)");
 		assertTrue("All kinds",p.couldMatchKinds().containsAll(Shadow.ALL_SHADOW_KINDS));
 	}
 	
@@ -365,7 +365,7 @@ public class PointcutRewriterTest extends TestCase {
 		assertTrue("Need cons-exe for inlined field inits",matches.contains(Shadow.ConstructorExecution));
 		assertTrue("Need init for inlined field inits",matches.contains(Shadow.Initialization));
 		// + @
-		p = getPointcut("@withincode(@Foo)");
+		p = getPointcut("@withincode(Foo)");
 		matches = p.couldMatchKinds();
 		for (Iterator iter = matches.iterator(); iter.hasNext();) {
 			Shadow.Kind kind = (Shadow.Kind) iter.next();
@@ -409,9 +409,9 @@ public class PointcutRewriterTest extends TestCase {
 	}
 	
 	public void testOrderingInAnd() {
-		Pointcut bigLongPC = getPointcut("cflow(this(Foo)) && @args(@X) && args(X) && @this(@Foo) && @target(@Boo) && this(Moo) && target(Boo) && @annotation(@Moo) && @withincode(@Boo) && withincode(new(..)) && set(* *)&& @within(@Foo) && within(Foo)");
+		Pointcut bigLongPC = getPointcut("cflow(this(Foo)) && @args(X) && args(X) && @this(Foo) && @target(Boo) && this(Moo) && target(Boo) && @annotation(Moo) && @withincode(Boo) && withincode(new(..)) && set(* *)&& @within(Foo) && within(Foo)");
 		Pointcut rewritten = prw.rewrite(bigLongPC);
-		assertEquals("((((((((((((within(Foo) && @within(@Foo)) && set(* *)) && withincode(new(..))) && @withincode(@Boo)) && @annotation(@Moo)) && target(Boo)) && this(Moo)) && @target(@Boo)) && @this(@Foo)) && args(X)) && @args(@X)) && cflow(this(Foo)))",rewritten.toString());
+		assertEquals("((((((((((((within(Foo) && @within(Foo)) && set(* *)) && withincode(new(..))) && @withincode(Boo)) && @annotation(Moo)) && target(Boo)) && this(Moo)) && @target(Boo)) && @this(Foo)) && args(X)) && @args(X)) && cflow(this(Foo)))",rewritten.toString());
 	}
 	
 	public void testOrderingInSimpleOr() {

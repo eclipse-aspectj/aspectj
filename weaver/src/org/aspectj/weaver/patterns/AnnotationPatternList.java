@@ -129,7 +129,8 @@ public class AnnotationPatternList extends PatternNode {
     		if (type == AnnotationTypePattern.ELLIPSIS) {
     			buf.append("..");
     		} else {
-    			buf.append(type.toString());
+    			String annPatt = type.toString();
+    			buf.append(annPatt.startsWith("@") ? annPatt.substring(1) : annPatt);
     		}
     	}
     	buf.append(")");

@@ -4,13 +4,13 @@ public aspect NotRuntimeRetention {
     pointcut doSomethingCall() : call(* doSomething());
     
     // CE L7
-    before() : doSomethingExecution() && @this(@MyClassRetentionAnnotation) {
+    before() : doSomethingExecution() && @this(MyClassRetentionAnnotation) {
     	// should be compile-time error!
         System.out.println("How did I get here?");
     }
     
     // CE L13
-    after() returning : doSomethingCall() && @target(@MyClassRetentionAnnotation) {
+    after() returning : doSomethingCall() && @target(MyClassRetentionAnnotation) {
     	// should be compile-time error!
         System.out.println("How did I get here?");
     }

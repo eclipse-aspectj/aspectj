@@ -255,7 +255,9 @@
         will be emitted by the compiler if the pointcut expression associated with an 
         advice statement can be statically determined to not match any join points. The
         warning can be suppressed for an individual advice statement by using the 
-        <literal>@SuppressWarnings({"unmatched"})</literal> annotation. (See JLS 9.6.1.5).
+        <literal>@SuppressAjWarnings({"unmatched"})</literal> annotation. This works in
+        the same way as the Java 5 SuppressWarnings annotation (See JLS 9.6.1.5), but has class file
+        retention.
     </para>
   </sect1>
 
@@ -264,11 +266,6 @@
   <sect1 id="annotations-pointcuts-and-advice">
     <title>Join Point Matching based on Annotations</title>
 
-    <para><emphasis>Note: compared to the previous version, this version restricts the
-    use of annotations in type patterns (package annotations and outer type annotations
-    cannot be specified inline), and requires parenthesis more often. These changes were
-    made to make pointcut expressions easier to read and interpret.</emphasis></para>  
-  
   <para>
   	This section discusses changes to type pattern and signature pattern matching in
   	AspectJ 5 that support matching join points based on the presence or absence of
@@ -733,7 +730,7 @@
     
   	    AtTarget := '@target' '(' AnnotationOrIdentifier ')'
   	
-  	    AnnotationOrIdentifier := '@' FullyQualifiedName | Identifier
+  	    AnnotationOrIdentifier := FullyQualifiedName | Identifier
         
   	    AtArgs := '@args' '(' AnnotationsOrIdentifiersPattern ')'
         
@@ -759,7 +756,7 @@
    <variablelist>
 
         <varlistentry>
-          <term>@this(@Foo)</term>
+          <term>@this(Foo)</term>
           <listitem>
             <para>
             	Matches any join point where the object currently bound to 'this'
@@ -769,7 +766,7 @@
         </varlistentry>
 
         <varlistentry>
-          <term>call(* *(..)) &amp;&amp; @target(@Classified)</term>
+          <term>call(* *(..)) &amp;&amp; @target(Classified)</term>
           <listitem>
             <para>
             	Matches a call to any object where the target of the call has
@@ -810,7 +807,7 @@
   	 * matches any join point with at least one argument, and where the
   	 * type of the first argument has the @Classified annotation
   	 */
-  	pointcut classifiedArgument() : @args(@Classified,..);
+  	pointcut classifiedArgument() : @args(Classified,..);
   	
   	/**
   	 * matches any join point with three arguments, where the third
@@ -867,7 +864,7 @@
    <variablelist>
 
         <varlistentry>
-          <term>@within(@Foo)</term>
+          <term>@within(Foo)</term>
           <listitem>
             <para>
             	Matches any join point where the executing code is defined 
@@ -1158,7 +1155,7 @@
 
   	<programlisting><![CDATA[
   	declare error : call(* org.xyz.model.*.*(..)) &&
-  	                !@within(@Trusted *)
+  	                !@within(Trusted)
   	                : "Untrusted code should not call the model classes directly";
 	]]></programlisting>
     
@@ -1259,11 +1256,16 @@
     <title>Declare Annotation</title>
   
       <para>AspectJ 5 supports a new kind of declare statement, <literal>declare annotation</literal>.
-      The general form of a <literal>declare annotation</literal> statement is:
+      This takes different forms according to the recipient of the annotation: 
+      <literal>declare @type</literal> for types, <literal>declare @method</literal> for methods,
+      <literal>declare @constructor</literal> for constructors, and <literal>declare @field</literal>
+      for fields. <literal>declare @package</literal> may be supported in a future release.
       </para>
+      
+      <para>The general form is:</para>
 
   	<programlisting><![CDATA[
-  	declare annotation : ElementPattern : Annotation ;
+  	declare @<kind> : ElementPattern : Annotation ;
 	]]></programlisting>
 
     <para>Where annotation is a regular annotation expression as defined in the Java 5 language. If the annotation has 
@@ -1284,7 +1286,7 @@
 	    <variablelist>
 	
 	        <varlistentry>
-	          <term>declare annotation : org.xyz.model..* : @BusinessDomain ;</term>
+	          <term>declare @type : org.xyz.model..* : @BusinessDomain ;</term>
 	          <listitem>
 	            <para>
                     All types defined in a package with the prefix <literal>org.xyz.model</literal>
@@ -1294,7 +1296,7 @@
 	        </varlistentry>
 	        
 	        <varlistentry>
-	          <term>declare annotation : public * BankAccount+.*(..) : @Secured(role="supervisor")</term>
+	          <term>declare @method : public * BankAccount+.*(..) : @Secured(role="supervisor")</term>
 	          <listitem>
 	            <para>
 	                All public methods in <literal>BankAccount</literal> and its subtypes have the
@@ -1304,7 +1306,7 @@
 	        </varlistentry>
 	        
 	        <varlistentry>
-	          <term>declare annotation : * DAO+.* : @Persisted;</term>
+	          <term>declare @field : * DAO+.* : @Persisted;</term>
 	          <listitem>
 	            <para>
 	            	All fields defined in <literal>DAO</literal> or its subtypes have the

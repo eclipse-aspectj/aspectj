@@ -689,11 +689,9 @@ public class PatternParser {
 		ExactAnnotationTypePattern p = null;
 		int startPos = tokenSource.peek().getStart();
 		if (maybeEat("@")) {
-			p = parseSimpleAnnotationName();
-		} else {
-			String formal = parseIdentifier();
-			p = new ExactAnnotationTypePattern(formal); // will get replaced when bindings resolved
+			throw new ParserException("@Foo form was deprecated in AspectJ 5 M2: annotation name or var ",tokenSource.peek(-1));
 		}
+		p = parseSimpleAnnotationName();
 		int endPos = tokenSource.peek(-1).getEnd();
 		p.setLocation(sourceContext,startPos,endPos);
 		return p;

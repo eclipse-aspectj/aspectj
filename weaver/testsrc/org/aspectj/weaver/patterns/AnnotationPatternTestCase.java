@@ -110,7 +110,7 @@ public class AnnotationPatternTestCase extends TestCase {
 	}
 
 	public void testParseNameOrVarAnnotationPattern() {
-		PatternParser p = new PatternParser("@Foo");
+		PatternParser p = new PatternParser("Foo");
 		AnnotationTypePattern foo = p.parseAnnotationNameOrVarTypePattern();
 		assertTrue("ExactAnnotationTypePattern",foo instanceof ExactAnnotationTypePattern);
 		assertEquals("Foo",TypeX.forName("Foo"),((ExactAnnotationTypePattern)foo).annotationType);		
@@ -127,7 +127,7 @@ public class AnnotationPatternTestCase extends TestCase {
 	}
 
 	public void testParseNameOrVarAnnotationPatternWithOr() {
-		PatternParser p = new PatternParser("@Foo || @Boo");
+		PatternParser p = new PatternParser("Foo || Boo");
 		AnnotationTypePattern foo = p.parseAnnotationNameOrVarTypePattern();
 		// rest of pattern not consumed...
 		assertTrue("ExactAnnotationTypePattern",foo instanceof ExactAnnotationTypePattern);
@@ -138,12 +138,11 @@ public class AnnotationPatternTestCase extends TestCase {
 		PatternParser p = new PatternParser("foo");
 		AnnotationTypePattern foo = p.parseAnnotationNameOrVarTypePattern();
 		assertTrue("ExactAnnotationTypePattern",foo instanceof ExactAnnotationTypePattern);
-		assertNull("no type pattern yet",((ExactAnnotationTypePattern)foo).annotationType);
-		assertEquals("foo",((ExactAnnotationTypePattern)foo).formalName);
+		assertEquals("@foo",((ExactAnnotationTypePattern)foo).toString());
 	}
 
 	public void testParseNameOrVarAnnotationPatternWithAnd() {
-		PatternParser p = new PatternParser("@Foo @Boo");
+		PatternParser p = new PatternParser("Foo Boo");
 		AnnotationTypePattern foo = p.parseAnnotationNameOrVarTypePattern();
 		// rest of pattern not consumed...
 		assertEquals("@Foo",foo.toString());

@@ -16,14 +16,14 @@ public aspect ThisOrTargetTests {
   pointcut doSomethingExecution() : execution(* doSomething());
   pointcut doSomethingCall() : call(* doSomething());
   
-  before() : doSomethingExecution() && @this(@MyAnnotation) {
+  before() : doSomethingExecution() && @this(MyAnnotation) {
   	// should match:
   	// b.doSomething(), reallyB.doSomething() [with test],
   	// c.doSomething()
   	add(before1Matches,thisJoinPointStaticPart);
   }
   
-  before() : doSomethingExecution() && @this(@MyInheritableAnnotation) {
+  before() : doSomethingExecution() && @this(MyInheritableAnnotation) {
   	// should match:
   	// c.doSomething()
   	// d.doSomething()
@@ -31,14 +31,14 @@ public aspect ThisOrTargetTests {
   	add(before2Matches,thisJoinPointStaticPart);
   }
   
-  after() returning : doSomethingCall() && @target(@MyAnnotation) {
+  after() returning : doSomethingCall() && @target(MyAnnotation) {
   	// should match:
   	// b.doSomething(), reallyB.doSomething() [with test],
   	// c.doSomething()
   	add(after1Matches,thisJoinPointStaticPart);
   }
   
-  after() returning : doSomethingCall() && @target(@MyInheritableAnnotation) {
+  after() returning : doSomethingCall() && @target(MyInheritableAnnotation) {
   	// should match:
   	// c.doSomething()
   	// d.doSomething()

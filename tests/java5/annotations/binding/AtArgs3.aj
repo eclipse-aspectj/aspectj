@@ -20,7 +20,7 @@ aspect X {
 
   static boolean b = false;
 
-  before(): call(* m(..)) && !within(X) && @args(@Colored) {
+  before(): call(* m(..)) && !within(X) && @args(Colored) {
     b=true;
   }
 

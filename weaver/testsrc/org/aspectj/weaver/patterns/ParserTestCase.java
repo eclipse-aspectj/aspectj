@@ -152,13 +152,13 @@ public class ParserTestCase extends TestCase {
 	}
 	
 	public void testAtAnnotation() {
-	    PatternParser parser = new PatternParser("@annotation(@Foo)");
+	    PatternParser parser = new PatternParser("@annotation(Foo)");
 	    AnnotationPointcut p = (AnnotationPointcut) parser.parsePointcut();
-	    assertEquals("@annotation(@Foo)",p.toString());	    	    	    	    	    	    
+	    assertEquals("@annotation(Foo)",p.toString());	    	    	    	    	    	    
 	}
 	
 	public void testBadAtAnnotation() {
-	    PatternParser parser = new PatternParser("@annotation(!@Foo)");
+	    PatternParser parser = new PatternParser("@annotation(!Foo)");
 	    try {
 	        Pointcut p = parser.parsePointcut();
 	        fail("Expected parser exception");
@@ -174,7 +174,7 @@ public class ParserTestCase extends TestCase {
 	}
 	
 	public void testDoubleAtAnnotation() {
-	    PatternParser parser = new PatternParser("@annotation(@Foo @Goo)");
+	    PatternParser parser = new PatternParser("@annotation(Foo Goo)");
 	    try {
 	        Pointcut p = parser.parsePointcut();
 	        fail("Expected parser exception");
@@ -187,18 +187,18 @@ public class ParserTestCase extends TestCase {
 	    PatternParser parser = new PatternParser("@within(foo)");
 	    WithinAnnotationPointcut p = (WithinAnnotationPointcut) parser.parsePointcut();
 	    assertEquals("@within(foo)",p.toString());	 
-	    parser = new PatternParser("@within(@Foo))");
+	    parser = new PatternParser("@within(Foo))");
 	    p = (WithinAnnotationPointcut) parser.parsePointcut();
-	    assertEquals("@within(@Foo)",p.toString());
+	    assertEquals("@within(Foo)",p.toString());
 	}
 	
 	public void testAtWithinCode() {
 	    PatternParser parser = new PatternParser("@withincode(foo)");
 	    WithinCodeAnnotationPointcut p = (WithinCodeAnnotationPointcut) parser.parsePointcut();
 	    assertEquals("@withincode(foo)",p.toString());	 
-	    parser = new PatternParser("@withincode(@Foo))");
+	    parser = new PatternParser("@withincode(Foo))");
 	    p = (WithinCodeAnnotationPointcut) parser.parsePointcut();
-	    assertEquals("@withincode(@Foo)",p.toString());
+	    assertEquals("@withincode(Foo)",p.toString());
 	}
 	
 	public void testAtThis() {
@@ -206,10 +206,10 @@ public class ParserTestCase extends TestCase {
 	    ThisOrTargetAnnotationPointcut p = (ThisOrTargetAnnotationPointcut) parser.parsePointcut();
 	    assertEquals("@this(foo)",p.toString());
 	    assertTrue("isThis",p.isThis());
-	    parser = new PatternParser("@this(@Foo))");
+	    parser = new PatternParser("@this(Foo))");
 	    p = (ThisOrTargetAnnotationPointcut) parser.parsePointcut();
 	    assertTrue("isThis",p.isThis());
-	    assertEquals("@this(@Foo)",p.toString());
+	    assertEquals("@this(Foo)",p.toString());
 	}
 
 	public void testAtTarget() {
@@ -217,16 +217,16 @@ public class ParserTestCase extends TestCase {
 	    ThisOrTargetAnnotationPointcut p = (ThisOrTargetAnnotationPointcut) parser.parsePointcut();
 	    assertEquals("@target(foo)",p.toString());
 	    assertTrue("isTarget",!p.isThis());
-	    parser = new PatternParser("@target(@Foo))");
+	    parser = new PatternParser("@target(Foo))");
 	    p = (ThisOrTargetAnnotationPointcut) parser.parsePointcut();
 	    assertTrue("isTarget",!p.isThis());
-	    assertEquals("@target(@Foo)",p.toString());
+	    assertEquals("@target(Foo)",p.toString());
 	}
 	
 	public void testAtArgs() {
-	    PatternParser parser = new PatternParser("@args(@Foo,@Goo,*,..,@Moo)");
+	    PatternParser parser = new PatternParser("@args(Foo,Goo,*,..,Moo)");
 	    Pointcut p = parser.parsePointcut();
-	    assertEquals("@args(@Foo, @Goo, @ANY, .., @Moo)",p.toString());
+	    assertEquals("@args(Foo, Goo, ANY, .., Moo)",p.toString());
 	}
 	
 	public TestScope makeSimpleScope() {

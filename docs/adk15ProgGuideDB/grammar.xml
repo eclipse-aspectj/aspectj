@@ -138,7 +138,7 @@
         AtWithin := '@within' '(' AnnotationOrIdentifier ')'
         AtWithinCode := '@withincode' '(' AnnotationOrIdentifier ')'        
         
-        AnnotationOrIdentifier := '@' FullyQualifiedName | Identifier
+        AnnotationOrIdentifier := FullyQualifiedName | Identifier
         
         AtArgs := '@args' '(' AnnotationsOrIdentifiersPattern ')'
         

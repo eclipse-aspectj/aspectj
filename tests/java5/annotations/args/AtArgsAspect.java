@@ -62,62 +62,62 @@ public aspect AtArgsAspect {
 	
 	// Non-inherited 
 	// test 5
-	before() : myMethod() && @args(@MyAnnotation,..) {
+	before() : myMethod() && @args(MyAnnotation,..) {
 		System.out.print("@args(@MyAnnotation,..): ");
 		System.out.println(TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
-	before() : myMethod() && !@args(@MyAnnotation,..) {
+	before() : myMethod() && !@args(MyAnnotation,..) {
 		System.out.print("@args(@MyAnnotation,..): ");
 		System.out.println(!TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
 
 	// test 6
-	before() : myMethod() && @args(@MyAnnotation,*,*,@MyAnnotation,*) {
+	before() : myMethod() && @args(MyAnnotation,*,*,MyAnnotation,*) {
 		System.out.print("@args(@MyAnnotation,*,*,@MyAnnotation,*): ");
 		System.out.println(TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
-	before() : myMethod() && !@args(@MyAnnotation,*,*,@MyAnnotation,*) {
+	before() : myMethod() && !@args(MyAnnotation,*,*,MyAnnotation,*) {
 		System.out.print("@args(@MyAnnotation,*,*,@MyAnnotation,*): ");
 		System.out.println(!TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
 
 	// test 7
-	before() : myMethod() && @args(@MyAnnotation,*,*,@MyAnnotation,@MyAnnotation) {
+	before() : myMethod() && @args(MyAnnotation,*,*,MyAnnotation,MyAnnotation) {
 		System.out.print("@args(@MyAnnotation,*,*,@MyAnnotation,@MyAnnotation): ");
 		System.out.println(TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
-	before() : myMethod() && !@args(@MyAnnotation,*,*,@MyAnnotation,@MyAnnotation) {
+	before() : myMethod() && !@args(MyAnnotation,*,*,MyAnnotation,MyAnnotation) {
 		System.out.print("@args(@MyAnnotation,*,*,@MyAnnotation,@MyAnnotation): ");
 		System.out.println(!TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
 	
 	// Inherited
 	// test 8
-	before() : myMethod() && @args(..,@MyInheritableAnnotation,*) {
+	before() : myMethod() && @args(..,MyInheritableAnnotation,*) {
 		System.out.print("@args(..,@MyInheritableAnnotation,*): ");
 		System.out.println(TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
-	@org.aspectj.lang.annotation.SuppressAjWarnings before() : myMethod() && !@args(..,@MyInheritableAnnotation,*) {
+	@org.aspectj.lang.annotation.SuppressAjWarnings before() : myMethod() && !@args(..,MyInheritableAnnotation,*) {
 		System.out.print("@args(..,@MyInheritableAnnotation,*): ");
 		System.out.println(!TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
 
 	// test 9
-	before() : myMethod() && @args(..,@MyInheritableAnnotation,@MyInheritableAnnotation) {
+	before() : myMethod() && @args(..,MyInheritableAnnotation,MyInheritableAnnotation) {
 		System.out.print("@args(..,@MyInheritableAnnotation,@MyInheritableAnnotation): ");
 		System.out.println(TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
-	@org.aspectj.lang.annotation.SuppressAjWarnings before() : myMethod() && !@args(..,@MyInheritableAnnotation,@MyInheritableAnnotation) {
+	@org.aspectj.lang.annotation.SuppressAjWarnings before() : myMethod() && !@args(..,MyInheritableAnnotation,MyInheritableAnnotation) {
 		System.out.print("@args(..,@MyInheritableAnnotation,@MyInheritableAnnotation): ");
 		System.out.println(!TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
 
 	// test 10
-	before() : myMethod() && @args(..,@MyInheritableAnnotation,@MyInheritableAnnotation,@MyInheritableAnnotation) {
+	before() : myMethod() && @args(..,MyInheritableAnnotation,MyInheritableAnnotation,MyInheritableAnnotation) {
 		System.out.print("@args(..,@MyInheritableAnnotation,@MyInheritableAnnotation,@MyInheritableAnnotation): ");
 		System.out.println(TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}
-	before() : myMethod() && !@args(..,@MyInheritableAnnotation,@MyInheritableAnnotation,@MyInheritableAnnotation) {
+	before() : myMethod() && !@args(..,MyInheritableAnnotation,MyInheritableAnnotation,MyInheritableAnnotation) {
 		System.out.print("@args(..,@MyInheritableAnnotation,@MyInheritableAnnotation,@MyInheritableAnnotation): ");
 		System.out.println(!TestingArgsAnnotations.expected() ? "PASS" : "FAIL");
 	}

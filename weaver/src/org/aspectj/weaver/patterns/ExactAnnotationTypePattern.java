@@ -42,7 +42,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		this.resolved = (annotationType instanceof ResolvedTypeX);
 	}
 
-	public ExactAnnotationTypePattern(String formalName) {
+	protected ExactAnnotationTypePattern(String formalName) {
 		this.formalName = formalName;
 		this.resolved = false;
 		this.bindingPattern = true;
@@ -104,8 +104,9 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 			Bindings bindings, boolean allowBinding) {
 		if (resolved) return this;
 		resolved = true;
-		if (formalName != null) {
-			FormalBinding formalBinding = scope.lookupFormal(formalName);
+		String simpleName = maybeGetSimpleName();
+		if (simpleName != null) {
+			FormalBinding formalBinding = scope.lookupFormal(simpleName);
 			if (formalBinding != null) {
 				if (bindings == null) {
 					scope.message(IMessage.ERROR, this, "negation doesn't allow binding");
@@ -116,6 +117,8 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 						"name binding only allowed in @pcds, args, this, and target");
 					return this;
 				}
+				formalName = simpleName;
+				bindingPattern = true;
 				verifyIsAnnotationType(formalBinding.getType(),scope);
 				BindingAnnotationTypePattern binding = new BindingAnnotationTypePattern(formalBinding);
 				binding.copyLocationFrom(this);
@@ -123,30 +126,32 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 				binding.resolveBinding(scope.getWorld());
 				
 				return binding;
-			} else {
-				scope.message(IMessage.ERROR,this,"unbound formal " + formalName);
-				return this;
-			}
-		} else {
-			// Non binding case
-
-			String cleanname = annotationType.getName();
-			annotationType = scope.getWorld().resolve(annotationType,true);
-			
-			// We may not have found it if it is in a package, lets look it up...
-			if (annotationType == ResolvedTypeX.MISSING) {
-				TypeX type = null;
-				while ((type = scope.lookupType(cleanname,this)) == ResolvedTypeX.MISSING) {
-					int lastDot = cleanname.lastIndexOf('.');
-					if (lastDot == -1) break;
-					cleanname = cleanname.substring(0,lastDot)+"$"+cleanname.substring(lastDot+1);
-				}
-				annotationType = scope.getWorld().resolve(type,true);
-			}
-			
-			verifyIsAnnotationType(annotationType,scope);
-			return this;
+			} 
 		}
+
+		// Non binding case
+		String cleanname = annotationType.getName();
+		annotationType = scope.getWorld().resolve(annotationType,true);
+		
+		// We may not have found it if it is in a package, lets look it up...
+		if (annotationType == ResolvedTypeX.MISSING) {
+			TypeX type = null;
+			while ((type = scope.lookupType(cleanname,this)) == ResolvedTypeX.MISSING) {
+				int lastDot = cleanname.lastIndexOf('.');
+				if (lastDot == -1) break;
+				cleanname = cleanname.substring(0,lastDot)+"$"+cleanname.substring(lastDot+1);
+			}
+			annotationType = scope.getWorld().resolve(type,true);
+		}
+		
+		verifyIsAnnotationType(annotationType,scope);
+		return this;
+	}
+	
+	private String maybeGetSimpleName() {
+		if (formalName != null) return formalName;
+		String ret = annotationType.getName();
+		return (ret.indexOf('.') == -1) ? ret : null;
 	}
 	
 	/**
