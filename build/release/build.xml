@@ -423,6 +423,20 @@
 			<param name="harness.suffix" value="-ajctaskCompiler"/>
 		</antcall>
 
+		<!-- examples tested only from command-line, eclipse -->
+		<antcall target="do-run-harness">
+			<param name="suite.filename" value="ajcTestsExamples"/>
+			<param name="harness.args" value=""/>
+			<param name="harness.suffix" value=""/>
+		</antcall>
+
+		<antcall target="do-run-harness">
+			<param name="suite.filename" value="ajcTestsExamples"/>
+			<param name="harness.args" value="-ajctaskCompiler"/>
+			<param name="harness.suffix" value="-ajctaskCompiler"/>
+		</antcall>
+		<!-- skip examples -emacssym - avoid littering docs tree -->
+
 		<!-- AJDE compiler hangs when done - unclose swing thread?
 		<antcall target="do-run-harness">
 			<param name="suite.filename" value="ajcTests"/>
