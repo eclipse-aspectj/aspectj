@@ -13,7 +13,7 @@ public aspect MissingImport {
 			} catch (InvocationTargetException e) {  // expect CE
 				 throw new RuntimeException("framework error in throwing test exception ", e);
 			} catch (IllegalAccessException e) {
-				 throw new RuntimeException("framework error in throwing test exception ", e);
+				 throw new RuntimeException("framework error in throwing test exception (IllegalAccess)");
 			}
 		return null;
 	}
