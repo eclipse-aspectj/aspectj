@@ -13,10 +13,12 @@
 package org.aspectj.ajdt.internal.compiler.batch;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.aspectj.ajdt.ajc.AjdtCommand;
 import org.aspectj.bridge.ICommand;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageHandler;
 
 /**
@@ -100,6 +102,26 @@ public class BasicCommandTestCase extends CommandTestCase {
 		
 		runCompiler(args, new int[] {2});
 	}
+	public void testMissingJarError() {
+		List args = new ArrayList();
+
+		args.add("-d");
+		args.add("out");
+		
+		args.add("-classpath");
+		args.add("../runtime/bin;../lib/junit/junit.jar;../testing-client/bin;not_found_anywhere.jar");
+		args.add("testdata/src1/ThisAndModifiers.java");
+		
+		ICommand command = new AjdtCommand();
+		MessageHandler myHandler = new MessageHandler();
+		//myHandler.setInterceptor(org.aspectj.tools.ajc.Main.MessagePrinter.TERSE);
+		boolean result = command.runCommand((String[])args.toArray(new String[args.size()]), myHandler);
+
+		//System.err.println("messages: " + Arrays.asList(myHandler.getMessages(IMessage.INFO, true)));
+		// DON'T yet have a way of testing that we actually got a particular info message
+		assertEquals("only info for missing jar", 0, myHandler.getErrors().length);
+
+	}
 	public void testMissingRuntimeError() {
 		List args = new ArrayList();
 
@@ -108,7 +130,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 		
 		args.add("-classpath");
 		args.add("../lib/junit/junit.jar;../testing-client/bin");
-		args.add("testdata/src1/Xlint.java");
+		args.add("testdata/src1/ThisAndModifiers.java");
 		
 		ICommand command = new AjdtCommand();
 		MessageHandler myHandler = new MessageHandler();

@@ -122,13 +122,25 @@ public class BuildArgParser extends Main {
                 }
             }
 				
-			List javaArgList = parser.getUnparsedArgs();
+			List javaArgList = new ArrayList();
+			
 			//	disable all special eclipse warnings by default
 			//??? might want to instead override getDefaultOptions()
-			javaArgList.add(0, "-warn:none"); 
-			if (javaArgList.size() != 0) {
+			javaArgList.add("-warn:none");
+			
+			// these next four lines are some nonsense to fool the eclipse batch compiler
+			// without these it will go searching for reasonable values from properties
+			//TODO fix org.eclipse.jdt.internal.compiler.batch.Main so this hack isn't needed
+			javaArgList.add("-classpath");
+			javaArgList.add(System.getProperty("user.dir"));
+			javaArgList.add("-bootclasspath");
+			javaArgList.add(System.getProperty("user.dir"));
+			
+			javaArgList.addAll(parser.getUnparsedArgs());
+
+//			if (javaArgList.size() != 0) {
 				super.configure((String[])javaArgList.toArray(new String[javaArgList.size()]));
-			}
+//			}
 			
 			if (buildConfig.getSourceRoots() != null) {
 				for (Iterator i = buildConfig.getSourceRoots().iterator(); i.hasNext(); ) {
@@ -210,13 +222,12 @@ public class BuildArgParser extends Main {
         }
         addExtDirs(extdirs, ret);
 
-		if ((classpaths == null || classpaths.length == 0) ||
-			(classpaths != null && classpaths[0] == ".")) {
+		if (parser.classpath == null) {
 			//??? this puts the compiler's classes on the classpath
 			//??? this is ajc-1.0 compatible
 			addClasspath(System.getProperty("java.class.path", ""), ret);
 		} else {
-	    	ret.addAll(Arrays.asList(classpaths));
+	    	addClasspath(parser.classpath, ret);
 		}	
 		
 		//??? eclipse seems to put outdir on the classpath
@@ -253,7 +264,8 @@ public class BuildArgParser extends Main {
     
     // !!! extract error handling to be common so that the IDEs can use it
     private class AjcConfigParser extends ConfigParser {
-        private String bootclasspath = null;
+		private String bootclasspath = null;
+		private String classpath = null;
         private String extdirs = null;
         private List unparsedArgs = new ArrayList();
 		private AjBuildConfig buildConfig;
@@ -408,9 +420,16 @@ public class BuildArgParser extends Main {
 				if (args.size() > nextArgIndex) {
 					bootclasspath = ((ConfigParser.Arg)args.get(nextArgIndex)).getValue();
 					args.remove(args.get(nextArgIndex));	
-                } else {
-                    showError("-bootclasspath requires classpath entries");
-                }
+				} else {
+					showError("-bootclasspath requires classpath entries");
+				}
+			} else if (arg.equals("-classpath")) {
+				if (args.size() > nextArgIndex) {
+					classpath = ((ConfigParser.Arg)args.get(nextArgIndex)).getValue();
+					args.remove(args.get(nextArgIndex));	
+				} else {
+					showError("-classpath requires classpath entries");
+				}
 			} else if (arg.equals("-extdirs")) {
 				if (args.size() > nextArgIndex) {
 					extdirs = ((ConfigParser.Arg)args.get(nextArgIndex)).getValue();
@@ -421,12 +440,12 @@ public class BuildArgParser extends Main {
             // error on directory unless -d, -{boot}classpath, or -extdirs
             } else if (arg.equals("-d")) {
                 dirLookahead(arg, args, nextArgIndex);
-            } else if (arg.equals("-classpath")) {
-                dirLookahead(arg, args, nextArgIndex);
-            } else if (arg.equals("-bootclasspath")) {
-                dirLookahead(arg, args, nextArgIndex);
-            } else if (arg.equals("-extdirs")) {
-                dirLookahead(arg, args, nextArgIndex);
+//            } else if (arg.equals("-classpath")) {
+//                dirLookahead(arg, args, nextArgIndex);
+//            } else if (arg.equals("-bootclasspath")) {
+//                dirLookahead(arg, args, nextArgIndex);
+//            } else if (arg.equals("-extdirs")) {
+//                dirLookahead(arg, args, nextArgIndex);
             } else if (new File(arg).isDirectory()) {
                 showError("dir arg not permitted: " + arg);
 			} else {

@@ -58,7 +58,8 @@ public class BuildArgParserTestCase extends TestCase {
     			config.getClasspath().contains("2.jar"));
     
     		config = parser.genBuildConfig(new String[] { "-1.3" }, messageWriter);
-            err = parser.getOtherMessages(true);       
+    		// these errors are deffered to the compiler now
+            //err = parser.getOtherMessages(true);       
             //!!!assertTrue(err, null == err);
     		assertTrue(
     			config.getClasspath().toString(),
@@ -79,8 +80,9 @@ public class BuildArgParserTestCase extends TestCase {
     			
     		config = parser.genBuildConfig(new String[] { 
     			"-classpath", ENTRY, "-1.4" }, messageWriter);
-            err = parser.getOtherMessages(true);       
-            assertTrue("expected errors for missing jars", null != err);
+			//			these errors are deffered to the compiler now
+            //err = parser.getOtherMessages(true);       
+            //assertTrue("expected errors for missing jars", null != err);
     		assertTrue(
     			config.getClasspath().toString(),
     			config.getClasspath().contains("1.jar"));
