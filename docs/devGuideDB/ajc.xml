@@ -190,7 +190,7 @@
       </varlistentry>
 
       <varlistentry>
-        <term>target <replaceable>[1.1|1.2]</replaceable></term>
+        <term>-target <replaceable>[1.1|1.2]</replaceable></term>
         <listitem><para>Specify classfile target setting (1.1 or 1.2, default is 1.1)
         </para></listitem>
       </varlistentry>
@@ -230,7 +230,7 @@
         <listitem><para>Emit warnings for any instances of
         the comma-delimited list of questionable code 
         (eg '-warn:unusedLocals,deprecation'):
-        <programlisting><!-- unable to embed simplelist? -->
+        <programlisting><!-- unable to embed itemizedlist? -->
     constructorName        method with constructor name
     packageDefaultMethod   attempt to override package-default method
     deprecation            usage of deprecated type or member
@@ -239,27 +239,6 @@
     unusedArguments        method argument never read
     unusedImports          import statement not used by code in file
         </programlisting>
-
-        <!-- old simplelist form
-        <simplelist>
-	     <listitem>constructorName: method with constructor name
-         </listitem>
-	     <listitem>packageDefaultMethod: attempt to override package-default method
-         </listitem>
-	     <listitem>deprecation: usage of deprecated type or member
-         </listitem>
-	     <listitem>maskedCatchBlocks: hidden catch block
-         </listitem>
-	     <listitem>unusedLocals: local variable never read
-         </listitem>
-	     <listitem>unusedArguments: method argument never read
-         </listitem>
-	     <listitem>unusedImports: import statement not used by code in file
-         </listitem>
-	     <listitem>syntheticAccess: performing synthetic access for innerclass
-         </listitem>
-        </simplelist>
-        end of comment with old simplelist form -->
         
         </para></listitem>
       </varlistentry>
@@ -285,14 +264,15 @@
 
       <varlistentry>
         <term>-g<replaceable>:[lines,vars,source]</replaceable></term>
-        <listitem><para>debug attributes level, that may take three forms:
+        <listitem>
+        	<para>debug attributes level, that may take three forms:
         <programlisting>
     -g         all debug info ('-g:lines,vars,source')
     -g:none    no debug info
     -g:{items} debug info for any/all of [lines, vars, source], e.g.,
                -g:lines,source
         </programlisting>
-        <!-- simplelist failed ?? -->
+            
         </para></listitem>
       </varlistentry>
 
@@ -310,7 +290,7 @@
       </varlistentry>
 
       <varlistentry>
-        <term>-encoding <replaceable>format</replaceable></term>
+	    <term>-encoding <replaceable>format</replaceable></term>
         <listitem><para>Specify default source encoding format.
             Specify custom encoding on a per file basis by suffixing
 			each input source file/folder name with '[encoding]'.
@@ -350,7 +330,6 @@
 
       <varlistentry>
         <term>-repeat <replaceable>N</replaceable></term>
-        <term></term>
         <listitem><para>Repeat compilation process N times 
         (typically to do performance analysis).
         </para></listitem>
@@ -371,7 +350,6 @@
 
       <varlistentry>
         <term>-XincrementalFile <replaceable>file</replaceable></term>
-        <term></term>
         <listitem><para>(Experimental) This works like incremental mode, 
         but using a file rather than standard input to control the compiler.  
         It will recompile each time file is changed and
@@ -381,7 +359,6 @@
 
       <varlistentry>
         <term>-XserializableAspects</term>
-        <term></term>
         <listitem><para>(Experimental) Normally it is an error to declare
         aspects Serializable.  This option removes that restriction.
         </para></listitem>
@@ -403,8 +380,9 @@
     <para>We'd like to discourage other means of mechanical distinction such as
     naming conventions or sub-packages in favor of the <filename>.aj</filename>
     extension.</para>
-
-    <simplelist>
+    <para>
+    
+    <itemizedlist>
 
     <listitem>Filename conventions are hard to enforce and lead to awkward names
     for your aspects.  Instead of <filename>TracingAspect.java</filename> we
@@ -417,7 +395,8 @@
     <filename>.aj</filename> extension and including these files in your existing
     packages instead.</listitem>
 
-    </simplelist>
+    </itemizedlist>
+    </para>
 
     </refsect2>
 
@@ -481,13 +460,14 @@ ajc @sources.lst</programlisting></para>
         Argfiles are also supported by jikes and javac, so you 
         can use the files in hybrid builds.  However, the support varies:
         </para>
-
-	    <simplelist>
+        <para>
+	    <itemizedlist>
             <listitem>Only ajc accepts command-line options</listitem>
             <listitem>Jikes and Javac do not accept internal @argfile references.
               </listitem>
             <listitem>Jikes and Javac only accept the @file form on the command line.</listitem>
-	    </simplelist>
+	    </itemizedlist>
+        </para>
 
       </example>
       <example id="examplebytecode">
@@ -634,10 +614,17 @@ commands to your environment as needed.
 
       <para>Unlike traditional java compilers, the AspectJ compiler may in
             certain cases generate classfiles from multiple source files.
-            Unfortunately, the Java class file format does not support multiple
-            SourceFile attributes.  So, in order to make sure all source file
+            Unfortunately, the original Java class file format does not support 
+            multiple
+            SourceFile attributes.  In order to make sure all source file
             information is available, the AspectJ compiler may in some cases
-            encode multiple filenames in the SourceFile attribute.
+            encode multiple filenames in the SourceFile attribute.  
+            When the Java VM generates stack traces, it uses this attribute
+            to specify the source file.
+      </para>
+      <para>(The compiler also supports the .class file extensions of JSR-45.
+      These permit compliant debuggers (such as jdb in Java 1.4.1) to identify 
+      the right file and line even given many source files for a single class.)  
       </para>
 
       <para>Probably the only time you may see this format is when you view
@@ -684,8 +671,7 @@ File0;File1[Number1];File2[Number2] ... :LineNumber
       that file.
       </para>
 
-      <para>Of course, AspectJ tools will do this decoding for you, and in a
-            class file that comes from only a single source file, the AspectJ
+      <para>In a class file that comes from only a single source file, the AspectJ
             compiler generates SourceFile attributes consistent with
             traditional Java compilers.
       </para>
