@@ -17,10 +17,8 @@ package org.aspectj.tools.ajc;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-//import java.util.Arrays;
-//import java.util.List;
-//
-//import org.aspectj.ajdt.ajc.BuildArgParser;
+import java.util.List;
+
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
@@ -81,6 +79,59 @@ public class Main {
         new Main().runMain(args, true);
     }
     
+	/**
+	 * Convenience method to run ajc and collect String lists of messages.
+	 * This can be reflectively invoked with the
+	 * List collecting parameters supplied by a parent class loader.
+	 * The String messages take the same form as command-line messages.
+	 * @param args the String[] args to pass to the compiler
+	 * @param useSystemExit if true and errors, return System.exit(errs)
+	 * @param fails the List sink, if any, for String failure (or worse) messages 
+	 * @param errors the List sink, if any, for String error messages
+	 * @param warnings the List sink, if any, for String warning messages
+	 * @param info the List sink, if any, for String info messages
+	 * @return number of messages reported with level ERROR or above
+     * @throws any unchecked exceptions the compiler does
+	 */
+	public static int bareMain(
+		String[] args,
+		boolean useSystemExit,
+		List fails,
+		List errors,
+		List warnings,
+		List infos) {
+		Main main = new Main();
+		MessageHandler holder = new MessageHandler();
+		main.setHolder(holder);
+		try {
+			main.runMain(args, useSystemExit);
+		} finally {
+			readMessages(holder, IMessage.FAIL, true, fails);
+			readMessages(holder, IMessage.ERROR, false, errors);
+			readMessages(holder, IMessage.WARNING, false, warnings);
+			readMessages(holder, IMessage.INFO, false, infos);
+		}
+		return holder.numMessages(IMessage.ERROR, true);
+	}
+
+    /** Read messages of a given kind into a List as String */
+	private static void readMessages(
+		IMessageHolder holder,
+		IMessage.Kind kind,
+		boolean orGreater,
+		List sink) {
+		if ((null == sink) || (null == holder)) {
+			return;
+		}
+		IMessage[] messages = holder.getMessages(kind, orGreater);
+		if (!LangUtil.isEmpty(messages)) {
+			StringBuffer buf = new StringBuffer();
+			for (int i = 0; i < messages.length; i++) {
+				sink.add(MessagePrinter.render(messages[i]));
+			}
+		}
+	}
+    
     /** 
      * @return String rendering throwable as compiler error for user/console,
      *          including information on how to report as a bug.
@@ -92,9 +143,7 @@ public class Main {
             + (null != m ? m + "\n": "") 
             + LangUtil.renderException(thrown, true);
     }
-        		
-
-    
+                
     /** append nothing if numItems is 0,
      * numItems + label + (numItems > 1? "s" : "") otherwise,
      * prefixing with " " if sink has content
@@ -129,7 +178,7 @@ public class Main {
     
     private int lastFails;
     private int lastErrors;
-
+    
     /** if not null, run this synchronously after each compile completes */
     private Runnable completionRunner;
     
@@ -405,7 +454,7 @@ public class Main {
          * @param message the IMessage to render
          * @return String rendering IMessage (never null)
          */
-        protected String render(IMessage message) {
+        public static String render(IMessage message) {
 //            IMessage.Kind kind = message.getKind();
             
             StringBuffer sb = new StringBuffer();
