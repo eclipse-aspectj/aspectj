@@ -86,7 +86,7 @@ public class DeclareSoft extends Declare {
     	exception = exception.resolveBindings(scope, null, false, true);
     	TypeX excType = exception.getExactType();
     	if (excType != ResolvedTypeX.MISSING) {
-    		if (!scope.getWorld().resolve(TypeX.THROWABLE).isAssignableFrom(excType)) {
+    		if (!scope.getWorld().getCoreType(TypeX.THROWABLE).isAssignableFrom(excType)) {
     			scope.getWorld().showMessage(IMessage.ERROR,
     					WeaverMessages.format(WeaverMessages.NOT_THROWABLE,excType.getName()),
     					exception.getSourceLocation(), null);

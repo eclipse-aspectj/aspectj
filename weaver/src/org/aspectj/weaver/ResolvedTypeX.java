@@ -729,8 +729,8 @@ public abstract class ResolvedTypeX extends TypeX {
         public final ResolvedTypeX[] getDeclaredInterfaces() {
             return
                 new ResolvedTypeX[] {
-                    world.resolve(CLONEABLE), 
-                    world.resolve(SERIALIZABLE)
+                    world.getCoreType(CLONEABLE), 
+                    world.getCoreType(SERIALIZABLE)
                 };
         }
         public final ResolvedMember[] getDeclaredPointcuts() {
@@ -738,7 +738,7 @@ public abstract class ResolvedTypeX extends TypeX {
         }
         
         public final ResolvedTypeX getSuperclass() {
-            return world.resolve(OBJECT);
+            return world.getCoreType(OBJECT);
         }
         public final boolean isAssignableFrom(TypeX o) {
             if (! o.isArray()) return false;
@@ -1064,7 +1064,7 @@ public abstract class ResolvedTypeX extends TypeX {
 			if (!compareToExistingMembers(munger, getMethods())) return;
 			if (this.isInterface()) {
 				if (!compareToExistingMembers(munger, 
-						Arrays.asList(world.resolve(OBJECT).getDeclaredMethods()).iterator())) return;
+						Arrays.asList(world.getCoreType(OBJECT).getDeclaredMethods()).iterator())) return;
 			}
 		} else if (sig.getKind() == Member.FIELD) {
 			if (!compareToExistingMembers(munger, Arrays.asList(getDeclaredFields()).iterator())) return;

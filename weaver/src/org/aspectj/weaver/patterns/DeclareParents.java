@@ -115,7 +115,7 @@ public class DeclareParents extends Declare {
 		TypeX iType = typePattern.getExactType();
 		ResolvedTypeX parentType = iType.resolve(world);
 		
-		if (targetType.equals(world.resolve(TypeX.OBJECT))) {
+		if (targetType.equals(world.getCoreType(TypeX.OBJECT))) {
 			world.showMessage(IMessage.ERROR, 
 					WeaverMessages.format(WeaverMessages.DECP_OBJECT),
 			        this.getSourceLocation(), null);

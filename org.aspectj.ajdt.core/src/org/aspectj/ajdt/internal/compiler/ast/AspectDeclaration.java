@@ -128,13 +128,13 @@ public class AspectDeclaration extends TypeDeclaration {
 		
 		// can't be Serializable/Cloneable unless -XserializableAspects
 		if (!world.isXSerializableAspects()) {
-			if (world.getWorld().resolve(TypeX.SERIALIZABLE).isAssignableFrom(myType)) {
+			if (world.getWorld().getCoreType(TypeX.SERIALIZABLE).isAssignableFrom(myType)) {
 				scope.problemReporter().signalError(sourceStart, sourceEnd,
 								"aspects may not implement Serializable");
 				ignoreFurtherInvestigation = true;
 			    return;
 			}
-			if (world.getWorld().resolve(TypeX.CLONEABLE).isAssignableFrom(myType)) {
+			if (world.getWorld().getCoreType(TypeX.CLONEABLE).isAssignableFrom(myType)) {
 				scope.problemReporter().signalError(sourceStart, sourceEnd,
 								"aspects may not implement Cloneable");
 				ignoreFurtherInvestigation = true;

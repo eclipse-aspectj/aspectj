@@ -169,8 +169,8 @@ public class BcelAdvice extends Advice {
 		
 		Collection ret = new ArrayList();
 		World world = concreteAspect.getWorld();
-		ResolvedTypeX runtimeException = world.resolve(TypeX.RUNTIME_EXCEPTION);
-		ResolvedTypeX error = world.resolve(TypeX.ERROR);
+		ResolvedTypeX runtimeException = world.getCoreType(TypeX.RUNTIME_EXCEPTION);
+		ResolvedTypeX error = world.getCoreType(TypeX.ERROR);
 		
 		for (int i=0, len=excs.length; i < len; i++) {
 			ResolvedTypeX t = world.resolve(excs[i]);

@@ -960,7 +960,7 @@ public class BcelShadow extends Shadow {
 									Constants.INVOKESTATIC));
 				break;
 			case 1:
-				((BcelVar)getArgVar(0)).appendLoadAndConvert(il, fact, world.resolve(ResolvedTypeX.OBJECT));
+				((BcelVar)getArgVar(0)).appendLoadAndConvert(il, fact, world.getCoreType(ResolvedTypeX.OBJECT));
 				il.append(fact.createInvoke("org.aspectj.runtime.reflect.Factory", 
 									"makeJP", LazyClassGen.tjpType,
 									new Type[] { LazyClassGen.staticTjpType,
@@ -968,8 +968,8 @@ public class BcelShadow extends Shadow {
 									Constants.INVOKESTATIC));
 				break;
 			case 2:
-				((BcelVar)getArgVar(0)).appendLoadAndConvert(il, fact, world.resolve(ResolvedTypeX.OBJECT));
-				((BcelVar)getArgVar(1)).appendLoadAndConvert(il, fact, world.resolve(ResolvedTypeX.OBJECT));
+				((BcelVar)getArgVar(0)).appendLoadAndConvert(il, fact, world.getCoreType(ResolvedTypeX.OBJECT));
+				((BcelVar)getArgVar(1)).appendLoadAndConvert(il, fact, world.getCoreType(ResolvedTypeX.OBJECT));
 				il.append(fact.createInvoke("org.aspectj.runtime.reflect.Factory", 
 									"makeJP", LazyClassGen.tjpType,
 									new Type[] { LazyClassGen.staticTjpType,
@@ -994,7 +994,7 @@ public class BcelShadow extends Shadow {
     		Field field = getEnclosingClass().getTjpField(this);
     		thisJoinPointStaticPartVar =
     			new BcelFieldRef(
-    				world.resolve(TypeX.forName("org.aspectj.lang.JoinPoint$StaticPart")),
+    				world.getCoreType(TypeX.forName("org.aspectj.lang.JoinPoint$StaticPart")),
     				getEnclosingClass().getClassName(),
     				field.getName());
 //    		getEnclosingClass().warnOnAddedStaticInitializer(this,munger.getSourceLocation());
@@ -2030,7 +2030,7 @@ public class BcelShadow extends Shadow {
 		final InstructionFactory fact = getFactory();	
 		
 		BcelVar arrayVar = new BcelVar(
-			world.resolve(TypeX.OBJECTARRAY),
+			world.getCoreType(TypeX.OBJECTARRAY),
 			extractedMethod.allocateLocal(1));
 		
 		int len = superConstructorTypes.length;

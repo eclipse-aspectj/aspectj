@@ -71,7 +71,7 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 	}
 	
 	public ResolvedTypeX getSuperclass() {
-		if (binding.isInterface()) return getResolvedTypeX().getWorld().resolve(TypeX.OBJECT);
+		if (binding.isInterface()) return getResolvedTypeX().getWorld().getCoreType(TypeX.OBJECT);
 		//XXX what about java.lang.Object
 		return eclipseWorld().fromEclipse(binding.superclass());
 	}
