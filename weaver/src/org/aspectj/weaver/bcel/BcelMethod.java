@@ -165,6 +165,9 @@ final class BcelMethod extends ResolvedMember {
 		return false;
 	}
 	
+	public Annotation[] getAnnotations() {
+		return method.getAnnotations();
+	}
 	
 	 public ResolvedTypeX[] getAnnotationTypes() {
 	 	if (resolvedAnnotations == null) {
