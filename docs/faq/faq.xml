@@ -3067,15 +3067,45 @@ vmparam -Xmx384m
       </qandaentry>
       <qandaentry>
         <question id="q:noaspectbound"
-            xreflabel="Q:When I run, I get a ClassNotFound message for NoAspectBoundException.">
+            xreflabel="Q:When I run, I get a NoAspectBoundException or a
+            ClassNotFound message for NoAspectBoundException.">
           <para>
-            When I run, I get a ClassNotFound message for NoAspectBoundException.
+            When I run, I get a <literal>NoAspectBoundException</literal> or a
+            ClassNotFound message for <literal>NoAspectBoundException</literal>.
           </para>
         </question>
         <answer>
-          <para>This is what happens when <literal>aspectjrt.jar</literal> classes
-          are not on the runtime classpath.  Add the jar to the classpath and
-          try again.
+        	<para>This happens when an aspect is not associated with an object
+        		that is being advised.  We have seen this happen two ways:
+			  <itemizedlist>
+				<listitem>
+				  <para>You get a ClassNotFound message for 
+				  	<literal>NoAspectBoundException</literal> when loading a 
+				  	class affected by aspects if <literal>aspectjrt.jar</literal> 
+				  	classes are not on the runtime classpath.   
+        			To fix this, put the classes on the classpath.
+				  </para>
+				</listitem>
+				<listitem>
+				  <para>
+				  	You can get a <literal>NoAspectBoundException</literal> when
+				  	there is a cycle in aspect initialization or static 
+				  	initialization, most commonly when an aspect advises
+				  	its own initializer.  To fix this, first find the class that
+				  	fails to load by running java in debug mode or looking 
+				  	at the <literal>NoAspectBoundException</literal> trace, 
+				  	and then fix the offending (probably unintended) dependency.
+				  	Most often, it comes from a pointcut like
+				  	<literal>staticinitialization(com.company..*)</literal>
+				  	or <literal>within(com.company..*)</literal>, which
+				  	can include any aspects in the same subpackages.
+				  	You can avoid advising most join points associated with
+				 	the aspect <literal>TheAspect</literal>
+				  	by adding <literal>&amp;&amp; !within(TheAspect)</literal>
+				  	to your pointcut.
+				  </para>
+				</listitem>
+			  </itemizedlist>
           </para> 
         </answer>
       </qandaentry>
@@ -4139,23 +4169,9 @@ vmparam -Xmx384m
         </question>
         <answer>
           <para>
-          This revision had still
-          more 1.1-driven changes and updated some process and build questions.
-          Entries changed since the earlier June, 2003 version:
+          Entries changed since the earlier September, 2003 version:
             <itemizedlist>
-            	
-        <listitem><para><xref linkend="q:support"/></para></listitem>
-        <listitem><para><xref linkend="q:mailingLists"/></para></listitem>
-        <listitem><para><xref linkend="q:requiredsources"/></para></listitem>
-        <listitem><para><xref linkend="q:javacbytecode"/></para></listitem>
-        <listitem><para><xref linkend="q:knowWhenAspectsAffectClasses"/></para></listitem>
-        <listitem><para><xref linkend="q:ajcrecompile"/></para></listitem>
-        <listitem><para><xref linkend="q:ajdocneeds13"/></para></listitem>
-        <listitem><para><xref linkend="q:differences"/></para></listitem>
-        <listitem><para><xref linkend="q:schedule"/></para></listitem>
-        <listitem><para><xref linkend="q:incrementalModuleCompiles"/></para></listitem>
-        <listitem><para><xref linkend="q:stepwiseBuilds"/></para></listitem>
-        <listitem><para><xref linkend="q:effectonperformance"/></para></listitem>
+        <listitem><para><xref linkend="q:noaspectbound"/></para></listitem>
             </itemizedlist>
           </para>
         </answer>
