@@ -266,26 +266,25 @@ public class HarnessSelectionTest extends TestCase {
         Exp exp = new Exp(17, 1, 16, 1, 0, 0, 16);
         checkSelection(SELECT, options, TITLE_LIST_ONE, exp);
     }
-    
-    public void testTitleListFileSelectionPlural() {
-        String[] options = new String[] 
-            { "-ajctestTitleList=" + TITLE_LIST_PLURAL,
-                "-eclipse"
-            };
-        Exp exp = new Exp(17, 2, 15, 2, 0, 0, 15);
-        checkSelection(SELECT, options, TITLE_LIST_PLURAL, exp);
-    }
-    
-    public void testTitleListFileSelectionPluralFailOnly() {
-        String[] options = new String[] 
-            { "-ajctestTitleFailList=" + TITLE_LIST_PLURAL,
-                "-eclipse"
-            };
-        // 1 messages skipped when run under 1.4 for other reasons,
-        // so count "skip" instead of TITLE_LIST_PLURAL
-        Exp exp = new Exp(17, 2, 15, 2, 0, 0, 15);
-        checkSelection(SELECT, options, "skip", exp);
-    }
+
+   public void testTitleListFileSelectionPlural() {
+       String[] options = new String[] 
+           { "-ajctestTitleList=" + TITLE_LIST_PLURAL,
+               "-eclipse"
+           };
+       Exp exp = new Exp(17, 2, 15, 2, 0, 0, 15);
+       checkSelection(SELECT, options, TITLE_LIST_PLURAL, exp);
+       
+       // Now check the "fail only" path 
+       options = new String[] 
+           { "-ajctestTitleFailList=" + TITLE_LIST_PLURAL,
+               "-eclipse"
+           };
+       // 1 messages skipped when run under 1.4 for other reasons,
+       // so count "skip" instead of TITLE_LIST_PLURAL
+       exp = new Exp(17, 2, 15, 2, 0, 0, 15);
+       checkSelection(SELECT, options, "skip", exp);
+   }
 
     /** 
      * Run the static test suite with the given options.
