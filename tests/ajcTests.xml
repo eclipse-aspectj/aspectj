@@ -7303,4 +7303,11 @@
             <message kind="error" line="6"/> 
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs"  pr="51322"
+    	title="Introduce Unknown Type to class causes Null pointer exception"  >
+        <compile files="Pr51322.java"> 
+        	<message kind="error" line="5"/>
+        </compile>
+    </ajc-test>
 </suite>

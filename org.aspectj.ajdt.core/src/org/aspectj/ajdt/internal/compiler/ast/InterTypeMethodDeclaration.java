@@ -28,6 +28,7 @@ import org.eclipse.jdt.internal.compiler.flow.FlowInfo;
 import org.eclipse.jdt.internal.compiler.flow.InitializationFlowContext;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
+import org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 
 /**
  * An inter-type method declaration.
@@ -101,6 +102,11 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		if (ignoreFurtherInvestigation) return null;
 		
 		binding = classScope.referenceContext.binding.resolveTypesFor(binding);
+		if (binding == null) {
+			// if binding is null, we failed to find a type used in the method params, this error
+			// has already been reported. 
+			throw new AbortCompilation();
+		}
 		ResolvedMember sig = new ResolvedMember(Member.METHOD, EclipseFactory.fromBinding(onTypeBinding),
 			declaredModifiers, EclipseFactory.fromBinding(binding.returnType), new String(declaredSelector),
 			EclipseFactory.fromBindings(binding.parameters),
