@@ -175,8 +175,6 @@ public class BcelRenderer implements ITestVisitor, IExprVisitor {
     }
 
     public void visit(HasAnnotation hasAnnotation) {
-        instructions.insert(createJumpBasedOnBooleanOnStack());
-        // now insert the instructions that leave a boolean on the stack
         // in Java:
         // foo.class.isAnnotationPresent(annotationClass);
         // in bytecode:
@@ -184,14 +182,17 @@ public class BcelRenderer implements ITestVisitor, IExprVisitor {
         // invokevirtual java/lang/Object.getClass:()Ljava/lang/Class
         // ldc_w annotationClass
         // invokevirtual java/lang/Class.isAnnotationPresent:(Ljava/lang/Class;)Z
+        InstructionList il = new InstructionList();
         Member getClass = Member.method(TypeX.OBJECT, 0, "getClass", "()Ljava/lang/Class;");
-        instructions.insert(Utility.createInvoke(fact, world, getClass));
+        il.append(Utility.createInvoke(fact, world, getClass));
         // aload annotationClass
         int annClassIndex = fact.getConstantPool().addClass(hasAnnotation.getAnnotationType().getSignature());
-        instructions.insert(new LDC_W(annClassIndex));
+        il.append(new LDC_W(annClassIndex));
         Member isAnnotationPresent = Member.method(TypeX.forName("Ljava/lang/Class"),0,
                 "isAnnotationPresent","(Ljava/lang/Class;)Z");
-        instructions.insert(Utility.createInvoke(fact,world,isAnnotationPresent));
+        il.append(Utility.createInvoke(fact,world,isAnnotationPresent));
+        il.append(createJumpBasedOnBooleanOnStack());
+        instructions.insert(il);
         hasAnnotation.getVar().accept(this);
     }
     
