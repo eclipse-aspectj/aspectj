@@ -14,6 +14,7 @@
 package org.aspectj.testing.harness.bridge;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -23,6 +24,7 @@ import junit.framework.TestCase;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
+import org.aspectj.testing.xml.MessageListXmlReader;
 import org.aspectj.testing.xml.XMLWriter;
 import org.aspectj.util.LangUtil;
 
@@ -31,6 +33,9 @@ import org.aspectj.util.LangUtil;
  */
 public class DirChangesTest extends TestCase {
     private static final boolean PRINTING = false;
+    
+    /** name of file in srcBaseDir with any expected messages */
+	public static final String EXPECTED_NAME = "expectedMessages.xml";
     
 	public DirChangesTest(String name) {
 		super(name);
@@ -44,14 +49,14 @@ public class DirChangesTest extends TestCase {
      * Uses testdata/dirChangesTestDir/same 
      */
     public void testSameExpDir() {
-        doCheck("same", true);
+        doCheck("same");
     }
     
     /** 
      * Uses testdata/dirChangesTestDir/diff
      */
     public void testDiffExpDir() {
-        doCheck("diff", false);
+        doCheck("diff");
     }
 
     public void testWriteEmpty() {
@@ -86,28 +91,39 @@ public class DirChangesTest extends TestCase {
         assertEquals(expected, actual.toString());
     }
     
-    private void doCheck(String dir, boolean expectPass) {
+    private void doCheck(String dir) {
         DirChanges.Spec spec = new DirChanges.Spec();
         File srcBaseDir = new File("testdata/dirChangesTestDir/" + dir);
         // actual = baseDir
         File baseDir = new File(srcBaseDir, "actual");
         // expected = srcBaseDir + spec.expDir
         spec.setExpDir("expected");
-        checkDirChanges(spec, expectPass, baseDir, srcBaseDir, null);
+        IMessage[] expected = null;
+        File expMssgFile = new File(srcBaseDir, EXPECTED_NAME);
+        if (expMssgFile.canRead()) {
+            try {
+                expected = new MessageListXmlReader().readMessages(expMssgFile);
+            } catch (IOException e) {
+                System.err.println("Continuing after error reading " + expMssgFile);
+                e.printStackTrace(System.err);
+            }
+        }
+        checkDirChanges(spec, baseDir, srcBaseDir, null, expected);
     }
 
     // XXX WEAK upgrade to read expected-diffs from file in directory
     private void checkDirChanges(
         DirChanges.Spec spec, 
-        boolean shouldPass,
         File baseDir,
         File srcBaseDir,
-        Runnable dirChanger) {
+        Runnable dirChanger,
+        IMessage[] expected) {
         DirChanges dc = new DirChanges(spec);
         MessageHandler handler = new MessageHandler();
         try {
             if (!dc.start(handler, baseDir)) {
-                assertTrue(!shouldPass);
+                //assertTrue(!shouldPass);
+                assertSameMessages(expected, handler);
                 return;  // exiting after (XXX) undertested expected failure?
             } else {
                 assertTrue(0 == handler.numMessages(IMessage.ERROR, true));
@@ -116,20 +132,100 @@ public class DirChangesTest extends TestCase {
                 dirChanger.run();
             }
             if (!dc.end(handler, srcBaseDir)) {
-                assertTrue(!shouldPass);
+                //assertTrue(!shouldPass);
+                assertSameMessages(expected, handler);
             } else {
                 assertTrue(0 == handler.numMessages(IMessage.ERROR, true));
-                assertTrue(shouldPass);
             }
         } catch (Throwable t) {
-            if (PRINTING && shouldPass) {
+            if (PRINTING) {
                 t.printStackTrace(System.err);
             }
             throw new AssertionFailedError(LangUtil.renderException(t));
         } finally {
-            if (PRINTING && 0 < handler.numMessages(null, true)) {
-                MessageUtil.print(System.err, handler, "checkDirChanges: ");
+            if (0 < handler.numMessages(null, true)) {
+                if (PRINTING) {
+                    MessageUtil.print(System.err, handler, "checkDirChanges: ");
+                }
+                IMessage[] toprint = handler.getMessages(null, true);
+                File output = new File(srcBaseDir, EXPECTED_NAME);
+                try {
+                    //toprint[0].getISourceLocation().getSourceFile();
+                    System.out.println("XXX writing to " + output
+                        + " messages " + LangUtil.arrayAsList(toprint));
+                    new MessageListXmlReader().writeMessages(output, toprint);
+                } catch (IOException e) {
+                    System.err.println("Error writing to " + output
+                        + " messages " + LangUtil.arrayAsList(toprint));
+                    e.printStackTrace(System.err);
+                }
             }
         }
     }
+
+	/**
+	 * Assert unless messages in handler match all expected messages.
+	 * @param expected
+	 * @param handler
+	 */
+	private void assertSameMessages(
+		IMessage[] expected,
+		MessageHandler handler) {
+        IMessage[] actual = handler.getMessages(null, true);
+        for (int i = 0; i < actual.length; i++) {
+			int found = find(actual[i], expected);
+            if (-1 != found) {
+                expected[found] = null;
+                actual[i] = null;
+            }
+		}
+        StringBuffer sb = new StringBuffer();
+        {
+            IMessage[] expNotFound = (IMessage[])
+                LangUtil.safeCopy(expected, new IMessage[0]);
+            if (0 < expNotFound.length) {
+                sb.append("expected not found: ");
+                sb.append(LangUtil.arrayAsList(expNotFound).toString());
+            }
+        }
+        {
+            IMessage[] actFound = (IMessage[])
+                LangUtil.safeCopy(actual, new IMessage[0]);
+            if (0 < actFound.length) {
+                sb.append(" not expected but found: ");
+                sb.append(LangUtil.arrayAsList(actFound).toString());
+            }
+        }
+
+        if (0 < sb.length()) {
+            assertTrue(sb.toString(), false);
+        }
+    }
+
+	/**
+     * Find message in array, comparing by contents
+     * but ignoring exceptions thrown and source location XXX.
+	 * @param message the IMessage to find
+	 * @param expected the 
+	 * @return int
+	 */
+	private int find(IMessage message, IMessage[] expected) {
+        if ((null != expected) && (0 != expected.length)
+            && (null != message)) {
+            final IMessage.Kind kind = message.getKind();
+            final String text = message.getMessage();
+            for (int i = 0; i < expected.length; i++) {
+                IMessage exp = expected[i];
+				if (null != exp) {
+                    if (kind.equals(exp.getKind())
+                        && text.equals(exp.getMessage())) {
+                        return i;
+                    }
+                }
+			}
+        }
+		return -1;
+	}
+
+
 }

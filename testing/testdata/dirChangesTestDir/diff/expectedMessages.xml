@@ -1,0 +1,35 @@
+
+<!DOCTYPE message-list [
+   <!ELEMENT message-list (message+) >
+   <!ELEMENT message (source-location)*>
+   <!ATTLIST message kind CDATA #REQUIRED >
+   <!ATTLIST message message CDATA #IMPLIED >
+   <!ELEMENT source-location (#PCDATA) >
+   <!ATTLIST source-location line CDATA #REQUIRED >
+   <!ATTLIST source-location endLine CDATA #IMPLIED >
+   <!ATTLIST source-location column CDATA #IMPLIED >
+   <!ATTLIST source-location sourceFile CDATA #IMPLIED >
+]>
+
+<message-list>
+<message kind="fail"
+  message="diff between testdata\dirChangesTestDir\diff\expected\one-one.txt in expected dir testdata\dirChangesTestDir\diff\expected and actual dir testdata\dirChangesTestDir\diff\actual
+4c4
+< Fourth line
+---
+> Fourth line changed
+">
+    <source-location line="0" column="0" endLine="0"
+      sourceFile="ISourceLocation.NO_FILE"/>
+</message>
+<message kind="fail"
+  message="diff between testdata\dirChangesTestDir\diff\expected\subone\one-subone-one.txt in expected dir testdata\dirChangesTestDir\diff\expected and actual dir testdata\dirChangesTestDir\diff\actual
+2c2
+< Second line
+---
+> Second line changed in one-subone-one.txt
+">
+    <source-location line="0" column="0" endLine="0"
+      sourceFile="ISourceLocation.NO_FILE"/>
+</message>
+</message-list>
