@@ -11,15 +11,14 @@
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.weaver.BcweaverTests;
 import org.aspectj.weaver.ResolvedMember;
@@ -185,6 +184,62 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 		assertTrue("@SimpleAnnotation should match on the AnnotatedClass.i field",
 				   simpleAnnotationTP.matches(aField).alwaysTrue());
 
+	}
+	
+	public void testAnnotationTypeResolutionOnTypes() {
+		ResolvedTypeX rtx = loadType("AnnotatedClass");
+		ResolvedTypeX[] types = rtx.getAnnotationTypes();
+		assertTrue("Did not expect null",types!=null);
+		assertTrue("Expected 1 entry but got "+types.length,types.length==1);
+		assertTrue("Should be 'p.SimpleAnnotation' but is "+types[0],
+				types[0].equals(world.resolve("p.SimpleAnnotation")));
+	}
+	
+	public void testAnnotationTypeResolutionOnMethods() {
+		ResolvedTypeX rtx = loadType("AnnotatedClass");
+
+		ResolvedMember aMethod = rtx.getDeclaredMethods()[1];
+		assertTrue("Haven't got the right method, I'm looking for 'm1()': "+aMethod.getName(),
+				aMethod.getName().equals("m1"));
+		
+		ResolvedTypeX[] types = aMethod.getAnnotationTypes();
+		assertTrue("Did not expect null",types!=null);
+		assertTrue("Expected 1 entry but got "+types.length,types.length==1);
+		assertTrue("Should be 'p.SimpleAnnotation' but is "+types[0],
+				types[0].equals(world.resolve("p.SimpleAnnotation")));
+	}
+	
+	public void testAnnotationTypeResolutionOnFields() {
+		ResolvedTypeX rtx = loadType("AnnotatedClass");
+
+		ResolvedMember aField = rtx.getDeclaredFields()[0];
+
+		assertTrue("Haven't got the right field, I'm looking for 'i'"+aField.getName(),
+				   aField.getName().equals("i"));
+				
+		ResolvedTypeX[] types = aField.getAnnotationTypes();
+		assertTrue("Did not expect null",types!=null);
+		assertTrue("Expected 1 entry but got "+types.length,types.length==1);
+		assertTrue("Should be 'p.SimpleAnnotation' but is "+types[0],
+				types[0].equals(world.resolve("p.SimpleAnnotation")));
+	}
+	
+	public void testWildPatternMatchingOnTypes() {
+		
+		ResolvedTypeX rtx = loadType("AnnotatedClass");
+        initAnnotationTypePatterns();		
+        
+        // Let's create something wild
+		PatternParser p = new PatternParser("@Foo || @Boo");
+		AnnotationTypePattern ap = p.maybeParseAnnotationPattern();
+		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
+		assertTrue("shouldnt match the type AnnotatedClass",ap.matches(rtx).alwaysFalse());
+		
+		
+		p = new PatternParser("@p.SimpleAnnotation || @Boo");
+		ap = p.maybeParseAnnotationPattern();
+		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
+		assertTrue("should match the type AnnotatedClass",ap.matches(rtx).alwaysTrue());
 	}
 
 }

@@ -564,6 +564,10 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 	    	return delegate.hasAnnotation(ofType);
 	    }
 	    
+	    public ResolvedTypeX[] getAnnotationTypes() {
+	    	return delegate.getAnnotationTypes(); 
+	    }
+	    
 	    public boolean isAspect() {
 	    	return delegate.isAspect();
 	    }
@@ -722,6 +726,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 	    public abstract boolean isAnnotation();
 	    
 	    public abstract boolean hasAnnotation(ResolvedTypeX ofType);
+	    public abstract ResolvedTypeX[] getAnnotationTypes();
 
 		public abstract ResolvedMember[] getDeclaredFields();
 

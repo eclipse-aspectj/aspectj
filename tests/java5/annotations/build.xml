@@ -5,6 +5,7 @@
        <mkdir dir="output"/>
        <javac destdir="output" debug="on" srcdir="." includes="SimpleAnnotation.java"/>
        <javac destdir="output" debug="on" srcdir="." includes="Annotation.java"/>
+       <javac destdir="output" debug="on" srcdir="." includes="AnnotatedType.java"/>
        <zip file="testcode.jar" basedir="output" includes="**/*"/>
        <delete dir="output"/>
     </target>

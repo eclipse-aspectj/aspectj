@@ -15,6 +15,8 @@ package org.aspectj.weaver.patterns;
 
 import junit.framework.TestCase;
 
+import org.aspectj.weaver.BcweaverTests;
+import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelShadow;
 import org.aspectj.weaver.bcel.BcelWorld;
@@ -33,7 +35,7 @@ public class ParserTestCase extends TestCase {
 		super(arg0);
 	}
 	
-	World world = new BcelWorld();
+	World world = new BcelWorld(BcweaverTests.TESTDATA_PATH + "/testcode.jar");
 	
 	public void testNamePatterns() {
 		
@@ -58,10 +60,23 @@ public class ParserTestCase extends TestCase {
 		} catch (ParserException pe) {
 			// good
 		}
-
-		
-		
 	}
+	
+	public void testParseWithAnnotation() {
+		PatternParser parser = new PatternParser("execution(@p.SimpleAnnotation void Hello.*(..))");
+		KindedPointcut p = (KindedPointcut) parser.parsePointcut();
+		// XXX - needs finishing...
+		// p.resolveBindings(makeSimpleScope(),new Bindings(3));
+//		System.err.println(p);
+//		assertEquals(p.kind, BcelShadow.MethodExecution);
+//		assertTrue(p.signature.getName().matches("foobar"));
+//		p.signature.resolveBindings(makeSimpleScope(),new Bindings(3));		
+	}
+	
+	public TestScope makeSimpleScope() {
+		return new TestScope(new String[] {"int", "java.lang.String"}, new String[] {"a", "b"}, world);
+	}
+
 }
 
 

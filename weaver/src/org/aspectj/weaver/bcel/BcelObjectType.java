@@ -47,6 +47,7 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
     private ResolvedTypeX superClass = null;
     private ResolvedMember[] fields = null;
     private ResolvedMember[] methods = null;
+    private ResolvedTypeX[] resolvedAnnotations = null;
             
     // strangely non-lazy
     private ResolvedPointcutDefinition[] pointcuts = null;
@@ -320,18 +321,7 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 		//if (lazyClassGen != null) lazyClassGen.print();
 	}
 
-//	public Annotation[] getAnnotations() {
-//    	if (annotations == null) {
-//    		annotations = javaClass.getAnnotations();
-////  This would be how to resolve annotations ...
-////    		annotationsTypeXs = new ResolvedTypeX[annotations.length];
-////    		for (int i = 0; i < annotations.length; i++) {
-////				Annotation annotation = annotations[i];
-////				getResolvedTypeX().getWorld().resolve(TypeX.forName(annotation.getTypeName()));
-////			}
-//    	}
-//    	return annotations;
-//    }
+
 
 	public boolean hasAnnotation(ResolvedTypeX ofType) {
 		Annotation[] annotationsOnThisType = javaClass.getAnnotations();
@@ -341,6 +331,19 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 		}
 		return false;
 	}
+	
+	public ResolvedTypeX[] getAnnotationTypes() {
+    	if (resolvedAnnotations == null) {
+    		Annotation annotations[] = javaClass.getAnnotations();
+    		resolvedAnnotations = new ResolvedTypeX[annotations.length];
+    		for (int i = 0; i < annotations.length; i++) {
+				Annotation annotation = annotations[i];
+				ResolvedTypeX rtx = getResolvedTypeX().getWorld().resolve(TypeX.forName(annotation.getTypeName()));
+				resolvedAnnotations[i] = rtx;
+			}
+    	}
+    	return resolvedAnnotations;
+    }
 } 
     
     

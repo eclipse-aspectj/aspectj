@@ -32,6 +32,8 @@ final class BcelField extends ResolvedMember {
 	private Field field;
 	private boolean isAjSynthetic;
 	private boolean isSynthetic = false;
+	private ResolvedTypeX[] resolvedAnnotations;
+	private World world;
 
 	BcelField(BcelObjectType declaringType, Field field) {
 		super(
@@ -41,7 +43,8 @@ final class BcelField extends ResolvedMember {
 			field.getName(), 
 			field.getSignature());
 		this.field = field;
-		unpackAttributes(declaringType.getResolvedTypeX().getWorld());
+		this.world = declaringType.getResolvedTypeX().getWorld();
+		unpackAttributes(world);
 		checkedExceptions = TypeX.NONE;
 	}
 
@@ -84,4 +87,17 @@ final class BcelField extends ResolvedMember {
 		}
 		return false;
 	}
+	
+	public ResolvedTypeX[] getAnnotationTypes() {
+	 	if (resolvedAnnotations == null) {
+	 		Annotation[] annotations = field.getAnnotations();
+			resolvedAnnotations = new ResolvedTypeX[annotations.length];
+			for (int i = 0; i < annotations.length; i++) {
+				Annotation annotation = annotations[i];
+				ResolvedTypeX rtx = world.resolve(TypeX.forName(annotation.getTypeName()));
+				resolvedAnnotations[i] = rtx;
+			}
+	 	}
+	 	return resolvedAnnotations;
+    }
 }

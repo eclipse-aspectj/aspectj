@@ -77,7 +77,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 				scope.getWorld().getMessageHandler().handleMessage(m);
 				resolved = false;
 			}
-    		return new ExactAnnotationTypePattern(et.getExactType());
+    		return new ExactAnnotationTypePattern(et.getExactType().resolve(scope.getWorld()));
     	} else {
     		return this;
     	}

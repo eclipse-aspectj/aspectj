@@ -37,6 +37,8 @@ final class BcelMethod extends ResolvedMember {
 	private ShadowMunger associatedShadowMunger;
 	private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
 	private AjAttribute.MethodDeclarationLineNumberAttribute declarationLineNumber;
+	private ResolvedTypeX[] resolvedAnnotations;
+	private World world;
 
 	BcelMethod(BcelObjectType declaringType, Method method) {
 		super(
@@ -49,7 +51,8 @@ final class BcelMethod extends ResolvedMember {
 			method.getName(), 
 			method.getSignature());
 		this.method = method;
-		unpackAjAttributes(declaringType.getResolvedTypeX().getWorld());
+		this.world = declaringType.getResolvedTypeX().getWorld();
+		unpackAjAttributes(world);
 		unpackJavaAttributes();
 	}
 
@@ -146,4 +149,18 @@ final class BcelMethod extends ResolvedMember {
 		}
 		return false;
 	}
+	
+	
+	 public ResolvedTypeX[] getAnnotationTypes() {
+	 	if (resolvedAnnotations == null) {
+	 		Annotation[] annotations = method.getAnnotations();
+			resolvedAnnotations = new ResolvedTypeX[annotations.length];
+			for (int i = 0; i < annotations.length; i++) {
+				Annotation annotation = annotations[i];
+				ResolvedTypeX rtx = world.resolve(TypeX.forName(annotation.getTypeName()));
+				resolvedAnnotations[i] = rtx;
+			}
+	 	}
+	 	return resolvedAnnotations;
+    }
 }

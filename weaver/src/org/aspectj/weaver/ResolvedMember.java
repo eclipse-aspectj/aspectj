@@ -110,6 +110,14 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
     	return false;
     }
     
+    public ResolvedTypeX[] getAnnotationTypes() {
+    	// The ctors don't allow annotations to be specified ... yet - but
+    	// that doesn't mean it is an error to call this method.
+    	// Normally the weaver will be working with subtypes of
+    	// this type - BcelField/BcelMethod
+    	return null;
+    }
+    
     public boolean isBridgeMethod() {
     	return (modifiers & Constants.ACC_BRIDGE)!=0;
     }

@@ -224,6 +224,10 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 	public boolean hasAnnotation(ResolvedTypeX ofType) {
 		throw new RuntimeException("How to implement this?  Needs to ask eclipse!");
 	}
+	
+	public ResolvedTypeX[] getAnnotationTypes() {
+		throw new RuntimeException("How to implement this?  Needs to ask eclipse!");
+	}
 
 	public PerClause getPerClause() {
 		//should probably be: ((AspectDeclaration)declaration).perClause;
