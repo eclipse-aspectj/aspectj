@@ -172,7 +172,7 @@
         <javadoc sourcepath="${aspectj.modules.dir}/runtime/src"
                     destdir="${docs.dist.dir}/doc/api"
                 windowtitle="AspectJ(tm) runtime API"
-                       link="http://java.sun.com/j2se/1.4/docs/api/index.html"
+                       link="http://java.sun.com/j2se/1.4.2/docs/api"
                packagenames="org.aspectj.lang,org.aspectj.lang.reflect" />
                <!-- note: link ineffective at avoiding see tag warning -->
     </target>
