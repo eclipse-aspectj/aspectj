@@ -335,15 +335,22 @@ public class WildTypePattern extends TypePattern {
 		
 		String cleanName = maybeGetCleanName();
 		String originalName = cleanName;
+		// if we discover it is 'MISSING' when searching via the scope, this next local var will
+		// tell us if it is really missing or if it does exist in the world and we just can't
+		// see it from the current scope.
+		ResolvedTypeX resolvedTypeInTheWorld = null;
 		if (cleanName != null) {
 			TypeX type;
 			
 			//System.out.println("resolve: " + cleanName);
 			//??? this loop has too many inefficiencies to count
+			resolvedTypeInTheWorld = scope.getWorld().resolve(TypeX.forName(cleanName),true);
 			while ((type = scope.lookupType(cleanName, this)) == ResolvedTypeX.MISSING) {
 				int lastDot = cleanName.lastIndexOf('.');
 				if (lastDot == -1) break;
 				cleanName = cleanName.substring(0, lastDot) + '$' + cleanName.substring(lastDot+1);
+				if (resolvedTypeInTheWorld == ResolvedTypeX.MISSING)
+					resolvedTypeInTheWorld = scope.getWorld().resolve(TypeX.forName(cleanName),true);					
 			}
 			if (type == ResolvedTypeX.MISSING) {
 				if (requireExactType) {
@@ -356,7 +363,9 @@ public class WildTypePattern extends TypePattern {
 					}
 					return NO;
 				} else if (scope.getWorld().getLint().invalidAbsoluteTypeName.isEnabled()) {
-					scope.getWorld().getLint().invalidAbsoluteTypeName.signal(originalName, getSourceLocation());
+					// Only put the lint warning out if we can't find it in the world
+					if (resolvedTypeInTheWorld == ResolvedTypeX.MISSING)
+					  scope.getWorld().getLint().invalidAbsoluteTypeName.signal(originalName, getSourceLocation());
 				}
 			} else {
 				if (dim != 0) type = TypeX.makeArray(type, dim);
