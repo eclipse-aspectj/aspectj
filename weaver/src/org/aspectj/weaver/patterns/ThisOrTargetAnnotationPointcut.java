@@ -67,25 +67,15 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	 */
 	public FuzzyBoolean match(Shadow shadow) {
 		if (!couldMatch(shadow)) return FuzzyBoolean.NO;
-		TypeX annotationType = annotationTypePattern.annotationType;
-		annotationType = annotationType.resolve(shadow.getIWorld());
-		if (annotationType.hasAnnotation(TypeX.AT_INHERITED)) {
-		    // we can attempt to match now
-		    ResolvedTypeX toMatchAgainst = 
-		        (isThis ? shadow.getThisType() : shadow.getTargetType() ).resolve(shadow.getIWorld());
-		    if (toMatchAgainst.hasAnnotation(annotationType)) {
-		    	return FuzzyBoolean.YES;
-		    } else {
-		    	ResolvedTypeX superC = toMatchAgainst;
-		    	while ((superC = superC.getSuperclass()) != null) {
-		    		if (superC.hasAnnotation(annotationType)) return FuzzyBoolean.YES;
-//		    		if (superC.getName().equals("java.lang.Object")) return FuzzyBoolean.NO;
-		    	}
-		    	return FuzzyBoolean.NO;
-		    }
-		} 
-	    // else we can only do matching via a runtime test
-		return FuzzyBoolean.MAYBE;
+	    ResolvedTypeX toMatchAgainst = 
+	        (isThis ? shadow.getThisType() : shadow.getTargetType() ).resolve(shadow.getIWorld());
+	    annotationTypePattern.resolve(shadow.getIWorld());
+	    if (annotationTypePattern.matches(toMatchAgainst).alwaysTrue()) {
+	    	return FuzzyBoolean.YES;
+	    } else {
+	    	// a subtype may match at runtime
+	    	return FuzzyBoolean.MAYBE;
+	    }
 	}
 
 	public boolean isThis() { return isThis; }
@@ -119,6 +109,14 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedTypeX, org.aspectj.weaver.IntMap)
 	 */
 	protected Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+		if (isDeclare(bindings.getEnclosingAdvice())) {
+			  // Enforce rule about which designators are supported in declare
+			  inAspect.getWorld().showMessage(IMessage.ERROR,
+			  		WeaverMessages.format(WeaverMessages.THIS_OR_TARGET_IN_DECLARE,isThis?"this":"target"),
+					bindings.getEnclosingAdvice().getSourceLocation(), null);
+			  return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
+		}
+
 		ExactAnnotationTypePattern newType = (ExactAnnotationTypePattern) annotationTypePattern.remapAdviceFormals(bindings);		
 		Pointcut ret = new ThisOrTargetAnnotationPointcut(isThis, newType, bindings.getEnclosingAdvice());
         ret.copyLocationFrom(this);

@@ -56,7 +56,7 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.Pointcut#fastMatch(org.aspectj.weaver.patterns.FastMatchInfo)
 	 */
 	public FuzzyBoolean fastMatch(FastMatchInfo info) {
-	    return annotationTypePattern.matches(info.getType());
+	    return annotationTypePattern.fastMatches(info.getType());
 	}
 
 	/* (non-Javadoc)
@@ -71,6 +71,7 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
 				shadow.getSourceLocation(),true,new ISourceLocation[]{getSourceLocation()});
 			shadow.getIWorld().getMessageHandler().handleMessage(msg);
 		}
+		annotationTypePattern.resolve(shadow.getIWorld());
 		return annotationTypePattern.matches(enclosingType);
 	}
 

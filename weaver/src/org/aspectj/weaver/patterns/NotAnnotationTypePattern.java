@@ -16,6 +16,7 @@ import java.io.IOException;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.World;
 
 public class NotAnnotationTypePattern extends AnnotationTypePattern {
 
@@ -31,6 +32,13 @@ public class NotAnnotationTypePattern extends AnnotationTypePattern {
 	 */
 	public FuzzyBoolean matches(AnnotatedElement annotated) {
 		return negatedPattern.matches(annotated).not();
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.AnnotationTypePattern#resolve(org.aspectj.weaver.World)
+	 */
+	public void resolve(World world) {
+		negatedPattern.resolve(world);
 	}
 
 	/* (non-Javadoc)

@@ -128,8 +128,9 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	public static final byte ATWITHIN = 17;
 	public static final byte ATWITHINCODE = 18;
 	public static final byte ATTHIS_OR_TARGET = 19;
+	public static final byte ATARGS = 20;
 	
-	public static final byte NONE = 20;
+	public static final byte NONE = 40;
 
 	public byte getPointcutKind() { return pointcutKind; }
 
@@ -249,6 +250,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 			case ATWITHIN: ret = WithinAnnotationPointcut.read(s, context); break;
 			case ATWITHINCODE: ret = WithinCodeAnnotationPointcut.read(s, context); break;
 			case ATTHIS_OR_TARGET: ret = ThisOrTargetAnnotationPointcut.read(s, context); break;
+			case ATARGS: ret = ArgsAnnotationPointcut.read(s,context); break;
 			case NONE: ret = makeMatchesNothing(RESOLVED); break;
 			default:
 				throw new BCException("unknown kind: " + kind);

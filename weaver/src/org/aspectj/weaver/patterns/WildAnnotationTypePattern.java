@@ -21,6 +21,7 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.World;
 
 /**
  * @author colyer
@@ -60,6 +61,13 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		return FuzzyBoolean.NO;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.AnnotationTypePattern#resolve(org.aspectj.weaver.World)
+	 */
+	public void resolve(World world) {
+		// nothing to do...
+	}
+	
 	/**
 	 * This can modify in place, or return a new TypePattern if the type changes.
 	 */

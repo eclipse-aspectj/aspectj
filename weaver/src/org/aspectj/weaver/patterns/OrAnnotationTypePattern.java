@@ -16,6 +16,7 @@ import java.io.IOException;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.World;
 
 public class OrAnnotationTypePattern extends AnnotationTypePattern {
 
@@ -30,6 +31,11 @@ public class OrAnnotationTypePattern extends AnnotationTypePattern {
 
 	public FuzzyBoolean matches(AnnotatedElement annotated) {
 		return left.matches(annotated).or(right.matches(annotated));
+	}
+	
+	public void resolve(World world) {
+		left.resolve(world);
+		right.resolve(world);
 	}
 
 	/* (non-Javadoc)

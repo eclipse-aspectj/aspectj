@@ -14,8 +14,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.World;
 
 /**
  * @author colyer
@@ -48,6 +51,44 @@ public class AnnotationPatternList extends PatternNode {
 	
 	public AnnotationPatternList(List l) {
 		this((AnnotationTypePattern[]) l.toArray(new AnnotationTypePattern[l.size()]));
+	}
+
+	public void resolve(World inWorld) {
+		for (int i = 0; i < typePatterns.length; i++) {
+			typePatterns[i].resolve(inWorld);
+		}
+	}
+	
+	public FuzzyBoolean matches(ResolvedTypeX[] someArgs) {
+		// do some quick length tests first
+		int numArgsMatchedByEllipsis = (someArgs.length + ellipsisCount) - typePatterns.length;
+		if (numArgsMatchedByEllipsis < 0) return FuzzyBoolean.NO;
+		if ((numArgsMatchedByEllipsis > 0) && (ellipsisCount == 0)) {
+			return FuzzyBoolean.NO;
+		}
+		// now work through the args and the patterns, skipping at ellipsis
+    	FuzzyBoolean ret = FuzzyBoolean.YES;
+    	int argsIndex = 0;
+    	for (int i = 0; i < typePatterns.length; i++) {
+			if (typePatterns[i] == AnnotationTypePattern.ELLIPSIS) {
+				// match ellipsisMatchCount args
+				argsIndex += numArgsMatchedByEllipsis;
+			} else if (typePatterns[i] == AnnotationTypePattern.ANY) {
+				argsIndex++;
+			} else {
+				// match the argument type at argsIndex with the ExactAnnotationTypePattern
+				// we know it is exact because nothing else is allowed in args
+				ExactAnnotationTypePattern ap = (ExactAnnotationTypePattern)typePatterns[i];
+				FuzzyBoolean matches = ap.matches(someArgs[argsIndex]);
+				if (matches == FuzzyBoolean.NO) {
+					return FuzzyBoolean.NO;
+				} else {
+					argsIndex++;
+					ret = ret.and(matches);
+				}
+			}
+		}   	
+    	return ret;
 	}
 	
 	public int size() { return typePatterns.length; }

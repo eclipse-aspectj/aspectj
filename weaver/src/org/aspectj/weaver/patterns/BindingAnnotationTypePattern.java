@@ -38,14 +38,14 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 		this(binding.getType(),binding.getIndex());
 	}
 	
-	public AnnotationTypePattern resolve(World world) {
+	public void resolveBinding(World world) {
 	    // For 1.5.0 M1
 		IMessage lim = MessageUtil.error("Binding not supported in @pcds (1.5.0 M1 limitation): " +
 		        getSourceLocation());
 		world.getMessageHandler().handleMessage(lim);
 	    // End of 1.5.0 M1
 	    
-		if (resolved) return this;
+		if (resolved) return;
 		resolved = true;
 		annotationType = annotationType.resolve(world);
 		if (!annotationType.isAnnotation(world)) {
@@ -66,7 +66,6 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 		    // TO DO... get the retention policy annotation, and check the value is 
 		    // RetentionPolicy.RUNTIME;
 		}
-		return this;
 	}
 	
 	

@@ -76,7 +76,8 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 		}
 
 		toMatchAgainst = TypeX.forName(rMember.getSignature()).resolve(shadow.getIWorld());
-		
+
+		annotationTypePattern.resolve(shadow.getIWorld());
 		return annotationTypePattern.matches(toMatchAgainst);
 	}
 	

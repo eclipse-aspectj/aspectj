@@ -72,7 +72,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	 */
 	public FuzzyBoolean fastMatch(FastMatchInfo info) {
 		if (info.getKind() == Shadow.StaticInitialization) {
-			return annotationTypePattern.matches(info.getType());
+			return annotationTypePattern.fastMatches(info.getType());
 		} else {
 			return FuzzyBoolean.MAYBE;
 		}
@@ -103,6 +103,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 			toMatchAgainst = rMember;
 		}
 		
+		annotationTypePattern.resolve(shadow.getIWorld());
 		return annotationTypePattern.matches(toMatchAgainst);
 	}
 	

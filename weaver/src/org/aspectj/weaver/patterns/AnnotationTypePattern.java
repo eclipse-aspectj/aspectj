@@ -18,6 +18,7 @@ import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.World;
 
 public abstract class AnnotationTypePattern extends PatternNode {
 
@@ -34,9 +35,15 @@ public abstract class AnnotationTypePattern extends PatternNode {
 	
 	public abstract FuzzyBoolean matches(AnnotatedElement annotated);
 	
+	public FuzzyBoolean fastMatches(AnnotatedElement annotated) {
+		return FuzzyBoolean.MAYBE;
+	}
+	
 	public AnnotationTypePattern remapAdviceFormals(IntMap bindings) {
 		return this;
 	}
+	
+	public abstract void resolve(World world);
 	
 	/**
 	 * This can modify in place, or return a new TypePattern if the type changes.
@@ -84,6 +91,9 @@ class AnyAnnotationTypePattern extends AnnotationTypePattern {
 		s.writeByte(AnnotationTypePattern.ANY_KEY);
 	}
 	
+	public void resolve(World world) {
+	}
+	
 	public String toString() { return "@ANY"; }
 }
 
@@ -96,6 +106,9 @@ class EllipsisAnnotationTypePattern extends AnnotationTypePattern {
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(AnnotationTypePattern.ELLIPSIS_KEY);
 	}
-	
+
+	public void resolve(World world) {
+	}
+
 	public String toString() { return ".."; }
 }

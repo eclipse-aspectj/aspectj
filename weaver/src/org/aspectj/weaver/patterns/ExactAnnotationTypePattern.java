@@ -22,6 +22,7 @@ import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.World;
 
 /**
  * Matches an annotation of a given type
@@ -48,12 +49,41 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		// will be turned into BindingAnnotationTypePattern during resolution
 	}
 	
+	public FuzzyBoolean fastMatches(AnnotatedElement annotated) {
+		if (annotated.hasAnnotation(annotationType)) {
+			return FuzzyBoolean.YES;
+		} else {
+			// could be inherited, but we don't know that until we are 
+			// resolved, and we're not yet...
+			return FuzzyBoolean.MAYBE;
+		}
+	}
+	
 	public FuzzyBoolean matches(AnnotatedElement annotated) {
-		return (annotated.hasAnnotation(annotationType) ?
-				   FuzzyBoolean.YES : FuzzyBoolean.NO);
+		boolean checkSupers = false;
+		if (annotationType.hasAnnotation(TypeX.AT_INHERITED)) {
+			if (annotated instanceof ResolvedTypeX) {
+				checkSupers = true;
+			}
+		}
+		
+		if (annotated.hasAnnotation(annotationType)) {
+			return FuzzyBoolean.YES;
+		} else if (checkSupers) {
+			ResolvedTypeX toMatchAgainst = ((ResolvedTypeX) annotated).getSuperclass();
+			while (toMatchAgainst != null) {
+				if (toMatchAgainst.hasAnnotation(annotationType)) return FuzzyBoolean.YES;
+				toMatchAgainst = toMatchAgainst.getSuperclass();
+			}
+		} 
+		return FuzzyBoolean.NO;
 	}
 
 	
+	public void resolve(World world) {
+		annotationType = annotationType.resolve(world);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.AnnotationTypePattern#resolveBindings(org.aspectj.weaver.patterns.IScope, org.aspectj.weaver.patterns.Bindings, boolean)
 	 */
@@ -77,7 +107,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 				BindingAnnotationTypePattern binding = new BindingAnnotationTypePattern(formalBinding);
 				binding.copyLocationFrom(this);
 				bindings.register(binding, scope);
-				binding.resolve(scope.getWorld());
+				binding.resolveBinding(scope.getWorld());
 				
 				return binding;
 			} else {

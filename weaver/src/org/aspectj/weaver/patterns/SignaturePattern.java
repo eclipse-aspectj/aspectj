@@ -130,6 +130,7 @@ public class SignaturePattern extends PatternNode {
 			world.getLint().unresolvableMember.signal(member.toString(), getSourceLocation());
 			return false;
 	  }
+	  annotationPattern.resolve(world);
 	  return annotationPattern.matches(rMember).alwaysTrue();
 	}
 	

@@ -16,6 +16,7 @@ import java.io.IOException;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.World;
 
 /**
  * @author colyer
@@ -38,6 +39,11 @@ public class AndAnnotationTypePattern extends AnnotationTypePattern {
 		return left.matches(annotated).and(right.matches(annotated));
 	}
 
+	public void resolve(World world) {
+		left.resolve(world);
+		right.resolve(world);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.AnnotationTypePattern#resolveBindings(org.aspectj.weaver.patterns.IScope, org.aspectj.weaver.patterns.Bindings, boolean)
 	 */
