@@ -177,7 +177,7 @@ public class Main {
                     throw new Exception("invalid javaPath: " + javaPath);
                 }
                 // directly set context and run
-                installer.getInstallPane().setContext(installerContext);
+                WizardPane.setContext(installerContext);
                 installer.run();
             }
         } catch (Exception e) {
@@ -518,7 +518,7 @@ abstract class Installer {
     }
 
     public void moveToPane(WizardPane pane) {
-        pane.setContext(this.context);
+        WizardPane.setContext(this.context);
 
         Dimension size = frame.getContentPane().getSize();
 
@@ -1786,11 +1786,11 @@ class JarUnpacker {
         URL url = getClass().getResource(jarName);
         InputStream stream = url.openStream();
         ZipInputStream zis = new ZipInputStream(stream);
-        int i = 0;
+//        int i = 0;
 
         ZipEntry entry;
         while ((entry = zis.getNextEntry()) != null) {
-            final String name = entry.getName();
+//            final String name = entry.getName();
             writeEntry(zis, entry, outputDir);
             //
         }

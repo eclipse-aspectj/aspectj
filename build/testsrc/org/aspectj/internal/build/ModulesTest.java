@@ -13,21 +13,18 @@
 
 package org.aspectj.internal.build;
 
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Java;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.Commandline.Argument;
-import org.aspectj.internal.tools.ant.taskdefs.AntBuilder;
-import org.aspectj.internal.tools.ant.taskdefs.BuildModule;
-import org.aspectj.internal.tools.build.Messager;
-import org.aspectj.internal.tools.build.Module;
-import org.aspectj.internal.tools.build.Modules;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
+
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.Path;
+import org.aspectj.internal.tools.ant.taskdefs.AntBuilder;
+import org.aspectj.internal.tools.build.Messager;
+import org.aspectj.internal.tools.build.Module;
+import org.aspectj.internal.tools.build.Modules;
 /**
  * 
  */

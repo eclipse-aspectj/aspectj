@@ -137,10 +137,10 @@ public class StripNonBodyHtml extends MatchingTask {
     }
 
     private boolean writeBodyTo(String s, File f) throws IOException {
-        int start, end;
+        int start;//, end;
         try {
             start = findStart(s);
-            end = findEnd(s, start);
+            findEnd(s, start);
         } catch (ParseException e) {
             return false; // if we get confused, just don't write the file.
         }

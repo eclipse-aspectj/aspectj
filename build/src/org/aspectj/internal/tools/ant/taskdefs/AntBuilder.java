@@ -336,7 +336,7 @@ public class AntBuilder extends Builder {
         
         // -- merge any merge jars
         List mergeJars =  module.getMerges();
-        final boolean useManifest = false;
+//        final boolean useManifest = false;
         if (0 < mergeJars.size()) {
             for (Iterator iter = mergeJars.iterator(); iter.hasNext();) {
                 File mergeJar = (File) iter.next();
@@ -550,7 +550,7 @@ class ProductBuilder extends AntBuilder {
     private static String getProductInstallResourcesSrc(BuildSpec buildSpec) {
         final String resourcesName = "installer-resources";  // XXXFileLiteral
         File dir = buildSpec.productDir.getParentFile();
-        String result = null;
+//        String result = null;
         if (null == dir) {
             return "../../" + resourcesName;
         } 
@@ -735,18 +735,18 @@ class ProductBuilder extends AntBuilder {
             + "/lib/build/build.jar" ; // XXX
     }
     
-    private Module moduleForReplaceFile(File replaceFile, Modules modules) {
-        String jarName = moduleAliasFor(replaceFile.getName().toLowerCase());
-        if (jarName.endsWith(".jar") || jarName.endsWith(".zip")) {   // XXXFileLiteral
-            jarName = jarName.substring(0, jarName.length()-4);
-        } else {
-            throw new IllegalArgumentException("can only replace .[jar|zip]");
-        }
-        boolean assembleAll = jarName.endsWith("-all");
-        String name = (!assembleAll ? jarName : jarName.substring(0, jarName.length()-4));
-        return modules.getModule(name);
-    }
-    
+//    private Module moduleForReplaceFile(File replaceFile, Modules modules) {
+//        String jarName = moduleAliasFor(replaceFile.getName().toLowerCase());
+//        if (jarName.endsWith(".jar") || jarName.endsWith(".zip")) {   // XXXFileLiteral
+//            jarName = jarName.substring(0, jarName.length()-4);
+//        } else {
+//            throw new IllegalArgumentException("can only replace .[jar|zip]");
+//        }
+//        boolean assembleAll = jarName.endsWith("-all");
+//        String name = (!assembleAll ? jarName : jarName.substring(0, jarName.length()-4));
+//        return modules.getModule(name);
+//    }
+//    
 }
 
 

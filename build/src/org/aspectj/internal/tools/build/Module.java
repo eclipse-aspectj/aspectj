@@ -361,7 +361,7 @@ public class Module {
             String line;
             
             XMLEntry entry = new XMLEntry("classpathentry", ATTS);
-            String lastKind = null;
+//            String lastKind = null;
             while (null != (line = reader.readLine())) {
                 // we assume no internal spaces...
                 entry.acceptTokens(line);

@@ -23,7 +23,7 @@ import org.aspectj.internal.tools.build.Builder;
 import org.aspectj.internal.tools.build.Util;
 
 public class TestBuildModule {
-    private static boolean REBUILD = false;
+//    private static boolean REBUILD = false;
     private static final String SYNTAX = "java {classname} <[product|module]dir>";
     public static void main(String[] args) {
         

@@ -16,7 +16,7 @@ package org.aspectj.internal.tools.build;
 
 
 import java.io.File;
-import java.util.Properties;
+//import java.util.Properties;
 
 /** 
  * Open struct for specifying builds for both modules and products.
@@ -156,7 +156,7 @@ public class BuildSpec {
     public boolean assembleAll;
     public boolean failonerror;
     public boolean verbose;
-    private Properties buildProperties;
+//    private Properties buildProperties;
 
     // building products
     public File productDir;

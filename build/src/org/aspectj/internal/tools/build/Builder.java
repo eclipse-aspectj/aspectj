@@ -245,7 +245,7 @@ public abstract class Builder {
 			final Modules modules = module.getModules();
 			final Messager handler = this.handler;
 			final boolean log = (verbose && (null != handler));
-			final boolean verbose = this.verbose;
+//			final boolean verbose = this.verbose;
 			if (log) {
 				handler.log(
 					"modules to build: " + Arrays.asList(buildList));

@@ -237,7 +237,7 @@ public class Checklics extends MatchingTask {
     
     /** visit all .java files in all directories... */
     private void visitAll(FileVisitor visitor) {
-        List filelist = new ArrayList();
+//        List filelist = new ArrayList();
         String[] dirs = sourcepath.list();
         for (int i = 0; i < dirs.length; i++) {
             File dir = project.resolveFile(dirs[i]);
@@ -445,7 +445,7 @@ public class Checklics extends MatchingTask {
 
 		public boolean checkFile(final File file) {
 			clear();
-			boolean result = false;
+//			boolean result = false;
 			BufferedReader input = null;
 			int lineNum = 0;
 			try {
@@ -643,8 +643,8 @@ class Header {
     
     /** replace the header in file */
     public static boolean replaceHeader(File file, HeaderInfo info) {
-        ArrayList years = new ArrayList();
-        int endLine = 0;
+//        ArrayList years = new ArrayList();
+//        int endLine = 0;
         BufferedReader input = null;
         PrintWriter output = null;
         FileWriter outWriter = null;

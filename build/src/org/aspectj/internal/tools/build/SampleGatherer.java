@@ -44,26 +44,26 @@ public class SampleGatherer {
     static final String AUTHOR = "@author";
     static final String FLAG = "XXX";
 
-    private static void test(String[] args){
-        String[] from = new String[] { "<pre>", "</pre>" };
-        String[] to = new String[] { "&lt;pre>", "&lt;/pre>" };
-        String source = "in this <pre> day and </pre> age of <pre and /pre>";
-        System.err.println("from " + source);
-        System.err.println("  to " + SampleUtil.replace(source, from, to));
-        source = "<pre> day and </pre>";
-        System.err.println("from " + source);
-        System.err.println("  to " + SampleUtil.replace(source, from, to));
-        source = "<pre day and </pre";
-        System.err.println("from " + source);
-        System.err.println("  to " + SampleUtil.replace(source, from, to));
-        source = "<pre> day and </pre> age";
-        System.err.println("from " + source);
-        System.err.println("  to " + SampleUtil.replace(source, from, to));
-        source = "in this <pre> day and </pre> age";
-        System.err.println("from " + source);
-        System.err.println("  to " + SampleUtil.replace(source, from, to));
-        
-    }
+//    private static void test(String[] args){
+//        String[] from = new String[] { "<pre>", "</pre>" };
+//        String[] to = new String[] { "&lt;pre>", "&lt;/pre>" };
+//        String source = "in this <pre> day and </pre> age of <pre and /pre>";
+//        System.err.println("from " + source);
+//        System.err.println("  to " + SampleUtil.replace(source, from, to));
+//        source = "<pre> day and </pre>";
+//        System.err.println("from " + source);
+//        System.err.println("  to " + SampleUtil.replace(source, from, to));
+//        source = "<pre day and </pre";
+//        System.err.println("from " + source);
+//        System.err.println("  to " + SampleUtil.replace(source, from, to));
+//        source = "<pre> day and </pre> age";
+//        System.err.println("from " + source);
+//        System.err.println("  to " + SampleUtil.replace(source, from, to));
+//        source = "in this <pre> day and </pre> age";
+//        System.err.println("from " + source);
+//        System.err.println("  to " + SampleUtil.replace(source, from, to));
+//        
+//    }
     /**
      * Emit samples gathered from any input args.
      * @param args the String[] of paths to files or directories to search
@@ -248,11 +248,11 @@ public class SampleGatherer {
             throws Abort {
         throw new Abort(why + " at " + file + ":" + lineNumber + ": " + line);
     }
-    private static void delay(Object toDelay) {
-        synchronized (toDelay) { // XXX sleep instead?
-            toDelay.notifyAll();
-        }
-    }
+//    private static void delay(Object toDelay) {
+//        synchronized (toDelay) { // XXX sleep instead?
+//            toDelay.notifyAll();
+//        }
+//    }
     static class Abort extends IOException {
         Abort(String s) {
             super(s);
@@ -339,7 +339,7 @@ class Sample {
         this.startLine = startLine;
         this.endLine = endLine;
         this.kind = Kind.getKind(sourcePath);
-        List theFlags;
+//        List theFlags;
         if ((null == flags) || (0 == flags.length)) {
             this.flags = Collections.EMPTY_LIST;
         } else {
