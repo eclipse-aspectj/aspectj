@@ -257,8 +257,12 @@ public class CompilerAdapter {
 		Map optionsToSet = new HashMap();
         LangUtil.throwIaxIfNull(optionsToSet, "javaOptions");
 
-		if (options.getSourceOnePointFourMode()) {
-			optionsToSet.put(CompilerOptions.OPTION_Compliance, CompilerOptions.VERSION_1_4);	 
+        if (options.getSourceCompatibilityLevel() != null && options.getSourceCompatibilityLevel().equals(CompilerOptions.VERSION_1_5)) {
+		    optionsToSet.put(CompilerOptions.OPTION_Compliance, CompilerOptions.VERSION_1_5);
+		    optionsToSet.put(CompilerOptions.OPTION_Source, CompilerOptions.VERSION_1_5); 
+		} else if (options.getSourceOnePointFourMode() 
+		        || options.getSourceCompatibilityLevel() != null && options.getSourceCompatibilityLevel().equals(CompilerOptions.VERSION_1_4)) {
+		    optionsToSet.put(CompilerOptions.OPTION_Compliance, CompilerOptions.VERSION_1_4);	 
 			optionsToSet.put(CompilerOptions.OPTION_Source, CompilerOptions.VERSION_1_4);
 		} 
 		
@@ -284,10 +288,15 @@ public class CompilerAdapter {
 				slVersion = CompilerOptions.VERSION_1_3;
 			}
 			// never set a lower source level than compliance level
-			String setCompliance = (String) optionsToSet.get( CompilerOptions.OPTION_Compliance);
-			if ( ! (setCompliance.equals( CompilerOptions.VERSION_1_4 )
+			// Mik: prepended with 1.5 check
+			if (sourceLevel.equals(CompilerOptions.VERSION_1_5)) {
+			    optionsToSet.put(CompilerOptions.OPTION_Source, CompilerOptions.VERSION_1_5);	
+			} else {
+				String setCompliance = (String) optionsToSet.get( CompilerOptions.OPTION_Compliance);
+				if ( ! (setCompliance.equals(CompilerOptions.VERSION_1_4 )
 			         && slVersion.equals(CompilerOptions.VERSION_1_3)) ) {
-				optionsToSet.put(CompilerOptions.OPTION_Source, slVersion);							
+				    optionsToSet.put(CompilerOptions.OPTION_Source, slVersion);		
+				} 
 			}
 		}
 	

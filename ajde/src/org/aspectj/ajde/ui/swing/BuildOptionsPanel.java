@@ -20,6 +20,8 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
 import org.aspectj.ajde.Ajde;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -71,6 +73,7 @@ public class BuildOptionsPanel extends OptionsPanel {
   JTextArea incrementalNote = new JTextArea();
   JLabel spacer_label = new JLabel();
   JCheckBox assertions_checkBox = new JCheckBox();
+  JCheckBox oneFive_checkBox = new JCheckBox();
   Box options_box = Box.createVerticalBox();
   JCheckBox incremental_checkBox = new JCheckBox();
   JCheckBox useJavac_checkBox = new JCheckBox();
@@ -95,10 +98,17 @@ public class BuildOptionsPanel extends OptionsPanel {
 		}
 	}
 
-	public void loadOptions() throws IOException {
-		assertions_checkBox.setSelected(
-			Ajde.getDefault().getBuildManager().getBuildOptions().getSourceOnePointFourMode()
-		);
+	public void loadOptions() throws IOException { 
+	    if (Ajde.getDefault().getBuildManager().getBuildOptions().getSourceCompatibilityLevel() != null) {
+		    oneFive_checkBox.setSelected(
+			        Ajde.getDefault().getBuildManager().getBuildOptions().getSourceCompatibilityLevel().equals(CompilerOptions.VERSION_1_5)
+				);
+		}
+	    if (Ajde.getDefault().getBuildManager().getBuildOptions().getSourceCompatibilityLevel() != null) {
+	        assertions_checkBox.setSelected(
+			        Ajde.getDefault().getBuildManager().getBuildOptions().getSourceCompatibilityLevel().equals(CompilerOptions.VERSION_1_4)
+				);
+		}
 		preprocess_checkBox.setSelected(
 			Ajde.getDefault().getBuildManager().getBuildOptions().getPreprocessMode()
 		);
@@ -126,9 +136,14 @@ public class BuildOptionsPanel extends OptionsPanel {
 	}
 
 	public void saveOptions() throws IOException {
-		AjdeUIManager.getDefault().getBuildOptions().setSourceOnePointFourMode(
-			assertions_checkBox.isSelected()
-		);
+	    if (oneFive_checkBox.isSelected()) {
+	        AjdeUIManager.getDefault().getBuildOptions().setSourceCompatibilityLevel(CompilerOptions.VERSION_1_5); 
+	    } else if (assertions_checkBox.isSelected()) {
+	        AjdeUIManager.getDefault().getBuildOptions().setSourceOnePointFourMode(true);
+	        AjdeUIManager.getDefault().getBuildOptions().setSourceCompatibilityLevel(CompilerOptions.VERSION_1_4); 
+	    } else { 
+	        AjdeUIManager.getDefault().getBuildOptions().setSourceCompatibilityLevel(CompilerOptions.VERSION_1_3); 
+	    }
 		AjdeUIManager.getDefault().getBuildOptions().setPreprocessMode(
 			preprocess_checkBox.isSelected()
 		);
@@ -225,7 +240,9 @@ public class BuildOptionsPanel extends OptionsPanel {
     incrementalNote.setText(INCREMENTAL_NOTE);
     spacer_label.setText("   ");
     assertions_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
-    assertions_checkBox.setText("Support assertions from 1.4 Java specification");
+    assertions_checkBox.setText("Java 1.4 source compatibility mode");
+    oneFive_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
+    oneFive_checkBox.setText("Java 1.5 source compatibility mode");
     incremental_checkBox.setText("Incremental compile");
     incremental_checkBox.setToolTipText("Only recompile necessary sources.");
     incremental_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
@@ -243,6 +260,7 @@ public class BuildOptionsPanel extends OptionsPanel {
     options_box2.add(spacer_label1, null);
     compileOptions_panel.add(options_box, BorderLayout.NORTH);
     options_box.add(assertions_checkBox, null);
+    options_box.add(oneFive_checkBox, null); 
     options_box.add(preprocess_checkBox, null);
     options_box.add(useJavac_checkBox, null);
     options_box.add(incremental_checkBox, null);
