@@ -203,6 +203,8 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
      * 
      * We keep a hashSet of interfaces that we've visited so we don't spiral
      * out into 2^n land.
+     * NOTE: Take a look at the javadoc on getMethodsWithoutIterator() to see if
+     * you are sensitive to a quirk in getMethods()
      */
     public Iterator getMethods() {
         final Iterators.Filter dupFilter = Iterators.dupFilter();
@@ -238,6 +240,31 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
                     },
                     Iterators.recur(this, ifaceGetter)),
                 methodGetter);
+    }
+    
+    /**
+     * Return a list of methods, first those declared on this class, then those declared on the superclass (recurse) and then those declared
+     * on the superinterfaces.  The getMethods() call above doesn't quite work the same as it will (through the iterator) return methods
+     * declared on *this* class twice, once at the start and once at the end - I couldn't debug that problem, so created this alternative.
+     */
+    public List getMethodsWithoutIterator() {
+        List methods = new ArrayList();
+        Set knowninterfaces = new HashSet();
+        addAndRecurse(knowninterfaces,methods,this);
+        return methods;
+    }
+    
+    private void addAndRecurse(Set knowninterfaces,List collector, ResolvedTypeX rtx) {
+      collector.addAll(Arrays.asList(rtx.getDeclaredMethods())); // Add the methods declared on this type
+      if (!rtx.equals(ResolvedTypeX.OBJECT)) addAndRecurse(knowninterfaces,collector,rtx.getSuperclass()); // Recurse if we aren't at the top
+      ResolvedTypeX[] interfaces = rtx.getDeclaredInterfaces(); // Go through the interfaces on the way back down
+      for (int i = 0; i < interfaces.length; i++) {
+		ResolvedTypeX iface = interfaces[i];
+		if (!knowninterfaces.contains(iface)) { // Dont do interfaces more than once
+          knowninterfaces.add(iface); 
+          addAndRecurse(knowninterfaces,collector,iface);
+        }
+	  }
     }
 
     /** 
@@ -1056,6 +1083,15 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 		return interTypeMungers;
 	}
     
+    public List getInterTypeParentMungers() {
+      List l = new ArrayList();
+      for (Iterator iter = interTypeMungers.iterator(); iter.hasNext();) {
+		ConcreteTypeMunger element = (ConcreteTypeMunger) iter.next();
+		if (element.getMunger() instanceof NewParentTypeMunger) l.add(element);
+	}
+      return l;
+    }
+    
 	/**
 	 * ??? This method is O(N*M) where N = number of methods and M is number of
 	 * inter-type declarations in my super
@@ -1064,6 +1100,21 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
         ArrayList ret = new ArrayList();
         collectInterTypeMungers(ret);
         return ret;
+    }
+
+     
+    public List getInterTypeParentMungersIncludingSupers() {
+      ArrayList ret = new ArrayList();
+      collectInterTypeParentMungers(ret);
+      return ret;
+    }
+    
+    private void collectInterTypeParentMungers(List collector) {
+        for (Iterator iter = getDirectSupertypes(); iter.hasNext();) {
+            ResolvedTypeX superType = (ResolvedTypeX) iter.next();
+            superType.collectInterTypeParentMungers(collector);
+        }
+        collector.addAll(getInterTypeParentMungers());
     }
         
         
