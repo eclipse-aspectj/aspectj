@@ -621,13 +621,13 @@
           All set join points are treated as having one argument, the value the
           field is being set to, so at a set join point, that value can be
           accessed with an <literal>args</literal> pointcut.  So an aspect
-          guarding an integer variable x declared in type T might be written as
+          guarding a static integer variable x declared in type T might be written as
         </para>
 
 <programlisting><![CDATA[
   aspect GuardedX {
       static final int MAX_CHANGE = 100;
-      before(int newval): set(int T.x) && args(newval) {
+      before(int newval): set(static int T.x) && args(newval) {
 	  if (Math.abs(newval - T.x) > MAX_CHANGE)
 	      throw new RuntimeException();
       }
