@@ -872,10 +872,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			
 		AjLookupEnvironment le =
 			new AjLookupEnvironment(forCompiler, forCompiler.options, pr, environment);
-		EclipseFactory factory = new EclipseFactory(le);
+		EclipseFactory factory = new EclipseFactory(le,this);
 		le.factory = factory;
 		pr.factory = factory;
-		le.factory.buildManager = this;
 		
 		forCompiler.lookupEnvironment = le;
 		

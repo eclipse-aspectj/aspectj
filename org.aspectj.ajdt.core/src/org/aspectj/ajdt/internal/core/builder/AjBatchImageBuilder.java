@@ -10,8 +10,9 @@
  *******************************************************************************/
 package org.aspectj.ajdt.internal.core.builder;
 
-import org.eclipse.jdt.internal.compiler.Compiler;
+import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.core.builder.BatchImageBuilder;
+import org.eclipse.jdt.internal.core.builder.SourceFile;
 
 /**
  * @author colyer
@@ -25,10 +26,15 @@ public class AjBatchImageBuilder extends BatchImageBuilder {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.eclipse.jdt.internal.core.builder.AbstractImageBuilder#newCompiler()
+	 * @see org.eclipse.jdt.internal.compiler.ICompilerRequestor#acceptResult(org.eclipse.jdt.internal.compiler.CompilationResult)
 	 */
-	protected Compiler newCompiler() {
-		// we must pass in an AjCompilerOptions instance...
-		return super.newCompiler();
+	public void acceptResult(CompilationResult result) {
+		if ((result.getCompilationUnit() != null) && (result.getCompilationUnit() instanceof SourceFile)) {
+			super.acceptResult(result);
+		} else {
+			// it's a file originating from binary source...
+			// we need to handle it ourselves
+			// TODO handle binary source output
+		}
 	}
 }
