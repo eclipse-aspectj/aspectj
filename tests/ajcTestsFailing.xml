@@ -5,6 +5,13 @@
 
 <suite>
 
+	<ajc-test dir="bugs"
+		pr="41888"
+		title="call PCD fails when given subtype of defining type">
+		<compile files="CallReference.java"/>
+		<run class="CallReference"/>
+		</ajc-test>
+
 	<ajc-test dir="bugs/options/classpath"
 		pr="41170"
 		title="combine classpath on command line and in .lst file">
