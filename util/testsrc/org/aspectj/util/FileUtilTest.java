@@ -254,9 +254,14 @@ public class FileUtilTest extends TestCase {
             assertTrue(null == exceptionClass);
             if (to.isFile()) {
                 assertTrue(from.length() == to.length()); // XXX cheap test
+            } else if (!from.isDirectory()){
+                File toFile = new File(to, from.getName());  
+               	assertTrue(from.length() == toFile.length()); 
             } else {
-                File toFile = new File(to, from.getName());                
-                assertTrue(from.length() == toFile.length()); 
+            	// from is a dir and to is a dir, toDir should be created, and have the
+            	// same contents as fromDir.
+            	assertTrue(to.exists());
+            	assertTrue(from.listFiles().length == to.listFiles().length);
             }
         } catch (Throwable t) {
             assertTrue(null != exceptionClass);
