@@ -495,3 +495,8 @@
         <compile files="ConcreteClassA.java"/>
         <run class="ConcreteClassA"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs" pr="74952" title="before,after not (cflow(within(Trace*))) prints nothing">
+        <compile files="WhatsGoingOn.java"/>
+        <run class="WhatsGoingOn"/>
+    </ajc-test>

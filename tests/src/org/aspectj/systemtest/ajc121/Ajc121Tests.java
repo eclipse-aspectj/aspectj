@@ -20,6 +20,9 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+
+
+	  
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc121Tests.class);
   }
@@ -336,6 +339,25 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
   public void test064() {
   	runTest("Anonymous classes unaware of introductions into abstract classes");
+  }
+  
+  private int countLines(String s) {
+    int lines = 0;
+    int idx = 0;
+    while (s.indexOf("\n",idx)!=-1) {
+    	lines++;
+    	idx = s.indexOf("\n",idx)+1;
+    }
+    return lines;
+  }
+  
+  public void test065() {
+  	runTest("before,after not (cflow(within(Trace*))) prints nothing");
+  	String s = getLastRunResult().getStdErr();
+  	int lines = countLines(s);
+	assertTrue("The actual output does not match the expected output.  Expected 102 lines but got "+
+			   lines+" lines.  Actual output =\n"+s,lines==102);
+	// IF YOU WANT TO SEE THE EXPECTED OUTPUT, LOOK IN THE TEST PROGRAM bugs/WhatsGoingOn.java
   }
 
 }

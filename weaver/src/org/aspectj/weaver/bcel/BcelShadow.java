@@ -240,6 +240,9 @@ public class BcelShadow extends Shadow {
 		if (getKind() == ConstructorCall) {
 			deleteNewAndDup();
 			initializeArgVars();
+		} else if (getKind() == PreInitialization) { // pr74952
+			ShadowRange range = getRange();
+			range.insert(InstructionConstants.NOP,Range.InsideAfter); 
 		} else if (getKind() == ExceptionHandler) {
 			
 			ShadowRange range = getRange();
@@ -1259,6 +1262,18 @@ public class BcelShadow extends Shadow {
             retList = new InstructionList(ret);
             afterAdvice = retList.getStart();
         } else /* if (munger.hasDynamicTests()) */ {
+        	/*
+        	 * 
+ 27:  getstatic       #72; //Field ajc$cflowCounter$0:Lorg/aspectj/runtime/internal/CFlowCounter;
+ 30:  invokevirtual   #87; //Method org/aspectj/runtime/internal/CFlowCounter.dec:()V
+ 33:  aload   6
+ 35:  athrow
+ 36:  nop
+ 37:  getstatic       #72; //Field ajc$cflowCounter$0:Lorg/aspectj/runtime/internal/CFlowCounter;
+ 40:  invokevirtual   #87; //Method org/aspectj/runtime/internal/CFlowCounter.dec:()V
+ 43:  d2i
+ 44:  invokespecial   #23; //Method java/lang/Object."<init>":()V
+        	 */
             retList = new InstructionList(InstructionConstants.NOP);            
             afterAdvice = retList.getStart();
 //        } else {
@@ -1295,7 +1310,7 @@ public class BcelShadow extends Shadow {
 			}
             range.append(advice);
             range.append(retList);
-        } else {
+        } else {            
             range.append(advice);
             range.append(retList);
         }
@@ -1449,7 +1464,7 @@ public class BcelShadow extends Shadow {
 				if (cflowStateVars.length == 0) {
 					// This should be getting managed by a counter - lets make sure.
 					if (!cflowField.getType().getName().endsWith("CFlowCounter")) 
-						throw new RuntimeException("Oncorrectly attempting counter operation on stacked cflow");
+						throw new RuntimeException("Incorrectly attempting counter operation on stacked cflow");
 					entrySuccessInstructions.append(
 			      			Utility.createGet(fact, cflowField));
 					//arrayVar.appendLoad(entrySuccessInstructions, fact);
@@ -1487,7 +1502,6 @@ public class BcelShadow extends Shadow {
 				munger.getTestInstructions(this, entrySuccessInstructions.getStart(), 
 									range.getRealStart(), 
 									entrySuccessInstructions.getStart());
-						
 			entryInstructions.append(testInstructions);
 			entryInstructions.append(entrySuccessInstructions);
 		}
