@@ -53,6 +53,9 @@ public class AsmAdaptor {
 				relation = AdviceAssociation.METHOD_RELATION;
 			} else if (shadow.getKind().equals(Shadow.ConstructorExecution)) {
 				relation = AdviceAssociation.CONSTRUCTOR_RELATION;
+			} else if (shadow.getKind().equals(Shadow.PreInitialization)) {
+				// TODO: someone should check that this behaves reasonably in the IDEs
+				relation = AdviceAssociation.INITIALIZER_RELATION;
 			} else {
 				System.err.println("> unmatched relation: " + shadow.getKind());
 				relation = AdviceAssociation.METHOD_RELATION;
