@@ -104,8 +104,13 @@ public abstract class Advice extends ShadowMunger {
     			return shadow.hasThis();
     		} else if (kind == AdviceKind.Around) {
     			if (shadow.getKind() == Shadow.PreInitialization) {
-	    			world.showMessage(IMessage.WARNING,
+	    			world.showMessage(IMessage.ERROR,
 	    				"around on pre-initialization not supported (compiler limitation)", 
+	    				getSourceLocation(), shadow.getSourceLocation());
+					return false;
+    			} else if (shadow.getKind() == Shadow.Initialization) {
+	    			world.showMessage(IMessage.ERROR,
+	    				"around on initialization not supported (compiler limitation)", 
 	    				getSourceLocation(), shadow.getSourceLocation());
 					return false;
     			} else {

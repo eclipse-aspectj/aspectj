@@ -495,6 +495,10 @@ class BcelClassWeaver implements IClassWeaver {
 								(InstructionHandle) srcToDest.get(oldRange.getEnd()));
 							shadowMap.put(oldRange, freshRange);
 							//recipient.matchedShadows.add(freshShadow);
+							// XXX should go through the NEW copied shadow and update
+							// the thisVar, targetVar, and argsVar
+							// ??? Might want to also go through at this time and add
+							// "extra" vars to the shadow. 
 						}
 					}
 	            }
@@ -634,13 +638,16 @@ class BcelClassWeaver implements IClassWeaver {
 			enclosingShadow = BcelShadow.makeConstructorExecution(world, mg, superOrThisCall);
 			
 			// walk the body
+			boolean beforeSuperOrThisCall = true;
 			if (shouldWeaveBody(mg)) { //!mg.isAjSynthetic()) {
 				for (InstructionHandle h = mg.getBody().getStart();
 					h != null;
 					h = h.getNext()) {
-					if (h == superOrThisCall)
+					if (h == superOrThisCall) {
+						beforeSuperOrThisCall = false;
 						continue;
-					match(mg, h, enclosingShadow, shadowAccumulator);
+					}
+					match(mg, h, beforeSuperOrThisCall ? null : enclosingShadow, shadowAccumulator);
 				}
 				match(enclosingShadow, shadowAccumulator);
 			}

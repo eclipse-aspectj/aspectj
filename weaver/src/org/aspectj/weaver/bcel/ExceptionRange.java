@@ -42,14 +42,20 @@ public final class ExceptionRange extends Range {
 	/**
 	 * After this constructor is called, this range is not well situated unless 
 	 * {@link #associateWithTargets} is called
+	 * 
+	 * XXX priority should be fixed
 	 */
 	public ExceptionRange(InstructionList body, TypeX exceptionType, int priority) {
 		super(body);
 		this.exceptionType = exceptionType;
 		this.priority = priority;
 	}
-	public ExceptionRange(InstructionList body, TypeX exceptionType, boolean highPriority) {
-		this(body, exceptionType, highPriority ? Integer.MAX_VALUE : -1);
+	
+	/**
+	 * @param insideExisting 
+	 */
+	public ExceptionRange(InstructionList body, TypeX exceptionType, boolean insideExisting) {
+		this(body, exceptionType, insideExisting ? Integer.MAX_VALUE : -1);
 	}
 	public void associateWithTargets(
 		InstructionHandle start,

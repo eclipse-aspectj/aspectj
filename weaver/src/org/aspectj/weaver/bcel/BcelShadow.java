@@ -78,9 +78,7 @@ public class BcelShadow extends Shadow {
     private ShadowRange range;    
     private final BcelWorld world;  
     private final LazyMethodGen enclosingMethod;
-    private final BcelShadow enclosingShadow;
-
-	private boolean fallsThrough;
+	private boolean fallsThrough;  //XXX not used anymore
 
 	// ---- initialization
 	
@@ -96,10 +94,9 @@ public class BcelShadow extends Shadow {
 		LazyMethodGen enclosingMethod,
 		BcelShadow enclosingShadow) 
 	{
-		super(kind, signature);
+		super(kind, signature, enclosingShadow);
 		this.world = world;
 		this.enclosingMethod = enclosingMethod;
-		this.enclosingShadow = enclosingShadow;
 		fallsThrough = kind.argsOnStack();
 	}
 
@@ -273,7 +270,7 @@ public class BcelShadow extends Shadow {
     
     // overrides
     public TypeX getEnclosingType() {
-    	return world.resolve(getEnclosingClass().getClassName());
+    	return getEnclosingClass().getType();
     }
 
     public LazyClassGen getEnclosingClass() {
@@ -652,23 +649,6 @@ public class BcelShadow extends Shadow {
 	}
 
     // ---- type access methods
-  
-    public boolean hasThis() {
-    	if (getKind() == PreInitialization) return false;
-    	return !getEnclosingCodeSignature().isStatic();
-        //???return !enclosingMethod.isStatic();
-    }        
-    public TypeX getThisType() {
-        if (!hasThis()) return ResolvedTypeX.MISSING;
-        return getEnclosingCodeSignature().getDeclaringType();
-        //???return TypeX.forName(getEnclosingClass().getClassName());      
-    }
-
-    public boolean isTargetDifferentFromThis() {
-        return hasTarget() && isExpressionKind();
-    }
-
-
     private ObjectType getTargetBcelType() {
         return (ObjectType) world.makeBcelType(getTargetType());
     }
@@ -677,10 +657,28 @@ public class BcelShadow extends Shadow {
     }
 
     // ---- kinding
+
+	/**
+	 * If the end of my range has no real instructions following then
+	 * my context needs a return at the end.
+	 */
+    public boolean terminatesWithReturn() {
+    	return getRange().getRealNext() == null;
+    }
     
-    public boolean isExpressionKind() {
-		if (getKind() == PreInitialization) return true;
-        return getKind().argsOnStack();
+    /**
+	 * Is arg0 occupied with the value of this
+	 */
+    public boolean arg0HoldsThis() {
+    	if (getKind().isEnclosingKind()) {
+    		return !getSignature().isStatic();
+    	} else if (enclosingShadow == null) {
+    		//XXX this is mostly right
+    		// this doesn't do the right thing for calls in the pre part of introduced constructors.
+    		return !enclosingMethod.isStatic();
+    	} else {
+    		return ((BcelShadow)enclosingShadow).arg0HoldsThis();
+    	}
     }
 
     // ---- argument getting methods
@@ -770,7 +768,7 @@ public class BcelShadow extends Shadow {
     		// the enclosing of an execution is itself
     		return getThisJoinPointStaticPartBcelVar();
     	} else {
-    		return enclosingShadow.getThisJoinPointStaticPartBcelVar();
+    		return ((BcelShadow)enclosingShadow).getThisJoinPointStaticPartBcelVar();
     	}
     }
     
@@ -815,8 +813,8 @@ public class BcelShadow extends Shadow {
     public void initializeTargetVar() {
     	InstructionFactory fact = getFactory();    	
         if (targetVar != null) return;
-        if (! isExpressionKind()) {
-            initializeThisVar();
+        if (getKind().isTargetSameAsThis()) {
+            if (hasThis()) initializeThisVar();
             targetVar = thisVar;
         } else {
             initializeArgVars(); // gotta pop off the args before we find the target
@@ -846,7 +844,7 @@ public class BcelShadow extends Shadow {
             }
         } else {
             int index = 0;
-            if (hasThis()) index++;
+            if (arg0HoldsThis()) index++;
             
             for (int i = 0; i < len; i++) {
                 TypeX type = getArgType(i); 
@@ -966,7 +964,7 @@ public class BcelShadow extends Shadow {
         enclosingMethod.addExceptionHandler(range.getStart().getNext(), protectedEnd.getPrev(),
                                  handlerStart, (ObjectType)BcelWorld.makeBcelType(catchType), //???Type.THROWABLE, 
                                  // high priority if our args are on the stack
-                                 isExpressionKind());    
+                                 getKind().hasHighPriorityExceptions());
     }      
 
 
@@ -994,7 +992,7 @@ public class BcelShadow extends Shadow {
         enclosingMethod.addExceptionHandler(range.getStart().getNext(), protectedEnd.getPrev(),
                                  handlerStart, (ObjectType)BcelWorld.makeBcelType(catchType), 
                                  // high priority if our args are on the stack
-                                 isExpressionKind());    
+                                 getKind().hasHighPriorityExceptions());    
     }      
 
 
@@ -1173,7 +1171,7 @@ public class BcelShadow extends Shadow {
             range.append(advice);
         } else {
             InstructionList callback = makeCallToCallback(extractedMethod);
-            if (! isExpressionKind()) {
+            if (terminatesWithReturn()) {
                 callback.append(fact.createReturn(extractedMethod.getReturnType()));
             } else {
                 advice.append(fact.createBranchInstruction(Constants.GOTO, range.getEnd()));
@@ -1358,7 +1356,7 @@ public class BcelShadow extends Shadow {
         } else {
             InstructionList callback = makeCallToCallback(callbackMethod);
             InstructionList postCallback = new InstructionList();
-            if (! isExpressionKind()) {
+            if (terminatesWithReturn()) {
                 callback.append(fact.createReturn(callbackMethod.getReturnType()));
             } else {
                 advice.append(fact.createBranchInstruction(Constants.GOTO, postCallback.append(fact.NOP)));
@@ -1652,7 +1650,7 @@ public class BcelShadow extends Shadow {
         	int newi = 0;
         	// if we're passing in a this and we're not argsOnStack we're always 
         	// passing in a target too
-	        if (hasThis()) { ret.put(0, 0); oldi++; newi+=1; }
+	        if (arg0HoldsThis()) { ret.put(0, 0); oldi++; newi+=1; }
 	        //assert targetVar == thisVar
 	        for (int i = 0; i < getArgCount(); i++) {
 	            TypeX type = getArgType(i); 
@@ -1661,6 +1659,12 @@ public class BcelShadow extends Shadow {
 	            newi += type.getSize();
 	        }   
         }      
+        
+//        System.err.println("making remap for : " + this);
+//        if (targetVar != null) System.err.println("target slot : " + targetVar.getSlot());
+//        if (thisVar != null) System.err.println("  this slot : " + thisVar.getSlot());
+//        System.err.println(ret);
+        
         return ret;
     }
 
@@ -1684,7 +1688,7 @@ public class BcelShadow extends Shadow {
             TypeX targetType = getTargetType();
             ResolvedMember resolvedMember = getSignature().resolve(world);
             if (resolvedMember != null && Modifier.isProtected(resolvedMember.getModifiers()) && 
-            	!samePackage(targetType.getPackageName(), getThisType().getPackageName()))
+            	!samePackage(targetType.getPackageName(), getEnclosingType().getPackageName()))
             {
             	if (!targetType.isAssignableFrom(getThisType(), world)) {
             		throw new BCException("bad bytecode");
@@ -1777,7 +1781,7 @@ public class BcelShadow extends Shadow {
 		return new SourceLocation(new File(getEnclosingClass().getFileName()), getSourceLine());
 	}
 
-	public BcelShadow getEnclosingShadow() {
+	public Shadow getEnclosingShadow() {
 		return enclosingShadow;
 	}
 
@@ -1786,6 +1790,6 @@ public class BcelShadow extends Shadow {
 	}
 
 	public boolean isFallsThrough() {
-		return fallsThrough;
+		return !terminatesWithReturn(); //fallsThrough;
 	}
 }

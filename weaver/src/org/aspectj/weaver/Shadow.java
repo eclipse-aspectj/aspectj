@@ -35,28 +35,87 @@ import org.aspectj.util.*;
 public abstract class Shadow {
 	private final Kind kind; 
     private final Member signature;
+	protected final Shadow enclosingShadow;
     protected List mungers = new ArrayList(1);
 
 	// ----
-
-    protected Shadow(Kind kind, Member signature) {
+    protected Shadow(Kind kind, Member signature, Shadow enclosingShadow) {
         this.kind = kind;
         this.signature = signature;
+        this.enclosingShadow = enclosingShadow;
     }
 
 	// ----
 
     public abstract World getIWorld();
     
-    public final boolean hasTarget() {
-        return !(getSignature().isStatic() || (getKind() == ConstructorCall)
-        		  || (getKind() == PreInitialization));
+    /**
+     * could this(*) pcd ever match
+     */
+    public final boolean hasThis() {
+    	if (getKind().neverHasThis()) {
+    		return false;
+    	} else if (getKind().isEnclosingKind()) {
+    		return !getSignature().isStatic();
+    	} else if (enclosingShadow == null) {
+    		return false;
+    	} else {
+    		return enclosingShadow.hasThis();
+    	}
     }
 
+    /**
+     * the type of the this object here
+     * 
+     * @throws IllegalStateException if there is no this here
+     */
+    public final TypeX getThisType() {
+        if (!hasThis()) throw new IllegalStateException("no this");
+        if (getKind().isEnclosingKind()) {
+    		return getSignature().getDeclaringType();
+    	} else {
+    		return enclosingShadow.getThisType();
+    	}
+    }
+    
+    /**
+     * a var referencing this
+     * 
+     * @throws IllegalStateException if there is no target here
+     */
+    public abstract Var getThisVar();
+    
+    
+    
+    /**
+     * could target(*) pcd ever match
+     */
+    public final boolean hasTarget() {
+    	if (getKind().neverHasTarget()) {
+    		return false;
+    	} else if (getKind().isTargetSameAsThis()) {
+    		return hasThis();
+    	} else {
+    		return !getSignature().isStatic();
+    	}
+    }
+
+    /**
+     * the type of the target object here
+     * 
+     * @throws IllegalStateException if there is no target here
+     */
     public final TypeX getTargetType() {
-        if (!hasTarget()) return ResolvedTypeX.MISSING;
+        if (!hasTarget()) throw new IllegalStateException("no target");
         return getSignature().getDeclaringType();
     }
+    
+    /**
+     * a var referencing the target
+     * 
+     * @throws IllegalStateException if there is no target here
+     */
+    public abstract Var getTargetVar();
     
     public TypeX[] getArgTypes() {
     	if (getKind() == FieldSet) return new TypeX[] { getSignature().getReturnType() };
@@ -73,12 +132,9 @@ public abstract class Shadow {
         return getSignature()
             .getParameterTypes().length;
     }
-    
-    public abstract boolean hasThis();
-	public abstract TypeX getThisType();	
+    	
 	public abstract TypeX getEnclosingType();	
-	public abstract Var getThisVar();
-	public abstract Var getTargetVar();
+
 	public abstract Var getArgVar(int i);
 	
 	public abstract Var getThisJoinPointVar();
@@ -128,7 +184,7 @@ public abstract class Shadow {
     /** A type-safe enum representing the kind of shadows
      */
 	public static final class Kind extends TypeSafeEnum {
-		private boolean argsOnStack;
+		private boolean argsOnStack;  //XXX unused
 
 		public Kind(String name, int key, boolean argsOnStack) {
 			super(name, key);
@@ -140,13 +196,51 @@ public abstract class Shadow {
 		}
 
 		public boolean argsOnStack() {
-			return argsOnStack;
+			return !isTargetSameAsThis();
 		}
 
 		// !!! this is false for handlers!
 		public boolean allowsExtraction() {
 			return true;
 		}
+		
+		// XXX revisit along with removal of priorities
+		public boolean hasHighPriorityExceptions() {
+			return !isTargetSameAsThis();
+		}
+		
+		
+		/**
+		 * These are all the shadows that contains other shadows within them and
+		 * are often directly associated with methods.
+		 */
+		public boolean isEnclosingKind() {
+			return this == MethodExecution || this == ConstructorExecution ||
+					this == AdviceExecution || this == StaticInitialization
+					|| this == Initialization;
+		}
+		
+		public boolean isTargetSameAsThis() {
+			return this == MethodExecution 
+				|| this == ConstructorExecution 
+				|| this == StaticInitialization
+				|| this == PreInitialization
+				|| this == AdviceExecution
+				|| this == Initialization;
+		}
+		
+		public boolean neverHasTarget() {
+			return this == ConstructorCall
+				|| this == ExceptionHandler
+				|| this == PreInitialization
+				|| this == StaticInitialization;
+		}
+		
+		public boolean neverHasThis() {
+			return this == PreInitialization
+				|| this == StaticInitialization;
+		}
+		
 		
 		public String getSimpleName() {
 			int dash = getName().lastIndexOf('-');
@@ -228,6 +322,9 @@ public abstract class Shadow {
     public String toString() {
         return getKind() + "(" + getSignature() + ")"; // + getSourceLines();
     }
+
+
+
 
 
 

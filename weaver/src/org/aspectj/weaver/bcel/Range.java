@@ -80,6 +80,10 @@ abstract class Range implements InstructionTargeter {
         return getRealEnd(end);
     }
 	
+    InstructionHandle getRealNext() {
+        return getRealStart(end);
+    }
+	
 	static InstructionHandle getRealPrev(InstructionHandle ih) {
 		InstructionHandle ret = ih.getPrev();
 		while (isRangeHandle(ret)) {
