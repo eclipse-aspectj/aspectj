@@ -14,10 +14,23 @@ scripts and libraries.
 Consider defining the following flag properties:
 <p>
 <table cellpadding="1" border="1">
-<tr><th>Property</th><th>Effect of setting it to any value</th>
+<tr><th>Property</th><th>Meaning</th>
     </tr>
+<tr><td>module.name
+    </td><td>To build any module (esp. those not directly supported
+             by a target), use the "any-module" target and define
+             the module name.  e.g., 
+             <code>ant any-module -Dmodule.name=ajde</code>.
+	</td></tr>
 <tr><td>check.build.jar
-    </td><td>fail if build.jar is out of date
+    </td><td>any value cause build to fail if build.jar is out of date
+	</td></tr>
+<tr><td>build.config
+    </td><td>override default configuration in build.xml.
+     Significant values include "verbose" for more output
+     and "useEclipseCompiles" to assume that Eclipse has 
+     compiled modules into their bin directories, and just
+     assemble those classes.
 	</td></tr>
 </table>	
 <p>		
@@ -55,18 +68,27 @@ This affects build products (e.g., installers) which are run under eclipse
 (e.g., by opening with the "default system editor") and libraries used
 when compiling under Javac (if not zip products or input).  This problem
 presents as files not being writable, i.e., deleted or modified.
-You might get no notice of the problem when
-deleting with quiet="on". (The alternative to that is to create any
-directories being deleted before deleting them).
+Ant provides no notice of the problem when
+deleting with quiet="on" (often used to avoid unnecessary errors caused
+by trying to delete directories that do not exist).
 
 <p>
-Currently BuildModule taskdefs fork the Javac command to work around
+Currently BuildModule tasks forks the Javac command to work around
 this problem, but the Zip commands do not work around it.
 
 If under Eclipse, you get strange behavior with Ant builds, clear 
 out everything and build from the command line. In some cases, you
 have to exit Eclipse before files can be deleted.  (*sigh*)
 
+<h4>Running the test harness</h4>
+The <code>build-testing-drivers</code> target builds a single jar with
+the AspectJ binaries and a test harness as the main class. 
+It reads test suite files like 
+   <a href="../tests/ajcTests.xml">../tests/ajcTests.xml</a>.
+<p>
+JUnit tests may be run under eclipse or by using Ant to "build"
+   <a href="../tests/junitModules.xml">../tests/junitModules.xml</a>
+(which uses the eclipse module bin directories as its classpath).
 
 <h3>Development</h3>
 <h4>BuildModule task</h4>
@@ -90,15 +112,16 @@ module jar file.
 These have an <code>install</code> directory for installer resources
 and a <code>dist</code> directory containing all files belonging in
 the distribution, including 0-length placeholders for the module build
-results.
+results.  These placeholder file names are mapped to the originating
+module by the task itself (yes, an awful hack).
 
 <h4>Build notes</h4>
 <p>
 <u>Directory names</u>: Top-level temporary build directories are prefixed "aj-",
 so you can safely destroy any such directory or ignore it
 in CVS or the Eclipse package explorer.  By default the build script
-puts them at the same level as other modules.  Property names follow
-a similar convention; those prefixed "aj-" may be deleted at will, while
+puts them at the same level as other modules.  In build scripts, property names 
+follow a similar convention; those prefixed "aj-" may be deleted at will, while
 "aspectj-" names are source directories which should never be deleted.
 
 <p>
@@ -119,8 +142,8 @@ To avoid updating <code>Version.java</code> whenever
 <a href="src/org/aspectj/internal/tools/ant/taskdefs/VersionUptodate.java">
          src/org/aspectj/internal/tools/ant/taskdefs/VersionUptodate.java</a>
 determines whether Version.java has the same version by scanning the source file.
-(Do not change the lines flagged in the template without also
-changing the scanning code in the task.)
+The scan is dim-witted; do not change the lines flagged in the template 
+without also changing the scanning code in the task.
 
 <p>
 <hr>
