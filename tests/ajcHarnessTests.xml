@@ -156,6 +156,21 @@
 		   options="new-event"/> <!-- now expect new-event -->
     </ajc-test>
 
+    <ajc-test dir="incremental/stringliteral"  
+    		title="incrementally change only string literal size">
+        <compile staging="true" options="-incremental" 
+        	sourceroots="src"/>
+		<run class="packageOne.Main"
+			options="in packageOne.Main.main(..),
+					 before main packageOne.Main"/>
+        <inc-compile tag="20">
+        	<dir-changes updated="packageOne.Main"/>
+        </inc-compile>
+		<run class="packageOne.Main"
+			options="in longer packageOne.Main.main(..),
+					 before main packageOne.Main"/>
+    </ajc-test>
+    
 </suite>
 
 

@@ -79,4 +79,29 @@
         </compile>
     </ajc-test>
 
+    <ajc-test dir="incremental/stringliteral"  
+    		title="incrementally change string size and wire in injar classes">
+        <compile staging="true" options="-incremental" 
+        	files="oneInjar.jar,twoInjar.jar"
+        	sourceroots="src"/>
+		<run class="packageOne.Main"
+			options="in packageOne.Main.main(..),
+					 before main packageOne.Main"/>
+        <inc-compile tag="20">
+        	<dir-changes updated="packageOne.Main"/>
+        </inc-compile>
+        <!-- now failing here.  This step passes in non-injar variant. -->
+		<run class="packageOne.Main"
+			options="in longer packageOne.Main.main(..),
+					 before main packageOne.Main"/>
+        <inc-compile tag="30">
+        	<dir-changes added="RunInjarMains"/>
+        </inc-compile>
+		<run class="packageOne.Main"
+			options="in longer packageOne.Main.main(..),
+					 before main InjarOneMain,
+					 before main InjarTwoMain,
+					 before main packageOne.Main"/>
+    </ajc-test>
+
 </suite>
