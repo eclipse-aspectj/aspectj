@@ -6,21 +6,10 @@
 <suite>
 
 	<ajc-test dir="bugs/extdirs"
-		pr="42574"
-		title="ZIP and JAR suffixes for classpath entries">
-		<compile 
-			argfiles="extdirs-src/main/main.lst"
-			classpath="dir-1/util-1.JAR,dir-2/util-2.ZIP"/>
-		<run class="Main"/>
-		</ajc-test>
-
-	<ajc-test dir="bugs/extdirs" 
-		pr="42574"
-		title="ZIP and JAR suffixes for extdirs entries">
-		<compile 
-			argfiles="extdirs-src/main/main.lst"
-			extdirs="dir-1,dir-2"/>
-		<run class="Main"/>
+		comment="eclipse bug? batch.FileSystem() takes only lowercase"
+		title="uppercase ZIP and JAR suffixes for classpath entries">
+		<compile files="extdirs-src/main/Main.java"
+			classpath="lib/uppercase/util-jar.JAR,lib/uppercase/util-zip.ZIP"/>
 		</ajc-test>
 
 	<ajc-test dir="bugs/privilege"
