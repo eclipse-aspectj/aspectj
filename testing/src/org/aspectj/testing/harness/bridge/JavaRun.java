@@ -132,7 +132,7 @@ public class JavaRun implements IAjcRun {
                 ? runInOtherVM(status, libs, dirs)
                 : runInSameVM(status, libs, dirs);
         } finally {
-            if (!completedNormally) {
+            if (!completedNormally  || !status.runResult()) {
                 MessageUtil.info(status, spec.toLongString());
                 MessageUtil.info(status, "sandbox: " + sandbox);
             }
