@@ -14,19 +14,14 @@
 
 package org.aspectj.tools.ajdoc;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.BufferedWriter;
-import java.io.PrintWriter;
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.StringReader;
-
+import java.io.*;
 import java.util.*;
 
-class Phase3 {
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationship;
+
+class HtmlDecorator {
 
     static List visibleFileList = new ArrayList();
     static Hashtable declIDTable = null;
@@ -99,7 +94,7 @@ class Phase3 {
                          newBase = base.substring(0, base.lastIndexOf(Config.DIR_SEP_CHAR));
                       }
                       filename = newBase + Config.DIR_SEP_CHAR + packageName +
-                                 Config.DIR_SEP_CHAR + currFileClass + "." +
+                                 Config.DIR_SEP_CHAR + currFileClass + //"." +
                                  getName(decl) + ".html";
                       nestedClass = true;
                     }
@@ -138,7 +133,7 @@ class Phase3 {
 
         boolean isSecond = false;
         int index = 0;
-        Declaration decl;
+        IProgramElement decl;
         while ( true ) {
 
             //---this next part is an inlined procedure that returns two values---
@@ -153,19 +148,22 @@ class Phase3 {
                 throw new Error("Malformed DeclID.");
             else {
                 String tid = contents.substring(start + Config.DECL_ID_STRING.length(), end);
-                decl = (Declaration)declIDTable.get(tid);
+                decl = (IProgramElement)declIDTable.get(tid);
                 index = start;
             }
             //---                                                              ---
-            //---                                                              ---
+            //---                                                               ---
 
             if ( decl == null ) break;
             fileContents.delete(start, end + Config.DECL_ID_TERMINATOR.length());
-            if ( decl.isType() ) {
+            if ( decl.getKind().isTypeKind() ) {
                 isSecond = true;
-                goAddIntroductions(decl, fileContents, index);
-                goAddAdvice(decl, fileContents, index);
-                goAddCrosscuts(decl, fileContents, index);
+//                addIntroductionDocumentation(decl, fileContents, index);
+//                addAdviceDocumentation(decl, fileContents, index);
+//                addPointcutDocumentation(decl, fileContents, index);
+                addAspectDocumentation(decl, fileContents, index);
+           
+            
             }
             else {
                 decorateMemberDocumentation(decl, fileContents, index);
@@ -189,37 +187,49 @@ class Phase3 {
         fos.write( fileContents.toString().getBytes() );
     }
 
-    static void goAddCrosscuts(Declaration decl, StringBuffer fileBuffer, int index ) {
-        Declaration[] crosscuts = decl.getCrosscutDeclarations();
-        if ( crosscuts.length > 0 ) {
-            insertDeclarationsSummary(fileBuffer, crosscuts, "Pointcut Summary", index);
-            insertDeclarationsDetails(fileBuffer, crosscuts, "Pointcut Detail", index);
-        }
+    static void addAspectDocumentation(IProgramElement node, StringBuffer fileBuffer, int index ) {
+        List relations = AsmManager.getDefault().getRelationshipMap().get(node);
+        System.err.println("> relations: " + relations);
+        
+//        if ( crosscuts.length > 0 ) {
+//            insertDeclarationsSummary(fileBuffer, crosscuts, "Pointcut Summary", index);
+//            insertDeclarationsDetails(fileBuffer, crosscuts, "Pointcut Detail", index);
+//        }
     }
-
-    static void goAddAdvice(Declaration decl, StringBuffer fileBuffer, int index ) {
-        Declaration[] advice = decl.getAdviceDeclarations();
-        if ( advice.length > 0 ) {
-            insertDeclarationsSummary(fileBuffer, advice, "Advice Summary", index);
-            insertDeclarationsDetails(fileBuffer, advice, "Advice Detail", index);
-        }
-    }
-
-    static void goAddIntroductions(Declaration decl,
-                                   StringBuffer fileBuffer,
-                                   int index ) {
-        Declaration[] introductions = decl.getIntroductionDeclarations();
-        if ( introductions.length > 0 ) {
-            insertDeclarationsSummary(fileBuffer,
-                                      introductions,
-                                      "Introduction Summary",
-                                      index);
-            insertDeclarationsDetails(fileBuffer,
-                                      introductions,
-                                      "Introduction Detail",
-                                      index);
-        }
-    }
+    
+    
+//    static void addPointcutDocumentation(IProgramElement decl, StringBuffer fileBuffer, int index ) {
+//        List AsmManager.getDefault().getRelationshipMap().get()
+//    	Declaration[] crosscuts = decl.getCrosscutDeclarations();
+//        if ( crosscuts.length > 0 ) {
+//            insertDeclarationsSummary(fileBuffer, crosscuts, "Pointcut Summary", index);
+//            insertDeclarationsDetails(fileBuffer, crosscuts, "Pointcut Detail", index);
+//        }
+//    }
+//
+//    static void addAdviceDocumentation(IProgramElement decl, StringBuffer fileBuffer, int index ) {
+//        Declaration[] advice = decl.getAdviceDeclarations();
+//        if ( advice.length > 0 ) {
+//            insertDeclarationsSummary(fileBuffer, advice, "Advice Summary", index);
+//            insertDeclarationsDetails(fileBuffer, advice, "Advice Detail", index);
+//        }
+//    }
+//
+//    static void addIntroductionDocumentation(IProgramElement decl,
+//                                   StringBuffer fileBuffer,
+//                                   int index ) {
+//        Declaration[] introductions = decl.getIntroductionDeclarations();
+//        if ( introductions.length > 0 ) {
+//            insertDeclarationsSummary(fileBuffer,
+//                                      introductions,
+//                                      "Introduction Summary",
+//                                      index);
+//            insertDeclarationsDetails(fileBuffer,
+//                                      introductions,
+//                                      "Introduction Detail",
+//                                      index);
+//        }
+//    }
 
     static void insertDeclarationsSummary(StringBuffer  fileBuffer,
                                           Declaration[] decls,
@@ -406,66 +416,65 @@ class Phase3 {
         }
     }
 
-    static void decorateMemberDocumentation( Declaration decl,
+    static void decorateMemberDocumentation(IProgramElement node,
                                              StringBuffer fileContentsBuffer,
                                               int index ) {
-        if (decl.isIntroduced()) {
-           // !!! HACK, THIS HAS TO BE CHANGED WITH THE SYMBOL MANAGER
-           String fname = decl.getFilename();
-           int index1 = fname.lastIndexOf('\\');
-           int index2 = fname.lastIndexOf(".java");
-           String introducingType = fname;
-           if (index1 != -1 && index2 != -1) {
-              introducingType = fname.substring(index1+1, index2);
-           }
-           //System.out.println( "decl: " + decl.getSignature() + ", ptb: " + decl.getFilename());
-           String hrefName = "";
-           if (decl.getPackageName() != null ) {
-              hrefName = decl.getPackageName().replace('.', '/') + Config.DIR_SEP_CHAR +
-                         introducingType;
-           }
-           else {
-                hrefName = introducingType;
-           }
-           String hrefLink = generateAffectsHREFLink( hrefName );
-           fileContentsBuffer.insert( index,
-                                      "<BR><B><FONT COLOR=CC6699>Introduced by: </FONT></B>" +
-                                      "<A HREF=\"" + hrefLink + "\">" +
-                                      hrefName.replace('/', '.') + "</A>" ); // !!! don't replace
-           return;
-        }
-        Declaration[] ptb = decl.getPointedToBy();
-        if ( ptb.length > 0 ) {
+//        if (decl.isIntroduced()) {
+//           // !!! HACK, THIS HAS TO BE CHANGED WITH THE SYMBOL MANAGER
+//           String fname = decl.getFilename();
+//           int index1 = fname.lastIndexOf('\\');
+//           int index2 = fname.lastIndexOf(".java");
+//           String introducingType = fname;
+//           if (index1 != -1 && index2 != -1) {
+//              introducingType = fname.substring(index1+1, index2);
+//           }
+//           //System.out.println( "decl: " + decl.getSignature() + ", ptb: " + decl.getFilename());
+//           String hrefName = "";
+//           if (decl.getPackageName() != null ) {
+//              hrefName = decl.getPackageName().replace('.', '/') + Config.DIR_SEP_CHAR +
+//                         introducingType;
+//           }
+//           else {
+//                hrefName = introducingType;
+//           }
+//           String hrefLink = generateAffectsHREFLink( hrefName );
+//           fileContentsBuffer.insert( index,
+//                                      "<BR><B><FONT COLOR=CC6699>Introduced by: </FONT></B>" +
+//                                      "<A HREF=\"" + hrefLink + "\">" +
+//                                      hrefName.replace('/', '.') + "</A>" ); // !!! don't replace
+//           return;
+//        }
+    	
+    	List relations = AsmManager.getDefault().getRelationshipMap().get(node);
+   
+//        Declaration[] ptb = decl.getPointedToBy();
+        if (relations != null && !relations.isEmpty()) {
             String prevName = "";
             String adviceDoc = "<BR><B><FONT COLOR=CC6699>Advised by: </FONT></B>";
-            for ( int i = 0; i < ptb.length; i++ ) {
-                Declaration currDecl = ptb[i];
+            for (Iterator it = relations.iterator(); it.hasNext(); ) {
+//            for ( int i = 0; i < ptb.length; i++ ) {
+            	IRelationship curr = (IRelationship)it.next();
+//                Declaration currDecl = ptb[i];
                 String hrefName = "";
-                if (currDecl.getPackageName() != null ) {
-                   hrefName = currDecl.getPackageName().replace('.', '/') + Config.DIR_SEP_CHAR +
-                              currDecl.getDeclaringType();
-                }
-                else {
-                   hrefName = currDecl.getDeclaringType();
-                }
-                String hrefLink = generateAffectsHREFLink( hrefName );
-                if (!hrefName.equals(prevName)) { // !!! eliminates dupilcates since it's ordered
-                    //if ( currDecl.getKind().equals( "introduction" ) ) {
-                    //   fileContentsBuffer.insert( index,
-                    //                              "<BR><B><FONT COLOR=CC6699>Introduced by: </FONT></B>" +
-                    //                              "<A HREF=\"" + hrefLink + "\">" +
-                    //                              hrefName.replace('/', '.') + "</A>" ); // !!! don't replace
-                    //   return;
-                    //}
-                    if ( currDecl.getKind().equals( "advice" ) ) {
-                       if ( i > 0 ) {
-                          adviceDoc = adviceDoc + ", ";
-                        }
-                        adviceDoc = adviceDoc +
-                                "<A HREF=\"" + hrefLink + "\">"
-                                + hrefName.replace('/', '.') + "</A>";  // !!! don't replace
-                    }
-                 }
+                
+//                if (currDecl.getPackageName() != null ) {
+//                   hrefName = currDecl.getPackageName().replace('.', '/') + Config.DIR_SEP_CHAR +
+//                              currDecl.getDeclaringType();
+//                }
+//                else {
+//                   hrefName = currDecl.getDeclaringType();
+//                }
+//                String hrefLink = generateAffectsHREFLink( hrefName );
+//                if (!hrefName.equals(prevName)) { // !!! eliminates dupilcates since it's ordered
+//                    if ( currDecl.getKind().equals( "advice" ) ) {
+//                       if ( i > 0 ) {
+//                          adviceDoc = adviceDoc + ", ";
+//                        }
+//                        adviceDoc = adviceDoc +
+//                                "<A HREF=\"" + hrefLink + "\">"
+//                                + hrefName.replace('/', '.') + "</A>";  // !!! don't replace
+//                    }
+//                 }
                 prevName = hrefName;
             }
             //adviceDoc += "<BR>&nbsp;";

@@ -22,7 +22,7 @@ import java.util.List;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
 
-class Phase1 {
+class StubFileGenerator {
 
     static Hashtable declIDTable = null;
 
@@ -51,7 +51,9 @@ class Phase1 {
            	IProgramElement fileNode = (IProgramElement)AsmManager.getDefault().getHierarchy().findElementForSourceFile(inputFile.getAbsolutePath());
         	for (Iterator it = fileNode.getChildren().iterator(); it.hasNext(); ) {
         		IProgramElement node = (IProgramElement)it.next();
-        		if (!node.getKind().equals(IProgramElement.Kind.IMPORT_REFERENCE)) {
+        		if (node.getKind().equals(IProgramElement.Kind.IMPORT_REFERENCE)) {
+        			processImportDeclaration(node, writer);
+        		} else {
         			processTypeDeclaration(node, writer);
         		}
         	}
@@ -64,21 +66,16 @@ class Phase1 {
         } 
     }
 
-//    static void processClassDeclarations(IProgramElement fileNode,
-//                         PrintWriter writer,
-//                         boolean declaringDeclIsInterface) throws IOException {
-//    	for (Iterator it = fileNode.getChildren().iterator(); it.hasNext(); ) {
-//    		IProgramElement node = (IProgramElement)it.next();
-//    		proc
-//    	}
-//        for (int i = 0; i < decls.length; i++) {
-//            Declaration decl = decls[i];
-//           
-//            //System.out.println( ">> sig: " + decl.getSignature() );
-//            doDecl(decl, writer, declaringDeclIsInterface);
-//        }
-//    }
-
+    private static void processImportDeclaration(IProgramElement node, PrintWriter writer) throws IOException {
+    	List imports = node.getChildren();
+    	for (Iterator i = imports.iterator(); i.hasNext();) {
+			IProgramElement importNode = (IProgramElement) i.next();
+			writer.print("import ");
+			writer.print(importNode.getName());
+			writer.println(';');
+		}  	 
+    }
+    
     private static void processTypeDeclaration(IProgramElement classNode, PrintWriter writer) throws IOException {
     	
 //        String formalComment = classNode.getFormalComment();
@@ -89,7 +86,7 @@ class Phase1 {
     	String formalComment = addDeclID(classNode, classNode.getFormalComment());
     	writer.println(formalComment);
     	
-    	String signature = StructureUtil.genSignature(classNode);
+    	String signature = classNode.getSourceSignature();// StructureUtil.genSignature(classNode);
     	writer.println(signature + " {" );
     	processMembers(classNode.getChildren(), writer, classNode.getKind().equals(IProgramElement.Kind.INTERFACE));
     	writer.println();
@@ -103,10 +100,9 @@ class Phase1 {
 	    	if (member.getKind().isTypeKind()) {
 				processTypeDeclaration(member, writer);
 			} else {
-			
-		    	String formalComment = addDeclID(member, member.getFormalComment());
+		    	String formalComment = addDeclID(member, member.getFormalComment());;
 		    	writer.println(formalComment);
-		    	String signature = StructureUtil.genSignature(member);
+		    	String signature = member.getSourceSignature();//StructureUtil.genSignature(member);
 		    	writer.print(signature);
 		    	
 		    	if (member.getKind().equals(IProgramElement.Kind.METHOD)) {
@@ -118,6 +114,22 @@ class Phase1 {
 			}
 		}
     }
+
+//  static void processClassDeclarations(IProgramElement fileNode,
+//  PrintWriter writer,
+//  boolean declaringDeclIsInterface) throws IOException {
+//for (Iterator it = fileNode.getChildren().iterator(); it.hasNext(); ) {
+//IProgramElement node = (IProgramElement)it.next();
+//proc
+//}
+//for (int i = 0; i < decls.length; i++) {
+//Declaration decl = decls[i];
+//
+////System.out.println( ">> sig: " + decl.getSignature() );
+//doDecl(decl, writer, declaringDeclIsInterface);
+//}
+//}
+
     
 //    	
 //        if (decl.hasSignature()) {

@@ -26,7 +26,7 @@ import java.io.StringReader;
 
 import java.util.*;
 
-class Phase2 {
+class JavadocExecutor {
      static void callJavadoc( String[] javadocargs ) {
         final SecurityManager defaultSecurityManager = System.getSecurityManager();
 

@@ -17,8 +17,7 @@ package org.aspectj.tools.ajdoc;
 import java.io.*;
 import java.util.*;
 
-import org.aspectj.asm.AsmManager;
-import org.aspectj.asm.IProgramElement;
+import org.aspectj.bridge.Version;
 
 /**
  * This is an old implementation of ajdoc that does not use an OO style.  However, it 
@@ -29,6 +28,8 @@ import org.aspectj.asm.IProgramElement;
  */
 public class Main implements Config {
 
+	private static final String FAIL_MESSAGE =  "> compile failed, exiting ajdoc";
+	
     static SymbolManager symbolManager = null;
 
     /** Command line options. */
@@ -59,6 +60,8 @@ public class Main implements Config {
     static Hashtable declIDTable   = new Hashtable();
     static String  docDir          = ".";
 
+	private static boolean aborted = false;
+
     public static void clearState() {
         symbolManager = null;
         options = new Vector();
@@ -76,7 +79,8 @@ public class Main implements Config {
     }
 
     public static void main(String[] args) {
-
+    	aborted = false;
+    	
         // STEP 1: parse the command line and do other global setup
         sourcepath.addElement("."); // add the current directory to the classapth
         parseCommandLine(args);
@@ -113,19 +117,11 @@ public class Main implements Config {
             }
 
             System.out.println( "> calling ajc..." );
-
-            try {
-                (new org.aspectj.tools.ajc.Main() {
-                    public void exit(int status) {
-                    if (status != 0) {
-                    System.out.println( "> compile failed, exiting ajdoc" );
-                    System.exit( -1 );
-                    }
-                    }
-                    }).main(argsToCompiler);
-            }
-            catch ( SecurityException se ) {
-                System.exit( -1 );
+            CompilerWrapper.main(argsToCompiler);
+            if (CompilerWrapper.hasErrors()) {
+            	System.out.println(FAIL_MESSAGE);
+            	aborted = true;
+            	return;
             }
 /*
             for (int ii = 0; ii < inputFiles.length; ii++) {
@@ -143,7 +139,7 @@ public class Main implements Config {
 
             // PHASE 1: generate Signature files (Java with DeclIDs and no bodies).
             System.out.println( "> building signature files..." );
-            Phase1.doFiles(declIDTable, symbolManager, inputFiles, signatureFiles);
+            StubFileGenerator.doFiles(declIDTable, symbolManager, inputFiles, signatureFiles);
 
             // PHASE 2: let Javadoc generate HTML (with DeclIDs)
             System.out.println( "> calling javadoc..." );
@@ -185,7 +181,7 @@ public class Main implements Config {
                 }
             }
          
-            Phase2.callJavadoc(javadocargs);
+            JavadocExecutor.callJavadoc(javadocargs);
             //for ( int o = 0; o < inputFiles.length; o++ ) {
             //    System.out.println( "file: " + inputFiles[o] );
             //}
@@ -196,19 +192,19 @@ public class Main implements Config {
             * into multiple .html files to handle inner classes or local classes.  The html
             * file decorator picks that up.
             */
-//            System.out.println( "> Decorating html files..." );
-//            Phase3.decorateHTMLFromInputFiles(declIDTable,
-//                                              rootDir,
-//                                              symbolManager,
-//                                              inputFiles,
-//                                              docModifier);
-//            removeDeclIDsFromFile("index-all.html");
-//            removeDeclIDsFromFile("serialized-form.html");
-//            for (int p = 0; p < packageList.size(); p++) {
-//                removeDeclIDsFromFile(((String)packageList.elementAt(p)).replace('.','/') +
-//                                       Config.DIR_SEP_CHAR +
-//                                       "package-summary.html" );
-//            }
+            System.out.println( "> Decorating html files..." );
+            HtmlDecorator.decorateHTMLFromInputFiles(declIDTable,
+                                              rootDir,
+                                              symbolManager,
+                                              inputFiles,
+                                              docModifier);
+            removeDeclIDsFromFile("index-all.html");
+            removeDeclIDsFromFile("serialized-form.html");
+            for (int p = 0; p < packageList.size(); p++) {
+                removeDeclIDsFromFile(((String)packageList.elementAt(p)).replace('.','/') +
+                                       Config.DIR_SEP_CHAR +
+                                       "package-summary.html" );
+            }
         } catch (Throwable e) {
             handleInternalError(e);
             exit(-2);
@@ -241,40 +237,6 @@ public class Main implements Config {
               // be siltent
         }
     }
-
-    static void callAJC( String[] ajcargs ) {
-        final SecurityManager defaultSecurityManager = System.getSecurityManager();
-
-        System.setSecurityManager( new SecurityManager() {
-            public void checkExit(int status) {
-            System.setSecurityManager( defaultSecurityManager );
-            //throw new SecurityException( "status code: " + status );
-            //System.exit( -1 );
-            }
-            public void checkPermission( java.security.Permission permission ) {
-            if ( defaultSecurityManager  != null )
-            defaultSecurityManager.checkPermission( permission );
-            }
-            public void checkPermission( java.security.Permission permission,
-            Object context ) {
-            if ( defaultSecurityManager  != null )
-            defaultSecurityManager.checkPermission( permission, context );
-            }
-            } );
-
-        try {
-            org.aspectj.tools.ajc.Main.main( ajcargs );
-        }
-        catch ( SecurityException se ) {
-            // Do nothing since we expect it to be thrown
-            //System.out.println( ">> se: " + se.getMessage() );
-        } catch ( IOException ioe ) {
-            System.out.println( ">> io error: " + ioe.getMessage() );
-        }
-        // Set the security manager back
-        System.setSecurityManager( defaultSecurityManager );
-    }
-
 
     /**
      * If the file doesn't exist on the specified path look for it in all the other
@@ -516,7 +478,7 @@ public class Main implements Config {
                     versionStandardDocletSwitch = true;
                 }
                 else if ( arg.equals( "-v" ) ) {
-                    printVersion();
+                    System.out.println(getVersion());
                     exit(0);
                 }
                 else if ( arg.equals( "-help" ) ) {
@@ -678,10 +640,13 @@ public class Main implements Config {
         System.err.println();
     }
 
-    static void printVersion() {
-        System.out.println( Config.VERSION );
+    static String getVersion() {
+        return "ajdoc version " + Version.text;
     }
-
+    
+	public static boolean hasAborted() {
+		return aborted;
+	}
 }
 
 

@@ -1,0 +1,5 @@
+
+class Mumble {
+
+	this fails
+}

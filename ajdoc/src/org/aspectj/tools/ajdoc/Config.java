@@ -15,11 +15,11 @@
 package org.aspectj.tools.ajdoc;
 
 interface Config {
+	
     static final String DECL_ID_STRING     = "__AJDECLID:";
     static final String DECL_ID_TERMINATOR = ":__";
     static final String WORKING_DIR        = "ajdocworkingdir";
     static final String DIR_SEP_CHAR       = "/";
-    static final String VERSION            = "ajdoc version 0.8beta4";
     static final String USAGE =
                                "Usage: ajdoc <options> <source files>\n" +
                                "\n" +
