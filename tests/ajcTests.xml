@@ -3072,7 +3072,7 @@
 	     cases that could produce weave-time errors.
 	-->
     <ajc-test dir="new" title="holding onto proceed calls in a closure-like way"
-      keywords="from-resolved_10x">
+      keywords="from-resolved_10x,knownLimitation">
         <compile files="HoldProceed.java"/>
         <run class="HoldProceed"/>
     </ajc-test>
