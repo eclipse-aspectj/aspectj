@@ -1,0 +1,19 @@
+<project name="Java 5 compilation of covariance test source" default="default" basedir=".">
+
+    <target name="default">
+       	<delete dir="output" failonerror="false"/>
+       
+    	<mkdir dir="output"/>
+       	<javac destdir="output" debug="on" srcdir="." includes="CovBaseProgram01.java"/>
+       	<zip file="CovBaseProgram01.jar" basedir="output" includes="*"/>
+    	<delete dir="output"/>
+        
+        <mkdir dir="output"/>
+        <javac destdir="output" debug="on" srcdir="." includes="CovBaseProgram02.java"/>
+        <zip file="CovBaseProgram02.jar" basedir="output" includes="*"/>
+        <delete dir="output"/>
+
+    
+    </target>
+
+</project>

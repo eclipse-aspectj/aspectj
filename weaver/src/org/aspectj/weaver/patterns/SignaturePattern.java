@@ -153,13 +153,20 @@ public class SignaturePattern extends PatternNode {
 			//System.out.println("   ret: " + ret);
 			return ret;
 		} else if (kind == Member.METHOD) {
-			if (!returnType.matchesStatically(sig.getReturnType().resolve(world))) return false;
+			// Change all this in the face of covariance...
+			
+			// Check the name
 			if (!name.matches(sig.getName())) return false;
+			
+			// Check the parameters
 			if (!parameterTypes.matches(world.resolve(sig.getParameterTypes()), TypePattern.STATIC).alwaysTrue()) {
 				return false;
 			}
+			
+			// Check the throws pattern
 			if (!throwsPattern.matches(sig.getExceptions(), world)) return false;
-			return declaringTypeMatch(member.getDeclaringType(), member, world);
+
+			return declaringTypeMatchAllowingForCovariance(member,world,returnType,sig.getReturnType().resolve(world));
 		} else if (kind == Member.CONSTRUCTOR) {
 			if (!parameterTypes.matches(world.resolve(sig.getParameterTypes()), TypePattern.STATIC).alwaysTrue()) {
 				return false;
@@ -171,7 +178,43 @@ public class SignaturePattern extends PatternNode {
 		
 		return false;
 	}
-
+	
+	public boolean declaringTypeMatchAllowingForCovariance(Member member,World world,TypePattern returnTypePattern,ResolvedTypeX sigReturn) {
+		TypeX onTypeUnresolved = member.getDeclaringType();
+		
+		ResolvedTypeX onType = onTypeUnresolved.resolve(world);
+			
+		// fastmatch
+		if (declaringType.matchesStatically(onType) && returnTypePattern.matchesStatically(sigReturn)) 
+			return true;
+			
+		Collection declaringTypes = member.getDeclaringTypes(world);
+		
+		boolean checkReturnType = true;
+		// XXX Possible enhancement?  Doesn't seem to speed things up
+		//	if (returnTypePattern.isStar()) {
+		//		if (returnTypePattern instanceof WildTypePattern) {
+		//			if (((WildTypePattern)returnTypePattern).getDimensions()==0) checkReturnType = false;
+		//		}
+		//	}
+			
+		// Sometimes that list includes types that don't explicitly declare the member we are after -
+		// they are on the list because their supertype is on the list, that's why we use
+		// lookupMethod rather than lookupMemberNoSupers()
+		for (Iterator i = declaringTypes.iterator(); i.hasNext(); ) {
+			ResolvedTypeX type = (ResolvedTypeX)i.next();
+			if (declaringType.matchesStatically(type)) {
+			  if (!checkReturnType) return true;
+			  ResolvedMember rm = type.lookupMethod(member);
+			  if (rm==null)  rm = type.lookupMethodInITDs(member); // It must be in here, or we have *real* problems
+			  TypeX returnTypeX = rm.getReturnType();
+			  ResolvedTypeX returnType = returnTypeX.resolve(world);
+			  if (returnTypePattern.matchesStatically(returnType)) return true;
+			}
+		}
+		return false;
+	}
+	
 	// for dynamic join point matching
 	public boolean matches(JoinPoint.StaticPart jpsp) {
 		Signature sig = jpsp.getSignature();
@@ -207,7 +250,7 @@ public class SignaturePattern extends PatternNode {
 				return false;
 			}
 			if (!throwsPattern.matches(exceptionTypes)) return false;
-			return declaringTypeMatch(sig);
+			return declaringTypeMatch(sig); // XXXAJ5 - Need to make this a covariant aware version for dynamic JP matching to work
 		} else if (kind == Member.CONSTRUCTOR) {
 			ConstructorSignature csig = (ConstructorSignature)sig;
 			Class[] params = csig.getParameterTypes();
@@ -223,6 +266,7 @@ public class SignaturePattern extends PatternNode {
 		return false;
 	}
 	
+// For methods, the above covariant aware version (declaringTypeMatchAllowingForCovariance) is used - this version is still here for fields
 	private boolean declaringTypeMatch(TypeX onTypeUnresolved, Member member, World world) {
 		ResolvedTypeX onType = onTypeUnresolved.resolve(world);
 		

@@ -33,6 +33,7 @@ public class Member implements Comparable {
     private final String name;
     private final TypeX[] parameterTypes;
     private final String signature;
+    private String paramSignature;
 
     public Member(
         Kind kind, 
@@ -381,8 +382,29 @@ public class Member implements Comparable {
     public TypeX getType() { return returnType; }
     public String getName() { return name; }
     public TypeX[]  getParameterTypes() { return parameterTypes; }
+    /**
+     * Return full signature, including return type, e.g. "()LFastCar;" for a signature without the return type,
+     * use getParameterSignature() - it is importnant to choose the right one in the face of covariance.
+     */
     public String getSignature() { return signature; }
     public int getArity() { return parameterTypes.length; }
+  
+    /**
+     * Return signature without return type, e.g. "()" for a signature *with* the return type,
+     * use getSignature() - it is important to choose the right one in the face of covariance.
+     */
+    public String getParameterSignature() {
+    	if (paramSignature != null) return paramSignature;
+    	StringBuffer sb = new StringBuffer();
+    	sb.append("(");
+    	for (int i = 0; i < parameterTypes.length; i++) {
+			TypeX tx = parameterTypes[i];
+			sb.append(tx.getSignature());
+		}
+    	sb.append(")");
+    	paramSignature = sb.toString();
+    	return paramSignature;
+    }
     
     public boolean isCompatibleWith(Member am) {
         if (kind != METHOD || am.getKind() != METHOD) return true;

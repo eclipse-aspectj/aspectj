@@ -122,6 +122,13 @@ public class KindedPointcut extends Pointcut {
 			return;
 		}
 		
+		if (!signature.getReturnType().matchesStatically(shadow.getSignature().getReturnType().resolve(world))) {
+			// Covariance issue...
+			// The reason we didn't match is that the type pattern for the pointcut (Car) doesn't match the
+			// return type for the specific declaration at the shadow. (FastCar Sub.getCar())
+			// XXX Put out another XLINT in this case?
+			return;
+		}
 		// PR60015 - Don't report the warning if the declaring type is object and 'this' is an interface
 		if (exactDeclaringType.isInterface(world) && shadowDeclaringType.equals(world.resolve("java.lang.Object"))) {
 			return;

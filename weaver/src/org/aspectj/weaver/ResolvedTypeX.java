@@ -215,10 +215,23 @@ public abstract class ResolvedTypeX extends TypeX {
     }
 
     /**
-     * described in JVM spec 2ed 5.4.3.3
+     * described in JVM spec 2ed 5.4.3.3.
+     * Doesnt check ITDs.
      */
     public ResolvedMember lookupMethod(Member m) {
         return lookupMember(m, getMethods());
+    }
+    
+    public ResolvedMember lookupMethodInITDs(Member m) {
+    	if (interTypeMungers != null) {
+			for (Iterator i = interTypeMungers.iterator(); i.hasNext();) {
+				ConcreteTypeMunger tm = (ConcreteTypeMunger) i.next();
+				if (matches(tm.getSignature(), m)) {
+					return tm.getSignature();
+				}
+			}
+		}
+    	return null;
     }
     
     /** return null if not found */
@@ -244,7 +257,19 @@ public abstract class ResolvedTypeX extends TypeX {
     public static boolean matches(Member m1, Member m2) {
         if (m1 == null) return m2 == null;
         if (m2 == null) return false;
-    	return m1.getName().equals(m2.getName()) && m1.getSignature().equals(m2.getSignature());
+        
+        // Check the names
+        boolean equalNames = m1.getName().equals(m2.getName());
+        if (!equalNames) return false;
+        
+        // Check the signatures
+        boolean equalSignatures = m1.getSignature().equals(m2.getSignature());
+        if (equalSignatures) return true;
+
+        // If they aren't the same, we need to allow for covariance ... where one sig might be ()LCar; and 
+        // the subsig might be ()LFastCar; - where FastCar is a subclass of Car
+        boolean equalParamSignatures = m1.getParameterSignature().equals(m2.getParameterSignature());
+        return equalParamSignatures;
     }
     
     
@@ -908,7 +933,9 @@ public abstract class ResolvedTypeX extends TypeX {
 
     }
 
-    /** return null if not found */
+    /** 
+     * Look up a member, takes into account any ITDs on this type.
+     * return null if not found */
 	public ResolvedMember lookupMemberNoSupers(Member member) {
 		ResolvedMember ret;
 		if (member.getKind() == Member.FIELD) {

@@ -86,6 +86,14 @@ public class WildTypePattern extends TypePattern {
 		return matchesExactlyByName(targetTypeName);
 	}
 
+	/**
+	 * Used in conjunction with checks on 'isStar()' to tell you if this pattern represents '*' or '*[]' which are 
+	 * different !
+	 */
+	public int getDimensions() {
+		return dim;
+	}
+	
     /**
 	 * @param targetTypeName
 	 * @return

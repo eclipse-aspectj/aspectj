@@ -26,6 +26,7 @@ public class AllTestsJava5_binaryWeaving {
 		//$JUnit-BEGIN$
 		suite.addTest(Ajc150Tests.suite());
 		suite.addTest(AccBridgeMethods.suite());
+		suite.addTestSuite(CovarianceTests.class);
 		//$JUnit-END$
 		return suite;
 	}

@@ -1,0 +1,10 @@
+aspect CovAspect07 {
+	
+  pointcut p(): call(Car+ Sub.getCar());
+
+  before(): p() {
+  	System.out.println("[call(Car+ Sub.getCar()) matched on '"+thisJoinPoint+":"+thisJoinPoint.getSourceLocation()+"']");
+  }
+  
+}
+
