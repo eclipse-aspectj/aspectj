@@ -167,8 +167,8 @@
 	<target name="build" depends="init-variables"
 		description="build an AspectJ release and tests"
 		unless="skip.build">
-		<antcall target="build.release"/>
-		<antcall target="build.tests"/>
+		<antcall target="build-release"/>
+		<antcall target="build-tests"/>
 	</target>
 		
 	<target name="build-release" depends="init-variables,create-tree"
@@ -272,7 +272,7 @@
 		 	location="${aspectj.tests.dir}/bin/junitXmlOutput"/>
 		 <copy todir="${aj.build.log.dir}/junitXmlOutput" 
 		 	filtering="off">
-		 	<fileset dir="${xmlSrcDir}"	includes="*"/>
+		 	<fileset dir="${xmlSrcDir}"	includes="**/*"/>
 		 </copy>
 	</target>
 
