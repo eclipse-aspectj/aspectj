@@ -1,0 +1,133 @@
+
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+
+<!--
+    hmm.  not running suite if any test fails setup?
+    
+    <ajc-test dir="new" title="bad arguments passed to ajc"
+     keywords="expect-fail">
+        <compile files="TestTester.java"/>
+        <run class="TestTester"/>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="no such file - report as error (CompilerRun specification)"
+     keywords="expect-fail">
+        <compile files="NoSuchFile.java"/>
+    </ajc-test>
+
+-->
+<suite>
+    <ajc-test dir="noSuchDir"
+      title="no such directory - report as error (AjcTest specification)"
+     keywords="expect-fail">
+        <compile files="NoSuchFile.java"/>
+    </ajc-test>
+    <ajc-test dir="harness"
+      title="1 error and 1 warning, with warning line wrong"
+     keywords="expect-fail">
+        <compile files="ErrorWarning.java">
+            <message kind="error" line="13" />
+            <message kind="warning" line="15"  text="Wrong line number"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness" title="1 error and 1 warning, with error line wrong"
+     keywords="expect-fail">
+        <compile files="ErrorWarning.java">
+            <message kind="error" line="12"  text="Wrong line number"/>
+            <message kind="warning" line="14"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness" title="1 error and 1 warning, with both lines wrong"
+     keywords="expect-fail">
+        <compile files="ErrorWarning.java">
+            <message kind="error" line="12"  text="Wrong error line"/>
+            <message kind="warning" line="15"  text="Wrong warning line"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness"
+      title="expecting error, get warning"
+     keywords="expect-fail">
+        <compile files="ErrorWarning.java">
+            <message kind="error" line="13"/>
+            <message kind="error" line="14" text="error line"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness"
+      title="1 error and 1 warning, failed to specify expected warning "
+     keywords="expect-fail">
+        <compile files="ErrorWarning.java">
+            <message kind="error" line="13"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness" title="checks and events, failed to specify 6 expected fails"
+     keywords="expect-fail">
+        <compile files="TestTesterFail.java"/>
+        <run class="TestTesterFail"/>
+    </ajc-test>
+
+    <ajc-test dir="harness" title="one missing note"
+     keywords="expect-fail">
+        <compile files="TesterNotesFail.java"/>
+        <run class="TesterNotesFail"/>
+    </ajc-test>
+
+    <ajc-test dir="harness" title="1 error and 1 warning, with filenames">
+        <compile files="ErrorWarning.java">
+            <message kind="error" line="13"  file="ErrorWarning.java"/>
+            <message kind="warning" line="14"  file="ErrorWarning.java"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness" title="messages treated as errors">
+        <compile files="Messages.java">
+            <message kind="error" line="14"/>
+            <message kind="error" line="15"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness" title="1 error and 1 warning, without filename">
+        <compile files="ErrorWarning.java">
+            <message kind="error" line="13"/>
+            <message kind="warning" line="14"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness" title="1 error and 1 warning, with filename">
+        <compile files="ErrorWarning.java">
+            <message kind="error" line="13" file="ErrorWarning.java"/>
+            <message kind="warning" line="14" file="ErrorWarning.java"/>
+        </compile>
+    </ajc-test>
+
+
+
+    <ajc-test dir="harness" title="checks and events, all should pass">
+        <compile files="TestTester.java"/>
+        <run class="TestTester"/>
+    </ajc-test>
+
+	<!-- XXX need keywords for running in eclipse or from the command-line -->
+    <ajc-test dir="harness" title="checks and events, expect error without tester (when run outside eclipse)"
+      keywords="expect-fail" >
+        <compile files="TestTester.java"/>
+        <run class="TestTester" skipTester="true"/>
+    </ajc-test>
+
+    <ajc-test dir="harness" title="event files">
+        <compile files="TestTesterFile.java"/>
+        <run class="TestTesterFile"/>
+    </ajc-test>
+
+    <ajc-test dir="harness" title="compile and run, no tester required">
+        <compile files="TestNoTester.java"/>
+        <run class="TestNoTester" skipTester="true"/>
+    </ajc-test>
+</suite>
+
+
