@@ -73,7 +73,7 @@ import  java.util.StringTokenizer;
  * class file.  Those interested in programatically generating classes
  * should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
 
- * @version $Id: JavaClass.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: JavaClass.java,v 1.2 2004/11/18 16:00:19 aclement Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -106,8 +106,7 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
    * use the default SyntheticRepository, because we
    * don't know any better.
    */
-  private transient org.aspectj.apache.bcel.util.Repository repository = 
-    SyntheticRepository.getInstance();
+  private transient org.aspectj.apache.bcel.util.Repository repository = null;
 
   /**
    * Constructor gets all contents as arguments.
@@ -672,6 +671,7 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
    * this is the same as SyntheticRepository.getInstance();
    */
   public org.aspectj.apache.bcel.util.Repository getRepository() {
+  	if (repository == null) repository = SyntheticRepository.getInstance();
     return repository;
   }
 
@@ -739,7 +739,7 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
     }
 
     try {
-      return repository.loadClass(getSuperclassName());
+      return getRepository().loadClass(getSuperclassName());
     } catch(ClassNotFoundException e) {
       System.err.println(e);
       return null;
@@ -772,7 +772,7 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
 
     try {
       for(int i = 0; i < interfaces.length; i++) {
-	classes[i] = repository.loadClass(interfaces[i]);
+	classes[i] = getRepository().loadClass(interfaces[i]);
       }
     } catch(ClassNotFoundException e) {
       System.err.println(e);

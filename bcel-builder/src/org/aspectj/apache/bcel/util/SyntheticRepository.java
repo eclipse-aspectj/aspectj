@@ -78,7 +78,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  *
  * @see org.aspectj.apache.bcel.Repository
  *
- * @version $Id: SyntheticRepository.java,v 1.2 2004/11/18 15:07:05 aclement Exp $
+ * @version $Id: SyntheticRepository.java,v 1.3 2004/11/18 16:00:19 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
  */
@@ -95,7 +95,7 @@ public class SyntheticRepository implements Repository {
   }
 
   public static SyntheticRepository getInstance() {
-    return getInstance(ClassPath.SYSTEM_CLASS_PATH);
+    return getInstance(ClassPath.getSystemClassPath());
   }
 
   public static SyntheticRepository getInstance(ClassPath classPath) {

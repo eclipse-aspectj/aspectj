@@ -64,7 +64,7 @@ import java.util.Vector;
  * operate on. That means, for every class (represented by a unique fully qualified
  * class name) there is exactly one Verifier.
  *
- * @version $Id: VerifierFactory.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: VerifierFactory.java,v 1.2 2004/11/18 16:00:19 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see org.aspectj.apache.bcel.verifier.Verifier
  */
@@ -91,7 +91,7 @@ public class VerifierFactory{
 	 * @return the (only) verifier responsible for the class with the given name.
 	 */
 	public static Verifier getVerifier(String fully_qualified_classname){
-		fully_qualified_classname = fully_qualified_classname;
+		//fully_qualified_classname = fully_qualified_classname;
 		
 		Verifier v = (Verifier) (hashMap.get(fully_qualified_classname));
 		if (v==null){
