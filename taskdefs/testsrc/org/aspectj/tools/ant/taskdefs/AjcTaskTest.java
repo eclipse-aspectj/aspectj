@@ -82,6 +82,7 @@ public class AjcTaskTest extends TestCase {
         		task.setSourceRoots(new Path(task.getProject(), input));
         	}        
         }
+        task.setClasspath(new Path(p, "../lib/test/aspectjrt.jar"));
         task.setVerbose(true); // XXX    
         return task;
     }
