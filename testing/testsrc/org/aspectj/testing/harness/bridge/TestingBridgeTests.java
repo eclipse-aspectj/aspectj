@@ -21,7 +21,10 @@ public class TestingBridgeTests extends TestCase {
     public static Test suite() { 
         TestSuite suite = new TestSuite(TestingBridgeTests.class.getName());
         //$JUnit-BEGIN$
+        suite.addTestSuite(AbstractRunSpecTest.class); 
         suite.addTestSuite(AjcSpecTest.class); 
+        suite.addTestSuite(CompilerRunSpecTest.class); 
+        suite.addTestSuite(DirChangesTest.class); 
         suite.addTestSuite(ParseTestCase.class); 
         //$JUnit-END$
         return suite;

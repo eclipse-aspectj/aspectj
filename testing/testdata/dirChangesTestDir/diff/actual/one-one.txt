@@ -1,0 +1,4 @@
+First line
+Second line
+
+Fourth line changed

@@ -258,6 +258,8 @@ public class AjcSpecTest extends TestCase {
         a.assertTrue(lhs != null);
         a.assertEquals(lhs.defaultSuffix, rhs.defaultSuffix);        
         a.assertEquals(lhs.dirToken, rhs.dirToken);
+        a.assertEquals(lhs.fastFail, rhs.fastFail);
+        a.assertEquals(lhs.expDir, rhs.expDir); // XXX normalize?
         sameList(lhs.updated, rhs.updated, a);
         sameList(lhs.removed, rhs.removed, a);
         sameList(lhs.added, rhs.added, a);

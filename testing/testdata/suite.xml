@@ -1,32 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 
-<!DOCTYPE suite [
-     <!ELEMENT suite (ajc-test+)>
-     <!ELEMENT ajc-test (compile*,run*)>
-     <!ATTLIST ajc-test title CDATA #REQUIRED >
-     <!ATTLIST ajc-test dir CDATA #REQUIRED >
-     <!ATTLIST ajc-test pr CDATA #IMPLIED >
-
-     <!ELEMENT compile (file*,message*)>
-     
-     <!ELEMENT run (#PCDATA)>
-     <!ATTLIST run class CDATA #REQUIRED >
-     <!ATTLIST run args CDATA "" >
-
-     <!ELEMENT file (#PCDATA)>
-     <!ELEMENT message (#PCDATA)>
-     <!ATTLIST message kind (error | warning | Xlint) #REQUIRED >
-     <!ATTLIST message line CDATA #REQUIRED >
-     <!ATTLIST message file CDATA #IMPLIED >
-     ]>
-
-
+<!DOCTYPE suite SYSTEM "../../tests/ajcTestSuite.dtd">
 
 <suite>
 <!--correct behavior for 1.0 is good error message, see real test in knownbugs-->
 <ajc-test title="harness error test"
           dir="harness" pr="9998">
-<compile file="ErrorTest.java">
+<compile files="ErrorTest.java">
 <message kind="error" line="5"/>
 <message kind="error" line="6"/>
 </compile>
@@ -35,7 +14,7 @@
 
 <ajc-test title="harness test with run"
           dir="harness" pr="101">
-<compile file="TestNoTester.java"/>
+<compile files="TestNoTester.java"/>
 <run class="TestNoTester"/>
 </ajc-test>
 
