@@ -113,11 +113,13 @@ public class IncCompilerRun implements IAjcRun {
                     String path = file.getAbsolutePath();
                     if (!path.endsWith(clip)) {
                         holder.numCopies++;
+                        validator.info("copying file: " + path);
                     } else {
                         doCopy = false;
                         path = path.substring(0, path.length()-clip.length()) + toSuffix;
                         File toDelete = new File(path);
                         if (toDelete.delete()) {
+                            validator.info("deleted file: " + path);
                             holder.numDeletes++;
                         } else {
                             validator.fail("unable to delete file: " + path);
