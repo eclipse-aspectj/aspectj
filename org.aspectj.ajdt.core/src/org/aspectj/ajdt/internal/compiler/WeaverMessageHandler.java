@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.aspectj.ajdt.internal.compiler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseSourceLocation;
@@ -164,12 +165,13 @@ public class WeaverMessageHandler implements IMessageHandler {
 	private IProblem[] buildSeeAlsoProblems(List sourceLocations,
 											CompilationResult problemSource,
 											boolean usedBinarySourceFileName) {
-		int probLength = sourceLocations.size();
-		if (usedBinarySourceFileName) probLength++;
-		IProblem[] ret = new IProblem[probLength];
+		List ret = new ArrayList();
+
 		for (int i = 0; i < sourceLocations.size(); i++) {
 			ISourceLocation loc = (ISourceLocation) sourceLocations.get(i);
-			ret[i] = new DefaultProblem(loc.getSourceFile().getPath().toCharArray(),
+			if (loc != null ) {
+			  	DefaultProblem dp = 
+			  		new DefaultProblem( loc.getSourceFile().getPath().toCharArray(),
 										"see also",
 										0,
 										new String[] {},
@@ -177,13 +179,19 @@ public class WeaverMessageHandler implements IMessageHandler {
 										getStartPos(loc,null),
 										getEndPos(loc,null),
 										loc.getLine());
+			  ret.add(dp);
+			} else {
+				throw new RuntimeException("Internal Compiler Error: Unexpected null source location passed as 'see also' location.");
+			}
 		}
 		if (usedBinarySourceFileName) {
-			ret[ret.length -1] = new DefaultProblem(problemSource.fileName,"see also",0,new String[] {},
+			DefaultProblem dp = new DefaultProblem(problemSource.fileName,"see also",0,new String[] {},
 													ProblemSeverities.Ignore,0,
 													0,0);
+			ret.add(dp);
 		}
-		return ret;
+		IProblem[] retValue = (IProblem[])ret.toArray(new IProblem[]{});
+		return retValue;
 	}
 }
 

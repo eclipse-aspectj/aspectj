@@ -7795,4 +7795,11 @@
         </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs/abstractITDs"
+		pr="64331" title="java.lang.NullPointerException in WeaverMessageHandler class">
+        <compile files="A.java,C.java" aspectpath="B.jar">
+          <message kind="error" line="1" text="must implement abstract inter-type declaration: void A.foo()"/>
+        </compile>
+    </ajc-test>
+    
 </suite>

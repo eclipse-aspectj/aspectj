@@ -986,10 +986,17 @@ public abstract class ResolvedTypeX extends TypeX {
         for (Iterator iter = getInterTypeMungersIncludingSupers().iterator(); iter.hasNext();) {
 			ConcreteTypeMunger element = (ConcreteTypeMunger) iter.next();
             if (element.getSignature() != null && element.getSignature().isAbstract()) {
+            	ISourceLocation xtraLocation = element.getSourceLocation();
+            	if (xtraLocation == null) {
+            		// Until intertype mungers remember where they came from, the source location
+            		// for the element is null when binary weaving.  In these cases uses the
+            		// source location for the aspect containing the ITD
+     				xtraLocation = element.getAspectType().getSourceLocation();
+            	}
                 world.getMessageHandler().handleMessage(
                     new Message("must implement abstract inter-type declaration: " + element.getSignature(),
                         "", IMessage.ERROR, getSourceLocation(), null, 
-                        new ISourceLocation[] { element.getSourceLocation() }));
+                        new ISourceLocation[] { xtraLocation }));
             }
 		}
     }
