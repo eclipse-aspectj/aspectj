@@ -109,10 +109,19 @@ public abstract class Advice extends ShadowMunger {
 	    				"around on pre-initialization not supported (compiler limitation)", 
 	    				getSourceLocation(), shadow.getSourceLocation());
 					return false;
-    			} else if (shadow.getKind() == Shadow.Initialization) {
-	    			world.showMessage(IMessage.ERROR,
-	    				"around on initialization not supported (compiler limitation)", 
-	    				getSourceLocation(), shadow.getSourceLocation());
+				} else if (shadow.getKind() == Shadow.Initialization) {
+					world.showMessage(IMessage.ERROR,
+						"around on initialization not supported (compiler limitation)", 
+						getSourceLocation(), shadow.getSourceLocation());
+					return false;
+				} else if (shadow.getKind() == Shadow.StaticInitialization && 
+							shadow.getEnclosingType().isInterface(world))
+				{
+					world.showMessage(IMessage.ERROR,
+						"around on staticinitialization of interface \'" + 
+						shadow.getEnclosingType().getName() +
+						"\' not supported (compiler limitation)", 
+						getSourceLocation(), shadow.getSourceLocation());
 					return false;
     			} else {
     				//System.err.println(getSignature().getReturnType() + " from " + shadow.getReturnType());

@@ -1,10 +1,6 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 <suite>    
-    <ajc-test dir="bugs" pr="36056"
-      title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds and naming">
-        <compile files="AroundNames.java"/>
-        <run class="AroundNames"/>
-    </ajc-test>
+
     
 
     <!--

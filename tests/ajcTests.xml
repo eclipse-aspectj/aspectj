@@ -5857,4 +5857,19 @@
         <run class="TryFinallyInAround"/>
     </ajc-test>
     
+    <ajc-test dir="new" pr="36778"
+      title="advise join points in subclass of empty interface">
+        <compile files="EmptyInterface.java"/>
+        <run class="EmptyInterface"/>
+    </ajc-test>
+    
+    <ajc-test dir="new" pr="36778"
+      title="can't put around advice on interface static initializer"
+      comment="this tests for a nice message given a compiler limitation">
+        <compile files="EmptyInterfaceCE.java">
+        	<message kind="error" line="20"/>
+        	<message kind="error" line="23"/>
+        </compile>
+    </ajc-test>
+    
 </suite>
