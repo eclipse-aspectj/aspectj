@@ -86,7 +86,7 @@ import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
  * use the `removeNOPs' method to get rid off them.
  * The resulting method object can be obtained via the `getMethod()' method.
  *
- * @version $Id: MethodGen.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: MethodGen.java,v 1.3 2005/01/26 14:01:30 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author  <A HREF="http://www.vmeng.com/beard">Patrick C. Beard</A> [setMaxStack()]
  * @see     InstructionList
@@ -787,7 +787,10 @@ public class MethodGen extends FieldGenOrMethodGen {
   public Type   getArgumentType(int i)                  { return arg_types[i]; }
 
   public void     setArgumentNames(String[] arg_names) { this.arg_names = arg_names; }
-  public String[] getArgumentNames()                   { return (String[])arg_names.clone(); }
+  public String[] getArgumentNames()                   { 
+  	if (arg_names!=null) return (String[])arg_names.clone(); 
+  	else                 return new String[0];
+  }
   public void     setArgumentName(int i, String name)     { arg_names[i] = name; }
   public String   getArgumentName(int i)                  { return arg_names[i]; }
 
