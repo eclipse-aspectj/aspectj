@@ -1,0 +1,3 @@
+figures/*.java
+figures/support/*.java
+figures/gui/*.java

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="/asm"/>
+	<classpathentry kind="src" path="/org.aspectj.ajdt.core"/>
+	<classpathentry kind="src" path="/bridge"/>
+	<classpathentry kind="src" path="/util"/>
+	<classpathentry kind="lib" path="C:/Apps/j2sdk1.4.2/lib/tools.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
