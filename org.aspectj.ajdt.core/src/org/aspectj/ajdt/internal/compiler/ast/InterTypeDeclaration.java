@@ -92,6 +92,12 @@ public abstract class InterTypeDeclaration extends MethodDeclaration {
 			}
 			ignoreFurtherInvestigation = true;
 		}
+		//??? this is not a friendly compiler limitation
+//		if (!(onTypeBinding instanceof SourceTypeBinding)) {
+//			classScope.problemReporter().signalError(onType.sourceStart, onType.sourceEnd,
+//						"can only introduce on types available as source code (compiler limitation)");
+//			ignoreFurtherInvestigation = true;
+//		}
 	}
 	
 	
