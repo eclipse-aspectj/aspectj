@@ -93,71 +93,71 @@ aspect AnnotationTests {
 	// binding tests
 	
 	before(SomeAnnotation sa) : execution(public ITDMe.new(String)) && @annotation(sa) {
-		print(sa);
+		print(sa,thisJoinPoint.getSourceLocation().toString());
 	}
 	
 	after(SomeAnnotation sa) : execution(private ITDMe.new(int)) && @annotation(sa) {
-		print(sa);
+		print(sa,thisJoinPoint.getSourceLocation().toString());
 	}
 	
 	before(SomeAnnotation sa) : execution(private ITDMe.new(int)) && @annotation(sa) {
-		print(sa);
+		print(sa,thisJoinPoint.getSourceLocation().toString());
 	}
 	
 	after(SomeAnnotation sa) : execution(public void ITDMe.bar(int)) && @annotation(sa) {
-		print(sa);
-		MethodSignature sig = (MethodSignature) thisJoinPoint.getSignature();
-		Method meth = sig.getMethod();
-		Annotation[][] anns = meth.getParameterAnnotations();
-		System.out.println("method bar has " + anns.length + " params, first param annotation is " 
-				+ anns[0][0].toString());
+		print(sa,thisJoinPoint.getSourceLocation().toString());
+//		MethodSignature sig = (MethodSignature) thisJoinPoint.getSignature(); 
+//		Method meth = sig.getMethod();
+//		Annotation[][] anns = meth.getParameterAnnotations();
+//		System.out.println("method bar has " + anns.length + " params, first param annotation is " 
+//				+ anns[0][0].toString());
 	}
 	
 	before(SomeAnnotation sa) : set(public Double ITDMe.d) && @annotation(sa) {
-		print(sa);
+		print(sa,thisJoinPoint.getSourceLocation().toString());
 	}
 	
 	after(SomeAnnotation sa) : set(private Float ITDMe.f) && @annotation(sa) {
-		print(sa);
+		print(sa,thisJoinPoint.getSourceLocation().toString());
 	}
 	
-	after(SomeAnnotation sa) returning : staticinitialization(@SomeAnnotation *) && @annotation(sa){
-		print(sa);
+        after(SomeAnnotation sa) returning : staticinitialization(@SomeAnnotation *) && @annotation(sa){
+		print(sa,thisJoinPoint.getSourceLocation().toString());
 	}
 	
 	// now repeat for the @declared versions
 
 	before(SomeAnnotation sa) : execution(public ITDMe2.new(String)) && @annotation(sa) {
-		print(sa);
+		print(sa,thisJoinPoint.getSourceLocation().toString());
 	}
 	
 	after(SomeAnnotation sa) : execution(private ITDMe2.new(int)) && @annotation(sa) {
-		print(sa);
+		print(sa,thisJoinPoint.getSourceLocation().toString());
 	}
 	
 	before(SomeAnnotation sa) : execution(private ITDMe2.new(int)) && @annotation(sa) {
-		print(sa);
+		print(sa,thisJoinPoint.getSourceLocation().toString());
 	}
 	
 	after(SomeAnnotation sa) : execution(public void ITDMe2.bar(int)) && @annotation(sa) {
-		print(sa);
-		MethodSignature sig = (MethodSignature) thisJoinPoint.getSignature();
-		Method meth = sig.getMethod();
-		Annotation[][] anns = meth.getParameterAnnotations();
-		System.out.println("method bar has " + anns.length + " params, first param annotation is " 
-				+ anns[0][0].toString());
+		print(sa,thisJoinPoint.getSourceLocation().toString());
+//		MethodSignature sig = (MethodSignature) thisJoinPoint.getSignature();
+//		Method meth = sig.getMethod();
+//		Annotation[][] anns = meth.getParameterAnnotations();
+//		System.out.println("method bar has " + anns.length + " params, first param annotation is " 
+//				+ anns[0][0].toString());
 	}
 	
 	before(SomeAnnotation sa) : set(public Double ITDMe2.d) && @annotation(sa) {
-		print(sa);
+		print(sa,thisJoinPoint.getSourceLocation().toString());
 	}
 	
 	after(SomeAnnotation sa) : set(private Float ITDMe2.f) && @annotation(sa) {
-		print(sa);
+		print(sa,thisJoinPoint.getSourceLocation().toString());
 	}
 		
-	private void print(SomeAnnotation sa) {
-		System.out.println(sa.s() + " " + sa.clazz().getName());
+	private void print(SomeAnnotation sa,String loc) {
+		System.err.println(sa.s() + " " + sa.clazz().getName()+" ("+loc+")");
 	}
 }
 
