@@ -25,12 +25,19 @@ public class ElementNameValuePairGen {
 	private ElementValueGen value;
 	private ConstantPoolGen cpool;
 
-	public ElementNameValuePairGen(ElementNameValuePair nvp, ConstantPoolGen cpool) {
+	public ElementNameValuePairGen(ElementNameValuePair nvp, ConstantPoolGen cpool, boolean copyPoolEntries) {
 		this.cpool = cpool;
 		// J5ASSERT:
 		// Could assert nvp.getNameString() points to the same thing as cpool.getConstant(nvp.getNameIndex())
-		nameIdx = nvp.getNameIndex();
-		value = ElementValueGen.copy(nvp.getValue(),cpool);
+//		if (!nvp.getNameString().equals(((ConstantUtf8)cpool.getConstant(nvp.getNameIndex())).getBytes())) {
+//			throw new RuntimeException("envp buggered");
+//		}
+		if (copyPoolEntries) { 
+			nameIdx = cpool.addUtf8(nvp.getNameString());
+		} else {
+			nameIdx = nvp.getNameIndex();
+		}
+		value = ElementValueGen.copy(nvp.getValue(),cpool,copyPoolEntries);
 	}
 
 

@@ -77,7 +77,7 @@ import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
  * existing java class (file).
  *
  * @see JavaClass
- * @version $Id: ClassGen.java,v 1.4 2004/12/09 15:19:39 aclement Exp $
+ * @version $Id: ClassGen.java,v 1.5 2005/03/10 12:15:04 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class ClassGen extends AccessFlags implements Cloneable {
@@ -199,14 +199,14 @@ public class ClassGen extends AccessFlags implements Cloneable {
 			List annos = rva.getAnnotations();
 			for (Iterator iter = annos.iterator(); iter.hasNext();) {
 				Annotation a = (Annotation) iter.next();
-				annotationGenObjs.add(new AnnotationGen(a,getConstantPool()));
+				annotationGenObjs.add(new AnnotationGen(a,getConstantPool(),false));
 			}
 		} else if (attr instanceof RuntimeInvisibleAnnotations) {
 			RuntimeInvisibleAnnotations ria = (RuntimeInvisibleAnnotations)attr;
 			List annos = ria.getAnnotations();
 			for (Iterator iter = annos.iterator(); iter.hasNext();) {
 				Annotation a = (Annotation) iter.next();
-				annotationGenObjs.add(new AnnotationGen(a,getConstantPool()));
+				annotationGenObjs.add(new AnnotationGen(a,getConstantPool(),false));
 			}
 		}
 	}

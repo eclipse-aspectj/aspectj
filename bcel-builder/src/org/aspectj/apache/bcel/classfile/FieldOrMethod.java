@@ -64,7 +64,7 @@ import java.util.List;
 /** 
  * Abstract super class for fields and methods.
  *
- * @version $Id: FieldOrMethod.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: FieldOrMethod.java,v 1.3 2005/03/10 12:15:04 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldOrMethod extends AccessFlags implements Cloneable, Node {
@@ -231,12 +231,13 @@ public abstract class FieldOrMethod extends AccessFlags implements Cloneable, No
     return c;
   }
   
+
   /**
    * Ensure we have unpacked any attributes that contain annotations.
    * We don't remove these annotation attributes from the attributes list, they
    * remain there.
    */
-  public Annotation[] getAnnotations() {
+  private void ensureAnnotationsUpToDate() {
   	if (annotationsOutOfDate) { 
   		// Find attributes that contain annotation data
   		Attribute[] attrs = getAttributes();
@@ -251,6 +252,19 @@ public abstract class FieldOrMethod extends AccessFlags implements Cloneable, No
   		annotations = (Annotation[])accumulatedAnnotations.toArray(new Annotation[]{});
   		annotationsOutOfDate = false;
   	}
+  }
+  
+  public Annotation[] getAnnotations() {
+    ensureAnnotationsUpToDate();
   	return annotations;
+  }
+  
+  public void addAnnotation(Annotation a) {
+    ensureAnnotationsUpToDate();
+  	int len = annotations.length;
+	Annotation[] newAnnotations = new Annotation[len+1];
+	System.arraycopy(annotations, 0, newAnnotations, 0, len);
+	newAnnotations[len] = a;
+	annotations = newAnnotations;
   }
 }

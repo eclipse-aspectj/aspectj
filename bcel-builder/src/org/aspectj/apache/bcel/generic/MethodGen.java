@@ -86,7 +86,7 @@ import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
  * use the `removeNOPs' method to get rid off them.
  * The resulting method object can be obtained via the `getMethod()' method.
  *
- * @version $Id: MethodGen.java,v 1.3 2005/01/26 14:01:30 aclement Exp $
+ * @version $Id: MethodGen.java,v 1.4 2005/03/10 12:15:04 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author  <A HREF="http://www.vmeng.com/beard">Patrick C. Beard</A> [setMaxStack()]
  * @see     InstructionList
@@ -288,7 +288,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 		List l = runtimeAnnotations.getAnnotations();
 		for (Iterator it = l.iterator(); it.hasNext();) {
 			Annotation element = (Annotation) it.next();
-			addAnnotation(new AnnotationGen(element,cp));
+			addAnnotation(new AnnotationGen(element,cp,false));
 		}
       } else {
       	addAttribute(a);
@@ -1085,7 +1085,7 @@ public class MethodGen extends FieldGenOrMethodGen {
   private List /*AnnotationGen*/ makeMutableVersion(Annotation[] mutableArray) {
   	List result = new ArrayList();
   	for (int i = 0; i < mutableArray.length; i++) {
-		result.add(new AnnotationGen(mutableArray[i],getConstantPool()));
+		result.add(new AnnotationGen(mutableArray[i],getConstantPool(),false));
 	}
   	return result;
   }

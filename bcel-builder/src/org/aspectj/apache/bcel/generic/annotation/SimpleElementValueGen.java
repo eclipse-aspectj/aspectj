@@ -89,11 +89,36 @@ public class SimpleElementValueGen extends ElementValueGen {
     	idx = cpGen.addUtf8(value);
     }
     
-	public SimpleElementValueGen(SimpleElementValue value,ConstantPoolGen cpool) {
+    /**
+     * The boolean controls whether we copy info from the 'old' constant pool
+     * to the 'new'.   You need to use this ctor if the annotation is 
+     * being copied from one file to another.
+     */
+	public SimpleElementValueGen(SimpleElementValue value,ConstantPoolGen cpool,boolean copyPoolEntries) {
 		super(value.getElementValueType(),cpool);
-		// J5ASSERT: Could assert value.stringifyValue() is the same as
-		// cpool.getConstant(SimpleElementValuevalue.getIndex())
-		idx = value.getIndex();
+		if (!copyPoolEntries) {
+			// J5ASSERT: Could assert value.stringifyValue() is the same as
+			// cpool.getConstant(SimpleElementValuevalue.getIndex())
+			idx = value.getIndex();
+		} else {
+			switch (value.getElementValueType()) {
+				case STRING:          idx = cpool.addUtf8(value.getValueString()); break;
+				case PRIMITIVE_INT:   idx = cpool.addInteger(value.getValueInt()); break;
+				case PRIMITIVE_BYTE:  idx = cpool.addInteger(value.getValueByte()); break;
+				case PRIMITIVE_CHAR:  idx = cpool.addInteger(value.getValueChar()); break;
+				case PRIMITIVE_LONG:  idx = cpool.addLong(value.getValueLong()); break;
+				case PRIMITIVE_FLOAT: idx = cpool.addFloat(value.getValueFloat());break;
+				case PRIMITIVE_DOUBLE:idx = cpool.addDouble(value.getValueDouble());break;
+				case PRIMITIVE_BOOLEAN:
+					if (value.getValueBoolean()) { idx = cpool.addInteger(1);
+					} else {					   idx = cpool.addInteger(0);}
+					break;
+				case PRIMITIVE_SHORT: idx = cpool.addInteger(value.getValueShort());break;
+				default:
+				  throw new RuntimeException("SimpleElementValueGen class does not know how "+
+					  	                     "to copy this type "+type);
+			}
+		}
 	}
 
 	public int getIndex() {

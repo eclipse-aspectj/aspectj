@@ -43,14 +43,19 @@ public class EnumElementValueGen extends ElementValueGen {
     
     public EnumElementValueGen(ObjectType t,String value,ConstantPoolGen cpool) {
     	super(ElementValueGen.ENUM_CONSTANT,cpool);
-    	typeIdx = cpool.addClass(t);
-    	valueIdx= cpool.addString(value);
+    	typeIdx = cpool.addUtf8(t.getSignature());// was addClass(t);
+    	valueIdx= cpool.addUtf8(value);// was addString(value);
     }
 
-	public EnumElementValueGen(EnumElementValue value, ConstantPoolGen cpool) {
+	public EnumElementValueGen(EnumElementValue value, ConstantPoolGen cpool, boolean copyPoolEntries) {
 		super(ENUM_CONSTANT,cpool);
-		typeIdx  = value.getTypeIndex();
-		valueIdx = value.getValueIndex();
+		if (copyPoolEntries) {
+			typeIdx = cpool.addUtf8(value.getEnumTypeString());// was addClass(value.getEnumTypeString());
+			valueIdx = cpool.addUtf8(value.getEnumValueString()); // was addString(value.getEnumValueString());
+		} else {
+			typeIdx  = value.getTypeIndex();
+			valueIdx = value.getValueIndex();
+		}
 	}
 
 	public void dump(DataOutputStream dos) throws IOException {
@@ -60,8 +65,10 @@ public class EnumElementValueGen extends ElementValueGen {
     }
     
     public String stringifyValue() {
-    	ConstantString cu8 = (ConstantString)getConstantPool().getConstant(valueIdx);
-    	return ((ConstantUtf8)getConstantPool().getConstant(cu8.getStringIndex())).getBytes();
+    	ConstantUtf8 cu8 = (ConstantUtf8)getConstantPool().getConstant(valueIdx);
+		return cu8.getBytes();
+//    	ConstantString cu8 = (ConstantString)getConstantPool().getConstant(valueIdx);
+//    	return ((ConstantUtf8)getConstantPool().getConstant(cu8.getStringIndex())).getBytes();
     }
     
     

@@ -15,7 +15,6 @@ package org.aspectj.apache.bcel.generic.annotation;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.aspectj.apache.bcel.classfile.ConstantClass;
 import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 import org.aspectj.apache.bcel.classfile.annotation.ClassElementValue;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
@@ -35,12 +34,19 @@ public class ClassElementValueGen extends ElementValueGen {
     
     public ClassElementValueGen(ObjectType t,ConstantPoolGen cpool) {
     	super(ElementValueGen.CLASS,cpool);
-    	this.idx = cpool.addClass(t);
+    	//this.idx = cpool.addClass(t);
+    	idx = cpool.addUtf8(t.getSignature());
     }
     
-	public ClassElementValueGen(ClassElementValue value, ConstantPoolGen cpool) {
+	public ClassElementValueGen(ClassElementValue value, ConstantPoolGen cpool,boolean copyPoolEntries) {
 		super(CLASS,cpool);
-		idx = value.getIndex();
+		if (copyPoolEntries) {
+			//idx = cpool.addClass(value.getClassString());
+			idx = cpool.addUtf8(value.getClassString());
+		} else { 	
+			idx = value.getIndex();
+			
+		}
 	}
 
 	public int getIndex() {
@@ -48,9 +54,11 @@ public class ClassElementValueGen extends ElementValueGen {
     }
      
     public String getClassString() {
-		ConstantClass c = (ConstantClass)getConstantPool().getConstant(idx);
-		ConstantUtf8 utf8 = (ConstantUtf8)getConstantPool().getConstant(c.getNameIndex());
-		return utf8.getBytes();
+    	ConstantUtf8 cu8 = (ConstantUtf8)getConstantPool().getConstant(idx);
+    	return cu8.getBytes();
+//		ConstantClass c = (ConstantClass)getConstantPool().getConstant(idx);
+//		ConstantUtf8 utf8 = (ConstantUtf8)getConstantPool().getConstant(c.getNameIndex());
+//		return utf8.getBytes();
     }
     
     public String stringifyValue() {

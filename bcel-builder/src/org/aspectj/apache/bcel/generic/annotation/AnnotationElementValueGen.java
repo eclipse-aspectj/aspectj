@@ -36,9 +36,9 @@ public class AnnotationElementValueGen extends ElementValueGen {
        	this.a = annotation; 	
 	}
 
-	public AnnotationElementValueGen(AnnotationElementValue value, ConstantPoolGen cpool) {
+	public AnnotationElementValueGen(AnnotationElementValue value, ConstantPoolGen cpool,boolean copyPoolEntries) {
 		super(ANNOTATION,cpool);
-		a = new AnnotationGen(value.getAnnotation(),cpool);
+		a = new AnnotationGen(value.getAnnotation(),cpool,copyPoolEntries);
 	}
 
 	public void dump(DataOutputStream dos) throws IOException {

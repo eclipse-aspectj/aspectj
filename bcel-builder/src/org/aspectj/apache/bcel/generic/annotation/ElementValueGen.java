@@ -109,7 +109,7 @@ public abstract class ElementValueGen {
 	/** 
 	 * Creates an (modifiable) ElementValueGen copy of an (immutable) ElementValue - constant pool is assumed correct.
 	 */
-	public static ElementValueGen copy(ElementValue value,ConstantPoolGen cpool) {
+	public static ElementValueGen copy(ElementValue value,ConstantPoolGen cpool,boolean copyPoolEntries) {
 		switch (value.getElementValueType()) {
 			 case 'B': // byte
 			 case 'C': // char
@@ -120,19 +120,19 @@ public abstract class ElementValueGen {
 			 case 'S': // short
 			 case 'Z': // boolean
 			 case 's': // String
-			  return new SimpleElementValueGen((SimpleElementValue)value,cpool);
+			  return new SimpleElementValueGen((SimpleElementValue)value,cpool,copyPoolEntries);
 				
 			 case 'e': // Enum constant
-			  	return new EnumElementValueGen((EnumElementValue)value,cpool);
+			  	return new EnumElementValueGen((EnumElementValue)value,cpool,copyPoolEntries);
 
 			 case '@': // Annotation
-			  	return new AnnotationElementValueGen((AnnotationElementValue)value,cpool);
+			  	return new AnnotationElementValueGen((AnnotationElementValue)value,cpool,copyPoolEntries);
 			  	
 		     case '[': // Array
-		     	return new ArrayElementValueGen((ArrayElementValue)value,cpool);
+		     	return new ArrayElementValueGen((ArrayElementValue)value,cpool,copyPoolEntries);
 
 		     case 'c': // Class
-		     	return new ClassElementValueGen((ClassElementValue)value,cpool);
+		     	return new ClassElementValueGen((ClassElementValue)value,cpool,copyPoolEntries);
 		     	
 			default:
 				throw new RuntimeException("Not implemented yet! ("+value.getElementValueType()+")");

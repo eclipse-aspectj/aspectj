@@ -33,25 +33,31 @@ public class AnnotationGen {
 	
 	/**
 	 * Here we are taking a fixed annotation of type Annotation and building a 
-	 * modifiable AnnotationGen object.  The ConstantPool entries should already
-	 * be correct, we could assert that ...
+	 * modifiable AnnotationGen object.  If the pool passed in is for a different
+	 * class file, then copyPoolEntries should have been passed as true as that
+	 * will force us to do a deep copy of the annotation and move the cpool entries
+	 * across.
 	 * We need to copy the type and the element name value pairs and the visibility.
 	 */
-	public AnnotationGen(Annotation a,ConstantPoolGen cpool) {
+	public AnnotationGen(Annotation a,ConstantPoolGen cpool,boolean copyPoolEntries) {
 		this.cpool = cpool;
-		// Could assert a.getTypeSignature()  == (ConstantUtf8)cpool.getConstant(a.getTypeIndex())).getBytes()
-		typeIndex = a.getTypeIndex();
+		
+		if (copyPoolEntries) {
+			typeIndex = cpool.addUtf8(a.getTypeSignature());			
+		} else {
+			typeIndex = a.getTypeIndex();
+		}
 		
 		isRuntimeVisible   = a.isRuntimeVisible();
 		
-		evs = copyValues(a.getValues(),cpool);
+		evs = copyValues(a.getValues(),cpool,copyPoolEntries);
 	}
 	
-	private List copyValues(List in,ConstantPoolGen cpool) {
+	private List copyValues(List in,ConstantPoolGen cpool,boolean copyPoolEntries) {
 		List out = new ArrayList();
 		for (Iterator iter = in.iterator(); iter.hasNext();) {
 			ElementNameValuePair nvp = (ElementNameValuePair) iter.next();
-			out.add(new ElementNameValuePairGen(nvp,cpool));
+			out.add(new ElementNameValuePairGen(nvp,cpool,copyPoolEntries));
 		}
 		return out;
 	}

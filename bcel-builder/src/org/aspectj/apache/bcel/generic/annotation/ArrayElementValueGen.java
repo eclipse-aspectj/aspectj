@@ -47,12 +47,12 @@ public class ArrayElementValueGen extends ElementValueGen {
 	 * @param value
 	 * @param cpool
 	 */
-	public ArrayElementValueGen(ArrayElementValue value, ConstantPoolGen cpool) {
+	public ArrayElementValueGen(ArrayElementValue value, ConstantPoolGen cpool,boolean copyPoolEntries) {
 		super(ARRAY,cpool);
 		evalues = new ArrayList();
 		ElementValue[] in = value.getElementValuesArray();
 		for (int i = 0; i < in.length; i++) {
-			evalues.add(ElementValueGen.copy(in[i],cpool));
+			evalues.add(ElementValueGen.copy(in[i],cpool,copyPoolEntries));
 		}
 	}
 
