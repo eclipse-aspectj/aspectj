@@ -59,7 +59,7 @@ public class PerObjectInterfaceTypeMunger extends ResolvedTypeMunger {
 		return testPointcut;
 	}
 	
-	public boolean matches(ResolvedTypeX matchType) {
+	public boolean matches(ResolvedTypeX matchType, ResolvedTypeX aspectType) {
 		//??? this matches many more types than are needed
 		return !matchType.isInterface();
 	}

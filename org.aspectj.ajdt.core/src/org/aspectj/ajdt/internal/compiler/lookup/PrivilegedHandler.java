@@ -44,7 +44,7 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 	}
 
 	public FieldBinding getPrivilegedAccessField(FieldBinding baseField, AstNode location) {
-		ResolvedMember key = inAspect.world.makeResolvedMember(baseField);
+		ResolvedMember key = inAspect.factory.makeResolvedMember(baseField);
 		if (accessors.containsKey(key)) return (FieldBinding)accessors.get(key);
 		FieldBinding ret = new PrivilegedFieldBinding(inAspect, baseField);
 		checkWeaveAccess(key.getDeclaringType(), location);
@@ -53,14 +53,14 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 	}
 
 	public MethodBinding getPrivilegedAccessMethod(MethodBinding baseMethod, AstNode location) {
-		ResolvedMember key = inAspect.world.makeResolvedMember(baseMethod);
+		ResolvedMember key = inAspect.factory.makeResolvedMember(baseMethod);
 		if (accessors.containsKey(key)) return (MethodBinding)accessors.get(key);
 		
 		MethodBinding ret;
 		if (baseMethod.isConstructor()) {
 			ret = baseMethod;
 		} else {
-			ret = inAspect.world.makeMethodBinding(
+			ret = inAspect.factory.makeMethodBinding(
 			AjcMemberMaker.privilegedAccessMethodForMethod(inAspect.typeX, key)
 			);
 		}
@@ -73,14 +73,14 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 	public void notePrivilegedTypeAccess(ReferenceBinding type, AstNode location) {
 		ResolvedMember key =
 			new ResolvedMember(Member.STATIC_INITIALIZATION,
-				inAspect.world.fromEclipse(type), 0, ResolvedTypeX.VOID, "", TypeX.NONE);
+				inAspect.factory.fromEclipse(type), 0, ResolvedTypeX.VOID, "", TypeX.NONE);
 		
 		checkWeaveAccess(key.getDeclaringType(), location);
 		accessors.put(key, key);
 	}
 
 	private void checkWeaveAccess(TypeX typeX, AstNode location) {
-		World world = inAspect.world.getWorld();
+		World world = inAspect.factory.getWorld();
 		Lint.Kind check = world.getLint().typeNotExposedToWeaver;
 		if (check.isEnabled()) {
 			if (!world.resolve(typeX).isExposedToWeaver()) {

@@ -49,14 +49,17 @@ public abstract class ResolvedTypeMunger {
     }
     
     
-    public boolean matches(ResolvedTypeX matchType) {
+    public boolean matches(ResolvedTypeX matchType, ResolvedTypeX aspectType) {
     	ResolvedTypeX onType = matchType.getWorld().resolve(signature.getDeclaringType());
     	//System.err.println("matching: " + this + " to " + matchType + " onType = " + onType);
    		if (matchType.equals(onType)) { 
-   			if (!onType.isExposedToWeaver() &&
-   					matchType.getWorld().getLint().typeNotExposedToWeaver.isEnabled())
-   			{
-   				matchType.getWorld().getLint().typeNotExposedToWeaver.signal(matchType.getName(), signature.getSourceLocation());
+   			if (!onType.isExposedToWeaver()) {
+   				if (!onType.isWovenBy(aspectType)) {
+	   				if (matchType.getWorld().getLint().typeNotExposedToWeaver.isEnabled()) {
+	   					matchType.getWorld().getLint().typeNotExposedToWeaver.signal(
+	   						matchType.getName(), signature.getSourceLocation());
+	   				}
+   				}
    			}
    			return true;
    		}

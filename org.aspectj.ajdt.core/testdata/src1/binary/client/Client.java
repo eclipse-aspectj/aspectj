@@ -9,6 +9,7 @@ public class Client {
 		System.out.println(c.value);
 		ConcreteA.Marker m = c;
 		System.out.println(m.value);
+		System.out.println(ConcreteA.getPrivateValue(c));
 		try {
 			new Client();
 		} catch (SoftException se) {

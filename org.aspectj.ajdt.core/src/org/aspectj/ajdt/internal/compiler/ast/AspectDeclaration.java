@@ -47,7 +47,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 	
 	public ResolvedTypeX.Name typeX;
 	
-	public EclipseFactory world;  //??? should use this consistently
+	public EclipseFactory factory;  //??? should use this consistently
 
 
 	// for better error messages in 1.0 to 1.1 transition
@@ -171,12 +171,12 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 			if (perClause == null) {
 				// we've already produced an error for this
 			} else if (perClause.getKind() == PerClause.SINGLETON) {
-				binding.addField(world.makeFieldBinding(AjcMemberMaker.perSingletonField(
+				binding.addField(factory.makeFieldBinding(AjcMemberMaker.perSingletonField(
 						typeX)));
 				methods[0] = new AspectClinit((Clinit)methods[0], compilationResult, false, true);
 			} else if (perClause.getKind() == PerClause.PERCFLOW) {
 				binding.addField(
-					world.makeFieldBinding(
+					factory.makeFieldBinding(
 						AjcMemberMaker.perCflowField(
 							typeX)));
 				methods[0] = new AspectClinit((Clinit)methods[0], compilationResult, true, false);
@@ -583,7 +583,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 				codeStream.aload_0();
 				AstUtil.generateParameterLoads(accessMethod.parameters, codeStream);
 				codeStream.invokespecial(
-					world.makeMethodBinding(method));
+					factory.makeMethodBinding(method));
 				AstUtil.generateReturn(accessMethod.returnType, codeStream);
 				// body ends here
 			}});
@@ -600,7 +600,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 	}
 	
 	private void generateInlineAccessors(ClassFile classFile, final InlineAccessFieldBinding accessField, final ResolvedMember field) {
-		final FieldBinding fieldBinding = world.makeFieldBinding(field);
+		final FieldBinding fieldBinding = factory.makeFieldBinding(field);
 		generateMethod(classFile, accessField.reader, 
 		new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
@@ -645,9 +645,9 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 				AstUtil.generateParameterLoads(accessMethod.parameters, codeStream);
 				
 				if (method.isStatic()) {
-					codeStream.invokestatic(world.makeMethodBinding(method));
+					codeStream.invokestatic(factory.makeMethodBinding(method));
 				} else {
-				    codeStream.invokevirtual(world.makeMethodBinding(method));
+				    codeStream.invokevirtual(factory.makeMethodBinding(method));
 				}
 					
 				AstUtil.generateReturn(accessMethod.returnType, codeStream);
@@ -724,19 +724,12 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 		checkSpec(classScope);
 		if (ignoreFurtherInvestigation) return;
 		
-		world = EclipseFactory.fromScopeLookupEnvironment(scope);
-//		concreteName = world.lookupConcreteName(binding);
-//		typeX = concreteName.getResolvedTypeX();
-
+		factory = EclipseFactory.fromScopeLookupEnvironment(scope);
 		
 		if (isPrivileged) {
 			binding.privilegedHandler = new PrivilegedHandler(this);
 		}
 		
-//		CrosscuttingMembers xcut = new CrosscuttingMembers(typeX);
-//		concreteName.crosscuttingMembers = xcut;
-		//typeX.crosscuttingMembers = xcut;
-		//XXXxcut.setPerClause(buildPerClause(scope));
 		buildPerClause(scope);
 		
 		if (methods != null) {
@@ -752,7 +745,11 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 		}
 
 		//??? timing is weird
-		world.getWorld().getCrosscuttingMembersSet().addOrReplaceAspect(typeX);		
+		factory.getWorld().getCrosscuttingMembersSet().addOrReplaceAspect(typeX);
+		
+		if (typeX.getSuperclass().isAspect() && !typeX.getSuperclass().isExposedToWeaver()) {
+			factory.getWorld().getCrosscuttingMembersSet().addOrReplaceAspect(typeX.getSuperclass());
+		}
 	}
 
 

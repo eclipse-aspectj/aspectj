@@ -49,7 +49,7 @@ public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparab
 
 	public boolean matches(ResolvedTypeX onType) {
 		if (munger == null) throw new RuntimeException("huh: " + this);
-		return munger.matches(onType);
+		return munger.matches(onType, aspectType);
 	}
 
 	public ResolvedMember getMatchingSyntheticMember(Member member) {

@@ -59,7 +59,7 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 	
 	public AccessForInlineVisitor(AspectDeclaration inAspect, PrivilegedHandler handler) {
 		this.inAspect = inAspect;
-		this.world = inAspect.world;
+		this.world = inAspect.factory;
 		this.handler = handler;
 	}
 	

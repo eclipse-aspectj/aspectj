@@ -38,6 +38,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		args.add("out");
 		
 		args.add("testdata/src1/binary/lib/ConcreteA.aj");
+		args.add("testdata/src1/binary/lib/AbstractA.aj");
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 		
@@ -52,34 +53,66 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		args.add("out");
 		
 		args.add("testdata/src1/binary/client/Client.java");
+		args.add("testdata/src1/binary/client/Client1.java");
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 		
 		TestUtil.runMain("out;out/lib.jar", "client.Client");
-	}
-
-
-	public void XXXtestJar1() throws IOException {
-		List args = new ArrayList();
-		args.add("-outjar");
-		args.add("out/megatrace.jar");
-
-		args.add("-classpath");
-		args.add("../runtime/bin");
-		
-		args.add("testdata/src1/trace/MegaTrace.java");
-		args.add("testdata/src1/trace/ExecTrace.java");
-		
-		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+		TestUtil.runMain("out;out/lib.jar", "client.Client1");
 		
 		args = new ArrayList();
 		args.add("-aspectpath");
-		args.add("out/megatrace.jar");
+		args.add("out/lib.jar");
 
 		args.add("-classpath");
 		args.add("../runtime/bin");
 		
-		args.add("testdata/src1/tracep1/TraceTest.java");
+		args.add("-d");
+		args.add("out");
+		
+		args.add("testdata/src1/binary/client/MyAspect.aj");
+		args.add("testdata/src1/binary/client/Client1.java");
+		
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+		
+		TestUtil.runMain("out;out/lib.jar", "client.Client1");
+
+		args = new ArrayList();
+		args.add("-aspectpath");
+		args.add("out/lib.jar");
+
+		args.add("-classpath");
+		args.add("../runtime/bin");
+		
+		args.add("-d");
+		args.add("out");
+		
+		args.add("testdata/src1/binary/client/MyAspect1.aj");
+		args.add("testdata/src1/binary/client/Client1.java");
+		
+		CommandTestCase.runCompiler(args, new int[] {24, 30});
+
+		args = new ArrayList();
+		args.add("-classpath");
+		args.add("../runtime/bin;out/lib.jar");
+		
+		args.add("-d");
+		args.add("out");
+		
+		args.add("testdata/src1/binary/client/Client1.java");
+		
+		CommandTestCase.runCompiler(args, new int[] {9, 11, 15, 17});
+		
+		args = new ArrayList();
+		args.add("-classpath");
+		args.add("../runtime/bin;out/lib.jar");
+		args.add("-Xlint:error");
+		
+		args.add("-d");
+		args.add("out");
+		
+		args.add("testdata/src1/binary/client/MyAspect.aj");
+		args.add("testdata/src1/binary/client/Client1.java");
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 	}

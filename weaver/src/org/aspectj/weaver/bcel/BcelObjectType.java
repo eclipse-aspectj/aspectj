@@ -146,8 +146,6 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 		ret[len] = d;
 		pointcuts = ret;
 	}
-		
-		
 
     public boolean isAspect() {
 		return perClause != null;
@@ -191,11 +189,6 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 		return perClause;
 	}
     
-    
-    
-    
-    
-    
     JavaClass getJavaClass() {
         return javaClass;
     }
@@ -213,16 +206,12 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
     	isObject = (javaClass.getSuperclassNameIndex() == 0);
         unpackAspectAttributes();
     }
-    
-    
-    /**
-     * Switch to a new JavaClass and clear all caches
-     */
-    void replaceJavaClass(JavaClass jc) {
-    	if (this.javaClass == jc) return;
-    	
-    	this.javaClass = jc;
-		resetState();
+
+	//XXX we've lost information so that we don't know who wove into this
+	//    class, only that someone did.  For better error messages we should
+	//    probably expand the information in weaverState
+	public boolean isWovenBy(ResolvedTypeX aspectType) {
+		return weaverState == WeaverStateKind.Woven;
 	}
 
 	public WeaverStateKind getWeaverState() {
