@@ -360,7 +360,10 @@ class BcelClassWeaver implements IClassWeaver {
         
         // if we matched any initialization shadows, we inline and weave
 		if (! initializationShadows.isEmpty()) {
-			inlineSelfConstructors(methodGens);
+			// Repeat next step until nothing left to inline...cant go on 
+			// infinetly as compiler will have detected and reported 
+			// "Recursive constructor invocation"
+			while (inlineSelfConstructors(methodGens));
 			positionAndImplement(initializationShadows);
 		}
 		
@@ -402,7 +405,8 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 
 
-	private void inlineSelfConstructors(List methodGens) {
+	private boolean inlineSelfConstructors(List methodGens) {
+		boolean inlinedSomething = false;
 		for (Iterator i = methodGens.iterator(); i.hasNext();) {
 			LazyMethodGen mg = (LazyMethodGen) i.next();
 			if (! mg.getName().equals("<init>")) continue;
@@ -410,8 +414,10 @@ class BcelClassWeaver implements IClassWeaver {
 			if (ih != null && isThisCall(ih)) {
 				LazyMethodGen donor = getCalledMethod(ih);
 				inlineMethod(donor, mg, ih);
+				inlinedSomething = true;
 			}
 		}
+		return inlinedSomething;
 	}
 
 	private void positionAndImplement(List initializationShadows) {
