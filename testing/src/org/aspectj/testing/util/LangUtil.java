@@ -944,8 +944,6 @@ public class LangUtil {
         ArrayList expected = new ArrayList();
         expected.addAll(expectedListIn);
         Collections.sort(expected, comparator);
-        Iterator expectedIter = expected.iterator();
-        Object exp = null;
         
         ArrayList actual = new ArrayList();
         actual.addAll(actualListIn);
@@ -953,53 +951,80 @@ public class LangUtil {
         Iterator actualIter = actual.iterator();        
         Object act = null;
         
-        while (((null != act) || actualIter.hasNext())
-             && ((null != exp) || expectedIter.hasNext())) {
-            if (null == act) {
-                act = actualIter.next();
-            }
-            if (null == exp) {
-                exp = expectedIter.next();
-            }
-            int diff = comparator.compare(exp, act);
-            if (0 > diff) {          // exp < act
-                if (null != missingListOut) {
-                    missingListOut.add(exp);
-                    exp = null;
-                }
-            } else if (0 < diff) {   // exp > act
-                if (null != extraListOut) {
-                    extraListOut.add(act);
-                    act = null;
-                }
-            } else { // got match of actual to expected
-                // absorb all actual matching expected (duplicates)
-                while ((0 == diff) && actualIter.hasNext()) {
-                    act = actualIter.next();
-                    diff = comparator.compare(exp, act);
-                }
-                if (0 == diff) {
-                    act = null;
-                }
-                exp = null;
-            }
+        if (missingListOut != null) {
+        	missingListOut.addAll(expectedListIn);
         }
-        if (null != missingListOut) {
-             if (null != exp) {
-                missingListOut.add(exp);
-             }
-            while (expectedIter.hasNext()) {
-                 missingListOut.add(expectedIter.next());
-            }
+        if (extraListOut != null) {
+        	extraListOut.addAll(actualListIn);
         }
-        if (null != extraListOut) {
-            if (null != act) {
-                extraListOut.add(act);
-            }
-            while (actualIter.hasNext()) {
-                 extraListOut.add(actualIter.next());
-            }
+        
+        // AMC: less efficient, but simplified implementation. Needed since messages can
+        // now match on text content too, and the old algorithm did not cope with two expected
+        // messages on the same line, but with different text content.
+        while (actualIter.hasNext()) {
+        	act = actualIter.next();
+        	for (Iterator expectedIter = expected.iterator(); expectedIter.hasNext();) {
+        		Object exp = expectedIter.next();
+        		// if actual matches expected remove actual from extraListOut, and 
+        		// remove expected from missingListOut
+        		int diff = comparator.compare(exp,act);
+        		if (diff == 0) {
+        			extraListOut.remove(act);
+        			missingListOut.remove(exp);
+        		} else if (diff > 0) {
+        			// since list is sorted, there can be no more matches...
+        			break;
+        		}
+        	}
         }
+        
+//        while (((null != act) || actualIter.hasNext())
+//             && ((null != exp) || expectedIter.hasNext())) {
+//            if (null == act) {
+//                act = actualIter.next();
+//            }
+//            if (null == exp) {
+//                exp = expectedIter.next();
+//            }
+//            int diff = comparator.compare(exp, act);
+//            if (0 > diff) {          // exp < act
+//                if (null != missingListOut) {
+//                    missingListOut.add(exp);
+//                    exp = null;
+//                }
+//            } else if (0 < diff) {   // exp > act
+//                if (null != extraListOut) {
+//                    extraListOut.add(act);
+//                    act = null;
+//                }
+//            } else { // got match of actual to expected
+//                // absorb all actual matching expected (duplicates)
+//                while ((0 == diff) && actualIter.hasNext()) {
+//                    act = actualIter.next();
+//                    diff = comparator.compare(exp, act);
+//                }
+//                if (0 == diff) {
+//                    act = null;
+//                }
+//                exp = null;
+//            }
+//        }
+//        if (null != missingListOut) {
+//             if (null != exp) {
+//                missingListOut.add(exp);
+//             }
+//            while (expectedIter.hasNext()) {
+//                 missingListOut.add(expectedIter.next());
+//            }
+//        }
+//        if (null != extraListOut) {
+//            if (null != act) {
+//                extraListOut.add(act);
+//            }
+//            while (actualIter.hasNext()) {
+//                 extraListOut.add(actualIter.next());
+//            }
+//        }
     }    
     public static class FlattenSpec {
         /** 
