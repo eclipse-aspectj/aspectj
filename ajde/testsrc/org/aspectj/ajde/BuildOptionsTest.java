@@ -146,7 +146,7 @@ public class BuildOptionsTest extends AjdeTestCase {
 	
 	protected void setUp() throws Exception {
 		super.setUp();
-		preferencesAdapter = new UserPreferencesStore();
+		preferencesAdapter = new UserPreferencesStore(false);
 		buildOptions = new AjcBuildOptions(preferencesAdapter);
 	}
 

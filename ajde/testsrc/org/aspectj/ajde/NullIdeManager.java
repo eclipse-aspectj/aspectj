@@ -42,7 +42,7 @@ public class NullIdeManager {
 	
 	public void init(String testProjectPath) {
 		try {
-			UserPreferencesAdapter preferencesAdapter = new UserPreferencesStore();
+			UserPreferencesAdapter preferencesAdapter = new UserPreferencesStore(false);
 			ProjectPropertiesAdapter browserProjectProperties = new NullIdeProperties(testProjectPath);
 			taskListManager = new NullIdeTaskListManager();
 			BasicEditor ajdeEditor = new BasicEditor();
