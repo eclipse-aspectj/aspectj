@@ -81,9 +81,9 @@ public interface IMessage {
 				Kind one = (Kind) o1;
 				Kind two = (Kind) o2;
 				if (null == one) {
-					return (null == two ? 0 : 1);
+					return (null == two ? 0 : -1);
 				} else if (null == two) {
-					return -1;
+					return 1;
 				} else if (one == two) {
 					return 0;
 				} else {
@@ -91,7 +91,17 @@ public interface IMessage {
 				}
 			}
 		};
-		
+        
+        /**
+         * @param kind the Kind floor
+         * @return false if kind is null or this
+         *         has less precedence than kind,
+         *         true otherwise.
+         */
+		public boolean isSameOrLessThan(Kind kind) {
+            return (0 >= COMPARATOR.compare(this, kind));
+		}
+        
 		public int compareTo(Object other) {
 			return COMPARATOR.compare(this, other);
 		}

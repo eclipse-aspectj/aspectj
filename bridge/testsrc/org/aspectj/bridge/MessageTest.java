@@ -17,6 +17,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -68,6 +69,23 @@ public class MessageTest extends TestCase {
         checkListOrder(Arrays.asList(new String[] { "a", "b", "C" }),
             String.CASE_INSENSITIVE_ORDER);
         checkListOrder(IMessage.KINDS, IMessage.Kind.COMPARATOR);
+    }
+    
+    public void testKind_isSameOrLessThan() {
+        IMessage.Kind last;
+        IMessage.Kind next = null;
+        for (Iterator iter = IMessage.KINDS.iterator(); iter.hasNext();) {
+            last = next;
+            next = (IMessage.Kind) iter.next();
+            if (null == last) {
+                continue;
+            }
+            String label = "last: " + last + " next: " + next;
+            assertTrue(label, !next.isSameOrLessThan(null));
+            assertTrue(label, !next.isSameOrLessThan(last));
+            assertTrue(label, last.isSameOrLessThan(next));
+            assertTrue(label, next.isSameOrLessThan(next));
+        }    
     }
     
     public void testMessageHandler() {

@@ -522,15 +522,15 @@ public class MessageUtil {
         final IMessage.Kind sought;
         final boolean floor;
         final String infix;
-
+    
         KindSelector(IMessage.Kind sought) {
             this(sought, false);
         }
-
+    
         KindSelector(IMessage.Kind sought, boolean floor) {
             this(sought, floor, null);
         }
-
+    
         KindSelector(IMessage.Kind sought, boolean floor, String infix) {
             this.sought = sought;
             this.floor = floor;
@@ -542,11 +542,11 @@ public class MessageUtil {
          * or if this has the exact kind we seek
          * and this has any text sought
          */
-		public boolean handleMessage(IMessage message) {
+    	public boolean handleMessage(IMessage message) {
             return ((null != message) && !isIgnoring(message.getKind())
                 && textIn(message));
-		}
-
+    	}
+    
         /** @return true if handleMessage would return false for a message of this kind */
         public boolean isIgnoring(IMessage.Kind kind) {            
             if (!floor) {

@@ -158,10 +158,9 @@ public class MessageHandler implements IMessageHolder {
                 }
             }
         } else {
-            final Comparator c = IMessage.Kind.COMPARATOR;
             for (Iterator iter = messages.iterator(); iter.hasNext();) {
                 IMessage m = (IMessage) iter.next();
-                if (0 >= c.compare(kind, m.getKind())) {
+                if (kind.isSameOrLessThan(m.getKind())) {
                     return true;
                 }
             }
@@ -184,10 +183,9 @@ public class MessageHandler implements IMessageHolder {
                 }
             }
         } else {
-            final Comparator c = IMessage.Kind.COMPARATOR;
             for (Iterator iter = messages.iterator(); iter.hasNext();) {
                 IMessage m = (IMessage) iter.next();
-                if (0 >= c.compare(kind, m.getKind())) {
+                if (kind.isSameOrLessThan(m.getKind())) {
                     result++;
                 }
             }
@@ -221,10 +219,9 @@ public class MessageHandler implements IMessageHolder {
                 }
             }
         } else {
-            final Comparator c = IMessage.Kind.COMPARATOR;
             for (Iterator iter = messages.iterator(); iter.hasNext();) {
-                IMessage m = (IMessage) iter.next();
-                if (0 >= c.compare(kind, m.getKind())) {
+                IMessage m = (IMessage) iter.next();                
+                if (kind.isSameOrLessThan(m.getKind())) {
                     result.add(m);
                 }
             }

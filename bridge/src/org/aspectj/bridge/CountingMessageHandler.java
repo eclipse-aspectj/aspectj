@@ -95,7 +95,7 @@ public class CountingMessageHandler implements IMessageHandler {
         } else {
             for (Iterator iter = IMessage.KINDS.iterator(); iter.hasNext();) {
                 IMessage.Kind k = (IMessage.Kind) iter.next();
-                if (0 >= IMessage.Kind.COMPARATOR.compare(kind, k)) {
+                if (kind.isSameOrLessThan(k)) {
                     result += numMessages(k);
                 }
             }
