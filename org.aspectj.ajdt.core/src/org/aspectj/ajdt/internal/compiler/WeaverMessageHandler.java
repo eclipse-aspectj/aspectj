@@ -94,9 +94,7 @@ public class WeaverMessageHandler implements IMessageHandler {
 								severity,
 								startPos,
 								endPos,
-								sLoc != null ? sLoc.getLine() : 0,
-								referenceContext,
-								problemSource
+								sLoc != null ? sLoc.getLine() : 0
 								);
 		IProblem[] seeAlso = buildSeeAlsoProblems(message.getExtraSourceLocations(),
 												  problemSource,	

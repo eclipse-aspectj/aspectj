@@ -13,7 +13,6 @@ package org.aspectj.ajdt.core;
 import java.util.Map;
 
 import org.aspectj.ajdt.internal.core.builder.AjCompilerOptions;
-import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.jdt.core.JavaCore;
 
 /**
@@ -38,8 +37,8 @@ public class AspectJCore extends JavaCore {
 	public static final String COMPILER_REWEAVABLE           = AjCompilerOptions.OPTION_XReweavable;
 	public static final String COMPILER_REWEAVABLE_COMPRESS  = AjCompilerOptions.OPTION_XReweavableCompress;
 	
-	public AspectJCore(IPluginDescriptor pluginDescriptor) {
-		super(pluginDescriptor);
+	public AspectJCore() {
+		super();
 	}
 	
 	public static AspectJCore getAspectJCore() {

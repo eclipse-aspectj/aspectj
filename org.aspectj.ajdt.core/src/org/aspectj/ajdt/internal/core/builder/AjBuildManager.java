@@ -602,7 +602,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		
 		CompilerOptions options = compiler.options;
 
-		options.produceReferenceInfo(true); //TODO turn off when not needed
+		options.produceReferenceInfo = true; //TODO turn off when not needed
 		
 		try {
 		 	compiler.compile(getCompilationUnits(filenames, encodings));

@@ -29,6 +29,7 @@ import org.eclipse.jdt.internal.compiler.flow.InitializationFlowContext;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
+import org.eclipse.jdt.internal.compiler.problem.AbortCompilationUnit;
 
 /**
  * An inter-type method declaration.
@@ -75,7 +76,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 	public void resolveStatements() {
         if ((modifiers & AccSemicolonBody) != 0) {
             if ((declaredModifiers & AccAbstract) == 0)
-                scope.problemReporter().methodNeedingAbstractModifier(this);
+                scope.problemReporter().methodNeedBody(this);
         } else {
             // the method HAS a body --> abstract native modifiers are forbiden
             if (((declaredModifiers & AccAbstract) != 0))
@@ -105,7 +106,9 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		if (binding == null) {
 			// if binding is null, we failed to find a type used in the method params, this error
 			// has already been reported.
-			throw new AbortCompilation(compilationResult);
+			this.ignoreFurtherInvestigation = true;
+			//return null;
+			throw new AbortCompilationUnit(compilationResult,null);
 		}
 		ResolvedMember sig = new ResolvedMember(Member.METHOD, EclipseFactory.fromBinding(onTypeBinding),
 			declaredModifiers, EclipseFactory.fromBinding(binding.returnType), new String(declaredSelector),
