@@ -19,11 +19,12 @@ Consider defining the following flag properties:
 <tr><td>module.name
     </td><td>To build any module (esp. those not directly supported
              by a target), use the "any-module" target and define
-             the module name.  e.g., 
-             <code>ant any-module -Dmodule.name=ajde</code>.
+             the module name.
 	</td></tr>
 <tr><td>check.build.jar
-    </td><td>any value cause build to fail if build.jar is out of date
+    </td><td>any value cause build to fail if 
+    <code>lib/build/build.jar</code> is out of date.  (This is a
+     built archive of the build module to avoid bootstrapping.)
 	</td></tr>
 <tr><td>build.config
     </td><td>override default configuration in build.xml.
@@ -32,14 +33,49 @@ Consider defining the following flag properties:
      compiled modules into their bin directories, and just
      assemble those classes.
 	</td></tr>
-</table>	
+</table>
+
+<p>
+For example, to build everything into a release bundle,
+with verbose logging
+<pre>
+  cd modules/build
+  ../lib/ant/bin/ant 
+</pre>
+
+To build only the asm module (and any modules it requires):
+<pre>
+  cd modules/build
+  ../lib/ant/bin/ant -f build.xml any-module -Dmodule.name=asm
+</pre>
+	
 <p>		
 
-<u>Release builds</u>: Release builds differ only in running
+<h5>Release builds</h5>
+Release builds differ only in running
 from a clean, up-to-date tree and with correct build version values
 in <a href="build-properties.xml">build-properties.xml</a>, which
-will update org.aspectj.bridge.Version.  
-See below for more details on how the version is updated.
+will update <code>org.aspectj.bridge.Version</code>.
+See <a href="#version">Version synchronization</a> below
+for more details on how the version is updated.
+
+<p>Do a quick test of the release by running the examples build script:
+<pre>
+    cd {aspect}/doc/examples
+    ant -f build.xml
+</pre>
+This should build and run the spacewar example. 
+To run all examples, use target <code>all</code>.
+To run all the examples that do not require manual operation,
+use target <code>nonGui</code>. 
+</p>
+<p>
+Finally, tag the tree so others can do diffs or create patches
+based on the release code.  E.g., from the command line:
+<pre>
+   cd org.aspectj/
+   cvs tag -R -c v1_1_0
+</pre>
 <p>
 
 <h4>Updating module dependencies and file locations</h4>  
@@ -85,6 +121,10 @@ The <code>build-testing-drivers</code> target builds a single jar with
 the AspectJ binaries and a test harness as the main class. 
 It reads test suite files like 
    <a href="../tests/ajcTests.xml">../tests/ajcTests.xml</a>.
+For more information, see
+  <a href="../tests/readme-tests-module.html">
+           ../tests/readme-tests-module.html</a>.
+  
 <p>
 JUnit tests may be run under eclipse or by using Ant to "build"
    <a href="../tests/junitModules.xml">../tests/junitModules.xml</a>
@@ -125,18 +165,23 @@ follow a similar convention; those prefixed "aj-" may be deleted at will, while
 "aspectj-" names are source directories which should never be deleted.
 
 <p>
+<a name="version"></a>
 <u>Version synchronization</u>: 
 Developers use the default "DEVELOPMENT" version unless doing or testing
 release builds.
 
 The build version is set in 
-<a href="build-properties.xml">build-properties.xml</a> and tracked in
+<a href="build-properties.xml">build-properties.xml</a> and propogated
+using Ant copy filters out to
+the <a href="../runtime/runtime.mf.txt">aspectjrt.jar manifest</a>,
+the <a href="../ajbrowser/ajbrowser.mf.txt">aspectjtools.jar manifest</a>
+
+and to 
 <a href="../bridge/src/org/aspectj/bridge/Version.java">
          ../bridge/src/org/aspectj/bridge/Version.java</a>
 which the <a href="build.xml">build.xml</a> <code>init-version</code> task
 generates from a template 
-<a href="lib/BridgeVersion.java.txt">lib/BridgeVersion.java.txt</a>
-using copy filters to set the build version and date.
+<a href="lib/BridgeVersion.java.txt">lib/BridgeVersion.java.txt</a>.
 To avoid updating <code>Version.java</code> whenever 
 <code>build-properties.xml</code> changes, a task
 <a href="src/org/aspectj/internal/tools/ant/taskdefs/VersionUptodate.java">
