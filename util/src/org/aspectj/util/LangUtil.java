@@ -14,6 +14,7 @@
 package org.aspectj.util;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -92,6 +93,27 @@ public class LangUtil {
         }
     }
     
+    /**
+     * Shorthand for "if not null or not assignable, throw IllegalArgumentException"
+     * @param c the Class to check - use null to ignore type check
+     * @throws IllegalArgumentException "null {name}" if o is null 
+     */
+    public static final void throwIaxIfNotAssignable(final Object ra[], final Class c, final String name) {
+        throwIaxIfNull(ra, name);
+        String label = (null == name ? "input" : name);
+        for (int i = 0; i < ra.length; i++) {
+            if (null == ra[i]) {
+                String m = " null " + label + "[" + i + "]";
+                throw new IllegalArgumentException(m);
+            } else if (null != c) {
+                Class actualClass = ra[i].getClass();
+                if (!c.isAssignableFrom(actualClass)) {
+                    String message = label + " not assignable to " + c.getName();
+                    throw new IllegalArgumentException(message);           
+                }
+            }
+        }
+    }
     /**
      * Shorthand for "if not null or not assignable, throw IllegalArgumentException"
      * @throws IllegalArgumentException "null {name}" if o is null 
@@ -173,6 +195,27 @@ public class LangUtil {
     }
     
     /**
+     * Split string as classpath, delimited at File.pathSeparator.
+     * Entries are not trimmed, but empty entries are ignored.
+     * @param classpath the String to split - may be null or empty
+     * @return String[] of classpath entries
+     */
+    public static String[] splitClasspath(String classpath) {
+        if (LangUtil.isEmpty(classpath)) {
+            return new String[0];
+        }
+        StringTokenizer st = new StringTokenizer(classpath, File.pathSeparator);
+        ArrayList result = new ArrayList(st.countTokens());
+        while (st.hasMoreTokens()) {
+            String entry = st.nextToken();
+            if (!LangUtil.isEmpty(entry)) {
+                result.add(entry);
+            }
+        }
+        return (String[]) result.toArray(new String[0]);
+    }
+    
+    /**
      * Splits <code>input</code>, removing delimiter and 
      * trimming any white space.
      * Returns an empty collection if the input is null.
@@ -210,6 +253,9 @@ public class LangUtil {
 	 * @param text <code>String</code> to split.
 	 */
 	public static List strings(String text) {
+        if (LangUtil.isEmpty(text)) {
+            return Collections.EMPTY_LIST;
+        }
 		List strings = new ArrayList();
 		StringTokenizer tok = new StringTokenizer(text);
 		while (tok.hasMoreTokens()) {
