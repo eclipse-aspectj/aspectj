@@ -48,14 +48,18 @@ information in
 <a name="simple"></a>
 <h4>Simple Test definitions</h4>
 
+Test definitions are specified in XML files.
 Here is a simple example to compile <code>Main.java</code>
-and expect an error on line 10:
+and expect an error on line 10 in a file <code>ajcSample.xml</code>:
 <pre>
+&lt;!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+&lt;suite>
     &lt;ajc-test dir="new" title="simple error test">
         &lt;compile files="Main.java">
             &lt;message kind="error" line="10"/>
         &lt;/compile>
     &lt;/ajc-test>
+&lt;/suite>
 </pre>
 
 <p>Here is an example to compile 
@@ -332,12 +336,55 @@ Messages require a kind (error or warning) and a line.
 To make specification easier, if an error is specified for a line, 
 the harness accepts as expected any number of errors on that line.  
 <p>
-The current harness has only been tested to validate compilation 
-based on line numbers. 
-Filename-based comparison is disabled as untested/unused,
-and run messages are handled wrongly; 
-line-number comparison will fail since
-run messages do not have line numbers.
+Most messages fall into those categories.  
+However, an IMessage also has a Throwable thrown, a String detail,
+and a List of ISourceLocation (essentially, "see also", to point
+to other relevant places in the code).  The thrown element is not
+supported, but you can specify the others:
+
+<pre>
+    &lt;ajc-test dir="new" title="simple error test">
+        &lt;compile files="Main.java">
+            &lt;message 
+                kind="error" 
+                line="10" 
+                file="Main.java"
+                text="This join point should never happen!"
+                detail="(Find the declaring code below.)">
+                &lt;source line="12" file="Main.java"/>
+                &lt;source line="14" file="Main.java"/>
+            &lt;message>
+        &lt;/compile>
+    &lt;/ajc-test>
+</pre>
+
+This compiler-error test specifies a single error message triggered 
+on line 10 of Main.java, with some text and details and two other
+source locations that are relevant, on lines 12 and 14 of the same
+file.
+
+<p>
+When specifying messages, be sure to provide enough detail that
+the harness can distinguish expected messages.  For example, if you
+only specify the line number, then it will match the message in
+any file (if there is more than one).  If there are two or more
+messages expected on a line, provide enough information
+to distinguish them.  If you are using text or detail attributes, 
+do not use one string that is a prefix of the other, since it 
+will match either message, and the other message might not match.
+
+<p>
+The "info" messages are special in that they are normally ignored.
+To specify expected "info" messages, you have to list all the
+messages the compiler will issue, which can vary depending on
+the compiler settings.  Use the option <code>^verbose<code> to 
+force the compiler's <code>-verbose</code> option off.
+<p>
+By the same token, if you don't specify any extra source locations,
+then they will not be checked.  If you think it is a bug if they
+are issued, then you have to specify one if them.  (There is 
+currently no way to specify that a message has no extra
+source locations.)
 
 <a name="dirchanges"></a>
 <h5>Changes in an output directory</h5>
@@ -505,7 +552,7 @@ Set this to re-use a compiler from a previous compiler run.
 
 <h5>Unsupported compiler options</h5>
 The harness does not support the following AspectJ compiler
-options: <code>-target {version}, -outjar {file}, -log {file}</code>.
+options: <code>-outjar {file}, -log {file}</code>.
 (<code>-d {dir}</code> is used but specification is not supported.)
 
  
@@ -549,12 +596,12 @@ For more information, see the API documentation for the harness.
         test specification, it can be disabled from the command line.)
        These appear in the test specifications as options
        with prefixes
-       '!' or '~' rather than '-' (e.g., '~emacssym' to force
+       '!' or '^' rather than '-' (e.g., '^emacssym' to force
        the emacssym option off, even in tests that specify it).
      </li>
 </ul>
 <hr>
-<small>last updated January 29, 2002 </small> <!-- CVS variable -->
+<small>last updated January 8, 2004 </small> <!-- CVS variable -->
 
 </body>
 </html>

@@ -40,11 +40,16 @@
    <!ELEMENT file (#PCDATA)>
    <!ATTLIST file path CDATA #IMPLIED >
 
-   <!ELEMENT message (#PCDATA)>
+   <!ELEMENT message (source*)>
    <!ATTLIST message kind (abort | fail | error | warning | info | Xlint) #REQUIRED >
    <!ATTLIST message line CDATA #IMPLIED >
    <!ATTLIST message text CDATA #IMPLIED >
    <!ATTLIST message file CDATA #IMPLIED >
+   <!ATTLIST message details CDATA #IMPLIED >
+
+   <!ELEMENT source (#PCDATA)>
+   <!ATTLIST source line CDATA #IMPLIED >
+   <!ATTLIST source file CDATA #IMPLIED >
 
    <!ELEMENT dir-changes (#PCDATA)>
    <!ATTLIST dir-changes dirToken (classes | run) #IMPLIED >
