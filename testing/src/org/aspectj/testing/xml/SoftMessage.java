@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
+import org.aspectj.bridge.*;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageUtil;
@@ -52,13 +53,14 @@ public class SoftMessage implements IMessage { // XXX mutable dup of Message
      * Print messages. 
      * @param messages List of IMessage
      */
-    public static void writeXml(XMLWriter out, List messages) {
-        if ((null == out) || (null == messages)) {
+    public static void writeXml(XMLWriter out, IMessageHolder messages) {
+        if ((null == out) || (null == messages)
+            || (0 == messages.numMessages(null, true))) {
             return;
         }
-        for (Iterator iter = messages.iterator(); iter.hasNext();) {
-            writeXml(out, (IMessage) iter.next());
-            
+        List list = messages.getUnmodifiableListView();
+        for (Iterator iter = list.iterator(); iter.hasNext();) {
+            writeXml(out, (IMessage) iter.next());            
         }
     }
 
