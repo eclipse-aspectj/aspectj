@@ -475,27 +475,51 @@ class HtmlDecorator {
         		String linkRef = "";
         		String linkName = rootDir.getAbsolutePath() + "/";
         		if (currDecl.getKind().isType()) {
-        			linkName = packagePath + currDecl.getName();
-					linkRef =
-						getRelativeComponent(packagePath)
-							+ packagePath
-							+ currDecl.toLabelString()
-							+ ".html";
+					linkName = packagePath;
+					if (currDecl.getParent().getKind().isType()) {
+						linkName =
+							linkName + currDecl.getParent().getName() + ".";
+					}
+					linkName = linkName + currDecl.getName();
+
+					linkRef = getRelativeComponent(packagePath) + packagePath;
+					// XXX: only one level of nested classes
+					if (currDecl.getParent().getKind().isType()) {
+						linkRef =
+							linkRef + currDecl.getParent().getName() + ".";
+					}
+					linkRef = linkRef + currDecl.toLabelString() + ".html";
         		} else {
-        			linkName = packagePath + currDecl.getParent().getName() + "." + currDecl.getName();
-        			linkRef = currDecl.getParent().getName() + ".html" + "#" + currDecl.toLabelString();
-//					linkRef =
-//						getRelativeComponent(packagePath)
-//							+ packagePath
-//							+ currDecl.getParent().getName()
-//							+ ".html"
-//							+ "#"
-//							+ currDecl.toLabelString();
-//        		 
-        			// XXX: only one level of nested classes
-        			if (currDecl.getParent().getParent().getKind().isType()) {
-        				linkRef = currDecl.getParent().getParent().getName() + "." + linkRef;
-        			}
+					linkName = packagePath;
+					if (currDecl.getParent().getParent().getKind().isType()) {
+						linkName =
+							linkName
+								+ currDecl.getParent().getParent().getName()
+								+ ".";
+					}
+					linkName =
+						linkName
+							+ currDecl.getParent().getName()
+							+ "."
+							+ currDecl.getName();
+
+					// Constructing the linkRef string requires a check 
+					// to see if the parent type is actually nested inside 
+					// another type. 		
+					linkRef = getRelativeComponent(packagePath) + packagePath;
+					// XXX: only one level of nested classes
+					if (currDecl.getParent().getParent().getKind().isType()) {
+						linkRef =
+							linkRef
+								+ currDecl.getParent().getParent().getName()
+								+ ".";
+					}
+					linkRef =
+						linkRef
+							+ currDecl.getParent().getName()
+							+ ".html"
+							+ "#"
+							+ currDecl.toLabelString();
         		}
         		if (!addedNames.contains(linkName)) {
 	                entry += "<A HREF=\"" + linkRef +
@@ -519,7 +543,7 @@ class HtmlDecorator {
 	 */
 	private static String getRelativeComponent(String packagePath) {
 		StringBuffer result = new StringBuffer("");
-		if (packagePath != null) {
+		if (packagePath != null && (packagePath.indexOf("/") != -1)) {
 			StringTokenizer sTok = new StringTokenizer(packagePath, "/", false);
 			while (sTok.hasMoreTokens()) {
 				sTok.nextToken(); // don't care about the token value
