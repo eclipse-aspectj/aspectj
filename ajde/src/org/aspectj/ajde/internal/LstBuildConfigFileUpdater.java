@@ -185,12 +185,13 @@ class LstBuildConfigFileUpdater {
      */
     public void writeConfigFile(String filePath, List fileContents) {
         Set contentsSet = new TreeSet(fileContents);
-        String fileContentsString = "";
+        StringBuffer fileContentsSB = new StringBuffer();
         Iterator it = contentsSet.iterator();
         while (it.hasNext()) {
-            fileContentsString += it.next().toString() + "\n";
+        	fileContentsSB.append(it.next().toString());
+        	fileContentsSB.append("\n");
         }
-        writeFile(fileContentsString, filePath);
+        writeFile(fileContentsSB.toString(), filePath);
     }
     
     private void writeFile(String contents, String filePath) {
