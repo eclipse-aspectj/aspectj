@@ -60,8 +60,10 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 	private List typeMungers = Collections.EMPTY_LIST;
 	private List declares = Collections.EMPTY_LIST;
 	private ResolvedMember[] privilegedAccess = null;
-	
-	
+
+    private boolean isAnnotationStyleAspect = false;// set upon construction
+
+
 	public Collection getTypeMungers() {
 		return typeMungers;	
 	}
@@ -94,6 +96,7 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
         // the only class in Java-1.4 with no superclasses
         isObject = (javaClass.getSuperclassNameIndex() == 0);
         unpackAspectAttributes();
+        isAnnotationStyleAspect = hasAnnotation(Ajc5MemberMaker.ASPECT);
     }
     
     
@@ -177,8 +180,7 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
      * @return true for @AJ aspect
      */
     public boolean isAnnotationStyleAspect() {
-        //FIXME optimize by keeping the result, lazily
-        return hasAnnotation(Ajc5MemberMaker.ASPECT);
+        return isAnnotationStyleAspect;
     }
 
 	private void unpackAspectAttributes() {
@@ -248,6 +250,7 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
     	
     	isObject = (javaClass.getSuperclassNameIndex() == 0);
         unpackAspectAttributes();
+        isAnnotationStyleAspect = hasAnnotation(Ajc5MemberMaker.ASPECT);
     }
     
     public void finishedWith() {

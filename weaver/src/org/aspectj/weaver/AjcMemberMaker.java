@@ -120,7 +120,7 @@ public class AjcMemberMaker {
 		return new ResolvedMember(
 				Member.FIELD, 
 				declaringType,
-				PRIVATE_STATIC,//FIXME ATAJ. Make this field synthetic
+				PRIVATE_STATIC,
 				NameMangler.INITFAILURECAUSE_FIELD_NAME,
 				TypeX.THROWABLE.getSignature());
 	}
