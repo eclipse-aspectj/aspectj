@@ -381,8 +381,12 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		World world = ((AjLookupEnvironment)declaration.scope.environment()).factory.getWorld();
 		TypeX onType = rp.onType;
 		if (onType == null) {
-		    Member member = EclipseFactory.makeResolvedMember(declaration.binding);
-			onType = member.getDeclaringType();
+			if (declaration.binding != null) {
+			    Member member = EclipseFactory.makeResolvedMember(declaration.binding);
+				onType = member.getDeclaringType();
+			} else {
+				return null;
+			}
 		}
 		ResolvedMember[] members = onType.getDeclaredPointcuts(world);
 		if (members != null) {

@@ -40,6 +40,13 @@
 	   </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs150/pr87376" title="structure model npe on type not found">
+        <compile files="I.java,NPE.aj" options="-emacssym">
+            <message kind="error" line="8" text="I cannot be resolved to a type"/>
+            <message kind="error" line="10" text="I cannot be resolved to a type"/>
+        </compile>
+    </ajc-test>
+    
     <ajc-test dir="decp" pr="80249" title="Order of types passed to compiler determines weaving behavior">
         <compile files="A.java,B.java,AspectX.java"/>
         <run class="B"/>

@@ -125,6 +125,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   	}
   }
   
+  public void npeOnTypeNotFound() {
+	  runTest("structure model npe on type not found");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
