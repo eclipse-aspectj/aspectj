@@ -6,8 +6,10 @@
     <title>Introduction</title>
 
 	<para>
-	AspectJ contains a compiler, ajc, that can be run from Ant. 
-	Included in the aspectjtools.jar are Ant binaries to support three 
+	AspectJ contains a compiler, <literal>ajc</literal>, 
+	that can be run from Ant. 
+	Included in the <literal>aspectjtools.jar</literal>
+	are Ant binaries to support three 
 	ways of running the compiler:
     <orderedlist>
       <listitem>
@@ -40,6 +42,7 @@
     </para>
   </sect1>
   
+  <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .  install -->
   <sect1 id="antTasks-install" xreflabel="Installing Ant Tasks">
     <title>Installing Ant Tasks</title>
     <para>
@@ -55,7 +58,8 @@
 	<para>
 	In Ant, third-party tasks can be declared using a taskdef entry in 
 	the build script, to identify the name and classes. 
-	When declaring a task, include the aspectjtools.jar either in the 
+	When declaring a task, include the 
+	<literal>aspectjtools.jar</literal> either in the 
 	taskdef classpath or in ${ANT_HOME}/lib where it will be added 
 	to the system class path by the ant script. 
 	You may specify the task script names directly, 
@@ -98,8 +102,7 @@
     </para>
     
     <para>
-    This task is named iajc now to avoid conflict with the 1.0 task ajc, 
-    but the name may change to ajc in the future.
+    This task is named iajc to avoid conflict with the 1.0 task ajc. 
     </para>
 
   	<sect2 id="antTasks-iajc-options" xreflabel="AjcTask (iajc) Options">
@@ -112,11 +115,12 @@
 		the same name, and a common path can be reused by defining it as a
 		global and passing the id to the corresponding {name}ref attribute. 
 		See <xref linkend="antTasks-iajc-paths"/> 
-		below for more information.
+		below for more details.
 	    </para>
 	    <para>
 		Most attributes and nested elements are optional.	
-		The compiler requires that the same version of aspectjrt.jar 
+		The compiler requires that the same version of 
+		<literal>aspectjrt.jar</literal>
 		be specified on the classpath, and that some sources be
 		be specified
 	    (using one or more of 
@@ -166,8 +170,8 @@
 				</para></entry>
 				<entry><para>						
 				Base directory of sources to compile, assuming there are 
-				TODO link nested elements  
-				for includes or excludes. This uses the Ant process 
+				<xref linkend="antTasks-nested-includes"/>.
+				This approach uses the Ant process 
 				for matching .java files and is not compatible with incremental 
 				mode. Unless using filters to limit the sources included, 
 				use sourceroots instead.
@@ -196,7 +200,7 @@
 				(<xref linkend="antTasks-iajc-paths"/>)
 				</para></entry>
 				<entry><para>
-				The bootclasspath specified types to use instead of the 
+				The bootclasspath specifies types to use instead of the 
 				invoking VM's when seeking types during compilation.					
 				</para></entry>
 			</row>
@@ -215,9 +219,10 @@
 				</para></entry>
 				<entry><para>						
 				Similar to classpath, aspectpath contains read-only, 
-				binary aspect libraries.  
-				Unlike classpath, it only accepts jar/zip files, 
-				not directories.
+				binary aspect libraries that are woven into sources
+				but not included in the output.
+				<literal>aspectpath</literal> accepts jar/zip files
+				(but, unlike classpath, not directories).
 				</para></entry>
 			</row>
 			</tbody>
@@ -239,7 +244,8 @@
 				</para></entry>
 				<entry><para>						
 				The directory in which to place the generated class files. 
-				Conflicts with outjar.	
+				Only one of <literal>destDir</literal> and 
+				<literal>outJar</literal> may be set.
 				</para></entry>
 			</row>
 			<row>
@@ -247,15 +253,19 @@
 				</para></entry>
 				<entry><para>						
 				The zip file in which to place the generated output class files. 
-				Conflicts with destdir.	
+				Only one of <literal>destDir</literal> and 
+				<literal>outJar</literal> may be set.
 				</para></entry>
 			</row>
 			<row>
-				<entry><para>outJar
+				<entry><para>copyInjars
 				</para></entry>
 				<entry><para>						
-				Copy all non-.class files from input jar(s) to the output jar or destination 
-				directory after the compile (or incremental compile) completes. 
+				If true, copy all non-.class files from input jar(s) 
+				to the output jar or destination directory after the 
+				compile (or incremental compile) completes.
+				In forked mode, this copies only after the process
+				completes, not after incremental compiles.
 				</para></entry>
 			</row>
 			<row>
@@ -288,13 +298,24 @@
 				<entry><para>fork
 				</para></entry>
 				<entry><para>						
-				Run process in another VM (usually to specify memory or avoid locking any 
-				jar files used on the classpath). 
-				When set, this requires 
-				<literal>aspectjtools.jar</literal>
-				be on the system/Ant classpath, and only uses the aspectjtools.jar 
-				to invoke the compiler (so nothing else on the system/Ant classpath 
-				is included implicitly in the compiler/user classpath). 
+				Run process in another VM. 
+				This gets the forking classpath either explicitly
+				from a <literal>forkclasspath</literal> entry 
+				or by searching the task or system/Ant classpath for the
+				first readable file with a name of the form
+				<literal>aspectj{-}tools{.*}.jar</literal>.
+				When forking you can specify the amount of memory used
+				with <literal>maxmem</literal>.
+				Fork cannot be used in incremental mode, 
+				unless using a tag file.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>forkclasspath, forkclasspathRef
+				(<xref linkend="antTasks-iajc-paths"/>)
+				</para></entry>
+				<entry><para>
+				Specify the classpath to use for the compiler when forking.
 				</para></entry>
 			</row>
 			<row>
@@ -306,12 +327,14 @@
 				</para></entry>
 			</row>
 			<row>
-				<entry><para>tagfile
+				<entry><para>incremental
 				</para></entry>
 				<entry><para>		
 				incremental mode: Build once, then recompile only required source 
 				files when user provides input. 
-				Requires that source files be specified only using sourceroots. 
+				Requires that source files be specified only using 
+				<literal>sourceroots</literal>. 
+				Incompatible with forking.
 				</para></entry>
 			</row>
 			<row>
@@ -320,7 +343,9 @@
 				<entry><para>		
 				incremental mode: Build once, then recompile only required source 
 				files when the tag file is updated, finally exiting when tag file 
-				is deleted (also requires and only permits sourceroots).				
+				is deleted.
+				Requires that source files be specified only using 
+				<literal>sourceroots</literal>. 
 				</para></entry>
 			</row>
 			<row>
@@ -337,7 +362,9 @@
 				</para></entry>
 				<entry><para>		
 				Experimental option to produce binaries that can only be used as input 
-				for the -injars option.
+				for the <literal>-injars</literal> option.
+				Usually aspects are compiled normally and put on the
+				<literal>aspectpath</literal>.
 				</para></entry>
 			</row>
 			</tbody>
@@ -358,21 +385,21 @@
 				<entry><para>emacssym
 				</para></entry>
 				<entry><para>
-				Whether to emit <literal>.ajesym</literal> symbol files for Emacs support.
+				If true, emit <literal>.ajesym</literal> symbol files for Emacs support.
 				</para></entry>
 			</row>
 			<row>
 				<entry><para>verbose
 				</para></entry>
 				<entry><para>
-				Whether to emit compiler status messages during the compile.				
+				If true, emit compiler status messages during the compile.				
 				</para></entry>
 			</row>
 			<row>
 				<entry><para>Xlistfileargs
 				</para></entry>
 				<entry><para>			
-				Whether to emit list of file arguments during 
+				If true, emit list of file arguments during 
 				the compile (but behaves now like verbose).			
 				</para></entry>
 			</row>
@@ -395,7 +422,7 @@
 				</para></entry>
 				<entry><para>			
 				Same as <literal>xlint:warning</literal>:
-				if enabled, set default level of all language 
+				if true, set default level of all language 
 				usage messages to warning.
 				</para></entry>
 			</row>
@@ -404,7 +431,7 @@
 				</para></entry>
 				<entry><para>
 				Specify default level of all language usage messages to one of 
-				(<literal>error warning ignore]</literal>.						
+				[<literal>error warning ignore</literal>].						
 				</para></entry>
 			</row>
 			<row>
@@ -421,8 +448,10 @@
 				<entry><para>failonerror
 				</para></entry>
 				<entry><para>			
-				Whether the build continues notwithstanding compile errors.
-				Defaults to <literal>true</literal>.			
+				If true, throw BuildException to halt build if there
+				are any compiler errors.
+				If false, continue notwithstanding compile errors.
+				Defaults to <literal>true</literal>.
 				</para></entry>
 			</row>
 			<row>
@@ -455,14 +484,14 @@
 				<entry><para>nowarn
 				</para></entry>
 				<entry><para>		
-				 	Same as <literal>warn:none</literal>.
+				 	If true, same as <literal>warn:none</literal>.
 				</para></entry>
 			</row>
 			<row>
 				<entry><para>deprecation
 				</para></entry>
 				<entry><para>			
-				Same as <literal>warn:deprecation</literal>			
+				If true, same as <literal>warn:deprecation</literal>			
 				</para></entry>
 			</row>
 			<row>
@@ -479,7 +508,7 @@
 				<entry><para>debug
 				</para></entry>
 				<entry><para>
-				Same as <literal>debug:lines,vars,source</literal>					
+				If true, same as <literal>debug:lines,vars,source</literal>					
 				</para></entry>
 			</row>
 			<row>
@@ -494,21 +523,21 @@
 				<entry><para>PreserveAllLocals
 				</para></entry>
 				<entry><para>			
-				 	Code gen preserves all local variables (for debug purposes).		
+				 	If true, code gen preserves all local variables (for debug purposes).		
 				</para></entry>
 			</row>
 			<row>
 				<entry><para>noimporterror
 				</para></entry>
 				<entry><para>			
-				 	No errors for unresolved imports.			
+				 	If true, emit no errors for unresolved imports.			
 				</para></entry>
 			</row>
 			<row>
 				<entry><para>referenceinfo
 				</para></entry>
 				<entry><para>			
-				Compute reference info.			
+				If true, compute reference info.			
 				</para></entry>
 			</row>
 			<row>
@@ -521,7 +550,7 @@
 			<row>
 				<entry><para>encoding
 				</para></entry>
-				<entry><para> 	Default source encoding format
+				<entry><para>Default source encoding format
 				(per-file encoding not supported in Ant tasks).				
 				</para></entry>
 			</row>
@@ -529,39 +558,41 @@
 				<entry><para>proceedOnError
 				</para></entry>
 				<entry><para>				
-				Keep compiling when error, dumping class files with problem methods.		
+				If true, keep compiling after errors encountered, 
+				dumping class files with problem methods.		
 				</para></entry>
 			</row>
 			<row>
 				<entry><para>progress
 				</para></entry>
 				<entry><para>		
-				 	Show progress (requires log).				
+				 	If true, emit progress (requires log).				
 				</para></entry>
 			</row>
 			<row>
 				<entry><para>time
 				</para></entry>
 				<entry><para>	
-				 	Display speed information.					
+				 	If true, display speed information.					
 				</para></entry>
 			</row>
 			<row>
 				<entry><para>target
 				</para></entry>
 				<entry><para>		
-				 	Specify target class file format (one of
+				 	Specify target class file format as one of
 				 	[<literal>1.1 1.2</literal>].
 				 	Defaults to 1.1 class file.				
 				</para></entry>
 			</row>
 			<row>
-				<entry><para>
+				<entry><para>source
 				</para></entry>
 				<entry><para>		
 				 	Set source compliance level to one of
 				 	[<literal>1.3 1.4</literal>]
-				 	(e.g., no import from default package in 1.4).
+				 	(e.g., in 1.4 no assert identifiers
+				 	and no import from default package).
 				 	Defaults to 1.3 compliance level. 				
 				</para></entry>
 			</row>
@@ -574,103 +605,26 @@
 				Default depends on compliance mode.				
 				</para></entry>
 			</row>
-			<row>
-				<entry><para>
-				</para></entry>
-				<entry><para>						
-				</para></entry>
-			</row>
-			<row>
-				<entry><para>
-				</para></entry>
-				<entry><para>						
-				</para></entry>
-			</row>
 			</tbody>
 		</tgroup>
 		</table> 
 
-
-		<!-- bug  Specifying sources morerows and rotate are failing 
-		<table>
-		<title>AjcTask (iajc) options</title>
-		<tgroup cols="3">
-			<thead>
-			<row>
-			<entry></entry>
-			<entry>Attribute</entry>
-			<entry>Description</entry>
-			</row>
-			</thead>
-			<tbody>
-				<row><entry morerows="7" rotate="1"><para>
-				Specifying sources
-				</para></entry></row>
-				<row><entrytbl spanname="both">
-					<tbody><row>
-						<entry><para>argfiles, argfilesRef
-						<xref linkend="antTasks-iajc-paths"/>)
-						</para></entry>
-						<entry><para>
-						An argument file contains a list of arguments read by the compiler. 
-						Each line is read into one element of the argument array 
-						and may include another argfile by reference.		
-						</para></entry>
-					</row></tbody>
-				</entrytbl></row>
-			</tbody>
-		</tgroup>
-		</table> 
-		-->
-		<!-- bug  Specifying sources spanname is failing 
-		<table>
-		<title>AjcTask (iajc) options</title>
-		<tgroup cols="2">
-		    <colspec colnum="1" colname="option" colwidth="4*"/>
-		    <colspec colnum="2" colname="description" colwidth="1*"/>
-		    <spanspec spanname="both" namest="option" nameend="description"/>
-			<thead>
-			<row>
-			<entry>Attribute</entry>
-			<entry>Description</entry>
-			</row>
-			</thead>
-			<tbody>
-				<row><entry spanname="both"><bold>Specifying sources</bold>
-				</entry></row>
-				<row><entrytbl spanname="both">
-					<tbody><row>
-						<entry spanname="option">
-						argfiles, argfilesRef
-						<xref linkend="antTasks-iajc-paths"/>)
-						</entry>
-						<entry spanname="description"><para>
-						An argument file contains a list of arguments read by the compiler. 
-						Each line is read into one element of the argument array 
-						and may include another argfile by reference.		
-						</para></entry>
-					</row></tbody>
-				</entrytbl></row>
-			</tbody>
-		</tgroup>
-		</table> 
-		-->
 		<!-- . . . . . . . . . . . . . . . . iajc options table -->
 	</sect2>
 	
-  	<sect2>
-    <title>AjcTask parameters specified as nested elements</title>
+  	<sect2 id="antTasks-nested-includes" xreflabel="nested matches">
+    <title>AjcTask matching parameters specified as nested elements</title>
     <para>
 	This task forms an implicit FileSet and supports all attributes of 
 	<literal>&lt;fileset&gt;</literal> (dir becomes srcdir) as well as 
 	the nested 
 	<literal>&lt;include&gt;</literal>, 
 	<literal>&lt;exclude&gt;</literal>, and 
-	<literal>&lt;patternset&gt;</literal> elements
-	as described in <xref linkend="antTasks-ajc-nested"/>. 
-	These can be used to specify source files. However, we recommend 
-	using sourceRoots to specify source directories unless using 
-	filters to exclude some files from compilation.
+	<literal>&lt;patternset&gt;</literal> elements.
+	These can be used to specify source files. 
+	However, it is better to use <literal>sourceroots</literal>
+	to specify source directories unless using filters to exclude 
+	some files from compilation.
     </para>
   	</sect2>
   	
@@ -682,7 +636,9 @@
 	<literal>sourceroots</literal>,
 	<literal>argfiles</literal>,
 	<literal>injars</literal>,
-	<literal>classpath</literal>, and
+	<literal>classpath</literal>,
+	<literal>bootclasspath</literal>,
+	<literal>forkclasspath</literal>, and
 	<literal>aspectpath</literal>.
 	In all cases, these may be specified as nested elements, something 
 	like this:
@@ -743,7 +699,8 @@
   </taskdef>
 
   <target name="compile" >
-    <iajc sourceroots="${home.dir}/ec/project/src" /> 
+    <iajc sourceroots="${home.dir}/ec/project/src" 
+        classpath="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/> 
   </target>
 </project>
 ]]>
@@ -773,8 +730,8 @@
 	        </para>
 	      </listitem>
 	      <listitem>
-	        <para>
-	        </para>Copies resources from the input jar and source directories into the application jar.
+	        <para>Copies resources from the input jar and source directories into the application jar.
+	        </para>
 	      </listitem>
 	    </orderedlist>
 		<para>
@@ -783,6 +740,7 @@
 		Messages are printed as usual. 
 		When the user has quit, then this runs the application.
 		</para>
+		<!-- if program changed, test in docs/test/antScriptTest -->
 
 		<programlisting>
 		<![CDATA[
@@ -815,7 +773,7 @@
 ]]>
 		</programlisting>
 		<para>
-		For an in-depth example of a build script,
+		For an example of a build script,
 		see <ulink url="../examples/build.xml">
 						../examples/build.xml</ulink>.
 		</para>
@@ -968,10 +926,12 @@
 	</itemizedlist>
 	<itemizedlist>
 		<listitem><para>
-		Warning - use build.compiler.clean to get all files, when available,
-		because Javac prunes the source file list of "up-to-date" source files 
-		based on the timestamps of corresponding .class files 
-		(and will not compile if no sources are out of date). 
+		Warning - define the system property
+		<literal>build.compiler.clean</literal> to compile all files, 
+		when available.
+		Javac prunes the source file list of "up-to-date" source files 
+		based on the timestamps of corresponding .class files, 
+		and will not compile if no sources are out of date. 
 		This is wrong for ajc which requires all the files for each compile 
 		and which may refer indirectly to sources using argument files. 
 		</para>
@@ -1039,7 +999,8 @@
 	    </para>
 	    <para>
 		Most attributes and nested elements are optional.	
-		The compiler requires that the same version of aspectjrt.jar 
+		The compiler requires that the same version of 
+		<literal>aspectjrt.jar</literal>
 		be specified on the classpath, and that some sources be
 		be specified
 	    (using one or more of 
@@ -1172,7 +1133,9 @@
 				<entry><para>failonerror
 				</para></entry>
 				<entry><para>
-				If true, build continues notwithstanding compile errors.
+				If true, throw BuildException to halt build if there
+				are any compiler errors.
+				If false, continue notwithstanding compile errors.
 				Defaults to <literal>true</literal>.
 				</para></entry>
 			</row>
@@ -1341,9 +1304,7 @@
 		<literal>&lt;include&gt;</literal>, 
 		<literal>&lt;exclude&gt;</literal>, and 
 		<literal>&lt;patternset&gt;</literal> elements. 
-		These can be used to specify source files. However, we recommend 
-		using sourceRoots to specify source directories unless using 
-		filters to exclude some files from compilation.
+		These can be used to specify source files. 
 	    </para>
 	    <para>
 		<literal>ajc</literal>'s
@@ -1431,7 +1392,214 @@
 	  </sect2>
 
   </sect1>
+	<sect1 id="antTasks-maven" xreflabel="Maven support">
+		<title>Maven support</title>
+		<para>
+		Maven is a project-based build system used by Apache and others
+		to integrate many open-source projects.  They have a plugin to
+		support AspectJ 1.0, and we plan to help them support AspectJ 1.1.
+		In the meantime, this describes how to upgrade an existing
+		Maven environment to use the AspectJ 1.1 compiler.
+		It was verified on a 1.0-beta10-SNAPSHOT release.
+		For more information on Maven, see
+		<ulink url="http://maven.apache.org">http://maven.apache.org</ulink>.
+		</para>
+		<sect2 id="antTasks-maven-plugin" xreflabel="Sample Maven plugin">
+		<title>Sample Maven plugin</title>
+		<para>
+		To integrate AspectJ requires writing a Maven plugin and
+		installing the AspectJ libraries in the local Maven 
+		repositories directory.	 
+		</para>
+		<para>
+		The Maven plugin defines an "aspectj" goal;
+		given a project with directories "src" and "aspectsrc",
+		the plugin will compile everything using AspectJ.
+		To use the plugin, request the aspectj goal
+		in your project:
+		</para>
+		<programlisting>
+		<![CDATA[		
+  maven aspectj
+]]>
+		</programlisting>
+		<para>
+		The plugin is mainly a Jelly script that specifies 
+		Ant scriptlets to run when building with AspectJ.
+		To create your own, start with the files from
+		the Maven support for AspectJ 1.0.
+		(Unfortunately, their plugin version is 1.1.
+		If you want to continue using the old version,
+		copy the files and 
+		use a different version number than 1.1 in the
+		examples below.)
+		</para>
+		<programlisting>
+		<![CDATA[		
+----plugins
+    |---maven-aspectj-plugin-1.1
+        |   plugin.jelly
+        |   project.properties
+        |   project.xml
+        |---META-INF
+                INDEX.LIST
+                LICENSE.txt
+                MANIFEST.MF
+]]>
+		</programlisting>
+		<para>
+		Below is a <literal>plugin.jelly</literal>
+		script that defines the
+		Ant calls.  The script uses XML namespace prefixes,
+		so find the start of the Ant compiler call
+		at <literal>&lt;ant:iajc ...</literal>.
+		Note that it uses the existing rule for defining
+		<literal>aspectSourcesPresent</literal>.
+		</para>
+		<programlisting>
+		<![CDATA[		
+<?xml version="1.0"?>
 
+<project xmlns:j="jelly:core"
+         xmlns:ant="jelly:ant"
+         xmlns:util="jelly:util">
+
+  <goal name="aspectj"
+    description="Compile code with AspectJ"
+    prereqs="aspectj:compile"/>
+
+  <goal name="aspectj:compile"
+    description="Compile code with AspectJ">
+  
+    <j:if test="${sourcesPresent == 'true'}">
+      <ant:available property="aspectSourcesPresent"
+        file="${pom.build.aspectSourceDirectory}"/>
+
+      <ant:uptodate property="aspectj.compile.notRequired" 
+        targetfile="${maven.build.dir}/${maven.final.name}.jar">
+        <ant:srcfiles dir="${pom.build.sourceDirectory}"/>
+        <j:if test="${aspectSourcesPresent == 'true'}">
+          <ant:srcfiles dir="${pom.build.aspectSourceDirectory}"/>
+        </j:if>
+      </ant:uptodate>
+
+      <j:set var="aspectjCompileNotRequired" 
+      	value="${aspectj.compile.notRequired}"/>
+      <j:if test="${aspectjCompileNotRequired == null}">
+      	<ant:taskdef 
+      		resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+          	<ant:classpath>
+              <ant:pathelement path="${plugin.getDependencyPath('aspectj:aspectjtools')}"/>
+          	</ant:classpath>
+      	</ant:taskdef>
+	
+        <!-- fork to avoid BCEL library version conflict with maven -->
+        <ant:iajc
+          destdir="${maven.build.dest}"
+          debug="${maven.compile.debug}"
+          fork="true">
+
+          <ant:forkclasspath>
+            <ant:pathelement path="${plugin.getDependencyPath('aspectj:aspectjtools')}"/>
+          </ant:forkclasspath>
+
+          <ant:sourceroots>
+            <ant:path refid="maven.compile.src.set"/>
+            <ant:pathelement location="${pom.build.aspectSourceDirectory}"/>
+          </ant:sourceroots>
+
+          <ant:classpath>
+            <ant:path refid="maven.dependency.classpath"/>
+            <ant:pathelement path="${plugin.getDependencyPath('aspectj:aspectjrt')}"/>
+          </ant:classpath>
+        </ant:iajc>
+      </j:if>
+  </j:if>
+  </goal>
+</project>
+]]>
+		</programlisting>
+		<para>
+		In this example, no special options
+		are supported, but nicely enough the script can read the
+		library jars from the plugin dependency path:
+		</para>
+		<programlisting>
+		<![CDATA[		
+  <ant:pathelement path="${plugin.getDependencyPath('aspectj:aspectjrt')}"/>
+]]>
+		</programlisting>
+		<para>
+		The plugin dependency path and the filenames of the library
+		jars are defined in the plugin 
+		<literal>project.xml</literal> file.
+		Below are the relevant definitions:
+		</para>
+		<programlisting>
+		<![CDATA[		
+<project>
+  <extend>${basedir}/../project.xml</extend>
+  <pomVersion>3</pomVersion>
+  <id>maven-aspectj-plugin</id>
+
+  ...
+
+  <dependencies>
+    <dependency>
+      <id>aspectj:aspectjtools</id>
+      <version>1.1</version>
+      <properties>
+        <classloader>root</classloader>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>aspectj:aspectjrt</id>
+      <version>1.1</version>
+      <properties>
+        <classloader>root</classloader>
+      </properties>
+    </dependency>
+  </dependencies>
+
+  ...
+
+</project>
+]]>
+		</programlisting>
+		<para>
+		So the actual paths are calculated from the dependencies,
+		which resolve to the local repository directory of your
+		Maven installation.  After you update the Jelly script,
+		manually rename and copy the AspectJ 1.1 libraries to your
+		directory:
+		</para>
+		<programlisting>
+		<![CDATA[		
+|---repository
+    |---aspectj
+    |   |---jars
+    |           aspectj-ant-1.0.6.jar
+    |           aspectj-ant-1.0.6.jar.md5
+    |           aspectj-tools-1.0.6.jar
+    |           aspectj-tools-1.0.6.jar.md5
+    |           aspectjrt-1.0.6.jar
+    |           aspectjrt-1.0.6.jar.md5
+    |           aspectjrt-1.1.jar            # add manually
+    |           aspectjtools-1.1.jar         # add manually
+]]>
+		</programlisting>
+		<para>
+		That should be it.  Remember to go through the files
+		for any version or library jar name changes.
+		Again, long-term, we hope to the Maven folks can 
+		have an official 
+		version of the AspectJ plugin which supports
+		both AspectJ 1.0 and 1.1.
+		</para>  		
+	  </sect2>
+  </sect1>
+
+  <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .  problems -->
   <sect1 id="antTasks-problems">
     <title>Isolating problems running the Ant tasks</title>
 
