@@ -202,10 +202,7 @@ public class IncCompilerRun implements IAjcRun {
                 return false; // setup failed
             }
         }
-        List errors = spec.getMessages(IMessage.ERROR);
-        List warnings = spec.getMessages(IMessage.WARNING);
-        List expectRecompiled = Collections.EMPTY_LIST;
-        AjcMessageHandler handler = new AjcMessageHandler(errors, warnings, expectRecompiled);
+        AjcMessageHandler handler = new AjcMessageHandler(spec.getMessages());
         boolean handlerResult = false;
         boolean commandResult = false;
         boolean result = false;
@@ -263,21 +260,6 @@ public class IncCompilerRun implements IAjcRun {
       //		return "IncCompilerRun(" + spec + ")"; // XXX
 	}
 
-//	/** @see IXmlWritable#writeXml(XMLWriter) */
-//	public void writeXml(XMLWriter out) {
-//        String elementName = "inc-compile";
-//        String tagAttr = out.makeAttribute("tag", spec.tag);
-//        List messages = spec.getMessages();
-//        int nMessages = messages.size();
-//        if (0 == nMessages) {
-//            out.printElement(elementName, tagAttr);
-//        } else {
-//            out.startElement(elementName, tagAttr, true);
-//            SoftMessage.writeXml(out, messages);
-//            out.endElement(elementName);
-//        }        
-//	}
-//
 	/** 
      * initializer/factory for IncCompilerRun.
      */
@@ -292,11 +274,11 @@ public class IncCompilerRun implements IAjcRun {
         /**
          * skip description, skip sourceLocation, 
          * do keywords, skip options, do paths as classes, do comment,
-         * skip staging (always true), 
+         * skip staging (always true),  skip badInput (irrelevant)
          * do dirChanges, do messages but skip children. 
          */
         private static final XMLNames NAMES = new XMLNames(XMLNames.DEFAULT,
-                "", "", null, "", "classes", null, "", false, false, true);
+                "", "", null, "", "classes", null, "", "", false, false, true);
                 
 		/** identifies files this run owns, so {name}.{tag}.java maps to {name}.java */
 		String tag;
@@ -357,10 +339,7 @@ public class IncCompilerRun implements IAjcRun {
             if (!LangUtil.isEmpty(dirChanges)) {
                 DirChanges.Spec.writeXml(out, dirChanges);
             }
-            List messages = getMessages();
-            if (0 < messages.size()) {
-                SoftMessage.writeXml(out, messages);
-            }
+            SoftMessage.writeXml(out, getMessages());
             out.endElement(xmlElementName);
         }
         
