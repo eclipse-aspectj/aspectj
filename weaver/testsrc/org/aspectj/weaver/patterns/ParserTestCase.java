@@ -16,7 +16,6 @@ package org.aspectj.weaver.patterns;
 import junit.framework.TestCase;
 
 import org.aspectj.weaver.BcweaverTests;
-import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelShadow;
