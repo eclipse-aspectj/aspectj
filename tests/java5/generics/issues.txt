@@ -1,0 +1,21 @@
+pointcut matching for constructor calls:
+
+call(List<Integer>.new()) ?
+
+call(List<Integer>.new(Integer i)) ??
+
+call(<T> List<T>.new())
+
+call(<T> List<T>.new(T))
+
+execution likewise ?
+
+for methods and fields in parameterized types:
+
+call(<T> foo(T))  etc. ?
+
+There is only ONE class remember.
+
+get(<T> T foo*)
+
+does get(Object obj) match new Foo<Object>()  with Foo<T> { T obj } ???

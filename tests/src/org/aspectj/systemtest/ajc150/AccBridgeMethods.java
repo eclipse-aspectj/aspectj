@@ -66,21 +66,7 @@ public class AccBridgeMethods extends org.aspectj.testing.XMLBasedAjcTestCase {
    */
   public void test001_bridgeMethodIgnored() {
   	runTest("Ignore bridge methods");
-  	List weaveMessages = getWeaveMessages(ajc.getLastCompilationResult(),false);
-  	assertTrue("Should only be two weave messages",weaveMessages.size()==2);
   }
   
-  private List getWeaveMessages(CompilationResult cr,boolean printThem) {
-  	List weaveMessages = new ArrayList();
-  	List infoMessages = cr.getInfoMessages();
-  	for (Iterator iter = infoMessages.iterator(); iter.hasNext();) {
-		IMessage element = (IMessage) iter.next();
-		if (element.getKind()==IMessage.WEAVEINFO) {
-			weaveMessages.add(element);
-			if (printThem) System.err.println(element);
-		}
-	}
-  	return weaveMessages;
-  }
-
+ 
 }

@@ -12,19 +12,23 @@ package org.aspectj.systemtest.ajc150;
 
 import java.io.File;
 
-import org.aspectj.tools.ajc.CompilationResult;
+import junit.framework.Test;
+
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 
 /**
  * Checks if we are obeying migration rules. 
  */
-public class MigrationTests extends TestUtils {
-	
-  protected void setUp() throws Exception {
-	super.setUp();
-	baseDir = new File("../tests/migration");
-  }
+public class MigrationTests extends XMLBasedAjcTestCase {
 
+	  public static Test suite() {
+	    return XMLBasedAjcTestCase.loadSuite(MigrationTests.class);
+	  }
+
+	  protected File getSpecFile() {
+	    return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
+	  }
   /**
    * Compile a simple java class with an aspect library built with aspectj 1.2.1 - this
    * checks that we can load in attributes (especially pointcuts) that were written out
@@ -32,13 +36,14 @@ public class MigrationTests extends TestUtils {
    *
    */
   public void testMigrationFrom121_pointcutsAndAdvice() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"-aspectpath","aspects121.jar","Program.java"});
-  	System.err.println(cR.getStandardError());
-  	assertTrue("Should not coredump: "+cR.getStandardError(),cR.getStandardError().indexOf("Dumping to ajcore")==-1);
-    assertTrue("Should be no error messages: \n"+cR.getErrorMessages(),cR.getErrorMessages().size()==0);
-    File f = new File(ajc.getSandboxDirectory()+File.separator+"Program.class");
-    assertTrue("Missing class file",f.exists());
-  	run("Program");
+  	runTest("load aspectj 1.2.1 aspects in aspectj 5");
+//  	CompilationResult cR = ajc(baseDir,new String[]{"-aspectpath","aspects121.jar","Program.java"});
+//  	System.err.println(cR.getStandardError());
+//  	assertTrue("Should not coredump: "+cR.getStandardError(),cR.getStandardError().indexOf("Dumping to ajcore")==-1);
+//    assertTrue("Should be no error messages: \n"+cR.getErrorMessages(),cR.getErrorMessages().size()==0);
+//    File f = new File(ajc.getSandboxDirectory()+File.separator+"Program.class");
+//    assertTrue("Missing class file",f.exists());
+//  	run("Program");
   }
   
 //  /**

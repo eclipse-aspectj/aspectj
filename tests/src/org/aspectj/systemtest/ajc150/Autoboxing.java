@@ -12,144 +12,83 @@ package org.aspectj.systemtest.ajc150;
 
 import java.io.File;
 
-import org.aspectj.tools.ajc.CompilationResult;
+import junit.framework.Test;
+
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
 This test must be run under a Java5 VM - so it is *not* currently
 in the test suite !!!
 */
-public class Autoboxing extends TestUtils {
+public class Autoboxing extends XMLBasedAjcTestCase {
 
-	private boolean runningUnderJava5 = false;
-	
-	
-	protected void setUp() throws Exception {
-		super.setUp();
-		baseDir = new File("../tests/java5/autoboxing");
-	}
-	
+	  public static Test suite() {
+	    return XMLBasedAjcTestCase.loadSuite(Autoboxing.class);
+	  }
+
+	  protected File getSpecFile() {
+	    return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
+	  }
 	
 	public void testSimpleBoxing() {
-		CompilationResult cR = binaryWeave("testcode.jar","SimpleAutoboxingAspect.aj",0,0,"-1.5");
-		assertTrue("Expected two weaving messages (both on line 7) but got:"+getWeavingMessages(cR.getInfoMessages()).size(),
-				getWeavingMessages(cR.getInfoMessages()).size()==2);
-		RunResult rR = run("SimpleAutoboxing");
-		verify(rR.getStdErr(),"Matching by Integer:20000");
-		verify(rR.getStdErr(),"Matching by int:20000");
-		verify(rR.getStdErr(),"method_takes_Integer=20000");
+		runTest("simple boxing test");
 	}
 	
 	public void testIntegerBoxing() {
-		CompilationResult cR = binaryWeave("testcode.jar","AspectInteger.aj",0,0,"-1.5");
-		System.err.println(cR.getStandardError());
-		assertTrue("Expected eight weaving messages but got: "+getWeavingMessages(cR.getInfoMessages()).size(),
-				getWeavingMessages(cR.getInfoMessages()).size()==8);
-		RunResult rR = run("AutoboxingI");
-		verify(rR.getStdErr(),"Matching by Integer:10000");
-		verify(rR.getStdErr(),"Matching by int:10000");
-		verify(rR.getStdErr(),"method_takes_Integer=10000");
-		verify(rR.getStdErr(),"Matching by Integer:20000");
-		verify(rR.getStdErr(),"Matching by int:20000");
-		verify(rR.getStdErr(),"method_takes_Integer=20000");
-		verify(rR.getStdErr(),"Matching by Integer:30000");
-		verify(rR.getStdErr(),"Matching by int:30000");
-		verify(rR.getStdErr(),"method_takes_int=30000");
-		verify(rR.getStdErr(),"Matching by Integer:40000");
-		verify(rR.getStdErr(),"Matching by int:40000");
-		verify(rR.getStdErr(),"method_takes_int=40000");
+		runTest("integer boxing");
 	}
-	
+
 	public void testCharacterBoxing() {
-		CompilationResult cR = binaryWeave("testcode.jar","AspectChar.aj",0,0,"-1.5");
-		System.err.println(cR.getStandardError());
-		assertTrue("Expected eight weaving messages but got: "+getWeavingMessages(cR.getInfoMessages()).size(),
-				getWeavingMessages(cR.getInfoMessages()).size()==8);
-		RunResult rR = run("AutoboxingC");
-		int lines = countLines(rR.getStdErr());
-		assertTrue("Expected 12 lines of output but got: #"+lines+":\n"+rR.getStdErr(),lines==12);
+		runTest("char boxing");
 	}
-	
+
 	public void testDoubleBoxing() {
-		CompilationResult cR = binaryWeave("testcode.jar","AspectDouble.aj",0,0,"-1.5");
-		System.err.println(cR.getStandardError());
-		assertTrue("Expected eight weaving messages but got: "+getWeavingMessages(cR.getInfoMessages()).size(),
-				getWeavingMessages(cR.getInfoMessages()).size()==8);
-		RunResult rR = run("AutoboxingD");
-		int lines = countLines(rR.getStdErr());
-		assertTrue("Expected 12 lines of output but got: #"+lines+":\n"+rR.getStdErr(),lines==12);
+		runTest("double boxing");
 	}
-	
+
 	public void testFloatBoxing() {
-		CompilationResult cR = binaryWeave("testcode.jar","AspectFloat.aj",0,0,"-1.5");
-		System.err.println(cR.getStandardError());
-		assertTrue("Expected eight weaving messages but got: "+getWeavingMessages(cR.getInfoMessages()).size(),
-				getWeavingMessages(cR.getInfoMessages()).size()==8);
-		RunResult rR = run("AutoboxingF");
-		int lines = countLines(rR.getStdErr());
-		assertTrue("Expected 12 lines of output but got: #"+lines+":\n"+rR.getStdErr(),lines==12);
+		runTest("float boxing");
 	}
 	
 	public void testShortBoxing() {
-		CompilationResult cR = binaryWeave("testcode.jar","AspectShort.aj",0,0,"-1.5");
-		System.err.println(cR.getStandardError());
-		assertTrue("Expected eight weaving messages but got: "+getWeavingMessages(cR.getInfoMessages()).size(),
-				getWeavingMessages(cR.getInfoMessages()).size()==8);
-		RunResult rR = run("AutoboxingS");
-		int lines = countLines(rR.getStdErr());
-		assertTrue("Expected 12 lines of output but got: #"+lines+":\n"+rR.getStdErr(),lines==12);
+		runTest("short boxing");
 	}
 	
 	public void testLongBoxing() {
-		CompilationResult cR = binaryWeave("testcode.jar","AspectLong.aj",0,0,"-1.5");
-		System.err.println(cR.getStandardError());
-		assertTrue("Expected eight weaving messages but got: "+getWeavingMessages(cR.getInfoMessages()).size(),
-				getWeavingMessages(cR.getInfoMessages()).size()==8);
-		RunResult rR = run("AutoboxingJ");
-		int lines = countLines(rR.getStdErr());
-		assertTrue("Expected 12 lines of output but got: #"+lines+":\n"+rR.getStdErr(),lines==12);
+		runTest("long boxing");
 	}
 	
 	public void testBooleanBoxing() {
-		CompilationResult cR = binaryWeave("testcode.jar","AspectBoolean.aj",0,0,"-1.5");
-		System.err.println(cR.getStandardError());
-		assertTrue("Expected eight weaving messages but got: "+getWeavingMessages(cR.getInfoMessages()).size(),
-				getWeavingMessages(cR.getInfoMessages()).size()==8);
-		RunResult rR = run("AutoboxingZ");
-		int lines = countLines(rR.getStdErr());
-		assertTrue("Expected 12 lines of output but got: #"+lines+":\n"+rR.getStdErr(),lines==12);
+		runTest("boolean boxing");
 	}
 	
 	public void testByteBoxing() {
-		CompilationResult cR = binaryWeave("testcode.jar","AspectByte.aj",0,0,"-1.5");
-		System.err.println(cR.getStandardError());
-		assertTrue("Expected eight weaving messages but got: "+getWeavingMessages(cR.getInfoMessages()).size(),
-				getWeavingMessages(cR.getInfoMessages()).size()==8);
-		RunResult rR = run("AutoboxingB");
-		int lines = countLines(rR.getStdErr());
-		assertTrue("Expected 12 lines of output but got: #"+lines+":\n"+rR.getStdErr(),lines==12);
+		runTest("byte boxing");
 	}
 	
 	public void testBoxingAfterReturning() {
-		CompilationResult cR = binaryWeave("testcode.jar","AspectAfterReturning.aj",0,0,"-1.5");
-		//System.err.println(cR.getStandardError());
-		assertTrue("Expected six weaving messages but got: "+getWeavingMessages(cR.getInfoMessages()).size(),
-				getWeavingMessages(cR.getInfoMessages()).size()==6);
-		RunResult rR = run("AspectAfterReturning");
-		int lines = countLines(rR.getStdErr());
-		assertTrue("Expected 6 lines of output but got: #"+lines+":\n"+rR.getStdErr(),lines==6);	
+		runTest("boxing in after returning");
 	}
-		
-	public int countLines(String s) {
-		int count = 0;
-		while (s.indexOf("\n")!=-1) {
-			count++;
-			s = s.substring(s.indexOf("\n")+1);
-		}
-		return count;
-	}
-	
-	protected void verify(String output,String lookingFor) {
-		assertTrue("Didn't find expected string '"+lookingFor+"' in:\n"+output,output.indexOf(lookingFor)!=-1);
-	}
-	
+//		CompilationResult cR = binaryWeave("testcode.jar","AspectAfterReturning.aj",0,0,"-1.5");
+//		//System.err.println(cR.getStandardError());
+//		assertTrue("Expected six weaving messages but got: "+getWeavingMessages(cR.getInfoMessages()).size(),
+//				getWeavingMessages(cR.getInfoMessages()).size()==6);
+//		RunResult rR = run("AspectAfterReturning");
+//		int lines = countLines(rR.getStdErr());
+//		assertTrue("Expected 6 lines of output but got: #"+lines+":\n"+rR.getStdErr(),lines==6);	
+//	}
+//		
+//	public int countLines(String s) {
+//		int count = 0;
+//		while (s.indexOf("\n")!=-1) {
+//			count++;
+//			s = s.substring(s.indexOf("\n")+1);
+//		}
+//		return count;
+//	}
+//	
+//	protected void verify(String output,String lookingFor) {
+//		assertTrue("Didn't find expected string '"+lookingFor+"' in:\n"+output,output.indexOf(lookingFor)!=-1);
+//	}
+//	
 }

@@ -10,12 +10,9 @@
 package org.aspectj.systemtest.ajc121;
 
 import java.io.File;
-import java.util.Iterator;
-import java.util.List;
 
 import junit.framework.Test;
 
-import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
@@ -272,21 +269,6 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   
   public void test050_typePatternMatchingWithArrays() {
   	runTest("declare warning warns at wrong points");
-  }
-
-  public void test051_arrayCloningInJava5() {
-    runTest("AJC possible bug with static nested classes");
-    List l = ajc.getLastCompilationResult().getInfoMessages();
-    assertTrue("Should at least have had one weaving message",l!=null && l.size()>0);
-    boolean gotWeaveMessage = false;
-    for (Iterator msg = l.iterator(); msg.hasNext();) {
-		Object element = (Object) msg.next();
-		if (element instanceof WeaveMessage) {
-			WeaveMessage wm = (WeaveMessage)element;
-			if (wm.getMessage().indexOf("advised by around advice from")!=-1) gotWeaveMessage = true;
-		}
-	}
-    assertTrue("Expected a weaving message but only found "+l,gotWeaveMessage);
   }
   
   public void test052_bogusMessage1() {

@@ -11,40 +11,35 @@
 package org.aspectj.systemtest.ajc150;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+
+import junit.framework.Test;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.tools.ajc.CompilationResult;
+import org.aspectj.apache.bcel.util.ClassPath;
+import org.aspectj.apache.bcel.util.SyntheticRepository;
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
-public class Annotations extends TestUtils {
-	
-  protected void setUp() throws Exception {
-	super.setUp();
-	baseDir = new File("../tests/java5/annotations");
-  }
-  
+public class Annotations extends XMLBasedAjcTestCase {
+
+	  public static Test suite() {
+	    return XMLBasedAjcTestCase.loadSuite(Annotations.class);
+	  }
+
+	  protected File getSpecFile() {
+	    return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
+	  }
+	  
   public void testCompilingAnnotation() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"SimpleAnnotation.java","-1.5"});
-  	MessageSpec ms = new MessageSpec(null,null);
-  	assertMessages(cR,ms);
+  	runTest("compiling an annotation");
   }
   
   public void testCompilingAnnotatedFile() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"AnnotatedType.java","SimpleAnnotation.java","-1.5"});
-  	MessageSpec ms = new MessageSpec(null,null);
-  	assertMessages(cR,ms);
+  	runTest("compiling annotated file");
   }
   
   public void testCompilingUsingWithinAndAnnotationTypePattern() {
-  	CompilationResult cR = ajc(new File(baseDir+File.separator+"within"),
-  			new String[]{"PlainWithin.java","PlainWithinTests.java","-1.5"});
-  	List expectedInfoMessages = new ArrayList();
-  	expectedInfoMessages.add(new Message(21,"positive within match on annotation"));
-	expectedInfoMessages.add(new Message(25,"negative within match on annotation"));
-  	MessageSpec ms = new MessageSpec(expectedInfoMessages,null);
-  	assertMessages(cR,ms);
+  	runTest("annotations and within (src)");
   }
   
   /**
@@ -53,12 +48,7 @@ public class Annotations extends TestUtils {
    * a simple program then checks the annotations were copied across.
    */
   public void testBugWithAnnotationsLostOnWovenMethods() throws ClassNotFoundException {
-  	CompilationResult cR = ajc(new File(baseDir+File.separator+"attarget"),
-  			new String[]{"Program.java","AtTargetAspect.java","-1.5"});
-  	//System.err.println(cR.getStandardError());
-  	List expectedInfoMessages = new ArrayList();
-  	MessageSpec ms = new MessageSpec(null,null);
-  	assertMessages(cR,ms);
+  	runTest("losing annotations...");
   	
   	JavaClass jc = getClassFrom(ajc.getSandboxDirectory(),"Program");
     Method[] meths = jc.getMethods();
@@ -68,5 +58,17 @@ public class Annotations extends TestUtils {
 			assertTrue("Didn't have annotations - were they lost? method="+method.getName(),method.getAnnotations().length==1);
 		}
 	}
+  }
+  
+  // helper methods.....
+  
+  public SyntheticRepository createRepos(File cpentry) {
+	ClassPath cp = new ClassPath(cpentry+File.pathSeparator+System.getProperty("java.class.path"));
+	return SyntheticRepository.getInstance(cp);
+  }
+  
+  protected JavaClass getClassFrom(File where,String clazzname) throws ClassNotFoundException {
+	SyntheticRepository repos = createRepos(where);
+	return repos.loadClass(clazzname);
   }
 }

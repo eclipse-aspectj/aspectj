@@ -1,12 +1,901 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[
-<!ENTITY tests SYSTEM "../tests/src/org/aspectj/systemtest/ajc150/ajc150-tests.xml">
 ]>
 
 <!-- AspectJ v1.5.0 Tests -->
 
 <suite>
 
-&tests;
+    <ajc-test dir="java5/bridgeMethods" pr="72766" title="Ignore bridge methods">
+        <compile files="AspectX.aj" inpath="testcode.jar" options="-showWeaveInfo">
+          <message kind="warning" line="7" text="pointcut did not match on the method call to a bridge method."/>
+          <message kind="weave" text="(AspectX.aj:18) advised by before advice from 'AspectX'"/>
+          <message kind="weave" text="(Number.java:5) advised by before advice from 'AspectX'"/>
+        </compile>
+    </ajc-test>
 
+    <ajc-test dir="migration" title="load aspectj 1.2.1 aspects in aspectj 5">
+        <compile files="Program.java" aspectpath="aspects121.jar">
+        </compile>
+        <run class="Program"/>
+    </ajc-test>
+
+	<ajc-test dir="bugs/java5/arrayCloning" pr="72150" vm="1.5"
+	   title="AJC possible bug with static nested classes">
+	   <compile files="A.java,C.java" options="-1.5,-showWeaveInfo">
+	       <message kind="weave" text="Type 'C' (C.java:14) advised by around advice from 'A' (A.java:2)"/>
+	   </compile>
+	   <run class="C"/>
+    </ajc-test>
+    
+    <ajc-test dir="decp" pr="80249" title="Order of types passed to compiler determines weaving behavior">
+        <compile files="A.java,B.java,AspectX.java"/>
+        <run class="B"/>
+        <compile files="B.java,A.java,AspectX.java"/>
+        <run class="B"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs" pr="61568" title="Various kinds of ambiguous bindings">
+        <compile files="AmbiguousBindings.aj">
+            <message line="17" text="ambiguous binding of parameter(s) foo across '||' in pointcut"></message>
+            <message line="19" text="ambiguous binding of parameter(s) foo across '||' in pointcut"></message>
+            <message line="21" text="ambiguous binding of parameter(s) foo across '||' in pointcut"></message>
+            <message line="23" text="ambiguous binding of parameter(s) x across '||' in pointcut"></message>
+            <message line="25" text="ambiguous binding of parameter(s) foo across '||' in pointcut"></message>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs" pr="61658" title="ambiguous args">
+        <compile files="PR61658.java">
+            <message line="17" text="ambiguous binding of parameter(s) a, b across '||' in pointcut"></message>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs150" pr="78021" title="Injecting exception into while loop with break statement causes catch block to be ignored">
+        <compile files="PR78021.java"/>
+        <run class="PR78021"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs150" pr="79554" title="Return in try-block disables catch-block if final-block is present">
+        <compile files="PR79554.java"/>
+        <run class="PR79554"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs150" pr="82570" title="Weaved code does not include debug lines">
+        <compile files="PR82570_1.java"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs150" pr="83303" title="compiler error when mixing inheritance, overriding and polymorphism">
+        <compile files="PR83303.java"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs150" pr="83563" title="pertypewithin() handing of inner classes (1)">
+        <compile files="PR83563_1.java"/>
+        <run class="PR83563_1"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs150" pr="83563" title="pertypewithin() handing of inner classes (2)">
+        <compile files="PR83563_2.java"/>
+        <run class="PR83563_2"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs150" pr="83645" title="pertypewithin({interface}) illegal field modifier">
+        <compile files="PR83645.java"/>
+        <run class="PR83645"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs150" title="bad asm for enums" vm="1.5">
+        <compile files="Rainbow.java" options="-emacssym,-1.5"/>
+    </ajc-test>
+    
+    <!-- Annotation binding tests -->
+    
+    <ajc-test dir="java5/annotations/binding" vm="1.5" title="call annotation binding 1">
+        <compile files="CallAnnBinding.aj" options="-1.5"/>
+        <run class="CallAnnBinding"/>    
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/binding" vm="1.5" title="call annotation binding 2">
+        <compile files="CallAnnBinding2.aj" options="-1.5"/>
+        <run class="CallAnnBinding2"/>    
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/binding" vm="1.5" title="call annotation binding 3">
+        <compile files="CallAnnBinding3.aj" options="-1.5"/>
+        <run class="CallAnnBinding3"/>    
+    </ajc-test>
+ 
+    <ajc-test dir="java5/annotations/binding" vm="1.5" title="call annotation binding 4">
+        <compile files="CallAnnBinding4.aj" options="-1.5"/>
+        <run class="CallAnnBinding4"/>    
+    </ajc-test>
+
+   <ajc-test dir="java5/annotations/binding" vm="1.5" title="call annotation binding 5">
+        <compile files="CallAnnBinding5.aj" options="-1.5"/>
+        <run class="CallAnnBinding5"/>    
+    </ajc-test>
+    
+           <ajc-test dir="java5/annotations/binding" vm="1.5" title="call annotation binding 6">
+        <compile files="CallAnnBinding6.aj" options="-1.5"/>
+        <run class="CallAnnBinding6"/>    
+    </ajc-test>
+    
+   <ajc-test dir="java5/annotations/binding" vm="1.5" title="call annotation binding 7">
+        <compile files="CallAnnBinding7.aj" options="-1.5"/>
+        <run class="CallAnnBinding7"/>    
+    </ajc-test>
+        
+     <ajc-test dir="java5/annotations/binding" vm="1.5" title="@target annotation binding 1">
+        <compile files="AtTarget1.aj" options="-1.5"/>
+        <run class="AtTarget1"/>    
+    </ajc-test>
+
+     <ajc-test dir="java5/annotations/binding" vm="1.5" title="@target annotation binding 2">
+        <compile files="AtTarget2.aj" options="-1.5"/>
+        <run class="AtTarget2"/>    
+    </ajc-test>
+
+     <ajc-test dir="java5/annotations/binding" vm="1.5" title="@target annotation binding 3">
+        <compile files="AtTarget3.aj" options="-1.5"/>
+        <run class="AtTarget3"/>    
+    </ajc-test>
+
+     <ajc-test dir="java5/annotations/binding" vm="1.5" title="@target annotation binding 4">
+        <compile files="AtTarget4.aj" options="-1.5"/>
+        <run class="AtTarget4"/>    
+    </ajc-test>
+
+     <ajc-test dir="java5/annotations/binding/usingPackageNames" vm="1.5" title="@target annotation binding 5">
+        <compile files="MyAspect.aj,MyAnnotation.java,MyClass.java" options="-1.5"/>
+        <run class="test.MyClass"/>    
+    </ajc-test>
+
+     <ajc-test dir="java5/annotations/binding" vm="1.5" title="@this annotation binding 1">
+        <compile files="AtThis1.aj" options="-1.5"/>
+        <run class="AtThis1"/>    
+    </ajc-test>
+
+     <ajc-test dir="java5/annotations/binding" vm="1.5" title="@this annotation binding 2">
+        <compile files="AtThis2.aj" options="-1.5"/>
+        <run class="AtThis2"/>    
+    </ajc-test>
+
+     <ajc-test dir="java5/annotations/binding" vm="1.5" title="@this annotation binding 3">
+        <compile files="AtThis3.aj" options="-1.5"/>
+        <run class="AtThis3"/>    
+    </ajc-test>
+
+     <ajc-test dir="java5/annotations/binding" vm="1.5" title="@this annotation binding 4">
+        <compile files="AtThis4.aj" options="-1.5"/>
+        <run class="AtThis4"/>    
+    </ajc-test>
+
+     <ajc-test dir="java5/annotations/binding" vm="1.5" title="@this annotation binding 5">
+        <compile files="AtThis5.aj" options="-1.5"/>
+        <run class="AtThis5"/>    
+    </ajc-test>
+
+     <ajc-test dir="java5/annotations/binding" vm="1.5" title="@args annotation binding 1">
+        <compile files="AtArgs1.aj" options="-1.5"/>
+        <run class="AtArgs1"/>    
+    </ajc-test>
+
+     <ajc-test dir="java5/annotations/binding" vm="1.5" title="@args annotation binding 2">
+        <compile files="AtArgs2.aj" options="-1.5"/>
+        <run class="AtArgs2"/>    
+    </ajc-test>
+
+     <ajc-test dir="java5/annotations/binding" vm="1.5" title="@args annotation binding 3">
+        <compile files="AtArgs3.aj" options="-1.5"/>
+        <run class="AtArgs3"/>    
+    </ajc-test>
+
+     <ajc-test dir="java5/annotations/binding" vm="1.5" title="@args annotation binding 4">
+        <compile files="AtArgs4.aj" options="-1.5"/>
+        <run class="AtArgs4"/>    
+    </ajc-test>
+
+     <ajc-test dir="java5/annotations/binding" vm="1.5" title="@args annotation binding 5">
+        <compile files="AtArgs5.aj" options="-1.5"/>
+        <run class="AtArgs5"/>    
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations/binding" vm="1.5" title="execution and @annotation">
+        <compile files="ExecutionAnnBinding1.aj" options="-1.5"/>
+        <run class="ExecutionAnnBinding1"/>    
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/binding" vm="1.5" title="set and @annotation">
+        <compile files="FieldAnnBinding1.aj" options="-1.5"/>
+        <run class="FieldAnnBinding1"/>    
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/binding" vm="1.5" title="get and @annotation">
+        <compile files="FieldAnnBinding2.aj" options="-1.5"/>
+        <run class="FieldAnnBinding2"/>    
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/binding" vm="1.5" title="get and @annotation with arrays">
+        <compile files="FieldAnnBinding3.aj" options="-1.5"/>
+        <run class="FieldAnnBinding3"/>    
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/binding" vm="1.5" title="cons call and @annotation">
+        <compile files="CtorAnnBinding1.aj" options="-1.5"/>
+        <run class="CtorAnnBinding1"/>    
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/binding" vm="1.5" title="cons exe and @annotation">
+        <compile files="CtorAnnBinding2.aj" options="-1.5"/>
+        <run class="CtorAnnBinding2"/>    
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/binding" vm="1.5" title="staticinit and @annotation">
+        <compile files="StaticInitBinding.aj" options="-1.5"/>
+        <run class="StaticInitBinding"/>    
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/binding" vm="1.5" title="preinit and @annotation">
+        <compile files="PreInitBinding.aj" options="-1.5"/>
+        <run class="PreInitBinding"/>    
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/binding" vm="1.5" title="init and @annotation">
+        <compile files="InitBinding.aj" options="-1.5"/>
+        <run class="InitBinding"/>    
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/binding" vm="1.5" title="adviceexecution and @annotation">
+        <compile files="AdviceExecBinding.aj" options="-1.5"/>
+        <run class="AdviceExecBinding"/>    
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/binding" vm="1.5" title="handler and @annotation">
+        <compile files="HandlerBinding.aj" options="-1.5"/>
+        <run class="HandlerBinding"/>    
+    </ajc-test>
+ 
+    <ajc-test dir="java5/annotations/binding/complexExample" vm="1.5" title="packages and no binding">
+        <compile files="A.java,B.java,Color.java,X.java" options="-1.5"/>
+        <run class="a.b.c.A"/>    
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/binding/complexExample" vm="1.5" title="packages and binding">
+        <compile files="A.java,B.java,Color.java,X2.java" options="-1.5"/>
+        <run class="a.b.c.A"/>    
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations/binding" vm="1.5" title="binding with static methods">
+        <compile files="StaticMethods.java" options="-1.5"/>
+        <run class="StaticMethods"/>    
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations" vm="1.5" title="annotation matching on call">
+        <weave classesFiles="AnnotatedType.java,SimpleAnnotation.java,SimpleAnnotation2.java"
+               aspectsFiles="AnnotationAspect02.aj"
+               options="-1.5,-showWeaveInfo">
+               <message kind="weave" text="Type 'AnnotatedType' (AnnotatedType.java:3) advised by before advice from 'AnnotationAspect02' (AnnotationAspect02.aj:4)"/>
+               <message kind="weave" text="Type 'AnnotatedType' (AnnotatedType.java:3) advised by before advice from 'AnnotationAspect02' (AnnotationAspect02.aj:2)"/>
+               <message kind="weave" text="Type 'AnnotatedType' (AnnotatedType.java:4) advised by before advice from 'AnnotationAspect02' (AnnotationAspect02.aj:4)"/>
+        </weave>
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations" vm="1.5" title="at annotation matching">
+        <weave classesFiles="AnnotatedType.java,SimpleAnnotation.java,SimpleAnnotation2.java"
+               aspectsFiles="AnnotationAspect03.aj"
+               options="-1.5,-showWeaveInfo">
+               <message kind="warning" line="8" text="@annotation matched here"/>
+        </weave>
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations/within_code" vm="1.5" title="annotations and within(code)">
+        <weave classesFiles="TestingAnnotations.java"
+               aspectsFiles="WithinAndWithinCodeTests.java"
+               options="-1.5,-showWeaveInfo">
+               <message kind="warning" line="31" text="@within match on non-inherited annotation"/>
+               <message kind="warning" line="39" text="@within match on non-inherited annotation"/>
+               <message kind="warning" line="39" text="@within match on inheritable annotation"/>
+               <message kind="warning" line="43" text="@within match on inheritable annotation"/>
+               <message kind="warning" line="32" text="@withincode match"/>
+        </weave>
+    </ajc-test>    
+    
+    <ajc-test dir="java5/annotations/within" vm="1.5" title="annotations and within">
+        <weave classesFiles="PlainWithin.java"
+               aspectsFiles="PlainWithinTests.java"
+               options="-1.5,-showWeaveInfo">
+               <message kind="warning" line="21" text="positive within match on annotation"/>
+               <message kind="warning" line="25" text="negative within match on annotation"/>
+        </weave>
+    </ajc-test>   
+    
+    <ajc-test dir="java5/annotations/thisOrtarget" vm="1.5" title="must have runtime retention">
+        <compile options="-1.5" files="TestingAnnotations.java,NotRuntimeRetention.aj">
+               <message kind="error" line="7" text="Annotation type MyClassRetentionAnnotation does not have runtime retention"/>
+               <message kind="error" line="13" text="Annotation type MyClassRetentionAnnotation does not have runtime retention"/>
+        </compile>
+    </ajc-test>
+     
+    <ajc-test dir="java5/annotations/thisOrtarget" vm="1.5" title="inheritable or not">
+        <compile options="-1.5" files="TestingAnnotations.java,ThisOrTargetTests.aj">
+        </compile>
+        <run class="TestingAnnotations"/>
+    </ajc-test> 
+
+    <ajc-test dir="java5/annotations/thisOrtarget" vm="1.5" title="use of @this/target in deow">
+        <compile options="-1.5" files="TestingAnnotations.java,DeclareEoW.java">
+               <message kind="error" line="3" text="this() pointcut designator cannot be used in declare statement"/>
+               <message kind="error" line="5" text="target() pointcut designator cannot be used in declare statement"/>
+        </compile>
+    </ajc-test> 
+
+    <ajc-test dir="java5/annotations/args" vm="1.5" title="@args tests">
+        <compile options="-1.5" files="TestingArgsAnnotations.java,AtArgsAspect.java">
+        </compile>
+        <run class="TestingArgsAnnotations"/>
+    </ajc-test> 
+    
+    <ajc-test dir="java5/annotations/args" vm="1.5" title="use of @args in deow">
+        <compile options="-1.5" files="TestingArgsAnnotations.java,DeclareEoW.java">
+               <message kind="error" line="3" text="args() pointcut designator cannot be used in declare statement"/>
+        </compile>
+    </ajc-test> 
+    
+    <ajc-test dir="java5/annotations" vm="1.5" title="compiling an annotation">
+        <compile options="-1.5" files="SimpleAnnotation.java">
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations" vm="1.5" title="compiling annotated file">
+        <compile options="-1.5" files="SimpleAnnotation.java,AnnotatedType.java">
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/within" vm="1.5" title="annotations and within (src)">
+        <compile files="PlainWithin.java,PlainWithinTests.java"
+               aspectsFiles="PlainWithinTests.java"
+               options="-1.5">
+               <message kind="warning" line="21" text="positive within match on annotation"/>
+               <message kind="warning" line="25" text="negative within match on annotation"/>
+        </compile>
+    </ajc-test>   
+
+    <ajc-test dir="java5/annotations/attarget" vm="1.5" title="losing annotations...">
+        <compile options="-1.5" files="Program.java,AtTargetAspect.java">
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations" vm="1.5" title="no itds on annotation types">
+        <compile files="AnnotatedType.java,SimpleAnnotation.java,SimpleAnnotation2.java,AnnotationAspect01.aj"
+               options="-1.5">
+               <message kind="error" line="4" text="can't make inter-type constructor declarations"/>
+               <message kind="error" line="8" text="can't make inter-type method declarations"/>
+               <message kind="error" line="13" text="can't make inter-type field declarations"/>
+        </compile>
+    </ajc-test>   
+
+   <ajc-test dir="java5/annotations" vm="1.5" title="no declare parents on annotation types">
+        <compile files="AnnotatedType.java,SimpleAnnotation.java,SimpleAnnotation2.java,AnnotationAspect04.aj"
+               options="-1.5">
+               <message kind="error" line="7" text="can't use declare parents to alter supertype of annotation type SimpleAnnotation"/>
+               <message kind="error" line="10" text="can't use declare parents to make 'java.lang.annotation.Annotation' the parent of type"/>
+               <message kind="error" line="4" text="can't use declare parents to make annotation type SimpleAnnotation implement an interface"/>
+        </compile>
+    </ajc-test>   
+
+   <ajc-test dir="java5/annotations" vm="1.5" title="declare parents wildcards matching annotation types">
+        <compile files="AnnotatedType.java,SimpleAnnotation.java,SimpleAnnotation2.java,AnnotationAspect05.aj"
+               options="-1.5">
+               <message kind="warning" line="4" text="annotation type SimpleAnnotation2 matches a declare parents type pattern but is being ignored"/>
+               <message kind="warning" line="4" text="annotation type SimpleAnnotation matches a declare parents type pattern but is being ignored"/>
+        </compile>
+    </ajc-test>   
+    
+   <ajc-test dir="java5/annotations/binding/complexExample" vm="1.5" title="annotated any pattern">
+        <compile files="A.java,B.java,C.java,Color.java,X3.java"
+               options="-1.5">
+        </compile>
+        <run class="g.h.i.C"/>
+        <run class="a.b.c.A"/>
+    </ajc-test>   
+    
+   <ajc-test dir="java5/annotations/binding/complexExample" vm="1.5" title="annotation not imported">
+        <compile files="A.java,B.java,C.java,Color.java,X4.java"
+               options="-1.5">
+               <message kind="warning" line="6" text="no match for this type name: Color"/>
+        </compile>
+        <run class="a.b.c.A"/>
+    </ajc-test>   
+
+   <!-- ======================================================================================= -->
+   <!--               Autoboxing tests                                                          -->
+   <!-- ======================================================================================= -->
+
+   <ajc-test dir="java5/autoboxing" vm="1.5" title="simple boxing test">
+        <compile files="AutoboxingB.java,AutoboxingC.java,AutoboxingD.java,AutoboxingF.java,AutoboxingI.java,AutoboxingJ.java,AutoboxingS.java,AutoboxingZ.java,SimpleAutoboxing.java,SimpleAutoboxingAspect.aj"
+               options="-1.5,-showWeaveInfo">
+               <message kind="weave" text="Type 'SimpleAutoboxing' (SimpleAutoboxing.java:7) advised by before advice from 'SimpleAutoboxingAspect' (SimpleAutoboxingAspect.aj:8)"/>
+               <message kind="weave" text="Type 'SimpleAutoboxing' (SimpleAutoboxing.java:7) advised by before advice from 'SimpleAutoboxingAspect' (SimpleAutoboxingAspect.aj:4)"/>
+        </compile>
+        <run class="SimpleAutoboxing">
+          <stderr>
+              <line text="Matching by Integer:20000"/>
+              <line text="Matching by int:20000"/>
+              <line text="method_takes_Integer=20000"/>
+          </stderr>
+        </run>
+   </ajc-test>   
+
+   <ajc-test dir="java5/autoboxing" vm="1.5" title="integer boxing">
+        <compile files="AutoboxingB.java,AutoboxingC.java,AutoboxingD.java,AutoboxingF.java,AutoboxingI.java,AutoboxingJ.java,AutoboxingS.java,AutoboxingZ.java,SimpleAutoboxing.java,AspectInteger.aj"
+               options="-1.5,-showWeaveInfo">
+               <message kind="weave" text="Type 'AutoboxingI' (AutoboxingI.java:11) advised by before advice from 'AspectInteger' (AspectInteger.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingI' (AutoboxingI.java:11) advised by before advice from 'AspectInteger' (AspectInteger.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingI' (AutoboxingI.java:12) advised by before advice from 'AspectInteger' (AspectInteger.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingI' (AutoboxingI.java:12) advised by before advice from 'AspectInteger' (AspectInteger.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingI' (AutoboxingI.java:13) advised by before advice from 'AspectInteger' (AspectInteger.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingI' (AutoboxingI.java:13) advised by before advice from 'AspectInteger' (AspectInteger.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingI' (AutoboxingI.java:14) advised by before advice from 'AspectInteger' (AspectInteger.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingI' (AutoboxingI.java:14) advised by before advice from 'AspectInteger' (AspectInteger.aj:4)"/>
+        </compile>
+        <run class="AutoboxingI">
+          <stderr>
+              <line text="Matching by Integer:10000"/>
+              <line text="Matching by int:10000"/>
+              <line text="method_takes_Integer=10000"/>
+              <line text="Matching by Integer:20000"/>
+              <line text="Matching by int:20000"/>
+              <line text="method_takes_Integer=20000"/>
+              <line text="Matching by Integer:30000"/>
+              <line text="Matching by int:30000"/>
+              <line text="method_takes_int=30000"/>
+              <line text="Matching by Integer:40000"/>
+              <line text="Matching by int:40000"/>
+              <line text="method_takes_int=40000"/>
+          </stderr>
+        </run>
+   </ajc-test>   
+   
+     <ajc-test dir="java5/autoboxing" vm="1.5" title="char boxing">
+        <compile files="AutoboxingB.java,AutoboxingC.java,AutoboxingD.java,AutoboxingF.java,AutoboxingI.java,AutoboxingJ.java,AutoboxingS.java,AutoboxingZ.java,SimpleAutoboxing.java,AspectChar.aj"
+               options="-1.5,-showWeaveInfo">
+               <message kind="weave" text="Type 'AutoboxingC' (AutoboxingC.java:11) advised by before advice from 'AspectChar' (AspectChar.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingC' (AutoboxingC.java:11) advised by before advice from 'AspectChar' (AspectChar.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingC' (AutoboxingC.java:12) advised by before advice from 'AspectChar' (AspectChar.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingC' (AutoboxingC.java:12) advised by before advice from 'AspectChar' (AspectChar.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingC' (AutoboxingC.java:13) advised by before advice from 'AspectChar' (AspectChar.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingC' (AutoboxingC.java:13) advised by before advice from 'AspectChar' (AspectChar.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingC' (AutoboxingC.java:14) advised by before advice from 'AspectChar' (AspectChar.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingC' (AutoboxingC.java:14) advised by before advice from 'AspectChar' (AspectChar.aj:4)"/>
+        </compile>
+        <run class="AutoboxingC">
+          <stderr>
+              <line text="Character:1"/>
+              <line text="char:1"/>
+              <line text="method_takes_Character=1"/>
+              <line text="Character:2"/>
+              <line text="char:2"/>
+              <line text="method_takes_Character=2"/>
+              <line text="Character:3"/>
+              <line text="char:3"/>
+              <line text="method_takes_char=3"/>
+              <line text="Character:4"/>
+              <line text="char:4"/>
+              <line text="method_takes_char=4"/>
+          </stderr>
+        </run>
+   </ajc-test>   
+   
+       <ajc-test dir="java5/autoboxing" vm="1.5" title="double boxing">
+        <compile files="AutoboxingB.java,AutoboxingC.java,AutoboxingD.java,AutoboxingF.java,AutoboxingI.java,AutoboxingJ.java,AutoboxingS.java,AutoboxingZ.java,SimpleAutoboxing.java,AspectDouble.aj"
+               options="-1.5,-showWeaveInfo">
+               <message kind="weave" text="Type 'AutoboxingD' (AutoboxingD.java:11) advised by before advice from 'AspectDouble' (AspectDouble.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingD' (AutoboxingD.java:11) advised by before advice from 'AspectDouble' (AspectDouble.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingD' (AutoboxingD.java:12) advised by before advice from 'AspectDouble' (AspectDouble.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingD' (AutoboxingD.java:12) advised by before advice from 'AspectDouble' (AspectDouble.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingD' (AutoboxingD.java:13) advised by before advice from 'AspectDouble' (AspectDouble.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingD' (AutoboxingD.java:13) advised by before advice from 'AspectDouble' (AspectDouble.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingD' (AutoboxingD.java:14) advised by before advice from 'AspectDouble' (AspectDouble.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingD' (AutoboxingD.java:14) advised by before advice from 'AspectDouble' (AspectDouble.aj:4)"/>
+        </compile>
+        <run class="AutoboxingD">
+          <stderr>
+              <line text="Double:100.0"/>
+              <line text="double:100.0"/>
+              <line text="method_takes_Double=100.0"/>
+              <line text="Double:200.0"/>
+              <line text="double:200.0"/>
+              <line text="method_takes_Double=200.0"/>
+              <line text="Double:300.0"/>
+              <line text="double:300.0"/>
+              <line text="method_takes_double=300.0"/>
+              <line text="Double:400.0"/>
+              <line text="double:400.0"/>
+              <line text="method_takes_double=400.0"/>
+          </stderr>
+        </run>
+   </ajc-test>   
+
+   <ajc-test dir="java5/autoboxing" vm="1.5" title="float boxing">
+        <compile files="AutoboxingB.java,AutoboxingC.java,AutoboxingD.java,AutoboxingF.java,AutoboxingI.java,AutoboxingJ.java,AutoboxingS.java,AutoboxingZ.java,SimpleAutoboxing.java,AspectFloat.aj"
+               options="-1.5,-showWeaveInfo">
+               <message kind="weave" text="Type 'AutoboxingF' (AutoboxingF.java:11) advised by before advice from 'AspectFloat' (AspectFloat.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingF' (AutoboxingF.java:11) advised by before advice from 'AspectFloat' (AspectFloat.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingF' (AutoboxingF.java:12) advised by before advice from 'AspectFloat' (AspectFloat.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingF' (AutoboxingF.java:12) advised by before advice from 'AspectFloat' (AspectFloat.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingF' (AutoboxingF.java:13) advised by before advice from 'AspectFloat' (AspectFloat.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingF' (AutoboxingF.java:13) advised by before advice from 'AspectFloat' (AspectFloat.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingF' (AutoboxingF.java:14) advised by before advice from 'AspectFloat' (AspectFloat.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingF' (AutoboxingF.java:14) advised by before advice from 'AspectFloat' (AspectFloat.aj:4)"/>
+        </compile>
+        <run class="AutoboxingF">
+          <stderr>
+              <line text="Float:100.0"/>
+              <line text="float:100.0"/>
+              <line text="method_takes_Float=100.0"/>
+              <line text="Float:200.0"/>
+              <line text="float:200.0"/>
+              <line text="method_takes_Float=200.0"/>
+              <line text="Float:300.0"/>
+              <line text="float:300.0"/>
+              <line text="method_takes_float=300.0"/>
+              <line text="Float:400.0"/>
+              <line text="float:400.0"/>
+              <line text="method_takes_float=400.0"/>
+          </stderr>
+        </run>
+   </ajc-test>   
+
+   <ajc-test dir="java5/autoboxing" vm="1.5" title="short boxing">
+        <compile files="AutoboxingB.java,AutoboxingC.java,AutoboxingD.java,AutoboxingF.java,AutoboxingI.java,AutoboxingJ.java,AutoboxingS.java,AutoboxingZ.java,SimpleAutoboxing.java,AspectShort.aj"
+               options="-1.5,-showWeaveInfo">
+               <message kind="weave" text="Type 'AutoboxingS' (AutoboxingS.java:11) advised by before advice from 'AspectShort' (AspectShort.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingS' (AutoboxingS.java:11) advised by before advice from 'AspectShort' (AspectShort.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingS' (AutoboxingS.java:12) advised by before advice from 'AspectShort' (AspectShort.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingS' (AutoboxingS.java:12) advised by before advice from 'AspectShort' (AspectShort.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingS' (AutoboxingS.java:13) advised by before advice from 'AspectShort' (AspectShort.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingS' (AutoboxingS.java:13) advised by before advice from 'AspectShort' (AspectShort.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingS' (AutoboxingS.java:14) advised by before advice from 'AspectShort' (AspectShort.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingS' (AutoboxingS.java:14) advised by before advice from 'AspectShort' (AspectShort.aj:4)"/>
+        </compile>
+        <run class="AutoboxingS">
+          <stderr>
+              <line text="Short:100"/>
+              <line text="short:100"/>
+              <line text="method_takes_Short=100"/>
+              <line text="Short:200"/>
+              <line text="short:200"/>
+              <line text="method_takes_Short=200"/>
+              <line text="Short:300"/>
+              <line text="short:300"/>
+              <line text="method_takes_short=300"/>
+              <line text="Short:400"/>
+              <line text="short:400"/>
+              <line text="method_takes_short=400"/>
+          </stderr>
+        </run>
+   </ajc-test>   
+
+   <ajc-test dir="java5/autoboxing" vm="1.5" title="long boxing">
+        <compile files="AutoboxingB.java,AutoboxingC.java,AutoboxingD.java,AutoboxingF.java,AutoboxingI.java,AutoboxingJ.java,AutoboxingS.java,AutoboxingZ.java,SimpleAutoboxing.java,AspectLong.aj"
+               options="-1.5,-showWeaveInfo">
+               <message kind="weave" text="Type 'AutoboxingJ' (AutoboxingJ.java:11) advised by before advice from 'AspectLong' (AspectLong.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingJ' (AutoboxingJ.java:11) advised by before advice from 'AspectLong' (AspectLong.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingJ' (AutoboxingJ.java:12) advised by before advice from 'AspectLong' (AspectLong.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingJ' (AutoboxingJ.java:12) advised by before advice from 'AspectLong' (AspectLong.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingJ' (AutoboxingJ.java:13) advised by before advice from 'AspectLong' (AspectLong.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingJ' (AutoboxingJ.java:13) advised by before advice from 'AspectLong' (AspectLong.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingJ' (AutoboxingJ.java:14) advised by before advice from 'AspectLong' (AspectLong.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingJ' (AutoboxingJ.java:14) advised by before advice from 'AspectLong' (AspectLong.aj:4)"/>
+        </compile>
+        <run class="AutoboxingJ">
+          <stderr>
+              <line text="Long:1000000"/>
+              <line text="long:1000000"/>
+              <line text="method_takes_Long=1000000"/>
+              <line text="Long:2000000"/>
+              <line text="long:2000000"/>
+              <line text="method_takes_Long=2000000"/>
+              <line text="Long:3000000"/>
+              <line text="long:3000000"/>
+              <line text="method_takes_long=3000000"/>
+              <line text="Long:4000000"/>
+              <line text="long:4000000"/>
+              <line text="method_takes_long=4000000"/>
+          </stderr>
+        </run>
+   </ajc-test>   
+
+   <ajc-test dir="java5/autoboxing" vm="1.5" title="boolean boxing">
+        <compile files="AutoboxingB.java,AutoboxingC.java,AutoboxingD.java,AutoboxingF.java,AutoboxingI.java,AutoboxingJ.java,AutoboxingS.java,AutoboxingZ.java,SimpleAutoboxing.java,AspectBoolean.aj"
+               options="-1.5,-showWeaveInfo">
+               <message kind="weave" text="Type 'AutoboxingZ' (AutoboxingZ.java:9) advised by before advice from 'AspectBoolean' (AspectBoolean.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingZ' (AutoboxingZ.java:9) advised by before advice from 'AspectBoolean' (AspectBoolean.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingZ' (AutoboxingZ.java:10) advised by before advice from 'AspectBoolean' (AspectBoolean.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingZ' (AutoboxingZ.java:10) advised by before advice from 'AspectBoolean' (AspectBoolean.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingZ' (AutoboxingZ.java:11) advised by before advice from 'AspectBoolean' (AspectBoolean.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingZ' (AutoboxingZ.java:11) advised by before advice from 'AspectBoolean' (AspectBoolean.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingZ' (AutoboxingZ.java:12) advised by before advice from 'AspectBoolean' (AspectBoolean.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingZ' (AutoboxingZ.java:12) advised by before advice from 'AspectBoolean' (AspectBoolean.aj:4)"/>
+        </compile>
+        <run class="AutoboxingZ">
+          <stderr>
+              <line text="Boolean:false"/>
+              <line text="boolean:false"/>
+              <line text="method_takes_Boolean=false"/>
+              <line text="Boolean:false"/>
+              <line text="boolean:false"/>
+              <line text="method_takes_Boolean=false"/>
+              <line text="Boolean:false"/>
+              <line text="boolean:false"/>
+              <line text="method_takes_boolean=false"/>
+              <line text="Boolean:false"/>
+              <line text="boolean:false"/>
+              <line text="method_takes_boolean=false"/>
+          </stderr>
+        </run>
+   </ajc-test>   
+
+   <ajc-test dir="java5/autoboxing" vm="1.5" title="byte boxing">
+        <compile files="AutoboxingB.java,AutoboxingC.java,AutoboxingD.java,AutoboxingF.java,AutoboxingI.java,AutoboxingJ.java,AutoboxingS.java,AutoboxingZ.java,SimpleAutoboxing.java,AspectByte.aj"
+               options="-1.5,-showWeaveInfo">
+               <message kind="weave" text="Type 'AutoboxingB' (AutoboxingB.java:11) advised by before advice from 'AspectByte' (AspectByte.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingB' (AutoboxingB.java:11) advised by before advice from 'AspectByte' (AspectByte.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingB' (AutoboxingB.java:12) advised by before advice from 'AspectByte' (AspectByte.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingB' (AutoboxingB.java:12) advised by before advice from 'AspectByte' (AspectByte.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingB' (AutoboxingB.java:13) advised by before advice from 'AspectByte' (AspectByte.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingB' (AutoboxingB.java:13) advised by before advice from 'AspectByte' (AspectByte.aj:4)"/>
+               <message kind="weave" text="Type 'AutoboxingB' (AutoboxingB.java:14) advised by before advice from 'AspectByte' (AspectByte.aj:8)"/>
+               <message kind="weave" text="Type 'AutoboxingB' (AutoboxingB.java:14) advised by before advice from 'AspectByte' (AspectByte.aj:4)"/>
+        </compile>
+        <run class="AutoboxingB">
+          <stderr>
+              <line text="Byte:1"/>
+              <line text="byte:1"/>
+              <line text="method_takes_Byte=1"/>
+              <line text="Byte:50"/>
+              <line text="byte:50"/>
+              <line text="method_takes_Byte=50"/>
+              <line text="Byte:3"/>
+              <line text="byte:3"/>
+              <line text="method_takes_byte=3"/>
+              <line text="Byte:52"/>
+              <line text="byte:52"/>
+              <line text="method_takes_byte=52"/>
+          </stderr>
+        </run>
+   </ajc-test>   
+
+   <ajc-test dir="java5/autoboxing" vm="1.5" title="boxing in after returning">
+        <compile files="AutoboxingB.java,AutoboxingC.java,AutoboxingD.java,AutoboxingF.java,AutoboxingI.java,AutoboxingJ.java,AutoboxingS.java,AutoboxingZ.java,SimpleAutoboxing.java,AspectAfterReturning.aj"
+               options="-1.5,-showWeaveInfo">
+               <message kind="weave" text="Type 'AspectAfterReturning' (AspectAfterReturning.aj:18) advised by afterReturning advice from 'AspectAfterReturning' (AspectAfterReturning.aj:4)"/>
+               <message kind="weave" text="Type 'AspectAfterReturning' (AspectAfterReturning.aj:18) advised by afterReturning advice from 'AspectAfterReturning' (AspectAfterReturning.aj:8)"/>
+               <message kind="weave" text="Type 'AspectAfterReturning' (AspectAfterReturning.aj:18) advised by afterReturning advice from 'AspectAfterReturning' (AspectAfterReturning.aj:12)"/>
+               <message kind="weave" text="Type 'AspectAfterReturning' (AspectAfterReturning.aj:19) advised by afterReturning advice from 'AspectAfterReturning' (AspectAfterReturning.aj:4)"/>
+               <message kind="weave" text="Type 'AspectAfterReturning' (AspectAfterReturning.aj:19) advised by afterReturning advice from 'AspectAfterReturning' (AspectAfterReturning.aj:8)"/>
+               <message kind="weave" text="Type 'AspectAfterReturning' (AspectAfterReturning.aj:19) advised by afterReturning advice from 'AspectAfterReturning' (AspectAfterReturning.aj:12)"/>
+        </compile>
+        <run class="AspectAfterReturning">
+          <stderr>
+              <line text="Returning I=5"/>
+              <line text="Returning Integer=5"/>
+              <line text="Returning Object=5"/>
+              <line text="Returning I=10"/>
+              <line text="Returning Integer=10"/>
+              <line text="Returning Object=10"/>
+          </stderr>
+        </run>
+   </ajc-test>   
+
+   <!-- ======================================================================================= -->
+   <!--               Covariance tests                                                          -->
+   <!-- ======================================================================================= -->
+
+    <ajc-test dir="java5/covariance" vm="1.5" title="covariance 1">
+        <compile options="-1.5,-showWeaveInfo" files="CovBaseProgram01.java,CovAspect01.aj">
+            <message kind="weave" text="Type 'CovBaseProgram01' (CovBaseProgram01.java:26) advised by before advice from 'CovAspect01' (CovAspect01.aj:5)"/>
+            <message kind="weave" text="Type 'CovBaseProgram01' (CovBaseProgram01.java:27) advised by before advice from 'CovAspect01' (CovAspect01.aj:5)"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/covariance" vm="1.5" title="covariance 2">
+        <compile options="-1.5,-showWeaveInfo" files="CovBaseProgram01.java,CovAspect02.aj">
+            <message kind="weave" text="Type 'CovBaseProgram01' (CovBaseProgram01.java:26) advised by before advice from 'CovAspect02' (CovAspect02.aj:5)"/>
+            <message kind="weave" text="Type 'CovBaseProgram01' (CovBaseProgram01.java:27) advised by before advice from 'CovAspect02' (CovAspect02.aj:5)"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/covariance" vm="1.5" title="covariance 3">
+        <compile options="-1.5,-showWeaveInfo" files="CovBaseProgram01.java,CovAspect03.aj">
+            <message kind="weave" text="Type 'CovBaseProgram01' (CovBaseProgram01.java:26) advised by before advice from 'CovAspect03' (CovAspect03.aj:5)"/>
+            <message kind="weave" text="Type 'CovBaseProgram01' (CovBaseProgram01.java:27) advised by before advice from 'CovAspect03' (CovAspect03.aj:5)"/>
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="java5/covariance" vm="1.5" title="covariance 4">
+        <compile options="-1.5,-showWeaveInfo" files="CovBaseProgram02.java,CovAspect04.aj">
+            <message kind="weave" text="Type 'CovBaseProgram02' (CovBaseProgram02.java:30) advised by before advice from 'CovAspect04' (CovAspect04.aj:5)"/>
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="java5/covariance" vm="1.5" title="covariance 5">
+        <compile options="-1.5,-showWeaveInfo" files="CovBaseProgram01.java,CovAspect05.aj">
+            <message kind="weave" text="Type 'CovBaseProgram01' (CovBaseProgram01.java:26) advised by before advice from 'CovAspect05' (CovAspect05.aj:5)"/>
+            <message kind="weave" text="Type 'CovBaseProgram01' (CovBaseProgram01.java:27) advised by before advice from 'CovAspect05' (CovAspect05.aj:5)"/>
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="java5/covariance" vm="1.5" title="covariance 6">
+        <compile options="-1.5,-showWeaveInfo" files="CovBaseProgram01.java,CovAspect06.aj">
+            <message kind="warning" line="3" text="does not match because declaring type is Super"/>
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="java5/covariance" vm="1.5" title="covariance 7">
+        <compile options="-1.5,-showWeaveInfo" files="CovBaseProgram01.java,CovAspect07.aj">
+            <message kind="weave" text="Type 'CovBaseProgram01' (CovBaseProgram01.java:27) advised by before advice from 'CovAspect07' (CovAspect07.aj:5)"/>
+            <message kind="warning" line="3" text="does not match because declaring type is Super"/>
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="java5/covariance" vm="1.5" title="covariance 8">
+        <compile options="-1.5,-showWeaveInfo" files="CovBaseProgram01.java,CovAspect08.aj">
+            <message kind="weave" text="Type 'CovBaseProgram01' (CovBaseProgram01.java:27) advised by before advice from 'CovAspect08' (CovAspect08.aj:11)"/>
+            <message kind="weave" text="Type 'CovBaseProgram01' (CovBaseProgram01.java:27) advised by before advice from 'CovAspect08' (CovAspect08.aj:5)"/>
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="java5/covariance" vm="1.5" title="covariance 9">
+        <compile options="-1.5,-showWeaveInfo" files="CovBaseProgram01.java,CovAspect09.aj">
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="java5/covariance" vm="1.5" title="covariance 10">
+        <compile options="-1.5,-showWeaveInfo" files="CovBaseProgram01.java,CovAspect10.aj">
+            <message kind="weave" text="Type 'CovBaseProgram01' (CovBaseProgram01.java:26) advised by before advice from 'CovAspect10' (CovAspect10.aj:5)"/>
+            <message kind="weave" text="Type 'CovBaseProgram01' (CovBaseProgram01.java:27) advised by before advice from 'CovAspect10' (CovAspect10.aj:5)"/>
+        </compile>
+    </ajc-test>
+
+   <!-- ======================================================================================= -->
+   <!--               Enum tests                                                                -->
+   <!-- ======================================================================================= -->
+
+    <ajc-test dir="java5/enums" vm="1.5" title="cant itd constructor on enum">
+        <compile files="SimpleEnum.java,SimpleEnum2.java,EnumAspect01.aj" options="-1.5">
+            <message kind="error" line="2" text="can't make inter-type constructor declarations on enum types"/>
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="java5/enums" vm="1.5" title="cant itd field or method on enum">
+        <compile files="SimpleEnum.java,SimpleEnum2.java,EnumAspect02.aj" options="-1.5">
+            <message kind="error" line="2" text="can't make inter-type method declarations on enum types"/>
+            <message kind="error" line="6" text="can't make inter-type field declarations on enum types"/>
+        </compile>
+    </ajc-test>
+    
+   <ajc-test dir="java5/enums" vm="1.5" title="declare parents and enums">
+        <compile files="SimpleEnum.java,SimpleEnum2.java,EnumAspect03.aj" options="-1.5">
+            <message kind="error" line="5" text="can't use declare parents to make enum type SimpleEnum implement an interface"/>
+            <message kind="error" line="8" text="can't use declare parents to alter supertype of enum type SimpleEnum"/>
+            <message kind="error" line="11" text="can't use declare parents to make 'java.lang.Enum' the parent of type EnumAspect03$D"/>          
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/enums" vm="1.5" title="wildcard enum match in itd">
+        <compile files="SimpleEnum.java,SimpleEnum2.java,EnumAspect04.aj" options="-1.5">
+            <message kind="warning" line="5" text="enum type SimpleEnum2 matches a declare parents type pattern but is being ignored"/>
+            <message kind="warning" line="5" text="enum type SimpleEnum matches a declare parents type pattern but is being ignored"/>
+        </compile>
+    </ajc-test>
+
+   <!-- ======================================================================================= -->
+   <!--               pertypewithin tests                                                       -->
+   <!-- ======================================================================================= -->
+    
+   <ajc-test dir="java5/pertypewithin" title="basic ptw test">
+       <compile files="A.java,B.java,C.java,D.java,Main.java,X.java"/>
+       <run class="p.A">
+           <stderr>
+               <line text="hi from A"/>
+               <line text="after() returning from a method call to sayhi()"/>
+               <line text="hi from A"/>
+               <line text="after() returning from a method call to sayhi()"/>
+               <line text="Tests in A have passed"/>
+               <line text="callcount = 2"/>
+           </stderr>
+       </run>
+   </ajc-test> 
+
+   <ajc-test dir="java5/pertypewithin" title="ptw hasAspect">
+       <compile files="A.java,B.java,C.java,D.java,Main.java,X.java"/>
+       <run class="p.B">
+           <stderr>
+               <line text="hi from B"/>
+               <line text="after() returning from a method call to sayhi()"/>
+               <line text="hi from B"/>
+               <line text="after() returning from a method call to sayhi()"/>
+               <line text="hi from B"/>
+               <line text="after() returning from a method call to sayhi()"/>
+               <line text="callcount = 3"/>
+           </stderr>
+       </run>
+   </ajc-test> 
+   
+    <ajc-test dir="java5/pertypewithin" title="ptw aspectOf">
+       <compile files="A.java,B.java,C.java,D.java,Main.java,X.java"/>
+       <run class="p.C"/>
+   </ajc-test> 
+
+    <ajc-test dir="java5/pertypewithin" title="ptw multi-aspects">
+       <compile files="P.java,Q.java,R.java"/>
+       <run class="P">
+           <stderr>
+               <line text="Q reporting 2"/>
+               <line text="R reporting 3"/>
+           </stderr>
+       </run>
+   </ajc-test> 
+
+    <ajc-test dir="java5/pertypewithin" title="ptw binary">
+       <weave classesFiles="G.java" aspectsFiles="H.java"/>
+       <run class="G">
+           <stderr>
+               <line text="advice running"/>
+           </stderr>
+       </run>
+   </ajc-test> 
+   
+   <ajc-test dir="java5/pertypewithin" title="ptw binary aspect">
+       <compile files="H.java" outjar="aspects.jar">
+           <message kind="warning" line="1" text="no match for this type name: G"/>
+       </compile>
+       <compile files="G.java" aspectpath="aspects.jar"/>
+       <run class="G">
+           <stderr>
+               <line text="advice running"/>
+           </stderr>
+       </run>
+   </ajc-test>
+
+   <!-- ======================================================================================= -->
+   <!--               varargs tests                                                             -->
+   <!-- ======================================================================================= -->
+
+   <ajc-test dir="java5/varargs" vm="1.5" title="varargs not matched by Object[] (call)">
+       <compile files="SimpleVarargs.java,VarargsAspect01.aj" options="-1.5,-showWeaveInfo">
+       </compile>
+   </ajc-test>
+
+   <ajc-test dir="java5/varargs" vm="1.5" title="varargs not matched by Object[] (exe)">
+       <compile files="SimpleVarargs.java,VarargsAspect02.aj" options="-1.5,-showWeaveInfo">
+       </compile>
+   </ajc-test>
+
+   <ajc-test dir="java5/varargs" vm="1.5" title="varargs not matched by Object[] (init)">
+       <compile files="SimpleVarargs.java,VarargsAspect03.aj" options="-1.5,-showWeaveInfo">
+       </compile>
+   </ajc-test>
+
+   <ajc-test dir="java5/varargs" vm="1.5" title="varargs not matched by Object[] (withincode)">
+       <compile files="SimpleVarargs.java,VarargsAspect04.aj" options="-1.5,-showWeaveInfo">
+       </compile>
+   </ajc-test>
+
+  <ajc-test dir="java5/varargs" vm="1.5" title="call with varargs signature">
+       <compile files="SimpleVarargs.java,VarargsAspect05.aj" options="-1.5,-showWeaveInfo">
+           <message kind="weave" text="Type 'SimpleVarargs' (SimpleVarargs.java:20) advised by before advice from 'VarargsAspect05' (VarargsAspect05.aj:3)"/>
+           <message kind="weave" text="Type 'SimpleVarargs' (SimpleVarargs.java:21) advised by before advice from 'VarargsAspect05' (VarargsAspect05.aj:3)"/>
+           <message kind="weave" text="Type 'SimpleVarargs' (SimpleVarargs.java:22) advised by before advice from 'VarargsAspect05' (VarargsAspect05.aj:3)"/>
+       </compile>
+   </ajc-test>
+
+     <ajc-test dir="java5/varargs" vm="1.5" title="call with varargs multi-signature">
+       <compile files="SimpleVarargs.java,VarargsAspect06.aj" options="-1.5,-showWeaveInfo">
+           <message kind="weave" text="Type 'SimpleVarargs' (SimpleVarargs.java:25) advised by before advice from 'VarargsAspect06' (VarargsAspect06.aj:3)"/>
+           <message kind="weave" text="Type 'SimpleVarargs' (SimpleVarargs.java:26) advised by before advice from 'VarargsAspect06' (VarargsAspect06.aj:3)"/>
+           <message kind="weave" text="Type 'SimpleVarargs' (SimpleVarargs.java:27) advised by before advice from 'VarargsAspect06' (VarargsAspect06.aj:3)"/>
+       </compile>
+   </ajc-test>
 </suite>
 

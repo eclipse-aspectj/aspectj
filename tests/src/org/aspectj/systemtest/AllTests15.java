@@ -6,7 +6,7 @@ package org.aspectj.systemtest;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.aspectj.systemtest.ajc150.AllTestsAspectJ150_NeedJava15;
+import org.aspectj.systemtest.ajc150.AllTestsAspectJ150;
 
 public class AllTests15 {
 
@@ -14,7 +14,7 @@ public class AllTests15 {
 		TestSuite suite = new TestSuite("AspectJ System Test Suite - JDK 1.5");
 		//$JUnit-BEGIN$
 		suite.addTest(AllTests14.suite());
-		suite.addTestSuite(AllTestsAspectJ150_NeedJava15.class);
+		suite.addTest(AllTestsAspectJ150.suite());
 		//$JUnit-END$
 		return suite;
 	}

@@ -19,24 +19,24 @@ import junit.framework.TestSuite;
 public class AllTestsAspectJ150 {
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite("Java5 - binary weaving");
+		TestSuite suite = new TestSuite("Java5/AspectJ5 tests");
 		//$JUnit-BEGIN$
 		suite.addTestSuite(MigrationTests.class);
 		suite.addTest(Ajc150Tests.suite());
-		suite.addTestSuite(Ajc150TestsNoHarness.class); 
         suite.addTestSuite(SCCSFixTests.class);
 		
-		// These are binary weaving tests
 		suite.addTest(AccBridgeMethods.suite());
 		suite.addTestSuite(CovarianceTests.class);
 		suite.addTestSuite(Enums.class);
-		suite.addTestSuite(AnnotationsBinaryWeaving.class);
-		suite.addTestSuite(AnnotationPointcutsTests.class);
+		suite.addTest(AnnotationsBinaryWeaving.suite());
+		suite.addTest(AnnotationPointcutsTests.suite());
 		suite.addTestSuite(VarargsTests.class);
-		suite.addTestSuite(AnnotationRuntimeTests.class);
+		suite.addTest(AnnotationRuntimeTests.suite());
 		suite.addTestSuite(PerTypeWithinTests.class);
 		
-		
+		suite.addTest(Autoboxing.suite());		
+		suite.addTest(Annotations.suite());
+		suite.addTest(AnnotationBinding.suite());
 		//$JUnit-END$
 		return suite;
 	}

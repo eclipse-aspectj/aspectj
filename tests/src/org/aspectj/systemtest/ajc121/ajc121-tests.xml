@@ -406,12 +406,6 @@
 			<message kind="warning" line="22" text="*[] returning method called"/>
 		</compile>
 	</ajc-test>
-	
-	<ajc-test dir="bugs/java5/arrayCloning" pr="72150"
-	   title="AJC possible bug with static nested classes">
-	   <compile files="A.java,OneFiveCode.jar" options="-showWeaveInfo"/>
-	   <!-- ARGH - Cant run it because run class is of type '49' run class="C"/-->
-    </ajc-test>
 
     <ajc-test dir="bugs" pr="72699"
 	   title="Bogus error message: The abstract method ajc$pointcut$$tracingScope$a2 in type Tracing can only be defined by an abstract class (1)">

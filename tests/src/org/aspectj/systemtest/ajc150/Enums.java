@@ -12,8 +12,9 @@ package org.aspectj.systemtest.ajc150;
 
 import java.io.File;
 
-import org.aspectj.bridge.IMessage;
-import org.aspectj.tools.ajc.CompilationResult;
+import junit.framework.Test;
+
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 
 /**
@@ -29,64 +30,43 @@ import org.aspectj.tools.ajc.CompilationResult;
  * 8. Lint warning if a non-explicit type pattern would match an enum type.
  * 
  */
-public class Enums extends TestUtils {
-	
-  protected void setUp() throws Exception {
-	super.setUp();
-	baseDir = new File("../tests/java5/enums");
-  }
-  
+public class Enums extends XMLBasedAjcTestCase {
+
+	  public static Test suite() {
+	    return XMLBasedAjcTestCase.loadSuite(Enums.class);
+	  }
+
+	  protected File getSpecFile() {
+	    return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
+	  }
+	  
   // Cannot make ITDC on an enum
   public void test001_itdcsOnEnumNotAllowed() {
-  	CompilationResult cR = binaryWeave("testcode.jar","EnumAspect01.aj",1,0);
-  	IMessage msg = (IMessage)cR.getErrorMessages().get(0);
-  	assertTrue("Expected a message about ITDCs not allowed on enums but got: "+msg,
-  			msg.toString().indexOf("can't make inter-type constructor declarations")!=-1);
-  	verifyWeavingMessagesOutput(cR,new String[]{});
+  	runTest("cant itd constructor on enum");
   }
-  
+
   // Cannot make ITDM or ITDF on an enum
   public void test002_itdFieldOrMethodOnEnumNotAllowed() {
-  	CompilationResult cR = binaryWeave("testcode.jar","EnumAspect02.aj",2,0);
-  	IMessage msg1 = (IMessage)cR.getErrorMessages().get(0);
- 	IMessage msg2 = (IMessage)cR.getErrorMessages().get(1);
-  	assertTrue("Expected a message about ITD methods not allowed on enums but got: "+msg1,
-  			msg1.toString().indexOf("can't make inter-type method declarations")!=-1);
-  	assertTrue("Expected a message about ITD fields not allowed on enums but got: "+msg2,
-  			msg2.toString().indexOf("can't make inter-type field declarations")!=-1);
-  	verifyWeavingMessagesOutput(cR,new String[]{});
+  	runTest("cant itd field or method on enum");
   }
-  
+
   // Deals with the cases where an explicit type is specified and it is an enum type
   public void test003_decpOnEnumNotAllowed_errors() {
-  	CompilationResult cR = binaryWeave("testcode.jar","EnumAspect03.aj",4,0,true);
-  	// THE ORDERING CAN BE SENSITIVE HERE... OUGHT TO FIX IT PROPERLY AND ALLOW FOR THEM
-  	// IN ANY POSITION
-  	IMessage msg = (IMessage)cR.getErrorMessages().get(1);
-  	assertTrue("Expected a message about can't use decp to alter supertype of an enum: "+msg,
-  			msg.toString().indexOf("to alter supertype of enum type")!=-1);
-  	msg = (IMessage)cR.getErrorMessages().get(2);
-  	assertTrue("Expected a message about can't use decp to make enum implement interface: "+msg,
-  			msg.toString().indexOf("implement an interface")!=-1);
-  	msg = (IMessage)cR.getErrorMessages().get(0);
-  	assertTrue("Expected a message about can't use decp to make Enum parent of another type: "+msg,
-  			msg.toString().indexOf("the parent of type")!=-1);
-  	msg = (IMessage)cR.getErrorMessages().get(3);
-  	assertTrue("Excpected message about not subclassing Enum: "+msg,
-  			msg.toString().indexOf("The type C may not subclass Enum explicitly")!=-1);
-  	verifyWeavingMessagesOutput(cR,new String[]{});
+  	runTest("declare parents and enums");
   }
 
   //Deals with the cases where an wild type pattern is specified and it hits an enum type
   public void test004_decpOnEnumNotAllowed_xlints() {
-  	CompilationResult cR = binaryWeave("testcode.jar","EnumAspect04.aj",0,2,false);
-  	IMessage msg = (IMessage)cR.getWarningMessages().get(0);
-  	assertTrue("Expected a message about an enum type matching a declare parents but being ignored: "+msg,
-  			msg.toString().indexOf("matches a declare parents type pattern")!=-1);
-  	msg = (IMessage)cR.getWarningMessages().get(1);
-  	assertTrue("Expected a message about an enum type matching a declare parents but being ignored: "+msg,
-  			msg.toString().indexOf("matches a declare parents type pattern")!=-1);
-  	verifyWeavingMessagesOutput(cR,new String[]{});
+  	runTest("wildcard enum match in itd");
   }
+//  	CompilationResult cR = binaryWeave("testcode.jar","EnumAspect04.aj",0,2,false);
+//  	IMessage msg = (IMessage)cR.getWarningMessages().get(0);
+//  	assertTrue("Expected a message about an enum type matching a declare parents but being ignored: "+msg,
+//  			msg.toString().indexOf("matches a declare parents type pattern")!=-1);
+//  	msg = (IMessage)cR.getWarningMessages().get(1);
+//  	assertTrue("Expected a message about an enum type matching a declare parents but being ignored: "+msg,
+//  			msg.toString().indexOf("matches a declare parents type pattern")!=-1);
+//  	verifyWeavingMessagesOutput(cR,new String[]{});
+//  }
 
 }

@@ -1,9 +1,10 @@
 import java.lang.Enum;
 
 public aspect EnumAspect03 {
-  declare parents: SimpleEnum implements java.io.Serializable;
+  interface I {}
+  declare parents: SimpleEnum implements I;
 
-  class C extends Enum { }
+  enum C {A,B,C};
   declare parents: SimpleEnum extends C;
 
   class D {}

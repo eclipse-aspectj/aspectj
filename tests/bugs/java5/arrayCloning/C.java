@@ -1,6 +1,6 @@
 import java.lang.reflect.*;
 
-class C {
+public class C {
 
   public static B.D[] arr = new B.D[5];
 

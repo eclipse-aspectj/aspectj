@@ -11,20 +11,23 @@
 package org.aspectj.systemtest.ajc150;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.aspectj.tools.ajc.CompilationResult;
+import junit.framework.Test;
+
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
 * Tests for @this, @target, @args
 */
-public class AnnotationRuntimeTests extends TestUtils {
+public class AnnotationRuntimeTests extends XMLBasedAjcTestCase {
 
-    protected void setUp() throws Exception {
-        super.setUp();
-    	baseDir = new File("../tests/java5/annotations/thisOrtarget");
-    }
+	  public static Test suite() {
+	    return XMLBasedAjcTestCase.loadSuite(AnnotationRuntimeTests.class);
+	  }
+
+	  protected File getSpecFile() {
+	    return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
+	  }
     
 //    No longer a limitation ASC 31Jan05
 //    public void test001_BindingWithAtTargetAllowed() {
@@ -35,46 +38,23 @@ public class AnnotationRuntimeTests extends TestUtils {
 //    }
     
     public void test002_MustHaveRuntimeRetention() {
-        CompilationResult cR = binaryWeave("TestingAnnotations.jar","NotRuntimeRetention.aj",2,0);
-        List errors = new ArrayList();
-        errors.add(new Message(7,"Annotation type MyClassRetentionAnnotation does not have runtime retention"));
-        errors.add(new Message(13,"Annotation type MyClassRetentionAnnotation does not have runtime retention"));
-        
-        MessageSpec messageSpec = new MessageSpec(new ArrayList(), errors);
-        assertMessages(cR, messageSpec);
+    	runTest("must have runtime retention");
     }
     
     public void test003_InheritableOrNot() {
-        CompilationResult cR = binaryWeave("TestingAnnotations.jar","ThisOrTargetTests.aj",0,0);   
+    	runTest("inheritable or not");
     }
 
     public void test004_CantUseinDecEoW() {
-        CompilationResult cR = binaryWeave("TestingAnnotations.jar","DeclareEoW.java",4,0);
-        List errors = new ArrayList();
-        errors.add(new Message(3,"this() pointcut designator cannot be used in declare statement"));
-        errors.add(new Message(5,"target() pointcut designator cannot be used in declare statement"));
-        MessageSpec messageSpec = new MessageSpec(new ArrayList(), errors);
-        assertMessages(cR, messageSpec);
+    	runTest("use of @this/target in deow");
     }
-
-    // TODO extra tests
-    // run the result of test003 and validate matches (needs 1.5 runtime)
-    // test inheritable annotation not present on type [should generate runtime test]
-    
+  
     public void test005_ArgsSuite() {
-    	baseDir = new File("../tests/java5/annotations/args");
-        CompilationResult cR = binaryWeave("TestingArgsAnnotations.jar","AtArgsAspect.java",0,0);  
-        // TODO need to RUN the result of these tests...
-        System.out.println(cR);
+    	runTest("@args tests");
     }
 
     public void test006_CantUseinDecEoW() {
-    	baseDir = new File("../tests/java5/annotations/args");
-        CompilationResult cR = binaryWeave("TestingArgsAnnotations.jar","DeclareEoW.java",2,0);
-        List errors = new ArrayList();
-        errors.add(new Message(3,"args() pointcut designator cannot be used in declare statement"));
-        MessageSpec messageSpec = new MessageSpec(new ArrayList(), errors);
-        assertMessages(cR, messageSpec);
+    	runTest("use of @args in deow");
     }
 
 }

@@ -11,110 +11,84 @@
 package org.aspectj.systemtest.ajc150;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.aspectj.tools.ajc.CompilationResult;
+import junit.framework.Test;
 
-public class AnnotationBinding extends TestUtils {
-	
-  protected void setUp() throws Exception {
-	super.setUp();
-	baseDir = new File("../tests/java5/annotations/binding");
+import org.aspectj.testing.XMLBasedAjcTestCase;
+
+public class AnnotationBinding extends XMLBasedAjcTestCase {
+
+  public static Test suite() {
+    return XMLBasedAjcTestCase.loadSuite(AnnotationBinding.class);
+  }
+
+  protected File getSpecFile() {
+    return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
   }
   
   ///////////////////////////////////// @ANNOTATION and CALL
   
   // Very simple annotation binding for 'call() && @annotation()'
   public void testCallAnnotationBinding1() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"CallAnnBinding.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec());
-  	RunResult rR = run("CallAnnBinding"); 
+  	runTest("call annotation binding 1");
   }
 
   // 'call() && @annotation()' when the called method has multiple arguments
   public void testCallAnnotationBinding2() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"CallAnnBinding2.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec());
-  	RunResult rR = run("CallAnnBinding2");
+ 	runTest("call annotation binding 2");
   }
   
   // 'call() && @annotation()' when the called method takes primitive arguments (YUCK!)
   public void testCallAnnotationBinding3() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"CallAnnBinding3.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("CallAnnBinding3");
+ 	runTest("call annotation binding 3");
   }
   
   // 'call() && @annotation()' when runtime type will exhibit different annotation (due to interface implementing)
   public void testCallAnnotationBinding4() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"CallAnnBinding4.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("CallAnnBinding4");
+  	runTest("call annotation binding 4");
   }
   
   // 'call() && @annotation()' when target doesnt have an annotation !
   public void testCallAnnotationBinding5() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"CallAnnBinding5.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("CallAnnBinding5");
+  	runTest("call annotation binding 5");
   }
   
   // 'call() && @annotation()' when runtime type will exhibit different annotation (due to subclassing)
   public void testCallAnnotationBinding6() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"CallAnnBinding6.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("CallAnnBinding6");
+  	runTest("call annotation binding 6");
   }
   
-
   // 'call() && @annotation()' using named pointcut
   public void testCallAnnotationBinding7() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"CallAnnBinding7.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("CallAnnBinding7");
+  	runTest("call annotation binding 7");
   }
   
-  
-  
-
   ///////////////////////////////////// @TARGET
   
   // 'call() && @target()'
   public void testAtTargetAnnotationBinding1() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"AtTarget1.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("AtTarget1");
+  	runTest("@target annotation binding 1");
   }
   
   // 'call() && @target() && @target'
   public void testAtTargetAnnotationBinding2() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"AtTarget2.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("AtTarget2");
+  	runTest("@target annotation binding 2");
   }
   
   // 'call() && @target()' - using a type hierarchy where some levels are missing annotations
   public void testAtTargetAnnotationBinding3() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"AtTarget3.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("AtTarget3");
+  	runTest("@target annotation binding 3");
   }
   
   // 'call() && @target()' - using a type hierarchy where some levels are missing annotations 
   // but the annotation is inherited
   public void testAtTargetAnnotationBinding4() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"AtTarget4.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("AtTarget4");
+  	runTest("@target annotation binding 4");
   }
   
   // @target() with an annotation in a package
   public void testAtTargetAnnotationBinding5() {
-    CompilationResult cR = ajc(new File(baseDir,"usingPackageNames"),
-      new String[]{"MyAspect.aj","MyAnnotation.java","MyClass.java","-1.5"});
-    assertMessages(cR,new EmptyMessageSpec()); 
-    RunResult rR = run("test.MyClass");
+  	runTest("@target annotation binding 5");
   }
   
   
@@ -122,75 +96,55 @@ public class AnnotationBinding extends TestUtils {
   
   // 'call() && @this()'
   public void testAtThisAnnotationBinding1() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"AtThis1.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("AtThis1");
+  	runTest("@this annotation binding 1");
   }
   
   // 'call() && @this() && @this'
   public void testAtThisAnnotationBinding2() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"AtThis2.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("AtThis2");
+  	runTest("@this annotation binding 2");
   }
   
   // 'call() && @this()' - using a type hierarchy where some levels are missing annotations
   public void testAtThisAnnotationBinding3() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"AtThis3.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("AtThis3");
+  	runTest("@this annotation binding 3");
   }
   
   // 'call() && @this()' - using a type hierarchy where some levels are missing annotations 
   // but the annotation is inherited
   public void testAtThisAnnotationBinding4() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"AtThis4.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("AtThis4");
+  	runTest("@this annotation binding 4");
   }
   
   // '@this() and @target()' used together
   public void testAtThisAtTargetAnnotationBinding() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"AtThis5.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("AtThis5");
+  	runTest("@this annotation binding 5");
   }
   
   ///////////////////////////////////// @ARGS
   
   // complex case when there are 3 parameters
   public void testAtArgs1() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"AtArgs1.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("AtArgs1");
+  	runTest("@args annotation binding 1");
   }
   
   // simple case when there is only one parameter
   public void testAtArgs2() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"AtArgs2.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("AtArgs2");
+  	runTest("@args annotation binding 2");
   }
   
   // simple case when there is only one parameter and no binding
   public void testAtArgs3() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"AtArgs3.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("AtArgs3");
+  	runTest("@args annotation binding 3");
   }
   
   // complex case binding different annotation kinds
   public void testAtArgs4() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"AtArgs4.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("AtArgs4");
+  	runTest("@args annotation binding 4");
   }
   
   // check @args and execution()
   public void testAtArgs5() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"AtArgs5.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("AtArgs5");
+  	runTest("@args annotation binding 5");
   }
   
 
@@ -198,96 +152,73 @@ public class AnnotationBinding extends TestUtils {
   
   // 'execution() && @annotation()' 
   public void testExecutionAnnotationBinding1() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"ExecutionAnnBinding1.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("ExecutionAnnBinding1");
+  	runTest("execution and @annotation");
   }
   
   ///////////////////////////////////// @ANNOTATION and SET
   
   // 'set() && @annotation()' 
   public void testFieldAnnotationBinding1() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"FieldAnnBinding1.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("FieldAnnBinding1");
+  	runTest("set and @annotation");
   }
   
   // 'get() && @annotation()' 
   public void testFieldAnnotationBinding2() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"FieldAnnBinding2.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("FieldAnnBinding2");
+  	runTest("get and @annotation");
   }
   
   // 'get() && @annotation()' when using array fields
   public void testFieldAnnotationBinding3() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"FieldAnnBinding3.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("FieldAnnBinding3");
+  	runTest("get and @annotation with arrays");
   }
   
   ///////////////////////////////////// @ANNOTATION and CTOR-CALL
   
   // 'ctor-call(new) && @annotation()' 
   public void testCtorCallAnnotationBinding1() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"CtorAnnBinding1.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("CtorAnnBinding1");
+  	runTest("cons call and @annotation");
   }
   
   ///////////////////////////////////// @ANNOTATION and CTOR-CALL
   
   // 'ctor-execution() && @annotation()' 
   public void testCtorExecAnnotationBinding1() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"CtorAnnBinding2.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("CtorAnnBinding2");
+  	runTest("cons exe and @annotation");
   }
-  
-  
+    
   ///////////////////////////////////// @ANNOTATION and STATICINITIALIZATION
   
   // 'staticinitialization() && @annotation()' 
   public void testStaticInitAnnotationBinding1() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"StaticInitBinding.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("StaticInitBinding");
+  	runTest("staticinit and @annotation");
   }
   
   ///////////////////////////////////// @ANNOTATION and PREINITIALIZATION
   
   // 'preinitialization() && @annotation()' 
   public void testPreInitAnnotationBinding1() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"PreInitBinding.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("PreInitBinding");
+  	runTest("preinit and @annotation");
   }
   
   ///////////////////////////////////// @ANNOTATION and INITIALIZATION
   
   // 'initialization() && @annotation()' 
   public void testInitAnnotationBinding1() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"InitBinding.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("InitBinding");
+  	runTest("init and @annotation");
   }
   
   ///////////////////////////////////// @ANNOTATION and ADVICEEXECUTION
   
   // 'adviceexecution() && @annotation()' 
   public void testAdviceExecAnnotationBinding1() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"AdviceExecBinding.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("AdviceExecBinding");
+  	runTest("adviceexecution and @annotation");
   }
   
   ///////////////////////////////////// @ANNOTATION and HANDLER
   
   // 'handler() && @annotation()' 
   public void testHandlerAnnotationBinding1() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"HandlerBinding.aj","-1.5"});
-  	assertMessages(cR,new EmptyMessageSpec()); 
-  	RunResult rR = run("HandlerBinding");
+  	runTest("handler and @annotation");
   }
   
 
@@ -295,43 +226,26 @@ public class AnnotationBinding extends TestUtils {
   
   // Using package names for the types (including the annotation) - NO BINDING
   public void testPackageNamedTypesNoBinding() {
-  	CompilationResult cR = ajc(new File(baseDir,"complexExample"),
-  			new String[]{"A.java","B.java","Color.java","X.java","-1.5","-d","."});
-  	assertMessages(cR,new EmptyMessageSpec());
-  	RunResult rR = run("a.b.c.A");
+  	runTest("packages and no binding");
   }
   
   // Using package names for the types (including the annotation) - INCLUDES BINDING
   public void testPackageNamedTypesWithBinding() {
-  	CompilationResult cR = ajc(new File(baseDir,"complexExample"),
-  			new String[]{"A.java","B.java","Color.java","X2.java","-1.5","-d","."});
-  	assertMessages(cR,new EmptyMessageSpec());
-  	RunResult rR = run("a.b.c.A");
+  	runTest("packages and binding");
   }
   
   // declare parents: @Color * implements Serializable
   public void testDeclareParentsWithAnnotatedAnyPattern() {
-  	CompilationResult cR = ajc(new File(baseDir,"complexExample"),
-  			new String[]{"A.java","B.java","C.java","Color.java","X3.java","-1.5","-d","."});
-  	assertMessages(cR,new EmptyMessageSpec());
-  	RunResult rR = run("g.h.i.C"); // C should now be serializable
-  	          rR = run("a.b.c.A"); // A should not be serializable
+  	runTest("annotated any pattern");
   }
   
   // Should error (in a nice way!) on usage of an annotation that isnt imported
   public void testAnnotationUsedButNotImported() {
-  	CompilationResult cR = ajc(new File(baseDir,"complexExample"),
-  			new String[]{"A.java","B.java","Color.java","X4.java","-1.5","-d","."});
-  	List warnings = new ArrayList();
-  	warnings.add(new Message(6));
-  	assertMessages(cR,new MessageSpec(warnings,null));
-  	RunResult rR = run("a.b.c.A"); 
+  	runTest("annotation not imported");
   }
   
   // Binding with calls/executions of static methods
   public void testCallsAndExecutionsOfStaticMethods() {
-  	CompilationResult cR = ajc(baseDir,new String[]{"StaticMethods.java","-1.5","-d","."});
-  	assertMessages(cR,new EmptyMessageSpec());
-  	RunResult rR = run("StaticMethods");
+  	runTest("binding with static methods");
   }
 }
