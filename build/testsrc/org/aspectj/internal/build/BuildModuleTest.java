@@ -45,6 +45,10 @@ import junit.framework.TestCase;
 public class BuildModuleTest extends TestCase {
 
     private static boolean printedMessage;
+    // skip those requiring ajdoc, which requires tools.jar
+    // also skip those requiring java5 unless manually set up
+    private static final String[] SKIPS 
+        = {"ajbrowser", "aspectjtools", "ajdoc", "aspectj5rt"};
     private static final String SKIP_MESSAGE = 
         "Define \"run.build.tests\" as a system property to run tests to build ";
     private static final String BUILD_CONFIG;
@@ -105,6 +109,12 @@ public class BuildModuleTest extends TestCase {
         checkBuild("runtime");
     }
 
+    public void testAspectj5rt() {
+        checkBuild("aspectj5rt", 
+                "org.aspectj.lang.annotation.Main",
+                new String[] {}); // compiler version
+    }
+
     public void testAjbrowser() {
         checkBuild("ajbrowser", 
             "org.aspectj.tools.ajbrowser.Main",
@@ -122,6 +132,7 @@ public class BuildModuleTest extends TestCase {
             new String[] {"-help"});
     }
     
+    // ajdoc relies on tools.jar
     public void testAspectjtools() {
         if (!shouldBuild("aspectjtools")) {
             return;
@@ -238,6 +249,12 @@ public class BuildModuleTest extends TestCase {
         if (!building && !printedMessage) {
             System.err.println(SKIP_MESSAGE + target + " (this is the only warning)");
             printedMessage = true;
+        }
+        for (int i = 0; i < SKIPS.length; i++) {
+            if (SKIPS[i].equals(target)) {
+                System.err.println(target + " expressly skipped...");                
+                return false;
+            }
         }
         return building;
     }
