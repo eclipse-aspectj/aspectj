@@ -4,5 +4,20 @@
 <!-- contains valid tests that the compiler has never passed -->
 
 <suite>
-
+	<ajc-test dir="bugs" 
+		title="interface call signatures when declaring method in aspect"
+		pr="40805">
+		<compile files="DeclareWarningAndInterfaceMethodCW.java">
+			<message kind="warning" line="27" text="call getSomething"/>
+			<message kind="warning" line="27" text="call ICanGetSomething.getSomething"/>
+			<message kind="warning" line="31" text="call getSomething"/>
+			<message kind="warning" line="31" text="call ICanGetSomething.getSomething"/>
+			<message kind="warning" line="33" text="call getSomething"/>
+			<message kind="warning" line="33" text="call ICanGetSomething.getSomething"/>
+			<message kind="warning" line="35" text="call getSomething"/>
+			<message kind="warning" line="35" text="call ICanGetSomething.getSomething"/>
+			<message kind="warning" line="38" text="call getSomething"/>
+			<message kind="warning" line="38" text="call ICanGetSomething.getSomething"/>
+			</compile>
+		</ajc-test>
 </suite>
