@@ -10,6 +10,14 @@ Adrian Colyer - initial version
 **********************************************************************/
 package org.aspectj.ajde;
 
+import java.io.File;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import junit.framework.TestSuite;
+
 import org.aspectj.ajde.internal.CompilerAdapter;
 import org.aspectj.ajde.ui.UserPreferencesAdapter;
 import org.aspectj.ajde.ui.internal.AjcBuildOptions;
@@ -17,15 +25,6 @@ import org.aspectj.ajde.ui.internal.UserPreferencesStore;
 import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
 import org.aspectj.util.LangUtil;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
-
-import java.io.File;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import junit.framework.AssertionFailedError;
-import junit.framework.TestSuite;
 
 /**
  * Tests that a correctly populated AjBuildConfig object is created

@@ -14,7 +14,6 @@
 
 package org.aspectj.tools.ajbrowser;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,6 @@ import javax.swing.JFrame;
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.BuildConfigManager;
 import org.aspectj.ajde.BuildListener;
-import org.aspectj.ajde.ProjectPropertiesAdapter;
 import org.aspectj.ajde.TaskListManager;
 import org.aspectj.ajde.ui.InvalidResourceException;
 import org.aspectj.ajde.ui.UserPreferencesAdapter;
@@ -33,8 +31,6 @@ import org.aspectj.ajde.ui.swing.AjdeUIManager;
 import org.aspectj.ajde.ui.swing.BasicEditor;
 import org.aspectj.ajde.ui.swing.IconRegistry;
 import org.aspectj.ajde.ui.swing.MultiStructureViewPanel;
-import org.aspectj.util.LangUtil;
-import org.aspectj.util.Reflection;
 
 /**
  * IDE manager for standalone AJDE application.

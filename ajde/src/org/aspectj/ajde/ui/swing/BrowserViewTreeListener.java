@@ -15,6 +15,7 @@
 package org.aspectj.ajde.ui.swing;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -102,7 +103,7 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
      * has been clicked.
      */
     private void maybeShowPopup(MouseEvent e) {
-        if (e.getModifiers() == e.BUTTON3_MASK && tree.getSelectionCount() > 0) {
+        if (e.getModifiers() == InputEvent.BUTTON3_MASK && tree.getSelectionCount() > 0) {
             TreePath[] selectionPaths = tree.getSelectionPaths();
             final List signatures = new ArrayList();
             for (int i = 0; i < selectionPaths.length; i++) {

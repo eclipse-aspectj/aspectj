@@ -16,10 +16,6 @@ package org.aspectj.ajde.internal;
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.BuildProgressMonitor;
 import org.aspectj.bridge.IProgressListener;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
-import org.eclipse.jdt.internal.core.builder.BuildNotifier;
 
 public class BuildNotifierAdapter implements IProgressListener {
 

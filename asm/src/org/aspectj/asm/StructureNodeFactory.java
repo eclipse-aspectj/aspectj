@@ -14,8 +14,8 @@
 
 package org.aspectj.asm;
 
-import java.util.*;
-import org.aspectj.asm.*;
+import java.util.Hashtable;
+import java.util.List;
 
 /**
  * @author Mik Kersten

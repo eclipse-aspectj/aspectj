@@ -15,7 +15,6 @@
 package org.aspectj.ajde.ui.swing;
    
 import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.LangUtil;
 
 /**

@@ -72,7 +72,7 @@ public class GoToLineThread extends Thread {
 
     private void shortPause() {
         try {
-            this.sleep(100);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             throw new RuntimeException(e.getMessage());
         }

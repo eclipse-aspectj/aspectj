@@ -16,11 +16,13 @@ package org.aspectj.ajde;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 
 import junit.framework.TestSuite;
 
-import org.aspectj.asm.*;
+import org.aspectj.asm.ModelWalker;
+import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.StructureModel;
+import org.aspectj.asm.StructureNode;
 
 /**
  * @author Mik Kersten

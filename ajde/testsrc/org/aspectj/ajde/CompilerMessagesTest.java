@@ -12,8 +12,6 @@
 
 package org.aspectj.ajde;
 
-import org.aspectj.bridge.MessageUtil;
-
 import java.io.IOException;
 import java.util.List;
 
