@@ -134,6 +134,10 @@ do
     fi
   fi
 done
+## AspectJ change: add in junit
+if [ -f "${ANT_HOME}"/../junit/junit.jar ] ; then
+	LOCALCLASSPATH="${ANT_HOME}/../junit/junit.jar":"$LOCALCLASSPATH"
+fi
 
 if [ -n "$JAVA_HOME" ] ; then
   if [ -f "$JAVA_HOME/lib/tools.jar" ] ; then
