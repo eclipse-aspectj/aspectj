@@ -1,3 +1,5 @@
+import p.SimpleAnnotation;
+
 @SimpleAnnotation(id=2)
 public class AnnotatedClass {
 
