@@ -1,0 +1,28 @@
+Work to do for 1.5.0M1
+
+Initial support for these features is mostly to do with tolerance of them for binary weaving:
+
+X Bridge Methods (Ignore them completely - they provide no join points)
+X Covariance     (Properly support covariance)
+o Varargs        (Don't allow Object[] to match a varargs method)
+o Autoboxing     (
+o -source 1.5    (So we can change our behavior, e.g. autoboxing)
+o LocalVarTypeTable (Manipulate it the same as we do the LocalVariableTable)
+X Annotations       (No ITDs allowed)
+X Enums             (No ITDs allowed)
+o Annotation        (No DECPs allowed)
+o Enums             (No DECPs allowed)
+
+===
+
+Things not done:
+
+Marked with XXXAJ5 - currently tagging things like:
+
+- No covariance support for dynamic pointcut matching, need to dup declaringTypeMatch() changes for cov support
+
+===
+
+Things we ought to do:
+- Lift binary decp restriction
+- ResolvedTypeMunger - switch on remembering source location !
