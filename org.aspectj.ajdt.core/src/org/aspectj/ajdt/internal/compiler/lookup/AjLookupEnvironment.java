@@ -373,18 +373,27 @@ public class AjLookupEnvironment extends LookupEnvironment {
 	private void reportDeclareParentsMessage(WeaveMessage.WeaveMessageKind wmk,SourceTypeBinding sourceType,ResolvedTypeX parent) {
 		if (!factory.getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
 			String filename = new String(sourceType.getFileName());
-			if (filename.lastIndexOf(File.separator)!=-1)
-			filename = filename.substring(filename.lastIndexOf(File.separator)+1);
+			
+			int takefrom = filename.lastIndexOf('/');
+			if (takefrom == -1 ) takefrom = filename.lastIndexOf('\\');
+			filename = filename.substring(takefrom+1);
 
 			factory.getWorld().getMessageHandler().handleMessage(
 			WeaveMessage.constructWeavingMessage(wmk,
 				new String[]{CharOperation.toString(sourceType.compoundName),
 						filename,
 						parent.getClassName(),
-						parent.getSourceLocation().getSourceFile().getName()}));
+						getShortname(parent.getSourceLocation().getSourceFile().getPath())}));
 		}
 	}
-
+	
+	private String getShortname(String path)  {
+		int takefrom = path.lastIndexOf('/');
+		if (takefrom == -1) {
+			takefrom = path.lastIndexOf('\\');
+		}
+		return path.substring(takefrom+1);
+	}
 
 	private void addParent(SourceTypeBinding sourceType, ResolvedTypeX parent) {
 		ReferenceBinding parentBinding = (ReferenceBinding)factory.makeTypeBinding(parent); 

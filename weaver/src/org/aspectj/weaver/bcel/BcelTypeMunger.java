@@ -98,7 +98,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		if (worthReporting  && munger!=null && !weaver.getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
 			String tName = weaver.getLazyClassGen().getType().getSourceLocation().getSourceFile().getName();
 			if (tName.indexOf("no debug info available")!=-1) tName = "no debug info available";
-			String fName = getAspectType().getSourceLocation().getSourceFile().getName();
+			else tName = getShortname(weaver.getLazyClassGen().getType().getSourceLocation().getSourceFile().getPath());
+			String fName = getShortname(getAspectType().getSourceLocation().getSourceFile().getPath());
         	if (munger.getKind().equals(ResolvedTypeMunger.Parent)) {
         		// This message will come out of AjLookupEnvironment.addParent if doing a source
         		// compilation.
@@ -121,6 +122,14 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		}
 		
 		return changed;
+	}
+	
+	private String getShortname(String path)  {
+		int takefrom = path.lastIndexOf('/');
+		if (takefrom == -1) {
+			takefrom = path.lastIndexOf('\\');
+		}
+		return path.substring(takefrom+1);
 	}
 
 
