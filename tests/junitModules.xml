@@ -166,6 +166,15 @@
           <pathelement location="${aspectj.modules.lib.dir}/test/aspectjrt.jar" />
         </classpath>
 
+		<!-- AMC added this next line, needed when testing release builds,
+		  (those whose version is something other than DEVELOPMENT). The NullIdeAdapter
+		  used for various Ajde tests picks up this property and adds it to the project
+		  classpath, which allows the Ajde version tests to complete. 
+		  Having built a release version, use e.g. 
+		  ant -Daspectjrt.path=../aj-build/dist/lib/aspectjrt.jar
+		  -->
+		<jvmarg value="-Daspectjrt.path=${aspectjrt.path}" />
+
         <formatter type="xml"/>
 
         <batchtest todir="${junitModules.output.dir}/${moduleName}">
