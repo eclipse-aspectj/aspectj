@@ -94,7 +94,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
         AjBuildConfig buildConfig, 
         IMessageHandler baseHandler, 
         boolean batch) throws IOException, AbortException {
-        
+        boolean ret = true;
     	batchCompile = batch;
     	
         try {
@@ -134,8 +134,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
             }
             
             if (buildConfig.getOutputJar() != null) {
-            	OutputStream os = FileUtil.makeOutputStream(buildConfig.getOutputJar());
-            	zos = new ZipOutputStream(os);
+            	if (!openOutputStream(buildConfig.getOutputJar())) return false;
             }
             
             if (batch) {
@@ -183,16 +182,52 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
             if (buildConfig.isGenerateModelMode()) {
                 AsmManager.getDefault().fireModelUpdated();  
             }
-            return !handler.hasErrors();
         } finally {
         	if (zos != null) {
-        		zos.close();
+        		closeOutputStream();
         	}
-            handler = null;        
+            ret = !handler.hasErrors();
+            handler = null;
         }
+        return ret;
     }
     
-    private void copyResourcesToDestination() throws IOException {
+
+	private boolean openOutputStream(File outJar)  {
+		try {
+			OutputStream os = FileUtil.makeOutputStream(buildConfig.getOutputJar());
+			zos = new ZipOutputStream(os);
+		} catch (IOException ex) {
+			IMessage message = 
+				new Message("Unable to open outjar " 
+								+ outJar.getPath() 
+								+ "(" + ex.getMessage() 
+								+ ")",
+							new SourceLocation(outJar,0),
+							true);
+			handler.handleMessage(message);
+			return false;
+		}
+		return true;
+	}
+
+	private void closeOutputStream() {
+		try {
+			if (zos != null) zos.close();
+		} catch (IOException ex) {
+			IMessage message = 
+				new Message("Unable to write outjar " 
+								+ buildConfig.getOutputJar().getPath() 
+								+ "(" + ex.getMessage() 
+								+ ")",
+							new SourceLocation(buildConfig.getOutputJar(),0),
+							true);
+			handler.handleMessage(message);
+		}
+	}
+
+	
+	private void copyResourcesToDestination() throws IOException {
     	if (buildConfig.getOutputJar() != null) {
     		bcelWeaver.dumpResourcesToOutJar(zos);
     	} else {

@@ -7236,7 +7236,7 @@
          
         </compile>
     </ajc-test>
-     
+    
     <ajc-test dir="bugs/serialVersionUID"
 		title="SUID: Before execution advice" pr="41181">
 		<compile files="Test.java, Util.java"/>
@@ -7430,8 +7430,8 @@
    	 title="fail in compiling aspect with overriding method introduction with different throws clause ">
         <compile files="IntertypeDifferentThrows.java" />
     </ajc-test>
-
-   	<ajc-test dir="new" 
+    
+	<ajc-test dir="new" 
 		comment="in ajc 1.1.1, VerifyError Illegal use of nonvirtual function call"
 		title="super call in anonymous class created in around advice">
         <compile files="SuperClosure.java" />
@@ -7466,11 +7466,24 @@
             <message kind="error" line="6"/> 
         </compile>
     </ajc-test>
-
-   <ajc-test dir="bugs"  pr="51322"
+    
+    <ajc-test dir="bugs"  pr="51322"
     	title="Introduce Unknown Type to class causes Null pointer exception"  >
         <compile files="Pr51322.java"> 
         	<message kind="error" line="5"/>
+        </compile>
+    </ajc-test>
+    
+     <ajc-test dir="bugs"  pr="43714"
+    	title="weaving from an input jar into that same jar.."  >
+        <compile files="notAJar.jar" outjar="notAJar.jar"> 
+        	<message kind="error" line="0"/>
+        </compile>
+    </ajc-test>
+	
+	 <ajc-test dir="bugs"  pr="43714"
+    	title="weaving from an input jar into that same jar.."  >
+        <compile files="WeaveLocal.java" aspectpath="notAJar.jar" outjar="notAJar.jar" >         	
         </compile>
     </ajc-test>
 </suite>

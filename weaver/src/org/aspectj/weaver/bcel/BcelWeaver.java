@@ -18,6 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -38,6 +39,8 @@ import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IProgressListener;
+import org.aspectj.bridge.Message;
+import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.CrosscuttingMembersSet;
@@ -52,6 +55,7 @@ import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.FastMatchInfo;
+
 
 public class BcelWeaver implements IWeaver {
     private BcelWorld world;
@@ -105,7 +109,7 @@ public class BcelWeaver implements IWeaver {
     
 
 
-	public void addLibraryJarFile(File inFile) throws IOException {
+	public void addLibraryJarFile(File inFile) throws IOException  {
 		ZipInputStream inStream = new ZipInputStream(new FileInputStream(inFile)); //??? buffered
 		
 		List addedAspects = new ArrayList();
@@ -189,39 +193,65 @@ public class BcelWeaver implements IWeaver {
 
 	/** Adds all class files in the jar
 	 */
-	public List addJarFile(File inFile, File outDir, boolean canBeDirectory) throws IOException {
+	public List addJarFile(File inFile, File outDir, boolean canBeDirectory){
 //		System.err.println("? addJarFile(" + inFile + ", " + outDir + ")");
 		List addedClassFiles = new ArrayList();
 		needToReweaveWorld = true;
+		ZipInputStream inStream = null;
 		
-		// Is this a directory we are looking at?
-		if (inFile.isDirectory() && canBeDirectory) {
-			addedClassFiles.addAll(addDirectoryContents(inFile,outDir));
-		} else {
-		
-			ZipInputStream inStream = new ZipInputStream(new FileInputStream(inFile)); //??? buffered
-		
-			while (true) {
-				ZipEntry entry = inStream.getNextEntry();
-				if (entry == null) break;
+		try {
+			// Is this a directory we are looking at?
+			if (inFile.isDirectory() && canBeDirectory) {
+				addedClassFiles.addAll(addDirectoryContents(inFile,outDir));
+			} else {
 			
-				byte[] bytes = FileUtil.readAsByteArray(inStream);
-				String filename = entry.getName();
-				UnwovenClassFile classFile = new UnwovenClassFile(new File(outDir, filename).getAbsolutePath(), bytes);
+				inStream = new ZipInputStream(new FileInputStream(inFile)); //??? buffered
+			
+				while (true) {
+					ZipEntry entry = inStream.getNextEntry();
+					if (entry == null) break;
+				
+					byte[] bytes = FileUtil.readAsByteArray(inStream);
+					String filename = entry.getName();
+					UnwovenClassFile classFile = new UnwovenClassFile(new File(outDir, filename).getAbsolutePath(), bytes);
 
-				if (filename.endsWith(".class")) {
-					this.addClassFile(classFile);
-					addedClassFiles.add(classFile);
+					if (filename.endsWith(".class")) {
+						this.addClassFile(classFile);
+						addedClassFiles.add(classFile);
+					}
+					else if (!entry.isDirectory()) {
+
+						/* bug-44190 Copy meta-data */
+						addResource(filename,classFile);
+					}
+
+					inStream.closeEntry();
 				}
-				else if (!entry.isDirectory()) {
-
-					/* bug-44190 Copy meta-data */
-					addResource(filename,classFile);
-				}
-
-				inStream.closeEntry();
+				inStream.close();
 			}
-			inStream.close();
+		} catch (FileNotFoundException ex) {
+			IMessage message = new Message(
+					"Could not find input jar file " + inFile.getPath() + ", ignoring",
+					new SourceLocation(inFile,0),
+					false);
+			world.getMessageHandler().handleMessage(message);
+		} catch (IOException ex) {
+			IMessage message = new Message(
+					"Could not read input jar file " + inFile.getPath() + "(" + ex.getMessage() + ")",
+					new SourceLocation(inFile,0),
+					true);
+			world.getMessageHandler().handleMessage(message);
+		} finally {
+			if (inStream != null) {
+				try {inStream.close();}
+				catch (IOException ex) {
+					IMessage message = new Message(
+							"Could not close input jar file " + inFile.getPath() + "(" + ex.getMessage() + ")",
+							new SourceLocation(inFile,0),
+							true);					
+					world.getMessageHandler().handleMessage(message);					
+				}
+			}
 		}
 		
 		return addedClassFiles;
