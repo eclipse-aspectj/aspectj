@@ -93,6 +93,7 @@ public class StructureViewManager {
 	/**
 	 * Only navigations of the default view are registered with
 	 * the history.
+     * @param newFilePath the canonicalized path to the new file
 	 */
 	public void fireNavigationAction(String newFilePath, int lineNumber) {				
 		StructureNode currNode = Ajde.getDefault().getStructureModelManager().getStructureModel().findNodeForSourceLine(
