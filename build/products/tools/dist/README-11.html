@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html> <head>
-<title>AspectJ 1.1beta4 -- Readme</title>
+<title>AspectJ 1.1beta5 -- Readme</title>
 <style type="text/css">
 <!--
   P   { margin-left:  20px; }
@@ -14,13 +14,14 @@
 
 <body>
 <div align="right"><small>
-&copy; Copyright 2002 Palo Alto Research Center, Incorporated.
+&copy; Copyright 2002 Palo Alto Research Center, Incorporated,
+2003 Contributors.
 All rights reserved.
 </small></div>
 
 <h1>AspectJ Readme</h1>
 
-<p align="right"><i>Version 1.1beta4</i></p>
+<p align="right"><i>Version 1.1beta5</i></p>
 
 <p> This is an early-access release of AspectJ 1.1.  It includes a small
 number of new language features as well as major improvements to the
@@ -37,7 +38,7 @@ descriptions here should be read as changes to the AspectJ
 documentation.  </p>
 
 <p> The main body of this document describes the differences between
-the 1.1beta4 release and the 1.0.6 release.  For those following our
+the 1.1beta5 release and the 1.0.6 release.  For those following our
 release schedule closely, however, these are the changes (other than
 bugfixes) since the 1.1beta2 release: </p>
 
@@ -46,7 +47,7 @@ bugfixes) since the 1.1beta2 release: </p>
   <a href="#ASPECT_INSTANTIATION_AND_ADVICE">clarified</a>. </li>
   <li>The new <code>declare dominates</code> is now written 
   <code>declare precedence</code>.  This is incompatible with
-  previous 1.1betaX releases, but is completely compatibile with
+  previous 1.1betaX releases, but is completely compatible with
   1.0 where this feature wasn't available at all.</li>
 </ul>
 
@@ -73,7 +74,7 @@ are now part of a single downloadable distribution from
 <a href="http://aspectj4emacs.sourceforge.net/">Emacs</a>,
 <a href="http://aspectj4netbean.sourceforge.net/">NetBeans</a> and
 <a href="http://aspectj4jbuildr.sourceforge.net/">JBuilder</a> are now
-available from individual SourceForge projects. </p>
+individual SourceForge projects. </p>
 
 <!-- ============================== -->
 <hr>
@@ -291,8 +292,8 @@ available from individual SourceForge projects. </p>
   task by setting the <code>build.compiler</code> property.  </p>
 
   <p>This release does not include <code>ajdoc</code>, the
-  documentation tool for AspectJ sources, and its 1.1 release will
-  trail the others' by weeks. Ajdoc is deeply dependent on the
+  documentation tool for AspectJ sources, and its 1.1 release looks
+  doubtful. Ajdoc is deeply dependent on the
   abstract syntax tree classes from the old compiler, so it needs a
   bottom-up rewrite. We think it best to use this opportunity to
   implement more general API's for publishing and rendering static
@@ -333,23 +334,23 @@ available from individual SourceForge projects. </p>
   and AJDE for Emacs haven't changed much either. They use the
   batch-build mode of the new compiler.  Incremental building and
   bytecode weaving are not available in the AJDE tools in the beta
-  release, but will be in a future release.</p>
+  release, but might be in a future release.</p>
 
   <p> Of note for the beta is that NetBeans 3.4 is supported, and there is now
   better integration for the compiler messages output window.</p>
 
 <!-- ============================== -->
 <hr>
-<h2><a name="sources">The Sources and the Licences</a></h2>
+<h2><a name="sources">The Sources and the Licenses</a></h2>
 
   <p> The AspectJ tools sources are available under the
   <a href="http://eclipse.org/legal/cpl-v10.html">Common Public
-  Licence</a> in the CVS repository
+  License</a> in the CVS repository
   at <a href="http://eclipse.org">http://eclipse.org</a>.
+  For more information, see the FAQ entry on
+    <a href="http://dev.eclipse.org/viewcvs/indextech.cgi/~checkout~/aspectj-home/doc/faq.html#q:buildingsource">
+    building sources</a>.
   </p>
-
-  <p> More information about the sources can be found in their
-  respective README files.  </p>
 
 <!-- ============================== -->
 <hr>
@@ -752,9 +753,9 @@ available from individual SourceForge projects. </p>
   <h3><a name="NO_SOURCE_COLUMN">SourceLocation.getColumn()</a></h3>
 
     <p>The Java .class file format contains information about the
-    source file and line numbers of its contents; however, it has not
+    source file and line numbers of its contents; however, it has no
     information about source columns.  As a result, we can not
-    effectively support the accesss of column information in the
+    effectively support the access of column information in the
     reflection API.  So, any calls to
     thisJoinPoint.getSourceLocation().getColumn() will be marked as
     deprecated by the compiler, and will always return 0.</p>
@@ -1115,7 +1116,7 @@ available from individual SourceForge projects. </p>
   <h3><a name="OTHER_X_OPTIONS">Various -X options</a></h3>
 
     <p> The AspectJ 1.0 compiler supported a number of options that
-    started with X, for "experimantal".  Some of them will not be
+    started with X, for "experimental".  Some of them will not be
     supported in 1.1, either because the "experiment" succeeded (in
     which case it's part of the normal functionality) or failed.
     Others will be supported as is (or nearly so) in 1.1:
@@ -1133,7 +1134,7 @@ available from individual SourceForge projects. </p>
       <li><a href="#XNOWEAVE">-XnoWeave, a compiler option to suppress
            weaving</a></li>
 
-      <li>-XtargetNearSource: Not suppoted in 1.1beta4, may not be
+      <li>-XtargetNearSource: Not supported in 1.1beta5, may not be
       supported in 1.1 final. </li>
 
       <li>-XserializableAspects: Supported. </li>
@@ -1160,11 +1161,11 @@ available from individual SourceForge projects. </p>
 
 
   <h3><a name="EXCEPTION_CHECKING">No exception checking during
-  weaving in 1.1beta4</a></h3>
+  weaving in 1.1beta5</a></h3>
 
     <p>Advice that has an explicit throws clause needs to have that
     throws clause checked during weaving for each join point that is
-    matched.  This checking is not implemented in 1.1beta2 which can
+    matched.  This checking is not implemented in 1.1beta5 which can
     lead to checked exceptions being thrown from places they are not
       allowed by the Java language.</p>
 
@@ -1179,7 +1180,7 @@ available from individual SourceForge projects. </p>
     <p>This code should result in a link-time weaving error that the
     throws clause in the advice is incompatible with the checked
     exceptions which can be legally thrown from the matched join
-    point.  In beta2 this will just silently weave in the advice and
+    point.  In beta5 this will just silently weave in the advice and
     it will be possible for an IOException to be thrown from m().</p>
 
   <h3><a name="XLINT">The -Xlint option</a></h3>
@@ -1194,7 +1195,7 @@ available from individual SourceForge projects. </p>
     default behavior and a template to copy. </p>
 
     <p> Though more <code>-Xlint</code> warnings are supported in
-    1.1beta2 than previously, we expect even more to be supported in
+    1.1beta5 than previously, we expect even more to be supported in
     1.1final.  Because the configurability allows users to turn off
     warnings, we will also be able to warn about more potentially
     dangerous situations, such as the potentially unsafe casts used by
@@ -1202,7 +1203,7 @@ available from individual SourceForge projects. </p>
 
   <h3><a name="NO_SOURCE">Source-specific options</a></h3>
 
-    <p> Because AspectJ 1.1beta2 does not generate source code after
+    <p> Because AspectJ 1.1beta5 does not generate source code after
     weaving, the source-code-specific options -source, -usejavac,
     -nocomment and -workingdir options are meaningless and so not
     supported.  </p>
@@ -1355,8 +1356,8 @@ available from individual SourceForge projects. </p>
 
     <p> So, because it's easier to implement, and because we believe that
     this is the last possibility to make the semantics more useful, we
-    have made set join points have a void return type in 1.1beta2.
-    Please complain voiceferously if you believe this is wrong, and we
+    have made set join points have a void return type in 1.1beta5.
+    Please complain vociferously if you believe this is wrong, and we
     can revert for the final version.  </p>
 
   <h3><a name="XNOINLINE">The -XnoInline Option</a></h3>
