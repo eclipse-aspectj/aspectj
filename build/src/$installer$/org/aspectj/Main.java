@@ -25,6 +25,9 @@ import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -64,7 +67,10 @@ import javax.swing.border.EmptyBorder;
 
 /**
  * Invoke the Installer gui.
- * To run without gui, pass two arguments:
+ * There are two ways to run without GUI by passing parameters to main:
+ * <ol>
+ * <li>pass <code>-text {pathToPropertiesFile}</code>:
+ * <ul>
  * <li> "-text".equals(arg[0])</li>
  * <li> arg[1] is the path to a properties file which defines
  *   name="output.dir" value="{path to output dir}"
@@ -73,11 +79,20 @@ import javax.swing.border.EmptyBorder;
  *   "context.javaPath=c:/apps/jdk1.3.1</pre></li>
  * <li>outputDir must be created and empty (i.e., no overwriting</li>
  * <li>the VM being invoked should be the target vm</li>
+ * </ul>
+ * </li>
+ * <li>pass <code>-to {pathToTargetDir}</code>:
+ * <ul>
+ * <li> "-to".equals(arg[0])</li>
+ * <li> arg[1] is the path to a writable install directory.
+ * </li>
+ * </ul>
+ * </li>
  */
 public class Main {
     public static void main(String[] args) {
         Options.loadArgs(args);
-        boolean hasGui = (null == Options.textProperties);
+        boolean hasGui = true;
         Properties properties = new Properties();
         InputStream istream = null;
         try {
@@ -87,13 +102,32 @@ public class Main {
                 Main.exit(-1);
             }
             properties.load(istream);
-            if (!hasGui) {
+            // when running outside GUI, load values into properties 
+            // so that property-value resolution works
+            // (otherwise, could just set values below).
+            // XXX not sure if this indirection is actually needed.
+            if (null != Options.textProperties) {
                 istream.close();
                 istream = new FileInputStream(Options.textProperties);
                 properties.load(istream);
+                hasGui = false;
+            } else if (null != Options.targetDir) {
+                String path = null;
+                try {
+                    path = Options.targetDir.getCanonicalPath();
+                } catch (IOException e) {
+                    path = Options.targetDir.getAbsolutePath();
+                }
+                String javaPath 
+                    = ConfigureLauncherPane.getDefaultJavaHomeLocation();
+                if (null == javaPath) {
+                    System.err.println("using GUI - unable to find java");
+                } else {
+                    properties.setProperty("output.dir", path);
+                    properties.setProperty("context.javaPath", javaPath);
+                    hasGui = false;
+                }
             }
-            istream.close();
-            istream = null;
         } catch (IOException ioe) {
             handleException(ioe);
         } finally {
@@ -166,6 +200,7 @@ public class Main {
 class Options {
     public static boolean verbose = false;
     public static String textProperties = null;
+    public static File targetDir = null;
     public static boolean forceError1 = false;
     public static boolean forceError2 = false;
     public static boolean forceHandConfigure = false;
@@ -183,6 +218,19 @@ class Options {
             else if (arg.equals("-text")) {
                 if (i+1 < args.length) {
                     textProperties = args[++i];
+                }
+            }
+            else if (arg.equals("-to")) {
+                String next = "no argument";
+                if (i+1 < args.length) {
+                    next = args[++i];
+                    File targDir = new File(next);
+                    if (targDir.isDirectory() && targDir.canWrite()) {
+                        targetDir = targDir;
+                    }
+                }
+                if (null == targetDir) {
+                    System.err.println("invalid -to dir: " + next);
                 }
             }
         }
@@ -377,7 +425,6 @@ class SrcInstaller extends Installer {
     }
 }
 
-
 abstract class Installer {
     static final String EXIT_MESSAGE = "Are you sure you want to cancel the installation?";
     static final String EXIT_TITLE = "Exiting installer";
@@ -442,6 +489,12 @@ abstract class Installer {
 
     public void runGUI() {
         frame = new JFrame(getTitle());
+        WindowListener wl = new WindowAdapter() {
+            public void windowClosing(WindowEvent arg0) {
+                Main.exit(-1); // -1 unless exiting through done button
+            }
+        };
+        frame.addWindowListener(wl);
 
         if (Options.forceError1) {
             throw new RuntimeException("forced error1 for testing purposes");
@@ -720,13 +773,15 @@ class InstallContext {
 }
 
 abstract class WizardPane {
-    InstallContext context;
+    static InstallContext context;
 
     protected JButton backButton = null;
     protected JButton nextButton = null;
     protected JButton cancelButton = null;
 
-    public void setContext(InstallContext context) { this.context = context; }
+    public static void setContext(InstallContext con) { 
+        context = con; 
+    }
 
     public abstract JPanel makePanel();
 
@@ -775,7 +830,6 @@ abstract class WizardPane {
     //"   color:black;\n" +
     "}</head>\n";*/
 
-
     public static String applyProperties(String text, Map map) {
         // ${name} -> map.get(name).toString()
         int lastIndex = 0;
@@ -799,7 +853,7 @@ abstract class WizardPane {
         return buf.toString();
     }
 
-    public String applyProperties(String text) {
+    public static String applyProperties(String text) {
         return applyProperties(text, context.getProperties());
     }
 
@@ -1043,7 +1097,7 @@ class ConfigureLauncherPane extends WizardPane {
     }
     */
 
-    public String getDefaultJavaHomeLocation() {
+    public static String getDefaultJavaHomeLocation() {
         if (!Options.forceHandConfigure) {
             File javaHome = findJavaHome();
             if (javaHome != null) return javaHome.getPath();
@@ -1171,18 +1225,18 @@ class ConfigureLauncherPane extends WizardPane {
 
     public static boolean windows = true;
 
-    public boolean isLegalJavaHome(File home) {
+    public static boolean isLegalJavaHome(File home) {
         File bin = new File(home, "bin");
         return new File(bin, "java").isFile() || new File(bin, "java.exe").isFile();
     }
 
-    public boolean isLegalJDKHome(File home) {
+    public static boolean isLegalJDKHome(File home) {
         File lib = new File(home, "lib");
         return new File(lib, "tools.jar").isFile();
     }
 
 
-    public File findJavaHome() {
+    public static File findJavaHome() {
         String s = System.getProperty("java.home");
         File javaHome = null;
         if (s != null) {
@@ -1473,7 +1527,8 @@ class LaunchScriptMaker {
         ps.println("echo please fix the JAVA_HOME environment variable");
         ps.println(":haveJava");
         ps.println("\"%JAVA_HOME%\\bin\\java\" -classpath " +
-                   "\"%ASPECTJ_HOME%\\lib\\aspectjtools.jar;%JAVA_HOME%\\lib\\tools.jar;%CLASSPATH%\""+
+                   "\"%ASPECTJ_HOME%\\lib\\aspectjtools.jar;%CLASSPATH%\""+
+//                   "\"%ASPECTJ_HOME%\\lib\\aspectjtools.jar;%JAVA_HOME%\\lib\\tools.jar;%CLASSPATH%\""+
                    " -Xmx64M " + className + //" -defaultClasspath " + "\"%CLASSPATH%\"" +
                    " " + makeScriptArgs(false));
     }
@@ -1498,7 +1553,7 @@ class LaunchScriptMaker {
 
         ps.println("\"$JAVA_HOME/bin/java\" -classpath "+
                    "\"$ASPECTJ_HOME/lib/aspectjtools.jar" + sep +
-                   "$JAVA_HOME/lib/tools.jar" + sep +
+//                   "$JAVA_HOME/lib/tools.jar" + sep +
                    "$CLASSPATH\""+
                    " -Xmx64M " + className +
                    " " + makeScriptArgs(true));
