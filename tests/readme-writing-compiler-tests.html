@@ -126,7 +126,37 @@ Here's an example that
     &lt;/ajc-test>
 </pre>
 
-Attributes of note for setting up an incremental test:
+To understand what's happening in this test would require
+looking at the source directory to see which files are tagged
+"20" and "30".  But before walking through that, there's a
+variation of incremental building for AJDE.  (The AJDE wrapper
+around the <code>ajc</code> compiler can also be driven by the
+test harness.)
+
+<p>
+In AJDE, incremental tests also involve the notion of "fresh builds",
+i.e., when the test reuses the same compiler and build configuration
+but rebuilds from scratch.  In that case, there is still the
+question of whether source files should be updated; if not,
+the tag can have the special value "same".  For example, if
+the last example had two more lines:
+<pre>
+        ...
+        &lt;inc-compile tag="30"/>
+        &lt;run class="Main"/>
+        
+        &lt;inc-compile fresh="true" tag="same"/>
+        &lt;run class="Main"/>
+    &lt;/ajc-test>
+</pre>
+The test would complete by completely rebuilding the same files
+and then running the main class.  This option has no effect on
+the normal (ajc) compiler, and requires specifying 
+<code>-ajdeCompiler</code> to the harness or compile step
+as an argument.
+<p>
+
+To recap the attributes of note for setting up incremental tests:
 <ul>
 <li><code>compile</code> <code>staging="true"</code>: 
 Incremental tests require staging, which copies the
@@ -144,20 +174,32 @@ the harness will still run an incremental test, but the compiler
 will not do its additional checking it on input options.
 </li>
 <li><code>inc-compile</code> <code>tag="{##}"</code>:
-The tag is a suffix identifying
+The required tag attribute is a suffix identifying
 files in the test source directory specifying how the sources should
 be changed before that incremental compilation step.  
 If there is a prefixing suffix "delete", then the file is deleted;
 otherwise, the file is copied (with the effect either of updating
 an existing file or adding a new file).
+If the tag is "same", then no files are changed.
+</li>
+<li><code>inc-compile</code> <code>fresh="true"</code>:
+With the AJDE compiler, you can rebuild the current build
+configuration in its entirety.  (By contrast, doing another
+&lt;compile> task would re-initialize the AJDE compiler.)
+This option is ignored unless <code>-ajdeCompiler</code> 
+is passed to the harness on the command line or to the
+immediately preceding &lt;compile> task in the options.
 </li>
 </ul>
 
 <p>
-Thus, to understand what's happening in an incremental test
-requires comparing the tags with the files specified in
-the test source directory.
-For example, here is a directory layout for the test above:
+Now, to get back to the question of
+what exactly is happening in an incremental test.  To do so,
+compare the tags with the files specified in
+the test source directory; the tagged files are the updates
+for that particular step.  (By convention the tags are numeric
+and in order, but they need not be.)
+For example, here are some sources for the test above:
 <pre>
     {some dir}
         {testDefinition}.xml
@@ -170,7 +212,8 @@ For example, here is a directory layout for the test above:
             Main.java
             NewFile.30.java
 </pre>
-The result will be one compile and two re-compiles:
+Comparing this with the test specification, you can see 
+the harness will run one compile and two re-compiles:
 <ol>
   <li>Initially compile <code>Main.java</code> and <code>DeleteMe.java</code>
   <pre>
