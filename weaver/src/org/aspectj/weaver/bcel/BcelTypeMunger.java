@@ -98,7 +98,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		}
 		
 		// TAG: WeavingMessage
-		if (worthReporting  && munger!=null && !weaver.getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
+		if (changed && worthReporting  && munger!=null && !weaver.getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
 			String tName = weaver.getLazyClassGen().getType().getSourceLocation().getSourceFile().getName();
 			if (tName.indexOf("no debug info available")!=-1) tName = "no debug info available";
 			else tName = getShortname(weaver.getLazyClassGen().getType().getSourceLocation().getSourceFile().getPath());
@@ -379,6 +379,16 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		ResolvedTypeX onType = weaver.getWorld().resolve(signature.getDeclaringType(),munger.getSourceLocation());
 		boolean onInterface = onType.isInterface();
 		
+		if (onType.isAnnotation(weaver.getWorld())) {
+			signalError(WeaverMessages.ITDM_ON_ANNOTATION_NOT_ALLOWED,weaver,onType);
+			return false;		
+		}
+		
+		if (onType.isEnum(weaver.getWorld())) {
+			signalError(WeaverMessages.ITDM_ON_ENUM_NOT_ALLOWED,weaver,onType);
+			return false;
+		}
+		
 		if (onType.equals(gen.getType())) {
 			ResolvedMember introMethod = 
 					AjcMemberMaker.interMethod(signature, aspectType, onInterface);
@@ -508,6 +518,11 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		}
 	}
 
+	private void signalError(String msgid,BcelClassWeaver weaver,TypeX onType) {
+		IMessage msg = MessageUtil.error(
+				WeaverMessages.format(msgid,onType.getName()),getSourceLocation());
+		weaver.getWorld().getMessageHandler().handleMessage(msg);
+	}
 
 	private boolean mungeNewConstructor(
 		BcelClassWeaver weaver,
@@ -518,6 +533,16 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 		ResolvedMember newConstructorMember = newConstructorTypeMunger.getSyntheticConstructor();
 		TypeX          onType = newConstructorMember.getDeclaringType();
+		
+		if (onType.isAnnotation(weaver.getWorld())) {
+			signalError(WeaverMessages.ITDC_ON_ANNOTATION_NOT_ALLOWED,weaver,onType);
+			return false;
+		}
+		
+		if (onType.isEnum(weaver.getWorld())) {
+			signalError(WeaverMessages.ITDC_ON_ENUM_NOT_ALLOWED,weaver,onType);
+			return false;
+		}
 		
 		if (! onType.equals(currentClass.getType())) return false;
 
@@ -654,6 +679,16 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		
 		ResolvedTypeX onType = weaver.getWorld().resolve(field.getDeclaringType(),munger.getSourceLocation());
 		boolean onInterface = onType.isInterface();
+		
+		if (onType.isAnnotation(weaver.getWorld())) {
+			signalError(WeaverMessages.ITDF_ON_ANNOTATION_NOT_ALLOWED,weaver,onType);
+			return false;
+		}
+		
+		if (onType.isEnum(weaver.getWorld())) {
+			signalError(WeaverMessages.ITDF_ON_ENUM_NOT_ALLOWED,weaver,onType);
+			return false;
+		}
 		
 		if (onType.equals(gen.getType())) {
 			if (onInterface) {
