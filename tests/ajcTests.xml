@@ -6843,4 +6843,11 @@
         </compile>
     </ajc-test>
 
+	<ajc-test dir="bugs" pr="45184"
+      title="External pointcut refs not resolved if named pointcut used by declare">
+        <compile files="DeclareErrorNamedPointcutCE.java">
+ 	        <message kind="error" line="10" text="ref"/>
+        </compile>
+    </ajc-test>
+    
 </suite>
