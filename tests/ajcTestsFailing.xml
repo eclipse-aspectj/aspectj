@@ -56,4 +56,11 @@
         </compile>
 	</ajc-test>
 
+    <ajc-test dir="errors"  
+    		title="type not imported in aspect">
+        <compile files="TypeInAspectNotImportedCE.java">
+        	<message kind="error" line="6"/>
+        </compile>
+	</ajc-test>
+
 </suite>
