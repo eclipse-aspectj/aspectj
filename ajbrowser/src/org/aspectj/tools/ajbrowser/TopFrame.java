@@ -77,6 +77,7 @@ public class TopFrame extends JFrame {
     private BorderLayout borderLayout1 = new BorderLayout();
     private BorderLayout borderLayout3 = new BorderLayout();
     private JMenuItem projectRun_menuItem = new JMenuItem();
+    private JMenuItem projectRunOther_menuItem = new JMenuItem();
     private Border border3;
     private JPanel status_panel = new JPanel();
     private BorderLayout borderLayout4 = new BorderLayout();
@@ -138,6 +139,7 @@ public class TopFrame extends JFrame {
             svProperties_menuItem.setIcon(AjdeUIManager.getDefault().getIconRegistry().getBrowserOptionsIcon());
             projectBuild_menuItem.setIcon(AjdeUIManager.getDefault().getIconRegistry().getBuildIcon());
             projectRun_menuItem.setIcon(AjdeUIManager.getDefault().getIconRegistry().getExecuteIcon());
+            projectRunOther_menuItem.setIcon(AjdeUIManager.getDefault().getIconRegistry().getExecuteIcon());
             projectDebug_menuItem.setIcon(AjdeUIManager.getDefault().getIconRegistry().getDebugIcon());
 
             this.setJMenuBar(menuBar);
@@ -199,20 +201,22 @@ public class TopFrame extends JFrame {
         editConfig_button.setBorder(null);
     }
 
-    private void bindKeys() {
+    private void bindKeys() { // XXX broken?
         this.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if (e.getModifiers() == java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()) {
                     if (e.getKeyCode() == KeyEvent.VK_F11) {
                         if (e.isShiftDown()) {
-                            Ajde.getDefault().getBuildManager().buildFresh();
+                            buildFresh();
                         } else {
-                            Ajde.getDefault().getBuildManager().build();
+                            build();
                         }
                     } else if (e.getKeyCode() == KeyEvent.VK_S) {
                         Ajde.getDefault().getEditorManager().saveContents();
                     } else if (e.getKeyCode() == KeyEvent.VK_P) {
                         AjdeUIManager.getDefault().showOptionsFrame();
+                    } else if (e.getKeyCode() == KeyEvent.VK_R) {
+                        runInSameVM();
                     }
                 }
             }
@@ -260,10 +264,19 @@ public class TopFrame extends JFrame {
         this.getContentPane().setLayout(borderLayout3);
         projectRun_menuItem.setEnabled(true);
         projectRun_menuItem.setFont(new java.awt.Font("Dialog", 0, 11));
-        projectRun_menuItem.setText("Run");
+        projectRun_menuItem.setText("Run in same VM");
+        projectRun_menuItem.setToolTipText("Run in same VM (hold shift down to run in separate process)");
         projectRun_menuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 projectRun_menuItem_actionPerformed(e);
+            }
+        });  
+        projectRunOther_menuItem.setEnabled(true);
+        projectRunOther_menuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        projectRunOther_menuItem.setText("Run in separate process");
+        projectRunOther_menuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                projectRunOther_menuItem_actionPerformed(e);
             }
         });  
         statusText_label.setFont(new java.awt.Font("Dialog", 0, 11));
@@ -330,7 +343,7 @@ public class TopFrame extends JFrame {
         run_button.setBorder(null);
         run_button.setMinimumSize(new Dimension(24, 20));
         run_button.setPreferredSize(new Dimension(20, 20));
-        run_button.setToolTipText("Run");
+        run_button.setToolTipText("Run in same VM (hold shift down to run in separate process)");
         run_button.setIcon(AjdeUIManager.getDefault().getIconRegistry().getExecuteIcon());
         run_button.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -416,6 +429,7 @@ public class TopFrame extends JFrame {
         jMenu1.add(exit_menuItem);
         jMenu2.add(projectBuild_menuItem);
         jMenu2.add(projectRun_menuItem);
+        jMenu2.add(projectRunOther_menuItem);
         //jMenu2.add(projectDebug_menuItem);
         tools_menu.add(joinpointProbe_menuItem);
         tools_menu.add(svProperties_menuItem);
@@ -472,26 +486,38 @@ public class TopFrame extends JFrame {
     void projectBuild_menuItem_actionPerformed(ActionEvent e) {
         BrowserManager.getDefault().saveAll();
         if (EditorManager.isShiftDown(e.getModifiers())) {
-            Ajde.getDefault().getBuildManager().buildFresh();
+            buildFresh();
         } else {
-            Ajde.getDefault().getBuildManager().build();
+            build();
         }
     }
 
     void run_button_actionPerformed(ActionEvent e) {
-        BrowserManager.getDefault().run();
+        if (EditorManager.isShiftDown(e.getModifiers())) {
+            runInNewVM();
+        } else {
+            runInSameVM();
+        }
+    }
+
+    void projectRunOther_menuItem_actionPerformed(ActionEvent e) {
+        runInNewVM();
     }
 
     void projectRun_menuItem_actionPerformed(ActionEvent e) {
-        BrowserManager.getDefault().run();
+        if (EditorManager.isShiftDown(e.getModifiers())) {
+            runInNewVM();
+        } else {
+            runInSameVM();
+        }
     }
 
     void build_button_actionPerformed(ActionEvent e) {
         BrowserManager.getDefault().saveAll();
         if (EditorManager.isShiftDown(e.getModifiers())) {
-            Ajde.getDefault().getBuildManager().buildFresh();
+            buildFresh();
         } else {
-            Ajde.getDefault().getBuildManager().build();
+            build();
         }
 	}
 
@@ -544,4 +570,22 @@ public class TopFrame extends JFrame {
     	}
     	refreshBuildMenu();
     }
+    
+    
+    private void buildFresh() {
+        Ajde.getDefault().getBuildManager().buildFresh();
+    }
+    
+    private void build() {
+        Ajde.getDefault().getBuildManager().build();
+    }
+    
+    private void runInSameVM() {
+        Ajde.getDefault().runInSameVM();
+    }
+    
+    private void runInNewVM() {
+        Ajde.getDefault().runInNewVM();
+    }
+    
 }
