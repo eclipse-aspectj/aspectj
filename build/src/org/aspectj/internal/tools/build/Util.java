@@ -26,6 +26,21 @@ import java.io.StringWriter;
  * Many mirror utils module APIs.
  */
 public class Util {
+    public static class Constants {
+        public static final String TESTSRC = "testsrc";
+        public static final String JAVA5_SRC = "java5-src";
+    }
+    // XXX quick hack for Java 5 support
+    public static final boolean JAVA5_VM;
+    static {
+        boolean java5VM = false;
+        try {
+            java5VM = (null != Class.forName("java.lang.annotation.Annotation"));
+        } catch (Throwable t) {
+            // ignore
+        }
+        JAVA5_VM = java5VM;
+    }
 
     /** 
      * Map version in long form to short, 
