@@ -40,16 +40,19 @@ import java.io.IOException;
  * 
  * <p><u>Warnings</u>: 
  * <ol>
+ * <li>cleaning will not work if no destination directory
+ *     is specified in the javac task
+ *     (because we don't know where to put the tag file).</li>
  * <li>cleaning will makes stepwise build processes fail
  * if they depend on the results of the prior compilation being
  * in the same directory, since this deletes <strong>all</strong>
  * .class files.</li>
- * <li>If no files are out of date, then the adapter is never called
+ * <li>If no files are out of date, then the adapter is <b>never</b> called
  *     and thus cannot gain control to clean out the destination dir.
  *     </li>
  * <p>
  * 
- * @author Wes Isberg <a href="mailto:isberg@aspectj.org">isberg@aspectj.org</a>
+ * @author Wes Isberg
  * @since AspectJ 1.1, Ant 1.5.1
  */
 public class Ajc11CompilerAdapter implements CompilerAdapter {
@@ -74,7 +77,7 @@ public class Ajc11CompilerAdapter implements CompilerAdapter {
         } else { 
             try {
                 AjcTask ajc = new AjcTask();
-                String err = AjcTask.setupAjc(ajc, javac, getDestDir());
+                String err = ajc.setupAjc(javac);
                 if (null != err) {
                     throw new BuildException(err, javac.getLocation());
                 }
@@ -93,17 +96,25 @@ public class Ajc11CompilerAdapter implements CompilerAdapter {
         }
     }
     
-    protected File getDestDir() {
+    /**
+     * Get javac dest dir.
+     * @param client the String label for the client seeking the directory
+     *        (only used in throwing BuildException)
+     * @return File dest dir
+     * @throws BuildException if not specified and required
+     */
+    protected File getDestDir(String client) {
         checkJavac();
         File destDir = javac.getDestdir();
         if (null == destDir) {
-            destDir = new File(".");
+            throw new BuildException("require destDir for " + client);
         }
         return destDir;
     }
 
     protected File getTagFile() {
-        return new File(getDestDir(), "Ajc11CompilerAdapter.tag");
+        return new File(getDestDir("getting tag file directory"), 
+                        "Ajc11CompilerAdapter.tag");
     }
 
     /**
@@ -123,13 +134,13 @@ public class Ajc11CompilerAdapter implements CompilerAdapter {
         String cleanDirs = javac.getProject().getProperty(CLEAN);
         if (null == cleanDirs) {
             return false;
-        }
+        } 
+        File destDir = getDestDir("recursing to clean");
         File tagFile = getTagFile();
         if (tagFile.exists()) {
             return false;
         }
         try {
-            File destDir = getDestDir();
             javac.log(CLEAN + " cleaning .class files from " + destDir,
                 Project.MSG_VERBOSE);
             FileUtil.deleteContents(destDir, FileUtil.DIRS_AND_WRITABLE_CLASSES, true);

@@ -30,15 +30,10 @@ import org.aspectj.util.*;
 /**
  * This runs the AspectJ 1.1 compiler, 
  * supporting all the command-line options.
- * It can also complete the output in
- * the destination directory or output jar
- * by copying non-.class files from all input jars
- * or copying resources from source root directories.
- * When copying anything to the output jar, 
- * this will pass the AspectJ
- * compiler a path to a different temporary output jar file,
- * the contents of which will be copied along with any
- * resources to the actual output jar.
+ * In 1.1.1, ajc started copying resources from the
+ * source directory as javac does, but users might
+ * want to copy additional resources using
+ * sourceRootCopyFilter.
  * When not forking, things will be copied as needed 
  * for each iterative compile,
  * but when forking things are only copied at the 
@@ -109,14 +104,11 @@ public class AjcTask extends MatchingTask {
      * @param destDir the File class destination directory (may be null)
      * @return null if no error, or String error otherwise
      */
-    public static String setupAjc(AjcTask ajc, Javac javac, File destDir) {        
-        if (null == ajc) {
-            return "null ajc";
-        } else if (null == javac) {
+    public String setupAjc(Javac javac) {        
+        if (null == javac) {
             return "null javac";
-        } else if (null == destDir) {
-            destDir = javac.getDestdir();
         }
+        AjcTask ajc = this;
         // no null checks b/c AjcTask handles null input gracefully
         ajc.setProject(javac.getProject());
         ajc.setLocation(javac.getLocation());
@@ -135,9 +127,10 @@ public class AjcTask extends MatchingTask {
         ajc.setVerbose(javac.getVerbose());               
         ajc.setTarget(javac.getTarget());        
         ajc.setSource(javac.getSource());        
-        ajc.setEncoding(javac.getEncoding());        
-        if (DEFAULT_DESTDIR != destDir) {
-            ajc.setDestdir(destDir);
+        ajc.setEncoding(javac.getEncoding());
+        File javacDestDir = javac.getDestdir();
+        if (null != javacDestDir) {
+            ajc.setDestdir(javacDestDir);
         }        
         ajc.setBootclasspath(javac.getBootclasspath());
         ajc.setExtdirs(javac.getExtdirs());
@@ -145,8 +138,6 @@ public class AjcTask extends MatchingTask {
         // ignore srcDir -- all files picked up in recalculated file list
 //      ajc.setSrcDir(javac.getSrcdir());        
         ajc.addFiles(javac.getFileList());
-        // mimic javac's behavior in copying resources,
-        ajc.setSourceRootCopyFilter("**/CVS/*,**/*.java,**/*.aj");
         // arguments can override the filter, add to paths, override options
         ajc.readArguments(javac.getCurrentCompilerArgs());
         
@@ -989,6 +980,16 @@ public class AjcTask extends MatchingTask {
      * @throw BuildException if options conflict
      */
     protected void verifyOptions() {
+        // log warnings - should be able to disable entirely,
+        // after they verify that this is indeed always working
+        if (null != sourceRootCopyFilter) {
+            log("sourceRootCopyFilter not required in 1.1.1", Project.MSG_WARN);
+        }
+        if (copyInjars) {
+            log("copyInjars not required in 1.1.1.\n", Project.MSG_WARN);
+        }
+
+        // throw BuildException for conflicting options
         StringBuffer sb = new StringBuffer();
         if (fork && isInIncrementalMode() && !isInIncrementalFileMode()) {
             sb.append("can fork incremental only using tag file.\n");
