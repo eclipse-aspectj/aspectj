@@ -418,7 +418,7 @@ public class JavaRun implements IAjcRun {
         public static String VM_ARGS_KEY = "javarun.vmargs";
         public static String JAVA_HOME_KEY = "javarun.java.home";
         public static String BOOTCLASSPATH_KEY = "javarun.bootclasspath";
-        private static final ForkSpec FORK;
+        static final ForkSpec FORK;
         static {
             ForkSpec fork  = new ForkSpec();
             fork.fork = Boolean.getBoolean(FORK_KEY);
@@ -457,6 +457,7 @@ public class JavaRun implements IAjcRun {
         private ForkSpec() {
             copy(FORK);
         }
+        
         private void copy(ForkSpec forkSpec) {
             if (null != forkSpec) {
                 fork = forkSpec.fork;
@@ -465,6 +466,16 @@ public class JavaRun implements IAjcRun {
                 javaHome = forkSpec.javaHome;
                 vmargs = forkSpec.vmargs;
             }
+        }
+
+        /**
+         * @return "" or bootclasspath with File.pathSeparator internal delimiters
+         */
+        String getBootclasspath() {
+            if (LangUtil.isEmpty(bootclasspath)) {
+                return "";
+            }
+            return FileUtil.flatten(bootclasspath, null);
         }
     }
     
