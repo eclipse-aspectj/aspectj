@@ -231,7 +231,7 @@ public class AjcSpecXmlReader {
         digester.addObjectCreate(suiteX,               AjcTest.Suite.Spec.class.getName());
         digester.addObjectCreate(ajctestX,             AjcTest.Spec.class.getName());
         digester.addObjectCreate(compileX,             CompilerRun.Spec.class.getName());
-        digester.addObjectCreate(compileX + "/file",   AbstractRunSpec.WrapFile.class.getName());
+        //digester.addObjectCreate(compileX + "/file",   AbstractRunSpec.WrapFile.class.getName());
         digester.addObjectCreate(inccompileX,          IncCompilerRun.Spec.class.getName());
         digester.addObjectCreate(runX,                 JavaRun.Spec.class.getName()); 
         digester.addObjectCreate(messageX,             SoftMessage.class.getName());
@@ -251,8 +251,8 @@ public class AjcSpecXmlReader {
         digester.addSetProperties(compileX + "/file");
         digester.addSetProperties(inccompileX, "classes", "paths");
         digester.addSetProperties(runX, 
-            new String[] { "class", "vm", "skipTester"},
-            new String[] { "className", "javaVersion", "skipTester"});
+            new String[] { "class", "vm", "skipTester", "fork", "vmargs"},
+            new String[] { "className", "javaVersion", "skipTester", "fork", "vmArgs"});
         digester.addSetProperties(dirchangesX);
         digester.addSetProperties(messageX);
         digester.addSetProperties(messageSrcLocX, "line", "lineAsString");
@@ -271,7 +271,7 @@ public class AjcSpecXmlReader {
         digester.addSetNext(compileX,             "addChild", CompilerRun.Spec.class.getName());
         digester.addSetNext(inccompileX,          "addChild", IncCompilerRun.Spec.class.getName());
         digester.addSetNext(runX,                 "addChild", JavaRun.Spec.class.getName());
-        digester.addSetNext(compileX + "/file",   "addWrapFile", AbstractRunSpec.WrapFile.class.getName());
+        //digester.addSetNext(compileX + "/file",   "addWrapFile", AbstractRunSpec.WrapFile.class.getName());
         digester.addSetNext(messageX,             "addMessage", IMessage.class.getName());
         // setSourceLocation is for the inline variant
         // addSourceLocation is for the extra
@@ -308,8 +308,8 @@ public class AjcSpecXmlReader {
                     // mapped from { "class", ...}
                 new BProps(DirChanges.Spec.class, 
                     new String[] { "added", "removed", "updated", "unchanged", "dirToken", "defaultSuffix"}),
-                new BProps(AbstractRunSpec.WrapFile.class, 
-                    new String[] { "path"}),
+//                new BProps(AbstractRunSpec.WrapFile.class, 
+//                    new String[] { "path"}),
                 new BProps(SoftMessage.class, 
                     new String[] { "kindAsString", "lineAsString", "text", "details", "file"})
                     // mapped from { "kind", "line", ...}
@@ -340,7 +340,7 @@ public class AjcSpecXmlReader {
         CompilerRun.Spec crunSpec = new CompilerRun.Spec();
         crunSpec.addMessage((IMessage) null);
         // XXX crunSpec.addSourceLocation((ISourceLocation) null);
-        crunSpec.addWrapFile((AbstractRunSpec.WrapFile) null);
+//        crunSpec.addWrapFile((AbstractRunSpec.WrapFile) null);
         crunSpec.setOptions((String) null);
         crunSpec.setPaths((String) null);
         crunSpec.setIncludeClassesDir(false);
