@@ -17,9 +17,9 @@ AspectJ contains a compiler, <tt>ajc</tt>, that can be run from Ant.
 Included in the <tt>aspectjtools.jar</tt> are Ant binaries to support
 three ways of running the compiler:
 <ol>
-<li><tt>Ajc10</tt> (<a href="ant-ajc10-task.html">options</a>),
+<li><tt>Ajc10</tt> (<a href="ant-ajc10-task.html">parameters</a>),
     a task to run build scripts compatible with the AspectJ 1.0 tasks,</li>
-<li><tt>AjcTask</tt> (<a href="ant-ajc-task.html">options</a>),
+<li><tt>AjcTask</tt> (<a href="ant-ajc-task.html">parameters</a>),
     a task to run the new AspectJ 1.1 compiler, which supports
     all the eclipse and ajc options, including incremental mode;
 <li><tt>Ajc11CompilerAdapter</tt>,
@@ -67,7 +67,9 @@ Jakarta's <a href="http://jakarta.apache.org/ant/manual/develop.html">documentat
 on integrating user-defined Ant tasks into builds.</p></li>
 <p>
 
-<h3><a name="#ajc10">Ajc10 (script name: ajc)</a></h3>
+<h3><a name="#ajc10">Ajc10 (script name: ajc)
+<small><a href="ant-ajc10-task.html">parameters</a></small>
+</a></h3>
 This task handles the same arguments as those used by the AspectJ 1.0 task.
 This should permit those with existing build scripts using
 the Ajc Ant task to continue using the same scripts 
@@ -104,20 +106,19 @@ that uses the ajc compiler to compile the files listed in
 &lt;/project&gt;
 </pre>
 
-<h3><a name="#ajctask">AjcTask (script name: iajc)</a></h3>
-This task handles all the ajc 1.1 compiler options, 
-as well as an incremental "tag" file to avoid depending
-on Ant input/output for controlling Ant-based incremenal compilation.
+<h3><a name="#ajctask">AjcTask (script name: iajc)
+<small><a href="ant-ajc-task.html">parameters</a></small>
+</a></h3>
+This task handles all the ajc 1.1 compiler options, including
+the experimental option for an incremental "tag" file.
+It also can copy resources from source directories or input jars
+to the output jar or directory.
 
-<p>Below is an example of incrementally compiling <tt>src</tt>
-   and <tt>testsrc</tt> root source directories, using <tt>tagfile.txt</tt>
-   to control recompilation and halting.
-When this script is run, the compiler will build once and 
-then wait for incremental builds, recompiling each time the
-last-modified date changes on the tag file.  When the tag file no longer
-exists, the build will complete.  Messages are printed as usual.
+<p>A minimal build script defines the task 
+and runs it, specifying the sources:
+
 <pre>
-&lt;project name="incremental-example" default="compile" &gt
+&lt;project name="simple-example" default="compile" &gt
   &lt;taskdef 
       resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties"&gt;
     &lt;classpath&gt;
@@ -126,17 +127,63 @@ exists, the build will complete.  Messages are printed as usual.
   &lt;/taskdef&gt;
 
   &lt;target name="compile" &gt;
-    &lt;mkdir dir="dest" /&gt;
-    &lt;iajc destdir="dest" 
-            tagfile="tagfile.txt" 
-            sourceroots="src${path.separator}testsrc" &gt;
-      &lt;!-- declare classes needed to compile the target files --&gt;
+    &lt;iajc sourceroots="${home.dir}/ec/project/src" /&gt; 
+  &lt;/target&gt;
+&lt;/project&gt;
+</pre>
+
+
+<p>Below is script with most everything in it.
+The compile process...
+<ul>
+<li>Runs in incremental mode, recompiling when the user
+    hits return;
+   </li>
+<li>Reads all the sources from two directories;
+   </li>
+<li>Reads extrinsic module bytecode as input jar for weaving;
+   </li>
+<li>Uses a binary aspect library for persistence;
+   </li>
+<li>Outputs to an application jar; and
+   </li>
+<li>Copies resources from the input jar and source directories
+    into the application jar.
+   </li>   
+</ul>
+   
+When this target is built, the compiler will build once and 
+then wait for input from the user.
+Messages are printed as usual.
+When the user has quit, then this runs the application.
+<pre>
+
+  &lt;target name="build-test" &gt;
+    &lt;iajc outjar="${home.dir}/output/application.jar" 
+            injars="${home.dir}/build/module.jar"
+            copyInjars="true"
+            sourceRootCopyFilter="**/CVS/*,**/*.java"
+            incremental="true" &gt;
+      &lt;sourceroots&gt;
+        &lt;pathelement location="${home.dir}/ec/project/src"/&gt;
+        &lt;pathelement location="${home.dir}/ec/project/testsrc"/&gt;
+      &lt;/sourceroots&gt;
+      &lt;aspectpath&gt;
+        &lt;pathelement location="${home.dir}/ec/int/persist.jar"/&gt;
+      &lt;/aspectpath&gt;
       &lt;classpath&gt;
         &lt;pathelement location="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/&gt;
       &lt;/classpath&gt;
     &lt;/iajc&gt;
+    
+    &lt;java classname="org.smart.app.Main"&gt;
+      &lt;classpath&gt;
+        &lt;pathelement location="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/&gt;
+        &lt;pathelement location="${home.dir}/ec/int/persist.jar"/&gt;
+        &lt;pathelement location="${home.dir}/output/application.jar"/&gt;
+      &lt;/classpath&gt;
+    &lt;/java&gt;
   &lt;/target&gt;
-&lt;/project&gt;
 </pre>
 
 
@@ -218,10 +265,6 @@ often more than similar compiles using javac.
 <u>Forking is not supported in this release</u>, so the only solution is to 
 increase the memory available to Ant (see the Ant documentation, searching for ANT_OPTS,
 the variable they use in their scripts to pass VM options, e.g., ANT_OPTS=-Xmx128m). 
-</li>
-
-<li><u>Messages suppressed</u>: In the incremental task,
-messages from the compiler are printed but not segregated.
 </li>
 
 <p>

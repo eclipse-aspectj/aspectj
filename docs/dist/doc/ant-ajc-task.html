@@ -10,6 +10,7 @@
 
 <h2>
 <a NAME="ajc"></a>AjcTask Ant Support for AspectJ 1.1</h2>
+<small><a href="ant-tasks.html">AspectJ Ant Tasks</a></small>
 
 <h3>
 Description</h3>
@@ -133,8 +134,9 @@ array and may include another argfile by reference.
 <td VALIGN=TOP>aspectpath, aspectpathref
  <br>(<a href="#nestedElements">Path</a>)
 </td>
-<td VALIGN=TOP>The aspectpath to use -- like classpath, only for
-read-only, binary aspect libraries (only accepts jar/zip files, no directories).
+<td VALIGN=TOP>Similar to classpath, aspectpath contains
+read-only, binary aspect libraries; unlike classpath,
+it only accepts jar/zip files, not directories.
 </td>
 <td ALIGN=CENTER VALIGN=TOP>No</td>
 </tr>
@@ -502,7 +504,9 @@ The task also supports an attribute
 Examples</h3>
 
 See <a href="examples/build.xml">examples/build.xml</a>
-for an example build script.
+for an example build script and
+<a href="ant-tasks.html">ant-tasks.html</a>
+for introductory scripts.
 
 <a name="compilerMessages"></>
 <h3>Programmatically handling compiler messages</h3>
