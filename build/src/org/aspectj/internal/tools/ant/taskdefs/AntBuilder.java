@@ -302,6 +302,10 @@ public class AntBuilder extends Builder {
             passed = executeTask(AspectJSupport.wrapIfNeeded(module, javac));
         } catch (BuildException e) {
             failure = e;
+        } catch (Error e) {
+            failure = new BuildException(e);
+        } catch (RuntimeException e) {
+            failure = new BuildException(e);
         } finally {
             javac.init(); // be nice to let go of classpath libraries...
         }
@@ -368,6 +372,7 @@ public class AntBuilder extends Builder {
         
         // -- merge any merge jars
         List mergeJars =  module.getMerges();
+        removeLibraryFilesToSkip(module, mergeJars);
 //        final boolean useManifest = false;
         if (0 < mergeJars.size()) {
             for (Iterator iter = mergeJars.iterator(); iter.hasNext();) {
@@ -469,8 +474,8 @@ public class AntBuilder extends Builder {
         zip.setDestFile(module.getAssembledJar());
         ZipFileSet zipfileset = null;
         
-        ArrayList known = module.findKnownJarAntecedants();
-        
+        List known = module.findKnownJarAntecedants();
+        removeLibraryFilesToSkip(module, known);
         // -- merge any antecedents, less any manifest
         for (Iterator iter = known.iterator(); iter.hasNext();) {
             File jarFile = (File) iter.next();
@@ -601,7 +606,6 @@ public class AntBuilder extends Builder {
          * under srcDir.
          * Written reflectively to compile in the build module,
          * which can't depend on the whole tree.
-         * TODO output from ajc is hidden on failure.
          * @param javac the Javac specification
          * @param toolsJar the Path to the aspectjtools.jar 
          * @param runtimeJar the Path to the aspectjrt.jar 

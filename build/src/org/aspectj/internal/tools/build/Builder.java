@@ -18,10 +18,12 @@ import java.io.FileFilter;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Properties;
+import java.util.StringTokenizer;
 
 import org.apache.tools.ant.BuildException;
 
@@ -87,13 +89,11 @@ public abstract class Builder {
 	 * properties to tunnel for filters. hmm.
 	 */
 
-	public static final String RESOURCE_PATTERN =
-		"**/*.txt,**/*.rsc,**/*.gif,**/*.properties";
+	public static final String RESOURCE_PATTERN;
 
-	public static final String BINARY_SOURCE_PATTERN =
-		"**/*.rsc,**/*.gif,**/*.jar,**/*.zip";
+	public static final String BINARY_SOURCE_PATTERN;
 
-	public static final String ALL_PATTERN = "**/*";
+	public static final String ALL_PATTERN;
 
 	/** enable copy filter semantics */
 	protected static final boolean FILTER_ON = true;
@@ -101,18 +101,60 @@ public abstract class Builder {
 	/** disable copy filter semantics */
 	protected static final boolean FILTER_OFF = false;
 
+    /** define libraries to skip as comma-delimited values for this key */
+    private static final String SKIP_LIBRARIES_KEY = "skip.libraries";
+    
+    /** List (String) names of libraries to skip during assembly */
+    private static final List SKIP_LIBRARIES;
     private static final String ERROR_KEY = "error loading properties";
     private static final Properties PROPS;
     static {
         PROPS = new Properties();
+        List skips = Collections.EMPTY_LIST;
+        String resourcePattern = "**/*.txt,**/*.rsc,**/*.gif,**/*.properties";
+        String allPattern = "**/*";
+        String binarySourcePattern = "**/*.rsc,**/*.gif,**/*.jar,**/*.zip";
         String name = Builder.class.getName().replace('.', '/') + ".properties";
         try {
             InputStream in = Builder.class.getClassLoader().getResourceAsStream(name);
-            PROPS.load(in);            
+            PROPS.load(in); 
+            allPattern = PROPS.getProperty("all.pattern");
+            resourcePattern = PROPS.getProperty("resource.pattern");
+            binarySourcePattern = PROPS.getProperty("binarySource.pattern");
+            skips = commaStrings(PROPS.getProperty(SKIP_LIBRARIES_KEY));
         } catch (Throwable t) {
-            String m = "unable to load " + name + ": " + t.getClass() + " " + t;
+            if (t instanceof ThreadDeath) {
+                throw (ThreadDeath) t;
+            }
+            String m = "error loading " + name + ": " + t.getClass() + " " + t;
             PROPS.setProperty(ERROR_KEY, m);
         }
+        SKIP_LIBRARIES = skips;
+        ALL_PATTERN = allPattern;
+        BINARY_SOURCE_PATTERN = binarySourcePattern;
+        RESOURCE_PATTERN = resourcePattern;
+    }
+    
+    /**
+     * Splits strings into an unmodifable <code>List</code> of String
+     * using comma as the delimiter and trimming whitespace from the result.
+     *
+     * @param text <code>String</code> to split.
+     * @return unmodifiable List (String) of String delimited by comma in text
+     */
+    public static List commaStrings(String text) {
+        if ((null == text) || (0 == text.length())) {
+            return Collections.EMPTY_LIST;
+        }
+        List strings = new ArrayList();
+        StringTokenizer tok = new StringTokenizer(text, ",");
+        while (tok.hasMoreTokens()) {
+            String token = tok.nextToken().trim();
+            if (0 < token.length()) {
+                strings.add(token);
+            }
+        }
+        return Collections.unmodifiableList(strings);
     }
     /**
      * Map delivered-jar name to created-module name
@@ -516,6 +558,28 @@ public abstract class Builder {
 		return (ProductModule[]) results.toArray(new ProductModule[0]);
 	}
 
+    /**
+     * Subclasses should query whether to include library files in the assembly.
+     * @param module the Module being built
+     * @param libraries the List of File path to the jar to consider assembling
+     * @return true if the jar should be included, false otherwise.
+     */
+    protected void removeLibraryFilesToSkip(Module module, List libraries) {
+        for (ListIterator liter = libraries.listIterator(); liter.hasNext();) {
+            File library= (File) liter.next();
+            final String fname = library.getName();
+            if (null != fname) {
+                for (Iterator iter = SKIP_LIBRARIES.iterator(); iter.hasNext();) {
+                    String name = (String) iter.next();
+                    if (fname.equals(name)) {
+                        liter.remove();
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
 	/** 
 	 * @return String[] names of modules to build for this module
 	 */
@@ -539,6 +603,7 @@ public abstract class Builder {
 
 	/**
 	 * Assemble the module distribution from the classesDir, saving String errors.
+     * @see #removeLibraryFilesToSkip(Module, File)
 	 */
 	abstract protected boolean assemble(
 		Module module,
@@ -548,6 +613,7 @@ public abstract class Builder {
 	/**
 	 * Assemble the module distribution from the classesDir and all antecendants, 
 	 * saving String errors.
+     * @see #removeLibraryFilesToSkip(Module, File)
 	 */
 	abstract protected boolean assembleAll(
 		Module module,
