@@ -6249,4 +6249,12 @@
         <run class="Big"/>
     </ajc-test>
 
+   <ajc-test dir="harness" 
+        title="setting -warn:constructorName works">
+        <compile files="ConstructorNameWarning.java" 
+        	options="-warn:constructorName">
+        	<message kind="warning" line="5" text="constructor name"/>
+    	</compile>
+    </ajc-test>
+
 </suite>
