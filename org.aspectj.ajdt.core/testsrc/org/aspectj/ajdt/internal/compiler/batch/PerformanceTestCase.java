@@ -36,7 +36,11 @@ public class PerformanceTestCase extends CommandTestCase {
 	}
 	
 	public void testLazyTjp() throws IOException {
-		checkCompile("src1/LazyTjp.aj", new String[] {"-XlazyTjp","-Xlint:error"}, new int[] {96});
+		// Pass -Xlint:error to promote the 'can not implement lazyTjp on this 
+		//   joinpoint method-execution(int LazyTjp.doit3(int)) because around advice is used [Xlint:canNotImplementLazyTjp]'
+		// into an error so that we can use checkCompiles() ability to check errors occur.
+		// Pass -proceedOnError to ensure even though we get that message, we still get the class file on disk
+		checkCompile("src1/LazyTjp.aj", new String[] {"-XlazyTjp","-Xlint:error","-proceedOnError"}, new int[] {96});
 		TestUtil.runMain("out", "LazyTjp");
 	}
 }
