@@ -285,7 +285,8 @@
 			<row>
 				<entry><para>copyInjars
 				</para></entry>
-				<entry><para>						
+				<entry><para>
+				(Deprecated/ignored; ajc does this.)						
 				If true, copy all non-.class files from input jar(s) 
 				to the output jar or destination directory after the 
 				compile (or incremental compile) completes.
@@ -302,8 +303,29 @@
 				The pattern should be compatible with an Ant fileset excludes filter; 
 				when using this, most developers pass 
 				<literal>**/CVS/*,**/*.java</literal> to exclude any CVS directories 
-				or source files.
+				or source files. 
+				See <literal>inpathDirCopyFilter</literal>.
+				Requires <literal>destDir</literal> or <literal>outJar</literal>.
 				</para></entry>
+			</row>
+			<row>
+				<entry><para>inpathDirCopyFilter
+				</para></entry>
+				<entry>
+					<para> When set, copy all files from the inpath directories 
+						to the output jar or destination directory except those 
+						specified in the filter pattern. The pattern should be 
+						compatible with an Ant fileset excludes filter; when 
+						using this, most developers pass 
+						<literal>**/CVS/*,**/*.java,**/*.class</literal> to 
+						exclude any CVS directories, source files, or unwoven 
+						.class files. (If <literal>**/*.class</literal> is not 
+						specified, it will be prepended to the filter.) See 
+						<literal>sourceRootCopyFilter</literal>. (Note that ajc 
+						itself copies all resources from input jar/zip files on 
+						the inpath.) Requires <literal>destDir</literal> or 
+						<literal>outJar</literal>.</para>
+				</entry>
 			</row>
 			</tbody>
 		</tgroup>
@@ -760,12 +782,12 @@
 	        </para>
 	      </listitem>
 	      <listitem>
-	        <para>Reads all the sources from two directories;
+	        <para>Reads all the source files from two directories;
 	        </para>
 	      </listitem>
 	      <listitem>
-	        <para>Reads extrinsic module bytecode as input jar for weaving;
-	        </para>
+			<para>Reads binary .class files from input jar and directory; 
+				</para>
 	      </listitem>
 	      <listitem>
 	        <para>Uses a binary aspect library for persistence;
@@ -776,8 +798,8 @@
 	        </para>
 	      </listitem>
 	      <listitem>
-	        <para>Copies resources from the input jar and source directories into the application jar.
-	        </para>
+			<para>Copies resources from the source directories and binary input 
+				jar and directories to the application jar. </para>
 	      </listitem>
 	    </orderedlist>
 		<para>
@@ -792,14 +814,17 @@
 		<![CDATA[
   <target name="build-test" >
     <iajc outjar="${home.dir}/output/application.jar" 
-            injars="${home.dir}/build/module.jar"
-            copyInjars="true"
             sourceRootCopyFilter="**/CVS/*,**/*.java"
+            inpathDirCopyFilter="**/CVS/*,**/*.java,**/*.class"
             incremental="true" >
       <sourceroots>
         <pathelement location="${home.dir}/ec/project/src"/>
         <pathelement location="${home.dir}/ec/project/testsrc"/>
       </sourceroots>
+      <inpath>
+        <pathelement location="${home.dir}/build/module.jar"/>
+        <pathelement location="${home.dir}/build/binary-input"/>
+      </inpath>
       <aspectpath>
         <pathelement location="${home.dir}/ec/int/persist.jar"/>
       </aspectpath>

@@ -61,6 +61,8 @@
 
 	<target name="clean" depends="init">
 		<delete quiet="on">
+			<fileset dir="${home.dir}/build/binary-input"
+		    	excludes="ignore.txt"/>
 			<fileset dir="${home.dir}"
 				includes="ec/int/persist.jar,
 						build/module.jar,
@@ -96,37 +98,45 @@
 			fork="${fork.iajc}"
 			sourceroots="${home.dir}/ec/module/src"
 			classpath="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/>
+		<mkdir dir="${home.dir}/build/binary-input"/>
+	    <iajc destdir="${home.dir}/build/binary-input"
+			failonerror="true"
+			fork="${fork.iajc}"
+			sourceroots="${home.dir}/ec/inpathDirSrc"
+			classpath="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/>
 	</target>
 	
   <target name="build-test" depends="init,taskdef,setup"
   	description="test Ant script from the devguide">
-  	<!-- copy this from the Ant section of the rendered devguide -->
+  	<!-- copy below from the Ant section of the rendered devguide -->
   	<!-- in eclipse, must run forked and not incremental -->
-    <iajc outjar="${home.dir}/output/application.jar" 
-            injars="${home.dir}/build/module.jar"
-            copyInjars="true"
-			fork="${fork.iajc}"
-            sourceRootCopyFilter="**/CVS/*,**/*.java"
-            incremental="false" >
-      <sourceroots>
-        <pathelement location="${home.dir}/ec/project/src"/>
-        <pathelement location="${home.dir}/ec/project/testsrc"/>
-      </sourceroots>
-      <aspectpath>
-        <pathelement location="${home.dir}/ec/int/persist.jar"/>
-      </aspectpath>
-      <classpath>
-        <pathelement location="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/>
-      </classpath>
-    </iajc>
-    
-    <java classname="org.smart.app.Main">
-      <classpath>
-        <pathelement location="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/>
-        <pathelement location="${home.dir}/ec/int/persist.jar"/>
-        <pathelement location="${home.dir}/output/application.jar"/>
-      </classpath>
-    </java>
-  </target>
 
+      <iajc outjar="${home.dir}/output/application.jar" 
+              sourceRootCopyFilter="**/CVS/*,**/*.java"
+              inpathDirCopyFilter="**/CVS/*,**/*.java,**/*.class"
+              incremental="true" >
+        <sourceroots>
+          <pathelement location="${home.dir}/ec/project/src"/>
+          <pathelement location="${home.dir}/ec/project/testsrc"/>
+        </sourceroots>
+        <inpath>
+          <pathelement location="${home.dir}/build/module.jar"/>
+          <pathelement location="${home.dir}/build/binary-input"/>
+        </inpath>
+        <aspectpath>
+          <pathelement location="${home.dir}/ec/int/persist.jar"/>
+        </aspectpath>
+        <classpath>
+          <pathelement location="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/>
+        </classpath>
+      </iajc>
+      
+      <java classname="org.smart.app.Main">
+        <classpath>
+          <pathelement location="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/>
+          <pathelement location="${home.dir}/ec/int/persist.jar"/>
+          <pathelement location="${home.dir}/output/application.jar"/>
+        </classpath>
+      </java>
+    </target>
 </project>

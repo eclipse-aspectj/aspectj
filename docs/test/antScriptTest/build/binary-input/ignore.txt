@@ -1,0 +1,1 @@
+ignore - just to avoid CVS trimming empty directories.
