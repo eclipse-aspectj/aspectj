@@ -1,0 +1,16 @@
+public abstract class DummyAspect extends java.lang.Object:
+  public void <init>():
+                    ALOAD_0     // DummyAspect this   (line 1)
+                    INVOKESPECIAL java.lang.Object.<init> ()V
+    constructor-execution(void DummyAspect.<init>())
+    |               RETURN
+    constructor-execution(void DummyAspect.<init>())
+  end public void <init>()
+
+  public void ajc$before$DummyAspect$57(Object)    AdviceAttribute(before, traced(BindingTypePattern(java.lang.Object, 0)), 0, 87)
+:
+    advice-execution(void DummyAspect.ajc$before$DummyAspect$57(java.lang.Object))
+    |               RETURN   (line 5)
+    advice-execution(void DummyAspect.ajc$before$DummyAspect$57(java.lang.Object))
+  end public void ajc$before$DummyAspect$57(Object)
+end public abstract class DummyAspect

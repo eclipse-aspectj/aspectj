@@ -1,0 +1,111 @@
+/* *******************************************************************
+ * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Xerox/PARC     initial implementation 
+ * ******************************************************************/
+
+
+package org.aspectj.weaver.bcel;
+
+import java.io.*;
+import java.lang.reflect.Modifier;
+import java.util.*;
+
+import org.aspectj.weaver.*;
+
+public class MegaZipTestCase extends WeaveTestCase {
+
+	public MegaZipTestCase(String arg0) {
+		super(arg0);
+	}
+
+
+    private BcelAdvice makeAroundMunger(final boolean matchOnlyPrintln) {
+        BcelWorld world = new BcelWorld();
+        final Member sig = 
+            Member.method(
+                TypeX.forName("fluffy.Aspect"),
+                Modifier.STATIC,
+                "aroundFun",
+                "(Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;");
+        
+        return new BcelAdvice(
+        	AdviceKind.stringToKind("around"), 
+        	matchOnlyPrintln ? makePointcutPrintln() : makePointcutAll(),
+	        sig, 0, -1, -1, null, null)
+	    {
+            public void specializeOn(Shadow s) {
+            	super.specializeOn(s);
+                ((BcelShadow) s).initializeForAroundClosure();
+            }
+        };    
+    }  
+
+	public List getShadowMungers() {
+        List ret = new ArrayList();
+            ret.add(
+                makeConcreteAdvice(
+                    "before"
+                        + "(): call(* *.println(..)) -> static void fluffy.Aspect.before_method_call()"));
+            ret.add(
+                makeConcreteAdvice(
+                    "afterReturning"
+                        + "(): call(* *.println(..)) -> static void fluffy.Aspect.afterReturning_method_call()"));
+
+            ret.add(
+                makeConcreteAdvice(
+                    "before"
+                        + "(): execution(* *.*(..)) -> static void fluffy.Aspect.ignoreMe()"));
+                        
+            ret.add(
+                makeConcreteAdvice(
+                    "afterReturning"
+                        + "(): execution(* *.*(..)) -> static void fluffy.Aspect.ignoreMe()"));
+
+            ret.add(
+                makeConcreteAdvice(
+                    "afterThrowing"
+                        + "(): execution(* *.*(..)) -> static void fluffy.Aspect.afterThrowing_method_execution(java.lang.Throwable)",
+                    1));
+            ret.add(
+                makeConcreteAdvice(
+                    "after"
+                        + "(): execution(* *.*(..)) -> static void fluffy.Aspect.ignoreMe()"));
+
+
+            ret.add(makeAroundMunger(true));
+		return ret;
+	}
+
+	
+	public void zipTest(String fileName) throws IOException {
+		long startTime = System.currentTimeMillis();
+		File inFile = new File("testdata", fileName);
+		File outFile = new File("out", fileName);
+		outFile.delete();
+		
+		world = new BcelWorld("c:/apps/java-1.3.1_04/lib/tools.jar");
+		BcelWeaver weaver1 = new BcelWeaver(world);
+
+
+		ZipFileWeaver weaver = new ZipFileWeaver(inFile);
+
+		weaver1.setShadowMungers(getShadowMungers());
+
+		weaver.weave(weaver1, outFile);
+		assertTrue(outFile.lastModified() > startTime);
+	}	
+	
+	// this is something we test every now and again.
+	public void testBig() throws IOException {
+		System.out.println("could take 80 seconds...");
+		zipTest("aspectjtools.jar");
+	}
+
+}

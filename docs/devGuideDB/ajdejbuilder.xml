@@ -1,0 +1,266 @@
+r<refentry>
+	<refnamediv>
+		<refname>
+      AspectJ Development Environment (AJDE) support for JBuilder
+    </refname>
+		<refpurpose>
+      OpenTool extension Borland's <ulink url="http://www.borland.com/jbuilder">JBuilder IDE</ulink>.
+    </refpurpose>
+	</refnamediv>
+	<refsect1>
+		<title>Overview</title>
+		<para>
+        For release-specific documentation refer to the <ulink url="http://aspectj.org/doc/dist/changes.html"> changes file</ulink>.
+    </para>
+		<para>
+      AJDE for JBuilder will allow you to:
+        <itemizedlist>
+				<listitem>
+					<para>compile AspectJ and Java files within the
+          IDE</para>
+				</listitem>
+				<listitem>
+					<para>browse the structure of your AspectJ
+          program</para>
+				</listitem>
+				<listitem>
+					<para>set up a compile configuration that determine which
+          files will be passed to the compiler</para>
+				</listitem>
+			</itemizedlist>
+    </para>
+	</refsect1>
+	<refsect1>
+		<title>Installation and Project Setup</title>
+		<para>
+        <command>Install procedure:</command> use the installer to place the
+        "ajdeForJBuilder.jar" and "aspectjrt.jar" into JBuilder's lib/ext
+        directory.  This will also install the two html files
+        "LICENCE-AJDEJBUILDER.html" and "README-AJDEJBUILDER.html".
+    </para>
+		<para>
+        <command>Uninstall procedure:</command> remove "ajdeForJBuilder.jar"
+        and "aspectjrt.jar" (and the two html files, if you like) from the
+        "lib/ext" directory.
+    </para>
+		<para>
+        <command>Project setup:</command> follow the normal procedure for
+        JBuilder project setup (for an example of this please refer to the
+        example below).  However, note that all of the source files to be
+        passed to the compiler must be added to your project either as files or
+        within a package that is added to the project.  This is necessary
+        because -- unlike a pure Java compiler -- ajc does not search the
+        SOURCEPATH for classes.
+    </para>
+		<imageobject>
+			<imagedata fileref="jbuilder-building.gif" />
+		</imageobject>
+		<para>
+        <command>Starting and stopping AJDE:</command> select "Start AJDE" in
+        the "AspectJ" section of the "Tools" menu, or just click on the "AJDE"
+        (<inlinemediaobject id="ajdebutton">
+				<imageobject>
+					<imagedata fileref="startAjde.gif" />
+				</imageobject>
+			</inlinemediaobject>) button (label 1 in the first screenshot).  This
+        will enable AJDE commands and will replace JBuilder's structure view
+        with the AspectJ Browser.  To disable AJDE select "Stop AJDE" in the
+        same menu, or click the "AJDE" button again.
+    </para>
+	</refsect1>
+	<refsect1>
+		<title>Compiling and Running the Project</title>
+		<para>
+        To compile the project select "Build project with ajc" from the AspectJ
+        toolbar, or click &lt;ctrl&gt;F11 while the editor pane is active.  All
+        of the files contained in your project and within any packages and
+        subpackages that have been added to your project will be compiled.  You
+        may also select a different configuration (as with label 2 in the first
+        screenshot).  Then, structure of the currently visited file is shown
+        (see label 3 in the first scrrenshot).  If there is a compile error,
+        the clickable error message is available (as with label 4 in the first
+        screenshot).
+    </para>
+		<para>
+        To run the project select "Run Project" from the AspectJ toolbar, or
+        click &lt;ctrl&gt;F12 while the editor pane is active.  Note that the
+        "AspectJ Runtime" library must be added to your project in order to 
+        run.  If the library is not added you will see a         "java.lang.NoClassDefFoundError: org/aspectj/lang/Signature" error.		The library is created automatically for you from the runtime
+		in "jbuilderdir/lib/ext".  You can also create a new  library
+		to use the runtime from a different location. If you have not added the 
+		library to the "Required Libraries" of your project it will be added
+		automatically when you restart JBuilder.
+    </para>
+		<para>
+	JBuilder7 users please note: when you set up a run/debug configuration 
+	you must select the "Build Target" (at the bottom of the 
+	"Runtime Properties" dialog) to be "&lt;None&gt;".  This will ensure 
+	that the Java compiler is not invoked on your AspectJ sources 
+	before running or debugging the project.
+    </para>
+	</refsect1>
+	<refsect1>
+		<title>Navigating the Program Structure</title>
+		<imageobject>
+			<imagedata fileref="jbuilder-structureNavigation.gif" />
+		</imageobject>
+		<para>
+        Navigation of program structure is provided by the <xref linkend="ajbrowser">AspectJ Browser</xref>, so apart from a JBuilder
+        look and feel, the extra navigation AspectJ allows work as described
+        there.  In particular, you can use views with labels 1, 2 and 4 of the
+        second screenshot to navigate structure using the blue links, and you
+        can set filtering and navigate history using the toolbar shown by label
+        3 of the second screenshot.
+    </para>
+	</refsect1>
+	<refsect1>
+		<title>Manipulating Build Configurations</title>
+		<para>
+            Build configurations can be manipulated adding, removing, and
+            editing build configuration files.  The <xref linkend="ajbrowser">AspectJ Browser</xref> is used to select the
+            current build configuration.  Configurations are represented by
+            ".lst" files which are described in the <xref linkend="ajc">ajc</xref> documentation.
+        </para>
+		<imageobject>
+			<imagedata fileref="jbuilder-configs.gif" />
+		</imageobject>
+		<refsect2>
+			<title>Adding and Removing Build Configurations</title>
+			<para>
+                By default all of the files contained in your project and
+                within any packages and subpackages that have been added to
+                your project will be compiled.  In order to compile a different
+                configuration first add it to the project (by selecting
+                "Add Files / Packages..." in the "Project"
+                menu, and selecting the desired build configuration file (see
+                label 1 in the third screenshot).
+            </para>
+		</refsect2>
+		<refsect2>
+			<title>Editing Build Configurations</title>
+			<para>
+                Double click a build configuration file in JBuilder's
+                "Project Pane" in order to edit it.  Configurations
+                can be edited as either text or in the graphical designer (see
+                labels 2 and 3 in the third screenshot)
+            </para>
+		</refsect2>
+	</refsect1>
+	<refsect1>
+		<title>Example: Setting up the "Spacewar" Sample Project</title>
+		<para>
+            To set up the Spacewar example first download it the <ulink url="http://aspectj.org/dl">examples distribution</ulink>.  Then
+
+            <orderedlist>
+				<listitem>
+					<para>launch JBuilder</para>
+				</listitem>
+				<listitem>
+					<para>in the "File" menu select "New
+                project"</para>
+				</listitem>
+				<listitem>
+					<para>Select the location of the "aspectj/examples"
+                   directory for the project.  This is because the Spacewar
+                   example uses both the "spacewar" and "coordination"
+                   packages, so we set up the project where it can get at both
+                   packages.
+                   </para>
+				</listitem>
+				<listitem>
+					<para>
+                    Choose a "jpr" project, either by typing in "Spacewar.jpr"
+                    as the project name, or by typing "Spacewar" as the project
+                    name and "jpr" as the type.  Make sure "aspectj/examples"
+                    is still the directory for the project. </para>
+				</listitem>
+				<listitem>
+					<para>click "Finish"</para>
+				</listitem>
+				<listitem>
+					<para>in the "Project" menu select "Project
+                  properties..."</para>
+				</listitem>
+				<listitem>
+					<para>set the "Output path" entry to be the directory
+                where you want your classes to go</para>
+				</listitem>
+				<listitem>
+					<para>set the "Output path" entry to be the directory
+                where you want your classes to go</para>
+				</listitem>
+				<listitem>
+					<para>add "aspectjrt.jar" as a required library for
+                the project.  This library is located in
+                "&lt;jbuilder-install-directory&gt;/lib/ext".
+                </para>
+				</listitem>
+				<listitem>
+					<para>
+                    in the "Source" tab select the entry and click
+                    "Edit" (by default JBuilder will set this directory to be
+                    "examples/src" which does not exist)</para>
+				</listitem>
+				<listitem>
+					<para>
+                    Select the "examples" directory for the
+                    Souce. </para>
+				</listitem>
+				<listitem>
+					<para>click "OK" to close the "Project
+                Properties"dialog</para>
+				</listitem>
+				<listitem>
+					<para>in the leftmost pane you will notice
+                    "Spacewar.jpr", right click this and select "Add to
+                    project" in the popup, then "Add class/package..."  in
+                    thenext popup.  Or directly choose "Add
+                    files/packages". </para>
+				</listitem>
+				<listitem>
+					<para>&lt;cntrl&gt; select the "spacewar" and
+                    "coordination" packages and then click "OK"; this will add
+                    the two packages to your project</para>
+				</listitem>
+				<listitem>
+					<para>click the "Build Project" button
+                         (<inlinemediaobject>
+							<imageobject>
+								<imagedata fileref="jbuilder-build.gif" />
+							</imageobject>
+						</inlinemediaobject>)
+                          to compile the project</para>
+				</listitem>
+				<listitem>
+					<para>open the Structure View to browse the structure
+                of the program</para>
+				</listitem>
+				<listitem>
+					<para>click the "Run Project" button to play
+                Spacewar (make sure that you have set up the runtime
+                library as described above)</para>
+				</listitem>
+				<listitem>
+					<para>if you have not selected a class to run, you
+                    will be prompted to do so: select the class
+                    "spacewar.Game". </para>
+				</listitem>
+				<listitem>
+					<para>AspectJ related build options can be
+		manipulated in the "AJDE settings" window
+		</para>
+					<imageobject>
+						<imagedata fileref="jbuilder-buildOptions.gif" />
+					</imageobject>
+				</listitem>
+			</orderedlist>
+        </para>
+	</refsect1>
+</refentry>
+
+<!-- Local variables: -->
+<!-- fill-column: 79 -->
+<!-- compile-command: "ant -quiet dev-html" -->
+<!-- sgml-local-ecat-files: devguide.ced -->
+<!-- sgml-parent-document:("devguide.sgml" "book" "refentry") -->
+<!-- End: -->

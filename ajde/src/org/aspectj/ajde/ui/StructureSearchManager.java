@@ -1,0 +1,71 @@
+/* *******************************************************************
+ * Copyright (c) 1999-2001 Xerox Corporation, 
+ *               2002 Palo Alto Research Center, Incorporated (PARC).
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Xerox/PARC     initial implementation 
+ * ******************************************************************/
+
+ 
+package org.aspectj.ajde.ui;
+
+import java.util.*;
+
+import org.aspectj.ajde.Ajde;
+import org.aspectj.asm.*;
+
+/**
+ * @author	Mik Kersten
+ */
+public class StructureSearchManager {
+
+	/**
+	 * @param		pattern		case-sensitive substring of node name
+	 * 
+	 * @return 	null if a corresponding node was not found
+	 */
+	public List findMatches(
+		String pattern, 
+		ProgramElementNode.Kind kind) {
+		
+		List matches = new ArrayList();
+		StructureModel model = Ajde.getDefault().getStructureModelManager().getStructureModel();
+		if (model.equals(StructureModel.NO_STRUCTURE)) {
+			return null;
+		} else {
+			return findMatchesHelper((ProgramElementNode)model.getRoot(), pattern, kind, matches);
+		}
+	}					
+	
+	
+	private List findMatchesHelper(
+		ProgramElementNode node, 
+		String pattern, 
+		ProgramElementNode.Kind kind,
+		List matches) {
+			
+		if (node != null && node.getName().indexOf(pattern) != -1) {
+			if (kind == null || node.getProgramElementKind().equals(kind)) {
+				matches.add(node);	
+			} 
+		}
+		
+		for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
+			StructureNode nextNode = (StructureNode)it.next();
+			if (nextNode instanceof ProgramElementNode) {
+				findMatchesHelper(
+					(ProgramElementNode)nextNode, 
+					pattern, 
+					kind,
+					matches); 		
+			}
+		}
+		 
+		return matches;		
+	}
+}

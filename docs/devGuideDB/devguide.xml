@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1//EN"
+                      "../../lib/docbook/docbook-dtd/docbookx.dtd"
+[
+<!ENTITY ajc              SYSTEM "ajc.xml">
+<!ENTITY ajdb             SYSTEM "ajdb.xml">
+<!ENTITY ajdoc            SYSTEM "ajdoc.xml">
+<!ENTITY antsupport       SYSTEM "antsupport.xml">
+<!ENTITY ajbrowser        SYSTEM "ajbrowser.xml">
+<!ENTITY ajdejbuilder     SYSTEM "ajdejbuilder.xml">
+<!ENTITY ajdeforte        SYSTEM "ajdeforte.xml">
+<!ENTITY aspectj-mode     SYSTEM "aspectj-mode.xml">
+<!ENTITY ajdee            SYSTEM "ajdee.xml">
+]>
+
+<book>
+  <bookinfo>
+    <title>The AspectJ<superscript>tm</superscript> Development Environment Guide</title>
+
+    <authorgroup>
+      <author>
+	<othername>the AspectJ Team</othername>
+      </author>
+    </authorgroup>
+
+      <legalnotice>
+	   <para>Copyright (c) 1998-2001 Xerox Corporation, 
+         2002 Palo Alto Research Center, Incorporated.  
+         All rights reserved.
+        </para>
+      </legalnotice>
+
+    <abstract>
+      <para>
+	This user's guide describes the tools which are part of the
+	AspectJ development environment. A companion guide describes the
+	AspectJ language.
+      </para>
+    </abstract>
+  </bookinfo>
+
+  <reference>
+    <title>The Command Line Tools</title>
+      &ajc;
+      &ajdb;
+      &ajdoc;
+  </reference>
+
+  <reference>
+    <title>The GUI Tools</title>
+      &ajbrowser;
+      &ajdejbuilder;
+      &ajdeforte;
+      &aspectj-mode;
+      &ajdee;
+  </reference>
+
+</book>
+
+<!--
+Local Variables:
+compile-command:"ant -quiet dev-html"
+fill-column: 79
+sgml-indent-step: 3
+sgml-local-ecat-files:devguide.ced
+sgml-namecase-general: t
+End:
+-->

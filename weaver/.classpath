@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+    <classpathentry kind="src" path="src"/>
+    <classpathentry kind="src" path="testsrc"/>
+    <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
+    <classpathentry kind="src" path="/runtime"/>
+    <classpathentry kind="lib" path="/lib/bcel/bcel.jar"
+        rootpath="bcel-5.0/src/java" sourcepath="/lib/bcel/bcel-src.zip"/>
+    <classpathentry kind="lib" path="/lib/junit/junit.jar" sourcepath="/lib/junit/src.jar"/>
+    <classpathentry kind="src" path="/util"/>
+    <classpathentry kind="src" path="/testing-util"/>
+    <classpathentry kind="src" path="/bridge"/>
+    <classpathentry kind="src" path="/asm"/>
+    <classpathentry kind="output" path="bin"/>
+</classpath>

@@ -1,0 +1,236 @@
+/* *******************************************************************
+ * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Xerox/PARC     initial implementation 
+ * ******************************************************************/
+
+
+package org.aspectj.weaver.bcel;
+
+import java.io.*;
+import java.lang.reflect.Modifier;
+import java.util.*;
+
+import org.aspectj.weaver.*;
+import org.aspectj.weaver.patterns.*;
+import org.aspectj.weaver.patterns.SimpleScope;
+
+public class PointcutResidueTestCase extends WeaveTestCase {
+	{
+		regenerate = false;
+	}
+	public PointcutResidueTestCase(String name) {
+		super(name);
+	}
+		
+    String[] none = new String[0];
+    
+    
+    // -----
+    
+    
+    
+    
+    
+    // ----   
+    
+    
+	
+	public void testArgResidue1() throws IOException {
+		checkMultiArgWeave(
+			"StringResidue1", 
+			"call(* *(java.lang.Object, java.lang.Object)) && args(java.lang.String, java.lang.String)");
+	}
+	
+	public void testArgResidue2() throws IOException {
+		checkMultiArgWeave(
+			"StringResidue2", 
+			"call(* *(java.lang.Object, java.lang.Object)) && args(.., java.lang.String)");
+	}
+    public void testArgResidue3() throws IOException {
+		checkMultiArgWeave(
+			"StringResidue3", 
+			"call(* *(java.lang.Object, java.lang.Object)) && args(java.lang.String, ..)");
+	}	
+	
+	// BETAX this is a beta feature.    
+//    public void testArgResidue4() throws IOException {
+//        checkMultiArgWeave(
+//            "StringResidue4",
+//            "call(* *(java.lang.Object, java.lang.Object)) && args(.., java.lang.String, ..)");
+//    }
+    
+    public void testMultiArgState() throws IOException {
+        checkWeave(
+            "StateResidue",
+            "MultiArgHelloWorld",
+            "call(* *(java.lang.Object, java.lang.Object)) && args(s, ..)",
+            new String[] { "java.lang.String" },
+            new String[] { "s" });
+        checkWeave(
+            "StateResidue",
+            "MultiArgHelloWorld",
+            "call(* *(java.lang.Object, java.lang.Object)) && args(s, *)",
+            new String[] { "java.lang.String" },
+            new String[] { "s" });
+    }
+
+
+
+	public void testAdd() throws IOException {
+		checkDynamicWeave("AddResidue", "call(public * add(..)) && target(java.util.ArrayList)");
+		checkDynamicWeave("AddResidue", "call(public * add(..)) && (target(java.util.ArrayList) || target(java.lang.String))");
+		checkDynamicWeave("AddResidue", "call(public * add(..)) && this(java.io.Serializable) && target(java.util.ArrayList) && !this(java.lang.Integer)");
+	}	
+	
+	public void testNot() throws IOException {
+		checkDynamicWeave("AddNotResidue", "call(public * add(..)) && !target(java.util.ArrayList)");
+		checkDynamicWeave("AddNotResidue", "call(public * add(..)) && !(target(java.util.ArrayList) || target(java.lang.String)) ");
+		checkDynamicWeave("AddNotResidue", "call(public * add(..)) && target(java.lang.Object) && !target(java.util.ArrayList)");
+	}
+
+    public void testState() throws IOException {
+        checkWeave(
+            "AddStateResidue",
+            "DynamicHelloWorld",
+            "call(public * add(..)) && target(list)",
+            new String[] { "java.util.ArrayList" },
+            new String[] { "list" });
+        checkWeave(
+            "AddStateResidue",
+            "DynamicHelloWorld",
+            "target(foo) && !target(java.lang.Integer) && call(public * add(..))",
+            new String[] { "java.util.ArrayList" },
+            new String[] { "foo" });
+        checkDynamicWeave(
+            "AddResidue",
+            "call(public * add(..)) && (target(java.util.ArrayList) || target(java.lang.String))");
+        checkDynamicWeave(
+            "AddResidue",
+            "call(public * add(..)) && this(java.io.Serializable) && target(java.util.ArrayList) && !this(java.lang.Integer)");
+    }
+	
+	public void testNoResidueArgs() throws IOException {
+		checkDynamicWeave("NoResidue", "call(public * add(..)) && args(java.lang.Object)");
+		checkDynamicWeave("NoResidue", "call(public * add(..)) && args(*)");
+		checkDynamicWeave("NoResidue", "call(public * add(..))");
+	}
+
+	// ---- cflow tests
+	
+    public void testCflowState() throws IOException {
+        checkWeave(
+            "CflowStateResidue",
+            "DynamicHelloWorld",
+            "cflow(call(public * add(..)) && target(list)) && execution(public void main(..))",
+            new String[] { "java.util.ArrayList" },
+            new String[] { "list" });
+//        checkWeave(
+//            "CflowStateResidue",
+//            "DynamicHelloWorld",
+//            "cflow(call(public * add(..)) && target(list)) && this(obj) && execution(public void doit(..))",
+//            new String[] { "java.lang.Object", "java.util.ArrayList" },
+//            new String[] { "obj", "list" });
+//        checkWeave(
+//            "AddStateResidue",
+//            "DynamicHelloWorld",
+//            "target(foo) && !target(java.lang.Integer) && call(public * add(..))",
+//            new String[] { "java.util.ArrayList" },
+//            new String[] { "foo" });
+//        checkDynamicWeave(
+//            "AddResidue",
+//            "call(public * add(..)) && (target(java.util.ArrayList) || target(java.lang.String))");
+//        checkDynamicWeave(
+//            "AddResidue",
+//            "call(public * add(..)) && this(java.io.Serializable) && target(java.util.ArrayList) && !this(java.lang.Integer)");
+    }
+	
+
+
+
+
+	// ----
+	
+    private void checkDynamicWeave(String label, String pointcutSource) throws IOException {
+		checkWeave(label, "DynamicHelloWorld", pointcutSource, new String[0], new String[0]);
+	}
+	
+    private void checkMultiArgWeave(String label, String pointcutSource) throws IOException {
+		checkWeave(label, "MultiArgHelloWorld", pointcutSource, new String[0], new String[0]);
+	}		
+	
+    private void checkWeave(
+        String label,
+        String filename,
+        String pointcutSource,
+        String[] formalTypes,
+        String[] formalNames)
+        throws IOException 
+    {
+        final Pointcut sp = Pointcut.fromString(pointcutSource);
+        final Pointcut rp =
+            sp.resolve(
+            	new SimpleScope(
+            	world,
+                SimpleScope.makeFormalBindings(TypeX.forNames(formalTypes),
+                formalNames)
+                ));
+
+        ShadowMunger pp =
+            world.concreteAdvice(
+                AdviceKind.Before,
+                rp,
+                Member.method(
+                    TypeX.forName("Aspect"),
+                    Modifier.STATIC,
+                    "ajc_before_0",
+                    Member.typesToSignature(
+                        ResolvedTypeX.VOID,
+                        TypeX.forNames(formalTypes))),
+            	0, -1, -1, null);
+
+		ResolvedTypeX inAspect = world.resolve("Aspect");
+		CrosscuttingMembers xcut = new CrosscuttingMembers(inAspect);
+		inAspect.crosscuttingMembers = xcut;
+		
+        ShadowMunger cp = pp.concretize(inAspect, world, null);
+        
+        xcut.addConcreteShadowMunger(cp);
+        
+        //System.out.println("extras: " + inAspect.getExtraConcreteShadowMungers());
+//        List advice = new ArrayList();
+//        advice.add(cp);
+//        advice.addAll(inAspect.getExtraConcreteShadowMungers());
+        weaveTest(new String[] { filename }, label, xcut.getShadowMungers());
+
+        checkSerialize(rp);
+    }
+	
+	public void weaveTest(String name, String outName, ShadowMunger planner) throws IOException {
+        List l = new ArrayList(1);
+        l.add(planner);
+        weaveTest(name, outName, l);
+    }
+
+
+	public void checkSerialize(Pointcut p) throws IOException {
+		ByteArrayOutputStream bo = new ByteArrayOutputStream();
+		DataOutputStream out = new DataOutputStream(bo);
+		p.write(out);
+		out.close();
+		
+		ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
+		DataInputStream in = new DataInputStream(bi);
+		Pointcut newP = Pointcut.read(in, null);
+		
+		assertEquals("write/read", p, newP);	
+	}
+
+
+}

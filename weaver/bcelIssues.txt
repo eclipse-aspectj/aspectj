@@ -1,0 +1,12 @@
+* updateTarget doesn't work with exnTargets, in particular, when the startPC and endPC are the same handle.
+
+* RemoveNOP doesn't work properly with exnTargets (and, much less importantly, local variable tables), 
+  because it always retargets to the NEXT instruction... the endPC should retarget to the LAST instruction.
+  
+* parameter names aren't set correctly (to anything) when a MethodGen is read from a Method.
+
+* the superclassname of java.lang.object is set to java.lang.object (!!)
+
+* RET should be a local variable instruction
+
+

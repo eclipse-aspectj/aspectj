@@ -1,0 +1,452 @@
+<refentry id="ajdee">
+  <refnamediv>
+    <refname>AJDEE</refname>
+    <refpurpose>JDEE support for XEmacs and GNU Emacs </refpurpose>
+  </refnamediv>
+
+  <refsect1>
+    <title>AJDE for Emacs User's Guide</title>
+    <para>
+      This guide describes AspectJ-mode extensions of JDEE for GNU Emacs and
+      XEmacs, which
+      provides enhanced editing and management of AspectJ code via a minor
+      mode extension of JDE mode.  AJDEE's AspectJ support builds on
+      <link linkend="aspectj-mode">aspectj-mode's</link> extension of
+      java-mode, also provided with the release.
+      Included in this document are guidance for AJDEE's <link
+        linkend="ajdee-featuresandusage">use</link>, including an <link
+        linkend="exploringspacewar">exploration of spacewar</link>, and <link
+        linkend="ajdee-installationetc">installation and compatibility</link>. See
+      the README file in AJDEE's distribution directory for
+      release-specific details.
+    </para>
+
+    <para>
+      In addition to the java-mode extensions provided by
+      <link linkend="aspectj-mode">aspectj-mode</link>, AJDEE provides
+      (see graphic):
+      <itemizedlist>
+        <listitem>
+          <para>
+    	Viewing and navigation of aspect structures via the
+    	the speedbar and Classes menu.
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+    	Basic support for completion.
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+    	Integrated Javadoc support.
+          </para>
+        </listitem>
+
+      </itemizedlist>
+    </para>
+
+    <para>
+      <inlinemediaobject id="ajdeemacsscreenshot">
+        <imageobject>
+          <imagedata fileref="ajdee.gif"/>
+        </imageobject>
+      </inlinemediaobject>
+    </para>
+  </refsect1>
+
+  <refsect1 id="ajdee-featuresandusage"><!-- Features and Usage -->
+    <title>AJDEE Features and Usage</title>
+    <para>
+      The AJDEE extensions of JDE require no special effort to use.
+      The speedbar and Classes menus provide additional sublists showing
+      crosscutting structure.  Selecting items in those lists navigates to
+      the referenced item.
+    </para>
+
+    <refsect2>
+      <title>Aspect Structure and Navigation</title>
+
+      <refsect3>
+        <title>Enhancements to Speedbar in JDE Mode</title>
+        <para>
+          As a minor mode of JDE mode, AJDEE enhances the speedbar to
+          show the location of aspect, advice, and inter-type declarations.
+          The affects/affected-by relationships are shown in the speedbar
+          rather than embedding tags in the text (available as an option),
+          and selecting the items in the speedbar will perform the expected
+          navigation. The speedbar symbols have been extended for AspectJ as
+          follows (see right side of <link
+    	linkend="ajdeemacsscreenshot">figure)</link>:
+        </para>
+
+        <table id="speedbarenhancements">
+          <title>Enhancements to Speedbar in JDE Mode</title>
+          <tgroup cols="2" colsep="1" rowsep="1" align="left">
+    	<thead>
+    	  <row>
+    	    <entry>Indication</entry>
+    	    <entry>Meaning</entry>
+    	  </row>
+    	</thead>
+
+    	<tbody>
+    	  <row>
+    	    <entry>
+    	      <literal>(+) </literal>
+    	      <emphasis><literal>name</literal></emphasis>
+    	    </entry>
+    	    <entry>
+    	      A class, interface, or aspect; double mouse-1 will
+    	      display its declarations
+    	    </entry>
+    	  </row>
+
+    	  <row>
+    	    <entry><literal>+  </literal>
+    	      <emphasis><literal>methodSignature</literal></emphasis>
+    	    </entry>
+    	    <entry>
+    	      Method has an advice that applies to it; double mouse-1
+    	      will display the relevant advice.
+    	    </entry>
+    	  </row>
+
+    	  <row>
+    	    <entry><literal>+  </literal>
+    	      <emphasis><literal>adviceSignature</literal></emphasis>
+    	    </entry>
+    	    <entry>
+    	      Advice declared by the containing aspect; double mouse-1
+    	      will display affected methods.
+    	    </entry>
+    	  </row>
+
+    	  <row>
+    	    <entry><literal>+  </literal>
+    	      <emphasis><literal>introductionSig</literal></emphasis>
+    	    </entry>
+    	    <entry>
+    	      Inter-type declaration declared by the containing class; double
+    	      mouse-1 will display affected methods or classes.
+    	    </entry>
+    	  </row>
+
+    	  <row>
+    	    <entry><literal>| | </literal>
+    	      <emphasis><literal>methodOrFieldSig</literal></emphasis>
+    	    </entry>
+    	    <entry>
+    	      Method or field has been declared by an aspect;
+    	      double mouse-1 on text will navigate to the declaration; a +
+    	      within the bars means that it has an advice that applies
+    	      to it.
+    	    </entry>
+    	  </row>
+    	</tbody>
+          </tgroup>
+        </table>
+
+        <para>
+          A minus (<literal>-</literal>) is displayed on the item when the
+          crosscutting items are displayed. AspectJ structure information is
+          derived from the last compile of your AspectJ program.
+        </para>
+      </refsect3>
+    </refsect2>
+
+    <refsect2>
+      <title>Compilation and JavaDoc</title>
+
+      <para>
+        The option <option>AspectJ Compile File Specification</option>
+	can be customized from the <guisubmenu>Customize options</guisubmenu>
+	under the <guimenu>AspectJ</guimenu> menu, changing the default
+	compile specification given to <command>ajc</command>.
+        See <link linkend="ajdee-installationetc">installation instructions</link>
+        for examples and other customizations.
+      </para>
+
+      <para>
+        AspectJ JavaDoc support is
+        enabled by setting <option>Jde Javadoc Command Path</option> to
+        invoke <command>ajdoc</command>. These are the default settings
+        provided in the installation instructions.
+      </para>
+    </refsect2>
+
+  </refsect1>
+
+  <refsect1 id="exploringspacewar"><!-- Exploring the Spacewar Source Code -->
+    <title>Exploring the Spacewar Source Code</title>
+    <para>
+      To begin exploring Spacewar within emacs using JDE and AspectJ mode:
+    </para>
+    <itemizedlist>
+      <listitem>
+        <para>Compile spacewar.</para>
+      </listitem>
+
+      <listitem>
+        <para>Change into the <filename>spacewar</filename>
+          directory.</para>
+      </listitem>
+
+      <listitem>
+        <para>Type <userinput>emacs Ship.java</userinput>.</para>
+      </listitem>
+
+            <listitem>
+        <para>
+          Pull down the <guimenu>JDE</guimenu> menu and select the
+          <guimenuitem>Speedbar</guimenuitem> entry to show the AspectJ
+          files in the directory. Note that <filename>Ship.java</filename>
+          is shown in red to denote that it is currently shown in the main
+          buffer.
+        </para>
+      </listitem>
+
+      <listitem>
+        <para>
+          Double-click with the left mouse button on the
+          <literal>+</literal> in front of the
+          <filename>Ship.java</filename> entry. It should display an entry
+          for the class <classname>Ship</classname>.
+        </para>
+      </listitem>
+
+      <listitem>
+        <para>
+          Double-clicking on Ship will navigate to its declaration in
+          the buffer. Note that declarations of advice are annotated to
+          note the types of objects that they advise, declarations of
+          methods that are advised are annotated with the aspects that
+          advise them, and so forth.
+        </para>
+      </listitem>
+
+      <listitem>
+        <para>
+          Double-clicking on the <literal>+</literal> in front of either
+          will show the declared fields, methods, inter-type declarations, and
+          advice. A <literal>+</literal> in front of any field or method
+          means that it is introduced or advised; double-clicking will list
+          entries for the introducers/advisers; double-clicking on them
+          will navigate to their declarations. A <literal>+</literal> in
+          front of any inter-type declarations or advice will will display its
+          targets.
+        </para>
+      </listitem>
+
+    </itemizedlist>
+  </refsect1>
+
+  <refsect1 id="ajdee-installationetc"><!-- Installation and Compatibility -->
+    <title>Installation and Compatibility</title>
+
+    <para> AJDEE requires the installation of
+      <ulink url="http://sunsite.auc.dk/jde">JDE 2.2.9beta4</ulink> or
+      higher and small edits to your <filename>.emacs</filename> file to
+      configure AJDEE and enable autoloading AJDEE when a
+      <filename>.java</filename> file is loaded.
+    </para>
+
+    <refsect2>
+      <title>Installation for enhancement of JDE mode</title>
+
+<!--        <note> -->
+        <para>
+          The first and last steps, with enhancements, can be found in the
+          example Emacs initialization file
+          <filename>sample.emacs</filename> and the sample JDE project
+          file <filename>sample.prj</filename> in the distribution. The
+          latter also demonstrates a way to enable AspectJ mode on a
+          per-project basis.
+        </para>
+<!--        </note> -->
+
+      <orderedlist>
+        <listitem>
+          <para>
+    	Make sure AJDEE, aspectj-mode, JDE, and supporting packages are on
+	your <literal>load-path</literal> and are ``required''. This is an
+    	example for the 1.0 release:
+    	<programlisting>
+    	  ;; I keep my emacs packages in C:/Emacs
+    	  (setq load-path
+    	  (append
+	   '(
+	    "C:/Emacs/aspectj-emacsMode-1.0"	; for AJDEE
+	    "C:/Emacs/aspectj-emacsAJDEE-1.0"
+	    "C:/Emacs/jde-2.2.9beta6/lisp"
+	    "C:/Emacs/elib-1.0"			; for JDEE
+	    "C:/Emacs/speedbar-0.14beta2"	; for JDEE
+	    "C:/Emacs/semantic-1.4beta12"	; for JDEE/speedbar
+	    "C:/Emacs/eieio-0.17beta3"		; for JDEE
+	    )
+	   load-path))
+
+    	  (require 'jde)
+    	  (require 'ajdee) ; can also appear in prj.el</programlisting>
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+    	<emphasis>[Optional]</emphasis> add <literal>-emacssym</literal>
+	switch to the <filename>ajc</filename> and <filename>ajc.bat</filename>
+	files in your AspectJ tools installations (in the
+	<filename>/bin</filename> directory).  If you invoke the compiler
+	outside Emacs, this will
+	ensure that your compiles always generate information for annotations
+	and the jump menu in the form of <literal>.ajesym</literal> files.
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+    	Customize AJDEE's compile options by
+    	putting a version of the following in your
+    	<filename>.emacs</filename> file or in a JDE project file
+    	<filename>prj.el</filename> in your project's hierarchy (see the
+    	<option>JDE Project File Name</option> option for the latter).
+    	Here is a simple example:
+
+    	<programlisting>
+    	  ;; A default version for simple projects, maybe good for
+    	  ;;; .emacs file.
+    	  (custom-set-variables
+    	  '(jde-compiler '("ajc" "ajc"))
+    	  '(jde-javadoc-command-path "ajdoc")
+
+    	  ;; ajc requires all files to be named for a compile
+    	  '(aspectj-compile-file-specification "*.java"))</programlisting>
+
+    	Here is an example for spacewar, in
+	<filename>examples/spacewar</filename>.
+    	<programlisting>
+    	  ;;; These options are for the spacewar, in examples/spacewar.
+    	  (custom-set-variables
+    	  '(jde-compiler '("ajc" "ajc"))
+    	  '(jde-javadoc-command-path "ajdoc")
+
+    	  ;; ajc provides an ``argfile'' mechanism for specifying all files.
+    	  '(aspectj-compile-file-specification "-argfile demo.lst")
+
+    	  ;; *if* compiling packages, name root dir for package hierarchy
+    	  ;; to tell ajc where .class files should go.
+    	  '(jde-compile-option-directory "..")
+    	  '(jde-run-working-directory ".."))
+    	  '(jde-run-application-class "spacewar.Game")</programlisting>
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+    	<emphasis>[XEmacs only]</emphasis> If you're installing JDE
+    	yourself, be sure to closely follow the JDE installation
+    	directions for XEmacs, otherwise you may get out of date JDE
+    	<filename>.jar</filename> files.
+          </para>
+        </listitem>
+      </orderedlist>
+
+    </refsect2>
+
+    <refsect2>
+      <title>Customizing Options</title>
+      <para>
+        Selecting <guimenuitem>Customize options</guimenuitem> from the
+        <guimenu>AspectJ</guimenu> menu displays a number of options that
+        customize AspectJ mode. These control whether annotations are shown
+        by default, and whether the bovinator set up by JDE runs.
+        <option>AspectJ Compile File Specification</option>, specifies a
+	compilation argument as
+        an alternative to the current buffer's file or the run class's file.
+        Example customizations are shown above and in the sample files
+        discussed above.
+      </para>
+    </refsect2>
+
+  </refsect1>
+
+
+  <refsect1>
+    <title>Usage and Upgrade Problems</title>
+
+    Please see the documentation for
+    <link linkend="aspectj-mode">aspectj-mode</link> for problems not
+    specific to AJDEE's features.
+
+    <itemizedlist>
+
+      <listitem>
+        <para><emphasis>Symptom</emphasis>:  Get
+        standard speedbar menus in JDE; no annotations display.  Message:
+
+<screen>
+AspectJ Mode Warning: Can't find declarations file for...
+</screen>
+
+</para>
+
+        <para>AspectJ file has not been compiled with ajc and the <literal>-emacssym</literal>
+	flag,
+        or was compiled with an obsolete version of ajc. After compilation,
+        there should be a &lt;file&gt;.ajesym for every &lt;file&gt;.java in the
+        build. If .ajsym files are present but error persists, recompile. Note
+        that aspectj-mode for JDE has a fallback view for uncompiled files.
+       </para>
+      </listitem>
+
+      <listitem>
+        <para><emphasis>Symptom</emphasis>: Navigations via the speedbar and
+	the jump menu are off, annotations are misplaced in the code.  </para>
+
+        <para>AspectJ mode operates by querying data
+        derived from the most recent compile that includes the
+	<literal>-emacssym</literal> flag.  Recompile the entire program with
+        ajc including the switch.  Consider permanently installing the switch
+	by editing the ajc and ajc.bat files in the /bin file in your
+	distribution.</para>
+      </listitem>
+
+      <listitem>
+        <para><emphasis>Symptom</emphasis>: Java files that are part of a Java project not written
+        in AspectJ come up in aspectj-mode.     </para>
+
+        <para>Emacs uses the file suffix (.java) to
+        determine which mode to invoke.  You can either globally toggle the
+	AspectJ features from the AspectJ menu, or you can prevent AJDEE
+        from coming up by moving the (require 'ajdee) expression from
+        your .emacs file to a prj.el file in each AspectJ project's directory
+        (see sample.prj in the distribution).
+        </para>
+      </listitem>
+
+      <listitem>
+        <para><emphasis>Symptom</emphasis>: Reported bug fixes and new features
+	to AJDEE are not seen, or ajdee.el cannot be found or loaded, with
+	message:
+
+<screen>
+Error in init file: File error: "Cannot open load file", "ajdee"
+</screen>
+
+</para>
+        <para>Your load-path variable (set in your .emacs)
+	is referring to an old release. Change your load-path to
+        point at the directory for the current release.  See the sample.emacs
+	files in the distribution, for example.</para>
+      </listitem>
+    </itemizedlist>
+  </refsect1>
+</refentry>
+
+<!-- Local variables: -->
+<!-- fill-column: 79 -->
+<!-- compile-command: "ant -quiet dev-html" -->
+<!-- sgml-local-ecat-files: devguide.ced -->
+<!-- sgml-parent-document:("devguide.sgml" "book" "refentry") -->
+<!-- End: -->

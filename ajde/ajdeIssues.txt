@@ -1,0 +1,3 @@
+
+* Source path needs to be same directory as ".lst" file, multiple sourcepaths not supported.
+

@@ -1,0 +1,169 @@
+public abstract class FancyHelloWorld extends java.lang.Object:
+  public void <init>():
+                    ALOAD_0     // FancyHelloWorld this   (line 7)
+                    INVOKESPECIAL java.lang.Object.<init> ()V
+    constructor-execution(void FancyHelloWorld.<init>())
+    |               ALOAD_0
+    |               INVOKESTATIC FancyHelloWorld.init$_extracted0 (LFancyHelloWorld;)V
+    |               RETURN
+    constructor-execution(void FancyHelloWorld.<init>())
+  end public void <init>()
+
+  public static void main(String[]):
+                    ALOAD_0
+                    ASTORE 11
+    method-execution(void FancyHelloWorld.main(java.lang.String[]))
+    |               ALOAD 11
+    |               INVOKESTATIC FancyHelloWorld.main_extracted5 ([Ljava/lang/String;)V
+    |               RETURN
+    method-execution(void FancyHelloWorld.main(java.lang.String[]))
+  end public static void main(String[])
+
+  public static String getName():
+    method-execution(java.lang.String FancyHelloWorld.getName())
+    |               INVOKESTATIC FancyHelloWorld.getName_extracted10 ()Ljava/lang/String;
+    |               ARETURN
+    method-execution(java.lang.String FancyHelloWorld.getName())
+  end public static String getName()
+
+  static final void init$_extracted0(FancyHelloWorld):
+                    RETURN   (line 7)
+  end static final void init$_extracted0(FancyHelloWorld)
+
+  static final java.io.PrintStream out_extracted1():
+                    GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 9)
+                    ARETURN
+  end static final java.io.PrintStream out_extracted1()
+
+  static final void println_extracted2(java.io.PrintStream, String):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V   (line 11)
+                    RETURN
+  end static final void println_extracted2(java.io.PrintStream, String)
+
+  static final void println_extracted3(java.io.PrintStream, Object):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/Object;)V   (line 13)
+                    RETURN
+  end static final void println_extracted3(java.io.PrintStream, Object)
+
+  static final void println_extracted4(java.io.PrintStream, String):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V   (line 15)
+                    RETURN
+  end static final void println_extracted4(java.io.PrintStream, String)
+
+  static final void main_extracted5(String[]):
+    field-get(java.io.PrintStream java.lang.System.out)
+    |               INVOKESTATIC FancyHelloWorld.out_extracted1 ()Ljava/io/PrintStream;
+    field-get(java.io.PrintStream java.lang.System.out)
+                    ASTORE_1   (line 9)
+    finally -> E1
+    | catch java.lang.Exception -> E0
+    | |             ALOAD_1   (line 11)
+    | |             LDC "bye"
+    | |             ASTORE_3
+    | |             ASTORE 5
+    | | method-call(void java.io.PrintStream.println(java.lang.String))
+    | | |           ALOAD 5
+    | | |           ALOAD_3
+    | | |           INVOKESTATIC FancyHelloWorld.println_extracted2 (Ljava/io/PrintStream;Ljava/lang/String;)V
+    | | method-call(void java.io.PrintStream.println(java.lang.String))
+    | |             GOTO L0
+    | catch java.lang.Exception -> E0
+    |           E0: ASTORE 7   (line 12)
+    |               ALOAD_1   (line 13)
+    |               ALOAD 7
+    |               ASTORE 9
+    |               ASTORE 11
+    | method-call(void java.io.PrintStream.println(java.lang.Object))
+    | |             ALOAD 11
+    | |             ALOAD 9
+    | |             INVOKESTATIC FancyHelloWorld.println_extracted3 (Ljava/io/PrintStream;Ljava/lang/Object;)V
+    | method-call(void java.io.PrintStream.println(java.lang.Object))
+    finally -> E1
+                    GOTO L0
+                E1: ASTORE 13   (line 14)
+                    JSR L1
+                    ALOAD 13
+                    ATHROW
+                L0: JSR L1
+                    GOTO L2
+                L1: ASTORE 15
+                    ALOAD_1   (line 15)
+                    LDC "finally"
+                    ASTORE 17
+                    ASTORE 19
+    method-call(void java.io.PrintStream.println(java.lang.String))
+    |               ALOAD 19
+    |               ALOAD 17
+    |               INVOKESTATIC FancyHelloWorld.println_extracted4 (Ljava/io/PrintStream;Ljava/lang/String;)V
+    method-call(void java.io.PrintStream.println(java.lang.String))
+                    RET 15   (line 10)
+                L2: RETURN   (line 17)
+  end static final void main_extracted5(String[])
+
+  static final int hashCode_extracted6(String):
+                    ALOAD_0
+                    INVOKEVIRTUAL java.lang.String.hashCode ()I   (line 21)
+                    IRETURN
+  end static final int hashCode_extracted6(String)
+
+  static final StringBuffer init$_extracted7(String):
+                    NEW java.lang.StringBuffer
+                    DUP
+                    ALOAD_0
+                    INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V   (line 22)
+                    ARETURN
+  end static final StringBuffer init$_extracted7(String)
+
+  static final StringBuffer append_extracted8(StringBuffer, int):
+                    ALOAD_0
+                    ILOAD_1
+                    INVOKEVIRTUAL java.lang.StringBuffer.append (I)Ljava/lang/StringBuffer;   (line 22)
+                    ARETURN
+  end static final StringBuffer append_extracted8(StringBuffer, int)
+
+  static final String toString_extracted9(StringBuffer):
+                    ALOAD_0
+                    INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;   (line 22)
+                    ARETURN
+  end static final String toString_extracted9(StringBuffer)
+
+  static final String getName_extracted10():
+                    ICONST_0   (line 20)
+                    ISTORE_0
+                    ILOAD_0   (line 21)
+                    LDC "name"
+                    ASTORE_2
+    method-call(int java.lang.String.hashCode())
+    |               ALOAD_2
+    |               INVOKESTATIC FancyHelloWorld.hashCode_extracted6 (Ljava/lang/String;)I
+    method-call(int java.lang.String.hashCode())
+                    IADD
+                    ISTORE_0
+                    LDC "name"   (line 22)
+                    ASTORE 4
+    constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
+    |               ALOAD 4
+    |               INVOKESTATIC FancyHelloWorld.init$_extracted7 (Ljava/lang/String;)Ljava/lang/StringBuffer;
+    constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
+                    ILOAD_0
+                    ISTORE 6
+                    ASTORE 8
+    method-call(java.lang.StringBuffer java.lang.StringBuffer.append(int))
+    |               ALOAD 8
+    |               ILOAD 6
+    |               INVOKESTATIC FancyHelloWorld.append_extracted8 (Ljava/lang/StringBuffer;I)Ljava/lang/StringBuffer;
+    method-call(java.lang.StringBuffer java.lang.StringBuffer.append(int))
+                    ASTORE 10
+    method-call(java.lang.String java.lang.StringBuffer.toString())
+    |               ALOAD 10
+    |               INVOKESTATIC FancyHelloWorld.toString_extracted9 (Ljava/lang/StringBuffer;)Ljava/lang/String;
+    method-call(java.lang.String java.lang.StringBuffer.toString())
+                    ARETURN
+  end static final String getName_extracted10()
+end public abstract class FancyHelloWorld

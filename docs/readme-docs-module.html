@@ -1,0 +1,32 @@
+<html>
+<title>AspectJ docs</title>
+<body>
+<h1>AspectJ docs</h1>
+
+The AspectJ docs include native sources (html and word files)
+and XML DocBook files used to produce the FAQ and guides.
+The <a href="dist">dist</a> directory contains the native files
+as they are delivered with the distribution, and the 
+docbook directories 
+ <a href="faq">faq</a>,
+ <a href="progGuideDB">progGuideDB</a>, and
+ <a href="devGuideDB">devGuideDB</a>
+contain sources for the FAQ and the Programming and Development Guides,
+generated using the Ant <a href="build.xml">build.xml</a> script.
+
+<p>
+<u>Build</u>: The script uses a taskdefs defined in ../lib/build/build.jar
+to generate the installers, and others to do misc. text-conversion.
+Dependencies outside this directory:
+<ul>
+<li>.xml files refer to their docbook dtds using relative
+    path, for the moment ../../lib/docbook/...
+    <li>
+<li>When building docbook, uses ../lib/saxon libraries.
+    <li>
+<li>When building installer, using ../lib/build/build.jar
+    and the ../build/installer-resources.
+    <li>
+</ul>
+</body>
+</html>

@@ -1,0 +1,131 @@
+/* *******************************************************************
+ * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Xerox/PARC     initial implementation 
+ * ******************************************************************/
+
+package org.aspectj.ajdt.internal.compiler.batch;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.List;
+
+import org.aspectj.testing.util.TestUtil;
+
+public class WorkingTestMain {
+
+	public static void main(String[] args1) throws IOException {
+		//testExamples();
+		testOne();
+	}
+	
+	public static void testOne() throws IOException {
+		//CommandTestCase.checkCompile("src1/Parents.java", CommandTestCase.NO_ERRORS);
+		
+		//CommandTestCase.checkCompile("../../tests/new/ArgsInCflow2.java", CommandTestCase.NO_ERRORS);
+		
+		//CommandTestCase.checkCompile("src1/ParentsFail.java", CommandTestCase.NO_ERRORS);
+		
+		List args = new ArrayList();
+		args.add("-verbose");
+		
+		args.add("-d");
+		args.add("out");
+		
+		args.add("-classpath");
+		args.add("../runtime/bin;../lib/junit/junit.jar;../testing-client/bin");
+		//args.add("../runtime/bin;../lib/junit/junit.jar");
+		
+//		args.add("-injars");
+//		args.add("testdata/testclasses.jar");
+		
+		//args.add("-aspectpath");
+		//args.add("../bcweaver/testdata/megatrace.jar");
+		
+		//args.add("testdata/src1/AroundA1.java");
+		args.add("../tests/new/StrictFPAdvice.java");
+		//args.add("-Xlint:error");
+		//args.add("testdata/src1/InterType.java");
+		//args.add("@" + examplesDir + "tjp/files.lst");
+		
+		
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+		//CommandTestCase.runCompiler(args, new int[] {11, 14, 18, 32, 43});
+		
+		CommandTestCase.printGenerated("../out", "StrictFPAdvice");
+		CommandTestCase.printGenerated("../out", "A");
+
+		//TestUtil.runMain("out;../bcweaver/testdata/megatrace.jar", "Privileged");
+		TestUtil.runMain("out;../lib/test/testing-client.jar", "StrictFPAdvice");
+	}
+	
+	private static String examplesDir = "c:/aspectj/examples/";
+	private static void example(String[] argfiles, String[] classes) {
+		List args = new ArrayList();
+		args.add("-verbose");
+		
+		args.add("-d");
+		args.add("out");
+		
+		args.add("-classpath");
+		args.add("../runtime/bin");
+		
+		for (int i=0; i < argfiles.length; i++) {
+			args.add("@" + examplesDir + argfiles[i]);
+		}
+		
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+		for (int i=0; i < classes.length; i++) {
+			TestUtil.runMain("out", classes[i]);
+		}		
+	}
+	
+	
+	public static void testExamples() throws IOException {
+//		example(new String[] {"observer/files.lst"}, 
+//				new String[] {"observer.Demo"});
+				
+//		example(new String[] {"tjp/files.lst"}, 
+//				new String[] {"tjp.Demo"});
+				
+		example(new String[] {"telecom/timing.lst"}, 
+				new String[] {"telecom.TimingSimulation"});
+				
+		example(new String[] {"telecom/billing.lst"}, 
+				new String[] {"telecom.BillingSimulation"});
+				
+		example(new String[] {"tracing/tracev1.lst"}, 
+				new String[] {"tracing.version1.TraceMyClasses"});
+				
+		example(new String[] {"tracing/tracev2.lst"}, 
+				new String[] {"tracing.version2.TraceMyClasses"});
+				
+		example(new String[] {"tracing/tracev3.lst"}, 
+				new String[] {"tracing.version3.TraceMyClasses"});
+				
+
+		example(new String[] {"introduction/files.lst"}, 
+				new String[] {"introduction.HashablePoint", "introduction.ComparablePoint"});
+
+
+				
+		
+		example(new String[] {"bean/files.lst"}, 
+				new String[] {"bean.Demo"});
+				
+		example(new String[] {"spacewar/demo.lst"}, 
+				new String[] {});
+				
+		example(new String[] {"spacewar/debug.lst"}, 
+				new String[] {});
+				
+				
+	}
+		
+}

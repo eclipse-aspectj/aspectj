@@ -1,0 +1,342 @@
+/* *******************************************************************
+ * Copyright (c) 1999-2001 Xerox Corporation, 
+ *               2002 Palo Alto Research Center, Incorporated (PARC).
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Xerox/PARC     initial implementation 
+ * ******************************************************************/
+
+
+package org.aspectj.ajde.ui.swing;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Iterator;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import org.aspectj.ajde.Ajde;
+import org.aspectj.ajde.ui.*;
+import org.aspectj.asm.*;
+
+public class BrowserStructureViewToolPanel extends JPanel {
+
+	private StructureView currentView;
+	private StructureViewPanel viewPanel;
+    protected BorderLayout borderLayout1 = new BorderLayout();
+    protected Border border1;
+    protected Border border2;
+    AJButtonMenuCombo granularityCombo;
+    AJButtonMenuCombo filterCombo;
+    AJButtonMenuCombo relationsCombo;
+    JPanel buttons_panel = new JPanel();
+    JPanel spacer_panel = new JPanel();
+    BorderLayout borderLayout2 = new BorderLayout();
+    BorderLayout borderLayout3 = new BorderLayout();
+    JPanel view_panel = new JPanel();
+    JComboBox view_comboBox = null;
+    JLabel view_label = new JLabel();
+    BorderLayout borderLayout4 = new BorderLayout();
+
+	public BrowserStructureViewToolPanel(
+		java.util.List structureViews,
+		StructureView currentView,
+		StructureViewPanel viewPanel) {
+
+		this.currentView = currentView;
+		this.viewPanel = viewPanel;
+		view_comboBox = new JComboBox();
+		view_comboBox.setFont(AjdeWidgetStyles.DEFAULT_LABEL_FONT);
+
+		for (Iterator it = structureViews.iterator(); it.hasNext(); ) {
+			view_comboBox.addItem(it.next());
+		}
+
+		try {
+			jbInit();
+		} catch (Exception e) {
+			Ajde.getDefault().getErrorHandler().handleError("Could not initialize GUI.", e);
+		}
+		initToolBar();
+	}
+
+	private void initToolBar() {
+        try {
+			granularityCombo = new AJButtonMenuCombo(
+				"Visible granularity",
+				"Visible granularity",
+				AjdeUIManager.getDefault().getIconRegistry().getGranularityIcon(),
+				createGranularityMenu(),
+				false);
+
+			filterCombo = new AJButtonMenuCombo(
+				"Filter members",
+				"Filter members",
+				AjdeUIManager.getDefault().getIconRegistry().getFilterIcon(),
+				createFilterMenu(),
+				false);
+
+			relationsCombo = new AJButtonMenuCombo(
+				"Filter associations",
+				"Filter associations",
+				AjdeUIManager.getDefault().getIconRegistry().getRelationsIcon(),
+				createRelationsMenu(),
+				false);
+
+			buttons_panel.add(granularityCombo,  BorderLayout.WEST);
+            buttons_panel.add(filterCombo,  BorderLayout.CENTER);
+            buttons_panel.add(relationsCombo,  BorderLayout.EAST);
+        } catch(Exception e) {
+        	Ajde.getDefault().getErrorHandler().handleError("Could not initialize GUI.", e);
+        }
+	}
+
+	private JPopupMenu createFilterMenu() {
+		JPopupMenu filterMenu = new JPopupMenu();
+		ProgramElementNode.Accessibility[] accessibility = ProgramElementNode.Accessibility.ALL;
+		for (int i = 0; i < accessibility.length; i++) {
+			CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(accessibility[i]);
+			menuItem.setIcon(AjdeUIManager.getDefault().getIconRegistry().getAccessibilitySwingIcon(accessibility[i]));
+			filterMenu.add(menuItem);
+		}
+		filterMenu.add(new JSeparator());
+
+		ProgramElementNode.Kind[] kinds = ProgramElementNode.Kind.ALL;
+		for (int i = 0; i < kinds.length; i++) {
+			if (kinds[i].isMemberKind()) {
+				CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(kinds[i]);
+				menuItem.setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getStructureIcon(kinds[i]).getIconResource());
+				filterMenu.add(menuItem);
+			}
+		}
+		filterMenu.add(new JSeparator());
+
+		ProgramElementNode.Modifiers[] modifiers = ProgramElementNode.Modifiers.ALL;
+		for (int i = 0; i < modifiers.length; i++) {
+			CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(modifiers[i]);
+			filterMenu.add(menuItem);
+		}
+		return filterMenu;
+	}
+
+	private JPopupMenu createRelationsMenu() {
+		JPopupMenu relationsMenu = new JPopupMenu();
+
+		java.util.List relations = Ajde.getDefault().getStructureViewManager().getAvailableRelations();
+		for (Iterator it = relations.iterator(); it.hasNext(); ) {
+			Relation relation = (Relation)it.next();
+			CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(relation);
+			menuItem.setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getRelationIcon(relation).getIconResource());
+			relationsMenu.add(menuItem);
+		}
+
+		return relationsMenu;
+	}
+
+	private JPopupMenu createGranularityMenu() {
+		JPopupMenu orderMenu = new JPopupMenu();
+
+		StructureViewProperties.Granularity[] granularity = StructureViewProperties.Granularity.ALL;
+		ButtonGroup group = new ButtonGroup();
+		for (int i = 0; i < granularity.length; i++) {
+			RadioSelectionMenuButton menuItem = new RadioSelectionMenuButton(granularity[i], group);
+			orderMenu.add(menuItem);
+			if (granularity[i].equals(StructureViewProperties.Granularity.MEMBER)) {
+				menuItem.setSelected(true);
+			}
+		}
+		return orderMenu;
+	}
+
+	private class RadioSelectionMenuButton extends JRadioButtonMenuItem {
+		public RadioSelectionMenuButton(StructureViewProperties.Granularity granularity, ButtonGroup group) {
+			super(granularity.toString());
+			super.setFont(AjdeWidgetStyles.DEFAULT_LABEL_FONT);
+			group.add(this);
+			this.addActionListener(new RadioSelectionMenuActionListener(granularity));
+		}
+	}
+
+	private class RadioSelectionMenuActionListener implements ActionListener {
+		private StructureViewProperties.Granularity granularity;
+
+		public RadioSelectionMenuActionListener(StructureViewProperties.Granularity granularity) {
+			this.granularity = granularity;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			currentView.getViewProperties().setGranularity(granularity);
+			Ajde.getDefault().getStructureViewManager().refreshView(currentView);
+		}
+	}
+
+	private class CheckBoxSelectionMenuButton extends JCheckBoxMenuItem {
+
+		public CheckBoxSelectionMenuButton(String name) {
+			super(name);
+			this.setFont(AjdeWidgetStyles.DEFAULT_LABEL_FONT);
+			this.setBackground(AjdeWidgetStyles.DEFAULT_BACKGROUND_COLOR);
+			//super.setSelected(true);
+		}
+
+		public CheckBoxSelectionMenuButton(ProgramElementNode.Accessibility accessibility) {
+			this(accessibility.toString());
+			this.addActionListener(new CheckBoxSelectionMenuActionListener(accessibility));
+		}
+
+		public CheckBoxSelectionMenuButton(ProgramElementNode.Kind kind) {
+			this(kind.toString());
+			this.addActionListener(new CheckBoxSelectionMenuActionListener(kind));
+		}
+
+		public CheckBoxSelectionMenuButton(ProgramElementNode.Modifiers modifiers) {
+			this(modifiers.toString());
+			this.addActionListener(new CheckBoxSelectionMenuActionListener(modifiers));
+		}
+
+		public CheckBoxSelectionMenuButton(StructureViewProperties.Sorting sorting) {
+			this(sorting.toString());
+			this.addActionListener(new CheckBoxSelectionMenuActionListener(sorting));
+		}
+
+		public CheckBoxSelectionMenuButton(Relation relation) {
+			this(relation.toString());
+			this.addActionListener(new CheckBoxSelectionMenuActionListener(relation));
+		}
+	}
+
+	/**
+	 * Ewwwwww!
+	 */
+	private class CheckBoxSelectionMenuActionListener implements ActionListener {
+		private ProgramElementNode.Accessibility accessibility = null;
+		private ProgramElementNode.Kind kind = null;
+		private ProgramElementNode.Modifiers modifiers = null;
+		private StructureViewProperties.Sorting sorting = null;
+		private Relation relation = null;
+
+		public CheckBoxSelectionMenuActionListener(ProgramElementNode.Accessibility accessibility) {
+			this.accessibility = accessibility;
+		}
+
+		public CheckBoxSelectionMenuActionListener(ProgramElementNode.Kind kind) {
+			this.kind = kind;
+		}
+
+		public CheckBoxSelectionMenuActionListener(ProgramElementNode.Modifiers modifiers) {
+			this.modifiers = modifiers;
+		}
+
+		public CheckBoxSelectionMenuActionListener(StructureViewProperties.Sorting sorting) {
+			this.sorting = sorting;
+		}
+
+		public CheckBoxSelectionMenuActionListener(Relation relation) {
+			this.relation = relation;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			if (!(e.getSource() instanceof CheckBoxSelectionMenuButton)) return;
+			CheckBoxSelectionMenuButton checkMenu = (CheckBoxSelectionMenuButton)e.getSource();
+			if (accessibility != null) {
+				if (checkMenu.isSelected()) {
+					currentView.getViewProperties().addFilteredMemberAccessibility(accessibility);
+				} else {
+					currentView.getViewProperties().removeFilteredMemberAccessibility(accessibility);
+				}
+			} else if (kind != null) {
+				if (checkMenu.isSelected()) {
+					currentView.getViewProperties().addFilteredMemberKind(kind);
+				} else {
+					currentView.getViewProperties().removeFilteredMemberKind(kind);
+				}
+			} else if (modifiers != null) {
+				if (checkMenu.isSelected()) {
+					currentView.getViewProperties().addFilteredMemberModifiers(modifiers);
+				} else {
+					currentView.getViewProperties().removeFilteredMemberModifiers(modifiers);
+				}
+			} else if (sorting != null) {
+				if (checkMenu.isSelected()) {
+					currentView.getViewProperties().setSorting(sorting);
+				} else {
+					currentView.getViewProperties().setSorting(StructureViewProperties.Sorting.DECLARATIONAL);
+				}
+			} else if (relation != null) {
+				if (checkMenu.isSelected()) {
+					currentView.getViewProperties().removeRelation(relation);
+				} else {
+					currentView.getViewProperties().addRelation(relation);
+				}
+			}
+			Ajde.getDefault().getStructureViewManager().refreshView(
+				currentView
+			);
+		}
+	}
+
+//    public void highlightNode(ProgramElementNode node) {
+//        treeManager.navigationAction(node, true, true);
+//    }
+
+    private void order_comboBox_actionPerformed(ActionEvent e) {
+		Ajde.getDefault().getStructureViewManager().refreshView(
+			currentView
+		);
+    }
+
+    private void jbInit() throws Exception {
+        this.setLayout(borderLayout2);
+        buttons_panel.setLayout(borderLayout3);
+        buttons_panel.setMinimumSize(new Dimension(105, 10));
+        buttons_panel.setPreferredSize(new Dimension(105, 10));
+        view_comboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                view_comboBox_actionPerformed(e);
+            }
+        });
+        view_label.setFont(new java.awt.Font("Dialog", 0, 11));
+        view_label.setText("  Global View   ");
+        view_comboBox.setFont(new java.awt.Font("SansSerif", 0, 11));
+        view_comboBox.setPreferredSize(new Dimension(125, 22));
+        view_panel.setLayout(borderLayout4);
+        view_panel.add(view_label, BorderLayout.WEST);
+        this.add(buttons_panel,  BorderLayout.EAST);
+        this.add(spacer_panel,  BorderLayout.CENTER);
+        this.add(view_panel,  BorderLayout.WEST);
+        view_panel.add(view_comboBox, BorderLayout.CENTER);
+
+    }
+
+    private void order_button_actionPerformed(ActionEvent e) {
+
+    }
+
+    private void orderPopup_button_actionPerformed(ActionEvent e) {
+
+    }
+
+    void separator_button_actionPerformed(ActionEvent e) {
+
+    }
+
+    void view_comboBox_actionPerformed(ActionEvent e) {
+    	StructureView view = (StructureView)view_comboBox.getSelectedItem();
+		viewPanel.setCurrentView(view);
+		if (((GlobalStructureView)view).getGlobalViewProperties().getHierarchy()
+			== StructureViewProperties.Hierarchy.DECLARATION) {
+			granularityCombo.setEnabled(true);
+			relationsCombo.setEnabled(true);
+			filterCombo.setEnabled(true);
+		} else {
+			granularityCombo.setEnabled(false);
+			relationsCombo.setEnabled(false);
+			filterCombo.setEnabled(false);
+		}
+    }
+}

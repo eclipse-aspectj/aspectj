@@ -1,0 +1,329 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<LINK rel="STYLESHEET" href="../style.css">
+<!--  type="text/css": Error: no attribute "TYPE" for this element (in 3.2) -->
+<title>AspectJ Documentation and Resources</title>
+</head>
+<body>
+<a name="top"></a>
+<h1>AspectJ Documentation and Resources</h1>
+<p> 
+    AspectJ <sup><small>tm</small></sup>
+    is a seamless aspect-oriented extension to 
+    Java<sup><small>tm</small></sup>.
+    The compiler and development tools are available under 
+    an open-source license, require Java 2 to run, and produce
+    code that runs in JDK 1.1 and later VM's. 
+    For the latest materials, see
+    <a href="@aspectj.home.url@">@aspectj.home.url@</a>,
+    especially the <a href="@aspectj.home.url@/faq">FAQ</a>.
+<p>
+
+<table>
+    <tr><td><u>Section</u></td><td><u>Contents</u></td></tr>
+    <tr><td><a href="#documentation">docs</a></td><td>
+       <a href="faq.html">FAQ</a>, 
+       <a href="quick.pdf">Quick Reference</a>, 
+       <a href="progguide/index.html">programming</a> and 
+       <a href="devguide/index.html">development</a> guides, 
+       <a href="api/overview-summary.html">API</a> and
+       <!-- start strip -->
+       (<a href="../examples/">local</a>) 
+       <!-- end strip -->
+       examples
+    <tr><td><a href="#distributions">distributions</a></td><td>  
+        compiler, AJDE, docs, and Ant taskdefs
+         (<a href="@aspectj.home.url@/dl">binary</a>
+         - <a href="@aspectj.home.url@/sources">source</a>)
+    <tr><td><a href="#resources">resources</a></td><td>
+       <a href="http://aosd.net">aosd.net</a>;
+       <a href="@aspectj.home.url@">aspectj.org</a>
+       bug <a href="@aspectj.home.url@/bugs">db</a> and
+       <a href="mailto:jitterbug@aspectj.org">email</a>,
+       mail <a href="@aspectj.home.url@/lists">lists</a> for
+       <a href="mailto:users@aspectj.org">users</a> and
+       <a href="mailto:support@aspectj.org">support</a>
+    <tr><td><a href="#paths">paths</a> </td><td>for those new to AspectJ
+</table>
+<p>
+
+<a name="documentation"></a>
+<h3>AspectJ documentation</h3>
+<table border="1">
+<tr> <th>Documentation</th><th>Description</th> 
+     </tr>
+
+<tr> <td><a href="quick.pdf"> AspectJ Quick Reference</a>
+       <!-- start strip -->
+         (<a href="@aspectj.home.url@/doc/dist/quick.pdf">web</a>)
+       <!-- end strip -->
+     </td>
+     <td>This is a two-page quick reference for the AspectJ language. 
+     </td> </tr>
+
+
+<tr> <td><a href="progguide/index.html">Programming Guide</a>
+         (printable <a href="progguide.pdf">pdf</a> or <a href="progguide/printable.html">html</a>
+         <!-- start strip -->
+         - <a href="@aspectj.home.url@/doc/dist/progguide/index.html">web</a>
+         <!-- end strip -->
+         )
+     </td>
+     <td>This introduces AOP and the AspectJ language.  
+      <a href="progguide/ch01.html">Getting Started</a>
+     describes basic semantics, and shows development- and production-time applications.
+     <a href="progguide/ch02.html">The AspectJ Language</a>
+     describes join points, pointcuts, advice, and introduction, all features new to AOP. 
+     <a href="progguide/ch03.html">Examples</a> walks you through the 
+     examples included with the documentation, and there are two short
+     chapters on useful <a href="progguide/ch04.html">Idioms</a> and a
+     few <a href="progguide/ch05.html">Pitfalls</a>
+     The appendices have reference information:
+     the <a href="progguide/apa.html">Quick Reference</a>
+     summarizes AspectJ syntax,
+     the <a href="progguide/apb.html">Language Semantics</a>
+     best describes AspectJ usage, and 
+     <a href="progguide/apc.html">Implementation Limitations</a> notes that
+     the current version is limited to code the compiler controls.</td>
+     </tr>
+
+<tr> <td><a href="devguide/index.html">Development Environment Guide</a><br>
+         
+         (printable <a href="devguide/printable.html">html</a>
+       <!-- start strip -->
+         - <a href="@aspectj.home.url@/doc/dist/devguide/index.html">web</a>
+       <!-- end strip -->
+       )
+     </td>
+     <td>Find here a guide to the command-line compiler <u><tt>ajc</tt></u> 
+     and API doc tool <u><tt>ajdoc</tt></u>, as well as
+     the <u>AspectJ Development Environment (AJDE)</u> for managing crosscutting
+     structure in JBuilder, Forte, Emacs, and the stand-alone <tt>ajbrowser</tt>.
+     (For using <tt>ajc</tt> and <tt>ajdoc</tt> in 
+     <a href="http://jakarta.apache.org/ant">Ant</a> builds,
+     see the <code>taskdefs</code> distribution.)
+     </td>
+     </tr>
+
+<tr> <td><a href="api/overview-summary.html">AspectJ API</a> 
+       <!-- start strip -->
+         (<a href="@aspectj.home.url@/doc/dist/api/overview-summary.html">web</a>)
+       <!-- end strip -->
+     </td>
+     <td>API documentation for AspectJ runtime classes. <tt>JoinPoint</tt>
+         shows the state automatically available at each join point.
+     </td> </tr>
+
+<tr> <td><a href="faq.html"> FAQ</a>
+       <!-- start strip -->
+         (<a href="@aspectj.home.url@/doc/dist/faq.html">web</a>)
+       <!-- end strip -->
+     </td>
+     <td>Frequently-asked questions about the AspectJ language, tools, and project.
+     </td> </tr>
+
+<tr> <td><a href="porting.html"> Porting guide</a>
+       <!-- start strip -->
+         (<a href="@aspectj.home.url@/doc/dist/porting.html">web</a>)
+       <!-- end strip -->
+     </td>
+     <td>How users can convert code from pre-1.0 versions 
+     of AspectJ to 1.0.  
+     </td> </tr>
+
+<tr> <td><a href="changes.html"> Changes </a>
+       <!-- start strip -->
+         (<a href="@aspectj.home.url@/doc/dist/changes.html">web</a>)
+       <!-- end strip -->
+     </td>
+     <td>Changes between the latest releases.
+     </td> </tr>
+
+<tr> <td>Examples 
+       <!-- start strip -->
+       (<a href="../examples/">local</a>) 
+       <!-- end strip -->
+     </td>
+     <td>AspectJ code to demonstrate some language features and implement
+     JavaBean properties, the Observer pattern, a tracing library, 
+     and a game application where aspects handle display updating.
+     </td> </tr>
+
+</table>
+
+<a name="distributions"></a>
+<h3>AspectJ distributions</h3>
+<table border="1">
+<tr> <th>Distributions</th><th>Description</th>
+<tr> <td><a href="@aspectj.home.url@/dl">AspectJ</a>
+     </td>
+     <td>The AspectJ distribution contains binaries for the
+         compiler, structure browser, and Ant taskdefs,
+         as well as the documentation and examples.
+         (Source code for AspectJ is available from the CVS
+         repositories for the AspectJ project.)
+         </td>
+     </tr>
+
+<tr> <td><a href="http://eclipse.org/ajdt">AspectJ for Eclipse</a>
+     </td>
+     <td>AspectJ Development Environment support for
+         Eclipse is available under the Common Public License 1.0
+         from the eclipse.org project site
+         <a href="http://eclipse.org/ajdt">
+                  http://eclipse.org/ajdt</a>
+         </td>
+     </tr>
+
+<tr> <td><a href="http://aspectj4emacs.sourceforge.net">
+            AspectJ for Emacs</a>
+     </td>
+     <td>AspectJ Development Environment support for
+         Emacs is available under the GPL
+         from the sourceforge project site
+         <a href="http://aspectj4emacs.sourceforge.net/">
+                  http://aspectj4emacs.sourceforge.net</a>
+         </td>
+     </tr>
+
+<tr> <td><a href="http://aspectj4jbuildr.sourceforge.net">
+            AspectJ for JBuilder</a>
+     </td>
+     <td>AspectJ Development Environment support for
+         JBuilder is available under the Mozilla Public License 1.1
+         from the sourceforge project site
+         <a href="http://aspectj4jbuildr.sourceforge.net/">
+                  http://aspectj4jbuildr.sourceforge.net</a>
+         </td>
+     </tr>
+
+<tr> <td><a href="http://aspectj4netbean.sourceforge.net">
+          AspectJ for Netbeans</a>
+     </td>
+     <td>AspectJ Development Environment support for
+         Netbeans is available under the Mozilla Public License 1.1
+         from the sourceforge project site
+         <a href="http://aspectj4netbean.sourceforge.net/">
+                  http://aspectj4netbean.sourceforge.net</a>
+         </td>
+     </tr>
+
+</table>
+
+<a name="resources"></a>
+<h3>Other AspectJ resources</h3>
+<table border="1">
+<tr> <th>Resources</th><th>Description</th> 
+     </tr>
+<tr> <td>
+         user 
+         <a href="mailto:users@aspectj.org">email</a>
+         <a href="@aspectj.home.url@/lists">list</a>
+     </td>
+     <td>Developers use the 
+         <a href="mailto:users@aspectj.org">users@aspectj.org</a>
+         mail list to discuss tips and
+         best practices for developing with AspectJ. 
+     </td> </tr>
+
+<tr> <td>
+         announce
+         <a href="mailto:announce@aspectj.org">email</a>
+         <a href="@aspectj.home.url@/lists">list</a>
+     </td>
+     <td>
+         <a href="mailto:announce@aspectj.org">announce@aspectj.org</a>
+         has notices about releases and AspectJ team events.
+     </td> </tr>
+
+<tr> <td>
+       <a href="mailto:support@aspectj.org">email</a> us
+     </td>
+     <td>
+         Email <a href="mailto:support@aspectj.org">support@aspectj.org</a>
+         to contact the AspectJ team directly.
+         (As a small team, we cannot reply as fast as 
+         <a href="mailto:users@aspectj.org">users</a>
+         can for usage questions.)
+     </td> </tr>
+
+<tr> <td>Bug 
+         <a href="@aspectj.home.url@/bugs">DB</a>
+         and <a href="mailto:jitterbug@aspectj.org">email</a>
+     </td>
+     <td>Please send AspectJ bugs! (as a small program
+         that reproduces the problem)
+     </td> </tr>
+
+<tr> <td> <a href="http://aosd.net">http://aosd.net</a> - the AOSD web site
+     </td>
+     <td>This site has discussion and announcements related to
+         aspect-oriented software development (AOSD) in general.  
+         Use <a href="mailto:announce@aosd.net">announce@aosd.net</a>
+         to get and publish notices about AOSD
+         workshops, conferences, and technology releases.
+         Use <a href="mailto:announce@aosd.net">discuss@aosd.net</a>
+         for general AOSD discussions.
+     </td> </tr>
+</table>
+
+<p>
+<a name="paths"></a>
+<h3>Suggested paths for those new to AspectJ</h3>
+<p>
+   To learn the AspectJ language, read the 
+    <a href="progguide/index.html">Programming Guide</a>,
+    keeping the <a href="progguide/apb.html">Semantics appendix</a>
+    nearby as the best reference for AspectJ usage.
+    Focus initially on the join point model and
+    pointcuts, concepts AOP adds to OOP.
+    To see how the code works, tour your 
+       <!-- start strip -->
+       <a href="../examples/">local</a>
+       <!-- end strip -->
+    examples as described in the 
+    <a href="progguide/ch03.html">Examples </a> section of the
+    <a href="progguide/index.html">Programming Guide</a>.
+    View and navigate the crosscutting structure using 
+    the <code>ajbrowser</code> structure viewer, as described in
+    the <a href="devguide/rn02re04.html">ajbrowser</a> section of
+    the <a href="devguide/index.html">Development Environment Guide</a>.
+<p>
+    To start using AspectJ with your own code, 
+    modify the example aspects to apply to your classes.
+    The <a href="devguide/index.html">Development Environment Guide</a>
+    shows how to build using the command-line tools. 
+    As you learn,
+    use the compiler's <code>-Xlint</code> flag to catch some common 
+    mistakes.  (Understand that the 
+    <a href="progguide/apc.html">current implementation</a>
+    is limited to code the compiler controls.)
+<p>
+   To plan how to adopt AspectJ into a project, read the 
+    <a href="progguide/index.html">Programming Guide</a>
+   on development- and production-time aspects 
+   and the <a href="faq.html">FAQ</a> entries for 
+   <a href="faq.html#q:startUsingAJ">How should I start using AspectJ?</a>,
+   <a href="faq.html#adoption">Deciding to adopt AspectJ</a>,
+   the Development tools sections
+   (<a href="faq.html#q:integrateWithDevTools">one</a>,
+    <a href="faq.html#devtools">two</a>),
+   <a href="faq.html#q:opensource">AspectJ as open-source</a> and 
+   <a href="faq.html#q:consulting">available support and consulting</a>.
+</p>
+<p>
+   Otherwise, see 
+   the <a href="faq.html">FAQ</a>,
+    <a href="@aspectj.home.url@/lists">view</a>  or
+    <a href="mailto:users@aspectj.org">email</a> the
+   AspectJ users list, and enjoy the language!
+</p>
+<p>
+The AspectJ Team
+</p>
+
+<hr>
+<small>
+<a href="#top">Top</a>
+</small>
+</body> </html>

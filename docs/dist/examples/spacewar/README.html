@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Space War</title>
+</head>
+
+<body BGCOLOR="white">
+
+<P>&copy; Copyright 1997-2001 Xerox Corporation. All rights
+reserved.</P>
+
+<P><B>Last updated</B>: January 10, 2001</P>
+
+<p>&nbsp;</p>
+
+
+
+<h2><a name="5">Exploring the Spacewar Example</a></h2>
+
+<P>The code in this directory is an implementation of the
+classic video game Spacewar.</P>
+
+<P>The Spacewar game is intended to provide a modest-sized example of
+a program that uses aspects.  The code for this example is evolving,
+as we add new features to AspectJ and come up with a better
+understanding of how to use the features.</P>
+
+<P>In order to compile and run this example, make sure to have the latest
+version of AspectJ correctly installed. If you're not sure you do, try the
+helloworld example first by following the instructions in <a href="../doc/primer/default.html">Primer</a>
+section Getting Started.</P>
+
+<h3><a name="5.1">Compiling Spacewar</a></h3>
+
+<ul>
+<li> Change to the <code>examples</code> directory. </li>
+
+<li> Type <code><strong>ajc -argfile spacewar/demo.lst</strong></code> to compile the
+     system.</li>
+</ul>
+
+<h3><a name="5.2">Running Spacewar</a></h3>
+
+<ul>
+<li> In the examples directory, type <code><strong>java spacewar.Game</strong></code></li>
+</ul>
+
+<p>When the game starts up you will see two different displays.  These
+are the two built-in display aspects of the game.  In each you will
+see a single white ship and two red ships.  The white ship is yours
+to control; the red ships are an enemy robots.  Your ship is controlled
+with the four arrow keys to turn, thrust and stop; the spacebar
+fires.  As you play, the game will be displayed in both windows.</p>
+
+<p>You can quit the game with ctl-Q.</p>
+
+<h3><a name="5.3">Exploring the Code</a></h3>
+
+<p>There is one other built-in configurations for the Spacewar game.
+Try it by typing <code><strong>ajc @spacewar\debug.lst</strong></code>.  This
+compiles in an elaborate debugging aspect for the game.
+
+</p>
+
+<p> We recommend you explore the Spacewar source code and look at the
+aspects that it uses.  You will find several of them, of different
+scales and different degrees of cross-cutting.  Remember that these
+represent our evolving understanding of how to use AspectJ to
+implement Spacewar.  If you believe we should be doing something
+differently, then please let us know.
+</p>
+
+
+</body>
+
+</html>

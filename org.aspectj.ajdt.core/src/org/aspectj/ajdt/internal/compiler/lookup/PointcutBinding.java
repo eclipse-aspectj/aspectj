@@ -1,0 +1,36 @@
+/* *******************************************************************
+ * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Xerox/PARC     initial implementation 
+ * ******************************************************************/
+
+
+package org.aspectj.ajdt.internal.compiler.lookup;
+
+import org.eclipse.jdt.internal.compiler.lookup.*;
+
+/**
+ */
+public class PointcutBinding extends Binding {
+
+	/**
+	 * @see org.eclipse.jdt.internal.compiler.lookup.Binding#bindingType()
+	 */
+	public int bindingType() {
+		return 0;
+	}
+
+	/**
+	 * @see org.eclipse.jdt.internal.compiler.lookup.Binding#readableName()
+	 */
+	public char[] readableName() {
+		return null;
+	}
+
+}

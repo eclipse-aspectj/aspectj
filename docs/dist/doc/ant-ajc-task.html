@@ -1,0 +1,389 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+      
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta http-equiv="Content-Language" content="en-us">
+   <title>AjcTask Ant Support for AspectJ 1.1</title>
+</head>
+<body>
+
+<h2>
+<a NAME="ajc"></a>AjcTask Ant Support for AspectJ 1.1</h2>
+
+<h3>
+Description</h3>
+
+This task uses the AspectJ<small><sup>tm</sup></small> 1.1 compiler 
+<code>ajc</code>.
+
+The AspectJ compiler can be used like 
+ <a href="http://jakarta.apache.org/ant/manual/CoreTasks/javac.html">Javac</a>
+to compile Java sources, but it can also compile AspectJ sources or 
+weave binary aspects with Java bytecode.  It can run in normal "batch" mode
+or in an "incremental" mode, where it only recompiles files it has to revisit.
+For more information on <tt>ajc</tt>, see the links from 
+the <a href="index.html">AspectJ docs home</a>.  The main things to remember:
+<ul>
+  <li>In incremental mode, sources may only be specified using source root directories.
+      </li>
+  <li>A .class file may only be woven once.  That means
+      binaries in injars or aspectjpath must have been compiled with jikes or javac
+      or, if using ajc, with noweave.
+      </li>
+</ul>
+This task is named <tt>iajc</tt> now to avoid conflict with the 
+1.0 task <tt>ajc</tt>, but the name may change to <tt>ajc</tt> in
+the future.
+<p>
+See <a href="#compilerMessages">below</a> for 
+an introduction to handling compiler messages programmatically.
+
+<p>
+<h3>
+Parameters</h3>
+
+<h4>Parameters supported by <code>ajc</code></h4>
+
+<table BORDER CELLSPACING=0 CELLPADDING=2 >
+<tr>
+<td VALIGN=TOP><b>Attribute</b></td>
+
+<td VALIGN=TOP><b>Description</b></td>
+
+<td ALIGN=CENTER VALIGN=TOP><b>Required</b></td>
+</tr>
+
+<tr>
+<th colspan="3">Specifying source and destination files</th>
+</tr>
+
+<td VALIGN=TOP>sourceroots</td>
+
+<td VALIGN=TOP>a list of base directories of the source files.  
+All source files (.java and .aj) in the base directories are compiled. 
+    May also be specified as a <a href="nestedElements">nested element</a>.
+</td>
+
+<td ALIGN=CENTER VALIGN=TOP>Yes, in incremental mode.</td>
+</tr>
+
+<tr> 
+<td VALIGN=TOP>outjar</td>
+<td VALIGN=TOP>Path to an output jar to generate with all output classes.</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr> 
+<td VALIGN=TOP>destdir</td>
+<td VALIGN=TOP>Specify where to place the generated class files.</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>classpath</td>
+<td VALIGN=TOP>the classpath required by the source files to compile.
+    May also be specified as a <a href="nestedElements">nested element</a>.
+</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>srcdir</td>
+<td VALIGN=TOP>the nested source base directory to compile,
+    specified as a <a href="nestedElements">nested element</a>.
+</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>aspectpath</td>
+<td VALIGN=TOP>the aspectpath to use -- like classpath, only for
+read-only, binary aspect libraries (only accepts jar/zip files, no directories).
+May also be specified as a <a href="nestedElements">nested element</a>.
+</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>bootclasspath</td>
+<td VALIGN=TOP>location of bootstrap class files.</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>classpathref</td>
+<td VALIGN=TOP>the classpath to use, given as a<a href="http://jakarta.apache.org/ant/manual/using.html#references">
+reference</a> to a PATH defined elsewhere.</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>bootclasspathref</td>
+<td VALIGN=TOP>location of bootstrap class files, given as a <a href="http://jakarta.apache.org/ant/manual/using.html#references">reference</a>
+to a PATH defined elsewhere.</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
+<th colspan="3">Specifying compiler behavior</th>
+</tr>
+
+<tr>
+<td VALIGN=TOP>noweave</td>
+<td VALIGN=TOP>If true, produce binaries for the -injars option (only) --
+defaults to <tt>false</tt>.</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
+  <td VALIGN=TOP>incremental</td>
+  <td VALIGN=TOP>build once, then recompile on demand only required files; 
+  defaults to <tt>false</tt>.
+  By default, files are recompiled based on input passed to stdin
+  (see tagfile)</td>
+  <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr> 
+  <td VALIGN=TOP>tagfile</td>
+  <td VALIGN=TOP>File that controls when incremental builds are done
+      and when the task completes.</td>
+   <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr> 
+  <td VALIGN=TOP>X</td>
+  <td VALIGN=TOP>Set experimental option(s), using comma-separated list
+     of accepted options (unlisted here -- for XLint, use
+     the xlint entries).  Options should not contain the leading X.</td> <!-- XXX list -->
+   <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+
+<tr>
+<th colspan="3">Specifying compiler side-effects and messages</th>
+</tr>
+
+<tr>
+<td VALIGN=TOP>verbose</td>
+<td VALIGN=TOP>whether to emit compiler status messages during the compile;
+defaults to <tt>false</tt>.</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>version</td>
+<td VALIGN=TOP>if true, do not compile - just print AspectJ version;
+defaults to <tt>false</tt>.</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>help</td>
+<td VALIGN=TOP>if true, just print help for the command-line compiler;
+defaults to <tt>false</tt>.</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>Xlintenabled</td>
+<td VALIGN=TOP>same as <tt>xlint:all</tt>, 
+whether to emit language usage messages during the compile;
+defaults to <tt>false</tt>.</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>Xlintfile</td>
+<td VALIGN=TOP>specify property file containing name:level associations
+for any overrides to the default associations for language usage
+messaged emitted during the compile.</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+<!--
+<tr>
+<td VALIGN=TOP>Xlint</td>
+<td VALIGN=TOP>Specify which language usage messages to emit
+during compile, using comma-separated list of entries.
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+-->
+
+<tr>
+  <td VALIGN=TOP>failonerror</td>
+  <td VALIGN=TOP>whether the build continues notwithstanding compile errors; 
+  defaults to <tt>true</tt>.&nbsp;</td>
+  <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr>
+<td VALIGN=TOP>messageholderclass</td>
+<td VALIGN=TOP>Specify a class to use as the message holder for the compile
+process.  The entry must be a fully-qualified name of a class resolveable 
+from the task classpath complying with the <tt>org.aspectj.bridge.IMessageHolder</tt>
+interface and having a public no-argument constructor.</td>
+<td ALIGN=CENTER VALIGN=TOP>No</td>
+</tr>
+
+
+<tr>
+<th colspan="3">Eclipse compiler options</th>
+</tr>
+
+<tr>
+  <td VALIGN=TOP>nowarn</td>
+  <td VALIGN=TOP>same as <tt>warn:none</tt>; 
+  defaults to <tt>false</tt>.&nbsp;</td>
+  <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr>
+  <td VALIGN=TOP>deprecation</td>
+  <td VALIGN=TOP>same as <tt>warn:deprecation</tt>; 
+  defaults to <tt>false</tt>.&nbsp;</td>
+  <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr>
+  <td VALIGN=TOP>warn</td>
+  <td VALIGN=TOP>one or more comma-separated warning specifications: 
+constructorName, 
+packageDefaultMethod, 
+deprecation, 
+maskedCatchBlocks, 
+unusedLocals, 
+unusedArguments, 
+unusedImports, 
+syntheticAccess, or
+assertIdentifier.</td>
+  <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr>
+  <td VALIGN=TOP>debug</td>
+  <td VALIGN=TOP>same as <tt>debug:lines,vars,source</tt></td>
+  <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr>
+  <td VALIGN=TOP>debuglevel</td>
+  <td VALIGN=TOP>comma-separated list lines, vars, or source,
+     indicating to add debugging information for lines, 
+     variables, or source</tt></td> <!-- XXX weak -->
+  <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr>
+  <td VALIGN=TOP>PreserveAllLocals</td>
+  <td VALIGN=TOP>code gen preserve all local variables (for debug purposes); 
+  defaults to <tt>false</tt>.&nbsp;</td>
+  <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr>
+  <td VALIGN=TOP>noimporterror</td>
+  <td VALIGN=TOP>no errors for unresolved imports; 
+  defaults to <tt>false</tt>.&nbsp;</td>
+  <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr>
+  <td VALIGN=TOP>referenceinfo</td>
+  <td VALIGN=TOP>compute reference info; 
+  defaults to <tt>false</tt>.&nbsp;</td>
+  <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr>
+  <td VALIGN=TOP>log</td>
+  <td VALIGN=TOP>File to log compiler messages to.</td>
+  <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr>
+  <td VALIGN=TOP>encoding</td>
+  <td VALIGN=TOP>default source encoding format</td>
+  <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr>
+  <td VALIGN=TOP>proceedonerror</td>
+  <td VALIGN=TOP>keep compiling when error, dumping class files with problem methods; 
+  defaults to <tt>false</tt>.&nbsp;</td>
+  <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr>
+  <td VALIGN=TOP>progress</td>
+  <td VALIGN=TOP>show progress (requires log); 
+  defaults to <tt>false</tt>.&nbsp;</td>
+  <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr>
+  <td VALIGN=TOP>time</td>
+  <td VALIGN=TOP>display speed information; 
+  defaults to <tt>false</tt>.&nbsp;</td>
+  <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr>
+  <td VALIGN=TOP>noexit</td>
+  <td VALIGN=TOP>disable System.exit (kills Ant -- use failonerror); 
+  defaults to <tt>true</tt>.&nbsp;</td>
+  <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr>
+  <td VALIGN=TOP>target</td>
+  <td VALIGN=TOP>Specify target class file format (must be "1.1" or "1.2"); 
+  defaults to 1.1 class file.&nbsp;</td>
+  <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr>
+  <td VALIGN=TOP>compliance</td>
+  <td VALIGN=TOP>Set "1.3" or "1.4" source compliance level 
+  (e.g., no import from default package in 1.4); 
+  defaults to 1.3 compliance level.&nbsp;</td>
+  <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+<tr>
+  <td VALIGN=TOP>source</td>
+  <td VALIGN=TOP>source assertion mode ("1.3" or "1.4"); 
+  default depends on compliance mode.&nbsp;</td>
+  <td ALIGN=CENTER VALIGN=TOP>No</td>
+  </tr>
+
+</table>
+
+<a name="nestedElements"></a>
+<h3>Nested Elements</h3>
+This taskdef should support nested elements as the old one did;
+see <a href="taskdef-ajc10.html#nestedElements">taskdef-ajc10.html#nestedElements</a>.
+
+<a name="compilerMessages"></>
+<h3>Programmatically handling compiler messages</h3>
+
+Users may specify a message holder which is passed all 
+messages generated by the compiler synchronously.  This overrides all of the normal
+message printing, but does not prevent the task from failing if failonerror is true
+and errors or exceptions were encountered.
+
+Handling messages programmatically could be useful 
+when using the compiler to inspect code.
+If aspects consist of declare [error|warning], then
+the compiler can act to detect invariants in the code being processed.  
+For code to compare expected and actual messages, see the AspectJ
+testing module (which is not included in the binary distribution).
+
+
+<hr>
+<center>
+</center>
+
+</body>
+</html>

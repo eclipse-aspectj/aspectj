@@ -1,0 +1,215 @@
+<refentry>
+  <refnamediv>
+    <refname>
+      AspectJ Development Environment (AJDE) support for Forte
+    </refname>
+    <refpurpose>
+      Module extension to Sun's <ulink url="http://www.sun.com/forte/ffj">Forte
+      for Java</ulink> and
+        <ulink url="http://netbeans.org">NetBeans</ulink> IDEs.
+    </refpurpose>
+  </refnamediv>
+
+  <refsect1>
+    <title>Overview</title>
+    <para>
+        For release-specific documentation refer to the <ulink
+        url="http://aspectj.org/doc/dist/changes.html"> changes file</ulink>.
+    </para>
+
+    <para>
+      AJDE for Forte will allow you to:
+        <itemizedlist>
+
+        <listitem><para>compile AspectJ and Java files within the
+        IDE</para></listitem>
+
+        <listitem><para>browse the structure of your AspectJ
+        program</para></listitem>
+
+        <listitem><para>set up a compile configuration that determine which
+        files will be passed to the compiler</para></listitem>
+
+        </itemizedlist>
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>Installation</title>
+      <para>
+
+        <itemizedlist>
+          <listitem><para>use the installer to place the "ajdeForForte.jar" and
+          "aspectjrt.jar" into the modules directory.  This will also install
+          the two html files "LICENCE-AJDEFORTE.html" and
+          "README-AJDEFORTE.html".</para></listitem>
+
+          <listitem><para>start up, and in the "Tools" menu select "Global
+          Options" </para></listitem>
+
+          <listitem><para>right-click the "Modules" item and select "New Module
+          from File..."  </para></listitem>
+
+          <listitem><para>find the ajdeForForte.jar in the directory that you
+          installed into (e.g.  c:/forte4j/modules) and select it
+          </para></listitem>
+        </itemizedlist>
+
+      </para>
+      <para>
+         To uninstall follow Forte's documentation on un-installing modules, or
+         simply remove the file modules/aspectjForForte.jar from Forte's
+         install directory.
+      </para>
+  </refsect1>
+
+  <refsect1>
+    <title>Running AJDE for Forte</title>
+      <para>
+        <emphasis role="strong">3.1 Setting up the AspectJ Examples (in
+        NetBeans 3.3.1)</emphasis>
+
+    <imageobject>
+       <imagedata fileref="netbeans-building.gif"/>
+    </imageobject>
+
+        <itemizedlist>
+
+          <listitem><para>in the "Project" menu select "Project Manager"
+          </para></listitem>
+
+          <listitem><para>Click "New..." and enter "AspectJ Examples" as the
+          projects' name and click "OK".  </para></listitem>
+
+          <listitem><para>In the "Filesystems" Explorer tab right click
+          "Filesystems", then select "Mount -&gt; Local Directory".
+          </para></listitem>
+
+          <listitem><para>browse into the AspectJ install directory (e.g.
+          "C:/apps/aspectj1.0") </para></listitem>
+
+          <listitem><para>select "examples" and click "Finish"
+          </para></listitem>
+
+
+          <listitem><para>In the "Tools" menu select "AspectJ -&gt; Start AJDE"
+          or just click on the "AJDE"
+          (<inlinemediaobject>
+            <imageobject>
+             <imagedata fileref="startAjde.gif"/>
+            </imageobject>
+           </inlinemediaobject>)
+           button (shown as label 1 of the screenshot).  	  
+          </para></listitem>
+
+        </itemizedlist>
+      </para>
+      <para>
+        <emphasis role="strong">3.2 Compiling the Spacewar Example</emphasis>
+
+        <itemizedlist>
+
+	  <listitem><para>After AJDE is started, a new "AspectJ" tab is added
+	  to the explorer window.  Click it.  The next thing to do is to choose
+	  a particular build, since there are many in the examples
+	  distribution.  To the right of the "Build" button
+                         (<inlinemediaobject>
+                            <imageobject>
+                              <imagedata fileref="build.gif"/>
+                            </imageobject>
+                          </inlinemediaobject>)
+          there is a downward arrow.  Click it, and select "spacewar/demo.lst"
+          (as in label 2 of the screenshot).  This will start a build of the
+          demo configuration of spacewar.  Clicking the "Build" button will
+          rebuild.  </para></listitem>
+
+          <listitem><para>When the compile is finished and the "AspectJ
+          Explorer" structure is present navigate the structure by clicking
+          nodes (as shown in label 3 of the screenshot).  Note that
+          associations between nodes appear with UML-style arrow icons and
+          italicized names and reperesent how a particular node in the
+          structure relates to others.  In order to navigate these associations
+          expand the notes and click the corresponding links (in blue).  These
+          links represent structure nodes elsewhere in the tree.
+          </para></listitem>
+
+          <listitem><para>If there are compilation errors, clickable messages
+          will appear (as in label 4 of the screenshot). 
+          </para></listitem>
+
+        </itemizedlist>
+
+      </para>
+      <para>
+
+        <emphasis role="strong">3.3 Running the Spacewar Example</emphasis>
+        <itemizedlist>
+          <listitem><para>
+                  In the "Filesystems" Explorer tab open the "spacewar"
+                  directory, right click "spacewar/Game.java", and the select
+                  "Execute".
+          </para></listitem>
+
+          <listitem><para>When finished executing switch back to the "Editing"
+          mode.</para></listitem>
+
+          <listitem><para>Select and build the "debug.lst" configuration as
+          described in 3.2 and execute again--you will notice that the debug
+          configuration adds a debug window used for tracing by including the
+          "Debug.java" aspect in the compile.</para></listitem>
+        </itemizedlist>
+
+      </para>
+
+        <emphasis role="strong">3.4 Debugging the Spacewar Example</emphasis>
+
+        <itemizedlist>
+                <listitem><para>
+                        You must first add the filesystem to the project so
+                        that the debugger can see the main class.  Do this in
+                        the "Project AspectJ Examples" tab in the explorer by
+                        right clicking the root node and selecting "Add
+                        Existing...".
+                </para></listitem>
+
+        <listitem><para>You may now need to add the AspectJ Runtime to the
+        project so that the debugger can see it.  In the same way as described
+        in 3.1 select "Mount -&gt; Archive (JAR, Zip)".  </para></listitem>
+
+          <listitem><para>Browse to the your lib/ext/aspectjrt.jar file within
+          your NetBeans install directory and click "Finish".</para></listitem>
+
+                <listitem><para>
+                        Select "Project -&gt; Set Project Main Class..." in the
+                        menu bar, browse to "spacewar/Game.java" in the
+                        examples directory that you created and click "OK".
+                </para></listitem>
+
+                <listitem><para>
+                        In the "Filesystems" Explorer tab open the "spacewar"
+                        directory, click "Game.java", and the select "Debug
+                        -&gt; Strat" from the menu bar.
+                </para></listitem>
+        </itemizedlist>
+
+	<para>
+	  AspectJ-related options can be modified in the AJDE settings window.
+	  </para>
+    <imageobject>
+       <imagedata fileref="netbeans-buildOptions.gif"/>
+    </imageobject>
+    
+
+
+
+
+
+  </refsect1>
+</refentry>
+
+<!-- Local variables: -->
+<!-- fill-column: 79 -->
+<!-- compile-command: "ant -quiet dev-html" -->
+<!-- sgml-local-ecat-files: devguide.ced -->
+<!-- sgml-parent-document:("devguide.sgml" "book" "refentry") -->
+<!-- End: -->

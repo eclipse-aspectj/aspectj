@@ -1,0 +1,133 @@
+public class DynamicHelloWorld extends java.lang.Object implements java.io.Serializable:
+  public void <init>():
+                    ALOAD_0     // DynamicHelloWorld this   (line 8)
+                    INVOKESPECIAL java.lang.Object.<init> ()V
+    constructor-execution(void DynamicHelloWorld.<init>())
+    |               RETURN
+    constructor-execution(void DynamicHelloWorld.<init>())
+  end public void <init>()
+
+  public static void main(String[]):
+    method-execution(void DynamicHelloWorld.main(java.lang.String[]))
+    | catch java.lang.UnsupportedOperationException -> E0
+    | |             NEW DynamicHelloWorld   (line 12)
+    | |             DUP
+    | | constructor-call(void DynamicHelloWorld.<init>())
+    | | |           INVOKESPECIAL DynamicHelloWorld.<init> ()V
+    | | constructor-call(void DynamicHelloWorld.<init>())
+    | |             LDC "hello"
+    | | field-get(java.util.List java.util.Collections.EMPTY_LIST)
+    | | |           GETSTATIC java.util.Collections.EMPTY_LIST Ljava/util/List;
+    | | field-get(java.util.List java.util.Collections.EMPTY_LIST)
+    | | method-call(java.lang.String DynamicHelloWorld.doit(java.lang.String, java.util.List))
+    | | |           INVOKEVIRTUAL DynamicHelloWorld.doit (Ljava/lang/String;Ljava/util/List;)Ljava/lang/String;
+    | | method-call(java.lang.String DynamicHelloWorld.doit(java.lang.String, java.util.List))
+    | |             POP
+    | |             GOTO L0
+    | catch java.lang.UnsupportedOperationException -> E0
+    |           E0: ASTORE_1   (line 13)
+    | field-get(java.io.PrintStream java.lang.System.out)
+    | |             GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 14)
+    | field-get(java.io.PrintStream java.lang.System.out)
+    |               NEW java.lang.StringBuffer
+    |               DUP
+    |               LDC "expected and caught: "
+    | constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
+    | |             INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
+    | constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
+    |               ALOAD_1     // java.lang.UnsupportedOperationException t
+    | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))
+    | |             INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/Object;)Ljava/lang/StringBuffer;
+    | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))
+    | method-call(java.lang.String java.lang.StringBuffer.toString())
+    | |             INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;
+    | method-call(java.lang.String java.lang.StringBuffer.toString())
+    | method-call(void java.io.PrintStream.println(java.lang.String))
+    | |             INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+    | method-call(void java.io.PrintStream.println(java.lang.String))
+    |               RETURN   (line 15)
+    |           L0: NEW java.lang.RuntimeException   (line 17)
+    |               DUP
+    |               LDC "should have caught exception"
+    | constructor-call(void java.lang.RuntimeException.<init>(java.lang.String))
+    | |             INVOKESPECIAL java.lang.RuntimeException.<init> (Ljava/lang/String;)V
+    | constructor-call(void java.lang.RuntimeException.<init>(java.lang.String))
+    |               ATHROW
+    method-execution(void DynamicHelloWorld.main(java.lang.String[]))
+  end public static void main(String[])
+
+  String doit(String, java.util.List):
+    method-execution(java.lang.String DynamicHelloWorld.doit(java.lang.String, java.util.List))
+    |               ALOAD_2     // java.util.List l   (line 21)
+    |               ALOAD_1     // java.lang.String arg0
+    |               ASTORE_3
+    |               ASTORE 4
+    | method-call(boolean java.util.List.add(java.lang.Object))
+    | |             ALOAD 4
+    | |             INSTANCEOF java.util.ArrayList
+    | |             IFEQ L0
+    | |             ALOAD 4
+    | |             CHECKCAST java.util.ArrayList
+    | |             BIPUSH 2
+    | |             ANEWARRAY java.lang.Object
+    | |             ASTORE 5
+    | |             ALOAD 5
+    | |             BIPUSH 0
+    | |             ALOAD 4
+    | |             AASTORE
+    | |             ALOAD 5
+    | |             BIPUSH 1
+    | |             ALOAD_3
+    | |             AASTORE
+    | |             NEW DynamicHelloWorld$AjcClosure1
+    | |             DUP
+    | |             ALOAD 5
+    | |             INVOKESPECIAL DynamicHelloWorld$AjcClosure1.<init> ([Ljava/lang/Object;)V
+    | |             INVOKESTATIC Aspect.ajc_around0 (Ljava/util/ArrayList;Lorg/aspectj/runtime/internal/AroundClosure;)Z
+    | |             GOTO L1
+    | |         L0: ALOAD 4
+    | |             ALOAD_3
+    | |             INVOKESTATIC DynamicHelloWorld.add_aroundBody0 (Ljava/util/List;Ljava/lang/Object;)Z
+    | |         L1: NOP
+    | method-call(boolean java.util.List.add(java.lang.Object))
+    |               POP
+    |               ALOAD_2     // java.util.List l   (line 22)
+    | method-call(java.lang.String java.lang.Object.toString())
+    | |             INVOKEVIRTUAL java.lang.Object.toString ()Ljava/lang/String;
+    | method-call(java.lang.String java.lang.Object.toString())
+    |               ARETURN
+    method-execution(java.lang.String DynamicHelloWorld.doit(java.lang.String, java.util.List))
+  end String doit(String, java.util.List)
+
+  static final boolean add_aroundBody0(java.util.List, Object):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKEINTERFACE java.util.List.add (Ljava/lang/Object;)Z   (line 21)
+                    IRETURN
+  end static final boolean add_aroundBody0(java.util.List, Object)
+end public class DynamicHelloWorld
+
+public class DynamicHelloWorld$AjcClosure1 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_1
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST java.util.List
+                    ALOAD_2
+                    BIPUSH 1
+                    AALOAD
+                    INVOKESTATIC DynamicHelloWorld.add_aroundBody0 (Ljava/util/List;Ljava/lang/Object;)Z
+                    INVOKESTATIC org.aspectj.runtime.internal.Conversions.booleanObject (Z)Ljava/lang/Object;
+                    ARETURN
+  end public Object run(Object[])
+end public class DynamicHelloWorld$AjcClosure1

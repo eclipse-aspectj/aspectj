@@ -1,0 +1,23 @@
+<refentry>
+  <refnamediv>
+    <refname>Ant Support</refname>
+    <refpurpose>Support of Ant</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+        <cmdsynopsis>
+          <command>ant </command>
+        </cmdsynopsis>
+      </refsynopsisdiv>
+
+  <refsect1>
+    <title>Description</title>
+    <para></para>
+  </refsect1>
+</refentry>
+
+<!-- Local variables: -->
+<!-- fill-column: 79 -->
+<!-- sgml-local-ecat-files: devguide.ced -->
+<!-- sgml-parent-document:("devguide.sgml" "book" "refentry") -->
+<!-- End: -->

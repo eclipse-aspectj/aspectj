@@ -1,0 +1,312 @@
+<refentry>
+  <refnamediv>
+    <refname>ajdb</refname>
+    <refpurpose>debugger for .class files produced by ajc (early-access)</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>ajdb</command>
+      <arg>-classpath <replaceable>path</replaceable></arg>
+      <arg>-D<replaceable>name</replaceable>=<replaceable>value</replaceable></arg>
+      <arg>-help</arg>
+      <arg>-gui</arg>
+      <arg>-read <replaceable>file</replaceable></arg>
+      <arg>-sourcepath <replaceable>dir</replaceable></arg>
+      <arg>
+        <group>
+  	<arg>-v</arg>
+  	<arg>-verbose</arg>
+  	<group>
+  	  <arg>:class</arg>
+  	  <arg>:gc</arg>
+  	  <arg>:jni</arg>
+  	</group>
+        </group>
+      </arg>
+      <arg>workingdir <replaceable>dir</replaceable></arg>
+      <arg>-X<replaceable>option</replaceable></arg>
+      <arg><replaceable>class</replaceable></arg>
+      <arg><replaceable>arguments</replaceable>
+      </arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>Description</title>
+
+    <para>The command <command>ajdb</command> is used to debug AspectJ and
+      Java programs. In addition to its command line interface,
+      <command>adjb</command> also has a standalone, Swing-based GUI
+      interface.
+    </para>
+    <para>
+      Note: As of the 1.0.3 release, AspectJ supports JSR-45, which provides
+      source-level debugging from many source files per class
+      and non-Java source files. 
+      JSR-45 is implemented in the J2SE 1.4 debugger support, so 
+      you may be able to use your existing debugger to step through
+      AspectJ source code if both the source and target VM's are
+      running under Java 1.4 or later.  
+      However, existing debuggers will display synthetic methods
+      in the stack frame.
+    </para> <!-- todo find docs on JSR-45 -->
+
+    <simplelist>
+      <member>-classpath <emphasis>path</emphasis></member>
+      <member>Specify where to find user class files.</member>
+
+      <member>
+        -D<replaceable>name</replaceable>=<replaceable>value</replaceable>
+      </member>
+      <member>Define the property <literal>name</literal> to have the value
+        <literal>value</literal>.</member>
+
+      <member>-help</member>
+      <member>Print out <command>ajdb</command>'s usage summary.</member>
+
+      <member>-read <emphasis>file</emphasis></member>
+      <member>Read this file for initializatoin commands.</member>
+
+      <member>-sourcepath <emphasis>path</emphasis></member>
+      <member>Search this directory for source files.</member>
+
+      <member>-gui</member>
+      <member></member>
+
+      <member>-v | -verbose [:class | :gc | :jni]</member>
+      <member>Print out class loading, garbage collection or dynamic library
+        loading information. Defaults to class loading.
+      </member>
+
+      <member>-workingdir <emphasis>directory</emphasis></member>
+      <member>Set <command>ajdb</command>'s working directory.</member>
+
+      <member>-X<emphasis>option</emphasis></member>
+      <member>Pass a non-standard option to the VM</member>
+    </simplelist>
+
+    <refsect2>
+      <title>Capabilities</title>
+      <para>
+        The AspectJ debugger implements all of <command>jdb</command>'s
+        commands. In addition, the command <literal>workingdir</literal>
+        allow you to set the AspectJ working directory, and the breakpoint
+        command, <literal>stop on</literal>, has been extended to allow the
+        setting of breakpoint on a source file line.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>Examples</title>
+
+      <example id="ajdbcommandline">
+        <title>Command line use</title>
+
+        <para>Suppose you want to debug the file spacewar/Ship.java found in
+  	the examples directory.  At the command line start up the debugger:
+
+  	<computeroutput>
+  	  ajdb
+  	</computeroutput>
+        </para>
+
+
+        <para>
+  	The debugger will first look for initialization files in your
+  	home or current directory called either
+  	<filename>ajdb.ini</filename> or <filename>.ajdbrc</filename> and
+  	execute the commands contained in them. A useful command to have
+  	in this file is the <literal>source-path</literal> command which
+  	tells the debugger where to find source files.
+        </para>
+
+        <para>For this example, we need to set the source path by:
+
+  	<userinput>
+  	  use C:\src
+  	</userinput>
+        </para>
+
+        <para>To view the file to debug, type <userinput>list
+  	  spacewar/Ship.java</userinput> which generates the following
+  	output:
+  	<programlisting>
+  	  209 void fire() {
+  	  210     // firing a shot takes energy
+  	  211     if (!expendEnergy(BULLET_ENERGY))
+  	  212     return;
+  	  213
+  	  214     //create a bullet object so it doesn't hit the ship that's firing it
+  	  215     double xV = getXVel() + BULLET_SPEED * (Math.cos(orientation));
+  	  216     double yV = getYVel() + BULLET_SPEED * (Math.sin(orientation));
+  	  217
+  	  218     // create the actual bullet
+  	  219     new Bullet(
+  	  220         getGame(),
+  	  221         (getXPos() + ((getSize()/2 + 2) * (Math.cos(orientation))) + xV),
+  	  222         (getYPos() + ((getSize()/2 + 2) * (Math.sin(orientation))) + yV),
+  	  223         xV,
+  	  224         yV);
+  	  225 }
+  	</programlisting>
+        </para>
+        <para>This is different from <command>jdb</command> because it allows
+  	one to view files before the debugger has started.  The
+  	<literal>list</literal>  command has the following syntax: </para>
+
+        <simplelist>
+  	<member><literal>list</literal></member>
+  	<member>list the source containing the location at which we are
+  	  currently stopped (can only be used with a running VM)</member>
+
+  	<member><literal>list</literal>
+  	  <emphasis><literal>source</literal></emphasis></member>
+  	<member>list the entire file source</member>
+
+  	<member><literal>list</literal> source line</member>
+  	<member>list source line line of file source</member>
+
+  	<member>
+  	  list <emphasis><literal>source start-line
+  	      end-line</literal></emphasis>
+  	</member>
+  	<member>
+  	  list the lines from <emphasis>start-line</emphasis> to
+  	  <emphasis>end-line</emphasis> of file
+  	  <emphasis>source</emphasis>
+  	</member>
+        </simplelist>
+
+        <para>
+  	To set a breakpoint in the method <literal>Ship.fire</literal>, we
+  	would could type <userinput>stop in spacewar.Ship.fire</userinput>.
+        </para>
+
+        <para>The following message appears notifying the user that the
+  	breakpoint has been noted but will not be set until the class has
+  	been loaded by the VM: </para>
+        <programlisting>
+  	Deferring breakpoint spacewar.Ship.fire()
+  	It will be set after the class is loaded.
+        </programlisting>
+
+        <para>
+  	To start Spacewar we type <userinput>run spacewar.Game</userinput>.
+        </para>
+
+        <para>
+  	When the breakpoint is set, the following message appears:
+  	<programlisting>
+  	  Set deferred breakpoint spacewar.Ship.fire()
+  	</programlisting>
+        </para>
+
+        <para> We are notified that we've hit the breakpoint:
+
+  	<programlisting>
+  	  Breakpoint hit: thread="Thread-2", spacewar.Ship.fire(), line=174, bci=0 209 void fire() {
+  	</programlisting></para>
+
+        <para>
+  	The prompt changes to present the thread that has broken, and we
+  	can view the current stack with the <literal>where</literal>
+  	command, as follows:
+  	<programlisting>
+  	  Thread-2[1] where
+  	  [1] fire (spacewar\Ship.java:209)
+  	  [2] run (spacewar\Robot.java:100)
+  	  [3] run [class java.lang.Thread]
+  	</programlisting>
+        </para>
+
+        <para>
+  	Next, to stop on line 216 we
+  	type <userinput>stop on spacewar/Ship.java:216</userinput>
+        </para>
+
+        <para>
+  	The following message tells us the breakpoint was set:
+  	<programlisting>
+  	  Set breakpoint Ship.java:216
+  	</programlisting>
+        </para>
+        <para>
+  	To continue execution, we type <userinput>cont</userinput> and the
+  	breakpoint at line 216 is hit
+  	<programlisting>
+  	  Breakpoint hit: thread="Thread-2", spacewar.Ship.fire(), line=216, bci=28
+  	  216 double yV = getYVel() + BULLET_SPEED * (Math.sin(orientation));
+  	</programlisting></para>
+
+        <para>
+  	To view the visible local variables, we type
+  	<userinput>locals</userinput> and ajdb responds with:
+  	<programlisting>
+  	  Local variables
+  	  xV = 12.242462584304468
+  	</programlisting></para>
+
+        <para>
+  	To change the value of the local variable i to 15, we type
+  	<userinput>set xV = 16.1</userinput>
+
+  	<programlisting>
+  	  Changed 'xV' from '12.242462584304468' to '16.1'
+  	</programlisting></para>
+
+        <para>
+  	To see our changes we can print the value of <literal>i</literal>
+  	by the following:
+  	<programlisting>
+  	  print xV
+  	  Value for printing 'xV' = 12.242462584304468
+  	</programlisting></para>
+
+        <para>We can now type exit or quit to leave the debugger, and we
+  	receive the following message:
+
+  	<programlisting>
+  	  The application has exited.
+  	</programlisting></para>
+      </example>
+
+    </refsect2>
+
+    <refsect2>
+      <title>The AspectJ debugger API</title>
+
+      <para>
+        The AspectJ debugger is implemented completely in Java and can be
+        called as a Java class.  The only interface that should be
+        considered public is the method
+        <literal>org.aspectj.tools.debugger.Main.main(String[]
+  	args)</literal> where <literal>args</literal> are the standard
+        <command>ajc</command> command line arguments. This means that an
+        alternative way to run the compiler is </para>
+
+      <cmdsynopsis>
+        <command>
+  	<literal>java org.aspectj.tools.debugger.Main</literal>
+        </command>
+        <arg><replaceable>option</replaceable></arg>
+        <arg><replaceable>class</replaceable></arg>
+        <arg><replaceable>arguments</replaceable></arg>
+      </cmdsynopsis>
+
+<!--        <note> -->
+        <para>
+  	You must additionally include <filename>tools.jar</filename> from
+  	your Java developer's kit in your classpath.
+        </para>
+<!--        </note> -->
+
+    </refsect2>
+  </refsect1>
+</refentry>
+
+<!-- Local variables: -->
+<!-- fill-column: 79 -->
+<!-- sgml-local-ecat-files: devguide.ced -->
+<!-- sgml-parent-document:("devguide.sgml" "book" "refentry") -->
+<!-- End: -->

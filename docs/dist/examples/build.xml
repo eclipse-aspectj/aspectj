@@ -1,0 +1,282 @@
+
+<!-- ========================================================================= -->
+<!-- Copyright (c) 1999-2001 Xerox Corporation,                                -->    
+<!--               2002 Palo Alto Research Center, Incorporated (PARC).        -->
+<!-- All rights reserved.                                -->
+<!-- This program and the accompanying materials are made available            -->
+<!-- under the terms of the Common Public License v1.0                         -->
+<!-- which accompanies this distribution and is available at                   -->
+<!-- http://www.eclipse.org/legal/cpl-v10.html                                 -->
+<!--                                                                           -->
+<!-- Contributors:                                                             -->
+<!--     Xerox/PARC     initial implementation                                 -->
+<!-- ========================================================================= -->
+
+<project name="aspectj-examples" default="spacewar" basedir=".">
+
+    <target name="info" >
+      <echo>
+  This script builds the AspectJ examples.  
+
+  Relevant targets:
+     spacewar        build and run spacewar with debugging (default)
+     all             build and run each example
+     {example}       build and run any {example} 
+                     (use -projecthelp to list {example} names)
+
+  Setup:
+     - Run from the examples directory.
+     - Put aspectj-ant.jar in ../lib with aspectjtools.jar and aspectjrt.jar
+
+  Variants:
+     - To avoid running (i.e., compile only), define variable "norun"
+     - To define a variable, use the Ant -D option - e.g., on Windows:
+  
+         ant -f build.xml -DJAVA_HOME=c:\jdk1.3.1 -Dnorun=skip
+
+      </echo>
+    </target>
+
+    <!-- ============================================================= -->
+    <!-- setup and cleanup targets                                     -->
+    <!-- ============================================================= -->
+
+    <target name="clean" depends="init"
+     description="clean and create classes dir">
+      <delete quiet="on" dir="${classes.dir}"/>
+      <delete quiet="on">
+        <fileset dir="${example.dir}" includes="**/*.ajesym"/>
+      </delete>
+      <mkdir dir="${classes.dir}"/>
+    </target>
+
+    <target name="init"  depends="init.variables,init.taskdefs"/>
+
+    <target name="init.variables" 
+     description="init variables">
+
+      <!-- required directories - run from examples or predefine -->
+      <property name="example.dir"
+            location="${basedir}"/> 
+      <property name="aspectj.lib.dir"
+            location="${basedir}/../lib"/> 
+
+      <!-- required libraries - install or predefine -->
+      <property name="aspectj-ant.jar"
+            location="${aspectj.lib.dir}/aspectj-ant.jar"/> 
+      <property name="aspectjrt.jar"
+            location="${aspectj.lib.dir}/aspectjrt.jar"/> 
+      <property name="aspectjtools.jar"
+            location="${aspectj.lib.dir}/aspectjtools.jar"/> 
+
+      <!-- created directories (fyi workingdir unused) -->
+      <property name="classes.dir"
+            location="${example.dir}/classes"/> 
+      <property name="working.dir"
+            location="${example.dir}/ajworkingdir"/> 
+
+      <!-- checking required libraries -->
+      <available file="${aspectjtools.jar}"
+             property="aspectjtools.jar.available"/>
+      <available file="${aspectjrt.jar}"
+             property="aspectjrt.jar.available"/>
+      <available file="${aspectj-ant.jar}"
+             property="aspectj-ant.jar.available"/>
+
+      <property name="example.packages"
+               value="bean, coordination, evolution, figures, figures.gui,
+                      helloworld, icount, icount.lib, introduction,
+                      observer, shadow, shadow.version1, shadow.version2,
+                      spacewar, telecom, telecom.version1, timeserver, tjp,
+                      tracing, tracing.lib tracing.version1, tracing.version2,
+                      tracing.version3"/>
+    </target>
+
+    <target name="init.taskdefs" depends="init.variables, 
+         aspectjtools.jar.available,
+         aspectjrt.jar.available,
+         aspectj-ant.jar.available">
+      
+      <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+          <classpath> 
+            <pathelement path="${aspectjtools.jar}"/> 
+            <pathelement path="${aspectj-ant.jar}"/> 
+          </classpath>
+      </taskdef>
+    </target>
+
+    <!-- targets to fail unless required libraries available -->
+
+    <target name="aspectjrt.jar.available" depends="init.variables" 
+          unless="aspectjrt.jar.available" >
+      <fail message="expecting aspectjrt.jar at ${aspectjrt.jar}"/>
+    </target>
+
+    <target name="aspectjtools.jar.available" depends="init.variables" 
+          unless="aspectjtools.jar.available" >
+      <fail message="expecting aspectjtools.jar at ${aspectjtools.jar}"/>
+    </target>
+
+    <target name="aspectj-ant.jar.available" depends="init.variables" 
+          unless="aspectj-ant.jar.available" >
+      <fail message="expecting aspectj-ant.jar at ${aspectj-ant.jar}"/>
+    </target>
+
+    <!-- ============================================================= -->
+    <!-- these targets compile and run any example                     -->
+    <!-- ============================================================= -->
+    <target name="Ajx" depends="init"
+     description="compile {list} and run {class} of example">
+       <echo message="##### Ajx list=${list} class=${class}" />
+       <antcall target="clean" />
+
+       <ajc destdir="${classes.dir}" emacssym="on" argfile="${list}" 
+          classpath="${aspectjrt.jar}"/>
+
+       <antcall target="Ajx-run" >
+         <param name="class" value="${class}"/>
+       </antcall>
+
+    </target>
+
+    <target name="Ajx-run" 
+     description="run {class} unless {norun} is set" 
+          unless="norun" >
+       <echo message="##### Ajx-run list=${list} class=${class}" />
+       <java classname="${class}" fork="yes">
+          <classpath>
+           <pathelement path="${classes.dir}"/>
+           <pathelement path="${aspectjrt.jar}"/>
+          </classpath>
+       </java>
+    </target>
+
+    <!-- ============================================================= -->
+    <!-- example targets                                               -->
+    <!-- ============================================================= -->
+    <target name="all" 
+     description="build and run all examples"
+         depends="bean,intro,intro-clone,intro-compare,intro-hash,
+                  observer,spacewar,spacewar-demo,telecom,
+                  telecom-timing,tracing-none,tracing-1,
+                  tracing-2,tracing-3,tjp"/>
+
+    <target name="nonGui" 
+     description="build and run non-GUI examples"
+         depends="bean,intro,intro-clone,intro-compare,intro-hash,
+                  telecom,telecom-timing,tracing-none,tracing-1,
+                  tracing-2,tracing-3,tjp"/>
+
+    <target name="bean">
+      <antcall target="Ajx">
+        <param name="list"    value="bean/files.lst"/>
+        <param name="class"   value="bean.Demo"/>
+      </antcall>
+    </target>
+
+    <target name="intro">
+      <antcall target="Ajx">
+        <param name="list"    value="introduction/files.lst"/>
+        <param name="class" value="introduction.Point"/>
+      </antcall>
+    </target>
+
+    <target name="intro-clone">
+      <antcall target="Ajx">
+        <param name="list"    value="introduction/files.lst"/>
+        <param name="class"   value="introduction.CloneablePoint"/>
+      </antcall>
+    </target>
+
+    <target name="intro-compare">
+      <antcall target="Ajx">
+        <param name="list"    value="introduction/files.lst"/>
+        <param name="class"   value="introduction.ComparablePoint"/>
+      </antcall>
+    </target>
+
+    <target name="intro-hash">
+      <antcall target="Ajx">
+        <param name="list"    value="introduction/files.lst"/>
+        <param name="class"   value="introduction.HashablePoint"/>
+      </antcall>
+    </target>
+
+    <target name="observer">
+      <antcall target="Ajx">
+        <param name="list"    value="observer/files.lst"/>
+        <param name="class"   value="observer.Demo"/>
+      </antcall>
+    </target>
+
+    <target name="spacewar">
+      <antcall target="Ajx">
+        <param name="list"    value="spacewar/debug.lst"/>
+        <param name="class"   value="spacewar.Game"/>
+      </antcall>
+    </target>
+
+    <target name="spacewar-demo">
+      <antcall target="Ajx">
+        <param name="list"    value="spacewar/demo.lst"/>
+        <param name="class"   value="spaceware.Game"/>
+      </antcall>
+    </target>
+
+    <target name="telecom">
+      <antcall target="Ajx">
+        <param name="list"    value="telecom/basic.lst"/>
+        <param name="class"   value="telecom.BasicSimulation"/>
+      </antcall>
+    </target>
+
+    <target name="telecom-billing">
+      <antcall target="Ajx">
+        <param name="list"    value="telecom/billing.lst"/>
+        <param name="class"   value="telecom.BillingSimulation"/>
+      </antcall>
+    </target>
+
+    <target name="telecom-timing">
+      <antcall target="Ajx">
+        <param name="list"    value="telecom/timing.lst"/>
+        <param name="class"   value="telecom.TimingSimulation"/>
+      </antcall>
+    </target>
+
+    <target name="tjp">
+      <antcall target="Ajx">
+        <param name="list"    value="tjp/files.lst"/>
+        <param name="class"   value="tjp.Demo"/>
+      </antcall>
+    </target>
+
+    <target name="tracing-none">
+      <antcall target="Ajx">
+        <param name="list"    value="tracing/notrace.lst"/>
+        <param name="class"   value="tracing.ExampleMain"/>
+      </antcall>
+    </target>
+
+    <target name="tracing-1">
+      <antcall target="Ajx">
+        <param name="list"    value="tracing/tracev1.lst"/>
+        <param name="class"   value="tracing.ExampleMain"/>
+      </antcall>
+    </target>
+
+    <target name="tracing-2">
+      <antcall target="Ajx">
+        <param name="list"    value="tracing/tracev2.lst"/>
+        <param name="class"   value="tracing.ExampleMain"/>
+      </antcall>
+    </target>
+
+    <target name="tracing-3">
+      <antcall target="Ajx">
+        <param name="list"    value="tracing/tracev3.lst"/>
+        <param name="class"   value="tracing.ExampleMain"/>
+      </antcall>
+    </target>
+
+</project>

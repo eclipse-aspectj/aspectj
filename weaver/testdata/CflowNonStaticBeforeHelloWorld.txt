@@ -1,0 +1,37 @@
+public class HelloWorld extends java.lang.Object:
+  public void <init>():
+                    ALOAD_0     // HelloWorld this   (line 5)
+                    INVOKESPECIAL java.lang.Object.<init> ()V
+    constructor-execution(void HelloWorld.<init>())
+    |               RETURN
+    constructor-execution(void HelloWorld.<init>())
+  end public void <init>()
+
+  public static void main(String[]):
+    method-execution(void HelloWorld.main(java.lang.String[]))
+    |               INVOKESTATIC Aspect.ajc$perCflowPush ()V
+    | catch java.lang.Throwable -> E0
+    | | field-get(java.io.PrintStream java.lang.System.out)
+    | | |           INVOKESTATIC Aspect.hasAspect ()Z
+    | | |           IFEQ L0
+    | | |           INVOKESTATIC Aspect.aspectOf ()LAspect;
+    | | |           INVOKEVIRTUAL Aspect.ajc_before ()V
+    | | |       L0: GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 8)
+    | | field-get(java.io.PrintStream java.lang.System.out)
+    | |             LDC "hello world"   (line 9)
+    | | method-call(void java.io.PrintStream.println(java.lang.String))
+    | | |           INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+    | | method-call(void java.io.PrintStream.println(java.lang.String))
+    | |             GOTO L1   (line 11)
+    | catch java.lang.Throwable -> E0
+    |           E0: ASTORE_2
+    |               GETSTATIC Aspect.ajc$perCflowStack Lorg/aspectj/runtime/internal/CFlowStack;
+    |               INVOKEVIRTUAL org.aspectj.runtime.internal.CFlowStack.pop ()V
+    |               ALOAD_2
+    |               ATHROW
+    |           L1: GETSTATIC Aspect.ajc$perCflowStack Lorg/aspectj/runtime/internal/CFlowStack;
+    |               INVOKEVIRTUAL org.aspectj.runtime.internal.CFlowStack.pop ()V
+    |               RETURN
+    method-execution(void HelloWorld.main(java.lang.String[]))
+  end public static void main(String[])
+end public class HelloWorld

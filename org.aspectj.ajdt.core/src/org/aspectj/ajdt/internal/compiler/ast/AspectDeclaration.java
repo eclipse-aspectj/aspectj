@@ -1,0 +1,705 @@
+/* *******************************************************************
+ * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Xerox/PARC     initial implementation 
+ * ******************************************************************/
+
+
+package org.aspectj.ajdt.internal.compiler.ast;
+
+import java.io.*;
+import java.lang.reflect.Modifier;
+
+import org.apache.bcel.classfile.AccessFlags;
+import org.aspectj.ajdt.internal.compiler.lookup.*;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
+import org.aspectj.weaver.*;
+import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.patterns.*;
+import org.eclipse.jdt.internal.compiler.*;
+import org.eclipse.jdt.internal.compiler.ast.*;
+import org.eclipse.jdt.internal.compiler.codegen.*;
+import org.eclipse.jdt.internal.compiler.codegen.CodeStream;
+import org.eclipse.jdt.internal.compiler.lookup.*;
+import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+
+
+// making all aspects member types avoids a nasty hierarchy pain
+public class AspectDeclaration extends MemberTypeDeclaration {
+	//public IAjDeclaration[] ajDeclarations;
+	
+	private AjAttribute.Aspect aspectAttribute;
+	public PerClause perClause;
+	public ResolvedMember aspectOfMethod;
+	public ResolvedMember hasAspectMethod;
+	
+	
+	public boolean isPrivileged;
+	
+	public EclipseObjectType typeX;
+	public EclipseWorld world;  //??? should use this consistently
+
+
+	// for better error messages in 1.0 to 1.1 transition
+	public TypePattern dominatesPattern;
+
+	public AspectDeclaration(CompilationResult compilationResult) {
+		super(compilationResult);
+		//perClause = new PerSingleton();
+	}
+	
+	public boolean isAbstract() {
+		return (modifiers & AccAbstract) != 0;
+	}
+	
+	public void checkSpec(ClassScope scope) {
+		if (ignoreFurtherInvestigation) return;
+		if (dominatesPattern != null) {
+			scope.problemReporter().signalError(
+					dominatesPattern.getStart(), dominatesPattern.getEnd(), 
+					"dominates has changed for 1.1, use 'declare dominates: " +
+					new String(this.name) + ", " + dominatesPattern.toString() + ";' " +
+					"in the body of the aspect instead");
+		}
+		
+		if (!isAbstract()) {
+			MethodBinding[] methods = binding.methods();
+			for (int i=0, len = methods.length; i < len; i++) {
+				MethodBinding m = methods[i];
+				if (m.isConstructor()) {
+					// this make all constructors in aspects invisible and thus uncallable
+					//XXX this only works for aspects that come from source
+					methods[i] = new MethodBinding(m, binding) {
+						public boolean canBeSeenBy(
+							InvocationSite invocationSite,
+							Scope scope) {
+							return false;
+						}
+					};
+					
+					if (m.parameters != null && m.parameters.length != 0) {
+						scope.problemReporter().signalError(m.sourceStart(), m.sourceEnd(),
+								"only zero-argument constructors allowed in concrete aspect");
+					}
+				}
+			}
+		}
+		
+		if (this.enclosingType != null) {
+			if (!Modifier.isStatic(modifiers)) {
+				scope.problemReporter().signalError(sourceStart, sourceEnd,
+								"inner aspects must be static");
+				ignoreFurtherInvestigation = true;
+			    return;
+			}
+		}
+		
+		
+		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(scope);
+		ResolvedTypeX myType = world.fromEclipse(binding);
+		ResolvedTypeX superType = myType.getSuperclass().resolve(world);		
+		
+		// can't be Serializable/Cloneable unless -XserializableAspects
+		if (!world.buildManager.buildConfig.isXserializableAspects()) {
+			if (world.resolve(TypeX.SERIALIZABLE).isAssignableFrom(myType)) {
+				scope.problemReporter().signalError(sourceStart, sourceEnd,
+								"aspects may not implement Serializable");
+				ignoreFurtherInvestigation = true;
+			    return;
+			}
+			if (world.resolve(TypeX.CLONEABLE).isAssignableFrom(myType)) {
+				scope.problemReporter().signalError(sourceStart, sourceEnd,
+								"aspects may not implement Cloneable");
+				ignoreFurtherInvestigation = true;
+			    return;
+			}
+
+		}
+
+		
+
+		if (superType.isAspect()) {
+			if (!superType.isAbstract()) {
+				scope.problemReporter().signalError(sourceStart, sourceEnd,
+								"can not extend a concrete aspect");
+				ignoreFurtherInvestigation = true;
+				return;
+			}
+		}
+		
+		//XXX need to move this somewhere that it will be applied to classes and interfaces
+		//    as well as to aspects, also need to handle inheritance and overriding
+//		ResolvedMember[] pointcuts = myType.getDeclaredPointcuts();
+//		for (int i=0, len=pointcuts.length; i < len; i++) {
+//			for (int j=i+1; j < len; j++) {
+//				if (pointcuts[i].getName().equals(pointcuts[j].getName())) {
+//					scope.problemReporter().signalError(0, 0, 
+//						"duplicate pointcut name: " + pointcuts[i].getName());
+//				}
+//			}
+//		}
+	}
+	
+	
+	
+	public void generateCode(ClassFile enclosingClassFile) {
+		if (ignoreFurtherInvestigation) {
+			if (binding == null)
+				return;
+			ClassFile.createProblemType(
+				this,
+				scope.referenceCompilationUnit().compilationResult);
+			return;
+		}
+		
+		
+		// make me and my binding public
+		this.modifiers = AstUtil.makePublic(this.modifiers);
+		this.binding.modifiers = AstUtil.makePublic(this.binding.modifiers);
+		
+		
+		if (!isAbstract()) {
+			if (perClause == null) {
+				// we've already produced an error for this
+			} else if (perClause.getKind() == PerClause.SINGLETON) {
+				binding.addField(world.makeFieldBinding(AjcMemberMaker.perSingletonField(
+						typeX)));
+				methods[0] = new AspectClinit((Clinit)methods[0], compilationResult);
+			} else if (perClause.getKind() == PerClause.PERCFLOW) {
+				binding.addField(
+					world.makeFieldBinding(
+						AjcMemberMaker.perCflowField(
+							typeX)));
+				methods[0] = new AspectClinit((Clinit)methods[0], compilationResult);
+			} else if (perClause.getKind() == PerClause.PEROBJECT) {
+//				binding.addField(
+//					world.makeFieldBinding(
+//						AjcMemberMaker.perCflowField(
+//							typeX)));
+			} else {
+				throw new RuntimeException("unimplemented");
+			}
+		}
+
+		if (EclipseWorld.DEBUG) System.out.println(toString(0));
+		
+		super.generateCode(enclosingClassFile);
+	}
+	
+	public boolean needClassInitMethod() {
+		return true;
+	}
+	
+	
+	protected void generateAttributes(ClassFile classFile) {		
+		if (!isAbstract()) generatePerSupportMembers(classFile);
+		
+		classFile.extraAttributes.add(
+			new EclipseAttributeAdapter(new AjAttribute.Aspect(perClause)));
+			
+		if (binding.privilegedHandler != null) {
+			ResolvedMember[] members = ((PrivilegedHandler)binding.privilegedHandler).getMembers();
+			classFile.extraAttributes.add(
+			new EclipseAttributeAdapter(new AjAttribute.PrivilegedAttribute(members)));
+		}
+		
+		//XXX need to get this attribute on anyone with a pointcut for good errors
+		classFile.extraAttributes.add(
+			new EclipseAttributeAdapter(new AjAttribute.SourceContextAttribute(
+				new String(compilationResult().getFileName()),
+				compilationResult().lineSeparatorPositions)));
+
+		super.generateAttributes(classFile);		
+	}
+
+	private void generatePerSupportMembers(ClassFile classFile) {
+		if (isAbstract()) return;
+		
+		//XXX otherwise we need to have this (error handling?)
+		if (aspectOfMethod == null) return;
+		if (perClause == null) {
+			System.err.println("has null perClause: " + this);
+			return;
+		}
+		
+		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		
+		if (perClause.getKind() == PerClause.SINGLETON) {
+			generatePerSingletonAspectOfMethod(classFile);
+			generatePerSingletonHasAspectMethod(classFile);
+			generatePerSingletonAjcClinitMethod(classFile);
+		} else if (perClause.getKind() == PerClause.PERCFLOW) {
+			generatePerCflowAspectOfMethod(classFile);
+			generatePerCflowHasAspectMethod(classFile);
+			generatePerCflowPushMethod(classFile);
+			generatePerCflowAjcClinitMethod(classFile);
+		} else if (perClause.getKind() == PerClause.PEROBJECT) {
+			TypeBinding interfaceType = 
+				generatePerObjectInterface(classFile);
+			world.addTypeBinding(interfaceType);
+			generatePerObjectAspectOfMethod(classFile, interfaceType);
+			generatePerObjectHasAspectMethod(classFile, interfaceType);
+			generatePerObjectBindMethod(classFile, interfaceType);
+		} else {
+			throw new RuntimeException("unimplemented");
+		}
+	}
+
+
+	private static interface BodyGenerator {
+		public void generate(CodeStream codeStream);
+	}
+	
+	
+	private void generateMethod(ClassFile classFile, ResolvedMember member, BodyGenerator gen) {
+		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		generateMethod(classFile, world.makeMethodBinding(member), gen);
+	}
+	
+	private void generateMethod(ClassFile classFile, MethodBinding methodBinding, BodyGenerator gen) {
+		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		classFile.generateMethodInfoHeader(methodBinding);
+		int methodAttributeOffset = classFile.contentsOffset;
+		int attributeNumber = classFile.generateMethodInfoAttribute(methodBinding, AstUtil.getAjSyntheticAttribute());
+		int codeAttributeOffset = classFile.contentsOffset;
+		classFile.generateCodeAttributeHeader();
+		CodeStream codeStream = classFile.codeStream;
+		codeStream.init(classFile);
+		codeStream.initializeMaxLocals(methodBinding);
+		// body starts here
+		gen.generate(codeStream);
+		// body ends here
+		classFile.completeCodeAttribute(codeAttributeOffset);
+		attributeNumber++;
+		classFile.completeMethodInfo(methodAttributeOffset, attributeNumber);
+	}		
+
+
+	private void generatePerCflowAspectOfMethod(
+		ClassFile classFile) 
+	{
+		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		generateMethod(classFile, aspectOfMethod, new BodyGenerator() {
+			public void generate(CodeStream codeStream) {
+				// body starts here
+				codeStream.getstatic(
+					world.makeFieldBinding(
+								AjcMemberMaker.perCflowField(
+									typeX)));
+				codeStream.invokevirtual(world.makeMethodBindingForCall(
+								AjcMemberMaker.cflowStackPeekInstance()));
+				codeStream.checkcast(binding);
+				codeStream.areturn();
+				// body ends here
+			}});
+
+	}
+
+
+	private void generatePerCflowHasAspectMethod(ClassFile classFile) {
+		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		generateMethod(classFile, hasAspectMethod, new BodyGenerator() {
+			public void generate(CodeStream codeStream) {
+				// body starts here
+				codeStream.getstatic(
+					world.makeFieldBinding(
+								AjcMemberMaker.perCflowField(
+									typeX)));
+				codeStream.invokevirtual(world.makeMethodBindingForCall(
+								AjcMemberMaker.cflowStackIsValid()));
+				codeStream.ireturn();
+				// body ends here
+			}});
+	}
+	
+	private void generatePerCflowPushMethod(
+		ClassFile classFile) 
+	{
+		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		generateMethod(classFile, world.makeMethodBinding(AjcMemberMaker.perCflowPush(
+				world.fromBinding(binding))), 
+		new BodyGenerator() {
+			public void generate(CodeStream codeStream) {
+				// body starts here
+				codeStream.getstatic(
+					world.makeFieldBinding(
+								AjcMemberMaker.perCflowField(
+									typeX)));
+				codeStream.new_(binding);
+				codeStream.dup();
+				codeStream.invokespecial(
+					new MethodBinding(0, "<init>".toCharArray(), 
+						BaseTypes.VoidBinding, new TypeBinding[0],
+						new ReferenceBinding[0], binding));
+					
+
+				codeStream.invokevirtual(world.makeMethodBindingForCall(
+								AjcMemberMaker.cflowStackPushInstance()));					
+			    codeStream.return_();
+				// body ends here
+			}});
+
+	}
+
+		
+
+
+	private void generatePerCflowAjcClinitMethod(
+		ClassFile classFile) 
+	{
+		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		generateMethod(classFile, world.makeMethodBinding(AjcMemberMaker.ajcClinitMethod(
+				world.fromBinding(binding))), 
+		new BodyGenerator() {
+			public void generate(CodeStream codeStream) {
+				// body starts here
+				codeStream.new_(world.makeTypeBinding(AjcMemberMaker.CFLOW_STACK_TYPE));
+				codeStream.dup();
+				codeStream.invokespecial(world.makeMethodBindingForCall(AjcMemberMaker.cflowStackInit()));
+				codeStream.putstatic(
+					world.makeFieldBinding(
+								AjcMemberMaker.perCflowField(
+									typeX)));
+			    codeStream.return_();
+				// body ends here
+			}});
+
+	}
+	
+	
+	private TypeBinding generatePerObjectInterface(
+		ClassFile classFile)
+	{
+		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		TypeX interfaceTypeX = 
+		    AjcMemberMaker.perObjectInterfaceType(typeX);
+		HelperInterfaceBinding interfaceType =
+			new HelperInterfaceBinding(this.binding, interfaceTypeX);
+		world.addTypeBinding(interfaceType);
+		interfaceType.addMethod(world, AjcMemberMaker.perObjectInterfaceGet(typeX));
+		interfaceType.addMethod(world, AjcMemberMaker.perObjectInterfaceSet(typeX));
+		interfaceType.generateClass(compilationResult, classFile);
+		return interfaceType;
+	}
+	
+	
+	private void generatePerObjectAspectOfMethod(
+		ClassFile classFile,
+		final TypeBinding interfaceType) 
+	{
+		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		generateMethod(classFile, aspectOfMethod, new BodyGenerator() {
+			public void generate(CodeStream codeStream) {
+				// body starts here				
+				Label wrongType = new Label(codeStream);
+				Label popWrongType = new Label(codeStream);
+				codeStream.aload_0();
+				codeStream.instance_of(interfaceType);
+				codeStream.ifeq(wrongType);
+				codeStream.aload_0();
+				codeStream.checkcast(interfaceType);
+				codeStream.invokeinterface(world.makeMethodBindingForCall(
+					AjcMemberMaker.perObjectInterfaceGet(typeX)));
+					
+				codeStream.dup();
+				codeStream.ifnull(popWrongType);
+				codeStream.areturn();
+				
+				popWrongType.place();
+				codeStream.pop();
+				
+				wrongType.place();
+				codeStream.new_(world.makeTypeBinding(AjcMemberMaker.NO_ASPECT_BOUND_EXCEPTION));
+				codeStream.dup();
+				codeStream.invokespecial(world.makeMethodBindingForCall(
+					AjcMemberMaker.noAspectBoundExceptionInit()
+				));
+				codeStream.athrow();
+				// body ends here
+			}});
+
+	}
+
+
+	private void generatePerObjectHasAspectMethod(ClassFile classFile, 
+		final TypeBinding interfaceType) {
+		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		generateMethod(classFile, hasAspectMethod, new BodyGenerator() {
+			public void generate(CodeStream codeStream) {
+				// body starts here
+				Label wrongType = new Label(codeStream);
+				codeStream.aload_0();
+				codeStream.instance_of(interfaceType);
+				codeStream.ifeq(wrongType);
+				codeStream.aload_0();
+				codeStream.checkcast(interfaceType);
+				codeStream.invokeinterface(world.makeMethodBindingForCall(
+					AjcMemberMaker.perObjectInterfaceGet(typeX)));
+				codeStream.ifnull(wrongType);
+				codeStream.iconst_1();
+				codeStream.ireturn();
+				
+				wrongType.place();
+				codeStream.iconst_0();
+				codeStream.ireturn();
+				// body ends here
+			}});
+	}
+	
+	private void generatePerObjectBindMethod(
+		ClassFile classFile,
+		final TypeBinding interfaceType) 
+	{
+		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		generateMethod(classFile, AjcMemberMaker.perObjectBind(world.fromBinding(binding)), 
+		new BodyGenerator() {
+			public void generate(CodeStream codeStream) {
+				// body starts here
+				Label wrongType = new Label(codeStream);
+				codeStream.aload_0();
+				codeStream.instance_of(interfaceType);
+				codeStream.ifeq(wrongType);  //XXX this case might call for screaming
+				codeStream.aload_0();
+				codeStream.checkcast(interfaceType);
+				codeStream.invokeinterface(world.makeMethodBindingForCall(
+					AjcMemberMaker.perObjectInterfaceGet(typeX)));
+				//XXX should do a check for null here and throw a NoAspectBound
+				codeStream.ifnonnull(wrongType);
+				
+				codeStream.aload_0();
+				codeStream.checkcast(interfaceType);
+				codeStream.new_(binding);
+				codeStream.dup();
+				codeStream.invokespecial(
+					new MethodBinding(0, "<init>".toCharArray(), 
+						BaseTypes.VoidBinding, new TypeBinding[0],
+						new ReferenceBinding[0], binding));
+				codeStream.invokeinterface(world.makeMethodBindingForCall(
+					AjcMemberMaker.perObjectInterfaceSet(typeX)));
+				
+				wrongType.place();
+				codeStream.return_();
+				// body ends here
+			}});
+	}
+	
+
+		
+	private void generatePerSingletonAspectOfMethod(ClassFile classFile) {
+		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		generateMethod(classFile, aspectOfMethod, new BodyGenerator() {
+			public void generate(CodeStream codeStream) {
+				// body starts here
+				codeStream.getstatic(world.makeFieldBinding(AjcMemberMaker.perSingletonField(
+						typeX)));
+				codeStream.areturn();
+				// body ends here
+			}});
+	}
+	
+	private void generatePerSingletonHasAspectMethod(ClassFile classFile) {
+		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		generateMethod(classFile, hasAspectMethod, new BodyGenerator() {
+			public void generate(CodeStream codeStream) {
+				// body starts here
+				codeStream.getstatic(world.makeFieldBinding(AjcMemberMaker.perSingletonField(
+						typeX)));
+				Label isNull = new Label(codeStream);
+				codeStream.ifnull(isNull);
+				codeStream.iconst_1();
+				codeStream.ireturn();
+				isNull.place();
+				codeStream.iconst_0();
+				codeStream.ireturn();
+				// body ends here
+			}});
+	}
+	
+	
+	private void generatePerSingletonAjcClinitMethod(
+		ClassFile classFile) 
+	{
+		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		generateMethod(classFile, world.makeMethodBinding(AjcMemberMaker.ajcClinitMethod(
+				world.fromBinding(binding))), 
+		new BodyGenerator() {
+			public void generate(CodeStream codeStream) {
+				// body starts here
+				codeStream.new_(binding);
+				codeStream.dup();
+				codeStream.invokespecial(
+					new MethodBinding(0, "<init>".toCharArray(), 
+						BaseTypes.VoidBinding, new TypeBinding[0],
+						new ReferenceBinding[0], binding));
+					
+				codeStream.putstatic(
+					world.makeFieldBinding(
+								AjcMemberMaker.perSingletonField(
+									typeX)));
+			    codeStream.return_();
+				// body ends here
+			}});
+
+	}
+	
+	
+	private PerClause.Kind lookupPerClauseKind(ReferenceBinding binding) {
+		if (binding instanceof SourceTypeBinding) {
+			SourceTypeBinding sourceSc = (SourceTypeBinding)binding;
+			if (sourceSc.scope.referenceContext instanceof AspectDeclaration) {
+				PerClause perClause = ((AspectDeclaration)sourceSc.scope.referenceContext).perClause;
+				if (perClause == null) return lookupPerClauseKind(binding.superclass());
+				else return perClause.getKind();
+			} else {
+				return null;
+			}
+		} else {
+			//XXX need to handle this too
+			return null;
+		}
+	}
+	
+
+	private void buildPerClause(ClassScope scope) {
+		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(scope);
+		
+		if (perClause == null) {
+			PerClause.Kind kind = lookupPerClauseKind(binding.superclass);
+			if (kind == null) {
+				perClause = new PerSingleton();
+			} else {
+				perClause = new PerFromSuper(kind);
+			}
+		}
+		
+		
+		//perClause.concretize(world.fromEclipse(binding));
+		aspectAttribute = new AjAttribute.Aspect(perClause);
+		
+		if (ignoreFurtherInvestigation) return; //???
+		
+		
+		if (!isAbstract()) {
+			if (perClause.getKind() == PerClause.SINGLETON) {
+				aspectOfMethod = AjcMemberMaker.perSingletonAspectOfMethod(typeX);
+				hasAspectMethod = AjcMemberMaker.perSingletonHasAspectMethod(typeX);		
+			} else if (perClause.getKind() == PerClause.PERCFLOW) {
+				aspectOfMethod = AjcMemberMaker.perCflowAspectOfMethod(typeX);
+				hasAspectMethod = AjcMemberMaker.perCflowHasAspectMethod(typeX);		
+			} else if (perClause.getKind() == PerClause.PEROBJECT) {
+				aspectOfMethod = AjcMemberMaker.perObjectAspectOfMethod(typeX);
+				hasAspectMethod = AjcMemberMaker.perObjectHasAspectMethod(typeX);
+			} else {
+				throw new RuntimeException("bad per clause: " + perClause);	
+			}
+			
+			binding.addMethod(world.makeMethodBinding(aspectOfMethod));
+			binding.addMethod(world.makeMethodBinding(hasAspectMethod));
+		}
+		resolvePerClause(); //XXX might be too soon for some error checking
+	}
+
+
+	private PerClause resolvePerClause() {        
+        EclipseScope iscope = new EclipseScope(new FormalBinding[0], scope);
+		perClause.resolve(iscope);
+		return perClause;
+	}
+
+
+
+	public void buildInterTypeAndPerClause(ClassScope classScope) {
+		checkSpec(classScope);
+		if (ignoreFurtherInvestigation) return;
+		
+		world = EclipseWorld.fromScopeLookupEnvironment(scope);
+		typeX = (EclipseObjectType)world.fromEclipse(binding);
+		
+		if (isPrivileged) {
+			binding.privilegedHandler = new PrivilegedHandler(this);
+		}
+		
+		CrosscuttingMembers xcut = new CrosscuttingMembers(typeX);
+		typeX.crosscuttingMembers = xcut;
+		//XXXxcut.setPerClause(buildPerClause(scope));
+		buildPerClause(scope);
+		
+		if (methods != null) {
+			for (int i = 0; i < methods.length; i++) {
+				if (methods[i] instanceof InterTypeDeclaration) {
+					((InterTypeDeclaration)methods[i]).build(classScope, xcut);
+				} else if (methods[i] instanceof DeclareDeclaration) {
+					((DeclareDeclaration)methods[i]).build(classScope, xcut);
+				}
+			}
+		}
+
+		world.getCrosscuttingMembersSet().addOrReplaceAspect(typeX);		
+	}
+
+
+	public String toString(int tab) {
+		return tabString(tab) + toStringHeader() + toStringBody(tab);
+	}
+
+	public String toStringBody(int tab) {
+
+		String s = " {"; //$NON-NLS-1$
+		
+
+		if (memberTypes != null) {
+			for (int i = 0; i < memberTypes.length; i++) {
+				if (memberTypes[i] != null) {
+					s += "\n" + memberTypes[i].toString(tab + 1); //$NON-NLS-1$
+				}
+			}
+		}
+		if (fields != null) {
+			for (int fieldI = 0; fieldI < fields.length; fieldI++) {
+				if (fields[fieldI] != null) {
+					s += "\n" + fields[fieldI].toString(tab + 1); //$NON-NLS-1$
+					if (fields[fieldI].isField())
+						s += ";"; //$NON-NLS-1$
+				}
+			}
+		}
+		if (methods != null) {
+			for (int i = 0; i < methods.length; i++) {
+				if (methods[i] != null) {
+					s += "\n" + methods[i].toString(tab + 1); //$NON-NLS-1$
+				}
+			}
+		}
+		s += "\n" + tabString(tab) + "}"; //$NON-NLS-2$ //$NON-NLS-1$
+		return s;
+	}
+
+	public String toStringHeader() {
+
+		String s = ""; //$NON-NLS-1$
+		if (modifiers != AccDefault) {
+			s += modifiersString(modifiers);
+		}
+		s += "aspect " + new String(name);//$NON-NLS-1$ //$NON-NLS-2$
+		if (superclass != null)
+			s += " extends " + superclass.toString(0); //$NON-NLS-1$
+		if (superInterfaces != null && superInterfaces.length > 0) {
+			s += (isInterface() ? " extends " : " implements ");//$NON-NLS-2$ //$NON-NLS-1$
+			for (int i = 0; i < superInterfaces.length; i++) {
+				s += superInterfaces[i].toString(0);
+				if (i != superInterfaces.length - 1)
+					s += ", "; //$NON-NLS-1$
+			};
+		};
+		return s;
+	}
+
+
+}
+

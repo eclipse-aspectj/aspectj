@@ -1,0 +1,129 @@
+/* *******************************************************************
+ * Copyright (c) 1999-2001 Xerox Corporation, 
+ *               2002 Palo Alto Research Center, Incorporated (PARC).
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Xerox/PARC     initial implementation 
+ * ******************************************************************/
+
+     
+package org.aspectj.ajde.ui.swing;
+
+import java.awt.event.*;
+import java.util.*;
+
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.tree.TreePath;
+import org.aspectj.asm.*;
+
+/**
+ * @author  Mik Kersten
+ */
+class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
+    private StructureTree tree = null;
+
+    public BrowserViewTreeListener(StructureTree tree) {
+        this.tree = tree;
+    }
+
+    public void valueChanged(TreeSelectionEvent e) { }
+
+    public void mouseEntered(MouseEvent e) { }
+
+    public void mouseExited(MouseEvent e) { }
+
+    public void mousePressed(MouseEvent e) { }
+
+    public void mouseReleased(MouseEvent e) { }
+
+    public void mouseClicked(MouseEvent e) {
+        singleClickNavigation(e);
+		//doubleClickNavigation(e);
+        maybeShowPopup(e);
+    }
+
+    public void singleClickNavigation(MouseEvent e) {
+        SwingTreeViewNode treeNode = (SwingTreeViewNode)tree.getLastSelectedPathComponent();
+        if (treeNode != null && !e.isControlDown() && !e.isShiftDown() && e.getModifiers() != 4) {
+            StructureNode currNode = (StructureNode)treeNode.getUserObject();
+            if (currNode instanceof ProgramElementNode && !e.isControlDown()
+                && !e.isShiftDown() && e.getModifiers() != 4) {
+                //AjdeUIManager.getDefault().getViewManager().showNodeInMasterView((ProgramElementNode)currNode);
+                //if (AjdeUIManager.getDefault().getViewManager().isSplitViewMode()) {
+                //    AjdeUIManager.getDefault().getViewManager().showNodeInSlaveView((ProgramElementNode)currNode);
+                //}
+            } else if (currNode instanceof LinkNode) {
+                //if (!AjdeUIManager.getDefault().getViewManager().isSplitViewMode()) {
+                //    AjdeUIManager.getDefault().getViewManager().showNodeInMasterView((LinkNode)currNode);
+                //} else {
+                //    AjdeUIManager.getDefault().getViewManager().showNodeInSlaveView(((LinkNode)currNode).getProgramElementNode());
+                //}
+           }
+        }
+    }
+
+        public void doubleClickNavigation(MouseEvent e) {
+            int clickCount = e.getClickCount();
+            SwingTreeViewNode treeNode = (SwingTreeViewNode)tree.getLastSelectedPathComponent();
+            if (treeNode != null) {
+                StructureNode currNode = (StructureNode)treeNode.getUserObject();
+                if (currNode instanceof ProgramElementNode && !e.isControlDown() && !e.isShiftDown()
+                    && e.getModifiers() != 4) {
+                    //AjdeUIManager.getDefault().getViewManager().showNodeInMasterView(((LinkNode)currNode).getProgramElementNode());
+                    //AjdeUIManager.getDefault().getViewManager().showNodeInSlaveView(((LinkNode)currNode).getProgramElementNode());
+                } else if (currNode instanceof LinkNode) {
+                    if (clickCount == 1) {
+                        //AjdeUIManager.getDefault().getViewManager().showLink((LinkNode)currNode);
+                    } else if (clickCount == 2) {
+                        //navigationAction((ProgramElementNode)((LinkNode)currNode).getProgramElementNode(), true, true);
+                    }
+                }
+            }
+        }
+
+    /**
+     * @todo    this should probably use <CODE>e.isPopupTrigger()</CODE> but that
+     * doesn't work for some reason, so we just check if the right mouse button
+     * has been clicked.
+     */
+    private void maybeShowPopup(MouseEvent e) {
+        if (e.getModifiers() == e.BUTTON3_MASK && tree.getSelectionCount() > 0) {
+            TreePath[] selectionPaths = tree.getSelectionPaths();
+            final List signatures = new ArrayList();
+            for (int i = 0; i < selectionPaths.length; i++) {
+                StructureNode currNode = (StructureNode)((SwingTreeViewNode)selectionPaths[i].getLastPathComponent()).getUserObject();
+                if (currNode instanceof LinkNode || currNode instanceof ProgramElementNode) {
+                    signatures.add(currNode);
+                }
+            }
+
+            JPopupMenu popup = new JPopupMenu();
+            JMenuItem showSourcesItem = new JMenuItem("Display sources", AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.CODE));
+            showSourcesItem.setFont(new java.awt.Font("Dialog", 0, 11));
+            showSourcesItem.addActionListener(new AbstractAction() {
+                public void actionPerformed(ActionEvent e) {
+                    //AjdeUIManager.getDefault().getViewManager().showSourcesNodes(signatures);
+                }
+            });
+            popup.add(showSourcesItem);
+
+            popup.addSeparator();
+            JMenuItem generatePCD = new JMenuItem("Pointcut Wizard (alpha)...", AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.POINTCUT));
+            generatePCD.setFont(new java.awt.Font("Dialog", 0, 11));
+            generatePCD.addActionListener(new AbstractAction() {
+                public void actionPerformed(ActionEvent e) {
+                    AjdeUIManager.getDefault().getViewManager().extractAndInsertSignatures(signatures, true);
+                }
+            });
+            popup.add(generatePCD);
+
+            popup.show(e.getComponent(), e.getX(), e.getY());
+        }
+    }
+}

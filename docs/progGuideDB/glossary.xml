@@ -1,0 +1,192 @@
+<appendix id="glossary" xreflabel="Glossary">
+
+  <title>Glossary</title>
+
+  <glosslist>
+
+<!--
+    <glossentry><glossterm>
+</glossterm>
+      <glossdef>
+         <para></para>
+      </glossdef>
+    </glossentry>
+
+-->
+
+    <glossentry><glossterm>
+advice</glossterm>
+      <glossdef>
+	  <para>Code, similar to a method, that is executed when a join
+	  point<emphasis></emphasis> is reached. There are three kinds of
+	  advice: before advice that runs when a join point is reached, but
+	  before the method in question executes, after advice that executes
+	  after the method body executes, but before control returns to the
+	  caller, and around advice that runs before and after the method in
+	  question runs, and also has explicit control over whether the method
+	  is run at all.</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry><glossterm>
+AOP</glossterm>
+      <glossdef>
+	  <para>See <emphasis>aspect-oriented programming</emphasis>.</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry><glossterm>
+aspect</glossterm>
+      <glossdef>
+	  <para>A modular unit of crosscutting implementation in
+	  <emphasis>aspect-oriented programming</emphasis>, just as classes are
+	  the modular unit of implementation in object-oriented
+	  programming.</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry><glossterm>
+aspect-oriented programming</glossterm>
+      <glossdef>
+	  <para>A type or style of programming that explicitly takes into
+	  account <emphasis>crosscutting concerns</emphasis>, just as
+	  object-oriented programming explicitly takes into account classes and
+	  objects. </para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry><glossterm>
+crosscutting concerns</glossterm>
+      <glossdef>
+	  <para>Issues or programmer concerns that are not local to the natural
+	  unit of modularity. </para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry><glossterm>
+dynamic context</glossterm>
+      <glossdef>
+	  <para>The state of a program while it is executing. Contrast with
+	  <emphasis>lexical context</emphasis>.</para> 
+      </glossdef>
+    </glossentry>
+
+    <glossentry><glossterm>
+join point</glossterm>
+      <glossdef>
+	 <para> A well-defined instant in the execution of a program. In
+	  AspectJ, join points are also principled, i.e. not every possible
+	  instance in the execution of a program is a potential join point.
+	</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry><glossterm>
+lexical context</glossterm>
+      <glossdef>
+	  <para>The state of a program as it is written. Contrast with
+	  <emphasis>dynamic context</emphasis>.</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry><glossterm>
+name-based pointcut designator</glossterm>
+      <glossdef>
+	  <para>A type of pointcut designator that enumerates and composes
+	  explicitly named join points. For example,</para>
+	  <programlisting>
+pointcut move():
+  call(void FigureElement.setXY(int,int)) ||
+  call(void Point.setX(int))              ||
+  call(void Point.setY(int))              ||
+  call(void Line.setP1(Point))            ||
+  call(void Line.setP2(Point));</programlisting>
+	  <para>is a pointcut designator that explicitly names five join
+	  points. See also <emphasis>property-based pointcut
+	    designator</emphasis>.
+	</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry><glossterm>
+pointcut</glossterm>
+      <glossdef>
+	  <para>A collection of join points.</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry><glossterm>
+pointcut designator</glossterm>
+      <glossdef>
+	  <para>The name of a pointcut, or an expression which identifies a
+	  pointcut. Pointcut designators can be primitive or composite.
+	  Composite pointcut designators are primitive pointcut designators
+	  composed using the operators <literal>||</literal>,
+	  <literal>&amp;&amp;<literal>, and </literal>!</literal>. See also
+	  <emphasis>name-based pointcut designator</emphasis> and
+	  <emphasis>property-based pointcut sesignator</emphasis>. </para>
+      </glossdef>
+    </glossentry>
+    
+    <glossentry><glossterm>
+post-condition</glossterm>
+      <glossdef>
+	  <para>A test or assertion that must be true after a method has
+	  executed.</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry><glossterm>
+pre-condition</glossterm>
+      <glossdef>
+	  <para>A test or assertion that must be true when a method is
+	  called.</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry><glossterm>
+property-based pointcut designator</glossterm>
+      <glossdef>
+	  <para>A type of pointcut designator that specifies pointcuts in terms
+	  of the properties of methods rather than just their names. For
+	  example,</para>  
+	  <programlisting>
+call(public * Figure.*(..))</programlisting>
+	  <para>specifies all the public methods in the class
+	  <classname>Figure</classname> regardless of the type and number of
+	  their arguments or return type. See also <emphasis>name-based
+	  pointcut designator</emphasis>.</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry><glossterm>
+reusable aspect</glossterm>
+      <glossdef>
+	  <para>An aspect that can be extended or inherited from.</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry><glossterm>
+signature</glossterm>
+      <glossdef>
+	  <para>The number, order and type of the arguments to a method.</para>
+      </glossdef>
+    </glossentry>
+    
+    <glossentry><glossterm>
+<literal>thisJoinPoint</literal></glossterm>
+      <glossdef>
+	  <para>The special variable that identifies the current join point
+	  when a non-static join point is reached.</para>
+      </glossdef>
+    </glossentry>
+
+  </glosslist>
+  
+</appendix>
+
+<!-- Local variables: -->
+<!-- fill-column: 79 -->
+<!-- sgml-local-ecat-files: progguide.ced -->
+<!-- sgml-parent-document:("progguide.sgml" "book" "appendix") -->
+<!-- End: -->

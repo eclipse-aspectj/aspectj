@@ -1,0 +1,32 @@
+
+This directory contains several examples of tracing aspects,
+including a reusable tracing library and examples of 
+using that library.
+
+A lesson in the AspectJ Primer explains all of this code.
+
+To work with these (or any other examples), first be sure .../examples
+is on your classpath, where ... is where you have installed AspectJ.
+
+
+--To compile and run the example without tracing--
+
+ ajc @.../examples/tracing/notrace.lst
+
+ java tracing.ExampleMain
+
+
+--To compile and run the example with tracing version<N>--
+
+ ajc @.../examples/tracing/tracev<N>.lst
+
+ java tracing.version<N>.TraceMyClasses
+
+where <N> is 1, 2, 3 or 4
+
+--To use the tracing.lib.AbstractTrace aspect--
+
+ Make sure .../examples is in your classpath.
+
+ In order to use this aspect, please read the documentation under
+ tracing/doc

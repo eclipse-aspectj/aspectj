@@ -1,0 +1,147 @@
+/* *******************************************************************
+ * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Xerox/PARC     initial implementation 
+ * ******************************************************************/
+
+
+package org.aspectj.ajdt.internal.compiler.ast;
+
+import java.io.*;
+import java.util.*;
+
+
+import org.aspectj.weaver.*;
+import org.aspectj.weaver.patterns.*;
+import org.eclipse.jdt.internal.compiler.*;
+import org.eclipse.jdt.internal.compiler.ast.*;
+import org.eclipse.jdt.internal.compiler.ast.AstNode;
+import org.eclipse.jdt.internal.compiler.lookup.*;
+import org.eclipse.jdt.internal.compiler.parser.Parser;
+import org.eclipse.jdt.internal.compiler.problem.*;
+
+
+public class PseudoTokens extends AstNode {
+	BasicTokenSource tokenSource;
+	PseudoToken[] tokens;  //XXX this is redundant with the field above
+	String endToken;
+	
+
+	public PseudoTokens(PseudoToken[] tokens, ISourceContext sourceContext) {
+		super();
+		this.tokens = tokens;
+		this.tokenSource = new BasicTokenSource(tokens, sourceContext);
+		endToken = tokens[tokens.length-1].getString();
+		sourceStart = tokens[0].sourceStart;
+		sourceEnd = tokens[tokens.length-2].sourceEnd;
+	}
+	
+	public Pointcut parsePointcut(Parser parser) {
+		PatternParser patternParser = new PatternParser(tokenSource);
+		try {
+			Pointcut ret = patternParser.parsePointcut();
+			checkEof(parser);
+			return ret;
+		} catch (ParserException pe) {
+			reportError(parser, pe);
+			return Pointcut.makeMatchesNothing(Pointcut.SYMBOLIC);
+		}
+	}
+
+	private void checkEof(Parser parser) {
+		IToken last = tokenSource.next();
+		if (tokenSource.next() != IToken.EOF) {
+			parser.problemReporter().parseError(last.getStart(), last.getEnd(),
+		                                    last.getString().toCharArray(),
+		                                    last.getString(),
+		                                    new String[] {endToken});
+		}
+	}
+
+	
+	private void reportError(Parser parser, ParserException pe) {
+		IHasPosition tok = pe.getLocation();
+		int start, end;
+		if (tok == IToken.EOF) {
+			start = sourceEnd+1;
+			end = sourceEnd+1;
+		} else {
+			start = tok.getStart();
+			end = tok.getEnd();
+		}
+		String found = "<unknown>";
+		if (tok instanceof IToken) {
+			found = ((IToken)tok).getString();
+		}
+		
+		parser.problemReporter().parseError(start, end,
+		                                    found.toCharArray(),
+		                                    found,
+		                                    new String[] {pe.getMessage()});
+	}
+	
+	
+	public TypePattern maybeParseDominatesPattern(Parser parser) {
+		PatternParser patternParser = new PatternParser(tokenSource);
+		try {
+			if (patternParser.maybeEatIdentifier("dominates")) {
+				// there is no eof check here
+				return patternParser.parseTypePattern();
+			} else {
+				return null;
+			}
+		} catch (ParserException pe) {
+			reportError(parser, pe);
+			return null;
+		}
+	}		
+	
+	
+	public PerClause parsePerClause(Parser parser) {
+		PatternParser patternParser = new PatternParser(tokenSource);
+		try {
+			PerClause ret = patternParser.maybeParsePerClause();
+			checkEof(parser);
+			if (ret == null) return new PerSingleton();
+			else return ret;
+		} catch (ParserException pe) {
+			reportError(parser, pe);
+			return new PerSingleton();
+		}
+		
+	}
+	
+	
+//	public TypePattern parseTypePattern(Parser parser) {
+//	}
+//	
+	public Declare parseDeclare(Parser parser) {
+		PatternParser patternParser = new PatternParser(tokenSource);
+		try {
+			Declare ret = patternParser.parseDeclare();
+			checkEof(parser);
+			return ret;
+		} catch (ParserException pe) {
+			reportError(parser, pe);
+			return null;
+		}
+	}
+	
+	
+	public void postParse(TypeDeclaration typeDec, MethodDeclaration enclosingDec) {
+		for (int i=0, len=tokens.length; i < len; i++) {
+			tokens[i].postParse(typeDec, enclosingDec);
+		}
+	}
+	
+	
+	public String toString(int tab) {
+		return tokenSource.toString();
+	}
+}

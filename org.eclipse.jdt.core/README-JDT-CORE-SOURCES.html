@@ -1,0 +1,94 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>AspectJ patch for org.eclipse.jdt.core</title>
+</head>
+
+<h2 align="center">AspectJ patch for <tt>org.eclipse.jdt.core</tt></b></h2>
+
+<h2 align="center">Source Code Release</h2>
+
+<p align="center"><i>Version @build.version.long@ released on @build.date@.</i></p>
+
+</p>
+
+<p>
+This distribution contains modifications to the <tt>org.eclipse.jdt.core</tt> package from
+the eclipse-2.0 distribution available at <a href="http://eclipse.org">eclipse.org</a>.
+These modifications were made in support of AspectJ 1.1, 
+available at <a href="http://aspectj.org">http://aspectj.org</a>.
+This distribution is made available under the Common Public License 1.0 (CPL).  
+</p>
+
+<p>To build under <a href="http://jakarta.apache.org/ant">Ant</a>, 
+  use <a href="jdt-src/build.xml">jdt-src/build.xml</a>.  
+For help, type 'ant -f build.xml info'.
+</p>
+
+<p>There are four kinds of changes made to the jdt.core sources.</p>
+
+<ol>
+<li>Things that are completely broken from an extensibility point of view.
+Serious design work is needed on these before we'd even want to propose changes to 
+the jdt.core main branch.
+<pre>
+Auto-generated constants
+org.eclipse.jdt.core.compiler.ITerminalSymbols
+org.eclipse.jdt.internal.compiler.parser.ParserBasicInformation
+
+Static dependencies might be solved for all but above
+org.eclipse.jdt.internal.compiler.parser.Parser
+org.eclipse.jdt.internal.compiler.parser.Scanner
+</pre>
+</li>
+<li>Visibility, finalness of methods/fields changed for extensibility.</li>
+<li>Additional extension hooks added to several classes.  Need to ensure there is no major performance hit, and that these designs are fairly clean.</li>
+<li>Whole question of what is the API of the compiler.  Currently, many internal classes are used and extended.  It would sure be nice to solve the practical problems in 1-3 before addressing this important question.</li>
+</ol>
+
+
+
+<h3>33 files changed</h3>
+<pre>
+compiler/org/eclipse/jdt/core/compiler/ITerminalSymbols.java
+compiler/org/eclipse/jdt/internal/compiler/ast/AbstractMethodDeclaration.java
+compiler/org/eclipse/jdt/internal/compiler/ast/Clinit.java
+compiler/org/eclipse/jdt/internal/compiler/ast/FieldReference.java
+compiler/org/eclipse/jdt/internal/compiler/ast/MessageSend.java
+compiler/org/eclipse/jdt/internal/compiler/ast/QualifiedNameReference.java
+compiler/org/eclipse/jdt/internal/compiler/ast/SingleNameReference.java
+compiler/org/eclipse/jdt/internal/compiler/ast/TypeDeclaration.java
+compiler/org/eclipse/jdt/internal/compiler/ClassFile.java
+compiler/org/eclipse/jdt/internal/compiler/Compiler.java
+compiler/org/eclipse/jdt/internal/compiler/IAttribute.java
+compiler/org/eclipse/jdt/internal/compiler/lookup/BlockScope.java
+compiler/org/eclipse/jdt/internal/compiler/lookup/ClassScope.java
+compiler/org/eclipse/jdt/internal/compiler/lookup/CompilationUnitScope.java
+compiler/org/eclipse/jdt/internal/compiler/lookup/FieldBinding.java
+compiler/org/eclipse/jdt/internal/compiler/lookup/IMemberFinder.java
+compiler/org/eclipse/jdt/internal/compiler/lookup/IPrivilegedHandler.java
+compiler/org/eclipse/jdt/internal/compiler/lookup/LookupEnvironment.java
+compiler/org/eclipse/jdt/internal/compiler/lookup/MethodBinding.java
+compiler/org/eclipse/jdt/internal/compiler/lookup/ReferenceBinding.java
+compiler/org/eclipse/jdt/internal/compiler/lookup/Scope.java
+compiler/org/eclipse/jdt/internal/compiler/lookup/SourceTypeBinding.java
+compiler/org/eclipse/jdt/internal/compiler/parser/aj_grammar.txt
+compiler/org/eclipse/jdt/internal/compiler/parser/Parser.java
+compiler/org/eclipse/jdt/internal/compiler/parser/ParserBasicInformation.java
+compiler/org/eclipse/jdt/internal/compiler/problem/ProblemReporter.java
+model/org/eclipse/jdt/internal/core/builder/AbortIncrementalBuildException.java
+model/org/eclipse/jdt/internal/core/builder/AbstractImageBuilder.java
+model/org/eclipse/jdt/internal/core/builder/BuildNotifier.java
+model/org/eclipse/jdt/internal/core/builder/ClasspathDirectory.java
+model/org/eclipse/jdt/internal/core/builder/ClasspathJar.java
+model/org/eclipse/jdt/internal/core/builder/ClasspathLocation.java
+model/org/eclipse/jdt/internal/core/builder/JavaBuilder.java
+model/org/eclipse/jdt/internal/core/builder/SourceFile.java
+model/org/eclipse/jdt/internal/core/builder/State.java
+</pre>
+
+</body>
+
+</html>

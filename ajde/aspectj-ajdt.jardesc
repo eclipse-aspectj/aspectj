@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jardesc>
+    <jar path="C:/Dev/eclipse/org.aspectj.ajde/ajde.jar"/>
+    <options overwrite="true" compress="true" exportErrors="false"
+        exportWarnings="true" saveDescription="true"
+        descriptionLocation="/ajde/aspectj-ajdt.jardesc"
+        useSourceFolders="false" buildIfNeeded="true"/>
+    <manifest manifestVersion="1.0" usesManifest="true"
+        reuseManifest="true" saveManifest="true"
+        generateManifest="false" manifestLocation="/ajde/aspectj-ajdt.mf">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="true">
+        <javaElement handleIdentifier="=ajde/src&lt;org.aspectj.ajde.resources.actions"/>
+        <javaElement handleIdentifier="=asm/src&lt;org.aspectj.asm.associations"/>
+        <javaElement handleIdentifier="=ajde/src&lt;org.aspectj.ajde.ui"/>
+        <javaElement handleIdentifier="=ajde/src&lt;org.aspectj.ajde.ui.swing"/>
+        <javaElement handleIdentifier="=ajde/src&lt;org.aspectj.ajde"/>
+        <javaElement handleIdentifier="=asm/src&lt;org.aspectj.asm.internal"/>
+        <javaElement handleIdentifier="=asm/src&lt;org.aspectj.asm.views"/>
+        <javaElement handleIdentifier="=asm/src&lt;org.aspectj.asm"/>
+        <javaElement handleIdentifier="=ajde/src&lt;org.aspectj.ajde.resources.structure"/>
+        <javaElement handleIdentifier="=ajde/src&lt;org.aspectj.ajde.internal"/>
+        <javaElement handleIdentifier="=ajde/src&lt;org.aspectj.ajde.ui.internal"/>
+        <javaElement handleIdentifier="=bridge/src&lt;org.aspectj.bridge"/>
+    </selectedElements>
+</jardesc>

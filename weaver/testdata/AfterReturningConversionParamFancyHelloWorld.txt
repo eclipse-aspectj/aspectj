@@ -1,0 +1,88 @@
+public abstract class FancyHelloWorld extends java.lang.Object:
+  public void <init>():
+    local 0: FancyHelloWorld this
+    |               ALOAD_0
+    |               INVOKESPECIAL java.lang.Object.<init> ()V
+    local 0: FancyHelloWorld this
+                    RETURN
+  end public void <init>()
+
+  public static void main(String[]):
+    method-execution(void FancyHelloWorld.main(java.lang.String[]))
+    | local 0: java.lang.String[] args
+    | | field-get(java.io.PrintStream java.lang.System.out)
+    | | |           GETSTATIC java.lang.System.out Ljava/io/PrintStream;
+    | | field-get(java.io.PrintStream java.lang.System.out)
+    | |             ASTORE_1
+    | | local 1: java.io.PrintStream out
+    | | | finally -> E1
+    | | | | catch java.lang.Exception -> E0
+    | | | | |       ALOAD_1
+    | | | | |       LDC "bye"
+    | | | | | method-call(void java.io.PrintStream.println(java.lang.String))
+    | | | | | |     INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+    | | | | | method-call(void java.io.PrintStream.println(java.lang.String))
+    | | | | |       GOTO L0
+    | | | | catch java.lang.Exception -> E0
+    | | | |     E0: ASTORE_2
+    | | | | local 2: java.lang.Exception e
+    | | | | |       ALOAD_1
+    | | | | |       ALOAD_2
+    | | | | | method-call(void java.io.PrintStream.println(java.lang.Object))
+    | | | | | |     INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/Object;)V
+    | | | | | method-call(void java.io.PrintStream.println(java.lang.Object))
+    | | | | local 2: java.lang.Exception e
+    | | | finally -> E1
+    | | |           GOTO L0
+    | | |       E1: ASTORE 4
+    | | |           JSR L1
+    | | |           ALOAD 4
+    | | |           ATHROW
+    | | |       L0: JSR L1
+    | | |           GOTO L2
+    | | |       L1: ASTORE_3
+    | | |           ALOAD_1
+    | | |           LDC "finally"
+    | | | method-call(void java.io.PrintStream.println(java.lang.String))
+    | | | |         INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+    | | | method-call(void java.io.PrintStream.println(java.lang.String))
+    | | |           RET 3
+    | | local 1: java.io.PrintStream out
+    | local 0: java.lang.String[] args
+    |           L2: RETURN
+    method-execution(void FancyHelloWorld.main(java.lang.String[]))
+  end public static void main(String[])
+
+  public static String getName():
+    method-execution(java.lang.String FancyHelloWorld.getName())
+    |               ICONST_0
+    |               ISTORE_0
+    | local 0: int x
+    | |             ILOAD_0
+    | |             LDC "name"
+    | | method-call(int java.lang.String.hashCode())
+    | | |           INVOKEVIRTUAL java.lang.String.hashCode ()I
+    | | |           DUP
+    | | |           ISTORE_1
+    | | |           ILOAD_1
+    | | |           INVOKESTATIC org.aspectj.runtime.internal.Conversions.intObject (I)Ljava/lang/Object;
+    | | |           INVOKESTATIC Aspect.ajc_afterReturning_field_get (Ljava/lang/Object;)V
+    | | method-call(int java.lang.String.hashCode())
+    | |             IADD
+    | |             ISTORE_0
+    | |             NEW java.lang.StringBuffer
+    | |             DUP
+    | |             LDC "name"
+    | |             INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
+    | |             ILOAD_0
+    | | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(int))
+    | | |           INVOKEVIRTUAL java.lang.StringBuffer.append (I)Ljava/lang/StringBuffer;
+    | | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(int))
+    | | method-call(java.lang.String java.lang.StringBuffer.toString())
+    | | |           INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;
+    | | method-call(java.lang.String java.lang.StringBuffer.toString())
+    | local 0: int x
+    |               ARETURN
+    method-execution(java.lang.String FancyHelloWorld.getName())
+  end public static String getName()
+end public abstract class FancyHelloWorld

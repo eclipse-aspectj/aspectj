@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- build script to create a batch compiler from org.eclipse.jdt.core -->
+<project name="Eclipse Batch Compiler" default="export" basedir="..">
+	<target name="init">
+		<tstamp/>
+		<property name="destdir" value="../../batchcompiler-export" />
+		<property name="dest"  value="${destdir}" />
+	</target>
+
+	<target name="export" depends="init">
+
+		<echo message="TARGET: ${destdir}" />
+		<mkdir dir="${destdir}" />
+		<delete dir="${dest}" />
+		<mkdir dir="${dest}" />
+
+		<echo message="UPDATE jdtcom.jar" />
+		<jar 
+			jarfile="${dest}/jdtcom.jar"
+			basedir="bin"
+			includes="org/eclipse/jdt/internal/compiler/**,org/eclipse/jdt/core/compiler/*" />
+		
+		<echo message="UPDATE jdtcomsrc.zip" />
+		<zip zipfile="${dest}/jdtcomsrc.zip">
+		    <zipfileset dir="batch" />
+		    <zipfileset dir="compiler" />
+  		</zip>		
+	
+	</target>
+</project>

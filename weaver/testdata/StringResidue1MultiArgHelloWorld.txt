@@ -1,0 +1,63 @@
+public class MultiArgHelloWorld extends java.lang.Object:
+  public void <init>():
+                    ALOAD_0     // MultiArgHelloWorld this   (line 3)
+                    INVOKESPECIAL java.lang.Object.<init> ()V
+    constructor-execution(void MultiArgHelloWorld.<init>())
+    |               RETURN
+    constructor-execution(void MultiArgHelloWorld.<init>())
+  end public void <init>()
+
+  public static void main(String[]):
+    method-execution(void MultiArgHelloWorld.main(java.lang.String[]))
+    |               LDC "Hello"   (line 6)
+    |               LDC "World"
+    |               ASTORE_1
+    |               ASTORE_2
+    | method-call(void MultiArgHelloWorld.foo(java.lang.Object, java.lang.Object))
+    | |             ALOAD_2
+    | |             INSTANCEOF java.lang.String
+    | |             IFEQ L0
+    | |             ALOAD_1
+    | |             INSTANCEOF java.lang.String
+    | |             IFEQ L0
+    | |             INVOKESTATIC Aspect.ajc_before_0 ()V
+    | |         L0: ALOAD_2
+    | |             ALOAD_1
+    | |             INVOKESTATIC MultiArgHelloWorld.foo (Ljava/lang/Object;Ljava/lang/Object;)V
+    | method-call(void MultiArgHelloWorld.foo(java.lang.Object, java.lang.Object))
+    |               RETURN   (line 7)
+    method-execution(void MultiArgHelloWorld.main(java.lang.String[]))
+  end public static void main(String[])
+
+  static void foo(Object, Object):
+    method-execution(void MultiArgHelloWorld.foo(java.lang.Object, java.lang.Object))
+    | field-get(java.io.PrintStream java.lang.System.out)
+    | |             GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 10)
+    | field-get(java.io.PrintStream java.lang.System.out)
+    |               NEW java.lang.StringBuffer
+    |               DUP
+    | constructor-call(void java.lang.StringBuffer.<init>())
+    | |             INVOKESPECIAL java.lang.StringBuffer.<init> ()V
+    | constructor-call(void java.lang.StringBuffer.<init>())
+    |               ALOAD_0     // java.lang.Object arg0
+    | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))
+    | |             INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/Object;)Ljava/lang/StringBuffer;
+    | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))
+    |               LDC " "
+    | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.String))
+    | |             INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/String;)Ljava/lang/StringBuffer;
+    | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.String))
+    |               ALOAD_1     // java.lang.Object t
+    | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))
+    | |             INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/Object;)Ljava/lang/StringBuffer;
+    | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))
+    | method-call(java.lang.String java.lang.StringBuffer.toString())
+    | |             INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;
+    | method-call(java.lang.String java.lang.StringBuffer.toString())
+    | method-call(void java.io.PrintStream.println(java.lang.String))
+    | |             INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+    | method-call(void java.io.PrintStream.println(java.lang.String))
+    |               RETURN   (line 11)
+    method-execution(void MultiArgHelloWorld.foo(java.lang.Object, java.lang.Object))
+  end static void foo(Object, Object)
+end public class MultiArgHelloWorld

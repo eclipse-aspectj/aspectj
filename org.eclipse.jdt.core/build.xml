@@ -1,0 +1,107 @@
+<!-- -*- Mode: SGML; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- -->
+
+<project name="jdt-core" default="jdtcore.jar" basedir=".">
+
+    <target name="info" >
+      <echo>
+  This script builds a patched version of jdtcore.jar with modifications
+  needed for the AspectJ 1.1 compiler.  It also builds a nicely packaged collection 
+  of the eclipse core packages that jdtcore depends on.   The command
+
+     {ant} -f build.xml -DeclipseDir=c:/apps/eclipse2.0
+
+  will produce ../lib/jdtcore-aj11.jar and ../lib/jdtDepends.jar
+
+  jdtcore-aj11.jar is used for building the AspectJ 1.1 source distribution.
+  It is *not* a replacement for jdtcore.jar in eclipse 2.0.
+
+      </echo>
+    </target>
+
+    <target name="clean" depends="init"
+     description="clean and create classes">
+      <delete quiet="on" dir="${classes.dir}"/>
+      <mkdir dir="${classes.dir}"/>
+    </target>
+
+    <target name="init">
+      <!-- required directories - run from src or predefine -->
+      <property name="src.dir"
+            location="${basedir}"/> 
+      <property name="lib.dir"
+            location="${basedir}/../lib"/> 
+
+      <!-- created directories and libraries -->
+      <property name="classes.dir"
+            location="${src.dir}/../classes"/> 
+      <property name="jdtDepends.jar"
+            location="${lib.dir}/jdtDepends.jar"/> 
+      <property name="jdtcore.jar"
+            location="${lib.dir}/jdtcore-aj11.jar"/> 
+
+      <!-- build signals -->
+      <available file="${jdtDepends.jar}"
+             property="jdtDepends.jar.available"/>
+
+      <available file="${src.dir}/org/eclipse/jdt/core/dom/ArrayCreation.java"
+                 property="base.sources.available"/>
+    </target>
+
+    <target name="jdtDepends.jar" depends="init" 
+           unless="jdtDepends.jar.available"
+     description="build library required from eclipse 2.0">
+       <fail unless="eclipseDir" 
+            message="Define eclipseDir variable to build jdtDepends.jar"/>
+      <mkdir dir="${lib.dir}"/>
+       <jar destfile="${jdtDepends.jar}" >
+         <zipgroupfileset dir="${eclipseDir}/plugins">
+           <!-- The ant and xerces .jar's might not be needed, should verify  -->
+           <include name="org.apache.ant_1.4.1/ant.jar" /> 
+           <include name="org.apache.ant_1.4.1/jakarta-ant-1.4.1-optional.jar" />
+           <include name="org.apache.xerces_4.0.3/xercesImpl.jar" />
+           <include name="org.apache.xerces_4.0.3/xmlParserAPIs.jar" /> 
+
+           <!-- These .jar's are all definitely required to build -->
+           <include name="org.eclipse.core.boot_2.0.0/boot.jar" />
+           <include name="org.eclipse.core.resources_2.0.0/resources.jar" />
+           <include name="org.eclipse.core.runtime_2.0.0/runtime.jar" />
+         </zipgroupfileset>
+       </jar>
+    </target>
+
+    <target name="base.sources" depends="init" 
+         unless="base.sources.available">
+        <property name="jdtcoresrc.zip" 
+                  value="${eclipseDir}/plugins/org.eclipse.jdt.source_2.0.0/src/org.eclipse.jdt.core_2.0.0/jdtcoresrc.zip"/>
+        <property name="original.jdtcore.jar" 
+                  value="${eclipseDir}/plugins/org.eclipse.jdt.core_2.0.0/jdtcore.jar"/>
+        <echo>Copy base sources from ${jdtcoresrc.zip}</echo>
+        <unzip src="${jdtcoresrc.zip}" dest="${src.dir}" overwrite="false"/>
+        <unzip src="${original.jdtcore.jar}" dest="${src.dir}" overwrite="false">
+           <patternset>
+                <include name="**/*.properties"/>
+                <include name="**/*.rsc"/>
+           </patternset>
+        </unzip>
+    </target>
+
+
+    <target name="jdtcore.compile" depends="jdtDepends.jar,base.sources">
+        <antcall target="clean" />
+        <javac destdir="${classes.dir}" 
+               srcdir="${src.dir}" 
+               includes="**/*.java" 
+               classpath="${jdtDepends.jar}"/>
+       <copy todir="${classes.dir}">
+             <fileset dir="${src.dir}" includes="**/*.properties,**/*.rsc"/>
+       </copy>
+    </target>
+
+    <target name="jdtcore.jar" depends="jdtcore.compile">
+       <jar destfile="${jdtcore.jar}" >
+            <zipfileset src="${jdtDepends.jar}"/>
+            <fileset dir="${classes.dir}"/>
+       </jar>
+    </target>
+
+</project>

@@ -1,0 +1,484 @@
+<refentry>
+  <refnamediv>
+    <refname>ajc</refname>
+    <refpurpose>compiler for the AspectJ language </refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>ajc</command>
+      <arg><replaceable>Options</replaceable></arg>
+      <group>
+        <arg><replaceable>file...</replaceable></arg>
+        <arg>@<replaceable>file...</replaceable></arg>
+        <arg>-argfile <replaceable>file...</replaceable></arg>
+      </group>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1 id="ajc" xreflabel="ajc">
+    <title>Description</title>
+
+    <para>The command <command>ajc</command> compiles AspectJ and Java
+      language source files into class files. Options and files may be
+      specified directly on the command line, or indirectly by naming a
+      file which contains them.</para>
+
+    <para> The arguments after the options specify the file(s) to compile.
+        Files may be listed directly on the command line, or listed in a file.
+        The <parameter>@<replaceable>file</replaceable></parameter> and
+        <parameter>-argfile <replaceable>file</replaceable></parameter> forms
+        are equivalent, and are interpreted as meaning all the files listed in
+        the specified file.  Each line in these files should contain one option
+        or filename. Comments, as in Java, start with <literal>//</literal> and
+        extend to the end of the line.
+    </para>
+
+    <para>
+        <command>NB:</command> You must explicitly pass ajc all of the source files necessary 
+        for the compilation.  When you are compiling source files containing aspects
+        or pointcuts, be sure 
+        to include the source files for any types affected by the aspects or
+        picked out by the pointcuts.  
+        (If you wish to exclude types from the scope affected by the
+        aspect, change the corresponding pointcut or declaration.)
+        This is necessary because, unlike javac, ajc does not search the sourcepath for classes.
+    </para>
+
+    <refsect2>
+    <title>Options</title>
+
+     <variablelist>
+
+      <varlistentry>
+        <term>-verbose</term>
+        <listitem><para>
+          Output messages about what ajc is doing
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-version</term>
+        <listitem><para>
+          Print the version of ajc
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-nocomments</term>
+        <listitem><para>
+          Don't generate any comments into the woven code.
+          Only relevant with -preprocess mode.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-emacssym</term>
+        <listitem><para>
+          Generate symbols used by AJDE for Emacs
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-usejavac</term>
+        <listitem><para>
+          Use javac to generate .class files
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-preprocess</term>
+        <listitem><para>
+          Don't try to generate any .class files.
+          Generate regular Java code into <replaceable>workingdir</replaceable>
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-workingdir <replaceable>Directory</replaceable></term>
+        <listitem><para>
+          Specify where to place intermediate .java files
+          <replaceable>Directory</replaceable> defaults to ./ajworkingdir.
+          Only relevant with -usejavac or -preprocess modes.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term></term>
+        <listitem><para>
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term></term>
+        <listitem><para>
+
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-O</term>
+        <listitem><para>
+          Optimize; may hinder debugging or enlarge class files
+        </para></listitem>
+      </varlistentry>
+
+      <!-- We don't actually warn about deprecated methods ever
+      <varlistentry>
+        <term>-deprecation</term>
+        <listitem><para>
+          Output source locations where deprecated APIs are used
+        </para></listitem>
+      </varlistentry>
+      -->
+
+      <varlistentry>
+        <term>-d <replaceable>Directory</replaceable></term>
+        <listitem><para>
+          Specify where to place generated .class files
+          <replaceable>Directory</replaceable> defaults to the current working dir
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term></term>
+        <listitem><para>
+
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-classpath <replaceable>Path</replaceable></term>
+        <listitem><para>
+          Specify where to find user class files
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-bootclasspath <replaceable>Path</replaceable></term>
+        <listitem><para>
+          Override location of bootstrap class files
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-extdirs <replaceable>Path</replaceable></term>
+        <listitem><para>
+          Override location of installed extensions
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-argfile <replaceable>File</replaceable></term>
+        <listitem><para>
+          the file is a line-delimited list of arguments
+          these arguments are inserted into the argument list
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-encoding <replaceable>Encoding</replaceable></term>
+        <listitem><para>
+          Specify character encoding used by source files
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-source <replaceable>1.4</replaceable></term>
+        <listitem><para>
+          Specify support for assertions according to the 1.4 Java language.
+          This will treat <literal>assert</literal> as a keyword and will
+          implement assertions according to the 1.4 language spec.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-lenient</term>
+        <listitem><para>
+          Be extra-lenient in interpreting the java specification
+          This allows some statements that some compilers consider errors.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-strict</term>
+        <listitem><para>
+          Be extra-strict in interpreting the java specification
+          This signals errors for some statements that many compilers don't
+          catch, and generates code strictly according to the Java Language
+          Specification, even though such code may not run on 1.2 VMs.
+        </para></listitem>
+      </varlistentry>
+     </variablelist>
+
+    </refsect2>
+
+    <refsect2> <title>File names</title>
+
+    <para>ajc accepts source files with either the <filename>.java</filename>
+    extension or the <filename>.aj</filename> extension.  We normally use
+    <filename>.java</filename> for all of our files in an AspectJ system -- files
+    that contain aspects as well as files that contain classes.  However, if
+    you have a need to mechanically distinguish files that use AspectJ's
+    additional functionality from those that are pure Java we recommend using
+    the <filename>.aj</filename> extension for those files.</para>
+
+    <para>We'd like to discourage other means of mechanical distinction such as
+    naming conventions or sub-packages in favor of the <filename>.aj</filename>
+    extension.</para>
+
+    <itemizedlist>
+
+    <listitem>Filename conventions are hard to enforce and lead to awkward names
+    for your aspects.  Instead of <filename>TracingAspect.java</filename> we
+    recommend using <filename>Tracing.aj</filename> (or just
+    <filename>Tracing.java</filename>) instead.</listitem>
+
+    <listitem>Sub-packages move aspects out of their natural place in a system
+    and can create an artificial need for privileged aspects.  Instead of
+    adding a sub-package like <filename>aspects</filename> we recommend using the
+    <filename>.aj</filename> extension and including these files in your existing
+    packages instead.</listitem>
+
+    </itemizedlist>
+
+    </refsect2>
+
+    <refsect2>
+      <title>Compatibility</title>
+
+      <para>
+        AspectJ is a compatible extension to the Java programming language. The
+        AspectJ compiler adheres to the <ulink
+        url="http://java.sun.com/docs/books/jls/index.html"> <citetitle
+        pubwork="book">The Java Language Specfication, Second
+        Edition</citetitle></ulink> and to the <ulink
+        url="http://java.sun.com/docs/books/vmspec/index.html"><citetitle
+        pubwork="book">The Java Virtual Machine Specification, Second
+        Edition</citetitle></ulink> and runs on any Java 2 compatible
+        platform. The code it generates runs on any Java 1.1 or later
+        compatible platform.</para>
+
+    </refsect2>
+
+    <refsect2>
+      <title>Examples</title>
+
+      <example id="simpleexample">
+        <title>A simple example</title>
+
+        <para>Compile two files:</para>
+
+        <programlisting>
+        ajc HelloWorld.java Trace.java
+        </programlisting>
+
+      </example>
+
+      <example id="exampleusingargfile">
+        <title>An example using -argfile/@</title>
+
+        <para>
+          To avoid specifying file names on the command line, 
+          list source files in a line-delimited text argfile.
+          Source file paths may be absolute or relative to the argfile,
+          and may include other argfiles by @-reference.
+          The following file <literal>sources.lst</literal>
+          contains absolute and relative files and @-references:
+          <para><programlisting>
+Gui.java
+/home/user/src/Library.java
+data/Repository.java
+data/Access.java
+@../../common/common.lst
+@/home/user/src/lib.lst
+view/body/ArrayView.java</programlisting></para>
+
+          Compile the files using either the -argfile or @ form:
+
+          <para><programlisting>
+ajc -argfile sources.lst
+ajc @sources.lst</programlisting></para>
+        </para>
+        <para>
+        Argfiles are also supported by jikes, javac, and ajdoc, so you 
+        can use the files in hybrid builds.  However, the support varies:
+        </para>
+
+	<simplelist>
+        <listitem>Only ajc accepts command-line options</listitem>
+        <listitem>Jikes and Javac do not accept internal @argfile references.
+          </listitem>
+        <listitem>Jikes and Javac only accept the @file form on the command line.</listitem>
+	</simplelist>
+
+      </example>
+
+      <!-- these examples suck
+      <example id="mixingoptionsandfiles">
+        <title>Mixing directly and indirectly specified options and
+        files</title>
+
+        <para>Invoke the AspectJ compiler with the options <literal>-threads
+          2</literal>, <literal>-deprecation</literal>,
+        <literal>-verbose</literal> and the options listed in the file
+        <filename>standard_ajc_options</filename> on the files listed in
+        <filename>prog_src_files</filename>. </para>
+
+        <programlisting>
+        ajc -threads 2 -deprecation @standard_ajc_options -argfile prog_src_files -verbose
+        </programlisting>
+
+      </example>
+
+      <example id="optionsnotinajc">
+
+        <title>Compiling with options not directly supported by
+        <command>ajc</command></title>
+
+        <para>Run the AspectJ compiler on the file
+        <filename>figures/FigureElement.java</filename> but do not generate
+        <filename>.class</filename> (bytecode) files. Keep the generated
+        Java source files and place them in the directory
+        <filename>tmp</filename>.</para>
+
+<programlisting>
+        ajc -preprocess -workingdir tmp figures/FigureElement.java
+</programlisting>
+
+        <para>You may then compile those files with:</para>
+
+        <programlisting>
+        cd tmp
+        javac -g figures/FigureElement.java
+        </programlisting>
+
+      </example>
+
+      <example id="usingjikes">
+        <title>Using <command>jikes</command></title>
+
+        <para>Invoke the AspectJ compiler on the file
+        <filename>figures/FigureElement.java</filename>, saving the
+        generated Java files in the directory
+        <filename>ajworkingdir</filename>. Then invoke the Jikes compiler
+        on the generated Java files.</para>
+
+        <programlisting>
+        JIKESPATH=$JAVA_HOME/jre/lib/rt.jar:$CLASSPATH
+        ajc -preprocess figures/FigureElement.java
+        cd ajworkingdir
+        jikes figures/FigureElement.java
+        </programlisting>
+
+        <para>Since <command>jikes</command> cannot infer the location of the
+        standard class files the way <command>javac</command> can, you must
+        tell it explicitly how to find the system and user class files it
+        needs. You may either use the <literal>-classpath</literal> option to
+        both <command>ajc</command> and to <command>jikes</command>, or you
+        may define the enviroment variables <envar>CLASSPATH</envar> and
+        <envar>JIKESPATH</envar> appropriately.</para>
+
+      </example>
+      -->
+
+    </refsect2>
+
+    <refsect2>
+      <title>The AspectJ compiler API</title>
+
+      <para>The AspectJ compiler is implemented completely in Java and can be
+        called as a Java class.  The only interface that should be considered
+        public is the method <literal>org.aspectj.tools.ajc.Main.main(String[]
+        args)</literal>
+        where <literal>args</literal> are the standard <command>ajc</command>
+        command line arguments. This means that an alternative way to run the
+        compiler is </para>
+
+      <cmdsynopsis>
+        <command><literal>java org.aspectj.tools.ajc.Main</literal></command>
+        <arg><replaceable>option...</replaceable></arg>
+        <arg><replaceable>file...</replaceable></arg>
+      </cmdsynopsis>
+
+<!--        <note> -->
+	<para>
+        To run in <literal>-usejavac</literal> mode,
+        you must include in your classpath the
+        <filename>tools.jar</filename> from your Java 2 developer's kit.
+    </para>
+<!--        </note> -->
+    </refsect2>
+
+    <refsect2>
+      <title>Stack Traces and the SourceFile attribute</title>
+
+      <para>Unlike traditional java compilers, the AspectJ compiler may in
+            certain cases generate classfiles from multiple source files.
+            Unfortunately, the Java class file format does not support multiple
+            SourceFile attributes.  So, in order to make sure all source file
+            information is available, the AspectJ compiler may in some cases
+            encode multiple filenames in the SourceFile attribute.
+      </para>
+
+      <para>Probably the only time you may see this format is when you view
+            stack traces, where you may encounter traces of the format
+      </para>
+
+<programlisting>
+java.lang.NullPointerException
+  at Main.new$constructor_call37(Main.java;SynchAspect.java[1k]:1030)
+</programlisting>
+
+      <para>where instead of the usual 
+      </para>
+
+<programlisting>
+File:LineNumber
+</programlisting>
+
+      <para>format, you see
+      </para>
+
+<programlisting>
+File0;File1[Number1];File2[Number2] ... :LineNumber
+</programlisting>
+
+      <para>In this case, LineNumber is the usual offset in lines plus the 
+      "start line" of the actual source file.  That means you use LineNumber 
+      both to identify the source file and to find the line at issue. 
+      The number in [brackets] after each file tells you the
+      virtual "start line" for that file (the first file has a start of 0).  
+      </para>
+
+      <para> In our example from the null pointer exception trace, 
+      the virtual start line is 1030.  Since the file SynchAspect.java
+      "starts" at line 1000 [1k], the LineNumber points to line 30 of
+      SynchAspect.java.
+      </para>
+
+      <para> So, when faced with such stack traces, the way to find the actual
+      source location is to look through the list of "start line" numbers to
+      find the one just under the shown line number.  That is the file where
+      the source location can actually be found.  Then, subtract that "start
+      line" from the shown line number to find the actual line number within
+      that file.
+      </para>
+
+      <para>Of course, AspectJ tools will do this decoding for you, and in a
+            class file that comes from only a single source file, the AspectJ
+            compiler generates SourceFile attributes consistent with
+            traditional Java compilers.
+      </para>
+
+    </refsect2>
+
+
+  </refsect1>
+</refentry>
+
+<!-- Local variables: -->
+<!-- fill-column: 79 -->
+<!-- sgml-local-ecat-files: devguide.ced -->
+<!-- sgml-parent-document:("devguide.sgml" "book" "refentry") -->
+<!-- End: -->

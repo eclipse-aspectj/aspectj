@@ -1,0 +1,2361 @@
+<appendix id="semantics" xreflabel="Semantics">
+
+  <title>Language Semantics</title>
+
+  <para>
+    AspectJ extends Java by overlaying a concept of join points onto the
+    existing Java semantics and by adding adds four kinds of program elements
+    to Java:
+  </para>
+
+  <para>
+    Join points are well-defined points in the execution of a program. These
+    include method and constructor calls, field accesses and others described
+    below.
+  </para>
+
+  <para>
+    A pointcut picks out join points, and exposes some of the values in the
+    execution context of those join points. There are several primitive
+    pointcut designators, new named pointcuts can be defined by the
+    <literal>pointcut</literal> declaration.
+  </para>
+
+  <para>
+    Advice is code that executes at each join point in a pointcut. Advice has
+    access to the values exposed by the pointcut. Advice is defined by
+    <literal>before</literal>, <literal>after</literal>, and
+    <literal>around</literal> declarations.
+  </para>
+
+  <para>
+    Introduction and declaration form AspectJ's static crosscutting features,
+    that is, is code that may change the type structure of a program, by adding
+    to or extending interfaces and classes with new fields, constructors, or
+    methods. Introductions are defined through an extension of usual method,
+    field, and constructor declarations, and other declarations are made with a
+    new <literal>declare</literal> keyword.
+  </para>
+
+  <para>
+    An aspect is a crosscutting type, that encapsulates pointcuts, advice, and
+    static crosscutting features. By type, we mean Java's notion: a modular
+    unit of code, with a well-defined interface, about which it is possible to
+    do reasoning at compile time. Aspects are defined by the
+    <literal>aspect</literal> declaration.
+  </para>
+
+  <sect1>
+    <title>Join Points</title>
+
+    <para>
+      While aspects do define crosscutting types, the AspectJ system does not
+      allow completely arbitrary crosscutting. Rather, aspects define types that
+      cut across principled points in a program's execution. These principled
+      points are called join points.
+    </para>
+
+
+    <para>
+      A join point is a well-defined point in the execution of a program. The
+      join points defined by AspectJ are:
+    </para>
+
+    <glosslist>
+
+      <glossentry>
+        <glossterm>Method call</glossterm>
+        <glossdef>
+          <para>
+            When a method is called, not including super calls of non-static
+            methods.
+          </para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry>
+        <glossterm>Method execution</glossterm>
+        <glossdef>
+          <para>
+            When the body of code for an actual method executes.
+          </para>
+        </glossdef>
+      </glossentry>
+
+
+      <glossentry>
+        <glossterm>Constructor call</glossterm>
+        <glossdef>
+          <para>
+            When an object is built and a constructor is called, not including
+            this or super constructor calls.  The object being constructed is
+            returned at a constructor call join point, so it may be accessed
+            with <literal>after returning</literal> advice.
+          </para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry>
+        <glossterm>Initializer execution</glossterm>
+        <glossdef>
+          <para>
+            When the non-static initializers of a class run.
+          </para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry>
+        <glossterm>Constructor execution</glossterm>
+        <glossdef>
+          <para>
+            When the body of code for an actual constructor executes, after its
+            this or super constructor call.  The object being constructed is
+            the currently executing object, and so may be accessed with the
+            <literal>this</literal> pointcut.  No value is returned from
+            constructor execution join points.
+          </para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry>
+        <glossterm>Static initializer execution</glossterm>
+        <glossdef>
+          <para>
+            When the static initializer for a class executes.
+          </para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry>
+       <glossterm>Object pre-initialization</glossterm>
+       <glossdef>
+         <para>
+           Before the object initialization code for a particular class runs.
+           This encompasses the time between the start of its first called
+           constructor and the start of its parent's constructor.  Thus, the
+           execution of these join points encompass the join points from the
+           code found in <literal>this()</literal> and
+           <literal>super()</literal> constructor calls.
+         </para>
+       </glossdef>
+      </glossentry>
+
+      <glossentry>
+        <glossterm>Object initialization</glossterm>
+        <glossdef>
+          <para>
+            When the object initialization code for a particular class runs.
+            This encompasses the time between the return of its parent's
+            constructor and the return of its first called constructor. It
+            includes all the dynamic initializers and constructors used to
+            create the object.  The object being constructed is
+            the currently executing object, and so may be accessed with the
+            <literal>this</literal> pointcut.  No value is returned from
+            constructor execution join points.
+          </para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry>
+        <glossterm>Field reference</glossterm>
+        <glossdef>
+          <para>
+            When a non-final field is referenced.
+          </para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry>
+        <glossterm>Field assignment</glossterm>
+        <glossdef>
+          <para>
+            When a field is assigned to.
+          </para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry>
+        <glossterm>Handler execution</glossterm>
+        <glossdef>
+          <para>
+            When an exception handler executes.
+          </para>
+        </glossdef>
+      </glossentry>
+    </glosslist>
+
+
+
+  </sect1>
+
+  <sect1>
+    <title>Pointcuts</title>
+
+    <para>
+      A pointcut is a program element that picks out join points, as well as
+      data from the execution context of the join points.  Pointcuts are used
+      primarily by advice.  They can be composed with boolean operators to
+      build up other pointcuts.  So a pointcut is defined by one of
+    </para>
+
+    <variablelist>
+      <varlistentry>
+        <term><literal>call(<replaceable>Signature</replaceable>)</literal></term>
+        <listitem>
+          <para>Picks out a method or constructor call join point based on the
+          static signature at the caller side. </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><literal>execution(<replaceable>Signature</replaceable>)</literal></term>
+        <listitem>
+          <para>Picks out a method or constructor execution join point based on
+          the static signature at the callee side. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><literal>get(<replaceable>Signature</replaceable>)</literal></term>
+        <listitem>
+          <para>Picks out a field get join point based on the static
+          signature. Note that references to constant fields (static final
+          fields bound to a constant string object or primitive value) are not
+          get join points, since Java requires them to be inlined. </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><literal>set(<replaceable>Signature</replaceable>)</literal></term>
+        <listitem>
+          <para>Picks out a field set join point based on the static
+          signature. Note that the initializations of constant fields (static
+          final fields where the initializer is a constant string object or
+          primitive value) are not set join points, since Java requires their
+          references to be inlined.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><literal>handler(<replaceable>TypePattern</replaceable>)</literal></term>
+        <listitem>
+          <para>Picks out an exception handler of any of the Throwable types
+          of the type pattern. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><literal>initialization(<replaceable>Signature</replaceable>)</literal></term>
+        <listitem>
+          <para>Picks out an object initialization join point based on the
+          static signature of the starting constructor. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><literal>staticinitialization(<replaceable>TypePattern</replaceable>)</literal></term>
+        <listitem>
+          <para>Picks out a static initializer execution join point of any of the types
+          of the type pattern. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><literal>within(<replaceable>TypePattern</replaceable>)</literal></term>
+        <listitem>
+          <para>Picks out all join points where the executing code is defined
+          in any of the classes of the type pattern. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><literal>withincode(<replaceable>Signature</replaceable>)</literal></term>
+        <listitem>
+          <para>Picks out all join points where the executing code is defined
+          in the method or constructor of the appropriate signature. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><literal>cflow(<replaceable>Pointcut</replaceable>)</literal></term>
+        <listitem>
+          <para>Picks out all join points in the control flow of the join
+          points picked out by the pointcut, including pointcut's join points
+          themselves. </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><literal>cflowbelow(<replaceable>Pointcut</replaceable>)</literal></term>
+        <listitem>
+          <para>Picks out all join points in the control flow below the join
+          points picked out by the pointcut. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><literal>this(<replaceable>TypePattern</replaceable> or <replaceable>Id</replaceable>)</literal></term>
+        <listitem>
+          <para>Picks out all join points where the currently executing object
+          (the object bound to <literal>this</literal>) is an instance of a
+          type of the type pattern, or of the type of the identifier.
+          Will not match any join points from static methods.
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><literal>target(<replaceable>TypePattern</replaceable> or <replaceable>Id</replaceable>)</literal></term>
+        <listitem>
+          <para>Picks out all join points where the target object (the object
+          on which a call or field operation is applied to) is an instance of a
+          type of the type pattern, or of the type of the
+          identifier.  Will not match any calls, gets, or sets to static
+          members. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><literal>args(<replaceable>TypePattern</replaceable> or <replaceable>Id</replaceable>, ...)</literal></term>
+        <listitem>
+          <para>Picks out all join points where the arguments are instances of
+          a type of the appropriate type pattern or identifier. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><literal><replaceable>PointcutId</replaceable>(<replaceable>TypePattern</replaceable> or <replaceable>Id</replaceable>, ...)</literal></term>
+        <listitem>
+          <para>Picks out all join points that are picked out by the
+          user-defined pointcut designator named by
+          <replaceable>PointcutId</replaceable>. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><literal>if(<replaceable>BooleanExpression</replaceable>)</literal></term>
+        <listitem>
+          <para>Picks out all join points where the boolean expression
+          evaluates to <literal>true</literal>.  The boolean expression used
+          can only access static members, variables exposed by teh enclosing
+          pointcut or advice, and <literal>thisJoinPoint</literal> forms.  In
+          particular, it cannot call non-static methods on the aspect. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><literal>! <replaceable>Pointcut</replaceable></literal></term>
+        <listitem>
+          <para>Picks out all join points that are not picked out by the
+          pointcut. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><literal><replaceable>Pointcut0</replaceable> <![CDATA[&&]]> <replaceable>Pointcut1</replaceable></literal></term>
+        <listitem>
+          <para>Picks out all join points that are picked out by both of the
+          pointcuts. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><literal><replaceable>Pointcut0</replaceable> || <replaceable>Pointcut1</replaceable></literal></term>
+        <listitem>
+          <para>Picks out all join points that are picked out by either of the
+          pointcuts. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><literal>( <replaceable>Pointcut</replaceable> )</literal></term>
+        <listitem>
+          <para>Picks out all join points that are picked out by the
+          parenthesized pointcut. </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+    <sect2>
+      <title>Pointcut naming
+      </title>
+
+      <para>
+        A named pointcut is defined with the <literal>pointcut</literal>
+        declaration.
+      </para>
+
+
+<programlisting>
+pointcut publicIntCall(int i):
+    call(public * *(int)) <![CDATA[&&]]> args(i);
+</programlisting>
+
+      <para>
+        A named pointcut may be defined in either a class or aspect, and is
+        treated as a member of the class or aspect where it is found.  As a
+        member, it may have an access modifier such as
+        <literal>public</literal> or <literal>private</literal>.
+      </para>
+
+<programlisting>
+class C {
+    pointcut publicCall(int i):
+        call(public * *(int)) <![CDATA[&&]]> args(i);
+}
+
+class D {
+    pointcut myPublicCall(int i):
+        C.publicCall(i) <![CDATA[&&]]> within(SomeType);
+}
+</programlisting>
+
+      <para>
+        Pointcuts that are not final may be declared abstract, and defined
+        without a body.  Abstract pointcuts may only be declared within
+        abstract aspects.
+      </para>
+
+<programlisting>
+abstract aspect A {
+    abstract pointcut publicCall(int i);
+}
+</programlisting>
+
+      <para>
+        In such a case, an extending aspect may override the abstract
+        pointcut.
+      </para>
+
+<programlisting>
+aspect B extends A {
+    pointcut publicCall(int i): call(public Foo.m(int)) <![CDATA[&&]]> args(i);
+}
+</programlisting>
+
+      <para>For completeness, a pointcut with a declaration may be declared
+      <literal>final</literal>. </para>
+
+      <para>
+        Though named pointcut declarations appear somewhat like method
+        declarations, and can be overridden in subaspects, they cannot be
+        overloaded. It is an error for two pointcuts to be named with the same
+        name in the same class or aspect declaration.
+      </para>
+
+      <para>
+        The scope of a named pointcut is the enclosing class declaration.  This
+        is different than the scope of other members; the scope of other
+        members is the enclosing class <emphasis>body</emphasis>.  This means
+        that the following code is legal:
+      </para>
+
+<programlisting>
+aspect B percflow(publicCall()) {
+    pointcut publicCall(): call(public Foo.m(int));
+}
+</programlisting>
+
+    </sect2>
+
+    <sect2>
+      <title>Context exposure</title>
+
+      <para>
+        Pointcuts have an interface; they expose some parts of the execution
+        context of the join points they pick out. For example, the PublicIntCall
+        above exposes the first argument from the receptions of all public
+        unary integer methods.  This context is exposed by providing typed
+        formal parameters to named pointcuts and advice, like the formal
+        parameters of a Java method. These formal parameters are bound by name
+        matching.
+      </para>
+
+      <para>
+        On the right-hand side of advice or pointcut declarations, a regular
+        Java identifier is allowed in certain pointcut designators in place of
+        a type or collection of types.
+        There are four primitive pointcut designators where this is allowed:
+        <literal>this</literal>, <literal>target</literal>, and
+        <literal>args</literal><!-- and hasaspect -->.  In all such
+        cases, using an identifier rather than a type is as if the type
+        selected was the type of the formal parameter, so that the pointcut
+      </para>
+
+<programlisting>
+pointcut intArg(int i): args(i);
+</programlisting>
+
+      <para>
+        picks out join points where an <literal>int</literal> is being passed
+        as an argument, but furthermore allows advice access to that argument.
+      </para>
+
+      <para>
+        Values can be exposed from named pointcuts as well, so
+      </para>
+
+<programlisting>
+pointcut publicCall(int x): call(public *.*(int)) <![CDATA[&&]]> intArg(x);
+pointcut intArg(int i): args(i);
+</programlisting>
+
+      <para>
+        is a legal way to pick out all calls to public methods accepting an int
+        argument, and exposing that argument.
+      </para>
+
+      <para>
+        There is one special case for this kind of exposure.  Exposing an
+        argument of type Object will also match primitive typed arguments, and
+        expose a "boxed" version of the primitive.  So,
+      </para>
+
+<programlisting>
+pointcut publicCall(): call(public *.*(..)) <![CDATA[&&]]> args(Object);
+</programlisting>
+
+      <para>
+        will pick out all unary methods that take, as their only argument,
+        subtypes of Object (i.e., not primitive types like
+        <literal>int</literal>), but
+      </para>
+
+<programlisting>
+pointcut publicCall(Object o): call(public *.*(..)) <![CDATA[&&]]> args(o);
+</programlisting>
+
+      <para>
+        will pick out all unary methods that take any argument:  And if the
+        argument was an <literal>int</literal>, then the value passed to advice
+        will be of type <literal>java.lang.Integer</literal>.
+      </para>
+    </sect2>
+
+    <sect2>
+      <title>Primitive pointcuts</title>
+
+      <bridgehead>Method-related pointcuts</bridgehead>
+
+        <para>AspectJ provides two primitive pointcut designators designed to
+        capture method call and execution join points. </para>
+
+        <simplelist>
+        <member><literal>call(<replaceable>Signature</replaceable>)</literal></member>
+        <member><literal>execution(<replaceable>Signature</replaceable>)</literal></member>
+        </simplelist>
+
+        <para>These two pointcuts also pick out constructor call end execution
+        join points. </para>
+
+      <bridgehead>Field-related pointcuts</bridgehead>
+
+        <para>
+          AspectJ provides two primitive pointcut designators designed to
+          capture field reference and assignment join points:
+        </para>
+
+        <simplelist>
+        <member><literal>get(<replaceable>Signature</replaceable>)</literal></member>
+        <member><literal>set(<replaceable>Signature</replaceable>)</literal></member>
+        </simplelist>
+
+        <para>
+          All set join points are treated as having one argument, the value the
+          field is being set to, so at a set join point, that value can be
+          accessed with an <literal>args</literal> pointcut.  So an aspect
+          guarding an integer variable x declared in type T might be written as
+        </para>
+
+<programlisting><![CDATA[
+aspect GuardedX {
+    static final int MAX_CHANGE = 100;
+    before(int newval): set(int T.x) && args(newval) {
+        if (Math.abs(newval - T.x) > MAX_CHANGE)
+            throw new RuntimeException();
+    }
+}]]></programlisting>
+
+      <bridgehead>Object creation-related pointcuts</bridgehead>
+
+        <para>
+          AspectJ provides three primitive pointcut designators designed to
+          capture the initializer execution join points of objects.
+        </para>
+
+        <simplelist>
+        <member><literal>call(<replaceable>Signature</replaceable>)</literal></member>
+        <member><literal>initialization(<replaceable>Signature</replaceable>)</literal></member>
+        <member><literal>execution(<replaceable>Signature</replaceable>)</literal></member>
+        </simplelist>
+
+      <bridgehead>Class initialization-related pointcuts</bridgehead>
+
+        <para>
+          AspectJ provides one primitive pointcut designator to pick out
+          static initializer execution join points.
+        </para>
+
+        <simplelist>
+        <member><literal>staticinitialization(<replaceable>TypePattern</replaceable>)</literal></member>
+        </simplelist>
+
+      <bridgehead>Exception handler execution-related pointcuts</bridgehead>
+
+        <para>
+          AspectJ provides one primitive pointcut designator to capture
+          execution of exception handlers:
+        </para>
+
+        <simplelist>
+        <member><literal>handler(<replaceable>TypePattern</replaceable>)</literal></member>
+        </simplelist>
+
+        <para>
+          All handler join points are treated as having one argument, the value
+          of the exception being handled, so at a handler join point, that
+          value can be accessed with an <literal>args</literal> pointcut.  So
+          an aspect used to put FooException objects into some normal form
+          before they are handled could be written as
+        </para>
+
+<programlisting>
+aspect NormalizeFooException {
+    before(FooException e): handler(FooException) <![CDATA[&&]]> args(e) {
+        e.normalize();
+    }
+}
+</programlisting>
+
+      <bridgehead>State-based pointcuts</bridgehead>
+
+        <para>
+          Many concerns cut across the dynamic times when an object of a
+          particular type is executing, being operated on, or being passed
+          around.  AspectJ provides primitive pointcuts that capture join
+          points at these times.  These pointcuts use the dynamic types of
+          their objects to discriminate, or pick out, join points.  They may
+          also be used to expose to advice the objects used for
+          discrimination.
+        </para>
+
+        <simplelist>
+        <member><literal>this(<replaceable>TypePattern</replaceable> or <replaceable>Id</replaceable>)</literal></member>
+        <member><literal>target(<replaceable>TypePattern</replaceable> or <replaceable>Id</replaceable>)</literal></member>
+<!--    <member><literal>hasaspect(<replaceable>TypePattern</replaceable> or <replaceable>Id</replaceable>)</literal></member> -->
+        </simplelist>
+
+        <para>
+          The this pointcut picks out all join points where the currently
+          executing object (the object bound to <literal>this</literal>) is an
+          instance of a particular type.  The target pointcut picks out all
+          join points where the target object (the object on which a method is
+          called or a field is accessed) is an instance of a particular type.
+<!--      The hasaspect pointcut picks out all join points where there is an
+          associated aspect instance of a particular type. -->
+        </para>
+
+        <simplelist>
+        <member><literal>args(<replaceable>TypePattern</replaceable> or <replaceable>Id</replaceable> or "..", ...)</literal></member>
+        </simplelist>
+
+        <para>
+          The args pointcut picks out all join points where the arguments are
+          instances of some types.  Each element in the comma-separated list is
+          one of three things.  If it is a type pattern, then the argument
+          in that position must be an instance of a type of the type name.  If
+          it is an identifier, then the argument in that position must be an
+          instance of the type of the identifier (or of any type if the
+          identifier is typed to Object).  If it is the special wildcard "..",
+          then any number of arguments will match, just like in signatures.  So
+          the pointcut
+        </para>
+
+<programlisting>
+args(int, .., String)
+</programlisting>
+
+        <para>
+          will pick out all join points where the first argument is an
+          <literal>int</literal> and the last is a <literal>String</literal>.
+        </para>
+
+
+      <bridgehead>Control flow-based pointcuts</bridgehead>
+
+        <para>
+          Some concerns cut across the control flow of the program. The cflow
+          and cflowbelow primitive pointcut designators capture join points
+          based on control flow.
+        </para>
+
+        <simplelist>
+        <member><literal>cflow(<replaceable>Pointcut</replaceable>)</literal></member>
+        <member><literal>cflowbelow(<replaceable>Pointcut</replaceable>)</literal></member>
+        </simplelist>
+
+        <para>
+          The cflow pointcut picks out all join points that occur between the start and the
+          end of each of the pointcut's join points.
+        </para>
+
+        <para>
+          The cflowbelow pointcut picks out all join points that occur between
+          the start and the end of each of the pointcut's join points, but
+          not including the initial join point of the control flow itself.
+        </para>
+
+      <bridgehead>Program text-based pointcuts</bridgehead>
+
+        <para>
+          While many concerns cut across the runtime structure of the program,
+          some must deal with the actual lexical structure. AspectJ allows
+          aspects to pick out join points based on where their associated code
+          is defined.
+        </para>
+
+        <simplelist>
+        <member><literal>within(<replaceable>TypePattern</replaceable>)</literal></member>
+        <member><literal>withincode(<replaceable>Signature</replaceable>)</literal></member>
+        </simplelist>
+
+        <para>
+          The within pointcut picks out all join points where the code
+          executing is defined in the declaration of one of the types in
+          <replaceable>TypePattern</replaceable>. This includes the class
+          initialization, object initialization, and method and constructor
+          execution join points for the type, as well as any join points
+          associated with the statements and expressions of the type.  It also
+          includes any join points that are associated with code within any of
+          the type's nested types.
+        </para>
+
+        <para>
+          The withincode pointcut picks out all join points where the code
+          executing is defined in the declaration of a particular method or
+          constructor.  This includes the method or constructor execution join
+          point as well as any join points associated with the statements and
+          expressions of the method or constructor.  It also includes any join
+          points that are associated with code within any of the method or
+          constructor's local or anonymous types.
+        </para>
+
+      <bridgehead>Dynamic property-based pointcuts</bridgehead>
+
+        <simplelist>
+        <member><literal>if(<replaceable>BooleanExpression</replaceable>)</literal></member>
+        </simplelist>
+
+        <para>
+          The if pointcut picks out join points based on a dynamic property.
+          It's syntax takes an expression, which must evaluate to a boolean
+          true or false.  Within this expression, the
+          <literal>thisJoinPoint</literal> object is available.  So one
+          (extremely inefficient) way of picking out all call join points would
+          be to use the pointcut
+        </para>
+
+<programlisting>
+if(thisJoinPoint.getKind().equals("call"))
+</programlisting>
+
+    </sect2>
+
+    <sect2>
+      <title>Signatures</title>
+
+      <para>
+        One very important property of a join point is its signature, which is
+        used by many of AspectJ's pointcut designators to select particular
+        join points.
+      </para>
+
+      <para>
+        At a method call join point, the signature is composed of the type used
+        to access the method, the name of the method, and the the types of the called
+        method's formal parameters and return value (if any).
+      </para>
+
+      <para>
+        At a method execution join point, the signature is composed of the type
+        defining the method, the name of the method, and the the types of the executing
+        method's formal parameters and return value (if any).
+      </para>
+
+
+      <para>
+        At a constructor call join point, the signature is composed of the type
+        of the object to be constructed and the types of the
+        called constructor's formal parameters.
+      </para>
+
+      <para>
+        At a constructor execution join point, the signature is composed of the
+        type defining the constructor and the types of the executing
+        constructor's formal parameters.
+      </para>
+
+      <para>
+        At an object initialization join point, the signature is composed of
+        the type being initialized and the types of the formal parameters of
+        the first constructor entered during the initialization of this type.
+      </para>
+
+      <para>
+       At an object pre-initialization join point, the signature is composed
+       of the type being initialized and the types of the formal parameters of
+       the first constructor entered during the initialization of this type.
+      </para>
+
+      <para>
+        At a field reference or assignment join point, the signature is
+        composed of the type used to access or assign to the field, the name of
+        the field, and the type of the field.
+      </para>
+
+      <para>
+        At a handler execution join point, the signature is composed of the
+        exception type that the handler handles.
+      </para>
+
+      <para>
+        The <literal>withincode</literal>, <literal>call</literal>,
+        <literal>execution</literal>, <literal>get</literal>, and
+        <literal>set</literal> primitive pointcut designators all use signature
+        patterns to determine the join points they describe. A signature
+        pattern is an abstract description of one or more join-point
+        signatures. Signature patterns are intended to match very closely the
+        same kind of things one would write when defining individual methods
+        and constructors.
+      </para>
+
+      <para>
+        Method definitions in Java include method names, method parameters,
+        return types, modifiers like static or private, and throws clauses,
+        while constructor definitions omit the return type and replace the
+        method name with the class name. The start of a particular method
+        definition, in class <literal>Test</literal>, for example, might be
+      </para>
+
+
+<programlisting>
+class C {
+    public final void foo() throws ArrayOutOfBoundsException { ... }
+}
+</programlisting>
+
+      <para>
+        In AspectJ, method signature patterns have all these, but most elements
+        can be replaced by wildcards. So
+      </para>
+
+
+<programlisting>
+call(public final void C.foo() throws ArrayOutOfBoundsException)
+</programlisting>
+
+      <para>
+        picks out call join points to that method, and the pointcut
+      </para>
+
+<programlisting>
+call(public final void *.*() throws ArrayOutOfBoundsException)
+</programlisting>
+
+
+      <para>
+        picks out all call join points to methods, regardless of their name
+        name or which class they are defined on, so long as they take no
+        arguments, return no value, are both <literal>public</literal> and
+        <literal>final</literal>, and are declared to throw
+        <literal>ArrayOutOfBounds</literal> exceptions.
+      </para>
+
+      <para>
+        The defining type name, if not present, defaults to *, so another way
+        of writing that pointcut would be
+      </para>
+
+<programlisting>
+call(public final void *() throws ArrayOutOfBoundsException)
+</programlisting>
+
+      <para>
+        Formal parameter lists can use the wildcard <literal>..</literal> to
+        indicate zero or more arguments, so
+      </para>
+
+<programlisting>
+execution(void m(..))
+</programlisting>
+
+      <para>
+        picks out execution join points for void methods named
+        <literal>m</literal>, of any number of arguments, while
+      </para>
+
+<programlisting>
+execution(void m(.., int))
+</programlisting>
+
+
+      <para>
+        picks out execution join points for void methods named
+        <literal>m</literal> whose last parameter is of type
+        <literal>int</literal>.
+      </para>
+
+      <para>
+        The modifiers also form part of the signature pattern. If an AspectJ
+        signature pattern should match methods without a particular modifier,
+        such as all non-public methods, the appropriate modifier should be
+        negated with the <literal>!</literal> operator. So,
+      </para>
+
+<programlisting>
+withincode(!public void foo())
+</programlisting>
+
+      <para>
+        picks out all join points associated with code in null non-public
+        void methods named <literal>foo</literal>, while
+      </para>
+
+<programlisting>
+withincode(void foo())
+</programlisting>
+
+      <para>
+        picks out all join points associated with code in null void methods
+        named <literal>foo</literal>, regardless of access modifier.
+      </para>
+
+      <para>
+        Method names may contain the * wildcard, indicating any number of
+        characters in the method name.  So
+      </para>
+
+<programlisting>
+call(int *())
+</programlisting>
+
+      <para>
+        picks out all call join points to <literal>int</literal> methods
+        regardless of name, but
+      </para>
+
+<programlisting>
+call(int get*())
+</programlisting>
+
+      <para>
+        picks out all call join points to <literal>int</literal> methods
+        where the method name starts with the characters "get".
+      </para>
+
+      <para>
+        AspectJ uses the <literal>new</literal> keyword for constructor
+        signature patterns rather than using a particular class name. So the
+        execution join points of private null constructor of a class C
+        defined to throw an ArithmeticException can be picked out with
+      </para>
+
+<programlisting>
+execution(private C.new() throws ArithmeticException)
+</programlisting>
+    </sect2>
+
+    <sect2>
+      <title>Type patterns</title>
+
+      <para>
+        Type patterns are a way to pick out collections of types and use them
+        in places where you would otherwise use only one type.  The rules for
+        using type patterns are simple.
+      </para>
+
+      <bridgehead>Type name patterns</bridgehead>
+
+      <para>
+        First, all type names are also type patterns.  So
+        <literal>Object</literal>, <literal>java.util.HashMap</literal>,
+        <literal>Map.Entry</literal>, <literal>int</literal> are all type
+        patterns.
+      </para>
+
+      <para>
+        There is a special type name, *, which is also a type pattern.  * picks out all
+        types, including primitive types.  So
+      </para>
+
+<programlisting>
+call(void foo(*))
+</programlisting>
+
+      <para>
+        picks out all call join points to void methods named foo, taking one
+        argument of any type.
+      </para>
+
+      <para>
+        Type names that contain the two wildcards "*" and
+        "<literal>..</literal>" are also type patterns.  The * wildcard matches
+        zero or more characters characters except for ".", so it can be used
+        when types have a certain naming convention.  So
+      </para>
+
+<programlisting>
+handler(java.util.*Map)
+</programlisting>
+
+      <para>
+        picks out the types java.util.Map and java.util.java.util.HashMap,
+        among others, and
+      </para>
+
+<programlisting>
+handler(java.util.*)
+</programlisting>
+
+      <para>
+        picks out all types that start with "<literal>java.util.</literal>" and
+        don't have any more "."s, that is, the types in the
+        <literal>java.util</literal> package, but not inner types
+        (such as java.util.Map.Entry).
+      </para>
+
+      <para>
+        The "<literal>..</literal>" wildcard matches any sequence of
+        characters that start and end with a ".", so it can be used
+        to pick out all types in any subpackage, or all inner types.  So
+      </para>
+
+<programlisting>
+target(com.xerox..*)
+</programlisting>
+
+      <para>
+        picks out all join points where the target object is an instance of
+        defined in any type beginning with "<literal>com.xerox.</literal>".
+      </para>
+
+      <bridgehead>Subtype patterns</bridgehead>
+
+      <para>
+        It is possible to pick out all subtypes of a type (or a collection of
+        types) with the "+" wildcard.  The "+" wildcard follows immediately a
+        type name pattern.  So, while
+      </para>
+
+<programlisting>
+call(Foo.new())
+</programlisting>
+
+      <para>
+        picks out all constructor call join points where an instance of exactly
+        type Foo is constructed,
+      </para>
+
+<programlisting>
+call(Foo+.new())
+</programlisting>
+
+      <para>
+        picks out all constructor call join points where an instance of any
+        subtype of Foo (including Foo itself) is constructed, and the unlikely
+      </para>
+
+<programlisting>
+call(*Handler+.new())
+</programlisting>
+
+      <para>
+        picks out all constructor call join points where an instance of any
+        subtype of any type whose name ends in "Handler" is constructed.
+      </para>
+
+      <bridgehead>Array type patterns</bridgehead>
+
+      <para>
+        A type name pattern or subtype pattern can be followed by one or more
+        sets of square brackets to make array type patterns.  So
+        <literal>Object[]</literal> is an array type pattern, and so is
+        <literal>com.xerox..*[][]</literal>, and so is
+        <literal>Object+[]</literal>.
+      </para>
+
+      <bridgehead>Type patterns</bridgehead>
+
+      <para>
+        Type patterns are built up out of type name patterns, subtype patterns,
+        and array type patterns, and constructed with boolean operators
+        <literal><![CDATA[&&]]></literal>, <literal>||</literal>, and
+        <literal>!</literal>.  So
+      </para>
+
+<programlisting>
+staticinitialization(Foo || Bar)
+</programlisting>
+
+      <para>
+        picks out the static initializer execution join points of either Foo or Bar,
+        and
+      </para>
+
+<programlisting>
+call((Foo+ <![CDATA[&&]]> ! Foo).new(..))
+</programlisting>
+
+      <para>
+        picks out the constructor call join points when a subtype of Foo, but
+        not Foo itself, is constructed.
+      </para>
+    </sect2>
+
+<!-- ============================== -->
+
+    <sect2>
+      <title>Pointcuts and Join Points</title>
+
+      <para>It is possible to pick out every different kind of join point with
+      pointcuts, but some of the less common ones require pointcut
+      combination.  </para>
+
+      <sect3>
+        <title>Method call </title> <!-- add chain up -->
+
+<programlisting>
+aspect A {
+    after() returning: call(void foo()) {
+        System.err.println(thisJoinPoint.getKind()); // should be "method-call"
+    }
+}
+</programlisting>	
+      </sect3>
+
+      <sect3>
+        <title>Method execution</title>
+
+<programlisting>
+aspect A {
+    after() returning: execution(void foo()) {
+        System.err.println(thisJoinPoint.getKind()); // should be "method-execution"
+    }
+}
+</programlisting>	
+      </sect3>
+
+      <sect3>
+        <title>Constructor call</title> <!-- add chain up -->
+
+<programlisting>
+aspect A {
+    after() returning: call(Foo.new()) {
+        System.err.println(thisJoinPoint.getKind()); // should be "constructor-call"
+    }
+}
+</programlisting>	
+      </sect3>
+
+      <sect3>
+        <title>Constructor execution<!--  [add chain up] --></title>
+
+<programlisting>
+aspect A {
+    after() returning: execution(Foo.new()) {
+        System.err.println(thisJoinPoint.getKind()); // should be "constructor-execution"
+    }
+}
+</programlisting>	
+      </sect3>
+
+      <sect3>
+        <title>Static initializer execution<!--  [add chain up] --></title>
+
+<programlisting>
+aspect A {
+    after() returning: staticinitializer(Foo) {
+        System.err.println(thisJoinPoint.getKind()); // should be "static-initializar"
+    }
+}
+</programlisting>	
+      </sect3>
+
+      <sect3>
+        <title>Object pre-initialization<!--  [add chain up] --></title>
+
+	<para>This join point will most commonly be seen as the enclosing
+	execution join point of a particular call, since it cannot be simply
+	picked out by AspectJ's primitive pointcuts.</para>
+
+<programlisting>
+aspect A {
+    after() returning: call(Foo) {
+        System.err.println(thisEnclosingJoinPointStaticPart.getKind()); // should be "pre-initialization"
+    }
+}
+</programlisting>	
+      </sect3>
+
+      <sect3>
+        <title>Object initialization<!--  [add chain up] --></title>
+
+
+<programlisting>
+aspect A {
+    after() returning: initialization(Foo.new()) {
+        System.err.println(thisEnclosingJoinPointStaticPart.getKind()); // should be "initialization"
+    }
+}
+</programlisting>	
+      </sect3>
+
+      <sect3>
+        <title>Field Reference <!-- [add chain up] --></title>
+
+
+<programlisting>
+aspect A {
+    after() returning: get(Foo.x) {
+        System.err.println(thisEnclosingJoinPointStaticPart.getKind()); // should be "field-get"
+    }
+}
+</programlisting>	
+      </sect3>
+
+      <sect3>
+        <title>Field Assignment <!-- [add chain up] --></title>
+
+
+<programlisting>
+aspect A {
+    after() returning: set(Foo.x) {
+        System.err.println(thisEnclosingJoinPointStaticPart.getKind()); // should be "field-set"
+    }
+}
+</programlisting>	
+      </sect3>
+
+
+      <sect3>
+        <title>Handler Execution  <!-- [add chain up] --></title>
+
+
+<programlisting>
+aspect A {
+    after() returning: handler(FooExn) {
+        System.err.println(thisEnclosingJoinPointStaticPart.getKind()); // should be "handler"
+    }
+}
+</programlisting>	
+      </sect3>
+
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Advice</title>
+
+      <simplelist>
+      <member><literal>before(<replaceable>Formals</replaceable>): <replaceable>Pointcut</replaceable> { <replaceable>Body</replaceable> }</literal></member>
+      <member><literal>after(<replaceable>Formals</replaceable>) returning [ (<replaceable>Formal</replaceable>) ]: <replaceable>Pointcut</replaceable> { <replaceable>Body</replaceable> }</literal></member>
+      <member><literal>after(<replaceable>Formals</replaceable>) throwing [ (<replaceable>Formal</replaceable>) ]: <replaceable>Pointcut</replaceable> { <replaceable>Body</replaceable> }</literal></member>
+      <member><literal>after(<replaceable>Formals</replaceable>) : <replaceable>Pointcut</replaceable> { <replaceable>Body</replaceable> }</literal></member>
+      <member><literal><replaceable>Type</replaceable> around(<replaceable>Formals</replaceable>) [ throws <replaceable>TypeList</replaceable> ] : <replaceable>Pointcut</replaceable> { <replaceable>Body</replaceable> }</literal></member>
+      </simplelist>
+
+    <para>
+      Advice defines crosscutting behavior.  It is defined in terms of
+      pointcuts. The code of a piece of advice runs at every join point picked
+      out by its pointcut. Exactly how the code runs depends on the kind of
+      advice.
+    </para>
+
+    <para>
+      AspectJ supports three kinds of advice. The kind of advice determines how
+      it interacts with the join points it is defined over. Thus AspectJ
+      divides advice into that which runs before its join points, that which
+      runs after its join points, and that which runs in place of (or "around")
+      its join points.
+    </para>
+
+    <para>
+      While before advice is relatively unproblematic, there can be three
+      interpretations of after advice: After the execution of a join point
+      completes normally, after it throws an exception, or after it does either
+      one. AspectJ allows after advice for any of these situations.
+    </para>
+
+<programlisting>
+aspect A {
+    pointcut publicCall(): call(public Object *(..));
+    after() returning (Object o): publicCall() {
+        System.out.println("Returned normally with " + o);
+    }
+    after() throwing (Exception e): publicCall() {
+        System.out.println("Threw an exception: " + e);
+    }
+    after(): publicCall(){
+        System.out.println("Returned or threw an Exception");
+    }
+}
+</programlisting>
+
+    <para>
+      After returning advice may not care about its returned object, in which
+      case it may be written
+    </para>
+
+<programlisting>
+after() returning: call(public Object *(..)) {
+    System.out.println("Returned normally");
+}
+</programlisting>
+
+    <para>
+      It is an error to try to put after returning advice on a join point that
+      does not return the correct type.  For example,
+    </para>
+
+<programlisting>
+after() returning (byte b): call(int String.length()) {
+    // this is an error
+}
+</programlisting>
+
+    <para>
+      is not allowed.  But if no return value is exposed, or the exposed return
+      value is typed to <literal>Object</literal>, then it may be applied to
+      any join point.  If the exposed value is typed to
+      <literal>Object</literal>, then the actual return value is converted to
+      an object type for the body of the advice:  <literal>int</literal> values
+      are represented as <literal>java.lang.Integer</literal> objects, etc, and
+      no value (from void methods, for example) is represented as
+      <literal>null</literal>.
+    </para>
+
+    <para>
+      Around advice runs in place of the join point it operates over, rather
+      than before or after it.  Because around is allowed to return a value, it
+      must be declared with a return type, like a method.  A piece of around
+      advice may be declared <literal>void</literal>, in which case it is not
+      allowed to return a value, and instead whatever value the join point
+      returned will be returned by the around advice (unless the around advice
+      throws an exception of its own).
+    </para>
+
+    <para>
+      Thus, a simple use of around advice is to make a particular method
+      constant:
+    </para>
+
+<programlisting>
+aspect A {
+    int around(): call(int C.foo()) {
+        return 3;
+    }
+}
+</programlisting>
+
+    <para>
+      Within the body of around advice, though, the computation of the original
+      join point can be executed with the special syntax
+    </para>
+
+<programlisting>
+proceed( ... )
+</programlisting>
+
+    <para>
+      The proceed form takes as arguments the context exposed by the around's
+      pointcut, and returns whatever the around is declared to return. So the
+      following around advice will double the second argument to
+      <literal>foo</literal> whenever it is called, and then halve its result:
+    </para>
+
+
+<programlisting>
+aspect A {
+    int around(int i): call(int C.foo(Object, int)) <![CDATA[&&]]> args(i) {
+        int newi = proceed(i*2)
+        return newi/2;
+    }
+}
+</programlisting>
+
+    <para>
+      If the return value of around advice is typed to
+      <literal>Object</literal>, then the result of proceed is converted to an
+      object representation, even if it is originally a primitive value.  And
+      when the advice returns an Object value, that value is converted back to
+      whatever representation it was originally.  So another way to write the
+      doubling and halving advice is:
+    </para>
+
+<programlisting>
+aspect A {
+    Object around(int i): call(int C.foo(Object, int)) <![CDATA[&&]]> args(i) {
+        Integer newi = (Integer) proceed(i*2)
+        return new Integer(newi.intValue() / 2);
+    }
+}
+</programlisting>
+
+    <para>
+      In all kinds of advice, the parameters of the advice behave exactly like
+      method parameters.  In particular, assigning to any parameter affects
+      only the value of the parameter, not the value that it came from.  This
+      means that
+    </para>
+
+<programlisting>
+aspect A {
+    after() returning (int i): call(int C.foo()) {
+        i = i * 2;
+    }
+}
+</programlisting>
+
+    <para>
+      will <emphasis>not</emphasis> double the returned value of the advice.
+      Rather, it will double the local parameter.  Changing the values of
+      parameters or return values of join points can be done by using around
+      advice.
+    </para>
+
+    <sect2>
+      <title>Advice modifiers</title>
+
+      <para>
+        The <literal>strictfp</literal> modifier is the only modifier allowed
+        on advice, and it has the effect of making all floating-point
+        expressions within the advice be FP-strict.
+      </para>
+    </sect2>
+
+    <sect2>
+      <title>Advice and checked exceptions</title>
+
+      <para>
+        An advice declaration must include a <literal>throws</literal> clause
+        listing the checked exceptions the body may throw.  This list of
+        checked exceptions must be compatible with each target join point
+        of the advice, or an error is signalled by the compiler.
+      </para>
+
+      <para>
+        For example, in the following declarations:
+      </para>
+
+<programlisting>
+import java.io.FileNotFoundException;
+
+class C {
+    int i;
+
+    int getI() { return i; }
+}
+
+aspect A {
+    before(): get(int C.i) {
+        throw new FileNotFoundException();
+    }
+    before() throws FileNotFoundException: get(int C.i) {
+        throw new FileNotFoundException();
+    }
+}
+</programlisting>
+
+      <para>
+        both pieces of advice are illegal.  The first because the body throws
+        an undeclared checked exception, and the second because field get join
+        points cannot throw <literal>FileNotFoundException</literal>s.
+      </para>
+
+      <para> The exceptions that each kind of join point in AspectJ may throw are:
+      </para> 
+
+    <variablelist>
+      <varlistentry>
+        <term>method call and execution</term>
+        <listitem>
+          <para>the checked exceptions declared by the target method's
+          <literal>throws</literal> clause.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>constructor call and execution</term>
+        <listitem>
+          <para>the checked exceptions declared by the target constructor's
+          <literal>throws</literal> clause.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>field get and set</term>
+        <listitem>
+          <para>no checked exceptions can be thrown from these join points. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>exception handler execution</term>
+        <listitem>
+          <para>the exceptions that can be thrown by the target exception handler.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>static initializer execution</term>
+        <listitem>
+          <para>no checked exceptions can be thrown from these join points. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>initializer execution, pre-initialization, and initialization</term>
+        <listitem>
+          <para>any exception that is in the throws clause of
+          <emphasis>all</emphasis> constructors of the initialized class. </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+
+    </sect2>
+
+
+    <sect2>
+      <title>Advice precedence</title>
+
+      <para>
+        Multiple pieces of advice may apply to the same join point.  In such
+        cases, the resolution order of the advice is based on advice
+        precedence.
+      </para>
+
+      <sect3>
+        <title>Determining precedence</title>
+
+        <para>There are a number of rules that determine whether a particular
+        piece of advice has precedence over another when they advise the same
+        join point. </para>
+
+        <para>If the two pieces of advice are defined in different aspects,
+        then there are three cases: </para>
+
+        <simplelist>
+          <member>If aspect A is declared such that it <literal>dominates</literal>
+          aspect B, then all advice defined in A has precedence over all advice
+          defined in
+          B. </member>
+
+          <member>
+          Otherwise, if aspect A is a subaspect of aspect B, then all advice
+          defined in A has precedence over all advice defined in
+          B. So, unless otherwise specified with a
+          <literal>dominates</literal> keyword, advice in a subaspect
+          dominates advice in a superaspect.
+          </member>
+    
+          <member>
+          Otherwise, if two pieces of advice are defined in two different
+          aspects, it is undefined which one has precedence.
+          </member>
+
+        </simplelist>
+
+        <para>If the two pieces of advice are defined in the same aspect, then
+        there are two cases: </para>
+
+        <simplelist>
+          <member>If either are <literal>after</literal> advice, then the one that
+          appears later in the aspect has precedence over the one that appears
+          earlier. </member>
+
+          <member>Otherwise, then the one that appears earlier in the aspect
+          has precedence over the one that appears later.
+          </member>
+    
+        </simplelist>
+
+        <para>These rules can lead to circularity, such as</para>
+
+<programlisting>
+aspect A {
+    before(): execution(void main(String[] args)) {}
+    after():  execution(void main(String[] args)) {}
+    before(): execution(void main(String[] args)) {}
+}
+</programlisting>
+
+        <para>such circularities will result in errors signalled by the compiler. </para>
+
+      </sect3>
+
+      <sect3>
+        <title>Effects of precedence</title>
+
+        <para>At a particular join point, advice is ordered by precedence.</para>
+
+        <para>A piece of <literal>around</literal> advice controls whether
+        advice of lower precedence will run by calling
+        <literal>proceed</literal>.  The call to <literal>proceed</literal>
+        will run the advice with next precedence, or the computation under the
+        join point if there is no further advice. </para>
+
+        <para>A piece of <literal>before</literal> advice can prevent advice of
+        lower precedence from running by throwing an exception.  If it returns
+        normally, however, then the advice of the next precedence, or the
+        computation under the join pint if there is no further advice, will run.
+	</para>
+
+        <para>Running <literal>after returning</literal> advice will run the
+        advice of next precedence, or the computation under the join point if
+        there is no further advice.  Then, if that computation returned
+        normally, the body of the advice will run. </para>
+
+        <para>Running <literal>after throwing</literal> advice will run the
+        advice of next precedence, or the computation under the join
+        point if there is no further advice.  Then, if that computation threw
+        an exception of an appropriate type, the body of the advice will
+        run. </para>
+
+        <para>Running <literal>after</literal> advice will run the advice of
+        next precedence, or the computation under the join point if
+        there is no further advice.  Then the body of the advice will
+        run. </para>
+      </sect3>
+
+    </sect2>
+
+    <sect2>
+      <title>Reflective access to the join point</title>
+
+      <para>
+        Three special variables are visible within bodies of advice:
+        <literal>thisJoinPoint</literal>,
+        <literal>thisJoinPointStaticPart</literal>, and
+        <literal>thisEnclosingJoinPointStaticPart</literal>. Each is bound to
+        an object that encapsulates some of the context of the advice's current
+        or enclosing join point.  These variables exist because some pointcuts
+        may pick out very large collections of join points. For example, the
+        pointcut
+      </para>
+
+
+<programlisting>
+pointcut publicCall(): call(public * *(..));
+</programlisting>
+
+
+      <para>
+        picks out calls to many methods. Yet the body of advice over this
+        pointcut may wish to have access to the method name or parameters of a
+        particular join point.
+      </para>
+
+      <para>
+        <literal>thisJoinPoint</literal> is bound to a complete join point
+        object, while <literal>thisJoinPointStaticPart</literal> is bound to a
+        part of the join point object that includes less information,
+        but for which no memory allocation is required on each execution of the
+        advice.
+      </para>
+
+      <para>
+        <literal>thisEnclosingJoinPointStaticPart</literal> is bound to the
+        static part of the join point enclosing the current join point.  Only
+        the static part of this enclosing join point is available through this
+        mechanism. 
+      </para>
+
+      <para>
+        Like standard Java reflection, which uses objects from the
+        <literal>java.lang.reflect</literal> hierarchy, join point objects have
+        types in a type hierarchy.  The type of objects bound to
+        <literal>thisJoinPoint</literal> is
+        <literal>org.aspectj.lang.JoinPoint</literal>, while
+        <literal>thisStaticJoinPoint</literal> is bound to objects of interface
+        type <literal>org.aspectj.lang.JoinPoint.StaticPart</literal>.
+      </para>
+    </sect2>
+
+  </sect1>
+
+  <sect1>
+    <title>Static crosscutting</title>
+
+    <para>
+      Advice declarations change the behavior of classes they crosscut, but do
+      not change their static type structure. For crosscutting concerns that do
+      operate over the static structure of type hierarchies, AspectJ provides
+      forms of introduction.
+    </para>
+
+    <para>
+      Each introduction form is a member of the aspect defining it, but defines
+      a new member of another type.
+    </para>
+
+    <sect2>
+      <title>Member introduction</title>
+
+      <para>
+        A method introduction looks like
+      </para>
+
+      <simplelist>
+        <member><literal><replaceable>Modifiers</replaceable>
+        <replaceable>Type</replaceable> <replaceable>TypePattern</replaceable>
+        .
+        <replaceable>Id</replaceable>(<replaceable>Formals</replaceable>)
+        { <replaceable>Body</replaceable> }</literal></member>
+
+        <member><literal>abstract <replaceable>Modifiers</replaceable>
+        <replaceable>Type</replaceable> <replaceable>TypePattern</replaceable>
+        .  <replaceable>Id</replaceable>(<replaceable>Formals</replaceable>);
+        </literal></member>
+      </simplelist>
+
+      <para>
+        The effect of such an introduction is to make all the types in TypePattern
+        support the new method. Interfaces in TypePattern will support the new method
+        as well, even if the method is neither public nor abstract, so the
+        following is legal AspectJ code:
+      </para>
+
+<programlisting>
+interface Iface {}
+
+aspect A {
+    private void Iface.m() { 
+        System.err.println("I'm a private method on an interface");
+    }
+    void worksOnI(Iface iface) {
+        // calling a private method on an interface
+        iface.m();
+    }
+}
+</programlisting>
+
+      <para>
+        A constructor introduction looks like
+      </para>
+
+      <simplelist>
+        <member><literal><replaceable>Modifiers</replaceable> <replaceable>TypePattern</replaceable>.new(<replaceable>Formals</replaceable>)
+        { <replaceable>Body</replaceable> }</literal></member>
+      </simplelist>
+
+      <para>
+        The effect of such an introduction is to make all the types in
+        TypePattern support the new constructor.  You cannot introduce a
+        constructor onto an interface, so if TypePattern includes an interface
+        type it is an error.
+      </para>
+
+      <para>
+        A field introduction looks like one of
+      </para>
+
+      <simplelist>
+        <member><literal><replaceable>Modifiers</replaceable>
+        <replaceable>Type</replaceable> <replaceable>TypePattern</replaceable>.<replaceable>Id</replaceable> = <replaceable>Expression</replaceable>;</literal></member>
+
+        <member><literal><replaceable>Modifiers</replaceable>
+        <replaceable>Type</replaceable> <replaceable>TypePattern</replaceable>.<replaceable>Id</replaceable>;</literal></member>
+      </simplelist>
+
+      <para>
+        The effect of such an introduction is to make all the types in
+        TypePattern support the new field. Interfaces in TypePattern will
+        support the new field as well, even if the field is neither public,
+        nor static, nor final. 
+      </para>
+    </sect2>
+
+      <para>
+        Any occurrence of the identifier <literal>this</literal> in the body of
+        the constructor or method introduction, or in the initializer of a
+        field introduction, refers to the target type from the
+        <replaceable>TypePattern</replaceable> rather than to the aspect type.
+      </para>
+
+
+    <sect2>
+      <title>Access modifiers</title>
+
+      <para>
+        Members may be introduced with access modifiers public or private, or
+        the default package-protected (protected introduction is not
+        supported).
+      </para>
+
+      <para>
+        The access modifier applies in relation to the aspect, not in relation
+        to the target type. So a member that is privately introduced is visible
+        only from code that is defined within the aspect introducing it. One
+        that is package-protectedly introduced is visible only from code that
+        is defined within the introducing aspect's package.
+      </para>
+
+      <para>
+        Note that privately introducing a method (which AspectJ supports) is
+        very different from introducing a private method (which AspectJ
+        previously supported). AspectJ does not allow the introduction of the
+        private method "void writeObject(ObjectOutputStream)" required to
+        implement the interface java.io.Serializable.
+      </para>
+    </sect2>
+
+    <sect2>
+      <title>Conflicts</title>
+
+      <para>
+        Introduction may cause conflicts among introduced members and between
+        introduced members and defined members.
+      </para>
+
+
+      <para>
+        Assuming <literal>otherPackage</literal> is not the package defining
+        the aspect <classname>A</classname>, the code
+      </para>
+
+<programlisting>
+aspect A {
+    private Registry otherPackage.*.r;
+    public void otherPackage.*.register(Registry r) {
+        r.register(this);
+        this.r = r;
+    }
+}
+</programlisting>
+
+      <para>
+        adds a field "<literal>r</literal>" to every type in otherPackage. This
+        field is only accessible from the code inside of aspect
+        <literal>A</literal>. The aspect also adds a
+        "<literal>register</literal>" method to every type in
+        <literal>otherPackage</literal>. This method is accessible
+        everywhere.
+      </para>
+
+      <para>
+        If any type in <literal>otherPackage</literal> already defines a
+        private or package-protected field "<literal>r</literal>", there is no
+        conflict: The aspect cannot see such a field, and no code in
+        <literal>otherPackage</literal> can see the introduced
+        "<literal>r</literal>".
+      </para>
+
+      <para>
+        If any type in <literal>otherPackage</literal> defines a public field
+        "<literal>r</literal>", there is a conflict: The expression
+      </para>
+
+<programlisting>
+this.r = r
+</programlisting>
+
+      <para>
+        is an error, since it is ambiguous whether the introduced
+        "<literal>r</literal>" or the public "<literal>r</literal>" should be
+        used.
+      </para>
+
+      <para>
+        If any type in <literal>otherPackage</literal> defines any method
+        "<literal>register(Registry)</literal>" there is a conflict, since it
+        would be ambiguous to any code that could see such a defined method
+        which "<literal>register(Registry)</literal>" method was applicable.
+      </para>
+
+      <para>
+        Conflicts are resolved as much as possible as per Java's conflict
+        resolution rules:
+      </para>
+
+      <simplelist>
+        <member>A subclass can inherit multiple <emphasis>fields</emphasis> from its superclasses,
+        all with the same name and type.  However, it is an error to have an ambiguous
+        <emphasis>reference</emphasis> to a field.</member>
+
+        <member>A subclass can only inherit multiple
+        <emphasis>methods</emphasis> with the same name and argument types from
+        its superclasses if only zero or one of them is concrete (i.e., all but
+        one is abstract, or all are abstract).
+	</member>
+      </simplelist>
+
+      <para>
+        Given a potential conflict between inter-type member declarations in 
+        different aspects, if one aspect dominates the other its declaration will
+        take effect without any conflict notice from compiler.  This is true both 
+        when the domination is declared explicitly in a "dominates" clause and 
+        when sub-aspects implicitly dominate their corresponding super-aspect. 
+      </para>
+
+    </sect2>
+
+    <sect2>
+      <title>Extension and Implementation</title>
+
+      <para>
+        An aspect may introduce a superclass or superinterface onto a type,
+        with the declarations
+      </para>
+
+      <simplelist>
+        <member><literal>declare parents: <replaceable>TypePattern</replaceable> extends <replaceable>TypeList</replaceable>;</literal></member>
+        <member><literal>declare parents: <replaceable>TypePattern</replaceable> implements <replaceable>TypeList</replaceable>;</literal></member>
+      </simplelist>
+
+      <para>
+        For example, if an aspect wished to make a particular class runnable,
+        it might add an appropriate <literal>void run()</literal> method, but
+        it should also change the type of the class to specify that it fulfills
+        the <literal>Runnable</literal> interface.  In order to implement the
+        methods in the <literal>Runnable</literal> interface, the 
+        <literal>run()</literal> method must be publically introduced:
+      </para>
+
+<programlisting>
+aspect A {
+    declare parents: SomeClass implements Runnable;
+    public void SomeClass.run() { ... }
+}
+</programlisting>
+
+    </sect2>
+
+    <sect2>
+      <title>Interfaces with members</title>
+
+      <para>
+        Through the use of introduction, interfaces may now carry
+        (non-public-static-final) fields and (non-public-abstract) methods that
+        classes can inherit. Conflicts may occur from ambiguously inheriting
+        members from a superclass and multiple superinterfaces.
+      </para>
+
+      <para>
+        Because interfaces may carry non-static initializers, the order of
+        super-interface instantiation is observable. We fix this order with the
+        following three properties: A supertype is initialized before a
+        subtype, that initialized code runs only once, and initializers for
+        supertypes run in left-to-right order. Consider the following hierarchy
+        where {<literal>Object</literal>, <literal>C</literal>,
+        <literal>D</literal>, <literal>E</literal>} are classes,
+        {<literal>M</literal>, <literal>N</literal>, <literal>O</literal>,
+        <literal>P</literal>, <literal>Q</literal>} are interfaces.
+      </para>
+
+<programlisting>
+  Object  M   O
+       \ / \ /
+        C   N   Q
+         \ /   /
+          D   P
+           \ /
+            E
+</programlisting>
+
+      <para>
+        when a new <literal>E</literal> is instantiated, the initializers run in this order:
+      </para>
+
+<programlisting>
+  Object M C O N D Q P E
+</programlisting>
+
+    </sect2>
+
+    <sect2>
+      <title>Warnings and Errors</title>
+
+      <para>An aspect may specify that a particular join point should never be
+      reached.  </para>
+
+      <simplelist>
+        <member><literal>declare error: <replaceable>Pointcut</replaceable>: <replaceable>String</replaceable>;</literal></member>
+        <member><literal>declare warning: <replaceable>Pointcut</replaceable>: <replaceable>String</replaceable>;</literal></member>
+      </simplelist>
+
+      <para>If the compiler determines that a join point in
+      <replaceable>Pointcut</replaceable> could possibly be reached, then it
+      will signal either an error or warning, as declared, using the
+      <replaceable>String</replaceable> for its message.   </para>
+
+    </sect2>
+
+    <sect2>
+      <title>Softened exceptions</title>
+
+      <para>An aspect may specify that a particular kind of exception, if
+      thrown at a join point, should bypass Java's usual static exception
+      checking system and instead be thrown as a
+      <literal>org.aspectj.lang.SoftException</literal>, which is subtype of
+      <literal>RuntimeException</literal> and thus does not need to be
+      declared.  </para>
+
+      <simplelist>
+        <member><literal>declare soft: <replaceable>TypePattern</replaceable>: <replaceable>Pointcut</replaceable>;</literal></member>
+      </simplelist>
+
+      <para>For example, the aspect</para>
+
+<programlisting>
+aspect A {
+    declare soft: Exception: execution(void main(String[] args));
+}
+</programlisting>
+
+      <para>Would, at the execution join point, catch any
+      <literal>Exception</literal> and rethrow a
+      <literal>org.aspectj.lang.SoftException</literal> containing
+      original exception. </para>
+
+      <para>This is similar to what the following advice would do</para>
+
+<programlisting>
+aspect A {
+    void around() execution(void main(String[] args)) {
+        try { proceed(); }
+        catch (Exception e) {
+            throw new org.aspectj.lang.SoftException(e);
+        }
+    }
+}
+</programlisting>
+
+      <para>except, in addition to wrapping the exception, it also affects
+      Java's static exception checking mechanism. </para>
+
+    </sect2>
+
+    <sect2>
+      <title>Statically determinable pointcuts</title>
+
+      <para>Pointcuts that appear inside of <literal>declare</literal> forms
+      have certain restrictions.  Like other pointcuts, these pick out join
+      points, but they do so in a way that is statically determinable.  </para>
+
+      <para>Consequently, such pointcuts may not include, directly or
+      indirectly (through user-defined pointcut declarations) pointcuts that
+      discriminate based on dynamic (runtime) context.  Therefore, such
+      pointcuts may not be defined in terms of</para>
+
+      <simplelist>
+        <member>cflow</member>
+        <member>cflowbelow</member>
+        <member>this</member>
+        <member>target</member>
+        <member>args</member>
+        <member>if</member>
+      </simplelist>
+
+      <para> all of which can discriminate on runtime information. </para>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Aspects</title>
+
+    <para>
+      An aspect is a crosscutting type defined by the aspect declaration. The
+      aspect declaration is similar to the class declaration in that it defines
+      a type and an implementation for that type. It differs in that the type
+      and implementation can cut across other types (including those defined by
+      other aspect declarations), and that it may not be directly instantiated
+      with a new expression, with cloning, or with serialization. Aspects may
+      have one constructor definition, but if so it must be of a constructor
+      taking no arguments and throwing no checked exceptions.
+    </para>
+
+    <para>
+      Aspects may be defined either at the package level, or as a static nested
+      aspect, that is, a static member of a class, interface, or aspect.  If it
+      is not at the package level, the aspect <emphasis>must</emphasis> be
+      defined with the static keyword.  Local and anonymous aspects are not
+      allowed.
+    </para>
+
+    <sect2>
+      <title>Aspect Extension</title>
+
+      <para>
+        To support abstraction and composition of crosscutting concerns,
+        aspects can be extended in much the same way that classes can. Aspect
+        extension adds some new rules, though.
+      </para>
+
+      <sect3>
+        <title>Aspects may extend classes and implement interfaces</title>
+
+        <para>
+          An aspect, abstract or concrete, may extend a class and may implement
+          a set of interfaces. Extending a class does not provide the ability
+          to instantiate the aspect with a new expression: The aspect may still
+          only define a null constructor.
+        </para>
+      </sect3>
+
+      <sect3>
+        <title>Classes may not extend aspects</title>
+
+        <para>
+          It is an error for a class to extend or implement an aspect.
+        </para>
+      </sect3>
+
+      <sect3>
+        <title>Aspects extending aspects
+        </title>
+        <para>
+          Aspects may extend other aspects, in which case not only are fields
+          and methods inherited but so are pointcuts. However, aspects may only
+          extend abstract aspects. It is an error for a concrete aspect to
+          extend another concrete aspect.
+        </para>
+      </sect3>
+    </sect2>
+
+    <sect2>
+      <title>Aspect instantiation</title>
+
+      <para>
+        Unlike class expressions, aspects are not instantiated with
+        <literal>new</literal> expressions.  Rather, aspect instances are
+        automatically created to cut across programs.
+      </para>
+
+      <para>
+        Because advice only runs in the context of an aspect instance, aspect
+        instantiation indirectly controls when advice runs.
+      </para>
+
+      <para>
+        The criteria used to determine how an aspect is instantiated
+        is inherited from its parent aspect.  If the aspect has no parent
+        aspect, then by default the aspect is a singleton aspect.
+      </para>
+
+      <sect3>
+        <title>Singleton Aspects</title>
+
+        <simplelist>
+          <member><literal>aspect <replaceable>Id</replaceable> { ... }</literal></member>
+          <member><literal>aspect <replaceable>Id</replaceable> issingleton { ... }</literal></member>
+        </simplelist>
+
+        <para>
+          By default, or by using the modifier <literal>issingleton</literal>, an
+          aspect has exactly one instance that cuts across the entire program.
+          That instance is available at any time during program execution with
+          the static method <literal>aspectOf()</literal> defined on the aspect
+          -- so, in the above examples, <literal>A.aspectOf()</literal> will
+          return A's instance.  This aspect instance is created as the aspect's
+          classfile is loaded.
+        </para>
+
+        <para>
+          Because the an instance of the aspect exists at all join points in
+          the running of a program (once its class is loaded), its advice will
+          have a chance to run at all such join points.
+        </para>
+      </sect3>
+
+      <sect3>
+        <title>Per-object aspects</title>
+
+        <simplelist>
+          <member><literal>aspect <replaceable>Id</replaceable> perthis(<replaceable>Pointcut</replaceable>) { ... }</literal></member>
+          <member><literal>aspect <replaceable>Id</replaceable> pertarget(<replaceable>Pointcut</replaceable>) { ... }</literal></member>
+        </simplelist>
+
+        <para>
+          If an aspect A is defined
+          <literal>perthis(<replaceable>Pointcut</replaceable>)</literal>, then
+          one object of type A is created for every object that is the
+          executing object (i.e., "this") at any of the join points picked out
+          by <replaceable>Pointcut</replaceable>.
+          The advice defined in A may then run at any join point where the
+          currently executing object has been associated with an instance of
+          A.
+        </para>
+
+        <para> Similarly, if an aspect A is defined
+          <literal>pertarget(<replaceable>Pointcut</replaceable>)</literal>,
+          then one object of type A is created for every object that is the
+          target object of the join points picked out by
+          <replaceable>Pointcut</replaceable>.
+          The advice defined in A may then run at any join point where the
+          target object has been associated with an instance of
+          A.
+        </para>
+
+        <para>
+          In either case, the static method call
+          <literal>A.aspectOf(Object)</literal> can be used to get the aspect
+          instance (of type A) registered with the object.  Each aspect
+          instance is created as early as possible, but not before reaching a
+          join point picked out by <replaceable>Pointcut</replaceable> where
+          there is no associated aspect of type A.
+        </para>
+
+        <para> Both <literal>perthis</literal> and <literal>pertarget</literal>
+        aspects may be affected by code the AspectJ compiler controls, as
+        discussed in the <xref linkend="limitations"/> appendix.  </para>
+
+      </sect3>
+
+      <sect3>
+        <title>Per-control-flow aspects</title>
+
+        <simplelist>
+          <member><literal>aspect <replaceable>Id</replaceable> percflow(<replaceable>Pointcut</replaceable>) { ... }</literal></member>
+          <member><literal>aspect <replaceable>Id</replaceable> percflowbelow(<replaceable>Pointcut</replaceable>) { ... }</literal></member>
+        </simplelist>
+
+        <para>
+          If an aspect A is defined
+          <literal>percflow(<replaceable>Pointcut</replaceable>)</literal> or
+          <literal>percflowbelow(<replaceable>Pointcut</replaceable>)</literal>,
+          then one object of type A is created for each flow of control of the
+          join points picked out by <replaceable>Pointcut</replaceable>, either
+          as the flow of control is entered, or below the flow of control,
+          respectively.  The advice defined in A may run at any join point in
+          or under that control flow.  During each such flow of control, the
+          static method <literal>A.aspectOf()</literal> will return an object
+          of type
+          A. An instance of the aspect is created upon entry into each such
+          control flow.
+        </para>
+      </sect3>
+    </sect2>
+
+    <sect2>
+      <title>Aspect privilege</title>
+
+      <simplelist>
+        <member><literal>privileged aspect <replaceable>Id</replaceable> { ... }</literal></member>
+      </simplelist>
+
+      <para>
+        Code written in aspects is subject to the same access control rules as
+        Java code when referring to members of classes or aspects. So, for
+        example, code written in an aspect may not refer to members with
+        default (package-protected) visibility unless the aspect is defined in
+        the same package.
+      </para>
+
+      <para>
+        While these restrictions are suitable for many aspects, there may be
+        some aspects in which advice or introductions needs to access private
+        or protected resources of other types. To allow this, aspects may be
+        declared <literal>privileged</literal>.  Code in priviliged aspects has
+        access to all members, even private ones. 
+      </para>
+
+
+<programlisting>
+class C {
+    private int i = 0;
+    void incI(int x) { i = i+x; }
+}
+privileged aspect A {
+    static final int MAX = 1000;
+    before(int x, C c): call(void C.incI(int)) <![CDATA[&&]]> target(c) <![CDATA[&&]]> args(x) {
+        if (c.i+x &gt; MAX) throw new RuntimeException();
+    }
+}
+</programlisting>
+
+      <para>
+        In this case, if A had not been declared privileged, the field reference
+        c.i would have resulted in an error signalled by the compiler.
+      </para>
+
+      <para>
+        If a privileged aspect can access multiple versions of a particular
+        member, then those that it could see if it were not privileged take
+        precedence. For example, in the code
+      </para>
+
+<programlisting>
+class C {
+    private int i = 0;
+    void foo() { }
+}
+privileged aspect A {
+    private int C.i = 999;
+    before(C c): call(void C.foo()) target(c) {
+        System.out.println(c.i);
+    }
+}
+</programlisting>
+
+      <para>
+        A's introduced private field C.i, initially bound to 999, will be
+        referenced in the body of the advice in preference to C's privately
+        declared field, since the A would have access to fields it introduces
+        even if it were not privileged. 
+      </para>
+
+    </sect2>
+
+
+    <sect2>
+      <title>Aspect domination</title>
+
+      <simplelist>
+        <member><literal>aspect <replaceable>Id</replaceable> dominates <replaceable>TypePattern</replaceable> { ... }</literal></member>
+      </simplelist>
+
+      <para>
+        An aspect may declare that the advice in it dominates the advice in
+        some other aspect.  Such declarations are like the
+        <literal>strictfp</literal> keyword in Java; it applies to the advice
+        declarations inside of the respective aspects, and states that the
+        advice declared in the current aspect has more precedence than the
+        advice in the aspects from <replaceable>TypePattern</replaceable>.
+      </para>
+
+      <para>
+        For example, the CountEntry aspect might want to count the entry to
+        methods in the current package accepting a Type object as its first
+        argument.  However, it should count all entries, even those that the
+        aspect DisallowNulls causes to throw exceptions.  This can be
+        accomplished by stating that CountEntry dominates DisallowNulls.
+      </para>
+
+
+<programlisting>
+aspect DisallowNulls {
+    pointcut allTypeMethods(Type obj): call(* *(..)) <![CDATA[&&]]> args(obj, ..);
+    before(Type obj):  allTypeMethods(obj) {
+        if (obj == null) throw new RuntimeException();
+    }
+}
+aspect CountEntry dominates DisallowNulls {
+    pointcut allTypeMethods(Type obj): call(* *(..)) <![CDATA[&&]]> args(obj, ..);
+    static int count = 0;
+    before():  allTypeMethods(Type) {
+        count++;
+    }
+}
+</programlisting>
+
+    </sect2>
+ </sect1>
+
+</appendix>
+
+<!--
+Local variables:
+compile-command: "java sax.SAXCount -v progguide.xml && java com.icl.saxon.StyleSheet -w0 progguide.xml progguide.html.xsl"
+fill-column: 79
+sgml-local-ecat-files: progguide.ced
+sgml-parent-document:("progguide.sgml" "book" "appendix")
+End:
+-->

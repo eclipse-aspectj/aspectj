@@ -1,0 +1,104 @@
+<chapter id="idioms" xreflabel="Idioms">
+  <title>Idioms</title>
+
+  <sect1><!-- About this Chapter -->
+    <title>About this Chapter</title>
+
+    <para>This chapter consists of very short snippets of AspectJ code,
+    typically pointcuts, that are particularly evocative or useful.
+    This section is a work in progress.
+    </para>
+
+    <para> Here's an example of how to enfore a rule that code in the java.sql
+    package can only be used from one particular package in your system. This
+    doesn't require any access to code in the java.sql package.
+    </para>
+
+<programlisting><![CDATA[
+/* Any call to methods or constructors in java.sql */
+pointcut restrictedCall():
+    call(* java.sql.*.*(..)) || call(java.sql.*.new(..));
+
+/* Any code in my system not in the sqlAccess package */ 
+pointcut illegalSource():
+    within(com.foo..*) && !within(com.foo.sqlAccess.*);
+
+declare error: restrictedCall() && illegalSource():
+    "java.sql package can only be accessed from com.foo.sqlAccess";
+]]></programlisting>
+
+    <para>Any call to an instance of a subtype of AbstractFacade whose class is
+    not exactly equal to AbstractFacade:</para>
+
+<programlisting><![CDATA[
+pointcut nonAbstract(AbstractFacade af): 
+    call(* *(..)) 
+    && target(af) 
+    && !if(af.getClass() == AbstractFacade.class);
+]]></programlisting>
+
+    <para> If AbstractFacade is an abstract class or an interface, then every
+    instance must be of a subtype and you can replace this with: </para>
+
+<programlisting><![CDATA[
+pointcut nonAbstract(AbstractFacade af):
+    call(* *(..)) 
+    && target(af);
+]]></programlisting>
+
+    <para> Any call to a method which is defined by a subtype of
+    AbstractFacade, but which isn't defined by the type AbstractFacade itself:
+    </para>
+
+<programlisting><![CDATA[
+pointcut callToUndefinedMethod(): 
+     call(* AbstractFacade+.*(..)) 
+     && !call(* AbstractFacade.*(..));
+]]></programlisting>
+
+    <para> The execution of a method that is defined in the source code for a
+    type that is a subtype of AbstractFacade but not in AbstractFacade itself:
+    </para>
+
+<programlisting><![CDATA[
+pointcut executionOfUndefinedMethod():
+    execution(* *(..)) 
+    && within(AbstractFacade+) 
+    && !within(AbstractFacade)
+]]></programlisting>
+
+    <para>To use a per-class variable declared on many classes,
+    you can defer initialization until you are in a non-static instance context
+    so you can refer to the particular class member.  If you want to use
+    it from advice (without knowing the particular class at compile-time), 
+    you can declare a method on the type.
+    </para>
+
+<programlisting><![CDATA[
+aspect Logging {
+
+    //...
+
+    /** per-Loggable-class reference to per-class Logger */
+    static private Logger Loggable+.staticLogger;
+
+    /** instance getter for static logger (lazy construction) */
+    public Logger Loggable+.getLogger() { // XXX make private to aspect?
+        if (null == staticLogger) {
+            staticLogger = Logger.getLoggerFor(getClass());
+        }
+        return staticLogger;
+    }
+
+    /** when logging and logger enabled, log the target and join point */ 
+    before(Loggable loggable) : target(loggable) && logging() {
+        Logger logger = loggable.getLogger();
+        if (logger.enabled()) {
+            logger.log(loggable + " at " + thisJoinPoint);
+        }
+    }
+}
+]]></programlisting>
+
+  </sect1>
+</chapter>

@@ -1,0 +1,9 @@
+
+<project default="default">
+  <target name="default">
+	<taskdef properties="src/org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties"/>
+    <iajc>
+      <fileset dir="testdata" includes="Default.j*"/>
+    </iajc>
+  </target>
+</project>

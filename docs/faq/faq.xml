@@ -1,0 +1,3397 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "../../lib/docbook/docbook-dtd/docbookx.dtd">
+
+<?xml-stylesheet type="text/css"
+    href="../../style.css"?>
+<!-- `copy-to-register' (C-x r s) then `insert-register' (C-x r i).
+      <qandaentry>
+        <question id="q:XX" xreflabel="Q:XX">
+          <para></para>
+        </question>
+
+        <answer>
+          <para></para>
+        </answer>
+      </qandaentry>
+-->
+<article class="faq">
+  <title>Frequently Asked Questions about AspectJ</title>
+  <para>Copyright (c) 1997-2001 Xerox Corporation, 
+       2002 Palo Alto Research Center, Incorporated. All rights reserved.
+  </para>
+  <!-- todo Update me! -->
+  <para>Last updated on the web November 26, 2002.
+  </para>
+  <para>
+   
+   For a list of recently-updated FAQ entries, see <xref linkend="q:faqchanges"/>
+   AspectJ 1.1 is currently in development, and 
+   some answers may change after it is released;  
+   for more information, see the 
+     <ulink url="http://aspectj.org/doc/readme11/index.html">AspectJ 1.1 README</ulink>.
+   This is a web-only distribution of the FAQ; the 1.0 documentation bundle
+   contains an earlier version.
+  </para>
+  <qandaset defaultlabel="number">
+    <qandadiv id="overview" xreflabel="Overview">
+      <title>Overview</title>
+      <qandaentry>
+        <question id="q:whatisaj" xreflabel="Q:What is AspectJ?">
+          <para>What is AspectJ?</para>
+        </question>
+        <answer>
+          <para>
+            AspectJ(tm) is a simple and practical extension to the 
+            Java(tm) programming
+            language that adds to Java aspect-oriented programming (AOP)
+            capabilities. AOP allows developers to reap the benefits of
+            modularity for concerns that cut across the natural units of
+            modularity. In object-oriented programs like Java, the natural unit
+            of modularity is the class. In AspectJ, aspects modularize concerns that
+            affect more than one class.  
+	  </para>
+          <para> AspectJ includes a compiler (<literal>ajc</literal>), a
+            debugger (<literal>ajdb</literal>), a documentation generator
+            (<literal>ajdoc</literal>), a program structure browser
+            (<literal>ajbrowser</literal>), and integration
+            with Eclipse, Sun-ONE/Netbeans, GNU Emacs/XEmacs, JBuilder, and Ant.
+          </para>
+          <para>You compile your program using the AspectJ compiler (perhaps using
+	the supported development environments) and then run it, supplying 
+	a small (&lt; 100K) runtime library.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:benefits"
+            xreflabel="Q:What are the benefits of using AspectJ?">
+          <para>What are the benefits of using AspectJ?</para>
+        </question>
+        <answer>
+          <para>AspectJ can be used to improve the modularity of software
+            systems.
+          </para>
+          <para> Using ordinary Java, it can be difficult to modularize design
+          concerns such as
+          </para>
+          <itemizedlist>
+            <listitem><para>system-wide error-handling</para></listitem>
+            <listitem><para>contract enforcement</para></listitem>
+            <listitem><para>distribution concerns</para></listitem>
+            <listitem><para>feature variations</para></listitem>
+            <listitem><para>context-sensitive behavior</para></listitem>
+            <listitem><para>persistence</para></listitem>
+            <listitem><para>testing</para></listitem>
+          </itemizedlist>
+          <para>The code for these concerns tends to be spread out across the
+            system. Because these concerns won't stay inside of any one module
+            boundary, we say that they <emphasis>crosscut</emphasis> the
+            system's modularity.
+          </para>
+          <para>AspectJ adds constructs to Java that enable the modular
+            implementation of crosscutting concerns. This ability is
+            particularly valuable because crosscutting concerns tend to be both
+            complex and poorly localized, making them hard to deal with.
+          </para>
+          <!--
+          <para>Initial studies have shown code size reductions of up to 40%
+            and programmer productivity gains of 20%-40%. These studies were in
+            an earlier version of the language and only for small sample sizes.
+            So while the results are encouraging, they aren't conclusive. We
+            intend to run a new set of studies once the current phase of
+            language development stabilizes.</para>
+-->
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:compability"
+            xreflabel="Q:Can AspectJ work with any Java program?">
+          <para>Can AspectJ work with any Java program?</para>
+        </question>
+        <answer>
+          <para>AspectJ has been designed as a <emphasis>compatible</emphasis>
+          extension to Java. By compatible, we mean
+          </para>
+          <informaltable frame="none">
+            <tgroup cols="2">
+              <tbody>
+                <row>
+                  <entry align="right">
+                    <emphasis>upward compatible</emphasis>
+                  </entry>
+                  <entry>All legal Java programs are legal AspectJ
+                    programs.
+                  </entry>
+                </row>
+                <row>
+                  <entry align="right">
+                    <emphasis>platform
+                    compatible
+                    </emphasis>
+                  </entry>
+                  <entry>All legal AspectJ programs run on standard Java
+                    virtual machines.
+                  </entry>
+                </row>
+                <row>
+                  <entry align="right">
+                    <emphasis>tool
+                    compatible
+                    </emphasis>
+                  </entry>
+                  <entry>Existing tools can be extended to work with
+                    AspectJ.
+                  </entry>
+                </row>
+                <row>
+                  <entry align="right">
+                    <emphasis>programmer compatible</emphasis>
+                  </entry>
+                  <entry>Programming in AspectJ feels natural to Java
+                    programmers.
+                  </entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+          <para>The AspectJ tools run on any Java 2 Platform compatible
+            platform.  The AspectJ compiler produces classes that run
+            on any Java 1.1 (or later) compatible platform.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:license" xreflabel="Q:How is AspectJ licensed?">
+          <para>How is AspectJ licensed?</para>
+        </question>
+        <answer>
+          <para>The AspectJ tools are open-source software available under the
+            <ulink url="http://aspectj.org/MPL">Mozilla Public License 1.1</ulink>.
+            The documentation is available under a separate
+            <ulink url="http://aspectj.org/servlets/AJSite?channel=download&amp;subChannel=docTerms">
+              license
+            </ulink> that precludes for-profit or commercial
+              redistribution.  Generally, we permit some usage for
+              internal presentations; please contact us at
+              <ulink url="mailto:support@aspectj.org?subject=Presentation%20materials">support@aspectj.org</ulink>
+              for permission.
+          </para>
+          <para>Most users only want to use AspectJ to build programs they distribute.
+          There are no restrictions here.  When you distribute your program, be sure to
+          include all the runtime classes from the aspectjrt.jar for that version of AspectJ.
+          When distributing only the runtime classes, you need not provide any notice that 
+          the program was compiled with AspectJ or includes binaries from the AspectJ project,
+          except as necessary to preserve the warranty disclaimers in our license.
+          Although the license does not require it, please email 
+          <ulink url="mailto:support@aspectj.org">support@aspectj.org</ulink>
+          if you are shipping applications built with AspectJ; knowing that is 
+          critical for ongoing support from our sponsors.
+          </para>
+          <para>
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:project" xreflabel="Q:What is the AspectJ Project?">
+          <para>What is the AspectJ Project?</para>
+        </question>
+        <answer>
+          <para>AspectJ is based on over ten years of research at
+            <ulink url="http://www.parc.xerox.com">
+              Xerox Palo Alto Research Center
+            </ulink> 
+	as funded by Xerox, a U.S. Government grant (NISTATP), and a
+            DARPA contract.
+          </para>
+          <para>It has evolved through open-source releases to a strong
+	  user community.
+            The AspectJ team works closely with the community
+            to ensure AspectJ continues to evolve as an effective 
+            aspect-oriented programming language and tool set.
+          </para>
+          <para>The latest release is 1.0.6 <!-- XXX todo Update me! --> 
+	    which can be downloaded from the AspectJ
+            <ulink url="http://aspectj.org/dl">download</ulink> page.
+	Further development is focused on supporting applications, 
+	improving performance of the 1.0 compiler, 
+        enhancing integration with IDEs,
+        and building the next generations of the language.
+          </para>
+        </answer>
+      </qandaentry>
+    </qandadiv>
+    <qandadiv id="quickstart" xreflabel="Quick Start">
+      <title>Quick Start</title>
+      <qandaentry>
+        <question id="q:requirements"
+            xreflabel="Q:What Java versions does AspectJ require and support?">
+          <para>
+            What Java versions does AspectJ require and support?
+          </para>
+        </question>
+        <answer>
+          <para>
+          The AspectJ compiler produces programs for any released version of the 
+          Java platform (jdk1.1 and later).  When running, your program classes must
+	      be able to reach classes in the
+          small (&lt; 100K) runtime library (aspectjrt.jar) from the distribution.
+          The tools themselves require Java 2 (jdk 1.2) or later to run,
+          but the compiler can be set up to target any 1.1-compliant
+          version of the Java platform.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:install"
+            xreflabel="Q:How do I download and install AspectJ?">
+          <para>How do I download and install AspectJ?</para>
+        </question>
+        <answer>
+          <para>Go to AspectJ's
+            <ulink url="http://aspectj.org/dl">download web
+              page
+            </ulink> and choose which components you want download.
+            The <literal>jar</literal> files are installed by executing
+          </para>
+          <programlisting>
+            java -jar <emphasis>jar file name</emphasis>
+          </programlisting>
+          <para>Do <emphasis role="bold">not</emphasis> try to extract the
+            <literal>jar</literal> file contents and then attempt to execute
+            <literal>java org.aspectj.Main</literal>. (A
+            <classname>NoClassDefFoundError</classname> exception will be
+            thrown.) The AspectJ distribution is not designed to be installed
+            this way. Use the <literal>java -jar</literal> form shown above.
+          </para>
+          <para>The compressed <literal>tar</literal> files (suffix:
+            <literal>.tgz</literal>) are extracted by decompressing them with
+            <literal>tar</literal> or with <literal>WinZip</literal>.
+          </para>
+          <para>To uninstall, remove the files the installer wrote in your 
+            file system.  In most cases, you can delete the top-level install
+	        directory (and all contained files), after you remove any
+	        new or updated files you want to keep. On Windows, no
+            registry settings were added or changed, so nothing needs to be
+            undone.  You may install over prior versions, but if the files are
+            locked the installer will warn you but still complete; in this case,
+            remove the locked files and reinstall.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:startUsingAJ"
+            xreflabel="Q: How should I start using AspectJ?">
+          <para>How should I start using AspectJ?</para>
+        </question>
+        <answer>
+          <para>Many users adopt AspectJ incrementally, first using it
+        to understand and validate their systems (relying on it only in
+        development) and then using it to implement crosscutting concerns
+        in production systems.  AspectJ has been designed to make each
+        step discrete and beneficial.
+          </para>
+          <para>
+            In order of increasing reliance, you may use AspectJ:
+          </para>
+          <itemizedlist>
+            <listitem>
+              <para>
+                <emphasis role="bold"> In the development
+                    process
+                </emphasis> Use AspectJ to trace or log
+                  interesting information. You can do this by adding 
+                  simple AspectJ code that performs logging or tracing. 
+                  This kind of addition may be removed ("unplugged") for
+                  the final build since it does not implement a design
+                  requirement; the functionality of the system is unaffected by
+                  the aspect.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                <emphasis role="bold">As an ancillary part of your
+                    system
+                </emphasis> Use AspectJ to more completely and
+                    accurately test the system.
+                  Add sophisticated code that can check contracts,
+                  provide debugging support, or implement test strategies. 
+                  Like pure development aspects, this code may also be 
+                  unplugged from production builds. However, the same code
+                  can often be helpful in diagnosing failures in deployed 
+                  production systems, so you may design the functionality
+                  to be deployed but disabled, and enable it when debugging.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                <emphasis role="bold">As an essential part of your
+                    system
+                </emphasis> Use AspectJ to modularize
+                  crosscutting concerns in your system by design. 
+                  This uses AspectJ to implement logic integral to a system
+                  and is delivered in production builds.
+              </para>
+            </listitem>
+          </itemizedlist>
+          <para>This adoption sequence works well in practice and has been
+          followed by many projects.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:integrateWithDevTools"
+            xreflabel="Q: How well does AspectJ integrate with existing Java development tools?">
+          <para>How does AspectJ integrate with existing Java development
+            tools?
+          </para>
+        </question>
+        <answer>
+          <para>AspectJ products are designed to make it easy to integrate
+          AspectJ into an existing development process.  
+          Each release includes 
+          Ant taskdefs for building programs,
+          the AspectJ Development Environment (AJDE) for writing
+          aspects inside popular IDE's,  and
+          command-line tools for compiling, documenting, and debugging.
+          </para>
+          <!-- ok to order for style, not priority? -->
+          <para>AspectJ provides replacements for standard Java tools:
+            <itemizedlist>
+              <listitem>
+                <para><literal>ajc</literal>, the AspectJ compiler,
+                  runs on any Java 2 compatible platform, and produces classes
+                  that run on any Java 1.1 (or later) compatible platform.
+                </para>
+              </listitem>
+              <listitem>
+                <para><literal>ajdoc</literal> works like
+                  Sun's <literal>javadoc</literal> API documentation generator
+                  to produce HTML describing the semantics of Java and
+                  AspectJ source files, including entries and cross-references 
+                  for the crosscutting structure.
+                </para>
+              </listitem>
+              <listitem>
+                <para><literal>ajdb</literal> is an aspect-aware debugger
+                akin to Java's <literal>jdb</literal>.
+                </para>
+              </listitem>
+            </itemizedlist>
+          </para>
+          <para>The AspectJ Development Environment (AJDE)
+           enables programmers to view and navigate the crosscutting structures
+           in their programs, integrated with existing support in 
+           popular Java IDE's for viewing and navigating object-oriented
+           structures. For many programmers this provides a deeper understanding
+           of how aspects work to modularize their concerns and permits them
+           to incrementally extend their development practices without 
+           having to abandon their existing tools.
+          </para>
+          <para>
+            AJDE integrates with the following tools:
+          </para>
+          <itemizedlist>
+            <listitem>
+              <para>Borland's JBuilder (versions 4 and 5)</para>
+            </listitem>
+            <listitem>
+              <para>Sun Microsystems' Forte for Java (versions 2 and 3), 
+                      and Netbeans 3.2
+              </para>
+            </listitem>
+            <listitem>
+              <para>Eclipse (version 2.0)</para>
+            </listitem>
+            <listitem>
+              <para>GNU Emacs (version 20.3) and XEmacs (version 21.1 on Unix
+                and 21.4 on Windows)
+              </para>
+            </listitem>
+          </itemizedlist>
+          <para>
+            The common functionality of AJDE is also available in
+            the stand-alone source code browser <literal>ajbrowser</literal>,
+            included in the tools distribution.
+          </para>
+          <para>AspectJ also supports building with Ant by providing
+           taskdef interfaces to the ajc and ajdoc tools.
+          </para>
+        </answer>
+      </qandaentry>
+    </qandadiv>
+    <qandadiv id="typicalprograms" xreflabel="Typical AspectJ programs">
+      <title>Typical AspectJ programs</title>
+      <qandaentry>
+        <question id="q:aspectsoptional"
+            xreflabel="Q:Are aspects always optional or non-functional parts of a program?">
+          <para>Are aspects always optional or non-functional parts of
+            a program?
+          </para>
+        </question>
+        <answer>
+          <para>No. Although AspectJ can be used in a way that allows AspectJ
+            code to be removed for the final build, aspect-oriented code is not
+            <emphasis>always</emphasis> optional or non-functional. Consider
+            what AOP really does: it makes the modules in a program correspond
+            to modules in the design. In any given design, some modules are
+            optional, and some are not.
+          </para>
+          <para>The examples directory included in the AspectJ distribution
+            contains some examples of the use aspects that are not optional.
+            Without aspects,
+          </para>
+          <informaltable frame="none">
+            <tgroup cols="2">
+              <tbody>
+                <row>
+                  <entry align="right">
+                    <emphasis role="strong">bean</emphasis>
+                  </entry>
+                  <entry>Point objects would not be JavaBeans.</entry>
+                </row>
+                <row>
+                  <entry align="right">
+                    <emphasis role="strong">introduction</emphasis>
+                  </entry>
+                  <entry>Point objects would not be cloneable, comparable or
+                    serializable.
+                  </entry>
+                </row>
+                <row>
+                  <entry align="right">
+                    <emphasis role="strong">spacewar</emphasis>
+                  </entry>
+                  <entry>Nothing would be displayed.</entry>
+                </row>
+                <row>
+                  <entry align="right">
+                    <emphasis role="strong">telecom</emphasis>
+                  </entry>
+                  <entry>No calls would be billed.</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:developmentAndProductionAspects"
+            xreflabel="Q:What is the difference between development and production aspects?">
+          <para>
+            What is the difference between development and production aspects?
+          </para>
+        </question>
+        <answer>
+          <para>
+            Production aspects are delivered with the finished product,
+	    while development aspects are used during the development process.
+	    Often production aspects are also used during development.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:devAspects"
+            xreflabel="Q:What are some common development aspects?">
+          <para>
+            What are some common development aspects?
+          </para>
+        </question>
+        <answer>
+          <para>Aspects for logging, tracing, debugging, profiling
+	   or performance monitoring, or testing.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:prodAspects"
+            xreflabel="Q:What are some common production aspects?">
+          <para>
+            What are some common production aspects?
+          </para>
+        </question>
+        <answer>
+          <para>
+            Aspects for performance monitoring and diagnostic systems, 
+	    display updating or notifications generally, security, 
+	    context passing, and error handling.
+          </para>
+        </answer>
+      </qandaentry>
+    </qandadiv>
+    <qandadiv id="concepts" xreflabel="Basic AOP and AspectJ Concepts">
+      <title>Basic AOP and AspectJ Concepts</title>
+      <qandaentry>
+        <question id="q:crosscutting"
+            xreflabel="Q:What are scattering, tangling, and crosscutting?">
+          <para>What are scattering, tangling, and crosscutting?</para>
+        </question>
+        <answer>
+          <para>
+	      "Scattering" is when similar code is distributed throughout many 
+          program modules.  This differs from a component being used by 
+          many other components since
+	      it involves the risk of misuse at each point and of inconsistencies
+	      across all points.  Changes to the implementation may require
+          finding and editing all affected code.
+          </para>
+          <para>"Tangling" is when two or more concerns are implemented in
+	      the same body of code or component, making it more difficult to understand.
+	      Changes to one implementation may cause unintended changes
+	      to other tangled concerns.
+          </para>
+          <para>"Crosscutting" is how to characterize a concern than spans
+	      multiple units of OO modularity - classes and objects.  Crosscutting
+	      concerns resist modularization using normal OO constructs, but 
+          aspect-oriented programs can modularize crosscutting concerns.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:joinpoints"
+            xreflabel="Q: What are join points?">
+          <para>What are join points?</para>
+        </question>
+        <answer>
+          <para>Join points are well-defined points in the execution of a
+            program. Not every execution point is a join point: only those
+            points that can be used in a disciplined and principled manner are.
+            So, in AspectJ, the execution of a method call is a join point, but
+            "the execution of the expression at line 37 in file Foo.java" is
+            not.
+          </para>
+          <para>The rationale for restricting join points is similar to the
+            rationale for restricting access to memory (pointers) or
+            restricting control flow expressions (<literal>goto</literal>) in
+            Java: programs are easier to understand, maintain and extend
+            without the full power of the feature.
+          </para>
+          <para>AspectJ join points include reading or writing a field; calling
+            or executing an exception handler, method or constructor.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:pointcut"
+            xreflabel="Q; What is a pointcut?">
+          <para>
+            What is a pointcut?
+          </para>
+        </question>
+        <answer>
+          <para>A pointcut picks out
+            <link linkend="q:joinpoints">
+              join points
+            </link>. These join points are described by the pointcut
+              declaration. Pointcuts can be defined in classes or in aspects,
+              and can be named or be anonymous.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:advice"
+            xreflabel="Q:What is advice?">
+          <para>What is advice?</para>
+        </question>
+        <answer>
+          <para>Advice is code that executes at each
+	    <link linkend="q:joinpoints">join point</link> picked out by a
+            <link linkend="q:pointcut">pointcut</link>. There are three
+            kinds of advice: before advice, around advice and after advice. As
+            their names suggest, before advice runs before the join point
+            executes; around advice executes before and after the join point;
+            and after advice executes after the join point. The power of
+            advice comes from the advice being able to access values in the
+            execution context of a pointcut.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:declarations"
+            xreflabel="Q:What are inter-type declarations?">
+          <para>What are inter-type declarations?</para>
+        </question>
+        <answer>
+          <para>AspectJ enables you to declare members and supertypes of another class
+	in an aspect, subject to Java's type-safety and access rules.  These are
+	visible to other classes only if you declare them as accessible.  
+        You can also declare compile-time errors and warnings based on pointcuts.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:whatisanaspect"
+            xreflabel="Q:What is an aspect?">
+          <para>What is an aspect?</para>
+        </question>
+        <answer>
+          <para>Aspects are a new class-like language element that has been
+            added to Java by AspectJ. Aspects are how developers encapsulate
+            concerns that cut across classes, the natural unit of modularity in
+            Java.
+          </para>
+          <para>Aspects are similar to classes because...
+            <itemizedlist>
+              <listitem><para>aspects have type</para></listitem>
+              <listitem>
+                <para>
+                  aspects can extend classes and other aspects
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+                  aspects can be abstract or concrete
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+                  non-abstract aspects can be instantiated
+                </para>
+              </listitem>
+              <listitem>
+                <para>aspects can have static and non-static state and
+                  behavior
+                </para>
+              </listitem>
+              <listitem>
+                <para>aspects can have fields, methods, and types
+                  as members
+                </para>
+              </listitem>
+              <listitem>
+                <para>the members of non-privileged aspects follow the
+                  same accessibility rules as those of classes
+                </para>
+              </listitem>
+            </itemizedlist>
+          </para>
+          <para>Aspects are different than classes because...
+            <itemizedlist>
+              <listitem>
+                <para>aspects can additionally include as members pointcuts,
+                  advice, and inter-type declarations;
+                </para>
+              </listitem>
+              <listitem>
+                <para>aspects can be qualified by specifying the
+                  context in which the non-static state is available
+                </para>
+              </listitem>
+              <listitem>
+                <para>aspects can't be used interchangeably with
+                  classes
+                </para>
+              </listitem>
+              <listitem>
+                <para>aspects don't have constructors or finalizers,
+                  and they cannot be created with the new operator;
+		  they are automatically available as needed.
+                </para>
+              </listitem>
+              <listitem>
+                <para>privileged aspects can access private members of
+                  other types
+                </para>
+              </listitem>
+            </itemizedlist>
+          </para>
+        </answer>
+      </qandaentry>
+    </qandadiv>
+    <qandadiv id="whyaop" xreflabel="Why AOP?">
+      <title>Why AOP?</title>
+      <qandaentry>
+        <question id="q:ccfromflaws"
+            xreflabel="Q:Are crosscutting concerns induced by flaws?">
+          <para>Are crosscutting concerns induced by flaws in parts of the
+          system design, programming language, operating system, etc. Or is
+          there something more fundamental going on?
+          </para>
+        </question>
+        <answer>
+          <para>AOP's fundamental assumption is that in any sufficiently
+            complex system, there will inherently be some crosscutting
+            concerns.
+          </para>
+          <para>So, while there are some cases where you could re-factor a
+            system to make a concern no longer be crosscutting, the AOP idea
+            is that there are many cases where that is not possible, or where
+            doing so would damage the code in other ways.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:definingaspectspercc"
+            xreflabel="Q:Does it really make sense to define aspects in terms of crosscutting?">
+          <para>Does it really make sense to define aspects in terms of
+          crosscutting?
+          </para>
+        </question>
+        <answer>
+          <para>Yes.</para>
+          <para>The short summary is that it is right to define AOP in terms of
+            crosscutting, because well-written AOP programs have clear
+            crosscutting structure.  It would be a mistake to define AOP in
+            terms of "cleaning up tangling and scattering", because that isn't
+            particular to AOP, and past programming language innovations also
+            do that, as will future developments.
+          </para>
+          <para>Slides for a long talk on this topic are at
+            <ulink url="http://www.cs.ubc.ca/~gregor/vinst-2-17-01.zip">
+              http://www.cs.ubc.ca/~gregor/vinst-2-17-01.zip
+            </ulink>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:domainspecific"
+            xreflabel="Q:Is AOP restricted to domain-specific applications?">
+          <para>Is AOP restricted to domain-specific
+            applications?
+          </para>
+        </question>
+        <answer>
+          <para>No. Some implementations of AOP are domain-specific, but
+            AspectJ was specifically designed to be general-purpose.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:whyaopifinterceptors"
+            xreflabel="Q:Why do I need AOP if I can use interceptors?">
+          <para>Why do I need AOP if I can use interceptors
+                (or JVMPI or ref
+            lection)?
+          </para>
+        </question>
+        <answer>
+          <para>There are many mechanisms people use now to implement
+          some crosscutting concerns.  But they don't have a way to express
+          the actual structure of the program so you (and your tools)
+	  can reason about it.  Using a language enables you to express the 
+          crosscutting in first-class constructs.  You can not only avoid the 
+          maintenance problems and structural requirements of some other 
+          mechanisms, but also combine forms of crosscutting so that all
+	  the mechanisms for a particular concern are one piece of code.
+          </para>
+        </answer>
+      </qandaentry>
+    </qandadiv>
+    <qandadiv id="related" xreflabel="Related Technology">
+      <title>Related Technology</title>
+      <qandaentry>
+        <question id="q:comparetonewforms"
+            xreflabel="Q:How does AspectJ compare to other new forms of programming?">
+          <para>
+            How does AspectJ compare to other new forms of programming?
+          </para>
+        </question>
+        <answer>
+          <para>There are many recent proposals for programming languages that
+            provide control over crosscutting concerns. Aspect-oriented
+            programming is an overall framework into which many of these
+            approaches fit. AspectJ is one particular instance of AOP,
+            distinguished by the fact that it was designed from the ground up
+            to be compatible with Java.
+          </para>
+          <para>See the
+            <ulink url="http://aspectj.org/relatedSites">Related
+              Sites
+            </ulink> page of the AspectJ web site for more
+              information.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:compartoreflection"
+            xreflabel="Q:How do you compare the features of AspectJ with reflective systems?">
+          <para>How do you compare the features of AspectJ with
+            reflective systems?
+          </para>
+        </question>
+        <answer>
+          <para>Reflective and aspect-oriented languages have an important
+            similarity: both provide programming support for dealing with
+            crosscutting concerns. In this sense reflective systems proved 
+            that independent programming of crosscutting concerns is
+            possible.
+          </para>
+          <para>But the control that reflection provides tends to be low-level
+            and extremely powerful. In contrast, AspectJ provides more
+            carefully controlled power, drawing on the rules learned from
+            object-oriented development to encourage a clean and understandable
+            program structure.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:comparetomixin"
+            xreflabel="Q:How do AspectJ features compare with those of mixin-based inheritance?">
+          <para>How do AspectJ features compare with those of mixin-based
+            inheritance?
+          </para>
+        </question>
+        <answer>
+          <para>Some features of AspectJ, such as introduction, are related to
+            <emphasis>mixin-based inheritance</emphasis>. But, in order to
+            support crosscutting, a core goal for AspectJ, AspectJ goes beyond
+            mixin-based inheritance.
+          </para>
+          <para>Firstly, an aspect imposes behavior on a class, rather than a
+            class requesting behavior from an aspect. An aspect can modify a
+            class without needing to edit that class. This property is
+            sometimes called <emphasis>reverse inheritance</emphasis>.
+          </para>
+          <para>Secondly, a single aspect can affect multiple classes in
+            different ways. A single paint aspect can add different paint
+            methods to all the classes that know how to paint, unlike mixin
+            classes.
+          </para>
+          <para>
+So mixin-based inheritance doesn't have the reverse inheritance
+property, and mixins affect every class that mixes them in the same.
+If I want to do something like SubjectObserverProtocol, I need two
+mixins, SubjectPartofSubjectObserverProtocol and ObserverPartof...
+In AspectJ, both halves of the protocol can be captured in a single
+aspect.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:aopandxp"
+            xreflabel="Q:What is the relationship between AOP and 
+        XP (extreme programming AKA agile methods)?">
+          <para>What is the relationship between AOP and 
+        XP (extreme programming AKA agile methods)?
+          </para>
+        </question>
+        <answer>
+          <para>From a question on the user list:
+            <programlisting>
+> Anyone know the connections between AOP and Extreme Programming?
+> I am really confused. It seems AOP is a programming paradigm, which
+> is the next level of abstraction of OOP. Extreme Programming, however,
+> this is a lightweight software development process. One of the common
+> motivations of AOP and XP is designed to adopt to the requirement
+> changes, so that it can save the cost of software development.
+            </programlisting>
+          </para>
+          <para>
+            This is Raymond Lee's answer:
+          </para>
+          <para>
+        You're not really that confused.  AOP and XP are orthogonal concepts,
+        although AOP can be used to help accomplish XP goals.
+        One of the goals of XP is to respond to changing requirements.
+        Another is to reduce the overall cost of development.  These are
+        not necessarily the same thing.
+          </para>
+          <para>
+        One of the principles of XP that contribute to meeting those goals
+        is to maintain clean, simple designs.  One of the criteria for clean,
+        simple designs is to factor out duplication from the code.  Benefits
+        of removing duplication include the code being easier to understand,
+        better modularity of the design, lower costs of code changes, less
+        chance of conflicting changes when practicing collective code
+        ownership, etc.
+          </para>
+          <para>
+        Different types of duplication lend themselves to being addressed by
+        different design paradigms and language features.  Duplicate snippets
+        of code can be factored out into methods.  Duplicate methods can be
+        factored out to common classes, or pushed up to base classes.
+        Duplicate patterns of methods and their use can be factored out to
+        mechanisms of classes and methods (i.e. instantiations of design
+        patterns).
+          </para>
+          <para>
+        AOP addresses a type of duplication that is very difficult to handle
+        in the other common paradigms, namely cross-cutting concerns.  By
+        factoring out duplicate cross-cutting code into aspects, the target
+        code becomes simpler and cleaner, and the cross-cutting code becomes
+        more centralized and modular.
+          </para>
+          <para>
+        So, AOP as a paradigm, and the associated tools, gives an XPer, or
+        anyone wanting to remove duplication from the code base, a powerful
+        way to remove a form of duplication not easily addressed until now.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:aspectjandcsharp"
+            xreflabel="Q:Will you support C#?">
+          <para>Will you support C#?</para>
+        </question>
+        <answer>
+          <para>Not at this time. Although the resemblances between C# and Java
+            means it would probably be a fairly straightforward matter to take
+            the AspectJ language design and produce AspectC#, our current focus
+            is only on supporting effective uses of AspectJ.
+          </para>
+        </answer>
+      </qandaentry>
+    </qandadiv>
+    <qandadiv id="adoption" xreflabel="Deciding to adopt AspectJ">
+      <title>Deciding to adopt AspectJ</title>
+      <qandaentry>
+        <question id="q:productplans"
+            xreflabel="Q:Is it safe to use AspectJ in my product plans??">
+          <para>
+            Is it safe to use AspectJ in my product plans?
+          </para>
+        </question>
+        <answer>
+          <para>You may use AspectJ in your product or project with little
+            risk. Several factors play a role in reducing the risk of adopting
+            this new technology:
+            <itemizedlist>
+              <listitem>
+                <para>AspectJ is an <emphasis>addition</emphasis> to
+                  Java, and can be incrementally introduced into a project 
+                  in a way that limits risk. 
+                  See <xref linkend="q:startUsingAJ"/> for
+                  some suggestions on how to do this.
+                </para>
+              </listitem>
+              <listitem>
+                <para>The AspectJ compiler accepts standard Java as
+                  input and produces standard Java bytecode as output. An
+                  optional mode produces standard Java source code which may
+                  then be compiled with any compliant Java compiler, e.g. Sun's
+                  <literal>javac</literal> compiler 
+                  or IBM's <literal>jikes</literal> compiler.
+                </para>
+              </listitem>
+              <listitem>
+                <para>AspectJ is available under the
+                  <ulink url="http://aspectj.org/MPL">Mozilla Public License</ulink>,
+                  a non-proprietary, open source license. This ensures that
+                  AspectJ will continue to evolve and be available, regardless
+                  of the fate of any particular organization involved with
+                  AspectJ.
+                </para>
+              </listitem>
+              <listitem>
+                <para>Removing AspectJ from your program is not
+                  difficult, although you will lose the flexibility and
+                  economy that AspectJ provided.
+                </para>
+              </listitem>
+            </itemizedlist>
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:effectonsize"
+            xreflabel="Q:What is the effect of using AspectJ on the source code size of programs?">
+          <para>What is the effect of using AspectJ on the source code
+            size of programs?
+          </para>
+        </question>
+        <answer>
+          <para>Using aspects reduces, as a side effect, the number of source
+            lines in a program. However, the major benefit of using aspects
+            comes from <emphasis>improving</emphasis> the modularity of a
+            program, not because the program is smaller. Aspects gather into a
+            module concerns that would otherwise be scattered across or
+            duplicated in multiple classes.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:effectonperformance"
+            xreflabel="Q:Does AspectJ add any performance overhead?">
+          <para>
+            Does AspectJ add any performance overhead?
+          </para>
+        </question>
+        <answer>
+          <para>The issue of performance overhead is an important one. It is
+            also quite subtle, since knowing what to measure is at least as
+            important as knowing how to measure it, and neither is always
+            apparent.
+          </para>
+          <para>There is currently no benchmark suite for AOP languages in
+            general nor for AspectJ in particular. It is probably too early to
+            develop such a suite because AspectJ needs more maturation of the
+            language and the coding styles first. Coding styles really drive
+            the development of the benchmark suites since they suggest what is
+            important to measure.
+          </para>
+          <para>In the absence of a benchmark suite, AspectJ probably has an
+            acceptable performance for everything except non-static advice.
+            Introductions and static advice should have extremely small
+            performance overheads compared to the same functionality
+            implemented by hand.
+          </para>
+          <para>The <literal>ajc</literal> compiler will use static typing information 
+            to only insert those checks that are absolutely necessary.  Unless you use 
+            'thisJoinPoint' or 'if', then the only dynamic checks that will be 
+            inserted by ajc will be 'instanceof' checks which are generally quite fast.  
+            These checks will only be inserted when they can not be inferred from 
+            the static type information.
+          </para>
+          <para>If you'd like to measure the performance be sure to write code
+            fragments in AspectJ and compare them to the performance of the
+            corresponding code written without AspectJ. For example, don't
+            compare a method with before/after advice that grabs a lock to just
+            the method. That would be comparing apples and oranges. Also be
+            sure to watch out for JIT effects that come from empty method
+            bodies and the like. Our experience is that they can be quite
+            misleading in understanding what you've measured.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:modularityviolations"
+            xreflabel="Q:I've heard that AspectJ leads to modularity violations.  Does it?">
+          <para>
+            I've heard that AspectJ leads to modularity violations.  Does it?
+          </para>
+        </question>
+        <answer>
+          <para>
+            Well I haven't yet seen a language in which you can't write bad code!
+          </para>
+          <para>
+        But seriously, most AspectJ users find that just like when they learned 
+        OO, it takes a while to really get the hang of it.  They tend to start 
+        in the usual way, by copying canonical examples and experimenting with 
+        variations on them.
+          </para>
+          <para>
+        But users also find that rather than being dangerous, AspectJ helps them 
+        write code that is more clear and has better encapsulation -- once they 
+        understand the kind of modularity AspectJ supports.  There are several 
+        good papers that talk about this (see below), but here's a basic point 
+        to keep in mind: when properly used, AspectJ makes it possible program 
+        in a modular way, something that would otherwise be spread throughout 
+        the code. Consider the following code, adapted from the AspectJ tutorial:
+          </para>
+          <programlisting>
+aspect PublicErrorLogging {
+    Log log = new Log();
+
+    pointcut publicInterface(Object o):
+        call(public * com.xerox.*.*(..)) &amp;&amp; target(o);
+
+    after(Object o) throwing (Error e): publicInterface(o) {
+        log.write(o, e);
+    }
+}
+          </programlisting>
+          <para>
+        The effect of this code is to ensure that whenever any public method of 
+        an interface or class in the <literal>com.xerox</literal> package 
+        throws an error, that error is logged before being thrown to its caller.
+          </para>
+          <para>
+        Of course in the alternative implementation a large number of methods 
+        have a try/catch around their body.
+          </para>
+          <para>
+        The AspectJ implementation of this crosscutting concern is clearly 
+        modular, whereas the other implementation is not.  As a result, if you 
+        want to change it, its easier in the AspectJ implementation.  For 
+        example, if you also want to pass the name of the method, or its 
+        arguments to <literal>log.write</literal>, you only have to edit 
+        one place in the AspectJ code.
+          </para>
+          <para>
+        This is just a short example, but I hope it shows how what happens 
+        with AOP and AspectJ is that the usual benefits of modularity are 
+        achieved for crosscutting concerns, and that leads to better code, 
+        not more dangerous code.
+          </para>
+          <para>
+        One paper someone else just reminded me of that talks some more 
+        about this is:
+            <ulink url="http://www.cs.ubc.ca/~kdvolder/Workshops/OOPSLA2001/submissions/12-nordberg.pdf">
+              http://www.cs.ubc.ca/~kdvolder/Workshops/OOPSLA2001/submissions/12-nordberg.pdf
+            </ulink>
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:encapsulation"
+            xreflabel="Q:Why does AspectJ permit aspects to access and add members of another type?">
+          <para>
+            Why does AspectJ permit aspects to access and add members of another type?  
+            Isn't that violating OO encapsulation?
+          </para>
+        </question>
+        <answer>
+          <para>In the spirit of Smalltalk, we have decided to give more power
+            to the language in order to let the user community experiment and
+            discover what is right. To date this has proven to be a successful
+            strategy because it has permitted the construction of many useful
+            aspects that crosscut the internal state of an object, and as such
+            need access the its private members. However, we are not
+            discounting that some sort of restrictions are useful, rather, we
+            are seeking input from the community in order to decide on what
+            these restrictions should be.
+          </para>
+          <para>
+            In that light, our position on encapsulation is :
+          </para>
+          <itemizedlist>
+            <listitem><para>we respect Java's visibility rules</para></listitem>
+            <listitem><para>we also provide open-classes, a mature OO technology</para></listitem>
+            <listitem><para>we provide "privileged" access if you really need it.</para></listitem>
+          </itemizedlist>
+          <para>
+          Introducing parents or members to classes is a well-studied OO technique
+          known as open classes.
+          </para>
+          <para>
+          Open classes have been used in many languages prior to AspectJ, 
+          including CLOS, Python, Smalltalk, Objective-C, and others.  
+          Building from Java, introduction in AspectJ provides better 
+          name hygiene and access control than prior languages.  
+          Introduced code obeys all of Java's normal accessibility rules 
+          for its lexical location in the aspect that it is introduced from.  
+          Such code can not even see, much less access, private members of 
+          the class it is introduced into. Further, introductions can be
+          declared private to the aspect, so they are not visible to
+          other clients of the class.
+          </para>
+          <para>
+          Privileged aspects do permit access to private members of another
+          class.  They are a response to the very few cases where developers 
+          genuinely need such access (typically for testing purposes where it
+          access is necessary), but it would be more risky to open access by
+          putting the aspect in the same package, adding test code, or changing
+          access in the target class.  We recommend using privileged aspects 
+          only as necessary, and believe that marking them "privileged" makes 
+          any potential misuse apparent.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:aspectjandj2ee"
+            xreflabel="Q:Can I use AspectJ with J2EE?">
+          <para>Can I use AspectJ with J2EE?</para>
+        </question>
+        <answer>
+          <para>
+            Consider the component types in J2EE:
+          </para>
+          <itemizedlist>
+            <listitem>
+              <para>
+                Servlet: AspectJ works well within servlets
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+	JSP: It is possible to use AspectJ to affect code in JSPs by precompiling
+	them into Java sources and compiling these with ajc. This can be used, e.g., to 
+	customize displays by turning on and off custom JSP taglibs. The mapping from a
+	given jsp source to java package and class name is not standardized, which means
+	doing this imposes dependencies on specific container versions.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+	EJB: AspectJ supports a wide variety of aspects for EJBs. It can be used for 
+	logging, tracing, debugging, error handling by layers, correlated method-level
+	interception (e.g., chargebacks), metering, fine-grained transactions, etc.
+	Indeed, it can be used to enforce adherence to coding restrictions within an
+	EJB (e.g., not using java.io, creating a class loader, or listening on 
+	sockets) using <literal>declare error</literal>.
+              </para>
+            </listitem>
+          </itemizedlist>
+          <para>
+	The basic limitations are that there is no built-in support for writing J2EE
+	analogs for AspectJ extensions to Java, like distributed aspects, distributed 
+	cflow, or managing state between invocations. These don't prevent one from using
+	AspectJ to do useful intra-container implementation, nor need they prevent one 
+	from building distributed support, state management, and inter-component 
+	implementations that leverage AspectJ. It just takes some work. In more detail:
+          </para>
+          <para>
+	All AspectJ implementations may define "code the implementation controls".
+        The AspectJ 1.0 implementation defines this as the files passed to the compiler
+        (AspectJ 1.1 will also support bytecode weaving).
+          </para>
+          <para>
+	Some advice on EJB operations will generate methods that confuse ejb compilers.
+	To avoid this problem, you can use the -XaddSafePrefix flag when compiling with ajc.
+          </para>
+          <para>
+	EJB components may be invoked remotely, and containers may passivate and 
+	pool EJB's.  Servlets have similar limitations, and in both cases the
+	lifespan of the defining class loader is implementation-dependent 
+	(though it must span the operation of a particular request).
+          </para>
+          <para>
+	Being limited by lifecycle and namespace, the AspectJ 1.0 implementation 
+        supports aspects that operate through non-remote invocations during the lifetime 
+        of the namespace for a particular 
+	deployment unit compiled in its entirety by the ajc compiler.
+	This means AspectJ supports common aspects only within a single local runtime
+	namespace (usually implemented as a class loader hierarchy).
+          </para>
+          <para>
+	Further, AspectJ recognizes language-level join points (object initialization, 
+	method calls, etc.), not their EJB analogs (ejb find or create methods...).
+	These lead to the following consequences:
+          </para>
+          <itemizedlist>
+            <listitem>
+              <para>
+	Issingleton aspects (the default) are limited to the lifetime of
+	the defining class loader, which in some implementations may not span
+	multiple invocations of the same application or EJB component.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+	EJB lifecycles are different from object lifecycles, so perthis
+	and pertarget aspects will make little sense.  They do not work
+        in the current implementation, which uses synchronized methods
+        to ensure a correct association in threaded environments 
+        (EJB's may not have synchronized methods).
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+	Percflow or percflowbelow aspects are restricted to a chain of
+	non-remote invocations.  While EJB 2.0 permits declaring an interface
+	local, this information is not available to the AspectJ compiler today.
+        For same reasons as stated above fore perthis, these will not work even 
+        in the EJB container.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+	Evaluation of cflow or cflowbelow pointcuts will be valid only
+	with respect to a chain of non-remote invocations.
+              </para>
+            </listitem>
+          </itemizedlist>
+          <para>
+            In addition, any AspectJ code should respect EJB operations:
+          </para>
+          <itemizedlist>
+            <listitem>
+              <para>
+	The EJB container accesses EJB component fields directly, i.e.,
+	in code outside the control of the compiler.  There is no join point for
+	these accesses, and hence no way to write a pointcut to advise that access.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+	The EJB container may pool EJB components, so any initialization
+	join points may run once per component constructed, not once per
+	component initialized for purposes of a client call.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+	The EJB container is permitted to change class loaders, even
+	between invocations of a particular EJB component (by passivating and
+	activating with a new class loader).  In this case, instances of singleton 
+	aspects will not operate over multiple invocations of the component, or that 
+	static initialization join point recur for a given class as it is re-loaded. 
+	This behavior depends on the container implementation.
+              </para>
+            </listitem>
+          </itemizedlist>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:aspectjandgj"
+            xreflabel="Q:Can I use AspectJ with Generic Java?">
+          <para>Can I use AspectJ with Generic Java?</para>
+        </question>
+        <answer>
+          <para>At this time, unfortunately not. The two compilers are just not
+            at all compatible. In an ideal world, there would be a wonderful
+            Open Source extensible compiler framework for Java that both GJ and
+            AspectJ would be built on top of, and they would seamlessly
+            interoperate along with all other extensions to Java that you might
+            be interested in, but that's not the case (yet?).
+          </para>
+          <para>However, on 09 October 2000, the Java Community Process
+            approved a proposal to add generic types to Java that is largely
+            based on GJ (JSR 14).  A draft specification was submitted for
+            public review, which closed on 01 August 2001, and a
+            <ulink url="http://plan9.bell-labs.com/who/wadler/pizza/gj/">
+              prototype implementation
+            </ulink> has been released.
+          </para>
+          <para>We are committed to moving very rapidly to add support for
+            generic types in AspectJ when generic types become part of the Java
+            language specification.  Everyone on the AspectJ team is looking
+            forward to this, because we too would really like to be able to
+            write code that includes both aspects and generic types.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:aopinjava"
+            xreflabel="Q: Are you working to put AOP into Java?">
+          <para> Are you working to put AOP into Java?  
+	   It seems that every AOP toolset currently uses proprietary mechanisms 
+	   to describe point-cuts, etc.
+          </para>
+        </question>
+        <answer>
+          <para>
+	We are working on standardization, but it's 
+	a question of timing/ripeness (imagine going from thousands of users 
+	to millions).  (See <xref linkend="q:standardization"/>.) We believe 
+	AspectJ addresses this question in the best way possible now:
+            <itemizedlist>
+              <listitem>
+                <para>
+	It's open-source.  Rather than being proprietary or controlled by a 
+	vendor, it's available for anybody to use and build upon, forever.
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+	AspectJ is not a set of mechanisms, it's a language.  It is currently 
+	implemented using certain techniques, but there's nothing that prevents 
+	it from being implemented with other techniques.  That means users can 
+	adopt the language with confidence that implementations will get better.
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+	There is no engineering need to change Java.  The AspectJ language uses 
+	the join point model already in Java, so there is no need to extend the 
+	programming model.  Our implementation produces valid Java bytecode, which 
+	runs in any compliant J2SE VM and supports standard debuggers for those VM's 
+	that support JSR-45 (debugging support for multi-language/multi-file sources).  
+	This is a huge benefit to Sun since Sun must be extremely cautious 
+	about extensions to the language or VM; before adopting AOP, Sun should 
+	demand the kind of actual-proof that AspectJ implementations offer.
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+	On the issue of "proprietary mechanisms to describe pointcuts, etc.":   Any AOP 
+	has to have some language to describe pointcuts and the like ("pointcuts" 
+	of course being the AspectJ term).  Users would like to have one language 
+	(to avoid having to learn or transform between many languages) and the 
+	choice of multiple implementations (tailored for a configuration, subject 
+	to competitive pressure, etc.).  That's what AspectJ offers.
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+	That said, we believe the AspectJ extensions to Java could form the basis 
+	for bringing AOP to Java; when that happens, there will be engineering 
+	opportunities to make the implementation and tool support better.
+                </para>
+              </listitem>
+            </itemizedlist>
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:support"
+            xreflabel="Q: What kind of support is available?">
+          <para>What kind of support is available?</para>
+        </question>
+        <answer>
+          <para>
+            The AspectJ users mailing list provides an
+            informal network of AspectJ experts. To subscribe,
+            visit the <ulink url="http://aspectj.org/servlets/AJSite?channel=userCommunity&amp;subChannel=mailingLists">Mailing Lists</ulink>
+              page of the AspectJ web site.
+          </para>
+          <para>If you have a problem that is not a bug, you may email 
+          the AspectJ team at 
+          <ulink url="mailto:support@aspectj.org">support@aspectj.org</ulink>.
+          You may view and submit bug reports and feature requests at 
+          <ulink url="http://aspectj.org/bugs">http://aspectj.org/bugs</ulink>.
+          </para>
+          <para>Members of the AspectJ team are available to work with users in
+            more depth on both program design and implementation issues. 
+          The team also presents educational courses and speakers for 
+          interested groups and offers commercial support 
+          and consulting for businesses. 
+            Please contact the
+            <ulink url="mailto:support@aspectj.org">AspectJ team</ulink>.
+              with your request.
+          </para>
+        </answer>
+      </qandaentry>
+    </qandadiv>
+    <qandadiv id="compiler" xreflabel="Using the AspectJ compiler">
+      <title>Using the AspectJ compiler</title>
+      <qandaentry>
+        <question id="q:requiredsources"
+            xreflabel="Q:What files do I need to include when compiling AspectJ programs?">
+          <para>
+            What files do I need to include when compiling AspectJ programs?
+          </para>
+        </question>
+        <answer>
+          <para>You need to specify to the compiler the source files that
+            contain your aspects and the source files that contain the 
+            types affected by your aspects.
+	    See <xref linkend="q:knowWhenAspectsAffectClasses"/>.
+	    The AspectJ compiler will not search the source path for types
+	    that may be affected (unlike Javac and Jikes), and it only uses
+            aspects in source form.
+          </para>
+          <para>In some cases you should compile your entire system all at once.
+           If this is too slow, then you can try to make reasonable divisions
+           between sets of source files whose aspects do not interact to 
+           achieve a shorter compile cycle (particularly for development 
+	   aspects).  However, if you get any problems
+           or if you wish to run tests or do a release, you should recompile
+           the entire system.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:listingsources"
+            xreflabel="Q:Is there any other way to provide the file names to ajc?">
+          <para>I have to list many files in the command line to
+            compile with <literal>ajc</literal>. Is there any other way to
+            provide the file names to <literal>ajc</literal>?
+          </para>
+        </question>
+        <answer>
+          <para>
+          Yes, use the argfile option to ajc. List source 
+          files in a line-delimited text file and direct ajc to that 
+          file using <literal>-argfile</literal> or <literal>@</literal>:
+          </para>
+          <programlisting>ajc @sources.lst
+ajc -argfile sources.lst
+          </programlisting>
+          <para>
+          For more information, see the <literal>ajc</literal> tool 
+          section of the
+            <ulink url="devguide/index.html">
+              Development Environment Guide
+            </ulink>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:compilerVM"
+            xreflabel="Q: What Java virtual machine (JVM) do I use to run the
+             AspectJ compiler? ">
+          <para>What Java virtual machine (JVM) do I use to run the
+            AspectJ compiler?
+          </para>
+        </question>
+        <answer>
+          <para>Use the latest, greatest, fastest JVM you can get your hands on
+            for your platform. The compiler's performance is dependent on the
+            performance of the JVM it is running on, so the faster a JVM you
+            can find to run it on, the shorter your compile times will be. At a
+            minimum you need to use a Java 2 or later JVM to run the compiler.
+            We realize that this constraint can be a problem for users who 
+            don't currently have a Java 2 JVM available. We're sorry for the
+            inconvenience, but we had to make the hard decision that the
+            advantages of being able to rely on Java 2 were worth the cost of
+            losing a number of developers who are working on platforms without
+            Java 2 support. Here is a list of starting places where you might
+            find support for your system.
+            <itemizedlist>
+              <listitem>
+                <para>
+                  <ulink url="http://java.sun.com/j2se/">Java 2
+                    Platform, Standard Edition
+                  </ulink>
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+                  <ulink
+                      url="http://www.ibm.com/java/jdk/download/">
+                    developerWorks : J
+                    ava technology : Tools and products - Developer kits
+                  </ulink>
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+                  <ulink
+                      url="http://oss.software.ibm.com/developerworks/projects/jikes/?dwzone=opensource">
+                    developerWorks : Open Source - Jikes Project
+                  </ulink>
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+                  <ulink url="http://java.sun.com/cgi-bin/java-ports.cgi">Java
+                    Platform Ports
+                  </ulink>
+                </para>
+              </listitem>
+            </itemizedlist>
+          </para>
+          <para>The requirement of Java 2 support is only for
+            <emphasis>running</emphasis> the AspectJ compiler. The AspectJ
+            compiler can be used to build programs that will run on Java 1.1
+            (or probably even on Java 1.0) systems. This means that it can
+            build programs that will run on Macintosh, FreeBSD, and applets
+            that will run in Internet Explorer and Netscape Navigator that are
+            still not yet Java 2 compliant.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:compilingForDifferentVMs"
+            xreflabel="Q: How to use ajc to compile for a different VM?">
+          <para>How can I use <literal>ajc</literal> to compile
+            programs for a JVM that is different from the one used to run it?
+          </para>
+        </question>
+        <answer>
+          <para>
+            <literal>ajc</literal> can be used to develop programs that are
+            targeted at the Java 1.1 platform, even though the
+            <literal>ajc</literal> compiler won't run on that platform. Here's
+            an example of using <literal>ajc</literal> in this sort of
+            cross-compilation mode (assuming a Windows platform with all the
+            default installation directories):
+          </para>
+          <programlisting>
+ajc -target 1.1 -bootclasspath c:\jdk1.1.7\lib\classes.zip \
+   -classpath c:\aspectj1.0\lib\aspectjrt.jar -extdirs "" \
+   -argfile jdk11system.lst
+          </programlisting>
+          <para>This same technique can be used if you want to run
+            <literal>ajc</literal> on a JDK 1.3 JVM (highly recommended) but
+            need to generate code for JDK 1.2. That would look something
+            like:
+          </para>
+          <programlisting>
+ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
+   -classpath c:\aspectj1.0\lib\aspectjrt.jar \
+    -extdirs c:\jdk1.2\jre\lib\ext
+            -argfile jdk12system.lst
+          </programlisting>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:assert"
+            xreflabel="Q:Does the ajc compiler support the assert keyword in Java 1.4?">
+          <para>Does the <literal>ajc</literal> compiler support 
+        the <literal>assert</literal> keyword in Java 1.4?
+          </para>
+        </question>
+        <answer>
+          <para>Yes. As with <literal>Javac</literal>,
+          use the <literal>-source 1.4</literal> option as described
+          in the <literal>ajc</literal> tool section  
+          of the
+            <ulink url="devguide/index.html">
+              Development Environment Guide
+            </ulink>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:msjvm"
+            xreflabel="Q:Are there any issues using AspectJ with the Microsoft JVM?">
+          <para>Are there any issues using AspectJ with the Microsoft
+            JVM?
+          </para>
+        </question>
+        <answer>
+          <para>Since AspectJ requires Java 2 or later, it will not run on the
+            Microsoft JVM, which does not support Java 2.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:javacbytecode"
+            xreflabel="Q:Does ajc rely on javac for generating bytecode?">
+          <para>Does <literal>ajc</literal> rely
+            on <literal>javac</literal> for generating Java bytecode
+            (<literal>.class</literal>) files?
+          </para>
+        </question>
+        <answer>
+          <para> No.  Some previous versions of AspectJ had this requirement,
+          and <literal>javac</literal> can still be used as
+          <literal>ajc</literal> back end by using the
+          <literal>-usejavac</literal> flag.  You can also run <literal>ajc</literal>
+          in preprocessor mode to generate Java source
+          (<literal>.java</literal>) files to be compiled using
+          <literal>javac</literal> or another java compiler.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:parsergenerators"
+            xreflabel="Q:I noticed the AspectJ compiler doesn't use a parser generator.  Why is that?">
+          <para>
+            I noticed the AspectJ compiler doesn't use a parser generator.  Why is that?
+          </para>
+        </question>
+        <answer>
+          <para>
+          The PARSER for ajc is written by hand.  This choice was made with full 
+          awareness of the generator tools out there.  (Jim had for example used 
+          the excellent javacc tool for building the parser for JPython (now Jython)).  
+          One of the reasons that AspectJ uses a hand-written parser is that using 
+          javacc taught Jim about the LL-k design for parsers (pioneered by antlr).  
+          As opposed to the state-machine parsers produced by yacc, these parsers are 
+          very readable and writable by humans.
+          </para>
+          <para>
+            Antlr and javacc did not really suit the project:
+          </para>
+          <itemizedlist>
+            <listitem>
+              <para>
+            Antlr's support for unicode in the lexer is still immature and this makes 
+            using it with Java challenging.  This was an even bigger issue 3 years ago 
+            when we started on the Java implementation of ajc.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+            While javacc is freely available, it is not Open Source.  Depending on a 
+            closed-source tool to build an Open Source compiler would reduce some 
+            of the transparency and control of open-source.
+              </para>
+            </listitem>
+          </itemizedlist>
+          <para>
+          There were also several things that were easier to implement with 
+          a hand-written parser than with any of the exiting tools.
+          </para>
+          <itemizedlist>
+            <listitem>
+              <para>
+            Semi-keywords -- it's important to us that 
+            "every legal Java program is also a legal AspectJ program."  
+            This wouldn't be true if we made 'before' and 'call' full keywords in 
+            AspectJ.  It is easier to support these sorts of semi-keywords with a 
+            hand-written parser.  (Note: ajc-1.0.x handles 'aspect' and 'pointcut' 
+            slightly specially which can break a few unusual pure Java programs.  
+            This is a compiler limitation that will be fixed in a future release.)
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+            Deprecated syntax warnings -- the syntax of AspectJ 
+            changed many times from version 0.2 to the 1.0 release.  It was easier 
+            to provide helpful warning messages for these changes with our 
+            hand-written parser.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+            Grammar modularity -- We like being able to have 
+            AspectJParser extend JavaParser.
+              </para>
+            </listitem>
+            <listitem>
+              <para> 
+            Part of the grammar for AspectJ is extremely hard for existing tools to 
+            capture. This is the type pattern syntax, i.e. "com.xerox..*.*(..)".  
+            The sort of case that gives standard parser generators fits is something 
+            like "*1.f(..)" which no one would ever write, but which must be 
+            supported for a consistent language.
+              </para>
+            </listitem>
+          </itemizedlist>
+        </answer>
+      </qandaentry>
+    </qandadiv>
+    <qandadiv id="devtools" xreflabel="Integrating AspectJ into your development environment">
+      <title>Integrating AspectJ into your development environment</title>
+      <qandaentry>
+        <question id="q:knowWhenAspectsAffectClasses"
+            xreflabel="Q: How do I know which aspects affect a class when looking at that class's source code?">
+          <para>How do I know which aspects affect a class when looking
+            at that class's source code?
+          </para>
+        </question>
+        <answer>
+          <para>When you are working with the IDE support, you can get an
+            understanding of which aspects affect any class.
+            This enables AspectJ programmers to get the benefits of
+            modularizing crosscutting concerns while still having immediate
+            access to what aspects affect a class.
+          </para>
+          <para>For example, the
+            <ulink url="devguide/index.html">
+              Development Environment Guide
+            </ulink> section
+          on <literal>ajbrowser</literal> shows that you can list or navigate
+          between method and advice affecting that method and between a type
+          and declarations in an aspect on that type.  (The IDE support may
+          have more features than <literal>ajbrowser</literal>, depending
+          on the IDE.)
+          </para>
+          <para>
+            When you are looking at documentation,
+            <literal>ajdoc</literal> will provide links from aspects and
+            advice to the affected code, but it provides less information
+            than the IDE support because it only parses declarations.
+          </para>
+          <para>
+            When you are running your program,
+            you can trace advice as it executes.  This
+            enables you to identify advice on join points picked out 
+            dynamically, which cannot be reflected precisely by IDE support.
+          </para>
+          <para>See <xref linkend="q:integrateWithDevTools"/> for more
+            information on which Java development environments are
+            supported.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:idesupport"
+            xreflabel="Q:What kind of IDE support is available for developing AspectJ programs?">
+          <para>What kind of IDE support is available for developing
+            AspectJ programs?
+          </para>
+        </question>
+        <answer>
+          <para>See <xref linkend="q:integrateWithDevTools"/></para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:hybridbuilds"
+            xreflabel="Q:Setting up hybrid builds">
+          <para>I want the aspects for development builds but 
+        remove them for production builds.  How can I set up the build
+        system so they are unpluggable?  And so I use <literal>javac</literal>
+        in my production build?
+          </para>
+        </question>
+        <answer>
+          <para>
+          If you are using development-time-only aspects - aspects that only 
+          exist when you are developing the code, not when you ship it - 
+          you can use implement a hybrid build process by listing
+          the production source files into a javac-compliant argfile,
+          and the development source files in another ajc argfiles:
+          </para>
+          <programlisting>
+     -- file "production.lst":
+     One.java
+     two/Three.java
+     ...
+
+     -- file "tracing.lst":
+     trace/Library.java
+     Trace.java
+
+     -- file "development.lst":
+     @production.lst
+     @tracing.lst
+          </programlisting>
+          <para>
+            Then your development build can use <literal>ajc</literal>:
+          </para>
+          <programlisting>
+            ajc @development.lst
+          </programlisting>
+          <para>
+          And your development build can use 
+          <literal>ajc</literal> or <literal>javac</literal>
+           or <literal>jikes</literal>:
+          </para>
+          <programlisting>
+            jikes @production.lst
+          </programlisting>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:idesupportplans"
+            xreflabel="Q:What plans are there to support my IDE?">
+          <para>What plans are there to support my IDE?</para>
+        </question>
+        <answer>
+          <para>
+            The AspectJ team directly provides components for JBuilder, Forte,
+            and Emacs.  We also support the open-source AspectJ plugin project
+            at <ulink url="http://eclipse.org/ajdt">http://eclipse.org/ajdt</ulink>
+            which uses the AJDE API support for IDE's.  We
+            are interested in supporting other developers as they use AJDE 
+            to provide components for the following IDE's (roughly in
+            order of interest and viability).
+            <itemizedlist>
+              <title></title>
+              <listitem>
+                <para>IDEA/IntelliJ has an enthusiastic community and 
+                the developers are working on an extensibility API
+                - <ulink url="http://intellij.com">http://intellij.com</ulink>
+                </para>
+              </listitem>
+              <listitem>
+                <para>jEdit comes from a very active open-source community.</para>
+              </listitem>
+              <listitem>
+                <para>
+                  Oracle JDeveloper has an Extension SDK unfamiliar to us.
+                </para>
+              </listitem>
+              <listitem>
+                <para>Together extensibility API is too limited</para>
+              </listitem>
+              <listitem>
+                <para>
+                  VisualCafe may have a difficult extensibility API
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+                  IBM's VisualAge for Java is to be replaced with Eclipse
+                </para>
+              </listitem>
+              <listitem>
+                <para>Some have suggested Codeguide from Omnicore
+	         <ulink url="http://www.omnicore.com">http://www.omnicore.com/</ulink>
+                </para>
+              </listitem>
+               <listitem><para>Visual SlickEdit ??</para></listitem>
+              <listitem><para>Kawa  has been discontinued</para></listitem>
+              <listitem> <para>VIM has been suggested.</para></listitem>
+            </itemizedlist>
+          </para>
+          <para>
+            If you would like to build support for an IDE, contact us so we can help.
+            To contribute or propose new IDE's, please
+            <ulink url="mailto:support@aspectj.org?subject=IDE%20Support:%20">mail us</ulink>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:portingajde"
+            xreflabel="Q:Can I port AJDE support to my development environment?">
+          <para>Can I port AJDE support to my development environment?</para>
+        </question>
+        <answer>
+          <para>Yes. The core AJDE API is extensible and the source code is
+            available for download. Start by studying the sources
+            for the existing IDE support.
+          </para>
+        </answer>
+      </qandaentry>
+    </qandadiv>
+    <qandadiv id="notes" xreflabel="Programming notes and tips">
+      <title>Programming notes and tips</title>
+      <qandaentry>
+        <question id="q:methodsignatures"
+            xreflabel="Q:Is it possible to change methods by introducing keywords, adding parameters, or changing the throws clause?">
+          <para>Is it possible to change methods by introducing keywords (like
+            <literal>synchronized</literal>), adding parameters, 
+                     or changing the "throws" clause?
+          </para>
+        </question>
+        <answer>
+          <para>AspectJ does not enable you to change the signature of a method,
+            but you can (by express declaration) work around some 
+            limits imposed by the signature.  You can convert a checked exception to
+            unchecked using <literal>declare soft</literal>, privileged aspects
+            have access to private methods, and you can use a percflow aspect to 
+            ferry additional state to a callee without changing intervening 
+            signatures.   For more details, see
+            <ulink url="progguide/index.html">The AspectJ Programming Guide</ulink>.
+            In the case of <literal>synchronized</literal>,
+            we have what we consider a better solution that uses
+            around advice instead of introduction.  This solution is described
+            in
+            <ulink url="http://aspectj.org/pipermail/users/2000/000534.html">
+              this thread
+            </ulink> on the AspectJ users list, with some
+            <ulink url="http://aspectj.org/pipermail/users/2000/000536.html">
+              additional comments
+            </ulink>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:seeingjoinpoints"
+            xreflabel="Q:I don't understand what join points exist.  How can I see them?">
+          <para>
+            I don't understand what join points exist.  How can I see them?
+          </para>
+        </question>
+        <answer>
+          <para>
+	    Try using an aspect posted to the user's list called
+            <ulink url="http://aspectj.org/pipermail/users/2002/001883.html">
+              TraceJoinPoints.java
+            </ulink>.
+           For example, you can start logging at a particular method call and 
+	   see what join points occur after the call and before it returns.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:comparecallandexecution"
+            xreflabel="Q:What is the difference between call and execution join points?">
+          <para>
+            What is the difference between call and execution join points?
+          </para>
+        </question>
+        <answer>
+          <para>Consider method execution in Java as (1) the initial call from
+                this object to some method on the target object with a
+                particular signature; and (2) the execution of the actual code
+                in the particular method dispatched in the target object.
+                The call join point starts with the initial call and ends 
+                when control returns to the call (by return or perhaps 
+                thrown exception).  The execution join point starts with
+                the method body and ends when the body completes (again
+                by return or throwing an exception), so the execution join
+                point always happens within the bounds of the corresponding
+                call join point.  You can see this if you use the
+	        join-point tracing aspect in
+            <ulink url="http://aspectj.org/pipermail/users/2002/001883.html">
+              TraceJoinPoints.java
+            </ulink>.
+	        as described above.
+          </para>
+          <para>As you would expect, the context differs 
+                in advice on pointcuts picking out execution and call join
+                points; for call, <literal>this</literal> refers to the caller, whereas 
+                for execution <literal>this</literal> refers to the called 
+                (executing) object.
+          </para>
+          <para>
+	There are some subtle interactions with other AspectJ semantics.
+	First, the meaning of the signature in the
+	<literal>execution()</literal> and <literal>call()</literal>
+	pointcut designators (PCD's) differ: the call type depends upon
+	the type of the reference making the call, while the execution
+	type depends on the enclosing class.
+        Second, you may choose one over another if you cannot bring all
+	your sources within the code the compiler controls
+	(described in the <ulink url="progguide/apb.html">appendix</ulink>
+     to the <literal>Programming Guide</literal>).
+	For example, to trace calls into a 
+	method from classes which are outside the code the compiler controls
+	at compile time, then using <literal>execution()</literal> will work
+	while using <literal>call()</literal>may not.  Finally, since 
+	<literal>super</literal> invocations are not considered method calls,
+	to trace <literal>super.foo()</literal> would require using
+	<literal>execution</literal>.
+          </para>
+          <para>
+                In most cases you should use the <literal>call()</literal> 
+                pointcut designator unless you have a good reason to use
+	        <literal>execution()</literal>
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:comparecflowandcflowbelow"
+            xreflabel="Q:What is the difference between cflow and cflowbelow?">
+          <para>
+            What is the difference between cflow and cflowbelow?
+          </para>
+        </question>
+        <answer>
+          <para>
+	    Both pick out all the join points in the control flow of
+	    the specified join points.
+            They differ only in that the <literal>cflowbelow()</literal>
+	    pointcut designator does not pick out the join points
+	    specified, while <literal>cflow()</literal> does.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:compareccallandexecution"
+            xreflabel="Q:What is the difference between call and execution?">
+          <para>
+            What is the difference between call and execution?
+          </para>
+        </question>
+        <answer>
+          <para>
+	    There are two interesting times when a constructor or method is
+	    run.  Those times are when it is called, and when it actually
+	    executes.
+          </para>
+          <para>
+	    The main difference is that a call join point happens outside of
+	    the object (for non-static methods) or class (for static methods
+	    and constructors), and that an execution join point happens inside
+	    the object or class.  This means that the <literal>within</literal>
+	    and <literal>withincode</literal> pointcuts pick them out
+	    differently: A call join point is picked out within the caller,
+	    while an execution join point is picked
+	    out where it is actually defined.
+          </para>
+          <para>
+	    A call join point is the ``outermost'' join point for a particular
+	    call.  Once a call join point proceeds, then a number of different
+	    things happen.  For non-static methods, for example, method
+	    dispatch happens, which will cause one method execution join point
+	    -- perhaps more, if there are super calls.  For constructors, the
+	    super constructor is called, and fields are initialized, and then
+	    various constructor execution join points will occur.
+          </para>
+          <para>
+	    A call join point matches only the ``external'' calls of a method
+	    or constructor, based on a signature, and it does not pick out
+	    calls made with <literal>super</literal>, or
+	    <literal>this</literal> constructor calls.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:recursiveentrypoints"
+            xreflabel="Q:How do I say that I want the topmost entrypoint in a recursive call?">
+          <para>How do I say that I want the topmost entrypoint in a
+	        recursive call? How about the most-recent prior entrypoint?
+          </para>
+        </question>
+        <answer>
+          <para>This is best seen by way of example.
+	Given a recursive call to <literal>int factorial(int)</literal>
+	  you can print the arguments for 
+	(a) the current and most-recent recursive call
+	or (b) the current and original recursive call:
+          </para>
+          <programlisting>
+aspect LogFactorial {
+    pointcut f(int i) : call(int factorial(int)) &amp;&amp; args(i);
+
+    // most-recent
+    before(int i, final int j) : f(i) &amp;&amp; cflowbelow(f(j)) { 
+        System.err.println(i + "-" + j);
+    }
+
+    // original
+    before(int i, final int j) : f(i) 
+        &amp;&amp; cflowbelow(cflow(f(j)) &amp;&amp; !cflowbelow(f(int))) { 
+        System.err.println(i + "@" + j);
+    }
+}
+          </programlisting>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:initializationjoinpoints"
+            xreflabel="Q:What is the difference between constructor call, constructor execution, initialization, and static initialization join points?">
+          <para>What is the difference between constructor call, 
+          constructor execution, initialization, and static 
+          initialization join points?
+          </para>
+        </question>
+        <answer>
+          <para>Static initialization pertains to initialization of
+          a class or interface type. Constructor call and execution
+          are akin to method call, and initialization generalizes this and
+          picks out the first constructor called.
+          </para>
+          <para>Their relations are best 
+          demonstrated by tracing the join points.  Below is the class
+          Test which implements an interface and extends a class
+          along with a trace of the join points below and including
+          the constructor call obtained using 
+          <literal>TraceJointPoints.java</literal> (linked above).
+          </para>
+          <programlisting>
+            <![CDATA[
+public class Init {
+    public static void main (String[] args) {
+        new Test(); 
+        end();
+    } 
+    static void end() {}
+}
+class Super {}
+interface I {}
+class Test extends Super implements I {
+    Test() {}
+}
+
+  <constructor-call sig="Test()" >
+    <staticinitialization sig="Super._init_" />
+    <staticinitialization sig="Test._init_" />
+    <initialization sig="Super()" >
+      <instanceinitializer-execution sig="Super._init_" />
+      <constructor-execution sig="Super()" />
+    </initialization>
+    <initialization sig="I()" >
+      <instanceinitializer-execution sig="I._init_" />
+      <constructor-execution sig="I()" />
+    </initialization>
+    <initialization sig="Test()" >
+      <instanceinitializer-execution sig="Test._init_" />
+      <constructor-execution sig="Test()" />
+    </initialization>
+  </constructor-call>
+]]>
+          </programlisting>
+          <para>
+        Ordinarily, using a <literal>call</literal> pointcut designator 
+        is best because the call join point surrounds the others, but in
+        the case of constructors there is no target object for
+        the call (because it has not been constructed yet), so you
+        might prefer to use the <literal>initialization</literal> 
+        pointcut designator.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:andingpointcuts"
+            xreflabel="Q:I want advice to run at two pointcuts, but it doesn't run at all.">
+          <para>
+            I want advice to run at two pointcuts, but it doesn't run at all.  What gives?
+          </para>
+        </question>
+        <answer>
+          <para>
+	  This reflects both a conceptual error and a programming mistake.
+	  Most likely you want to do something like "run the advice for all 
+	public and private calls," and the code looks something like this:
+          </para>
+          <programlisting>
+            within(com.xerox.printing..*) &amp;&amp; call(public * *(..)) &amp;&amp; call(private * *(..))
+          </programlisting>
+          <para>
+	A pointcut picks out join points; it is evaluated at each join point.
+        The expression above would never pick out any call join point,
+	because no method signature has both public and private access.
+	In a pointcut, <literal>pc1() &amp;&amp; pc2()</literal> means both
+	must be true at a given join point for advice to run at that join point.
+	The correct pointcut would use <literal>||</literal> as follows:
+          </para>
+          <programlisting>
+            within(com.xerox.printing..*) &amp;&amp; (call(public * *(..)) || call(private * *(..)))
+          </programlisting>
+          <para>
+            Then the advice will run at the join point.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:staticfieldreferences"
+            xreflabel="Q:How do I refer to a static field when my advice crosscuts multiple classes?">
+          <para>
+            How do I refer to a static field when my advice crosscuts multiple classes?
+          </para>
+        </question>
+        <answer>
+          <para>There is no way in advice to refer to the type of the
+	  code executing in a static context except by specification.
+	  This makes it impossible to refer to static members using 
+	  runtime information.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:interfacesastypepatterns"
+            xreflabel="Q:How can I reuse a type pattern?">
+          <para>I would like to reuse a type pattern, e.g., to
+	write advice that is limited to a certain set of classes.
+	Do I have to retype it each time?
+          </para>
+        </question>
+        <answer>
+          <para>No.  You can declare that all the types implement
+	an interface you define, and then use the interface type in
+	your program.  For example:
+          </para>
+          <programlisting>
+/** 
+ * Example of using an interface to represent a type pattern.
+ * sub-aspects use declare parents to add to traced types, e.g.,
+ *    declare parents: com.mycompany.whatever..* implements Marked;
+ */
+abstract aspect MarkerExample {
+  /** marker interface for types that we want to trace */
+  interface Marked {}
+
+  /** calls to an instance of Marked not from an instance of Marked */
+  pointcut dynamicCallsIn(): call(* *(..)) &amp;&amp; target(Marked) &amp;&amp; !this(Marked);
+
+  /** calls to methods defined by a subtype of Marked
+   *  that don't come from the body of a subtype of Marked
+   */
+  pointcut staticCallsIn(): call(* Marked+.*(..)) &amp;&amp; !within(Marked+);
+
+  /** print dynamic calls */
+  before(): dynamicCallsIn() { System.out.println("before " + thisJoinPoint); }
+}
+
+aspect MyMarker extends MarkerExample {
+  declare parents: com.mycompany.whatever..* implements Marked;
+}
+          </programlisting>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:exampleprograms"
+            xreflabel="Q:Where do I find example programs?">
+          <para>Where do I find example programs?</para>
+        </question>
+        <answer>
+          <para>Some examples are distributed in the documentation release, 
+           and you can find other code in the discussions on the users list.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:aspectlibraries"
+            xreflabel="Q:Are aspect libraries available?">
+          <para>Are aspect libraries available?</para>
+        </question>
+        <answer>
+          <para>Some libraries are distributed in the release under the
+            examples folder in the distribution. If you develop a library and
+            want to make it available to other users, make sure to
+            <ulink
+                url="http://aspectj.org/servlets/AJSite?channel=supportAndBugs&amp;subChannel=askAQuestion">
+              contact us
+            </ulink>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:serialversionuid"
+            xreflabel="Q:How does ajc interact with the serialVersionUID?">
+          <para>How does <literal>ajc</literal> interact with the
+            <literal>serialVersionUID</literal>?
+          </para>
+        </question>
+        <answer>
+          <para>The current version of <literal>ajc</literal> can change the
+            <varname>serialVersionUID</varname> of generated
+            <filename>.class</filename> files as a result of weaving in advice.
+            This is an important fact that developers using both aspects and
+            serialization should be aware of.  It is likely that a future
+            version of the compiler will be better behaved regarding the
+            <varname>serialVersionUID</varname>.
+          </para>
+          <para>However, changes to the <literal>serialVersionUID</literal>
+            attribute are typically only important when using serialization for
+            the long-term persistence of  objects.  Using standard Java
+            serialization for long-term persistence has a number of drawbacks
+            and many developers already use alternative solutions.  For one
+            possibly standard solution, see
+            <ulink url="http://jcp.org/jsr/detail/057.jsp">
+              Lon
+              g-Term Persistence for JavaBeans Specification
+            </ulink>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:applets"
+            xreflabel="Q:How can I use AspectJ with applets?">
+          <para>How can I use AspectJ with applets?</para>
+        </question>
+        <answer>
+          <para>
+            Just include the aspectjrt.jar as a required archive.  
+            For example, here is the HTML code for an HTML editor 
+            applet that contains some debugging aspects:
+          </para>
+          <programlisting>
+            <![CDATA[
+<APPLET
+   CODE='com.company.swing.applets.EditorApplet'
+  WIDTH='700'
+ HEIGHT='525'>
+    <PARAM NAME="CODE" VALUE="com.company.swing.applets.EditorApplet" >
+    <PARAM NAME="ARCHIVE" 
+         VALUE ="../company-applets.jar,../aspectjrt.jar,../xmlrpc-applet.jar" >
+    <PARAM NAME="type" VALUE="application/x-java-applet;version=1.4">
+    <PARAM NAME="scriptable" VALUE="false">
+</APPLET>
+]]>
+          </programlisting>
+          <para>
+          The above markup has worked reliably with the Java Plugin
+          (included in the JRE 1.4.x) in IE 6, Mozilla 1.1 (Win32), 
+          and Mozilla 1.0.1 (Red Hat Linux 8.0).  
+          The following link describes how to configure Mozilla/Netscape
+          6.x/7.x to use the Java Plugin from a JRE/SDK installation:
+          <ulink url="http://java.sun.com/j2se/1.4.1/manual_install_linux.html">
+          http://java.sun.com/j2se/1.4.1/manual_install_linux.html</ulink>.
+          (Thanks to Chris Bartling for this answer.)
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:typeoblivious"
+            xreflabel="Q:How can I specify types for advice that captures primitives, void, etc.?">
+          <para>How can I specify types for advice that captures primitives, void, etc.?</para>
+        </question>
+        <answer>
+          <para>
+	In some cases, AspectJ allows conversion from values of primitive types to Object, 
+	so that highly polymorphic advice may be written.  This works if an advice parameter 
+	or the return type for around is typed to Object.  So:
+          </para>
+          <programlisting>
+class Test {
+    static int i;
+    public static void main(String[] args) {
+        i = 37;
+    }
+}
+
+aspect TraceSet {
+    before(Object val): set(* Test.*) &amp;&amp; args(val) {
+        System.err.println(val);
+        System.err.println(val.class);
+    }
+}
+          </programlisting>
+          <para>
+            will print out
+          </para>
+          <programlisting>
+37
+java.lang.Integer
+          </programlisting>
+          <para>
+	For more information, see the Programming Guide
+            <ulink url="http://aspectj.org/doc/dist/progguide/apbs02.html">
+              semantics section "Context Exposure"
+            </ulink>.
+          </para>
+        </answer>
+      </qandaentry>
+    </qandadiv>
+    <qandadiv id="problems" xreflabel="Common Problems">
+      <title>Common Problems</title>
+      <qandaentry>
+        <question id="q:infiniterecursion"
+            xreflabel="Q:When I run, I get a StackOverflowError or no output.">
+          <para>When I run, I get a <literal>StackOverflowError</literal>
+        (or a long stack trace or no output whatsoever)
+          </para>
+        </question>
+        <answer>
+          <para>Most likely this is a case of infinite recursion, 
+          where advice is advising itself. It presents as a 
+          <literal>StackOverflowError</literal>
+          or silence as the VM exhausts itself in the recursion.
+          </para>
+          <para>Of course, infinite recursion is possible in Java:</para>
+          <programlisting>
+public class Main {
+    public static void main(String[] args) {
+        try {
+           main(args);
+        } finally {
+           main(args);
+        }
+    }
+}
+          </programlisting>
+          <para>If you compile and run this program, and it will fail silently, trying
+            to process the finally clause even after throwing the StackOverflowError.
+          </para>
+          <para>Here's a similar AspectJ program where the recursion is 
+          not so obvious:
+          </para>
+          <programlisting>
+aspect A {
+    after():  call(* *(..)) { System.out.println("after " + thisJoinPoint); }
+}
+          </programlisting>
+          <para>This re-invokes itself because it advises any call.
+          It invokes itself even after an exception is thrown, since
+          <literal>after</literal> advice, like a finally clause, runs even 
+          after exceptions are thrown. You can fix this by following two practices:
+          </para>
+          <para>
+          (1) Use <literal>after returning</literal> to advise normal completions
+              or <literal>after throwing</literal> to advise abrupt completions.
+              If you use <literal>after</literal> or <literal>after throwing</literal>, 
+              write the advice with the same care you would a finally clause, 
+              understanding that it may run after some failure.
+          </para>
+          <para>(2) Avoid writing advice that advises itself.  One simple way to
+          do so is to exclude the code within the current aspect:
+          </para>
+          <programlisting>
+aspect A {
+    after() returning:  !within(A) &amp;&amp; call(* *(..)) { 
+        System.out.println("after " + thisJoinPoint); 
+    }
+}
+          </programlisting>
+          <para>A better way is often to re-write the pointcut.  
+          If the advice is advising itself accidentally, that's a sign that 
+          the pointcut is not saying what you mean.
+          </para>
+          <programlisting>
+aspect A {
+    pointcut withinTargetClasses() : within(A+) || within(B+);
+    after() returning:  withinTargetClasses() &amp;&amp; call(* *(..)) { 
+        System.out.println("after " + thisJoinPoint); 
+    }
+}
+          </programlisting>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:typelessdeclarations"
+            xreflabel="Q:I've declared a field on every class in my package; how do I use it in advice?">
+          <para>I've declared a field on every class in
+            my package; how do I use it in advice?
+          </para>
+          <programlisting>
+aspect A {
+    boolean com.xerox..*.dirtyFlag;
+    after (Object target) returning 
+        : target(target) &amp;&amp; call(* com.xerox..*.set*(..)) {
+        target.dirtyFlag = true; // compile fails here
+    }
+}
+          </programlisting>
+        </question>
+        <answer>
+          <para>You need a type to refer to any member, field or method.
+          It's generally better to introduce onto an interface and
+          declare classes to implement the interface, which permits you
+          to use the interface type in advice formals.
+          </para>
+          <programlisting>
+aspect A {
+    interface TrackingSets {}
+    boolean TrackingSets.dirtyFlag;
+    declare parents : com.xerox..* implements TrackingSets;
+
+    after (TrackingSets target) returning 
+        : target(target) &amp;&amp; call(* com.xerox..*.set*(..)) {
+        target.dirtyFlag = true; 
+    }
+}
+          </programlisting>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:ajcoom"
+            xreflabel="Q:The AspectJ compiler aborts with an OutOfMemoryError when compiling many classes. How can I fix this?">
+          <para>The AspectJ compiler aborts with an OutOfMemoryError when
+          compiling many classes. How can I fix this?
+          </para>
+        </question>
+        <answer>
+          <para>The command <literal>ajc</literal> is actually a script that
+            launches a Java virtual machine with the correct classpath. You
+            should make a copy of this script, rename it, and then edit it.
+            Change the -Xmx option, size of memory allocation pool (heap). You
+            might try <literal>-Xmx128M</literal> or even
+            <literal>-Xmx256M</literal>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:ajcrecompile"
+            xreflabel="Q:ajc recompiles all files every time. How can I make it recompile only the files that have changed?">
+          <para>
+            <literal>ajc</literal> recompiles all files every time. 
+          How can I make it recompile only the files that have changed?
+          </para>
+        </question>
+        <answer>
+          <para>
+            <literal>ajc</literal> 1.0 does not currently support incremental
+          compilation, but we are working on this for the 1.1 release.
+          </para>
+          <para>As a limited workaround, many build systems enable you to avoid 
+            doing a compile if no sources have changed.  (See, e.g., Ant's
+            "uptodate" task.)
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:ajcjvm"
+            xreflabel="Q:ajc is using the wrong JVM. How do I fix it?">
+          <para>
+            <literal>ajc</literal> is using the wrong JVM. How do I
+            fix it?
+          </para>
+        </question>
+        <answer>
+          <para>The easiest way to fix this is to re-install
+            <literal>ajc</literal> (using the same <literal>.class</literal> or
+            <literal>.exe</literal> file that you originally downloaded) and
+            this time make sure to tell it to use the desired JDK (typically
+            the JDK versions 1.2 or 1.3 from Sun).
+          </para>
+          <para>If you are familiar with DOS batch files or shell programming,
+            you could also fix this by simply editing the
+            <literal>bin\ajc.bat</literal> or <literal>bin/ajc</literal>
+            script.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:idebalkingataspects"
+            xreflabel="Q:My IDE is trying to parse AspectJ files which makes my project unusable. What can I do?">
+          <para>My IDE is trying to parse AspectJ files which makes my project unusable.
+                What can I do?
+          </para>
+        </question>
+        <answer>
+          <para>
+        When working with an unsupported IDE that objects to the syntax of 
+        AspectJ source files (and, e.g., automatically gathers them 
+        in a source tree as Java files based on the .java extension), 
+        you can use the .aj extension for your AspectJ files.  
+        The ajc compiler accepts both .java and .aj files, and you can 
+        set up your build scripts to include the correct list of 
+        source files.  (You will have to find another editor for
+        editing AspectJ files; you can use the ajbrowser to view
+        edit your AspectJ files and navigate the crosscutting structure.)
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:idememory"
+            xreflabel="Q:I used to be able to compile my program, but now I run out of memory.">
+          <para>I used to be able to compile my program in my IDE, but when I
+                use AJDE, I run out of memory (or it goes really slow).
+          </para>
+        </question>
+        <answer>
+          <para>
+        The ajc compiler does more analysis than (e.g.,) javac,
+        and AJDE may in some IDE's hold a copy of the structure tree until the
+        next tree is available from the compile process.  Both mean that you may
+        need extra memory to compile the same program.  However, increasing
+        available memory to the point that you are swapping to disk can
+        slow the process considerably.
+          </para>
+          <para>
+        If you are having problems and would like to find the optimal memory 
+        allocation, iteratively decrease the amount of memory available until 
+        AJDE or ajc signals out-of-memory errors, and then increase that 
+        amount by 5-10%.
+          </para>
+          <para>
+        To increase memory for the ajc compiler, see <xref linkend="q:ajcoom"/>.
+        For your IDE, do something similar or follow the provider's instructions.
+        For example, to increase memory in JBuilder, edit the 
+        <literal>jbuilderX/bin/jbuilder.config</literal>
+        file to have an entry like:
+<programlisting>        
+vmparam -Xmx384m
+</programlisting>        
+          </para>
+          <para>
+        If it turns out that your project is too big to use with AJDE, your IDE 
+        may nonetheless support external commands or Ant build processes, which
+        run outside the IDE memory space.  For an Ant taskdef, see 
+        <ulink url="http://aspectj.org/dl"/>.  For a JBuilder Ant plugin, some
+        people have directed us to <ulink url="http://antrunner.sourceforge.net"/>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:stacktraces"
+            xreflabel="Q:My stack traces don't make sense.  What gives?">
+          <para>
+            My stack traces don't make sense.  What gives?
+          </para>
+        </question>
+        <answer>
+          <para>Unless you are using the <literal>ajdb</literal> debugger, 
+          stack traces may
+          have synthetic methods in the stack, and the line numbers may
+          not track your source code.  The 
+          <ulink url="devguide/index.html">Development Environment Guide</ulink>.
+          discusses how to interpret stack at the end of the section
+          on the <literal>ajc</literal> compiler.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:advicenotrunning"
+            xreflabel="Q:My advice is not running (or running twice), and I don't know why.">
+          <para>
+            My advice is not running (or running twice), and I don't know why.
+          </para>
+        </question>
+        <answer>
+          <para>When advice is not running, it is probably a problem in the
+          pointcut.  Sometimes users specify pointcuts that do not mean what they intend -
+	      most often when they misspell a type name.  Run the compiler in
+	      <literal>-Xlint</literal> mode, which will flag some likely mistakes,
+	      like the type name.  If that does not work, use
+            <ulink url="http://aspectj.org/pipermail/users/2002/001883.html">
+              TraceJoinPoints.java
+            </ulink> to see if your join points are executing at all.
+          </para>
+          <para>When advice is running more than it should, it may be that your
+          pointcut picks out more join points than you intend.  
+          If you are using IDE support, you should be able to trace back from
+          the pointcut or advice to the join points which can be statically
+          determined to be affected.  To identify advised dynamic join points,
+          you can try using
+            <ulink url="http://aspectj.org/pipermail/users/2002/001883.html">
+              TraceJoinPoints.java
+            </ulink>, but often it is easier to update the advice to
+          print the source location of the join point.  
+          This will show if the advice applies to code that you did
+          not consider.
+          </para>
+          <para>If you've done this and convinced yourself it's not working,
+          it may be a bug.  See <xref linkend="q:bugreports"/>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:packagedeclares"
+            xreflabel="Q:I declared a member on a class with package access, but other classes in the package cannot see it.">
+          <para>
+            I declared a member on a class with package access, but other classes in the package cannot see it.
+          </para>
+        </question>
+        <answer>
+          <para>When declaring parents on other types from an aspect, package access only
+	applies to code the implementation controls.  For AspectJ 1.0, that is the set of files
+	passed to the compiler.  That means other classes not compiled with the aspect will not
+	be able to access the aspect-declared members even if they are in the same package.
+	The only way for classes outside the control of the implementation to access aspect-declared
+	members is to declare them public.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:cantfindjavac"
+            xreflabel="Q:ajc complains that it can't find javac. What's wrong?">
+          <para>
+            <literal>ajc</literal> complains that it can't find
+            <literal>javac</literal>. What's wrong?
+          </para>
+        </question>
+        <answer>
+          <para>
+            <literal>ajc</literal> does not try to locate
+            <literal>javac</literal> in your path: it uses the
+            <literal>javac</literal> classes directly. In JDK 1.2 and 1.3 these
+            classes are found in <literal>tools.jar</literal> (in the
+            <literal>lib</literal> directory of the JDK distribution), which
+            must be on your classpath to make
+            <literal>ajc</literal> work with <literal>javac</literal>. 
+            Inspect the java command that launches ajc to make sure that 
+            <literal>tools.jar</literal> is on the classpath for ajc;
+            the -classpath option only applies to the sources compiled.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:ajdocneeds13"
+            xreflabel="Q:I'm running under 1.4, but ajdoc asks for 1.3 (or throws IllegalAccessError for HtmlWriter.configuration)">
+          <para>
+          I'm running under 1.4, but <literal>ajdoc</literal> asks for 1.3 
+          (or throws IllegalAccessError for HtmlWriter.configuration)
+          </para>
+        </question>
+        <answer>
+          <para>
+          The current implementation of <literal>ajdoc</literal> uses
+	      specific javadoc classes in the J2SE 1.3 tools.jar.
+	      We are working on addressing this limitation, but in the interim
+	      it is best to run ajdoc under 1.3.
+          </para>
+          <para>
+          When running from the command-line scripts, edit the scripts directly
+          to put the 1.3 tools.jar first on the classpath.  (The installer does
+          not know about this limitation of ajdoc.)
+          </para>
+          <para>
+          When running from Ant, users often have tools.jar in ${ant.classpath}
+          (to make javac, et al work).  That makes it impossible to run the ajdoc
+          taskdef (which does not currently support forking), so you'll need to
+          run a separate ant process, either from the command-line or via Ant's
+          exec task (the Ant task will propagate the classpath).  
+          If the wrong tools.jar is not on the ant classpath, then it should work
+          to put the 1.3 tools.jar in the taskdef classpath.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:compileunits"
+            xreflabel="Q:I set up different files to my compiles to change what the aspects see, but now I don't understand how the aspects are working?">
+          <para>I set up different files to my compiles to change what
+                the aspects see, but now I don't
+	        understand how the aspects are working.
+          </para>
+        </question>
+        <answer>
+          <para>It is a bad practice to use the compilation unit
+	   to control crosscutting.  Aspects and pointcuts especially
+            should be written to specify crosscutting precisely.	
+            Aspects will behave the same when you add files if
+            you initially included all files affected by your aspects.
+            If you use the compilation unit, then your code will behave
+	    differently in AspectJ implementations that do not limit 
+	    themselves to specified files.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:readingpreprocessedcode"
+            xreflabel="Q:I'm reading the code generated by ajc in -preprocess mode, and it seems like it would not work.">
+          <para>I'm reading the code generated by <literal>ajc</literal>
+        in <literal>-preprocess</literal> mode, and it seems like it would not
+        work (or "like it works this way").
+          </para>
+        </question>
+        <answer>
+          <para>The generated code can be difficult for a human to read and
+          understand.  The compiler uses implementation techniques which might
+          not be apparent.  To determine if the code is behaving correctly, you
+          should write and run a program that attempts to provoke the error you
+          suspect.  Similarly, you should not rely on invariants you infer from
+          the generated code (especially naming conventions for generated members).
+          Please rely only on the semantics stated in the appendix of the
+          AspectJ <ulink url="progguide/index.html">Programming Guide</ulink>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:injection"
+            xreflabel="Q:I've heard AspectJ can generate or inject code into my code.  Is this true?">
+          <para>I've heard AspectJ can generate or inject code into my code.  
+	        Is this true?
+          </para>
+        </question>
+        <answer>
+          <para>
+            This is a misconception spawned from the early implementation.
+          </para>
+          <para>
+	  AspectJ does not "inject" or "generate" code.  In AspectJ the
+	  pointcut constructs allow the programmer to identify join points,
+	  and the advice constructs define additional code to run at those
+	  join points.
+          </para>
+          <para>
+	  So the semantic model of advice is like the semantic model of a 
+	  method -- it says "when any of these things happen, do this".
+          </para>
+          <para>
+	  People who worked with earlier versions of AspectJ, in which ajc
+	  was very explicitly a pre-processor, sometimes thought of AspectJ
+	  as injecting code.  But that was an artifact of the implementation,
+	  not the underlying language semantics.
+          </para>
+          <para>
+	  This distinction is important for two reasons.  One is that thinking
+          about it this way will make more sense at the implementation continues
+          to evolve towards load-time or runtime weaving.  The other is that
+          it makes it much easier to understand the semantics of advice on
+          cflow pointcuts.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:currentbugs"
+            xreflabel="Q:What are the bugs now most affecting users?">
+          <para>What are the bugs now most affecting users?</para>
+        </question>
+        <answer>
+          <itemizedlist>
+            <listitem>
+              <para>
+                <ulink url="http://aspectj.org/bugs/ajdoc?id=813">813</ulink>
+              - Ajdoc requires J2SE 1.3 tools.jar, not that of 1.2 or 1.4.
+              </para>
+            </listitem>
+          </itemizedlist>
+        </answer>
+      </qandaentry>
+    </qandadiv>
+    <qandadiv id="help" xreflabel="Getting Help">
+      <title>Getting Help</title>
+      <qandaentry>
+        <question id="q:moreaboutaj"
+            xreflabel="Q:How do I find out more about AspectJ?">
+          <para>
+            How do I find out more about AspectJ?
+          </para>
+        </question>
+        <answer>
+          <para>Visit the AspectJ project web site:
+            <ulink url="http://aspectj.org">http://aspectj.org</ulink>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:bugreports"
+            xreflabel="Q:How do I submit a bug report?">
+          <para>How do I submit a bug report?</para>
+        </question>
+        <answer>
+          <para>You can submit a bug using the web interface
+            <ulink url="http://aspectj.org/bugs">http://aspectj.org/bugs</ulink>
+            (preferred), or you may send email to
+            <ulink url="mailto:jitterbug@aspectj.org">jitterbug@aspectj.org</ulink> directly.
+            See also
+
+If it seems to be a bug in the compiler,
+            please include in the body of the email source code to reproduce the problem.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:comments"
+            xreflabel="Q:How do I submit comments and feature requests?">
+          <para>
+            How do I submit comments and feature requests?
+          </para>
+        </question>
+        <answer>
+          <para>You can email comments to all users at 
+          <ulink url="mailto:users@aspectj.org">users@aspectj.org</ulink>,
+          email the AspectJ team at 
+          <ulink url="mailto:support@aspectj.org">support@aspectj.org</ulink>.
+          You can view and submit bug reports and feature requests at
+          <ulink url="http://aspectj.org/bugs">http://aspectj.org/bugs</ulink>.
+	  If you think you might simply be making a mistake, you might
+	  email some source code to 
+          <ulink url="mailto:users@aspectj.org">users@aspectj.org</ulink>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:talktousers"
+            xreflabel="Q:How do I communicate with other AspectJ users?">
+          <para>
+            How do I communicate with other AspectJ users?
+          </para>
+        </question>
+        <answer>
+          <para>You can reach other AspectJ users by using the
+            aspectj-users mailing list. To subscribe to the list or view the
+            list archives go to the user community page:
+            <ulink url="http://aspectj.org/lists">
+              http://aspectj.org/lists
+            </ulink>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:searchingsite"
+            xreflabel="Q:How can I search the email archives or the web site?">
+          <para>
+            How can I search the email archives or the web site?
+          </para>
+        </question>
+        <answer>
+          <para>
+	There is a search entry box on the left navigation bar of the web site,
+	but it is generally more effective to do a google search of the form,
+            <ulink url="http://www.google.com/search?q=site%3Aaspectj.org+%22abstract pointcuts%22">
+              http://www.google.com/search?q=site%3Aaspectj.org+%22abstract pointcuts%22
+            </ulink>
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:writingbugsandemails"
+            xreflabel="Q:How should I write email queries?">
+          <para>
+            How should I write email queries?
+          </para>
+        </question>
+        <answer>
+          <orderedlist>
+            <listitem>
+              <para>
+                Here's the big picture of what I'm trying to do...
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+  	Here's what I think it takes, in AspectJ terms
+  	(concepts, syntax, and semantics) from the 
+            <ulink url="progguide/index.html">Programming Guide</ulink>...
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+	Here's the AspectJ code I'm using, the output it
+  	produces when run, and what I expect...
+              </para>
+            </listitem>
+          </orderedlist>
+          <para>
+	The big picture helps others redirect you to other approaches.
+	Using AspectJ terms helps others correct mistakes in thinking
+	about the problem (the most common being to confuse join points
+	and pointcuts).
+           The code is key to clarifying your question and getting a good
+           response.  On the mail list, someone can reply by fixing your 
+           code.  In bugs, the developers can reproduce the problem immediately
+           and start analyzing the fix.
+          </para>
+          <para>
+             For the mail lists, we try to follow the conventions for open-source
+             discussions that help avoid "the tragedy of the commons." 
+             For example conventions, see
+            <ulink url="http://jakarta.apache.org/site/mail.html">
+              http://jakarta.apache.org/site/mail.html
+            </ulink> and
+            <ulink url="http://www.tuxedo.org/%7Eesr/faqs/smart-questions.html">
+              http://www.tuxedo.org/%7Eesr/faqs/smart-questions.html
+            </ulink>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:idebugs"
+            xreflabel="Q:How do I write bugs for the IDE support?">
+          <para>
+            How do I write bugs for IDE support?
+          </para>
+        </question>
+        <answer>
+          <para>
+          Bugs appearing in the IDE's may apply to the affected IDE
+          or to the compiler.  Compiler stack traces in IDE message windows
+          are prefixed "Internal Compiler Error" and should be written up
+          as compiler bugs.  If you are unsure, try redoing the compile
+          from the command line.
+          </para>
+          <para>
+	Bug reports for the Eclipse support go to the Eclipse
+            <ulink url="http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AJDT">
+              bugzilla
+            </ulink> database.
+        Bug reports on other IDE support should have version
+	information for both Java and the IDE, and
+	(most importantly) clear steps for reproducing the bug.  
+        You may submit the bugs via the web form 
+        (<ulink url="http://aspectj.org/bugs">http://aspectj.org/bugs</ulink>)
+	or via email
+        (<ulink url="mailto:jitterbug@aspectj.org">jitterbug@aspectj.org</ulink>).
+          </para>
+          <para>
+	One of the benefits of open-source is that you can
+	find and fix the bug for yourself; when you submit
+	the fix back to us, we can validate the fix for you
+	and incorporate it into the next release.  Email
+        <ulink url="mailto:support@aspectj.org">support@aspectj.org</ulink>
+        for instructions on submitting a patch.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:ajcbugs"
+            xreflabel="Q:How do I write bugs for the AspectJ compiler?">
+          <para>
+            How do I write bugs for the AspectJ compiler?
+          </para>
+        </question>
+        <answer>
+          <para>
+	The best compiler bug report is a reproducible test case, 
+	standalone code that demonstrates the problem.
+	Sometimes with aspects, a test case requires several 
+	files, if not some way to capture the behavior.
+	Here's how we recommend submitting test cases:
+            <orderedlist>
+              <listitem>
+                <para>
+	Write the test case so that when the compiler bug 
+  	is fixed, the test completes normally without output
+  	(e.g., expected compiler errors are issued,
+   	or classes produced run correctly).  This usually
+    means writing one or more source files.
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+	In the bug report, briefly summarize the bug.
+	If it is not obvious, be sure to specify 
+	the expected output/behavior (e.g., compiler error on line 32)
+	and, if the compile should complete, the main class to run.
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+	At the end of the report, append each source file,
+        separated with a line and the file name.
+  	(Include all sources, and do not send attachments.)
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+	Submit the bugs via the web form 
+        (<ulink url="http://aspectj.org/bugs">http://aspectj.org/bugs</ulink>)
+	or via email
+        (<ulink url="mailto:jitterbug@aspectj.org">jitterbug@aspectj.org</ulink>).
+                </para>
+              </listitem>
+            </orderedlist>
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:teachingmaterials"
+            xreflabel="Q:Can you recommend reading or teaching material for AspectJ?">
+          <para>
+            Can you recommend reading or teaching material for AspectJ?
+          </para>
+        </question>
+        <answer>
+          <para>The documentation available on this site is a primary source of
+          material on AspectJ:
+            <informaltable frame="none">
+              <tgroup cols="2">
+                <tbody>
+                  <row>
+                    <entry valign="top">
+                      <ulink url="http://aspectj.org/doc/papersAndSlides">
+                        Selected AspectJ Papers and Presentations
+                      </ulink>
+                    </entry>
+                    <entry>Papers presented at various conferences; tutorial
+                      slide presentations.
+                    </entry>
+                  </row>
+                  <row>
+                    <entry valign="top">
+                      <ulink url="http://aspectj.org/documentation/papersAndSlides/ECOOP1997-AOP.pdf">
+                        Aspect-Oriented Programming
+                      </ulink>
+                    </entry>
+                    <entry valign="top">
+                      The seminal AOP/AspectJ paper
+                    </entry>
+                  </row>
+                  <row>
+                    <entry valign="top">
+                      <ulink url="progguide/index.html">
+                        The AspectJ Programming Guide
+                      </ulink>
+                    </entry>
+                    <entry valign="top">A practical guide for programmers.
+                    Includes a number of examples, some quite
+                    sophisticated.
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <ulink url="tutorial.pdf">The AspectJ Tutorial</ulink>
+                    </entry>
+                    <entry>Slides from a day-long tutorial presentation on
+                    AspectJ.
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:consulting"
+            xreflabel="Q:Where can our group get consulting and support?">
+          <para>
+            Where can our group get consulting and support?
+          </para>
+        </question>
+        <answer>
+          <para>Beyond what's available on the aspectj.org web site,
+	        the AspectJ team does a limited amount of consulting
+	        and support for qualified groups.  For more information, 
+		see <xref linkend="q:support"/>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:faqchanges"
+            xreflabel="Q:What has changed since the last FAQ version?">
+          <para>
+            What has changed since the last FAQ version?
+          </para>
+        </question>
+        <answer>
+          <para>
+   Entries changed since the earlier September 13 version:
+            <itemizedlist>
+        <listitem><para><xref linkend="q:ajdocneeds13"/></para></listitem>
+        <listitem><para><xref linkend="q:idebugs"/></para></listitem>
+        <listitem><para><xref linkend="q:ajcbugs"/></para></listitem>
+        <listitem><para><xref linkend="q:searchingsite"/></para></listitem>
+        <listitem><para><xref linkend="q:bytecodeweaving"/></para></listitem>
+        <listitem><para><xref linkend="q:differences"/></para></listitem>
+        <listitem><para><xref linkend="q:schedule"/></para></listitem>
+        <listitem><para><xref linkend="q:aopinjava"/></para></listitem>
+        <listitem><para><xref linkend="q:aspectjandj2ee"/></para></listitem>
+        <listitem><para><xref linkend="q:applets"/></para></listitem>
+        <listitem><para><xref linkend="q:packagedeclares"/></para></listitem>
+        <listitem><para><xref linkend="q:writingbugsandemails"/></para></listitem>
+        <listitem><para><xref linkend="q:andingpointcuts"/></para></listitem>
+        <listitem><para><xref linkend="q:idesupportplans"/></para></listitem>
+        <listitem><para><xref linkend="q:opensource"/></para></listitem>
+            </itemizedlist>
+          </para>
+        </answer>
+      </qandaentry>
+    </qandadiv>
+    <qandadiv id="project" xreflabel="About the AspectJ Project">
+      <title>About the AspectJ Project</title>
+      <qandaentry>
+        <question id="q:opensource"
+            xreflabel="Q:What does the fact that AspectJ is an Open Source Project mean to me?">
+          <para>What does the fact that AspectJ is an Open Source
+            Project mean to me?
+          </para>
+        </question>
+        <answer>
+          <para>Open source protects your interest in a correct, long-lived,
+		up-to-date, and widely-accepted implementation of AspectJ.
+            <itemizedlist>
+              <listitem>
+                <para>With the source code, you control your own destiny
+                in perpetuity.  You can continue to use the implementation
+		and update it as necessary to fix bugs and add things you need.
+                </para>
+              </listitem>
+              <listitem>
+                <para>Because the code is available to all, anyone can find
+		and fix bugs.  There is no need to hope for it to be fixed
+		in the next product release.  Those who encounter the bugs
+		are motivated to fix them, and there are more eyeballs on 
+		the code than in closed-source, so the quality tends to be high.
+		This can be particularly true for the AspectJ community,
+		which tends to be highly skilled.
+                </para>
+              </listitem>
+              <listitem>
+                <para>The same is true of new features or behavior, so the
+		implementation should be up-to-date.  This is important as
+		the field of AOP develops, to capture the latest solutions.
+                </para>
+              </listitem>
+              <listitem>
+                <para>For a programming language which forms the basis of 
+		an entire solution stack, open source facilitates the kind
+		of adoption -- tool integrations and significant projects --
+		that develop and prove the technology for wider adoption.  This 
+		limits delays caused by waiting for the completion of standards 
+		process or promulgation by industry leaders, and also provides
+	        the proofs necessary for such adoption.
+                </para>
+              </listitem>
+            </itemizedlist>
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:standardization"
+            xreflabel="Q:What are your plans to make AspectJ a general feature of Java supported by Sun and the other key-players in the Java Industry?">
+          <para>What are your plans to make AspectJ a general feature
+            of Java supported by Sun and the other key players in the Java
+            Industry?
+          </para>
+        </question>
+        <answer>
+          <para>Although we are committed to making AspectJ available to a wide
+            range of users, it is too early to decide on a strategy. Some
+            options include continuing AspectJ as a stand-alone product,
+            integrating it into IDEs, or possibly incorporating it into
+            standard Java with Sun's blessing.
+          </para>
+          <para>We currently focus on developing for the 1.1 implementation 
+            which improves AspectJ in key areas: rapid
+            incremental compilation, bytecode weaving, and IDE integration.
+          </para>
+          <para>Through all of this our goal is to make AspectJ integrate as
+            seamlessly as possible with the Java programming language. The
+            AspectJ language design is becoming more integrated, the compiler
+            is becoming faster and more integrated, the IDE extensions are
+            becoming more integrated. All of this is designed to help users
+            really use AspectJ and give us feedback on it.
+          </para>
+          <para>As the system is improved and we work more closely
+            with users, we will be in good position to explore the best path
+            for AspectJ in the long term.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:bytecodeweaving"
+            xreflabel="Q:When will AspectJ work from class files? When will it work at class-loading time?">
+          <para>When will AspectJ work from class files?
+	        When will it work at class-loading time?
+          </para>
+        </question>
+        <answer>
+          <para>Bytecode weaving is scheduled for AspectJ 1.1.  We believe it
+	  will work as described in an email to the users list by Jim Hugugin:
+          </para>
+          <para>
+              The AspectJ language was designed to support weaving at many different times: 
+              compile, load, or even run-time in the JVM.  Weaving into bytecodes at both 
+              compile and load-time will definitely be provided in a future release.  This 
+              will allow weaving at compile-time into libraries for which source code is 
+              not available.  It will also support aspect-aware class loaders that can 
+              perform weaving at load time on arbitrary classes.  One advantage of a 
+              language like AspectJ, rather than an explicit meta-tool like jiapi, is 
+              that it separates the specification of a crosscutting concern from any 
+              particular implementation strategy for weaving.
+          </para>
+          <para>
+              ...AspectJ provides a language that can cleanly 
+              capture crosscutting concerns while preserving the static type checking, 
+              modularity, and composability of Java.
+          </para>
+          <para>If you have an application for using aspects and bytecode, 
+              please let the AspectJ team know of your requirements.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:differences"
+            xreflabel="Q:What are the differences between the current and previously released versions of AspectJ?">
+          <para>What are the differences between the current and
+            previously released versions of AspectJ?
+          </para>
+        </question>
+        <answer>
+	  <para>The AspectJ team aims to keep the implementation up-to-date
+	 and bug-free, but to limit language changes to those that 
+	are carefully considered, compelling, and backwards-compatible,
+	and to deliver those language changes only in significant releases (1.0, 1.1).
+	  </para>
+          <table>
+            <title></title>
+            <tgroup cols="2">
+              <tbody>
+                <row>
+                  <entry align="left">Version</entry>
+                  <entry align="left">Description</entry>
+                </row>
+                <row>
+                  <entry>AspectJ 1.0</entry>
+                  <entry>Many language changes, fixes, cleanup and
+                    clarifications, some significant.
+                  </entry>
+                </row>
+                <row>
+                  <entry>AspectJ 0.8</entry>
+                  <entry>More cleanup of the syntax and semantics.</entry>
+                </row>
+                <row>
+                  <entry>AspectJ 0.7</entry>
+                  <entry>Clean up of the semantics, 0.7 beta 4 is the first
+                    open source release.
+                  </entry>
+                </row>
+                <row>
+                  <entry>AspectJ 0.6</entry>
+                  <entry>Advice and crosscuts get explicit type signatures
+                    which describe the values that are available to advice at a
+                    crosscut.
+                  </entry>
+                </row>
+                <row>
+                  <entry>AspectJ 0.5</entry>
+                  <entry>Improved tool support: better Emacs environment
+                    support and <literal>ajdoc</literal> to parallel
+                    <literal>javadoc</literal>. around advice is added, and the
+                    <literal>aspect</literal> keyword is removed and replaced
+                    by the Java keyword class.
+                  </entry>
+                </row>
+                <row>
+                  <entry>AspectJ 0.4</entry>
+                  <entry>Clear separation of crosscuts and crosscut actions
+                    makes it possible to define extensible library
+                    aspects.
+                  </entry>
+                </row>
+                <row>
+                  <entry>AspectJ 0.3</entry>
+                  <entry>First all Java implementation, also includes many
+                    small language improvements.
+                  </entry>
+                </row>
+                <row>
+                  <entry>AspectJ 0.2</entry>
+                  <entry>General-purpose support for crosscutting. Users could
+                    program any kind of aspects, not just coordination. This
+                    release dropped COOL.
+                  </entry>
+                </row>
+                <row>
+                  <entry>AspectJ 0.1</entry>
+                  <entry>A single domain-specific aspect language, called COOL,
+                    for programming coordination in multi-threaded
+                    programs.
+                  </entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table>
+          <para> More detailed comments are available in the
+            <literal>doc/changes.html</literal> file in the
+            distribution.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:schedule"
+            xreflabel="Q:What is the AspectJ development schedule?">
+          <para>
+            What is the AspectJ development schedule?
+          </para>
+        </question>
+        <answer>
+          <table>
+            <title>The AspectJ Development Schedule</title>
+            <tgroup cols="2">
+              <tbody>
+                <row>
+                  <entry align="left">Version</entry>
+                  <entry align="left">Description</entry>
+                </row>
+                <row>
+                  <entry valign="top" align="center">1.0</entry>
+                  <entry>Final syntax and semantic changes. Standalone structure
+                    browser. Complete documentation.
+                  </entry>
+                </row>
+                <row>
+                  <entry valign="top" align="center">1.1</entry>
+                  <entry>Faster incremental compilation, bytecode weaving,
+	                 and a small number of language changes.</entry>
+                </row>
+                <row>
+                  <entry valign="top" align="center">2.0</entry>
+                  <entry>New, dynamic crosscuts (bytecode-only)</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table>
+        </answer>
+      </qandaentry>
+    </qandadiv>
+  </qandaset>
+  <para>AspectJ is a registered trademark of Palo Alto Research Center, Incorporated (PARC).
+	Java and all Java-based marks are trademarks or registered trademarks of
+    Sun Microsystems, Inc. in the United States and other countries. All other
+    trademarks are the property of their respective owners.
+  </para>
+</article>
+<!--
+Local variables:
+compile-command: "java com.icl.saxon.StyleSheet -o faq.html faq.xml /usr/local/docbook/docbook-xsl-1.44/html/docbook.xsl"
+fill-column: 79
+sgml-local-ecat-files: faq.ced
+End:
+-->

@@ -1,0 +1,2343 @@
+<chapter id="examples" xreflabel="Examples">
+  <title>Examples</title>
+
+  <sect1><!-- About this Chapter -->
+    <title>About this Chapter</title>
+
+    <para>This chapter consists entirely of examples of AspectJ use.
+
+<!-- ADD THIS IN AGAIN WHEN IT'S TRUE
+      The
+      examples have been chosen because they illustrate common AspectJ usage
+      patterns or techniques. Care has been taken to ensure that they also
+      exhibit good style, in addition to being merely syntactically and
+      semantically correct.
+-->
+</para>
+
+    <para>The examples can be grouped into four categories:</para>
+
+    <simplelist columns="2" type="horiz">
+      <member><emphasis role="bold">technique</emphasis></member>
+      <member>Examples which illustrate how to use one or more features of the
+        language. </member>
+
+      <member><emphasis role="bold">development</emphasis></member>
+      <member>Examples of using AspectJ during the development phase of a
+        project. </member>
+
+      <member><emphasis role="bold">production</emphasis></member>
+      <member>Examples of using AspectJ to provide functionality in an
+        application. </member>
+
+      <member><emphasis role="bold">reusable</emphasis></member>
+      <member>Examples of reuse of aspects and pointcuts.</member>
+    </simplelist>
+
+  </sect1>
+
+
+  <sect1>
+    <title>Obtaining, Compiling and Running the Examples</title>
+
+    <para>The examples source code is part of AspectJ's documentation
+      distribution which may be downloaded from <ulink
+        url="http://aspectj.org/dl">the AspectJ download page</ulink>.</para>
+
+    <para>Compiling most examples should be straightforward. Go the
+      <filename><replaceable>InstallDir</replaceable>/examples</filename>
+      directory, and look for a <filename>.lst</filename> file in one of the
+      example subdirectories. Use the <literal>-arglist</literal> option to
+      <literal>ajc</literal> to compile the example. For instance, to compile
+      the telecom example with billing, type </para>
+
+<programlisting>
+ajc -argfile telecom/billing.lst
+</programlisting>
+
+    <para>To run the examples, your classpath must include the AspectJ run-time
+      Java archive (<literal>aspectjrt.jar</literal>). You may either set
+      the <literal>CLASSPATH</literal> environment variable or use the
+      <literal>-classpath</literal> command line option to the Java
+      interpreter:</para>
+
+<programlisting>
+(In Unix use a : in the CLASSPATH)
+java -classpath ".:<replaceable>InstallDir</replaceable>/lib/aspectjrt.jar" telecom.billingSimulation
+</programlisting>
+
+<programlisting>
+(In Windows use a ; in the CLASSPATH)
+java -classpath ".;<replaceable>InstallDir</replaceable>/lib/aspectjrt.jar" telecom.billingSimulation
+</programlisting>
+
+  </sect1>
+
+
+<!--  ============================================================ -->
+<!--  ============================================================ -->
+
+
+  <sect1>
+    <title>Basic Techniques</title>
+
+    <para>This section presents two basic techniques of using AspectJ, one each
+      from the two fundamental ways of capturing crosscutting concerns: with
+      dynamic join points and advice, and with static introduction. Advice
+      changes an application's behavior. Introduction changes both an
+      application's behavior and its structure. </para>
+
+    <para>The first example, <xref endterm="sec:JoinPointsAndtjp:title"
+            linkend="sec:JoinPointsAndtjp"/>, is about gathering and using
+      information about the join point that has triggered some advice. The
+      second example, <xref endterm="sec:RolesAndViews:title"
+            linkend="sec:RolesAndViews"/>, concerns changing an existing class
+      hierarchy. </para>
+
+<!--  ======================================== -->
+
+    <sect2 id="sec:JoinPointsAndtjp"><!-- Join Points and thisJoinPoint -->
+      <title>Join Points and <literal>thisJoinPoint</literal></title>
+        <titleabbrev id="sec:JoinPointsAndtjp:title">Join Points and
+          <literal>thisJoinPoint</literal></titleabbrev>
+
+      <para>(The code for this example is in
+      <filename><replaceable>InstallDir</replaceable>/examples/tjp</filename>.)</para>
+
+      <para>A join point is some point in the
+        execution of a program together with a view into the execution context
+        when that point occurs. Join points are picked out by pointcuts. When a
+        join point is reached, before, after or around advice on that join
+        point may be run. </para>
+
+      <para>When dealing with pointcuts that pick out join points of specific
+      method calls, field gets, or the like, the advice will know exactly what
+      kind of join point it is executing under.  It might even have access to
+      context given by its pointcut.  Here, for example, since the only join
+      points reached will be calls of a certain method, we can get the target
+      and one of the args of the method directly.
+      </para>
+
+<programlisting><![CDATA[
+before(Point p, int x): target(p)
+                     && args(x)
+                     && call(void setX(int)) {
+    if (!p.assertX(x)) {
+        System.out.println("Illegal value for x"); return;
+    }
+}
+]]></programlisting>
+
+   <para>But sometimes the join point is not so clear.  For
+        instance, suppose a complex application is being debugged, and one
+        would like to know when any method in some class is being executed.
+        Then, the pointcut </para>
+
+<programlisting><![CDATA[
+pointcut execsInProblemClass(): within(ProblemClass)
+                             && execution(* *(..));
+]]></programlisting>
+
+      <para>will select all join points where a method defined within the class
+        <classname>ProblemClass</classname> is being executed. But advice
+        executes when a particular join point is matched, and so the question,
+        "Which join point was matched?" naturally arises.</para>
+
+      <para>Information about the join point that was matched is available to
+        advice through the special variable <varname>thisJoinPoint</varname>,
+        of type <ulink
+        url="../api/org/aspectj/lang/JoinPoint.html"><classname>org.aspectj.lang.JoinPoint</classname></ulink>. This
+        class provides methods that return</para>
+
+      <itemizedlist spacing="compact">
+        <listitem>the kind of join point that was matched
+        </listitem>
+        <listitem>the source location of the current join point
+        </listitem>
+        <listitem>normal, short and long string representations of the
+          current join point</listitem>
+        <listitem>the actual argument(s) to the method or field selected
+          by the current join point </listitem>
+        <listitem>the signature of the method or field selected by the
+            current join point</listitem>
+        <listitem>the target object</listitem>
+        <listitem>the currently executing object</listitem>
+        <listitem>a reference to the static portion of the object
+          representing the current join point.  This is also available through
+          the special variable <varname>thisJoinPointStaticPart</varname>.</listitem>
+
+      </itemizedlist>
+
+      <sect3>
+        <title>The <classname>Demo</classname> class</title>
+
+          <para>The class <classname>tjp.Demo</classname> in
+          <filename>tjp/Demo.java</filename> defines two methods
+            <literal>foo</literal> and <literal>bar</literal> with different
+            parameter lists and return types. Both are called, with suitable
+            arguments, by <classname>Demo</classname>'s <function>go</function>
+            method which was invoked from within its <function>main</function>
+            method. </para>
+
+<programlisting><![CDATA[
+public class Demo {
+
+    static Demo d;
+
+    public static void main(String[] args){
+        new Demo().go();
+    }
+
+    void go(){
+        d = new Demo();
+        d.foo(1,d);
+        System.out.println(d.bar(new Integer(3)));
+    }
+
+    void foo(int i, Object o){
+        System.out.println("Demo.foo(" + i + ", " + o + ")\n");
+    }
+
+
+    String bar (Integer j){
+        System.out.println("Demo.bar(" + j + ")\n");
+        return "Demo.bar(" + j  + ")";
+    }
+
+}
+]]></programlisting>
+
+      </sect3>
+
+      <sect3>
+        <title>The Aspect <literal>GetInfo</literal></title>
+
+        <para>This aspect uses around advice to intercept the execution of
+          methods <literal>foo</literal> and <literal>bar</literal> in
+          <classname>Demo</classname>, and prints out information garnered from
+          <literal>thisJoinPoint</literal> to the console. </para>
+
+        <sect4>
+          <title>Defining the scope of a pointcut</title>
+
+          <para>The pointcut <function>goCut</function> is defined as
+            <literal><![CDATA[cflow(this(Demo)) && execution(void
+              go())]]></literal> so that only executions made in the control
+            flow of <literal>Demo.go</literal> are intercepted. The control
+            flow from the method <literal>go</literal> includes the execution of
+            <literal>go</literal> itself, so the definition of the around
+            advice includes <literal>!execution(* go())</literal> to exclude it
+            from the set of executions advised. </para>
+        </sect4>
+
+        <sect4>
+          <title>Printing the class and method name</title>
+
+          <para>The name of the method and that method's defining class are
+            available as parts of the <ulink
+              url="../api/org/aspectj/lang/Signature.html">Signature</ulink>,
+            found using the method <literal>getSignature</literal> of either
+            <literal>thisJoinPoint</literal> or
+            <literal>thisJoinPointStaticPart</literal>. </para>
+
+<programlisting><![CDATA[
+aspect GetInfo {
+
+   static final void println(String s){ System.out.println(s); }
+
+   pointcut goCut(): cflow(this(Demo) && execution(void go()));
+
+   pointcut demoExecs(): within(Demo) && execution(* *(..));
+
+   Object around(): demoExecs() && !execution(* go()) && goCut() {
+      println("Intercepted message: " +
+          thisJoinPointStaticPart.getSignature().getName());
+      println("in class: " +
+          thisJoinPointStaticPart.getSignature().getDeclaringType().getName());
+      printParameters(thisJoinPoint);
+      println("Running original method: \n" );
+      Object result = proceed();
+      println("  result: " + result );
+      return result;
+   }
+
+   static private void printParameters(JoinPoint jp) {
+      println("Arguments: " );
+      Object[] args = jp.getArgs();
+      String[] names = ((CodeSignature)jp.getSignature()).getParameterNames();
+      Class[] types = ((CodeSignature)jp.getSignature()).getParameterTypes();
+      for (int i = 0; i < args.length; i++) {
+         println("  "  + i + ". " + names[i] +
+             " : " +            types[i].getName() +
+             " = " +            args[i]);
+      }
+   }
+}
+]]></programlisting>
+        </sect4>
+
+        <sect4>
+          <title>Printing the parameters</title>
+
+          <para>
+            The static portions of the parameter details, the name and
+            types of the parameters, can be accessed through the <ulink
+              url="../api/org/aspectj/lang/reflect/CodeSignature.html"><literal>CodeSignature</literal></ulink>
+            associated with the join point. All execution join points have code
+            signatures, so the cast to <literal>CodeSignature</literal>
+            cannot fail. </para>
+
+          <para>
+            The dynamic portions of the parameter details, the actual
+            values of the parameters, are accessed directly from the execution
+            join point object. </para>
+        </sect4>
+      </sect3>
+    </sect2>
+
+    <sect2 id="sec:RolesAndViews">
+      <title>Roles and Views Using Introduction</title>
+      <titleabbrev id="sec:RolesAndViews:title">Roles and Views Using
+        Introduction</titleabbrev>
+
+      <para>(The code for this example is in
+      <filename><replaceable>InstallDir</replaceable>/examples/introduction</filename>.)</para>
+
+      <para>Like advice, pieces of introduction are members of an aspect. They
+        define new members that act as if they were defined on another
+        class. Unlike advice, introduction affects not only the behavior of the
+        application, but also the structural relationship between an
+        application's classes. </para>
+
+      <para>This is crucial: Affecting the class structure of an application at
+        makes these modifications available to other components of the
+        application.</para>
+
+      <para>Introduction modifies a class by adding or changing</para>
+      <itemizedlist spacing="compact">
+        <listitem>member fields</listitem>
+        <listitem>member methods</listitem>
+        <listitem>nested classes</listitem>
+      </itemizedlist>
+
+      <para>and by making the class</para>
+
+      <itemizedlist spacing="compact">
+        <listitem>implement interfaces</listitem>
+        <listitem>extend classes</listitem>
+      </itemizedlist>
+
+      <para>
+        This example provides three illustrations of the use of introduction to
+        encapsulate roles or views of a class. The class we will be introducing
+        into, <classname>Point</classname>, is a simple class with rectangular
+        and polar coordinates. Our introduction will make the class
+        <classname>Point</classname>, in turn, cloneable, hashable, and
+        comparable. These facilities are provided by introduction forms without
+        having to modify the class <classname>Point</classname>.
+        </para>
+
+      <sect3>
+        <title>The class <classname>Point</classname></title>
+
+        <para>The class <classname>Point</classname> defines geometric points
+          whose interface includes polar and rectangular coordinates, plus some
+          simple operations to relocate points. <classname>Point</classname>'s
+          implementation has attributes for both its polar and rectangular
+          coordinates, plus flags to indicate which currently reflect the
+          position of the point. Some operations cause the polar coordinates to
+          be updated from the rectangular, and some have the opposite effect.
+          This implementation, which is in intended to give the minimum number
+          of conversions between coordinate systems, has the property that not
+          all the attributes stored in a <classname>Point</classname> object
+          are necessary to give a canonical representation such as might be
+          used for storing, comparing, cloning or making hash codes from
+          points. Thus the aspects, though simple, are not totally trivial.
+        </para>
+
+        <para>
+          The diagram below gives an overview of the aspects and their
+          interaction with the class <classname>Point</classname>.</para>
+
+        <para>
+          <inlinemediaobject>
+            <imageobject>
+              <imagedata fileref="aspects.gif"/>
+            </imageobject>
+          </inlinemediaobject>
+        </para>
+        <para></para>
+
+      </sect3>
+
+      <sect3>
+        <title>Making <classname>Point</classname>s Cloneable &mdash; The Aspect
+          <classname>CloneablePoint</classname></title>
+
+        <para>This first example demonstrates the introduction of a interface
+          (<classname>Cloneable</classname>) and a method
+          (<function>clone</function>) into the class
+          <classname>Point</classname>. In Java, all objects inherit the method
+          <literal>clone</literal> from the class
+          <classname>Object</classname>, but an object is not cloneable unless
+          its class also implements the interface
+          <classname>Cloneable</classname>. In addition, classes frequently
+          have requirements over and above the simple bit-for-bit copying that
+          <literal>Object.clone</literal> does. In our case, we want to update
+          a <classname>Point</classname>'s coordinate systems before we
+          actually clone the <classname>Point</classname>. So we have to
+          override <literal>Object.clone</literal> with a new method that does
+          what we want. </para>
+
+        <para>The <classname>CloneablePoint</classname> aspect uses the
+          <literal>declare parents</literal> form to introduce the interface
+          <classname>Cloneable</classname> into the class
+          <classname>Point</classname>. It then defines a method,
+          <literal>Point.clone</literal>, which overrides the method
+          <function>clone</function> that was inherited from
+          <classname>Object</classname>. <function>Point.clone</function>
+          updates the <classname>Point</classname>'s coordinate systems before
+          invoking its superclass' <function>clone</function> method.</para>
+
+        <programlisting><![CDATA[
+public aspect CloneablePoint {
+
+   declare parents: Point implements Cloneable;
+
+   public Object Point.clone() throws CloneNotSupportedException {
+      // we choose to bring all fields up to date before cloning.
+      makeRectangular();
+      makePolar();
+      return super.clone();
+   }
+
+   public static void main(String[] args){
+      Point p1 = new Point();
+      Point p2 = null;
+
+      p1.setPolar(Math.PI, 1.0);
+      try {
+         p2 = (Point)p1.clone();
+      } catch (CloneNotSupportedException e) {}
+      System.out.println("p1 =" + p1 );
+      System.out.println("p2 =" + p2 );
+
+      p1.rotate(Math.PI / -2);
+      System.out.println("p1 =" + p1 );
+      System.out.println("p2 =" + p2 );
+   }
+}
+]]></programlisting>
+
+        <para>Note that since aspects define types just as classes define
+          types, we can define a <function>main</function> method that is
+          invocable from the command line to use as a test method.</para>
+      </sect3>
+
+      <sect3>
+        <title>Making <classname>Point</classname>s Comparable &mdash; The
+          Aspect <classname>ComparablePoint</classname></title>
+
+        <para>This second example introduces another interface and
+          method into the class <classname>Point</classname>.</para>
+
+        <para>The interface <classname>Comparable</classname> defines the
+          single method <literal>compareTo</literal> which can be use to define
+          a natural ordering relation among the objects of a class that
+          implement it. </para>
+
+        <para>The aspect <classname>ComparablePoint</classname> introduces
+          implements <classname>Comparable</classname> into
+          <classname>Point</classname> along with a
+          <literal>compareTo</literal> method that can be used to compare
+          <classname>Point</classname>s. A <classname>Point</classname>
+          <literal>p1</literal> is  said to be less than
+          another <classname>Point</classname><literal> p2</literal> if
+          <literal>p1</literal> is closer to the origin. </para>
+
+        <programlisting><![CDATA[
+public aspect ComparablePoint {
+
+   declare parents: Point implements Comparable;
+
+   public int Point.compareTo(Object o) {
+      return (int) (this.getRho() - ((Point)o).getRho());
+   }
+
+   public static void main(String[] args){
+      Point p1 = new Point();
+      Point p2 = new Point();
+
+      System.out.println("p1 =?= p2 :" + p1.compareTo(p2));
+
+      p1.setRectangular(2,5);
+      p2.setRectangular(2,5);
+      System.out.println("p1 =?= p2 :" + p1.compareTo(p2));
+
+      p2.setRectangular(3,6);
+      System.out.println("p1 =?= p2 :" + p1.compareTo(p2));
+
+      p1.setPolar(Math.PI, 4);
+      p2.setPolar(Math.PI, 4);
+      System.out.println("p1 =?= p2 :" + p1.compareTo(p2));
+
+      p1.rotate(Math.PI / 4.0);
+      System.out.println("p1 =?= p2 :" + p1.compareTo(p2));
+
+      p1.offset(1,1);
+      System.out.println("p1 =?= p2 :" + p1.compareTo(p2));
+   }
+}]]></programlisting>
+      </sect3>
+
+      <sect3>
+        <title>Making <classname>Point</classname>s Hashable &mdash; The Aspect
+          <classname>HashablePoint</classname></title>
+
+        <para>The third aspect overrides two previously defined methods to
+          give to <classname>Point</classname> the hashing behavior we
+          want.</para>
+
+        <para>The method <literal>Object.hashCode</literal> returns an unique
+          integer, suitable for use as a hash table key. Different
+          implementations are allowed return different integers, but must
+          return distinct integers for distinct objects, and the same integer
+          for objects that test equal. But since the default implementation
+          of <literal>Object.equal</literal> returns <literal>true</literal>
+          only when two objects are identical, we need to redefine both
+          <function>equals</function> and <function>hashCode</function> to work
+          correctly with objects of type <classname>Point</classname>. For
+          example, we want two <classname>Point</classname> objects to test
+          equal when they have the same <literal>x</literal> and
+          <literal>y</literal> values, or the same <literal>rho</literal> and
+          <literal>theta</literal> values, not just when they refer to the same
+          object. We do this by overriding the methods
+          <literal>equals</literal> and <literal>hashCode</literal> in the
+          class <classname>Point</classname>. </para>
+
+        <para>The class <classname>HashablePoint</classname> introduces the
+          methods <literal>hashCode</literal> and <literal>equals</literal>
+          into the class <classname>Point</classname>. These methods use
+          <classname>Point</classname>'s rectangular coordinates to generate a
+          hash code and to test for equality. The <literal>x</literal> and
+          <literal>y</literal> coordinates are obtained using the appropriate
+          get methods, which ensure the rectangular coordinates are up-to-date
+          before returning their values. </para>
+
+        <programlisting><![CDATA[
+public aspect HashablePoint {
+
+   public int Point.hashCode() {
+      return (int) (getX() + getY() % Integer.MAX_VALUE);
+   }
+
+   public boolean Point.equals(Object o) {
+      if (o == this) { return true; }
+      if (!(o instanceof Point)) { return false; }
+      Point other = (Point)o;
+      return (getX() == other.getX()) && (getY() == other.getY());
+   }
+
+   public static void main(String[] args) {
+      Hashtable h = new Hashtable();
+      Point p1 = new Point();
+
+      p1.setRectangular(10, 10);
+      Point p2 = new Point();
+
+      p2.setRectangular(10, 10);
+
+      System.out.println("p1 = " + p1);
+      System.out.println("p2 = " + p2);
+      System.out.println("p1.hashCode() = " + p1.hashCode());
+      System.out.println("p2.hashCode() = " + p2.hashCode());
+
+      h.put(p1, "P1");
+      System.out.println("Got: " + h.get(p2));
+   }
+}
+]]></programlisting>
+
+        <para> Again, we supply a <literal>main</literal> method in the aspect
+        for testing.
+        </para>
+
+      </sect3>
+
+    </sect2>
+
+  </sect1>
+
+<!--  ============================================================ -->
+<!--  ============================================================ -->
+
+  <sect1>
+    <title>Development Aspects</title>
+
+  <sect2>
+    <title>Tracing Aspects</title>
+
+      <para>(The code for this example is in
+      <filename><replaceable>InstallDir</replaceable>/examples/tracing</filename>.)
+      </para>
+
+    <sect3>
+      <title>Overview</title>
+
+        <para>
+        Writing a class that provides tracing functionality is easy: a couple
+        of functions, a boolean flag for turning tracing on and off, a choice
+        for an output stream, maybe some code for formatting the output---these
+        are all elements that <classname>Trace</classname> classes have been
+        known to have. <classname>Trace</classname> classes may be highly
+        sophisticated, too, if the task of tracing the execution of a program
+        demands so.
+      </para>
+
+      <para>
+        But developing the support for tracing is just one part of the effort
+        of inserting tracing into a program, and, most likely, not the biggest
+        part. The other part of the effort is calling the tracing functions at
+        appropriate times. In large systems, this interaction with the tracing
+        support can be overwhelming.  Plus, tracing is one of those things that
+        slows the system down, so these calls should often be pulled out of the
+        system before the product is shipped. For these reasons, it is not
+        unusual for developers to write ad-hoc scripting programs that rewrite
+        the source code by inserting/deleting trace calls before and after the
+        method bodies.
+      </para>
+
+      <para>
+        AspectJ can be used for some of these tracing concerns in a less ad-hoc
+        way.  Tracing can be seen as a concern that crosscuts the entire system
+        and as such is amenable to encapsulation in an aspect.  In addition, it
+        is fairly independent of what the system is doing. Therefore tracing is
+        one of those kind of system aspects that can potentially be plugged in
+        and unplugged without any side-effects in the basic functionality of
+        the system.
+      </para>
+    </sect3>
+
+    <sect3>
+      <title>An Example Application</title>
+
+      <para>
+        Throughout this example we will use a simple application that contains
+        only four classes. The application is about shapes. The
+        <classname>TwoDShape</classname> class is the root of the shape
+        hierarchy:
+      </para>
+
+<programlisting><![CDATA[
+public abstract class TwoDShape {
+    protected double x, y;
+    protected TwoDShape(double x, double y) {
+        this.x = x; this.y = y;
+    }
+    public double getX() { return x; }
+    public double getY() { return y; }
+    public double distance(TwoDShape s) {
+        double dx = Math.abs(s.getX() - x);
+        double dy = Math.abs(s.getY() - y);
+        return Math.sqrt(dx*dx + dy*dy);
+    }
+    public abstract double perimeter();
+    public abstract double area();
+    public String toString() {
+        return (" @ (" + String.valueOf(x) + ", " + String.valueOf(y) + ") ");
+    }
+}
+]]></programlisting>
+
+      <para>
+        <classname>TwoDShape</classname> has two subclasses,
+        <classname>Circle</classname> and <classname>Square</classname>:
+      </para>
+
+<programlisting><![CDATA[
+public class Circle extends TwoDShape {
+    protected double r;
+    public Circle(double x, double y, double r) {
+        super(x, y); this.r = r;
+    }
+    public Circle(double x, double y) { this(  x,   y, 1.0); }
+    public Circle(double r)           { this(0.0, 0.0,   r); }
+    public Circle()                   { this(0.0, 0.0, 1.0); }
+    public double perimeter() {
+        return 2 * Math.PI * r;
+    }
+    public double area() {
+        return Math.PI * r*r;
+    }
+    public String toString() {
+        return ("Circle radius = " + String.valueOf(r) + super.toString());
+    }
+}
+]]></programlisting>
+
+<programlisting><![CDATA[
+public class Square extends TwoDShape {
+    protected double s;    // side
+    public Square(double x, double y, double s) {
+        super(x, y); this.s = s;
+    }
+    public Square(double x, double y) { this(  x,   y, 1.0); }
+    public Square(double s)           { this(0.0, 0.0,   s); }
+    public Square()                   { this(0.0, 0.0, 1.0); }
+    public double perimeter() {
+        return 4 * s;
+    }
+    public double area() {
+        return s*s;
+    }
+    public String toString() {
+        return ("Square side = " + String.valueOf(s) + super.toString());
+    }
+}
+]]></programlisting>
+
+      <para>
+        To run this application, compile the classes. You can do it with or
+        without ajc, the AspectJ compiler. If you've installed AspectJ, go to
+        the directory
+        <filename><replaceable>InstallDir</replaceable>/examples</filename> and
+        type:
+      </para>
+
+<programlisting>
+ajc -argfile tracing/notrace.lst
+</programlisting>
+
+      <para>To run the program, type</para>
+
+<programlisting>
+java tracing.ExampleMain
+</programlisting>
+
+      <para>(we don't need anything special on the classpath since this is pure
+      Java code).  You should see the following output:</para>
+
+<programlisting><![CDATA[
+c1.perimeter() = 12.566370614359172
+c1.area() = 12.566370614359172
+s1.perimeter() = 4.0
+s1.area() = 1.0
+c2.distance(c1) = 4.242640687119285
+s1.distance(c1) = 2.23606797749979
+s1.toString(): Square side = 1.0 @ (1.0, 2.0)
+]]></programlisting>
+
+      </sect3>
+    <sect3>
+      <title>Tracing&mdash;Version 1</title>
+
+      <para>
+        In a first attempt to insert tracing in this application, we will start
+        by writing a <classname>Trace</classname> class that is exactly what we
+        would write if we didn't have aspects.  The implementation is in
+        <filename>version1/Trace.java</filename>.  Its public interface is:
+      </para>
+
+<programlisting><![CDATA[
+public class Trace {
+    public static int TRACELEVEL = 0;
+    public static void initStream(PrintStream s) {...}
+    public static void traceEntry(String str) {...}
+    public static void traceExit(String str) {...}
+}
+]]></programlisting>
+
+      <para>
+        If we didn't have AspectJ, we would have to insert calls to
+        <literal>traceEntry</literal> and <literal>traceExit</literal> in all
+        methods and constructors we wanted to trace, and to initialize
+        <literal>TRACELEVEL</literal> and the stream. If we wanted to trace all
+        the methods and constructors in our example, that would amount to
+        around 40 calls, and we would hope we had not forgotten any method. But
+        we can do that more consistently and reliably with the following
+        aspect (found in <filename>version1/TraceMyClasses.java</filename>):
+      </para>
+
+<programlisting><![CDATA[
+aspect TraceMyClasses {
+    pointcut myClass(): within(TwoDShape) || within(Circle) || within(Square);
+    pointcut myConstructor(): myClass() && execution(new(..));
+    pointcut myMethod(): myClass() && execution(* *(..));
+
+    before (): myConstructor() {
+        Trace.traceEntry("" + thisJoinPointStaticPart.getSignature());
+    }
+    after(): myConstructor() {
+        Trace.traceExit("" + thisJoinPointStaticPart.getSignature());
+    }
+
+    before (): myMethod() {
+        Trace.traceEntry("" + thisJoinPointStaticPart.getSignature());
+    }
+    after(): myMethod() {
+        Trace.traceExit("" + thisJoinPointStaticPart.getSignature());
+    }
+}]]></programlisting>
+
+      <para>
+        This aspect performs the tracing calls at appropriate times. According
+        to this aspect, tracing is performed at the entrance and exit of every
+        method and constructor defined within the shape hierarchy.
+      </para>
+
+      <para>
+        What is printed at before and after each of the traced
+        join points is the signature of the method executing. Since the
+        signature is static information, we can get it through
+        <literal>thisJoinPointStaticPart</literal>.
+      </para>
+
+      <para>
+        To run this version of tracing, go to the directory
+        <filename><replaceable>InstallDir</replaceable>/examples</filename> and
+        type:
+      </para>
+
+<programlisting><![CDATA[
+  ajc -argfile tracing/tracev1.lst
+]]></programlisting>
+
+      <para>
+        Running the main method of
+        <classname>tracing.version1.TraceMyClasses</classname> should produce
+        the output:
+      </para>
+
+<programlisting><![CDATA[
+  --> tracing.TwoDShape(double, double)
+  <-- tracing.TwoDShape(double, double)
+  --> tracing.Circle(double, double, double)
+  <-- tracing.Circle(double, double, double)
+  --> tracing.TwoDShape(double, double)
+  <-- tracing.TwoDShape(double, double)
+  --> tracing.Circle(double, double, double)
+  <-- tracing.Circle(double, double, double)
+  --> tracing.Circle(double)
+  <-- tracing.Circle(double)
+  --> tracing.TwoDShape(double, double)
+  <-- tracing.TwoDShape(double, double)
+  --> tracing.Square(double, double, double)
+  <-- tracing.Square(double, double, double)
+  --> tracing.Square(double, double)
+  <-- tracing.Square(double, double)
+  --> double tracing.Circle.perimeter()
+  <-- double tracing.Circle.perimeter()
+c1.perimeter() = 12.566370614359172
+  --> double tracing.Circle.area()
+  <-- double tracing.Circle.area()
+c1.area() = 12.566370614359172
+  --> double tracing.Square.perimeter()
+  <-- double tracing.Square.perimeter()
+s1.perimeter() = 4.0
+  --> double tracing.Square.area()
+  <-- double tracing.Square.area()
+s1.area() = 1.0
+  --> double tracing.TwoDShape.distance(TwoDShape)
+    --> double tracing.TwoDShape.getX()
+    <-- double tracing.TwoDShape.getX()
+    --> double tracing.TwoDShape.getY()
+    <-- double tracing.TwoDShape.getY()
+  <-- double tracing.TwoDShape.distance(TwoDShape)
+c2.distance(c1) = 4.242640687119285
+  --> double tracing.TwoDShape.distance(TwoDShape)
+    --> double tracing.TwoDShape.getX()
+    <-- double tracing.TwoDShape.getX()
+    --> double tracing.TwoDShape.getY()
+    <-- double tracing.TwoDShape.getY()
+  <-- double tracing.TwoDShape.distance(TwoDShape)
+s1.distance(c1) = 2.23606797749979
+  --> String tracing.Square.toString()
+    --> String tracing.TwoDShape.toString()
+    <-- String tracing.TwoDShape.toString()
+  <-- String tracing.Square.toString()
+s1.toString(): Square side = 1.0 @ (1.0, 2.0)
+]]></programlisting>
+
+      <para>
+        When <filename>TraceMyClasses.java</filename> is not provided to
+        <command>ajc</command>, the aspect does not have any affect on the
+        system and the tracing is unplugged.
+      </para>
+    </sect3>
+
+    <sect3>
+      <title>Tracing&mdash;Version 2</title>
+
+      <para>
+        Another way to accomplish the same thing would be to write a reusable
+        tracing aspect that can be used not only for these application classes,
+        but for any class. One way to do this is to merge the tracing
+        functionality of <literal>Trace&mdash;version1</literal> with the
+        crosscutting support of
+        <literal>TraceMyClasses&mdash;version1</literal>. We end up with a
+        <literal>Trace</literal> aspect (found in
+        <filename>version2/Trace.java</filename>) with the following public
+        interface
+      </para>
+
+<programlisting><![CDATA[
+abstract aspect Trace {
+
+    public static int TRACELEVEL = 2;
+    public static void initStream(PrintStream s) {...}
+    protected static void traceEntry(String str) {...}
+    protected static void traceExit(String str) {...}
+    abstract pointcut myClass();
+}
+]]></programlisting>
+
+      <para>
+        In order to use it, we need to define our own subclass that knows about
+        our application classes, in <filename>version2/TraceMyClasses.java</filename>:
+      </para>
+
+<programlisting><![CDATA[
+public aspect TraceMyClasses extends Trace {
+    pointcut myClass(): within(TwoDShape) || within(Circle) || within(Square);
+
+    public static void main(String[] args) {
+        Trace.TRACELEVEL = 2;
+        Trace.initStream(System.err);
+        ExampleMain.main(args);
+    }
+}
+]]></programlisting>
+
+      <para>
+        Notice that we've simply made the pointcut <literal>classes</literal>,
+        that was an abstract pointcut in the super-aspect, concrete. To run
+        this version of tracing, go to the directory
+        <filename>examples</filename> and type:
+      </para>
+
+<programlisting><![CDATA[
+  ajc -argfile tracing/tracev2.lst
+]]></programlisting>
+
+      <para>
+        The file tracev2.lst lists the application classes as well as this
+        version of the files Trace.java and TraceMyClasses.java. Running the
+        main method of <classname>tracing.version2.TraceMyClasses</classname>
+        should output exactly the same trace information as that from version
+        1.
+      </para>
+
+      <para>
+        The entire implementation of the new <classname>Trace</classname> class
+        is:
+      </para>
+
+<programlisting><![CDATA[
+abstract aspect Trace {
+
+    // implementation part
+
+    public static int TRACELEVEL = 2;
+    protected static PrintStream stream = System.err;
+    protected static int callDepth = 0;
+
+    public static void initStream(PrintStream s) {
+        stream = s;
+    }
+    protected static void traceEntry(String str) {
+        if (TRACELEVEL == 0) return;
+        if (TRACELEVEL == 2) callDepth++;
+        printEntering(str);
+    }
+    protected static void traceExit(String str) {
+        if (TRACELEVEL == 0) return;
+        printExiting(str);
+        if (TRACELEVEL == 2) callDepth--;
+    }
+    private static void printEntering(String str) {
+        printIndent();
+        stream.println("--> " + str);
+    }
+    private static void printExiting(String str) {
+        printIndent();
+        stream.println("<-- " + str);
+    }
+    private static void printIndent() {
+        for (int i = 0; i < callDepth; i++)
+            stream.print("  ");
+    }
+
+    // protocol part
+
+    abstract pointcut myClass();
+
+    pointcut myConstructor(): myClass() && execution(new(..));
+    pointcut myMethod(): myClass() && execution(* *(..));
+
+    before(): myConstructor() {
+        traceEntry("" + thisJoinPointStaticPart.getSignature());
+    }
+    after(): myConstructor() {
+        traceExit("" + thisJoinPointStaticPart.getSignature());
+    }
+
+    before(): myMethod() {
+        traceEntry("" + thisJoinPointStaticPart.getSignature());
+    }
+    after(): myMethod() {
+        traceExit("" + thisJoinPointStaticPart.getSignature());
+    }
+}
+]]></programlisting>
+
+      <para>
+        This version differs from version 1 in several subtle ways. The first
+        thing to notice is that this <classname>Trace</classname> class merges
+        the functional part of tracing with the crosscutting of the tracing
+        calls. That is, in version 1, there was a sharp separation between the
+        tracing support (the class <classname>Trace</classname>) and the
+        crosscutting usage of it (by the class
+        <classname>TraceMyClasses</classname>). In this version those two
+        things are merged. That's why the description of this class explicitly
+        says that "Trace messages are printed before and after constructors and
+        methods are," which is what we wanted in the first place. That is, the
+        placement of the calls, in this version, is established by the aspect
+        class itself, leaving less opportunity for misplacing calls.</para>
+
+      <para>
+        A consequence of this is that there is no need for providing traceEntry
+        and traceExit as public operations of this class. You can see that they
+        were classified as protected. They are supposed to be internal
+        implementation details of the advice.
+      </para>
+
+      <para>
+        The key piece of this aspect is the abstract pointcut classes that
+        serves as the base for the definition of the pointcuts constructors and
+        methods. Even though <classname>classes</classname> is abstract, and
+        therefore no concrete classes are mentioned, we can put advice on it,
+        as well as on the pointcuts that are based on it. The idea is "we don't
+        know exactly what the pointcut will be, but when we do, here's what we
+        want to do with it." In some ways, abstract pointcuts are similar to
+        abstract methods. Abstract methods don't provide the implementation,
+        but you know that the concrete subclasses will, so you can invoke those
+        methods.
+      </para>
+    </sect3>
+    </sect2>
+  </sect1>
+
+<!--  ============================================================ -->
+<!--  ============================================================ -->
+
+  <sect1>
+    <title>Production Aspects</title>
+
+    <!--  ==================== -->
+
+  <sect2><!-- A Bean Aspect -->
+    <title>A Bean Aspect</title>
+
+      <para>(The code for this example is in
+      <filename><replaceable>InstallDir</replaceable>/examples/bean</filename>.)
+      </para>
+
+    <para>
+      This example examines an aspect that makes Point objects into a Java beans
+      with bound properties. </para>
+
+    <sect3>
+      <title>Introduction</title>
+      <para>
+        Java beans are reusable software components that can be visually
+        manipulated in a builder tool. The requirements for an object to be a
+        bean are few. Beans must define a no-argument constructor and must be
+        either <classname>Serializable</classname> or
+        <classname>Externalizable</classname>. Any properties of the object
+        that are to be treated as bean properties should be indicated by the
+        presence of appropriate <literal>get</literal> and
+        <literal>set</literal> methods whose names are
+            <literal>get</literal><emphasis>property</emphasis> and
+            <literal>set </literal><emphasis>property</emphasis>
+        where <emphasis>property</emphasis> is the name of a field in the bean
+        class. Some bean properties, known as bound properties, fire events
+        whenever their values change so that any registered listeners (such as,
+        other beans) will be informed of those changes. Making a bound property
+        involves keeping a list of registered listeners, and creating and
+        dispatching event objects in methods that change the property values,
+        such as set<emphasis>property</emphasis> methods.</para>
+
+      <para>
+        <classname>Point</classname> is a simple class representing points with
+        rectangular coordinates. <classname>Point</classname> does not know
+        anything about being a bean: there are set methods for
+        <literal>x</literal> and <literal>y</literal> but they do not fire
+        events, and the class is not serializable. Bound is an aspect that
+        makes <classname>Point</classname> a serializable class and makes its
+        <literal>get</literal> and <literal>set</literal> methods support the
+        bound property protocol.
+      </para>
+    </sect3>
+
+    <sect3>
+        <title>The Class <classname>Point</classname></title>
+
+        <para>
+        The class <classname>Point</classname> is a very simple class with
+        trivial getters and setters, and a simple vector offset method.
+      </para>
+
+        <programlisting><![CDATA[
+class Point {
+
+  protected int x = 0;
+  protected int y = 0;
+
+  public int getX() {
+    return x;
+  }
+
+  public int getY() {
+    return y;
+  }
+
+  public void setRectangular(int newX, int newY) {
+    setX(newX);
+    setY(newY);
+  }
+
+  public void setX(int newX) {
+    x = newX;
+  }
+
+  public void setY(int newY) {
+    y = newY;
+  }
+
+  public void offset(int deltaX, int deltaY) {
+    setRectangular(x + deltaX, y + deltaY);
+  }
+
+  public String toString() {
+    return "(" + getX() + ", " + getY() + ")" ;
+  }
+}]]></programlisting>
+
+    </sect3>
+
+    <sect3>
+      <title>The Aspect <classname>BoundPoint</classname></title>
+
+      <para>
+        The aspect <classname>BoundPoint</classname> adds "beanness" to
+        <classname>Point</classname> objects. The first thing it does is
+        privately introduce a reference to an instance of
+        <classname>PropertyChangeSupport</classname> into all
+        <classname>Point</classname> objects. The property change
+        support object must be constructed with a reference to the bean for
+        which it is providing support, so it is initialized by passing it this,
+        an instance of <classname>Point</classname>. The support field is
+        privately introduced, so only the code in the aspect can refer to it.
+      </para>
+
+      <para>
+        Methods for registering and managing listeners for property change
+        events are introduced into <classname>Point</classname> by the
+        introductions. These methods delegate the work to the
+        property change support object.
+      </para>
+
+      <para>
+        The introduction also makes <classname>Point</classname> implement the
+        <classname>Serializable</classname> interface. Implementing
+        <classname>Serializable</classname> does not require any methods to be
+        implemented. Serialization for <classname>Point</classname> objects is
+        provided by the default serialization method.
+      </para>
+
+      <para>
+        The pointcut <function>setters</function> names the
+        <literal>set</literal> methods: reception by a
+        <classname>Point</classname> object of any method whose name begins
+        with '<literal>set</literal>' and takes one parameter. The around
+        advice on <literal>setters()</literal> stores the values
+        of the <literal>X</literal> and <literal>Y</literal> properties, calls
+        the original <literal>set</literal> method and then fires the
+        appropriate property change event according to which set method was
+        called. Note that the call to the method proceed needs to pass along
+        the <literal>Point p</literal>. The rule of thumb is that context that
+        an around advice exposes must be passed forward to continue.
+      </para>
+
+<programlisting><![CDATA[
+aspect BoundPoint {
+  private PropertyChangeSupport Point.support = new PropertyChangeSupport(this);
+
+  public void Point.addPropertyChangeListener(PropertyChangeListener listener){
+    support.addPropertyChangeListener(listener);
+  }
+
+  public void Point.addPropertyChangeListener(String propertyName,
+                                              PropertyChangeListener listener){
+
+    support.addPropertyChangeListener(propertyName, listener);
+  }
+
+  public void Point.removePropertyChangeListener(String propertyName,
+                                                 PropertyChangeListener listener) {
+    support.removePropertyChangeListener(propertyName, listener);
+  }
+
+  public void Point.removePropertyChangeListener(PropertyChangeListener listener) {
+    support.removePropertyChangeListener(listener);
+  }
+
+  public void Point.hasListeners(String propertyName) {
+    support.hasListeners(propertyName);
+  }
+
+  declare parents: Point implements Serializable;
+
+  pointcut setter(Point p): call(void Point.set*(*)) && target(p);
+
+  void around(Point p): setter(p) {
+        String propertyName =
+      thisJoinPointStaticPart.getSignature().getName().substring("set".length());
+        int oldX = p.getX();
+        int oldY = p.getY();
+        proceed(p);
+        if (propertyName.equals("X")){
+      firePropertyChange(p, propertyName, oldX, p.getX());
+        } else {
+      firePropertyChange(p, propertyName, oldY, p.getY());
+        }
+  }
+
+  void firePropertyChange(Point p,
+                          String property,
+                          double oldval,
+                          double newval) {
+        p.support.firePropertyChange(property,
+                                 new Double(oldval),
+                                 new Double(newval));
+  }
+}
+]]></programlisting>
+
+    </sect3>
+
+    <sect3>
+      <title>The Test Program</title>
+
+      <para>
+        The test program registers itself as a property change listener to a
+        <literal>Point</literal> object that it creates and then performs
+        simple manipulation of that point: calling its set methods and the
+        offset method. Then it serializes the point and writes it to a file and
+        then reads it back. The result of saving and restoring the point is that
+        a new point is created.
+      </para>
+
+<programlisting><![CDATA[
+  class Demo implements PropertyChangeListener {
+
+    static final String fileName = "test.tmp";
+
+    public void propertyChange(PropertyChangeEvent e){
+      System.out.println("Property " + e.getPropertyName() + " changed from " +
+         e.getOldValue() + " to " + e.getNewValue() );
+    }
+
+    public static void main(String[] args){
+      Point p1 = new Point();
+      p1.addPropertyChangeListener(new Demo());
+      System.out.println("p1 =" + p1);
+      p1.setRectangular(5,2);
+      System.out.println("p1 =" + p1);
+      p1.setX( 6 );
+      p1.setY( 3 );
+      System.out.println("p1 =" + p1);
+      p1.offset(6,4);
+      System.out.println("p1 =" + p1);
+      save(p1, fileName);
+      Point p2 = (Point) restore(fileName);
+      System.out.println("Had: " + p1);
+      System.out.println("Got: " + p2);
+      }
+    ...
+  }
+]]></programlisting>
+
+    </sect3>
+    <sect3>
+      <title>Compiling and Running the Example</title>
+      <para>To compile and run this example, go to the examples directory and type:
+      </para>
+
+<programlisting><![CDATA[
+ajc -argfile bean/files.lst
+java bean.Demo
+]]></programlisting>
+
+      </sect3>
+    </sect2>
+
+    <!--  ==================== -->
+
+  <sect2><!-- The Subject/Observer Protocol -->
+    <title>The Subject/Observer Protocol</title>
+
+      <para>(The code for this example is in
+      <filename><replaceable>InstallDir</replaceable>/examples/observer</filename>.)
+      </para>
+
+    <para>
+      This demo illustrates how the Subject/Observer design pattern can be
+      coded with aspects. </para>
+
+    <sect3>
+      <title>Overview</title>
+      <para>
+         The demo consists of the following: A colored label is a renderable
+         object that has a color that cycles through a set of colors, and a
+         number that records the number of cycles it has been through. A button
+         is an action item that records when it is clicked.
+      </para>
+
+      <para>
+        With these two kinds of objects, we can build up a Subject/Observer
+        relationship in which colored labels observe the clicks of buttons;
+        that is, where colored labels are the observers and buttons are the
+        subjects.
+      </para>
+
+      <para>
+        The demo is designed and implemented using the Subject/Observer design
+        pattern. The remainder of this example explains the classes and aspects
+        of this demo, and tells you how to run it.
+      </para>
+    </sect3>
+
+    <sect3>
+      <title>Generic Components</title>
+
+      <para>
+        The generic parts of the protocol are the interfaces
+        <classname>Subject</classname> and <classname>Observer</classname>, and
+        the abstract aspect <classname>SubjectObserverProtocol</classname>. The
+        <classname>Subject</classname> interface is simple, containing methods
+        to add, remove, and view <classname>Observer</classname> objects, and a
+        method for getting data about state changes:
+      </para>
+
+<programlisting><![CDATA[
+    interface Subject {
+      void addObserver(Observer obs);
+      void removeObserver(Observer obs);
+      Vector getObservers();
+      Object getData();
+  }
+]]></programlisting>
+
+      <para> The <classname>Observer</classname> interface is just as simple,
+        with methods to set and get <classname>Subject</classname> objects, and
+        a method to call when the subject gets updated.
+      </para>
+
+<programlisting><![CDATA[
+  interface Observer {
+      void setSubject(Subject s);
+      Subject getSubject();
+      void update();
+  }
+]]></programlisting>
+
+      <para>
+        The <classname>SubjectObserverProtocol</classname> aspect contains
+        within it all of the generic parts of the protocol, namely, how to fire
+        the <classname>Observer</classname> objects' update methods when some
+        state changes in a subject.
+      </para>
+
+<programlisting><![CDATA[
+  abstract aspect SubjectObserverProtocol {
+
+      abstract pointcut stateChanges(Subject s);
+
+      after(Subject s): stateChanges(s) {
+          for (int i = 0; i < s.getObservers().size(); i++) {
+              ((Observer)s.getObservers().elementAt(i)).update();
+          }
+      }
+
+      private Vector Subject.observers = new Vector();
+      public void   Subject.addObserver(Observer obs) {
+          observers.addElement(obs);
+          obs.setSubject(this);
+      }
+      public void   Subject.removeObserver(Observer obs) {
+          observers.removeElement(obs);
+          obs.setSubject(null);
+      }
+      public Vector Subject.getObservers() { return observers; }
+
+      private Subject Observer.subject = null;
+      public void     Observer.setSubject(Subject s) { subject = s; }
+      public Subject  Observer.getSubject() { return subject; }
+
+  }
+]]></programlisting>
+
+      <para>
+        Note that this aspect does three things. It define an abstract pointcut
+        that extending aspects can override. It defines advice that should run
+        after the join points of the pointcut. And it introduces state and
+        behavior onto the <classname>Subject</classname> and
+        <classname>Observer</classname> interfaces.
+      </para>
+    </sect3>
+
+    <sect3>
+      <title>Application Classes</title>
+
+      <para> <classname>Button</classname> objects extend
+        <classname>java.awt.Button</classname>, and all they do is make sure
+        the <literal>void click()</literal> method is called whenever a button
+        is clicked.
+      </para>
+
+<programlisting><![CDATA[
+  class Button extends java.awt.Button {
+
+      static final Color  defaultBackgroundColor = Color.gray;
+      static final Color  defaultForegroundColor = Color.black;
+      static final String defaultText = "cycle color";
+
+      Button(Display display) {
+          super();
+          setLabel(defaultText);
+          setBackground(defaultBackgroundColor);
+          setForeground(defaultForegroundColor);
+          addActionListener(new ActionListener() {
+                  public void actionPerformed(ActionEvent e) {
+                      Button.this.click();
+                  }
+              });
+          display.addToFrame(this);
+      }
+
+      public void click() {}
+
+  }
+]]></programlisting>
+
+      <para>
+        Note that this class knows nothing about being a Subject.
+      </para>
+      <para>
+        ColorLabel objects are labels that support the void colorCycle()
+        method. Again, they know nothing about being an observer.
+      </para>
+
+<programlisting><![CDATA[
+  class ColorLabel extends Label {
+
+      ColorLabel(Display display) {
+          super();
+          display.addToFrame(this);
+      }
+
+      final static Color[] colors = {Color.red, Color.blue,
+                                     Color.green, Color.magenta};
+      private int colorIndex = 0;
+      private int cycleCount = 0;
+      void colorCycle() {
+          cycleCount++;
+          colorIndex = (colorIndex + 1) % colors.length;
+          setBackground(colors[colorIndex]);
+          setText("" + cycleCount);
+      }
+  }
+]]></programlisting>
+
+      <para>
+        Finally, the <classname>SubjectObserverProtocolImpl</classname>
+        implements the subject/observer protocol, with
+        <classname>Button</classname> objects as subjects and
+        <classname>ColorLabel</classname> objects as observers:
+      </para>
+
+<programlisting><![CDATA[
+package observer;
+
+import java.util.Vector;
+
+aspect SubjectObserverProtocolImpl extends SubjectObserverProtocol {
+
+    declare parents: Button implements Subject;
+    public Object Button.getData() { return this; }
+
+    declare parents: ColorLabel implements Observer;
+    public void    ColorLabel.update() {
+        colorCycle();
+    }
+
+    pointcut stateChanges(Subject s):
+        target(s) &&
+        call(void Button.click());
+
+}]]></programlisting>
+
+      <para>
+        It does this by introducing the appropriate interfaces onto the
+        <classname>Button</classname> and <classname>ColorLabel</classname>
+        classes, making sure the methods required by the interfaces are
+        implemented, and providing a definition for the
+        <literal>stateChanges</literal> pointcut. Now, every time a
+        <classname>Button</classname> is clicked, all
+        <classname>ColorLabel</classname> objects observing that button will
+        <literal>colorCycle</literal>.
+      </para>
+    </sect3>
+
+    <sect3>
+      <title>Compiling and Running</title>
+
+      <para> <classname>Demo</classname> is the top class that starts this
+        demo. It instantiates a two buttons and three observers and links them
+        together as subjects and observers. So to run the demo, go to the
+        <filename>examples</filename> directory and type:
+      </para>
+
+<programlisting><![CDATA[
+  ajc -argfile observer/files.lst
+  java observer.Demo
+]]></programlisting>
+
+      </sect3>
+    </sect2>
+
+    <!--  ==================== -->
+
+    <sect2>
+    <title>A Simple Telecom Simulation</title>
+
+      <para>(The code for this example is in
+      <filename><replaceable>InstallDir</replaceable>/examples/telecom</filename>.)
+      </para>
+
+    <para>
+      This example illustrates some ways that dependent concerns can be encoded
+      with aspects. It uses an example system comprising a simple model of
+      telephone connections to which timing and billing features are added
+      using aspects, where the billing feature depends upon the timing feature.
+    </para>
+
+    <sect3>
+      <title>The Application</title>
+
+      <para>
+        The example application is a simple simulation of a telephony system in
+        which customers make, accept, merge and hang-up both local and long
+        distance calls. The application architecture is in three layers.
+      </para>
+      <itemizedlist>
+        <listitem>
+          <para>
+            The basic objects  provide basic functionality to simulate
+            customers, calls and connections (regular calls have one
+            connection, conference calls have more than one).
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+            The timing feature is concerned with timing the connections and
+            keeping the total connection time per customer. Aspects are used to
+            add a timer to each connection and to manage the total time per
+            customer.
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+            The billing feature is concerned with charging customers for the
+            calls they make. Aspects are used to calculate a charge per
+            connection and, upon termination of a connection, to add the charge
+            to the appropriate customer's bill. The billing aspect builds upon
+            the timing aspect: it uses a pointcut defined in Timing and it uses
+            the timers that are associated with connections.
+          </para>
+        </listitem>
+      </itemizedlist>
+      <para>
+        The simulation of system has three configurations: basic, timing and
+        billing. Programs for the three configurations are in classes
+        <classname>BasicSimulation</classname>,
+        <classname>TimingSimulation</classname> and
+        <classname>BillingSimulation</classname>. These share a common
+        superclass <classname>AbstractSimulation</classname>, which defines the
+        method run with the simulation itself and the method wait used to
+        simulate elapsed time.
+      </para>
+    </sect3>
+
+    <sect3>
+      <title>The Basic Objects</title>
+
+      <para>
+        The telecom simulation comprises the classes
+        <classname>Customer</classname>, <classname>Call</classname> and the
+        abstract class <classname>Connection</classname> with its two concrete
+        subclasses <classname>Local</classname> and
+        <classname>LongDistance</classname>. Customers have a name and a
+        numeric area code. They also have methods for managing calls. Simple
+        calls are made between one customer (the caller) and another (the
+        receiver), a <classname>Connection</classname> object is used to
+        connect them. Conference calls between more than two customers will
+        involve more than one connection. A customer may be involved in many
+        calls at one time.
+        <inlinemediaobject>
+          <imageobject>
+            <imagedata fileref="telecom.gif"/>
+          </imageobject>
+        </inlinemediaobject>
+      </para>
+    </sect3>
+
+    <sect3>
+      <title>The Class <classname>Customer</classname></title>
+
+      <para>
+        <classname>Customer</classname> has methods <literal>call</literal>,
+        <literal>pickup</literal>, <literal>hangup</literal> and
+        <literal>merge</literal> for managing calls.
+      </para>
+
+<programlisting><![CDATA[
+public class Customer {
+
+      private String name;
+      private int areacode;
+      private Vector calls = new Vector();
+
+      protected void removeCall(Call c){
+          calls.removeElement(c);
+      }
+
+      protected void addCall(Call c){
+          calls.addElement(c);
+      }
+
+      public Customer(String name, int areacode) {
+          this.name = name;
+          this.areacode = areacode;
+      }
+
+      public String toString() {
+          return name + "(" + areacode + ")";
+      }
+
+      public int getAreacode(){
+          return areacode;
+      }
+
+      public boolean localTo(Customer other){
+          return areacode == other.areacode;
+      }
+
+      public Call call(Customer receiver) {
+          Call call = new Call(this, receiver);
+          addCall(call);
+          return call;
+      }
+
+      public void pickup(Call call) {
+          call.pickup();
+          addCall(call);
+      }
+
+      public void hangup(Call call) {
+          call.hangup(this);
+          removeCall(call);
+      }
+
+      public void merge(Call call1, Call call2){
+          call1.merge(call2);
+          removeCall(call2);
+      }
+  }
+]]></programlisting>
+
+      </sect3>
+
+    <sect3>
+      <title>The Class <classname>Call</classname></title>
+
+      <para>
+        Calls are created with a caller and receiver who are customers. If the
+        caller and receiver have the same area code then the call can be
+        established with a <classname>Local</classname> connection (see below),
+        otherwise a <classname>LongDistance</classname> connection is required.
+        A call comprises a number of connections between customers. Initially
+        there is only the connection between the caller and receiver but
+        additional connections can be added if calls are merged to form
+        conference calls.
+      </para>
+    </sect3>
+
+    <sect3>
+      <title>The Class <classname>Connection</classname></title>
+
+      <para>The class <classname>Connection</classname> models the physical
+        details of establishing a connection between customers. It does this
+        with a simple state machine (connections are initially
+        <literal>PENDING</literal>, then <literal>COMPLETED</literal> and
+        finally <literal>DROPPED</literal>). Messages are printed to the
+        console so that the state of connections can be observed. Connection is
+        an abstract class with two concrete subclasses:
+        <classname>Local</classname> and <classname>LongDistance</classname>.
+      </para>
+
+<programlisting><![CDATA[
+  abstract class Connection {
+
+      public static final int PENDING = 0;
+      public static final int COMPLETE = 1;
+      public static final int DROPPED = 2;
+
+      Customer caller, receiver;
+      private int state = PENDING;
+
+      Connection(Customer a, Customer b) {
+          this.caller = a;
+          this.receiver = b;
+      }
+
+      public int getState(){
+          return state;
+      }
+
+      public Customer getCaller() { return caller; }
+
+      public Customer getReceiver() { return receiver; }
+
+      void complete() {
+          state = COMPLETE;
+          System.out.println("connection completed");
+      }
+
+      void drop() {
+          state = DROPPED;
+          System.out.println("connection dropped");
+      }
+
+      public boolean connects(Customer c){
+          return (caller == c || receiver == c);
+      }
+
+  }
+]]></programlisting>
+
+      </sect3>
+
+    <sect3>
+      <title>The Class Local</title>
+
+<programlisting><![CDATA[
+  class Local extends Connection {
+      Local(Customer a, Customer b) {
+          super(a, b);
+          System.out.println("[new local connection from " +
+             a + " to " + b + "]");
+      }
+  }
+]]></programlisting>
+
+      </sect3>
+
+    <sect3>
+      <title>The Class LongDistance</title>
+
+<programlisting><![CDATA[
+  class LongDistance extends Connection {
+      LongDistance(Customer a, Customer b) {
+          super(a, b);
+          System.out.println("[new long distance connection from " +
+              a + " to " + b + "]");
+      }
+  }
+]]></programlisting>
+
+      </sect3>
+
+    <sect3>
+      <title>Compiling and Running the Basic Simulation</title>
+
+      <para>
+        The source files for the basic system are listed in the file
+        <filename>basic.lst</filename>. To build and run the basic system, in a
+        shell window, type these commands:
+      </para>
+
+<programlisting><![CDATA[
+ajc -argfile telecom/basic.lst
+java telecom.BasicSimulation
+]]></programlisting>
+
+      </sect3>
+
+    <sect3>
+      <title>Timing</title>
+      <para>
+        The <classname>Timing</classname> aspect keeps track of total
+        connection time for each <classname>Customer</classname> by starting
+        and stopping a timer associated with each connection. It uses some
+        helper classes:
+      </para>
+
+      <sect4>
+        <title>The Class <classname>Timer</classname></title>
+
+        <para>
+          A <classname>Timer</classname> object simply records the current time
+          when it is started and stopped, and returns their difference when
+          asked for the elapsed time. The aspect
+          <classname>TimerLog</classname> (below) can be used to cause the
+          start and stop times to be printed to standard output.
+        </para>
+
+<programlisting><![CDATA[
+  class Timer {
+      long startTime, stopTime;
+
+      public void start() {
+          startTime = System.currentTimeMillis();
+          stopTime = startTime;
+      }
+
+      public void stop() {
+          stopTime = System.currentTimeMillis();
+      }
+
+      public long getTime() {
+          return stopTime - startTime;
+      }
+  }
+]]></programlisting>
+
+        </sect4>
+      </sect3>
+
+      <sect3>
+        <title>The Aspect <classname>TimerLog</classname></title>
+
+        <para>
+          The aspect <classname>TimerLog</classname> can be included in a
+          build to get the timer to announce when it is started and stopped.
+        </para>
+
+<programlisting><![CDATA[
+public aspect TimerLog {
+
+    after(Timer t): target(t) && call(* Timer.start())  {
+      System.err.println("Timer started: " + t.startTime);
+    }
+
+    after(Timer t): target(t) && call(* Timer.stop()) {
+      System.err.println("Timer stopped: " + t.stopTime);
+    }
+}
+]]></programlisting>
+
+        </sect3>
+
+      <sect3>
+        <title>The Aspect <classname>Timing</classname></title>
+
+        <para>
+          The aspect <classname>Timing</classname> introduces attribute
+          <literal>totalConnectTime</literal> into the class
+          <classname>Customer</classname> to store the accumulated connection
+          time per <classname>Customer</classname>. It introduces attribute
+          timer into <classname>Connection</classname> to associate a timer
+          with each <classname>Connection</classname>. Two pieces of after
+          advice ensure that the timer is started when a connection is
+          completed and and stopped when it is dropped. The pointcut
+          <literal>endTiming</literal> is defined so that it can be used by the
+          <classname>Billing</classname> aspect.
+        </para>
+
+<programlisting><![CDATA[
+public aspect Timing {
+
+    public long Customer.totalConnectTime = 0;
+
+    public long getTotalConnectTime(Customer cust) {
+        return cust.totalConnectTime;
+    }
+    private Timer Connection.timer = new Timer();
+    public Timer getTimer(Connection conn) { return conn.timer; }
+
+    after (Connection c): target(c) && call(void Connection.complete()) {
+        getTimer(c).start();
+    }
+
+    pointcut endTiming(Connection c): target(c) &&
+        call(void Connection.drop());
+
+    after(Connection c): endTiming(c) {
+        getTimer(c).stop();
+        c.getCaller().totalConnectTime += getTimer(c).getTime();
+        c.getReceiver().totalConnectTime += getTimer(c).getTime();
+    }
+}]]></programlisting>
+
+        </sect3>
+
+    <sect3>
+      <title>Billing</title>
+
+      <para>
+        The Billing system adds billing functionality to the telecom
+        application on top of timing.
+      </para>
+
+      <sect4>
+        <title>The Aspect <classname>Billing</classname></title>
+
+        <para>
+          The aspect <classname>Billing</classname> introduces attribute
+          <literal>payer</literal> into <classname>Connection</classname>
+          to indicate who initiated the call and therefore who is
+          responsible to pay for it. It also introduces method
+          <literal>callRate</literal> into <classname>Connection</classname>
+          so that local and long distance calls can be charged
+          differently. The call charge must be calculated after the timer is
+          stopped; the after advice on pointcut
+          <literal>Timing.endTiming</literal> does this and
+          <classname>Billing</classname> dominates Timing to make
+          sure that this advice runs after <classname>Timing's</classname>
+          advice on the same join point. It introduces attribute
+          <literal>totalCharge</literal> and its associated methods into
+          <classname>Customer</classname> (to manage the
+          customer's bill information.
+        </para>
+
+<programlisting><![CDATA[
+public aspect Billing dominates Timing {
+    // domination required to get advice on endtiming in the right order
+
+    public static final long LOCAL_RATE = 3;
+    public static final long LONG_DISTANCE_RATE = 10;
+
+
+    public Customer Connection.payer;
+    public Customer getPayer(Connection conn) { return conn.payer; }
+
+    after(Customer cust) returning (Connection conn):
+        args(cust, ..) && call(Connection+.new(..)) {
+        conn.payer = cust;
+    }
+
+    public abstract long Connection.callRate();
+
+
+    public long LongDistance.callRate() { return LONG_DISTANCE_RATE; }
+    public long Local.callRate() { return LOCAL_RATE; }
+
+
+    after(Connection conn): Timing.endTiming(conn) {
+        long time = Timing.aspectOf().getTimer(conn).getTime();
+        long rate = conn.callRate();
+        long cost = rate * time;
+        getPayer(conn).addCharge(cost);
+    }
+
+
+    public long Customer.totalCharge = 0;
+    public long getTotalCharge(Customer cust) { return cust.totalCharge; }
+
+    public void Customer.addCharge(long charge){
+        totalCharge += charge;
+    }
+}
+]]></programlisting>
+
+        </sect4>
+    </sect3>
+
+    <sect3>
+      <title>Accessing the Introduced State</title>
+
+      <para>
+        Both the aspects <classname>Timing</classname> and
+        <classname>Billing</classname> contain the definition of operations
+        that the rest of the system may want to access. For example, when
+        running the simulation with one or both aspects, we want to find out
+        how much time each customer spent on the telephone and how big their
+        bill is. That information is also stored in the classes, but they are
+        accessed through static methods of the aspects, since the state they
+        refer to is private to the aspect.
+      </para>
+
+      <para>
+        Take a look at the file <filename>TimingSimulation.java</filename>. The
+        most important method of this class is the method
+        <filename>report(Customer c)</filename>, which is used in the method
+        run of the superclass <classname>AbstractSimulation</classname>. This
+        method is intended to print out the status of the customer, with
+        respect to the <classname>Timing</classname> feature.
+      </para>
+
+<programlisting><![CDATA[
+  protected void report(Customer c){
+      Timing t = Timing.aspectOf();
+      System.out.println(c + " spent " + t.getTotalConnectTime(c));
+  }
+]]></programlisting>
+
+      </sect3>
+
+    <sect3>
+      <title>Compiling and Running</title>
+
+      <para>
+        The files timing.lst and billing.lst contain file lists for the timing
+        and billing configurations. To build and run the application with only
+        the timing feature, go to the directory examples and type:
+      </para>
+
+<programlisting><![CDATA[
+  ajc -argfile telecom/timing.lst
+  java telecom.TimingSimulation
+]]></programlisting>
+
+      <para>
+        To build and run the application with the timing and billing features,
+        go to the directory examples and type:
+      </para>
+
+<programlisting><![CDATA[
+  ajc -argfile telecom/billing.lst
+  java telecom.BillingSimulation
+]]></programlisting>
+
+      </sect3>
+
+    <sect3>
+      <title>Discussion</title>
+
+      <para>
+        There are some explicit dependencies between the aspects Billing and
+        Timing:
+        <itemizedlist>
+          <listitem>
+            <para>
+              Billing is declared to dominate Timing so that Billing's after
+              advice runs after that of Timing  when they are on the same join
+              point.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>
+              Billing uses the pointcut Timing.endTiming.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>
+              Billing needs access to the timer associated with a connection.
+            </para>
+          </listitem>
+        </itemizedlist>
+      </para>
+    </sect3>
+    </sect2>
+  </sect1>
+
+<!--  ============================================================ -->
+<!--  ============================================================ -->
+
+  <sect1>
+    <title>Reusable Aspects</title>
+
+    <sect2>
+      <title>Tracing Aspects Revisited</title>
+
+      <para>(The code for this example is in
+      <filename><replaceable>InstallDir</replaceable>/examples/tracing</filename>.)
+      </para>
+
+    <sect3>
+      <title>Tracing&mdash;Version 3</title>
+
+      <para>
+        One advantage of not exposing the methods traceEntry and traceExit as
+        public operations is that we can easily change their interface without
+        any dramatic consequences in the rest of the code.
+      </para>
+
+      <para>
+        Consider, again, the program without AspectJ. Suppose, for example,
+        that at some point later the requirements for tracing change, stating
+        that the trace messages should always include the string representation
+        of the object whose methods are being traced. This can be achieved in
+        at least two ways. One way is keep the interface of the methods
+        <literal>traceEntry</literal> and <literal>traceExit</literal> as it
+        was before,
+      </para>
+
+<programlisting><![CDATA[
+  public static void traceEntry(String str);
+  public static void traceExit(String str);
+]]></programlisting>
+
+      <para>
+        In this case, the caller is responsible for ensuring that the string
+        representation of the object is part of the string given as argument.
+        So, calls must look like:
+      </para>
+
+<programlisting><![CDATA[
+  Trace.traceEntry("Square.distance in " + toString());
+]]></programlisting>
+
+      <para>
+        Another way is to enforce the requirement with a second argument in the
+        trace operations, e.g.
+      </para>
+
+<programlisting><![CDATA[
+  public static void traceEntry(String str, Object obj);
+  public static void traceExit(String str, Object obj);
+]]></programlisting>
+
+      <para>
+        In this case, the caller is still responsible for sending the right
+        object, but at least there is some guarantees that some object will be
+        passed. The calls will look like:
+      </para>
+
+<programlisting><![CDATA[
+  Trace.traceEntry("Square.distance", this);
+]]></programlisting>
+
+      <para>
+        In either case, this change to the requirements of tracing will have
+        dramatic consequences in the rest of the code -- every call to the
+        trace operations traceEntry and traceExit must be changed!
+      </para>
+
+      <para>
+        Here's another advantage of doing tracing with an aspect. We've already
+        seen that in version 2 <literal>traceEntry</literal> and
+        <literal>traceExit</literal> are not publicly exposed. So changing
+        their interfaces, or the way they are used, has only a small effect
+        inside the <classname>Trace</classname> class. Here's a partial view at
+        the implementation of <classname>Trace</classname>, version 3. The
+        differences with respect to version 2 are stressed in the
+        comments:
+      </para>
+
+<programlisting><![CDATA[
+abstract aspect Trace {
+
+    public static int TRACELEVEL = 0;
+    protected static PrintStream stream = null;
+    protected static int callDepth = 0;
+
+    public static void initStream(PrintStream s) {
+        stream = s;
+    }
+
+    protected static void traceEntry(String str, Object o) {
+        if (TRACELEVEL == 0) return;
+        if (TRACELEVEL == 2) callDepth++;
+        printEntering(str + ": " + o.toString());
+    }
+
+    protected static void traceExit(String str, Object o) {
+        if (TRACELEVEL == 0) return;
+        printExiting(str + ": " + o.toString());
+        if (TRACELEVEL == 2) callDepth--;
+    }
+
+    private static void printEntering(String str) {
+        printIndent();
+        stream.println("Entering " + str);
+    }
+
+    private static void printExiting(String str) {
+        printIndent();
+        stream.println("Exiting " + str);
+    }
+
+
+    private static void printIndent() {
+        for (int i = 0; i < callDepth; i++)
+            stream.print("  ");
+    }
+
+
+    abstract pointcut myClass(Object obj);
+
+    pointcut myConstructor(Object obj): myClass(obj) && execution(new(..));
+    pointcut myMethod(Object obj): myClass(obj) &&
+        execution(* *(..)) && !execution(String toString());
+
+    before(Object obj): myConstructor(obj) {
+        traceEntry("" + thisJoinPointStaticPart.getSignature(), obj);
+    }
+    after(Object obj): myConstructor(obj) {
+        traceExit("" + thisJoinPointStaticPart.getSignature(), obj);
+    }
+
+    before(Object obj): myMethod(obj) {
+        traceEntry("" + thisJoinPointStaticPart.getSignature(), obj);
+    }
+    after(Object obj): myMethod(obj) {
+        traceExit("" + thisJoinPointStaticPart.getSignature(), obj);
+    }
+}
+]]></programlisting>
+
+      <para>
+        As you can see, we decided to apply the first design by preserving the
+        interface of the methods <literal>traceEntry</literal> and
+        <literal>traceExit</literal>. But it doesn't matter&mdash;we could as
+        easily have applied the second design (the code in the directory
+        <filename>examples/tracing/version3</filename> has the second design).
+        The point is that the effects of this change in the tracing
+        requirements are limited to the <classname>Trace</classname> aspect
+        class.
+      </para>
+
+      <para>
+        One implementation change worth noticing is the specification of the
+        pointcuts. They now expose the object. To maintain full consistency
+        with the behavior of version 2, we should have included tracing for
+        static methods, by defining another pointcut for static methods and
+        advising it. We leave that as an exercise.
+      </para>
+
+      <para>
+        Moreover, we had to exclude the execution join point of the method
+        <filename>toString</filename> from the <literal>methods</literal>
+        pointcut. The problem here is that <literal>toString</literal> is being
+        called from inside the advice.  Therefore if we trace it, we will end
+        up in an infinite recursion of calls. This is a subtle point, and one
+        that you must be aware when writing advice. If the advice calls back to
+        the objects, there is always the possibility of recursion. Keep that in
+        mind!
+      </para>
+
+      <para>
+        In fact, esimply excluding the execution join point may not be enough,
+        if there are calls to other traced methods within it -- in which case,
+        the restriction should be
+      </para>
+      
+<programlisting><![CDATA[
+&& !cflow(execution(String toString()))
+]]></programlisting>
+
+      <para>
+        excluding both the execution of toString methods and all join points
+        under that execution. 
+      </para>
+
+      <para>
+        In summary, to implement the change in the tracing requirements we had
+        to make a couple of changes in the implementation of the
+        <classname>Trace</classname> aspect class, including changing the
+        specification of the pointcuts. That's only natural. But the
+        implementation changes were limited to this aspect. Without aspects, we
+        would have to change the implementation of every application class.
+      </para>
+
+      <para>
+        Finally, to run this version of tracing, go to the directory
+        <filename>examples</filename> and type:
+      </para>
+
+<programlisting><![CDATA[
+ajc -argfile tracing/tracev3.lst
+]]></programlisting>
+
+      <para>
+        The file tracev3.lst lists the application classes as well as this
+        version of the files <filename>Trace.java</filename> and
+        <filename>TraceMyClasses.java</filename>. To run the program, type
+      </para>
+
+<programlisting><![CDATA[
+java tracing.version3.TraceMyClasses
+]]></programlisting>
+
+      <para>The output should be:</para>
+
+<programlisting><![CDATA[
+  --> tracing.TwoDShape(double, double)
+  <-- tracing.TwoDShape(double, double)
+  --> tracing.Circle(double, double, double)
+  <-- tracing.Circle(double, double, double)
+  --> tracing.TwoDShape(double, double)
+  <-- tracing.TwoDShape(double, double)
+  --> tracing.Circle(double, double, double)
+  <-- tracing.Circle(double, double, double)
+  --> tracing.Circle(double)
+  <-- tracing.Circle(double)
+  --> tracing.TwoDShape(double, double)
+  <-- tracing.TwoDShape(double, double)
+  --> tracing.Square(double, double, double)
+  <-- tracing.Square(double, double, double)
+  --> tracing.Square(double, double)
+  <-- tracing.Square(double, double)
+  --> double tracing.Circle.perimeter()
+  <-- double tracing.Circle.perimeter()
+c1.perimeter() = 12.566370614359172
+  --> double tracing.Circle.area()
+  <-- double tracing.Circle.area()
+c1.area() = 12.566370614359172
+  --> double tracing.Square.perimeter()
+  <-- double tracing.Square.perimeter()
+s1.perimeter() = 4.0
+  --> double tracing.Square.area()
+  <-- double tracing.Square.area()
+s1.area() = 1.0
+  --> double tracing.TwoDShape.distance(TwoDShape)
+    --> double tracing.TwoDShape.getX()
+    <-- double tracing.TwoDShape.getX()
+    --> double tracing.TwoDShape.getY()
+    <-- double tracing.TwoDShape.getY()
+  <-- double tracing.TwoDShape.distance(TwoDShape)
+c2.distance(c1) = 4.242640687119285
+  --> double tracing.TwoDShape.distance(TwoDShape)
+    --> double tracing.TwoDShape.getX()
+    <-- double tracing.TwoDShape.getX()
+    --> double tracing.TwoDShape.getY()
+    <-- double tracing.TwoDShape.getY()
+  <-- double tracing.TwoDShape.distance(TwoDShape)
+s1.distance(c1) = 2.23606797749979
+  --> String tracing.Square.toString()
+    --> String tracing.TwoDShape.toString()
+    <-- String tracing.TwoDShape.toString()
+  <-- String tracing.Square.toString()
+s1.toString(): Square side = 1.0 @ (1.0, 2.0)
+]]></programlisting>
+
+      </sect3>
+    </sect2>
+  </sect1>
+</chapter>
+
+<!--
+Local variables:
+compile-command: "java sax.SAXCount -v progguide.xml && java com.icl.saxon.StyleSheet -w0 progguide.xml progguide.html.xsl"
+fill-column: 79
+sgml-local-ecat-files: "progguide.ced"
+sgml-parent-document:("progguide.xml" "book" "chapter")
+End:
+-->

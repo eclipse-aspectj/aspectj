@@ -1,0 +1,113 @@
+public abstract class FancyHelloWorld extends java.lang.Object:
+  public void <init>():
+                    ALOAD_0     // FancyHelloWorld this   (line 7)
+                    INVOKESPECIAL java.lang.Object.<init> ()V
+    constructor-execution(void FancyHelloWorld.<init>())
+    |               RETURN
+    constructor-execution(void FancyHelloWorld.<init>())
+  end public void <init>()
+
+  public static void main(String[]):
+    method-execution(void FancyHelloWorld.main(java.lang.String[]))
+    | field-get(java.io.PrintStream java.lang.System.out)
+    | |             GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 9)
+    | field-get(java.io.PrintStream java.lang.System.out)
+    |               ASTORE_1
+    | finally -> E1
+    | | catch java.lang.Exception -> E0
+    | | |           ALOAD_1     // java.io.PrintStream out   (line 11)
+    | | |           LDC "bye"
+    | | |           ASTORE 5
+    | | |           ASTORE 6
+    | | | method-call(void java.io.PrintStream.println(java.lang.String))
+    | | | |         ALOAD 6
+    | | | |         INVOKESTATIC Aspect.ajc$perObjectBind (Ljava/lang/Object;)V
+    | | | |         ALOAD 6
+    | | | |         INVOKESTATIC Aspect.hasAspect (Ljava/lang/Object;)Z
+    | | | |         IFEQ L0
+    | | | |         ALOAD 6
+    | | | |         INVOKESTATIC Aspect.aspectOf (Ljava/lang/Object;)LAspect;
+    | | | |         INVOKEVIRTUAL Aspect.ajc_before ()V
+    | | | |     L0: ALOAD 6
+    | | | |         ALOAD 5
+    | | | |         INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+    | | | method-call(void java.io.PrintStream.println(java.lang.String))
+    | | |           GOTO L2
+    | | catch java.lang.Exception -> E0
+    | |         E0: ASTORE_2   (line 12)
+    | |             ALOAD_1     // java.io.PrintStream out   (line 13)
+    | |             ALOAD_2     // java.lang.Exception e
+    | |             ASTORE 7
+    | |             ASTORE 8
+    | | method-call(void java.io.PrintStream.println(java.lang.Object))
+    | | |           ALOAD 8
+    | | |           INVOKESTATIC Aspect.ajc$perObjectBind (Ljava/lang/Object;)V
+    | | |           ALOAD 8
+    | | |           INVOKESTATIC Aspect.hasAspect (Ljava/lang/Object;)Z
+    | | |           IFEQ L1
+    | | |           ALOAD 8
+    | | |           INVOKESTATIC Aspect.aspectOf (Ljava/lang/Object;)LAspect;
+    | | |           INVOKEVIRTUAL Aspect.ajc_before ()V
+    | | |       L1: ALOAD 8
+    | | |           ALOAD 7
+    | | |           INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/Object;)V
+    | | method-call(void java.io.PrintStream.println(java.lang.Object))
+    | finally -> E1
+    |               GOTO L2
+    |           E1: ASTORE 4   (line 14)
+    |               JSR L3
+    |               ALOAD 4
+    |               ATHROW
+    |           L2: JSR L3
+    |               GOTO L5
+    |           L3: ASTORE_3
+    |               ALOAD_1     // java.io.PrintStream out   (line 15)
+    |               LDC "finally"
+    |               ASTORE 9
+    |               ASTORE 10
+    | method-call(void java.io.PrintStream.println(java.lang.String))
+    | |             ALOAD 10
+    | |             INVOKESTATIC Aspect.ajc$perObjectBind (Ljava/lang/Object;)V
+    | |             ALOAD 10
+    | |             INVOKESTATIC Aspect.hasAspect (Ljava/lang/Object;)Z
+    | |             IFEQ L4
+    | |             ALOAD 10
+    | |             INVOKESTATIC Aspect.aspectOf (Ljava/lang/Object;)LAspect;
+    | |             INVOKEVIRTUAL Aspect.ajc_before ()V
+    | |         L4: ALOAD 10
+    | |             ALOAD 9
+    | |             INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+    | method-call(void java.io.PrintStream.println(java.lang.String))
+    |               RET 3   (line 10)
+    |           L5: RETURN   (line 17)
+    method-execution(void FancyHelloWorld.main(java.lang.String[]))
+  end public static void main(String[])
+
+  public static String getName():
+    method-execution(java.lang.String FancyHelloWorld.getName())
+    |               ICONST_0   (line 20)
+    |               ISTORE_0
+    |               ILOAD_0     // int x   (line 21)
+    |               LDC "name"
+    | method-call(int java.lang.String.hashCode())
+    | |             INVOKEVIRTUAL java.lang.String.hashCode ()I
+    | method-call(int java.lang.String.hashCode())
+    |               IADD
+    |               ISTORE_0     // int x
+    |               NEW java.lang.StringBuffer   (line 22)
+    |               DUP
+    |               LDC "name"
+    | constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
+    | |             INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
+    | constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
+    |               ILOAD_0     // int x
+    | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(int))
+    | |             INVOKEVIRTUAL java.lang.StringBuffer.append (I)Ljava/lang/StringBuffer;
+    | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(int))
+    | method-call(java.lang.String java.lang.StringBuffer.toString())
+    | |             INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;
+    | method-call(java.lang.String java.lang.StringBuffer.toString())
+    |               ARETURN
+    method-execution(java.lang.String FancyHelloWorld.getName())
+  end public static String getName()
+end public abstract class FancyHelloWorld

@@ -1,0 +1,70 @@
+<bibliography>
+
+  <title>Bibliography</title>
+
+<!--   <biblioentry> -->
+<!--     <authorgroup> -->
+<!--       <author> -->
+<!-- 	<firstname></firstname> <surname></surname> -->
+<!--       </author> -->
+<!--     </authorgroup> -->
+<!--     <title></title> -->
+<!--     <publisher> -->
+<!--       <publishername></publishername> -->
+<!--       <address><city></city></address> -->
+<!--     </publisher> -->
+<!--     <copyright><year></year></copyright> -->
+<!--   </biblioentry> -->
+
+<!-- The state element doesn't appear in HTML, so overload the city element. -->
+
+  <biblioentry>
+    <authorgroup>
+      <author>
+	<firstname>Doug</firstname> <surname>Lea</surname>
+      </author>
+    </authorgroup>
+    <title>Concurrent Programming in Java, Second Edition</title>
+    <publisher>
+      <publishername>Addison-Wesley</publishername>
+      <address><city>Reading, MA</city></address>
+    </publisher>
+    <copyright><year>1999</year></copyright>
+  </biblioentry>
+
+  <biblioentry>
+    <authorgroup>
+      <author>
+	<firstname>Gregor</firstname> <surname>Kiczales, et al</surname>
+      </author>
+    </authorgroup>
+    <title>An Overview of AspectJ</title>
+    <publisher>
+      <publishername>in Proceedings of the 5th European Conference on Object
+      Oriented Programming (ECOOP), Springer</publishername> 
+      <address><city>Budapest, Hungary</city></address>
+    </publisher>
+    <copyright><year>2001</year></copyright>
+  </biblioentry>
+
+  <biblioentry>
+    <authorgroup>
+      <author>
+	<firstname>Betrand</firstname><surname>Meyer</surname>
+      </author>
+    </authorgroup>
+    <title>Object-Oriented Software Construction, 2/e</title>
+    <publisher>
+      <publishername>Prentice-Hall</publishername>
+      <address><city>New York, NY</city></address>
+    </publisher>
+    <copyright><year>1999</year></copyright>
+  </biblioentry>
+
+</bibliography>
+
+<!-- Local variables: -->
+<!-- fill-column: 79 -->
+<!-- sgml-local-ecat-files: progguide.ced -->
+<!-- sgml-parent-document:("progguide.sgml" "book" "bibliography") -->
+<!-- End: -->

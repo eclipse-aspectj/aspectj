@@ -1,0 +1,22 @@
+public class HelloWorld extends java.lang.Object:
+  public void <init>():
+                    ALOAD_0     // HelloWorld this   (line 5)
+                    INVOKESPECIAL java.lang.Object.<init> ()V
+                    RETURN
+  end public void <init>()
+
+  public static void main(String[]):
+                    GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 8)
+                    LDC "hello world"   (line 9)
+                    INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+                    RETURN   (line 11)
+  end public static void main(String[])
+
+  static void <clinit>():
+                    NEW HelloWorld
+                    DUP
+                    INVOKESPECIAL HelloWorld.<init> ()V
+                    PUTSTATIC HelloWorld.ajc$perSingletonInstance LHelloWorld;
+                    RETURN
+  end static void <clinit>()
+end public class HelloWorld

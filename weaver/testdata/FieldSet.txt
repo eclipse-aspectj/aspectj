@@ -1,0 +1,68 @@
+public class FieldyHelloWorld extends java.lang.Object:
+  public static String str
+  static void <clinit>():
+    staticinitialization(void FieldyHelloWorld.<clinit>())
+    |               LDC "Hello"   (line 3)
+    | field-set(java.lang.String FieldyHelloWorld.str)
+    | |             PUTSTATIC FieldyHelloWorld.str Ljava/lang/String;
+    | field-set(java.lang.String FieldyHelloWorld.str)
+    |               RETURN   (line 1)
+    staticinitialization(void FieldyHelloWorld.<clinit>())
+  end static void <clinit>()
+
+  public void <init>():
+                    ALOAD_0     // FieldyHelloWorld this   (line 1)
+                    INVOKESPECIAL java.lang.Object.<init> ()V
+    constructor-execution(void FieldyHelloWorld.<init>())
+    |               INVOKESTATIC Aspect.ajc_before_constructor_execution ()V
+    |               RETURN
+    constructor-execution(void FieldyHelloWorld.<init>())
+  end public void <init>()
+
+  public static void main(String[]):
+    method-execution(void FieldyHelloWorld.main(java.lang.String[]))
+    |               INVOKESTATIC Aspect.ajc_before_method_execution ()V
+    | field-get(java.lang.String FieldyHelloWorld.str)
+    | |             INVOKESTATIC Aspect.ajc_before_field_get ()V
+    | |             GETSTATIC FieldyHelloWorld.str Ljava/lang/String;   (line 6)
+    | field-get(java.lang.String FieldyHelloWorld.str)
+    | method-call(java.lang.String java.lang.String.valueOf(java.lang.Object))
+    | |             INVOKESTATIC Aspect.ajc_before_method_call ()V
+    | |             INVOKESTATIC java.lang.String.valueOf (Ljava/lang/Object;)Ljava/lang/String;
+    | method-call(java.lang.String java.lang.String.valueOf(java.lang.Object))
+    |               ASTORE_1
+    | constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
+    | |             INVOKESTATIC Aspect.ajc_before_constructor_call ()V
+    | |             NEW java.lang.StringBuffer
+    | |             DUP
+    | |             ALOAD_1
+    | |             INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
+    | constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
+    |               LDC " World"
+    | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.String))
+    | |             INVOKESTATIC Aspect.ajc_before_method_call ()V
+    | |             INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/String;)Ljava/lang/StringBuffer;
+    | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.String))
+    | method-call(java.lang.String java.lang.StringBuffer.toString())
+    | |             INVOKESTATIC Aspect.ajc_before_method_call ()V
+    | |             INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;
+    | method-call(java.lang.String java.lang.StringBuffer.toString())
+    | field-set(java.lang.String FieldyHelloWorld.str)
+    | |             PUTSTATIC FieldyHelloWorld.str Ljava/lang/String;
+    | field-set(java.lang.String FieldyHelloWorld.str)
+    | field-get(java.io.PrintStream java.lang.System.out)
+    | |             INVOKESTATIC Aspect.ajc_before_field_get ()V
+    | |             GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 8)
+    | field-get(java.io.PrintStream java.lang.System.out)
+    | field-get(java.lang.String FieldyHelloWorld.str)
+    | |             INVOKESTATIC Aspect.ajc_before_field_get ()V
+    | |             GETSTATIC FieldyHelloWorld.str Ljava/lang/String;
+    | field-get(java.lang.String FieldyHelloWorld.str)
+    | method-call(void java.io.PrintStream.println(java.lang.String))
+    | |             INVOKESTATIC Aspect.ajc_before_method_call ()V
+    | |             INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+    | method-call(void java.io.PrintStream.println(java.lang.String))
+    |               RETURN   (line 9)
+    method-execution(void FieldyHelloWorld.main(java.lang.String[]))
+  end public static void main(String[])
+end public class FieldyHelloWorld

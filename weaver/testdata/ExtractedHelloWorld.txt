@@ -1,0 +1,52 @@
+public class HelloWorld extends java.lang.Object:
+  public void <init>():
+                    ALOAD_0     // HelloWorld this   (line 5)
+                    INVOKESPECIAL java.lang.Object.<init> ()V
+    constructor-execution(void HelloWorld.<init>())
+    |               ALOAD_0
+    |               INVOKESTATIC HelloWorld.init$_extracted (LHelloWorld;)V
+    |               RETURN
+    constructor-execution(void HelloWorld.<init>())
+  end public void <init>()
+
+  public static void main(String[]):
+                    ALOAD_0
+                    ASTORE_3
+    method-execution(void HelloWorld.main(java.lang.String[]))
+    |               ALOAD_3
+    |               INVOKESTATIC HelloWorld.main_extracted ([Ljava/lang/String;)V
+    |               RETURN
+    method-execution(void HelloWorld.main(java.lang.String[]))
+  end public static void main(String[])
+
+  static final void init$_extracted(HelloWorld):
+                    RETURN   (line 5)
+  end static final void init$_extracted(HelloWorld)
+
+  static final java.io.PrintStream out_extracted():
+                    GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 8)
+                    ARETURN
+  end static final java.io.PrintStream out_extracted()
+
+  static final void println_extracted(java.io.PrintStream, String):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V   (line 9)
+                    RETURN
+  end static final void println_extracted(java.io.PrintStream, String)
+
+  static final void main_extracted(String[]):
+    field-get(java.io.PrintStream java.lang.System.out)
+    |               INVOKESTATIC HelloWorld.out_extracted ()Ljava/io/PrintStream;
+    field-get(java.io.PrintStream java.lang.System.out)
+                    LDC "hello world"   (line 9)
+                    ASTORE_1
+                    ASTORE_3
+    method-call(void java.io.PrintStream.println(java.lang.String))
+    |               ALOAD_3
+    |               ALOAD_1
+    |               INVOKESTATIC HelloWorld.println_extracted (Ljava/io/PrintStream;Ljava/lang/String;)V
+    method-call(void java.io.PrintStream.println(java.lang.String))
+                    RETURN   (line 11)
+  end static final void main_extracted(String[])
+end public class HelloWorld

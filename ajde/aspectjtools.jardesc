@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jardesc>
+    <jar path="C:/Dev/eclipse/org.aspectj.ajde/aspectjtools.jar"/>
+    <options overwrite="true" compress="true" exportErrors="false"
+        exportWarnings="true" saveDescription="true"
+        descriptionLocation="/ajde/aspectjtools.jardesc"
+        useSourceFolders="false" buildIfNeeded="true"/>
+    <manifest manifestVersion="1.0" usesManifest="true"
+        reuseManifest="true" saveManifest="true"
+        generateManifest="false" manifestLocation="/ajde/aspectjtools.mf">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="true">
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util.gui"/>
+        <javaElement handleIdentifier="=runtime/src&lt;org.aspectj.lang"/>
+        <javaElement handleIdentifier="=bcweaver/src&lt;org.aspectj.weaver.patterns"/>
+        <javaElement handleIdentifier="=runtime/src&lt;org.aspectj.lang.reflect"/>
+        <javaElement handleIdentifier="=runtime/src&lt;org.aspectj.runtime"/>
+        <javaElement handleIdentifier="=runtime/src&lt;org.aspectj.runtime.reflect"/>
+        <javaElement handleIdentifier="=org.eclipse.jdt.core/dom"/>
+        <javaElement handleIdentifier="=org.eclipse.jdt.core/formatter"/>
+        <javaElement handleIdentifier="=org.eclipse.jdt.core/batch"/>
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util{NonLocalExit.java"/>
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util{IntList.java"/>
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util{FuzzyBoolean.java"/>
+        <javaElement handleIdentifier="=runtime/src&lt;org.aspectj.runtime.internal"/>
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util{StreamPrintWriter.java"/>
+        <javaElement handleIdentifier="=org.eclipse.jdt.core/model"/>
+        <javaElement handleIdentifier="=org.aspectj.ajdt.core/src&lt;org.aspectj.ajdt.internal.compiler.lookup"/>
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util{LineReader.java"/>
+        <javaElement handleIdentifier="=org.aspectj.ajdt.core/src&lt;org.aspectj.workbench.resources"/>
+        <javaElement handleIdentifier="=org.eclipse.jdt.core/search"/>
+        <javaElement handleIdentifier="=org.aspectj.ajdt.core/src&lt;org.aspectj.ajdt.internal.compiler.parser"/>
+        <javaElement handleIdentifier="=org.eclipse.jdt.core/compiler"/>
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util{ConfigParser.java"/>
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util{ArgumentScanner.java"/>
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util{LineNumberTableMapper.java"/>
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util{InvertableSet.java"/>
+        <javaElement handleIdentifier="=org.aspectj.ajdt.core/src&lt;org.aspectj.ajdt.internal.compiler.ast"/>
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util{StackMap.java"/>
+        <javaElement handleIdentifier="=bcweaver/src&lt;org.aspectj.weaver.ast"/>
+        <javaElement handleIdentifier="=org.eclipse.jdt.core/codeassist"/>
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util{Reflection.java"/>
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util{PartialOrder.java"/>
+        <javaElement handleIdentifier="=org.aspectj.ajdt.core/src&lt;org.aspectj.ajdt.ajc"/>
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util{FileUtil.java"/>
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util{ConfigFileUtil.java"/>
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util{JavaStrings.java"/>
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util{CollectionUtil.java"/>
+        <javaElement handleIdentifier="=bcweaver/src&lt;org.aspectj.weaver.bcel"/>
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util{UnicodeEscapeWriter.java"/>
+        <javaElement handleIdentifier="=org.aspectj.ajdt.core/src&lt;org.aspectj.ajdt.internal.compiler.problem"/>
+        <javaElement handleIdentifier="=org.aspectj.ajdt.core/src&lt;org.aspectj.tools.ajc"/>
+        <javaElement handleIdentifier="=org.aspectj.ajdt.core/src&lt;org.aspectj.ajdt.internal.compiler"/>
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util{TypeSafeEnum.java"/>
+        <javaElement handleIdentifier="=org.eclipse.jdt.core/eval"/>
+        <javaElement handleIdentifier="=bcweaver/src&lt;org.aspectj.weaver"/>
+        <javaElement handleIdentifier="=org.aspectj.ajdt.core/src&lt;org.aspectj.ajdt.compiler"/>
+        <javaElement handleIdentifier="=org.aspectj.ajdt.core/src&lt;org.aspectj.ajdt.internal.core.builder"/>
+        <javaElement handleIdentifier="=util/src&lt;org.aspectj.util{LangUtil.java"/>
+    </selectedElements>
+</jardesc>

@@ -1,0 +1,34 @@
+public class HelloWorld extends java.lang.Object:
+  public void <init>():
+                    ALOAD_0     // HelloWorld this   (line 5)
+                    INVOKESPECIAL java.lang.Object.<init> ()V
+    constructor-execution(void HelloWorld.<init>())
+    |               RETURN
+    constructor-execution(void HelloWorld.<init>())
+  end public void <init>()
+
+  public static void main(String[]):
+    method-execution(void HelloWorld.main(java.lang.String[]))
+    | field-get(java.io.PrintStream java.lang.System.out)
+    | |             GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 8)
+    | field-get(java.io.PrintStream java.lang.System.out)
+    |               LDC "hello world"   (line 9)
+    |               ASTORE_1
+    |               ASTORE_2
+    | method-call(void java.io.PrintStream.println(java.lang.String))
+    | |             ALOAD_2
+    | |             INVOKESTATIC Aspect.ajc$perObjectBind (Ljava/lang/Object;)V
+    | |             ALOAD_2
+    | |             INVOKESTATIC Aspect.hasAspect (Ljava/lang/Object;)Z
+    | |             IFEQ L0
+    | |             ALOAD_2
+    | |             INVOKESTATIC Aspect.aspectOf (Ljava/lang/Object;)LAspect;
+    | |             INVOKEVIRTUAL Aspect.ajc_before ()V
+    | |         L0: ALOAD_2
+    | |             ALOAD_1
+    | |             INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+    | method-call(void java.io.PrintStream.println(java.lang.String))
+    |               RETURN   (line 11)
+    method-execution(void HelloWorld.main(java.lang.String[]))
+  end public static void main(String[])
+end public class HelloWorld

@@ -1,0 +1,658 @@
+<appendix id="quickreference" xreflabel="AspectJ Quick Reference">
+
+  <title>AspectJ Quick Reference</title>
+  <indexterm><primary>AspectJ</primary><secondary>semantics</secondary>
+    <tertiary>quick reference</tertiary>
+  </indexterm>
+
+    <sect1>
+      <title>Pointcut Designators</title>
+
+      <table frame="all" id="qrpointcutdesignators">
+        <title>Pointcut Designators</title>
+
+        <tgroup cols="2" align="left">
+          <colspec colname="c1"/>
+            <colspec colname="c2"/>
+        <spanspec spanname="hspan" namest="c1" nameend="c2" align="left"/>
+
+          <tbody valign="middle">
+
+            <row>
+              <entry spanname="hspan">
+                <emphasis role="bold">Methods and Constructors</emphasis>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>call(<replaceable>Signature</replaceable>)</literal>
+              </entry>
+              <entry>
+                Method or constructor call join points when the signature
+                matches <replaceable>Signature</replaceable>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>execution(<replaceable>Signature</replaceable>)</literal>
+              </entry>
+              <entry>
+                Method or constructor execution join points when the
+                signature matches
+                <replaceable>Signature</replaceable>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>initialization(<replaceable>Signature</replaceable>)</literal>
+              </entry>
+              <entry>
+                Object initialization join point when the first
+                constructor called in the type matches
+                <replaceable>Signature</replaceable>
+              </entry>
+            </row>
+
+            <row>
+              <entry spanname="hspan">
+                <emphasis role="bold">Exception Handlers</emphasis>
+              </entry>
+            </row>
+
+            <row rowsep="1">
+              <entry>
+                <literal>handler(<replaceable>TypePattern</replaceable>)</literal>
+              </entry>
+              <entry>
+                Exception handler execution join points when
+                try handlers for the throwable types in
+                <replaceable>TypePattern</replaceable> are executed.
+                The exception object can be accessed with an
+                <literal>args</literal> pointcut.
+              </entry>
+            </row>
+
+            <row>
+              <entry spanname="hspan">
+                <emphasis role="bold">Fields</emphasis>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>get(<replaceable>Signature</replaceable>)</literal>
+              </entry>
+              <entry>
+                Field reference join points when the field matches
+                <replaceable>Signature</replaceable>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>set(<replaceable>Signature</replaceable>)</literal>
+              </entry>
+              <entry>
+                Field assignment join points when the field matches
+                <replaceable>Signature</replaceable>. The new value
+                can be accessed with an <literal>args</literal>
+                pointcut.
+              </entry>
+            </row>
+
+            <row>
+              <entry spanname="hspan">
+                <emphasis role="bold">Static Initializers</emphasis>
+              </entry>
+            </row>
+
+            <row rowsep="1">
+              <entry>
+                <literal>staticinitialization(<replaceable>TypePattern</replaceable>)</literal>
+              </entry>
+              <entry>
+                Static initializer execution join points for the types in
+                <replaceable>TypePattern</replaceable>.
+              </entry>
+            </row>
+
+            <row>
+              <entry spanname="hspan">
+                <emphasis role="bold">Objects</emphasis>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>this(<replaceable>TypePattern</replaceable>)</literal>
+              </entry>
+              <entry>
+                Join points when the currently executing object is an
+                instance of a type in <replaceable>TypePattern</replaceable>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>target(<replaceable>TypePattern</replaceable>)</literal>
+              </entry>
+              <entry>
+                Join points when the target object is an instance
+                of a type in <replaceable>TypePattern</replaceable>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>args(<replaceable>TypePattern</replaceable>, ...)</literal>
+              </entry>
+              <entry>
+                Join points when the argument objects are instances of
+                the <replaceable>TypePattern</replaceable>s
+              </entry>
+            </row>
+
+<!--
+            <row rowsep="1">
+              <entry>
+                <literal>hasaspect(<replaceable>TypePattern</replaceable>)</literal>
+              </entry>
+              <entry>
+                Join points where an aspect instance of a type in
+                <replaceable>TypePattern</replaceable> is associated
+                with the join point
+              </entry>
+            </row>
+-->
+            <row>
+              <entry spanname="hspan">
+                <emphasis role="bold">Lexical Extents</emphasis>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>within(<replaceable>TypePattern</replaceable>)</literal>
+              </entry>
+              <entry>
+                Join points when the code executing is defined in the
+                types in <replaceable>TypePattern</replaceable>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>withincode(<replaceable>Signature</replaceable>)</literal>
+              </entry>
+              <entry>
+                Join points when the code executing is defined in the
+                method or constructor with signature
+                <replaceable>Signature</replaceable>
+              </entry>
+            </row>
+
+            <row>
+              <entry spanname="hspan">
+                <emphasis role="bold">Control Flow</emphasis>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>cflow(<replaceable>Pointcut</replaceable>)</literal>
+              </entry>
+              <entry>
+                Join points in the control flow of the join points
+                specified by <replaceable>Pointcut</replaceable>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>cflowbelow(<replaceable>Pointcut</replaceable>)</literal>
+              </entry>
+              <entry>
+                Join points in the control flow below the join points
+                specified by <replaceable>Pointcut</replaceable>
+              </entry>
+            </row>
+
+            <row>
+              <entry spanname="hspan">
+                <emphasis role="bold">Conditional</emphasis>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>if(<replaceable>Expression</replaceable>)</literal>
+              </entry>
+              <entry>
+                Join points when the boolean 
+                <replaceable>Expression</replaceable> evaluates
+                to <literal>true</literal>
+              </entry>
+            </row>
+
+            <row>
+              <entry spanname="hspan">
+                <emphasis role="bold">Combination</emphasis>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>! <replaceable>Pointcut</replaceable></literal>
+              </entry>
+              <entry>
+                Join points that are not picked out by
+                <replaceable>Pointcut</replaceable>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal><replaceable>Pointcut0</replaceable> <![CDATA[&&]]> <replaceable>Pointcut1</replaceable></literal>
+              </entry>
+              <entry>
+                Join points that are picked out by both
+                <replaceable>Pointcut0</replaceable> and
+                <replaceable>Pointcut1</replaceable>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal><replaceable>Pointcut0</replaceable> || <replaceable>Pointcut1</replaceable></literal>
+              </entry>
+              <entry>
+                Join points that are picked out by either
+                <replaceable>Pointcut0</replaceable> or
+                <replaceable>Pointcut1</replaceable>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>( <replaceable>Pointcut</replaceable> )</literal>
+              </entry>
+              <entry>
+                Join points that are picked out by the parenthesized
+                <replaceable>Pointcut</replaceable>
+              </entry>
+            </row>
+
+          </tbody>
+        </tgroup>
+
+      </table>
+
+    </sect1>
+
+    <sect1>
+      <title>Type Patterns</title>
+      <para>
+      </para>
+
+      <table frame="all" id="qrtypenamepatterns">
+        <title>Type Name Patterns</title>
+        <tgroup cols="2" colsep="1" rowsep="0">
+          <tbody>
+            <row>
+              <entry><literal>*</literal> alone</entry>
+              <entry>all types</entry>
+            </row>
+            <row>
+              <entry><literal>*</literal> in an identifier</entry>
+              <entry>any sequence of characters, not including "."</entry>
+            </row>
+            <row>
+              <entry><literal>..</literal> in an identifier</entry>
+              <entry>any sequence of characters starting and ending
+              with "."</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <para>
+        The + wildcard can be appended to a type name pattern to
+        indicate all subtypes.
+      </para>
+
+      <para>
+        Any number of []s can be put on a type name or subtype pattern
+        to indicate array types.
+      </para>
+
+      <table frame="all" id="qrtypepatterns">
+        <title>Type Patterns</title>
+        <tgroup cols="2" colsep="1" rowsep="0">
+          <tbody>
+            <row>
+              <entry><replaceable>TypeNamePattern</replaceable></entry>
+              <entry>all types in <replaceable>TypeNamePattern</replaceable></entry>
+            </row>
+            <row>
+              <entry><replaceable>SubtypePattern</replaceable></entry>
+              <entry>all types in <replaceable>SubtypePattern</replaceable>, a
+              pattern with a +. </entry>
+            </row>
+            <row>
+              <entry><replaceable>ArrayTypePattern</replaceable></entry>
+              <entry>all types in <replaceable>ArrayTypePattern</replaceable>,
+              a pattern with one or more []s. </entry>
+            </row>
+            <row>
+              <entry><literal>!<replaceable>TypePattern</replaceable></literal></entry>
+              <entry>all types not in <replaceable>TypePattern</replaceable></entry>
+            </row>
+            <row>
+              <entry><literal><replaceable>TypePattern0</replaceable>
+              <![CDATA[&&]]> <replaceable>TypePattern1</replaceable></literal></entry>
+              <entry>all types in both
+              <replaceable>TypePattern0</replaceable> and <replaceable>TypePattern1</replaceable></entry>
+            </row>
+            <row>
+              <entry><literal><replaceable>TypePattern0</replaceable> || <replaceable>TypePattern1</replaceable></literal></entry>
+              <entry>all types in either
+              <replaceable>TypePattern0</replaceable> or <replaceable>TypePattern1</replaceable></entry>
+            </row>
+            <row>
+              <entry><literal>( <replaceable>TypePattern</replaceable> )</literal></entry>
+              <entry>all types in <replaceable>TypePattern</replaceable></entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+    </sect1>
+
+    <sect1>
+      <title>Advice</title>
+
+      <para></para>
+      <table frame="all" id="qradvice">
+        <title>Advice</title>
+        <tgroup cols="2" colsep="1" rowsep="0">
+          <tbody>
+
+            <row>
+        <entry>
+          <literal>before(<replaceable>Formals</replaceable>) : </literal>
+        </entry>
+        <entry>
+          Run before the join point.
+        </entry>
+            </row>
+
+
+            <row>
+        <entry>
+          <literal>after(<replaceable>Formals</replaceable>) returning
+          [ (<replaceable>Formal</replaceable>) ] : </literal>
+        </entry>
+        <entry>
+          Run after the join point if it returns normally.  The
+          optional formal gives access to the returned value.
+        </entry>
+            </row>
+
+            <row>
+        <entry>
+          <literal>after(<replaceable>Formals</replaceable>) throwing [
+          (<replaceable>Formal</replaceable>) ] : </literal>
+        </entry>
+        <entry>
+          Run after the join point if it throws an exception.  The
+          optional formal gives access to the
+          <literal>Throwable</literal> exception value.
+        </entry>
+            </row>
+
+            <row>
+        <entry>
+          <literal>after(<replaceable>Formals</replaceable>) : </literal>
+        </entry>
+        <entry>
+          Run after the join point both when it returns normally and
+          when it throws an exception.
+        </entry>
+            </row>
+
+            <row>
+        <entry>
+          <literal><replaceable>Type</replaceable>
+          around(<replaceable>Formals</replaceable>) [ throws
+          <replaceable>TypeList</replaceable> ] :</literal>
+        </entry>
+        <entry>
+          Run instead of the join point.  The join point can be
+          executed by calling <literal>proceed</literal>.
+        </entry>
+            </row>
+
+          </tbody>
+        </tgroup>
+      </table>
+    </sect1>
+
+    <sect1>
+      <title>Static Crosscutting</title>
+
+      <para></para>
+
+      <table frame="all" id="qrintroduction">
+        <title>Introduction</title>
+
+        <tgroup cols="2" colsep="1" rowsep="0">
+
+          <tbody>
+
+            <row>
+              <entry>
+                <replaceable>Modifiers Type TypePattern.Id(Formals) { Body }</replaceable>
+              </entry>
+              <entry>
+                Defines a method on the types in <replaceable>TypePattern</replaceable>.
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>abstract <replaceable>Modifiers Type TypePattern.Id(Formals)</replaceable>;</literal>
+              </entry>
+              <entry>
+                Defines an abstract method on the types in <replaceable>TypePattern</replaceable>.
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal><replaceable>Modifiers TypePattern</replaceable>.new<replaceable>(Formals) { Body }</replaceable></literal>
+              </entry>
+              <entry>
+                Defines a a constructor on the types in <replaceable>TypePattern</replaceable>.
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <replaceable>Modifiers Type TypePattern.Id [ = Expression ];</replaceable>
+              </entry>
+              <entry>
+                Defines a field on the types in <replaceable>TypePattern</replaceable>.
+              </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <table frame="all" id="qrotherdeclarations">
+        <title>Other declarations</title>
+
+        <tgroup cols="2" colsep="1" rowsep="0">
+
+          <tbody>
+
+            <row>
+              <entry>
+                <literal>declare parents: <replaceable>TypePattern</replaceable> extends <replaceable>TypeList</replaceable>;</literal>
+              </entry>
+              <entry>
+                Declares that the types in <replaceable>TypePattern</replaceable> extend the types of <replaceable>TypeList</replaceable>.
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>declare parents: <replaceable>TypePattern</replaceable> implements <replaceable>TypeList</replaceable>;</literal>
+              </entry>
+              <entry>
+                Declares that the types in <replaceable>TypePattern</replaceable> implement the types of <replaceable>TypeList</replaceable>.
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>declare warning: <replaceable>Pointcut</replaceable>: <replaceable>String</replaceable>;</literal>
+              </entry>
+              <entry>
+                Declares that if any of the join points in
+                <replaceable>Pointcut</replaceable> possibly exist in
+                the program, the compiler should emit a warning of
+                <replaceable>String</replaceable>.
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>declare error: <replaceable>Pointcut</replaceable>: <replaceable>String</replaceable>;</literal>
+              </entry>
+              <entry>
+                Declares that if any of the join points in
+                <replaceable>Pointcut</replaceable> possibly exist in
+                the program, the compiler should emit an error of
+                <replaceable>String</replaceable>.
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <literal>declare soft:
+                <replaceable>TypePattern</replaceable>:
+                <replaceable>Pointcut</replaceable>; </literal>
+              </entry>
+              <entry>
+                Declares that any exception of a type in
+                <replaceable>TypePattern</replaceable> that gets
+                thrown at any join point picked out by
+                <replaceable>Pointcut</replaceable> will be wrapped in
+                <literal>org.aspectj.lang.SoftException</literal>.
+              </entry>
+            </row>
+
+          </tbody>
+        </tgroup>
+      </table>
+
+    </sect1>
+
+    <sect1>
+      <title>Aspect Associations</title>
+      <para>
+      </para>
+
+      <table frame="all" id="qrassociations">
+        <title>Associations</title>
+        <tgroup cols="3" align="left" colsep="1" rowsep="1">
+          <thead>
+            <row>
+        <entry>modifier</entry>
+        <entry>Description</entry>
+        <entry>Accessor</entry>
+            </row>
+          </thead>
+
+          <tbody>
+
+            <row>
+        <entry>
+          [ <literal>issingleton</literal> ]
+        </entry>
+        <entry>
+          One instance of the aspect is made.  This is
+          the default.
+        </entry>
+        <entry>
+          <literal>aspectOf()</literal> at all join points
+        </entry>
+            </row>
+
+            <row>
+        <entry>
+          <literal>perthis(<replaceable>Pointcut</replaceable>)</literal>
+        </entry>
+        <entry>
+          An instance is associated with each object that is the
+          currently executing object at any join point in
+          <replaceable>Pointcut</replaceable>.
+        </entry>
+        <entry>
+          <literal>aspectOf(Object)</literal> at all join points</entry>
+            </row>
+
+            <row>
+        <entry>
+          <literal>pertarget(<replaceable>Pointcut</replaceable>)</literal>
+        </entry>
+        <entry>
+          An instance is associated with each object that is the
+          target object at any join point in
+          <replaceable>Pointcut</replaceable>.
+        </entry>
+        <entry>
+          <literal>aspectOf(Object)</literal> at all join points</entry>
+            </row>
+
+            <row>
+        <entry>
+          <literal>percflow(<replaceable>Pointcut</replaceable>)</literal>
+        </entry>
+        <entry>
+          The aspect is defined for each entrance to the control flow of
+          the join points defined by <replaceable>Pointcut</replaceable>. </entry>
+        <entry>
+          <literal>aspectOf()</literal> at join points in
+          <literal>cflow(<replaceable>Pointcut</replaceable>)</literal>
+        </entry>
+            </row>
+
+            <row>
+        <entry>
+          <literal>percflowbelow(<replaceable>Pointcut</replaceable>)</literal>
+        </entry>
+        <entry>
+          The aspect is defined for each entrance to the control flow
+          below the join points defined by <replaceable>Pointcut</replaceable>.
+        </entry>
+        <entry>
+          <literal>aspectOf()</literal> at join points in
+          <literal>cflowbelow(<replaceable>Pointcut</replaceable>)</literal>
+        </entry>
+            </row>
+          </tbody>
+
+        </tgroup>
+      </table>
+    </sect1>
+</appendix>
+
+<!-- Local variables: -->
+<!-- fill-column: 79 -->
+<!-- sgml-local-ecat-files: progguide.ced -->
+<!-- sgml-parent-document:("progguide.sgml" "book" "appendix") -->
+<!-- End: -->

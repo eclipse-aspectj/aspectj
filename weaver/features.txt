@@ -1,0 +1,305 @@
+AspectJ 1.1 Features
+------------------------------------------------------------
+
+
+------------------------------
+About this document
+
+This document contains information about the proposed features of
+AspectJ 1.1.  It assumes as a baseline that AspectJ 1.1 includes all
+the features of AspectJ 1.0.6.  Any feature difference, especially
+incompatible changes, should be noted.  It is organized by DOWNLOAD.
+Inside the tools download there are sections per feature. 
+
+Feel free to just stick shorthand notes at the end of this file, and
+move them up to the New Features (or other) section as we want.
+
+
+------------------------------
+OPEN ISSUES
+
+* -sourceroots/-injars matrix completeness
+
+* do we release ant tasks in beta?
+
+* do we call beta alpha or alpha beta?
+
+------------------------------
+DOWNLOAD: Tools
+
+General deliverables:  Two licence files.  A readme.  Possibly a changes.
+
+---- runtime
+
+Deliverable:  aspectjrt.jar
+
+Changes:
+
+* RUNTIME_LICENCE:  AspectjRT.jar now has a BSD-style licence [NOT BETA]
+
+* JOINPOINT_NAMES: Added constant fields holding constant names for
+  the join points.
+  
+* NO_COLUMN_NUMBER: thisJoinPoint.getSourceLocation().getColumn()
+  is incompatible with bytecode weaving and can not be supported.
+  Do we want to remove the method or make it return -1?
+  
+* NOT_10_BINARY_COMPATIBLE: Some modifications to classes in internal
+  packages means that code built with 1.1 won't run on the 1.0 version
+  of aspectjrt.jar.
+  [XXX this has always been true and sounds more scary than it is.
+   The readme/docs do/should always say that you need to compile and
+   run with at least the same version of the runtime classes as 
+   the compiler]
+
+---- tools
+
+Deliverable: aspectjtools.jar
+
+* Single jar containing .class files for all components listed below.
+  This will contain code under both the CPL and the MPL.
+
+---- ajc
+
+Deliverable:  ajc, ajc.bat
+
+Changes: 
+
+-- new features 
+* NO_SOURCE: -source/-usejavac options are not supported [INCOMPATIBLE]  
+
+* SOURCEROOT: -sourceroots option indicates that all source files in
+  a particular directory tree should be compiled [NEW]
+  This option is the only way that sourcefiles can currently be
+  specified for incremental compilation on the command-line.
+
+* BYTECODE_WEAVING: supporting bytecode-containing jar files as input
+  for the compiler.  [NEW]
+  * Command-line: -injars option
+  Not supported in incremental mode.
+  * Eclipse: not supported [BETA]
+  This has a ripple effect on "code the compiler controls" issues.
+  There are obfustication issues that should be discussed in the readme
+
+* OUTJAR: supports generating a single .jar file with the results of a
+  compilation, rather than separate .class files. This should be
+  most useful when weaving into existing .jar files.  The resulting jar 
+  file has no meta-information, just classes.  [question: compression level?]
+  [NEW]
+
+* BINARY_ASPECTS: Aspects may be compiled to a standalone bytecode
+  form, and later be used in a linking/compiling phase to affect join
+  points.  [NEW]
+  This will only be partially working in beta1:  The front-end is not
+  reading the binary aspects. [BETA]
+
+* INCREMENTAL: incremental compilation [NEW] 
+  * Command-line: interface is using -sourceroots and typing <enter>
+    for an incremental recompile.  Better interfaces are possible
+    in the future.
+  * Eclipse: invisible
+  * JBuilder/Netbeans:  ??
+  * Emacs:  possibly using new command-line interface?
+  * Ant: unsupported in BETA
+
+* NORMAL_OPTIONS: now supporting many javac options ajc failed to in 1.0:  
+  essentially those supported in the ECLIPSE_OPTIONS [NEW]
+
+* ECLIPSE_OPTIONS: The eclipse compiler provides a large number of
+  options for controlling its behavior, i.e. -warn:unusedLocals.  All
+  of these options may be passed to the command-line ajc compiler.  Mik should 
+  be bugged to get full list and description of the options [NEW]
+
+
+-- features not supported yet
+
+* NO_WEAVE: An option with unknown name that generates code but does 
+  no back-end weaving [NO BETA]
+
+* SOURCE_INFORMATION: Source file information in error messages may be
+  either better or worse (depending on how well we do our eclipse
+  integration, this may not happen). [INCOMPATIBLE, MINIMAL]
+  JSR 45 information is not created/maintained. [BETA]  
+
+* NO_AROUND_OPTIMIZATION: -XinlineAroundClosure not implemented.
+  [INCOMPATIBLE]  No inlining at all [BETA].
+
+* NO_CALLEE_SIDE_CALL:  Not implemented [BETA]
+
+* OTHER_X_OPTIONS: XaddSafePrefix (not used anymore, but we make some
+                   weak guarantees about this), XserializableAspects [see below]
+                   XTargetNearSource [see below]
+                   
+
+-- features no longer supported
+* NO_SOURCE: -preprocess/-usejavac/-nocomment/-workingdir options are 
+  not supported [INCOMPATIBLE]  
+
+* NO_STRICT_LENIENT:  The -strict/-lenient flags are no longer
+  supported, since we no longer own the compiler [INCOMPATIBLE, MINIMAL]
+  
+
+* NO_PORTING: The -porting flag is no longer supported.
+
+---- Ajdb
+
+* NO_AJDB: Ajdb is no longer supported, shipped, talked about,
+  seen, or believed to exist.  We write a nice couple of paragraphs
+  about JSR 45. [INCOMPATIBLE] 
+
+
+---- Ajdoc
+
+* NO_AJDOC: Ajdoc is not provided [BETA, possibly but not certainly
+  FINAL as well]
+
+---- ajbrowser
+
+* NO_CROSSCUTTING_STRUCTURE:  Crosscutting structure is not shown
+  [BETA_ONLY]
+
+
+------------------------------
+DOWNLOADS: AJDE for Jbuilder, AJDE for Netbeans, AJDE for Emacs
+
+Deliverables:  3 downloads, same as 1.0.6 (Mik, expand?)
+
+Changes:
+
+* NO_AJDE_INCREMENTAL_COMPILATION: the 1.1 compiler will only 
+  work in batch mode [BETA_ONLY]
+
+* NO_TARGET_NEAR_SOURCE:  -XTargetNearSource option is not supported in
+  the 1.1 command-line compiler. [INCOMPATIBLE]
+
+
+------------------------------
+DOWNLOAD: ajc ant tasks
+
+Deliverables:  1 download, same as 1.0.6
+
+Changes: 
+  - adding experimental taskdef based on DefaultCompilerAdapter
+  - updated taskdef to use new compiler interface
+  - neither support incremental mode [XXX leave ant running, touch tag file?]
+
+------------------------------
+DOWNLOAD: Source distributions
+
+Tools Source: completely revamped, includes license for org.eclipse package
+AJDE-JBuilder Source: basically the same, if aspectjtools.jar is one jar
+AJDE-Netbeans Source: basically the same, if aspectjtools.jar is one jar
+
+------------------------------
+DOWNLOAD: Documentation
+
+Deliverable: 1 or 0 downloads.  Main deliverable is fleshed-out
+version of this document with outgoing links to bare or updated 1.0.6
+documentation.
+
+Changes (language changes):
+
+* THROWS_PATTERN: Typename patterns are allowed in place of typenames 
+  in throws clauses.  This is 
+  http://aspectj.org/home/hugunin/features11.html#throws-patterns [NEW]
+
+* CALLEE_SIDE_CALLS: 1.1 may pick out different callee-side call join
+  points than 1.0.6 on the same code.  [INCOMPATIBLE] 
+
+* SINGLE_INTERCLASS_TARGET: 1.1 does not allow inter-class
+  declarations to be made with a TypePattern as target.  (workaround
+  available, defense can be presented if asked).  [INCOMPATIBLE]
+
+* SINGLE_TYPENAME_PATTERN_TARGET: A simple type-name pattern with no
+  wildcard can match no more than one type.  The type that it matches
+  is determined at compile-time.  [INCOMPATIBLE]  
+  [THIS IS NO LONGER THE CASE, SO IT IS NOT DOCUMENTED AS SUCH]
+
+* ASPECT_PRECEDENCE: Dominates is replaced/mirrored with alternate
+  declare-space specification, or it's not.  (??) [INCOMPATIBLE, or
+  NEW, or NOTHING]
+
+* UNAVAILABLE_JOIN_POINTS: [INCOMPATIBLE, MINIMAL]
+  * Initializer Execution join points no longer exist.  The
+    information needed to pick them out doesn't exist in bytecode.
+    there was not kinded pcd for it, and we're not sure anyone will
+    actually notice the difference.
+  * Others? (??)
+  
+* CONSTRUCTOR_EXECUTION_IS_BIGGER: constructor execution join points
+  (of constructors which call super) include the code for instance
+  initialization (the code inside the old initializer execution join
+  point).  Again, the information needed to NOT include this code
+  isn't available in bytecode.  This could be a big deal... before
+  advice on many constructor execution join points will run before the
+  dynamic initializers run. [INCOMPATIBLE]
+
+* NEW_PCDS: Kinded PCDs are available for every kind of join
+  point. This is 
+  http://aspectj.org/home/hugunin/features11.html#kinded-pcds [NEW]
+  * adviceExecution (spelling?)
+  * preInitialization (spelling?)
+
+* WITHIN_MEMBER_TYPES: Within of a member type (NOT a package-level
+  type) such as within(pkg.Type.MemberType) is not guaranteed to pick
+  out code inside anonymous and local types.  (JLS 13.1).  If anyone
+  cares, we can do tests on jikes/javac/eclipse to see if we actually
+  do, but this is hopefully a completely minimal issue [INCOMPATIBLE,
+  MINIMAL].  It is unclear if this is a fundamental limitation of 
+  bytecode weaving or if it can be fixed with further work.
+
+
+Documentation caveats:
+
+- example code not updated [XXX?]
+- quick ref
+- 
+
+------------------------------
+Future work
+
+There are a number of changes that clearly would be either useful or
+easy (hopefully things that are both useful and easy are already
+done), but we don't plan to actually ship them in 1.1.  
+
+* HANDLER_EXCLUDES_NON_EXCEPTIONS: (PR826)
+
+* SUPERTYPES_TYPE_PATTERN:
+
+* DYNAMIC_CLASSLOADER_WEAVER:
+
+* SOURCE_WEAVING:
+
+------------------------------
+Shorthand notes
+
+- no optimizations for per* aspects
+
+- declare soft unimplemented [this is on the table for not doing for beta]
+
+- privileged unimplemented [this is on the table for not doing for beta]
+
+- declare dominates (?) [decided before beta]
+
+- declare error/warning source locations are weaker than just missing column [BETA]
+
+
+- a note for the dangerous bends section of the programming guide
+
+  Base.m() throws IOException
+  Derived.m() [no throws]
+  
+  call(void Base.m() throws IOException)
+  --> this doesn't match new Derived().m(), but will without the throws
+  
+  
+- The status of the -XserializableAspects flag is iceberg-like.
+
+- Don't implement intra-type static members onto interfaces
+
+- Don't handle introduced fields with constant values
+
+- no crosscuting structure means no inline annotations w/ -emacssym, but speedbar still
+  shows declaration tree
+  
+

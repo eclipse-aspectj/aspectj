@@ -1,0 +1,13 @@
+ class Hello extends java.lang.Object:
+  void <init>():
+                    ALOAD_0     // Hello this
+                    INVOKESPECIAL java.lang.Object.<init> ()V
+                    RETURN
+  end void <init>()
+
+  public static void main(String[]):
+                    GETSTATIC A.ajc$perSingletonInstance LA;
+                    INVOKEVIRTUAL A.ajc_before_1 ()V
+                    RETURN
+  end public static void main(String[])
+end  class Hello

@@ -1,0 +1,9 @@
+- setLeadingComment is a problem. The parser doesn't store the comment
+
+TODO:
+	
+getDeclaredModifiers()
+
+check that we filter out synthetic methods, fields and parameters.
+
+SimpleType

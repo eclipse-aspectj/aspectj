@@ -1,0 +1,73 @@
+public class HelloWorld extends java.lang.Object:
+  public void <init>():
+                    ALOAD_0     // HelloWorld this   (line 5)
+                    INVOKESPECIAL java.lang.Object.<init> ()V
+    constructor-execution(void HelloWorld.<init>())
+    |               RETURN
+    constructor-execution(void HelloWorld.<init>())
+  end public void <init>()
+
+  public static void main(String[]):
+    method-execution(void HelloWorld.main(java.lang.String[]))
+    | field-get(java.io.PrintStream java.lang.System.out)
+    | |             GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 8)
+    | field-get(java.io.PrintStream java.lang.System.out)
+    |               LDC "hello world"   (line 9)
+    |               ASTORE_1
+    |               ASTORE_2
+    | method-call(void java.io.PrintStream.println(java.lang.String))
+    | |             BIPUSH 2
+    | |             ANEWARRAY java.lang.Object
+    | |             ASTORE_3
+    | |             ALOAD_3
+    | |             BIPUSH 0
+    | |             ALOAD_2
+    | |             AASTORE
+    | |             ALOAD_3
+    | |             BIPUSH 1
+    | |             ALOAD_1
+    | |             AASTORE
+    | |             NEW HelloWorld$AjcClosure1
+    | |             DUP
+    | |             ALOAD_3
+    | |             INVOKESPECIAL HelloWorld$AjcClosure1.<init> ([Ljava/lang/Object;)V
+    | |             INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    | |             POP
+    | method-call(void java.io.PrintStream.println(java.lang.String))
+    |               RETURN   (line 11)
+    method-execution(void HelloWorld.main(java.lang.String[]))
+  end public static void main(String[])
+
+  static final void println_aroundBody0(java.io.PrintStream, String):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V   (line 9)
+                    RETURN
+  end static final void println_aroundBody0(java.io.PrintStream, String)
+end public class HelloWorld
+
+public class HelloWorld$AjcClosure1 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST java.io.PrintStream
+                    ALOAD_2
+                    BIPUSH 1
+                    AALOAD
+                    CHECKCAST java.lang.String
+                    INVOKESTATIC HelloWorld.println_aroundBody0 (Ljava/io/PrintStream;Ljava/lang/String;)V
+                    ACONST_NULL
+                    ARETURN
+  end public Object run(Object[])
+end public class HelloWorld$AjcClosure1

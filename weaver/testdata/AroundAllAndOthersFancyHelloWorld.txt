@@ -1,0 +1,1003 @@
+public abstract class FancyHelloWorld extends java.lang.Object:
+  public void <init>():
+                    ALOAD_0     // FancyHelloWorld this   (line 7)
+                    INVOKESPECIAL java.lang.Object.<init> ()V
+    constructor-execution(void FancyHelloWorld.<init>())
+    |               INVOKESTATIC Aspect.ajc_before_constructor_execution ()V
+    |               BIPUSH 1
+    |               ANEWARRAY java.lang.Object
+    |               ASTORE_2
+    |               ALOAD_2
+    |               BIPUSH 0
+    |               ALOAD_0
+    |               AASTORE
+    |               NEW FancyHelloWorld$AjcClosure3
+    |               DUP
+    |               ALOAD_2
+    |               INVOKESPECIAL FancyHelloWorld$AjcClosure3.<init> ([Ljava/lang/Object;)V
+    |               INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    |               POP
+    |               RETURN
+    constructor-execution(void FancyHelloWorld.<init>())
+  end public void <init>()
+
+  public static void main(String[]):
+                    ALOAD_0
+                    ASTORE 19
+    method-execution(void FancyHelloWorld.main(java.lang.String[]))
+    |               INVOKESTATIC Aspect.ajc_before_method_execution ()V
+    |               BIPUSH 1
+    |               ANEWARRAY java.lang.Object
+    |               ASTORE 21
+    |               ALOAD 21
+    |               BIPUSH 0
+    |               ALOAD 19
+    |               AASTORE
+    |               NEW FancyHelloWorld$AjcClosure23
+    |               DUP
+    |               ALOAD 21
+    |               INVOKESPECIAL FancyHelloWorld$AjcClosure23.<init> ([Ljava/lang/Object;)V
+    |               INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    |               POP
+    |               RETURN
+    method-execution(void FancyHelloWorld.main(java.lang.String[]))
+  end public static void main(String[])
+
+  public static String getName():
+    method-execution(java.lang.String FancyHelloWorld.getName())
+    |               INVOKESTATIC Aspect.ajc_before_method_execution ()V
+    |               BIPUSH 0
+    |               ANEWARRAY java.lang.Object
+    |               ASTORE 15
+    |               NEW FancyHelloWorld$AjcClosure43
+    |               DUP
+    |               ALOAD 15
+    |               INVOKESPECIAL FancyHelloWorld$AjcClosure43.<init> ([Ljava/lang/Object;)V
+    |               INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    |               CHECKCAST java.lang.String
+    |               ARETURN
+    method-execution(java.lang.String FancyHelloWorld.getName())
+  end public static String getName()
+
+  static final void init$_aroundBody0(FancyHelloWorld):
+                    RETURN   (line 7)
+  end static final void init$_aroundBody0(FancyHelloWorld)
+
+  static final void init$_aroundBody2(FancyHelloWorld):
+                    INVOKESTATIC Aspect.ajc_before_constructor_execution ()V
+                    BIPUSH 1
+                    ANEWARRAY java.lang.Object
+                    ASTORE_1
+                    ALOAD_1
+                    BIPUSH 0
+                    ALOAD_0
+                    AASTORE
+                    NEW FancyHelloWorld$AjcClosure1
+                    DUP
+                    ALOAD_1
+                    INVOKESPECIAL FancyHelloWorld$AjcClosure1.<init> ([Ljava/lang/Object;)V
+                    INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+                    POP
+                    RETURN
+  end static final void init$_aroundBody2(FancyHelloWorld)
+
+  static final java.io.PrintStream out_aroundBody4():
+                    GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 9)
+                    ARETURN
+  end static final java.io.PrintStream out_aroundBody4()
+
+  static final java.io.PrintStream out_aroundBody6():
+                    INVOKESTATIC Aspect.ajc_before_field_get ()V
+                    BIPUSH 0
+                    ANEWARRAY java.lang.Object
+                    ASTORE_0
+                    NEW FancyHelloWorld$AjcClosure5
+                    DUP
+                    ALOAD_0
+                    INVOKESPECIAL FancyHelloWorld$AjcClosure5.<init> ([Ljava/lang/Object;)V
+                    INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+                    CHECKCAST java.io.PrintStream
+                    ARETURN
+  end static final java.io.PrintStream out_aroundBody6()
+
+  static final void println_aroundBody8(java.io.PrintStream, String):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V   (line 11)
+                    RETURN
+  end static final void println_aroundBody8(java.io.PrintStream, String)
+
+  static final void println_aroundBody10(java.io.PrintStream, String):
+                    INVOKESTATIC Aspect.ajc_before_method_call ()V
+                    BIPUSH 2
+                    ANEWARRAY java.lang.Object
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    ALOAD_0
+                    AASTORE
+                    ALOAD_2
+                    BIPUSH 1
+                    ALOAD_1
+                    AASTORE
+                    NEW FancyHelloWorld$AjcClosure9
+                    DUP
+                    ALOAD_2
+                    INVOKESPECIAL FancyHelloWorld$AjcClosure9.<init> ([Ljava/lang/Object;)V
+                    INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+                    POP
+                    RETURN
+  end static final void println_aroundBody10(java.io.PrintStream, String)
+
+  static final void println_aroundBody12(java.io.PrintStream, Object):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/Object;)V   (line 13)
+                    RETURN
+  end static final void println_aroundBody12(java.io.PrintStream, Object)
+
+  static final void println_aroundBody14(java.io.PrintStream, Object):
+                    INVOKESTATIC Aspect.ajc_before_method_call ()V
+                    BIPUSH 2
+                    ANEWARRAY java.lang.Object
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    ALOAD_0
+                    AASTORE
+                    ALOAD_2
+                    BIPUSH 1
+                    ALOAD_1
+                    AASTORE
+                    NEW FancyHelloWorld$AjcClosure13
+                    DUP
+                    ALOAD_2
+                    INVOKESPECIAL FancyHelloWorld$AjcClosure13.<init> ([Ljava/lang/Object;)V
+                    INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+                    POP
+                    RETURN
+  end static final void println_aroundBody14(java.io.PrintStream, Object)
+
+  static final void println_aroundBody16(java.io.PrintStream, String):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V   (line 15)
+                    RETURN
+  end static final void println_aroundBody16(java.io.PrintStream, String)
+
+  static final void println_aroundBody18(java.io.PrintStream, String):
+                    INVOKESTATIC Aspect.ajc_before_method_call ()V
+                    BIPUSH 2
+                    ANEWARRAY java.lang.Object
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    ALOAD_0
+                    AASTORE
+                    ALOAD_2
+                    BIPUSH 1
+                    ALOAD_1
+                    AASTORE
+                    NEW FancyHelloWorld$AjcClosure17
+                    DUP
+                    ALOAD_2
+                    INVOKESPECIAL FancyHelloWorld$AjcClosure17.<init> ([Ljava/lang/Object;)V
+                    INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+                    POP
+                    RETURN
+  end static final void println_aroundBody18(java.io.PrintStream, String)
+
+  static final void main_aroundBody20(String[]):
+    field-get(java.io.PrintStream java.lang.System.out)
+    |               INVOKESTATIC Aspect.ajc_before_field_get ()V
+    |               BIPUSH 0
+    |               ANEWARRAY java.lang.Object
+    |               ASTORE_1
+    |               NEW FancyHelloWorld$AjcClosure7
+    |               DUP
+    |               ALOAD_1
+    |               INVOKESPECIAL FancyHelloWorld$AjcClosure7.<init> ([Ljava/lang/Object;)V
+    |               INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    |               CHECKCAST java.io.PrintStream
+    field-get(java.io.PrintStream java.lang.System.out)
+                    ASTORE_3   (line 9)
+    finally -> E1
+    | catch java.lang.Exception -> E0
+    | |             ALOAD_3   (line 11)
+    | |             LDC "bye"
+    | |             ASTORE 5
+    | |             ASTORE 7
+    | | method-call(void java.io.PrintStream.println(java.lang.String))
+    | | |           INVOKESTATIC Aspect.ajc_before_method_call ()V
+    | | |           BIPUSH 2
+    | | |           ANEWARRAY java.lang.Object
+    | | |           ASTORE 9
+    | | |           ALOAD 9
+    | | |           BIPUSH 0
+    | | |           ALOAD 7
+    | | |           AASTORE
+    | | |           ALOAD 9
+    | | |           BIPUSH 1
+    | | |           ALOAD 5
+    | | |           AASTORE
+    | | |           NEW FancyHelloWorld$AjcClosure11
+    | | |           DUP
+    | | |           ALOAD 9
+    | | |           INVOKESPECIAL FancyHelloWorld$AjcClosure11.<init> ([Ljava/lang/Object;)V
+    | | |           INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    | | |           POP
+    | | method-call(void java.io.PrintStream.println(java.lang.String))
+    | |             GOTO L0
+    | catch java.lang.Exception -> E0
+    |           E0: ASTORE 11   (line 12)
+    |               ALOAD_3   (line 13)
+    |               ALOAD 11
+    |               ASTORE 13
+    |               ASTORE 15
+    | method-call(void java.io.PrintStream.println(java.lang.Object))
+    | |             INVOKESTATIC Aspect.ajc_before_method_call ()V
+    | |             BIPUSH 2
+    | |             ANEWARRAY java.lang.Object
+    | |             ASTORE 17
+    | |             ALOAD 17
+    | |             BIPUSH 0
+    | |             ALOAD 15
+    | |             AASTORE
+    | |             ALOAD 17
+    | |             BIPUSH 1
+    | |             ALOAD 13
+    | |             AASTORE
+    | |             NEW FancyHelloWorld$AjcClosure15
+    | |             DUP
+    | |             ALOAD 17
+    | |             INVOKESPECIAL FancyHelloWorld$AjcClosure15.<init> ([Ljava/lang/Object;)V
+    | |             INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    | |             POP
+    | method-call(void java.io.PrintStream.println(java.lang.Object))
+    finally -> E1
+                    GOTO L0
+                E1: ASTORE 19   (line 14)
+                    JSR L1
+                    ALOAD 19
+                    ATHROW
+                L0: JSR L1
+                    GOTO L2
+                L1: ASTORE 21
+                    ALOAD_3   (line 15)
+                    LDC "finally"
+                    ASTORE 23
+                    ASTORE 25
+    method-call(void java.io.PrintStream.println(java.lang.String))
+    |               INVOKESTATIC Aspect.ajc_before_method_call ()V
+    |               BIPUSH 2
+    |               ANEWARRAY java.lang.Object
+    |               ASTORE 27
+    |               ALOAD 27
+    |               BIPUSH 0
+    |               ALOAD 25
+    |               AASTORE
+    |               ALOAD 27
+    |               BIPUSH 1
+    |               ALOAD 23
+    |               AASTORE
+    |               NEW FancyHelloWorld$AjcClosure19
+    |               DUP
+    |               ALOAD 27
+    |               INVOKESPECIAL FancyHelloWorld$AjcClosure19.<init> ([Ljava/lang/Object;)V
+    |               INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    |               POP
+    method-call(void java.io.PrintStream.println(java.lang.String))
+                    RET 21   (line 10)
+                L2: RETURN   (line 17)
+  end static final void main_aroundBody20(String[])
+
+  static final void main_aroundBody22(String[]):
+                    INVOKESTATIC Aspect.ajc_before_method_execution ()V
+                    BIPUSH 1
+                    ANEWARRAY java.lang.Object
+                    ASTORE_1
+                    ALOAD_1
+                    BIPUSH 0
+                    ALOAD_0
+                    AASTORE
+                    NEW FancyHelloWorld$AjcClosure21
+                    DUP
+                    ALOAD_1
+                    INVOKESPECIAL FancyHelloWorld$AjcClosure21.<init> ([Ljava/lang/Object;)V
+                    INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+                    POP
+                    RETURN
+  end static final void main_aroundBody22(String[])
+
+  static final int hashCode_aroundBody24(String):
+                    ALOAD_0
+                    INVOKEVIRTUAL java.lang.String.hashCode ()I   (line 21)
+                    IRETURN
+  end static final int hashCode_aroundBody24(String)
+
+  static final int hashCode_aroundBody26(String):
+                    INVOKESTATIC Aspect.ajc_before_method_call ()V
+                    BIPUSH 1
+                    ANEWARRAY java.lang.Object
+                    ASTORE_1
+                    ALOAD_1
+                    BIPUSH 0
+                    ALOAD_0
+                    AASTORE
+                    NEW FancyHelloWorld$AjcClosure25
+                    DUP
+                    ALOAD_1
+                    INVOKESPECIAL FancyHelloWorld$AjcClosure25.<init> ([Ljava/lang/Object;)V
+                    INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+                    INVOKESTATIC org.aspectj.runtime.internal.Conversions.intValue (Ljava/lang/Object;)I
+                    IRETURN
+  end static final int hashCode_aroundBody26(String)
+
+  static final StringBuffer init$_aroundBody28(String):
+                    NEW java.lang.StringBuffer
+                    DUP
+                    ALOAD_0
+                    INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V   (line 22)
+                    ARETURN
+  end static final StringBuffer init$_aroundBody28(String)
+
+  static final StringBuffer init$_aroundBody30(String):
+                    INVOKESTATIC Aspect.ajc_before_constructor_call ()V
+                    BIPUSH 1
+                    ANEWARRAY java.lang.Object
+                    ASTORE_1
+                    ALOAD_1
+                    BIPUSH 0
+                    ALOAD_0
+                    AASTORE
+                    NEW FancyHelloWorld$AjcClosure29
+                    DUP
+                    ALOAD_1
+                    INVOKESPECIAL FancyHelloWorld$AjcClosure29.<init> ([Ljava/lang/Object;)V
+                    INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+                    CHECKCAST java.lang.StringBuffer
+                    ARETURN
+  end static final StringBuffer init$_aroundBody30(String)
+
+  static final StringBuffer append_aroundBody32(StringBuffer, int):
+                    ALOAD_0
+                    ILOAD_1
+                    INVOKEVIRTUAL java.lang.StringBuffer.append (I)Ljava/lang/StringBuffer;   (line 22)
+                    ARETURN
+  end static final StringBuffer append_aroundBody32(StringBuffer, int)
+
+  static final StringBuffer append_aroundBody34(StringBuffer, int):
+                    INVOKESTATIC Aspect.ajc_before_method_call ()V
+                    BIPUSH 2
+                    ANEWARRAY java.lang.Object
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    ALOAD_0
+                    AASTORE
+                    ALOAD_2
+                    BIPUSH 1
+                    ILOAD_1
+                    INVOKESTATIC org.aspectj.runtime.internal.Conversions.intObject (I)Ljava/lang/Object;
+                    AASTORE
+                    NEW FancyHelloWorld$AjcClosure33
+                    DUP
+                    ALOAD_2
+                    INVOKESPECIAL FancyHelloWorld$AjcClosure33.<init> ([Ljava/lang/Object;)V
+                    INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+                    CHECKCAST java.lang.StringBuffer
+                    ARETURN
+  end static final StringBuffer append_aroundBody34(StringBuffer, int)
+
+  static final String toString_aroundBody36(StringBuffer):
+                    ALOAD_0
+                    INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;   (line 22)
+                    ARETURN
+  end static final String toString_aroundBody36(StringBuffer)
+
+  static final String toString_aroundBody38(StringBuffer):
+                    INVOKESTATIC Aspect.ajc_before_method_call ()V
+                    BIPUSH 1
+                    ANEWARRAY java.lang.Object
+                    ASTORE_1
+                    ALOAD_1
+                    BIPUSH 0
+                    ALOAD_0
+                    AASTORE
+                    NEW FancyHelloWorld$AjcClosure37
+                    DUP
+                    ALOAD_1
+                    INVOKESPECIAL FancyHelloWorld$AjcClosure37.<init> ([Ljava/lang/Object;)V
+                    INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+                    CHECKCAST java.lang.String
+                    ARETURN
+  end static final String toString_aroundBody38(StringBuffer)
+
+  static final String getName_aroundBody40():
+                    ICONST_0   (line 20)
+                    ISTORE_0
+                    ILOAD_0   (line 21)
+                    LDC "name"
+                    ASTORE_2
+    method-call(int java.lang.String.hashCode())
+    |               INVOKESTATIC Aspect.ajc_before_method_call ()V
+    |               BIPUSH 1
+    |               ANEWARRAY java.lang.Object
+    |               ASTORE 4
+    |               ALOAD 4
+    |               BIPUSH 0
+    |               ALOAD_2
+    |               AASTORE
+    |               NEW FancyHelloWorld$AjcClosure27
+    |               DUP
+    |               ALOAD 4
+    |               INVOKESPECIAL FancyHelloWorld$AjcClosure27.<init> ([Ljava/lang/Object;)V
+    |               INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    |               INVOKESTATIC org.aspectj.runtime.internal.Conversions.intValue (Ljava/lang/Object;)I
+    method-call(int java.lang.String.hashCode())
+                    IADD
+                    ISTORE_0
+                    LDC "name"   (line 22)
+                    ASTORE 6
+    constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
+    |               INVOKESTATIC Aspect.ajc_before_constructor_call ()V
+    |               BIPUSH 1
+    |               ANEWARRAY java.lang.Object
+    |               ASTORE 8
+    |               ALOAD 8
+    |               BIPUSH 0
+    |               ALOAD 6
+    |               AASTORE
+    |               NEW FancyHelloWorld$AjcClosure31
+    |               DUP
+    |               ALOAD 8
+    |               INVOKESPECIAL FancyHelloWorld$AjcClosure31.<init> ([Ljava/lang/Object;)V
+    |               INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    |               CHECKCAST java.lang.StringBuffer
+    constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
+                    ILOAD_0
+                    ISTORE 10
+                    ASTORE 12
+    method-call(java.lang.StringBuffer java.lang.StringBuffer.append(int))
+    |               INVOKESTATIC Aspect.ajc_before_method_call ()V
+    |               BIPUSH 2
+    |               ANEWARRAY java.lang.Object
+    |               ASTORE 14
+    |               ALOAD 14
+    |               BIPUSH 0
+    |               ALOAD 12
+    |               AASTORE
+    |               ALOAD 14
+    |               BIPUSH 1
+    |               ILOAD 10
+    |               INVOKESTATIC org.aspectj.runtime.internal.Conversions.intObject (I)Ljava/lang/Object;
+    |               AASTORE
+    |               NEW FancyHelloWorld$AjcClosure35
+    |               DUP
+    |               ALOAD 14
+    |               INVOKESPECIAL FancyHelloWorld$AjcClosure35.<init> ([Ljava/lang/Object;)V
+    |               INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    |               CHECKCAST java.lang.StringBuffer
+    method-call(java.lang.StringBuffer java.lang.StringBuffer.append(int))
+                    ASTORE 16
+    method-call(java.lang.String java.lang.StringBuffer.toString())
+    |               INVOKESTATIC Aspect.ajc_before_method_call ()V
+    |               BIPUSH 1
+    |               ANEWARRAY java.lang.Object
+    |               ASTORE 18
+    |               ALOAD 18
+    |               BIPUSH 0
+    |               ALOAD 16
+    |               AASTORE
+    |               NEW FancyHelloWorld$AjcClosure39
+    |               DUP
+    |               ALOAD 18
+    |               INVOKESPECIAL FancyHelloWorld$AjcClosure39.<init> ([Ljava/lang/Object;)V
+    |               INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    |               CHECKCAST java.lang.String
+    method-call(java.lang.String java.lang.StringBuffer.toString())
+                    ARETURN
+  end static final String getName_aroundBody40()
+
+  static final String getName_aroundBody42():
+                    INVOKESTATIC Aspect.ajc_before_method_execution ()V
+                    BIPUSH 0
+                    ANEWARRAY java.lang.Object
+                    ASTORE_0
+                    NEW FancyHelloWorld$AjcClosure41
+                    DUP
+                    ALOAD_0
+                    INVOKESPECIAL FancyHelloWorld$AjcClosure41.<init> ([Ljava/lang/Object;)V
+                    INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+                    CHECKCAST java.lang.String
+                    ARETURN
+  end static final String getName_aroundBody42()
+end public abstract class FancyHelloWorld
+
+public class FancyHelloWorld$AjcClosure1 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST FancyHelloWorld
+                    INVOKESTATIC FancyHelloWorld.init$_aroundBody0 (LFancyHelloWorld;)V
+                    ACONST_NULL
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure1
+
+public class FancyHelloWorld$AjcClosure3 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST FancyHelloWorld
+                    INVOKESTATIC FancyHelloWorld.init$_aroundBody2 (LFancyHelloWorld;)V
+                    ACONST_NULL
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure3
+
+public class FancyHelloWorld$AjcClosure5 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    INVOKESTATIC FancyHelloWorld.out_aroundBody4 ()Ljava/io/PrintStream;
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure5
+
+public class FancyHelloWorld$AjcClosure7 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    INVOKESTATIC FancyHelloWorld.out_aroundBody6 ()Ljava/io/PrintStream;
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure7
+
+public class FancyHelloWorld$AjcClosure9 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST java.io.PrintStream
+                    ALOAD_2
+                    BIPUSH 1
+                    AALOAD
+                    CHECKCAST java.lang.String
+                    INVOKESTATIC FancyHelloWorld.println_aroundBody8 (Ljava/io/PrintStream;Ljava/lang/String;)V
+                    ACONST_NULL
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure9
+
+public class FancyHelloWorld$AjcClosure11 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST java.io.PrintStream
+                    ALOAD_2
+                    BIPUSH 1
+                    AALOAD
+                    CHECKCAST java.lang.String
+                    INVOKESTATIC FancyHelloWorld.println_aroundBody10 (Ljava/io/PrintStream;Ljava/lang/String;)V
+                    ACONST_NULL
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure11
+
+public class FancyHelloWorld$AjcClosure13 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST java.io.PrintStream
+                    ALOAD_2
+                    BIPUSH 1
+                    AALOAD
+                    INVOKESTATIC FancyHelloWorld.println_aroundBody12 (Ljava/io/PrintStream;Ljava/lang/Object;)V
+                    ACONST_NULL
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure13
+
+public class FancyHelloWorld$AjcClosure15 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST java.io.PrintStream
+                    ALOAD_2
+                    BIPUSH 1
+                    AALOAD
+                    INVOKESTATIC FancyHelloWorld.println_aroundBody14 (Ljava/io/PrintStream;Ljava/lang/Object;)V
+                    ACONST_NULL
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure15
+
+public class FancyHelloWorld$AjcClosure17 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST java.io.PrintStream
+                    ALOAD_2
+                    BIPUSH 1
+                    AALOAD
+                    CHECKCAST java.lang.String
+                    INVOKESTATIC FancyHelloWorld.println_aroundBody16 (Ljava/io/PrintStream;Ljava/lang/String;)V
+                    ACONST_NULL
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure17
+
+public class FancyHelloWorld$AjcClosure19 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST java.io.PrintStream
+                    ALOAD_2
+                    BIPUSH 1
+                    AALOAD
+                    CHECKCAST java.lang.String
+                    INVOKESTATIC FancyHelloWorld.println_aroundBody18 (Ljava/io/PrintStream;Ljava/lang/String;)V
+                    ACONST_NULL
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure19
+
+public class FancyHelloWorld$AjcClosure21 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST [Ljava.lang.String;
+                    INVOKESTATIC FancyHelloWorld.main_aroundBody20 ([Ljava/lang/String;)V
+                    ACONST_NULL
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure21
+
+public class FancyHelloWorld$AjcClosure23 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST [Ljava.lang.String;
+                    INVOKESTATIC FancyHelloWorld.main_aroundBody22 ([Ljava/lang/String;)V
+                    ACONST_NULL
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure23
+
+public class FancyHelloWorld$AjcClosure25 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST java.lang.String
+                    INVOKESTATIC FancyHelloWorld.hashCode_aroundBody24 (Ljava/lang/String;)I
+                    INVOKESTATIC org.aspectj.runtime.internal.Conversions.intObject (I)Ljava/lang/Object;
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure25
+
+public class FancyHelloWorld$AjcClosure27 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST java.lang.String
+                    INVOKESTATIC FancyHelloWorld.hashCode_aroundBody26 (Ljava/lang/String;)I
+                    INVOKESTATIC org.aspectj.runtime.internal.Conversions.intObject (I)Ljava/lang/Object;
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure27
+
+public class FancyHelloWorld$AjcClosure29 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST java.lang.String
+                    INVOKESTATIC FancyHelloWorld.init$_aroundBody28 (Ljava/lang/String;)Ljava/lang/StringBuffer;
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure29
+
+public class FancyHelloWorld$AjcClosure31 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST java.lang.String
+                    INVOKESTATIC FancyHelloWorld.init$_aroundBody30 (Ljava/lang/String;)Ljava/lang/StringBuffer;
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure31
+
+public class FancyHelloWorld$AjcClosure33 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST java.lang.StringBuffer
+                    ALOAD_2
+                    BIPUSH 1
+                    AALOAD
+                    INVOKESTATIC org.aspectj.runtime.internal.Conversions.intValue (Ljava/lang/Object;)I
+                    INVOKESTATIC FancyHelloWorld.append_aroundBody32 (Ljava/lang/StringBuffer;I)Ljava/lang/StringBuffer;
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure33
+
+public class FancyHelloWorld$AjcClosure35 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST java.lang.StringBuffer
+                    ALOAD_2
+                    BIPUSH 1
+                    AALOAD
+                    INVOKESTATIC org.aspectj.runtime.internal.Conversions.intValue (Ljava/lang/Object;)I
+                    INVOKESTATIC FancyHelloWorld.append_aroundBody34 (Ljava/lang/StringBuffer;I)Ljava/lang/StringBuffer;
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure35
+
+public class FancyHelloWorld$AjcClosure37 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST java.lang.StringBuffer
+                    INVOKESTATIC FancyHelloWorld.toString_aroundBody36 (Ljava/lang/StringBuffer;)Ljava/lang/String;
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure37
+
+public class FancyHelloWorld$AjcClosure39 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    BIPUSH 0
+                    AALOAD
+                    CHECKCAST java.lang.StringBuffer
+                    INVOKESTATIC FancyHelloWorld.toString_aroundBody38 (Ljava/lang/StringBuffer;)Ljava/lang/String;
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure39
+
+public class FancyHelloWorld$AjcClosure41 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    INVOKESTATIC FancyHelloWorld.getName_aroundBody40 ()Ljava/lang/String;
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure41
+
+public class FancyHelloWorld$AjcClosure43 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    INVOKESTATIC FancyHelloWorld.getName_aroundBody42 ()Ljava/lang/String;
+                    ARETURN
+  end public Object run(Object[])
+end public class FancyHelloWorld$AjcClosure43

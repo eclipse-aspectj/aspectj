@@ -1,0 +1,52 @@
+<preface>
+  <title>Preface</title> 
+  
+  <para>
+    This user's guide does three things. It
+    <itemizedlist spacing="compact">
+      <listitem>
+	<para>introduces the AspectJ language</para>
+      </listitem> 
+
+      <listitem>
+	<para>
+	  defines each of AspectJ's constructs and their semantics, and</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  provides examples of their use.</para>
+      </listitem>
+    </itemizedlist>
+    Three appendices give a quick reference, a more formal definition of
+    AspectJ, and a glossary.
+  </para>
+
+  <para>The first section, <xref linkend="gettingstarted" />, provides a gentle
+    overview of writing AspectJ programs. It also shows how one can introduce
+    AspectJ into an existing development effort in stages, reducing the
+    associated risk. You should read this section if this is your first
+    exposure to AspectJ and you want to get a sense of what AspectJ is all
+    about.</para>
+
+  <para>The second section, <xref linkend="aspectjlanguage" />, covers the
+    features of the language in more detail, using code snippets as examples.
+    The entire language is covered, and after reading this section, you should
+    be able to use all the features of the language correctly.</para>
+
+  <para>The next section, <xref linkend="examples" />, comprises a set of
+    complete programs that not only show the features being used, but also try
+    to illustrate recommended practice. You should read this section after you
+    are familiar with the elements of AspectJ.</para>
+  
+  <para>The back matter contains several appendices that cover AspectJ's
+    semantics, a quick reference to the language, a glossary of terms and the
+    index.</para>
+
+</preface>
+
+<!-- Local variables: -->
+<!-- sgml-local-ecat-files: progguide.ced -->
+<!-- sgml-parent-document:("progguide.sgml" "book" "preface") -->
+<!-- End: -->
+

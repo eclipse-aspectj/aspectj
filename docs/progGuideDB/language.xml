@@ -1,0 +1,1226 @@
+<chapter id="aspectjlanguage" xreflabel="The AspectJ Language">
+
+  <title>The AspectJ Language</title>
+
+  <sect1>
+    <title>Introduction</title>
+
+      <para>The previous chapter, <xref linkend="gettingstarted"/>, was a brief
+      overview of the AspectJ language. You should read this chapter to
+      understand AspectJ's syntax and semantics. It covers the same material as
+      the previous chapter, but more completely and in much more detail.
+    </para>
+
+      <para>We will start out by looking at an example aspect that we'll build
+      out of a pointcut, an introduction, and two pieces of advice. This
+      example aspect will gives us something concrete to talk about.</para>
+
+  </sect1>
+
+  <sect1 id="AnatomyOfAnAspect">
+    <title>The Anatomy of an Aspect</title>
+
+    <para>
+      This lesson explains the parts of AspectJ's aspects. By reading this
+      lesson you will have an overview of what's in an aspect and you will be
+      exposed to the new terminology introduced by AspectJ.
+    </para>
+
+    <sect2>
+      <title>An Example Aspect</title>
+
+      <para>
+        Here's an example of an aspect definition in AspectJ:
+      </para>
+
+      <programlisting><![CDATA[
+ 1 aspect FaultHandler {
+ 2
+ 3   private boolean Server.disabled = false;
+ 4
+ 5   private void reportFault() {
+ 6     System.out.println("Failure! Please fix it.");
+ 7   }
+ 8
+ 9   public static void fixServer(Server s) {
+10     s.disabled = false;
+11   }
+12
+13   pointcut services(Server s): target(s) && call(public * *(..));
+14
+15   before(Server s): services(s) {
+16     if (s.disabled) throw new DisabledException();
+17   }
+18
+19   after(Server s) throwing (FaultException e): services(s) {
+20     s.disabled = true;
+21     reportFault();
+22   }
+23 }
+]]></programlisting>
+
+      <para>
+        The <literal>FaultHandler</literal> consists of one variable introduced
+        onto <literal>Server</literal> (line 03), two methods (lines 05-07
+        and 09-11), one pointcut (line 13), and two pieces of advice (lines
+        15-17 and 19-22).
+      </para>
+
+      <para>
+        This covers the basics of what aspects can contain. In general, aspects
+        consist of an association with other program entities, ordinary
+        variables and methods, pointcuts, introductions, and advice, where
+        advice may be before, after or around advice. The remainder of this
+        lesson focuses on those crosscut-related constructs.
+      </para>
+    </sect2>
+
+    <sect2>
+      <title>Pointcuts</title>
+
+      <para>
+        AspectJ's pointcuts define collections of events, i.e. interesting
+        points in the execution of a program. These events, or points in the
+        execution, can be method or constructor invocations and executions,
+        handling of exceptions, field assignments and accesses, etc. Take, for
+        example, the pointcut declaration in line 13:
+      </para>
+
+<programlisting><![CDATA[
+pointcut services(Server s): target(s) && call(public * *(..))
+]]></programlisting>
+
+      <para>
+        This pointcut, named <literal>services</literal>, picks out those points
+        in the execution of the program when instances of the
+        <literal>Server</literal> class have their public methods called.
+      </para>
+
+      <para>
+        The idea behind this pointcut in the <literal>FaultHandler</literal>
+        aspect is that fault-handling-related behavior must be triggered on the
+        calls to public methods. For example, the server may be unable to
+        proceed with the request because of some fault. The calls of those
+        methods are, therefore, interesting events for this aspect, in the
+        sense that certain fault-related things will happen when these events
+        occur.
+      </para>
+
+      <para>
+        Part of the context in which the events occur is exposed by the formal
+        parameters of the pointcut. In this case, that consists of objects of
+        type server.  That formal parameter is then being used on the right
+        hand side of the declaration in order to identify which events the
+        pointcut refers to. In this case, a pointcut picking out join points
+        where a Server is the target of some operation (target(s)) is being
+        composed (<literal><![CDATA[&&]]></literal>, meaning and) with a
+        pointcut picking out call join points (call(...)). The calls are
+        identified by signatures that can include wild cards. In this case,
+        there are wild cards in the return type position (first *), in the name
+        position (second *) and in the argument list position (..); the only
+        concrete information is given by the qualifier public.
+      </para>
+
+      <sect3>
+        <title>What else?</title>
+
+        <para>
+           Pointcuts define arbitrarily large sets of points in the execution
+           of a program. But they use only a finite number of
+           <emphasis>kinds</emphasis> of points. Those kinds of points
+           correspond to some of the most important concepts in Java. Here is
+           an incomplete list: method invocation, method execution, exception
+           handling, instantiation, constructor execution.  Each of these has a
+           specific syntax that you will learn about in other parts of this
+           guide.
+        </para>
+      </sect3>
+    </sect2>
+
+    <sect2>
+      <title>Advice</title>
+
+      <para>
+        Advice defines pieces of aspect implementation that execute at join
+        points picked out by a pointcut. For example, the advice in lines 15-17
+        specifies that the following piece of code
+      </para>
+
+<programlisting><![CDATA[
+{
+  if (s.disabled) throw new DisabledException();
+}
+]]></programlisting>
+
+      <para>
+        is executed when instances of the Server class have their public
+        methods called, as specified by the pointcut services. More
+        specifically, it runs when those calls are made, just before the
+        corresponding methods are executed.
+      </para>
+
+      <para>
+        The advice in lines 19-22 defines another piece of implementation
+        that is executed on the same pointcut:
+      </para>
+
+<programlisting><![CDATA[
+{
+  s.disabled = true;
+  reportFault();
+}
+]]></programlisting>
+
+      <para>
+        But this second method executes whenever those operations throw
+        exception of type <literal>FaultException</literal>.
+      </para>
+
+      <sect3>
+        <title>What else?</title>
+        <para>
+           There are two other variations of after advice: upon successful
+           return and upon return, either successful or with an exception.
+           There is also a third kind of advice called around. You will see
+           those in other parts of this guide.
+        </para>
+      </sect3>
+    </sect2>
+
+  </sect1>
+
+  <sect1>
+    <title>Join Points and Pointcuts</title>
+
+    <para>
+      Consider the following Java class:
+    </para>
+
+<programlisting><![CDATA[
+class Point {
+    private int x, y;
+
+    Point(int x, int y) { this.x = x; this.y = y; }
+
+    void setX(int x) { this.x = x; }
+    void setY(int y) { this.y = y; }
+
+    int getX() { return x; }
+    int getY() { return y; }
+}
+]]></programlisting>
+
+    <para>
+      In order to get an intuitive understanding of AspectJ's pointcuts, let's
+      go back to some of the basic principles of Java. Consider the following a
+      method declaration in class Point:
+    </para>
+
+<programlisting><![CDATA[
+void setX(int x) { this.x = x; }
+]]></programlisting>
+
+    <para>
+      What this piece of program states is that when an object of type Point
+      has a method called setX with an integer as the argument called on it,
+      then the method body { this.x = x; } is executed. Similarly, the
+      constructor given in that class states that when an object of type Point
+      is instantiated through a constructor with two integers as arguments,
+      then the constructor body { this.x = x; this.y = y; } is executed.
+    </para>
+
+    <para>
+      One pattern that emerges from these descriptions is when something
+      happens, then something gets executed. In object-oriented programs, there
+      are several kinds of "things that happen" that are determined by the
+      language. We call these the join points of Java. Join points comprised
+      method calls, method executions, instantiations, constructor executions,
+      field references and handler executions. (See the quick reference for
+      complete listing.)
+    </para>
+
+    <para>
+      Pointcuts pick out these join points. For example, the pointcut
+    </para>
+
+<programlisting><![CDATA[
+pointcut setter(): target(Point) &&
+                   (call(void setX(int)) ||
+                    call(void setY(int)));
+]]></programlisting>
+
+    <para>
+      describes the calls to <literal>setX(int)</literal> or
+      <literal>setY(int)</literal> methods of any instance of Point. Here's
+      another example:
+    </para>
+
+<programlisting><![CDATA[
+pointcut ioHandler(): within(MyClass) && handler(IOException);
+]]></programlisting>
+
+    <para>
+      This pointcut picks out the join points at which exceptions of type
+      IOException are handled inside the code defined by class MyClass.
+    </para>
+
+    <para>
+      Pointcuts consist of a left-hand side and a right-hand side, separated by
+      a colon. The left-hand side defines the pointcut name and the pointcut
+      parameters (i.e. the data available when the events happen). The
+      right-hand side defines the events in the pointcut.
+    </para>
+
+    <para>
+      Pointcuts can then be used to define aspect code in advice, as we will
+      see later. But first let's see what types of events can be captured and
+      how they are described in AspectJ.
+    </para>
+
+    <sect2>
+      <title>Designators</title>
+
+      <para>
+        Here are examples of designators of
+      </para>
+      <glosslist>
+
+        <glossentry>
+          <glossterm>when a particular method body executes</glossterm>
+          <glossdef>
+            <para>
+              <literal>execution(void Point.setX(int))</literal>
+            </para>
+          </glossdef>
+        </glossentry>
+
+        <glossentry>
+          <glossterm>when a method is called</glossterm>
+          <glossdef>
+            <para>
+              <literal>call(void Point.setX(int))</literal>
+            </para>
+          </glossdef>
+        </glossentry>
+
+        <glossentry>
+          <glossterm>when an exception handler executes</glossterm>
+          <glossdef>
+            <para>
+              <literal>handler(ArrayOutOfBoundsException)</literal>
+            </para>
+          </glossdef>
+        </glossentry>
+
+        <glossentry>
+          <glossterm>when the object currently executing
+            (i.e. <literal>this</literal>) is of type <literal>SomeType</literal></glossterm>
+          <glossdef>
+            <para>
+              <literal>this(SomeType)</literal>
+            </para>
+          </glossdef>
+        </glossentry>
+
+        <glossentry>
+          <glossterm>when the target object is of type
+            <literal>SomeType</literal></glossterm>
+          <glossdef>
+            <para>
+              <literal>target(SomeType)</literal>
+            </para>
+          </glossdef>
+        </glossentry>
+
+        <glossentry>
+          <glossterm>when the executing code belongs to
+            class <literal>MyClass</literal></glossterm>
+          <glossdef>
+            <para>
+              <literal>within(MyClass)</literal>
+            </para>
+          </glossdef>
+        </glossentry>
+
+        <glossentry>
+          <glossterm>when the join point is in the control flow of a call to a
+          <literal>Test</literal>'s no-argument <literal>main</literal> method
+	  </glossterm>
+          <glossdef>
+            <para>
+              <literal>cflow(void Test.main())</literal>
+            </para>
+          </glossdef>
+        </glossentry>
+
+
+      </glosslist>
+
+      <para>
+        Designators compose through the operations <literal>or</literal>
+        ("<literal>||</literal>"), <literal>and</literal>
+        ("<literal><![CDATA[&&]]></literal>") and <literal>not</literal>
+        ("<literal>!</literal>").
+      </para>
+
+      <itemizedlist>
+        <listitem>
+          <para>
+            It is possible to use wildcards. So
+            <orderedlist>
+              <listitem>
+                <para>
+                  <literal>execution(* *(..))</literal>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  <literal>call(* set(..))</literal>
+                </para>
+              </listitem>
+            </orderedlist>
+            means (1) all the executions of methods with any return and
+            parameter types and (2) method calls of set methods with any
+            return and parameter types -- in case of overloading there may be
+            more than one; this designator picks out all of them.
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+            You can select elements based on types. For example,
+            <orderedlist>
+              <listitem>
+                <para>
+                  <literal>execution(int *())</literal>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  <literal>call(* setY(long))</literal>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  <literal>call(* Point.setY(int))</literal>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  <literal>call(*.new(int, int))</literal>
+                </para>
+              </listitem>
+
+            </orderedlist>
+            means (1) all executions of methods with no parameters, returning
+            an <literal>int</literal> (2) the calls of
+            <literal>setY</literal> methods that take a
+            <literal>long</literal> as an argument, regardless of their return
+            type or defining type, (3) the calls of class
+            <literal>Point</literal>'s <literal>setY</literal> methods that
+            take an <literal>int</literal> as an argument, regardless of the
+            return type, and (4) the calls of all classes' constructors that
+            take two <literal>int</literal>s as arguments.
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+            You can compose designators. For example,
+            <orderedlist>
+              <listitem>
+                <para>
+                  <literal>target(Point) <![CDATA[&&]]> call(int *())</literal>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  <literal>call(* *(..)) <![CDATA[&&]]> (within(Line) || within(Point))</literal>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  <literal>within(*) <![CDATA[&&]]> execution(*.new(int))</literal>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  <literal>this(*) <![CDATA[&&]]> !this(Point) <![CDATA[&&]]>
+                  call(int *(..))</literal>
+                </para>
+              </listitem>
+            </orderedlist>
+
+            means (1) all calls to methods received by instances of class
+            <literal>Point</literal>, with no parameters, returning an
+            <literal>int</literal>, (2) calls to any method where the call is
+            made from the code in <literal>Point</literal>'s or
+            <literal>Line</literal>'s type declaration, (3) executions of
+            constructors of all classes, that take an <literal>int</literal> as
+            an argument, and
+            (4) all method calls of any method returning an
+            <literal>int</literal>, from all objects except
+            <literal>Point</literal> objects to any other objects.
+
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+            You can select methods and constructors based on their modifiers
+            and on negations of modifiers. For example, you can say:
+            <orderedlist>
+              <listitem>
+                <para>
+                  <literal>call(public * *(..))</literal>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  <literal>execution(!static * *(..))</literal>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  <literal> execution(public !static * *(..))</literal>
+                </para>
+              </listitem>
+
+            </orderedlist>
+            which means (1) all invocation of public methods, (2) all
+            executions of non-static methods, and (3) all signatures of
+            the public, non-static methods.
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+            Designators can also deal with interfaces. For example, given the
+            interface </para>
+
+          <programlisting><![CDATA[
+interface MyInterface { ... }]]></programlisting>
+
+          <para> the designator <literal>call(* MyInterface.*(..))</literal>
+            picks out the call join points for methods defined by the interface
+            <literal>MyInterface</literal> (or its superinterfaces).
+          </para>
+        </listitem>
+
+      </itemizedlist>
+    </sect2>
+
+    <sect2>
+      <title>call vs. execution</title>
+
+      <para>
+        When methods and constructors run, there are two interesting times
+        associated with them.  That is when they are called, and when they
+        actually execute.
+      </para>
+
+      <para>
+        AspectJ exposes these times as call and execution join points,
+        respectively, and allows them to be picked out specifically by call and
+        execution pointcuts. 
+      </para>
+
+      <para>
+        So what's the difference between these times?  Well, there are a number
+        of differences:
+      </para>
+
+      <para>
+        Firstly, the lexical pointcut declarations <literal>within</literal>
+        and <literal>withincode</literal> match differently.  At a call join
+        point, the enclosing text is that of the call site.  This means that
+        This means that <literal>call(void m()) <![CDATA[&&]]> within(void m())</literal>
+        will only capture recursive calls, for example.  At an execution join
+        point, however, the control is already executing the method. 
+      </para>
+
+      <para>
+        Secondly, the call join point does not capture super calls to
+        non-static methods.  This is because such super calls are different in
+	Java, since they don't behave via dynamic dispatch like other calls to
+	non-static methods.
+      </para>
+
+      <para>
+        The rule of thumb is that if you want to pick a join point that runs
+        when an actual piece of code runs, pick an execution, but if you want 
+        to pick one that runs when a particular signature is called, pick a
+        call. 
+      </para>
+    </sect2>
+
+
+
+    <sect2>
+      <title>Pointcut composition</title>
+
+      <para>Pointcuts are put together with the operators and (spelled
+      <literal>&amp;&amp;</literal>), or (spelled <literal>||</literal>), and
+      not (spelled <literal>!</literal>).  This allows the creation of very
+      powerful pointcuts from the simple building blocks of primitive
+      pointcuts.  This composition can be somewhat confusing when used with
+      primitive pointcuts like cflow and cflowbelow.  Here's an example:
+      </para>
+
+      <para> <literal>cflow(<replaceable>P</replaceable>)</literal> picks out
+      the join points in the control flow of the join points picked out by
+      <replaceable>P</replaceable>.  So, pictorially:
+      </para>
+
+<programlisting>
+  P ---------------------
+    \
+     \  cflow of P
+      \
+</programlisting>
+
+
+      <para>What does <literal>cflow(<replaceable>P</replaceable>) &amp;&amp;
+      cflow(<replaceable>Q</replaceable>)</literal> pick out?  Well, it picks
+      out those join points that are in both the control flow of
+      <replaceable>P</replaceable> and in the control flow of
+      <replaceable>Q</replaceable>.  So...
+      </para>
+
+<programlisting>
+          P ---------------------
+            \
+             \  cflow of P
+              \
+               \
+                \
+  Q -------------\-------
+    \             \
+     \  cflow of Q \ cflow(P) &amp;&amp; cflow(Q)
+      \             \
+</programlisting>
+
+      <para>Note that <replaceable>P</replaceable> and <replaceable>Q</replaceable> might
+      not have any join points in common... but their control flows might have join
+      points in common.
+      </para>
+
+      <para>But what does <literal>cflow(<replaceable>P</replaceable>
+      &amp;&amp; <replaceable>Q</replaceable>)</literal> mean?  Well, it means
+      the control flow of those join points that are both picked out by
+      <replaceable>P</replaceable> picked out by <replaceable>Q</replaceable>.
+      </para>
+
+<programlisting>
+   P &amp;&amp; Q -------------------
+          \
+           \ cflow of (P &amp;&amp; Q)
+            \
+</programlisting>
+
+      <para>and if there are <emphasis>no</emphasis> join points that are both picked by
+      <replaceable>P</replaceable> and picked out by <replaceable>Q</replaceable>,
+      then there's no chance that there are any join points in the control flow of
+      <literal>(<replaceable>P</replaceable> &amp;&amp;
+      <replaceable>Q</replaceable>)</literal>.
+      </para>
+
+      <para>Here's some code that expresses this.  
+      </para>
+
+<programlisting><![CDATA[
+public class Test {
+    public static void main(String[] args) {
+        foo();
+    } 
+    static void foo() {
+        goo();
+    }
+    static void goo() {
+        System.out.println("hi");
+    }
+}
+
+aspect A  {
+
+    pointcut fooPC(): execution(void Test.foo());
+    pointcut gooPC(): execution(void Test.goo());
+    pointcut printPC(): call(void java.io.PrintStream.println(String));
+
+    before(): cflow(fooPC()) && cflow(gooPC()) && printPC() {
+        System.out.println("should occur");
+    }
+
+    before(): cflow(fooPC() && gooPC()) && printPC() {
+        System.out.println("should not occur");
+    }
+
+}
+]]></programlisting>
+
+    </sect2>
+
+    <sect2>
+      <title>Pointcut Parameters</title>
+
+      <para>
+        Consider, for example, the first pointcut you've seen here,
+      </para>
+
+<programlisting><![CDATA[
+  pointcut setter(): target(Point) &&
+                     (call(void setX(int)) ||
+                      call(void setY(int)));
+]]></programlisting>
+
+      <para>
+        As we've seen before, the right-hand side of the pointcut picks out the
+        calls to <literal>setX(int)</literal> or <literal>setY(int)</literal>
+        methods where the target is any object of type
+        <literal>Point</literal>. On the left-hand side, the pointcut is given
+        the name "setters" and no parameters. An empty parameter list means
+        that when those events happen no context is immediately available. But
+        consider this other version of the same pointcut:
+      </para>
+
+<programlisting><![CDATA[
+  pointcut setter(Point p): target(p) &&
+                            (call(void setX(int)) ||
+                             call(void setY(int)));
+]]></programlisting>
+
+      <para>
+        This version picks out exactly the same calls. But in this version, the
+        pointcut has one parameter of type <literal>Point</literal>. This means
+        that when the events described on the right-hand side happen, a
+        <literal>Point</literal> object, named by a parameter named "p", is
+        available. According to the right-hand side of the pointcut, that
+        <literal>Point</literal> object in the pointcut parameters is the
+        object that receives the calls.
+      </para>
+
+      <para>
+        Here's another example that illustrates the flexible mechanism for
+        defining pointcut parameters:
+      </para>
+
+<programlisting><![CDATA[
+  pointcut testEquality(Point p): target(Point) &&
+                                  args(p) &&
+                                  call(boolean equals(Object));
+]]></programlisting>
+
+      <para>
+        This pointcut also has a parameter of type <literal>Point</literal>.
+        Similarly to the "setters" pointcut, this means that when the events
+        described on the right-hand side happen, a <literal>Point</literal>
+        object, named by a parameter named "p", is available. But in this case,
+        looking at the right-hand side, we find that the object named in the
+        parameters is not the target <literal>Point</literal> object that receives the
+        call; it's the argument (of type Point) passed to the "equals" method on some other
+        target Point object. If we wanted access to both objects, then the pointcut
+        definition that would define target <literal>Point p1</literal> 
+        and argument <literal>Point p2</literal> would be
+      </para>
+
+<programlisting><![CDATA[
+  pointcut testEquality(Point p1, Point p2): target(p1) &&
+                                             args(p2) &&
+                                             call(boolean equals(Object));
+]]></programlisting>
+
+      <para>
+        Let's look at another variation of the "setters" pointcut:
+      </para>
+
+<programlisting><![CDATA[
+pointcut setter(Point p, int newval): target(p) &&
+                                      args(newval) &&
+                                      (call(void setX(int)) ||
+                                       call(void setY(int)));
+]]></programlisting>
+
+      <para>
+        In this case, a <literal>Point</literal> object and an integer value
+        are available when the calls happen. Looking at the events definition
+        on the right-hand side, we find that the <literal>Point</literal>
+        object is the object receiving the call, and the integer
+        value is the argument of the method .
+      </para>
+
+      <para>
+        The definition of pointcut parameters is relatively flexible. The most
+        important rule is that when each of those events defined in the
+        right-hand side happen, all the pointcut parameters must be bound to
+        some value. So, for example, the following pointcut definition will
+        result in a compilation error:
+      </para>
+
+<programlisting><![CDATA[
+  pointcut xcut(Point p1, Point p2):
+      (target(p1) && call(void setX(int))) ||
+      (target(p2) && call(void setY(int)));
+]]></programlisting>
+
+      <para>
+        The right-hand side establishes that this pointcut picks out the call
+        join points consisting of the <literal>setX(int)</literal> method
+        called on a point object, or the <literal>setY(int)</literal> method
+        called on a point object. This is fine. The problem is that the
+        parameters definition tries to get access to two point objects. But
+        when <literal>setX(int)</literal> is called on a point object, there is
+        no other point object to grab! So in that case, the parameter
+        <literal>p2</literal> is unbound, and hence, the compilation error.
+      </para>
+
+    </sect2>
+
+    <sect2>
+      <title>Example: <literal>HandleLiveness</literal></title>
+
+      <para>
+        The example below consists of two object classes (plus an exception
+        class) and one aspect. Handle objects delegate their public, non-static
+        operations to their <literal>Partner</literal> objects. The aspect
+        <literal>HandleLiveness</literal> ensures that, before the delegations,
+        the partner exists and is alive, or else it throws an exception.</para>
+
+<programlisting><![CDATA[
+  class Handle {
+    Partner partner = new Partner();
+
+    public void foo() { partner.foo(); }
+    public void bar(int x) { partner.bar(x); }
+
+    public static void main(String[] args) {
+      Handle h1 = new Handle();
+      h1.foo();
+      h1.bar(2);
+    }
+  }
+
+  class Partner {
+    boolean isAlive() { return true; }
+    void foo() { System.out.println("foo"); }
+    void bar(int x) { System.out.println("bar " + x); }
+  }
+
+  aspect HandleLiveness {
+    before(Handle handle): target(handle) && call(public * *(..)) {
+      if ( handle.partner == null  || !handle.partner.isAlive() ) {
+        throw new DeadPartnerException();
+      }
+    }
+  }
+
+  class DeadPartnerException extends RuntimeException {}
+]]></programlisting>
+
+    </sect2>
+
+  </sect1>
+
+  <sect1>
+    <title>Advice</title>
+
+    <para>
+      Advice defines pieces of aspect implementation that execute at
+      well-defined points in the execution of the program. Those points can be
+      given either by named pointcuts (like the ones you've seen above) or by
+      anonymous pointcuts. Here is an example of an advice on a named pointcut:
+    </para>
+
+<programlisting><![CDATA[
+  pointcut setter(Point p1, int newval): target(p1) && args(newval)
+                                         (call(void setX(int) ||
+                                          call(void setY(int)));
+
+  before(Point p1, int newval): setter(p1, newval) {
+      System.out.println("About to set something in " + p1 +
+                         " to the new value " + newval);
+  }
+]]></programlisting>
+
+    <para>
+      And here is exactly the same example, but using an anonymous
+      pointcut:
+    </para>
+
+<programlisting><![CDATA[
+  before(Point p1, int newval): target(p1) && args(newval)
+                                (call(void setX(int)) ||
+                                 call(void setY(int))) {
+      System.out.println("About to set something in " + p1 +
+                         " to the new value " + newval);
+  }
+]]></programlisting>
+
+    <para>
+      Here are examples of the different advice:
+    </para>
+
+<programlisting><![CDATA[
+  before(Point p, int x): target(p) && args(x) && call(void setX(int)) {
+      if (!p.assertX(x)) return;
+  }
+]]></programlisting>
+
+    <para>
+      This before advice runs just before the execution of the actions
+      associated with the events in the (anonymous) pointcut.
+    </para>
+
+<programlisting><![CDATA[
+  after(Point p, int x): target(p) && args(x) && call(void setX(int)) {
+      if (!p.assertX(x)) throw new PostConditionViolation();
+  }
+]]></programlisting>
+
+    <para>
+      This after advice runs just after each join point picked out by the
+      (anonymous) pointcut, regardless of whether it returns normally or throws
+      an exception.
+    </para>
+
+<programlisting><![CDATA[
+  after(Point p) returning(int x): target(p) && call(int getX()) {
+      System.out.println("Returning int value " + x + " for p = " + p);
+  }
+]]></programlisting>
+
+    <para>
+      This after returning advice runs just after each join point picked out by
+      the (anonymous) pointcut, but only if it returns normally.  The return
+      value can be accessed, and is named <literal>x</literal> here.  After the
+      advice runs, the return value is returned.
+    </para>
+
+<programlisting><![CDATA[
+  after() throwing(Exception e): target(Point) && call(void setX(int)) {
+      System.out.println(e);
+  }
+]]></programlisting>
+
+    <para>
+      This after throwing advice runs just after each join point picked out by
+      the (anonymous) pointcut, but only when it throws an exception of type
+      <literal>Exception</literal>.  Here the exception value can be accessed
+      with the name <literal>e</literal>.  The advice re-raises the exception
+      after it's done.
+    </para>
+
+<programlisting><![CDATA[
+void around(Point p, int x): target(p)
+                          && args(x)
+                          && call(void setX(int)) {
+    if (p.assertX(x)) proceed(p, x);
+    p.releaseResources();
+}
+]]></programlisting>
+
+    <para>
+      This around advice traps the execution of the join point; it runs
+      <emphasis>instead</emphasis> of the join point.  The original action
+      associated with the join point can be invoked through the special
+      <literal>proceed</literal> call.
+    </para>
+
+  </sect1>
+
+  <sect1>
+    <title>Introduction</title>
+
+    <para>
+      Introduction declarations add whole new elements in the given types, and
+      so change the type hierarchy. Here are examples of introduction
+      declarations:
+    </para>
+
+<programlisting><![CDATA[
+  private boolean Server.disabled = false;
+]]></programlisting>
+
+    <para>
+      This privately introduces a field named <literal>disabled</literal> in
+      <literal>Server</literal> and initializes it to
+      <literal>false</literal>.  Because it is declared
+      <literal>private</literal>, only code defined in the aspect can access
+      the field.
+    </para>
+
+<programlisting><![CDATA[
+  public int Point.getX() { return x; }
+]]></programlisting>
+
+    <para>
+      This publicly introduces a method named <literal>getX</literal> in
+      <literal>Point</literal>; the method returns an <literal>int</literal>,
+      it has no arguments, and its body is return <literal>x</literal>.
+      Because it is defined publically, any code can call it.
+    </para>
+
+<programlisting><![CDATA[
+  public Point.new(int x, int y) { this.x = x; this.y = y; }
+]]></programlisting>
+
+    <para>
+      This publicly introduces a constructor in Point; the constructor has
+      two arguments of type int, and its body is this.x = x; this.y = y;
+    </para>
+
+<programlisting><![CDATA[
+  public int Point.x = 0;
+]]></programlisting>
+
+    <para>
+      This publicly introduces a field named x of type int in Point; the
+      field is initialized to 0.
+    </para>
+
+<programlisting><![CDATA[
+  declare parents: Point implements Comparable;
+]]></programlisting>
+
+    <para>
+      This declares that the <literal>Point</literal> class now implements the
+      <literal>Comparable</literal> interface. Of course, this will be an error
+      unless <literal>Point</literal> defines the methods of
+      <literal>Comparable</literal>.
+    </para>
+
+<programlisting><![CDATA[
+  declare parents: Point extends GeometricObject;
+]]></programlisting>
+
+    <para>
+      This declares that the <literal>Point</literal> class now extends the
+      <literal>GeometricObject</literal> class.
+    </para>
+
+    <para>
+      An aspect can introduce several elements in at the same time. For
+      example, the following declaration
+    </para>
+
+<programlisting><![CDATA[
+  public String Point.name;
+  public void Point.setName(String name) { this.name = name; }
+]]></programlisting>
+
+    <para>
+      publicly introduces both a field and a method into class
+      <literal>Point</literal>. Note that the identifier "name" in the body of
+      the method is bound to the "name" field in <literal>Point</literal>, even
+      if the aspect defined another field called "name".
+    </para>
+
+    <para>
+      One declaration can introduce several elements in several classes as
+      well. For example,
+    </para>
+
+<programlisting><![CDATA[
+  public String (Point || Line || Square).getName()  { return name; }
+]]></programlisting>
+
+    <para>
+      publicly introduces three methods, one in <literal>Point</literal>,
+      another in Line and another in <literal>Square</literal>. The three
+      methods have the same name (getName), no parameters, return a String, and
+      have the same body (return name;). The purpose of introducing several
+      elements in one single declaration is that their bodies are the same. The
+      introduction is an error if any of <literal>Point</literal>,
+      <literal>Line</literal>, or <literal>Square</literal> do not have a
+      "name" field.
+    </para>
+
+    <para>
+      An aspect can introduce fields and methods (even with bodies) onto
+      interfaces as well as classes.
+    </para>
+
+    <sect2>
+      <title>Introduction Scope</title>
+
+      <para>
+        AspectJ allows private and package-protected (default) introduction in
+        addition to public introduction. Private introduction means private in
+        relation to the aspect, not necessarily the target type. So, if an
+        aspect makes a private introduction of a field on a type
+      </para>
+
+<programlisting><![CDATA[
+  private int Foo.x;
+]]></programlisting>
+
+      <para>
+        Then code in the aspect can refer to Foo's x field, but nobody else
+        can. Similarly, if an aspect makes a package-protected
+        introduction,
+      </para>
+
+<programlisting><![CDATA[
+  int Foo.x;
+]]></programlisting>
+
+      <para>
+        then everything in the aspect's package (which may not be Foo's
+        package) can access x.
+      </para>
+    </sect2>
+
+    <sect2>
+      <title>Example: <literal>PointAssertions</literal></title>
+      <para>
+        The example below consists of one class and one aspect. The aspect
+        introduces all implementation that is related with assertions of the
+        class. It privately introduces two methods in the class Point, namely
+        assertX and assertY. It also advises the two set methods of Point with
+        before declarations that assert the validity of the given values. The
+        introductions are made privately because other parts of the program
+        have no business accessing the assert methods.  Only the code inside of
+        the aspect can call those methods.
+      </para>
+
+<programlisting><![CDATA[
+  class Point  {
+      int x, y;
+
+      public void setX(int x) { this.x = x; }
+      public void setY(int y) { this.y = y; }
+
+      public static void main(String[] args) {
+          Point p = new Point();
+          p.setX(3); p.setY(333);
+      }
+  }
+
+  aspect PointAssertions {
+
+      private boolean Point.assertX(int x) {
+          return (x <= 100 && x >= 0);
+      }
+      private boolean Point.assertY(int y) {
+          return (y <= 100 && y >= 0);
+      }
+
+      before(Point p, int x): target(p) && args(x) && call(void setX(int)) {
+          if (!p.assertX(x)) {
+              System.out.println("Illegal value for x"); return;
+          }
+      }
+      before(Point p, int y): target(p) && args(y) && call(void setY(int)) {
+          if (!p.assertY(y)) {
+              System.out.println("Illegal value for y"); return;
+          }
+      }
+  }
+]]></programlisting>
+
+      </sect2>
+  </sect1>
+
+<!--    ================================================== -->
+
+  <sect1>
+    <title>Reflection</title>
+
+    <para>
+      AspectJ provides a special reference variable, thisJoinPoint, that
+      contains reflective information about the current join point for the
+      advice to use. The thisJoinPoint variable can only be used in the context
+      of advice, just like this can only be used in the context of non-static
+      methods and variable initializers. In advice, thisJoinPoint is an object
+      of type JoinPoint.
+    </para>
+
+    <para>
+      One way to use it is simply to print it out. Like all Java objects,
+      thisJoinPoint has a toString() method that makes quick-and-dirty tracing
+      easy.
+    </para>
+
+<programlisting><![CDATA[
+  class TraceNonStaticMethods {
+      before(Point p): target(p) && call(* *(..)) {
+          System.out.println("Entering " + thisJoinPoint + " in " + p);
+      }
+  }
+]]></programlisting>
+
+    <para>
+      The type of thisJoinPoint includes a rich reflective class hierarchy of
+      signatures, and can be used to access both static and dynamic information
+      about join points. If, however, only the static information about the
+      join point (such as the Signature) is desired, a lightweight join-point
+      object is available from the thisJoinPointStaticPart special variable.
+      This object is the same object you would get from
+    </para>
+
+
+<programlisting><![CDATA[
+ thisJoinPoint.getStaticPart()
+]]></programlisting>
+
+    <para>
+      The static part of a join point does not include dynamic information,
+      such as the arguments, which can be accessed with
+    </para>
+
+<programlisting><![CDATA[
+ thisJoinPoint.getArgs()
+]]></programlisting>
+
+    <para>
+      But it has the performance benefit that repeated execution of the code
+      containing <literal>thisJoinPointStaticPart</literal> (through, for
+      example, separate method calls) will not result in repeated construction
+      of the reflective object.
+    </para>
+
+    <para>It is always the case that
+    </para>
+
+<programlisting><![CDATA[
+   thisJoinPointStaticPart == thisJoinPoint.getStaticPart()
+
+   thisJoinPoint.getKind() == thisJoinPointStaticPart.getKind()
+   thisJoinPoint.getSignature() == thisJoinPointStaticPart.getSignature()
+   thisJoinPoint.getSourceLocation() == thisJoinPointStaticPart.getSourceLocation()
+]]></programlisting>
+
+    <para>
+      One more reflective variable is available:
+      <literal>thisEnclosingJoinPointStaticPart</literal>.  This, like
+      <literal>thisJoinPointStaticPart</literal>, only holds the static part of
+      a join point, but it is not the current but the enclosing join point.
+      So, for example, it is possible to print out the calling source location
+      (if available) with
+    </para>
+
+
+<programlisting><![CDATA[
+   before() : execution (* *(..)) {
+     System.err.println(thisEnclosingJoinPointStaticPart.getSourceLocation())
+   }
+]]></programlisting>
+
+  </sect1>
+
+</chapter>
+
+<!-- Local variables: -->
+<!-- fill-column: 79 -->
+<!-- compile-command: "ant -quiet prog-html" -->
+<!-- sgml-local-ecat-files: progguide.ced -->
+<!-- sgml-parent-document:("progguide.xml" "book" "chapter") -->
+<!-- End: -->

@@ -1,0 +1,99 @@
+/* *******************************************************************
+ * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Xerox/PARC     initial implementation 
+ * ******************************************************************/
+
+ 
+ package org.aspectj.ajdt.internal.compiler.lookup;
+
+import java.util.*;
+
+import org.aspectj.weaver.*;
+import org.aspectj.weaver.TypeX;
+import org.eclipse.jdt.internal.compiler.*;
+import org.eclipse.jdt.internal.compiler.lookup.*;
+
+public class HelperInterfaceBinding extends SourceTypeBinding {
+	private TypeX typeX;
+	SourceTypeBinding enclosingType;
+	List methods = new ArrayList();
+	
+	public HelperInterfaceBinding(SourceTypeBinding enclosingType, TypeX typeX) {
+		super();
+		this.fPackage = enclosingType.fPackage;
+		//this.fileName = scope.referenceCompilationUnit().getFileName();
+		this.modifiers = AccPublic | AccInterface;
+		this.sourceName = enclosingType.scope.referenceContext.name;
+		this.enclosingType = enclosingType;
+		this.typeX = typeX;
+		
+		this.scope = enclosingType.scope;
+	}
+
+	public HelperInterfaceBinding(
+		char[][] compoundName,
+		PackageBinding fPackage,
+		ClassScope scope) {
+		super(compoundName, fPackage, scope);
+	}
+	
+	public char[] getFileName() {
+		return enclosingType.getFileName();
+	}
+
+	public TypeX getTypeX() {
+		return typeX;
+	}
+	
+	public void addMethod(EclipseWorld world , ResolvedMember member) {
+		MethodBinding binding = world.makeMethodBinding(member);
+		this.methods.add(binding);
+	}
+	
+	public FieldBinding[] fields() { return new FieldBinding[0]; }
+	
+	public MethodBinding[] methods() { return new MethodBinding[0]; }
+	
+
+	public char[] constantPoolName() {
+		String sig = typeX.getSignature();
+		return sig.substring(1, sig.length()-1).toCharArray();
+	}
+
+	public void generateClass(CompilationResult result, ClassFile enclosingClassFile) {
+		ClassFile classFile = new ClassFile(this, enclosingClassFile, false);
+		classFile.addFieldInfos();
+
+		classFile.setForMethodInfos();
+		for (Iterator i = methods.iterator(); i.hasNext(); ) {
+			MethodBinding b = (MethodBinding)i.next();
+			generateMethod(classFile, b);
+		}
+
+		classFile.addAttributes();
+			
+		result.record(this.constantPoolName(), classFile);
+	}
+	
+	
+	private void generateMethod(ClassFile classFile, MethodBinding binding) {
+		classFile.generateMethodInfoHeader(binding);
+		int methodAttributeOffset = classFile.contentsOffset;
+		int attributeNumber = classFile.generateMethodInfoAttribute(binding);
+		classFile.completeMethodInfo(methodAttributeOffset, attributeNumber);
+	}
+	
+	
+
+	public ReferenceBinding[] superInterfaces() {
+		return new ReferenceBinding[0];
+	}
+
+}

@@ -1,0 +1,304 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>AJDE Browser</title>
+<STYLE TYPE="text/css">
+<!--
+ 
+   /* FOR THE SDA PAGE */
+ 
+	/*
+	BODY {margin-top: 15px; margin-left: 15px; margin-right: 15px;}
+	*/
+
+	A:link {
+		color:#4756AC;
+	}
+	A:visited {
+		color:#60657B;
+	}
+	A:hover {
+		color:red
+	}
+	
+	INPUT {font:12px "Courier New", sans-serif;}
+	
+	H2 {
+		font:18px/18px Verdana, Arial, Helvetica, sans-serif; 
+		color:black; 
+		font-weight:bold; 
+		margin-left: 10px;
+		line-height:110%; 
+	}
+	H3 {
+		font:18px/18px Verdana, Arial, Helvetica, sans-serif; 
+		color:black; 
+		font-weight:bold; 
+		margin-left: 10px;
+		line-height:110%; 
+	}
+	H4 {
+		font:15px/16px Verdana, Arial, Helvetica, sans-serif; 
+		color:black; 
+		font-weight:bold; 
+		margin-left: 10px;
+		line-height:140%;
+	}
+	P {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif; 
+		margin-right: 10px;
+		margin-left: 10px;
+		line-height:130%; 
+	}
+	.paragraph {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif; 
+		margin-right: 10px;
+		margin-left: 10px;
+		line-height:130%; 
+	}
+	.smallParagraph {
+		font:11px/11px Verdana, Arial, Helvetica, sans-serif; 
+		margin-right: 10px;
+		margin-left: 10px;
+		line-height:130%; 
+	}
+	LI {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif;
+		text-align:justify; 
+		margin-right: 10px;
+		margin-left: 15px;
+		line-height:120%; 
+	}
+	/*
+	UL {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif;
+		text-align:justify; 
+		margin-right: 10px;
+		margin-left: 15px;
+		line-height:120%; 
+	}*/
+	CODE {
+		font:11px/11px Courier New, Courier, sans-serif;
+		text-align:justify; 
+		margin-right: 10px;
+		margin-left: 15px;
+		line-height:120%; 
+	}
+	
+	DL {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif;
+		text-align:justify; 
+		margin-right: 10px;
+		margin-left: 15px;
+		line-height:120%; 
+	}
+	.footer {
+		font:10px/10px Verdana, Arial, Helvetica, sans-serif;  
+		color:#888888; 
+		text-align:left
+	}
+	.figureTitle {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif; 
+		text-align:justify; 
+		text-align:center
+	}
+	.copyrightNotice {
+		font:10px/10px Verdana, Arial, Helvetica, sans-serif; 
+		color:#999999; 
+		line-height:110%;
+	}
+	.smallHeading {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif; 
+		font-weight:bold;
+		line-height:110%;
+	}
+	.tinyHeading {
+		font:11px/11px Verdana, Arial, Helvetica, sans-serif; 
+		font-weight:bold;
+		line-height:120%;
+	}
+	.newsText {
+		font:11px/11px Verdana, Arial, Helvetica, sans-serif; 
+		line-height:130%;
+	}
+	.smallParagraph {
+		font:11px/11px Verdana, Arial, Helvetica, sans-serif; 
+		line-height:130%;
+	}
+	.fancyHeading {
+		font:20px/20px Chantilly, Arial, Helvetica, sans-serif; 
+		margin-right: 10px;
+		color:#6f7a92;
+		margin-left: 10px;
+		line-height:130%;
+	}
+ 
+-->
+</STYLE>
+</head>
+
+<BODY BGCOLOR="white">
+
+<h3 align="center">AJDE Test Script</h3>
+
+<p><b>Structure Browser</b></p>
+
+
+<ul>
+  <li>Select link node corresponding to code (nodes not in structure view): 
+  navigation should seek to the source line for the corresponding node, and the 
+  parent declaration should be selected in the structure view.</li>
+  <li>seeking on compiler messages doesn't highlight, seeking on structure does 
+  and sets cursor in editor</li>
+  <li>after successful compile task is removed</li>
+  <li>JBuilder (and all?): save all happens before build</li>
+</ul>
+
+<p><b>AJBrowser Script</b></p>
+
+
+<p>Steps 3-6 apply should be re-tested in JBuilder and Forte seperately. </p>
+
+
+<ol>
+  <li>launch browser &amp; manipulate config file set<ul>
+    <li>with no config file passed as command line parameter: error message</li>
+    <li>open config file by browsing filesystem<ul>
+    <li>browse and add</li>
+    <li>close config</li>
+    <li>close config: silent fail</li>
+    <li>compile: error message</li>
+  </ul>
+    </li>
+    <li>with multiple config files passed as command line parameters<ul>
+    <li>a file specified by its full path</li>
+    <li>a file specified by its relative path</li>
+    <li>non &quot;.lst&quot; file: file not added to configs list</li>
+    <li>a file with an incorrect suffix: not added to list</li>
+  </ul>
+    </li>
+  </ul>
+  </li>
+  <li><font color="#000080">run</font><ul>
+    <li><font color="#000080">with no class selected: error dialog</font></li>
+    <li><font color="#000080">with a non-main class selected: error dialog</font></li>
+    <li><font color="#000080">with a correct main class selected</font></li>
+  </ul>
+  </li>
+  <li><font color="#000080">debug</font><ul>
+    <li><font color="#000080">with no class selected: error dialog</font></li>
+    <li><font color="#000080">with a non-main class selected: error dialog</font></li>
+    <li><font color="#000080">with a correct main class selected</font></li>
+  </ul>
+  </li>
+  <li>compile<ul>
+    <li>no config file present: error message</li>
+    <li>non-existing config file: error message</li>
+    <li>invalid config file: error dialog<ul>
+    <li><font color="#008080">incorrect entry: error message seeks to 
+    corresponding line</font></li>
+    <li><font color="#008080">non-existing file: error message seeks to 
+    corresponding line</font></li>
+  </ul>
+    </li>
+    <li>compile error-generating code: compiler error, failed build reported<ul>
+      <li>seek to compiler message</li>
+      <li>recompile: messages pane disappears</li>
+    </ul>
+    </li>
+    <li>compile warning-generating code: compiler warning, successful build 
+    reported</li>
+    <li><font color="#008080">compile and generate compiler error: error message</font></li>
+    <li><font color="#008080">compile and generate OutOfMemoryError: error 
+    message</font></li>
+    <li><font color="#008080">compile and abort: aborted build reported</font></li>
+    <li>compile valid code: successful build reported</li>
+  </ul>
+  </li>
+  <li>browse structure (expand this section)<ul>
+    <li>test modes<ul>
+    <li>global view</li>
+    <li>file view</li>
+    <li>split views</li>
+  </ul>
+    </li>
+    <li>expand/collapse tree levels using slider</li>
+    <li>close and re-launch browser: previously saved structure tree should be 
+    present</li>
+  </ul>
+  </li>
+  <li><font color="#008080">edit &quot;.lst&quot; file</font><ul>
+    <li><font color="#008080">select for editing and verify integrity of package/file structure</font></li>
+    <li><font color="#008080">select/deselect nodes and save</font></li>
+    <li><font color="#008080">verify saves committed to disk</font></li>
+    <li><font color="#008080">break &quot;.lst&quot; file on disk: error dialog</font></li>
+    <li><font color="#008080">coverage: when compilation breaks</font></li>
+    <li><font color="#008080">coverage: when aspectjrt.jar not present on 
+    classpath</font></li>
+  </ul>
+  </li>
+  <li>user preferences<ul>
+    <li>set options in &quot;Properties&quot; window</li>
+    <li>close and re-launch browser</li>
+    <li>verify properties<ul>
+    <li>Build Options<ul>
+    <li>non-standard options</li>
+  </ul>
+    </li>
+  </ul>
+    </li>
+  </ul>
+  </li>
+  <li>error handler<ul>
+    <li>verify that the error handler shows stack trace</li>
+  </ul>
+  </li>
+</ol>
+
+
+<p><b>AJDE/JBuilder</b></p>
+<ol>
+  <li>launch<ul>
+    <li>AJDE startup message appears</li>
+    <li>no AJDE listeners are enabled until AJDE started (whitebox)</li>
+  </ul>
+  </li>
+  <li>make new project<ul>
+    <li>*any* combination of parameters to the new project wizard should work</li>
+    <li>add packages</li>
+    <li>add single files</li>
+  </ul>
+  </li>
+  <li>start AJDE</li>
+  <li>repeat AJBrowser tests</li>
+  <li>inline annotations<ul>
+    <li>line with a single annotation</li>
+    <li>line with multiple annotations</li>
+  </ul>
+  </li>
+</ol>
+<p><b>AJDE/Forte</b></p>
+<ol>
+  <li>launch<ul>
+    <li>AJDE startup message appears</li>
+    <li>no AJDE listeners are enabled until AJDE started (whitebox)</li>
+  </ul>
+  </li>
+  <li>make new project<ul>
+    <li>*any* combination of parameters to the new project wizard should work</li>
+    <li>add packages</li>
+    <li>add single files</li>
+  </ul>
+  </li>
+  <li>start AJDE</li>
+  <li>repeat AJBrowser tests</li>
+</ol>
+
+
+</body>
+
+</html>

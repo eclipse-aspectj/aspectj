@@ -1,0 +1,534 @@
+/* *******************************************************************
+ * Copyright (c) 1999-2001 Xerox Corporation, 
+ *               2002 Palo Alto Research Center, Incorporated (PARC).
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Xerox/PARC     initial implementation 
+ * ******************************************************************/
+
+
+package org.aspectj.tools.ajbrowser;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import java.io.File;
+
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JSplitPane;
+import javax.swing.JToolBar;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
+import javax.swing.filechooser.FileFilter;
+
+import org.aspectj.ajde.Ajde;
+import org.aspectj.ajde.ui.swing.AJButtonMenuCombo;
+import org.aspectj.ajde.ui.swing.AjdeUIManager;
+import org.aspectj.ajde.ui.swing.BuildConfigPopupMenu;
+import org.aspectj.ajde.ui.swing.MultiStructureViewPanel;
+import org.aspectj.asm.ProgramElementNode;
+
+/**
+ * UI for standalone operation.
+ *
+ * @author Mik Kersten
+ */
+public class TopFrame extends JFrame {
+
+    JLabel statusText_label = new JLabel();
+
+	//private AJButtonMenuCombo lastBuildCombo = null;
+    private JPanel editor_panel = null;
+    private JPanel sourceEditor_panel = null;
+
+    private JMenuBar menuBar = new JMenuBar();
+    private JMenu jMenu1 = new JMenu();
+    private JMenu jMenu2 = new JMenu();
+    private JMenuItem projectBuild_menuItem = new JMenuItem();
+    private FlowLayout left_flowLayout = new FlowLayout();
+    private Border border1;
+    private Border border2;
+    private JMenuItem jMenuItem1 = new JMenuItem();
+    private JMenuItem exit_menuItem = new JMenuItem();
+    private JSplitPane top_splitPane = new JSplitPane();
+    private BorderLayout borderLayout2 = new BorderLayout();
+    private BorderLayout borderLayout1 = new BorderLayout();
+    private BorderLayout borderLayout3 = new BorderLayout();
+    private JMenuItem projectRun_menuItem = new JMenuItem();
+    private Border border3;
+    private JPanel status_panel = new JPanel();
+    private BorderLayout borderLayout4 = new BorderLayout();
+    private Border emptyBorder = BorderFactory.createEmptyBorder();
+    private JPanel toolbar_panel = new JPanel();
+    private JSplitPane right_splitPane = new JSplitPane();
+    private JPanel messages_panel = null;
+    private JMenu tools_menu = new JMenu();
+    private JMenuItem joinpointProbe_menuItem = new JMenuItem();
+    private JMenuItem projectDebug_menuItem = new JMenuItem();
+    private Border border4;
+    private Border border5;
+    private Border border6;
+    private Border border7;
+    private JMenuItem svProperties_menuItem = new JMenuItem();
+    JPanel toolBar_panel = new JPanel();
+    JToolBar build_toolBar = new JToolBar();
+    JButton closeConfig_button = new JButton();
+    JButton openConfig_button = new JButton();
+    JButton run_button = new JButton();
+    JToolBar project_toolBar = new JToolBar();
+    JButton save_button = new JButton();
+    JButton options_button = new JButton();
+    JButton editConfig_button = new JButton();
+    JToolBar file_toolBar = new JToolBar();
+    JPanel filler_panel = new JPanel();
+    BorderLayout borderLayout5 = new BorderLayout();
+    BorderLayout borderLayout6 = new BorderLayout();
+    Border border8;
+    JLabel jLabel1 = new JLabel();
+    JLabel jLabel2 = new JLabel();
+    JPanel multiView_panel;
+
+	private AJButtonMenuCombo buildCombo;
+    //JPanel view_panel;
+    //JSplitPane structureView_pane = new JSplitPane();
+    //JPanel browser_panel = null;
+
+//    public final BuildConfigListener CONFIGURATION_LISTENER = new BuildConfigListener() {
+//        public void currConfigChanged(String configFilePath) {
+//        	AjdeUIManager.getDefault().getViewManager().updateView();
+//        }
+//        
+//        public void configsListUpdated(java.util.List configsList) { 
+//	       	//AjdeUIManager.getDefault().getViewManager().updateConfigsList();
+//        }
+//    };
+
+    public void init(MultiStructureViewPanel multiViewPanel, JPanel compilerMessagesPanel, JPanel editorPanel) {
+        try {
+        	this.multiView_panel = multiViewPanel;
+            //this.browser_panel = browserPanel;
+            //this.fileStructure_panel = fileStructurePanel;
+            this.messages_panel = compilerMessagesPanel;
+            this.editor_panel = editorPanel;
+            this.sourceEditor_panel = editorPanel;
+
+            jbInit();
+            svProperties_menuItem.setIcon(AjdeUIManager.getDefault().getIconRegistry().getBrowserOptionsIcon());
+            projectBuild_menuItem.setIcon(AjdeUIManager.getDefault().getIconRegistry().getBuildIcon());
+            projectRun_menuItem.setIcon(AjdeUIManager.getDefault().getIconRegistry().getExecuteIcon());
+            projectDebug_menuItem.setIcon(AjdeUIManager.getDefault().getIconRegistry().getDebugIcon());
+
+            this.setJMenuBar(menuBar);
+            this.setIconImage(((ImageIcon)AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.ADVICE)).getImage());
+            this.setLocation(75, 10);
+            this.setSize(900, 650);
+            this.setTitle(BrowserManager.TITLE);
+            bindKeys();
+            fixButtonBorders();
+            messages_panel.setVisible(false);
+
+			JPopupMenu orderMenu = new BuildConfigPopupMenu(new AbstractAction() {
+	    		public void actionPerformed(ActionEvent arg0) {
+			        BrowserManager.getDefault().saveAll();
+				}
+	    	});
+
+			buildCombo = new AJButtonMenuCombo(
+				"Build",
+				"Build",
+				AjdeUIManager.getDefault().getIconRegistry().getBuildIcon(),
+				orderMenu,
+				false);  
+			
+			build_toolBar.add(buildCombo, 1);
+			refreshBuildMenu();
+        }
+        catch(Exception e) {
+            e.printStackTrace();  
+        }
+    }
+  
+	private void refreshBuildMenu() {
+		JPopupMenu orderMenu = new BuildConfigPopupMenu(new AbstractAction() {
+    		public void actionPerformed(ActionEvent arg0) {
+		        BrowserManager.getDefault().saveAll();
+			}
+    	});
+
+		buildCombo.setMenu(orderMenu);
+	}
+
+    public void setEditorPanel(JPanel panel) {
+        editor_panel = panel;
+        right_splitPane.remove(editor_panel);
+        right_splitPane.add(panel, JSplitPane.TOP);
+        panel.setVisible(true);
+    }
+
+    /**
+     * @todo    get rid of this method and make jbinit() work properly
+     */
+    private void fixButtonBorders() {
+        run_button.setBorder(null);
+        options_button.setBorder(null);
+        openConfig_button.setBorder(null);
+        closeConfig_button.setBorder(null);
+        save_button.setBorder(null);
+        editConfig_button.setBorder(null);
+    }
+
+    private void bindKeys() {
+        this.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getModifiers() == java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()) {
+                    if (e.getKeyCode() == KeyEvent.VK_F11) {
+                        Ajde.getDefault().getBuildManager().build();
+                    } else if (e.getKeyCode() == KeyEvent.VK_S) {
+                        Ajde.getDefault().getEditorManager().saveContents();
+                    } else if (e.getKeyCode() == KeyEvent.VK_P) {
+                        AjdeUIManager.getDefault().showOptionsFrame();
+                    }
+                }
+            }
+        });
+    }
+
+    private void jbInit() throws Exception {
+        border1 = BorderFactory.createBevelBorder(BevelBorder.LOWERED,Color.white,Color.white,new Color(148, 145, 140),new Color(103, 101, 98));
+        border2 = BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140));
+        border3 = BorderFactory.createBevelBorder(BevelBorder.LOWERED,Color.white,Color.white,new Color(148, 145, 140),new Color(103, 101, 98));
+        border4 = BorderFactory.createBevelBorder(BevelBorder.RAISED,Color.white,Color.white,new Color(148, 145, 140),new Color(103, 101, 98));
+        border5 = BorderFactory.createEmptyBorder();
+        border6 = BorderFactory.createEmptyBorder();
+        border7 = BorderFactory.createBevelBorder(BevelBorder.RAISED,Color.white,Color.white,new Color(148, 145, 140),new Color(103, 101, 98));
+        border8 = BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(Color.white,new Color(156, 156, 158)),BorderFactory.createEmptyBorder(2,2,2,2));
+        emptyBorder = BorderFactory.createEmptyBorder(2,2,2,2);
+        jMenu1.setFont(new java.awt.Font("Dialog", 0, 11));
+        jMenu1.setText("File");
+        jMenu2.setFont(new java.awt.Font("Dialog", 0, 11));
+        jMenu2.setText("Project");
+        projectBuild_menuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        projectBuild_menuItem.setText("Build");
+        projectBuild_menuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                projectBuild_menuItem_actionPerformed(e);
+            }
+        });
+        left_flowLayout.setAlignment(FlowLayout.LEFT);
+        jMenuItem1.setFont(new java.awt.Font("Dialog", 0, 11));
+        jMenuItem1.setText("Save");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                jMenuItem1_actionPerformed(e);
+            }
+        });
+        exit_menuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        exit_menuItem.setText("Exit");
+        exit_menuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                exit_menuItem_actionPerformed(e);
+            }
+        });
+        top_splitPane.setPreferredSize(new Dimension(706, 800));
+        top_splitPane.setDividerSize(4);
+        this.getContentPane().setLayout(borderLayout3);
+        projectRun_menuItem.setEnabled(true);
+        projectRun_menuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        projectRun_menuItem.setText("Run");
+        projectRun_menuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                projectRun_menuItem_actionPerformed(e);
+            }
+        });  
+        statusText_label.setFont(new java.awt.Font("Dialog", 0, 11));
+        statusText_label.setBorder(BorderFactory.createLoweredBevelBorder());
+        statusText_label.setMaximumSize(new Dimension(2000, 20));
+        statusText_label.setPreferredSize(new Dimension(300, 20));
+        status_panel.setLayout(borderLayout4);
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(WindowEvent e) {
+                this_windowClosed(e);
+            }
+            public void windowClosing(WindowEvent e) {
+                this_windowClosing(e);
+            }
+        });
+        toolbar_panel.setLayout(borderLayout5);
+        right_splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        right_splitPane.setBorder(null);
+        right_splitPane.setDividerSize(4);
+        tools_menu.setFont(new java.awt.Font("Dialog", 0, 11));
+        tools_menu.setText("Tools");
+        projectDebug_menuItem.setEnabled(false);
+        projectDebug_menuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        projectDebug_menuItem.setText("Debug");
+        svProperties_menuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                svProperties_menuItem_actionPerformed(e);
+            }
+        });
+        svProperties_menuItem.setText("Options...");
+        svProperties_menuItem.setActionCommand("AJDE Console...");
+        svProperties_menuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        build_toolBar.setBorder(emptyBorder);
+        build_toolBar.setFloatable(false);
+        closeConfig_button.setMaximumSize(new Dimension(100, 20));
+        closeConfig_button.setEnabled(true);
+        closeConfig_button.setFont(new java.awt.Font("Dialog", 0, 11));
+        closeConfig_button.setBorder(null);
+        closeConfig_button.setMinimumSize(new Dimension(24, 20));
+        closeConfig_button.setPreferredSize(new Dimension(20, 20));
+        closeConfig_button.setToolTipText("Close build configuration");
+        closeConfig_button.setIcon(AjdeUIManager.getDefault().getIconRegistry().getCloseConfigIcon());
+        closeConfig_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                closeConfig_button_actionPerformed(e);
+            }
+        });
+        openConfig_button.setMaximumSize(new Dimension(100, 20));
+        openConfig_button.setEnabled(true);
+        openConfig_button.setFont(new java.awt.Font("Dialog", 0, 11));
+        openConfig_button.setBorder(null);
+        openConfig_button.setMinimumSize(new Dimension(24, 20));
+        openConfig_button.setPreferredSize(new Dimension(20, 20));
+        openConfig_button.setToolTipText("Open build configuration...");
+        openConfig_button.setIcon(AjdeUIManager.getDefault().getIconRegistry().getOpenConfigIcon());
+        openConfig_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                openConfig_button_actionPerformed(e);
+            }
+        });
+        run_button.setMaximumSize(new Dimension(60, 20));
+        run_button.setEnabled(true);
+        run_button.setFont(new java.awt.Font("Dialog", 0, 11));
+        run_button.setBorder(null);
+        run_button.setMinimumSize(new Dimension(24, 20));
+        run_button.setPreferredSize(new Dimension(20, 20));
+        run_button.setToolTipText("Run");
+        run_button.setIcon(AjdeUIManager.getDefault().getIconRegistry().getExecuteIcon());
+        run_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                run_button_actionPerformed(e);
+            }
+        });
+        project_toolBar.setBorder(emptyBorder);
+        save_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                save_button_actionPerformed(e);
+            }
+        });
+        save_button.setIcon(AjdeUIManager.getDefault().getIconRegistry().getSaveIcon());
+        save_button.setText("Save");
+        save_button.setToolTipText("Save");
+        save_button.setPreferredSize(new Dimension(55, 20));
+        save_button.setMinimumSize(new Dimension(24, 20));
+        save_button.setFont(new java.awt.Font("Dialog", 0, 11));
+        save_button.setBorder(null);
+        save_button.setMaximumSize(new Dimension(60, 20));
+        options_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                options_button_actionPerformed(e);
+            }
+        });
+        options_button.setIcon(AjdeUIManager.getDefault().getIconRegistry().getBrowserOptionsIcon());
+        options_button.setText("Options");
+        options_button.setToolTipText("Options...");
+        options_button.setPreferredSize(new Dimension(60, 20));
+        options_button.setMinimumSize(new Dimension(24, 20));
+        options_button.setFont(new java.awt.Font("Dialog", 0, 11));
+        options_button.setBorder(null);
+        options_button.setMaximumSize(new Dimension(80, 20));
+        editConfig_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                editConfig_button_actionPerformed(e);
+            }
+        });
+        editConfig_button.setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.FILE_LST));
+        editConfig_button.setText("Edit Config");
+        editConfig_button.setToolTipText("Edit Config...");
+        editConfig_button.setPreferredSize(new Dimension(80, 20));
+        editConfig_button.setMinimumSize(new Dimension(24, 20));
+        editConfig_button.setFont(new java.awt.Font("Dialog", 0, 11));
+        editConfig_button.setBorder(null);
+        editConfig_button.setMaximumSize(new Dimension(80, 20));
+        file_toolBar.setBorder(emptyBorder);
+        toolBar_panel.setLayout(borderLayout6);
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 11));
+        jLabel1.setText(" Build: ");
+        jLabel2.setText("      Run: ");
+        jLabel2.setFont(new java.awt.Font("Dialog", 0, 11));
+        //fileStructure_panel.setFont(new java.awt.Font("Dialog", 0, 11));
+        //browser_panel.setFont(new java.awt.Font("Dialog", 0, 11));
+        this.getContentPane().add(top_splitPane, BorderLayout.CENTER);
+        top_splitPane.add(right_splitPane, JSplitPane.RIGHT);
+        top_splitPane.add(multiView_panel, JSplitPane.LEFT);
+        right_splitPane.add(messages_panel, JSplitPane.BOTTOM);
+        right_splitPane.add(editor_panel, JSplitPane.TOP);
+        //structureView_pane.add(fileStructure_panel, JSplitPane.RIGHT);
+        //structureView_pane.add(browser_panel, JSplitPane.LEFT);
+        this.getContentPane().add(status_panel, BorderLayout.SOUTH);
+        status_panel.add(statusText_label, BorderLayout.CENTER);
+        this.getContentPane().add(toolbar_panel, BorderLayout.NORTH);
+        toolbar_panel.add(filler_panel, BorderLayout.CENTER);
+        toolbar_panel.add(toolBar_panel,  BorderLayout.WEST);
+        //file_toolBar.add(editConfig_button, null);
+        file_toolBar.add(save_button, null);
+        file_toolBar.add(options_button, null);
+        toolBar_panel.add(build_toolBar, BorderLayout.WEST);
+        toolBar_panel.add(project_toolBar, BorderLayout.CENTER);
+        project_toolBar.add(jLabel2, null);
+        project_toolBar.add(run_button, null);
+        build_toolBar.add(jLabel1, null);
+        build_toolBar.add(openConfig_button, null);
+        build_toolBar.add(closeConfig_button, null);
+        toolBar_panel.add(file_toolBar, BorderLayout.EAST);
+        menuBar.add(jMenu1);
+        menuBar.add(jMenu2);
+        menuBar.add(tools_menu);
+        jMenu1.add(jMenuItem1);
+        jMenu1.addSeparator();
+        jMenu1.add(exit_menuItem);
+        jMenu2.add(projectBuild_menuItem);
+        jMenu2.add(projectRun_menuItem);
+        //jMenu2.add(projectDebug_menuItem);
+        tools_menu.add(joinpointProbe_menuItem);
+        tools_menu.add(svProperties_menuItem);
+        top_splitPane.setDividerLocation(380);
+        right_splitPane.setDividerLocation(500);
+        project_toolBar.addSeparator();
+        project_toolBar.addSeparator();
+    }
+
+    private void exit_menuItem_actionPerformed(ActionEvent e) {
+        quit();
+    }
+
+    private void this_windowClosing(WindowEvent e) {
+        quit();
+    }
+
+    private void quit() {
+        this.dispose();
+        System.exit(0);
+    }
+
+
+    void treeMode_comboBox_actionPerformed(ActionEvent e) { }
+
+    void save_button_actionPerformed(ActionEvent e) {
+        Ajde.getDefault().getEditorManager().saveContents();
+    }
+
+
+    void this_windowClosed(WindowEvent e) {
+        quit();
+    }
+
+    public void showMessagesPanel() {
+        right_splitPane.setDividerLocation(right_splitPane.getHeight()-100);
+        messages_panel.setVisible(true);
+    }
+
+    public void hideMessagesPanel() {
+        right_splitPane.setDividerLocation(right_splitPane.getHeight());
+        messages_panel.setVisible(false);
+    }
+
+
+    void emacsTest_button_actionPerformed(ActionEvent e) {
+//        Tester.emacsCompile(TopManager.BROWSER_MANAGER.getCurrConfigFile());
+    }
+
+    void jMenuItem1_actionPerformed(ActionEvent e) {
+        Ajde.getDefault().getEditorManager().saveContents();
+    }
+
+    void projectBuild_menuItem_actionPerformed(ActionEvent e) {
+        BrowserManager.getDefault().saveAll();
+        Ajde.getDefault().getBuildManager().build();
+    }
+
+    void run_button_actionPerformed(ActionEvent e) {
+        BrowserManager.getDefault().run();
+    }
+
+    void projectRun_menuItem_actionPerformed(ActionEvent e) {
+        BrowserManager.getDefault().run();
+    }
+
+    void build_button_actionPerformed(ActionEvent e) {
+        BrowserManager.getDefault().saveAll();
+        Ajde.getDefault().getBuildManager().build();
+	}
+
+    void options_button_actionPerformed(ActionEvent e) {
+        AjdeUIManager.getDefault().showOptionsFrame();
+    }
+
+    void editConfig_button_actionPerformed(ActionEvent e) {
+        //Ajde.getDefault().getConfigurationManager().editConfigFile(UiManager.getDefault().getViewManager().getCurrConfigFile());
+    	BrowserManager.getDefault().openFile(Ajde.getDefault().getConfigurationManager().getActiveConfigFile());
+    	refreshBuildMenu();
+    }
+
+    public void resetSourceEditorPanel() {
+        right_splitPane.removeAll();
+        right_splitPane.add(sourceEditor_panel, JSplitPane.TOP);
+    }
+    
+    private void svProperties_menuItem_actionPerformed(ActionEvent e) {
+        AjdeUIManager.getDefault().showOptionsFrame();
+    }
+
+    private void openConfig_button_actionPerformed(ActionEvent e) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(new FileFilter() {
+            public boolean accept(File f) {
+                if (f.getPath().endsWith(".lst") || f.isDirectory()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            public String getDescription() {
+                return "AspectJ Build Configuration (*.lst)";
+            }
+        });
+        int returnVal = fileChooser.showOpenDialog(this);
+        if(returnVal == JFileChooser.APPROVE_OPTION) {
+        	String path = fileChooser.getSelectedFile().getAbsolutePath();//.replace('\\', '/');
+        	BrowserManager.getDefault().getConfigFiles().add(0, path);
+        	Ajde.getDefault().getConfigurationManager().setActiveConfigFile(path);
+            refreshBuildMenu();  
+        }
+    }
+
+    private void closeConfig_button_actionPerformed(ActionEvent e) {
+    	BrowserManager.getDefault().getConfigFiles().remove(Ajde.getDefault().getConfigurationManager().getActiveConfigFile());
+    	if (!BrowserManager.getDefault().getConfigFiles().isEmpty()) {
+    		Ajde.getDefault().getConfigurationManager().setActiveConfigFile((String)BrowserManager.getDefault().getConfigFiles().get(0));
+    	}
+    	refreshBuildMenu();
+    }
+}
