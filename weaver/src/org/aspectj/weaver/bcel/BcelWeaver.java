@@ -55,6 +55,7 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AnnotationOnTypeMunger;
 import org.aspectj.weaver.AnnotationX;
+import org.aspectj.weaver.AsmRelationshipProvider;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.CrosscuttingMembersSet;
 import org.aspectj.weaver.IClassFileProvider;
@@ -1107,6 +1108,10 @@ public class BcelWeaver implements IWeaver {
 	private boolean applyDeclareAtType(DeclareAnnotation decA, ResolvedTypeX onType,boolean reportProblems) {
 		boolean didSomething = false;
 		if (decA.matches(onType)) {
+			
+			//FIXME asc CRITICAL this should be guarded by the 'already has annotation' check below but isn't since the compiler is producing classfiles with deca affected things in...
+			AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decA.getSourceLocation(),onType.getSourceLocation());
+			
 		    if (onType.hasAnnotation(decA.getAnnotationX().getSignature())) {
 // FIXME asc Could put out a lint here for an already annotated type - the problem is that it may have
 // picked up the annotation during 'source weaving' in which case the message is misleading.  Leaving it
