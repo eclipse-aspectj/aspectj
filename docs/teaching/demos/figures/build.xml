@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<!-- writen for Ant 1.5.1 -->
+<project name="figures" default="reset">
+
+<target name="reset" description="Reset the demonstration system sources">
+ 
+ <delete>
+ 	<fileset dir="src"/>
+ </delete>
+ <copy todir="src">
+   <fileset dir="src-fresh"/>
+ </copy>
+</target>
+
+</project>

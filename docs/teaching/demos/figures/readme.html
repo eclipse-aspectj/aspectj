@@ -1,0 +1,299 @@
+
+<head>
+<style>
+<!--
+ table.MsoNormalTable
+	{mso-style-parent:"";
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	}
+-->
+</style>
+<STYLE TYPE="text/css">
+<!--
+ 
+   /* FOR THE SDA PAGE */
+ 
+	/*
+	BODY {margin-top: 15px; margin-left: 15px; margin-right: 15px;}
+	*/
+
+	A:link {
+		color:#4756AC;
+	}
+	A:visited {
+		color:#60657B;
+	}
+	A:hover {
+		color:red
+	}
+	
+	INPUT {font:12px "Courier New", sans-serif;}
+	
+	H2 {
+		font:18px/18px Verdana, Arial, Helvetica, sans-serif; 
+		color:black; 
+		font-weight:bold; 
+		margin-left: 10px;
+		line-height:110%; 
+	}
+	H3 {
+		font:18px/18px Verdana, Arial, Helvetica, sans-serif; 
+		color:black; 
+		font-weight:bold; 
+		margin-left: 10px;
+		line-height:110%; 
+	}
+	H4 {
+		font:15px/16px Verdana, Arial, Helvetica, sans-serif; 
+		color:black; 
+		font-weight:bold; 
+		margin-left: 10px;
+		line-height:140%;
+	}
+	P {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif; 
+		margin-right: 10px;
+		margin-left: 10px;
+		line-height:130%; 
+	}
+	.paragraph {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif; 
+		margin-right: 10px;
+		margin-left: 10px;
+		line-height:130%; 
+	}
+	.smallParagraph {
+		font:11px/11px Verdana, Arial, Helvetica, sans-serif; 
+		margin-right: 10px;
+		margin-left: 10px;
+		line-height:130%; 
+	}
+	LI {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif;
+		text-align:justify; 
+		margin-right: 10px;
+		margin-left: 15px;
+		line-height:120%; 
+	}
+	/*
+	UL {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif;
+		text-align:justify; 
+		margin-right: 10px;
+		margin-left: 15px;
+		line-height:120%; 
+	}*/
+	
+	DL {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif;
+		text-align:justify; 
+		margin-right: 10px;
+		margin-left: 15px;
+		line-height:120%; 
+	}
+	B { font:13px/13px Verdana, Arial, Helvetica, sans-serif; 
+		font-weight:bold; 
+		line-height:140%;
+	}
+	.footer {
+		font:10px/10px Verdana, Arial, Helvetica, sans-serif;  
+		color:#888888; 
+		text-align:left
+	}
+	.figureTitle {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif; 
+		text-align:justify; 
+		text-align:center
+	}
+	.copyrightNotice {
+		font:10px/10px Verdana, Arial, Helvetica, sans-serif; 
+		color:#999999; 
+		line-height:110%;
+	}
+	.smallHeading {
+		font:13px/13px Verdana, Arial, Helvetica, sans-serif; 
+		font-weight:bold;
+		line-height:110%;
+	}
+	.tinyHeading {
+		font:11px/11px Verdana, Arial, Helvetica, sans-serif; 
+		font-weight:bold;
+		line-height:120%;
+	}
+	.newsText {
+		font:11px/11px Verdana, Arial, Helvetica, sans-serif; 
+		line-height:130%;
+	}
+	.smallParagraph {
+		font:11px/11px Verdana, Arial, Helvetica, sans-serif; 
+		line-height:130%;
+	}
+	.fancyHeading {
+		font:20px/20px Chantilly, Arial, Helvetica, sans-serif; 
+		margin-right: 10px;
+		color:#6f7a92;
+		margin-left: 10px;
+		line-height:130%;
+	}
+ 
+-->
+</STYLE>
+</head>
+
+<h2 align="center">AspectJ Figures Demo Instructions</h2>
+<h4>Setup</h4>
+<ul>
+	<li>
+	<p style="text-align: left">src: contains the end result of the demo, with the Canvas.updateHistory() 
+	call refactored into the src/figures/support/HistoryUpdating.aj aspect</li>
+	<li>
+	<p style="text-align: left">src-fresh: contains the plain Java sources that the demo starts with</li>
+</ul>
+<h4>Reset </h4>
+<ul>
+	<li>run the &quot;reset&quot; target in build.xml to reset overwrite the sources in 
+	src with those in src-fresh</li>
+</ul>
+<h4>Script</h4>
+<div align="center">
+	<table class="MsoNormalTable" border="0" cellspacing="3" cellpadding="0" style="width: 531.65pt; margin-left: -7.95pt" id="table1">
+		<tr style="height: 33.45pt">
+			<td style="width: 231px; height: 33.45pt; padding: 1.5pt; background: #F7F7F7">
+			<p class="MsoNormal" style="text-indent: -.25in; margin-left: 40.5pt">
+			<span style="font-size: 10.0pt; font-family: Symbol">·<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</span></span><span style="font-size:10.0pt;font-family:
+  Tahoma">Show Figure editor running</span></p>
+			<p class="MsoNormal" style="text-indent: -.25in; margin-left: 40.5pt">
+			<span style="font-size: 10.0pt; font-family: Symbol">·<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</span></span><span style="font-size:10.0pt;font-family:
+  Tahoma">Inspect Point.java</span></p>
+			<p class="MsoNormal" style="text-indent: -.25in; margin-left: 40.5pt">
+			<span style="font-size: 10.0pt; font-family: Symbol">·<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</span></span><span style="font-size:10.0pt;font-family:
+  Tahoma">Use joinpoint probe or Eclipse search to find calls</span></td>
+			<td style="width: 461px; height: 33.45pt; padding: 1.5pt; background: #F7F7F7">
+			<p class="MsoNormal" style="margin-left:7.5pt">
+			<span style="font-family: Courier"><font size="1">call(void 
+			figures.Canvas.updateHistory())</font></span></td>
+		</tr>
+		<tr style="height: 33.45pt">
+			<td style="width: 231px; height: 33.45pt; padding: 1.5pt; background: #F7F7F7">
+			<p class="MsoNormal" style="text-indent: -.25in; margin-left: 40.5pt">
+			<span style="font-size: 10.0pt; font-family: Symbol">·<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</span></span><span style="font-size:10.0pt;font-family:
+  Tahoma">Describe places that it’s called</span></p>
+			<p class="MsoNormal" style="text-indent: -.25in; margin-left: 40.5pt">
+			<span style="font-size: 10.0pt; font-family: Symbol">·<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</span></span><span style="font-size:10.0pt;font-family:
+  Tahoma">create aspect (defines a special class that can crosscut other 
+			classes)</span></p>
+			<p class="MsoNormal" style="text-indent: -.25in; margin-left: 40.5pt">
+			<span style="font-size: 10.0pt; font-family: Symbol">·<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</span></span><span style="font-size:10.0pt;font-family:
+  Tahoma">aspect HistoryUpdating </span></p>
+			<p class="MsoNormal" style="text-indent: -.25in; margin-left: 40.5pt">
+			<span style="font-size: 10.0pt; font-family: Symbol">·<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</span></span><span style="font-size:10.0pt;font-family:
+  Tahoma">write pointcut (has name and parameters)</span></td>
+			<td style="width: 461px; height: 33.45pt; padding: 1.5pt; background: #F7F7F7">
+			<p class="MsoNormal" style="margin-left:7.5pt">
+			<span style="font-family: Courier"><font size="1">pointcut moves(): 
+			</font> </span></p>
+			<p class="MsoNormal" style="margin-left:7.5pt">
+			<span style="font-family: Courier"><font size="1">&nbsp;&nbsp;&nbsp; execution(void 
+			Line.setP1(Point)) || </font> </span></p>
+			<p class="MsoNormal" style="margin-left:7.5pt">
+			<span style="font-family: Courier"><font size="1">&nbsp;&nbsp;&nbsp; execution(void 
+			Line.setP2(Point));</font></span></td>
+		</tr>
+		<tr style="height: 33.45pt">
+			<td style="width: 231px; height: 33.45pt; padding: 1.5pt; background: #F7F7F7">
+			<p class="MsoNormal" style="text-indent: -.25in; margin-left: 40.5pt">
+			<span style="font-size: 10.0pt; font-family: Symbol">·<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</span></span><span style="font-size:10.0pt;font-family:
+  Tahoma">write after advice (runs “on the way back out”)</span></td>
+			<td style="width: 461px; height: 33.45pt; padding: 1.5pt; background: #F7F7F7">
+			<p class="MsoNormal" style="margin-left:7.5pt">
+			<span style="font-family: Courier"><font size="1">after() returning: move() { <br>
+			&nbsp;&nbsp; &lt;runs after each move&gt; }</font></span></td>
+		</tr>
+		<tr style="height: 33.45pt">
+			<td style="width: 231px; height: 33.45pt; padding: 1.5pt; background: #F7F7F7">
+			<p class="MsoNormal" style="text-indent: -.25in; margin-left: 40.5pt">
+			<span style="font-size: 10.0pt; font-family: Symbol">·<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</span></span><span style="font-size:10.0pt;font-family:
+  Tahoma">extend advice to Point setters (multi-class)</span></td>
+			<td style="width: 461px; height: 33.45pt; padding: 1.5pt; background: #F7F7F7">
+			<p class="MsoNormal" style="margin-left:7.5pt">
+			<span style="font-family: Courier"><font size="1">call(void FigureElement+.set*(..))</font></span></td>
+		</tr>
+		<tr style="height: 33.45pt">
+			<td style="width: 231px; height: 33.45pt; padding: 1.5pt; background: #F7F7F7">
+			<p class="MsoNormal" style="text-indent: -.25in; margin-left: 40.5pt">
+			<span style="font-size: 10.0pt; font-family: Symbol">·<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</span></span><span style="font-size:10.0pt;font-family:
+  Tahoma">capture context &amp; use interface</span></td>
+			<td style="width: 461px; height: 33.45pt; padding: 1.5pt; background: #F7F7F7">
+			<p class="MsoNormal" style="margin-left:7.5pt">
+			<span style="font-family: Courier"><font size="1">move(FigureElement fe): 
+			this(fe) 
+			&amp;&amp;..</font></span></td>
+		</tr>
+		<tr style="height: 33.45pt">
+			<td style="width: 231px; height: 33.45pt; padding: 1.5pt; background: #F7F7F7">
+			<p class="MsoNormal" style="text-indent: -.25in; margin-left: 40.5pt">
+			<span style="font-size: 10.0pt; font-family: Symbol">·<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</span></span><span style="font-size:10.0pt;font-family:
+  Tahoma">Show structure, note that SlothfulPoint is now included</span></p>
+			<p class="MsoNormal" style="text-indent: -.25in; margin-left: 40.5pt">
+			<span style="font-size: 10.0pt; font-family: Symbol">·<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</span></span><span style="font-size:10.0pt;font-family:
+  Tahoma">Run &amp; show effect</span></td>
+			<td style="width: 461px; height: 33.45pt; padding: 1.5pt; background: #F7F7F7">
+			<p class="MsoNormal" style="margin-left:7.5pt">
+			<span style="font-family: Courier"><font size="1">&nbsp;</font></span></td>
+		</tr>
+		<tr style="height: 33.45pt">
+			<td style="width: 231px; height: 33.45pt; padding: 1.5pt; background: #F7F7F7">
+			<p class="MsoNormal" style="text-indent: -.25in; margin-left: 40.5pt">
+			<span style="font-size: 10.0pt; font-family: Symbol">·<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</span></span><span style="font-size:10.0pt;font-family:
+  Tahoma">Show Point.moveBy history violoation</span></p>
+			<p class="MsoNormal" style="text-indent: -.25in; margin-left: 40.5pt">
+			<span style="font-size: 10.0pt; font-family: Symbol">·<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</span></span><span style="font-size:10.0pt;font-family:
+  Tahoma">Want to make sure that sets of private fields of classes implementing 
+			FigureElement only happen from within the set methods</span></td>
+			<td style="width: 461px; height: 33.45pt; padding: 1.5pt; background: #F7F7F7">
+			<p class="MsoNormal" style="margin-left:7.5pt">
+			<span style="font-family: Courier"><font size="1">declare warning: 
+			</font> </span></p>
+			<p class="MsoNormal" style="margin-left:7.5pt">
+			<span style="font-family: Courier"><font size="1">&nbsp;&nbsp;&nbsp; set(private * FigureElement+.*) &nbsp;<br>
+&nbsp;&nbsp;&nbsp; &amp;&amp; !(withincode(* 
+			FigureElement+.set*(..)) || <br>
+&nbsp;&nbsp;&nbsp; withincode(FigureElement+.new(..))):</font></span></p>
+			<p class="MsoNormal" style="margin-left:7.5pt">
+			<span style="font-family: Courier"><font size="1">&nbsp;&nbsp;&nbsp; &quot;should only assign to fields 
+			from set methods&quot;;</font></span></td>
+		</tr>
+		<tr style="height: 33.45pt">
+			<td style="width: 231px; height: 33.45pt; padding: 1.5pt; background: #F7F7F7">
+			<p class="MsoNormal" style="text-indent: -.25in; margin-left: 40.5pt">
+			<span style="font-size: 10.0pt; font-family: Symbol">·<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</span></span><span style="font-size:10.0pt;font-family:
+  Tahoma">Write before advice that does precondition checking on Points.</span></td>
+			<td style="width: 461px; height: 33.45pt; padding: 1.5pt; background: #F7F7F7">
+			<p class="MsoNormal" style="margin-left:7.5pt">
+			<span style="font-family:&quot;Courier New&quot;"><font size="2">before(int</font><font size="2"> 
+			newValue): <br>
+			&nbsp;&nbsp;&nbsp; set(int Point.*) &amp;&amp; args(newValue) {<br>
+			&nbsp;&nbsp;&nbsp; if (newValue &lt; 0) {<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; throw new IAE(&quot;too small&quot;);<br>
+			&nbsp;&nbsp;&nbsp; } <br>
+			}</font></span></td>
+		</tr>
+	</table>
+</div>
+<p>&nbsp;</p>
