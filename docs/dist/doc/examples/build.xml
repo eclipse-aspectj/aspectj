@@ -331,6 +331,7 @@
 	
     <!-- ============================================================= -->
     <!-- do tracing example with 1.1 bytecode weaving (binary aspects) -->
+    <!-- (and use fork/forkclasspath to avoid Eclipse 2.x bug)         -->
     <!-- ============================================================= -->
     <target name="tracing-bc" depends="init"
      description="tracing example with bytecode weaving (binary aspects)">
@@ -339,6 +340,8 @@
        <!-- build application classes -->
        <iajc outjar="${jar.dir}/tracingApp.jar"
           classpath="${aspectjrt.jar}"
+          fork="true"
+          forkclasspath="${aspectjtools.jar}"
             verbose="off">
          <src path="${example.dir}"/>
          <include name="tracing/*.java" />
@@ -357,6 +360,8 @@
        <!-- Build a read-only tracing library -->
        <iajc outjar="${jar.dir}/tracingLib.jar"
           classpath="${aspectjrt.jar}"
+          fork="true"
+          forkclasspath="${aspectjtools.jar}"
             verbose="off">
          <src path="${example.dir}"/>
          <include name="tracing/version3/Trace.java" />
@@ -366,9 +371,11 @@
        <!-- This example uses a concrete aspect in source form, -->
        <!-- but the aspects could be written to be binary only. -->
        <iajc outjar="${jar.dir}/tracedApp.jar"
-             injars="${jar.dir}/tracingApp.jar"
+             inpath="${jar.dir}/tracingApp.jar"
          aspectpath="${jar.dir}/tracingLib.jar" 
           classpath="${aspectjrt.jar}"
+          fork="true"
+          forkclasspath="${aspectjtools.jar}"
             verbose="off">
          <src path="${example.dir}"/>
          <include name="tracing/version3/TraceMyClasses.java" />
