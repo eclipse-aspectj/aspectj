@@ -23,10 +23,23 @@ public interface ObjectChecker {
         public final boolean isValid(Object input) { return true; }
         public final String toString() { return "ObjectChecker.ANY"; }
     };
+    
     /** this returns true for any non-null object */
     public static final ObjectChecker NOT_NULL = new ObjectChecker() {
         public boolean isValid(Object input) { return (null != input); }
-        public String toString() { return "ObjectChecker.MOT_NULL"; }
+        public String toString() { return "ObjectChecker.NOT_NULL"; }
+    };
+    
+    /** @return true if input is 0 Integer or any other non-Integer reference. */
+    public static final ObjectChecker ANY_ZERO = new ObjectChecker() {
+        public boolean isValid(Object input) { 
+            if (input instanceof Integer) {
+                return (0 == ((Integer) input).intValue());
+            } else {
+                return true;
+            }
+        }
+        public String toString() { return "ObjectChecker.ANY_ZERO"; }
     };
     
     /**

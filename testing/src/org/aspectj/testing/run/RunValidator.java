@@ -37,8 +37,12 @@ import org.aspectj.testing.util.ObjectChecker;
  * e.g., as underlying components signal ABORT without using abort(...).
  */
 public class RunValidator implements IRunValidator {
-    /** expect normal completion with any non-null result object */
+    /** expect normal completion with any non-null result object,
+     *  except that Integer Objects must have value 0 */
     public static final IRunValidator NORMAL
+            = new RunValidator(ObjectChecker.ANY_ZERO);
+    /** expect normal completion with any non-null result object */
+    public static final IRunValidator ORIGINAL_NORMAL
             = new RunValidator(ObjectChecker.ANY);
 
     /** expect normal completion and Integer result object with value 0 */
