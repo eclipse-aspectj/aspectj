@@ -1234,6 +1234,12 @@ public class BcelShadow extends Shadow {
         InstructionList handler = new InstructionList();        
         BcelVar exceptionVar = genTempVar(catchType);
         exceptionVar.appendStore(handler, fact);
+        
+        // ENH 42743 suggests that we don't soften runtime exceptions.
+        // To implement that, would need to add instructions into the handler
+        // stream here to test if exceptionVar is an instanceof RuntimeException,
+        // and if it is, just re-throw it without softening.
+        // (Not yet implemented obviously).
 
 		handler.append(fact.createNew(NameMangler.SOFT_EXCEPTION_TYPE));
 		handler.append(InstructionFactory.createDup(1));   
