@@ -2,12 +2,11 @@
 <classpath>
     <classpathentry kind="src" path="src"/>
     <classpathentry kind="src" path="testsrc"/>
-    <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
+    <classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
     <classpathentry kind="src" path="/ajde"/>
     <classpathentry kind="src" path="/util"/>
     <classpathentry kind="lib" path="/lib/junit/junit.jar" sourcepath="/lib/junit/junit-src.jar"/>
     <classpathentry kind="src" path="/bridge"/>
     <classpathentry kind="src" path="/asm"/>
-    <classpathentry kind="src" path="/taskdefs"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
