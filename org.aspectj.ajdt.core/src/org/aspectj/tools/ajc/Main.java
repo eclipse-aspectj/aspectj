@@ -502,9 +502,10 @@ public class Main {
          */
         public String[] init(String[] args, IMessageHandler sink) {
             running = true;
+            String[] unused;
             if (!LangUtil.isEmpty(args)) {
                 String[][] options = LangUtil.copyStrings(OPTIONS);
-                args = LangUtil.extractOptions(args, options);
+                unused = LangUtil.extractOptions(args, options);
                 incremental = (null != options[0][0]);
                 if (null != options[1][0]) {
                     File file = new File(options[1][1]);

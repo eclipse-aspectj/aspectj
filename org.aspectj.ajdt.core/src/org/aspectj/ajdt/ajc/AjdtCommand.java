@@ -121,12 +121,29 @@ public class AjdtCommand implements ICommand {
         return false;
     }
 
-    /** @throws AbortException on error after handling message */
+    /** 
+     * This creates a build configuration for the arguments.
+     * Errors reported to the handler:
+     * <ol>
+     *   <li>The parser detects some directly</li>
+     *   <li>The parser grabs some from the error stream
+     *       emitted by its superclass</li>
+     *   <li>The configuration has a self-test</li>
+     * </ol>
+     * In the latter two cases, the errors do not have
+     * a source location context for locating the error.
+     */
     public static AjBuildConfig genBuildConfig(String[] args, CountingMessageHandler handler) {
         BuildArgParser parser = new BuildArgParser();
         AjBuildConfig config = parser.genBuildConfig(args, handler);
         String message = parser.getOtherMessages(true);
 
+        if (null != message) {
+            IMessage.Kind kind = inferKind(message);
+            IMessage m = new Message(message, kind, null, null);            
+            handler.handleMessage(m);
+        }
+        message = config.configErrors();
         if (null != message) {
             IMessage.Kind kind = inferKind(message);
             IMessage m = new Message(message, kind, null, null);            
