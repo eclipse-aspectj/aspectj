@@ -145,7 +145,13 @@ public class Module {
     private final File assembledJar;
     
     /** File list of library jars */
-    private final List libJars;
+    private final List libJars; 
+
+    /** 
+     * File list of library jars exported to clients 
+     * (duplicates some libJars entries) 
+     */
+    private final List exportedLibJars; 
 
     /** File list of source directories */
     private final List srcDirs;
@@ -183,6 +189,7 @@ public class Module {
         this.moduleDir = moduleDir;
         this.trimTesting = trimTesting;
         this.libJars = new ArrayList();
+        this.exportedLibJars = new ArrayList();
         this.required = new ArrayList();
         this.srcDirs = new ArrayList();
         this.properties = new Properties();
@@ -207,6 +214,11 @@ public class Module {
     /** @return unmodifiable List of required modules String names*/
     public List getRequired() {
         return Collections.unmodifiableList(required);
+    }
+    
+    /** @return unmodifiable list of exported library files, guaranteed readable */
+    public List getExportedLibJars() {
+        return Collections.unmodifiableList(exportedLibJars);
     }
     
     /** @return unmodifiable list of required library files, guaranteed readable */
@@ -340,7 +352,7 @@ public class Module {
             while (null != (line = reader.readLine())) {
                 lastKind = parseLine(line, lastKind);
             }
-            return (0 < srcDirs.size());
+            return (0 < (srcDirs.size() + libJars.size()));
         } catch (IOException e) {
             messager.logException("IOException reading " + file, e);
         } finally {
@@ -414,7 +426,7 @@ public class Module {
         return true;
     }
     
-    private String parseLine(String line, String lastKind) {
+    private String parseLine(final String line, String lastKind) {
         if (null == line) {
             return null;
         }
@@ -454,7 +466,8 @@ public class Module {
                     messager.error("unable to create required module: " + moduleName);
                 }                
             } else {                    // src dir
-                File srcDir = new File(moduleDir, path);
+                String fullPath = getFullPath(path);
+                File srcDir = new File(fullPath);
                 if (srcDir.canRead() && srcDir.isDirectory()) {
                     srcDirs.add(srcDir); 
                 } else {
@@ -462,12 +475,13 @@ public class Module {
                 }
             }
         } else if ("lib".equals(kind)) {
-            String libPath = path.startsWith("/") 
-                ? modules.baseDir.getAbsolutePath() + path
-                : path;
-             File libJar = new File(libPath);
+             String fullPath = getFullPath(path);
+             File libJar= new File(fullPath);
              if (libJar.canRead() && libJar.isFile()) {
                 libJars.add(libJar);
+                if (-1 != line.indexOf("exported=\"true\"")) {
+                    exportedLibJars.add(libJar);
+                }
              } else {
                 messager.error("no such library jar " + libJar + " from " + line);                
              }
@@ -476,13 +490,34 @@ public class Module {
                 messager.log("cannot handle var yet: " + line);
             }
         } else if ("con".equals(kind)) {
-            messager.log("cannot handle con yet: " + line);
+            if (-1 == line.indexOf("JRE")) { // warn non-JRE containers
+                messager.log("cannot handle con yet: " + line);
+            }
         } else if ("out".equals(kind)) {
             // ignore output entries
         } else {
             messager.log("unrecognized kind " + kind + " in " + line);
         }
         return null;
+    }
+    /** resolve path absolutely, assuming / means base of modules dir */
+    private String getFullPath(String path) {
+        String fullPath;
+        if (path.startsWith("/")) {
+            fullPath = modules.baseDir.getAbsolutePath() + path;
+        } else {
+            fullPath = moduleDir.getAbsolutePath() + "/" + path; 
+        }
+        // check for absolute paths (untested - none in our modules so far)
+        File testFile = new File(fullPath);
+        //System.out.println("Module.getFullPath: " + fullPath + " - " + testFile.getAbsolutePath());
+        if (! testFile.exists()) {
+            testFile = new File(path);
+            if (testFile.exists() && testFile.isAbsolute()) {
+                fullPath = path;
+            }
+        }
+        return fullPath;
     }
     
     /** @return List of File of any module or library jar ending with suffix */
