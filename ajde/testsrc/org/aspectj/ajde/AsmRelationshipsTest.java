@@ -12,8 +12,11 @@
 package org.aspectj.ajde;
 
 import java.util.Iterator;
+import java.util.List;
 
-import org.aspectj.asm.*;
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationship;
 
 // TODO: check for return types
 public class AsmRelationshipsTest extends AjdeTestCase {
@@ -25,11 +28,32 @@ public class AsmRelationshipsTest extends AjdeTestCase {
 		super(name);
 	}
 
+	public void testDeclareParents() {		
+		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, "DeclareCoverage");
+//		System.err.println(aspect.getChildren());
+		
+		IProgramElement dp = manager.getHierarchy().findElementForLabel(
+				aspect, 
+				IProgramElement.Kind.DECLARE_PARENTS, 
+				"declare parents: Point");
+		
+		assertNotNull(dp);
+		List relations = manager.getRelationshipMap().get(dp);
+		
+//		assertTrue(false);
+		
+//		assertTrue(rel.getTargets().size() > 0);
+//		
+//		checkDeclareMapping("DeclareCoverage", "Point", , 
+//			"Point", "matched by", "matches declare", 
+//			IProgramElement.Kind.DECLARE_PARENTS);		
+	}
+	
 	public void testDeclareWarningAndError() {		
 		checkDeclareMapping("DeclareCoverage", "Point", "declare warning: \"Illegal call.\"", 
 			"method-call(void Point.setX(int))", "matched by", "matches declare", IProgramElement.Kind.DECLARE_WARNING);		
 	}
-  
+	
 	public void testInterTypeDeclarations() {		
 		checkInterTypeMapping("InterTypeDecCoverage", "Point", "Point.xxx", "Point", 
 			"declared on", "aspect declarations", IProgramElement.Kind.INTER_TYPE_FIELD);	
@@ -55,6 +79,7 @@ public class AsmRelationshipsTest extends AjdeTestCase {
 		IProgramElement beforeExecNode = manager.getHierarchy().findElementForLabel(aspect, kind, beforeExec);
 		assertNotNull(beforeExecNode);
 		IRelationship rel = manager.getRelationshipMap().get(beforeExecNode, IRelationship.Kind.DECLARE, forwardRelName);
+		assertTrue(rel.getTargets().size() > 0);
 		String handle = (String)rel.getTargets().get(0);
 		assertEquals(manager.getHierarchy().findElementForHandle(handle).toString(), to);  
 
