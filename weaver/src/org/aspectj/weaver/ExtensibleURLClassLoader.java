@@ -33,6 +33,8 @@ public abstract class ExtensibleURLClassLoader extends URLClassLoader {
 	}
 
 	protected void addURL(URL url) {
+		super.addURL(url);  // amc - this call was missing and is needed in
+		                 // WeavingURLClassLoader chains
 		classPath.addPath(url.getPath(),null);
 	}
 	
