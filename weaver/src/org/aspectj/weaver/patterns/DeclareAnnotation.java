@@ -8,32 +8,85 @@
  *  
  * Contributors: 
  *     Adrian Colyer     initial implementation 
+ *      Andy Clement     got it working
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.World;
 
 public class DeclareAnnotation extends Declare {
 		
-	private String kind;
-	private TypePattern typePattern;
-	private SignaturePattern sigPattern;
+	public static final Kind AT_TYPE        = new Kind(1,"type");
+	public static final Kind AT_FIELD       = new Kind(2,"field");
+	public static final Kind AT_METHOD      = new Kind(3,"method");
+	public static final Kind AT_CONSTRUCTOR = new Kind(4,"constructor");
+	
+	private Kind kind;
+	private TypePattern typePattern;     // for declare @type
+	private SignaturePattern sigPattern; // for declare @field,@method,@constructor
 	private String annotationMethod = "unknown";
 	private String annotationString = "@<annotation>";
+	private ResolvedTypeX containingAspect;
+	private AnnotationX   annotation;
+	
+    /**
+     * Captures type of declare annotation (method/type/field/constructor)
+     */
+	public static class Kind {
+		private final int id;
+		private String s;
+		
+		private Kind(int n,String name) {
+			id = n;
+			s = name;
+		}
+		
+		public int hashCode() {
+	      return (19 + 37*id);
+		}
 
-	public DeclareAnnotation(String kind, TypePattern typePattern) {
+	  	public boolean equals(Object obj) {
+	  		if (!(obj instanceof Kind)) return false;
+	  		Kind other = (Kind) obj;
+	  		return other.id == id;
+	  	}
+	  	
+	  	public String toString() {
+	  		return "at_"+s;
+	  	}
+	}
+
+	
+
+	public DeclareAnnotation(Kind kind, TypePattern typePattern) {
 		this.typePattern = typePattern;
 		this.kind = kind;
 	}
 	
-	public DeclareAnnotation(String kind, SignaturePattern sigPattern) {
+    /**
+     * Returns the string, useful before the real annotation has been resolved
+     */
+	public String getAnnotationString() { return annotationString;}
+	
+	public DeclareAnnotation(Kind kind, SignaturePattern sigPattern) {
 		this.sigPattern = sigPattern;
 		this.kind = kind;
 	}
+	
+	public boolean isExactPattern() {
+		return typePattern instanceof ExactTypePattern;
+	}
+	
+	public String getAnnotationMethod() { return annotationMethod;}
 	
 	public String toString() {
 		StringBuffer ret = new StringBuffer();
@@ -46,16 +99,15 @@ public class DeclareAnnotation extends Declare {
 		return ret.toString();
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Declare#resolve(org.aspectj.weaver.patterns.IScope)
-	 */
 	public void resolve(IScope scope) {
-		if (typePattern != null) typePattern.resolve(scope.getWorld());
+		if (typePattern != null) {
+			typePattern = typePattern.resolveBindings(scope,Bindings.NONE,false,false);
+		}
+		if (sigPattern != null) {
+			sigPattern = sigPattern.resolveBindings(scope,Bindings.NONE);
+		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Declare#isAdviceLike()
-	 */
 	public boolean isAdviceLike() {
 		return false;
 	}
@@ -70,9 +122,6 @@ public class DeclareAnnotation extends Declare {
  	
 	
 	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
 	public boolean equals(Object obj) {
 		if (!(obj instanceof DeclareAnnotation)) return false;
 		DeclareAnnotation other = (DeclareAnnotation) obj;
@@ -88,9 +137,6 @@ public class DeclareAnnotation extends Declare {
 		return true;
 	}
 	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
 	public int hashCode() {
       int result = 19;
       result = 37*result + kind.hashCode();
@@ -106,7 +152,7 @@ public class DeclareAnnotation extends Declare {
 	 */
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Declare.ANNOTATION);
-		s.writeUTF(kind);
+		s.writeInt(kind.id);
 		s.writeUTF(annotationString);
 		s.writeUTF(annotationMethod);
 		if (typePattern != null) typePattern.write(s);
@@ -114,30 +160,182 @@ public class DeclareAnnotation extends Declare {
 		writeLocation(s);	
 	}
 
-	/**
-	 * @param s
-	 * @param context
-	 * @return
-	 * @throws IOException
-	 */
 	public static Declare read(VersionedDataInputStream s,
 			ISourceContext context) throws IOException {
 		DeclareAnnotation ret = null;
-		String kind = s.readUTF();
+		int kind = s.readInt();
 		String annotationString = s.readUTF();
 		String annotationMethod = s.readUTF();
 		TypePattern tp = null;
 		SignaturePattern sp = null;
-		if (kind.equals("type")) {
+		switch (kind) {
+		  case 1:
 			tp = TypePattern.read(s,context);
-			ret = new DeclareAnnotation(kind,tp);
-		} else {
-			sp = SignaturePattern.read(s,context);
-			ret = new DeclareAnnotation(kind,sp);
+			ret = new DeclareAnnotation(AT_TYPE,tp);
+			break;
+		  case 2:
+		  	sp = SignaturePattern.read(s,context);
+			ret = new DeclareAnnotation(AT_FIELD,sp);
+			break;
+		  case 3:
+		  	sp = SignaturePattern.read(s,context);
+			ret = new DeclareAnnotation(AT_METHOD,sp);
+			break;
+		  case 4:
+		  	sp = SignaturePattern.read(s,context);
+			ret = new DeclareAnnotation(AT_CONSTRUCTOR,sp);
+			break;
+			
 		}
+//		if (kind==AT_TYPE.id) {
+//			tp = TypePattern.read(s,context);
+//			ret = new DeclareAnnotation(AT_TYPE,tp);
+//		} else {
+//			sp = SignaturePattern.read(s,context);
+//			ret = new DeclareAnnotation(kind,sp);
+//		}
 		ret.setAnnotationString(annotationString);
 		ret.setAnnotationMethod(annotationMethod);
 		ret.readLocation(context,s);
 		return ret;
+	}
+
+
+//	public boolean getAnnotationIfMatches(ResolvedTypeX onType) {
+//		return (match(onType));
+//	}
+	
+
+    /**
+     * For @constructor, @method, @field
+     */
+	public boolean matches(ResolvedMember rm,World world) {
+		return sigPattern.matches(rm,world);
+	}
+	
+    /**
+     * For @type
+     */
+	public boolean matches(ResolvedTypeX typeX) {
+		if (!typePattern.matchesStatically(typeX)) return false;
+		if (typeX.getWorld().getLint().typeNotExposedToWeaver.isEnabled() &&
+				!typeX.isExposedToWeaver())
+		{
+			typeX.getWorld().getLint().typeNotExposedToWeaver.signal(typeX.getName(), getSourceLocation());
+		}
+		return true; 
+	}
+
+	public void setAspect(ResolvedTypeX typeX) {
+		containingAspect = typeX;
+	}
+
+	public TypeX getAspect() {
+		return containingAspect;
+	}
+
+	public void copyAnnotationTo(ResolvedTypeX onType) {
+		ensureAnnotationDiscovered();
+		if (!onType.hasAnnotation(annotation.getSignature())) {
+			onType.addAnnotation(annotation);			
+		}
+	}
+	
+	public AnnotationX getAnnotationX() {
+		ensureAnnotationDiscovered();
+		return annotation;
+	}
+	
+
+	/**
+	 * The annotation specified in the declare @type is stored against
+	 * a simple method of the form "ajc$declare_<NN>", this method
+	 * finds that method and retrieves the annotation
+	 */
+	private void ensureAnnotationDiscovered() {
+		if (annotation!=null) return;
+		ResolvedMember rms[] = containingAspect.getDeclaredMethods();
+		for (int i = 0; i < rms.length; i++) {
+			ResolvedMember member = rms[i];
+			if (member.getName().equals(annotationMethod)) {
+				annotation = member.getAnnotations()[0];
+			}
+		}
+	}
+
+	public TypePattern getTypePattern() {
+		return typePattern;
+	}
+	
+	public boolean isStarredAnnotationPattern() {
+		if (typePattern!=null) return typePattern.isStarAnnotation();
+		if (sigPattern!=null)  return sigPattern.isStarAnnotation();
+		throw new RuntimeException("Impossible! what kind of deca is this: "+this);
+	}
+
+
+	public Kind getKind() {
+		return kind;
+	}
+
+	public boolean isDeclareAtConstuctor() {
+		return kind.equals(AT_CONSTRUCTOR);
+	}
+	public boolean isDeclareAtMethod() {
+		return kind.equals(AT_METHOD);
+	}
+	public boolean isDeclareAtType() {
+		return kind.equals(AT_TYPE);
+	}
+	public boolean isDeclareAtField() {
+		return kind.equals(AT_FIELD);
+	}
+
+    /**
+     * @return TypeX for the annotation
+     */
+	public TypeX getAnnotationTypeX() {
+	   ensureAnnotationDiscovered();
+	   return this.annotation.getSignature(); 
+	}
+
+	/**
+	 * @return true if the annotation specified is allowed on a field
+	 */
+	public boolean isAnnotationAllowedOnField() {
+	    ensureAnnotationDiscovered();
+		return annotation.allowedOnField();
+	}
+
+	public String getPatternAsString() {
+	   if (sigPattern!=null) return sigPattern.toString();
+	   if (typePattern!=null) return typePattern.toString();
+	   return "DONT KNOW";
+	}
+
+	/**
+	 * Return true if this declare annotation could ever match something 
+	 * in the specified type - only really able to make intelligent
+	 * decision if a type was specified in the sig/type pattern
+	 * signature. 
+	 */
+	public boolean couldEverMatch(ResolvedTypeX type) {
+	    // Haven't implemented variant for typePattern (doesn't seem worth it!)
+	    // BUGWARNING This test might not be sufficient for funny cases relating
+		// to interfaces and the use of '+' - but it seems really important to
+		// do something here so we don't iterate over all fields and all methods
+		// in all types exposed to the weaver!  So look out for bugs here and
+		// we can update the test as appropriate.
+	    if (sigPattern!=null)
+	      return sigPattern.getDeclaringType().matches(type,TypePattern.STATIC).maybeTrue();
+		return true;
+	}
+	
+	/**
+	 * Provide a name suffix so that we can tell the different declare annotations
+	 * forms apart in the AjProblemReporter
+	 */
+	public String getNameSuffix() {
+		  return getKind().toString();
 	}
 }
