@@ -40,7 +40,8 @@ public class EclipseAdapterUtils {
         int endPosition = problem.getSourceEnd();
         
         if ((startPosition > endPosition)
-            || ((startPosition <= 0) && (endPosition <= 0)))
+            || ((startPosition <= 0) && (endPosition <= 0))
+            || compilationUnit==null)
             //return Util.bind("problem.noSourceInformation"); //$NON-NLS-1$
         	return "(no source information available)";
 
