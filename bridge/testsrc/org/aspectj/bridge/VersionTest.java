@@ -15,6 +15,8 @@ package org.aspectj.bridge;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
@@ -45,7 +47,8 @@ public class VersionTest extends TestCase {
             assertEquals(Version.time, Version.NOTIME);
         } else {
             Date date = new Date(Version.time);
-            SimpleDateFormat format = new SimpleDateFormat(Version.SIMPLE_DATE_FORMAT);
+            SimpleDateFormat format = new SimpleDateFormat(Version.SIMPLE_DATE_FORMAT, Locale.US);
+            format.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
             String timeString = format.format(date);
             assertEquals(Version.time_text, timeString);
         }
