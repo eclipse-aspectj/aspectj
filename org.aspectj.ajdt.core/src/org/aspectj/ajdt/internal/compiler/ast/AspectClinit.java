@@ -76,11 +76,14 @@ public class AspectClinit extends Clinit {
 		}
 		
 		if (initFailureField != null) {
+			// Changes to this exception handling code may require changes to
+			// BcelClassWeaver.isInitFailureHandler()
 			handlerLabel.placeEnd();
 			Label endLabel = new Label(codeStream);
 			codeStream.goto_(endLabel);
-			
 			handlerLabel.place();
+			codeStream.astore_0(); // Bug #52394
+		    codeStream.aload_0();
 			codeStream.putstatic(initFailureField);
 			endLabel.place();
 		}

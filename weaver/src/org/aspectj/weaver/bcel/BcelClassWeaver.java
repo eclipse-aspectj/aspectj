@@ -998,8 +998,13 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 
 	private boolean isInitFailureHandler(InstructionHandle ih) {
-		if (ih.getInstruction() instanceof PUTSTATIC) {
-			String name = ((PUTSTATIC)ih.getInstruction()).getFieldName(cpg);
+		// Skip the astore_0 and aload_0 at the start of the handler and 
+		// then check if the instruction following these is 
+		// 'putstatic ajc$initFailureCause'.  If it is then we are 
+		// in the handler we created in AspectClinit.generatePostSyntheticCode()
+		InstructionHandle twoInstructionsAway = ih.getNext().getNext();
+		if (twoInstructionsAway.getInstruction() instanceof PUTSTATIC) {
+			String name = ((PUTSTATIC)twoInstructionsAway.getInstruction()).getFieldName(cpg);
 			if (name.equals(NameMangler.INITFAILURECAUSE_FIELD_NAME)) return true;
 		}
 		return false;
