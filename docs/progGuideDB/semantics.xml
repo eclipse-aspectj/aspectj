@@ -696,6 +696,7 @@
         argument was an <literal>int</literal>, then the value passed to
         advice will be of type <literal>java.lang.Integer</literal>.
       </para>
+
     </sect2>
 
     <sect2>
@@ -929,6 +930,57 @@
           picked out by <replaceable>Pointcut</replaceable>.
         </para>
 
+        <sect4>
+          <title>Context exposure from control flows</title>
+
+          <para>
+            The <literal>cflow</literal> and
+            <literal>cflowbelow</literal> pointcuts may expose context
+            state through enclosed <literal>this</literal>,
+            <literal>target</literal>, and <literal>args</literal>
+            pointcuts. 
+          </para>
+
+          <para>
+	    Anytime such state is accessed, it is accessed through the
+	    <emphasis>most recent</emphasis> control flow that
+	    matched.   So the "current arg" that would be printed by
+	    the following program is zero, even though it is in many
+	    control flows.
+          </para>
+
+<programlisting>
+class Test {
+    public static void main(String[] args) {
+        fact(5);
+    }
+    static int fact(int x) {
+        if (x == 0) {
+            System.err.println("bottoming out");
+            return 1;
+        }
+        else return x * fact(x - 1);
+    }
+}
+
+aspect A {
+    pointcut entry(int i): call(int fact(int)) <![CDATA[&&]]> args(i);
+    pointcut writing(): call(void println(String)) <![CDATA[&&]]> ! within(A);
+    
+    before(int i): writing() <![CDATA[&&]]> cflow(entry(i)) {
+        System.err.println("Current arg is " + i);
+    }
+}
+</programlisting>
+
+          <para>
+            It is an error to expose such state through
+            <emphasis>negated</emphasis> control flow pointcuts, such
+            as within <literal>!
+            cflowbelow(<replaceable>P</replaceable>)</literal>.
+          </para>
+
+        </sect4>
       </sect3>
 
       <sect3>
