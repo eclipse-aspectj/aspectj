@@ -36,6 +36,7 @@ import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.tools.ajc.Main;
 import org.aspectj.tools.ajc.Main.MessagePrinter;
+import org.aspectj.util.LangUtil;
 
 
 /**
@@ -523,6 +524,8 @@ public class AjcTask extends MatchingTask {
      * Compile using ajc per settings.
      * This prints the messages in verbose or terse form
      * unless an IMessageHolder was set using setMessageHolder.
+     * This also renders Compiler exceptions with our header to System.err
+     * an rethrows a BuildException to be ignored.
      * @exception BuildException if the compilation has problems
      *             or if there were compiler errors and failonerror is true.
      */
@@ -534,7 +537,10 @@ public class AjcTask extends MatchingTask {
 	    	final IMessageHandler delegate 
 	    		= verbose ? MessagePrinter.VERBOSE: MessagePrinter.TERSE;
   			mhandler.setInterceptor(delegate);
-  			holder = mhandler;		
+  			if (!verbose) {
+  				mhandler.ignore(IMessage.INFO);
+  			}
+  			holder = mhandler;
     		numPreviousErrors = 0;
     	} else {
     		numPreviousErrors = holder.numMessages(IMessage.ERROR, true);
@@ -566,7 +572,10 @@ public class AjcTask extends MatchingTask {
         } catch (BuildException e) {
             throw e;
         } catch (Throwable x) {
-            throw new BuildException("Thrown: ", x);
+        	System.err.println(Main.renderExceptionForUser(x));        	
+            throw new BuildException("IGNORE -- See " 
+            	+ LangUtil.unqualifiedClassName(x) 
+            	+ " rendered to System.err");
         }
     }
     
