@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.aspectj.bridge.*;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
@@ -78,7 +79,10 @@ import org.aspectj.util.LangUtil;
 abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHandler?
 
     /** true if we expect to use a staging directory */
-    boolean isStaging;     
+    boolean isStaging;
+    
+    /** true if this spec permits bad input (e.g., to test error handling) */
+    boolean badInput;  
     
     protected String description;
     
@@ -90,7 +94,7 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
     
     protected final String xmlElementName;
     protected final ArrayList /*String*/ keywords; 
-    protected final ArrayList /*IMessage*/ expectedMessages;
+    protected final IMessageHolder /*IMessage*/ messages;
     protected final ArrayList /*String*/ options;
     protected final ArrayList /*String*/ paths;
     protected final ArrayList /*ISourceLocation*/ sourceLocations; // XXX remove?
@@ -114,7 +118,7 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
             xmlElementName = "spec";
         }
         this.xmlElementName = xmlElementName;
-        expectedMessages = new ArrayList();
+        messages = new MessageHandler(true);
         options = new ArrayList();
         paths = new ArrayList();
         sourceLocations = new ArrayList();
@@ -138,6 +142,10 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
         isStaging = staging;
     }
     
+    public void setBadInput(boolean badInput) {
+        this.badInput = badInput;
+    }
+
     boolean isStaging() {
         return isStaging;
     }
@@ -363,14 +371,16 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
 
     public void addMessage(IMessage message) {
         if (null != message) {
-            expectedMessages.add(message);
+            if (!messages.handleMessage(message)) {
+                String s = "invalid message: " + message;
+                throw new IllegalArgumentException(s);
+            }
         }
     }
     
     public void addMessage(String message) {
         if (null != message) {
-            IMessage m = BridgeUtil.readMessage(message);
-            expectedMessages.add(m);
+            addMessage(BridgeUtil.readMessage(message));
         }
     }
     
@@ -397,18 +407,13 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
         }    
     }
 
-    public ArrayList getMessages(IMessage.Kind kind) {
-        return makeList(MessageUtil.getMessages(expectedMessages, kind));
-    }
-    
-
     /** @return int number of message of this kind (optionally or greater */
     public int numMessages(IMessage.Kind kind, boolean orGreater) {
-        return MessageUtil.numMessages(expectedMessages, kind, orGreater);
+        return messages.numMessages(kind, orGreater);
     }
     
-    public ArrayList getMessages() {
-        return getMessages(null); // XXX special meaning of null
+    public IMessageHolder getMessages() {
+        return messages;
     }
     
     
@@ -614,7 +619,10 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
             out.printAttribute(xmlNames.commentName, comment);
         }
         if (isStaging && !LangUtil.isEmpty(xmlNames.stagingName)) {
-            out.printAttribute(xmlNames.commentName, comment);
+            out.printAttribute(xmlNames.stagingName, "true");
+        }
+        if (badInput && !LangUtil.isEmpty(xmlNames.badInputName)) {
+            out.printAttribute(xmlNames.badInputName, "true");
         }
     }
 
@@ -646,8 +654,8 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
      * can write child elements of current element.
 	 */
 	protected void writeMessages(XMLWriter out) {
-        if (0 < expectedMessages.size()) {
-            SoftMessage.writeXml(out, expectedMessages);
+        if (0 < messages.numMessages(null, true)) {
+            SoftMessage.writeXml(out, messages);
         }
 
 	}
@@ -699,7 +707,7 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
         int nOptions = options.size();
         int nPaths = paths.size();
         int nLoc = sourceLocations.size();
-        int nMssg = expectedMessages.size();
+        int nMssg = messages.numMessages(null, true);
         return 
             ( (nOptions == 0 ? "" : nOptions + " options " )
             + (nPaths == 0 ? "" : nPaths + " paths " )
@@ -709,13 +717,8 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
     
     public String toLongString() { 
         String mssg = "";
-        if (expectedMessages.size() > 0) {
-            // XXX add MessageHandler.renderCounts(IMessage[] messages)
-            MessageHandler h = new MessageHandler(); 
-            for (Iterator iter = expectedMessages.iterator(); iter.hasNext();) {
-				h.handleMessage((IMessage) iter.next());
-			}
-            mssg = " expected messages (" + MessageUtil.renderCounts(h) + ")";
+        if (0 < messages.numMessages(null, true)) {
+            mssg = " expected messages (" + MessageUtil.renderCounts(messages) + ")";
         }
         return getPrintName() + containedSummary() + mssg.trim();
     }
@@ -737,7 +740,7 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
         public static final XMLNames DEFAULT =
             new XMLNames(null, "description", "sourceLocation", 
                     "keywords", "options", "paths", "comment", 
-                    "staging", false, false, false);
+                    "staging", "badInput", false, false, false);
         final String descriptionName;
         final String sourceLocationName;
         final String keywordsName;
@@ -745,6 +748,7 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
         final String pathsName;
         final String commentName;
         final String stagingName;
+        final String badInputName;
         final boolean skipDirChanges;
         final boolean skipMessages;
         final boolean skipChildren;
@@ -761,6 +765,7 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
                 String pathsName,
                 String commentName,
                 String stagingName,
+                String badInputName,
                 boolean skipDirChanges,
                 boolean skipMessages,
                 boolean skipChildren) {
@@ -775,6 +780,7 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
                 this.pathsName = (null != pathsName ? pathsName : defaultNames.pathsName);
                 this.commentName = (null != commentName ? commentName : defaultNames.commentName);
                 this.stagingName = (null != stagingName ? stagingName : defaultNames.stagingName);
+                this.badInputName = (null != badInputName ? badInputName : defaultNames.badInputName);
             } else {
                 this.descriptionName = descriptionName;
                 this.sourceLocationName = sourceLocationName;
@@ -783,6 +789,7 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
                 this.pathsName = pathsName;
                 this.commentName = commentName;
                 this.stagingName = stagingName;
+                this.badInputName = badInputName;
             }
         }
     }
