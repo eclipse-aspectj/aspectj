@@ -217,6 +217,55 @@
 
   </sect2>
 
+  <sect2>
+    <title>Initializers and Inter-type Constructors</title>
+
+  <para>
+    The code for Java initializers, such as the assignment to the
+    field d in
+  </para>
+
+<programlisting><![CDATA[
+  class C {
+      double d = Math.sqrt(2);
+  }
+]]></programlisting>
+
+  <para>
+    are considered part of constructors by the time AspectJ gets ahold
+    of bytecode.  That is, the assignment of d to the square root of
+    two happens <emphasis>inside</emphasis> the default constructor of
+    C.  
+  </para>
+
+  <para>
+    Thus inter-type constructors will not necessarily run a target
+    type's initialization code.  In particular, if the inter-type
+    constructor calls a super-constructor (as opposed to a
+    <literal>this</literal> constructor), the target type's
+    initialization code will <emphasis>not</emphasis> be run when that
+    inter-type constructor is called.
+  </para>
+
+<programlisting><![CDATA[
+  aspect A {
+      C.new(Object o) {} // implicitly calls super()
+
+      public static void main(String[] args) {
+         System.out.println((new C()    ).d);    // prints 1.414...
+         System.out.println((new C(null)).d);    // prints 0.0
+  }
+]]></programlisting>
+  
+  <para>
+    It is the job of an inter-type constructor to do all the required
+    initialization, or to delegate to a <literal>this</literal>
+    constructor if necessary.
+  </para>
+
+  </sect2>
+
+
 </sect1>
 
 </appendix>
