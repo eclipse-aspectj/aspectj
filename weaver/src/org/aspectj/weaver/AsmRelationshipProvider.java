@@ -358,8 +358,8 @@ public class AsmRelationshipProvider {
 		
 	  IProgramElement typeElem = AsmManager.getDefault().getHierarchy().findElementForType(pkg,type);
 	  if (typeElem == null) return;
-	  
-	  // FIXME asc tidy this up you lazy git
+
+
 	  StringBuffer parmString = new StringBuffer("(");
 	  Type[] args = method.getArgumentTypes();
 	  for (int i = 0; i < args.length; i++) {
