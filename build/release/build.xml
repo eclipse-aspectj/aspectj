@@ -1,0 +1,147 @@
+
+<!-- ========================================================================= -->
+<!-- Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).        -->
+<!-- All rights reserved.                                                      -->
+<!-- This program and the accompanying materials are made available            -->
+<!-- under the terms of the Common Public License v1.0                         -->
+<!-- which accompanies this distribution and is available at                   -->
+<!-- http://www.eclipse.org/legal/cpl-v10.html                                 -->
+<!--                                                                           -->
+<!-- Contributors:                                                             -->
+<!--     Xerox/PARC     initial implementation                                 -->
+<!-- ========================================================================= -->
+
+<!DOCTYPE project [
+<!ENTITY build-properties SYSTEM "file:build-properties.xml">
+]>
+<project name="build" default="all" basedir=".">
+	
+	<target name="info">
+	<echo>
+  This downloads and build the AspectJ source tree.
+  
+  Targets of note:
+
+    build-release          checkout and build AspectJ
+  
+  Properties of note:
+
+     version               set if not DEVELOPMENT
+     do.not.create.tree    no CVS checkout
+     aspectj.modules.dir   define this to reuse existing
+     
+	</echo>
+	</target>
+	
+	<target name="init-variables"
+		unless="init.variables.done">
+		
+		<property name="version" value="DEVELOPMENT"/>
+		<property name="ant.verbose" value=""/>
+
+		<property name="aspectj.workspace"
+			location="${basedir}/aspectj-workspace"/>
+		<property name="aspectj.modules.dir"
+			location="${aspectj.workspace}/org.aspectj/modules"/>
+		<property name="aspectj.build.dir"
+			location="${aspectj.modules.dir}/build"/>
+		<property name="aspectj.lib.dir"
+			location="${aspectj.modules.dir}/lib"/>
+		<property name="aspectj.ant.home"
+			location="${aspectj.lib.dir}/ant"/>
+		<property name="aspectj.ant.lib.dir"
+			location="${aspectj.ant.home}/lib"/>
+		<property name="aj.build.dir"
+			location="${aspectj.modules.dir}/aj-build"/>
+		<property name="aj.build.jar.dir"
+			location="${aj.build.dir}/jars"/>
+		<property name="aj.build.dist.dir"
+			location="${aj.build.dir}/dist"/>
+		<property name="aj.build.jar.dir"
+			location="${aj.build.dir}/jars"/>
+		<property name="aj.build.install.dir"
+			location="${aj.build.dir}/install"/>
+
+		<property name="aspectj.jar"
+			location="${aj.build.dist.dir}/aspectj-${version}.jar"/>
+			
+		<property name="java.command"
+			location="${java.home}/bin/java"/>
+		
+		<path id="ant.classpath">
+			<fileset dir="${aspectj.ant.lib.dir}">
+				<include name="*.jar"/>
+			</fileset>
+			<pathelement path="${java.home}/lib/tools.jar"/>
+			<pathelement path="${java.home}/../lib/tools.jar"/>
+		</path>
+		<!-- property name="init.variables.done" value="done"/ -->
+	</target>
+	
+	<target name="all" depends="test-aspectj-install"/>
+	
+	<target name="test-aspectj-install" depends="install-aspectj">
+		<!-- run examples non-gui, etc. -->
+	</target>
+
+	<target name="build-release" depends="init-variables,create-tree"
+		description="build an AspectJ release">
+		 <antcall target="run-ant">
+			<param name="ant.target" value="clean"/>
+		 </antcall>
+		 <antcall target="run-ant">
+			<param name="ant.target" value="aspectj"/>
+		 </antcall>
+	</target>
+
+	<target name="create-tree" depends="init-variables"
+		unless="do.not.create.tree"
+		description="create an AspectJ source tree">
+		<fail message="testing now"/>
+		<mkdir dir="${aspectj.workspace}"/>
+		<delete dir="${aspectj.workspace}"/>
+		<mkdir dir="${aspectj.workspace}"/>
+		<cvs cvsRoot=":pserver:anonymous@eclipse.org:/home/technology"
+		          dest="${quicklook.tree.dir}"
+		       package="org.aspectj/modules" 
+		         quiet="on" 
+		   failonerror="on" 
+		       command="checkout -P" />
+	</target>
+
+	<target name="install-aspectj" depends="build-release,init-variables"
+		description="create an AspectJ source tree">
+		<fail unless="aspectj.jar" message="define aspectj.jar"/>
+		<fail unless="aj.build.install.dir" message="define aj.build.install.dir"/>
+		<mkdir dir="${aj.build.install.dir}"/>
+		<delete dir="${aj.build.install.dir}"/>
+		<mkdir dir="${aj.build.install.dir}"/>
+		<java fork="true" jar="${aspectj.jar}" failonerror="true">
+			<arg line="-to ${aj.build.install.dir}"/>
+		</java>
+	</target>
+
+	<target name="run-ant" depends="init-variables">
+		<!-- we could use normal ant, but we enforce using ours
+		<ant dir="${aspectj.build.dir}" 
+			target="clean"
+			inheritAll="false"/>
+		 -->
+		<fail unless="ant.target" message="define ant.target"/>
+		<java 
+			fork="true"
+			dir="${aspectj.build.dir}"
+			jvm="${java.command}"
+			classname="org.apache.tools.ant.Main"
+			maxmemory="350m"
+			failonerror="true"
+			newenvironment="true"
+			classpathref="ant.classpath"
+			>
+			<sysproperty key="JAVA_HOME" path="${java.home}"/>
+			<sysproperty key="ANT_HOME" 
+				path="${aspectj.ant.home}"/>
+			<arg line="-f build.xml ${ant.target} ${ant.verbose}"/>
+		</java>
+	</target>
+</project>
