@@ -147,7 +147,7 @@
       only a few new constructs: pointcuts, advice, inter-type declarations
       and aspects.  Pointcuts and advice dynamically affect program flow,
       inter-type declarations statically affects a program's class
-      heirarchy, and aspects encapsulate these new constructs.
+      hierarchy, and aspects encapsulate these new constructs.
     </para>
 
     <para>
@@ -514,7 +514,7 @@ after(FigureElement fe, int x, int y) returning: setXY(fe, x, y) {
 
       <para>
         Consider the problem of expressing a capability shared by some
-        existing classes that are already part of a class heirarchy,
+        existing classes that are already part of a class hierarchy,
         i.e. they already extend a class.  In Java, one creates an
         interface that captures this new capability, and then adds to
         <emphasis>each affected class</emphasis> a method that implements
