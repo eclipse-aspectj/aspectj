@@ -1,0 +1,38 @@
+/* *******************************************************************
+ * Copyright (c) 2005 IBM
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Andy Clement     initial implementation 
+ * ******************************************************************/
+
+
+package org.aspectj.weaver;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
+
+/**
+ * Represents adding an annotation to a type
+ */
+public class AnnotationOnTypeMunger extends ResolvedTypeMunger {
+	AnnotationX newAnnotation;
+	
+	public AnnotationOnTypeMunger(AnnotationX anno) {
+		super(AnnotationOnType,null);
+		newAnnotation = anno;
+	}
+
+	public void write(DataOutputStream s) throws IOException {
+		throw new RuntimeException("unimplemented");
+	}
+
+
+	public AnnotationX getNewAnnotation() {
+		return newAnnotation;
+	}
+}
