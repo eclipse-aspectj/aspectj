@@ -826,7 +826,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		handler.reset();
 	}
 	
-	String makeClasspathString() {
+	String makeClasspathString(AjBuildConfig buildConfig) {
 		if (buildConfig == null || buildConfig.getFullClasspath() == null) return "";
 		StringBuffer buf = new StringBuffer();
 		boolean first = true;
@@ -889,7 +889,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			}
 		}
 		
-		return "couldn't find aspectjrt.jar on classpath, checked: " + makeClasspathString();
+		return "couldn't find aspectjrt.jar on classpath, checked: " + makeClasspathString(buildConfig);
 	}
 	
 
