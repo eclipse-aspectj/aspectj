@@ -423,7 +423,7 @@ class BcelClassWeaver implements IClassWeaver {
           // go through all the fields
           for (int memberCounter = 0;memberCounter<members.size();memberCounter++) {
             LazyMethodGen mg = (LazyMethodGen)members.get(memberCounter);
-            
+            if (!mg.getName().startsWith(NameMangler.PREFIX)) {
             // Single first pass
             List worthRetrying = new ArrayList();
             boolean modificationOccured = false;
@@ -454,13 +454,14 @@ class BcelClassWeaver implements IClassWeaver {
 				if (decaM.matches(mg.getMemberView(),world)) {
 					if (doesAlreadyHaveAnnotation(mg.getMemberView(),decaM,false)) continue; // skip this one...
 					mg.addAnnotation(decaM.getAnnotationX());
-					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaM.getSourceLocation(),mg.getSourceLocation());
+					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaM.getSourceLocation(),clazz.getName(),mg.getMethod());
 					isChanged = true;
 					modificationOccured = true;
 					forRemoval.add(decaM);
 				}
 			  }
 			  worthRetrying.removeAll(forRemoval);
+            }
             }
           }
         }
@@ -504,7 +505,7 @@ class BcelClassWeaver implements IClassWeaver {
           // go through all the fields
           for (int fieldCounter = 0;fieldCounter<fields.length;fieldCounter++) {
             BcelField aBcelField = new BcelField(clazz.getBcelObjectType(),fields[fieldCounter]);
-           
+			if (!aBcelField.getName().startsWith(NameMangler.PREFIX)) {
             // Single first pass
             List worthRetrying = new ArrayList();
             boolean modificationOccured = false;
@@ -541,6 +542,7 @@ class BcelClassWeaver implements IClassWeaver {
 			  }
 			  worthRetrying.removeAll(forRemoval);
             }
+			}
           }
         }
 		return isChanged;
