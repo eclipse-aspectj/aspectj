@@ -12,22 +12,16 @@
 
 package org.aspectj.ajdt.ajc;
 
-import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
-import org.aspectj.ajdt.internal.core.builder.AjCompilerOptions;
+import java.io.*;
+import java.util.*;
+
+import junit.framework.TestCase;
+
+import org.aspectj.ajdt.internal.core.builder.*;
 import org.aspectj.bridge.MessageWriter;
 import org.aspectj.testing.util.TestUtil;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import junit.framework.TestCase;
 
 /**
  * Some black-box test is happening here.
@@ -326,6 +320,23 @@ public class BuildArgParserTestCase extends TestCase {
         File outputDir = config.getOutputDir();
         assertNotNull(outputDir);        
 		assertEquals(outputDir.getPath(), OUT_PATH);
+	}
+
+	public void testNonExistentConfigFile() throws IOException {
+		String FILE_PATH =   "@" + TEST_DIR + "../bug-40257/d1/test.lst";
+		AjBuildConfig config = parser.genBuildConfig(new String[] { FILE_PATH }, messageWriter);
+
+		String a = new File(TEST_DIR + "../bug-40257/d1/A.java").getCanonicalPath();
+		String b = new File(TEST_DIR + "../bug-40257/d1/d2/B.java").getCanonicalPath();
+		String c = new File(TEST_DIR + "../bug-40257/d3/C.java").getCanonicalPath();
+		List pathList = new ArrayList();
+		for (Iterator it = config.getFiles().iterator(); it.hasNext(); ) {
+			pathList.add(((File)it.next()).getCanonicalPath());
+		}
+		assertTrue(pathList.contains(a));
+		assertTrue(pathList.contains(b));
+		assertTrue(pathList.contains(c));
+			
 	}
 
 	public void testXlint() throws InvalidInputException {

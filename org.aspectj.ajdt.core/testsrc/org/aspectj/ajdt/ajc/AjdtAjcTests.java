@@ -25,7 +25,7 @@ public class AjdtAjcTests extends TestCase {
         suite.addTestSuite(BuildArgParserTestCase.class); 
         suite.addTestSuite(ConsoleMessageHandlerTestCase.class); 
         //$JUnit-END$
-        return suite;
+        return suite;  
     }
 
     public AjdtAjcTests(String name) { super(name); }

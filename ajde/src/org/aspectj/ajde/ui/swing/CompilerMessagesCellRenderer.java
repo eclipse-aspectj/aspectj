@@ -57,7 +57,7 @@ public class CompilerMessagesCellRenderer extends JLabel implements ListCellRend
 			} else if (IMessage.ERROR.isSameOrLessThan(kind)) {
                 setIcon(AjdeUIManager.getDefault().getIconRegistry().getErrorIcon());
 			} else {
-                setIcon(null);
+                setIcon(AjdeUIManager.getDefault().getIconRegistry().getInfoIcon());
 			}
 			if (isSelected) {
 				setBackground(list.getSelectionBackground());

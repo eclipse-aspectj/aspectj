@@ -25,15 +25,15 @@ import org.aspectj.ajde.*;
 /**
  * @author Mik Kersten
  */
-public class BrowserManagerTest extends TestCase {
+public class InteractiveBrowserTest extends TestCase {
 
-	public BrowserManagerTest(String name) {
+	public InteractiveBrowserTest(String name) {
 		super(name);
 	}
 
 	public static TestSuite suite() {
 		TestSuite result = new TestSuite();
-		result.addTestSuite(BrowserManagerTest.class);	
+		result.addTestSuite(InteractiveBrowserTest.class);	
 		return result;
 	}
 
@@ -49,16 +49,19 @@ public class BrowserManagerTest extends TestCase {
 			"project-level task",
 			IMessage.ERROR);
 
+		BrowserManager.getDefault().showMessages();
+
 		assertTrue("confirmation result", verifySuccess("Project task is visible."));
 	}
 	
 	public void testAddSourceLineTasks() {
 		BrowserManager.getDefault().init(new String[]{}, true);	
-		ISourceLocation dummyLocation = new SourceLocation(new File("<file>"), -1, -1);
+		ISourceLocation dummyLocation = new SourceLocation(new File("<file>"), 0, 0);
+
 		Ajde.getDefault().getTaskListManager().addSourcelineTask(
 			"error task",
 			dummyLocation,
-			IMessage.ERROR);
+			IMessage.ERROR); 
 
 		Ajde.getDefault().getTaskListManager().addSourcelineTask(
 			"warning task",
@@ -69,6 +72,8 @@ public class BrowserManagerTest extends TestCase {
 			"info task",
 			dummyLocation,
 			IMessage.INFO);
+			
+		BrowserManager.getDefault().showMessages();
 
 		assertTrue("confirmation result", verifySuccess("3 kinds of sourceline tasks are visible."));
 	}
