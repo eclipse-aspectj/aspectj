@@ -13,10 +13,15 @@
 
 package org.aspectj.util;
 
+import java.io.File;
 import java.lang.reflect.*;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 public class Reflection {
+    public static final Class[] MAIN_PARM_TYPES = new Class[] {String[].class};    
 
 	private Reflection() {
 	}
@@ -102,5 +107,98 @@ public class Reflection {
 			throw new RuntimeException("unimplemented");
 		}
 	}
+
+    public static void runMainInSameVM(
+            String classpath,
+            String className, 
+            String[] args) 
+            throws SecurityException, NoSuchMethodException, 
+            IllegalArgumentException, IllegalAccessException, 
+            InvocationTargetException, ClassNotFoundException {
+        LangUtil.throwIaxIfNull(className, "class name");
+        if (LangUtil.isEmpty(classpath)) {
+            Class mainClass = Class.forName(className);
+            runMainInSameVM(mainClass, args);
+            return;            
+        }
+        ArrayList dirs = new ArrayList();
+        ArrayList libs = new ArrayList();
+        ArrayList urls = new ArrayList();
+        String[] entries = LangUtil.splitClasspath(classpath);
+        for (int i = 0; i < entries.length; i++) {
+            String entry = entries[i];
+            URL url = makeURL(entry);
+            if (null != url) {
+                urls.add(url);
+            }
+            File file = new File(entries[i]);
+// tolerate bad entries b/c bootclasspath sometimes has them
+//            if (!file.canRead()) {
+//                throw new IllegalArgumentException("cannot read " + file);
+//            }
+            if (FileUtil.hasZipSuffix(file)) {
+                libs.add(file);
+            } else if (file.isDirectory()) {
+                dirs.add(file);
+            } else {
+                // not URL, zip, or dir - unsure what to do
+            }
+        }
+        File[] dirRa = (File[]) dirs.toArray(new File[0]);
+        File[] libRa = (File[]) libs.toArray(new File[0]);
+        URL[] urlRa = (URL[]) urls.toArray(new URL[0]);
+        runMainInSameVM(urlRa, libRa, dirRa, className, args);
+    }
+        
+    public static void runMainInSameVM(
+            URL[] urls,
+            File[] libs, 
+            File[] dirs, 
+            String className, 
+            String[] args) 
+            throws SecurityException, NoSuchMethodException, 
+            IllegalArgumentException, IllegalAccessException, 
+            InvocationTargetException, ClassNotFoundException {
+        LangUtil.throwIaxIfNull(className, "class name");
+        LangUtil.throwIaxIfNotAssignable(libs, File.class, "jars");
+        LangUtil.throwIaxIfNotAssignable(dirs, File.class, "dirs");
+        URL[] libUrls = FileUtil.getFileURLs(libs);
+        if (!LangUtil.isEmpty(libUrls)) {
+            if (!LangUtil.isEmpty(urls)) {
+                URL[] temp = new URL[libUrls.length + urls.length];
+                System.arraycopy(urls, 0, temp, 0, urls.length);
+                System.arraycopy(urls, 0, temp, libUrls.length, urls.length);
+                urls = temp;
+            } else {
+                urls = libUrls;
+            }
+        }
+        UtilClassLoader loader = new UtilClassLoader(urls, dirs);
+        Class targetClass = null;
+        try {
+            targetClass = loader.loadClass(className);
+        } catch (ClassNotFoundException e) {
+            String s = "unable to load class " + className
+                + " using class loader " + loader; 
+            throw new ClassNotFoundException(s);
+        }
+        Method main = targetClass.getMethod("main", MAIN_PARM_TYPES);
+        main.invoke(null, new Object[] { args });
+    }
+    
+    public static void runMainInSameVM(Class mainClass, String[] args) throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+        LangUtil.throwIaxIfNull(mainClass, "main class");
+        Method main = mainClass.getMethod("main", MAIN_PARM_TYPES);
+        main.invoke(null, new Object[] { args });
+    }
+
+    /** @return URL if the input is valid as such */
+    private static URL makeURL(String s) {
+        try {
+            return new URL(s);            
+        } catch (Throwable t) {
+            return null;
+        }
+    }
 
 }

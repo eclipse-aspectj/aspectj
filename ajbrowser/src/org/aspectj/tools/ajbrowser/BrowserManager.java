@@ -14,6 +14,7 @@
 
 package org.aspectj.tools.ajbrowser;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import javax.swing.JFrame;
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.BuildConfigManager;
 import org.aspectj.ajde.BuildListener;
+import org.aspectj.ajde.ProjectPropertiesAdapter;
 import org.aspectj.ajde.TaskListManager;
 import org.aspectj.ajde.ui.InvalidResourceException;
 import org.aspectj.ajde.ui.UserPreferencesAdapter;
@@ -31,6 +33,8 @@ import org.aspectj.ajde.ui.swing.AjdeUIManager;
 import org.aspectj.ajde.ui.swing.BasicEditor;
 import org.aspectj.ajde.ui.swing.IconRegistry;
 import org.aspectj.ajde.ui.swing.MultiStructureViewPanel;
+import org.aspectj.util.LangUtil;
+import org.aspectj.util.Reflection;
 
 /**
  * IDE manager for standalone AJDE application.
@@ -45,7 +49,7 @@ public class BrowserManager {
 	public static BrowserManager getDefault() {
 		return INSTANCE;
 	}
-	
+    	
 	private List configFiles = new ArrayList();
 	
 	public static final String TITLE = "AspectJ Browser";
@@ -131,8 +135,8 @@ public class BrowserManager {
         topFrame.setTitle(BrowserManager.TITLE + " - " + text);
     }
 
-    public void run() {
-        Runner.run(Ajde.getDefault().getProjectProperties().getClassToExecute());
+    public void run() {        
+        Ajde.runInSameVM(Ajde.getDefault().getProjectProperties());
     }
 
     public void saveAll() {
@@ -181,40 +185,31 @@ public class BrowserManager {
         return configs;
 	}
 
-    private static class Runner {
-        public static void run(String className) {
-            try {
-                Process p = Runtime.getRuntime().exec("java " 
-                	//+ "-classpath" + Ajde.getDefault().getProjectProperties().getClasspath() + " "
-                	+ className);
-            } catch(IOException ioe) {
-                Ajde.getDefault().getErrorHandler().handleError("Coud not run: " + className, ioe);
-            }
-        }  
-  
-        public static void invoke(String className) {
-            try {
-                if (className == null || className.length() == 0) {
-                    Ajde.getDefault().getErrorHandler().handleWarning("No main class specified, please select a class to run.");
-
-                } else {
-                    Class[] argTypes = { String[].class };
-                    java.lang.reflect.Method method = Class.forName(className).getDeclaredMethod("main", argTypes);
-                    Object[] args = { new String[0] };
-                    method.invoke(null, args);
-                }
-            } catch(ClassNotFoundException cnfe) {
-                Ajde.getDefault().getErrorHandler().handleWarning("Main class not found: " + className +
-                "\nMake sure that you have \".\" on your classpath.");
-            } catch(NoSuchMethodException nsme) {
-                Ajde.getDefault().getErrorHandler().handleWarning("Class: " + className + " does not declare public static void main(String[])");
-            } catch(java.lang.reflect.InvocationTargetException ite) {
-                Ajde.getDefault().getErrorHandler().handleWarning("Could not execute: " + className);
-            } catch(IllegalAccessException iae) {
-                Ajde.getDefault().getErrorHandler().handleWarning("Class: " + className + " does not declare public main method");
-            }
-        }
-    }
+//    private static class Runner {
+//  
+//        public static void invoke(String className) {
+//            try {
+//                if (className == null || className.length() == 0) {
+//                    Ajde.getDefault().getErrorHandler().handleWarning("No main class specified, please select a class to run.");
+//
+//                } else {
+//                    Class[] argTypes = { String[].class };
+//                    java.lang.reflect.Method method = Class.forName(className).getDeclaredMethod("main", argTypes);
+//                    Object[] args = { new String[0] };
+//                    method.invoke(null, args);
+//                }
+//            } catch(ClassNotFoundException cnfe) {
+//                Ajde.getDefault().getErrorHandler().handleWarning("Main class not found: " + className +
+//                "\nMake sure that you have \".\" on your classpath.");
+//            } catch(NoSuchMethodException nsme) {
+//                Ajde.getDefault().getErrorHandler().handleWarning("Class: " + className + " does not declare public static void main(String[])");
+//            } catch(java.lang.reflect.InvocationTargetException ite) {
+//                Ajde.getDefault().getErrorHandler().handleWarning("Could not execute: " + className);
+//            } catch(IllegalAccessException iae) {
+//                Ajde.getDefault().getErrorHandler().handleWarning("Class: " + className + " does not declare public main method");
+//            }
+//        }
+//    }
     
 	private final BuildListener BUILD_MESSAGES_LISTENER = new BuildListener() {
 		

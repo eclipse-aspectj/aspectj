@@ -14,6 +14,7 @@
 
 package org.aspectj.ajde;
 
+import java.io.File;
 import java.io.PrintStream;
 import java.util.List;
 
@@ -26,6 +27,8 @@ import org.aspectj.ajde.ui.StructureViewManager;
 import org.aspectj.ajde.ui.StructureViewNodeFactory;
 import org.aspectj.asm.StructureModelManager;
 import org.aspectj.bridge.Version;
+import org.aspectj.util.LangUtil;
+import org.aspectj.util.Reflection;
 
 /**
  * Singleton class responsible for AJDE initialization, and the main point of access to
@@ -38,6 +41,33 @@ public class Ajde {
 	private static final Ajde INSTANCE = new Ajde();
 	private static final String NOT_INITIALIZED_MESSAGE = "Ajde is not initialized.";
 	private static boolean isInitialized = false;
+
+    /**
+     * Utility to run the project main class in the same VM
+     * using a class loader populated with the classpath
+     * and output path or jar.
+     * @param project the ProjectPropertiesAdapter specifying the
+     * main class, classpath, and executable arguments.
+     */
+    public static void runInSameVM(ProjectPropertiesAdapter project) {
+        String mainClass = "<none>";
+        try {            
+            mainClass = project.getClassToExecute();
+            if (LangUtil.isEmpty(mainClass)) {
+                Ajde.getDefault().getErrorHandler().handleWarning("No main class specified");
+            }
+            String classpath = project.getOutputPath();
+            if (LangUtil.isEmpty(classpath)) {
+                classpath = project.getOutJar();
+            }
+            classpath += File.pathSeparator + project.getClasspath();
+            String[] args = LangUtil.split(project.getExecutionArgs());
+            Reflection.runMainInSameVM(classpath, mainClass, args);
+        } catch(Throwable e) {
+            Ajde.getDefault().getErrorHandler().handleError("Error running " + mainClass, e);
+        }
+    }  
+
 	private BuildManager buildManager;
 	private EditorManager editorManager;
 	private StructureViewManager structureViewManager;
