@@ -93,7 +93,7 @@
     <target name="init.taskdefs" depends="init.variables, 
          aspectjtools.jar.available,
          aspectjrt.jar.available">
-      
+      <!-- sets name of new task to iajc, old task to ajc -->
       <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
           <classpath> 
             <pathelement path="${aspectjtools.jar}"/> 
@@ -120,8 +120,8 @@
      description="compile {list} and run {class} of example">
        <echo message="##### Ajx list=${list} class=${class}" />
        <antcall target="clean" />
-
-       <ajc destdir="${classes.dir}" emacssym="on" argfile="${list}" 
+       <!-- can use ajc or iajc here -->
+       <ajc destdir="${classes.dir}" argfile="${list}" 
           classpath="${aspectjrt.jar}"/>
 
        <antcall target="Ajx-run" >
