@@ -13,17 +13,14 @@
  * ******************************************************************/
 
 package org.aspectj.tools.ajdoc;
-import java.util.Enumeration;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-
-
-import java.util.*;
-
-// Make sure that references to Vector use the standard version
-// This lets us generate serialized files which interoperate with other code better
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.aspectj.asm.IProgramElement;
 
