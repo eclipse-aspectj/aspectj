@@ -370,7 +370,7 @@ pointcut ioHandler(): within(MyClass) && handler(IOException);
           </term>
           <listitem>
             <para>
-              <literal>cflow(void Test.main())</literal>
+              <literal>cflow(call(void Test.main()))</literal>
             </para>
           </listitem>
         </varlistentry>
