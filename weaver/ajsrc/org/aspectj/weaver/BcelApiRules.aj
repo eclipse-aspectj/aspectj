@@ -1,3 +1,17 @@
+/* *******************************************************************
+ * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC),
+ *               2003 Contributors.
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Xerox/PARC      initial implementation 
+ *     AMC 01.20.2003  extended to support new AspectJ 1.1 options,
+ * 				       bugzilla #29769
+ * ******************************************************************/
 
 package org.aspectj.weaver;
 
@@ -6,7 +20,7 @@ import org.aspectj.weaver.bcel.*;
 import org.apache.bcel.generic.*;
 
 /**
- * Enforces the use of BCEL API use.
+ * Enforces the correct use of BCEL APIs.
  */
 public aspect BcelApiRules {
 	
