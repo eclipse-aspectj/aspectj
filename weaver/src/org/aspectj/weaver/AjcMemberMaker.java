@@ -215,7 +215,68 @@ public class AjcMemberMaker {
 			sig);
 	}
 	
+	// --- inline accessors
+	//??? can eclipse handle a transform this weird without putting synthetics into the mix
+	public static ResolvedMember superAccessMethod(TypeX baseType, ResolvedMember method) {
+		return new ResolvedMember(Member.METHOD,
+			baseType,
+			Modifier.PUBLIC,
+			method.getReturnType(),
+			NameMangler.superDispatchMethod(baseType, method.getName()),
+			method.getParameterTypes());
+			//XXX needs thrown exceptions to be correct
+	}
 	
+	public static ResolvedMember inlineAccessMethodForMethod(TypeX aspectType, ResolvedMember method) {
+		TypeX[] paramTypes = method.getParameterTypes();
+		if (!method.isStatic()) {
+			paramTypes = TypeX.insert(method.getDeclaringType(), paramTypes);
+		}
+		return new ResolvedMember(Member.METHOD,
+			aspectType,
+			PUBLIC_STATIC, //??? what about privileged and super access
+						   //???Modifier.PUBLIC | (method.isStatic() ? Modifier.STATIC : 0),
+			method.getReturnType(),
+			
+			NameMangler.inlineAccessMethodForMethod(method.getName(),
+												method.getDeclaringType(), aspectType),
+			paramTypes);
+			//XXX needs thrown exceptions to be correct
+	}
+	
+	public static ResolvedMember inlineAccessMethodForFieldGet(TypeX aspectType, Member field) {
+		String sig;
+		if (field.isStatic()) {
+			sig = "()" + field.getReturnType().getSignature();
+		} else {
+			sig = "(" + field.getDeclaringType().getSignature() + ")" + field.getReturnType().getSignature();
+		}
+		
+		return new ResolvedMember(Member.METHOD,
+			aspectType,
+			PUBLIC_STATIC, //Modifier.PUBLIC | (field.isStatic() ? Modifier.STATIC : 0),
+			NameMangler.inlineAccessMethodForFieldGet(field.getName(),
+												field.getDeclaringType(), aspectType), 
+			sig);
+	}
+	
+	public static ResolvedMember inlineAccessMethodForFieldSet(TypeX aspectType, Member field) {
+		String sig;
+		if (field.isStatic()) {
+			sig = "(" + field.getReturnType().getSignature() + ")V";
+		} else {
+			sig = "(" + field.getDeclaringType().getSignature() + field.getReturnType().getSignature() + ")V";
+		}
+		
+		return new ResolvedMember(Member.METHOD,
+			aspectType,
+			PUBLIC_STATIC, //Modifier.PUBLIC | (field.isStatic() ? Modifier.STATIC : 0),
+			NameMangler.inlineAccessMethodForFieldSet(field.getName(),
+												field.getDeclaringType(), aspectType), 
+			sig);
+	}
+	
+
 
 	// --- runtimeLibrary api stuff
 

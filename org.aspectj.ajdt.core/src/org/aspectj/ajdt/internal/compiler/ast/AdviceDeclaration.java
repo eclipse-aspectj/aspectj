@@ -138,10 +138,10 @@ public class AdviceDeclaration extends MethodDeclaration {
 				}
 			}
 			
+			// ??? should reorganize into AspectDeclaration
 			// if we have proceed in inners we won't ever be inlined so the code below is unneeded
 			if (!proceedInInners) {
 				PrivilegedHandler handler = (PrivilegedHandler)upperScope.referenceContext.binding.privilegedHandler;
-				//XXX timings is odd here
 				if (handler == null) {
 					handler = new PrivilegedHandler((AspectDeclaration)upperScope.referenceContext);
 					upperScope.referenceContext.binding.privilegedHandler = handler;
@@ -149,7 +149,7 @@ public class AdviceDeclaration extends MethodDeclaration {
 				
 				this.traverse(new MakeDeclsPublicVisitor(), (ClassScope)null);
 				
-				AccessForInlineVisitor v = new AccessForInlineVisitor(world, handler);
+				AccessForInlineVisitor v = new AccessForInlineVisitor((AspectDeclaration)upperScope.referenceContext, handler);
 				this.traverse(v, (ClassScope) null);
 			}
 		}

@@ -13,64 +13,73 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
-import java.util.Arrays;
+import java.util.*;
 
 import org.aspectj.ajdt.internal.compiler.lookup.*;
-import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedHandler;
 import org.aspectj.weaver.*;
-import org.aspectj.weaver.ShadowMunger;
-import org.eclipse.jdt.internal.compiler.AbstractSyntaxTreeVisitorAdapter;
+import org.eclipse.jdt.internal.compiler.*;
 import org.eclipse.jdt.internal.compiler.ast.*;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 
 /**
- * Takes a method that already has the three extra parameters
- * thisJoinPointStaticPart, thisJoinPoint and thisEnclosingJoinPointStaticPart
+ * Walks the body of around advice
+ * 
+ * Makes sure that all member accesses are to public members.  Will
+ * convert to use access methods when needed to ensure that.  This
+ * makes it much simpler (and more modular) to inline the body of
+ * an around.
+ * 
+ * ??? constructors are handled different and require access to the
+ * target type.  changes to org.eclipse.jdt.internal.compiler.ast.AllocationExpression
+ * would be required to fix this issue.
+ * 
+ * @author Jim Hugunin
  */
 
 public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 	PrivilegedHandler handler;
-	EclipseWorld world;
-	public AccessForInlineVisitor(EclipseWorld world, PrivilegedHandler handler) {
-		this.world = world;
+	AspectDeclaration inAspect;
+	EclipseWorld world; // alias for inAspect.world
+	
+	public AccessForInlineVisitor(AspectDeclaration inAspect, PrivilegedHandler handler) {
+		this.inAspect = inAspect;
+		this.world = inAspect.world;
 		this.handler = handler;
 	}
 	
+	
 	public void endVisit(SingleNameReference ref, BlockScope scope) {
 		if (ref.binding instanceof FieldBinding) {
-			FieldBinding fieldBinding = (FieldBinding)ref.binding;
-			makePublic(fieldBinding.declaringClass);
-			if (isPublic(fieldBinding)) return;
-			ref.binding = handler.getPrivilegedAccessField(fieldBinding, ref);
+			ref.binding = getAccessibleField((FieldBinding)ref.binding);
 		}
 	}
 
 	public void endVisit(QualifiedNameReference ref, BlockScope scope) {
 		if (ref.binding instanceof FieldBinding) {
-			FieldBinding fieldBinding = (FieldBinding)ref.binding;
-			makePublic(fieldBinding.declaringClass);
-			if (isPublic(fieldBinding)) return;
-			ref.binding = handler.getPrivilegedAccessField(fieldBinding, ref);
+			ref.binding = getAccessibleField((FieldBinding)ref.binding);
 		}
 	}
 
 	public void endVisit(FieldReference ref, BlockScope scope) {
 		if (ref.binding instanceof FieldBinding) {
-			FieldBinding fieldBinding = (FieldBinding)ref.binding;
-			makePublic(fieldBinding.declaringClass);
-			if (isPublic(fieldBinding)) return;
-			ref.binding = handler.getPrivilegedAccessField(fieldBinding, ref);
+			ref.binding = getAccessibleField((FieldBinding)ref.binding);
 		}
 	}
 	public void endVisit(MessageSend send, BlockScope scope) {
 		if (send instanceof Proceed) return;
 		if (send.binding == null) return;
-		if (isPublic(send.binding)) return;
-		makePublic(send.binding.declaringClass);
-		send.binding = send.codegenBinding = handler.getPrivilegedAccessMethod(send.binding, send);
+		
+		if (send.isSuperAccess() && !send.binding.isStatic()) {
+			send.receiver = new ThisReference();
+			send.binding = send.codegenBinding = 
+				getSuperAccessMethod((MethodBinding)send.binding);
+		} else if (!isPublic(send.binding)) {
+			send.syntheticAccessor = getAccessibleMethod((MethodBinding)send.binding);
+		}
 	}
 	public void endVisit(AllocationExpression send, BlockScope scope) {
 		if (send.binding == null) return;
+		//XXX TBD
 		if (isPublic(send.binding)) return;
 		makePublic(send.binding.declaringClass);
 		send.binding = handler.getPrivilegedAccessMethod(send.binding, send);
@@ -87,6 +96,56 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 		BlockScope scope)
 	{
 		makePublic(ref.binding);
+	}
+	
+	private FieldBinding getAccessibleField(FieldBinding binding) {
+		if (!binding.isValidBinding()) return binding;
+		
+		makePublic(binding.declaringClass);
+		if (isPublic(binding)) return binding;
+		if (binding instanceof PrivilegedFieldBinding) return binding;
+		if (binding instanceof InterTypeFieldBinding) return binding;
+
+		if (binding.isPrivate() &&  binding.declaringClass != inAspect.binding) {
+			binding.modifiers = AstUtil.makePackageVisible(binding.modifiers);
+		}
+		
+		ResolvedMember m = world.makeResolvedMember(binding);
+		if (inAspect.accessForInline.containsKey(m)) return (FieldBinding)inAspect.accessForInline.get(m);
+		FieldBinding ret = new InlineAccessFieldBinding(inAspect, binding);
+		inAspect.accessForInline.put(m, ret);
+		return ret;
+	}
+	
+	private MethodBinding getAccessibleMethod(MethodBinding binding) {
+		if (!binding.isValidBinding()) return binding;
+		
+		makePublic(binding.declaringClass);  //???
+		if (isPublic(binding)) return binding;
+		if (binding instanceof InterTypeMethodBinding) return binding;
+
+		if (binding.isPrivate() &&  binding.declaringClass != inAspect.binding) {
+			binding.modifiers = AstUtil.makePackageVisible(binding.modifiers);
+		}
+
+		
+		ResolvedMember m = world.makeResolvedMember(binding);
+		if (inAspect.accessForInline.containsKey(m)) return (MethodBinding)inAspect.accessForInline.get(m);
+		MethodBinding ret = world.makeMethodBinding(
+			AjcMemberMaker.inlineAccessMethodForMethod(inAspect.typeX, m)
+			);
+		inAspect.accessForInline.put(m, ret);
+		return ret;
+	}
+	
+	private MethodBinding getSuperAccessMethod(MethodBinding binding) {
+		ResolvedMember m = world.makeResolvedMember(binding);
+		if (inAspect.superAccessForInline.containsKey(m)) return (MethodBinding)inAspect.superAccessForInline.get(m);
+		MethodBinding ret = world.makeMethodBinding(
+			AjcMemberMaker.superAccessMethod(inAspect.typeX, m)
+			);
+		inAspect.superAccessForInline.put(m, ret);
+		return ret;
 	}
 	
 	private boolean isPublic(FieldBinding fieldBinding) {

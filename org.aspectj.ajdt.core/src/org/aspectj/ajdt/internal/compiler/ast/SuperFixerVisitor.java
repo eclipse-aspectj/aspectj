@@ -50,7 +50,6 @@ public class SuperFixerVisitor extends AbstractSyntaxTreeVisitorAdapter {
 			return;
 		}
 		char[] accessName;
-		boolean isSuper;
 		if (call.isSuperAccess() && !call.binding.isStatic()) {
 			call.receiver = new ThisReference();
 			accessName =

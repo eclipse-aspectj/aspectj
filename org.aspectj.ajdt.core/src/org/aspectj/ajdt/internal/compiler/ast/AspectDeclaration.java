@@ -14,6 +14,7 @@
 package org.aspectj.ajdt.internal.compiler.ast;
 
 import java.lang.reflect.*;
+import java.util.*;
 
 import org.aspectj.ajdt.internal.compiler.lookup.*;
 import org.aspectj.weaver.*;
@@ -32,7 +33,10 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 	public PerClause perClause;
 	public ResolvedMember aspectOfMethod;
 	public ResolvedMember hasAspectMethod;
-	
+
+
+	public Map accessForInline = new HashMap();
+	public Map superAccessForInline = new HashMap();
 	
 	public boolean isPrivileged;
 	
@@ -195,6 +199,8 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 	protected void generateAttributes(ClassFile classFile) {		
 		if (!isAbstract()) generatePerSupportMembers(classFile);
 		
+		generateInlineAccessMembers(classFile);
+		
 		classFile.extraAttributes.add(
 			new EclipseAttributeAdapter(new AjAttribute.Aspect(perClause)));
 			
@@ -212,6 +218,18 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 
 		super.generateAttributes(classFile);		
 	}
+	
+	private void generateInlineAccessMembers(ClassFile classFile) {
+		for (Iterator i = superAccessForInline.entrySet().iterator(); i.hasNext(); ) {
+			Map.Entry e = (Map.Entry)i.next();
+			generateSuperAccessMethod(classFile, (MethodBinding)e.getValue(), (ResolvedMember)e.getKey());
+		}
+		for (Iterator i = accessForInline.entrySet().iterator(); i.hasNext(); ) {
+			Map.Entry e = (Map.Entry)i.next();
+			generateInlineAccessMethod(classFile, (Binding)e.getValue(), (ResolvedMember)e.getKey());
+		}
+	}
+
 
 	private void generatePerSupportMembers(ClassFile classFile) {
 		if (isAbstract()) return;
@@ -553,6 +571,87 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 
 	}
 	
+	private void generateSuperAccessMethod(ClassFile classFile, final MethodBinding accessMethod, final ResolvedMember method) {
+		generateMethod(classFile, accessMethod, 
+		new BodyGenerator() {
+			public void generate(CodeStream codeStream) {
+				// body starts here
+				codeStream.aload_0();
+				AstUtil.generateParameterLoads(accessMethod.parameters, codeStream);
+				codeStream.invokespecial(
+					world.makeMethodBinding(method));
+				AstUtil.generateReturn(accessMethod.returnType, codeStream);
+				// body ends here
+			}});
+
+	}
+	
+
+	private void generateInlineAccessMethod(ClassFile classFile, final Binding binding, final ResolvedMember member) {
+		if (binding instanceof InlineAccessFieldBinding) {
+			generateInlineAccessors(classFile, (InlineAccessFieldBinding)binding, member);
+		} else {
+			generateInlineAccessMethod(classFile, (MethodBinding)binding, member);
+		}
+	}
+	
+	private void generateInlineAccessors(ClassFile classFile, final InlineAccessFieldBinding accessField, final ResolvedMember field) {
+		final FieldBinding fieldBinding = world.makeFieldBinding(field);
+		generateMethod(classFile, accessField.reader, 
+		new BodyGenerator() {
+			public void generate(CodeStream codeStream) {
+				// body starts here
+				if (field.isStatic()) {
+					codeStream.getstatic(fieldBinding);
+				} else {
+					codeStream.aload_0();
+					codeStream.getfield(fieldBinding);
+				}
+					
+				AstUtil.generateReturn(accessField.reader.returnType, codeStream);
+				// body ends here
+			}});
+			
+		generateMethod(classFile, accessField.writer, 
+		new BodyGenerator() {
+			public void generate(CodeStream codeStream) {
+				// body starts here
+				if (field.isStatic()) {
+					codeStream.load(fieldBinding.type, 0);
+					codeStream.putstatic(fieldBinding);
+				} else {
+					codeStream.aload_0();
+					codeStream.load(fieldBinding.type, 1);
+					codeStream.putfield(fieldBinding);
+				}	
+					
+				codeStream.return_();
+				// body ends here
+			}});
+
+	}
+	
+
+	private void generateInlineAccessMethod(ClassFile classFile, final MethodBinding accessMethod, final ResolvedMember method) {
+		generateMethod(classFile, accessMethod, 
+		new BodyGenerator() {
+			public void generate(CodeStream codeStream) {
+				// body starts here
+				
+				AstUtil.generateParameterLoads(accessMethod.parameters, codeStream);
+				
+				if (method.isStatic()) {
+					codeStream.invokestatic(world.makeMethodBinding(method));
+				} else {
+				    codeStream.invokevirtual(world.makeMethodBinding(method));
+				}
+					
+				AstUtil.generateReturn(accessMethod.returnType, codeStream);
+				// body ends here
+			}});
+	}
+	
+
 	
 	private PerClause.Kind lookupPerClauseKind(ReferenceBinding binding) {
 		if (binding instanceof SourceTypeBinding && !(binding instanceof BinaryTypeBinding)) {

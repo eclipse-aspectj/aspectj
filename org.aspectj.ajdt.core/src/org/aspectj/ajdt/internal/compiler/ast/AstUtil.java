@@ -132,8 +132,12 @@ public class AstUtil {
 	}
 	
 	public static int makePublic(int modifiers) {
+		return makePackageVisible(modifiers) | IConstants.AccPublic;
+	}
+
+	public static int makePackageVisible(int modifiers) {
 		modifiers &= ~(IConstants.AccPublic | IConstants.AccPrivate | IConstants.AccProtected);
-		return modifiers | IConstants.AccPublic;
+		return modifiers;
 	}
 
 	public static CompilationUnitScope getCompilationUnitScope(Scope scope) {
@@ -143,6 +147,17 @@ public class AstUtil {
 		return getCompilationUnitScope(scope.parent);
 	}
 	
+	
+	public static void generateParameterLoads(TypeBinding[] parameters, CodeStream codeStream) {
+		int paramIndex = 0;
+		int varIndex = 0;
+		while (paramIndex < parameters.length) {
+			TypeBinding param = parameters[paramIndex++];
+			codeStream.load(param, varIndex);
+			varIndex += slotsNeeded(param);
+		}
+	}
+
 	
 	public static void generateReturn(TypeBinding returnType, CodeStream codeStream) {
 		if (returnType.id == TypeIds.T_void) {

@@ -74,6 +74,23 @@ public class NameMangler {
 	
 	
 	
+	public static String inlineAccessMethodForMethod(String name, TypeX objectType, TypeX aspectType) {
+		return makeName("inlineAccessMethod", aspectType.getNameAsIdentifier(),
+					objectType.getNameAsIdentifier(), name);
+	}
+	
+	public static String inlineAccessMethodForFieldGet(String name, TypeX objectType, TypeX aspectType) {
+		return makeName("inlineAccessFieldGet", aspectType.getNameAsIdentifier(),
+					objectType.getNameAsIdentifier(), name);
+	}
+	
+	public static String inlineAccessMethodForFieldSet(String name, TypeX objectType, TypeX aspectType) {
+		return makeName("inlineAccessFieldSet", aspectType.getNameAsIdentifier(),
+					objectType.getNameAsIdentifier(), name);
+	}
+	
+	
+	
 	/**
 	 * The name of methods corresponding to advice declarations
 	 */

@@ -82,7 +82,6 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 			}
 		}
 	}
-
 	
 	public ResolvedMember[] getMembers() {
 		Collection m = accessors.keySet();
@@ -94,7 +93,4 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 		}
 		return ret;
 	}
-
-
-
 }
