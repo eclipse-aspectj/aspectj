@@ -88,7 +88,9 @@ public class BuildArgParser extends Main {
 	 *         which will be invalid unless there are no handler errors.
 	 */
 	public AjBuildConfig genBuildConfig(String[] args) {
-		return genBuildConfig(args,  true, null);
+		AjBuildConfig config = new AjBuildConfig();
+		populateBuildConfig(config, args,  true, null);
+		return config;
 	}  
       
     /**
@@ -100,8 +102,7 @@ public class BuildArgParser extends Main {
      * @return AjBuildConfig per args, 
      *         which will be invalid unless there are no handler errors.
      */
-	public AjBuildConfig genBuildConfig(String[] args, boolean setClasspath, File configFile) {
-		AjBuildConfig buildConfig = new AjBuildConfig();
+	public AjBuildConfig populateBuildConfig(AjBuildConfig buildConfig, String[] args, boolean setClasspath, File configFile) {		
 		buildConfig.setConfigFile(configFile);
 		try {
 			// sets filenames to be non-null in order to make sure that file paramters are ignored
@@ -124,7 +125,7 @@ public class BuildArgParser extends Main {
             }
 				
 			List javaArgList = new ArrayList();
-			//	disable all special eclipse warnings by default
+			//	disable all special eclipse warnings by default - why???
 			//??? might want to instead override getDefaultOptions()
 			javaArgList.add("-warn:none");
 			// these next four lines are some nonsense to fool the eclipse batch compiler

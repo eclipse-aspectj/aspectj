@@ -299,9 +299,10 @@ public class AjBuildConfig { // XXX needs bootclasspath?
      * @param global the AjBuildConfig to read globals from
      */
     public void installGlobals(AjBuildConfig global) { // XXX relies on default values
-        Map optionsMap = options.getMap();
-        join(optionsMap,global.getOptions().getMap());
-        options.set(optionsMap);
+    	// don't join the options - they already have defaults taken care of.
+//        Map optionsMap = options.getMap();
+//        join(optionsMap,global.getOptions().getMap());
+//        options.set(optionsMap);
         join(aspectpath, global.aspectpath);
         join(classpath, global.classpath);
         if (null == configFile) {

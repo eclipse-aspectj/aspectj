@@ -65,6 +65,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 	// One builder instance per project  (important)
 	private BcelWeaver myWeaver = null;
 	private BcelWorld myBcelWorld = null;
+	private EclipseClassPathManager cpManager = null;
 	private UnwovenResultCollector unwovenResultCollector = null;
 	private OutputFileNameProvider fileNameProvider = null;
 		
@@ -97,10 +98,16 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 	 * @see org.eclipse.jdt.internal.compiler.ICompilerAdapterFactory#getAdapter(org.eclipse.jdt.internal.compiler.Compiler)
 	 */
 	public ICompilerAdapter getAdapter(Compiler forCompiler) {
-		AjCompilerOptions options = (AjCompilerOptions) forCompiler.options;
+		Map javaOptions = forCompiler.options.getMap();
+		// TODO get aspectj options from project and add into map before...
+		AjCompilerOptions ajOptions = new AjCompilerOptions(javaOptions);
+		forCompiler.options = ajOptions;
 		
 		if (isBatchBuild || myBcelWorld == null || myWeaver == null) {
-			initWorldAndWeaver(options);
+			initWorldAndWeaver(ajOptions);
+		} else {
+			// update the nameEnvironment each time we compile...
+			cpManager.setNameEnvironment(nameEnvironment);
 		}
 		
 		// * an eclipse factory  -- create from AjLookupEnvironment, need to hide AjBuildManager field
@@ -110,7 +117,9 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 		forCompiler.problemReporter = pr;			
 		AjLookupEnvironment le =
 			new AjLookupEnvironment(forCompiler, forCompiler.options, pr,nameEnvironment);		
-		EclipseFactory eFactory = new EclipseFactory(le,myBcelWorld,options.xSerializableAspects);
+		EclipseFactory eFactory = new EclipseFactory(le,myBcelWorld,ajOptions.xSerializableAspects);
+		le.factory = eFactory;
+		forCompiler.lookupEnvironment = le;
 		
 		AjBuildNotifier ajNotifier = (AjBuildNotifier) notifier;
 		if (fileNameProvider == null ) fileNameProvider = new OutputFileNameProvider(getProject());
@@ -130,7 +139,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 		return new AjCompilerAdapter(forCompiler,isBatchBuild,myBcelWorld,
 				     myWeaver,eFactory,unwovenResultCollector,ajNotifier,fileNameProvider,bsProvider,
 					 fullBinarySourceEntries,resultSetForFullWeave,
-					 options.noWeave);
+					 ajOptions.noWeave);
 	}		
 	
 	/* (non-Javadoc)
@@ -143,8 +152,8 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 
 	
 	private void initWorldAndWeaver(AjCompilerOptions options) {
-		EclipseClassPathManager cpMgr = new EclipseClassPathManager(nameEnvironment);
-		myBcelWorld = new BcelWorld(cpMgr,new UnhandledMessageHandler(getProject()),null /*(xrefHandler)*/);
+		cpManager = new EclipseClassPathManager(nameEnvironment);
+		myBcelWorld = new BcelWorld(cpManager,new UnhandledMessageHandler(getProject()),null /*(xrefHandler)*/);
 		myBcelWorld.setXnoInline(options.xNoInline);
 		myBcelWorld.setXlazyTjp(options.xLazyThisJoinPoint);
 		setLintProperties(myBcelWorld,options);
@@ -203,7 +212,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 		public boolean handleMessage(IMessage message) throws AbortException {
 			try {
 				IMarker marker = project.createMarker(IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER);
-				marker.setAttribute(IMarker.MESSAGE, message); 
+				marker.setAttribute(IMarker.MESSAGE, message.getMessage()); 
 				marker.setAttribute(IMarker.SEVERITY, message.isError() ? IMarker.SEVERITY_ERROR : IMarker.SEVERITY_WARNING);
 			} catch (CoreException e) {
 				AspectJCore.getPlugin().getLog().log(e.getStatus());

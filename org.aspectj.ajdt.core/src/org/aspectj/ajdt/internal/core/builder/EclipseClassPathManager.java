@@ -38,6 +38,12 @@ public class EclipseClassPathManager extends ClassPathManager {
 		this.nameEnv = env;
 	}
 	
+	// class path manager will be used by weaver across multiple compiles,
+	// whereas a name environment may be constructed per-compile.
+	public void setNameEnvironment(INameEnvironment env) {
+		this.nameEnv = env;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.bcel.ClassPathManager#addPath(java.lang.String, org.aspectj.bridge.IMessageHandler)
 	 */

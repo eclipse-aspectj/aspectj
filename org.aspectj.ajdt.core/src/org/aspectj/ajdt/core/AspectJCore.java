@@ -42,6 +42,10 @@ public class AspectJCore extends JavaCore {
 		super(pluginDescriptor);
 	}
 	
+	public static AspectJCore getAspectJCore() {
+		return (AspectJCore) getPlugin();
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.core.JavaCore#getCompilerOptions()
 	 */

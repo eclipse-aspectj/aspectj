@@ -49,6 +49,19 @@ public class WeaverMessageHandler implements IMessageHandler {
 		if (! (message.isError() || message.isWarning()) ) return sink.handleMessage(message);
 		// we only care about warnings and errors here...
 		ISourceLocation sLoc = message.getSourceLocation();
+		
+		// See bug 62073.  We should assert that the caller pass the correct primary source location.
+		// But for AJ1.2 final we will simply do less processing of the locations if that is not the
+		// case (By calling sink.handleMessage()) - this ensures we don't put out bogus source context info.
+		if (sLoc instanceof EclipseSourceLocation) {
+			EclipseSourceLocation esLoc = (EclipseSourceLocation)sLoc;
+			if (currentlyWeaving!=null && esLoc.getCompilationResult()!=null) {
+			  if (!currentlyWeaving.equals(((EclipseSourceLocation)sLoc).getCompilationResult()))
+			  return sink.handleMessage(message);
+			  //  throw new RuntimeException("Primary source location must match the file we are currently processing!");
+			}
+		}
+		
 		CompilationResult problemSource = currentlyWeaving;
 		if (problemSource == null) {
 			// must be a problem found during completeTypeBindings phase of begin to compile
