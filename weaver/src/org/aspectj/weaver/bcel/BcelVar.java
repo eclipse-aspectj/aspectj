@@ -13,8 +13,9 @@
 
 package org.aspectj.weaver.bcel;
 
-import org.apache.bcel.generic.*;
-import org.aspectj.weaver.*;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionFactory;
+import org.apache.bcel.generic.InstructionList;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.ast.Var;
 

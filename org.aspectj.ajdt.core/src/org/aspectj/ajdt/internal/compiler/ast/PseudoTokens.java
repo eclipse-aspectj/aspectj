@@ -13,18 +13,21 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
-import java.io.*;
-import java.util.*;
-
-
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.patterns.*;
-import org.eclipse.jdt.internal.compiler.*;
-import org.eclipse.jdt.internal.compiler.ast.*;
+import org.aspectj.weaver.IHasPosition;
+import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.patterns.BasicTokenSource;
+import org.aspectj.weaver.patterns.Declare;
+import org.aspectj.weaver.patterns.IToken;
+import org.aspectj.weaver.patterns.ParserException;
+import org.aspectj.weaver.patterns.PatternParser;
+import org.aspectj.weaver.patterns.PerClause;
+import org.aspectj.weaver.patterns.PerSingleton;
+import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.TypePattern;
 import org.eclipse.jdt.internal.compiler.ast.AstNode;
-import org.eclipse.jdt.internal.compiler.lookup.*;
+import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
-import org.eclipse.jdt.internal.compiler.problem.*;
 
 
 public class PseudoTokens extends AstNode {

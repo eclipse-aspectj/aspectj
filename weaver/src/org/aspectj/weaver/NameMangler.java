@@ -15,9 +15,8 @@ package org.aspectj.weaver;
 
 import java.lang.reflect.Modifier;
 
-import org.aspectj.util.FuzzyBoolean;
-import org.aspectj.weaver.bcel.*;
 import org.aspectj.weaver.bcel.BcelObjectType;
+import org.aspectj.weaver.bcel.LazyClassGen;
 
 public class NameMangler {
 	private NameMangler() {

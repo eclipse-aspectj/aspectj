@@ -13,9 +13,13 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.TypeX;
 
 public class BindingTypePattern extends ExactTypePattern {
 	private int formalIndex;

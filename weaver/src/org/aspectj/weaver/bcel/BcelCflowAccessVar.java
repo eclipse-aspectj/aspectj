@@ -14,10 +14,13 @@
 package org.aspectj.weaver.bcel;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.generic.*;
-import org.aspectj.weaver.*;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionFactory;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.Type;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.ast.Var;
 
 /**
  * XXX Erik and I need to discuss this hierarchy.  Having FieldRef

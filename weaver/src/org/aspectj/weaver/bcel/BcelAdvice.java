@@ -13,10 +13,25 @@
 
 package org.aspectj.weaver.bcel;
 
-import org.apache.bcel.generic.*;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.ast.*;
-import org.aspectj.weaver.patterns.*;
+import org.apache.bcel.generic.InstructionFactory;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
+import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.AdviceKind;
+import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverStateKind;
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.ast.Literal;
+import org.aspectj.weaver.ast.Test;
+import org.aspectj.weaver.patterns.ExactTypePattern;
+import org.aspectj.weaver.patterns.ExposedState;
+import org.aspectj.weaver.patterns.Pointcut;
 
 /**
  * Advice implemented for bcel.

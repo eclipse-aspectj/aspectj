@@ -15,14 +15,20 @@ package org.aspectj.ajdt.internal.compiler.ast;
 
 import java.lang.reflect.Modifier;
 
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.patterns.*;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.patterns.IfPointcut;
+import org.aspectj.weaver.patterns.Pointcut;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.ast.*;
+import org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.eclipse.jdt.internal.compiler.ast.Expression;
+import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
+import org.eclipse.jdt.internal.compiler.ast.Statement;
+import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
-import org.eclipse.jdt.internal.compiler.parser.*;
+import org.eclipse.jdt.internal.compiler.parser.Parser;
 
 
 /**

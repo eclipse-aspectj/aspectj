@@ -13,17 +13,14 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
-import java.lang.reflect.Modifier;
-
-import org.aspectj.ajdt.internal.compiler.ast.*;
-import org.aspectj.ajdt.internal.compiler.ast.AstUtil;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.NameMangler;
-import org.eclipse.jdt.internal.compiler.ast.*;
-import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
-import org.eclipse.jdt.internal.compiler.impl.Constant;
-import org.eclipse.jdt.internal.compiler.lookup.*;
-import org.eclipse.jdt.internal.compiler.util.CharOperation;
+import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
+import org.aspectj.weaver.AjcMemberMaker;
+import org.eclipse.jdt.internal.compiler.ast.AstNode;
+import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
+import org.eclipse.jdt.internal.compiler.lookup.Scope;
+import org.eclipse.jdt.internal.compiler.lookup.SyntheticAccessMethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 
 
 /**

@@ -14,11 +14,11 @@
  
 package org.aspectj.testing.run;
 
-import org.aspectj.bridge.AbortException;
-import org.aspectj.bridge.MessageUtil;
-
 import java.io.PrintWriter;
 import java.util.List;
+
+import org.aspectj.bridge.AbortException;
+import org.aspectj.bridge.MessageUtil;
 
 /**
  * A generic RunListener for easier partial implementations.

@@ -13,10 +13,6 @@
 
 package org.aspectj.bridge;
 
-import org.aspectj.bridge.IMessage.Kind;
-import org.aspectj.util.LangUtil;
-import org.aspectj.util.LineReader;
-
 import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -26,6 +22,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import org.aspectj.bridge.IMessage.Kind;
+import org.aspectj.util.LangUtil;
+import org.aspectj.util.LineReader;
 
 /**
  * Convenience API's for constructing, printing, and sending messages.

@@ -13,17 +13,23 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.util.*;
-import java.util.Map;
 
-import org.apache.bcel.classfile.*;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.ast.*;
-import org.aspectj.bridge.*;
+import org.apache.bcel.classfile.JavaClass;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageUtil;
-import org.aspectj.util.*;
+import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.ResolvedPointcutDefinition;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ast.Test;
 
 /**
  */

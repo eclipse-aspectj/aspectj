@@ -13,10 +13,8 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.io.*;
-import java.util.zip.*;
-
-import org.aspectj.util.FileUtil;
+import java.io.File;
+import java.io.IOException;
 
 
 //XXX delete very soon

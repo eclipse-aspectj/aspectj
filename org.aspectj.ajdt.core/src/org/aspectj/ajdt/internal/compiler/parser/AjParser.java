@@ -14,17 +14,38 @@
 package org.aspectj.ajdt.internal.compiler.parser;
 
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
-import org.aspectj.ajdt.internal.compiler.ast.*;
+import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.DeclareDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.IfPseudoToken;
+import org.aspectj.ajdt.internal.compiler.ast.InterTypeConstructorDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.InterTypeFieldDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.InterTypeMethodDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.PointcutDesignator;
+import org.aspectj.ajdt.internal.compiler.ast.Proceed;
+import org.aspectj.ajdt.internal.compiler.ast.PseudoToken;
+import org.aspectj.ajdt.internal.compiler.ast.PseudoTokens;
 import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
-import org.aspectj.weaver.*;
 import org.aspectj.weaver.AdviceKind;
+import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.patterns.Declare;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.ast.*;
-import org.eclipse.jdt.internal.compiler.parser.*;
-import org.eclipse.jdt.internal.compiler.problem.*;
+import org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.eclipse.jdt.internal.compiler.ast.AstNode;
+import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
+import org.eclipse.jdt.internal.compiler.ast.Expression;
+import org.eclipse.jdt.internal.compiler.ast.Literal;
+import org.eclipse.jdt.internal.compiler.ast.MessageSend;
+import org.eclipse.jdt.internal.compiler.ast.OperatorExpression;
+import org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.eclipse.jdt.internal.compiler.parser.Parser;
+import org.eclipse.jdt.internal.compiler.parser.RecoveredType;
+import org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
+import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities;
 import org.eclipse.jdt.internal.compiler.util.CharOperation;
 import org.eclipse.jdt.internal.core.util.CharArrayOps;
 

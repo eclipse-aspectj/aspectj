@@ -13,7 +13,7 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
-import org.eclipse.jdt.internal.compiler.lookup.*;
+import org.eclipse.jdt.internal.compiler.lookup.Binding;
 
 /**
  */

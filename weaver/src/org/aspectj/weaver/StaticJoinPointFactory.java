@@ -13,8 +13,6 @@
 
 package org.aspectj.weaver;
 
-import java.io.StringReader;
-import java.util.*;
 
 public class StaticJoinPointFactory {
 //	int usedKeys;

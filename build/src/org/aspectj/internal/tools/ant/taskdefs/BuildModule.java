@@ -14,14 +14,14 @@
  
 package org.aspectj.internal.tools.ant.taskdefs;
 
+import java.io.File;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
 import org.aspectj.internal.tools.build.BuildSpec;
 import org.aspectj.internal.tools.build.Builder;
-
-import java.io.File;
 
 /**
  * Ant interface to build a product or module, including any required modules.

@@ -14,10 +14,20 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
-import java.util.*;
-import java.io.*;
-//import org.aspectj.tools.ide.*;
-import org.aspectj.asm.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import org.aspectj.asm.AdviceAssociation;
+import org.aspectj.asm.IntroductionAssociation;
+import org.aspectj.asm.LinkNode;
+import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.RelationNode;
+import org.aspectj.asm.StructureModelManager;
 //import org.aspectj.ajde.compiler.AjdeCompiler;
 
 /** 

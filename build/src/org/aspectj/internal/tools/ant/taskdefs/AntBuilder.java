@@ -11,6 +11,14 @@
  * ******************************************************************/
 package org.aspectj.internal.tools.ant.taskdefs;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
@@ -28,14 +36,6 @@ import org.aspectj.internal.tools.build.Module;
 import org.aspectj.internal.tools.build.Modules;
 import org.aspectj.internal.tools.build.ProductModule;
 import org.aspectj.internal.tools.build.Util;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Implement Builder in Ant.

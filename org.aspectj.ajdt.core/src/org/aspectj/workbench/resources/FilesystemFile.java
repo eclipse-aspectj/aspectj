@@ -13,13 +13,19 @@
 
 package org.aspectj.workbench.resources;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
-import org.aspectj.util.FileUtil;
-import org.eclipse.core.internal.resources.*;
-import org.eclipse.core.resources.*;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 
 public class FilesystemFile extends AbstractFile implements IFile {
 

@@ -13,6 +13,8 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
+import java.io.File;
+
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
@@ -21,8 +23,6 @@ import org.aspectj.util.LangUtil;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.eclipse.jdt.internal.compiler.util.Util;
-
-import java.io.File;
 
 /**
  * 

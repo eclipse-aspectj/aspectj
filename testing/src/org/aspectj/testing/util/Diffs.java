@@ -13,15 +13,15 @@
 
 package org.aspectj.testing.util;
 
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.MessageUtil;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.MessageUtil;
 
 /** result struct for expected/actual diffs for Collection */
 public class Diffs {

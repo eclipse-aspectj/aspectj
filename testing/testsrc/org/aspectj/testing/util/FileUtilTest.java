@@ -13,8 +13,6 @@
 
 package org.aspectj.testing.util;
 
-import java.io.File;
-
 import junit.framework.TestCase;
 
 /**

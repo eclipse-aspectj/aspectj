@@ -14,9 +14,9 @@
 package org.aspectj.testing.xml;
 
 
-import org.aspectj.bridge.ISourceLocation;
-
 import java.io.File;
+
+import org.aspectj.bridge.ISourceLocation;
 
 /**
  * Immutable source location.

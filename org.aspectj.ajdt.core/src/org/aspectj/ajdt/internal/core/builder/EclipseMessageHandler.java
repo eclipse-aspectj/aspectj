@@ -13,13 +13,7 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
-import java.io.*;
-
-import org.aspectj.bridge.*;
-import org.eclipse.jdt.core.compiler.*;
-import org.eclipse.jdt.internal.compiler.env.*;
-import org.eclipse.jdt.internal.compiler.problem.*;
-import org.eclipse.jdt.internal.compiler.util.*;
+import org.aspectj.bridge.IMessageHandler;
 
 /** @deprecated EclipseMessageAdapter */
 public class EclipseMessageHandler { // implements IMessageHandler {

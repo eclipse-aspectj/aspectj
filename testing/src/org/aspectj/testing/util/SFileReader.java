@@ -13,15 +13,15 @@
 
 package org.aspectj.testing.util;
 
-import org.aspectj.bridge.AbortException;
-import org.aspectj.bridge.IMessage;
-import org.aspectj.util.LangUtil;
-import org.aspectj.util.LineReader;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+
+import org.aspectj.bridge.AbortException;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.util.LangUtil;
+import org.aspectj.util.LineReader;
 
 
 /**

@@ -13,8 +13,6 @@
 
 package org.aspectj.internal.tools.build;
 
-import org.apache.tools.ant.BuildException;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
@@ -22,6 +20,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+
+import org.apache.tools.ant.BuildException;
 
 /**
  * Template class to build (eclipse) modules (and, weakly, products),

@@ -13,6 +13,11 @@
 
 package org.aspectj.testing.harness.bridge;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.testing.util.TestUtil;
@@ -20,11 +25,6 @@ import org.aspectj.testing.xml.IXmlWritable;
 import org.aspectj.testing.xml.XMLWriter;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Calculate changes in a directory tree.

@@ -13,14 +13,19 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.io.*;
 import java.io.File;
-import java.util.*;
-import java.util.zip.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.aspectj.bridge.*;
 import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.TypeX;
 
 

@@ -13,12 +13,18 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
-import java.lang.reflect.Modifier;
-import java.util.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-import org.aspectj.weaver.*;
-import org.aspectj.util.*;
+import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
 
 public class TypePatternList extends PatternNode {
 	private TypePattern[] typePatterns;

@@ -15,7 +15,7 @@ package org.aspectj.ajdt.internal.core.builder;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseSourceLocation;
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.IHasPosition;
 import org.aspectj.weaver.ISourceContext;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 

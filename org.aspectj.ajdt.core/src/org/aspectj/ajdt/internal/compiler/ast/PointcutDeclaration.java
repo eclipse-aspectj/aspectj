@@ -13,17 +13,18 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
-import java.io.*;
-import java.io.IOException;
-
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
 import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.patterns.Pointcut;
-import org.eclipse.jdt.internal.compiler.*;
-import org.eclipse.jdt.internal.compiler.ast.*;
-import org.eclipse.jdt.internal.compiler.lookup.*;
+import org.eclipse.jdt.internal.compiler.ClassFile;
+import org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.eclipse.jdt.internal.compiler.util.CharOperation;

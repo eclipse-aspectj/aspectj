@@ -13,9 +13,11 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
-import org.aspectj.weaver.patterns.*;
-import org.eclipse.jdt.internal.compiler.ast.*;
+import org.aspectj.weaver.patterns.IToken;
+import org.aspectj.weaver.patterns.Pointcut;
 import org.eclipse.jdt.internal.compiler.ast.AstNode;
+import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 
 /**

@@ -13,11 +13,10 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
-
-import org.aspectj.util.FuzzyBoolean;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.ast.*;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.ast.Test;
+import org.aspectj.weaver.ast.Var;
 
 /**
  * Common super type for Pointcuts that can bind formal parameters.

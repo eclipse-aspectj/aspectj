@@ -13,10 +13,16 @@
 
 package org.aspectj.weaver;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 import org.aspectj.util.FileUtil;
-import org.aspectj.weaver.patterns.*;
+import org.aspectj.weaver.patterns.Declare;
+import org.aspectj.weaver.patterns.PerClause;
+import org.aspectj.weaver.patterns.Pointcut;
 
 /**
  * These attributes are written to and read from .class files (see the JVM spec).

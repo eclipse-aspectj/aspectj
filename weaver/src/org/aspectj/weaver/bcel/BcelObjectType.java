@@ -14,11 +14,24 @@
 package org.aspectj.weaver.bcel;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
-import org.apache.bcel.classfile.*;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.patterns.*;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedPointcutDefinition;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverStateKind;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.PerClause;
 
 // ??? exposed for testing

@@ -13,11 +13,10 @@
 
 package org.aspectj.weaver;
 
-import java.io.*;
-import java.lang.reflect.Modifier;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Set;
-
-import org.aspectj.weaver.ResolvedTypeMunger.Kind;
 
 public class NewFieldTypeMunger extends ResolvedTypeMunger {
 	public NewFieldTypeMunger(ResolvedMember signature, Set superMethodsCalled) {

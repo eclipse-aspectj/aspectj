@@ -13,8 +13,8 @@
 
 package org.aspectj.weaver.ast;
 
-import org.aspectj.weaver.*;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ResolvedTypeX;
 
 public class CallExpr extends Expr {
 	// assert m.return value is boolean

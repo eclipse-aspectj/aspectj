@@ -13,10 +13,15 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.bcel.classfile.Field;
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.World;
 
 final class BcelField extends ResolvedMember {
 

@@ -13,16 +13,17 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
-import java.lang.reflect.Modifier;
-
-import org.aspectj.ajdt.internal.compiler.ast.AstUtil;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.NameMangler;
-import org.eclipse.jdt.internal.compiler.ast.*;
-import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
-import org.eclipse.jdt.internal.compiler.impl.Constant;
-import org.eclipse.jdt.internal.compiler.lookup.*;
-import org.eclipse.jdt.internal.compiler.util.CharOperation;
+import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.TypeX;
+import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
+import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.eclipse.jdt.internal.compiler.lookup.Scope;
+import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.SyntheticAccessMethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 
 public class InterTypeFieldBinding extends FieldBinding {
 	public ReferenceBinding targetType;

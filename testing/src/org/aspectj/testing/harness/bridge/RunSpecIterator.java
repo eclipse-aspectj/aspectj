@@ -13,6 +13,8 @@
 
 package org.aspectj.testing.harness.bridge;
 
+import java.util.ArrayList;
+
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.Message;
@@ -21,8 +23,6 @@ import org.aspectj.testing.run.IRunIterator;
 import org.aspectj.testing.run.Runner;
 import org.aspectj.testing.run.WrappedRunIterator;
 import org.aspectj.util.LangUtil;
-
-import java.util.ArrayList;
 
 
 /** 

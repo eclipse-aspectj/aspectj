@@ -13,8 +13,10 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
-import org.aspectj.weaver.*;
 import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.patterns.Pointcut;
 
 

@@ -13,15 +13,15 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
-import java.util.Arrays;
-
-import org.aspectj.ajdt.internal.compiler.lookup.*;
-import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedHandler;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.ShadowMunger;
 import org.eclipse.jdt.internal.compiler.AbstractSyntaxTreeVisitorAdapter;
-import org.eclipse.jdt.internal.compiler.ast.*;
-import org.eclipse.jdt.internal.compiler.lookup.*;
+import org.eclipse.jdt.internal.compiler.ast.AnonymousLocalTypeDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.LocalTypeDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
+import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 
 /**
  * Takes a method that already has the three extra parameters

@@ -13,12 +13,14 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.Unknown;
 import org.apache.bcel.generic.ConstantPoolGen;
-import org.aspectj.weaver.*;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.ISourceContext;
 
 
 // this is a class o' static methods for reading attributes.  It's pretty much a bridge from 

@@ -15,13 +15,14 @@ package org.aspectj.ajdt.ajc;
 
 import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
 import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
-import org.aspectj.bridge.*;
-import org.aspectj.util.LangUtil;
+import org.aspectj.bridge.AbortException;
+import org.aspectj.bridge.CountingMessageHandler;
+import org.aspectj.bridge.ICommand;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageUtil;
 import org.eclipse.jdt.internal.core.builder.MissingSourceFileException;
-
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * ICommand adapter for the AspectJ eclipse-based compiler.

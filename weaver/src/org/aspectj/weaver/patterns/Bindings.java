@@ -13,8 +13,8 @@
 
 package org.aspectj.weaver.patterns;
 
-import org.aspectj.weaver.BCException;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.weaver.BCException;
 
 public class Bindings {
 	public static final Bindings NONE = new Bindings(0);

@@ -14,10 +14,27 @@
 package org.aspectj.weaver.bcel;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.generic.*;
-import org.aspectj.weaver.*;
+import org.apache.bcel.generic.InstructionFactory;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.Type;
 import org.aspectj.weaver.BCException;
-import org.aspectj.weaver.ast.*;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ast.And;
+import org.aspectj.weaver.ast.Call;
+import org.aspectj.weaver.ast.CallExpr;
+import org.aspectj.weaver.ast.Expr;
+import org.aspectj.weaver.ast.FieldGet;
+import org.aspectj.weaver.ast.FieldGetCall;
+import org.aspectj.weaver.ast.IExprVisitor;
+import org.aspectj.weaver.ast.ITestVisitor;
+import org.aspectj.weaver.ast.Instanceof;
+import org.aspectj.weaver.ast.Literal;
+import org.aspectj.weaver.ast.Not;
+import org.aspectj.weaver.ast.Or;
+import org.aspectj.weaver.ast.Test;
+import org.aspectj.weaver.ast.Var;
 
 // we generate right to left, btw.
 public class BcelRenderer implements ITestVisitor, IExprVisitor {

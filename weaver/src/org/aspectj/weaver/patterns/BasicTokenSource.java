@@ -13,9 +13,11 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.ISourceContext;
 
 
 public class BasicTokenSource implements ITokenSource {

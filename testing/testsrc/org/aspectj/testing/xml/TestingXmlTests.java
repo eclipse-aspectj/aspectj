@@ -14,7 +14,9 @@
 
 package org.aspectj.testing.xml;
 
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 public class TestingXmlTests extends TestCase {
 

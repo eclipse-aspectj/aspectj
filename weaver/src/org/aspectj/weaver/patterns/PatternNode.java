@@ -13,11 +13,12 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-import org.aspectj.bridge.*;
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.IHasSourceLocation;
 import org.aspectj.weaver.ISourceContext;
 
 public abstract class PatternNode implements IHasSourceLocation {

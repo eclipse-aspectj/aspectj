@@ -14,6 +14,9 @@
 
 package org.aspectj.testing.run;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessageHolder;
@@ -21,9 +24,6 @@ import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.LangUtil;
-
-import java.util.Enumeration;
-import java.util.Hashtable;
 
 /**
  * Run IRun, setting status and invoking listeners

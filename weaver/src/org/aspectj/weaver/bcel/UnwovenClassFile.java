@@ -13,8 +13,13 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.aspectj.util.FileUtil;

@@ -14,9 +14,9 @@
 package org.aspectj.bridge;
 
 
-import org.aspectj.util.LangUtil;
-
 import java.io.File;
+
+import org.aspectj.util.LangUtil;
 
 /**
  * Immutable source location.

@@ -15,13 +15,19 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 
 import java.lang.reflect.Modifier;
 
-import org.aspectj.bridge.*;
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.weaver.*;
 import org.aspectj.weaver.ConcreteTypeMunger;
+import org.aspectj.weaver.NewConstructorTypeMunger;
+import org.aspectj.weaver.NewFieldTypeMunger;
+import org.aspectj.weaver.NewMethodTypeMunger;
+import org.aspectj.weaver.ResolvedTypeMunger;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
-import org.eclipse.jdt.internal.compiler.lookup.*;
-import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 
 
 public class EclipseTypeMunger extends ConcreteTypeMunger {

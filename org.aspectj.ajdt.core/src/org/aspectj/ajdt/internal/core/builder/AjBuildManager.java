@@ -13,31 +13,67 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
+
 import org.aspectj.ajdt.internal.compiler.AjCompiler;
 import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
 import org.aspectj.ajdt.internal.compiler.parser.AjParser;
 import org.aspectj.ajdt.internal.compiler.problem.AjProblemReporter;
-import org.aspectj.asm.*;
-import org.aspectj.bridge.*;
+import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.StructureModel;
+import org.aspectj.asm.StructureModelManager;
+import org.aspectj.bridge.AbortException;
+import org.aspectj.bridge.CountingMessageHandler;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageUtil;
+import org.aspectj.bridge.Version;
 import org.aspectj.util.LangUtil;
-import org.aspectj.weaver.bcel.*;
-import org.aspectj.workbench.resources.*;
+import org.aspectj.weaver.bcel.BcelWeaver;
+import org.aspectj.weaver.bcel.BcelWorld;
+import org.aspectj.weaver.bcel.UnwovenClassFile;
+import org.aspectj.workbench.resources.FilesystemFile;
+import org.aspectj.workbench.resources.FilesystemFolder;
+import org.aspectj.workbench.resources.SimpleProject;
 import org.eclipse.core.internal.events.ResourceDelta;
-import org.eclipse.core.resources.*;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.compiler.IProblem;
-import org.eclipse.jdt.internal.compiler.*;
+import org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.eclipse.jdt.internal.compiler.Compiler;
+import org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.eclipse.jdt.internal.compiler.util.Util;
-import org.eclipse.jdt.internal.core.builder.*;
-import org.eclipse.jdt.internal.compiler.Compiler;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.jar.*;
+import org.eclipse.jdt.internal.core.builder.AbortIncrementalBuildException;
+import org.eclipse.jdt.internal.core.builder.AbstractImageBuilder;
+import org.eclipse.jdt.internal.core.builder.BatchImageBuilder;
+import org.eclipse.jdt.internal.core.builder.BuildNotifier;
+import org.eclipse.jdt.internal.core.builder.ClasspathLocation;
+import org.eclipse.jdt.internal.core.builder.IncrementalImageBuilder;
+import org.eclipse.jdt.internal.core.builder.JavaBuilder;
+import org.eclipse.jdt.internal.core.builder.NameEnvironment;
+import org.eclipse.jdt.internal.core.builder.ProblemFactory;
+import org.eclipse.jdt.internal.core.builder.SimpleLookupTable;
+import org.eclipse.jdt.internal.core.builder.SourceFile;
+import org.eclipse.jdt.internal.core.builder.State;
 
 public class AjBuildManager {
 

@@ -13,13 +13,17 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-import org.apache.bcel.classfile.JavaClass;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.ast.*;
-import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.ast.Literal;
+import org.aspectj.weaver.ast.Test;
 
 /**
  * This is a kind of KindedPointcut.  This belongs either in 

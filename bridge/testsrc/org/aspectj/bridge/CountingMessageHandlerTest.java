@@ -14,14 +14,6 @@
 package org.aspectj.bridge;
 
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ListIterator;
-
-import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 

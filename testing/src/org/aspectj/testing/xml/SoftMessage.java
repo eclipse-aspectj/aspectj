@@ -14,15 +14,15 @@
 
 package org.aspectj.testing.xml;
 
+import java.io.File;
+import java.util.Iterator;
+import java.util.List;
+
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.LangUtil;
-
-import java.io.File;
-import java.util.Iterator;
-import java.util.List;
 
 
 /**

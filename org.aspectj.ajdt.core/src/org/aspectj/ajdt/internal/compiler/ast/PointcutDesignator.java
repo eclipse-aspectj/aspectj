@@ -13,16 +13,19 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
-import java.io.*;
-import java.util.List;
-
-import org.aspectj.ajdt.internal.compiler.lookup.*;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseScope;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.patterns.*;
+import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.patterns.FormalBinding;
-import org.eclipse.jdt.internal.compiler.ast.*;
-import org.eclipse.jdt.internal.compiler.lookup.*;
+import org.aspectj.weaver.patterns.Pointcut;
+import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.eclipse.jdt.internal.compiler.ast.AstNode;
+import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 
 public class PointcutDesignator extends AstNode {

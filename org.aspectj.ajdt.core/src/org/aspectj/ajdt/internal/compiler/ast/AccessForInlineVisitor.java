@@ -13,13 +13,29 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
-import java.util.*;
-
-import org.aspectj.ajdt.internal.compiler.lookup.*;
-import org.aspectj.weaver.*;
-import org.eclipse.jdt.internal.compiler.*;
-import org.eclipse.jdt.internal.compiler.ast.*;
-import org.eclipse.jdt.internal.compiler.lookup.*;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
+import org.aspectj.ajdt.internal.compiler.lookup.InlineAccessFieldBinding;
+import org.aspectj.ajdt.internal.compiler.lookup.InterTypeFieldBinding;
+import org.aspectj.ajdt.internal.compiler.lookup.InterTypeMethodBinding;
+import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedFieldBinding;
+import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedHandler;
+import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.ResolvedMember;
+import org.eclipse.jdt.internal.compiler.AbstractSyntaxTreeVisitorAdapter;
+import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
+import org.eclipse.jdt.internal.compiler.ast.FieldReference;
+import org.eclipse.jdt.internal.compiler.ast.MessageSend;
+import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
+import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
+import org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.ThisReference;
+import org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
+import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
+import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 
 /**
  * Walks the body of around advice

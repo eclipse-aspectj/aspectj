@@ -13,7 +13,8 @@
 
 package org.aspectj.weaver.ast;
 
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ResolvedTypeX;
 
 public abstract class Expr extends ASTNode {
 

@@ -13,7 +13,7 @@
 
 package org.aspectj.weaver.patterns;
 
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.IHasPosition;
 
 
 public class ParserException extends RuntimeException {

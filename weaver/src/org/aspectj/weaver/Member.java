@@ -13,9 +13,14 @@
 
 package org.aspectj.weaver;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 
 import org.aspectj.util.TypeSafeEnum;
 

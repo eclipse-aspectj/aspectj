@@ -15,8 +15,8 @@ package org.aspectj.weaver;
 
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.PartialOrder;
-import org.aspectj.weaver.patterns.*;
 import org.aspectj.weaver.patterns.PerClause;
+import org.aspectj.weaver.patterns.Pointcut;
 
 /**
  * For every shadow munger, nothing can be done with it until it is concretized.  Then...

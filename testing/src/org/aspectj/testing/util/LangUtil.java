@@ -13,9 +13,6 @@
 
 package org.aspectj.testing.util;
 
-import org.aspectj.bridge.AbortException;
-import org.aspectj.bridge.IMessage;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -35,6 +32,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
+
+import org.aspectj.bridge.AbortException;
+import org.aspectj.bridge.IMessage;
 
 
 /** 

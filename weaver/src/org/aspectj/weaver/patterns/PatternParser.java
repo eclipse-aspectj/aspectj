@@ -13,9 +13,12 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.Shadow;
 
 //XXX doesn't handle errors for extra tokens very well (sometimes ignores)
 public class PatternParser {

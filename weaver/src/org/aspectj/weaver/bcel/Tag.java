@@ -13,7 +13,8 @@
 
 package org.aspectj.weaver.bcel;
 
-import org.apache.bcel.generic.*;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionTargeter;
 
 /** A tag is an instruction-targeter that doesn't bother remembering its target(s) */
 abstract class Tag implements InstructionTargeter, Cloneable {

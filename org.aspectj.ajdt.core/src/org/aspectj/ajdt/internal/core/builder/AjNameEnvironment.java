@@ -13,11 +13,14 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.aspectj.ajdt.internal.compiler.ast.*;
-import org.eclipse.jdt.core.*;
-import org.eclipse.jdt.internal.core.builder.*;
+import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.internal.core.builder.ClasspathLocation;
+import org.eclipse.jdt.internal.core.builder.NameEnvironment;
 
 public class AjNameEnvironment extends NameEnvironment {
 	private Set aspectDeclarations = new HashSet();

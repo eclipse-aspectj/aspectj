@@ -15,14 +15,27 @@ package org.aspectj.ajdt.internal.compiler.ast;
 
 import java.lang.reflect.Modifier;
 
-import org.aspectj.ajdt.internal.compiler.lookup.*;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.Shadow.Kind;
-import org.eclipse.jdt.internal.compiler.*;
-import org.eclipse.jdt.internal.compiler.ast.*;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
+import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.CrosscuttingMembers;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.NewMethodTypeMunger;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.TypeX;
+import org.eclipse.jdt.internal.compiler.ClassFile;
+import org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.codegen.CodeStream;
-import org.eclipse.jdt.internal.compiler.flow.*;
-import org.eclipse.jdt.internal.compiler.lookup.*;
+import org.eclipse.jdt.internal.compiler.flow.FlowContext;
+import org.eclipse.jdt.internal.compiler.flow.FlowInfo;
+import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 
 

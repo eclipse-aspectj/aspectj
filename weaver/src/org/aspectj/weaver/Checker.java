@@ -13,9 +13,10 @@
 
 package org.aspectj.weaver;
 
-import org.aspectj.weaver.patterns.*;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
+import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.PerClause;
-import org.aspectj.bridge.*;
 
 
 public class Checker extends ShadowMunger {

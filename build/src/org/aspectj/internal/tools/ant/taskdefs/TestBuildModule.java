@@ -14,13 +14,13 @@
  
 package org.aspectj.internal.tools.ant.taskdefs;
 
-import org.apache.tools.ant.Project;
-import org.aspectj.internal.tools.build.*;
-import org.aspectj.internal.tools.build.BuildSpec;
-import org.aspectj.internal.tools.build.Util;
-
 import java.io.File;
 import java.util.Arrays;
+
+import org.apache.tools.ant.Project;
+import org.aspectj.internal.tools.build.BuildSpec;
+import org.aspectj.internal.tools.build.Builder;
+import org.aspectj.internal.tools.build.Util;
 
 public class TestBuildModule {
     private static boolean REBUILD = false;

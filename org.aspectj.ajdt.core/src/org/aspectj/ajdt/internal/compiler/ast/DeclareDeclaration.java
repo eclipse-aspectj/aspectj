@@ -13,16 +13,16 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
-import org.aspectj.ajdt.internal.compiler.lookup.*;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseScope;
-import org.aspectj.weaver.*;
 import org.aspectj.weaver.AjAttribute;
-import org.aspectj.weaver.patterns.*;
+import org.aspectj.weaver.CrosscuttingMembers;
 import org.aspectj.weaver.patterns.Declare;
-import org.eclipse.jdt.internal.compiler.*;
+import org.aspectj.weaver.patterns.FormalBinding;
+import org.eclipse.jdt.internal.compiler.ClassFile;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.ast.*;
-import org.eclipse.jdt.internal.compiler.lookup.*;
+import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 

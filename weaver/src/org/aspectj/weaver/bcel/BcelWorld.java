@@ -13,22 +13,40 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.io.*;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.util.*;
-import java.util.zip.*;
-import java.util.zip.ZipInputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.classfile.ClassParser;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.GETSTATIC;
+import org.apache.bcel.generic.INVOKEINTERFACE;
+import org.apache.bcel.generic.INVOKESPECIAL;
+import org.apache.bcel.generic.INVOKESTATIC;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.PUTSTATIC;
+import org.apache.bcel.generic.Type;
 import org.apache.bcel.util.ClassPath;
-import org.aspectj.util.FileUtil;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.patterns.*;
-import org.aspectj.asm.StructureModel;
-import org.aspectj.bridge.*;
 import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.AdviceKind;
+import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.ConcreteTypeMunger;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedTypeMunger;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.patterns.FormalBinding;
+import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.SimpleScope;
 
 public class BcelWorld extends World {
 	private ClassPathManager classPath;

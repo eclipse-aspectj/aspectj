@@ -13,13 +13,16 @@
 
 package org.aspectj.weaver;
 
-import java.util.*;
+import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.aspectj.asm.*;
+import org.aspectj.asm.AdviceAssociation;
+import org.aspectj.asm.LinkNode;
+import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.Relation;
+import org.aspectj.asm.RelationNode;
 import org.aspectj.asm.StructureModel;
-import org.aspectj.bridge.*;
-import org.aspectj.bridge.SourceLocation;
+import org.aspectj.bridge.ISourceLocation;
 
 public class AsmAdaptor {
 	public static void noteMunger(StructureModel model, Shadow shadow, ShadowMunger munger) {

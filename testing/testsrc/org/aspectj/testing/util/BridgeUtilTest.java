@@ -13,14 +13,13 @@
 
 package org.aspectj.testing.util;
 
+import junit.framework.TestCase;
+
 import org.aspectj.bridge.MessageHandler;
-import org.aspectj.bridge.MessageUtil;
 import org.aspectj.testing.run.IRun;
 import org.aspectj.testing.run.IRunStatus;
 import org.aspectj.testing.run.RunStatus;
 import org.aspectj.testing.run.Runner;
-
-import junit.framework.TestCase;
 
 /**
  * 

@@ -13,6 +13,12 @@
 
 package org.aspectj.testing.harness.bridge;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.testing.run.IRunIterator;
@@ -20,12 +26,6 @@ import org.aspectj.testing.run.IRunStatus;
 import org.aspectj.testing.run.Runner;
 import org.aspectj.testing.xml.XMLWriter;
 import org.aspectj.util.LangUtil;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * An AjcTest has child subruns (compile, [inc-compile|run]*).

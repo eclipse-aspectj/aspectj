@@ -13,17 +13,11 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
-import java.util.*;
-
-import org.aspectj.ajdt.internal.compiler.ast.*;
-import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
-import org.aspectj.bridge.*;
-import org.aspectj.bridge.MessageUtil;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.patterns.*;
-import org.eclipse.jdt.internal.compiler.ast.*;
-import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
-import org.eclipse.jdt.internal.compiler.lookup.*;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedPointcutDefinition;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
+import org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 
 public class EclipseBinaryType extends EclipseObjectType {
 	private BinaryTypeBinding binding;

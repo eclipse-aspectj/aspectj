@@ -13,6 +13,12 @@
 
 package org.aspectj.testing.harness.bridge;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessageHolder;
@@ -21,12 +27,6 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.testing.util.BridgeUtil;
 import org.aspectj.testing.util.Diffs;
 import org.aspectj.util.LangUtil;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
 
 
 /**

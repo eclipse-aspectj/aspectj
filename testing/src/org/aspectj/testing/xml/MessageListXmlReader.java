@@ -12,14 +12,6 @@
 
 package org.aspectj.testing.xml;
 
-import org.apache.commons.digester.Digester;
-import org.aspectj.bridge.AbortException;
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.MessageUtil;
-import org.aspectj.util.LangUtil;
-import org.xml.sax.SAXException;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -27,6 +19,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.digester.Digester;
+import org.aspectj.bridge.AbortException;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.MessageUtil;
+import org.aspectj.util.LangUtil;
+import org.xml.sax.SAXException;
 
 /** 
  * Read a list of messages in xml form. 

@@ -13,8 +13,13 @@
 
 package org.aspectj.internal.tools.ant.taskdefs;
 
-import org.apache.tools.ant.*;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Task;
 
 public abstract class ConditionalTask extends Task {
 

@@ -14,10 +14,10 @@
  
  package org.aspectj.testing.harness.bridge;
 
+import java.io.File;
+
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
-
-import java.io.File;
 
 /**
  */

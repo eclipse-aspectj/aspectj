@@ -12,15 +12,15 @@
 
 package org.aspectj.testing.harness.bridge;
 
+import java.io.File;
+import java.util.ArrayList;
+
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.testing.util.Diffs;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
-
-import java.io.File;
-import java.util.ArrayList;
 
 /**
  * A sandbox holds state shared by AjcTest sub-runs,

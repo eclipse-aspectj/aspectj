@@ -13,7 +13,9 @@
 
 package org.aspectj.weaver;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 import org.aspectj.weaver.patterns.Pointcut;
 

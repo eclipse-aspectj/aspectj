@@ -13,11 +13,11 @@
 
 package org.aspectj.testing.xml;
 
-import org.aspectj.util.LangUtil;
-
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Stack;
+
+import org.aspectj.util.LangUtil;
 
 /** 
  * Manage print stream to an XML document.

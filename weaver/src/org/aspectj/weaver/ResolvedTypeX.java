@@ -14,12 +14,18 @@
 package org.aspectj.weaver;
 
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
-import org.aspectj.bridge.*;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.bcel.BcelObjectType;
-import org.aspectj.weaver.patterns.*;
+import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
 
 public abstract class ResolvedTypeX extends TypeX {

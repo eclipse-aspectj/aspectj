@@ -13,15 +13,34 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.io.*;
-import java.util.*;
-import java.util.zip.*;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
-import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.util.FileUtil;
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.ConcreteTypeMunger;
+import org.aspectj.weaver.CrosscuttingMembersSet;
+import org.aspectj.weaver.IWeaver;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
 
 public class BcelWeaver implements IWeaver {
     private BcelWorld world;

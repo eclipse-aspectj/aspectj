@@ -13,15 +13,20 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
-import java.util.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.aspectj.weaver.*;
-import org.aspectj.bridge.*;
 import org.aspectj.bridge.IMessage;
-import org.aspectj.util.*;
-
-import com.sun.corba.se.internal.util.Utility;
+import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageUtil;
+import org.aspectj.util.FileUtil;
+import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
 
 //XXX need to use dim in matching
 public class WildTypePattern extends TypePattern {

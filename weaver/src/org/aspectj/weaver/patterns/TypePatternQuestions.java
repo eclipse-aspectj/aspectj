@@ -13,14 +13,12 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.util.*;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.ResolvedTypeX;
 
 
 public class TypePatternQuestions {

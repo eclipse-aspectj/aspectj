@@ -13,6 +13,9 @@
 
 package org.aspectj.testing.util;
 
+import java.io.File;
+import java.util.Comparator;
+
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
@@ -22,9 +25,6 @@ import org.aspectj.testing.run.IRunStatus;
 import org.aspectj.testing.run.RunValidator;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LineReader;
-
-import java.io.File;
-import java.util.Comparator;
 
 /**
  * 

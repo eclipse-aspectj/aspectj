@@ -14,12 +14,53 @@
 package org.aspectj.weaver.bcel;
 
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.generic.BranchInstruction;
+import org.apache.bcel.generic.CPInstruction;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.INVOKESPECIAL;
+import org.apache.bcel.generic.IndexedInstruction;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionFactory;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.InstructionTargeter;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.LocalVariableInstruction;
+import org.apache.bcel.generic.NEW;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.PUTFIELD;
+import org.apache.bcel.generic.PUTSTATIC;
+import org.apache.bcel.generic.RET;
+import org.apache.bcel.generic.ReturnInstruction;
+import org.apache.bcel.generic.Select;
+import org.apache.bcel.generic.Type;
 import org.aspectj.util.PartialOrder;
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.ConcreteTypeMunger;
+import org.aspectj.weaver.IClassWeaver;
+import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.NewFieldTypeMunger;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.WeaverStateKind;
 
 class BcelClassWeaver implements IClassWeaver {
     

@@ -13,11 +13,13 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import org.aspectj.bridge.IMessage;
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
 
 public class DeclarePrecedence extends Declare {

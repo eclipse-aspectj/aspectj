@@ -13,7 +13,6 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
-import java.util.Map;
 
 /**
  * ??? should this go away?

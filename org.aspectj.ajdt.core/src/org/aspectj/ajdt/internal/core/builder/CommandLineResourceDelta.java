@@ -13,11 +13,9 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
-import org.apache.bcel.generic.RETURN;
-import org.aspectj.workbench.resources.FilesystemFile;
-import org.eclipse.core.internal.events.*;
+import org.eclipse.core.internal.events.ResourceDelta;
 import org.eclipse.core.internal.resources.ResourceInfo;
-import org.eclipse.core.resources.*;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.IPath;
 

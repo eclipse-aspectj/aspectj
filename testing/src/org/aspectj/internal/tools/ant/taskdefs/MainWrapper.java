@@ -15,12 +15,13 @@
 
 package org.aspectj.internal.tools.ant.taskdefs;
 
-import org.aspectj.testing.util.LangUtil; // todo config management here
-
+import java.io.File;
+import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.InvocationTargetException;
-import java.io.*;
+
+import org.aspectj.testing.util.LangUtil;
 
 /** 
  * Wrapper to invoke class identified by setting VM argument.

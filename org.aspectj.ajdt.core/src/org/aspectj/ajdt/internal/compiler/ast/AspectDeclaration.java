@@ -13,16 +13,45 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-import org.aspectj.ajdt.internal.compiler.lookup.*;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.patterns.*;
-import org.eclipse.jdt.internal.compiler.*;
-import org.eclipse.jdt.internal.compiler.ast.*;
-import org.eclipse.jdt.internal.compiler.codegen.*;
-import org.eclipse.jdt.internal.compiler.lookup.*;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseScope;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseSourceType;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
+import org.aspectj.ajdt.internal.compiler.lookup.HelperInterfaceBinding;
+import org.aspectj.ajdt.internal.compiler.lookup.InlineAccessFieldBinding;
+import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedHandler;
+import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.CrosscuttingMembers;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.patterns.FormalBinding;
+import org.aspectj.weaver.patterns.PerClause;
+import org.aspectj.weaver.patterns.PerFromSuper;
+import org.aspectj.weaver.patterns.PerSingleton;
+import org.aspectj.weaver.patterns.TypePattern;
+import org.eclipse.jdt.internal.compiler.ClassFile;
+import org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.eclipse.jdt.internal.compiler.ast.Clinit;
+import org.eclipse.jdt.internal.compiler.ast.MemberTypeDeclaration;
+import org.eclipse.jdt.internal.compiler.codegen.CodeStream;
+import org.eclipse.jdt.internal.compiler.codegen.Label;
+import org.eclipse.jdt.internal.compiler.lookup.BaseTypes;
+import org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.Binding;
+import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
+import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.eclipse.jdt.internal.compiler.lookup.Scope;
+import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 
 
 // making all aspects member types avoids a nasty hierarchy pain

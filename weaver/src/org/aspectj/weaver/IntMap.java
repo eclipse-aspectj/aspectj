@@ -13,7 +13,8 @@
 
 package org.aspectj.weaver;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class IntMap {
 	public static final IntMap EMPTY = new IntMap(0) {

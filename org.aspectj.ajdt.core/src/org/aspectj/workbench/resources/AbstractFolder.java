@@ -13,9 +13,12 @@
 
 package org.aspectj.workbench.resources;
 
-import org.eclipse.core.resources.*;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 
 public abstract class AbstractFolder extends AbstractContainer implements IFolder {
 

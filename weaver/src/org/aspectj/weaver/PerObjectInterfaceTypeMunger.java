@@ -13,10 +13,9 @@
 
 package org.aspectj.weaver;
 
-import java.io.*;
-import java.util.Set;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-import org.aspectj.weaver.ResolvedTypeMunger.Kind;
 import org.aspectj.weaver.patterns.Pointcut;
 
 public class PerObjectInterfaceTypeMunger extends ResolvedTypeMunger {

@@ -13,16 +13,22 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
-import java.util.*;
-import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.aspectj.ajdt.internal.compiler.lookup.*;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.ajdt.internal.compiler.lookup.InterTypeMethodBinding;
+import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.ResolvedMember;
 import org.eclipse.jdt.internal.compiler.AbstractSyntaxTreeVisitorAdapter;
-import org.eclipse.jdt.internal.compiler.ast.*;
-import org.eclipse.jdt.internal.compiler.lookup.*;
+import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.AstNode;
+import org.eclipse.jdt.internal.compiler.ast.MessageSend;
+import org.eclipse.jdt.internal.compiler.ast.ThisReference;
+import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
+import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 
 /**
  * Takes a method that already has the three extra parameters

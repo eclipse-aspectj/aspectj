@@ -13,14 +13,14 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
-import java.lang.reflect.Modifier;
-import java.util.List;
+import java.io.DataInputStream;
+import java.io.IOException;
 
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.ast.Test;
-import org.aspectj.util.*;
-import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.util.TypeSafeEnum;
+import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.ResolvedTypeX;
 
 public abstract class PerClause extends Pointcut {
 	protected ResolvedTypeX inAspect;

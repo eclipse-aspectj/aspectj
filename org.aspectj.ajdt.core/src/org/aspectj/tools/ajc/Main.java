@@ -14,6 +14,12 @@
 
 package org.aspectj.tools.ajc;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.List;
+
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
@@ -25,13 +31,6 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.ReflectionFactory;
 import org.aspectj.bridge.Version;
 import org.aspectj.util.LangUtil;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Programmatic and command-line interface to AspectJ compiler.

@@ -13,11 +13,18 @@
 
 package org.aspectj.weaver;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
-import org.aspectj.weaver.patterns.*;
+import org.aspectj.weaver.patterns.Declare;
+import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
+import org.aspectj.weaver.patterns.DeclareParents;
+import org.aspectj.weaver.patterns.DeclarePrecedence;
+import org.aspectj.weaver.patterns.DeclareSoft;
 import org.aspectj.weaver.patterns.PerClause;
-import org.aspectj.bridge.*;
+import org.aspectj.weaver.patterns.Pointcut;
 
 
 /**

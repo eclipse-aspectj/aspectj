@@ -14,14 +14,14 @@
 
 package org.aspectj.testing.run;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.testing.util.BridgeUtil;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Default implementation of {@link IRunStatus}.

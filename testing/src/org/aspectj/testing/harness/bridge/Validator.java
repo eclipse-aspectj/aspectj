@@ -12,13 +12,6 @@
 
 package org.aspectj.testing.harness.bridge;
 
-import org.aspectj.bridge.AbortException;
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.MessageUtil;
-import org.aspectj.util.FileUtil;
-import org.aspectj.util.LangUtil;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +19,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Stack;
+
+import org.aspectj.bridge.AbortException;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.MessageUtil;
+import org.aspectj.util.FileUtil;
+import org.aspectj.util.LangUtil;
 
 /** 
  * Check input and implement defaults.

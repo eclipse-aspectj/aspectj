@@ -13,11 +13,11 @@
 
 package org.aspectj.bridge;
 
-import org.aspectj.util.LangUtil;
-
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+
+import org.aspectj.util.LangUtil;
 
 /** 
  * Wrap an IMessageHandler to count messages handled.

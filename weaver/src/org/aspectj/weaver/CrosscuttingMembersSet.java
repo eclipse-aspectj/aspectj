@@ -13,11 +13,11 @@
 
 package org.aspectj.weaver;
 
-import java.util.*;
-
-import org.aspectj.weaver.patterns.*;
-import org.aspectj.weaver.patterns.PerClause;
-import org.aspectj.bridge.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 
 /**

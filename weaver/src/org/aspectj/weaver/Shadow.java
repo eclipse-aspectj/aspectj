@@ -13,18 +13,18 @@
 
 package org.aspectj.weaver;
 
-import java.io.*;
-import java.lang.reflect.Modifier;
-import java.util.*;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Field;
-import org.aspectj.weaver.ast.Var;
-import org.aspectj.weaver.patterns.IScope;
-import org.aspectj.bridge.*;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.util.*;
+import org.aspectj.util.PartialOrder;
+import org.aspectj.util.TypeSafeEnum;
+import org.aspectj.weaver.ast.Var;
 
 /*
  * The superclass of anything representing a the shadow of a join point.  A shadow represents

@@ -15,9 +15,15 @@ package org.aspectj.weaver.bcel;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Field;
-import org.apache.bcel.generic.*;
 import org.apache.bcel.generic.FieldGen;
-import org.aspectj.weaver.*;
+import org.apache.bcel.generic.InstructionFactory;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.Type;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedTypeX;
 
 public class BcelCflowStackFieldAdder extends BcelTypeMunger {
 	private ResolvedMember cflowStackField;

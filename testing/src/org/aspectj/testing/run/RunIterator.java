@@ -14,13 +14,13 @@
  
 package org.aspectj.testing.run;
 
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.MessageUtil;
-import org.aspectj.util.LangUtil;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
+
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.MessageUtil;
+import org.aspectj.util.LangUtil;
 
 /**
  * Adapt IRun or Run[] or List or ListIterator to RunIteratorI.

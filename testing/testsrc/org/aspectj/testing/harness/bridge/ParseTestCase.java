@@ -12,38 +12,33 @@
 
 package org.aspectj.testing.harness.bridge;
 
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.IMessageHolder;
-import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.Message;
-import org.aspectj.bridge.MessageHandler;
-import org.aspectj.bridge.MessageUtil;
-import org.aspectj.bridge.SourceLocation;
-import org.aspectj.testing.run.IRun;
-import org.aspectj.testing.run.IRunIterator;
-import org.aspectj.testing.run.IRunListener;
-import org.aspectj.testing.run.IRunStatus;
-import org.aspectj.testing.run.IRunValidator;
-import org.aspectj.testing.run.RunStatus;
-import org.aspectj.testing.run.RunValidator;
-import org.aspectj.testing.run.Runner;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import junit.framework.TestCase;
+
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHolder;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageHandler;
+import org.aspectj.bridge.MessageUtil;
+import org.aspectj.bridge.SourceLocation;
+import org.aspectj.testing.run.IRunIterator;
+import org.aspectj.testing.run.IRunListener;
+import org.aspectj.testing.run.RunStatus;
+import org.aspectj.testing.run.Runner;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class ParseTestCase extends TestCase {
 

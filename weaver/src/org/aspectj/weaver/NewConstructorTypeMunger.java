@@ -13,11 +13,12 @@
 
 package org.aspectj.weaver;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
-import org.aspectj.weaver.ResolvedTypeMunger.Kind;
 
 public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 	private ResolvedMember syntheticConstructor;

@@ -13,11 +13,10 @@
 
 package org.aspectj.weaver;
 
-import java.io.*;
-import java.lang.reflect.Modifier;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Iterator;
-
-import org.aspectj.weaver.patterns.PerClause;
 
 public class TypeX {
 	/**

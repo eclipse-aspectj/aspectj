@@ -13,12 +13,16 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
-import java.util.Map;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.ast.*;
-import org.aspectj.util.*;
+import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.ast.Test;
 
 public class AndPointcut extends Pointcut {
 	Pointcut left, right;  // exposed for testing

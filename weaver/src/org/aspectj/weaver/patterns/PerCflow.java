@@ -13,14 +13,28 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.ast.*;
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.CrosscuttingMembers;
+import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.ast.Expr;
+import org.aspectj.weaver.ast.Test;
 
 public class PerCflow extends PerClause {
 	private boolean isBelow;

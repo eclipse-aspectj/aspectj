@@ -13,9 +13,12 @@
 
 package org.aspectj.weaver.patterns;
 
-import org.aspectj.weaver.*;
-import org.aspectj.bridge.*;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.weaver.IHasPosition;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.World;
 
 public interface IScope {
 

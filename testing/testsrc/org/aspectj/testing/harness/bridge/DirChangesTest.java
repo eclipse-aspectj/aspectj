@@ -13,16 +13,18 @@
 
 package org.aspectj.testing.harness.bridge;
 
-import org.aspectj.bridge.*;
-import org.aspectj.testing.run.IRunIterator;
-import org.aspectj.testing.xml.XMLWriter;
-import org.aspectj.util.LangUtil;
-
-import java.io.*;
-import java.util.List;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
+
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.MessageHandler;
+import org.aspectj.bridge.MessageUtil;
+import org.aspectj.testing.xml.XMLWriter;
+import org.aspectj.util.LangUtil;
 
 /**
  *

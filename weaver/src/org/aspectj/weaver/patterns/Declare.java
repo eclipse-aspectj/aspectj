@@ -13,7 +13,8 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.IOException;
 
 import org.aspectj.weaver.ISourceContext;
 

@@ -14,13 +14,6 @@
 
 package org.aspectj.testing.util;
 
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.Message;
-import org.aspectj.bridge.MessageHandler;
-import org.aspectj.bridge.MessageUtil;
-import org.aspectj.bridge.SourceLocation;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -30,6 +23,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.TestCase;
+
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageHandler;
+import org.aspectj.bridge.MessageUtil;
+import org.aspectj.bridge.SourceLocation;
 
 /**
  * 

@@ -16,8 +16,9 @@ package org.aspectj.weaver.bcel;
 import java.io.File;
 import java.util.Arrays;
 
-import org.aspectj.bridge.*;
-import org.aspectj.weaver.*;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.SourceLocation;
+import org.aspectj.weaver.IHasPosition;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.AjAttribute.SourceContextAttribute;
 

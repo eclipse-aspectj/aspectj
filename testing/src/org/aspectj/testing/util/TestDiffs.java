@@ -13,8 +13,6 @@
 
 package org.aspectj.testing.util;
 
-import org.aspectj.util.LangUtil;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -26,6 +24,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+
+import org.aspectj.util.LangUtil;
 
 /**
  * Calculated differences between two test runs 

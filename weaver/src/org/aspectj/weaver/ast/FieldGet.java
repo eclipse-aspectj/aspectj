@@ -13,7 +13,8 @@
 
 package org.aspectj.weaver.ast;
 
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ResolvedTypeX;
 
 
 public class FieldGet extends Expr {

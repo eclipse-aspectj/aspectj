@@ -13,8 +13,20 @@
 
 package org.aspectj.weaver.bcel;
 
-import org.apache.bcel.generic.*;
-import org.aspectj.weaver.*;
+import org.apache.bcel.generic.BranchInstruction;
+import org.apache.bcel.generic.IndexedInstruction;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionFactory;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.InstructionTargeter;
+import org.apache.bcel.generic.LocalVariableInstruction;
+import org.apache.bcel.generic.RET;
+import org.apache.bcel.generic.Select;
+import org.apache.bcel.generic.TargetLostException;
+import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.Shadow;
 
 final class ShadowRange extends Range {
 

@@ -13,17 +13,14 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
-import org.eclipse.jdt.internal.core.builder.*;
-import org.aspectj.util.FileUtil;
-import org.eclipse.core.resources.*;
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
 import org.eclipse.jdt.internal.compiler.env.NameEnvironmentAnswer;
 import org.eclipse.jdt.internal.compiler.util.Util;
-
-import java.io.*;
+import org.eclipse.jdt.internal.core.builder.ClasspathLocation;
 
 class ClasspathContainer extends ClasspathLocation {
 

@@ -13,6 +13,13 @@
 
 package org.aspectj.testing.xml;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import org.apache.commons.digester.Digester;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
@@ -28,13 +35,6 @@ import org.aspectj.testing.harness.bridge.JavaRun;
 import org.aspectj.testing.util.RunUtils;
 import org.aspectj.util.LangUtil;
 import org.xml.sax.SAXException;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 /** 
  * Read an ajc test specification in xml form. 

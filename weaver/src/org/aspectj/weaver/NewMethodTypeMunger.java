@@ -13,10 +13,10 @@
 
 package org.aspectj.weaver;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Set;
-
-import org.aspectj.weaver.ResolvedTypeMunger.Kind;
 
 public class NewMethodTypeMunger extends ResolvedTypeMunger {
 	public NewMethodTypeMunger(

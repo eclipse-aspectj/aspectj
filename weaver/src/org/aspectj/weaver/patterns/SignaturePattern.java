@@ -13,11 +13,19 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
-import java.util.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Collection;
+import java.util.Iterator;
 
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.World;
 
 
 public class SignaturePattern extends PatternNode {

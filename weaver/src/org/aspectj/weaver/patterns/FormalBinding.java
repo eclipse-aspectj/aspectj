@@ -13,7 +13,8 @@
 
 package org.aspectj.weaver.patterns;
 
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.IHasPosition;
+import org.aspectj.weaver.TypeX;
 
 public class FormalBinding implements IHasPosition {
 	private final TypeX type;

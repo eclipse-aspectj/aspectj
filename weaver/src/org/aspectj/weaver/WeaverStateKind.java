@@ -13,7 +13,8 @@
 
 package org.aspectj.weaver;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.IOException;
 
 import org.aspectj.util.TypeSafeEnum;
 

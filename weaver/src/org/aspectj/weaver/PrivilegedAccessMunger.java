@@ -13,11 +13,8 @@
 
 package org.aspectj.weaver;
 
-import java.io.*;
-import java.util.Set;
-
-import org.aspectj.weaver.ResolvedTypeMunger.Kind;
-import org.aspectj.weaver.patterns.Pointcut;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 public class PrivilegedAccessMunger extends ResolvedTypeMunger {
 	public PrivilegedAccessMunger(ResolvedMember member) {

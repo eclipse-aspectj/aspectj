@@ -15,9 +15,11 @@ package org.aspectj.workbench.resources;
 
 import java.io.InputStream;
 
-import org.eclipse.core.resources.*;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.resources.IFileState;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 
 public abstract class AbstractFile extends AbstractResource implements IFile {
 

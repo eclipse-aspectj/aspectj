@@ -15,7 +15,8 @@
 package org.aspectj.ajdt.internal.compiler.parser;
 
 import org.aspectj.ajdt.compiler.IAjTerminalSymbols;
-import org.eclipse.jdt.core.compiler.*;
+import org.eclipse.jdt.core.compiler.IScanner;
+import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.internal.compiler.parser.Scanner;
 import org.eclipse.jdt.internal.compiler.util.CharOperation;
 

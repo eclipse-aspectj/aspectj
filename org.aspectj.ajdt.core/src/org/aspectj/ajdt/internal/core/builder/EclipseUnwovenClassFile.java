@@ -14,13 +14,13 @@
 package org.aspectj.ajdt.internal.core.builder;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Iterator;
 import java.util.List;
 
-import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.Message;
+import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 

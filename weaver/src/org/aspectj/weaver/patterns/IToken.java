@@ -13,7 +13,7 @@
 
 package org.aspectj.weaver.patterns;
 
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.IHasPosition;
 
 public interface IToken extends IHasPosition {
 	public static final IToken EOF = BasicToken.makeOperator("<eof>", 0, 0);

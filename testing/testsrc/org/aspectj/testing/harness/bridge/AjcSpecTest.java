@@ -13,14 +13,6 @@
 
 package org.aspectj.testing.harness.bridge;
 
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.IMessageHolder;
-import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.MessageHandler;
-import org.aspectj.bridge.MessageUtil;
-import org.aspectj.testing.harness.bridge.AjcTest.Suite.Spec;
-import org.aspectj.testing.xml.AjcSpecXmlReaderTest;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -29,6 +21,10 @@ import java.util.List;
 import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
+
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.MessageUtil;
 
 /**
  * Primarily used by others to test AjcTest

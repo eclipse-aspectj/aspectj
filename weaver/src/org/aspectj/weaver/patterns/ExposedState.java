@@ -15,8 +15,9 @@ package org.aspectj.weaver.patterns;
 
 import java.util.Arrays;
 
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.ast.*;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ast.Expr;
+import org.aspectj.weaver.ast.Var;
 
 public class ExposedState {
 	public Var[] vars;

@@ -14,10 +14,19 @@
 package org.aspectj.weaver.bcel;
 
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
-import org.apache.bcel.classfile.*;
-import org.aspectj.weaver.*;
+import org.apache.bcel.classfile.ExceptionTable;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTable;
+import org.apache.bcel.classfile.Method;
+import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.World;
 
 final class BcelMethod extends ResolvedMember {
 

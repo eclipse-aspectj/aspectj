@@ -13,10 +13,10 @@
 
 package org.aspectj.testing.harness.bridge;
 
+import junit.framework.TestCase;
+
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
-
-import junit.framework.TestCase;
 
 /**
  * 

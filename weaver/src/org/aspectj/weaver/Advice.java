@@ -13,11 +13,14 @@
 
 package org.aspectj.weaver;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
-import org.aspectj.bridge.*;
-import org.aspectj.bridge.MessageUtil;
-import org.aspectj.weaver.patterns.*;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.weaver.patterns.AndPointcut;
+import org.aspectj.weaver.patterns.PerClause;
+import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.TypePattern;
 
 public abstract class Advice extends ShadowMunger {
 

@@ -13,13 +13,13 @@
 
 package org.aspectj.testing.harness.bridge;
 
-import org.aspectj.testing.run.IRunIterator;
-import org.aspectj.testing.xml.XMLWriter;
-
 import java.io.PrintWriter;
 import java.util.List;
 
 import junit.framework.TestCase;
+
+import org.aspectj.testing.run.IRunIterator;
+import org.aspectj.testing.xml.XMLWriter;
 
 /**
  * 

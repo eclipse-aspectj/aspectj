@@ -14,22 +14,27 @@
 
 package org.aspectj.ajdt.ajc;
 
-import java.io.*;
-import java.util.*;
-import org.aspectj.ajdt.internal.core.builder.*;
-import org.aspectj.weaver.bcel.*;
-import org.apache.bcel.util.ClassPath;
-import org.aspectj.bridge.*;
-import org.aspectj.bridge.IMessage.Kind;
-import org.aspectj.util.*;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.compiler.*;
-import org.eclipse.jdt.internal.compiler.*;
-import org.eclipse.jdt.internal.compiler.batch.*;
-import org.eclipse.jdt.internal.compiler.problem.*;
-import org.eclipse.jdt.internal.core.util.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.StringTokenizer;
+
+import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
 import org.aspectj.ajdt.internal.core.builder.AjCompilerOptions;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.ConfigParser;
+import org.aspectj.util.FileUtil;
+import org.aspectj.util.LangUtil;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 

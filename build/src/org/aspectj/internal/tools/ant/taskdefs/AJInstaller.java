@@ -14,13 +14,30 @@
 //XXX INCLUDES CODE FROM ANT -- UNDER APACHE LICENSE
 package org.aspectj.internal.tools.ant.taskdefs;
 
-import org.apache.tools.ant.types.*;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringBufferInputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.zip.CRC32;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import java.util.*;
-import java.util.zip.*;
-import org.apache.tools.ant.taskdefs.*;
-import org.apache.tools.ant.*;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Copy;
+import org.apache.tools.ant.taskdefs.Delete;
+import org.apache.tools.ant.taskdefs.Expand;
+import org.apache.tools.ant.taskdefs.MatchingTask;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.PatternSet;
 
 public class AJInstaller extends MatchingTask {
     static final String INCLUDE_CLASSES = "$installer$/org/aspectj/*.class";

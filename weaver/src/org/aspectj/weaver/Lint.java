@@ -13,13 +13,20 @@
 
 package org.aspectj.weaver;
 
-import java.io.*;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
 
-import org.aspectj.bridge.*;
-import org.aspectj.bridge.IMessage.Kind;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageUtil;
 
 public class Lint {
 	private Map kinds = new HashMap();

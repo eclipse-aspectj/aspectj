@@ -13,13 +13,14 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.lang.reflect.Modifier;
 import java.util.Map;
 
-import org.apache.bcel.Constants;
-import org.apache.bcel.generic.*;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.IntMap;
+import org.apache.bcel.generic.IMPDEP1;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.InstructionTargeter;
+import org.aspectj.weaver.BCException;
 
 abstract class Range implements InstructionTargeter {
 

@@ -13,6 +13,9 @@
 
 package org.aspectj.testing.util;
 
+import java.io.PrintStream;
+import java.util.Iterator;
+
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessageHolder;
@@ -23,9 +26,6 @@ import org.aspectj.testing.harness.bridge.IRunSpec;
 import org.aspectj.testing.run.IRunStatus;
 import org.aspectj.testing.run.RunValidator;
 import org.aspectj.util.LangUtil;
-
-import java.io.PrintStream;
-import java.util.Iterator;
 
 /**
  * 

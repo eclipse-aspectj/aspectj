@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launchConfiguration type="org.eclipse.jdt.junit.launchconfig">
-    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.aspectj.testing.util.TestUtilTest"/>
-    <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
     <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.aspectj.testing.util.TestUtilTest"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="testing-util"/>
     <listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
         <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
@@ -14,7 +14,7 @@
 "/>
         <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;runtimeClasspathEntry internalArchive=&quot;/lib/junit/junit.jar&quot; path=&quot;3&quot;
-    sourceAttachmentPath=&quot;/lib/junit/junit-src.jar&quot; type=&quot;2&quot;/&gt;
+    sourceAttachmentPath=&quot;/lib/junit/junit-src.jar&quot; sourceRootPath=&quot;&quot; type=&quot;2&quot;/&gt;
 "/>
         <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;runtimeClasspathEntry path=&quot;3&quot; projectName=&quot;util&quot; type=&quot;1&quot;/&gt;
@@ -32,7 +32,8 @@
 &lt;runtimeClasspathEntry internalArchive=&quot;/lib/bcel/bcel.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;
 "/>
     </listAttribute>
+    <stringAttribute key="org.eclipse.debug.ui.target_debug_perspective" value="perspective_default"/>
+    <stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value=""/>
     <stringAttribute key="org.eclipse.debug.ui.target_run_perspective" value="perspective_default"/>
     <stringAttribute key="org.eclipse.debug.core.source_locator_id" value="org.eclipse.jdt.debug.ui.javaSourceLocator"/>
-    <stringAttribute key="org.eclipse.debug.ui.target_debug_perspective" value="perspective_default"/>
 </launchConfiguration>

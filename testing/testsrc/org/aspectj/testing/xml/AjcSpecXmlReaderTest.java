@@ -13,17 +13,6 @@
 
 package org.aspectj.testing.xml;
 
-import org.aspectj.bridge.MessageHandler;
-import org.aspectj.bridge.MessageUtil;
-import org.aspectj.testing.harness.bridge.AjcSpecTest;
-import org.aspectj.testing.harness.bridge.CompilerRun;
-import org.aspectj.testing.harness.bridge.FlatSuiteReader;
-import org.aspectj.testing.harness.bridge.AjcTest;
-import org.aspectj.testing.run.IRunStatus;
-import org.aspectj.testing.run.IRunValidator;
-import org.aspectj.testing.run.RunValidator;
-import org.aspectj.util.LangUtil;
-
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -32,9 +21,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import junit.framework.TestCase;
+
+import org.aspectj.testing.harness.bridge.AjcSpecTest;
+import org.aspectj.testing.harness.bridge.AjcTest;
+import org.aspectj.testing.harness.bridge.FlatSuiteReader;
+import org.aspectj.util.LangUtil;
 
 /**
  * 

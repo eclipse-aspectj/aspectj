@@ -14,12 +14,28 @@
 package org.aspectj.weaver.bcel;
 
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.generic.*;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.patterns.*;
+import org.apache.bcel.generic.FieldGen;
+import org.apache.bcel.generic.InstructionFactory;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.Type;
+import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.ConcreteTypeMunger;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.NewConstructorTypeMunger;
+import org.aspectj.weaver.NewFieldTypeMunger;
+import org.aspectj.weaver.NewMethodTypeMunger;
+import org.aspectj.weaver.PerObjectInterfaceTypeMunger;
+import org.aspectj.weaver.PrivilegedAccessMunger;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedTypeMunger;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.patterns.Pointcut;
 
 
 //XXX addLazyMethodGen is probably bad everywhere
