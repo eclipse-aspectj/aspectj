@@ -233,7 +233,7 @@
 		<run class="packageOne.Main" 
 		   options="new-event"/> 
     </ajc-test>
-<!-- disabled pending resolution of same in ajcTestsFailing.xml
+
     <ajc-test dir="incremental/stringliteral"
     	keywords="incremental-test,fixme"
 		title="pass incrementally change only string literal size">
@@ -249,7 +249,6 @@
 			options="in longer packageOne.Main.main(..),
 					 before main packageOne.Main"/>
     </ajc-test>
--->
 
    <ajc-test dir="incremental/defaultPackage/src"
    	title="pass test using prior classes">
@@ -293,8 +292,8 @@
     </ajc-test>
     
     
-    <!-- Expect two warnings when compiling -1.3 -->
     <ajc-test dir="harness"
+      comment="Expect two warnings when compiling -1.3"
       title="pass 2 compound warning -1.3">
         <compile files="CompoundMessage.java" options="-1.3">
             <message kind="warning" line="6">
@@ -306,20 +305,41 @@
         </compile>
     </ajc-test>
     
-    <!-- Expect no warnings when compiling -1.4 -->
     <ajc-test dir="harness"
+    	comment="Expect no warnings when compiling -1.4"
       title="pass 2 compound warning -1.4">
         <compile files="CompoundMessage.java" options="-1.4"/>
     </ajc-test>
 
-	<!-- Actual errors on lines 5,6 are: 'Type mismatch: cannot convert from Integer to int'-->
-    <!--ajc-test dir="harness"
-      title="fail 2 error, but expecting more details">
+    <ajc-test dir="harness/xlintfile"
+      title="pass default xlintfile">
+        <compile files="TypeNotExposed.java">
+            <message kind="warning" line="4" text="xpose"/>
+        	</compile>
+    </ajc-test>
+
+    <ajc-test dir="harness/xlintfile"
+      title="pass xlintfile promotes to error">
+        <compile files="TypeNotExposed.java"
+			xlintfile="tneError.properties">
+            <message kind="error" line="4" text="xpose"/>
+        	</compile>
+    </ajc-test>
+
+    <ajc-test dir="harness/xlintfile"
+      title="pass xlintfile demotes to ignore">
+        <compile files="TypeNotExposed.java"
+			xlintfile="tneIgnore.properties"/>
+    </ajc-test>
+
+    <ajc-test dir="harness"
+    	keywords="expect-fail"
+		title="fail 2 error, but expecting more details">
         <compile files="ErrorTest.java">
             <message kind="error" line="5" details="expecting more"/>
             <message kind="error" line="6" details="details"/>
         </compile>
-    </ajc-test-->
+    </ajc-test>
 
 </suite>
 

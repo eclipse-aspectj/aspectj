@@ -509,10 +509,12 @@ which handle most of the other compiler arguments:
    </li><li><code>aspectpath</code>: binary aspects in jar files
    </li><li><code>argfiles</code>: argument list files
    </li><li><code>sourceroots</code>: root directories for source files
+   </li><li><code>xlintfile</code>: override org.aspectj.weaver.XlintDefault.properties
    </li>
 </ul>
 Paths for these are all relative to the test base directory, and 
 multiple entries are separated with commas.
+(Use only one entry for xlintfile.)
 <p>
 Here is a cooked example that uses all <code>compiler</code> attributes:
 <pre>
@@ -522,6 +524,7 @@ Here is a cooked example that uses all <code>compiler</code> attributes:
                options="-Xlint,-g:none"
               argfiles="debug.lst,aspects/test.lst"
             aspectpath="jars/requiredAspects.jar"
+             xlintfile="ignore-all-but-typenotfound.properties"
              classpath="providedClassesDir,jars/required.jar"/>
         &lt;inc-compile tag="20"/>
     &lt;/ajc-test>
@@ -587,7 +590,9 @@ through the sandbox, adding default libraries:
 
 The harness provides some more advance behaviors,
 which you might see specified in the tests.
-For more information, see the API documentation for the harness.
+For more information, see the API documentation for the harness
+(<a href="../testing-drivers/src/org/aspectj/testing/drivers/package.html">
+ org/aspectj/testing/drivers/package.html</a>).
 <ul>
    <li><u>option dominance and overriding</u>:
        Both in test specifications and on the command line
@@ -601,7 +606,7 @@ For more information, see the API documentation for the harness.
      </li>
 </ul>
 <hr>
-<small>last updated January 8, 2004 </small> <!-- CVS variable -->
+<small>last updated March 8, 2004 </small> <!-- CVS variable -->
 
 </body>
 </html>

@@ -24,6 +24,7 @@
    <!ATTLIST compile extdirs CDATA #IMPLIED >
    <!ATTLIST compile options CDATA #IMPLIED >
    <!ATTLIST compile sourceroots CDATA #IMPLIED >
+   <!ATTLIST compile xlintfile CDATA #IMPLIED >
 
    <!ELEMENT inc-compile (dir-changes*,message*)>
    <!ATTLIST inc-compile tag CDATA #REQUIRED >
