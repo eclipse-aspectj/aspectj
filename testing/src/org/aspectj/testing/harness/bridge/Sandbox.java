@@ -294,6 +294,12 @@ public class Sandbox {
 //        diffs.report(handler, IMessage.ERROR);
 //    }
     
+    ICommand getCommand(CompilerRun caller) {
+        LangUtil.throwIaxIfNull(caller, "caller");
+        assertState(null != command, "command never set"); 
+        return command;
+    }
+
     ICommand getCommand(IncCompilerRun caller) {
         LangUtil.throwIaxIfNull(caller, "caller");
         assertState(null != command, "command never set"); 
