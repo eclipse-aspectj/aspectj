@@ -11,7 +11,7 @@
  *     Xerox/PARC     initial implementation 
  * ******************************************************************/
 
-package org.aspectj.testing.util;
+package org.aspectj.testingutil;
 
 import org.aspectj.util.LangUtil;
 

@@ -11,7 +11,7 @@
  *     Xerox/PARC     initial implementation 
  * ******************************************************************/
 
-package org.aspectj.testing.util;
+package org.aspectj.testingutil;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +21,7 @@ import junit.framework.TestCase;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FileUtil;
+import org.aspectj.testing.util.TestUtil;
 
 /**
  * 
