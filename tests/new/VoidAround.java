@@ -26,7 +26,7 @@ aspect A {
         Tester.expectEvent("Object C.result()");
     }
     // no compile error expected (also note: message jp signatures are wrong?)
-    void around() : target(C) && call(* r*(..)) {
+    void around() : target(C) && call(* r*(..)) {  // CE can't apply to methods returning Object
         Tester.event(thisJoinPoint.getSignature().toString());
     }
 }
