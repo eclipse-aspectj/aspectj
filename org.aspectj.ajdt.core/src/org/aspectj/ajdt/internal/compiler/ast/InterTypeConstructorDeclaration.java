@@ -186,13 +186,12 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 
 	public EclipseTypeMunger build(ClassScope classScope) {
 		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
-
-		binding = classScope.referenceContext.binding.resolveTypesFor(binding);
 		
 		resolveOnType(classScope);
 		if (ignoreFurtherInvestigation) return null;
 		
-		
+		binding = classScope.referenceContext.binding.resolveTypesFor(binding);
+				
 		if (onTypeBinding.isInterface()) {
 			classScope.problemReporter().signalError(sourceStart, sourceEnd,
 							"can't define constructors on interfaces");
