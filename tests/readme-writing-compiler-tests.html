@@ -442,7 +442,7 @@ the <code>options</code> attribute:
 <pre>
     &lt;ajc-test dir="new" title="lint test">
         &lt;compile files="LintTest.java" 
-                 options="-Xlint,-emacssym">
+                 options="-Xlint,-emacssym,-source,1.4">
             &lt;message kind="warning" line="22">
         &lt;/compile>
 </pre>
@@ -450,8 +450,6 @@ This should work even for complex single-arg options like
 <code>-g:none</code>, but will fail for comma-delimited single-arg options like
 <code>-g:lines,vars</code> because the comma delimiters
 are ambiguous (yes, a design bug!).
-For -source 1.4 and -source 1.3 options,
-use -source14 and -source13 (yes, a hack!). 
 <p>
 The <code>compile</code> element has the following attributes
 which handle most of the other compiler arguments:

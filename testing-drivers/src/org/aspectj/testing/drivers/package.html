@@ -204,26 +204,28 @@ arguments on the harness command line:
 <tr><td rowspan="6" valign="top">CompilerRun
 <p>compiler options and side-effects
     </td></tr>
-  <tr><td><u>supported options</u>: Options given on the command-line have
-     the same meaning they would have to the compiler
-     (i.e., the same meaning as they would have as a value in the
-     <code>options</code> attribute in the &lt;compile&gt; entity
-     in the &lt;ajc-test&gt; test specification).
-     Only one-word options are supported; for this reason, <code>-source 1.4</code> is
-     specified as <code>-source14</code> and converted by CompilerRun back 
-     to <code>-source 1.4</code>. Unsupported options include
-     <code>-argfile</code>,
-     <code>-d</code>,
-     <code>-classpath</code>,
-     <code>-outjar</code>, and
-     <code>-sourceroot</code>.
-     (But <code>argfile</code>, 
-      <code>classpath</code> and       
+  <tr><td><u>supported options</u>: 
+     The command line passed to the compiler by <code>CompilerRun</code>
+     is composed of entries derived from the <code>&lt;compile&gt;</code>
+     attributes and recognized from the harness command line.
+     <code>&lt;compile&gt;</code> has specific attributes like
+     <code>files</code>, 
+     <code>argfiles</code>, 
+     <code>classpath</code> and       
      <code>sourceroot</code> 
-     are attributes accepted in the &lt;compile&gt; entity,
-     and in any case the test calculates and uses
-     <code>-d</code> and 
-     <code>-classpath</code>.)
+     which translate directly to their counterparts.
+     The output option <code>-d</code> is defined by <code>CompilerRun</code> and
+     may not be specified (and <code>-outjar</code> is not supported).
+     Most other compiler options are defined in 
+     <code>CompilerRun.Spec.CRSOptions</code> and may be specified
+     on the harness command-line
+     or in the <code>options</code> attribute of 
+     <code>&lt;compile&gt;</code>.  
+     In the <code>options</code> attribute, each argument is comma-delimited,
+     so an option with an argument would look like 
+     <code>&lt;compile options="-source,1.4" ...&gt;</code>.  
+     If options collide, duplicates
+     can be resolved using option dominance (below).
      </td></tr>
   <tr><td><u>compiler selectors</u>: 
   	 Use <code>-ajc</code> or <code>-eclipse</code> to select the old
@@ -239,26 +241,28 @@ arguments on the harness command line:
      Some tests require or prohibit certain options; 
      likewise, sometime you want to force all tests
      run with or without an option specified on the command-line,
-     regardless of its setting in the &lt;compile options=".." ...&gt; 
+     regardless of its setting in the <code>&lt;compile options=".." ...&gt;</code> 
      attribute. 
-     CompilerRun supports encodings and
-     conflict resolution for these, so an option may be specified as
+     For this reason an option may be specified in the options attribute
+     or on the harness command-line as
       <code>-option</code>,
       <code>!option</code>, or 
       <code>^option</code>.
      <ul>
      <li><u>- set</u>: If the leading character of an option is "-", then it is set unless forced-off.</li>
-     <li><u>^ force-off</u>: If the leading character of an option is "^", then it is forced off.</li>
-     <li><u>! force-on</u>: If the leading character of an option is "!", then it is forced on.</li>
-     <li><u>force conflict</u>: If local and global forces oppose, the test is skipped.</li>
-     <li><u>compiler conflicts</u>: compiler selectors may be forced (e.g., 
-     	<code>!ajc</code> or <code>^eclipse</code>), and conflicts are resolved
-         in the same way, so a local-global set conflict resolves in favor of the 
-         global specification. (e.g., local <code>-eclipse</code> and global
-         <code>-ajc</code> will use the ajc compiler)</li>
+     <li><u>^ force-off</u>: If the leading character of an option is "^", then it is forced off.
+            Any other matching option will be removed.</li>
+     <li><u>! force-on</u>: If the leading character of an option is "!", then it is forced on.
+         Any other non-force-on matching option will be removed.</li>
+     <li><u>force conflict</u>: If there are two matching force-on options, the test is skipped.</li>
+     <li><u>related options</u>: Two options match if they are the same or
+        if they are in the same family.  For example, <code>-ajc</code> and
+        <code>eclipse</code> are both compiler, and <code>-source 1.4</code>
+        and <code>-source 1.3</code> are both source.
+        </li>
      <ul><p>
      </td></tr>
-  <tr><td><u>auto-skip</u>: After collation of global and local options, there may be
+  <tr><td><u>auto-skip</u>: After combining global and local options, there may be
      conflicting or impossible options, which cause the test to be skipped:
      <ul>
      <li><u>semantic conflicts</u>: two options may conflict in meaning 
@@ -271,7 +275,7 @@ arguments on the harness command line:
      
   <tr><td><u>source searching</u>: Given <code>-seek:{literal}</code>,  
   	  as a side-effect, 
-  	  CompilerRun will search source files for {literal},
+  	  <code>CompilerRun</code> will search source files for {literal},
       emitting for each instance an INFO message of the form: 
      <tt>found: {file}:{line}:{column}</tt>
       (Note that the harness does not display INFO messages unless <tt>-verboseHarness</tt>
@@ -387,7 +391,7 @@ separate vm, do something like this:
         ajcTests.xml -logFail
 </pre>
 
-Here CompilerRun would add the bootclasspath as such when compiling.
+Here <code>CompilerRun</code> would add the bootclasspath as such when compiling.
 JavaRun would fork using the 1.1 vm and prepend the bootclasspath
 to the classpath, with an effect like these commands
 (ignoring the line splitting in the classpath):
