@@ -433,13 +433,6 @@
 				</para></entry>
 			</row>
 			<row>
-				<entry><para>showWeaveInfo
-				</para></entry>
-				<entry><para>	
-					If true, print out messages about what is being woven where.					
-				</para></entry>
-			</row>
-			<row>
 				<entry><para>Xlintwarnings
 				</para></entry>
 				<entry><para>			
