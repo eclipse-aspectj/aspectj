@@ -150,15 +150,15 @@ public class BrowserProperties implements ProjectPropertiesAdapter {
     	return null;
     }
     
-    public String getOutJar( ) {
+    public String getOutJar( ) { // XXX unimplemented
     	return null;
     }
     
-	public Set getSourceRoots( ) {
+	public Set getSourceRoots( ) { // XXX unimplemented
 		return null;
 	}    
 	
-	public Set getAspectPath( ) {
+	public Set getAspectPath( ) { // XXX unimplemented
 		return null;
 	}
 }
