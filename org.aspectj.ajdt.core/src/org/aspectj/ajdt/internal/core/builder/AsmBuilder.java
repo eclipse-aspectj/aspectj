@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Stack;
 
 import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
@@ -31,6 +32,8 @@ import org.aspectj.asm.StructureModelManager;
 import org.aspectj.asm.StructureNode;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
+import org.aspectj.util.FileUtil;
+import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.Member;
 import org.eclipse.jdt.internal.compiler.AbstractSyntaxTreeVisitorAdapter;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -55,96 +58,125 @@ import org.eclipse.jdt.internal.compiler.problem.ProblemHandler;
 
 public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 	
-	private Stack stack  = new Stack();
-	private CompilationResult currCompilationResult = null;
-	
-	public static void build(
-		CompilationUnitDeclaration unit,
-		StructureModel structureModel) {
-		new AsmBuilder().internalBuild(unit, structureModel);
-	}
-	
-	
-	private void internalBuild(CompilationUnitDeclaration unit, StructureModel structureModel) {
-		currCompilationResult = unit.compilationResult();
-		File file = new File(new String(unit.getFileName()));
-		// AMC - use the source start and end from the compilation unit decl
-		//ISourceLocation sourceLocation = new SourceLocation(file, 1);
-		int startLine = getStartLine(unit);
-		int endLine = getEndLine(unit);		
-		ISourceLocation sourceLocation = new SourceLocation(file, 
-			startLine, endLine);		
+    public static void build(
+        CompilationUnitDeclaration unit,
+        StructureModel structureModel) {
+        LangUtil.throwIaxIfNull(unit, "unit");
+          
+        new AsmBuilder(unit.compilationResult()).internalBuild(unit, structureModel);
+    }
 
-		ProgramElementNode cuNode = new ProgramElementNode(
-			new String(file.getName()),
-			ProgramElementNode.Kind.FILE_JAVA,
-			sourceLocation,
-			0,
-			"",
-			new ArrayList());
+	private final Stack stack;
+	private final CompilationResult currCompilationResult;
+	
+    private AsmBuilder(CompilationResult result) {
+        LangUtil.throwIaxIfNull(result, "result");
+        currCompilationResult = result;
+        stack = new Stack();
+    }
+	   
+    /** 
+     * Called only by 
+     * build(CompilationUnitDeclaration unit, StructureModel structureModel) 
+     */
+    private void internalBuild(
+        CompilationUnitDeclaration unit, 
+        StructureModel structureModel) {
+        LangUtil.throwIaxIfNull(structureModel, "structureModel");
+        if (!currCompilationResult.equals(unit.compilationResult())) {
+            throw new IllegalArgumentException("invalid unit: " + unit);
+        }
+        // ---- summary
+        // add unit to package (or root if no package),
+        // first removing any duplicate (XXX? removes children if 3 classes in same file?)
+        // push the node on the stack
+        // and traverse
+        
+        // -- create node to add
+        final File file = new File(new String(unit.getFileName()));
+        final ProgramElementNode cuNode;
+        {
+            // AMC - use the source start and end from the compilation unit decl
+            int startLine = getStartLine(unit);
+            int endLine = getEndLine(unit);     
+            ISourceLocation sourceLocation 
+                = new SourceLocation(file, startLine, endLine);
+            cuNode = new ProgramElementNode(
+                new String(file.getName()),
+                ProgramElementNode.Kind.FILE_JAVA,
+                sourceLocation,
+                0,
+                "",
+                new ArrayList());
+        }
 
-		ImportReference currentPackage = unit.currentPackage;
-		if (currentPackage != null) {
-			StringBuffer nameBuffer = new StringBuffer();
-			for (int i = 0; i < currentPackage.getImportName().length; i++) {
-				nameBuffer.append(new String(currentPackage.getImportName()[i]));
-				if (i < currentPackage.getImportName().length-1) nameBuffer.append('.');
-			}
-			String pkgName = nameBuffer.toString();
-			
-			boolean found = false;
-			ProgramElementNode pkgNode = null;
-			for (Iterator it = StructureModelManager.INSTANCE.getStructureModel().getRoot().getChildren().iterator(); it.hasNext(); ) {
-				ProgramElementNode currNode = (ProgramElementNode)it.next();
-				if (currNode.getName().equals(pkgName)) pkgNode = currNode;
-			}
-			if (pkgNode == null) {
-				pkgNode = new ProgramElementNode(
-					pkgName, 
-					ProgramElementNode.Kind.PACKAGE, 
-					new ArrayList());
-				StructureModelManager.INSTANCE.getStructureModel().getRoot().addChild(pkgNode);
-			}	
-			// if the node already exists remove before adding
-			ProgramElementNode duplicate = null;	
-			for (Iterator itt = pkgNode.getChildren().iterator(); itt.hasNext(); ) {
-				ProgramElementNode child = (ProgramElementNode)itt.next();
-				if (child.getSourceLocation().getSourceFile().equals(file)) {
-					duplicate = child;
-				} 
-			}
-			if (duplicate != null) {
-				pkgNode.removeChild(duplicate);
-			}
- 			pkgNode.addChild(cuNode);
-		} else {
-			// if the node already exists remove before adding
-			ProgramElementNode duplicate = null;	
-			for (Iterator itt = StructureModelManager.INSTANCE.getStructureModel().getRoot().getChildren().iterator(); itt.hasNext(); ) {
-				ProgramElementNode child = (ProgramElementNode)itt.next();
-				if (child.getSourceLocation().getSourceFile().equals(file)) {
-					duplicate = child;
-				} 
-			}
-			if (duplicate != null) {
-				StructureModelManager.INSTANCE.getStructureModel().getRoot().removeChild(duplicate);
-			}
-			StructureModelManager.INSTANCE.getStructureModel().getRoot().addChild(cuNode);
-		}
-		
-		stack.push(cuNode);
-		unit.traverse(this, unit.scope);  
-		
-		try {
-	        //StructureModelManager.INSTANCE.getStructureModel().getFileMap().put(
-			StructureModelManager.INSTANCE.getStructureModel().addToFileMap(
-	        	file.getCanonicalPath(),//.replace('\\', '/'),
-	        	cuNode
-	        );
-		} catch (IOException ioe) { }
-//		if (currImports != null) peNode.addChild(0, currImports);
-//		currImports = null;
-	}
+        // -- get node (package or root) to add to
+        final StructureNode addToNode;
+        {
+            ImportReference currentPackage = unit.currentPackage;
+            if (null == currentPackage) {
+                addToNode = structureModel.getRoot();
+            } else {
+                String pkgName;
+                {
+                    StringBuffer nameBuffer = new StringBuffer();
+                    final char[][] importName = currentPackage.getImportName();
+                    final int last = importName.length-1;
+                    for (int i = 0; i < importName.length; i++) {
+                        nameBuffer.append(new String(importName[i]));
+                        if (i < last) {
+                            nameBuffer.append('.');
+                        } 
+                    }
+                    pkgName = nameBuffer.toString();
+                }
+            
+                ProgramElementNode pkgNode = null;
+                for (Iterator it = structureModel.getRoot().getChildren().iterator(); 
+                    it.hasNext(); ) {
+                    ProgramElementNode currNode = (ProgramElementNode)it.next();
+                    if (pkgName.equals(currNode.getName())) {
+                        pkgNode = currNode;
+                        break; // any reason not to quit when found?
+                    } 
+                }
+                if (pkgNode == null) {
+                    // note packages themselves have no source location
+                    pkgNode = new ProgramElementNode(
+                        pkgName, 
+                        ProgramElementNode.Kind.PACKAGE, 
+                        new ArrayList());
+                    structureModel.getRoot().addChild(pkgNode);
+                }
+                addToNode = pkgNode;
+            }
+        }
+        
+        // -- remove duplicates before adding (XXX use them instead?)
+        for (ListIterator itt = addToNode.getChildren().listIterator(); itt.hasNext(); ) {
+            ProgramElementNode child = (ProgramElementNode)itt.next();
+            ISourceLocation childLoc = child.getSourceLocation();
+            if (null == childLoc) {
+                // XXX ok, packages have null source locations
+                // signal others?
+            } else if (childLoc.getSourceFile().equals(file)) {
+                itt.remove();
+            }
+        }
+        // -- add and traverse
+        addToNode.addChild(cuNode);     
+        stack.push(cuNode);
+        unit.traverse(this, unit.scope);  
+        
+        // -- update file map (XXX do this before traversal?)
+        try {
+            structureModel.addToFileMap(file.getCanonicalPath(), cuNode);
+        } catch (IOException e) { 
+            System.err.println("IOException " + e.getMessage() 
+                + " creating path for " + file );
+            // XXX signal IOException when canonicalizing file path
+        }
+    }
 
 	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
 		String name = new String(typeDeclaration.name);
