@@ -203,6 +203,66 @@ def test(batch=0, couldChange=[], changed=[], deleted=[], errors=[]):
 
 
 
+"""
+Bugzilla Bug 29684  
+   Incremental: Commenting out conflict yeilds NullPointerException 
+   
+public class SomeClass {
+
+    public String toString() {
+        return "from SomeClass";
+    }
+}
+
+public aspect Conflicter {
+
+    public String SomeClass.toString() {
+        return "from Conflicter";
+    }
+
+    public static void main(String[] args) {
+       int i = 0;
+    }
+}
+
+However, modifying Conflicter so that it reads:
+
+public aspect Conflicter {
+
+//    public String SomeClass.toString() {
+//        return "from Conflicter";
+//    }
+
+    public static void main(String[] args) {
+       int i = 0;
+    }
+}
+   
+   
+"""
+makeType("conflict.SomeClass", 
+	body="""public String toString() { return "from SomeClass"; }""")
+makeType("conflict.Conflicter", kind="aspect",
+	body="""public String SomeClass.toString() { return "from Conflicter"; }""")
+test(batch=1, errors=["Conflicter:3"])
+
+makeType("conflict.Conflicter", kind="aspect",
+	body="")
+test(changed=["SomeClass", "Conflicter"])
+
+makeType("conflict.Conflicter", kind="aspect",
+	body="""public String SomeClass.toString() { return "from Conflicter"; }""")
+test(errors=["Conflicter:3"])
+
+makeType("conflict.SomeClass", 
+	body="")
+test(changed=["SomeClass"])
+
+
+
+print "done", errorList
+sys.exit(0)
+
 
 """
 Simple tests with aspects
