@@ -702,7 +702,8 @@ public class Member implements Comparable {
 	protected String makeString(TypeX t) {
     	// this is the inverse of the odd behavior for Class.forName w/ arrays
     	if (t.isArray()) {
-    		return t.getSignature();
+    		// this behavior matches the string used by the eclipse compiler for Foo.class literals
+    		return t.getSignature().replace('/', '.');
     	} else {
     		return t.getName();
     	}
