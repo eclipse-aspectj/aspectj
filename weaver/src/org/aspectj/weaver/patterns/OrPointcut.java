@@ -88,8 +88,8 @@ public class OrPointcut extends Pointcut {
 	}
 	
 	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
-		return new OrPointcut(left.concretize1(inAspect, bindings),
-								right.concretize1(inAspect, bindings));
+		return new OrPointcut(left.concretize(inAspect, bindings),
+								right.concretize(inAspect, bindings));
 	}
 	
 	public Pointcut getLeft() {

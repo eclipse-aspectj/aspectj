@@ -238,4 +238,32 @@ public class SignaturePattern extends PatternNode {
 		return ret;
 	}
 
+	/**
+	 * @return
+	 */
+	public ModifiersPattern getModifiers() {
+		return modifiers;
+	}
+
+	/**
+	 * @return
+	 */
+	public TypePatternList getParameterTypes() {
+		return parameterTypes;
+	}
+
+	/**
+	 * @return
+	 */
+	public TypePattern getReturnType() {
+		return returnType;
+	}
+
+	/**
+	 * @return
+	 */
+	public ThrowsPattern getThrowsPattern() {
+		return throwsPattern;
+	}
+
 }

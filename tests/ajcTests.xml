@@ -2786,7 +2786,7 @@
 
     <ajc-test dir="design/calls" title="calls: calls(...)"
       keywords="from-resolved_10x">
-        <compile files="Simple.java"/>
+        <compile files="Simple.java" options="-Xlint:ignore"/>
         <run class="Simple"/>
     </ajc-test>
 
@@ -3508,7 +3508,7 @@
     <ajc-test dir="new"
       title="Does the matrix coverage thing for the new method signatures"
       keywords="from-resolved_10x">
-        <compile files="MethodSignatures.java" options="-1.4"/>
+        <compile files="MethodSignatures.java" options="-1.4,-Xlint:ignore"/>
         <run class="MethodSignatures" vm="1.4"/>
     </ajc-test>  
 
@@ -3531,7 +3531,7 @@
         this behavior. -->
     <ajc-test dir="new" title="correct types of parameters at call-sites"
       keywords="from-resolved_10x">
-        <compile files="CallTypes.java" options="-1.4"/>
+        <compile files="CallTypes.java" options="-1.4,-Xlint:ignore"/>
         <run class="CallTypes" vm="1.4"/>
     </ajc-test>
 
@@ -3698,7 +3698,7 @@
     <ajc-test dir="new"
       title="target type matching with messy interface hierarchies"
       keywords="from-resolved_10x">
-        <compile files="CallTypesI.java" options="-1.4"/>
+        <compile files="CallTypesI.java" options="-1.4,-Xlint:ignore"/>
         <run class="CallTypesI" vm="1.4"/>
     </ajc-test>
 
@@ -3806,7 +3806,7 @@
 
     <ajc-test dir="new" pr="519" title="Exception planning advice"
       keywords="from-resolved_10x">
-        <compile files="PR519.java"/>
+        <compile files="PR519.java" options="-Xlint:ignore"/>
         <run class="PR519"/>
     </ajc-test>
 
@@ -4223,14 +4223,14 @@
     <ajc-test dir="new" pr="654"
       title="Overriding method implementations using introduction on interfaces"
       keywords="from-resolved_10x,fail-unimplemented">
-        <compile files="IntroductionsOverriding.java"/>
+        <compile files="IntroductionsOverriding.java" options="-Xlint:ignore" />
         <run class="IntroductionsOverriding"/>
     </ajc-test>
 
     <ajc-test dir="new" pr="654"
       title="more coverage for around and concrete methods on interfaces"
       keywords="from-resolved_10x">
-        <compile files="MultiAndAround.java"/>
+        <compile files="MultiAndAround.java" options="-Xlint:ignore"/>
         <run class="MultiAndAround"/>
     </ajc-test>
 
@@ -4267,7 +4267,7 @@
     <ajc-test dir="new" pr="695"
       title="! and declaring types with callee-side call join points"
       keywords="from-resolved_10x">
-        <compile files="NotAndDeclaringTypes.java"/>
+        <compile files="NotAndDeclaringTypes.java" options="-Xlint:ignore"/>
         <run class="NotAndDeclaringTypes"/>
     </ajc-test>
 
@@ -5037,7 +5037,7 @@
     <ajc-test dir="base/test131"
       title="various forms of package name pattern matching work"
       keywords="from-broken14usejavac">
-        <compile files="Driver.java,p1/C1.java,p1/p2/C2.java"/>
+        <compile files="Driver.java,p1/C1.java,p1/p2/C2.java" />
         <run class="Driver"/>
     </ajc-test>
 
@@ -6821,7 +6821,7 @@
         	<message kind="error" line="20" text="incompatible type"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="49250"
       title="alias getCause for getWrappedThrowable in SoftException">
         <compile files="GetCauseOnSoftException.java" options="-Xlint:warning">
@@ -6849,5 +6849,39 @@
  	        <message kind="error" line="10" text="ref"/>
         </compile>
     </ajc-test>
+
+	<ajc-test dir="bugs"
+		title="XLint warning for call PCD's using subtype of defining type"
+		pr="41952"
+		>
+		<compile 
+			files="DeclaringTypeWarning.java" >
+			<!-- Should test for extra source locations lines 12 and 14 -->
+			<message kind="warning" line="6"/>
+		</compile>
+		</ajc-test>
+
+	<ajc-test dir="bugs"
+		title="(-Xlint:ignore) XLint warning for call PCD's using subtype of defining type"
+		pr="41952"
+		>
+		<compile
+			options="-Xlint:ignore" 
+			files="DeclaringTypeWarning.java" >
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs"
+		title="(-1.4) XLint warning for call PCD's using subtype of defining type"
+		pr="41952"
+		>
+		<compile
+			options="-1.4" 
+			files="DeclaringTypeWarning.java" >
+			<!-- Should test for extra source locations line 14 -->
+			<message kind="warning" line="6"/>
+			<message kind="error" line="12" />
+		</compile>
+	</ajc-test>
     
 </suite>

@@ -97,7 +97,8 @@ aspect A {
         T.e(name);
     }
 
-    pointcut safe()                                : call(Safe+.new(..)) || call(* Safe+.*(..)); 
+    pointcut safe()                                : (call(Safe+.new(..))) ||
+                                                        (call(* *.*(..)) && target(Safe)); 
 
     pointcut o1End()                               : args(.., Object);
     pointcut s1End()                               : args(.., String);

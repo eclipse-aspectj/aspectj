@@ -759,28 +759,49 @@ public class MessageUtil {
         if (null == message) {
             return "((IMessage) null)";
         }
-        StringBuffer result = new StringBuffer();
-        
-        result.append(message.getKind().toString());
-        result.append(" ");
-        
-        String messageString = message.getMessage();
-        if (!LangUtil.isEmpty(messageString)) {
-            result.append(messageString);
-            result.append(" ");
-        }
-
+       
         ISourceLocation loc = message.getSourceLocation();
-        if ((null != loc) && (loc != ISourceLocation.EMPTY)) {
-            result.append("at " + renderSourceLocation(loc));
+        String locString = (null == loc ? "" : " at " + loc);
+        
+        String result = message.getKind() + locString + " " + message.getMessage();
+      
+        Throwable thrown = message.getThrown();
+        if (thrown != null) {
+            result += " -- " + LangUtil.renderExceptionShort(thrown);  
+            result += "\n" + LangUtil.renderException(thrown, elide);         
         }
-        Throwable thrown = message.getThrown(); 
-        if (null != thrown) {
-            result.append(" -- " + LangUtil.renderExceptionShort(thrown));
-            result.append("\n" + LangUtil.renderException(thrown, elide));            
+        
+        if (message.getExtraSourceLocations().isEmpty()) {
+            return result;    
         }
-        return result.toString();
+        else {
+            return addExtraSourceLocations(message, result);    
+        }
     }
+
+	public static String addExtraSourceLocations(
+		IMessage message,
+		String baseMessage)
+	{
+		StringWriter buf = new StringWriter();
+		PrintWriter writer = new PrintWriter(buf);
+		writer.println(baseMessage);
+		for (Iterator iter = message.getExtraSourceLocations().iterator(); iter.hasNext();) {
+		    ISourceLocation element = (ISourceLocation) iter.next();
+		    writer.print("\tsee also: " + element.toString());
+		    if (iter.hasNext()) {
+		        writer.println();
+		    }
+		}
+		try { buf.close(); } 
+		catch (IOException ioe) {} 
+		return buf.getBuffer().toString();    
+	}
+    
+    
+    
+    
+    
     
     /**
      * Render ISourceLocation to String, ignoring empty elements

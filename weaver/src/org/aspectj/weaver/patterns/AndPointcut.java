@@ -85,8 +85,8 @@ public class AndPointcut extends Pointcut {
 	}
 
 	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
-		return new AndPointcut(left.concretize1(inAspect, bindings),
-								right.concretize1(inAspect, bindings));
+		return new AndPointcut(left.concretize(inAspect, bindings),
+								right.concretize(inAspect, bindings));
 	}
 
 	public Pointcut getLeft() {

@@ -13,23 +13,43 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.FuzzyBoolean;
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.Checker;
+import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 
 public class KindedPointcut extends Pointcut {
 	Shadow.Kind kind;
 	SignaturePattern signature;
+    
+    private ShadowMunger munger = null; // only set after concretization
 
-	public KindedPointcut(
-		Shadow.Kind kind,
-		SignaturePattern signature) {
-		this.kind = kind;
-		this.signature = signature;
-	}
+    public KindedPointcut(
+        Shadow.Kind kind,
+        SignaturePattern signature) {
+        this.kind = kind;
+        this.signature = signature;
+    }
+    public KindedPointcut(
+        Shadow.Kind kind,
+        SignaturePattern signature,
+        ShadowMunger munger)
+    {
+        this(kind, signature);
+        this.munger = munger;
+    }
 	
     public FuzzyBoolean fastMatch(ResolvedTypeX type) {
 		return FuzzyBoolean.MAYBE;
@@ -37,11 +57,70 @@ public class KindedPointcut extends Pointcut {
 	public FuzzyBoolean match(Shadow shadow) {
 		if (shadow.getKind() != kind) return FuzzyBoolean.NO;
 		
-		if (!signature.matches(shadow.getSignature(), shadow.getIWorld())) return  FuzzyBoolean.NO;
+		if (!signature.matches(shadow.getSignature(), shadow.getIWorld())){
+            if(kind == Shadow.MethodCall) {
+                warnOnConfusingSig(shadow);
+            }
+            return  FuzzyBoolean.NO; 
+        }
 
 		return  FuzzyBoolean.YES;
 	}
 	
+	private void warnOnConfusingSig(Shadow shadow) {
+        // no warnings for declare error/warning
+        if (munger instanceof Checker) return;
+        
+        World world = shadow.getIWorld();
+        
+		// warning never needed if the declaring type is any
+		TypeX exactDeclaringType = signature.getDeclaringType().getExactType();
+        
+		ResolvedTypeX shadowDeclaringType =
+			shadow.getSignature().getDeclaringType().resolve(world);
+        
+		if (signature.getDeclaringType().isStar()
+			|| exactDeclaringType== ResolvedTypeX.MISSING)
+			return;
+
+        // warning not needed if match type couldn't ever be the declaring type
+		if (!shadowDeclaringType.isAssignableFrom(exactDeclaringType)) {
+            return;
+		}
+
+		// if the method in the declaring type is *not* visible to the
+		// exact declaring type then warning not needed.
+		int shadowModifiers = shadow.getSignature().getModifiers(world);
+		if (!ResolvedTypeX
+			.isVisible(
+				shadowModifiers,
+				shadowDeclaringType,
+				exactDeclaringType.resolve(world))) {
+			return;
+		}
+
+		SignaturePattern nonConfusingPattern =
+			new SignaturePattern(
+				signature.getKind(),
+				signature.getModifiers(),
+				signature.getReturnType(),
+				TypePattern.ANY,
+				signature.getName(), 
+				signature.getParameterTypes(),
+				signature.getThrowsPattern());
+
+		if (nonConfusingPattern
+			.matches(shadow.getSignature(), shadow.getIWorld())) {
+                shadow.getIWorld().getLint().unmatchedSuperTypeInCall.signal(
+                    new String[] {
+                        shadow.getSignature().getDeclaringType().toString(),
+                        signature.getDeclaringType().toString()
+                    },
+                    this.getSourceLocation(),
+                    new ISourceLocation[] {shadow.getSourceLocation()} );               
+		}
+	}
+
 	public boolean equals(Object other) {
 		if (!(other instanceof KindedPointcut)) return false;
 		KindedPointcut o = (KindedPointcut)other;
@@ -102,7 +181,9 @@ public class KindedPointcut extends Pointcut {
 	}
 	
 	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
-		return new KindedPointcut(kind, signature);
+		Pointcut ret = new KindedPointcut(kind, signature, bindings.getEnclosingAdvice());
+        ret.copyLocationFrom(this);
+        return ret;
 	}
 
 	public Shadow.Kind getKind() {

@@ -122,13 +122,19 @@ public abstract class Pointcut extends PatternNode {
 	
 	
 	public Pointcut concretize(ResolvedTypeX inAspect, IntMap bindings) {
-		assertState(RESOLVED);
+		//!!! add this test -- assertState(RESOLVED);
 		Pointcut ret = this.concretize1(inAspect, bindings);
+        if (shouldCopyLocationForConcretize()) ret.copyLocationFrom(this);
 		ret.state = CONCRETE;
 		return ret;
 	}
 	
 	
+	protected boolean shouldCopyLocationForConcretize() {
+		return true;
+	}
+
+
 	/**
 	 * Resolves and removes ReferencePointcuts, replacing with basic ones
 	 * 

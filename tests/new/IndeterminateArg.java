@@ -120,7 +120,8 @@ aspect A {
         T.e(name);
     }
 
-    pointcut safe()                                : (call(C+.new(..)) || call(* C+.*(..))); 
+    pointcut safe()                                : (call(C+.new(..))) ||
+                                                        (call(* *.*(..)) && target(C)); 
     // XXX should encode slots, range: a0o1 = args(Object); a3o2Start = args(Object, Object, *)
     pointcut none()                                : args();
     pointcut o1()                                  : args(Object);

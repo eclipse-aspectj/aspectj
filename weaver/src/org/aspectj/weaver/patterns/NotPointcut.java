@@ -91,7 +91,7 @@ public class NotPointcut extends Pointcut {
 	}
 	
 	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
-		return new NotPointcut(body.concretize1(inAspect, bindings));
+		return new NotPointcut(body.concretize(inAspect, bindings));
 	}
 
 }

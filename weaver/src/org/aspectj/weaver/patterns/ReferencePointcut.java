@@ -271,7 +271,7 @@ public class ReferencePointcut extends Pointcut {
 			newBindings.copyContext(bindings);
 			newBindings.pushEnclosingDefinition(pointcutDec);
 			try {
-				return pointcutDec.getPointcut().concretize1(searchStart, newBindings);
+				return pointcutDec.getPointcut().concretize(searchStart, newBindings);
 			} finally {
 				newBindings.popEnclosingDefinitition();
 			}
@@ -280,6 +280,11 @@ public class ReferencePointcut extends Pointcut {
 			concretizing = false;
 		}
 	}
+    
+    // We want to keep the original source location, not the reference location
+    protected boolean shouldCopyLocationForConcretize() {
+        return false;
+    }
 
     public boolean equals(Object other) { 
         if (!(other instanceof ReferencePointcut)) return false;

@@ -15,6 +15,7 @@
 package org.aspectj.testing.xml;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -286,5 +287,12 @@ public class SoftMessage implements IMessage { // XXX mutable dup of Message
 
 	public void setDetails(String string) {
 		details = string;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.aspectj.bridge.IMessage#getExtraSourceLocations()
+	 */
+	public List getExtraSourceLocations() {
+		return Collections.EMPTY_LIST;
 	}
 }

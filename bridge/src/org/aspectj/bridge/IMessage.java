@@ -124,4 +124,6 @@ public interface IMessage {
 	 * join point's static part. 
 	 */
 	public String getDetails();
+    
+    public List getExtraSourceLocations();
 }

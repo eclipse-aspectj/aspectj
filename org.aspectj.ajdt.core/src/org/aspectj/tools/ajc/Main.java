@@ -432,7 +432,12 @@ public class Main {
                 sb.append(Main.renderExceptionForUser(thrown));
             }
             
-            return sb.toString();
+            if (message.getExtraSourceLocations().isEmpty()) {
+				return sb.toString();
+            } else {
+            	return MessageUtil.addExtraSourceLocations(message, sb.toString());
+            }
+            
         }
 
         public boolean isIgnoring(IMessage.Kind kind) {

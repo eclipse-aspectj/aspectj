@@ -135,7 +135,7 @@ public class SourceLocation implements ISourceLocation, java.io.Serializable {
             sb.append(sourceFile.getPath());
             sb.append(":");
         }
-        sb.append("" + startLine + "-" + endLine);
+        sb.append(startLine); //"" + startLine + "-" + endLine);
         if (!noColumn) {
             sb.append(":" + column);
         }

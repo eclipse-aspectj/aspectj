@@ -46,7 +46,10 @@ public class Lint {
 		
 	public final Kind shadowNotInStructure = 
 		new Kind("shadowNotInStructure", "the shadow for this join point is not exposed in the structure model: {0}");
-		
+
+    public final Kind unmatchedSuperTypeInCall = 
+        new Kind("unmatchedSuperTypeInCall", "does not match because declaring type is {0}, if match desired use target({1})");
+            
 	public Lint(World world) {
 		this.world = world;
 	}
@@ -148,6 +151,15 @@ public class Lint {
 			String text = MessageFormat.format(message, new Object[] {info} );
 			text += " [Xlint:" + name + "]";
 			world.getMessageHandler().handleMessage(new Message(text, kind, null, location));
+		}
+
+		public void signal(String[] infos, ISourceLocation location, ISourceLocation[] extraLocations) {
+            if (kind == null) return;
+            
+            String text = MessageFormat.format(message, infos );
+            text += " [Xlint:" + name + "]";
+            world.getMessageHandler().handleMessage(
+                new Message(text, "", kind, location, null, extraLocations));
 		}
 	}
 }

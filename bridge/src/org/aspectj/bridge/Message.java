@@ -18,6 +18,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -30,6 +34,7 @@ public class Message implements IMessage { // XXX toString or renderer?
     private final Throwable thrown;
     private final ISourceLocation sourceLocation;
     private final String details;
+    private final List/*SourceLocation*/ extraSourceLocations;
     
     /** convenience for constructing failure messages */
     public static Message fail(String message, Throwable thrown) {
@@ -60,20 +65,19 @@ public class Message implements IMessage { // XXX toString or renderer?
 	 * and thrown is null.
 	 */
 	public Message(String message, String details, IMessage.Kind kind, 
-		ISourceLocation sourceLocation) {
+		ISourceLocation sourceLocation, Throwable thrown, ISourceLocation[] extraSourceLocations) {
 		this.details = details;
-		this.message = message;
+		this.message = (message==null) ? thrown.getMessage() : message;
 		this.kind = kind;
 		this.sourceLocation = sourceLocation;
-		this.thrown = null;
-		if (null == message) {
-			if (null != thrown) {
-				message = thrown.getMessage();
-			} 
-			if (null == message) {
-				throw new IllegalArgumentException("null message");
-			}
+		this.thrown = thrown;
+        
+		if (extraSourceLocations != null) {
+			this.extraSourceLocations = Arrays.asList(extraSourceLocations);
 		}
+        else {
+            this.extraSourceLocations = Collections.EMPTY_LIST;
+        }
 		if (null == kind) {
 			 throw new IllegalArgumentException("null kind");
 		}
@@ -92,22 +96,23 @@ public class Message implements IMessage { // XXX toString or renderer?
      */
     public Message(String message, IMessage.Kind kind, Throwable thrown,
                     ISourceLocation sourceLocation) {
-        this.message = message;
-        this.kind = kind;
-        this.thrown = thrown;
-        this.sourceLocation = sourceLocation;
-        this.details = "";
-        if (null == message) {
-            if (null != thrown) {
-                message = thrown.getMessage();
-            } 
-            if (null == message) {
-                throw new IllegalArgumentException("null message");
-            }
-        }
-        if (null == kind) {
-             throw new IllegalArgumentException("null kind");
-        }
+          this(message, "", kind, sourceLocation, thrown, null );              
+//        this.message = message;
+//        this.kind = kind;
+//        this.thrown = thrown;
+//        this.sourceLocation = sourceLocation;
+//        this.details = "";
+//        if (null == message) {
+//            if (null != thrown) {
+//                message = thrown.getMessage();
+//            } 
+//            if (null == message) {
+//                throw new IllegalArgumentException("null message");
+//            }
+//        }
+//        if (null == kind) {
+//             throw new IllegalArgumentException("null kind");
+//        }
     }
     
     /** @return the kind of this message */
@@ -165,16 +170,9 @@ public class Message implements IMessage { // XXX toString or renderer?
     }
     
     public String toString() {
-        return Message.renderToString(this);
+        return MessageUtil.renderMessage(this,false);
     }
     
-    public static String renderToString(IMessage message) { 
-        ISourceLocation loc = message.getSourceLocation();
-        String locString = (null == loc ? "" : " at " + loc);
-        Throwable thrown = message.getThrown();
-        return message.getKind() + locString + ": " + message.getMessage()
-            + (null == thrown ? "" : render(thrown));
-    }
 
     public static String render(Throwable thrown) { // XXX cf LangUtil.debugStr
         if (null == thrown) return "null throwable";
@@ -200,4 +198,9 @@ public class Message implements IMessage { // XXX toString or renderer?
 	public String getDetails() {
 		return details;
 	}
+    
+	public List getExtraSourceLocations() {
+		return extraSourceLocations;
+	}
+
 }

@@ -49,7 +49,9 @@ public class Checker extends ShadowMunger {
 				msg,
 				shadow.toString(),
 				isError ? IMessage.ERROR : IMessage.WARNING,
-				shadow.getSourceLocation());
+				shadow.getSourceLocation(),
+                null,
+                new ISourceLocation[]{this.getSourceLocation()});
 			world.getMessageHandler().handleMessage(message);
 			
 			AsmRelationshipProvider.checkerMunger(world.getModel(), shadow, this);

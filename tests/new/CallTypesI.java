@@ -53,7 +53,7 @@ interface I1a extends I0 { }
 
 interface I1b extends I0 { }
 
-interface I2 extends I1a, I1b {}
+////interface I2 extends I1a, I1b {}
 
 
 class C0 {
@@ -74,9 +74,11 @@ aspect A {
     before(): call(void C0.mC()) {
 	noteAdvice += "static c0, ";
     }
+    
     before(): call(void C1a.mC()) || call(void C1a.mI()) {
 	noteAdvice += "static c1a, ";
     }
+    
     before(): call(void C1b.mC()) || call(void C1b.mI()) {
 	noteAdvice += "static c1b, ";
     }
