@@ -52,7 +52,7 @@ public class SourceLocation implements ISourceLocation, java.io.Serializable {
     }
 
     private final File sourceFile;
-    private final int line;
+    private final int startLine;
     private final int column;
     private final int endLine;
     private boolean noColumn;
@@ -89,7 +89,7 @@ public class SourceLocation implements ISourceLocation, java.io.Serializable {
         LangUtil.throwIaxIfFalse(line <= endLine , line + " > " + endLine);
         LangUtil.throwIaxIfFalse(column >= 0, "negative column: " + column);
         this.sourceFile = file;
-        this.line = line;
+        this.startLine = line;
         this.column = column;
         this.endLine = endLine;
     }
@@ -98,7 +98,7 @@ public class SourceLocation implements ISourceLocation, java.io.Serializable {
         return sourceFile;
     }
     public int getLine() {
-        return line;
+        return startLine;
     }
     
     /**
@@ -110,7 +110,7 @@ public class SourceLocation implements ISourceLocation, java.io.Serializable {
     }
     
     public int getEndLine() {
-        return line;
+        return endLine;
     }
     
     /** @return String {file:}line{:column} */
@@ -121,7 +121,7 @@ public class SourceLocation implements ISourceLocation, java.io.Serializable {
             sb.append(sourceFile.getPath());
             sb.append(":");
         }
-        sb.append("" + line);
+        sb.append("" + startLine);
         if (!noColumn) {
             sb.append(":" + column);
         }
