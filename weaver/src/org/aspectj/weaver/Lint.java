@@ -76,7 +76,13 @@ public class Lint {
 	
     public final Kind adviceDidNotMatch =
         new Kind("adviceDidNotMatch","advice defined in {0} has not been applied");
+    
+    public final Kind invalidTargetForAnnotation =
+    	new Kind("invalidTargetForAnnotation","{0} is not a valid target for annotation {1}, this annotation can only be applied to {2}");
 
+    public final Kind elementAlreadyAnnotated =
+    	new Kind("elementAlreadyAnnotated","{0} - already has an annotation of type {1}, cannot add a second instance");
+    	
     public Lint(World world) {
 		this.world = world;
 	}
