@@ -26,6 +26,7 @@ import org.aspectj.bridge.IProgressListener;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.patterns.CflowPointcut;
+import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.Compiler;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ICompilerAdapter;
@@ -254,6 +255,14 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 			InterimCompilationResult ir = (InterimCompilationResult) iter.next();
 			if (!resultsPendingWeave.contains(ir)) {  // equality based on source file name...
 				ir.result().hasBeenAccepted = false;  // it may have been accepted before, start again
+				
+				// Remove DEOWs as they are going to be added again during weaving
+				ir.result().removeProblems(new CompilationResult.ProblemsForRemovalFilter() {
+					public boolean accept(IProblem p) {
+						String s = p.getSupplementaryMessageInfo();
+						if (s != null && s.endsWith("[deow=true]")) return true;
+						return false;
+					}});
 				resultsPendingWeave.add(ir);
 			}			
 		}
