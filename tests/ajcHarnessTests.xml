@@ -2,6 +2,10 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 
 <!--
+    To log unexpected results, run
+        with -logPass -ajctestRequireKeywords=expect-fail
+     or with -logFail -ajctestSkipKeywords=expect-fail
+
     hmm.  not running suite if any test fails setup?
     
     <ajc-test dir="new" title="bad arguments passed to ajc"
@@ -23,6 +27,7 @@
      keywords="expect-fail">
         <compile files="NoSuchFile.java"/>
     </ajc-test>
+
     <ajc-test dir="harness"
       title="1 error and 1 warning, with warning line wrong"
      keywords="expect-fail">
@@ -59,7 +64,8 @@
 
     <ajc-test dir="harness"
       title="1 error and 1 warning, failed to specify expected warning "
-     keywords="expect-fail">
+     keywords="expect-fail"
+     comment="unexpected pass b/c 1.1 bug: declare fails to warn">
         <compile files="ErrorWarning.java">
             <message kind="error" line="13"/>
         </compile>
@@ -128,6 +134,23 @@
         <compile files="TestNoTester.java"/>
         <run class="TestNoTester" skipTester="true"/>
     </ajc-test>
+
+    <ajc-test dir="harness/classpathTest"
+      title="specify jars and directories on classpath"
+      keywords="purejava">
+        <compile classpath="classesDir,jars/required.jar" 
+                 files="Main.java"/>
+        <run class="Main"/>
+    </ajc-test>
+
+    <ajc-test dir="harness/classpathTest"
+      title="specify aspectpath and classpath jars and directories">
+        <compile classpath="classesDir,jars/required.jar"
+                 aspectpath="jars/requiredAspects.jar"
+                 files="AspectMain.java"/>
+        <run class="AspectMain"/>
+    </ajc-test>
+
 </suite>
 
 
