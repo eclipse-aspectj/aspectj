@@ -14,6 +14,10 @@
 
 package org.aspectj.runtime.reflect;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+
 import org.aspectj.lang.*;
 import org.aspectj.lang.reflect.*;
 
@@ -23,7 +27,7 @@ public final class Factory {
     String filename;
     public Factory(String filename, Class lexicalClass) {
         //System.out.println("making
-        this.filename = filename;
+        this.filename = filename;  
         this.lexicalClass = lexicalClass;
         lookupClassLoader = lexicalClass.getClassLoader();
     }
@@ -38,6 +42,29 @@ public final class Factory {
     
     public JoinPoint.StaticPart makeSJP(String kind, Signature sig, int l) {
         return new JoinPointImpl.StaticPartImpl(kind, sig, makeSourceLoc(l, -1));
+    }
+    
+    public static JoinPoint.StaticPart makeEncSJP(Member member) {
+    	Signature sig = null;
+    	String kind = null;
+    	if (member instanceof Method) {
+    		Method method = (Method) member;
+    		sig = new MethodSignatureImpl(method.getModifiers(),method.getName(),
+    				method.getDeclaringClass(),method.getParameterTypes(),
+					new String[method.getParameterTypes().length],
+					method.getExceptionTypes(),method.getReturnType());
+    		kind = JoinPoint.METHOD_EXECUTION;
+    	} else if (member instanceof Constructor) {
+    		Constructor cons = (Constructor) member;
+    		sig = new ConstructorSignatureImpl(cons.getModifiers(),cons.getDeclaringClass(),
+    				cons.getParameterTypes(),
+					new String[cons.getParameterTypes().length],
+					cons.getExceptionTypes());
+    		kind = JoinPoint.CONSTRUCTOR_EXECUTION;
+    	} else {
+    		throw new IllegalArgumentException("member must be either a method or constructor");
+    	}
+    	return new JoinPointImpl.StaticPartImpl(kind,sig,null);
     }
     
     private static Object[] NO_ARGS = new Object[0];
