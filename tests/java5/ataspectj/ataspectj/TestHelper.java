@@ -17,7 +17,7 @@ import java.util.Enumeration;
  * upon test failure.
  * <p/>
  * This is required for Ajc test case that are also designed to work with LTW.
- * 
+ *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class TestHelper {
