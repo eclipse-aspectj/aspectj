@@ -82,7 +82,11 @@ public class Ajc11CompilerAdapterTest extends TestCase {
         File classesDir = FileUtil.getTempDir("Ajc11CompilerAdapterTest");
         tempFiles.add(classesDir);
         javac.setDestdir(classesDir);
-        javac.setVerbose(true);
+        javac.setVerbose(LOGGING);
+        String rtpath = "../lib/test/aspectjrt.jar";
+        File rt = new File(rtpath);
+        assertTrue("can read " + rtpath, rt.canRead());
+        javac.setClasspath(new Path(project, rt.getAbsolutePath()));
         return javac;
     }
     
