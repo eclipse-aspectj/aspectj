@@ -115,17 +115,17 @@ public class BuildModuleTests extends TestCase {
         final String label = "source dir " + moduleDir + " (module " + module + ")";
         assertTrue(label,  (moduleDir.exists() && moduleDir.isDirectory()));
         String license = getLicense(module);
-        if (replacing) {
-            if (replacing) {
-                throw new Error("replacing done - code left for other replaces");
-            }
-            assertTrue("aborting - replace failed", !replaceFailed);
-            // do the replace
-            int fails = Checklics.runDirect(moduleDir.getPath(), "replace-headers");
-            replaceFailed = (0 != fails);
-            assertTrue(!replaceFailed);
-            license = Checklics.CPL_IBM_PARC_XEROX_TAG;
-        }
+//        if (replacing) {
+//            if (replacing && true) {
+//                throw new Error("replacing done - code left for other replaces");
+//            }
+//            assertTrue("aborting - replace failed", !replaceFailed);
+//            // do the replace
+//            int fails = Checklics.runDirect(moduleDir.getPath(), "replace-headers");
+//            replaceFailed = (0 != fails);
+//            assertTrue(!replaceFailed);
+//            license = Checklics.CPL_IBM_PARC_XEROX_TAG;
+//        }
         int fails = Checklics.runDirect(moduleDir.getPath(), license);
         if (0 != fails) {
             if (replacing) {
