@@ -20,20 +20,24 @@ import java.util.Date;
 /** release-specific version information */
 public class Version {
     
+    // generated from build/lib/BridgeVersion.java
+
     /** default version value for development version */
     public static final String DEVELOPMENT = "DEVELOPMENT";
+    // VersionUptodate.java depends on this value
 
     /** default time value for development version */
     public static final long NOTIME = 0L;
     
     /** set by build script */
-    public static final String text = DEVELOPMENT;
+    public static final String text = "DEVELOPMENT";
+    // VersionUptodate.java scans for "static final String text = "
     
     /** 
       * Time text set by build script using SIMPLE_DATE_FORMAT.
       * (if DEVELOPMENT version, invalid)
       */
-    public static final String time_text = "12/18/02 at 03:20:03 PST";
+    public static final String time_text = "";
 
     /** 
       * time in seconds-since-... format, used by programmatic clients.
@@ -57,6 +61,24 @@ public class Version {
 	        }
         }
         time = foundTime;
+    }
+
+    /**
+     * Test whether the version is as specified by any first argument.
+     * Emit text to System.err on failure
+     * @param args String[] with first argument equal to Version.text
+     * @see Version#text
+     */
+    public static void main(String[] args) {
+        if ((null != args) && (0 < args.length)) {
+            if (!Version.text.equals(args[0])) {
+                System.err.println("version expected: \"" 
+                                + args[0] 
+                                + "\" actual=\"" 
+                                + Version.text 
+                                + "\"");
+            }
+        }
     }
 }
     
