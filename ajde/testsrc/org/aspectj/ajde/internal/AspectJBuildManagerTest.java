@@ -15,6 +15,8 @@ package org.aspectj.ajde.internal;
 
 import junit.framework.*;
 import org.aspectj.ajde.*;
+import org.aspectj.asm.AsmManager;
+
 import java.io.*;
 
 /**
@@ -33,6 +35,8 @@ public class AspectJBuildManagerTest extends AjdeTestCase {
 	}
 
 	public void testSequence() {
+		AsmManager.dumpModelPostBuild=true; // or you wont get a .ajsym file
+		try {
 		assertTrue("initialization", ideManager != null);
         assertTrue("compile of non-existing build config success", !testerBuildListener.getBuildSucceeded());   
         // XXX should fail? empty configs fail b/c no sources specified
@@ -52,7 +56,10 @@ public class AspectJBuildManagerTest extends AjdeTestCase {
             file.delete();
         } else {
             assertTrue("expected .ajsym" + file, false);
-        }           
+        }    
+		} finally {
+			AsmManager.dumpModelPostBuild=false;
+		}
 	}
 
 	protected void setUp() throws Exception {

@@ -41,6 +41,7 @@ public class AsmManager {
 	private static boolean creatingModel = false;
 	
 
+	public static boolean dumpModelPostBuild = false; // Dumping the model is expensive
 	public static boolean attemptIncrementalModelRepairs = false;
 //	for debugging ...	
 	
@@ -78,7 +79,7 @@ public class AsmManager {
 
 	public void fireModelUpdated() {
 		notifyListeners();	
-		if (hierarchy.getConfigFile() != null) {
+		if (dumpModelPostBuild && hierarchy.getConfigFile() != null) {
 			writeStructureModel(hierarchy.getConfigFile());
 		}
 	}
