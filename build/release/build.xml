@@ -407,7 +407,7 @@
 		depends="init-variables,init-junitTests-available">
 		<antcall target="do-run-ant">
 			<param name="run.ant.file" value="junitModules.xml"/>
-			<param name="ant.target" value=""/>
+			<param name="ant.target" value="test-all"/>
 			<param name="ant.dir" 
 				location="${aspectj.modules.dir}/tests"/>
 			<param name="ant.output" 
