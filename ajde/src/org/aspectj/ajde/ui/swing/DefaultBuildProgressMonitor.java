@@ -19,7 +19,7 @@ import java.awt.Frame;
 import javax.swing.JDialog;
 
 import org.aspectj.ajde.BuildProgressMonitor;
-
+  
 /**
  * This dialog box is open while ajc is compiling the system and displays
  * a corresponding progress bar.
@@ -36,7 +36,11 @@ public class DefaultBuildProgressMonitor extends Thread implements BuildProgress
         progressDialog = new BuildProgressPanel();
         dialog.setContentPane(progressDialog);
         dialog.setSize(550, 120);
-        dialog.setLocationRelativeTo(parent);	
+        try {
+	        dialog.setLocationRelativeTo(parent);	
+		} catch (NoSuchMethodError nsme) {
+			// running on 1.3
+		}
 	}
 
     /**
