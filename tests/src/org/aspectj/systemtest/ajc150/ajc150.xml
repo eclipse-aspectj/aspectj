@@ -994,8 +994,9 @@
 
     <ajc-test dir="java5/annotations/aspectMembers" title="annotated advice">
         <compile files="a/Annotations.java,a/AnnotatedAspect05.aj" options="-1.5">
-            <message kind="warning" line="16"/>
+            <message kind="warning" line="17"/>
         </compile>
+        <run class="a.AnnotatedAspect05"/>
     </ajc-test>
 
     <ajc-test dir="java5/annotations/aspectMembers" title="annotated advice with bad target">

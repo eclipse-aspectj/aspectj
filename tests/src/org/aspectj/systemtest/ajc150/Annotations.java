@@ -11,9 +11,6 @@
 package org.aspectj.systemtest.ajc150;
 
 import java.io.File;
-import java.lang.annotation.Annotation;
-import java.net.URL;
-import java.net.URLClassLoader;
 
 import junit.framework.Test;
 
@@ -88,21 +85,6 @@ public class Annotations extends XMLBasedAjcTestCase {
   
   public void testAnnotatedAdvice() {
   	runTest("annotated advice");
-  	try {
-  		File classFile = new File(ajc.getSandboxDirectory(),"a/AnnotatedAspect05.class"); 	
-  		ClassLoader cl = new URLClassLoader(new URL[] {ajc.getSandboxDirectory().toURI().toURL()});
-  		Class c = cl.loadClass("a.AnnotatedAspect05");
-  		Class ann = cl.loadClass("a.AnyAnnotation");
-  		java.lang.reflect.Method[] methods = c.getDeclaredMethods();
-  		for (int i = 0; i < methods.length; i++) {
-			if (methods[i].getName().startsWith("ajc$afterThrowing")) {
-				Annotation annotation = methods[i].getAnnotation(ann);
-				assertNotNull("Should have @AnyAnnotation",annotation);
-			}
-		}
-  	} catch (Exception ex) {
-  		fail(ex.getMessage());
-  	}
   }
   
   public void testAnnotatedAdviceWithWrongAnnotationType() {
