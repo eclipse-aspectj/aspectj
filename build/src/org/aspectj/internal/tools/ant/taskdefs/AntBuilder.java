@@ -14,12 +14,18 @@ package org.aspectj.internal.tools.ant.taskdefs;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -270,7 +276,7 @@ public class AntBuilder extends Builder {
         javac.setTarget("1.1"); // 1.1 class files - Javac in 1.4 uses 1.4
         // compile
         try {
-            return executeTask(javac);
+            return executeTask(AspectJSupport.wrapIfNeeded(module, javac));
         } catch (BuildException e) {
             String args = "" + Arrays.asList(javac.getCurrentCompilerArgs());
             errors.add("BuildException compiling " + module.toLongString() + args 
@@ -489,8 +495,111 @@ public class AntBuilder extends Builder {
         }
         task.execute();
         return true;
-    }  
+    }
+    /**
+     * Support for compiling basic AspectJ projects.
+     * Projects may only compile all (and only) their source directories;
+     * aspectpath, inpath, etc. are not supported.
+     * To load the compiler, this assumes the user has either defined 
+     * a project property "aspectj.home" or that there exists 
+     * <code>{module-dir}/lib/aspectj/lib/aspectj[tools|rt].jar</code>.
+     */
+    static class AspectJSupport {
+        static final String AJCTASK = "org.aspectj.tools.ant.taskdefs.AjcTask";
+        static final String ASPECTJRT_JAR_VARIABLE = "ASPECTJRT_LIB";
+        static final String ASPECTJLIB_RPATH = "/lib/aspectj/lib";
+        static final Map nameToAspectjrtjar = new HashMap();
+        static final String NONE = "NONE";
+        
+        /**
+         * If this module should be compiled with AspectJ,
+         * return a task to do so.
+         * @param module the Module to compile
+         * @param javac the Javac compile commands
+         * @return javac or a Task to compile with AspectJ if needed
+         */
+        static Task wrapIfNeeded(Module module, Javac javac) {
+            final Project project = javac.getProject();
+            Path runtimeJar = null;
+            if (runtimeJarOnClasspath(module)) { 
+                // yes aspectjrt.jar on classpath
+            } else if (module.getClasspathVariables().contains(ASPECTJRT_JAR_VARIABLE)) {
+                // yes, in variables - find aspectjrt.jar to add to classpath
+                runtimeJar = getAspectJLib(project, module, "aspectjrt.jar");
+            } else {
+                // no
+                return javac;
+            }
+            Path aspectjtoolsJar = getAspectJLib(project, module, "aspectjtools.jar");
+            return aspectJTask(javac, aspectjtoolsJar, runtimeJar);
+        }
+        
+        /** @return true if aspectjrt.jar is on classpath */
+        private static boolean runtimeJarOnClasspath(Module module) {
+            for (Iterator iter = module.getLibJars().iterator(); iter.hasNext();) {
+                File file = (File) iter.next();
+                if ("aspectjrt.jar".equals(file.getName())) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
+        static Path getAspectJLib(Project project, Module module, String name) {
+            String libDir = project.getProperty("aspectj.home");
+            if (null == libDir) {
+                libDir = project.getProperty("ASPECTJ_HOME");
+            }
+            if (null != libDir) {
+                libDir += File.separator + "lib";
+            } else {
+                libDir = module.getFullPath(ASPECTJLIB_RPATH);
+            }
+            return new Path(project, libDir + File.separator + name);
+        }
+                
+        
+        /**
+         * Wrap AspectJ compiler as Task.
+         * Only works for javac-like source compilation of everything 
+         * under srcDir.
+         * Written reflectively to compile in the build module,
+         * which can't depend on the whole tree.
+         * TODO output from ajc is hidden on failure.
+         * @param javac the Javac specification
+         * @param toolsJar the Path to the aspectjtools.jar 
+         * @param runtimeJar the Path to the aspectjrt.jar 
+         * @return javac or another Task invoking the AspectJ compiler
+         */
+        static Task aspectJTask(Javac javac, Path toolsJar, Path runtimeJar) {        
+            Object task = null;
+            try {
+                String url = "file:" + toolsJar.toString().replace('\\', '/');
+                ClassLoader loader = new URLClassLoader(new URL[] {new URL(url)});
+                Class c = loader.loadClass(AJCTASK);
+                task = c.newInstance();
+                Project project = javac.getProject();
+                Method m = c.getMethod("setupAjc", new Class[] {Javac.class});
+                m.invoke(task, new Object[] {javac});
+                m = c.getMethod("setFork", new Class[] {boolean.class});
+                m.invoke(task, new Object[] {Boolean.TRUE});
+                m = c.getMethod("setForkclasspath", new Class[] {Path.class});
+                m.invoke(task, new Object[] {toolsJar});
+                m = c.getMethod("setSourceRoots", new Class[] {Path.class});
+                m.invoke(task, new Object[] {javac.getSrcdir()});
+                if (null != runtimeJar) {
+                    m = c.getMethod("setClasspath", new Class[] {Path.class});
+                    m.invoke(task, new Object[] {runtimeJar});
+                }
+            } catch (BuildException e) {
+                throw e;
+            } catch (Throwable t) {
+                throw new BuildException(t);
+            }
+            return (Task) task;
+        }
+        private AspectJSupport() {throw new Error("no instances");}
+    }
 }
 
      

@@ -162,6 +162,9 @@ public class Module {
     
     /** File list of library jars */
     private final List libJars; 
+    
+    /** String list of classpath variables */
+    private final List classpathVariables;
 
     /** 
      * File list of library jars exported to clients 
@@ -208,6 +211,7 @@ public class Module {
         this.exportedLibJars = new ArrayList();
         this.required = new ArrayList();
         this.srcDirs = new ArrayList();
+        this.classpathVariables = new ArrayList();
         this.properties = new Properties();
         this.name = name;
         this.modules = modules;
@@ -227,6 +231,11 @@ public class Module {
         return assembledJar;
     }
     
+    /** @return unmodifiable List of String classpath variables */
+    public List getClasspathVariables() {
+        return Collections.unmodifiableList(classpathVariables);
+    }
+
     /** @return unmodifiable List of required modules String names*/
     public List getRequired() {
         return Collections.unmodifiableList(required);
@@ -424,9 +433,10 @@ public class Module {
                 messager.error("no such library jar " + libJar + " from " + entry);                
              }
         } else if ("var".equals(kind)) {
-            if (!"JRE_LIB".equals(path)) {
+            if (!"JRE_LIB".equals(path) && !"ASPECTJRT_LIB".equals(path)) {
                 messager.log("cannot handle var yet: " + entry);
             }
+            classpathVariables.add(path);
         } else if ("con".equals(kind)) {
             if (-1 == path.indexOf("JRE")) { // warn non-JRE containers
                 messager.log("cannot handle con yet: " + entry);
@@ -508,7 +518,7 @@ public class Module {
     }
     
     /** resolve path absolutely, assuming / means base of modules dir */
-    private String getFullPath(String path) {
+    public String getFullPath(String path) {
         String fullPath;
         if (path.startsWith("/")) {
             fullPath = modules.baseDir.getAbsolutePath() + path;
