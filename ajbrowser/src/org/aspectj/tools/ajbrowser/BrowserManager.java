@@ -54,7 +54,7 @@ public class BrowserManager {
     
 	public void init(String[] configFilesArgs, boolean visible) {
 		try {
-			UserPreferencesAdapter preferencesAdapter = new UserPreferencesStore();
+			UserPreferencesAdapter preferencesAdapter = new UserPreferencesStore(true);
 			browserProjectProperties = new BrowserProperties(preferencesAdapter);
 			TaskListManager taskListManager = new CompilerMessagesPanel();
 			BasicEditor ajdeEditor = new BasicEditor();
