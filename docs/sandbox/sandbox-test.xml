@@ -62,6 +62,11 @@
 		<run class="language.ControlFlow"/>
 		</ajc-test>
 
+	<ajc-test dir="common" title="language-doubleDispatch">
+		<compile files="language/DoubleDispatch.java"/>
+		<run class="language.DoubleDispatch"/>
+	</ajc-test>
+
 
 	<ajc-test dir="common" title="tracing-simpleLogging">
 		<compile 
