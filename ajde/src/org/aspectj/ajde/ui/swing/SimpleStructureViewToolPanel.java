@@ -14,27 +14,17 @@
 
 package org.aspectj.ajde.ui.swing;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.SystemColor;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
+import javax.swing.*;
+import javax.swing.border.*;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.StructureView;
-import org.aspectj.ajde.ui.StructureViewProperties;
-import org.aspectj.asm.IProgramElement;
-import org.aspectj.asm.AspectJModel;
-import org.aspectj.asm.IStructureModelListener;
+import org.aspectj.ajde.ui.*;
+import org.aspectj.asm.*;
 
 public class SimpleStructureViewToolPanel extends JPanel {
 
@@ -60,10 +50,10 @@ public class SimpleStructureViewToolPanel extends JPanel {
     BorderLayout borderLayout3 = new BorderLayout();
     BorderLayout borderLayout4 = new BorderLayout();
 
-    public final IStructureModelListener MODEL_LISTENER = new IStructureModelListener() {
-        public void containmentHierarchyUpdated(AspectJModel model) {
+    public final IHierarchyListener MODEL_LISTENER = new IHierarchyListener() {
+        public void elementsUpdated(IHierarchy model) {
 			String path = Ajde.getDefault().getConfigurationManager().getActiveConfigFile();
-			String fileName = "<no active config>";
+			String fileName = "<no active config>"; 
 			if (path != null) fileName = new File(path).getName();
 			updateCurrConfigLabel(fileName);
         }

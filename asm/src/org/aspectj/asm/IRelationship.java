@@ -1,6 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
- *               2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2003 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -8,7 +7,7 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Mik Kersten     initial implementation 
  * ******************************************************************/
 
 
@@ -24,9 +23,9 @@ public interface IRelationship extends Serializable {
 
 	public String getName();
 	
-	public List getTargets();
+	public List/*String*/ getTargets();
 	
-	public IProgramElement getSource();
+	public String getSourceHandle();
 	
 	public Kind getKind();
 		
@@ -37,6 +36,7 @@ public interface IRelationship extends Serializable {
 		
 		public static final Kind ADVICE = new Kind("advice");
 		public static final Kind DECLARE = new Kind("declare");
+		public static final Kind DECLARE_INTER_TYPE = new Kind("inter-type declaration");
 		public static final Kind[] ALL = { ADVICE, DECLARE };
 		private final String name;
 		

@@ -18,6 +18,7 @@ import java.util.*;
 
 import org.aspectj.ajde.ui.*;
 import org.aspectj.asm.*;
+import org.aspectj.asm.internal.*;
 import org.aspectj.asm.internal.ProgramElement;
 
 /**
@@ -34,17 +35,17 @@ public class TreeStructureViewBuilder {
 	/**
 	 * @todo	get rid of instanceof tests
 	 */
-	public void buildView(StructureView view, AspectJModel model) {
+	public void buildView(StructureView view, IHierarchy model) {
 		StructureViewProperties properties = view.getViewProperties();
 		IProgramElement modelRoot = null;
 		boolean noStructure = false;
 		if (isFileView(view)) {
 			FileStructureView fileView = (FileStructureView)view;
 			if (fileView.getSourceFile() == null) {	
-				modelRoot = AspectJModel.NO_STRUCTURE;
+				modelRoot = IHierarchy.NO_STRUCTURE;
 				noStructure = true;
 			} else {
-				modelRoot = model.findRootNodeForSourceFile(fileView.getSourceFile());
+				modelRoot = model.findElementForSourceFile(fileView.getSourceFile());
 			}
 		} else {
 			modelRoot = model.getRoot();
@@ -197,7 +198,7 @@ public class TreeStructureViewBuilder {
 		}
 	}
 
-    private IStructureViewNode buildCustomTree(GlobalStructureView view, AspectJModel model) {
+    private IStructureViewNode buildCustomTree(GlobalStructureView view, IHierarchy model) {
         IProgramElement rootNode = model.getRoot();
         IStructureViewNode treeNode = nodeFactory.createNode(rootNode);
 

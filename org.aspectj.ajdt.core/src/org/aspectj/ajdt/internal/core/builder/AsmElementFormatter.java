@@ -10,7 +10,7 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
-import java.util.Iterator;
+import java.util.*;
 
 import org.aspectj.ajdt.internal.compiler.ast.*;
 import org.aspectj.asm.IProgramElement;
@@ -18,13 +18,13 @@ import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.*;
 import org.eclipse.jdt.internal.compiler.ast.*;
 
-public class AsmNodeFormatter {
+public class AsmElementFormatter {
 
-	public static final String DECLARE_PRECEDENCE = "precedence: ";
-	public static final String DECLARE_SOFT = "soft: ";
-	public static final String DECLARE_PARENTS = "parents: ";
-	public static final String DECLARE_WARNING = "warning: ";
-	public static final String DECLARE_ERROR = "error: ";
+	public static final String DECLARE_PRECEDENCE = "precedence";
+	public static final String DECLARE_SOFT = "soft";
+	public static final String DECLARE_PARENTS = "parents";
+	public static final String DECLARE_WARNING = "warning";
+	public static final String DECLARE_ERROR = "error";
 	public static final String DECLARE_UNKNONWN = "<unknown declare>";
 	public static final String POINTCUT_ABSTRACT = "<abstract pointcut>";
 	public static final String POINTCUT_ANONYMOUS = "<anonymous pointcut>";
@@ -32,110 +32,118 @@ public class AsmNodeFormatter {
 	public static final String DEC_LABEL = "declare";
 
 	public void genLabelAndKind(MethodDeclaration methodDeclaration, IProgramElement node) {
+		
 		if (methodDeclaration instanceof AdviceDeclaration) { 
 			AdviceDeclaration ad = (AdviceDeclaration)methodDeclaration;
-			node.setKind( IProgramElement.Kind.ADVICE);
-			String label = "";
-			label += ad.kind.toString();
-			label += "(" + genArguments(ad) + "): ";
+			node.setKind(IProgramElement.Kind.ADVICE);
 
 			if (ad.kind == AdviceKind.Around) {
 				node.setReturnType(ad.returnTypeToString(0));
 			}
 	
+			String details = "";
 			if (ad.pointcutDesignator != null) {	
 				if (ad.pointcutDesignator.getPointcut() instanceof ReferencePointcut) {
 					ReferencePointcut rp = (ReferencePointcut)ad.pointcutDesignator.getPointcut();
-					label += rp.name + "..";
+					details += rp.name + "..";
 				} else if (ad.pointcutDesignator.getPointcut() instanceof AndPointcut) {
 					AndPointcut ap = (AndPointcut)ad.pointcutDesignator.getPointcut();
 					if (ap.getLeft() instanceof ReferencePointcut) {
-						label += ap.getLeft().toString() + "..";	
+						details += ap.getLeft().toString() + "..";	
 					} else {
-						label += POINTCUT_ANONYMOUS + "..";
+						details += POINTCUT_ANONYMOUS + "..";
 					}
 				} else if (ad.pointcutDesignator.getPointcut() instanceof OrPointcut) {
 					OrPointcut op = (OrPointcut)ad.pointcutDesignator.getPointcut();
 					if (op.getLeft() instanceof ReferencePointcut) {
-						label += op.getLeft().toString() + "..";	
+						details += op.getLeft().toString() + "..";	
 					} else {
-						label += POINTCUT_ANONYMOUS + "..";
+						details += POINTCUT_ANONYMOUS + "..";
 					}
 				} else {
-					label += POINTCUT_ANONYMOUS;
+					details += POINTCUT_ANONYMOUS;
 				}
 			} else {
-				label += POINTCUT_ABSTRACT;
+				details += POINTCUT_ABSTRACT;
 			} 
-			node.setName(label);
+			node.setName(ad.kind.toString());
+			node.setDetails(details);
+			setParameters(methodDeclaration, node);
 
 		} else if (methodDeclaration instanceof PointcutDeclaration) { 
 			PointcutDeclaration pd = (PointcutDeclaration)methodDeclaration;
-			node.setKind( IProgramElement.Kind.POINTCUT);
-			String label = translatePointcutName(new String(methodDeclaration.selector));
-			label += "(" + genArguments(pd) + ")";
-			node.setName(label); 
+			node.setKind(IProgramElement.Kind.POINTCUT);
+			node.setName(translatePointcutName(new String(methodDeclaration.selector)));
+			setParameters(methodDeclaration, node);
 			
 		} else if (methodDeclaration instanceof DeclareDeclaration) { 
 			DeclareDeclaration declare = (DeclareDeclaration)methodDeclaration;
-			String label = DEC_LABEL + " ";
+			String name = DEC_LABEL + " ";
 			if (declare.declare instanceof DeclareErrorOrWarning) {
 				DeclareErrorOrWarning deow = (DeclareErrorOrWarning)declare.declare;
 				
 				if (deow.isError()) {
 					node.setKind( IProgramElement.Kind.DECLARE_ERROR);
-					label += DECLARE_ERROR;
+					name += DECLARE_ERROR;
 				} else {
 					node.setKind( IProgramElement.Kind.DECLARE_WARNING);
-					label += DECLARE_WARNING;
+					name += DECLARE_WARNING;
 				}
-				node.setName(label + "\"" + genDeclareMessage(deow.getMessage()) + "\"") ;
-				 
+				node.setName(name) ;
+				node.setDetails("\"" + genDeclareMessage(deow.getMessage()) + "\"");
+				
 			} else if (declare.declare instanceof DeclareParents) {
 				node.setKind( IProgramElement.Kind.DECLARE_PARENTS);
 				DeclareParents dp = (DeclareParents)declare.declare;
-				node.setName(label + DECLARE_PARENTS + genTypePatternLabel(dp.getChild()));	
+				node.setName(name + DECLARE_PARENTS);
+				node.setDetails(genTypePatternLabel(dp.getChild()));	
 				
 			} else if (declare.declare instanceof DeclareSoft) {
 				node.setKind( IProgramElement.Kind.DECLARE_SOFT);
 				DeclareSoft ds = (DeclareSoft)declare.declare;
-				node.setName(label + DECLARE_SOFT + genTypePatternLabel(ds.getException()));
+				node.setName(name + DECLARE_SOFT);
+				node.setDetails(genTypePatternLabel(ds.getException()));
+				
 			} else if (declare.declare instanceof DeclarePrecedence) {
 				node.setKind( IProgramElement.Kind.DECLARE_PRECEDENCE);
 				DeclarePrecedence ds = (DeclarePrecedence)declare.declare;
-				node.setName(label + DECLARE_PRECEDENCE + genPrecedenceListLabel(ds.getPatterns()));
+				node.setName(name + DECLARE_PRECEDENCE);
+				node.setDetails(genPrecedenceListLabel(ds.getPatterns()));
+				
+				
 			} else {
-				node.setKind( IProgramElement.Kind.ERROR);
+				node.setKind(IProgramElement.Kind.ERROR);
 				node.setName(DECLARE_UNKNONWN);
 			}
 			
 		} else if (methodDeclaration instanceof InterTypeDeclaration) {
 			InterTypeDeclaration itd = (InterTypeDeclaration)methodDeclaration;
-			String label = itd.onType.toString() + "." + new String(itd.getDeclaredSelector()); 
+			String name = itd.onType.toString() + "." + new String(itd.getDeclaredSelector()); 
 			if (methodDeclaration instanceof InterTypeFieldDeclaration) {
 				node.setKind(IProgramElement.Kind.INTER_TYPE_FIELD);				
 			} else if (methodDeclaration instanceof InterTypeMethodDeclaration) {
 				node.setKind(IProgramElement.Kind.INTER_TYPE_METHOD);
-				InterTypeMethodDeclaration itmd = (InterTypeMethodDeclaration)methodDeclaration;			
-				label += "(" + genArguments(itd) + ")";
+				InterTypeMethodDeclaration itmd = (InterTypeMethodDeclaration)methodDeclaration;
 			} else if (methodDeclaration instanceof InterTypeConstructorDeclaration) {
 				node.setKind(IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR);
 				InterTypeConstructorDeclaration itcd = (InterTypeConstructorDeclaration)methodDeclaration;				
 			} else {
 				node.setKind(IProgramElement.Kind.ERROR);
 			}
-			node.setName(label);
+			node.setName(name);
 			node.setReturnType(itd.returnType.toString());
-			
-		} else {
+			if (node.getKind() != IProgramElement.Kind.INTER_TYPE_FIELD) {
+				setParameters(methodDeclaration, node);
+			}		
+		} else {			
 			if (methodDeclaration.isConstructor()) {
 				node.setKind(IProgramElement.Kind.CONSTRUCTOR);
 			} else {
 				node.setKind(IProgramElement.Kind.METHOD);
 			} 
 			String label = new String(methodDeclaration.selector);
-			label += "(" + genArguments(methodDeclaration) + ")";
 			node.setName(label); 
+			setParameters(methodDeclaration, node);
 		}
 	}
 
@@ -149,25 +157,48 @@ public class AsmNodeFormatter {
 		return tpList;
 	}
   
-	private String genArguments(MethodDeclaration md) {
-		String args = "";
+//	private String genArguments(MethodDeclaration md) {
+//		String args = "";
+//		Argument[] argArray = md.arguments;
+//		if (argArray == null) return args;
+//		for (int i = 0; i < argArray.length; i++) {
+//			String argName = new String(argArray[i].name);
+//			String argType = argArray[i].type.toString();
+//			if (acceptArgument(argName, argType)) {   
+//				args += argType + ", ";
+//			}  
+//		}
+//		int lastSepIndex = args.lastIndexOf(',');
+//		if (lastSepIndex != -1 && args.endsWith(", ")) args = args.substring(0, lastSepIndex);
+//		return args;
+//	}
+
+	private void setParameters(MethodDeclaration md, IProgramElement pe) {
 		Argument[] argArray = md.arguments;
-		if (argArray == null) return args;
+		List names = new ArrayList();
+		List types = new ArrayList();
+		pe.setParameterNames(names);
+		pe.setParameterTypes(types);
+		
+		if (argArray == null) return;
 		for (int i = 0; i < argArray.length; i++) {
 			String argName = new String(argArray[i].name);
 			String argType = argArray[i].type.toString();
-//			TODO: fix this way of determing ajc-added arguments, make subtype of Argument with extra info
-			if (!argName.startsWith("ajc$this_") 
-				&& !argType.equals("org.aspectj.lang.JoinPoint.StaticPart")
-				&& !argType.equals("org.aspectj.lang.JoinPoint")
-				&& !argType.equals("org.aspectj.runtime.internal.AroundClosure")) {   
-				args += argType + ", ";
-			}  
+			if (acceptArgument(argName, argType)) { 
+				names.add(argName);
+				types.add(argType);
+			}   
 		}
-		int lastSepIndex = args.lastIndexOf(',');
-		if (lastSepIndex != -1 && args.endsWith(", ")) args = args.substring(0, lastSepIndex);
-		return args;
 	}
+
+	// TODO: fix this way of determing ajc-added arguments, make subtype of Argument with extra info
+	private boolean acceptArgument(String name, String type) {
+		return !name.startsWith("ajc$this_") 
+			&& !type.equals("org.aspectj.lang.JoinPoint.StaticPart")
+			&& !type.equals("org.aspectj.lang.JoinPoint")
+			&& !type.equals("org.aspectj.runtime.internal.AroundClosure");
+	}
+		
 
 	public String genTypePatternLabel(TypePattern tp) {
 		final String TYPE_PATTERN_LITERAL = "<type pattern>";

@@ -1,11 +1,13 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
- *               2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2003 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
  * which accompanies this distribution and is available at 
  * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Mik Kersten     initial implementation 
  * ******************************************************************/
 
 
@@ -25,18 +27,18 @@ public class Relationship implements IRelationship {
 	
 	private String name;
 	private Kind kind;
-	private IProgramElement source;
+	private String sourceHandle;
 	private List targets;
 	
 	public Relationship(
 		String name, 
 		Kind kind,
-		IProgramElement source,
+		String sourceHandle,
 		List targets) {
 			
 		this.name = name;
 		this.kind = kind;
-		this.source = source;
+		this.sourceHandle = sourceHandle;
 		this.targets = targets;
 	}	
 	
@@ -52,8 +54,8 @@ public class Relationship implements IRelationship {
 		return name;
 	}	
 	
-	public IProgramElement getSource() {
-		return source;
+	public String getSourceHandle() {
+		return sourceHandle;
 	}
 
 	public List getTargets() {

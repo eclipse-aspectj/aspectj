@@ -10,9 +10,13 @@ class Point {
 	
 	public Point() { }
 	
-	public int getX() { return x;	}
+	public int getX() { 
+		return x;	
+	}
 	
-	public void setX(int x) { this.x = x; }
+	public void setX(int x) { 
+		this.x = x; 
+	}
 	 
 	public int changeX(int x) { 
 		this.x = x;

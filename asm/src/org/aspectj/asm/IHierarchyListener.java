@@ -1,6 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
- *               2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2003 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -8,7 +7,7 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Mik Kersten     initial implementation 
  * ******************************************************************/
 
 
@@ -16,12 +15,14 @@ package org.aspectj.asm;
 
 import java.util.EventListener;
 
+import org.aspectj.asm.internal.*;
+
 /**
  * Compiler listeners get notified of structure model update events.
  *
  * @author Mik Kersten
  */
-public interface IStructureModelListener extends EventListener {
+public interface IHierarchyListener extends EventListener {
 
-    public void containmentHierarchyUpdated(AspectJModel rootNode);
+    public void elementsUpdated(IHierarchy rootNode);
 }

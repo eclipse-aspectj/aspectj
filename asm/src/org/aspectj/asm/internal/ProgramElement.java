@@ -1,16 +1,19 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
- *               2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2003 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
  * which accompanies this distribution and is available at 
  * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Mik Kersten     initial implementation 
  * ******************************************************************/
 
 
 package org.aspectj.asm.internal;
 
+import java.io.IOException;
 import java.util.*;
 
 import org.aspectj.asm.*;
@@ -46,6 +49,11 @@ public class ProgramElement implements IProgramElement {
 	private String bytecodeSignature;
 	private String fullSignature;
 	private String returnType;
+	
+	private List parameterNames = null;
+	private List parameterTypes = null;
+	
+	private String details = null;
     
 	/**
 	 * Used during de-externalization.
@@ -203,7 +211,7 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public String toString() {
-		return getName();
+		return toLabelString();
 	}
 
 	private static List genModifiers(int modifiers) {
@@ -258,13 +266,13 @@ public class ProgramElement implements IProgramElement {
 		this.bytecodeSignature = bytecodeSignature;
 	}
 
-	public String getFullSignature() {
-		return fullSignature;
-	}
-
-	public void setFullSignature(String string) {
-		fullSignature = string;
-	}
+//	public String getFullSignature() {
+//		return fullSignature;
+//	}
+//
+//	public void setFullSignature(String string) {
+//		fullSignature = string;
+//	}
 	
 	public void setKind(Kind kind) {
 		this.kind = kind;
@@ -359,12 +367,70 @@ public class ProgramElement implements IProgramElement {
 		this.modifiers = genModifiers(i);
 	}
 
-	public String getSignatureKey() {
-		return packageName + '/' 
-			+ name + ':' 
-			+ sourceLocation.getLine() + ':' 
-			+ sourceLocation.getColumn();
+	public String toSignatureString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(name);
+		
+		if (parameterTypes != null ) {
+			sb.append('('); 
+			for (Iterator it = parameterTypes.iterator(); it.hasNext(); ) {
+				sb.append((String)it.next());
+				if (it.hasNext()) sb.append(", ");
+			}
+			sb.append(')');
+		}
+		
+		return sb.toString();
 	}
 
+	public String toLabelString() {
+		String label = toSignatureString();
+		if (details != null) {
+			label += ": " + details;
+		} 
+		return label;
+	}
+
+	public String getHandleIdentifier() {
+		try {
+			StringBuffer sb = new StringBuffer();
+			if (sourceLocation == null) {
+				return null;
+			} else {  
+				sb.append(sourceLocation.getSourceFile().getCanonicalPath());
+				sb.append(ID_DELIM);
+				sb.append(sourceLocation.getLine());
+				sb.append(ID_DELIM);
+				sb.append(sourceLocation.getColumn());
+				return sb.toString();
+			}
+		} catch (IOException ioe) {
+			return null;
+		}
+	}
+
+	public List getParameterNames() {
+		return parameterNames;
+	}
+
+	public List getParameterTypes() {
+		return parameterTypes;
+	}
+
+	public void setParameterNames(List list) {
+		parameterNames = list;
+	}
+
+	public void setParameterTypes(List list) {
+		parameterTypes = list;
+	}
+
+	public String getDetails() {
+		return details;
+	}
+
+	public void setDetails(String string) {
+		details = string;
+	}
 }
 

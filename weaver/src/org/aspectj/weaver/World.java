@@ -13,21 +13,13 @@
 
 package org.aspectj.weaver;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import org.aspectj.asm.AspectJModel;
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.Message;
-import org.aspectj.bridge.MessageUtil;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.internal.AspectJElementHierarchy;
+import org.aspectj.bridge.*;
 import org.aspectj.bridge.IMessage.Kind;
-import org.aspectj.weaver.ResolvedTypeX.Name;
-import org.aspectj.weaver.patterns.DeclarePrecedence;
-import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.*;
 
 public abstract class World {
 	protected IMessageHandler messageHandler = IMessageHandler.SYSTEM_ERR;
@@ -36,7 +28,7 @@ public abstract class World {
     
     protected CrosscuttingMembersSet crosscuttingMembersSet = new CrosscuttingMembersSet(this);
     
-    protected AspectJModel model = null;
+    protected IHierarchy model = null;
     
     protected Lint lint = new Lint(this);
     
@@ -340,11 +332,11 @@ public abstract class World {
 		return crosscuttingMembersSet;
 	}
 
-	public AspectJModel getModel() {
+	public IHierarchy getModel() {
 		return model;
 	}
 
-	public void setModel(AspectJModel model) {
+	public void setModel(IHierarchy model) {
 		this.model = model;
 	}
 

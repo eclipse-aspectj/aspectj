@@ -42,6 +42,7 @@ public class AjdeUIManager {
 	private IdeUIAdapter ideUIAdapter = null;
 	private TreeViewBuildConfigEditor buildConfigEditor = null;
 	private IconRegistry iconRegistry;
+	private boolean initialized = false;
 	
 	private OptionsFrame optionsFrame = null;
 	private Frame rootFrame = null;
@@ -116,11 +117,13 @@ public class AjdeUIManager {
 			viewManager = new BrowserViewManager();
 			optionsFrame = new OptionsFrame(iconRegistry);
 			
+			
 			//Ajde.getDefault().getStructureViewManager().refreshView(
 			//	Ajde.getDefault().getStructureViewManager().getDefaultFileStructureView()
 			//);
 			
 			//viewManager.updateView();
+			initialized = true;
 		} catch (Throwable t) {
 			Ajde.getDefault().getErrorHandler().handleError("AJDE failed to initialize.", t);
 		}
@@ -190,6 +193,10 @@ public class AjdeUIManager {
 	public IconRegistry getIconRegistry() {
 		return iconRegistry;
 	}
+	public boolean isInitialized() {
+		return initialized;
+	}
+
 }
 
 //public abstract class AjdeAction {

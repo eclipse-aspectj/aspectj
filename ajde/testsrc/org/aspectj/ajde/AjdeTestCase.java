@@ -52,6 +52,7 @@ public class AjdeTestCase extends TestCase {
 		currTestDataPath = TEST_DATA_PATH + File.separatorChar + testDataPath;
 		ideManager.init(currTestDataPath);
 		super.setUp();
+		assertTrue(NullIdeManager.getIdeManager().isInitialized()); 
 		Ajde.getDefault().getBuildManager().addListener(testerBuildListener);
 	}
     

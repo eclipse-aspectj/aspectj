@@ -18,6 +18,7 @@ import java.util.*;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.asm.*;
+import org.aspectj.asm.internal.*;
 
 /**
  * Prototype functionality for package view clients.
@@ -114,9 +115,9 @@ public class StructureModelUtil {
 
 	public static List getPackagesInModel() {
 		List packages = new ArrayList();
-		AspectJModel model =
-			Ajde.getDefault().getStructureModelManager().getModel();
-		if (model.equals(AspectJModel.NO_STRUCTURE)) {
+		IHierarchy model =
+			Ajde.getDefault().getStructureModelManager().getHierarchy();
+		if (model.equals(IHierarchy.NO_STRUCTURE)) {
 			return null;
 		} else {
 			return getPackagesHelper(

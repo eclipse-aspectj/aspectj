@@ -19,6 +19,7 @@ import java.util.*;
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.ui.internal.*;
 import org.aspectj.asm.*;
+import org.aspectj.asm.internal.*;
 
 /**
  * @author	Mik Kersten
@@ -35,8 +36,8 @@ public class StructureViewManager {
     private static final StructureViewProperties DEFAULT_VIEW_PROPERTIES; 
     private static final List AVAILABLE_RELATIONS;
 	
-    public final IStructureModelListener VIEW_LISTENER = new IStructureModelListener() {
-        public void containmentHierarchyUpdated(AspectJModel model) {        	
+    public final IHierarchyListener VIEW_LISTENER = new IHierarchyListener() {
+        public void elementsUpdated(IHierarchy model) {        	
         	Ajde.getDefault().logEvent("updating structure views: " + structureViews);
 //        	
 //        	if (defaultFileView != null) {
@@ -44,7 +45,7 @@ public class StructureViewManager {
 //        	}
         	
         	for (Iterator it = structureViews.iterator(); it.hasNext(); ) {
-        		treeViewBuilder.buildView((StructureView)it.next(), (AspectJModel)model);
+        		treeViewBuilder.buildView((StructureView)it.next(), (AspectJElementHierarchy)model);
         	}
         }
     }; 
@@ -84,7 +85,7 @@ public class StructureViewManager {
      * @param newFilePath the canonicalized path to the new file
 	 */
 	public void fireNavigationAction(String newFilePath, int lineNumber) {				
-		IProgramElement currNode = Ajde.getDefault().getStructureModelManager().getModel().findNodeForSourceLine(
+		IProgramElement currNode = Ajde.getDefault().getStructureModelManager().getHierarchy().findElementForSourceLine(
 			newFilePath,
 			lineNumber);
 		
@@ -116,7 +117,7 @@ public class StructureViewManager {
 	 */ 
 	private void navigationAction(IProgramElement node, boolean recordHistory) { 
 		if (node == null 
-			|| node == AspectJModel.NO_STRUCTURE) {
+			|| node == IHierarchy.NO_STRUCTURE) {
 			Ajde.getDefault().getIdeUIAdapter().displayStatusInformation("Source not available for node: " + node.getName());
 			return;    	
 		}
@@ -127,7 +128,7 @@ public class StructureViewManager {
 			if (defaultFileView.getSourceFile() != null
 				&& !defaultFileView.getSourceFile().equals(newFilePath)) {
 				defaultFileView.setSourceFile(newFilePath);
-				treeViewBuilder.buildView(defaultFileView, AsmManager.getDefault().getModel());
+				treeViewBuilder.buildView(defaultFileView, AsmManager.getDefault().getHierarchy());
 			}
 		}
 		   
@@ -161,7 +162,7 @@ public class StructureViewManager {
 	
 	public void refreshView(StructureView view) {
 		IStructureViewNode activeNode = view.getActiveNode();
-		treeViewBuilder.buildView(view, Ajde.getDefault().getStructureModelManager().getModel());
+		treeViewBuilder.buildView(view, Ajde.getDefault().getStructureModelManager().getHierarchy());
 		view.setActiveNode(activeNode);
 	}		
 
@@ -195,7 +196,7 @@ public class StructureViewManager {
 		if (properties == null) properties = DEFAULT_VIEW_PROPERTIES;
 		FileStructureView view = new FileStructureView(properties);
 		view.setSourceFile(sourceFilePath);
-		treeViewBuilder.buildView(view, AsmManager.getDefault().getModel()); 
+		treeViewBuilder.buildView(view, AsmManager.getDefault().getHierarchy()); 
 		structureViews.add(view);
 		return view; 
 	}

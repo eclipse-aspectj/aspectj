@@ -13,71 +13,59 @@
 
 package org.aspectj.weaver;
 
+import java.io.IOException;
 import java.util.*;
 
 import org.aspectj.asm.*;
 import org.aspectj.asm.internal.*;
 import org.aspectj.bridge.*;
 
-public class AsmAdapter {
+public class AsmAdviceRelationshipProvider {
 	
 	public static final String ADVISES = "advises";
 	public static final String ADVISED_BY = "advised by";
 	public static final String DECLARES_ON = "declares on";
 	public static final String DECLAREDY_BY = "declared by";
 
-	public static void checkerMunger(AspectJModel model, Shadow shadow) {
+	public static void checkerMunger(IHierarchy model, Shadow shadow) {
 //		System.err.println("> " + shadow.getThisVar() + " to " + shadow.getTargetVar());
 	}
 	
-	public static void nodeMunger(AspectJModel model, Shadow shadow, ShadowMunger munger) {
+	public static void nodeMunger(IHierarchy model, Shadow shadow, ShadowMunger munger) {
 		if (munger instanceof Advice) {
-			Advice a = (Advice)munger;
-			if (a.getKind().isPerEntry() || a.getKind().isCflow()) {
+			Advice advice = (Advice)munger;
+			if (advice.getKind().isPerEntry() || advice.getKind().isCflow()) {
 				// TODO: might want to show these in the future
 				return;
 			}
-			IRelationshipMapper mapper = AsmManager.getDefault().getMapper();
-
-			IProgramElement targetNode = getNode(model, shadow);
-			IProgramElement adviceNode = getNode(model, a);  
+			IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
+			IProgramElement targetNode = getNode(AsmManager.getDefault().getHierarchy(), shadow);
+			try {
+				if (advice.getSourceLocation() != null && targetNode != null) {
+					String adviceHandle =
+						advice.getSourceLocation().getSourceFile().getCanonicalPath()
+						+ IProgramElement.ID_DELIM + advice.getSourceLocation().getLine()
+						+ IProgramElement.ID_DELIM + advice.getSourceLocation().getColumn();
+					
+									
 			
-			if (adviceNode != null && targetNode != null) {
-				IRelationship foreward = mapper.get(adviceNode, IRelationship.Kind.ADVICE, ADVISES);
-				if (foreward == null) {
-					foreward = new Relationship(
-						ADVISES,
-						IRelationship.Kind.ADVICE,
-						adviceNode, 
-						new ArrayList()
-					);
-					mapper.put(adviceNode, foreward);
+					if (targetNode != null) {
+						String targetHandle = targetNode.getHandleIdentifier();	
+					
+						IRelationship foreward = mapper.get(adviceHandle, IRelationship.Kind.ADVICE, ADVISES);
+						if (foreward != null) foreward.getTargets().add(targetHandle);
+						
+						IRelationship back = mapper.get(targetHandle, IRelationship.Kind.ADVICE, ADVISED_BY);
+						if (back != null) back.getTargets().add(adviceHandle);
+					}
 				}
-				foreward.getTargets().add(targetNode);
-
-				IRelationship back = mapper.get(targetNode, IRelationship.Kind.ADVICE, ADVISED_BY);
-				if (back == null) {
-					back = new Relationship(
-						ADVISED_BY,
-						IRelationship.Kind.ADVICE,
-						targetNode, 
-						new ArrayList()
-					);
-					mapper.put(targetNode, back);
-				}
-				back.getTargets().add(adviceNode);
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}
 
-	private static IProgramElement getNode(AspectJModel model, Advice a) {
-		//ResolvedTypeX inAspect = a.getConcreteAspect();
-		Member member = a.getSignature();
-		if (a.getSignature() == null) return null;
-		return lookupMember(model, member);
-	}
-	
-	private static IProgramElement getNode(AspectJModel model, Shadow shadow) {
+	private static IProgramElement getNode(IHierarchy model, Shadow shadow) {
 		Member enclosingMember = shadow.getEnclosingCodeSignature();
 		
 		IProgramElement enclosingNode = lookupMember(model, enclosingMember);
@@ -91,16 +79,14 @@ public class AsmAdapter {
 		
 		Member shadowSig = shadow.getSignature();
 		if (!shadowSig.equals(enclosingMember)) {
-			IProgramElement bodyNode = findOrCreateBodyNode(enclosingNode, shadowSig, shadow);
+			IProgramElement bodyNode = findOrCreateCodeNode(enclosingNode, shadowSig, shadow);
 			return bodyNode;
 		} else {
 			return enclosingNode;
 		}
 	}
-
-	private static IProgramElement findOrCreateBodyNode(
-		IProgramElement enclosingNode,
-		Member shadowSig, Shadow shadow)
+	
+	private static IProgramElement findOrCreateCodeNode(IProgramElement enclosingNode, Member shadowSig, Shadow shadow)
 	{
 		for (Iterator it = enclosingNode.getChildren().iterator(); it.hasNext(); ) {
 			IProgramElement node = (IProgramElement)it.next();
@@ -116,24 +102,22 @@ public class AsmAdapter {
 		IProgramElement peNode = new ProgramElement(
 			shadow.toString(),
 			IProgramElement.Kind.CODE,
-//XXX why not use shadow file? new SourceLocation(sl.getSourceFile(), sl.getLine()),
-        new SourceLocation(enclosingNode.getSourceLocation().getSourceFile(), sl.getLine()),
-//			enclosingNode.getSourceLocation(),
+		//XXX why not use shadow file? new SourceLocation(sl.getSourceFile(), sl.getLine()),
+			new SourceLocation(enclosingNode.getSourceLocation().getSourceFile(), sl.getLine()),
 			0,
 			"",
 			new ArrayList());
-			
-		//System.err.println(peNode.getSourceLocation());
+				
 		peNode.setBytecodeName(shadowSig.getName());
 		peNode.setBytecodeSignature(shadowSig.getSignature());
 		enclosingNode.addChild(peNode);
 		return peNode;
 	}
 	
-	public static IProgramElement lookupMember(AspectJModel model, Member member) {
+	private static IProgramElement lookupMember(IHierarchy model, Member member) {
 		TypeX declaringType = member.getDeclaringType();
 		IProgramElement classNode =
-			model.findNodeForType(declaringType.getPackageName(), declaringType.getClassName());
+			model.findElementForType(declaringType.getPackageName(), declaringType.getClassName());
 		return findMemberInClass(classNode, member);
 	}
 
@@ -154,4 +138,32 @@ public class AsmAdapter {
 	 	// if we can't find the member, we'll just put it in the class
 		return classNode;
 	}
+	
+//	private static IProgramElement.Kind genShadowKind(Shadow shadow) {
+//		IProgramElement.Kind shadowKind;
+//		if (shadow.getKind() == Shadow.MethodCall
+//			|| shadow.getKind() == Shadow.ConstructorCall
+//			|| shadow.getKind() == Shadow.FieldGet
+//			|| shadow.getKind() == Shadow.FieldSet
+//			|| shadow.getKind() == Shadow.ExceptionHandler) {
+//			return IProgramElement.Kind.CODE;
+//			
+//		} else if (shadow.getKind() == Shadow.MethodExecution) {
+//			return IProgramElement.Kind.METHOD;
+//			
+//		} else if (shadow.getKind() == Shadow.ConstructorExecution) {
+//			return IProgramElement.Kind.CONSTRUCTOR;
+//			
+//		} else if (shadow.getKind() == Shadow.PreInitialization
+//			|| shadow.getKind() == Shadow.Initialization) {
+//			return IProgramElement.Kind.CLASS;
+//			
+//		} else if (shadow.getKind() == Shadow.AdviceExecution) {
+//			return IProgramElement.Kind.ADVICE;
+//			
+//		} else {
+//			return IProgramElement.Kind.ERROR;
+//		}
+//	}
+
 }

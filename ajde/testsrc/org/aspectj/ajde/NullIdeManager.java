@@ -33,6 +33,7 @@ public class NullIdeManager {
 	private static NullIdeManager ideManager = null;
 	private NullIdeTaskListManager taskListManager = null;
 	private NullIdeProperties projectProperties = null;
+	private boolean initialized = false;
 	
 	public static NullIdeManager getIdeManager() {
 		if ( null == ideManager ) {
@@ -49,7 +50,6 @@ public class NullIdeManager {
 			EditorAdapter ajdeEditor = new NullIdeEditorAdapter();
 			IdeUIAdapter uiAdapter = new NullIdeUIAdapter();
 			JFrame nullFrame = new JFrame();
-			//configurationManager.setConfigFiles(getConfigFilesList(configFiles));	
 
 			AjdeUIManager.getDefault().init(
 				ajdeEditor,
@@ -62,8 +62,9 @@ public class NullIdeManager {
 				new NullIdeProgressMonitor(),
 				new NullIdeErrorHandler(),
 				true);	
-			//Ajde.getDefault().enableLogging( System.out );
+			initialized = true;
 		} catch (Throwable t) {
+			initialized = false;
 			t.printStackTrace();
 			Ajde.getDefault().getErrorHandler().handleError(
 				"Null IDE failed to initialize.",
@@ -81,6 +82,10 @@ public class NullIdeManager {
 
 	public void setProjectProperties(NullIdeProperties properties) {
 		projectProperties = properties;
+	}
+
+	public boolean isInitialized() {
+		return initialized && AjdeUIManager.getDefault().isInitialized();
 	}
 
 }

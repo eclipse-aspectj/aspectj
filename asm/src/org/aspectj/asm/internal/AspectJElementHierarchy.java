@@ -1,6 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
- *               2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2003 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -8,30 +7,29 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Mik Kersten     initial implementation 
  * ******************************************************************/
 
 
-package org.aspectj.asm;
+package org.aspectj.asm.internal;
 
 import java.io.*;
 import java.util.*;
 
-import org.aspectj.asm.internal.ProgramElement;
+import org.aspectj.asm.*;
+import org.aspectj.asm.IProgramElement.Kind;
 import org.aspectj.bridge.*;
 
 /**
  * @author Mik Kersten
  */
-public class AspectJModel implements Serializable {
+public class AspectJElementHierarchy implements IHierarchy {
 	
     protected  IProgramElement root = null;
     protected String configFile = null;
 
     private Map fileMap = null;
     
-    public static final IProgramElement NO_STRUCTURE = new ProgramElement("<build to view structure>", IProgramElement.Kind.ERROR, null);
-
 	public IProgramElement getElement(String handle) {
 		throw new RuntimeException("unimplemented");
 	}
@@ -64,43 +62,49 @@ public class AspectJModel implements Serializable {
 	public boolean isValid() {
         return root != null && fileMap != null;
     }
-
-
+ 
 	/** 
 	 * Returns the first match
 	 * 
 	 * @param parent
 	 * @param kind		not null
-	 * @param decErrLabel
 	 * @return null if not found
 	 */
-	public IProgramElement findNode(IProgramElement parent, IProgramElement.Kind kind, String name) {
+	public IProgramElement findElementForSignature(IProgramElement parent, IProgramElement.Kind kind, String signature) {
 		for (Iterator it = parent.getChildren().iterator(); it.hasNext(); ) {
 			IProgramElement node = (IProgramElement)it.next();
-			if (node.getKind().equals(kind) 
-				&& name.equals(node.getName())) {
+			if (node.getKind() == kind && signature.equals(node.toSignatureString())) {
 				return node;
 			} else {
-				IProgramElement childSearch = findNode(node, kind, name);
+				IProgramElement childSearch = findElementForSignature(node, kind, signature);
 				if (childSearch != null) return childSearch;
 			}
 		}
 		return null;
 	}
-
-	/**
-	 * 
-	 * @param signatureKey	PackageName.TypeName.Signature.SourceLine.SourceColumn
-	 */
-	public IProgramElement findNodeForSignatureKey(String signatureKey) {
-		throw new RuntimeException("unimplemented");
-	}	
-
+	
+	public IProgramElement findElementForLabel(
+		IProgramElement parent,
+		IProgramElement.Kind kind,
+		String label) {
+			
+		for (Iterator it = parent.getChildren().iterator(); it.hasNext(); ) {
+			IProgramElement node = (IProgramElement)it.next();
+			if (node.getKind() == kind && label.equals(node.toLabelString())) {
+				return node;
+			} else {
+				IProgramElement childSearch = findElementForSignature(node, kind, label);
+				if (childSearch != null) return childSearch;
+			}
+		}
+		return null;			
+	}
+	
 	/**
 	 * @param packageName	if null default package is searched
 	 * @param className 	can't be null
 	 */ 
-	public IProgramElement findNodeForType(String packageName, String typeName) {
+	public IProgramElement findElementForType(String packageName, String typeName) {
 		IProgramElement packageNode = null;
 		if (packageName == null) {
 			packageNode = root;
@@ -153,10 +157,10 @@ public class AspectJModel implements Serializable {
 	 * @param		sourceFilePath	modified to '/' delimited path for consistency
 	 * @return		a new structure node for the file if it was not found in the model
 	 */
-	public IProgramElement findRootNodeForSourceFile(String sourceFile) {
+	public IProgramElement findElementForSourceFile(String sourceFile) {
        	try {
 	       	if (!isValid() || sourceFile == null) {   
-	            return AspectJModel.NO_STRUCTURE;
+	            return IHierarchy.NO_STRUCTURE;
 	        } else {
 	            String correctedPath = new File(sourceFile).getCanonicalPath();//.replace('\\', '/');
 	            //StructureNode node = (StructureNode)getFileMap().get(correctedPath);//findFileNode(filePath, model);
@@ -168,15 +172,19 @@ public class AspectJModel implements Serializable {
 	            }
 	        }
 		} catch (Exception e) {
-			return AspectJModel.NO_STRUCTURE;
+			return IHierarchy.NO_STRUCTURE;
 		}
     }
 
 	/**
 	 * TODO: discriminate columns
 	 */
-	public IProgramElement findNodeForSourceLine(ISourceLocation location) {
-		return findNodeForSourceLine(location.getSourceFile().getAbsolutePath(), location.getLine());
+	public IProgramElement findElementForSourceLine(ISourceLocation location) {
+		try {
+			return findElementForSourceLine(location.getSourceFile().getCanonicalPath(), location.getLine());
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	/**
@@ -186,7 +194,7 @@ public class AspectJModel implements Serializable {
 	 * @param 		lineNumber		if 0 or 1 the corresponding file node will be returned
 	 * @return		a new structure node for the file if it was not found in the model
 	 */
-	public IProgramElement findNodeForSourceLine(String sourceFilePath, int lineNumber) {
+	public IProgramElement findElementForSourceLine(String sourceFilePath, int lineNumber) {
 		IProgramElement node = findNodeForSourceLineHelper(root, sourceFilePath, lineNumber);
 		if (node != null) {
 			return node;	
@@ -229,8 +237,7 @@ public class AspectJModel implements Serializable {
 //				System.err.println("====\n1: " + 
 //					sourceFilePath + "\n2: " +
 //					node.getSourceLocation().getSourceFile().getCanonicalPath().equals(sourceFilePath)
-//				);	
-			
+//				);				
 			return node != null 
 				&& node.getSourceLocation() != null
 				&& node.getSourceLocation().getSourceFile().getCanonicalPath().equals(sourceFilePath)
@@ -238,8 +245,7 @@ public class AspectJModel implements Serializable {
 					&& node.getSourceLocation().getEndLine() >= lineNumber)
 					||
 					(lineNumber <= 1
-					 && node instanceof IProgramElement 
-					 && ((IProgramElement)node).getKind().isSourceFileKind())	
+					 && node.getKind().isSourceFileKind())
 				);
 		} catch (IOException ioe) { 
 			return false;
@@ -261,5 +267,43 @@ public class AspectJModel implements Serializable {
 	public void setConfigFile(String configFile) {
 		this.configFile = configFile;
 	}
+	
+	// TODO: optimize this lookup
+	public IProgramElement findElementForHandle(String handle) {
+		StringTokenizer st = new StringTokenizer(handle, IProgramElement.ID_DELIM);
+		String file = st.nextToken();
+		int line = new Integer(st.nextToken()).intValue();
+		int col = new Integer(st.nextToken()).intValue();
+		// TODO: use column number when available
+		return findElementForSourceLine(file, line);
+		
+//		IProgramElement parent = findElementForType(packageName, typeName);
+//		if (parent == null) return null;
+//		if (kind == IProgramElement.Kind.CLASS ||
+//			kind == IProgramElement.Kind.ASPECT) {
+//				return parent;
+//		} else {
+//			return findElementForSignature(parent, kind, name);	
+//		}	
+	}
+//	
+//	private IProgramElement findElementForBytecodeInfo(
+//		IProgramElement node, 
+//		String parentName,
+//		String name, 
+//		String signature) {
+//		for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
+//			IProgramElement curr = (IProgramElement)it.next();
+//			if (parentName.equals(curr.getParent().getBytecodeName())
+//				&& name.equals(curr.getBytecodeName()) 
+//				&& signature.equals(curr.getBytecodeSignature())) {
+//				return node;
+//			} else {
+//				IProgramElement childSearch = findElementForBytecodeInfo(curr, parentName, name, signature);
+//				if (childSearch != null) return childSearch;
+//			}
+//		}
+//		return null;
+//	}
 }
 

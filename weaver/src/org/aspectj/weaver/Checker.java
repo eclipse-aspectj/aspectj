@@ -55,7 +55,7 @@ public class Checker extends ShadowMunger {
 				shadow.getSourceLocation());
 			world.getMessageHandler().handleMessage(message);
 			
-			AsmAdapter.checkerMunger(world.getModel(), shadow);
+			AsmAdviceRelationshipProvider.checkerMunger(world.getModel(), shadow);
 		}
 		return false;
 	}

@@ -1,6 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
- *               2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2003 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -8,7 +7,7 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Mik Kersten     initial implementation 
  * ******************************************************************/
 
 
@@ -29,24 +28,32 @@ public class AsmManager {
 	 */  
 	private static AsmManager INSTANCE = new AsmManager();
 	private boolean shouldSaveModel = true;
-    protected AspectJModel model = new AspectJModel();
+    protected IHierarchy hierarchy;
     private List structureListeners = new ArrayList();
-	private IRelationshipMapper mapper;
+	private IRelationshipMap mapper;
 
     protected AsmManager() {
+    	hierarchy = new AspectJElementHierarchy();
     	List relationships = new ArrayList();
-//    	relationships.add(ADVICE);
-		mapper = new RelationshipMapper();
+		mapper = new RelationshipMap(hierarchy);
     }
 
-    public AspectJModel getModel() {
-        return model;	
+    public IHierarchy getHierarchy() {
+        return hierarchy;	
+	}
+
+	public static AsmManager getDefault() {
+		return INSTANCE;
+	}
+	
+	public IRelationshipMap getRelationshipMap() {
+		return mapper;
 	}
 
 	public void fireModelUpdated() {
 		notifyListeners();	
-		if (model.getConfigFile() != null) {
-			writeStructureModel(model.getConfigFile());
+		if (hierarchy.getConfigFile() != null) {
+			writeStructureModel(hierarchy.getConfigFile());
 		}
 	}
 
@@ -105,17 +112,17 @@ public class AsmManager {
 //        }
 //    }
 
-    public void addListener(IStructureModelListener listener) {
+    public void addListener(IHierarchyListener listener) {
         structureListeners.add(listener);
     }
 
-    public void removeStructureListener(IStructureModelListener listener) {
+    public void removeStructureListener(IHierarchyListener listener) {
         structureListeners.remove(listener);
     }
 
     private void notifyListeners() {
         for (Iterator it = structureListeners.iterator(); it.hasNext(); ) {
-            ((IStructureModelListener)it.next()).containmentHierarchyUpdated(model);
+            ((IHierarchyListener)it.next()).elementsUpdated(hierarchy);
         }
     }
 
@@ -126,7 +133,7 @@ public class AsmManager {
         try {
             String filePath = genExternFilePath(configFilePath);
             ObjectOutputStream s = new ObjectOutputStream(new FileOutputStream(filePath));
-            s.writeObject(model);
+            s.writeObject(hierarchy);
             s.flush();
         } catch (Exception e) {
             // ignore
@@ -140,16 +147,16 @@ public class AsmManager {
     public void readStructureModel(String configFilePath) {
         try {
             if (configFilePath == null) {
-            	model.setRoot(AspectJModel.NO_STRUCTURE);
+            	hierarchy.setRoot(IHierarchy.NO_STRUCTURE);
             } else {
 	            String filePath = genExternFilePath(configFilePath);
 	            FileInputStream in = new FileInputStream(filePath);
 	            ObjectInputStream s = new ObjectInputStream(in);
-	            model = (AspectJModel)s.readObject();
+	            hierarchy = (AspectJElementHierarchy)s.readObject();
             }
         } catch (Exception e) {
         	//System.err.println("AJDE Message: could not read structure model: " + e);
-            model.setRoot(AspectJModel.NO_STRUCTURE);
+            hierarchy.setRoot(IHierarchy.NO_STRUCTURE);
         } finally {
         	notifyListeners();	
         }
@@ -162,14 +169,5 @@ public class AsmManager {
 	public void setShouldSaveModel(boolean shouldSaveModel) {
 		this.shouldSaveModel = shouldSaveModel;
 	}
-
-	public static AsmManager getDefault() {
-		return INSTANCE;
-	}
-	
-	public IRelationshipMapper getMapper() {
-		return mapper;
-	}
-
 }
 

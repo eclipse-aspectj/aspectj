@@ -19,6 +19,7 @@ import java.util.*;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.asm.*;
+import org.aspectj.asm.internal.*;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.*;
 import org.aspectj.util.LangUtil;
@@ -32,14 +33,14 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
 	
     public static void build(    
         CompilationUnitDeclaration unit,
-        AspectJModel structureModel) {
+		IHierarchy structureModel) {
         LangUtil.throwIaxIfNull(unit, "unit");
         new AsmHierarchyBuilder(unit.compilationResult()).internalBuild(unit, structureModel);
     }
 
 	private final Stack stack;
 	private final CompilationResult currCompilationResult;
-	private AsmNodeFormatter formatter = new AsmNodeFormatter();
+	private AsmElementFormatter formatter = new AsmElementFormatter();
 	
     protected AsmHierarchyBuilder(CompilationResult result) {
         LangUtil.throwIaxIfNull(result, "result");
@@ -53,7 +54,7 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
      */
     private void internalBuild(
         CompilationUnitDeclaration unit, 
-        AspectJModel structureModel) {
+		IHierarchy structureModel) {
         LangUtil.throwIaxIfNull(structureModel, "structureModel");        
         if (!currCompilationResult.equals(unit.compilationResult())) {
             throw new IllegalArgumentException("invalid unit: " + unit);
@@ -112,11 +113,11 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
 	}
 
 	/**
-	 * Get/create teh node (package or root) to add to.
+	 * Get/create the node (package or root) to add to.
 	 */
 	private IProgramElement genAddToNode(
 		CompilationUnitDeclaration unit,
-		AspectJModel structureModel) {
+		IHierarchy structureModel) {
 		final IProgramElement addToNode;
 		{
 		    ImportReference currentPackage = unit.currentPackage;
@@ -174,8 +175,6 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
 			typeDeclaration.modifiers,			"",
 			new ArrayList());
 		
-//		peNode.setFullSignature(typeDeclaration.());
-		
 		((IProgramElement)stack.peek()).addChild(peNode);
 		stack.push(peNode);
 		return true;
@@ -200,8 +199,6 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
 			memberTypeDeclaration.modifiers,
 			"",
 			new ArrayList());
-		
-		peNode.setFullSignature(memberTypeDeclaration.toString());
 		
 		((IProgramElement)stack.peek()).addChild(peNode);
 		stack.push(peNode);
@@ -265,7 +262,7 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
 		return (IProgramElement)stack.peek();
 	}	
 	
-	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {		
+	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {				
 		IProgramElement peNode = new ProgramElement(
 			"",
 			IProgramElement.Kind.ERROR,
@@ -280,7 +277,7 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
 
 		// TODO: add return type test
 		if (peNode.getKind().equals(IProgramElement.Kind.METHOD)) {
-			if (peNode.getName().equals("main(String[])")
+			if (peNode.toLabelString().equals("main(String[])")
 				&& peNode.getModifiers().contains(IProgramElement.Modifiers.STATIC)
 				&& peNode.getAccessibility().equals(IProgramElement.Accessibility.PUBLIC)) {
 				((IProgramElement)stack.peek()).setRunnable(true);

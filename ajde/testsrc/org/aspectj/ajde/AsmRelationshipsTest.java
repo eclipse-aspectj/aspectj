@@ -26,9 +26,11 @@ public class AsmRelationshipsTest extends AjdeTestCase {
 		super(name);
 	}
   
-//	public void testInterTypeDeclarations() {		
-//		checkMapping("InterTypeDecCoverage", "Point", "Point.xxx:", "xxx", "declared on", "aspect declarations");	
-//	}
+	public void testInterTypeDeclarations() {		
+//		checkMapping("InterTypeDecCoverage", "Point", "Point.xxx", "xxx", "declared on", "aspect declarations");	
+//		checkMapping("InterTypeDecCoverage", "Point", "Point.check(int, Line)", "Point", "declared on", "aspect declarations");	
+
+	}
 
 	public void testAdvice() {	
 		checkMapping("AdvisesRelationshipCoverage", "Point", "before(): methodExecutionP..", "setX(int)", "advises", "advised by");
@@ -37,31 +39,34 @@ public class AsmRelationshipsTest extends AjdeTestCase {
 	}
 
 	private void checkUniDirectionalMapping(String fromType, String toType, String from, String to, String relName) {
-		IProgramElement aspect = AsmManager.getDefault().getModel().findNodeForType(null, fromType);
+		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, fromType);
 		assertNotNull(aspect);		
 		String beforeExec = from;
-		IProgramElement beforeExecNode = manager.getModel().findNode(aspect, IProgramElement.Kind.ADVICE, beforeExec);
+		IProgramElement beforeExecNode = manager.getHierarchy().findElementForLabel(aspect, IProgramElement.Kind.ADVICE, beforeExec);
 		assertNotNull(beforeExecNode);
-		IRelationship rel = manager.getMapper().get(beforeExecNode, IRelationship.Kind.ADVICE, relName);
-		assertEquals(((IProgramElement)rel.getTargets().get(0)).getName(), to);
+		IRelationship rel = manager.getRelationshipMap().get(beforeExecNode, IRelationship.Kind.ADVICE, relName);
+		String handle = (String)rel.getTargets().get(0);
+		assertEquals(manager.getHierarchy().findElementForHandle(handle).toLabelString(), to);
 	}
 
 	private void checkMapping(String fromType, String toType, String from, String to, String forwardRelName, String backRelName) {
-		IProgramElement aspect = AsmManager.getDefault().getModel().findNodeForType(null, fromType);
+		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, fromType);
 		assertNotNull(aspect);		
 		String beforeExec = from;
-		IProgramElement beforeExecNode = manager.getModel().findNode(aspect, IProgramElement.Kind.ADVICE, beforeExec);
+		IProgramElement beforeExecNode = manager.getHierarchy().findElementForLabel(aspect, IProgramElement.Kind.ADVICE, beforeExec);
 		assertNotNull(beforeExecNode);
-		IRelationship rel = manager.getMapper().get(beforeExecNode, IRelationship.Kind.ADVICE, forwardRelName);
-		assertEquals(((IProgramElement)rel.getTargets().get(0)).getName(), to);
+		IRelationship rel = manager.getRelationshipMap().get(beforeExecNode, IRelationship.Kind.ADVICE, forwardRelName);
+		String handle = (String)rel.getTargets().get(0);
+		assertEquals(manager.getHierarchy().findElementForHandle(handle).toString(), to);  
 
-		IProgramElement clazz = AsmManager.getDefault().getModel().findNodeForType(null, toType);
+		IProgramElement clazz = AsmManager.getDefault().getHierarchy().findElementForType(null, toType);
 		assertNotNull(clazz);
 		String set = to;
-		IProgramElement setNode = manager.getModel().findNode(clazz, IProgramElement.Kind.METHOD, set);
+		IProgramElement setNode = manager.getHierarchy().findElementForLabel(clazz, IProgramElement.Kind.METHOD, set);
 		assertNotNull(setNode);
-		IRelationship rel2 = manager.getMapper().get(setNode, IRelationship.Kind.ADVICE, backRelName);
-		assertEquals(((IProgramElement)rel2.getTargets().get(0)).getName(), from);
+		IRelationship rel2 = manager.getRelationshipMap().get(setNode, IRelationship.Kind.ADVICE, backRelName);
+		String handle2 = (String)rel2.getTargets().get(0);
+		assertEquals(manager.getHierarchy().findElementForHandle(handle2).toString(), from);
 	}
 
 	protected void setUp() throws Exception {

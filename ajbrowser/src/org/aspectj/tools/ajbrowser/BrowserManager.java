@@ -24,6 +24,7 @@ import org.aspectj.ajde.ui.*;
 import org.aspectj.ajde.ui.internal.UserPreferencesStore;
 import org.aspectj.ajde.ui.swing.*;
 import org.aspectj.asm.*;
+import org.aspectj.asm.internal.*;
 
 /**
  * IDE manager for standalone AJDE application.
@@ -46,8 +47,8 @@ public class BrowserManager {
     
     private static TopFrame topFrame = null;
     
-	public final IStructureModelListener VIEW_LISTENER = new IStructureModelListener() {
-		public void containmentHierarchyUpdated(AspectJModel model) {        	
+	public final IHierarchyListener VIEW_LISTENER = new IHierarchyListener() {
+		public void elementsUpdated(IHierarchy model) {        	
 			FileStructureView fsv = Ajde.getDefault().getStructureViewManager().getDefaultFileView();
 			if (fsv != null) {
 				fsv.setSourceFile(BrowserManager.getDefault().getEditorManager().getCurrFile());

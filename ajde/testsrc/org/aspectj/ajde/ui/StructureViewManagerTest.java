@@ -50,7 +50,7 @@ public class StructureViewManagerTest extends AjdeTestCase {
 	}
 
 	public void testModelExists() {
-		assertTrue(Ajde.getDefault().getStructureModelManager().getModel() != null);
+		assertTrue(Ajde.getDefault().getStructureModelManager().getHierarchy() != null);
 	}
 
 	public void testNotificationAfterConfigFileChange() {
@@ -66,7 +66,7 @@ public class StructureViewManagerTest extends AjdeTestCase {
 		assertTrue(
 			"no structure", 
 			currentView.getRootNode().getStructureNode().getChildren().get(0) 
-			== AspectJModel.NO_STRUCTURE
+			== IHierarchy.NO_STRUCTURE
 		);			
 	}
 
@@ -83,17 +83,17 @@ public class StructureViewManagerTest extends AjdeTestCase {
 		assertTrue("notified", renderer.getHasBeenNotified());	
 		// AMC should this be currentView, or should we recreate the root... do the latter	
 		//IProgramElement n = currentView.getRootNode().getIProgramElement();
-		IProgramElement n = Ajde.getDefault().getStructureModelManager().getModel().getRoot();
+		IProgramElement n = Ajde.getDefault().getStructureModelManager().getHierarchy().getRoot();
 		assertTrue(
 			"no structure", 
 			//currentView.getRootNode().getIProgramElement().getChildren().get(0) 
-			n == AspectJModel.NO_STRUCTURE
+			n == IHierarchy.NO_STRUCTURE
 		);	
 	}
 
 	public void testModelIntegrity() {
 		doSynchronousBuild(CONFIG_FILE_PATH);
-		IProgramElement modelRoot = Ajde.getDefault().getStructureModelManager().getModel().getRoot();
+		IProgramElement modelRoot = Ajde.getDefault().getStructureModelManager().getHierarchy().getRoot();
 		assertTrue("root exists", modelRoot != null);	
 		
 		try {
@@ -125,7 +125,7 @@ public class StructureViewManagerTest extends AjdeTestCase {
 		assertTrue(
 			"no structure", 
 			currentView.getRootNode().getStructureNode() 
-			== AspectJModel.NO_STRUCTURE
+			== IHierarchy.NO_STRUCTURE
 		);
 	}
   

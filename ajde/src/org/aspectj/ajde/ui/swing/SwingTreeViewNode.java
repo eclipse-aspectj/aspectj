@@ -108,7 +108,7 @@ public class SwingTreeViewNode extends DefaultMutableTreeNode implements IStruct
 		if (kind == IStructureViewNode.Kind.RELATIONSHIP) {
 			return relationshipName;
 		} else {
-			return programElement.getName();
+			return programElement.toLabelString();
 		}
 	}
 

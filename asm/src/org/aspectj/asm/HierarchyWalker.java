@@ -1,6 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
- *               2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2003 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -8,25 +7,28 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Mik Kersten     initial implementation 
  * ******************************************************************/
 
 
 package org.aspectj.asm;
+
+import org.aspectj.asm.internal.*;
+import org.aspectj.asm.internal.*;
 
 /**
  * @author Mik Kersten
  */
 public abstract class HierarchyWalker {
 
-	private AspectJModel model;
+	private IHierarchy hierarchy;
 
 	public HierarchyWalker() {
 		super();
 	}
 	
-	public HierarchyWalker(AspectJModel model) {
-		this.model = model;
+	public HierarchyWalker(IHierarchy hierarchy) {
+		this.hierarchy = hierarchy;
     }
 
     protected void preProcess(IProgramElement node) { }

@@ -77,8 +77,8 @@ public class StructureModelTest extends AjdeTestCase {
 
 	public void testRootForSourceFile() throws IOException {
 		File testFile = openFile("figures-coverage/figures/Figure.java");	
-		IProgramElement node = Ajde.getDefault().getStructureModelManager().getModel().findRootNodeForSourceFile(
-			testFile.getCanonicalPath());
+		IProgramElement node = Ajde.getDefault().getStructureModelManager().getHierarchy().findElementForSourceFile(
+			testFile.getAbsolutePath());
 		assertTrue("find result", node != null) ;	
 		IProgramElement pNode = (IProgramElement)node;
 		String child = ((IProgramElement)pNode.getChildren().get(0)).getName();
@@ -87,23 +87,18 @@ public class StructureModelTest extends AjdeTestCase {
 
 	public void testPointcutName() throws IOException {
 		File testFile = openFile("figures-coverage/figures/Main.java");	
-		IProgramElement node = Ajde.getDefault().getStructureModelManager().getModel().findRootNodeForSourceFile(
-			testFile.getCanonicalPath());
+		IProgramElement node = Ajde.getDefault().getStructureModelManager().getHierarchy().findElementForSourceFile(
+			testFile.getAbsolutePath());
 		assertTrue("find result", node != null) ;	
 		IProgramElement pNode = (IProgramElement)((IProgramElement)node).getChildren().get(1);
 		IProgramElement pointcut = (IProgramElement)pNode.getChildren().get(0);
 		assertTrue("kind", pointcut.getKind().equals(IProgramElement.Kind.POINTCUT));
-		assertTrue("found node: " + pointcut.getName(), pointcut.getName().equals("testptct()"));
-	}
-
-	public void testDeclare() {
-		
-		
+		assertTrue("found node: " + pointcut.getName(), pointcut.toLabelString().equals("testptct()"));
 	}
 
 	public void testFileNodeFind() throws IOException {
 		File testFile = openFile("figures-coverage/figures/Main.java");
-		IProgramElement node = Ajde.getDefault().getStructureModelManager().getModel().findNodeForSourceLine(
+		IProgramElement node = Ajde.getDefault().getStructureModelManager().getHierarchy().findElementForSourceLine(
 			testFile.getCanonicalPath(), 1);
 		assertTrue("find result", node != null) ;	
 		assertEquals("find result has children", 2, node.getChildren().size()) ;	
@@ -115,11 +110,11 @@ public class StructureModelTest extends AjdeTestCase {
   	 * @todo	add negative test to make sure things that aren't runnable aren't annotated
   	 */ 
 	public void testMainClassNodeInfo() throws IOException {
-        AspectJModel model = Ajde.getDefault().getStructureModelManager().getModel();
+        IHierarchy model = Ajde.getDefault().getStructureModelManager().getHierarchy();
         assertTrue("model exists", model != null);
 		assertTrue("root exists", model.getRoot() != null);
 		File testFile = openFile("figures-coverage/figures/Main.java");
-		IProgramElement node = model.findNodeForSourceLine(testFile.getCanonicalPath(), 11);	
+		IProgramElement node = model.findElementForSourceLine(testFile.getCanonicalPath(), 11);	
 		assertTrue("find result", node != null);	
 		IProgramElement pNode = (IProgramElement)((IProgramElement)node).getParent();
         if (null == pNode) {
@@ -132,7 +127,7 @@ public class StructureModelTest extends AjdeTestCase {
 	 * Integrity could be checked somewhere in the API.
 	 */ 
 	public void testModelIntegrity() {
-		IProgramElement modelRoot = Ajde.getDefault().getStructureModelManager().getModel().getRoot();
+		IProgramElement modelRoot = Ajde.getDefault().getStructureModelManager().getHierarchy().getRoot();
 		assertTrue("root exists", modelRoot != null);	
 		
 		try {
@@ -162,7 +157,7 @@ public class StructureModelTest extends AjdeTestCase {
   		    	}
   		    }
   		};
-  		Ajde.getDefault().getStructureModelManager().getModel().getRoot().walk(walker);
+  		Ajde.getDefault().getStructureModelManager().getHierarchy().getRoot().walk(walker);
   	}  
   
 	protected void setUp() throws Exception {

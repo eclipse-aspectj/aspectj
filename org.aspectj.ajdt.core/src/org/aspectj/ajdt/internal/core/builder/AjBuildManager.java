@@ -22,6 +22,7 @@ import org.aspectj.ajdt.internal.compiler.lookup.*;
 import org.aspectj.ajdt.internal.compiler.parser.AjParser;
 import org.aspectj.ajdt.internal.compiler.problem.AjProblemReporter;
 import org.aspectj.asm.*;
+import org.aspectj.asm.internal.*;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.*;
 import org.aspectj.weaver.World;
@@ -42,7 +43,7 @@ public class AjBuildManager {
 	private int compiledCount;
 	private int sourceFileCount;
 	
-	private AspectJModel structureModel;
+	private IHierarchy structureModel;
 	public AjBuildConfig buildConfig;
 	
 	AjState state = new AjState(this);
@@ -118,7 +119,7 @@ public class AjBuildManager {
             if (batch) {
                 // System.err.println("XXXX batch: " + buildConfig.getFiles());
                 if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {  
-                    bcelWorld.setModel(AsmManager.getDefault().getModel());
+                    bcelWorld.setModel(AsmManager.getDefault().getHierarchy());
                     // in incremental build, only get updated model?
                 }
                 performCompilation(buildConfig.getFiles());
@@ -167,7 +168,7 @@ public class AjBuildManager {
      
     private void setupModel() {
         String rootLabel = "<root>";
-        AspectJModel model = AsmManager.getDefault().getModel();
+		IHierarchy model = AsmManager.getDefault().getHierarchy();
         IProgramElement.Kind kind = IProgramElement.Kind.FILE_JAVA;
         if (buildConfig.getConfigFile() != null) {
             rootLabel = buildConfig.getConfigFile().getName();
@@ -523,14 +524,14 @@ public class AjBuildManager {
 	}
 
 
-	public void setStructureModel(AspectJModel structureModel) {
+	public void setStructureModel(IHierarchy structureModel) {
 		this.structureModel = structureModel;
 	}
 
 	/**
 	 * Returns null if there is no structure model
 	 */
-	public AspectJModel getStructureModel() {
+	public IHierarchy getStructureModel() {
 		return structureModel;
 	}
     

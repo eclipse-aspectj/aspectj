@@ -32,11 +32,11 @@ public class EmacsStructureModelManager {
     }
 
     public void externalizeModel() {
-    	if (!AsmManager.getDefault().getModel().isValid()) return;
+    	if (!AsmManager.getDefault().getHierarchy().isValid()) return;
         
         try {
             //Set fileSet = StructureModelManager.INSTANCE.getStructureModel().getFileMap().entrySet(); 
-			Set fileSet = AsmManager.getDefault().getModel().getFileMapEntrySet(); 
+			Set fileSet = AsmManager.getDefault().getHierarchy().getFileMapEntrySet(); 
             for (Iterator it = fileSet.iterator(); it.hasNext(); ) {
                 IProgramElement peNode = (IProgramElement)((Map.Entry)it.next()).getValue();
                 dumpStructureToFile(peNode);

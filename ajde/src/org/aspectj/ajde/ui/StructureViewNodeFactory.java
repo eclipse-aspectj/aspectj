@@ -36,25 +36,31 @@ public abstract class StructureViewNodeFactory {
 	public IStructureViewNode createNode(IProgramElement node, List children) {
 		AbstractIcon icon = iconRegistry.getStructureIcon(node.getKind(), node.getAccessibility());
 
-		IStructureViewNode svNode = createDeclaration(node, icon, children);		
-		List relationships = AsmManager.getDefault().getMapper().get(node);
-		for (Iterator it = relationships.iterator(); it.hasNext(); ) {
-			IRelationship rel = (IRelationship)it.next();
-			if (rel != null && rel.getTargets().size() > 0) {
-				IStructureViewNode relNode = createRelationship(
-					rel, 
-					iconRegistry.getIcon(rel.getKind())
-				);
-				svNode.add(relNode, 0);
-				
-				for (Iterator it2 = rel.getTargets().iterator(); it2.hasNext(); ) {
-					IProgramElement link = (IProgramElement)it2.next();
-					IStructureViewNode linkNode = createLink(
-						link,   
-						iconRegistry.getStructureIcon(link.getKind(), link.getAccessibility())  
-					);	
-					relNode.add(linkNode);
-						
+		IStructureViewNode svNode = createDeclaration(node, icon, children);
+		String nodeHandle = node.getHandleIdentifier();
+		if (nodeHandle != null) {	
+			List relationships = AsmManager.getDefault().getRelationshipMap().get(nodeHandle);
+			if (relationships != null) {
+				for (Iterator it = relationships.iterator(); it.hasNext(); ) {
+					IRelationship rel = (IRelationship)it.next();
+					if (rel != null && rel.getTargets().size() > 0) {
+						IStructureViewNode relNode = createRelationship(
+							rel, 
+							iconRegistry.getIcon(rel.getKind())
+						);
+						svNode.add(relNode, 0);					
+						for (Iterator it2 = rel.getTargets().iterator(); it2.hasNext(); ) {
+							String handle = (String)it2.next();
+							IProgramElement link = AsmManager.getDefault().getHierarchy().findElementForHandle(handle);
+							if (link != null) {
+								IStructureViewNode linkNode = createLink(
+									link,   
+									iconRegistry.getStructureIcon(link.getKind(), link.getAccessibility())  
+								);	
+								relNode.add(linkNode);
+							}
+						}
+					}
 				}
 			}
 		}

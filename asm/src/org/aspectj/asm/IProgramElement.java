@@ -1,11 +1,13 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
- *               2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2003 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
  * which accompanies this distribution and is available at 
  * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Mik Kersten     initial implementation 
  * ******************************************************************/
 
 package org.aspectj.asm;
@@ -22,6 +24,8 @@ import org.aspectj.bridge.*;
  */
 public interface IProgramElement extends Serializable {
 	
+	public static final String ID_DELIM = "|";
+	
 	public List/*IProgramElement*/ getChildren();
 
 	public void setChildren(List children);	
@@ -32,6 +36,9 @@ public interface IProgramElement extends Serializable {
 
 	public String getName();
 	public void setName(String name);
+
+	public String getDetails();
+	public void setDetails(String details);
 	
 	public IProgramElement.Kind getKind();
 	public void setKind(Kind kind);
@@ -47,8 +54,7 @@ public interface IProgramElement extends Serializable {
 	public void setReturnType(String returnType);
 	public String getReturnType();
 	
-	public String getFullSignature();
-	public void setFullSignature(String string);
+	public String toSignatureString();
 	
 	public void setRunnable(boolean value);
 	public boolean isRunnable();
@@ -66,8 +72,25 @@ public interface IProgramElement extends Serializable {
 	public void setSourceLocation(ISourceLocation sourceLocation);
 	
 	public String toString();
+
+	/**
+	 * Includes name, parameter types (if any) and details (if any).
+	 */
+	public String toLabelString();
+
+	public List getParameterTypes();
+	public void setParameterTypes(List list);
+
+	public List getParameterNames();
+	public void setParameterNames(List list);
 	
-	// public String getHandle() TODO: check IJavaElement
+	/**
+	 * The format of the string handle is not specified, but is stable across 
+	 * compilation sessions.
+	 * 
+	 * @return	a string representtaion of this element
+	 */
+	public String getHandleIdentifier();
 	
 	/**
 	 * @return	a string representation of this node and all of its children (recursive)
@@ -160,6 +183,7 @@ public interface IProgramElement extends Serializable {
 		public static final Kind INTER_TYPE_FIELD = new Kind("inter-type field");
 		public static final Kind INTER_TYPE_METHOD = new Kind("inter-type method");
 		public static final Kind INTER_TYPE_CONSTRUCTOR = new Kind("inter-type constructor");
+		public static final Kind INTER_TYPE_PARENT = new Kind("inter-type parent");
 		public static final Kind CONSTRUCTOR = new Kind("constructor");
 		public static final Kind METHOD = new Kind("method");
 		public static final Kind FIELD = new Kind("field");  
@@ -170,14 +194,39 @@ public interface IProgramElement extends Serializable {
 		public static final Kind DECLARE_ERROR = new Kind("declare error");
 		public static final Kind DECLARE_SOFT = new Kind("declare soft");
 		public static final Kind DECLARE_PRECEDENCE= new Kind("declare precedence");
-		public static final Kind CODE = new Kind("decBodyElement");
+		public static final Kind CODE = new Kind("code");
 		public static final Kind ERROR = new Kind("error");
 
-		public static final Kind[] ALL = { PROJECT, PACKAGE, FILE, FILE_JAVA, 
-			FILE_ASPECTJ, FILE_LST, CLASS, INTERFACE, ASPECT,
-			INITIALIZER, INTER_TYPE_FIELD, INTER_TYPE_METHOD, INTER_TYPE_CONSTRUCTOR, 
-			CONSTRUCTOR, METHOD, FIELD, POINTCUT, ADVICE, DECLARE_PARENTS, 
-			DECLARE_WARNING, DECLARE_ERROR, DECLARE_SOFT, CODE, ERROR };
+ 
+
+		public static final Kind[] ALL =
+			{
+				PROJECT,
+				PACKAGE,
+				FILE,
+				FILE_JAVA,
+				FILE_ASPECTJ,
+				FILE_LST,
+				CLASS,
+				INTERFACE,
+				ASPECT,
+				INITIALIZER,
+				INTER_TYPE_FIELD,
+				INTER_TYPE_METHOD,
+				INTER_TYPE_CONSTRUCTOR,
+				INTER_TYPE_PARENT,
+				CONSTRUCTOR,
+				METHOD,
+				FIELD,
+				POINTCUT,
+				ADVICE,
+				DECLARE_PARENTS,
+				DECLARE_WARNING,
+				DECLARE_ERROR,
+				DECLARE_SOFT,
+				DECLARE_PRECEDENCE,
+				CODE,
+				ERROR };
 		
 		public static Kind getKindForString(String kindString) {
 			for (int i = 0; i < ALL.length; i++) {

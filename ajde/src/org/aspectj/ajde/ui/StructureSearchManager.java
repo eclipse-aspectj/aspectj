@@ -18,6 +18,7 @@ import java.util.*;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.asm.*;
+import org.aspectj.asm.internal.*;
 
 /**
  * @author	Mik Kersten
@@ -34,8 +35,8 @@ public class StructureSearchManager {
 		IProgramElement.Kind kind) {
 		
 		List matches = new ArrayList();
-		AspectJModel model = Ajde.getDefault().getStructureModelManager().getModel();
-		if (model.equals(AspectJModel.NO_STRUCTURE)) {
+		IHierarchy model = Ajde.getDefault().getStructureModelManager().getHierarchy();
+		if (model.equals(IHierarchy.NO_STRUCTURE)) {
 			return null;
 		} else {
 			return findMatchesHelper((IProgramElement)model.getRoot(), pattern, kind, matches);
