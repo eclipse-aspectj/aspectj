@@ -16,35 +16,20 @@ package org.aspectj.ajde.ui.swing;
    
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.util.LangUtil;
 
 /**
  * @author  Mik Kersten
  */
 public class CompilerMessage {
-        public String message;
-        public ISourceLocation sourceLocation; 
-        public IMessage.Kind kind;
+    public final IMessage message;
 
-        public CompilerMessage(String message, IMessage.Kind kind) {
+        public CompilerMessage(IMessage message) {
+            LangUtil.throwIaxIfNull(message, "message");
             this.message = message;
-            this.sourceLocation = null;
-            this.kind = kind;  
-        }
-
-        public CompilerMessage(String message, ISourceLocation sourceLocation, IMessage.Kind kind) {
-            this.message = message;
-            this.sourceLocation = sourceLocation;
-            this.kind = kind;  
         }
 
         public String toString() {
-        	if (sourceLocation != null) {
-	            return sourceLocation.getSourceFile().getAbsolutePath() + ":" 
-	            	+ " " + message 
-	            	+ " at line " + sourceLocation.getLine() 
-	            	+ ", column " + sourceLocation.getColumn();
-        	} else {
-	            return message;        	
-        	}
+            return message.toString();
         }
     }
