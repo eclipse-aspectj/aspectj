@@ -27,6 +27,8 @@
 
   knownLimitation-ajctaskCompiler
                       Accepted limitation of the AjcTaskCompilerCommand wrapper
+  knownLimitation-ajdeCompiler
+                      Accepted limitation of the AJDE CompileCommand wrapper
   -->
 
 <suite>
@@ -6192,7 +6194,8 @@
     </ajc-test>
 
     <ajc-test dir="harness" 
-    	keywords="command-line-error,knownLimitation-ajctaskCompiler"
+    	keywords="command-line-error,knownLimitation-ajctaskCompiler,knownLimitation-ajdeCompiler"
+    	comment="ajde omits usage"
       title="CLE: bad filename">
         <compile  badInput="true" files="NoSuchFile.java">
             <message kind="error" text="NoSuchFile.java"/>
@@ -6210,7 +6213,8 @@
         </compile>
     </ajc-test>
 
-    <ajc-test dir="harness" keywords="command-line-error"
+    <ajc-test dir="harness" keywords="command-line-error,knownLimitation-ajdeCompiler"
+    	comment="ajde has same errors, different wording"
       title="CLE: no sourceroot specified for incremental">
         <compile badInput="true" options="-incremental">
             <message kind="error" text="no sources specified"/>
@@ -6219,7 +6223,8 @@
         </compile>
     </ajc-test>
 
-    <ajc-test dir="harness" keywords="command-line-error"
+    <ajc-test dir="harness" keywords="command-line-error,knownLimitation-ajdeCompiler"
+    	comment="ajde has same errors, different wording"
       title="CLE: file specified with incremental">
         <compile badInput="true" files="ErrorTest.java"
         	options="-incremental">
