@@ -5775,4 +5775,11 @@
         <run class="Driver"/>
     </ajc-test>
     
+    <ajc-test dir="bugs/interInherit" pr="35725"
+      title="Inter type declaration to base class not seen by derived class">
+        <compile files="a_impl/AImpl.java,a_impl/Af.java,a_intf/A.java,b_impl/BImpl.java,b_intf/B.java"/>
+        <run class="b_impl.BImpl"/>
+    </ajc-test>
+
+    
 </suite>
