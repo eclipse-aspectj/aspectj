@@ -32,6 +32,7 @@
 
     <target name="init" depends="init-properties,init-directories">
       <property name="build.config" value="verbose"/> 
+      <property name="trim.testing.default" value="true"/>
       <property name="aj.installer.jar" 
             location="${aj.dist.dir}/aspectj-${build.version.short}.jar"/>
 
@@ -149,7 +150,7 @@
               baseDir="${aspectj.modules.dir}"
               distDir="${aj.dist.dir}"
            productDir="${aspectj.modules.dir}/build/products/${product.name}"
-          trimTesting="true"
+          trimTesting="${trim.testing.default}"
           buildConfig="${build.config}" 
               version="${build.version.long}"
               verbose="true"
@@ -161,7 +162,7 @@
               baseDir="${aspectj.modules.dir}"
               distDir="${aj.dist.dir}"
                module="${module.name}"              
-          trimTesting="true"
+          trimTesting="${trim.testing.default}"
           buildConfig="${build.config}" 
               version="${build.version.long}"
               verbose="true"
@@ -174,7 +175,7 @@
               baseDir="${aspectj.modules.dir}"
               distDir="${aj.dist.dir}"
                jarDir="${aj.jar.dir}"
-          trimTesting="true"
+          trimTesting="${trim.testing.default}"
           buildConfig="${build.config}" 
               version="${build.version.long}"
               verbose="true"
