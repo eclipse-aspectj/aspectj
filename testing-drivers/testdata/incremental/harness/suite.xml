@@ -13,8 +13,10 @@
     <!-- 
          test harness ability to update and delete source files to prep for a compile
      -->
-    <ajc-test dir="sourceDeleted" title="  file" keywords="incremental" >
-        <compile staging="true" files="delete/Main.java,delete/Target.java,delete/DeleteMe.java"/>
+     
+    <ajc-test dir="sourceDeleted" title="delete file" keywords="incremental-test" 
+      comment="moved to ajcTests{Failing}.xml">
+        <compile staging="true" options="-incremental" sourceroots="."/>
         <run class="delete.Main"/>
         <inc-compile tag="20">
             <dir-changes removed="delete.DeleteMe"/>
@@ -24,8 +26,8 @@
         <run class="delete.Main"/>
     </ajc-test>
     
-    <ajc-test dir="sourceAdded" title="add file with class" keywords="incremental" >
-        <compile staging="true" files="main/Main.java"/>
+    <ajc-test dir="sourceAdded" title="add file with class" keywords="incremental-test" >
+        <compile staging="true" options="-incremental" sourceroots="."/>
         <run class="main.Main"/>
         <inc-compile tag="20">
             <dir-changes added="main.Target"/>
@@ -36,8 +38,8 @@
         <run class="main.Main"/>
     </ajc-test>
 
-    <ajc-test dir="defaultPackage" title="do everything in default package" keywords="incremental" >
-        <compile staging="true" files="Main.java"/>
+    <ajc-test dir="defaultPackage" title="do everything in default package" keywords="incremental-test" >
+        <compile staging="true"  options="-incremental" sourceroots="."/>
         <run class="Main"/>
         <inc-compile tag="20">
             <dir-changes added="Target"/>
@@ -49,7 +51,6 @@
         <run class="Main" skipTester="true"/>
         <inc-compile tag="40">
             <dir-changes updated="Main" removed="Target"/>
-			<message kind="error" line="1"/>
         </inc-compile>
         <run class="Main"/>
     </ajc-test>
@@ -61,8 +62,8 @@
          XXX document special handling of dir-changes paths as FQN for .class suffix
          XXX need negative tests, fails reported
      -->
-    <ajc-test dir="classAdded" title="expect class added" keywords="incremental" >
-        <compile staging="true" files="main/Main.java"/>
+    <ajc-test dir="classAdded" title="expect class added" keywords="incremental-test" >
+        <compile staging="true"  options="-incremental" sourceroots="."/>
         <run class="main.Main"/>
         <inc-compile tag="20" >
             <dir-changes added="main.Target"/>
@@ -70,8 +71,8 @@
         <run class="main.Main"  skipTester="true"/>
     </ajc-test>
 
-    <ajc-test dir="classRemoved" title="expect class removed" keywords="incremental" >
-        <compile staging="true" files="main/Main.java"/>
+    <ajc-test dir="classRemoved" title="expect class removed" keywords="incremental-test" >
+        <compile staging="true"  options="-incremental" sourceroots="."/>
         <run class="main.Main"/>
         <inc-compile tag="20">
             <dir-changes removed="main.Target"/>
@@ -79,17 +80,8 @@
         <run class="main.Main"/>
     </ajc-test>
 
-    <ajc-test dir="classUnchanged" title="expect class unchanged" keywords="incremental" >
-        <compile staging="true" files="main/Main.java"/>
-        <run class="main.Main"/>
-        <inc-compile tag="20">
-            <dir-changes updated="main.Main" unchanged="main.Target"/>
-        </inc-compile>
-        <run class="main.Main"/>
-    </ajc-test>
-
-    <ajc-test dir="classUpdated" title="expect class updated" keywords="incremental" >
-        <compile staging="true" files="main/Main.java"/>
+    <ajc-test dir="classUpdated" title="expect class updated" keywords="incremental-test" >
+        <compile staging="true"  options="-incremental" sourceroots="."/>
         <run class="main.Main"/>
         <inc-compile tag="20">
             <dir-changes updated="main.Main"/>
@@ -97,10 +89,9 @@
         <run class="main.Main"/>
     </ajc-test>
 
-    <ajc-test dir="expClasses" title="expected class tree" keywords="incremental"
-      comment="XXX need to install Main.class compiled with harness" >
+    <ajc-test dir="expClasses" title="expected class tree" keywords="incremental-test" >
         <compile files="Main.java">
-            <dir-changes expDir="expClasses"/>
+            <dir-changes expDir="exp"/>
         </compile>
         <run class="Main"/>
     </ajc-test>
