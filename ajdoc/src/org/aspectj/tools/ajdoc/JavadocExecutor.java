@@ -23,6 +23,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.StringReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import java.util.*;
 
@@ -30,7 +32,19 @@ import java.util.*;
  * @author Mik Kersten
  */
 class JavadocExecutor {
-     static void callJavadoc( String[] javadocargs ) {
+	static boolean has14ToolsAvailable() {
+		Class jdMainClass = com.sun.tools.javadoc.Main.class;
+		try {
+			Class[] paramTypes = new Class[] {String[].class};
+			jdMainClass.getMethod("execute", paramTypes);
+		} catch (NoSuchMethodException e) {
+			return false;
+		}
+		return true;
+	}
+	
+	
+     static void callJavadoc( String[] javadocargs ){
         final SecurityManager defaultSecurityManager = System.getSecurityManager();
 
         System.setSecurityManager( new SecurityManager() {
@@ -57,7 +71,26 @@ class JavadocExecutor {
             } );
 
         try {
-            com.sun.tools.javadoc.Main.main( javadocargs );
+        	// for JDK 1.4 and above call the execute method...
+        	Class jdMainClass = com.sun.tools.javadoc.Main.class;
+        	Method executeMethod = null;
+			try {
+				Class[] paramTypes = new Class[] {String[].class};
+				executeMethod = jdMainClass.getMethod("execute", paramTypes);
+			} catch (NoSuchMethodException e) {
+				throw new UnsupportedOperationException("ajdoc requires a tools library from JDK 1.4 or later.");
+			}
+			try {
+				executeMethod.invoke(null, new Object[] {javadocargs});
+			} catch (IllegalArgumentException e1) {
+				throw new RuntimeException("Failed to invoke javadoc");
+			} catch (IllegalAccessException e1) {
+				throw new RuntimeException("Failed to invoke javadoc");
+			} catch (InvocationTargetException e1) {
+				throw new RuntimeException("Failed to invoke javadoc");
+			}
+        	// main method is documented as calling System.exit() - which stops us dead in our tracks
+            //com.sun.tools.javadoc.Main.main( javadocargs );
         }
         catch ( SecurityException se ) {
             // Do nothing since we expect it to be thrown

@@ -80,6 +80,12 @@ public class Main implements Config {
 
     public static void main(String[] args) {
     	aborted = false;
+    	
+    	if (!JavadocExecutor.has14ToolsAvailable()) {
+    		System.err.println("ajdoc requires a JDK 1.4 or later tools jar - exiting");
+    		aborted = true;
+    		return;
+    	}
     	  
 //    	System.err.println("> command invoked: " + Arrays.asList(args).toString());
     	  
