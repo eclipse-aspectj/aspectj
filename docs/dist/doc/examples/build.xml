@@ -219,7 +219,7 @@
      description="build spacewar demo (no debug) example">
       <antcall target="Ajx">
         <param name="list"    value="spacewar/demo.lst"/>
-        <param name="class"   value="spaceware.Game"/>
+        <param name="class"   value="spacewar.Game"/>
       </antcall>
     </target>
 
