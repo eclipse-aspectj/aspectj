@@ -316,6 +316,8 @@
 		 	value="${aspectjrt.jar}"/>
 		 <compilerarg compiler="${ajc.adapter}" 
 		     path="${example.dir}/tracing/version3/Trace.java"/>
+		 <compilerarg compiler="${ajc.adapter}" 
+		     path="${example.dir}/tracing/version3/TraceMyClasses.java"/>
        </javac>	   
     </target>
 
