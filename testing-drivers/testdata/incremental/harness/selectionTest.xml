@@ -105,7 +105,7 @@
 
     <!-- .............................................................................
    	  CompilerRun should skip invalid options CompilerRun.Spec.INVALID_OPTIONS:
-      { "-workingdir", "-argfile", "-sourceroot", "-outjar", "-source" }
+      { "-workingdir", "-argfile", "-sourceroots", "-outjar", "-source" }
     -->
 
     <ajc-test dir="." title="skip - local invalid option -workingdir" 
@@ -120,9 +120,9 @@
         <run class="TestNoTester"/>
     </ajc-test>
 
-    <ajc-test dir="." title="skip - local invalid option -sourceroot" 
+    <ajc-test dir="." title="skip - local invalid option -sourceroots" 
     	 keywords="requireKeyword,localInvalidOption" >
-        <compile files="TestNoTester.java" options="-sourceroot,."/>
+        <compile files="TestNoTester.java" options="-sourceroots,."/>
         <run class="TestNoTester"/>
     </ajc-test>
 
