@@ -483,7 +483,13 @@ class HtmlDecorator {
         		} else {
         			
         			linkName = packagePath + currDecl.getParent().getName() + "." + currDecl.getName();
-        			linkRef = currDecl.getParent().getName() + ".html" + "#" + currDecl.toLabelString();
+					linkRef =
+						getRelativeComponent(packagePath)
+							+ packagePath
+							+ currDecl.getParent().getName()
+							+ ".html"
+							+ "#"
+							+ currDecl.toLabelString();
 //        		
         			// XXX: only one level of nested classes
         			if (currDecl.getParent().getParent().getKind().isType()) {
@@ -502,7 +508,27 @@ class HtmlDecorator {
         return entry;
     }
 
-    static String generateIntroductionSignatures(IProgramElement decl, boolean isDetails) {
+    /**
+     * Generates a relative directory path fragment that can be 
+     * usd to navigate "upwards".
+	 * @param packagePath
+	 * @return String consisting of multiple "../" parts, one for 
+	 * 		each component part of the input <code>packagePath</code>. 
+	 */
+	private static String getRelativeComponent(String packagePath) {
+		StringBuffer result = new StringBuffer("");
+		if (packagePath != null) {
+			StringTokenizer sTok = new StringTokenizer(packagePath, "/", false);
+			while (sTok.hasMoreTokens()) {
+				sTok.nextToken(); // don't care about the token value
+				result.append(".." + Config.DIR_SEP_CHAR);
+			}// end while
+		}// end if
+		
+		return result.toString();
+	}
+
+	static String generateIntroductionSignatures(IProgramElement decl, boolean isDetails) {
     	return "<not implemented>";
     	//        Declaration[] decls = decl.getDeclarations();
 //        String entry = "";
