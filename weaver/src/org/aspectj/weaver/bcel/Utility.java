@@ -421,6 +421,8 @@ public class Utility {
 
 	/** returns -1 if no source line attribute */
 	public static int getSourceLine(InstructionHandle ih) {
+		if (ih == null) return -1;
+		
         InstructionTargeter[] ts = ih.getTargeters();
         if (ts != null) { 
             for (int j = ts.length - 1; j >= 0; j--) {
@@ -430,7 +432,7 @@ public class Utility {
                 }
             }
         }
-        return -1;
+        return getSourceLine(ih.getNext());
 	}
 	
 	// assumes that there is no already extant source line tag.  Otherwise we'll have to be better.

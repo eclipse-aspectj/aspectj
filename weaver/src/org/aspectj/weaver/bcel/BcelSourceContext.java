@@ -29,6 +29,12 @@ public class BcelSourceContext implements ISourceContext {
 	
 	public BcelSourceContext(BcelObjectType inObject) {
 		this.inObject = inObject;
+		sourceFileName = inObject.getJavaClass().getSourceFileName();
+		
+		String pname = inObject.getResolvedTypeX().getPackageName();
+		if (pname != null) {
+			sourceFileName = pname.replace('.', '/') + '/' + sourceFileName;
+		}
 	}
 	
 	private File getSourceFile() {
