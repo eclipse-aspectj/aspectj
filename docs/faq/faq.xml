@@ -2579,6 +2579,38 @@ java.lang.Integer
           </para>
         </answer>
       </qandaentry>
+      <qandaentry>
+        <question id="q:versioninfo"
+            xreflabel="Q:How do I detect which version I am running?">
+          <para>How do I detect which version I am running?</para>
+        </question>
+        <answer>
+          <para>The <literal>ajc</literal>
+          compiler emits the version when passed the
+          <literal>-version</literal> flag as an argument.
+          </para>
+          <para>To programmatically
+          detect the version of the AspectJ runtime while running
+          under Java 1.4 or later, get the version from the package:
+          <programlisting>
+    Package lang = org.aspectj.lang.JoinPoint.class.getPackage();
+    String version = lang.getImplementationVersion();
+          </programlisting>
+          </para>
+          <para>When running under Java 1.3 or earlier, read the manifest
+          directly.  For example code, see the source for
+          <literal>AjBuildManager.checkRtJar(AjBuildConfig)</literal>
+          in the <literal>org.aspectj.ajdt.internal.core.builder</literal>
+          package of the <literal>org.aspectj.ajdt.core</literal> module,
+          available as described in
+          <xref linkend="q:buildingsource"/>.
+          </para>
+          <para>Note that the version of AspectJ for the tools in
+          <literal>aspectjtools.jar</literal> is in
+          <literal>org.aspectj.bridge.Version</literal>.
+          </para>
+        </answer>
+      </qandaentry>
     </qandadiv>
     <qandadiv id="problems" xreflabel="Common Problems">
       <title>Common Problems</title>
@@ -3616,6 +3648,7 @@ vmparam -Xmx384m
         <listitem><para><xref linkend="q:buildingsource"/></para></listitem>
         <listitem><para><xref linkend="q:testharness"/></para></listitem>
         <listitem><para><xref linkend="q:integrateWithDevTools"/></para></listitem>
+        <listitem><para><xref linkend="q:versioninfo"/></para></listitem>
             </itemizedlist>
           </para>
         </answer>
