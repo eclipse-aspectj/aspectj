@@ -33,6 +33,8 @@ public interface TaskListManager {
 	 */ 
     public void addSourcelineTask(String message, ISourceLocation sourceLocation, IMessage.Kind kind);
 
+    public void addSourcelineTask(IMessage message);
+
 	/**
 	 * Add a task associated with the current project.
 	 * 
