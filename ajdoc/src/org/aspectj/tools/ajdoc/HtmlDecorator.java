@@ -82,25 +82,29 @@ class HtmlDecorator {
                 String packageName = decl.getPackageName();
                 String filename    = "";
                 if ( packageName != null ) {
+                   
                    int index1 = base.lastIndexOf(Config.DIR_SEP_CHAR);
                    int index2 = base.lastIndexOf(".");
                    String currFileClass = "";
                    if (index1 > -1 && index2 > 0 && index1 < index2) {
                       currFileClass = base.substring(index1+1, index2);
                    }
+                   
+                   // XXX only one level of nexting
                    if (currFileClass.equals(decl.getDeclaringType())) {
-                      // !!! hack for inner class !!!
+                   	  nestedClass = true;
                       packageName = packageName.replace( '.','/' );
                       String newBase = "";
                       if ( base.lastIndexOf(Config.DIR_SEP_CHAR) > 0 ) {
                          newBase = base.substring(0, base.lastIndexOf(Config.DIR_SEP_CHAR));
                       }
+                      String signature = constructNestedTypeName(decl.getNode());
+                     
                       filename = newBase + Config.DIR_SEP_CHAR + packageName +
                                  Config.DIR_SEP_CHAR + currFileClass + //"." +
-                                 decl.getSignature() + ".html";
-                      nestedClass = true;
+                                 signature + ".html"; 
                    } else {
-                       packageName = packageName.replace( '.','/' ); // !!!
+                       packageName = packageName.replace( '.','/' ); 
                        filename = base + packageName + Config.DIR_SEP_CHAR + decl.getSignature() + ".html";
                    }
                 }
@@ -109,6 +113,7 @@ class HtmlDecorator {
                 }
                 if (!exceededNestingLevel) {
                    decorateHTMLFile(new File(filename));
+                   
                    decorateHTMLFromDecls(decl.getDeclarations(),
                                          base + decl.getSignature() + ".",
                                          docModifier,
@@ -122,7 +127,17 @@ class HtmlDecorator {
         }
     }
 
-    static void decorateHTMLFile(File file) throws IOException {
+    private static String constructNestedTypeName(IProgramElement node) {
+    	if (node.getParent().getKind().isSourceFile()) {
+    		return node.getName();
+    	} else {
+			String nodeName = "";
+			if (node.getKind().isType()) nodeName += '.' + node.getName();
+			return constructNestedTypeName(node.getParent()) + nodeName;
+    	}
+	}
+
+	static void decorateHTMLFile(File file) throws IOException {
         System.out.println( "> Decorating " + file.getCanonicalPath() + "..." );
         BufferedReader reader = new BufferedReader(new FileReader(file));
         StringBuffer fileContents = new StringBuffer();
@@ -166,7 +181,7 @@ class HtmlDecorator {
             }
             else {
                 decorateMemberDocumentation(decl, fileContents, index);
-            }
+            } 
         } 
         
         // Change "Class" to "Aspect", HACK: depends on "affects:"
@@ -479,52 +494,25 @@ class HtmlDecorator {
         		if (currDecl.getPackageName() != null && !currDecl.getPackageName().equals("")) {
         			packagePath = currDecl.getPackageName().replace('.', '/') + Config.DIR_SEP_CHAR;
         		}
-        		String hrefLink = "";
-        		String hrefName = rootDir.getAbsolutePath() + "/";
-        		if (currDecl.getKind().isType()) {
-					hrefName = packagePath;
-					if (currDecl.getParent().getKind().isType()) {
-						hrefName =
-							hrefName + currDecl.getParent().getName() + ".";
-					}
-					hrefName = hrefName + currDecl.getName();
-
-					hrefLink = rootDir.getAbsolutePath() + "/" + packagePath;
-//					hrefLink = getRelativeComponent(packagePath) + packagePath;
-					// XXX: only one level of nested classes
-					if (currDecl.getParent().getKind().isType()) {
-						hrefLink =
-							hrefLink + currDecl.getParent().getName() + ".";
-					}
-					hrefLink = hrefLink + currDecl.toLabelString() + ".html";
-        		} else {
-					hrefName = packagePath;
-					if (currDecl.getParent().getParent().getKind().isType()) {
-						hrefName += currDecl.getParent().getParent().getName()
-								 + ".";
-					} 
-					hrefName += currDecl.getParent().getName()
-							+ "." + currDecl.getName();
- 		
-					hrefLink = rootDir.getAbsolutePath() + "/" + packagePath;
-//						getRelativeComponent(packagePath) + packagePath;
-
-					// Constructing the hrefLink string requires a check 
-					// to see if the parent type is actually nested inside 
-					// another type.
-					
-					// XXX: only one level of nested classes
-					if (currDecl.getParent().getParent().getKind().isType()) {
-						hrefLink +=
-								currDecl.getParent().getParent().getName()
-								+ ".";
-					}
-					hrefLink +=
-							currDecl.getParent().getName()
-							+ ".html"
-							+ "#"
-							+ currDecl.toLabelString();
+        		
+				String typeSignature = constructNestedTypeName(currDecl);
+        		
+        		String hrefName = 
+        			packagePath
+					+ typeSignature;       		
+        		
+        		String hrefLink = 
+        			rootDir.getAbsolutePath() + "/" 
+//        			getRelativePathFromHere(packagePath)
+					+ packagePath 
+					+ typeSignature
+        			+ ".html";
+        		
+        		if (!currDecl.getKind().isType()) {
+        			hrefName += '.' + currDecl.getName();
+					hrefLink += "#" + currDecl.toLabelString();
         		}
+        		
         		if (!addedNames.contains(hrefName)) {
 	                entry += "<A HREF=\"" + hrefLink +
 	                             "\"><tt>" + hrefName.replace('/', '.') + "</tt></A>";  // !!! don't replace
@@ -544,11 +532,11 @@ class HtmlDecorator {
 	 * @param packagePath
 	 * @return String consisting of multiple "../" parts, one for 
 	 * 		each component part of the input <code>packagePath</code>. 
-	 */
-	private static String getRelativeComponent(String packagePath) {
-		StringBuffer result = new StringBuffer("");
-		if (packagePath != null && (packagePath.indexOf("/") != -1)) {
-			StringTokenizer sTok = new StringTokenizer(packagePath, "/", false);
+	 */   
+	private static String getRelativePathFromHere(String packagePath) {
+        StringBuffer result = new StringBuffer(""); 
+        if (packagePath != null && (packagePath.indexOf("/") != -1)) { 
+                StringTokenizer sTok = new StringTokenizer(packagePath, "/", false); 
 			while (sTok.hasMoreTokens()) {
 				sTok.nextToken(); // don't care about the token value
 				result.append(".." + Config.DIR_SEP_CHAR);

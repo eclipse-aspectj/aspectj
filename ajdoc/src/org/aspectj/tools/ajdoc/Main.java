@@ -53,7 +53,7 @@ public class Main implements Config {
     /** Default to package visiblity. */
     static String docModifier = "package";
 
-    static Vector sourcepath = new Vector();
+    static Vector sourcepath;
 
     static boolean verboseMode = false;
     static boolean packageMode = false;
@@ -81,17 +81,12 @@ public class Main implements Config {
         rootDir       = null;
         declIDTable   = new Hashtable();
         docDir          = ".";
+    	aborted = false;
+    	deleteTempFilesOnExit = true;
     }
 
     public static void main(String[] args) {
-    	aborted = false;
-    	deleteTempFilesOnExit = true;
-   
-        filenames = new Vector();
-        fileList= new Vector();
-        packageList = new Vector();
-        options = new Vector();
-        ajcOptions = new Vector();
+    	clearState();
 //    	if (!JavadocRunner.has14ToolsAvailable()) {
 //    		System.err.println("ajdoc requires a JDK 1.4 or later tools jar - exiting");
 //    		aborted = true;
@@ -322,9 +317,10 @@ public class Main implements Config {
             if ( ((String)options.elementAt(i)).equals( "-d" ) ) {
                 rootDir = new File((String)options.elementAt(i+1));
                 if ( !rootDir.exists() ) {
-                    System.out.println( "Destination directory not found: " +
-                                        (String)options.elementAt(i+1) );
-                    System.exit( -1 );
+                	rootDir.mkdir();
+//                    System.out.println( "Destination directory not found: " +
+//                                        (String)options.elementAt(i+1) );
+//                    System.exit( -1 );
                 }
             }
         }
@@ -581,10 +577,12 @@ public class Main implements Config {
                 options.addElement(arg);
                 addNextAsOption = false;
             } 
-            else {
+            else { 
                 // check if this is a file or a package
-                if ( arg.indexOf( ".java" ) == arg.length() - 5 ||
-                     arg.indexOf( ".lst" ) == arg.length() - 4 &&
+//            	System.err.println(">>>>>>>> " + );
+            	String entryName = arg.substring(arg.lastIndexOf(File.separator)+1);
+                if ((arg.endsWith(".java") && entryName.indexOf('.') == entryName.length()-5) ||
+                     arg.endsWith(".lst") &&
                      arg != null ) {
                     File f = new File(arg);
                     if (f.isAbsolute()) {
@@ -598,6 +596,7 @@ public class Main implements Config {
 
                 // PACKAGE MODE STUFF
                 else if (!ignoreArg) {
+                	
                     packageMode = true;
                     packageList.addElement( arg );
                     arg = arg.replace( '.', '/' );  // !!!

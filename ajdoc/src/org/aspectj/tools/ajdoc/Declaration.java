@@ -61,13 +61,15 @@ public class Declaration implements Serializable {
     transient private Declaration[] pointsTo = null;
 
     private Declaration parentDeclaration = null;
+	private IProgramElement node;
 
     public Declaration(int beginLine, int endLine, int beginColumn, int endColumn,
                        String modifiers, String signature, String fullSignature,
                        String crosscutDesignator,
                        String declaringType, String kind,
                        String filename, String formalComment,
-                       String packageName)
+                       String packageName,
+					   IProgramElement node)
     {
         this.beginLine = beginLine;
         this.endLine = endLine;
@@ -92,6 +94,7 @@ public class Declaration implements Serializable {
         this.pointsToHandles = new Handle[0];
         //???
         this.declarations = new Declaration[0];
+        this.node = node;
     }
 
     public int getBeginLine() { return beginLine; }
@@ -296,4 +299,7 @@ public class Declaration implements Serializable {
             return manager.getDeclarationAtPoint(filename, line, column);
         }
     }
+	public IProgramElement getNode() {
+		return node;
+	}
 }

@@ -118,7 +118,8 @@ public class SymbolManager {
 			node.getKind().toString(),
 			node.getSourceLocation().getSourceFile().getAbsolutePath(),
 			node.getFormalComment(),
-			node.getPackageName()
+			node.getPackageName(),
+			node
 		);
 		return dec;
 	}
