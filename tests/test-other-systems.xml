@@ -44,10 +44,9 @@
   Runs cycles of ajc/ajdoc/java on other large systems,
   using taskdef in testing module.  Expected and generated files:
 
-  build/
-    aj-results/
-      jars/
-        testing-drivers-all.jar # taskdef and required libraries
+  aj-build/
+    jars/
+      testing-drivers-all.jar # taskdef and required libraries
   lib/
     test-other-systems/
       other-systems-src.zip   # sources for other systems
@@ -78,12 +77,12 @@
     <property name="jdk.tools.jar" 
           location="XXXTODO_DEFINE_TOOLS.jar"/>
 
-    <property name="aspectj.modules.build.dir" 
-          location="${basedir}/../build"/>
+    <property name="aspectj.modules.dir" 
+          location="${basedir}/.."/>
     <property name="aj.build.results.dir" 
-          location="${aspectj.modules.build.dir}/aj-results"/>
+          location="${aspectj.modules.dir}/aj-build"/>
     <property name="aspectj.modules.lib.dir" 
-          location="${basedir}/../lib"/>
+          location="${aspectj.modules.dir}/lib"/>
     <property name="aspectj.other-systems.lib.dir" 
           location="${aspectj.modules.lib.dir}/test-other-systems"/>
 
@@ -94,9 +93,6 @@
     <!-- base dir for other-systems test sources -->
     <!-- zip of other-systems test sources -->
 
-    <property name="aj.otherSystems.dir" 
-          location="${basedir}/aj-other-systems"/>
-   
     <!-- temporary base dir for unzipped test data is not in build temp dir b/c costly -->
     <property name="aj.otherSystems.dir" 
           location="${basedir}/aj-other-systems"/>
@@ -108,23 +104,20 @@
     <!-- temp classes dir -->
     <property name="output.classes.dir" 
           location="${aj.otherSystems.dir}/classes"/>
-    <!-- temp working dir XXX unused -->
-    <property name="workingdir" 
-          location="${aj.otherSystems.dir}/workingdir"/>
     <!-- run from source files directory -->
     <property name="otherSystems.run.dir" 
           location="${aj.otherSystems.src.dir}"/>
 
     <!-- XXX dependency on ../build/build.xml value for jar output position -->
     <property name="aj.jar.dir" 
-          location="${aspectj.modules.build.dir}/aj-results/jars"/>
+          location="${aj.build.results.dir}/jars"/>
     <property name="aj.modules.runtime.jar" 
           location="${aj.jar.dir}/runtime.jar"/>
     <property name="aj.modules.eajctesting.jar" 
           location="${aj.jar.dir}/testing-drivers-all.jar"/>
 
     <property name="ajctest.classpath" 
-             value="${aj.modules.eajctesting.jar}${path.separator}${jdk.tools.jar}" />
+             value="${aj.modules.eajctesting.jar}" />
 
     <!-- unzipped libraries -->
     <property name="otherSystems.src.zip" 
@@ -139,12 +132,9 @@
     <!-- sensible alias to combined other-systems test sources -->
     <property name="ajctest.src.dir" 
              value="${aj.otherSystems.src.dir}"/>
-    <!-- system classes directory  -->
+    <!-- runtime classes passed to ajctest using classpath -->
     <property name="aj.runtime.classes" 
              value="${aj.modules.runtime.jar}"/>
-
-    <property name="ajctest.classpath" 
-             value="${aj.modules.eajctesting.jar}${path.separator}${jdk.tools.jar}" />
 
     <!-- set args applied to ajc when running all tests -->
     <property name="ajctest.args" 
@@ -172,10 +162,13 @@
 
     <!-- echo settings that affect running -->
     <echo>
-    "## ajctest FYI   skip.hard.tests: ${skip.hard.tests}"
-    "## ajctest FYI ajctest.classpath: ${ajctest.classpath}"
-    "## ajctest FYI      ajctest.args: ${ajctest.args}"
-    "## ajctest FYI  ajctest.compiler: ${ajctest.compiler}"
+    "## ajctest FYI   -----------------------------------"
+    "##      skip.hard.tests: ${skip.hard.tests}"
+    "##    ajctest.classpath: ${ajctest.classpath}"
+    "##         ajctest.args: ${ajctest.args}"
+    "##     ajctest.compiler: ${ajctest.compiler}"
+    "##  ajctest.wrapper.jar: ${ajctest.wrapper.jar}"
+    "## ajctest       -----------------------------------"
     </echo>
 
     <taskdef name="ajctest" 
@@ -192,9 +185,11 @@
 
   <target name="warnings" depends="init">
     <fail unless="aj.modules.runtime.jar.available"
-       message="build ${aj.modules.runtime.jar}"/>
+       message="build runtime: ${aj.modules.runtime.jar}"/>
     <fail unless="aj.modules.eajctesting.jar.available"
-       message="build ${aj.modules.eajctesting.jar}"/>
+       message="build ${aj.modules.eajctesting.jar} using 
+    ant build.xml build-testing-drivers
+"/>
     <fail unless="otherSystems.src.zip.available"
        message="get ${otherSystems.src.zip}"/>
   </target>
@@ -218,7 +213,7 @@
        depends="rsa,biojava,jato,kawa,
                 gnuprolog,jarp,jiu,
                 tt-bytecode,xc4j,jmeter,bcel,
-                jame,sablecc,examples, nsuml,jsci,
+                jame,sablecc,examples,nsuml,jsci,
                 applets"/>
 
   <!-- ============================================================ -->
@@ -255,7 +250,6 @@
   <!-- ============================================================ -->
   <target name="clean" unless="noclean">
     <delete dir="${output.classes.dir}"/>
-    <delete dir="${workingdir}"/>
   </target>
 
   <!-- ============================================================ -->
@@ -272,7 +266,7 @@
    <target name="testWrap" depends="prepare"
     description="(wes-only) target for testing ajclean and build scripts" >
         <ajctest testId="testWrap"
-            dir="c:/home/wes/work/src"
+            dir="/home/wes/work/src"
             args="${ajctest.args}"
             destdir="${output.classes.dir}" >
             <classpath>
@@ -292,7 +286,7 @@
   <target name="rsa" depends="prepare">
     <ajctest testId="rsa"
             dir="${ajctest.src.dir}/rsa" 
-            args="showversion,${ajctest.args}"
+            args="version,${ajctest.args}"
              destdir="${output.classes.dir}">
       <classpath>
         <pathelement path="${output.classes.dir}"/>
@@ -683,19 +677,17 @@
       <testset argfiles="main.lst,lexer-aspect.lst"/>
     </ajctest>
   </target>
- <!-- 
- -->
-  <target name="mmexamples" depends="prepare">
+
+  <target name="examples" depends="init">
+    <property name="aj.tempExamples.dir"
+          location="${aj.otherSystems.dir}/examples"/>
+    <mkdir dir="${aj.tempExamples.dir}"/>
+    <copy todir="${aj.tempExamples.dir}">
+      <fileset dir="../docs/dist/doc/examples"/>
+    </copy>
+    <!-- copy to temp.examples.dir -->
     <ajctest testId="examples" 
-            dir="examples" 
-             destdir="${output.classes.dir}">
-      <testset argfiles="bean/files.lst"
-               classes="bean.Demo"/>
-    </ajctest>
-  </target>
-  <target name="examples" depends="prepare">
-    <ajctest testId="examples" 
-            dir="./examples" 
+            dir="${aj.tempExamples.dir}" 
             args="${ajctest.args}"
              destdir="${output.classes.dir}">
       <classpath>
@@ -725,10 +717,6 @@
       <testset argfiles="telecom/timing.lst" 
                classes="telecom.TimingSimulation" />
 
-      <testset argfiles="timeserver/abort.lst" 
-               classes=""/>
-      <testset argfiles="timeserver/retry.lst" 
-               classes=""/>
       <testset argfiles="tjp/files.lst" 
                classes="tjp.Demo"/>
       <testset argfiles="tracing/notrace.lst" 
@@ -748,7 +736,7 @@
     <echo message="tools: ${jdk.tools.jar}"/>
     <ajctest testId="ajc"
             dir="${ajctest.src.dir}/ajc-src" 
-            args="nosymbols,timings,JXmx256M,${ajctest.args}"
+            args="time,JXmx256M,${ajctest.args}"
              destdir="${output.classes.dir}">
       <classpath>
         <pathelement path="${jdk.tools.jar}"/>
@@ -767,7 +755,7 @@
         unless="skip.hard.tests" >
     <ajctest testId="hard-ajc"
             dir="${ajctest.src.dir}/ajc-src"
-            args="nosymbols,timings,JXmx350M,${ajctest.args}"
+            args="time,JXmx350M,${ajctest.args}"
              destdir="${output.classes.dir}">
       <classpath>
         <pathelement path="${jdk.tools.jar}"/>
@@ -789,7 +777,7 @@
   <target name="java-src" depends="prepare">
     <ajctest testId="java-src"
             dir="${ajctest.src.dir}/java-src" 
-            args="JXmx256M,timings,${ajctest.args}"
+            args="JXmx256M,time,${ajctest.args}"
          destdir="${output.classes.dir}"
          depends="java-src.depends">
       <classpath>
@@ -839,6 +827,7 @@
     exceptions because of a known bug in swing:
        - FileChooserDemo
        - Metalworks
+    Update: they fail to compile unless using proper JDK libraries
     -------------------- INFORMATION ---------------------
     </echo>
   </target>
@@ -937,30 +926,6 @@
   </target>
 
   <!-- ============================================================ -->
-  <!-- Help                                                         -->
-  <!-- ============================================================ -->
-  <target name="help">
-    <echo>
-     Usage: ant -f ${ant.file} [ant-options] [options]
-     
-     where ant-options can be found be typing:
-
-         ant -help
-
-     and where options include:
-     -Dnodownload=true  do NOT download test files
-     -Dnocompile=true   do NOT compile files, just run the tests
-     -Dnoclean=true     do NOT clean the ${output.classes.dir} before each test
-     -Dnodoc=true       do NOT generate run ajdoc
-     -Dgui=true         display the GUI helper
-     -help              print this help message
-     -Ddumpresults      dump the results to a file
-                        named ajctest-errors[date-and-time].txt
-    </echo>
-  </target>
-
-
-  <!-- ============================================================ -->
   <!-- Tests for ajctest taskdef                                    -->
   <!-- ============================================================ -->
   <target name="testAjctest" 
@@ -973,13 +938,13 @@
   <target name="testAjctest.depends" 
        depends="prepare">
     <property name="testAjctest.src.dir"
-          location="${aspectj.test.src.dir}/harness/ajctest"/>
+          location="${basedir}/harness/ajctest"/>
   </target>
 
   <target name="testAjctest.all" depends="testAjctest.depends">
     <ajctest testId="testAjctest.all"
             dir="${testAjctest.src.dir}" 
-            args="showversion,${ajctest.args}"
+            args="version,${ajctest.args}"
              destdir="${output.classes.dir}">
       <classpath>
         <pathelement path="${output.classes.dir}"/>
@@ -1007,7 +972,7 @@
   <target name="testAjctest.normal.pass" depends="testAjctest.depends">
     <ajctest testId="testAjctest.normal.pass"
             dir="${testAjctest.src.dir}" 
-            args="showversion,${ajctest.args}"
+            args="version,${ajctest.args}"
              destdir="${output.classes.dir}">
       <classpath>
         <pathelement path="${output.classes.dir}"/>
@@ -1022,7 +987,7 @@
   <target name="testAjctest.exception.fail" depends="testAjctest.depends">
     <ajctest testId="testAjctest.exception.fail"
             dir="${testAjctest.src.dir}" 
-            args="showversion,${ajctest.args}"
+            args="version,${ajctest.args}"
              destdir="${output.classes.dir}">
       <classpath>
         <pathelement path="${output.classes.dir}"/>
@@ -1039,7 +1004,7 @@
   <target name="testAjctest.error.fail" depends="testAjctest.depends">
     <ajctest testId="testAjctest.error.fail"
             dir="${testAjctest.src.dir}" 
-            args="showversion,${ajctest.args}"
+            args="version,${ajctest.args}"
              destdir="${output.classes.dir}">
       <classpath>
         <pathelement path="${output.classes.dir}"/>
@@ -1056,7 +1021,7 @@
   <target name="testAjctest.exit.fail" depends="testAjctest.depends">
     <ajctest testId="testAjctest.exit.fail"
             dir="${testAjctest.src.dir}" 
-            args="showversion,${ajctest.args}"
+            args="version,${ajctest.args}"
              destdir="${output.classes.dir}">
       <classpath>
         <pathelement path="${output.classes.dir}"/>
@@ -1073,7 +1038,7 @@
   <target name="testAjctest.exit.pass" depends="testAjctest.depends">
     <ajctest testId="testAjctest.exit.pass"
             dir="${testAjctest.src.dir}" 
-            args="showversion,${ajctest.args}"
+            args="version,${ajctest.args}"
              destdir="${output.classes.dir}">
       <classpath>
         <pathelement path="${output.classes.dir}"/>
@@ -1090,7 +1055,7 @@
   <target name="testAjctest.compileFailure.fail" depends="testAjctest.depends">
     <ajctest testId="testAjctest.compileFailure.fail"
             dir="${testAjctest.src.dir}" 
-            args="showversion,${ajctest.args}"
+            args="version,${ajctest.args}"
              destdir="${output.classes.dir}">
       <classpath>
         <pathelement path="${output.classes.dir}"/>
