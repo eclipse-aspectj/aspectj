@@ -5394,4 +5394,41 @@
         </compile>
     </ajc-test>
     
+	<!-- The follwing three idioms are allowed.  Within a declare parents,
+	     implements and extends can be used interchangably.  We could
+	     provide -Xlint style warnings for misuse.
+	-->
+
+    <ajc-test dir="new" pr="853"
+      title="declare class extends interface">
+        <compile files="DeclareClassExtendsInterface.java">
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="853"
+      title="declare class implements class">
+        <compile files="DeclareClassImplementsClass.java">
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="853"
+      title="declare interface implements interface">
+        <compile files="DeclareInterfaceImplementsInterface.java">
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="new"
+      title="if and cflow arg binding">
+        <compile files="CflowBinding.java">
+          <message kind="error" line="13"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs" pr="902"
+      title="circularity in declare dominates">
+        <compile files="CircularDominates.java">
+		  <message kind="error" line="18"/>
+        </compile>
+    </ajc-test>
+    
 </suite>

@@ -43,27 +43,6 @@
         <run class="aspect.Aspect"/>
     </ajc-test>
 
-    <ajc-test dir="new" pr="853"
-      title="declare class extends interface">
-        <compile files="DeclareClassExtendsInterface.java">
-           <message kind="error" line="10"/>
-        </compile>
-    </ajc-test>
-
-    <ajc-test dir="new" pr="853"
-      title="declare class implements class">
-        <compile files="DeclareClassImplementsClass.java">
-           <message kind="error" line="10"/>
-        </compile>
-    </ajc-test>
-
-    <ajc-test dir="new" pr="853"
-      title="declare interface implements interface">
-        <compile files="DeclareInterfaceImplementsInterface.java">
-           <message kind="error" line="10"/>
-        </compile>
-    </ajc-test>
-
     <ajc-test dir="new/PR862" pr="862"
       title="import any inner from interface implementor"
       keywords="purejava">
@@ -73,19 +52,6 @@
         <run class="pack.ImportInnerFromInterfaceImplementor"/>
     </ajc-test>
 
-    <ajc-test dir="new"
-      title="if and cflow arg binding">
-        <compile files="CflowBinding.java">
-          <message kind="error" line="13"/>
-        </compile>
-    </ajc-test>
-
-    <ajc-test dir="bugs" pr="902"
-      title="circularity in declare dominates">
-        <compile files="CircularDominates.java">
-		  <message kind="error" line="18"/>
-        </compile>
-    </ajc-test>
 
     <ajc-test dir="bugs" pr="906"
       title="privileged access to code outside the control of the compiler">
