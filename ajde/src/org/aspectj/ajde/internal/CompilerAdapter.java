@@ -1,5 +1,6 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC),
+ *               2003 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -15,29 +16,32 @@
 
 package org.aspectj.ajde.internal;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
-
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.BuildOptionsAdapter;
 import org.aspectj.ajde.BuildProgressMonitor;
 import org.aspectj.ajde.ProjectPropertiesAdapter;
 import org.aspectj.ajde.TaskListManager;
-import org.aspectj.ajdt.ajc.BuildArgParser;
+import org.aspectj.ajdt.ajc.AjdtCommand;
 import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
 import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
 import org.aspectj.bridge.AbortException;
+import org.aspectj.bridge.CountingMessageHandler;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.util.ConfigParser;
+import org.aspectj.bridge.MessageHandler;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.LangUtil;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 public class CompilerAdapter {
 
@@ -46,16 +50,33 @@ public class CompilerAdapter {
     private BuildNotifierAdapter currNotifier = null;
 	private boolean initialized = false;
 	private boolean structureDirty = true;
-	private boolean firstBuild = true;
-	private boolean incrementalEnabled = true; // XXX make false by default	
+    private boolean showInfoMessages = false;
+    // set to false in incremental mode to re-do initial build
+	private boolean nextBuild = false; 
 	
 	public CompilerAdapter() {
 		super();
 	}
 
+    public void showInfoMessages(boolean show) { // XXX surface in GUI
+        showInfoMessages = show;
+    }
+    public boolean getShowInfoMessages() {
+        return showInfoMessages;
+    }
+
+    public void nextBuildFresh() {
+        if (nextBuild) {
+            nextBuild = false;
+        }
+    }
+
 	public void requestCompileExit() {
-		if (currNotifier != null) currNotifier.cancelBuild();
-//		buildManager.getJavaBuilder().notifier.setCancelling(true);
+		if (currNotifier != null) {
+            currNotifier.cancelBuild();
+        } else {
+            signalText("unable to cancel build process"); 
+        }
 	}
 
 	public boolean isStructureDirty() {
@@ -70,64 +91,146 @@ public class CompilerAdapter {
 		init();
 		try { 
 			AjBuildConfig buildConfig = genBuildConfig(configFile);
-			buildConfig.setGenerateModelMode(true);
-			
-			
+			if (null == buildConfig) {
+                return false;
+			}
 			currNotifier = new BuildNotifierAdapter(progressMonitor);		
 			buildManager.setProgressListener(currNotifier);
 			messageHandler.setBuildNotifierAdapter(currNotifier);
 			
 			String rtInfo = buildManager.checkRtJar(buildConfig); // !!! will get called twice
 			if (rtInfo != null) {
-				Ajde.getDefault().getErrorHandler().handleWarning(
-					"AspectJ Runtime error: " + rtInfo
-		            + "  Please place a valid aspectjrt.jar in the lib/ext directory.");
+				signalWarning(
+                	  "AspectJ Runtime error: " + rtInfo
+		            + "  Please place a valid aspectjrt.jar on the classpath.");
 	            return false;
 			}
-			
-			if (incrementalEnabled && !firstBuild){
-				return buildManager.incrementalBuild(buildConfig, messageHandler);  // XXX incremental not implemented
-//				return buildManager.incrementalBuild(buildConfig);
-			} else {
-				firstBuild = false;
-				return buildManager.batchBuild(buildConfig, messageHandler); 
-			}
-		} catch (OperationCanceledException ce) {
-			Ajde.getDefault().getIdeUIAdapter().displayStatusInformation("build cancelled by user");
+			boolean incrementalEnabled = 
+                buildConfig.isIncrementalMode()
+                || buildConfig.isIncrementalFileMode();
+            if (incrementalEnabled && nextBuild) {
+                return buildManager.incrementalBuild(buildConfig, messageHandler);
+            } else {
+                if (incrementalEnabled) {
+                    nextBuild = incrementalEnabled;
+                } 
+                return buildManager.batchBuild(buildConfig, messageHandler); 
+            }
+        } catch (OperationCanceledException ce) {
+            signalWarning("build cancelled by user");
+            return false;
+		} catch (AbortException e) {
+            final IMessage message = e.getIMessage();
+            if (null == message) {
+                signalThrown(e);
+            } else if (null != message.getMessage()) {
+                signalWarning(message.getMessage());
+            } else if (null != message.getThrown()) {
+                signalThrown(message.getThrown());
+            } else {
+                signalThrown(e);
+            }
 			return false;
 		} catch (Throwable t) {
-			t.printStackTrace();
+            signalThrown(t);
 			return false; 
-//			messageHandler.handleMessage(new Message(t.toString(), Message.ERROR, t, null));
 		} 
 	}
-
+    
+    /**
+     * Generate AjBuildConfig from the local configFile parameter
+     * plus global project and build options.
+     * Errors signalled using signal... methods.
+     * @param configFile
+     * @return null if invalid configuration, 
+     *   corresponding AjBuildConfig otherwise
+     */
 	public AjBuildConfig genBuildConfig(String configFile) {
-	    AjBuildConfig buildConfig = new AjBuildConfig();
+        init();
 	    File config = new File(configFile);
         if (!config.exists()) {
-            Ajde.getDefault().getErrorHandler().handleWarning("Config file \"" + configFile + "\" does not exist."); 
-        } else {
-	        ConfigParser configParser = new ConfigParser();
-	        configParser.parseConfigFile(config);
-			buildConfig.setFiles(configParser.getFiles());
-			buildConfig.setConfigFile(config);
+            signalError("Config file \"" + configFile + "\" does not exist."); 
+            return null;
         }
+        String[] args = new String[] { "@" + config.getAbsolutePath() };
+        CountingMessageHandler counter 
+            = CountingMessageHandler.makeCountingMessageHandler(messageHandler);
+        AjBuildConfig local = AjdtCommand.genBuildConfig(args, counter);
+        if (counter.hasErrors()) {
+            return null; 
+        }
+        local.setConfigFile(config);
+
+        // -- get globals, treat as defaults used if no local values
+        AjBuildConfig global = new AjBuildConfig();
+        // AMC refactored into two methods to populate buildConfig from buildOptions and
+        // project properties - bugzilla 29769.
+        BuildOptionsAdapter buildOptions 
+            = Ajde.getDefault().getBuildManager().getBuildOptions();
+        if (!configureBuildOptions(global, buildOptions, counter)) {
+            return null;
+        }
+        ProjectPropertiesAdapter projectOptions =
+            Ajde.getDefault().getProjectProperties();
+        configureProjectOptions(global, projectOptions);
 		
-		// AMC refactored into two methods to populate buildConfig from buildOptions and
-		// project properties - bugzilla 29769.
-		configureBuildOptions(buildConfig, Ajde.getDefault().getBuildManager().getBuildOptions());
-		configureProjectOptions(buildConfig, Ajde.getDefault().getProjectProperties());
-		
-		buildConfig.setGenerateModelMode(true);		
-		return buildConfig;
+        local.installGlobals(global); // XXX other post-evaluation?
+        String errs = local.configErrors();
+        if (null != errs) {
+            MessageUtil.error(counter, errs);
+            return null;
+        }
+        // always force model generation in AJDE
+        local.setGenerateModelMode(true);       
+
+        return fixupBuildConfig(local, global, buildOptions, projectOptions);
 	}
+
+    /**
+     * Fix up build configuration just before using to compile.
+     * This should be delegated to a BuildAdapter callback (XXX)
+     * for implementation-specific value checks
+     * (e.g., to force use of project classpath rather
+     * than local config classpath).
+     * This implementation does no checks and returns local.
+     * @param local the AjBuildConfig generated to validate
+     * @param global
+     * @param buildOptions
+     * @param projectOptions
+     * @return null if unable to fix problems or fixed AjBuildConfig if no errors
+     * 
+     */
+    protected AjBuildConfig fixupBuildConfig(AjBuildConfig local, AjBuildConfig global, BuildOptionsAdapter buildOptions, ProjectPropertiesAdapter projectOptions) {
+        return local;
+    }
+
+    /** signal error text to user */
+    protected void signalError(String text) {
+        Ajde.getDefault().getErrorHandler().handleError(text);
+    }
+    /** signal warning text to user */
+    protected void signalWarning(String text) {
+        Ajde.getDefault().getErrorHandler().handleWarning(text);
+    }
+
+    /** signal text to user */
+    protected void signalText(String text) {
+        Ajde.getDefault().getIdeUIAdapter().displayStatusInformation(text);
+    }
+
+    /** signal Throwable to user (summary in GUI, trace to stdout). */
+    protected void signalThrown(Throwable t) { // nothing to error handler?
+        String text = LangUtil.unqualifiedClassName(t) 
+            + " thrown: " 
+            + t.getMessage();
+        Ajde.getDefault().getErrorHandler().handleError(text, t);
+    }
 
 	/**
 	 * Populate options in a build configuration, using the Ajde BuildOptionsAdapter.
 	 * Added by AMC 01.20.2003, bugzilla #29769
 	 */
-	private void configureBuildOptions( AjBuildConfig config, BuildOptionsAdapter options ) {
+	private static boolean configureBuildOptions( AjBuildConfig config, BuildOptionsAdapter options, IMessageHandler handler) {
         LangUtil.throwIaxIfNull(options, "options");
         LangUtil.throwIaxIfNull(config, "config");
 		Map javaOptions = config.getJavaOptions();
@@ -204,7 +307,6 @@ public class CompilerAdapter {
 			if (lineNo)  javaOptions.put(CompilerOptions.OPTION_LineNumberAttribute,
 											CompilerOptions.GENERATE);
 		}
-
 		if ( options.getNoImportError() ) {
 			javaOptions.put( CompilerOptions.OPTION_ReportInvalidImport,
 				CompilerOptions.WARNING);	
@@ -214,16 +316,23 @@ public class CompilerAdapter {
 			javaOptions.put( CompilerOptions.OPTION_PreserveUnusedLocal,
 				CompilerOptions.PRESERVE);		
 		}
-				
+        if ( !config.isIncrementalMode()
+            && options.getIncrementalMode() ) {
+                config.setIncrementalMode(true);
+        }
+        				
 		config.setJavaOptions( javaOptions );
-		
-		configureNonStandardOptions( config, options );
+		String toAdd = options.getNonStandardOptions();
+        return LangUtil.isEmpty(toAdd) 
+            ? true
+            : configureNonStandardOptions( config, toAdd, handler );
+        // ignored: lenient, porting, preprocess, strict, usejavac, workingdir
 	}
 	
 	/**
 	 * Helper method for configureBuildOptions
 	 */
-	private void disableWarnings( Map options ) {
+	private static void disableWarnings( Map options ) {
 		options.put(
 			CompilerOptions.OPTION_ReportOverridingPackageDefaultMethod,
 			CompilerOptions.IGNORE);
@@ -259,7 +368,7 @@ public class CompilerAdapter {
 	/**
 	 * Helper method for configureBuildOptions
 	 */
-	private void enableWarnings( Map options, Set warnings ) {
+	private static void enableWarnings( Map options, Set warnings ) {
 		Iterator it = warnings.iterator();
 		while (it.hasNext() ) {
 			String thisWarning = (String) it.next();
@@ -299,11 +408,20 @@ public class CompilerAdapter {
 
 
 	/**
-	 * Helper method for configure build options
+	 * Helper method for configure build options.
+     * This reads all command-line options specified
+     * in the non-standard options text entry and
+     * sets any corresponding unset values in config.
+     * @return false if config failed
 	 */
-	private void configureNonStandardOptions( AjBuildConfig config, BuildOptionsAdapter options ) {
-		String nonStdOptions = options.getNonStandardOptions();
-		if ( null == nonStdOptions || (nonStdOptions.length() == 0)) return;
+	private static boolean configureNonStandardOptions(
+        AjBuildConfig config, 
+        String nonStdOptions,
+        IMessageHandler messageHandler ) {
+
+        if (LangUtil.isEmpty(nonStdOptions)) {
+            return true;
+        }
 		
 		StringTokenizer tok = new StringTokenizer( nonStdOptions );
 		String[] args = new String[ tok.countTokens() ];
@@ -314,129 +432,112 @@ public class CompilerAdapter {
 
 		// set the non-standard options in an alternate build config
 		// (we don't want to lose the settings we already have)
-		BuildArgParser argParser = new BuildArgParser();
-		AjBuildConfig altConfig = argParser.genBuildConfig( args, messageHandler );
-		
-		// copy the answers across
-		config.setNoWeave( altConfig.isNoWeave() );
-		config.setXnoInline( altConfig.isXnoInline() );
-		config.setXserializableAspects( altConfig.isXserializableAspects());
-		config.setLintMode( altConfig.getLintMode() );
-		config.setLintSpecFile( altConfig.getLintSpecFile() );		
-	}
+        CountingMessageHandler counter 
+            = CountingMessageHandler.makeCountingMessageHandler(messageHandler);
+		AjBuildConfig altConfig = AjdtCommand.genBuildConfig(args, counter);
+		if (counter.hasErrors()) {
+            return false;
+        }
+        // copy globals where local is not set
+        config.installGlobals(altConfig);
+        return true;
+    }
+
 	/**
-	 * Populate options in a build configuration, using the ProjectPropertiesAdapter.
-	 * Added by AMC 01.20.2003, bugzilla #29769
+	 * Add new options from the ProjectPropertiesAdapter to the configuration.
+     * <ul>
+     * <li>New list entries are added if not duplicates,
+     *     for classpath, aspectpath, injars, and sourceroots</li>
+     * <li>New bootclasspath entries are ignored XXX</li>
+     * <li>Set only one new entry for output dir or output jar
+     *     only if there is no output dir/jar entry in the config</li>
+     * </ul>
+     * Subsequent changes to the ProjectPropertiesAdapter will not affect
+     * the configuration.
+	 * <p>Added by AMC 01.20.2003, bugzilla #29769
 	 */
 	private void configureProjectOptions( AjBuildConfig config, ProjectPropertiesAdapter properties ) {
+        // XXX no error handling in copying project properties
+        String propcp = properties.getClasspath(); // XXX omitting bootclasspath...
+        if (!LangUtil.isEmpty(propcp)) {
+            StringTokenizer st = new StringTokenizer(propcp, File.pathSeparator);
+            List configClasspath = config.getClasspath();
+            ArrayList toAdd = new ArrayList();
+            while (st.hasMoreTokens()) {
+                String entry = st.nextToken();
+                if (!configClasspath.contains(entry)) {
+                    toAdd.add(entry);
+                }
+            }
+            if (0 < toAdd.size()) {
+                ArrayList both = new ArrayList(configClasspath.size() + toAdd.size());
+                both.addAll(configClasspath);
+                both.addAll(toAdd);
+                config.setClasspath(both);
+                Ajde.getDefault().logEvent("building with classpath: " + both);
+            }
+        }
 
-		// set the classpath
-		String classpathString = 
-			properties.getBootClasspath()
-			+ File.pathSeparator
-			+ properties.getClasspath();
-			
-		StringTokenizer st = new StringTokenizer(
-			classpathString,
-			File.pathSeparator
-		);
-		
-		List classpath = new ArrayList();
-		while (st.hasMoreTokens()) classpath.add(st.nextToken());
+        // set outputdir and outputjar only if both not set
+        if ((null == config.getOutputDir() && (null == config.getOutputJar()))) {
+            String outPath = properties.getOutputPath();
+            if (!LangUtil.isEmpty(outPath)) {
+                config.setOutputDir(new File(outPath));
+            } 
+            String outJar = properties.getOutJar();
+            if (!LangUtil.isEmpty(outJar)) {
+                config.setOutputJar(new File( outJar ) );  
+            }
+        }
 
-		config.setClasspath(classpath);  
-		Ajde.getDefault().logEvent("building with classpath: " + classpath);
-
-		config.setOutputDir(
-			new File(properties.getOutputPath())
-		);
-
-		// new 1.1 options added by AMC
-
-		Set roots = properties.getSourceRoots();
-		if ( null != roots && !roots.isEmpty() ) {		
-			List sourceRoots = new ArrayList( roots );
-			config.setSourceRoots(sourceRoots);
-		}
-		
-		Set jars = properties.getInJars();
-		if ( null != jars && !jars.isEmpty() ) {		
-			List inJars = new ArrayList( jars );
-			config.setInJars(inJars);
-		}
-		
-		String outJar = properties.getOutJar();
-		if ( null != outJar && (outJar.length() > 0) ) {
-			config.setOutputJar( new File( outJar ) );	
-		}
-
-		Set aspects = properties.getAspectPath();
-		if ( null != aspects && !aspects.isEmpty() ) {		
-			List aPath = new ArrayList( aspects );
-			config.setAspectpath( aPath);
-		}
-
-					
+        join(config.getSourceRoots(), properties.getSourceRoots());
+        join(config.getInJars(), properties.getInJars());
+        join(config.getAspectpath(), properties.getAspectPath());
 	}
+
+    void join(Collection target, Collection source) {  // XXX dup Util
+        if ((null == target) || (null == source)) {
+            return;
+        }
+        for (Iterator iter = source.iterator(); iter.hasNext();) {
+            Object next = iter.next();
+            if (! target.contains(next)) {
+                target.add(next);
+            }
+        }
+    }
 
 	private void init() {
 		if (!initialized) {  // XXX plug into AJDE initialization
 //			Ajde.getDefault().setErrorHandler(new DebugErrorHandler());
 			this.messageHandler = new MessageHandlerAdapter();
 			buildManager = new AjBuildManager(messageHandler);
+            // XXX need to remove the properties file each time!
 			initialized = true;
 		}
 	}
 	
-	class MessageHandlerAdapter implements IMessageHandler {
+	class MessageHandlerAdapter extends MessageHandler {
 		private TaskListManager taskListManager;
 		private BuildNotifierAdapter buildNotifierAdapter;
 		
 		public MessageHandlerAdapter() {
 			this.taskListManager = Ajde.getDefault().getTaskListManager();
 		}	
-		
+
 		public boolean handleMessage(IMessage message) throws AbortException {
-			if (isIgnoring(message.getKind())) return true;
+            IMessage.Kind kind = message.getKind(); 
+            if (isIgnoring(kind) 
+                || (!showInfoMessages && IMessage.INFO.equals(kind))) {
+                    return true;
+                }
 			
-			// ??? relies on only info messages being class-file written messages
-			if (message.getKind().equals(IMessage.INFO)) {
-				// ignore, need to get this info in a better way
-//				if (buildNotifierAdapter != null) {
-//					buildNotifierAdapter.generatedBytecode(message.getMessage());
-//				}
-			} else {
-				taskListManager.addSourcelineTask(
-					message.getMessage(),
-					message.getISourceLocation(),
-					message.getKind()
-				);	
-			}
-			return true;	
+			taskListManager.addSourcelineTask(message);
+			return super.handleMessage(message); // also store...	
 		}
-	
-		public boolean isIgnoring(IMessage.Kind kind) {
-			// XXX implement for INFO, DEBUG?
-			return false;
-		}
-		
+        // --------------- adje methods
 		public void setBuildNotifierAdapter(BuildNotifierAdapter buildNotifierAdapter) {
 			this.buildNotifierAdapter = buildNotifierAdapter;
 		}
-
 	}
-	/**
-	 * @return
-	 */
-	public boolean isIncrementalEnabled() {
-		return incrementalEnabled;
-	}
-
-	/**
-	 * @param b
-	 */
-	public void setIncrementalEnabled(boolean b) {
-		incrementalEnabled = b;
-	}
-
 }
