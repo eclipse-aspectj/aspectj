@@ -147,7 +147,7 @@
           <pathelement location="${modules.dir}/bridge/bin" />
           <pathelement location="${modules.dir}/build/bin" />
           <pathelement location="${modules.dir}/org.aspectj.ajdt.core/bin" />
-          <pathelement location="${modules.dir}/org.eclipse.jdt.core/bin" />
+          <pathelement location="${modules.dir}/org.eclipse.jdt.core/jdtcore-for-aspectj.jar" />
           <pathelement location="${modules.dir}/runtime/bin" />
           <pathelement location="${modules.dir}/taskdefs/bin" />
           <pathelement location="${modules.dir}/testing/bin" />
