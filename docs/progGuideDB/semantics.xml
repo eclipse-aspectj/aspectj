@@ -1464,14 +1464,13 @@
 
     <para>
       A value is of the appropriate type if it would be assignable to
-      a variable of that type, in the Java sense.
-      <literal>byte</literal>, <literal>short</literal>,
-      <literal>char</literal> and <literal>int</literal> are
-      assignable to each other, an <literal>int</literal> is
-      assignable to a <literal>float</literal> parameter,
-      <literal>boolean</literal> values are only assignable to
-      <literal>boolean</literal> parameters, and reference types work
-      by instanceof. 
+      a variable of that type, in the Java sense.  That is, a
+      <literal>byte</literal> value is assignable to a
+      <literal>short</literal> parameter but not vice-versa, an
+      <literal>int</literal> is assignable to a
+      <literal>float</literal> parameter, <literal>boolean</literal>
+      values are only assignable to <literal>boolean</literal>
+      parameters, and reference types work by instanceof.
     </para>
 
     <para>
