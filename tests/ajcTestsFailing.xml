@@ -3,23 +3,5 @@
 
 <!-- contains valid tests that the compiler has never passed -->
 <suite>
-    <ajc-test dir="incremental/stringliteral"
-    	keywords="incremental-test"
-    	comment="compare known limitation in injars form; also fails inconsistently?"
-		title="incrementally change only string literal, still expect advice">
-        <compile staging="true" options="-incremental" 
-        	sourceroots="src"/>
-		<run class="packageOne.Main"
-			options="in packageOne.Main.main(..),
-					 before main packageOne.Main"/>
-        <inc-compile tag="20">
-        	<dir-changes updated="packageOne.Main"/>
-        </inc-compile>
-		<run class="packageOne.Main"
-			options="in longer packageOne.Main.main(..),
-					 before main packageOne.Main"/>
-    </ajc-test>
-
-
 
 </suite>

@@ -6322,4 +6322,44 @@
         </compile>
     </ajc-test>
 
+    <ajc-test dir="incremental/stringliteral"
+    	keywords="incremental-test"
+		title="incrementally change only string literal, still expect advice">
+        <compile staging="true" options="-incremental" 
+        	sourceroots="src"/>
+		<run class="packageOne.Main"
+			options="in packageOne.Main.main(..),
+					 before main packageOne.Main"/>
+        <inc-compile tag="20">
+        	<dir-changes updated="packageOne.Main"/>
+        </inc-compile>
+		<run class="packageOne.Main"
+			options="in longer packageOne.Main.main(..),
+					 before main packageOne.Main"/>
+    </ajc-test>
+
+   <ajc-test dir="harness" pr="38134" keywords="knownLimitation"
+   		comment="behavior is correct for 1.1 - revisit for 1.2"
+        title="-nowarn suppresses XLint warnings">
+        <compile files="XLintWarningTest.java" options="-nowarn"/>
+    </ajc-test>
+
+   <ajc-test dir="harness" pr="38134" keywords="knownLimitation"
+   		comment="behavior is correct for 1.1 - revisit for 1.2"
+        title="warn:none suppresses XLint warnings">
+        <compile files="XLintWarningTest.java" options="-warn:none"/>
+    </ajc-test>
+
+    <ajc-test dir="harness" pr="38134" keywords="knownLimitation"
+   		comment="behavior is correct for 1.1 - revisit for 1.2"
+        title="-nowarn suppresses declare warnings">
+        <compile files="WarningTest.java" options="-nowarn"/>
+    </ajc-test>
+
+    <ajc-test dir="harness" pr="38134" keywords="knownLimitation"
+   		comment="behavior is correct for 1.1 - revisit for 1.2"
+        title="-warn:none suppresses declare warnings">
+        <compile files="WarningTest.java" options="-warn:none"/>
+    </ajc-test>
+
 </suite>
