@@ -489,9 +489,9 @@ public class Main {
             
             // per Wes' suggestion on dev...
             if (message.getKind() == IMessage.ERROR) {
-            	sb.append("error ");
+            	sb.append("[error] ");
             } else if (message.getKind() == IMessage.WARNING) {
-            	sb.append("warning ");
+            	sb.append("[warning] ");
             }
             
             sb.append(text);
