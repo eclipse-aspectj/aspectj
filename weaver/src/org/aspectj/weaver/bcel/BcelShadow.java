@@ -904,7 +904,11 @@ public class BcelShadow extends Shadow {
             throw new IllegalStateException("no target");
         }
 	    initializeTargetAnnotationVars();
-	    return (Var) targetAnnotationVars.get(forAnnotationType);
+	    Var v  =(Var) targetAnnotationVars.get(forAnnotationType);
+	    // Even if we can't find one, we have to return one as we might have this annotation at runtime
+	    if (v==null)
+	      v = new TypeAnnotationAccessVar(forAnnotationType.resolve(world),(BcelVar)getTargetVar()); 
+		return v;
    }
    public Var getArgVar(int i) {
         initializeArgVars();
@@ -1278,6 +1282,11 @@ public class BcelShadow extends Shadow {
             targetAnnotationVars = thisAnnotationVars;
         } else {
         	targetAnnotationVars = new HashMap();
+        	ResolvedTypeX[] rtx = this.getTargetType().resolve(world).getAnnotationTypes(); // what about annotations we havent gotten yet but we will get in subclasses?
+        	for (int i = 0; i < rtx.length; i++) {
+				ResolvedTypeX typeX = rtx[i];
+				targetAnnotationVars.put(typeX,new TypeAnnotationAccessVar(typeX,(BcelVar)getTargetVar()));
+			}
         	// populate.
         }
     }
@@ -1297,6 +1306,55 @@ public class BcelShadow extends Shadow {
     	// annotations on the appropriate element (method, field, constructor, type).
     	// Then create one BcelVar entry in the map for each annotation, keyed by
     	// annotation type (TypeX).
+    	
+    	// !!! Refactor these once all shadow kinds added - there is lots of commonality
+    	if (getKind() == Shadow.MethodCall) {
+    		ResolvedMember rm[] = this.getTargetType().getDeclaredMethods(world);
+    		ResolvedMember found = null;
+    		String searchString = getSignature().getName()+getSignature().getParameterSignature();
+    		for (int i = 0; i < rm.length; i++) {
+				ResolvedMember member = rm[i];
+				if ((member.getName()+member.getParameterSignature()).equals(searchString)) {
+					found = member;
+				}
+			}
+    		ResolvedTypeX[] anns = found.getAnnotationTypes();
+    		for (int i = 0; i < anns.length; i++) {
+				ResolvedTypeX typeX = anns[i];
+	    		kindedAnnotationVars.put(typeX,new KindedAnnotationAccessVar(typeX.resolve(world),(BcelVar)getTargetVar(),getSignature()));
+			}
+    	}
+    	if (getKind() == Shadow.MethodExecution) {
+    		ResolvedMember rm[] = this.getTargetType().getDeclaredMethods(world);
+    		ResolvedMember found = null;
+    		String searchString = getSignature().getName()+getSignature().getParameterSignature();
+    		for (int i = 0; i < rm.length; i++) {
+				ResolvedMember member = rm[i];
+				if ((member.getName()+member.getParameterSignature()).equals(searchString)) {
+					found = member;
+				}
+			}
+    		ResolvedTypeX[] anns = found.getAnnotationTypes();
+    		for (int i = 0; i < anns.length; i++) {
+				ResolvedTypeX typeX = anns[i];
+	    		kindedAnnotationVars.put(typeX,new KindedAnnotationAccessVar(typeX.resolve(world),(BcelVar)getTargetVar(),getSignature()));
+			}
+    	}
+//    	if (getKind() == Shadow.FieldSet) {
+//    		ResolvedMember rm[] = this.getTargetType().getDeclaredFields(world);
+//    		ResolvedMember found = null;
+//    		for (int i = 0; i < rm.length; i++) {
+//				ResolvedMember member = rm[i];
+//				if ((member.getName()+member.getParameterSignature()).equals(getSignature().getName()+getSignature().getParameterSignature())) {
+//					found = member;
+//				}
+//			}
+//    		ResolvedTypeX[] anns = found.getAnnotationTypes();
+//    		for (int i = 0; i < anns.length; i++) {
+//				ResolvedTypeX typeX = anns[i];
+//	    		kindedAnnotationVars.put(typeX,new KindedAnnotationAccessVar(typeX.resolve(world),(BcelVar)getTargetVar(),getSignature()));
+//			}
+//    	}
     	
     }
     public void initializeWithinAnnotationVars() {
