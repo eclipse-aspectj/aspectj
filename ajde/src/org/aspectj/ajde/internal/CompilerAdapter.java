@@ -73,6 +73,11 @@ public class CompilerAdapter {
 	}
 
 	public boolean compile(String configFile, BuildProgressMonitor progressMonitor, boolean buildModel) {
+		if (configFile == null) {
+			Ajde.getDefault().getErrorHandler().handleError(
+				"Tried to build null config file."
+			);
+		}
 		init();
 		try { 
 			AjBuildConfig buildConfig = genBuildConfig(configFile);
@@ -86,7 +91,7 @@ public class CompilerAdapter {
 			
 			String rtInfo = buildManager.checkRtJar(buildConfig); // !!! will get called twice
 			if (rtInfo != null) {
-				signalWarning(
+				Ajde.getDefault().getErrorHandler().handleWarning(
                 	  "AspectJ Runtime error: " + rtInfo
 		            + "  Please place a valid aspectjrt.jar on the classpath.");
 	            return false;
@@ -103,14 +108,15 @@ public class CompilerAdapter {
                 return buildManager.batchBuild(buildConfig, messageHandler); 
             }
         } catch (OperationCanceledException ce) {
-            signalWarning("build cancelled by user");
+			Ajde.getDefault().getErrorHandler().handleWarning(
+				"build cancelled by user");
             return false;
 		} catch (AbortException e) {
             final IMessage message = e.getIMessage();
             if (null == message) {
                 signalThrown(e);
             } else if (null != message.getMessage()) {
-                signalWarning(message.getMessage());
+				Ajde.getDefault().getErrorHandler().handleWarning(message.getMessage());
             } else if (null != message.getThrown()) {
                 signalThrown(message.getThrown());
             } else {
@@ -127,7 +133,7 @@ public class CompilerAdapter {
      * Generate AjBuildConfig from the local configFile parameter
      * plus global project and build options.
      * Errors signalled using signal... methods.
-     * @param configFile
+     * @param configFile	
      * @return null if invalid configuration, 
      *   corresponding AjBuildConfig otherwise
      */
@@ -135,7 +141,9 @@ public class CompilerAdapter {
         init();
 	    File configFile = new File(configFilePath);
         if (!configFile.exists()) {
-            signalError("Config file \"" + configFile + "\" does not exist."); 
+			Ajde.getDefault().getErrorHandler().handleError(
+				"Config file \"" + configFile + "\" does not exist."
+			);
             return null;
         }
         String[] args = new String[] { "@" + configFile.getAbsolutePath() };
@@ -201,14 +209,14 @@ public class CompilerAdapter {
 //        return local;
 //    }
 
-    /** signal error text to user */
-    protected void signalError(String text) {
-        Ajde.getDefault().getErrorHandler().handleError(text);
-    }
-    /** signal warning text to user */
-    protected void signalWarning(String text) {
-        Ajde.getDefault().getErrorHandler().handleWarning(text);
-    }
+//    /** signal error text to user */
+//    protected void signalError(String text) {
+        
+//    } 
+//    /** signal warning text to user */
+//    protected void signalWarning(String text) {
+//        
+//    }
 
     /** signal text to user */
     protected void signalText(String text) {
