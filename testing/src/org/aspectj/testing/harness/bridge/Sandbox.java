@@ -13,7 +13,10 @@
 package org.aspectj.testing.harness.bridge;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
@@ -327,6 +330,25 @@ public class Sandbox {
         return testBaseSrcDir;
     }
     
+    /**
+     * Get the files with names (case-sensitive)
+     * under the staging or test base directories.
+     * @param names
+     * @return
+     */
+    File[] findFiles(final String[] names) {
+        ArrayList result = new ArrayList();
+        NamesFilter filter = new NamesFilter(names);
+        File[] bases = { testBaseDir, sandboxDir };
+        for (int i = 0; i < bases.length; i++) {
+            File base = bases[i];
+            if ((null == base) || !base.canRead()) {
+                continue;
+            }
+            result.addAll(Arrays.asList(FileUtil.listFiles(base, filter)));
+        }
+        return (File[]) result.toArray(new File[0]);
+    }
     File getTestBaseSrcDir(JavaRun caller) {
         LangUtil.throwIaxIfNull(caller, "caller");
         return testBaseSrcDir;
@@ -490,5 +512,24 @@ public class Sandbox {
     String getBootclasspath(JavaRun caller) {
         LangUtil.throwIaxIfNull(caller, "caller");
         return bootClasspath;
+    }
+    private static class NamesFilter implements FileFilter {
+        private final String[] names;
+        private NamesFilter(String[] names) {
+            this.names = names;
+        }
+        public boolean accept(File file) {
+            if (null != file) {
+                String name = file.getName();
+                if (null != name) {
+                    for (int i = 0; i < names.length; i++) {
+                        if (name.equals(names[i])) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
     }
 }
