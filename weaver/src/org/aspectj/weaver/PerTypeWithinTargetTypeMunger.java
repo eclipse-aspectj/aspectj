@@ -47,8 +47,10 @@ public class PerTypeWithinTargetTypeMunger extends ResolvedTypeMunger {
 	
 	// This is a lexical within() so if you say PerTypeWithin(Test) and matchType is an
 	// inner type (e.g. Test$NestedType) then it should match successfully
+	// Does not match if the target is an interface
 	public boolean matches(ResolvedTypeX matchType, ResolvedTypeX aspectType) {
-		return isWithinType(matchType).alwaysTrue();
+		return isWithinType(matchType).alwaysTrue() && 
+		       !matchType.isInterface();
 	}
 	
 	private FuzzyBoolean isWithinType(ResolvedTypeX type) {
