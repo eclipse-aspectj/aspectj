@@ -323,18 +323,19 @@ public final class LazyClassGen {
         for (Iterator i = methodGens.iterator(); i.hasNext();) {
             LazyMethodGen gen = (LazyMethodGen) i.next();
 			if (gen.getName().equals(NameMangler.AJC_CLINIT_NAME)) return gen;
-        } 
-        throw new RuntimeException("unimplemented");
-//        LazyMethodGen clinit = new LazyMethodGen(
-//        	Modifier.STATIC,
-//        	Type.VOID,
-//        	"<clinit>",
-//        	new Type[0],
-//        	CollectionUtil.NO_STRINGS,
-//        	this);
-//       	clinit.getBody().insert(getFactory().RETURN);
-//        methodGens.add(clinit);
-//        return clinit;
+        }
+        LazyMethodGen ajcClinit = new LazyMethodGen(
+        	Modifier.STATIC,
+        	Type.VOID,
+        	NameMangler.AJC_CLINIT_NAME,
+        	new Type[0],
+        	CollectionUtil.NO_STRINGS,
+        	this);
+       	ajcClinit.getBody().insert(getFactory().RETURN);
+        methodGens.add(ajcClinit);
+        
+        getStaticInitializer().getBody().insert(Utility.createInvoke(getFactory(), ajcClinit));
+        return ajcClinit;
     }
     
     
