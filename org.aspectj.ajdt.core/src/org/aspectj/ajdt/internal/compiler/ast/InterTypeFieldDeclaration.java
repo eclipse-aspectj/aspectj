@@ -137,7 +137,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 		resolveOnType(classScope);
 		
-		if (classScope.referenceContext.binding == null) return null;
+		if (ignoreFurtherInvestigation) return null;
 		
 		binding = classScope.referenceContext.binding.resolveTypesFor(binding);
 		if (ignoreFurtherInvestigation) return null;

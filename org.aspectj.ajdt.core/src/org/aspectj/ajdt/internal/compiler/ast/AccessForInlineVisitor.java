@@ -177,6 +177,7 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 	}
 
 	private void makePublic(TypeBinding binding) {
+		if (binding == null || !binding.isValidBinding()) return;  // has already produced an error
 		if (binding instanceof ReferenceBinding) {
 			ReferenceBinding rb = (ReferenceBinding)binding;
 			if (!rb.isPublic()) handler.notePrivilegedTypeAccess(rb, null); //???
