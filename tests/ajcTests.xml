@@ -6161,5 +6161,30 @@
         </compile>
         <run class="p1.Main"/>
     </ajc-test>
+    
+
+   <ajc-test dir="incremental/defaultPackage"
+    keywords="incremental-test"
+   	title="change sources in default package">
+        <compile 
+        	staging="true"
+        	options="-incremental" 
+        	sourceroots="src"/>
+        <run class="Main"/>
+        <inc-compile tag="20"/>
+        <run class="Main"/>
+    </ajc-test>
+
+   <ajc-test dir="incremental/interPackage"
+    keywords="incremental-test"
+   	title="change source">
+        <compile 
+        	staging="true"
+        	options="-incremental" 
+        	sourceroots="src"/>
+        <run class="app.Main"/>
+        <inc-compile tag="20"/>
+        <run class="app.Main"/>
+    </ajc-test>
 
 </suite>
