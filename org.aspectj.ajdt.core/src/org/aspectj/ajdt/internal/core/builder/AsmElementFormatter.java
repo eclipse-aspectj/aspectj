@@ -28,6 +28,7 @@ import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.patterns.AndPointcut;
+import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
@@ -159,7 +160,20 @@ public class AsmElementFormatter {
 				node.setName(name + DECLARE_PRECEDENCE);
 				node.setDetails(genPrecedenceListLabel(ds.getPatterns()));
 				
-				
+			} else if (declare.declareDecl instanceof DeclareAnnotation) {
+			    DeclareAnnotation deca = (DeclareAnnotation)declare.declareDecl;
+			    node.setName(name + deca.getKind());
+			    if (deca.getKind()==DeclareAnnotation.AT_CONSTRUCTOR) {
+			      node.setKind(IProgramElement.Kind.DECLARE_ANNOTATION_AT_CONSTRUCTOR);
+			    } else  if (deca.getKind()==DeclareAnnotation.AT_FIELD) {
+			      node.setKind(IProgramElement.Kind.DECLARE_ANNOTATION_AT_FIELD);
+			    } else  if (deca.getKind()==DeclareAnnotation.AT_METHOD) {
+			      node.setKind(IProgramElement.Kind.DECLARE_ANNOTATION_AT_METHOD);
+			    } else  if (deca.getKind()==DeclareAnnotation.AT_TYPE) {
+			      node.setKind(IProgramElement.Kind.DECLARE_ANNOTATION_AT_TYPE);
+			    }
+			    node.setDetails(genDecaLabel(deca));
+			    
 			} else {
 				node.setKind(IProgramElement.Kind.ERROR);
 				node.setName(DECLARE_UNKNONWN);
@@ -209,6 +223,13 @@ public class AsmElementFormatter {
 		}
 	}
 
+    private String genDecaLabel(DeclareAnnotation deca) {
+      StringBuffer sb = new StringBuffer("");
+      sb.append(deca.getPatternAsString());
+      sb.append(" : ");
+      sb.append(deca.getAnnotationString());
+      return sb.toString();
+    }
 
 	private String genPrecedenceListLabel(TypePatternList list) {
 		String tpList = "";
