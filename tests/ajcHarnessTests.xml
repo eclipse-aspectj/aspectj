@@ -341,6 +341,105 @@
         </compile>
     </ajc-test>
 
+    <ajc-test dir="harness"
+      title="pass dir-changes: nested and static class">
+        <compile files="DirChangesTest.java">
+            <dir-changes added="DirChangesTest,DirChangesTest$Inner,DirChangesTest$Nested"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness"
+    	keywords="expect-fail"
+		title="fail dir-changes: at end, expected file not added .. $Missing..">
+        <compile files="DirChangesTest.java">
+            <dir-changes added="DirChangesTest$Missing"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness/dirchanges-inc"
+		title="pass dir-changes incremental">
+        <compile 
+			options="-incremental"
+			staging="true" 
+			sourceroots="src">
+            <dir-changes added="Unchanged,Changed"/>
+        </compile>
+        <run class="Changed" options="first"/>
+        <inc-compile tag="20">
+            <dir-changes removed="Removed" updated="Changed"/>
+        </inc-compile>
+        <run class="Changed" options="second"/>
+    </ajc-test>
+
+    <ajc-test dir="harness/dirchanges-inc"
+    	keywords="expect-fail"
+		title="fail dir-changes incremental: at start, did not expect added file to exist: {added==}Changed.class">
+        <compile 
+			options="-incremental"
+			staging="true" 
+			sourceroots="src"/>
+		<inc-compile tag="20">
+            <dir-changes added="Changed"/>
+        </inc-compile>
+    </ajc-test>
+
+    <ajc-test dir="harness/dirchanges-inc"
+    	keywords="expect-fail"
+		title="fail dir-changes incremental: at start, expected removed file to exist: {removed==}Missing.class">
+        <compile 
+			options="-incremental"
+			staging="true" 
+			sourceroots="src">
+            <dir-changes removed="Missing"/>
+		</compile>
+    </ajc-test>
+
+    <ajc-test dir="harness/dirchanges-inc"
+    	keywords="expect-fail"
+		title="fail dir-changes incremental: at start, expected updated file to exist: {updated==}Missing.class">
+        <compile 
+			options="-incremental"
+			staging="true" 
+			sourceroots="src">
+            <dir-changes updated="Missing"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness/dirchanges-inc"
+    	keywords="expect-fail"
+		title="fail dir-changes incremental: at end, expected added file to exist: {added==}Missing.class">
+        <compile 
+			options="-incremental"
+			staging="true" 
+			sourceroots="src">
+            <dir-changes added="Missing"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness/dirchanges-inc"
+    	keywords="expect-fail"
+		title="fail dir-changes incremental: at end, did not expect removed file to exist: {removed==}Changed.class">
+        <compile 
+			options="-incremental"
+			staging="true" 
+			sourceroots="src"/>
+		<inc-compile tag="20">
+            <dir-changes removed="Changed"/>
+        </inc-compile>
+    </ajc-test>
+
+    <ajc-test dir="harness/dirchanges-inc"
+    	keywords="expect-fail"
+		title="fail dir-changes incremental: at end, expected updated file to exist: {updated==}Removed.class">
+        <compile 
+			options="-incremental"
+			staging="true" 
+			sourceroots="src"/>
+		<inc-compile tag="20">
+            <dir-changes updated="Removed"/>
+		</inc-compile>
+    </ajc-test>
+
 </suite>
 
 
