@@ -99,7 +99,7 @@ public class AjBuildManager {
         	
             boolean canIncremental = state.prepareForNextBuild(buildConfig);
             if (!canIncremental && !batch) { // retry as batch?
-                return doBuild(buildConfig, handler, true);
+                return doBuild(buildConfig, baseHandler, true);
             }
             this.handler = 
                 CountingMessageHandler.makeCountingMessageHandler(baseHandler);
@@ -125,7 +125,7 @@ public class AjBuildManager {
             }
             
             if (batch) {
-                //System.err.println("XXXX batch: " + buildConfig.getFiles());
+                // System.err.println("XXXX batch: " + buildConfig.getFiles());
                 if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {  
                     bcelWorld.setModel(StructureModelManager.INSTANCE.getStructureModel());
                     // in incremental build, only get updated model?
@@ -139,10 +139,10 @@ public class AjBuildManager {
 //                if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {  
 //                    bcelWorld.setModel(StructureModelManager.INSTANCE.getStructureModel());
 //                }
-                //System.err.println("XXXX start inc ");
+                // System.err.println("XXXX start inc ");
                 List files = state.getFilesToCompile(true);
                 for (int i = 0; (i < 5) && !files.isEmpty(); i++) {
-                    //System.err.println("XXXX inc: " + files);
+                    // System.err.println("XXXX inc: " + files);
                     performCompilation(files);
                     if (handler.hasErrors()) {
                         return false;
