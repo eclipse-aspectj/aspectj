@@ -49,6 +49,7 @@ import org.apache.bcel.generic.RETURN;
 import org.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.CollectionUtil;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
@@ -377,6 +378,23 @@ public final class LazyClassGen {
     }
 
     private void writeBack(BcelWorld world) {
+        if (getConstantPoolGen().getSize() > Short.MAX_VALUE) {
+            // PR 59208
+            // we've generated a class that is just toooooooooo big (you've been generating programs
+            // again haven't you? come on, admit it, no-one writes classes this big by hand).
+            // create an empty myGen so that we can give back a return value that doesn't upset the
+            // rest of the process.
+            myGen = new ClassGen(myGen.getClassName(), myGen.getSuperclassName(), 
+                    myGen.getFileName(), myGen.getAccessFlags(), myGen.getInterfaceNames());
+            // raise an error against this compilation unit.
+       		getWorld().showMessage(
+        			IMessage.ERROR, 
+    				WeaverMessages.format(WeaverMessages.CLASS_TOO_BIG,
+    						              this.getClassName()),
+    			    new SourceLocation(new File(myGen.getFileName()),0), null
+    			    );
+        	return;
+        }
     	if (myType != null && myType.getWeaverState() != null) {
 			myGen.addAttribute(BcelAttributes.bcelAttribute(
 				new AjAttribute.WeaverState(myType.getWeaverState()), 

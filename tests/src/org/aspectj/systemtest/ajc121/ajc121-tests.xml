@@ -164,3 +164,23 @@
         <compile files="VeryLongBranch.java"/>
 	</ajc-test>
 -->
+
+<!-- these next two tests commented out as they take minutes to run - reinstate if you need to 
+	investigate 59208 for any reason 
+	<ajc-test dir="bugs/pr59208" pr="59208"
+    	title="Weaver fails in BCEL for large classes">
+        <compile files="Foo.java, A.aj">
+	        <message kind="error" line="0" text="constant pool too big"></message>
+	    </compile>
+	</ajc-test>
+
+
+	<ajc-test dir="bugs/pr59208" pr="59208"
+    	title="Weaver fails in BCEL for large classes (binary)">
+        <compile 
+        	aspectpath="test.jar"
+        	inpath="classes">
+	        <message kind="error" line="0" text="constant pool too big"></message>
+	    </compile>
+	</ajc-test>
+-->

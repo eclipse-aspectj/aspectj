@@ -119,5 +119,13 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //  public void test020_branchTargetOffsetTooLargeForShort() {
 //      runTest("Branch target offset too large for short");
 //  }
+  
+//  public void test021_BcelFailureWithVeryLargeClasses() {
+//      runTest("Weaver fails in BCEL for large classes");
+//  }
+//  
+//  public void test022_BcelFailureWithVeryLargeClasses_Binary() {
+//      runTest("Weaver fails in BCEL for large classes (binary)");
+//  }
 }
 

@@ -83,6 +83,7 @@ public class WeaverMessages {
 	public static final String AROUND_ON_INTERFACE_STATICINIT = "aroundOnInterfaceStaticInit";
 	
 	public static final String PROBLEM_GENERATING_METHOD = "problemGeneratingMethod";
+	public static final String CLASS_TOO_BIG = "classTooBig";
 	
 	public static final String ZIPFILE_ENTRY_MISSING = "zipfileEntryMissing";
 	public static final String ZIPFILE_ENTRY_INVALID = "zipfileEntryInvalid";
