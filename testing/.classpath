@@ -2,7 +2,7 @@
 <classpath>
     <classpathentry kind="src" path="src"/>
     <classpathentry kind="src" path="testsrc"/>
-    <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
+    <classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
     <classpathentry kind="lib" path="/lib/ant/lib/ant.jar" sourcepath="/lib/ant/ant-src.zip"/>
     <classpathentry kind="lib" path="/lib/junit/junit.jar" sourcepath="/lib/junit/junit-src.jar"/>
     <classpathentry kind="lib" path="/lib/jdiff/jdiff.jar"/>
@@ -14,5 +14,7 @@
     <classpathentry kind="lib" path="/lib/ant/lib/xml-apis.jar"/>
     <classpathentry kind="lib" path="/lib/commons/commons.jar" sourcepath="/lib/commons/commons-src.zip"/>
     <classpathentry kind="src" path="/testing-util"/>
+    <classpathentry kind="src" path="/ajde"/>
+    <classpathentry kind="src" path="/asm"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

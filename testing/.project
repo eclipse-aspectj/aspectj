@@ -3,6 +3,8 @@
 	<name>testing</name>
 	<comment></comment>
 	<projects>
+		<project>ajde</project>
+		<project>asm</project>
 		<project>bridge</project>
 		<project>testing-client</project>
 		<project>testing-util</project>
