@@ -31,4 +31,5 @@ public class HelloWorld extends java.lang.Object:
     |               RETURN   (line 11)
     method-execution(void HelloWorld.main(java.lang.String[]))
   end public static void main(String[])
+
 end public class HelloWorld

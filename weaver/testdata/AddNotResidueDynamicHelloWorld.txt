@@ -59,7 +59,7 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
   String doit(String, java.util.List):
     method-execution(java.lang.String DynamicHelloWorld.doit(java.lang.String, java.util.List))
     |               ALOAD_2     // java.util.List l   (line 21)
-    |               ALOAD_1     // java.lang.String arg0
+    |               ALOAD_1     // java.lang.String s
     |               ASTORE_3
     |               ASTORE 4
     | method-call(boolean java.util.List.add(java.lang.Object))
@@ -79,4 +79,5 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
     |               ARETURN
     method-execution(java.lang.String DynamicHelloWorld.doit(java.lang.String, java.util.List))
   end String doit(String, java.util.List)
+
 end public class DynamicHelloWorld

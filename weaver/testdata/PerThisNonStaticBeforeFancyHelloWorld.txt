@@ -110,4 +110,5 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               ARETURN
     method-execution(java.lang.String FancyHelloWorld.getName())
   end public static String getName()
+
 end public abstract class FancyHelloWorld
