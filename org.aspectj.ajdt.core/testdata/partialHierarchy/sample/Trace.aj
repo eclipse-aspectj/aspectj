@@ -1,6 +1,6 @@
 package sample;
 
-import java.util.logging.Logger;
+
 
 public aspect Trace {
     public interface Traced {}
@@ -19,4 +19,9 @@ public aspect Trace {
 //	return logger;
 return null;
     }
+}
+
+class Logger {
+  public void severe(String s) {
+  }
 }
