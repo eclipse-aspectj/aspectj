@@ -6757,4 +6757,10 @@
         <compile files="ParentsAndPointcuts.java"/>
         <run class="ParentsAndPointcuts"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs" pr="43194"
+   	 title="Non-functional concretezation of ReferencePointcut">
+        <compile files="AdviceInteraction.java"/>
+        <run class="AdviceInteraction"/>
+    </ajc-test>
 </suite>
