@@ -12,4 +12,4 @@ echo please fix the JAVA_HOME environment variable
 :haveJava
 set ASPECTJ_HOME=%EXTRACTION%\aspectj
 set PATH=%ASPECTJ_HOME%\bin;%PATH%
-set CLASSPATH=.;%ASPECTJ_HOME%\lib\aspectjrt.jar;%EXTRACTION%\junit.jar
+set CLASSPATH=.;%ASPECTJ_HOME%\lib\aspectjrt.jar;%EXTRACTION%\junit.jar;%JAVA_HOME%\jre\lib\rt.jar

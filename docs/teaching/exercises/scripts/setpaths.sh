@@ -11,7 +11,7 @@ fi
 
 export ASPECTJ_HOME=$EXTRACTION/aspectj
 export PATH=$ASPECTJ_HOME/bin:$PATH
-export CLASSPATH=.:$ASPECTJ_HOME/lib/aspectjrt.jar:$EXTRACTION/junit.jar
+export CLASSPATH=.:$ASPECTJ_HOME/lib/aspectjrt.jar:$EXTRACTION/junit.jar:$JAVA_HOME/jre/lib/rt.jar
 
 chmod a+x $ASPECTJ_HOME/bin/ajc
 chmod a+x $ASPECTJ_HOME/bin/ajbrowser
