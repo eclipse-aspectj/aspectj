@@ -24,6 +24,13 @@ Folder: aj-<event>:
     aspectj for everybody
 
 ------------------------------
+Requirements for users:
+
+* We learned at OOPSLA 2004 that the system doesn't work well at
+  all under linux using the blackdown JDK.  Use Sun's jdk!
+
+
+------------------------------
 ------------------------------
 
 THIS FILE IS OUT-OF-DATE !!! (2003-3-17)
