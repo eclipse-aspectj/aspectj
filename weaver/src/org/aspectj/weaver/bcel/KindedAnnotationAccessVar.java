@@ -33,7 +33,7 @@ public class KindedAnnotationAccessVar extends BcelVar {
 
 	private Member stackField;
 	private int index;
-	BcelVar target;
+	TypeX target;
 	Member sig;
 
 //	public KindedAnnotationAccessVar(ResolvedTypeX type, Member stackField, int index) {
@@ -42,7 +42,7 @@ public class KindedAnnotationAccessVar extends BcelVar {
 //		this.index = index;
 //	}
 	
-	public KindedAnnotationAccessVar(ResolvedTypeX type,BcelVar theTargetIsStoredHere,Member sig) {
+	public KindedAnnotationAccessVar(ResolvedTypeX type,TypeX theTargetIsStoredHere,Member sig) {
 		super(type,0);
 		target = theTargetIsStoredHere;
 		this.sig = sig;
@@ -94,7 +94,7 @@ public class KindedAnnotationAccessVar extends BcelVar {
 		
 		// Calls getClass
 		// System.err.println("What is the class of target? "+target.getType());
-		il.append(fact.createConstant(BcelWorld.makeBcelType(target.getType())));
+		il.append(fact.createConstant(BcelWorld.makeBcelType(target)));
 //		il.append(target.createLoad(fact));
 //        il.append(fact.createInvoke("java/lang/Object","getClass",jlClass,new Type[]{},Constants.INVOKEVIRTUAL));
     

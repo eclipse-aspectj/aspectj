@@ -233,6 +233,7 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 	
 	public boolean hasAnnotation(TypeX ofType) {
 		Annotation[] as = declaration.annotations;
+		if (as == null) return false;
 		for (int i = 0; i < as.length; i++) {
 			Annotation annotation = as[i];
 			String tname = CharOperation.charToString(annotation.resolvedType.constantPoolName());
