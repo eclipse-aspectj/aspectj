@@ -240,7 +240,12 @@ public class AspectJElementHierarchy implements IHierarchy {
 	}
 
 	private IProgramElement createFileStructureNode(String sourceFilePath) {
-		String fileName = new File(sourceFilePath).getName();
+		// SourceFilePath might have originated on windows on linux...
+		int lastSlash = sourceFilePath.lastIndexOf('\\');
+		if (lastSlash == -1) {
+			lastSlash = sourceFilePath.lastIndexOf('/');
+		}
+		String fileName = sourceFilePath.substring(lastSlash+1);
 		IProgramElement fileNode = new ProgramElement(fileName, IProgramElement.Kind.FILE_JAVA, null);
 		fileNode.setSourceLocation(new SourceLocation(new File(sourceFilePath), 1, 1));
 		fileNode.addChild(NO_STRUCTURE);
