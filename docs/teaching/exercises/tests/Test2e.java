@@ -16,27 +16,24 @@ import figures.*;
 
 import junit.framework.*;
 
-public class Test2e extends Test {
+public class Test2e extends TestCase {
     public Test2e(String name) { super(name); }
 
     public static void main(String[] args) {
+        junit.textui.TestRunner.run(Test.class);
         junit.textui.TestRunner.run(Test2e.class);
     }
 
-    public void setUp() {
-        super.setUp();
-    }
-
-    public void testEasy() {
-        Box sq = new Box(0, 0, 10, 10);
-        sq.move(5,5);
-        assertEquals(sq.getP0().getX(), 5);
-        assertEquals(sq.getP0().getY(), 5);
-
+    public void testSloth() {
+        Point sp = new SlothfulPoint(10, 10);
         try {
-            sq.getP0().setX(100);
-            sq.move(37, 1);
+            sp.move(10, 10);
             fail("should have thrown IllegalStateException");
         } catch (IllegalStateException e) { }
+    }
+
+    public void testNonSloth() {
+	Point p1 = new Point(10, 100);
+        p1.move(3, 30);
     }
 }

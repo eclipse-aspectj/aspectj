@@ -16,22 +16,31 @@ import figures.*;
 
 import junit.framework.*;
 
-public class Test2b extends Test {
+public class Test2b extends TestCase {
     public Test2b(String name) { super(name); }
 
     public static void main(String[] args) {
+        junit.textui.TestRunner.run(Test.class);
         junit.textui.TestRunner.run(Test2b.class);
     }
 
-    public void setUp() {
-        super.setUp();
-    }
-
     public void testNull() {
+        Point p1 = new Point(10, 100);
+        Group g  = new Group(p1);
+
         try {
             g.add(null);
             fail("should have thrown IllegalArgumentException");
         } catch (IllegalArgumentException ea) {
         }
     }
+
+    public void testNonNull() {
+        Point p1 = new Point(10, 100);
+        Group g  = new Group(p1);
+        Point p2 = new Point(20, 200);
+
+	g.add(p2);
+    }
+
 }

@@ -14,11 +14,19 @@ package answers;
 
 import figures.*;
 
-public aspect Answer2f {
-    pointcut checkpoint(Box box):
-        target(box) && call(public * *(..)) && !within(Answer*);
+import java.awt.Rectangle;
 
-    after(Box box) returning: checkpoint(box) {
-        box.checkBoxness();
+aspect Answer2f {
+    void around(FigureElement fe, int dx, int dy):
+            target(fe) && call(void move(int, int)) && args(dx, dy) {
+
+        Rectangle preBounds = new Rectangle(fe.getBounds());
+        proceed(fe, dx, dy);
+
+        preBounds.translate(dx, dy);
+
+        if (!preBounds.equals(fe.getBounds())) {
+            throw new IllegalStateException("bounds don't match move");
+        }
     }
 }

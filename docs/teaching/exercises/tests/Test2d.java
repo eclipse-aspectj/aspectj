@@ -16,22 +16,31 @@ import figures.*;
 
 import junit.framework.*;
 
-public class Test2d extends Test {
+public class Test2d extends TestCase {
     public Test2d(String name) { super(name); }
 
     public static void main(String[] args) {
+        junit.textui.TestRunner.run(Test.class);
         junit.textui.TestRunner.run(Test2d.class);
     }
 
-    public void setUp() {
-        super.setUp();
+    public void testOutOfBounds() {
+        Point p1 = new Point(10, 100);
+
+        p1.setX(-10);
+        p1.setY(-100);
+
+        assertEquals(0, p1.getX());
+        assertEquals(0, p1.getY());
     }
 
-    public void testSetting() {
-        try {
-            sloth1.setX(10);
-            fail("should have thrown RuntimeException");
-        } catch (RuntimeException ea) {
-        }
+    public void testInBounds() {
+        Point p1 = new Point(10, 100);
+
+        p1.setX(30);
+        p1.setY(300);
+
+        assertEquals(30, p1.getX());
+        assertEquals(300, p1.getY());
     }
 }

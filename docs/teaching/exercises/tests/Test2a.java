@@ -16,18 +16,16 @@ import figures.*;
 
 import junit.framework.*;
 
-public class Test2a extends Test {
+public class Test2a extends TestCase {
     public Test2a(String name) { super(name); }
 
     public static void main(String[] args) {
+        junit.textui.TestRunner.run(Test.class);
         junit.textui.TestRunner.run(Test2a.class);
     }
 
-    public void setUp() {
-        super.setUp();
-    }
-
     public void testTooSmall() {
+	Point p1 = new Point(10, 100);
         try {
             p1.setX(-10);
             fail("should have thrown IllegalArgumentException");
@@ -35,17 +33,13 @@ public class Test2a extends Test {
         }
     }
 
-
-    public void testTooBig() {
-        try {
-            p1.setY(1000);
-            fail("should have thrown IllegalArgumentException");
-        } catch (IllegalArgumentException ea) {
-        }
+    public void testNotTooSmall() {
+	Point p1 = new Point(10, 100);
+	p1.setX(0);
     }
 
-
     public void testMove() {
+        Line l1 = new Line(new Point(10, 100), new Point(20, 200));
         try {
             l1.move(-500, -500);
             fail("should have thrown IllegalArgumentException");

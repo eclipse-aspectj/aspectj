@@ -78,6 +78,15 @@ duplicate some code.  </p>
 
 <h3>a. Catch old tracing</h3>
 
+<p> <strong>Sample Exercise</strong>: The main point of this exercise
+is to make sure your configuration works.  We have provided the
+answer to this exercise below, so XXX.  You need not go through the
+thought process of fixing this </p>
+
+<p> <strong>Task:</strong> Signal a warning for calls to
+<code>System.out.println</code>. 
+</p>
+
 <p> The way that we are all taught to print "hello world" from Java is
 to use <code>System.out.println()</code>, so that is what we typically
 use for one-off debugging traces.  It's a common mistake to leave
@@ -135,8 +144,8 @@ users who bind System.out to a static field to save typing.  </p>
 
 <h3>b. Mandate setters</h3>
 
-<p> <strong>Problem:</strong> Add warnings for assignments outside of setter methods.
-</p>
+<p> <strong>Task:</strong> Signal a warning for assignments outside
+of setter methods.  </p>
 
 <p> <strong>Tools:</strong> <code>set</code>, <code>withincode</code>,
 signature <code>void set*(..)</code>
@@ -157,30 +166,26 @@ aspect A {
 
 <p> where the pointcut picks out join points of private field sets
 outside of setter methods.  "Outside", here, means that the code for
-the assignment is outside the <em>text</em> of the setter (a setter is
-a method that looks like "void set*(..)"), so check out the quick
-reference for <code>set</code> and <code>withincode</code> primitive
-pointcuts.  ) </p>
+the assignment is outside the <em>text</em> of the setter. 
 
 <p> Make sure your program still passes the JUnit test
 <code>tests.Test</code> before continuing, and that you see all of the
 following warning messages.  Make sure you get 11 warnings from this.
-Wait to fix them until the next exercise.
-</p>
+Wait to fix them until the next exercise.  </p>
 
 <h3>c. Refine setters mandate</h3>
 
-<p> <strong>Problem:</strong> Allow assignmnents inside of constructors.
+<p> <strong>Task:</strong> Allow assignmnents inside of constructors.
 </p>
 
 <p> <strong>Tools:</strong> signature <code>new(..)</code> </p>
 
-<p> Look at some of the warnings.  Notice that a lot of them are from
-within constructors.  Actually, the common coding convention is that
-no private field should be set outside of setter methods <emph>or
-constructors</emph>.  Modify your answer (in a new file) to signal an
-actual error at compile time (rather than just a warning) when such an
-illegal assignment expression exists.  </p>
+<p> Look at some of the warnings from the previous exercise.  Notice
+that a lot of them are from within constructors.  Actually, the common
+coding convention is that no private field should be set outside of
+setter methods <em>or constructors</em>.  Modify your answer (in a new
+file) to signal an actual error at compile time (rather than just a
+warning) when such an illegal assignment expression exists.  </p>
 
 <p>You'll want to add another <code>withincode</code> primitive
 pointcut to deal with the constructors. 
@@ -219,13 +224,16 @@ them.  </p>
 
 <h3>a. Check a simple precondition</h3>
 
-<p> <strong>Problem:</strong> Pass <code>tests.Test2a</code>.
+<p> <strong>Sample Exercise</strong>: The main point of this exercise
+is to make sure your configuration works.  We have provided the
+answer to this exercise below, so XXX.  You need not go through the
+thought process of fixing this </p>
+
+
+<p> <strong>Task:</strong> Pass <code>tests.Test2a</code>.
 </p>
 
 <p> <strong>Tools:</strong> <code>args</code>, <code>before</code>
-</p>
-
-<p> THERE IS AN ANSWER BELOW. LOOK AT IT.  TYPE IT IN.  
 </p>
 
 <p> Write an aspect to throw an <code>IllegalArgumentException</code>
@@ -275,45 +283,33 @@ import figures.*;
 
 aspect Answer2a {
     before(int newValue): set(int Point.*) &amp;&amp; args(newValue) {
-        if (newValue &lt; FigureElement.MIN_VALUE) {
+        if (newValue < 0) {
             throw new IllegalArgumentException("too small");
-        } else if (newValue &gt; FigureElement.MAX_VALUE) {
-            throw new IllegalArgumentException("too large");
-        }
+        } 
     }
 }
 </PRE></blockquote>
 
 <h3>b. Check another precondition</h3>
 
+<p> <strong>Task:</strong> Pass <code>tests.Test2b</code>. </p>
+
 <p> <code>Group</code> is a <code>FigureElement</code> class that
 encapsulates groups of other figure elements.  As such, only actual
-figure element objects should be added to <code>Group</code> objects.  Write
-an aspect to throw an <code>IllegalArgumentException</code> whenever
-<code>Group.add()</code> is called with a
-<code>null</code> value.  If you look at the source code for
-tests/Test2b.java, you'll see an example of the desired behavior,
-i.e. </p>
+figure element objects should be added to <code>Group</code> objects.
+Write an aspect to throw an <code>IllegalArgumentException</code>
+whenever <code>Group.add()</code> is called with a <code>null</code>
+value. </p>
 
-<pre>
-    public void testNull() {
-        try {
-	    g.add(null);
-            fail("should have thrown IllegalArgumentException");
-        } catch (IllegalArgumentException ea) {
-        }
-    }
-</pre>
-
-<p> For each of these exercises, you'll find that the corresponding
-test case provides that most concrete example of the desired behavior
-for your aspect.  Please avail yourself of this resource. </p>
-
-<p> With this aspect in place, your code should pass
-<code>tests.Test2b</code>. 
-</p>
+<p> Look at <code>tests/Test2b.java</code> to see exactly what we're
+testing for. </p>
 
 <h3>c. Check yet another precondition</h3>
+
+<p> <strong>Task:</strong> Pass <code>tests.Test2c</code>. </p>
+
+<p> <strong>Tools:</strong> <code>target</code>
+</p>
 
 <p> Another constraint on a well-formed group is that it should not
 contain itself as a member (though it may contain other groups). Write
@@ -326,9 +322,70 @@ an attempt is made to call <code>Group.add()</code> on a
 call. 
 </p>
 
-<p> With this aspect in place, your code should pass
-<code>tests.Test2c</code>. 
+XXX RENUMBER LATER
+
+<h3>d. Assure input</h3>
+
+<p> <strong>Task: </strong> Pass <code>tests.Test2g</code>.
 </p>
+
+<p> <strong>Tools: </strong>  around advice
+</p>
+
+<p> Instead of throwing an exception when one of <code>Point</code>'s
+<code>int</code> fields are set to an out-of-bounds value, write an
+aspect to trim the value into an in-bounds one.  You'll want to use
+<code>around</code> advice that exposes the new value of the field
+assignment with an <code>args</code> pointcut, and
+<code>proceed</code> with the trimmed value. </p>
+
+<h3>e. Check a postcondition</h3>
+
+<p> <strong>Task: </strong>  Pass <code>tests.Test2e</code>
+</p>
+
+<p> <strong>Tools: </strong>  around advice
+</p>
+
+<p> A postcondition of a <code>Point</code>'s <code>move</code>
+operation is that the <code>Point</code>'s coordinates should change.
+If a call to move move didn't actually move a point by the desired
+offset, then the point is in an illegal state and so an
+<code>IllegalStateException</code> should be thrown.
+</p>
+
+<p> Note that because we're dealing with how the coordinates change
+during move, we need some way of getting access to the coordinates
+both before <em>and</em> after the move, in one piece of advice.  </p>
+
+<h3>f. Check another postcondition</h3>
+
+<p> <strong>Task: </strong>  Pass <code>tests.Test2f</code>
+</p>
+
+<p> <strong>Tools:</strong> the <code> Rectangle(Rectangle)</code>
+constructor, the <code>Rectangle.translate(int, int)</code> method.
+</p>
+
+<p> <code>FigureElement</code> objects have a <code>getBounds()</code>
+method that returns a <code>java.awt.Rectangle</code> representing the
+bounds of the object.  An important postcondition of the general
+<code>move</code> operation on a figure element is that the figure
+element's bounds rectangle should move by the same amount as the
+figure itself.  Write an aspect to check for this postcondition --
+throw an <code>IllegalStateException</code> if it is violated.  </p>
+
+<h3>Help Yourself by Helping Others</h3>
+
+<p> At this point, check the people to your left and right.  If
+they're stuck somewhere, see if you can help them.  </p>
+
+<!-- ============================== -->
+
+<hr />
+<!-- page break -->
+
+<h2>3. Logging</h2>
 
 <h3>d. Check a simple postcondition</h3>
 
@@ -351,6 +408,7 @@ when it returns normally, or both?  </p>
 <p> With this aspect in place, your code should pass
 <code>tests.Test2d</code>. 
 </p>
+
 
 <h3>e. Check invariant</h3>
 
@@ -398,77 +456,7 @@ causes the VM to abort.)
 <p> Make sure to pass the JUnit test <code>tests.Test2f</code>
 before continuing.  </p>
 
-
-<h3>g. Assure input</h3>
-
-<p> Instead of throwing an exception when one of <code>Point</code>'s
-<code>int</code> fields are set to an out-of-bounds value, write an
-aspect to trim the value into an in-bounds one.  You'll want to use
-<code>around</code> advice that exposes the new value of the field
-assignment with an <code>args</code> pointcut, and
-<code>proceed</code> with the trimmed value. Becuase this is tricky,
-type in the below aspect... the trick for this exercise is not to come
-up with an answer, but to understand the answer. </p>
-
-<p> Make sure to pass the JUnit test <code>tests.Test2g</code>
-before continuing.  </p>
-
-<p> <strong>Answer: </strong>
-</p>
-
-<blockquote><PRE>
-package answers;
-
-import figures.*;
-
-aspect Answer2g {
-    int around(int val):
-            (set(int Point._x) || set(int Point._y))
-            &amp;&amp; args(val) {
-        return proceed(trim(val));
-    }
-
-    private int trim(int val) {
-        return Math.max(Math.min(val, FigureElement.MAX_VALUE),
-                        FigureElement.MIN_VALUE);
-    }
-}
-</PRE></blockquote>
-
-
-<h3>h. Check another invariant</h3>
-
-<p> <code>FigureElement</code> objects have a <code>getBounds()</code>
-method that returns a <code>java.awt.Rectangle</code> representing the
-bounds of the object.  An important postcondition of the
-<code>move</code> operation is that the figure element's bounds
-rectangle should move by the same amount as the figure itself.  Write
-an aspect to check for this postcondition -- throw an
-<code>IllegalStateException</code> if it is violated.  </p>
-
-<p> Note that because we're dealing with how the bounds changes during
-move, we need some way of getting access to the bounds both before
-<em>and</em> after the move, in one piece of advice.  Also, note that
-you can create a copy of a figure element's bounds rectangle with
-<code>new Rectangle(fe.getBounds())</code>, and you can move a bounds
-rectangle <code>rect</code> with <code>rect.translate(dx,
-dy)</code>. </p>
-
-<p> Make sure to pass the JUnit test <code>tests.Test2h</code>
-before continuing.  </p>
-
-
-<h3>Help Yourself by Helping Others</h3>
-
-<p> At this point, check the people to your left and right.  If
-they're stuck somewhere, see if you can help them.  </p>
-
-<!-- ============================== -->
-
-<hr />
-<!-- page break -->
-
-<h2>3. Logging</h2>
+==================================================
 
 <p> The crosscutting feature you will be adding in part (4) will be
 support for caching the bound objects of <code>Group</code> figure

@@ -17,10 +17,8 @@ import figures.FigureElement;
 
 public aspect Answer2a {
     before(int newValue): set(int Point.*) && args(newValue) {
-        if (newValue < FigureElement.MIN_VALUE) {
+        if (newValue < 0) {
             throw new IllegalArgumentException("too small");
-        } else if (newValue > FigureElement.MAX_VALUE) {
-            throw new IllegalArgumentException("too large");
         }
     }
 }

@@ -12,13 +12,13 @@
 
 package answers;
 
-import figures.SlothfulPoint;
+import figures.*;
 
 aspect Answer2d {
-    after(int newValue, SlothfulPoint p) returning:
-            call(void setX(int)) && args(newValue) && target(p) {
-        if (newValue != p.getX()) {
-            throw new RuntimeException("setter didn't set");
-        }
+    int around(int val): (set(int Point._x) || set(int Point._y))
+                         && args(val) {
+        if (val < 0)
+            val = 0;
+        return proceed(val);
     }
 }

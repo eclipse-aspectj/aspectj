@@ -20,23 +20,23 @@ public class Test2f extends Test {
     public Test2f(String name) { super(name); }
 
     public static void main(String[] args) {
+        junit.textui.TestRunner.run(Test.class);
         junit.textui.TestRunner.run(Test2f.class);
     }
 
-    public void setUp() {
-        super.setUp();
-    }
-
-    public void testEasy() {
-        Box sq = new Box(0, 0, 10, 10);
-        sq.move(5,5);
-        assertEquals(sq.getP0().getX(), 5);
-        assertEquals(sq.getP0().getY(), 5);
-
+    public void testSloth() {
+        FigureElement fe = new SlothfulPoint(10, 10);
         try {
-            sq.getP0().setX(100);
-            sq.getP1();
+            fe.move(10, 10);
             fail("should have thrown IllegalStateException");
         } catch (IllegalStateException e) { }
+    }
+
+    public void testNonSloth() {
+        Point p1 = new Point(10, 100);
+        Point p2 = new Point(20, 200);
+        Line  l1 = new Line(p1, p2);
+
+        l1.move(3, 30);
     }
 }

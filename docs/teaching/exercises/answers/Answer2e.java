@@ -14,11 +14,21 @@ package answers;
 
 import figures.*;
 
-public aspect Answer2e {
-    pointcut checkpoint(Box box):
-        call(void move(int, int)) && target(box);
+import java.awt.Rectangle;
 
-    after(Box box) returning: checkpoint(box) {
-        box.checkBoxness();
+aspect Answer2e {
+    void around(Point p, int dx, int dy):
+            target(fe) && call(void move(int, int)) && args(dx, dy) {
+        int preX = p.getX();
+        int preY = p.getY();
+
+        proceed(p, dx, dy);
+
+        int postX = p.getX();
+        int postY = p.getY();
+
+        if ((postX != preX + dx) || (postY != preY + dy)) {
+            throw new IllegalStateException("point didn't move properly");
+        }
     }
 }
