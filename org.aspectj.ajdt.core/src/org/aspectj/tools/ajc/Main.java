@@ -38,6 +38,18 @@ import org.aspectj.util.LangUtil;
  * Programmatic and command-line interface to AspectJ compiler.
  * The compiler is an ICommand obtained by reflection.
  * Not thread-safe.
+ * By default, messages are printed as they are emitted;
+ * info messages go to the output stream, and 
+ * warnings and errors go to the error stream.
+ * <p>
+ * Clients can handle all messages by registering a holder:
+ * <pre>Main main = new Main();
+ * IMessageHolder holder = new MessageHandler();
+ * main.setHolder(holder);</pre>
+ * Clients can get control after each command completes
+ * by installing a Runnable:
+ * <pre>main.setCompletionRunner(new Runnable() {..});</pre>
+ * 
  */
 public class Main {
 	/** Header used when rendering exceptions for users */
@@ -105,10 +117,13 @@ public class Main {
     
     /** internally-set message sink */
     private final MessageHandler ourHandler;
-        
+    
     private int lastFails;
     private int lastErrors;
 
+    /** if not null, run this synchronously after each compile completes */
+    private Runnable completionRunner;
+    
     public Main() {
         controller = new CommandController();
         commandName = ReflectionFactory.ECLIPSE;
@@ -248,7 +263,16 @@ public class Main {
     public void setHolder(IMessageHolder holder) {
         clientHolder = holder;
     }
-        
+    
+    /**
+     * Install a Runnable to be invoked synchronously
+     * after each compile completes.
+     * @param runner the Runnable to invoke - null to disable
+     */
+    public void setCompletionRunner(Runnable runner) {
+        this.completionRunner = runner;
+    }
+    
     /**
      * Nicer messages for some illegal argument combinations
      */
@@ -311,6 +335,10 @@ public class Main {
     protected boolean report(boolean pass, IMessageHolder holder) {
         lastFails = holder.numMessages(IMessage.FAIL, true);
         boolean result = (0 == lastFails);
+        final Runnable runner = completionRunner;
+        if (null != runner) {
+            runner.run();
+        }
         if (holder == ourHandler) {
             lastErrors = holder.numMessages(IMessage.ERROR, false);
             int warnings = holder.numMessages(IMessage.WARNING, false);
@@ -324,19 +352,8 @@ public class Main {
                     : System.out);
                 out.println(""); // XXX "wrote class file" messages no eol?
                 out.println(sb.toString());
-                if (false) { // printed elsewhere so printed when found
-                    if (0 < lastFails) {
-                        MessageUtil.print(System.err, holder, "", MessageUtil.MESSAGE_ALL, MessageUtil.PICK_FAIL_PLUS);
-                    }
-                    if (0 < lastErrors) {
-                        MessageUtil.print(System.err, holder, "", MessageUtil.MESSAGE_ALL, MessageUtil.PICK_ERROR);
-                    }
-                    if (0 < warnings) {
-                        MessageUtil.print(System.err, holder, "", MessageUtil.MESSAGE_ALL, MessageUtil.PICK_WARNING);
-                    }
-                }
             }
-        }
+        } 
         return result;
     }
         
@@ -500,9 +517,12 @@ public class Main {
                 args = LangUtil.extractOptions(args, options);
                 incremental = (null != options[0][0]);
                 if (null != options[1][0]) {
-                    tagFile = new File(options[1][1]);
-                    if (!tagFile.exists()) {
-                        MessageUtil.abort(sink, "tag file does not exist: " + tagFile);
+                    File file = new File(options[1][1]);
+                    if (!file.exists()) {
+                        MessageUtil.abort(sink, "tag file does not exist: " + file);
+                    } else {
+                        tagFile = file;
+                        fileModTime = tagFile.lastModified();
                     }
                 }
             }
