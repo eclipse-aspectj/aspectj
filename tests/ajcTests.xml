@@ -6785,4 +6785,12 @@
             options="-1.4"/>
         <run class="de.test.MyMain"/>
     </ajc-test>
+
+	<ajc-test dir="bugs/extdirs" 
+		pr="42574"
+		title="zip and jar suffixes for extdirs entries">
+		<compile files="extdirs-src/main/Main.java"
+			extdirs="lib/lowercase"/>
+	</ajc-test>
+
 </suite>
