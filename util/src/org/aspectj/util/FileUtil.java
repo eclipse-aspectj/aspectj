@@ -37,7 +37,16 @@ public class FileUtil {
     public static final FileFilter ALL = new FileFilter() {
         public boolean accept(File f) { return true; }
     };
-    
+    public static final FileFilter DIRS_AND_WRITABLE_CLASSES
+        = new FileFilter() {
+            public boolean accept(File file) {
+                return ((null != file)
+                    && (file.isDirectory()
+                        || (file.canWrite()
+                            && file.getName().toLowerCase().endsWith(".class"))));
+            }
+        };
+
     /** @return true if file path has a zip/jar suffix */
     public static boolean hasZipSuffix(File file) {
         return ((null != file) && hasZipSuffix(file.getPath()));
