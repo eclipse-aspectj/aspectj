@@ -6189,5 +6189,10 @@
         <inc-compile tag="20"/>
         <run class="app.Main"/>
     </ajc-test>
-
+    
+    <ajc-test dir="bugs" pr="37325"  
+      title="Weaver fails with NPE for very large source files ">
+        <compile files="LongFile.java"/>
+        <run class="LongFile"/>
+    </ajc-test>   
 </suite>
