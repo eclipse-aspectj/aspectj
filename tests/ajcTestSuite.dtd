@@ -20,7 +20,8 @@
    <!ATTLIST compile includeClassesDir CDATA #IMPLIED >
    <!ATTLIST compile argfiles CDATA #IMPLIED >
    <!ATTLIST compile aspectpath CDATA #IMPLIED >
-   <!ATTLIST compile classpath CDATA #IMPLIED > <!-- XXX unused - calculated -->
+   <!ATTLIST compile classpath CDATA #IMPLIED >
+   <!ATTLIST compile extdirs CDATA #IMPLIED >
    <!ATTLIST compile options CDATA #IMPLIED >
    <!ATTLIST compile sourceroots CDATA #IMPLIED >
 

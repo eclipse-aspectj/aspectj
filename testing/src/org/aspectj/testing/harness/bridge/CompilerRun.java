@@ -178,7 +178,11 @@ public class CompilerRun implements IAjcRun {
                 || !validator.canRead(
                     testBaseSrcDir,
                     spec.sourceroots,
-                    "sourceroots")) {
+                    "sourceroots") 
+                || !validator.canRead(
+                    testBaseSrcDir,
+                    spec.extdirs,
+                    "extdirs")) {
                 return false;
             }
         }
@@ -200,6 +204,8 @@ public class CompilerRun implements IAjcRun {
             FileUtil.getBaseDirFiles(testBaseSrcDir, injarPaths);
         final File[] aspectFiles =
             FileUtil.getBaseDirFiles(testBaseSrcDir, spec.aspectpath);
+        final File[] extdirFiles =
+            FileUtil.getBaseDirFiles(testBaseSrcDir, spec.extdirs);
         final File[] classFiles =
             FileUtil.getBaseDirFiles(testBaseSrcDir, spec.classpath);
         // hmm - duplicates validation above, verifying getBaseDirFiles?
@@ -298,6 +304,12 @@ public class CompilerRun implements IAjcRun {
             return false;
         }
         arguments.clear();
+        
+        if (!LangUtil.isEmpty(extdirFiles)) {
+            arguments.add("-extdirs");
+            String sr = FileUtil.flatten(extdirFiles, null);
+            arguments.add(sr);
+        }
         if (!LangUtil.isEmpty(sourcerootFiles)) {
             arguments.add("-sourceroots");
             String sr = FileUtil.flatten(sourcerootFiles, null);
@@ -659,14 +671,16 @@ public class CompilerRun implements IAjcRun {
 
         // use same command - see also IncCompiler.Spec.fresh
         protected boolean reuseCompiler;
+        protected boolean permitAnyCompiler;
         protected boolean includeClassesDir;
 
         protected TestSetup testSetup;
 
         protected String[] argfiles = new String[0];
         protected String[] aspectpath = new String[0];
-        protected String[] classpath = new String[0]; // XXX unused
+        protected String[] classpath = new String[0];
         protected String[] sourceroots = new String[0];
+        protected String[] extdirs = new String[0];
 
         /** src path = {suiteParentDir}/{testBaseDirOffset}/{testSrcDirOffset}/{path} */
         protected String testSrcDirOffset;
@@ -686,7 +700,9 @@ public class CompilerRun implements IAjcRun {
             spec.compiler = compiler;
             spec.includeClassesDir = includeClassesDir;
             spec.reuseCompiler = reuseCompiler;
+            spec.permitAnyCompiler = permitAnyCompiler;
             spec.sourceroots = copy(sourceroots);
+            spec.extdirs = copy(extdirs);
             spec.testSetup = null;
             if (null != testSetup) {
                 spec.testSetup = (TestSetup) testSetup.clone();
@@ -705,6 +721,10 @@ public class CompilerRun implements IAjcRun {
         }
         public void setReuseCompiler(boolean reuse) {
             this.reuseCompiler = reuse;
+        }
+
+        public void setPermitAnyCompiler(boolean permitAny) {
+            this.permitAnyCompiler = permitAny;
         }
 
         public void setCompiler(String compilerName) {
@@ -760,6 +780,17 @@ public class CompilerRun implements IAjcRun {
         public void setSourceroots(String dirs) {
             if (!LangUtil.isEmpty(dirs)) {
                 sourceroots = XMLWriter.unflattenList(dirs);
+            }
+        }
+
+        /** 
+         * Set extension dirs, deleting any old ones
+         * @param files comma-delimited list of directories
+         *  - ignored if null or empty
+         */
+        public void setExtdirs(String dirs) {
+            if (!LangUtil.isEmpty(dirs)) {
+                extdirs = XMLWriter.unflattenList(dirs);
             }
         }
 
@@ -1039,12 +1070,14 @@ public class CompilerRun implements IAjcRun {
              * @param compilerName the String name of the target compiler
              * @return a String describing any conflicts, or null if none
              */
-            if (!(ReflectionFactory.ECLIPSE.equals(compilerName)
-                || ReflectionFactory.OLD_AJC.equals(compilerName)
-                || CRSOPTIONS.AJDE_COMPILER.equals(compilerName)
-                || CRSOPTIONS.AJCTASK_COMPILER.equals(compilerName) 
-                )) {
-                //|| BUILDER_COMPILER.equals(compilerName))
+            if (!permitAnyCompiler
+                && (!(ReflectionFactory.ECLIPSE.equals(compilerName)
+                    || ReflectionFactory.OLD_AJC.equals(compilerName)
+                    || CRSOPTIONS.AJDE_COMPILER.equals(compilerName)
+                    || CRSOPTIONS.AJCTASK_COMPILER.equals(compilerName)
+                    || permitAnyCompiler 
+                    ))) {
+                    //|| BUILDER_COMPILER.equals(compilerName))
                 result.failureReason =
                     "unrecognized compiler: " + compilerName;
                 return true;
@@ -1256,6 +1289,10 @@ public class CompilerRun implements IAjcRun {
             if (reuseCompiler) {
                 out.printAttribute("reuseCompiler", "true");
             }
+// test-only feature
+//            if (permitAnyCompiler) {
+//                out.printAttribute("permitAnyCompiler", "true");
+//            }
             if (includeClassesDir) {
                 out.printAttribute("includeClassesDir", "true");
             }
@@ -1267,12 +1304,17 @@ public class CompilerRun implements IAjcRun {
             if (!LangUtil.isEmpty(aspectpath)) {
                 out.printAttribute(
                     "aspectpath",
-                    XMLWriter.flattenFiles(argfiles));
+                    XMLWriter.flattenFiles(aspectpath));
             }
             if (!LangUtil.isEmpty(sourceroots)) {
                 out.printAttribute(
                     "sourceroots",
-                    XMLWriter.flattenFiles(argfiles));
+                    XMLWriter.flattenFiles(sourceroots));
+            }
+            if (!LangUtil.isEmpty(extdirs)) {
+                out.printAttribute(
+                    "extdirs",
+                    XMLWriter.flattenFiles(extdirs));
             }
             out.endAttributes();
             if (!LangUtil.isEmpty(dirChanges)) {
@@ -1563,6 +1605,9 @@ public class CompilerRun implements IAjcRun {
                         factory.create("XnoWeave"),
                         factory.create("XserializableAspects")
                     };
+                    
+                // among options not permitted: extdirs...
+                
                 for (int i = 0; i < options.length; i++) {
                     crsOptions.addOption(options[i]);
                 }
