@@ -301,37 +301,48 @@ For bug fixes, associated tests in
   </li>
   
   <li>All compiler tests in <code>tests/ajcTests.xml</code>. 
-    Run these before the final build using the test harness.  
-    Run both with and without the
-    -emacssym option.  You can ignore known limitations and pure-java
-    failures (the latter 
-    because they are presumed to be the fault of the underlying
-    eclipse Java compiler); do that by excluding those keywords.  
-    For example, the following command runs the <code>ajcTests.xml</code>
-    suite twice (with and without -emacssym), skipping tests with
-    "pureJava" or "knownLimitation" as keywords, emitting verbose harness
-    information but logging only failures (not passes).  It also
-    suppresses the output streams (but those associated with
-    failures are emitted when the failures are logged).
+    Run these before the final build using the test harness,
+    as follows:
 <pre>
   cd tests/
-  java -jar ../aj-build/jars/testing-drivers-all.jar ajcTests.xml -emacssym- \
-     -ajctestSkipKeywords=pureJava,knownLimitation -logFail -verbose -hideStreams
-</pre>
-   You might also be able to use the build script:
+  java -jar {..}/testing-drivers-all.jar ajcTests.xml -release 
+</pre>        
+    The <code>-release</code> option skips tests 
+    marked <code>purejava</code> or <code>knownLimitation</code>
+    and only emits one-line results for each test:
 <pre>
-  cd build
-  ../lib/ant/bin/ant -f build.xml ajcTests
-</pre>    
+PASS one test identifier()
+FAIL another test identifier()
+...
+</pre>
+    (Use <code>-help</code> on the harness to see the full 
+    definition of the <code>-release</code> alias.)
+    Run with and without the <code>-emacssym</code> option, 
+    saving the output
+    to the appropriate subdirectory of 
+      <a href="../../releases">the releases directory</a>.
+    with the name 
+       <code>ajcTests-result-{version}.txt</code> 
+    or <code>ajcTests-result-{version}-emacssym.txt</code>.
+    <p>
+    Compare results with a prior release or test run using TestDiffs:
+<pre>
+  set CLASSPATH="{..}/testing-drivers-all.jar"
+  java org.aspectj.testing.util.TestDiffs {first-run}.txt {second-run}.txt
+</pre>        
+   This will generate lists of tests fixed, broken, missing, or
+   added.  For a release, no tests should be broken, and missing 
+   tests (those in the first run absent from the
+   second run) should be justified (usually the test was
+   removed as invalid). A test will show up as
+   missing from the first run and added to the second run if
+   it is renamed between runs.
+   <p>
     For more information, see the instructions for building and running
-    the test harness
-       <a href="../testing-drivers/readme-testing-drivers.html">
-                ../testing-drivers/readme-testing-drivers.html</a>
-    and the tests
+    the test harness and the tests
        <a href="../tests/readme-tests-module.html">
                 ../tests/readme-tests-module.html</a>.
-  </li>
-  
+     </li>  
   <li>Examples.  Run these on the built/installed release:
 <pre>
     cd {aspectj-install}/doc/examples
