@@ -1,7 +1,7 @@
 /* *******************************************************************
  * Copyright (c) 2001-2001 Xerox Corporation, 
  *               2002 Palo Alto Research Center, Incorporated (PARC)
- *               2003 Contributors.
+ *               2003-2004 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -10,6 +10,7 @@
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
+ *     Wes Isberg     2003-2004 changes
  * ******************************************************************/
 
 
@@ -242,6 +243,13 @@ public class AjcTask extends MatchingTask {
 
     public static final String COMMAND_EDITOR_NAME
         = AjcTask.class.getName() + ".COMMAND_EDITOR";
+
+    static final String[] TARGET_INPUTS = new String [] 
+    { "1.1", "1.2", "1.3", "1.4" };
+    static final String[] SOURCE_INPUTS = new String [] 
+    { "1.3", "1.4" };
+    static final String[] COMPLIANCE_INPUTS = new String [] 
+    { "1.3", "1.4" };
 
     private static final ICommandEditor COMMAND_EDITOR;
             
@@ -599,46 +607,38 @@ public class AjcTask extends MatchingTask {
         destDir = dir;        
     }
     
-    public void setTarget(String either11or12) {
-    	if ("1.1".equals(either11or12)) {
-    		cmd.addFlagged("-target", "1.1");
-    	} else if ("1.2".equals(either11or12)) {
-    		cmd.addFlagged("-target", "1.2");
-    	} else if (null != either11or12){
-    		ignore("-target " + either11or12);
-    	}   		
+    /**
+     * @param input a String in TARGET_INPUTS
+     */
+    public void setTarget(String input) {
+        String ignore = cmd.addOption("-target", TARGET_INPUTS, input);
+        if (null != ignore) {
+            ignore(ignore);
+        }
     }
     
     /** 
      * Language compliance level.
      * If not set explicitly, eclipse default holds.
-     * @param either13or14 either "1.3" or "1.4"
+     * @param input a String in COMPLIANCE_INPUTS
      */
-    public void setCompliance(String either13or14) {
-    	if ("1.3".equals(either13or14)) {
-    		cmd.addFlag("-1.3", true);
-    	} else if ("1.4".equals(either13or14)) {
-    		cmd.addFlag("-1.4", true);
-//        } else if ("1.5".equals(either13or14)) {
-//            cmd.addFlag("-1.5", true);
-        } else if (null != either13or14) {
-    		ignore(either13or14 + "[compliance]");
-    	}   		
+    public void setCompliance(String input) {
+        String ignore = cmd.addOption(null, COMPLIANCE_INPUTS, input);
+        if (null != ignore) {
+            ignore(ignore);
+        }
     }
     
     /** 
      * Source compliance level.
      * If not set explicitly, eclipse default holds.
-     * @param either13or14 either "1.3" or "1.4"
+     * @param input a String in SOURCE_INPUTS
      */
-    public void setSource(String either13or14) {
-    	if ("1.3".equals(either13or14)) {
-    		cmd.addFlagged("-source", "1.3");
-    	} else if ("1.4".equals(either13or14)) {
-    		cmd.addFlagged("-source", "1.4");
-    	} else if (null != either13or14) {
-    		ignore("-source " + either13or14);
-    	}   		
+    public void setSource(String input) {
+        String ignore = cmd.addOption("-source", SOURCE_INPUTS, input);
+        if (null != ignore) {
+            ignore(ignore);
+        }
     }
     /**
      * Flag to copy all non-.class contents of injars
@@ -1741,6 +1741,24 @@ public static class GuardedCommand {
             command.createArgument().setValue(flag);
             //size += 1 + flag.length();
         }
+    }
+    
+    /** @return null if added or ignoreString otherwise */
+    String addOption(String prefix, String[] validOptions, String input) {
+        if (isEmpty(input)) {
+            return null;
+        }
+        for (int i = 0; i < validOptions.length; i++) {
+			if (input.equals(validOptions[i])) {
+                if (isEmpty(prefix)) {
+                    addFlag(input, true);
+                } else {
+                    addFlagged(prefix, input);
+                }
+                return null;
+			}
+		}
+        return (null == prefix ? input : prefix + " " + input);
     }
     
     void addFlagged(String flag, String argument) {
