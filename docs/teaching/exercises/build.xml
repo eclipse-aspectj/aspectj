@@ -23,10 +23,10 @@ and a clean AspectJ installer.
   <!-- CUSTOMIZE THESE PROPERTIES -->
 
   <!-- this directory should hold a clean unpacked AspectJ release -->
-  <property name="aj.home" value="c:/apps/aspectj11" />
+  <property name="aj.home" value="c:/apps/aspectj" />
 
   <!-- this is the name of the event -->
-  <property name="aj.event" value="oopsla2003" />
+  <property name="aj.event" value="oopsla2004" />
 
   <!-- NO CUSTOMIZABLE PROPERTIES BELOW HERE -->
 
@@ -49,6 +49,8 @@ and a clean AspectJ installer.
     <delete dir="${printdir}/exercises.pdf.contents" />
     <mkdir dir="${printdir}/exercises.pdf.contents" />
     <copy toDir="${printdir}/exercises.pdf.contents" file="index.html" />
+    <copy toDir="${printdir}/exercises.pdf.contents" file="figures_classes.gif" />
+    <copy toDir="${printdir}/exercises.pdf.contents" file="${aj.home}/doc/quick.pdf" />
 
     <delete dir="${printdir}/install.pdf.contents" />
     <mkdir dir="${printdir}/install.pdf.contents" />
