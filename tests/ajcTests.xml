@@ -6382,4 +6382,10 @@
         <compile files="p1/Base.java,p2/Derived.java"/>
         <run class="p2.Derived"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs" pr="38345" keywords="purejava"
+   	 title="try switch VerifyError, InconsistentStackHeight">
+        <compile files="TrySwitch.java"/>
+        <run class="TrySwitch"/>
+    </ajc-test>
 </suite>

@@ -1,4 +1,9 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 <suite> 
+    <ajc-test dir="bugs" pr="38345" keywords="purejava"
+   	 title="try switch VerifyError, InconsistentStackHeight">
+        <compile files="TrySwitch.java"/>
+        <run class="TrySwitch"/>
+    </ajc-test>
 
 </suite>
