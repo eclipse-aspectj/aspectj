@@ -117,7 +117,7 @@ public class HelloWorld extends java.lang.Object:
                     ALOAD_0
                     LDC "method-execution"
                     ALOAD_0
-                    LDC "9-main-HelloWorld-[Ljava/lang/String;:-args:--void-"
+                    LDC "9-main-HelloWorld-[Ljava.lang.String;:-args:--void-"
                     INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeMethodSig (Ljava/lang/String;)Lorg/aspectj/lang/reflect/MethodSignature;
                     BIPUSH 8
                     INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeSJP (Ljava/lang/String;Lorg/aspectj/lang/Signature;I)Lorg/aspectj/lang/JoinPoint$StaticPart;
