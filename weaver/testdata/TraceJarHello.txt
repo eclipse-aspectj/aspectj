@@ -65,47 +65,19 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
     |               INVOKESTATIC MyTrace.aspectOf ()LMyTrace;
     |               ALOAD_0
     |               INVOKEVIRTUAL Trace.ajc$before$Trace$51 (Ljava/lang/Object;)V
-    |               INVOKESTATIC MyTrace.aspectOf ()LMyTrace;
-    |               ACONST_NULL
-    |               ASTORE 13
-    |               ASTORE 12
-    |               LDC "Hi"   (line 9)
-    |               ASTORE 14
-    |               GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 10)
-    |               NEW java.lang.StringBuffer
-    |               DUP
-    |               LDC "start around: "
-    |               INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
-    |               ALOAD 14
-    |               INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/Object;)Ljava/lang/StringBuffer;
-    |               INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;
-    |               INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
-    |               ALOAD 13   (line 11)
-    |               ASTORE 18
     |               ALOAD_0
     |               ALOAD_3
     |               ALOAD 4
-    |               INVOKESTATIC DynamicHelloWorld.doit_aroundBody1 (LDynamicHelloWorld;Ljava/lang/String;Ljava/util/List;)Ljava/lang/String;
-    |               ASTORE 16
-    |               GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 12)
-    |               NEW java.lang.StringBuffer
-    |               DUP
-    |               LDC "exiting around with: "
-    |               INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
-    |               ALOAD 16
-    |               INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/Object;)Ljava/lang/StringBuffer;
-    |               INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;
-    |               INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
-    |               ALOAD 16   (line 13)
-    |               GOTO L0
-    |           L0: NOP
+    |               INVOKESTATIC MyTrace.aspectOf ()LMyTrace;
+    |               ACONST_NULL
+    |               INVOKESTATIC DynamicHelloWorld.doit_aroundBody3$advice (LDynamicHelloWorld;Ljava/lang/String;Ljava/util/List;LTrace;Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
     |               CHECKCAST java.lang.String
-    |               GOTO L1
-    |           L1: DUP
-    |               ASTORE 19
+    |               GOTO L0
+    |           L0: DUP
+    |               ASTORE 5
     |               INVOKESTATIC MyTrace.aspectOf ()LMyTrace;
     |               ALOAD_0
-    |               ALOAD 19
+    |               ALOAD 5
     |               INVOKEVIRTUAL MyTrace.ajc$afterReturning$MyTrace$6e (Ljava/lang/Object;Ljava/lang/Object;)V
     |               ARETURN
     method-execution(java.lang.String DynamicHelloWorld.doit(java.lang.String, java.util.List))
@@ -125,45 +97,80 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
                     ARETURN
   end static final String doit_aroundBody0(DynamicHelloWorld, String, java.util.List)
 
-  static final String doit_aroundBody1(DynamicHelloWorld, String, java.util.List):
-                    INVOKESTATIC MyTrace.aspectOf ()LMyTrace;
-                    ALOAD_0
-                    ACONST_NULL
-                    ASTORE_3
-                    ASTORE 5
-                    ASTORE 7
+  static final Object doit_aroundBody1$advice(DynamicHelloWorld, String, java.util.List, Trace, Object, org.aspectj.runtime.internal.AroundClosure):
                     GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 17)
                     NEW java.lang.StringBuffer
                     DUP
                     LDC "start around(2): "
                     INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
-                    ALOAD 5
+                    ALOAD 4
                     INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/Object;)Ljava/lang/StringBuffer;
                     INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;
                     INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
-                    ALOAD 5   (line 18)
-                    ALOAD_3
-                    ASTORE 9
-                    ASTORE 11
-                    ALOAD 11
+                    ALOAD 4   (line 18)
+                    ALOAD 5
+                    ASTORE 7
+                    ASTORE 8
+                    ALOAD 8
                     CHECKCAST DynamicHelloWorld
                     ALOAD_1
                     ALOAD_2
                     INVOKESTATIC DynamicHelloWorld.doit_aroundBody0 (LDynamicHelloWorld;Ljava/lang/String;Ljava/util/List;)Ljava/lang/String;
-                    ASTORE 13
+                    ASTORE 6
                     GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 19)
                     NEW java.lang.StringBuffer
                     DUP
                     LDC "exiting around with(2): "
                     INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
-                    ALOAD 13
+                    ALOAD 6
                     INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/Object;)Ljava/lang/StringBuffer;
                     INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;
                     INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
-                    ALOAD 13   (line 20)
-                    GOTO L0
-                L0: NOP
+                    ALOAD 6   (line 20)
+                    ARETURN
+  end static final Object doit_aroundBody1$advice(DynamicHelloWorld, String, java.util.List, Trace, Object, org.aspectj.runtime.internal.AroundClosure)
+
+  static final String doit_aroundBody2(DynamicHelloWorld, String, java.util.List):
+                    ALOAD_0
+                    ALOAD_1
+                    ALOAD_2
+                    INVOKESTATIC MyTrace.aspectOf ()LMyTrace;
+                    ALOAD_0
+                    ACONST_NULL
+                    INVOKESTATIC DynamicHelloWorld.doit_aroundBody1$advice (LDynamicHelloWorld;Ljava/lang/String;Ljava/util/List;LTrace;Ljava/lang/Object;Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
                     CHECKCAST java.lang.String
                     ARETURN
-  end static final String doit_aroundBody1(DynamicHelloWorld, String, java.util.List)
+  end static final String doit_aroundBody2(DynamicHelloWorld, String, java.util.List)
+
+  static final Object doit_aroundBody3$advice(DynamicHelloWorld, String, java.util.List, Trace, org.aspectj.runtime.internal.AroundClosure):
+                    LDC "Hi"   (line 9)
+                    ASTORE 5
+                    GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 10)
+                    NEW java.lang.StringBuffer
+                    DUP
+                    LDC "start around: "
+                    INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
+                    ALOAD 5
+                    INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/Object;)Ljava/lang/StringBuffer;
+                    INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;
+                    INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+                    ALOAD 4   (line 11)
+                    ASTORE 7
+                    ALOAD_0
+                    ALOAD_1
+                    ALOAD_2
+                    INVOKESTATIC DynamicHelloWorld.doit_aroundBody2 (LDynamicHelloWorld;Ljava/lang/String;Ljava/util/List;)Ljava/lang/String;
+                    ASTORE 6
+                    GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 12)
+                    NEW java.lang.StringBuffer
+                    DUP
+                    LDC "exiting around with: "
+                    INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
+                    ALOAD 6
+                    INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/Object;)Ljava/lang/StringBuffer;
+                    INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;
+                    INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+                    ALOAD 6   (line 13)
+                    ARETURN
+  end static final Object doit_aroundBody3$advice(DynamicHelloWorld, String, java.util.List, Trace, org.aspectj.runtime.internal.AroundClosure)
 end public class DynamicHelloWorld

@@ -400,7 +400,7 @@ class BcelClassWeaver implements IClassWeaver {
 			genArgumentStores(donor, recipient, frameEnv, fact);
 
 		InstructionList inlineInstructions = 
-			genInlineInstructions(donor, recipient, frameEnv, fact);
+			genInlineInstructions(donor, recipient, frameEnv, fact, false);
 
 		inlineInstructions.insert(argumentStores);
 		
@@ -418,11 +418,12 @@ class BcelClassWeaver implements IClassWeaver {
 	 * 			initially populated with argument locations.
 	 * @param fact an instruction factory for recipient
 	 */
-	private static InstructionList genInlineInstructions(
+	static InstructionList genInlineInstructions(
 		LazyMethodGen donor,
 		LazyMethodGen recipient,
 		IntMap frameEnv,
-		InstructionFactory fact) 
+		InstructionFactory fact,
+		boolean keepReturns) 
 	{
 		InstructionList footer = new InstructionList();
 		InstructionHandle end = footer.append(fact.NOP);
@@ -455,7 +456,11 @@ class BcelClassWeaver implements IClassWeaver {
 			if (src.getInstruction() == Range.RANGEINSTRUCTION) {
 				dest = ret.append(Range.RANGEINSTRUCTION);
 			} else if (fresh instanceof ReturnInstruction) {
-				dest = ret.append(fact.createBranchInstruction(Constants.GOTO, end));
+				if (keepReturns) {
+					dest = ret.append(fresh);
+				} else {
+					dest = ret.append(fact.createBranchInstruction(Constants.GOTO, end));
+				}
 			} else if (fresh instanceof BranchInstruction) {
 				dest = ret.append((BranchInstruction) fresh);
 			} else if (
@@ -560,7 +565,7 @@ class BcelClassWeaver implements IClassWeaver {
 	            }
 	        }			
 		}
-		ret.append(footer);
+		if (!keepReturns) ret.append(footer);
 		return ret;
 	}
 

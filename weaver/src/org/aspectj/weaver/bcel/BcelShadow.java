@@ -1201,11 +1201,7 @@ public class BcelShadow extends Shadow {
         BcelObjectType ot = BcelWorld.getBcelObjectType(declaringType); 
         
 		LazyMethodGen adviceMethod = ot.getLazyClassGen().getLazyMethodGen(mungerSig);
-		//TODO handle the second part of this if by creating a method for the around
-		//     advice rather than going to a full-on closure
-		if (!adviceMethod.getCanInline() ||
-		    isFallsThrough() && adviceMethod.hasExceptionHandlers() // fix for Bug 29665
-			)
+		if (!adviceMethod.getCanInline())
 		{
 			weaveAroundClosure(munger, hasDynamicTest);
 			return;
@@ -1216,7 +1212,6 @@ public class BcelShadow extends Shadow {
 		//??? should consider optimizations to recognize simple cases that don't require body extraction
 		enclosingMethod.setCanInline(false);
 		
-		
 		// start by exposing various useful things into the frame
 		final InstructionFactory fact = getFactory();
 		
@@ -1226,6 +1221,88 @@ public class BcelShadow extends Shadow {
         		NameMangler.aroundCallbackMethodName(
         			getSignature(),
         			getEnclosingClass()));
+        			
+        			
+        // now extract the advice into its own method
+        String adviceMethodName =
+			NameMangler.aroundCallbackMethodName(
+							getSignature(),
+							getEnclosingClass()) + "$advice";
+        
+		List paramTypeList = new ArrayList();
+		List argVarList = new ArrayList();
+		List proceedVarList = new ArrayList();
+		int extraParamOffset = 0;
+		
+		//TODO paramTypeList not needed any more
+		
+		// start w/ stuff
+		if (thisVar != null) {
+			paramTypeList.add(thisVar.getType());
+			argVarList.add(thisVar);
+			proceedVarList.add(new BcelVar(thisVar.getType(), extraParamOffset));
+			extraParamOffset += thisVar.getType().getSize();
+		}
+		
+		if (targetVar != null && targetVar != thisVar) {
+			paramTypeList.add(targetVar.getType());
+			argVarList.add(targetVar);
+			proceedVarList.add(new BcelVar(targetVar.getType(), extraParamOffset));
+			extraParamOffset += targetVar.getType().getSize();
+		}
+		for (int i = 0, len = getArgCount(); i < len; i++) {
+			paramTypeList.add(argVars[i].getType());
+			argVarList.add(argVars[i]);
+			proceedVarList.add(new BcelVar(argVars[i].getType(), extraParamOffset));
+			extraParamOffset += argVars[i].getType().getSize();
+		}
+		if (thisJoinPointVar != null) {
+			paramTypeList.add(thisJoinPointVar.getType());
+			argVarList.add(thisJoinPointVar);
+			proceedVarList.add(new BcelVar(thisJoinPointVar.getType(), extraParamOffset));
+			extraParamOffset += thisJoinPointVar.getType().getSize();
+		}
+        
+        Type[] adviceParameterTypes = adviceMethod.getArgumentTypes();
+        Type[] extractedMethodParameterTypes = extractedMethod.getArgumentTypes();
+		Type[] parameterTypes = new Type[extractedMethodParameterTypes.length + adviceParameterTypes.length + 1];
+		int parameterIndex = 0;
+		System.arraycopy(extractedMethodParameterTypes, 0, parameterTypes, parameterIndex, extractedMethodParameterTypes.length);
+		parameterIndex += extractedMethodParameterTypes.length;
+
+//        for (Iterator i = paramTypeList.iterator(); i.hasNext(); ) {
+//        	ResolvedTypeX t = (ResolvedTypeX)i.next();
+//        	parameterTypes[parameterIndex++] = BcelWorld.makeBcelType(t);
+//        }
+        parameterTypes[parameterIndex++] =
+        	BcelWorld.makeBcelType(adviceMethod.getEnclosingClass().getType());
+		System.arraycopy(adviceParameterTypes, 0, parameterTypes, parameterIndex, adviceParameterTypes.length);
+
+        LazyMethodGen localAdviceMethod =
+					new LazyMethodGen(
+						Modifier.FINAL | Modifier.STATIC, 
+						adviceMethod.getReturnType(), 
+						adviceMethodName,
+						parameterTypes,
+						new String[0],
+						getEnclosingClass());
+    
+		getEnclosingClass().addMethodGen(localAdviceMethod);
+		
+		int nVars = adviceMethod.getMaxLocals() + extraParamOffset;
+		IntMap varMap = IntMap.idMap(nVars);
+		for (int i=extraParamOffset; i < nVars; i++) {
+			varMap.put(i-extraParamOffset, i);
+		}
+		
+		localAdviceMethod.getBody().insert(
+			BcelClassWeaver.genInlineInstructions(adviceMethod, 
+					localAdviceMethod, varMap, fact, true));
+					
+		localAdviceMethod.setMaxLocals(nVars);
+					
+		//System.err.println(localAdviceMethod);
+		
     
     	// the shadow is now empty.  First, create a correct call
     	// to the around advice.  This includes both the call (which may involve 
@@ -1236,11 +1313,15 @@ public class BcelShadow extends Shadow {
     	InstructionList advice = new InstructionList();
         InstructionHandle adviceMethodInvocation;
         {
+			for (Iterator i = argVarList.iterator(); i.hasNext(); ) {
+				BcelVar var = (BcelVar)i.next();
+				var.appendLoad(advice, fact);
+			}       	
         	// ??? we don't actually need to push NULL for the closure if we take care
 		    advice.append(munger.getAdviceArgSetup(this, null, new InstructionList(fact.ACONST_NULL)));
 		    adviceMethodInvocation =
 		        advice.append(
-		        	Utility.createInvoke(fact, getWorld(), munger.getSignature()));
+		        	Utility.createInvoke(fact, localAdviceMethod)); //(fact, getWorld(), munger.getSignature()));
 			advice.append(
 		        Utility.createConversion(
 		            getFactory(), 
@@ -1273,7 +1354,7 @@ public class BcelShadow extends Shadow {
         // now the range contains everything we need.  We now inline the advice method.
 
 				
-        BcelClassWeaver.inlineMethod(adviceMethod, enclosingMethod, adviceMethodInvocation);
+        //BcelClassWeaver.inlineMethod(adviceMethod, enclosingMethod, adviceMethodInvocation);
 
         // now search through the advice, looking for a call to PROCEED.  
         // Then we replace the call to proceed with some argument setup, and a 
@@ -1281,9 +1362,9 @@ public class BcelShadow extends Shadow {
         String proceedName = 
         	NameMangler.proceedMethodName(munger.getSignature().getName());
 
-        InstructionHandle curr = getRange().getStart();
-        InstructionHandle end = getRange().getEnd();
-        ConstantPoolGen cpg = extractedMethod.getEnclosingClass().getConstantPoolGen();
+        InstructionHandle curr = localAdviceMethod.getBody().getStart();
+        InstructionHandle end = localAdviceMethod.getBody().getEnd();
+        ConstantPoolGen cpg = localAdviceMethod.getEnclosingClass().getConstantPoolGen();
         while (curr != end) {
 			InstructionHandle next = curr.getNext();
 			Instruction inst = curr.getInstruction();
@@ -1291,8 +1372,8 @@ public class BcelShadow extends Shadow {
 					&& proceedName.equals(((INVOKESTATIC) inst).getMethodName(cpg))) {
 
 					
-				enclosingMethod.getBody().append(curr, getRedoneProceedCall(fact, extractedMethod, munger));
-				Utility.deleteInstruction(curr, enclosingMethod);
+				localAdviceMethod.getBody().append(curr, getRedoneProceedCall(fact, extractedMethod, munger, localAdviceMethod, proceedVarList));
+				Utility.deleteInstruction(curr, localAdviceMethod);
 			}
 			curr = next;
         }
@@ -1302,28 +1383,30 @@ public class BcelShadow extends Shadow {
 	private InstructionList getRedoneProceedCall(
 		InstructionFactory fact,
 		LazyMethodGen callbackMethod,
-		BcelAdvice munger) 
+		BcelAdvice munger,
+		LazyMethodGen localAdviceMethod,
+		List argVarList) 
 	{
 		InstructionList ret = new InstructionList();
 		// we have on stack all the arguments for the ADVICE call.
 		// we have in frame somewhere all the arguments for the non-advice call.
 		
-		List argVarList = new ArrayList();
-		
-		// start w/ stuff
-		if (thisVar != null) {
-			argVarList.add(thisVar);
-		}
-		
-        if (targetVar != null && targetVar != thisVar) {
-            argVarList.add(targetVar);
-        }
-		for (int i = 0, len = getArgCount(); i < len; i++) {
-			argVarList.add(argVars[i]);
-		}
-		if (thisJoinPointVar != null) {
-			argVarList.add(thisJoinPointVar);
-		}
+//		List argVarList = new ArrayList();
+//		
+//		// start w/ stuff
+//		if (thisVar != null) {
+//			argVarList.add(thisVar);
+//		}
+//		
+//        if (targetVar != null && targetVar != thisVar) {
+//            argVarList.add(targetVar);
+//        }
+//		for (int i = 0, len = getArgCount(); i < len; i++) {
+//			argVarList.add(argVars[i]);
+//		}
+//		if (thisJoinPointVar != null) {
+//			argVarList.add(thisJoinPointVar);
+//		}
 		
 		BcelVar[] adviceVars = munger.getExposedStateAsBcelVars();		
 		//??? this is too easy
@@ -1349,7 +1432,7 @@ public class BcelShadow extends Shadow {
 		
 		//System.out.println("stateTypes: " + Arrays.asList(stateTypes));
 		BcelVar[] proceedVars = 
-			Utility.pushAndReturnArrayOfVars(proceedParamTypes, ret, fact, enclosingMethod);
+			Utility.pushAndReturnArrayOfVars(proceedParamTypes, ret, fact, localAdviceMethod);
 		
 
 		Type[] stateTypes = callbackMethod.getArgumentTypes();
