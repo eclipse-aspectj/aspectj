@@ -14,46 +14,57 @@
 
 package org.aspectj.runtime.internal;
 
+import java.util.Stack;
+
 import org.aspectj.lang.NoAspectBoundException;
 import org.aspectj.runtime.CFlow;
+import org.aspectj.runtime.internal.cflowstack.ThreadStack;
+import org.aspectj.runtime.internal.cflowstack.ThreadStackFactory;
+import org.aspectj.runtime.internal.cflowstack.ThreadStackFactoryImpl;
+import org.aspectj.runtime.internal.cflowstack.ThreadStackFactoryImpl11;
 
-import java.util.Stack;
-import java.util.Hashtable;
-import java.util.Enumeration;
+/*
+ * How we benefit from ThreadLocal when it is available at runtime:
+ * 
+ * When the CFlowStack class is loaded, we run its static initializer.  This checks the JVM
+ * version number and loads an appropriate implementation of the ThreadStackFactory.
+ * There are two possible implementations depending on whether this is a 1.1 or 1.2+ JVM.
+ * Rather than doing a Class.forName for ThreadLocal and catching a ClassNotFoundEx in order
+ * to determine the JVM version, we look at the java class version which I believe can help
+ * us identify the Java level.
+ * 
+ * In the 1.1 JVM case we use a factory implementation that does not use ThreadLocal storage.
+ * In the 1.2+ JVM case we use a factory implementation that does use ThreadLocal storage.
+ * 
+ * Once we have the factory set, whenever someone builds a CFlowStack object, we ask the 
+ * factory for a new stack proxy - this is an object that can return us the right stack
+ * that we should use on a particular thread.  The reason we create the proxy in the ctor and
+ * not lazily in the getThreadStack() method is because it means the getThreadStack() method in
+ * this class does not have to be synchronized.
+ * 
+ * When any of the methods in CFlowStack need to operate on the stack (peek/pop/etc), they 
+ * all delegate to getThreadStack() which asks the proxy for the right stack.  Depending on the
+ * factory loaded to build the proxy, the call to proxy.getThreadStack() will return a threadlocal
+ * based stack or it will call the original implementation of getThreadStack() which manages
+ * a Hashtable of threads->stacks.  
+ * 
+ */
 
 public class CFlowStack {
-    private Hashtable stacks = new Hashtable();
-    private Thread cached_thread;
-    private Stack cached_stack;
-    private int change_count = 0;
-    private static final int COLLECT_AT = 20000;
-    private static final int MIN_COLLECT_AT = 100;
 
-    private synchronized Stack getThreadStack() {
-        if (Thread.currentThread() != cached_thread) {
-            cached_thread = Thread.currentThread();
-            cached_stack = (Stack)stacks.get(cached_thread);
-            if (cached_stack == null) {
-                cached_stack = new Stack();
-                stacks.put(cached_thread, cached_stack);
-            }
-            change_count++;
-            // Collect more often if there are many threads, but not *too* often
-            int size = Math.max(1, stacks.size()); // should be >1 b/c always live threads, but...
-            if (change_count > Math.max(MIN_COLLECT_AT, COLLECT_AT/size)) {
-                Stack dead_stacks = new Stack();
-                for (Enumeration e = stacks.keys(); e.hasMoreElements(); ) {
-                    Thread t = (Thread)e.nextElement();
-                    if (!t.isAlive()) dead_stacks.push(t);
-                }
-                for (Enumeration e = dead_stacks.elements(); e.hasMoreElements(); ) {
-                    Thread t = (Thread)e.nextElement();
-                    stacks.remove(t);
-                }
-                change_count = 0;
-            }
-        }
-        return cached_stack;
+	private static ThreadStackFactory tsFactory;
+	private ThreadStack stackProxy;
+
+	static {
+		selectFactoryForVMVersion();
+	}
+	
+	public CFlowStack() {
+		stackProxy = tsFactory.getNewThreadStack();
+	}
+	
+    private Stack getThreadStack() {
+    	return stackProxy.getThreadStack();
     }
 
 	//XXX dangerous, try to remove
@@ -105,4 +116,31 @@ public class CFlowStack {
     public boolean isValid() {
         return !getThreadStack().isEmpty();
     }
+        
+	private static ThreadStackFactory getThreadLocalStackFactory()      { return new ThreadStackFactoryImpl(); }
+	private static ThreadStackFactory getThreadLocalStackFactoryFor11() { return new ThreadStackFactoryImpl11(); }
+    
+	private static void selectFactoryForVMVersion() {
+		String override = System.getProperty("aspectj.runtime.cflowstack.usethreadlocal","unspecified");
+		boolean useThreadLocalImplementation = false;
+		if (override.equals("unspecified")) {
+			String v = System.getProperty("java.class.version","0.0");
+			// Java 1.2 is version 46.0 and above
+			useThreadLocalImplementation = (v.compareTo("46.0") >= 0);
+		} else {
+			useThreadLocalImplementation = override.equals("yes") || override.equals("true");
+		}
+		// System.err.println("Trying to use thread local implementation? "+useThreadLocalImplementation);
+		if (useThreadLocalImplementation) {
+			tsFactory = getThreadLocalStackFactory();
+		} else {
+			tsFactory = getThreadLocalStackFactoryFor11();
+		}
+	}
+	
+	//  For debug ...
+	public static String getThreadStackFactoryClassName() {
+		return tsFactory.getClass().getName();
+	}
+
 }
