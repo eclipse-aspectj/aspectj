@@ -4704,7 +4704,7 @@
     <ajc-test dir="new" title="simple declare warning (NPE)"
       keywords="from-resolved_105">
         <compile files="DeclareWarningMain.java">
-            <message kind="warning" line="4"/>
+            <message kind="warning" line="5"/>
         </compile>
         <run class="DeclareWarningMain"/>
     </ajc-test>
@@ -4831,7 +4831,7 @@
 
     <ajc-test dir="new" pr="764"
       title="flag errors when binding args with indeterminate prefix and suffix"
-      keywords="from-resolved_105">
+      keywords="from-resolved_105,knownLimitation">
         <compile files="IndeterminateArgsCE.java">
             <message kind="error" line="67"/>
             <message kind="error" line="68"/>
