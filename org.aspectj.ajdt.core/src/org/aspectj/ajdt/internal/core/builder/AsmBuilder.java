@@ -64,6 +64,7 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 		new AsmBuilder().internalBuild(unit, structureModel);
 	}
 	
+	
 	private void internalBuild(CompilationUnitDeclaration unit, StructureModel structureModel) {
 		currCompilationResult = unit.compilationResult();
 		File file = new File(new String(unit.getFileName()));
@@ -104,8 +105,30 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 					new ArrayList());
 				StructureModelManager.INSTANCE.getStructureModel().getRoot().addChild(pkgNode);
 			}	
-			pkgNode.addChild(cuNode);
+			// if the node already exists remove before adding
+			ProgramElementNode duplicate = null;	
+			for (Iterator itt = pkgNode.getChildren().iterator(); itt.hasNext(); ) {
+				ProgramElementNode child = (ProgramElementNode)itt.next();
+				if (child.getSourceLocation().getSourceFile().equals(file)) {
+					duplicate = child;
+				} 
+			}
+			if (duplicate != null) {
+				pkgNode.removeChild(duplicate);
+			}
+ 			pkgNode.addChild(cuNode);
 		} else {
+			// if the node already exists remove before adding
+			ProgramElementNode duplicate = null;	
+			for (Iterator itt = StructureModelManager.INSTANCE.getStructureModel().getRoot().getChildren().iterator(); itt.hasNext(); ) {
+				ProgramElementNode child = (ProgramElementNode)itt.next();
+				if (child.getSourceLocation().getSourceFile().equals(file)) {
+					duplicate = child;
+				} 
+			}
+			if (duplicate != null) {
+				StructureModelManager.INSTANCE.getStructureModel().getRoot().removeChild(duplicate);
+			}
 			StructureModelManager.INSTANCE.getStructureModel().getRoot().addChild(cuNode);
 		}
 		

@@ -154,7 +154,7 @@ public class TreeStructureViewBuilder {
 		if (granularity == StructureViewProperties.Granularity.DECLARED_ELEMENTS) {
 			return true;
 		} else if (granularity == StructureViewProperties.Granularity.MEMBER && 
-			(kind == ProgramElementNode.Kind.CODE)) {
+			(kind != ProgramElementNode.Kind.CODE)) {
 			return true;
 		} else if (granularity == StructureViewProperties.Granularity.TYPE
 			&& (kind == ProgramElementNode.Kind.PROJECT

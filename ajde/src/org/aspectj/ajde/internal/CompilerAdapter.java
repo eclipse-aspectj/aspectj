@@ -47,6 +47,7 @@ public class CompilerAdapter {
 	private boolean initialized = false;
 	private boolean structureDirty = true;
 	private boolean firstBuild = true;
+	private boolean incrementalEnabled = true; // XXX make false by default	
 	
 	public CompilerAdapter() {
 		super();
@@ -67,7 +68,7 @@ public class CompilerAdapter {
 
 	public boolean compile(String configFile, BuildProgressMonitor progressMonitor) {
 		init();
-		try {	 
+		try { 
 			AjBuildConfig buildConfig = genBuildConfig(configFile);
 			buildConfig.setGenerateModelMode(true);
 			
@@ -84,12 +85,12 @@ public class CompilerAdapter {
 	            return false;
 			}
 			
-			if (firstBuild) {
-				firstBuild = false;
-				return buildManager.batchBuild(buildConfig, messageHandler);  
-			} else {
-				return buildManager.batchBuild(buildConfig, messageHandler);  // XXX incremental not implemented
+			if (incrementalEnabled && !firstBuild){
+				return buildManager.incrementalBuild(buildConfig, messageHandler);  // XXX incremental not implemented
 //				return buildManager.incrementalBuild(buildConfig);
+			} else {
+				firstBuild = false;
+				return buildManager.batchBuild(buildConfig, messageHandler); 
 			}
 		} catch (OperationCanceledException ce) {
 			Ajde.getDefault().getIdeUIAdapter().displayStatusInformation("build cancelled by user");
@@ -424,4 +425,18 @@ public class CompilerAdapter {
 		}
 
 	}
+	/**
+	 * @return
+	 */
+	public boolean isIncrementalEnabled() {
+		return incrementalEnabled;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setIncrementalEnabled(boolean b) {
+		incrementalEnabled = b;
+	}
+
 }

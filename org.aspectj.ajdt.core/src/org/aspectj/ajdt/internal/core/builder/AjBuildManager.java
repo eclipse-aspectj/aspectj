@@ -163,21 +163,37 @@ public class AjBuildManager {
 
 	//XXX fake incremental
 	public boolean incrementalBuild(AjBuildConfig buildConfig, IMessageHandler baseHandler) throws IOException {
+//		StructureModelManager.INSTANCE.getStructureModel().getRoot().removeChildren();
+
+		
 		if (!state.prepareForNextBuild(buildConfig)) {
 			return batchBuild(buildConfig, baseHandler);
 		}
+
+		
 		
 		//!!! too much cut-and-paste from batchBuild
 		this.handler = CountingMessageHandler.makeCountingMessageHandler(baseHandler);
  
+		String check = checkRtJar(buildConfig);
+		if (check != null) {
+			IMessage message = new Message(check, Message.WARNING, null, null);
+			// give delegate a chance to implement different message (abort)?
+			handler.handleMessage(message); 
+		} 
+ 
 		try {
 			setBuildConfig(buildConfig);
 
-			//setupModel();
+			setupModel();
 //			initBcelWorld(handler);
 //			if (handler.hasErrors()) {
 //				return false;
 //			}
+
+			if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {  
+				bcelWorld.setModel(StructureModelManager.INSTANCE.getStructureModel());
+			}
 
 //			if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {  
 //				bcelWorld.setModel(StructureModelManager.INSTANCE.getStructureModel());
@@ -186,6 +202,7 @@ public class AjBuildManager {
 			List filesToCompile;
 			while ( !(filesToCompile = state.getFilesToCompile(count == 0)).isEmpty() ) {
 				//if (count > 0) return batchBuild(buildConfig, baseHandler);  //??? only 1 try
+				
 				performCompilation(filesToCompile);
 				
 				if (handler.hasErrors()) return false;
@@ -194,12 +211,6 @@ public class AjBuildManager {
 					return batchBuild(buildConfig, baseHandler);
 				}
 			}
-			
-			//System.err.println("built in " + count + " cycles");
-
-//			if (buildConfig.isEmacsSymMode()) {
-//				new org.aspectj.ajdt.internal.core.builder.EmacsStructureModelManager().externalizeModel();
-//			}
 
 			if (handler.hasErrors()) {
 				return false;
@@ -208,10 +219,11 @@ public class AjBuildManager {
 			state.successfulCompile(buildConfig);
 
 			boolean weaved = weaveAndGenerateClassFiles();
+
 			
 			if (buildConfig.isGenerateModelMode()) {
 				StructureModelManager.INSTANCE.fireModelUpdated();  
-			}
+			}  
 			return !handler.hasErrors();
 		} finally {
 			handler = null;        
