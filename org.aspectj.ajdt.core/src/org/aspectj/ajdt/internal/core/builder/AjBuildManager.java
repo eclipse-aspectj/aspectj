@@ -257,6 +257,7 @@ public class AjBuildManager {
 	public boolean weaveAndGenerateClassFiles() throws IOException {
 		handler.handleMessage(MessageUtil.info("weaving"));
 		if (progressListener != null) progressListener.setText("weaving aspects");
+		bcelWeaver.setProgressListener(progressListener, 0.5, 0.5/state.addedClassFiles.size());
 		//!!! doesn't provide intermediate progress during weaving
 		// XXX add all aspects even during incremental builds?
         addAspectClassFilesToWeaver(state.addedClassFiles);
@@ -402,6 +403,7 @@ public class AjBuildManager {
 				if (progressListener != null) {
 					compiledCount++;
 					progressListener.setProgress((compiledCount/2.0)/sourceFileCount);
+					progressListener.setText("compiled: " + new String(compilationResult.getFileName()));
 				}
 				
 				if (compilationResult.hasProblems() || compilationResult.hasTasks()) {

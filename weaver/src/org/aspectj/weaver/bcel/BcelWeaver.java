@@ -20,6 +20,7 @@ import java.util.zip.*;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IProgressListener;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.DeclareParents;
@@ -28,6 +29,9 @@ import org.aspectj.weaver.patterns.Pointcut;
 public class BcelWeaver implements IWeaver {
     private BcelWorld world;
     private CrosscuttingMembersSet xcutSet;
+    private IProgressListener progressListener = null;
+    private double progressMade;
+    private double progressPerClassFile;
 
     public BcelWeaver(BcelWorld world) {
         super();
@@ -328,10 +332,18 @@ public class BcelWeaver implements IWeaver {
 
 	// non-private for testing
 	LazyClassGen weave(UnwovenClassFile classFile, BcelObjectType classType) throws IOException {
-		return weave(classFile, classType, true);
+		LazyClassGen ret = weave(classFile, classType, true);
+		
+		if (progressListener != null) {
+			progressMade += progressPerClassFile;
+			progressListener.setProgress(progressMade);
+			progressListener.setText("woven: " + classFile.getFilename());
+		}
+		
+		return ret;
 	}
 	
-	private LazyClassGen weave(UnwovenClassFile classFile, BcelObjectType classType, boolean dump) throws IOException {
+	private LazyClassGen weave(UnwovenClassFile classFile, BcelObjectType classType, boolean dump) throws IOException {		
 		if (classType.isSynthetic()) {
 			if (dump) dumpUnchanged(classFile);
 			return null;
@@ -430,4 +442,11 @@ public class BcelWeaver implements IWeaver {
 		}
 		return result;
 	}
+
+	public void setProgressListener(IProgressListener listener, double previousProgress, double progressPerClassFile) {
+		progressListener = listener;
+		this.progressMade = previousProgress;
+		this.progressPerClassFile = progressPerClassFile;
+	}
+
 }
