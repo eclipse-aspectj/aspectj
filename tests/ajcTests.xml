@@ -1745,6 +1745,7 @@
       title="disallow defining more than one pointcut with the same name"
       keywords="from-errors,fail-unimplemented">
         <compile files="OverloadedPointcuts.java">
+            <message kind="error" line="4"/>
             <message kind="error" line="5"/>
         </compile>
     </ajc-test>
@@ -1974,7 +1975,6 @@
             <message kind="error" line="8"/>
             <message kind="error" line="16"/>
             <message kind="error" line="20"/>
-            <message kind="error" line="23"/>
             <message kind="error" line="26"/>
             <message kind="error" line="30"/>
         </compile>
@@ -2919,8 +2919,9 @@
         <run class="pack.PackageWildcards"/>
     </ajc-test>
 
+	<!-- only before advice implemented for handler join points in 1.1 -->
     <ajc-test dir="new" title="advice on catch clauses"
-      keywords="from-resolved_10x">
+      keywords="from-resolved_10x,knownLimitation">
         <compile files="CatchAdvice.java"/>
         <run class="CatchAdvice"/>
     </ajc-test>
@@ -4334,8 +4335,9 @@
         <run class="PR560"/>
     </ajc-test>
 
+	<!-- pointcuts aren't checked for circularities unless they're used -->
     <ajc-test dir="new" pr="568" title="cyclic pointcut definitions"
-      keywords="from-resolved_10rc3">
+      keywords="from-resolved_10rc3,knownLimitation">
         <compile files="CyclicPointcuts.java">
             <message kind="error" line="11"/>
             <message kind="error" line="14"/>
@@ -4470,7 +4472,7 @@
       keywords="from-resolved_104">
         <compile files="AbstractPointcutIndirectCE.java">
             <message kind="error" line="9"/>
-            <message kind="error" line="4"/>
+            <message kind="error" line="5"/>
         </compile>
     </ajc-test>
 
