@@ -6915,4 +6915,9 @@
 		  <message kind="warning" line="4" text="no match for this type name: SampleClass"/>
         </compile>
     </ajc-test>   
+    
+   	<ajc-test dir="bugs" pr="46750" title="inner aspect containing declare soft">
+       <compile files="TestSoftening.java">
+       </compile>
+    </ajc-test>
 </suite>
