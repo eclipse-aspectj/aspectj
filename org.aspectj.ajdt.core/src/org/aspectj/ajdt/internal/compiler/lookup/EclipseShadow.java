@@ -41,12 +41,12 @@ import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
  * such cases.
  */
 public class EclipseShadow extends Shadow {
-	EclipseWorld world;
+	EclipseFactory world;
 	AstNode astNode;
 	//XXXReferenceContext context;
 	AbstractMethodDeclaration enclosingMethod;
 
-	public EclipseShadow(EclipseWorld world, Kind kind, Member signature, AstNode astNode, 
+	public EclipseShadow(EclipseFactory world, Kind kind, Member signature, AstNode astNode, 
 							ReferenceContext context)
 	{
 		super(kind, signature, null);
@@ -57,7 +57,7 @@ public class EclipseShadow extends Shadow {
 	}
 
 	public World getIWorld() {
-		return world;
+		return world.getWorld();
 	}
 
 
@@ -103,7 +103,7 @@ public class EclipseShadow extends Shadow {
 	
 	// --- factory methods
 	
-	public static EclipseShadow makeShadow(EclipseWorld world, AstNode astNode, 
+	public static EclipseShadow makeShadow(EclipseFactory world, AstNode astNode, 
 							ReferenceContext context)
 	{
 		//XXX make sure we're getting the correct declaring type at call-site

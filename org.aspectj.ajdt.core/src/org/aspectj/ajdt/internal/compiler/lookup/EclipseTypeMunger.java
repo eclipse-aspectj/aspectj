@@ -33,14 +33,14 @@ import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 public class EclipseTypeMunger extends ConcreteTypeMunger {
 	protected ReferenceBinding targetBinding = null;
 	private AbstractMethodDeclaration sourceMethod;
-	private EclipseWorld world;
+	private EclipseFactory world;
 
-	public EclipseTypeMunger(ResolvedTypeMunger munger, ResolvedTypeX aspectType,
+	public EclipseTypeMunger(EclipseFactory world, ResolvedTypeMunger munger, ResolvedTypeX aspectType,
 								AbstractMethodDeclaration sourceMethod)
 	{
 		super(munger, aspectType);
+		this.world = world;
 		this.sourceMethod = sourceMethod;
-		this.world = (EclipseWorld)aspectType.getWorld();
 	}
 
 	public String toString() {

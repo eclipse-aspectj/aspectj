@@ -14,7 +14,7 @@
 package org.aspectj.ajdt.internal.compiler.ast;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeScope;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -87,10 +87,10 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 	private MethodDeclaration makePreMethod(ClassScope scope, 
 											ExplicitConstructorCall explicitConstructorCall)
 	{
-		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(scope);
+		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(scope);
 		
-		TypeX aspectTypeX = EclipseWorld.fromBinding(binding.declaringClass);
-		TypeX targetTypeX = EclipseWorld.fromBinding(onTypeBinding);
+		TypeX aspectTypeX = EclipseFactory.fromBinding(binding.declaringClass);
+		TypeX targetTypeX = EclipseFactory.fromBinding(onTypeBinding);
 		
 		ArrayBinding objectArrayBinding = scope.createArray(scope.getJavaLangObject(), 1);
 		
@@ -202,25 +202,25 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 
 
 
-	public void build(ClassScope classScope, CrosscuttingMembers xcut) {
-		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(classScope);
+	public EclipseTypeMunger build(ClassScope classScope) {
+		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 
 		binding = classScope.referenceContext.binding.resolveTypesFor(binding);
 		
 		resolveOnType(classScope);
-		if (ignoreFurtherInvestigation) return;
+		if (ignoreFurtherInvestigation) return null;
 		
 		
 		if (onTypeBinding.isInterface()) {
 			ignoreFurtherInvestigation = true;
-			return;
+			return null;
 		}
 		
 		if (onTypeBinding.isNestedType()) {
 			classScope.problemReporter().signalError(sourceStart, sourceEnd,
 				"can't define constructors on nested types (compiler limitation)");
 			ignoreFurtherInvestigation = true;
-			return;
+			return null;
 		}	
 		
 		ResolvedTypeX declaringTypeX = world.fromEclipse(onTypeBinding);
@@ -238,18 +238,18 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		NewConstructorTypeMunger myMunger = 
 			new NewConstructorTypeMunger(signature, syntheticInterMember, null, null);
 		setMunger(myMunger);
-		myMunger.check(world);
+		myMunger.check(world.getWorld());
 		
 		this.selector = binding.selector =
 			NameMangler.postIntroducedConstructor(
-				EclipseWorld.fromBinding(binding.declaringClass),
+				EclipseFactory.fromBinding(binding.declaringClass),
 				declaringTypeX).toCharArray();
 		
-		xcut.addTypeMunger(new EclipseTypeMunger(myMunger, aspectType, this));
+		return new EclipseTypeMunger(world, myMunger, aspectType, this);
 	}
 	
 	
-	private AjAttribute makeAttribute(EclipseWorld world) {
+	private AjAttribute makeAttribute(EclipseFactory world) {
 		if (explicitConstructorCall != null && !(explicitConstructorCall.binding instanceof ProblemMethodBinding)) {
 			MethodBinding explicitConstructor = explicitConstructorCall.binding;
 			if (explicitConstructor.alwaysNeedsAccessMethod()) {
@@ -262,7 +262,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		} else {
 			((NewConstructorTypeMunger)munger).setExplicitConstructor(
 				new ResolvedMember(Member.CONSTRUCTOR, 
-					EclipseWorld.fromBinding(onTypeBinding.superclass()),
+					EclipseFactory.fromBinding(onTypeBinding.superclass()),
 					0, ResolvedTypeX.VOID, "<init>", TypeX.NONE));
 		}
 		return new AjAttribute.TypeMunger(munger);
@@ -271,7 +271,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 	
 	public void generateCode(ClassScope classScope, ClassFile classFile) {
 		if (ignoreFurtherInvestigation) return;
-		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(classScope);
+		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 		classFile.extraAttributes.add(new EclipseAttributeAdapter(makeAttribute(world)));
 		super.generateCode(classScope, classFile);
 		

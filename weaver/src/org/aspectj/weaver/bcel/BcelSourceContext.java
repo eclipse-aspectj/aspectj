@@ -35,7 +35,7 @@ public class BcelSourceContext implements ISourceContext {
 	public ISourceLocation makeSourceLocation(IHasPosition position) {
 		String fileName = sourceFileName;
 		if (fileName == null) inObject.getJavaClass().getFileName();
-		if (fileName == null) fileName = inObject.getName() + ".class";
+		if (fileName == null) fileName = inObject.getResolvedTypeX().getName() + ".class";
 		
 		if (lineBreaks != null) {
 			int line = Arrays.binarySearch(lineBreaks, position.getStart());

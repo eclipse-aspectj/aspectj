@@ -25,7 +25,7 @@ public class UtilityTestCase extends TestCase {
     public void disassembleTest(String name) throws IOException {
         BcelWorld world = new BcelWorld("../weaver/bin");
         
-        LazyClassGen clazz = new LazyClassGen((BcelObjectType) world.resolve(name));
+        LazyClassGen clazz = new LazyClassGen(BcelWorld.getBcelObjectType(world.resolve(name)));
         clazz.print();
         System.out.println();
     }
@@ -43,7 +43,7 @@ public class UtilityTestCase extends TestCase {
     
     public static void main(String[] args) throws IOException {
     	BcelWorld world = new BcelWorld();
-        LazyClassGen clazz = new LazyClassGen((BcelObjectType)world.resolve(args[0]));
+        LazyClassGen clazz = new LazyClassGen(BcelWorld.getBcelObjectType(world.resolve(args[0])));
         clazz.print();
     } 
 }

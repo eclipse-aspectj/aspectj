@@ -16,7 +16,7 @@ package org.aspectj.ajdt.internal.compiler.ast;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeMethodBinding;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;
@@ -71,17 +71,17 @@ public class SuperFixerVisitor extends AbstractSyntaxTreeVisitorAdapter {
 		if (call.isSuperAccess() && !call.binding.isStatic()) {
 			call.receiver = new ThisReference();
 			accessName =
-				NameMangler.superDispatchMethod(EclipseWorld.fromBinding(targetClass), 
+				NameMangler.superDispatchMethod(EclipseFactory.fromBinding(targetClass), 
 							new String(superBinding.selector)).toCharArray();
 		} else if (call.receiver.isThis() && call.binding.isProtected() && !call.binding.isStatic()) {
 			//XXX this is a hack that violates some binary compatibility rules
 			if (superBinding.declaringClass.equals(targetClass)) {
 				accessName =
-					NameMangler.protectedDispatchMethod(EclipseWorld.fromBinding(targetClass), 
+					NameMangler.protectedDispatchMethod(EclipseFactory.fromBinding(targetClass), 
 								new String(superBinding.selector)).toCharArray();
 			} else {
 				accessName =
-				NameMangler.superDispatchMethod(EclipseWorld.fromBinding(targetClass), 
+				NameMangler.superDispatchMethod(EclipseFactory.fromBinding(targetClass), 
 							new String(superBinding.selector)).toCharArray();
 			}
 		} else {
@@ -96,7 +96,7 @@ public class SuperFixerVisitor extends AbstractSyntaxTreeVisitorAdapter {
 		
 		call.codegenBinding = superAccessBinding;
 		
-		ResolvedMember targetMember = EclipseWorld.makeResolvedMember(superBinding);
+		ResolvedMember targetMember = EclipseFactory.makeResolvedMember(superBinding);
 		superMethodsCalled.add(targetMember);
 	}
 }

@@ -29,7 +29,7 @@ import java.util.jar.Manifest;
 
 import org.aspectj.ajdt.internal.compiler.AjCompiler;
 import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.parser.AjParser;
 import org.aspectj.ajdt.internal.compiler.problem.AjProblemReporter;
 import org.aspectj.asm.ProgramElementNode;
@@ -43,6 +43,7 @@ import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.Version;
 import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
@@ -314,6 +315,10 @@ public class AjBuildManager {
 		}
 	}
 	
+	public World getWorld() {
+		return bcelWorld;
+	}
+	
 	//??? do this well
 	private void initJavaBuilder(IMessageHandler handler) {
 		javaBuilder = new JavaBuilder();
@@ -553,12 +558,12 @@ public class AjBuildManager {
 		AjLookupEnvironment le =
 			new AjLookupEnvironment(compiler, compiler.options,
 									pr, nameEnvironment);
-		EclipseWorld ew = new EclipseWorld(le, handler);
-		ew.setLint(bcelWorld.getLint());
-		ew.setXnoInline(buildConfig.isXnoInline());
-		le.world = ew;
+		EclipseFactory ew = new EclipseFactory(le);
+//		ew.setLint(bcelWorld.getLint());
+//		ew.setXnoInline(buildConfig.isXnoInline());
+		le.factory = ew;
 		pr.world = ew;
-		le.world.buildManager = this;
+		le.factory.buildManager = this;
 		
 		compiler.lookupEnvironment = le;
 		

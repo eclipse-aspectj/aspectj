@@ -42,7 +42,7 @@ import org.eclipse.jdt.internal.compiler.util.CharOperation;
  */
 public class EclipseScope implements IScope {
 	private Scope scope;
-	private EclipseWorld world;
+	private EclipseFactory world;
 	private ResolvedTypeX enclosingType;
 	private FormalBinding[] bindings;
 	
@@ -54,7 +54,7 @@ public class EclipseScope implements IScope {
 		this.bindings = bindings;
 		
 		this.scope = scope;
-		this.world = EclipseWorld.fromScopeLookupEnvironment(scope);
+		this.world = EclipseFactory.fromScopeLookupEnvironment(scope);
 		
 		this.enclosingType = world.fromEclipse(scope.enclosingSourceType());
 	}
@@ -115,7 +115,7 @@ public class EclipseScope implements IScope {
 	
 	
 	private ResolvedTypeX resolveVisible(String name) {
-		ResolvedTypeX found = world.resolve(TypeX.forName(name), true);
+		ResolvedTypeX found = world.getWorld().resolve(TypeX.forName(name), true);
 		if (found == ResolvedTypeX.MISSING) return found;
 		if (ResolvedTypeX.isVisible(found.getModifiers(), found, enclosingType)) return found;
 		return ResolvedTypeX.MISSING; 
@@ -192,7 +192,7 @@ public class EclipseScope implements IScope {
 		
 		TypeBinding[] topTypes = cuScope.topLevelTypes;
 		for (int i = 0; i < topTypes.length; i++) {
-			importedNamesList.add(EclipseWorld.fromBinding(topTypes[i]).getName());
+			importedNamesList.add(EclipseFactory.fromBinding(topTypes[i]).getName());
 		}
 		
 		importedNames =
@@ -207,7 +207,7 @@ public class EclipseScope implements IScope {
 		List importedPrefixesList)
 	{
 		if (binding == null) return;
-		importedPrefixesList.add(EclipseWorld.fromBinding(binding).getName()+"$");
+		importedPrefixesList.add(EclipseFactory.fromBinding(binding).getName()+"$");
 		
 		addClassAndParentsToPrefixes(binding.superclass(), importedPrefixesList);
 		ReferenceBinding[] superinterfaces = binding.superInterfaces();
@@ -254,7 +254,7 @@ public class EclipseScope implements IScope {
 	}
 
 	public IMessageHandler getMessageHandler() {
-		return world.getMessageHandler();
+		return world.getWorld().getMessageHandler();
 	}
 
 
@@ -277,7 +277,7 @@ public class EclipseScope implements IScope {
 
 	}
 	public World getWorld() {
-		return world;
+		return world.getWorld();
 	}
 
 	public ResolvedTypeX getEnclosingType() {

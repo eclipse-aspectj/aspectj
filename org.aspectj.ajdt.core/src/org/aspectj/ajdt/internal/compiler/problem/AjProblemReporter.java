@@ -18,7 +18,7 @@ import java.util.Iterator;
 
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.Proceed;
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
@@ -48,7 +48,7 @@ import org.eclipse.jdt.internal.compiler.util.CharOperation;
 public class AjProblemReporter extends ProblemReporter {
 	private static final boolean DUMP_STACK = false;
 	
-	public EclipseWorld world;
+	public EclipseFactory world;
 
 	public AjProblemReporter(
 		IErrorHandlingPolicy policy,
@@ -63,7 +63,7 @@ public class AjProblemReporter extends ProblemReporter {
 		TypeBinding exceptionType,
 		AstNode location)
 	{
-		if (!world.getDeclareSoft().isEmpty()) {
+		if (!world.getWorld().getDeclareSoft().isEmpty()) {
 			Shadow callSite = world.makeShadow(location, referenceContext);
 			if (callSite == null) {
 				super.unhandledException(exceptionType, location);
@@ -74,7 +74,7 @@ public class AjProblemReporter extends ProblemReporter {
 	//				" at " + location + " in " + referenceContext);
 			
 			
-			for (Iterator i = world.getDeclareSoft().iterator(); i.hasNext(); ) {
+			for (Iterator i = world.getWorld().getDeclareSoft().iterator(); i.hasNext(); ) {
 				DeclareSoft d = (DeclareSoft)i.next();
 				FuzzyBoolean match = d.getPointcut().match(callSite);
 				if (match.alwaysTrue()) {

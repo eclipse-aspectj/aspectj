@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ResolvedMember;
@@ -35,7 +36,7 @@ import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.PerClause;
 
 // ??? exposed for testing
-public class BcelObjectType extends ResolvedTypeX.Name {
+public class BcelObjectType extends ResolvedTypeX.ConcreteName {
     private JavaClass javaClass;
     private boolean isObject = false;  // set upon construction
 	private LazyClassGen lazyClassGen = null;  // set lazily if it's an aspect
@@ -71,8 +72,8 @@ public class BcelObjectType extends ResolvedTypeX.Name {
 	
     
     // IMPORTANT! THIS DOESN'T do real work on the java class, just stores it away.
-    BcelObjectType(String signature, World world, JavaClass javaClass, boolean exposedToWeaver) {
-        super(signature, world, exposedToWeaver);
+    BcelObjectType(ResolvedTypeX.Name resolvedTypeX, JavaClass javaClass, boolean exposedToWeaver) {
+        super(resolvedTypeX, exposedToWeaver);
         this.javaClass = javaClass;
         
         sourceContext = new BcelSourceContext(this);
@@ -90,7 +91,7 @@ public class BcelObjectType extends ResolvedTypeX.Name {
     public ResolvedTypeX getSuperclass() {
         if (isObject) return null;
         if (superClass == null) {
-            superClass = world.resolve(TypeX.forName(javaClass.getSuperclassName()));
+            superClass = getResolvedTypeX().getWorld().resolve(TypeX.forName(javaClass.getSuperclassName()));
         }
         return superClass;
     }
@@ -100,7 +101,7 @@ public class BcelObjectType extends ResolvedTypeX.Name {
             String[] ifaceNames = javaClass.getInterfaceNames();
             interfaces = new ResolvedTypeX[ifaceNames.length];
             for (int i = 0, len = ifaceNames.length; i < len; i++) {
-                interfaces[i] = world.resolve(TypeX.forName(ifaceNames[i]));
+                interfaces[i] = getResolvedTypeX().getWorld().resolve(TypeX.forName(ifaceNames[i]));
             }
         }
         return interfaces;
@@ -161,13 +162,13 @@ public class BcelObjectType extends ResolvedTypeX.Name {
 			AjAttribute a = (AjAttribute) iter.next();
 			//System.err.println("unpacking: " + this + " and " + a);
 			if (a instanceof AjAttribute.Aspect) {
-				perClause = ((AjAttribute.Aspect)a).reify(this);
+				perClause = ((AjAttribute.Aspect)a).reify(this.getResolvedTypeX());
 			} else if (a instanceof AjAttribute.PointcutDeclarationAttribute) {
 				pointcuts.add(((AjAttribute.PointcutDeclarationAttribute)a).reify());
 			} else if (a instanceof AjAttribute.WeaverState) {
 				weaverState = ((AjAttribute.WeaverState)a).reify();
 			} else if (a instanceof AjAttribute.TypeMunger) {
-				typeMungers.add(((AjAttribute.TypeMunger)a).reify(getWorld(), this));
+				typeMungers.add(((AjAttribute.TypeMunger)a).reify(getResolvedTypeX().getWorld(), getResolvedTypeX()));
 			} else if (a instanceof AjAttribute.DeclareAttribute) {
 				declares.add(((AjAttribute.DeclareAttribute)a).getDeclare());
 			} else if (a instanceof AjAttribute.PrivilegedAttribute) {
@@ -189,6 +190,10 @@ public class BcelObjectType extends ResolvedTypeX.Name {
 	public PerClause getPerClause() {
 		return perClause;
 	}
+    
+    
+    
+    
     
     
     JavaClass getJavaClass() {
@@ -253,6 +258,18 @@ public class BcelObjectType extends ResolvedTypeX.Name {
     	}
     	return ret;
     }
+
+	public boolean isInterface() {
+		return javaClass.isInterface();
+	}
+	
+	public boolean isSynthetic() {
+		return getResolvedTypeX().isSynthetic();
+	}
+
+	public ISourceLocation getSourceLocation() {
+		return null; //FIXME, we can do much better than this
+	}
 } 
     
     

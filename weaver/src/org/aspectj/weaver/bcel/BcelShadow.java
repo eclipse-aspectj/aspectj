@@ -1191,7 +1191,7 @@ public class BcelShadow extends Shadow {
         Member mungerSig = munger.getSignature();
         ResolvedTypeX declaringType = world.resolve(mungerSig.getDeclaringType());
         //??? might want some checks here to give better errors
-        BcelObjectType ot = (BcelObjectType)declaringType;
+        BcelObjectType ot = BcelWorld.getBcelObjectType(declaringType); 
         
 		LazyMethodGen adviceMethod = ot.getLazyClassGen().getLazyMethodGen(mungerSig);
 		if (!adviceMethod.getCanInline()) {

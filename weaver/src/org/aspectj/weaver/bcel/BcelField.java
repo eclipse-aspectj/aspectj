@@ -31,20 +31,16 @@ final class BcelField extends ResolvedMember {
 	BcelField(BcelObjectType declaringType, Field field) {
 		super(
 			FIELD, 
-			declaringType,
+			declaringType.getResolvedTypeX(),
 			field.getAccessFlags(),
 			field.getName(), 
 			field.getSignature());
 		this.field = field;
-		unpackAttributes(declaringType.getWorld());
+		unpackAttributes(declaringType.getResolvedTypeX().getWorld());
 		checkedExceptions = TypeX.NONE;
 	}
 
 	// ----
-
-	BcelObjectType getBcelDeclaringType() {
-		return (BcelObjectType) getDeclaringType(); // I want covariant return types.
-	}
 	
 	private void unpackAttributes(World world) {
 		List as = BcelAttributes.readAjAttributes(field.getAttributes(), getSourceContext(world));

@@ -13,7 +13,7 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ast.Clinit;
@@ -40,7 +40,7 @@ public class AspectClinit extends Clinit {
 		CodeStream codeStream) 
 	{
 		if (hasPre) {
-			final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(classScope);
+			final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 
 			codeStream.invokestatic(world.makeMethodBindingForCall(
 				AjcMemberMaker.ajcPreClinitMethod(
@@ -56,7 +56,7 @@ public class AspectClinit extends Clinit {
 	{
 		super.generatePostSyntheticCode(classScope, codeStream);
 		if (hasPost) {
-			final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(classScope);
+			final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 
 			codeStream.invokestatic(world.makeMethodBindingForCall(
 				AjcMemberMaker.ajcPostClinitMethod(

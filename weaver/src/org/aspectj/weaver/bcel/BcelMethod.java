@@ -39,22 +39,18 @@ final class BcelMethod extends ResolvedMember {
 		super(
 			method.getName().equals("<init>") ? CONSTRUCTOR : 
 				(method.getName().equals("<clinit>") ? STATIC_INITIALIZATION : METHOD), 
-			declaringType,
+			declaringType.getResolvedTypeX(),
 			declaringType.isInterface() 
 				? method.getAccessFlags() | Modifier.INTERFACE
 				: method.getAccessFlags(),
 			method.getName(), 
 			method.getSignature());
 		this.method = method;
-		unpackAjAttributes(declaringType.getWorld());
+		unpackAjAttributes(declaringType.getResolvedTypeX().getWorld());
 		unpackJavaAttributes();
 	}
 
 	// ----
-	
-	BcelObjectType getBcelDeclaringType() {
-		return (BcelObjectType) getDeclaringType(); // I want covariant return types.
-	}
 
 	private void unpackJavaAttributes() {
 		ExceptionTable exnTable = method.getExceptionTable();

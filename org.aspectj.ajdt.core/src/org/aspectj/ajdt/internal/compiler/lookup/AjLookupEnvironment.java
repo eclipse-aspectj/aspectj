@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
@@ -40,7 +41,7 @@ import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 
 public class AjLookupEnvironment extends LookupEnvironment {
-	public EclipseWorld world = null;
+	public EclipseFactory factory = null;
 	
 	private boolean builtInterTypesAndPerClauses = false;
 	private List pendingTypesToWeave = new ArrayList();
@@ -69,10 +70,19 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		}
 		stepCompleted = CONNECT_TYPE_HIERARCHY;
 	
-		// collect inter-type declarations as well
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			units[i].scope.buildFieldsAndMethods();
 		}
+		
+		// would like to gather up all TypeDeclarations at this point and put them in the factory
+		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
+			SourceTypeBinding[] b = units[i].scope.topLevelTypes;
+			for (int j = 0; j < b.length; j++) {
+				factory.addSourceTypeBinding(b[j]);
+			}
+		}
+		
+		
 		
 		// need to build inter-type declarations for all AspectDeclarations at this point
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
@@ -85,8 +95,10 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		doPendingWeaves();
 	
 		// now do weaving
-		Collection typeMungers = world.getTypeMungers();
-		Collection declareParents = world.getDeclareParents();
+		Collection typeMungers = factory.getTypeMungers();
+		//System.out.println("typeMungers: " + typeMungers);
+		
+		Collection declareParents = factory.getDeclareParents();
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			weaveInterTypeDeclarations(units[i].scope, typeMungers, declareParents);
 			units[i] = null; // release unnecessary reference to the parsed unit
@@ -135,13 +147,13 @@ public class AjLookupEnvironment extends LookupEnvironment {
 			pendingTypesToWeave.add(sourceType);
 		} else {
 			//System.err.println("weaving: " + new String(sourceType.sourceName()) + ", " + world.getTypeMungers());
-			weaveInterTypeDeclarations(sourceType, world.getTypeMungers(), world.getDeclareParents());
+			weaveInterTypeDeclarations(sourceType, factory.getTypeMungers(), factory.getDeclareParents());
 		}
 	}
 	
 	
 	private void weaveInterTypeDeclarations(SourceTypeBinding sourceType, Collection typeMungers, Collection declareParents) {
-		ResolvedTypeX onType = world.fromEclipse(sourceType);
+		ResolvedTypeX onType = factory.fromEclipse(sourceType);
 		onType.clearInterTypeMungers();
 		
 		for (Iterator i = declareParents.iterator(); i.hasNext();) {
@@ -149,11 +161,15 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		}
 		
 		for (Iterator i = typeMungers.iterator(); i.hasNext();) {
-			EclipseTypeMunger munger = (EclipseTypeMunger) i.next();
-			//System.out.println("weaving: " + munger);
-			//if (munger.match(scope))
-			if (munger.matches(onType)) {
-				onType.addInterTypeMunger(munger);
+			Object o = i.next();
+			if (o instanceof EclipseTypeMunger) {
+				EclipseTypeMunger munger = (EclipseTypeMunger) o;
+				if (munger.matches(onType)) {
+					onType.addInterTypeMunger(munger);
+				}
+			} else {
+				//FIXME this needs to handle some binary form type mungers for aspect libs
+				//???System.out.println("skipping: " + o);
 			}
 		}
 		
@@ -173,7 +189,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
 	}
 
 	private void doDeclareParents(DeclareParents declareParents, SourceTypeBinding sourceType) {
-		if (declareParents.match(world.fromEclipse(sourceType))) {
+		if (declareParents.match(factory.fromEclipse(sourceType))) {
 			TypePatternList l = declareParents.getParents();
 			for (int i=0, len=l.size(); i < len; i++) {
 				addParent(declareParents, sourceType, l.get(i));
@@ -189,20 +205,21 @@ public class AjLookupEnvironment extends LookupEnvironment {
 //			throw new RuntimeException("yikes: " + typePattern);
 //		}
 		//if (iType == ResolvedTypeX.MISSING || iType == null) return;
-		ReferenceBinding b = (ReferenceBinding)world.makeTypeBinding(iType); //"
+		ReferenceBinding b = (ReferenceBinding)factory.makeTypeBinding(iType); //"
 				
 		if (b.isClass()) {
 			if (sourceType.isInterface()) {
-				world.getMessageHandler().handleMessage(MessageUtil.error(
-					"interface can not extend a class", declareParents.getSourceLocation()
-				));
+				factory.showMessage(IMessage.ERROR, 
+					"interface can not extend a class", 
+					declareParents.getSourceLocation(), null
+				);
 				// how to handle xcutting errors???
 			}
 			
 			if (sourceType == b || sourceType.isSuperclassOf(b)) {
-				world.getMessageHandler().handleMessage(MessageUtil.error(
-					"class can not extend itself", declareParents.getSourceLocation()
-				));
+				factory.showMessage(IMessage.ERROR,
+					"class can not extend itself", declareParents.getSourceLocation(), null
+				);
 				return;
 			}
 			sourceType.superclass = b;
@@ -213,9 +230,9 @@ public class AjLookupEnvironment extends LookupEnvironment {
 			}
 			
 			if (sourceType.isInterface() && b.implementsInterface(sourceType, true)) {
-				world.getMessageHandler().handleMessage(MessageUtil.error(
-					"interface can not extend itself", declareParents.getSourceLocation()
-				));
+				factory.showMessage(IMessage.ERROR,
+					"interface can not extend itself", declareParents.getSourceLocation(), null
+				);
 				return;
 			}
 			if (sourceType == b || b.isSuperclassOf(sourceType)) return;

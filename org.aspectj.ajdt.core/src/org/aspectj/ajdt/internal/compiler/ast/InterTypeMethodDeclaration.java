@@ -15,17 +15,9 @@ package org.aspectj.ajdt.internal.compiler.ast;
 
 import java.lang.reflect.Modifier;
 
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
-import org.aspectj.weaver.AjAttribute;
-import org.aspectj.weaver.AjcMemberMaker;
-import org.aspectj.weaver.CrosscuttingMembers;
-import org.aspectj.weaver.Member;
-import org.aspectj.weaver.NewMethodTypeMunger;
-import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.*;
 import org.eclipse.jdt.internal.compiler.ClassFile;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
@@ -33,9 +25,7 @@ import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.codegen.CodeStream;
 import org.eclipse.jdt.internal.compiler.flow.FlowContext;
 import org.eclipse.jdt.internal.compiler.flow.FlowInfo;
-import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
-import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
-import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 
 
@@ -82,16 +72,16 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 	
 	
 
-	public void build(ClassScope classScope, CrosscuttingMembers xcut) {
-		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(classScope);
+	public EclipseTypeMunger build(ClassScope classScope) {
+		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 		
 		resolveOnType(classScope);
-		if (ignoreFurtherInvestigation) return;
+		if (ignoreFurtherInvestigation) return null;
 		
 		binding = classScope.referenceContext.binding.resolveTypesFor(binding);
-		ResolvedMember sig = new ResolvedMember(Member.METHOD, EclipseWorld.fromBinding(onTypeBinding),
-			declaredModifiers, EclipseWorld.fromBinding(binding.returnType), new String(declaredSelector),
-			EclipseWorld.fromBindings(binding.parameters));
+		ResolvedMember sig = new ResolvedMember(Member.METHOD, EclipseFactory.fromBinding(onTypeBinding),
+			declaredModifiers, EclipseFactory.fromBinding(binding.returnType), new String(declaredSelector),
+			EclipseFactory.fromBindings(binding.parameters));
 		sig.setCheckedExceptions(world.fromEclipse(binding.thrownExceptions));
 		
 		NewMethodTypeMunger myMunger = new NewMethodTypeMunger(sig, null);
@@ -101,7 +91,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 			myMunger.getDispatchMethod(aspectType);
 		this.selector = binding.selector = me.getName().toCharArray();
 		
-		xcut.addTypeMunger(new EclipseTypeMunger(myMunger, aspectType, this));
+		return new EclipseTypeMunger(world, myMunger, aspectType, this);
 	}
 	
 	
@@ -126,9 +116,9 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 	}
 	
 	public void generateDispatchMethod(ClassScope classScope, ClassFile classFile) {
-		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(classScope);
+		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 		
-		TypeX aspectType = EclipseWorld.fromBinding(classScope.referenceContext.binding);
+		TypeX aspectType = EclipseFactory.fromBinding(classScope.referenceContext.binding);
 		ResolvedMember signature = munger.getSignature();
 		
 		ResolvedMember dispatchMember = 

@@ -13,16 +13,15 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
+import java.util.List;
+
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseScope;
 import org.aspectj.weaver.AjAttribute;
-import org.aspectj.weaver.CrosscuttingMembers;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.FormalBinding;
 import org.eclipse.jdt.internal.compiler.ClassFile;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.eclipse.jdt.internal.compiler.ast.*;
 import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 
@@ -80,28 +79,13 @@ public class DeclareDeclaration extends MethodDeclaration {
 //	}
 
 	
-	public void build(ClassScope classScope, CrosscuttingMembers xcut) {
-		if (declare == null) return;
+	public Declare build(ClassScope classScope) {
+		if (declare == null) return null;
         
         EclipseScope scope = new EclipseScope(new FormalBinding[0], classScope);
 
         declare.resolve(scope);
-        xcut.addDeclare(declare);
-
-		//EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(classScope);
-		//XXX need to work out the eclipse side of all this state
-//XXX		world.addDeclare(world.resolve(EclipseWorld.fromBinding(classScope.referenceContext.binding)),
-//XXX						declare, false);
-
-
-
-
-//		binding = makeMethodBinding(classScope);
-//		world.addTypeMunger(new EclipseNewMethodTypeMunger(binding));
-//		//??? what do we need to know
-//		munger = new NewMethodTypeMunger(
-//			EclipseWorld.makeResolvedMember(binding.introducedMethod),
-//			EclipseWorld.makeResolvedMember(super.binding), null);
+        return declare;
 	}
 
 

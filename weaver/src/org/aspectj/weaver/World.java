@@ -25,6 +25,7 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.IMessage.Kind;
+import org.aspectj.weaver.ResolvedTypeX.Name;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.Pointcut;
 
@@ -92,7 +93,16 @@ public abstract class World {
     public ResolvedTypeX resolve(String name) {
     	return resolve(TypeX.forName(name));
     }
-    protected abstract ResolvedTypeX resolveObjectType(TypeX ty);
+    protected final ResolvedTypeX resolveObjectType(TypeX ty) {
+    	ResolvedTypeX.Name name = new ResolvedTypeX.Name(ty.getSignature(), this);
+    	ResolvedTypeX.ConcreteName concreteName = resolveObjectType(name);
+    	if (concreteName == null) return ResolvedTypeX.MISSING;
+    	name.setDelegate(concreteName);
+    	return name;
+    }
+    
+    protected abstract ResolvedTypeX.ConcreteName resolveObjectType(ResolvedTypeX.Name ty);
+    
 
     protected final boolean isCoerceableFrom(TypeX type, TypeX other) {
         return resolve(type).isCoerceableFrom(other);
@@ -183,8 +193,8 @@ public abstract class World {
     
     public static final World EMPTY = new World() {
         public List getShadowMungers() { return Collections.EMPTY_LIST; }
-        public ResolvedTypeX resolveObjectType(TypeX ty) {
-            return ResolvedTypeX.MISSING;
+        public ResolvedTypeX.ConcreteName resolveObjectType(ResolvedTypeX.Name ty) {
+            return null;
         }
         public Advice concreteAdvice(AjAttribute.AdviceAttribute attribute, Pointcut p, Member m) {
             throw new RuntimeException("unimplemented");
@@ -352,6 +362,17 @@ public abstract class World {
 
 	public void setXnoInline(boolean xnoInline) {
 		XnoInline = xnoInline;
+	}
+
+	public ResolvedTypeX.Name lookupOrCreateName(TypeX ty) {
+		String signature = ty.getSignature();
+        ResolvedTypeX.Name ret = (ResolvedTypeX.Name)typeMap.get(signature);
+        if (ret == null) {
+        	ret = new ResolvedTypeX.Name(signature, this);
+        	typeMap.put(signature, ret);
+        }
+        
+		return ret;
 	}
 
 }

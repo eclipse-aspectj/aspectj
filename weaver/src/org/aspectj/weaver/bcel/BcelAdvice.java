@@ -107,7 +107,7 @@ public class BcelAdvice extends Advice {
 
 		if (concreteAspect.getWorld().isXnoInline()) return false;
     	//System.err.println("isWoven? " + ((BcelObjectType)concreteAspect).getLazyClassGen().getWeaverState());
-    	return ((BcelObjectType)concreteAspect).getLazyClassGen().getWeaverState() 
+    	return BcelWorld.getBcelObjectType(concreteAspect).getLazyClassGen().getWeaverState() 
     			== WeaverStateKind.Woven;
     }
 

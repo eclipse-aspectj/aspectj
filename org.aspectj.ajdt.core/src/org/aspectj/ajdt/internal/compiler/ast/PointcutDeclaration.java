@@ -13,7 +13,7 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
@@ -91,10 +91,10 @@ public class PointcutDeclaration extends MethodDeclaration {
 	public ResolvedPointcutDefinition makeResolvedPointcutDefinition() {
 		//System.out.println("pc: " + getPointcut());
 		ResolvedPointcutDefinition ret = new ResolvedPointcutDefinition(
-            EclipseWorld.fromBinding(this.binding.declaringClass), 
+            EclipseFactory.fromBinding(this.binding.declaringClass), 
             declaredModifiers, 
             declaredName,
-			EclipseWorld.fromBindings(this.binding.parameters),
+			EclipseFactory.fromBindings(this.binding.parameters),
 			getPointcut());
 			
 		ret.setPosition(sourceStart, sourceEnd);

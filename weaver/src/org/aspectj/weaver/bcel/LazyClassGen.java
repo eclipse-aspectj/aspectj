@@ -43,6 +43,7 @@ import org.apache.bcel.generic.PUSH;
 import org.apache.bcel.generic.RETURN;
 import org.apache.bcel.generic.Type;
 import org.aspectj.util.CollectionUtil;
+import org.aspectj.weaver.*;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
@@ -62,7 +63,7 @@ public final class LazyClassGen {
 
         BcelWorld world = new BcelWorld(path);
 
-        LazyClassGen clazz = new LazyClassGen((BcelObjectType) world.resolve(name));
+        LazyClassGen clazz = new LazyClassGen(BcelWorld.getBcelObjectType(world.resolve(name)));
         clazz.print(out);
         out.println();
     }
@@ -482,7 +483,12 @@ public final class LazyClassGen {
     }
     
 
-	public BcelObjectType getType() {
+	public ResolvedTypeX getType() {
+		if (myType == null) return null;
+		return myType.getResolvedTypeX();
+	}
+
+	public BcelObjectType getBcelObjectType() {
 		return myType;
 	}
 

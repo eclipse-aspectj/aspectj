@@ -14,44 +14,18 @@
 package org.aspectj.ajdt.internal.compiler.ast;
 
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseScope;
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseSourceType;
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
-import org.aspectj.ajdt.internal.compiler.lookup.HelperInterfaceBinding;
-import org.aspectj.ajdt.internal.compiler.lookup.InlineAccessFieldBinding;
-import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedHandler;
-import org.aspectj.weaver.AjAttribute;
-import org.aspectj.weaver.AjcMemberMaker;
-import org.aspectj.weaver.CrosscuttingMembers;
-import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
-import org.aspectj.weaver.patterns.FormalBinding;
-import org.aspectj.weaver.patterns.PerClause;
-import org.aspectj.weaver.patterns.PerFromSuper;
-import org.aspectj.weaver.patterns.PerSingleton;
-import org.aspectj.weaver.patterns.TypePattern;
+import org.aspectj.ajdt.internal.compiler.lookup.*;
+import org.aspectj.weaver.*;
+import org.aspectj.weaver.patterns.*;
 import org.eclipse.jdt.internal.compiler.ClassFile;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ast.Clinit;
 import org.eclipse.jdt.internal.compiler.ast.MemberTypeDeclaration;
 import org.eclipse.jdt.internal.compiler.codegen.CodeStream;
 import org.eclipse.jdt.internal.compiler.codegen.Label;
-import org.eclipse.jdt.internal.compiler.lookup.BaseTypes;
-import org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
-import org.eclipse.jdt.internal.compiler.lookup.Binding;
-import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
-import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
-import org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
-import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
-import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
-import org.eclipse.jdt.internal.compiler.lookup.Scope;
-import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
-import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.*;
 
 
 // making all aspects member types avoids a nasty hierarchy pain
@@ -69,8 +43,11 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 	
 	public boolean isPrivileged;
 	
-	public EclipseSourceType typeX;
-	public EclipseWorld world;  //??? should use this consistently
+	public EclipseSourceType concreteName;
+	
+	public ResolvedTypeX.Name typeX;
+	
+	public EclipseFactory world;  //??? should use this consistently
 
 
 	// for better error messages in 1.0 to 1.1 transition
@@ -91,10 +68,9 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 			return;
 		}
 		
-		if (typeX != null) typeX.checkPointcutDeclarations();
+		if (concreteName != null) concreteName.checkPointcutDeclarations();
 		
 		super.resolve();
-		
 	}
 	
 	
@@ -141,19 +117,20 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 		}
 		
 		
-		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(scope);
-		ResolvedTypeX myType = world.fromEclipse(binding);
-		ResolvedTypeX superType = myType.getSuperclass().resolve(world);		
+		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(scope);
+		ResolvedTypeX myType = typeX;
+		//if (myType == null) System.err.println("bad myType for: " + this);
+		ResolvedTypeX superType = myType.getSuperclass();		
 		
 		// can't be Serializable/Cloneable unless -XserializableAspects
 		if (!world.buildManager.buildConfig.isXserializableAspects()) {
-			if (world.resolve(TypeX.SERIALIZABLE).isAssignableFrom(myType)) {
+			if (world.getWorld().resolve(TypeX.SERIALIZABLE).isAssignableFrom(myType)) {
 				scope.problemReporter().signalError(sourceStart, sourceEnd,
 								"aspects may not implement Serializable");
 				ignoreFurtherInvestigation = true;
 			    return;
 			}
-			if (world.resolve(TypeX.CLONEABLE).isAssignableFrom(myType)) {
+			if (world.getWorld().resolve(TypeX.CLONEABLE).isAssignableFrom(myType)) {
 				scope.problemReporter().signalError(sourceStart, sourceEnd,
 								"aspects may not implement Cloneable");
 				ignoreFurtherInvestigation = true;
@@ -161,8 +138,6 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 			}
 
 		}
-
-		
 
 		if (superType.isAspect()) {
 			if (!superType.isAbstract()) {
@@ -215,7 +190,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 			}
 		}
 
-		if (EclipseWorld.DEBUG) System.out.println(toString(0));
+		if (EclipseFactory.DEBUG) System.out.println(toString(0));
 		
 		super.generateCode(enclosingClassFile);
 	}
@@ -270,7 +245,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 			return;
 		}
 		
-		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		
 		if (perClause.getKind() == PerClause.SINGLETON) {
 			generatePerSingletonAspectOfMethod(classFile);
@@ -300,12 +275,12 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 	
 	
 	private void generateMethod(ClassFile classFile, ResolvedMember member, BodyGenerator gen) {
-		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, world.makeMethodBinding(member), gen);
 	}
 	
 	private void generateMethod(ClassFile classFile, MethodBinding methodBinding, BodyGenerator gen) {
-		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		classFile.generateMethodInfoHeader(methodBinding);
 		int methodAttributeOffset = classFile.contentsOffset;
 		int attributeNumber = classFile.generateMethodInfoAttribute(methodBinding, AstUtil.getAjSyntheticAttribute());
@@ -326,7 +301,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 	private void generatePerCflowAspectOfMethod(
 		ClassFile classFile) 
 	{
-		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, aspectOfMethod, new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here
@@ -345,7 +320,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 
 
 	private void generatePerCflowHasAspectMethod(ClassFile classFile) {
-		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, hasAspectMethod, new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here
@@ -363,7 +338,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 	private void generatePerCflowPushMethod(
 		ClassFile classFile) 
 	{
-		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, world.makeMethodBinding(AjcMemberMaker.perCflowPush(
 				world.fromBinding(binding))), 
 		new BodyGenerator() {
@@ -395,7 +370,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 	private void generatePerCflowAjcClinitMethod(
 		ClassFile classFile) 
 	{
-		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, world.makeMethodBinding(AjcMemberMaker.ajcPreClinitMethod(
 				world.fromBinding(binding))), 
 		new BodyGenerator() {
@@ -418,7 +393,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 	private TypeBinding generatePerObjectInterface(
 		ClassFile classFile)
 	{
-		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		TypeX interfaceTypeX = 
 		    AjcMemberMaker.perObjectInterfaceType(typeX);
 		HelperInterfaceBinding interfaceType =
@@ -435,7 +410,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 		ClassFile classFile,
 		final TypeBinding interfaceType) 
 	{
-		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, aspectOfMethod, new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here				
@@ -471,7 +446,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 
 	private void generatePerObjectHasAspectMethod(ClassFile classFile, 
 		final TypeBinding interfaceType) {
-		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, hasAspectMethod, new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here
@@ -498,7 +473,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 		ClassFile classFile,
 		final TypeBinding interfaceType) 
 	{
-		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, AjcMemberMaker.perObjectBind(world.fromBinding(binding)), 
 		new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
@@ -534,7 +509,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 
 		
 	private void generatePerSingletonAspectOfMethod(ClassFile classFile) {
-		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, aspectOfMethod, new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here
@@ -556,7 +531,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 	}
 	
 	private void generatePerSingletonHasAspectMethod(ClassFile classFile) {
-		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, hasAspectMethod, new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here
@@ -577,7 +552,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 	private void generatePerSingletonAjcClinitMethod(
 		ClassFile classFile) 
 	{
-		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
+		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, world.makeMethodBinding(AjcMemberMaker.ajcPostClinitMethod(
 				world.fromBinding(binding))), 
 		new BodyGenerator() {
@@ -700,7 +675,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 	
 
 	private void buildPerClause(ClassScope scope) {
-		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(scope);
+		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(scope);
 		
 		if (perClause == null) {
 			PerClause.Kind kind = lookupPerClauseKind(binding.superclass);
@@ -711,8 +686,6 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 			}
 		}
 		
-		
-		//perClause.concretize(world.fromEclipse(binding));
 		aspectAttribute = new AjAttribute.Aspect(perClause);
 		
 		if (ignoreFurtherInvestigation) return; //???
@@ -751,29 +724,35 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 		checkSpec(classScope);
 		if (ignoreFurtherInvestigation) return;
 		
-		world = EclipseWorld.fromScopeLookupEnvironment(scope);
-		typeX = (EclipseSourceType)world.fromEclipse(binding);
+		world = EclipseFactory.fromScopeLookupEnvironment(scope);
+//		concreteName = world.lookupConcreteName(binding);
+//		typeX = concreteName.getResolvedTypeX();
+
 		
 		if (isPrivileged) {
 			binding.privilegedHandler = new PrivilegedHandler(this);
 		}
 		
-		CrosscuttingMembers xcut = new CrosscuttingMembers(typeX);
-		typeX.crosscuttingMembers = xcut;
+//		CrosscuttingMembers xcut = new CrosscuttingMembers(typeX);
+//		concreteName.crosscuttingMembers = xcut;
+		//typeX.crosscuttingMembers = xcut;
 		//XXXxcut.setPerClause(buildPerClause(scope));
 		buildPerClause(scope);
 		
 		if (methods != null) {
 			for (int i = 0; i < methods.length; i++) {
 				if (methods[i] instanceof InterTypeDeclaration) {
-					((InterTypeDeclaration)methods[i]).build(classScope, xcut);
+					EclipseTypeMunger m = ((InterTypeDeclaration)methods[i]).build(classScope);
+					if (m != null) concreteName.typeMungers.add(m);
 				} else if (methods[i] instanceof DeclareDeclaration) {
-					((DeclareDeclaration)methods[i]).build(classScope, xcut);
+					Declare d = ((DeclareDeclaration)methods[i]).build(classScope);
+					if (d != null) concreteName.declares.add(d);
 				}
 			}
 		}
 
-		world.getCrosscuttingMembersSet().addOrReplaceAspect(typeX);		
+		//??? timing is weird
+		world.getWorld().getCrosscuttingMembersSet().addOrReplaceAspect(typeX);		
 	}
 
 

@@ -33,7 +33,7 @@ public class InterTypeMethodBinding extends MethodBinding {
 	
 	public AbstractMethodDeclaration sourceMethod;
 	
-	public InterTypeMethodBinding(EclipseWorld world, ResolvedMember signature, TypeX withinType,
+	public InterTypeMethodBinding(EclipseFactory world, ResolvedMember signature, TypeX withinType,
 									AbstractMethodDeclaration sourceMethod)
 	{
 		super(world.makeMethodBinding(signature), null);
@@ -49,7 +49,7 @@ public class InterTypeMethodBinding extends MethodBinding {
 				world.makeMethodBinding(AjcMemberMaker.interMethodBody(signature, withinType));
 		} else {
 			syntheticMethod = world.makeMethodBinding(
-				AjcMemberMaker.interConstructor(world.resolve(signature.getDeclaringType()),
+				AjcMemberMaker.interConstructor(world.getWorld().resolve(signature.getDeclaringType()),
 							signature, withinType));
 			postDispatchMethod = syntheticMethod;
 		}

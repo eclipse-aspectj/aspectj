@@ -226,7 +226,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	{
 		LazyClassGen gen = weaver.getLazyClassGen();
 		
-		if (couldMatch(gen.getType(), munger.getTestPointcut())) {
+		if (couldMatch(gen.getBcelObjectType(), munger.getTestPointcut())) {
 			FieldGen fg = makeFieldGen(gen, 
 				AjcMemberMaker.perObjectField(gen.getType(), aspectType));
 

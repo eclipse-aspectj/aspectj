@@ -130,6 +130,8 @@ public abstract class CommandTestCase extends TestCase {
 		String fullpath = "testdata/" + path;
 		LazyClassGen.disassemble(fullpath, name, System.out);
 	}
+	
+	
     
     /** incremental test case adapter to JUnit */
     public class IncCase extends IncrementalCase {

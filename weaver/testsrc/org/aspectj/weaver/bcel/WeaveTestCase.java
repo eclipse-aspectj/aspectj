@@ -76,7 +76,7 @@ public abstract class WeaveTestCase extends TestCase {
 	{
 		//int preErrors = currentResult.errorCount();
 		BcelObjectType classType =
-			(BcelObjectType) world.resolve(classFile.getClassName());
+			BcelWorld.getBcelObjectType(world.resolve(classFile.getClassName()));
 		LazyClassGen gen = weaver.weave(classFile, classType);
 		if (gen == null) {
 			// we didn't do any weaving, but let's make a gen anyway

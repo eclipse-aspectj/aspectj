@@ -13,31 +13,43 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedPointcutDefinition;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.*;
+import org.aspectj.weaver.patterns.PerClause;
+import org.aspectj.weaver.patterns.PerSingleton;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
-import org.eclipse.jdt.internal.compiler.lookup.CompilerModifiers;
-import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
-import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
-import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.*;
 
-public class EclipseSourceType extends EclipseObjectType {
-	private SourceTypeBinding binding;
+public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
+	protected ResolvedPointcutDefinition[] declaredPointcuts = null;
+	protected ResolvedMember[] declaredMethods = null;
+	protected ResolvedMember[] declaredFields = null;
 	
+	public List declares = new ArrayList();
+	public List typeMungers = new ArrayList();
+	
+	private EclipseFactory factory;
+	
+	private SourceTypeBinding binding;
+	private TypeDeclaration declaration;
+	
+	protected EclipseFactory eclipseWorld() {
+		return factory;
+	}
 
-	public EclipseSourceType(String signature, EclipseWorld world, SourceTypeBinding binding) {
-		super(signature, world, true);
+	public EclipseSourceType(ResolvedTypeX.Name resolvedTypeX, EclipseFactory factory,
+								SourceTypeBinding binding, TypeDeclaration declaration)
+	{
+		super(resolvedTypeX, true);
+		this.factory = factory;
 		this.binding = binding;
+		this.declaration = declaration;
 	}
 
 
@@ -47,7 +59,7 @@ public class EclipseSourceType extends EclipseObjectType {
 	}
 	
 	public ResolvedTypeX getSuperclass() {
-		if (binding.isInterface()) return world.resolve(TypeX.OBJECT);
+		if (binding.isInterface()) return getResolvedTypeX().getWorld().resolve(TypeX.OBJECT);
 		//XXX what about java.lang.Object
 		return eclipseWorld().fromEclipse(binding.superclass());
 	}
@@ -91,6 +103,22 @@ public class EclipseSourceType extends EclipseObjectType {
 			declaredFields.toArray(new ResolvedMember[declaredFields.size()]);
 	}
 
+
+	public ResolvedMember[] getDeclaredFields() {
+		if (declaredFields == null) fillDeclaredMembers();
+		return declaredFields;
+	}
+
+	public ResolvedMember[] getDeclaredMethods() {
+		if (declaredMethods == null) fillDeclaredMembers();
+		return declaredMethods;
+	}
+
+	public ResolvedMember[] getDeclaredPointcuts() {
+		if (declaredPointcuts == null) fillDeclaredMembers();
+		return declaredPointcuts;
+	}
+
 	
 	public int getModifiers() {
 		// only return the real Java modifiers, not the extra eclipse ones
@@ -98,7 +126,7 @@ public class EclipseSourceType extends EclipseObjectType {
 	}
 	
 	public String toString() {
-		return "EclipseSourceType(" + getClassName() + ")";
+		return "EclipseSourceType(" + new String(binding.sourceName()) + ")";
 	}
 
 
@@ -113,7 +141,7 @@ public class EclipseSourceType extends EclipseObjectType {
 						"abstract pointcut only allowed in aspect" + pointcuts[i].getName(),
 						pointcuts[i].getSourceLocation(), null);
 					sawError = true;
-				} else if (!this.isAbstract()) {
+				} else if (!binding.isAbstract()) {
 					eclipseWorld().showMessage(IMessage.ERROR,
 						"abstract pointcut in concrete aspect" + pointcuts[i],
 						pointcuts[i].getSourceLocation(), null);
@@ -140,12 +168,41 @@ public class EclipseSourceType extends EclipseObjectType {
 		//    i.e. same signatures and greater or equal visibility
 		// find all inherited abstract pointcuts and make sure they're concretized if I'm concrete
 		// find all inherited pointcuts and make sure they don't conflict
-		getExposedPointcuts();
+		getResolvedTypeX().getExposedPointcuts();  //??? this is an odd construction
 
 	}
+	
+	//???
+//	public CrosscuttingMembers collectCrosscuttingMembers() {
+//		return crosscuttingMembers;
+//	}
 
 	public ISourceLocation getSourceLocation() {
 		TypeDeclaration dec = binding.scope.referenceContext;
 		return new EclipseSourceLocation(dec.compilationResult, dec.sourceStart, dec.sourceEnd);
 	}
+
+	public boolean isInterface() {
+		return binding.isInterface();
+	}
+
+	public PerClause getPerClause() {
+		//should probably be: ((AspectDeclaration)declaration).perClause;
+		// but we don't need this level of detail, and working with real per clauses
+		// at this stage of compilation is not worth the trouble
+		return new PerSingleton(); 
+	}
+	
+	protected Collection getDeclares() {
+		return declares;
+	}
+
+	protected Collection getPrivilegedAccesses() {
+		return Collections.EMPTY_LIST;
+	}
+
+	protected Collection getTypeMungers() {
+		return typeMungers;
+	}
+
 }

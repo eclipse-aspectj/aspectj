@@ -13,7 +13,7 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.InlineAccessFieldBinding;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeFieldBinding;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeMethodBinding;
@@ -55,7 +55,7 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 	PrivilegedHandler handler;
 	AspectDeclaration inAspect;
-	EclipseWorld world; // alias for inAspect.world
+	EclipseFactory world; // alias for inAspect.world
 	
 	public AccessForInlineVisitor(AspectDeclaration inAspect, PrivilegedHandler handler) {
 		this.inAspect = inAspect;

@@ -321,26 +321,6 @@ public abstract class ResolvedTypeX extends TypeX {
 
 	//??? collecting data-structure, shouldn't really be a field
     public CrosscuttingMembers crosscuttingMembers;
-    
-//    
-//    private List extraConcreteShadowMungers = new ArrayList(); //XXX makes testing easier...
-//    public void addExtraConcreteShadowMunger(ShadowMunger munger) {
-//    	munger.pointcut.assertState(Pointcut.CONCRETE);
-//    	extraConcreteShadowMungers.add(munger);
-//    }
-//	public List getExtraConcreteShadowMungers() {
-//		return extraConcreteShadowMungers;
-//	}
-//    
-//    private List extraConcreteTypeMungers = new ArrayList(); //XXX makes testing easier...Collections.EMPTY_LIST;
-//    public void addExtraConcreteTypeMunger(ConcreteTypeMunger munger) {
-//    	//munger.pointcut.assertState(Pointcut.CONCRETE);
-//    	extraConcreteTypeMungers.add(munger);
-//    }
-//	public List getExtraConcreteTypeMungers() {
-//		return extraConcreteTypeMungers;
-//	}
-
 
 	public CrosscuttingMembers collectCrosscuttingMembers() {
 		crosscuttingMembers = new CrosscuttingMembers(this);
@@ -517,34 +497,33 @@ public abstract class ResolvedTypeX extends TypeX {
     
     // ---- types
     
-    public static abstract class Name extends ResolvedTypeX {
-    	protected ISourceContext sourceContext;
-    	protected boolean exposedToWeaver;
-	
+    public static class Name extends ResolvedTypeX {
+    	private ConcreteName delegate = null;
 
-        public Name(String signature, World world, boolean exposedToWeaver) {
+		//??? should set delegate before any use
+        public Name(String signature, World world) {
             super(signature, world);
-            this.exposedToWeaver = exposedToWeaver;
         }
 	        
 	    public final boolean isClass() {
-	    	return !isAspect() && !isInterface();
+	    	return delegate.isClass();
 	    }
 	    
-	    public abstract boolean isAspect();    
+	    public boolean isAspect() {
+	    	return delegate.isAspect();
+	    }
+	     
+        public final boolean needsNoConversionFrom(TypeX o) {
+            return isAssignableFrom(o);
+        }
+	     
         public final boolean isAssignableFrom(TypeX o) {
             if (o.isPrimitive()) return false;
             ResolvedTypeX other = o.resolve(world);
 
             return isAssignableFrom(other);
         }
-        private boolean isAssignableFrom(ResolvedTypeX other) {
-            if (this == other) return true;
-            for(Iterator i = other.getDirectSupertypes(); i.hasNext(); ) {
-                if (this.isAssignableFrom((ResolvedTypeX) i.next())) return true;
-            }       
-            return false;
-        }        
+        
         public final boolean isCoerceableFrom(TypeX o) {
             ResolvedTypeX other = o.resolve(world);
 
@@ -559,7 +538,7 @@ public abstract class ResolvedTypeX extends TypeX {
             }            
             // ??? needs to be Methods, not just declared methods? JLS 5.5 unclear
             ResolvedMember[] a = getDeclaredMethods();
-            ResolvedMember[] b = ((Name)other).getDeclaredMethods();
+            ResolvedMember[] b = ((Name)other).getDeclaredMethods();  //??? is this cast always safe
             for (int ai = 0, alen = a.length; ai < alen; ai++) {
                 for (int bi = 0, blen = b.length; bi < blen; bi++) {
                     if (! b[bi].isCompatibleWith(a[ai])) return false;
@@ -567,13 +546,106 @@ public abstract class ResolvedTypeX extends TypeX {
             } 
             return true;
         }
-        public final boolean needsNoConversionFrom(TypeX o) {
-            return isAssignableFrom(o);
-        }
         
-        public ResolvedMember addPerSingletonField() {
-            throw new RuntimeException("unimplemented");
+        private boolean isAssignableFrom(ResolvedTypeX other) {
+            if (this == other) return true;
+            for(Iterator i = other.getDirectSupertypes(); i.hasNext(); ) {
+                if (this.isAssignableFrom((ResolvedTypeX) i.next())) return true;
+            }       
+            return false;
         }
+
+		public ISourceContext getSourceContext() {
+			return delegate.getSourceContext();
+		}
+		
+		public ISourceLocation getSourceLocation() { return delegate.getSourceLocation(); }
+
+		public boolean isExposedToWeaver() {
+			return delegate.isExposedToWeaver();  //??? where does this belong
+		}
+
+		public ResolvedMember[] getDeclaredFields() {
+			return delegate.getDeclaredFields();
+		}
+
+		public ResolvedTypeX[] getDeclaredInterfaces() {
+			return delegate.getDeclaredInterfaces();
+		}
+
+		public ResolvedMember[] getDeclaredMethods() {
+			return delegate.getDeclaredMethods();
+		}
+
+		public ResolvedMember[] getDeclaredPointcuts() {
+			return delegate.getDeclaredPointcuts();
+		}
+
+		public PerClause getPerClause() { return delegate.getPerClause(); }
+		protected Collection getDeclares() { return delegate.getDeclares(); }
+		protected Collection getTypeMungers() { return delegate.getTypeMungers(); }
+		
+		protected Collection getPrivilegedAccesses() { return delegate.getPrivilegedAccesses(); }
+
+
+		public int getModifiers() {
+			return delegate.getModifiers();
+		}
+
+		public ResolvedTypeX getSuperclass() {
+			return delegate.getSuperclass();
+		}
+
+
+		public ConcreteName getDelegate() {
+			return delegate;
+		}
+
+		public void setDelegate(ConcreteName delegate) {
+			this.delegate = delegate;
+		}
+    }
+    
+    public static abstract class ConcreteName {
+    	protected ISourceContext sourceContext;
+    	protected boolean exposedToWeaver;
+    	ResolvedTypeX.Name resolvedTypeX;
+	
+
+        public ConcreteName(ResolvedTypeX.Name resolvedTypeX, boolean exposedToWeaver) {
+            //???super(signature, world);
+            this.resolvedTypeX = resolvedTypeX;
+            this.exposedToWeaver = exposedToWeaver;
+        }
+	        
+	    public final boolean isClass() {
+	    	return !isAspect() && !isInterface();
+	    }
+	    
+	    public abstract boolean isAspect();
+	    public abstract boolean isInterface();
+
+		public abstract ResolvedMember[] getDeclaredFields();
+
+		public abstract ResolvedTypeX[] getDeclaredInterfaces();
+
+		public abstract ResolvedMember[] getDeclaredMethods();
+
+		public abstract ResolvedMember[] getDeclaredPointcuts();
+
+		public abstract PerClause getPerClause();
+		protected abstract Collection getDeclares() ;
+		protected abstract Collection getTypeMungers();
+		
+		protected abstract Collection getPrivilegedAccesses();
+
+
+		public abstract int getModifiers();
+
+		public abstract ResolvedTypeX getSuperclass();
+
+		public abstract ISourceLocation getSourceLocation();
+
 
 		public ISourceContext getSourceContext() {
 			return sourceContext;
@@ -581,6 +653,10 @@ public abstract class ResolvedTypeX extends TypeX {
 
 		public boolean isExposedToWeaver() {
 			return exposedToWeaver;
+		}
+
+		public ResolvedTypeX.Name getResolvedTypeX() {
+			return resolvedTypeX;
 		}
 
 	}
@@ -924,7 +1000,7 @@ public abstract class ResolvedTypeX extends TypeX {
 						//??? might need list of these overridden abstracts
 						continue;
 					} else {
-						if (this instanceof BcelObjectType) return false;  //XXX ignores separate comp
+						//XXX dual errors possible if (this instanceof BcelObjectType) return false;  //XXX ignores separate comp
 						getWorld().getMessageHandler().handleMessage(
 							MessageUtil.error("inter-type declaration from " + munger.getAspectType().getName() +
 											" conflicts with existing member: " + existingMember,
@@ -1031,7 +1107,7 @@ public abstract class ResolvedTypeX extends TypeX {
 		ConcreteTypeMunger m2)
 	{
 		//XXX this works only if we ignore separate compilation issues
-		if (this instanceof BcelObjectType) return;
+		//XXX dual errors possible if (this instanceof BcelObjectType) return;
 		
 		//System.err.println("conflict at " + m2.getSourceLocation());
 		getWorld().showMessage(IMessage.ERROR,
@@ -1086,6 +1162,8 @@ public abstract class ResolvedTypeX extends TypeX {
 		addPointcutsResolvingConflicts(ret, Arrays.asList(getDeclaredPointcuts()), true);
 		for (Iterator i = ret.iterator(); i.hasNext(); ) {
 			ResolvedPointcutDefinition inherited = (ResolvedPointcutDefinition)i.next();
+//			System.err.println("looking at: " + inherited + " in " + this);
+//			System.err.println("            " + inherited.isAbstract() + " in " + this.isAbstract());
 			if (inherited.isAbstract()) {
 				if (!this.isAbstract()) {
 					getWorld().showMessage(IMessage.ERROR,

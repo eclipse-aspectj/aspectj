@@ -177,8 +177,8 @@ public class BcelWorld extends World {
         return resolve(fromBcel(t));
     }       
 
-    // ---- fluf
-	protected ResolvedTypeX resolveObjectType(TypeX ty) {
+
+	protected ResolvedTypeX.ConcreteName resolveObjectType(ResolvedTypeX.Name ty) {
         String name = ty.getName();
         JavaClass jc = null;
         //UnwovenClassFile classFile = (UnwovenClassFile)sourceJavaClasses.get(name);
@@ -190,11 +190,18 @@ public class BcelWorld extends World {
         	jc = lookupJavaClass(classPath, name);
         }       
         if (jc == null) {
-        	return ResolvedTypeX.MISSING;
+        	return null;
         } else {
-        	return new BcelObjectType(ty.getSignature(), this, jc, false);
+        	return makeBcelObjectType(ty, jc, false);
         }
 	}
+	
+	private BcelObjectType makeBcelObjectType(ResolvedTypeX.Name resolvedTypeX, JavaClass jc, boolean exposedToWeaver) {
+		BcelObjectType ret = new BcelObjectType(resolvedTypeX, jc, exposedToWeaver);
+		resolvedTypeX.setDelegate(ret);
+		return ret;
+	}
+	
 	
 	private JavaClass lookupJavaClass(ClassPathManager classPath, String name) {
 		if (classPath == null) return null;
@@ -215,13 +222,14 @@ public class BcelWorld extends World {
 	
 	public BcelObjectType addSourceObjectType(JavaClass jc) {
 		String signature = TypeX.forName(jc.getClassName()).getSignature();
-        BcelObjectType ret = (BcelObjectType)typeMap.get(signature);
-        if (ret == null) {
-            ret = new BcelObjectType(signature, this, jc, true);
-            typeMap.put(signature, ret);
-        } else {
-            ret.replaceJavaClass(jc);
+        ResolvedTypeX.Name nameTypeX = (ResolvedTypeX.Name)typeMap.get(signature);
+
+        if (nameTypeX == null) {
+        	nameTypeX = new ResolvedTypeX.Name(signature, this);
         }
+        BcelObjectType ret = makeBcelObjectType(nameTypeX, jc, true);
+        nameTypeX.setDelegate(ret);
+        typeMap.put(signature, nameTypeX);
 		return ret;
 	}
 	
@@ -312,15 +320,6 @@ public class BcelWorld extends World {
         return Member.method(
             TypeX.forName(javaClass.getClassName()), mods, method.getName(), method.getSignature()); 
     }
-         
-	public JavaClass lookupJavaClass(String className) {        
-		ResolvedTypeX t = resolve(TypeX.forName(className));
-		if (t instanceof BcelObjectType) {
-			return ((BcelObjectType)t).getJavaClass();
-		} else {
-		    return null;
-		}
-	}
     
     private static final String[] ZERO_STRINGS = new String[0];
     
@@ -349,6 +348,11 @@ public class BcelWorld extends World {
     
 	public ConcreteTypeMunger makeCflowStackFieldAdder(ResolvedMember cflowField) {
 		return new BcelCflowStackFieldAdder(cflowField);
+	}
+
+	public static BcelObjectType getBcelObjectType(ResolvedTypeX concreteAspect) {
+		//XXX need error checking
+		return (BcelObjectType) ((ResolvedTypeX.Name)concreteAspect).getDelegate();
 	}
 
 }

@@ -15,35 +15,14 @@ package org.aspectj.ajdt.internal.compiler.ast;
 
 import java.lang.reflect.Modifier;
 
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
-import org.aspectj.weaver.AjAttribute;
-import org.aspectj.weaver.AjcMemberMaker;
-import org.aspectj.weaver.CrosscuttingMembers;
-import org.aspectj.weaver.Member;
-import org.aspectj.weaver.NewFieldTypeMunger;
-import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.*;
 import org.eclipse.jdt.internal.compiler.ClassFile;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.ast.Argument;
-import org.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpression;
-import org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
-import org.eclipse.jdt.internal.compiler.ast.Assignment;
-import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.Expression;
-import org.eclipse.jdt.internal.compiler.ast.Reference;
-import org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
-import org.eclipse.jdt.internal.compiler.ast.Statement;
-import org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.eclipse.jdt.internal.compiler.ast.*;
 import org.eclipse.jdt.internal.compiler.codegen.CodeStream;
-import org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
-import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
-import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
-import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
-import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 
 /**
@@ -79,9 +58,9 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		if (munger == null) ignoreFurtherInvestigation = true;
 		if (ignoreFurtherInvestigation) return;
 		
-		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(upperScope);
+		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(upperScope);
 		ResolvedMember sig = munger.getSignature();
-		TypeX aspectType = EclipseWorld.fromBinding(upperScope.referenceContext.binding);
+		TypeX aspectType = EclipseFactory.fromBinding(upperScope.referenceContext.binding);
 //
 //		System.err.println("sig: " + sig);
 //		System.err.println("field: " + world.makeFieldBinding(
@@ -115,7 +94,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		} else {
 			//XXX something is broken about this logic.  Can we write to static interface fields?
 			MethodBinding writeMethod = world.makeMethodBinding(
-				AjcMemberMaker.interFieldInterfaceSetter(sig, sig.getDeclaringType().resolve(world), aspectType));
+				AjcMemberMaker.interFieldInterfaceSetter(sig, sig.getDeclaringType().resolve(world.getWorld()), aspectType));
 			if (Modifier.isStatic(declaredModifiers)) {
 				this.statements = new Statement[] {
 					new KnownMessageSend(writeMethod, 
@@ -140,12 +119,12 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 
 	}
 	
-	public void build(ClassScope classScope, CrosscuttingMembers xcut) {
-		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(classScope);
+	public EclipseTypeMunger build(ClassScope classScope) {
+		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 		resolveOnType(classScope);
 		
 		binding = classScope.referenceContext.binding.resolveTypesFor(binding);
-		if (ignoreFurtherInvestigation) return;
+		if (ignoreFurtherInvestigation) return null;
 		
 		if (!Modifier.isStatic(declaredModifiers)) {
 			super.binding.parameters = new TypeBinding[] {
@@ -159,8 +138,8 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		//System.err.println("type: " + binding.returnType + ", " + returnType);
 		
 		ResolvedMember sig =
-			new ResolvedMember(Member.FIELD, EclipseWorld.fromBinding(onTypeBinding),
-					declaredModifiers, EclipseWorld.fromBinding(binding.returnType),
+			new ResolvedMember(Member.FIELD, EclipseFactory.fromBinding(onTypeBinding),
+					declaredModifiers, EclipseFactory.fromBinding(binding.returnType),
 					new String(declaredSelector), TypeX.NONE);
 		
 		NewFieldTypeMunger myMunger = new NewFieldTypeMunger(sig, null);
@@ -172,43 +151,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		this.binding.returnType = TypeBinding.VoidBinding;
 		//??? all other pieces should already match
 		
-		xcut.addTypeMunger(new EclipseTypeMunger(myMunger, aspectType, this));
-		
-//		interBinding = new InterTypeFieldBinding(name, type, declaredModifiers,
-//		    declaringClass, constant, withinType);	
-		
-//		//XXX handle problem bindings
-//		TypeBinding type = returnType.getTypeBinding(classScope);
-//		char[] name = selector;
-//		super.binding.returnType = type;
-//		
-//		if (ignoreFurtherInvestigation) return;
-//		
-//		
-//		ReferenceBinding withinType = classScope.referenceContext.binding;
-//		
-//		this.returnType.binding = super.binding.returnType = TypeBinding.VoidBinding;
-//		//this.modifiers = super.binding.modifiers = AccStatic | AccPublic; 
-//		
-//		TypeX aspectTypeX = EclipseWorld.fromBinding(withinType);
-//		TypeX onTypeX = EclipseWorld.fromBinding(declaringClass);
-//		
-//		this.selector =
-//			NameMangler.interFieldInitializer(aspectTypeX, onTypeX, new String(selector)).toCharArray();
-//		
-//		super.binding.selector = this.selector;
-//		Constant constant = Constant.NotAConstant;
-//		//XXX this is not completely correct, it will miss all constants
-////		if (initialization instanceof Literal) {
-////			((Literal)initialization).computeConstant();
-////			constant = initialization.constant;
-////		}
-		
-	
-		
-		
-		
-
+		return new EclipseTypeMunger(world, myMunger, aspectType, this);
 	}	
 	
 	
@@ -227,15 +170,15 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 	}
 
 	private void generateDispatchMethods(ClassScope classScope, ClassFile classFile) {
-		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(classScope);
+		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 		ResolvedMember sig = munger.getSignature();
-		TypeX aspectType = EclipseWorld.fromBinding(classScope.referenceContext.binding);
+		TypeX aspectType = EclipseFactory.fromBinding(classScope.referenceContext.binding);
 		generateDispatchMethod(world, sig, aspectType, classScope, classFile, true);
 		generateDispatchMethod(world, sig, aspectType, classScope, classFile, false);
 	}
 
 	private void generateDispatchMethod(
-		EclipseWorld world,
+		EclipseFactory world,
 		ResolvedMember sig,
 		TypeX aspectType,
 		ClassScope classScope,
@@ -265,7 +208,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 			if (onTypeBinding.isInterface()) {
 				MethodBinding readMethod = world.makeMethodBinding(
 					AjcMemberMaker.interFieldInterfaceGetter(
-						sig, world.resolve(sig.getDeclaringType()), aspectType));
+						sig, world.getWorld().resolve(sig.getDeclaringType()), aspectType));
 				generateInterfaceReadBody(binding, readMethod, codeStream);
 			} else {
 				generateClassReadBody(binding, classField, codeStream);
@@ -274,7 +217,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 			if (onTypeBinding.isInterface()) {
 				MethodBinding writeMethod = world.makeMethodBinding(
 					AjcMemberMaker.interFieldInterfaceSetter(
-						sig, world.resolve(sig.getDeclaringType()), aspectType));
+						sig, world.getWorld().resolve(sig.getDeclaringType()), aspectType));
 				generateInterfaceWriteBody(binding, writeMethod, codeStream);
 			} else {
 				generateClassWriteBody(binding, classField, codeStream);

@@ -296,7 +296,7 @@ public class NameMangler {
 
 
 	public static String makeClosureClassName(
-		BcelObjectType enclosingType,
+		TypeX enclosingType,
 		int index) 
 	{
 			return enclosingType.getName() + "$AjcClosure"  + index;

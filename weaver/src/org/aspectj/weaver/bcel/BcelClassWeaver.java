@@ -123,10 +123,10 @@ class BcelClassWeaver implements IClassWeaver {
 		this.clazz = clazz;
 		this.shadowMungers = shadowMungers;
 		this.typeMungers = typeMungers;
-		this.ty = clazz.getType();
+		this.ty = clazz.getBcelObjectType();
 		this.cpg = clazz.getConstantPoolGen();
 		this.fact = clazz.getFactory();
-		initializeSuperInitializerMap(ty);
+		initializeSuperInitializerMap(ty.getResolvedTypeX());
 	} 
     
     // --------------------------------------------
@@ -134,7 +134,7 @@ class BcelClassWeaver implements IClassWeaver {
    	private void initializeSuperInitializerMap(ResolvedTypeX child) {
 		ResolvedTypeX[] superInterfaces = child.getDeclaredInterfaces();
 		for (int i=0, len=superInterfaces.length; i < len; i++) {
-			if (ty.isTopmostImplementor(superInterfaces[i])) {
+			if (ty.getResolvedTypeX().isTopmostImplementor(superInterfaces[i])) {
 				if (addSuperInitializer(superInterfaces[i])) {
 					initializeSuperInitializerMap(superInterfaces[i]);
 				}
@@ -156,7 +156,7 @@ class BcelClassWeaver implements IClassWeaver {
 		if (m.getSignature().isStatic()) {
 			addedClassInitializers.add(cm);
 		} else {
-			if (onType == ty) {
+			if (onType == ty.getResolvedTypeX()) {
 				addedThisInitializers.add(cm);
 			} else {
 				IfaceInitList l = (IfaceInitList) addedSuperInitializers.get(onType);

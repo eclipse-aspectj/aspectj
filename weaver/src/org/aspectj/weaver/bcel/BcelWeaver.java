@@ -77,7 +77,7 @@ public class BcelWeaver implements IWeaver {
 
     public void addLibraryAspect(String aspectName) {
     	ResolvedTypeX type = world.resolve(aspectName);
-    	System.out.println("type: " + type + " for " + aspectName);
+    	//System.out.println("type: " + type + " for " + aspectName);
 		if (type.isAspect()) {
 			xcutSet.addOrReplaceAspect(type);
 		} else {
@@ -104,7 +104,7 @@ public class BcelWeaver implements IWeaver {
 	        JavaClass jc = parser.parse();
 			inStream.closeEntry();
 			
-			ResolvedTypeX type = world.addSourceObjectType(jc);
+			ResolvedTypeX type = world.addSourceObjectType(jc).getResolvedTypeX();
     		if (type.isAspect()) {
     			addedAspects.add(type);
     		}
@@ -249,7 +249,7 @@ public class BcelWeaver implements IWeaver {
         for (Iterator i = filesToWeave.iterator(); i.hasNext(); ) {
             UnwovenClassFile classFile = (UnwovenClassFile)i.next();
 	    	String className = classFile.getClassName();
-            BcelObjectType classType = (BcelObjectType) world.resolve(className);
+            BcelObjectType classType = BcelWorld.getBcelObjectType(world.resolve(className));
             classType.resetState();
         }
     	
@@ -267,7 +267,7 @@ public class BcelWeaver implements IWeaver {
         for (Iterator i = filesToWeave.iterator(); i.hasNext(); ) {
             UnwovenClassFile classFile = (UnwovenClassFile)i.next();
 	    	String className = classFile.getClassName();
-            BcelObjectType classType = (BcelObjectType) world.resolve(className);
+            BcelObjectType classType = BcelWorld.getBcelObjectType(world.resolve(className));
             if (classType.isAspect()) {
 	            weave(classFile, classType);
 	            wovenClassNames.add(className);
@@ -278,7 +278,7 @@ public class BcelWeaver implements IWeaver {
 		for (Iterator i = filesToWeave.iterator(); i.hasNext(); ) {
             UnwovenClassFile classFile = (UnwovenClassFile)i.next();
 	    	String className = classFile.getClassName();
-            BcelObjectType classType = (BcelObjectType) world.resolve(className);
+            BcelObjectType classType = BcelWorld.getBcelObjectType(world.resolve(className));
             if (! classType.isAspect()) {
 	            weave(classFile, classType);
 	            wovenClassNames.add(className);
@@ -328,7 +328,7 @@ public class BcelWeaver implements IWeaver {
 		
 		JavaClass javaClass = classType.getJavaClass();
 		List shadowMungers = fastMatch(shadowMungerList, javaClass);
-		List typeMungers = fastMatch(classType.getInterTypeMungers(), javaClass);
+		List typeMungers = fastMatch(classType.getResolvedTypeX().getInterTypeMungers(), javaClass);
 
 		LazyClassGen clazz = null;
 		

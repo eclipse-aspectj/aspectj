@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.aspectj.ajdt.internal.compiler.lookup.AjTypeConstants;
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedHandler;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
@@ -128,7 +128,7 @@ public class AdviceDeclaration extends MethodDeclaration {
 		
 		if (kind == AdviceKind.Around) {
 			int n = proceedCalls.size();
-			EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(upperScope);
+			EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(upperScope);
 						
 			//System.err.println("access to: " + Arrays.asList(handler.getMembers()));
 			
@@ -260,7 +260,7 @@ public class AdviceDeclaration extends MethodDeclaration {
 	
 	public void postParse(TypeDeclaration typeDec) {
 		this.selector =
-			NameMangler.adviceName(EclipseWorld.fromBinding(typeDec.binding), kind, sourceStart).toCharArray();
+			NameMangler.adviceName(EclipseFactory.fromBinding(typeDec.binding), kind, sourceStart).toCharArray();
 		if (arguments != null) {
 			baseArgumentCount = arguments.length;
 		}

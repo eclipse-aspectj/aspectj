@@ -24,7 +24,7 @@ import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.DeclareDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.InterTypeDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.asm.ProgramElementNode;
 import org.aspectj.asm.StructureModel;
 import org.aspectj.asm.StructureModelManager;
@@ -256,7 +256,7 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 		}
 
 		if (methodDeclaration.binding != null) {
-			Member member = EclipseWorld.makeResolvedMember(methodDeclaration.binding);
+			Member member = EclipseFactory.makeResolvedMember(methodDeclaration.binding);
 			peNode.setBytecodeName(member.getName());
 			peNode.setBytecodeSignature(member.getSignature());
 		}

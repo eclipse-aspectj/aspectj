@@ -31,7 +31,7 @@ public class InterTypeFieldBinding extends FieldBinding {
 	public SyntheticAccessMethodBinding writer;
 	public AbstractMethodDeclaration sourceMethod;
 	
-	public InterTypeFieldBinding(EclipseWorld world, ResolvedMember signature, TypeX withinType,
+	public InterTypeFieldBinding(EclipseFactory world, ResolvedMember signature, TypeX withinType,
 									AbstractMethodDeclaration sourceMethod)
 	{
 		super(world.makeFieldBinding(signature), null);

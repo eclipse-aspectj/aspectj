@@ -136,7 +136,7 @@ public final class LazyMethodGen {
         	throw new RuntimeException("bad abstract method with code: " + m + " on " + enclosingClass);
         }
         MethodGen gen = new MethodGen(m, enclosingClass.getName(), enclosingClass.getConstantPoolGen());
-		this.memberView = new BcelMethod(enclosingClass.getType(), m);
+		this.memberView = new BcelMethod(enclosingClass.getBcelObjectType(), m);
         this.accessFlags = gen.getAccessFlags();
         this.returnType = gen.getReturnType();
         this.name = gen.getName();

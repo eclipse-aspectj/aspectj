@@ -80,7 +80,7 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 	}
 
 	private void checkWeaveAccess(TypeX typeX, AstNode location) {
-		World world = inAspect.world;
+		World world = inAspect.world.getWorld();
 		Lint.Kind check = world.getLint().typeNotExposedToWeaver;
 		if (check.isEnabled()) {
 			if (!world.resolve(typeX).isExposedToWeaver()) {

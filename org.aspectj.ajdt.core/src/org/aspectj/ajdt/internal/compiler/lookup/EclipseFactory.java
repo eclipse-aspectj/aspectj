@@ -13,51 +13,26 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
+import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.AstUtil;
 import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
 import org.aspectj.ajdt.internal.core.builder.AsmBuilder;
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.weaver.Advice;
-import org.aspectj.weaver.AjAttribute;
-import org.aspectj.weaver.ConcreteTypeMunger;
-import org.aspectj.weaver.IHasPosition;
-import org.aspectj.weaver.Member;
-import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeMunger;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
-import org.aspectj.weaver.World;
-import org.aspectj.weaver.patterns.Pointcut;
-import org.eclipse.jdt.internal.compiler.ast.AstNode;
-import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.EmptyStatement;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.IMessage.Kind;
+import org.aspectj.weaver.*;
+import org.eclipse.jdt.internal.compiler.ast.*;
 import org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
-import org.eclipse.jdt.internal.compiler.lookup.BaseTypes;
-import org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
-import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
-import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
-import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
-import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
-import org.eclipse.jdt.internal.compiler.lookup.Scope;
-import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
-import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.util.CharOperation;
 
 /**
- * This holds unique ResolvedTypeXs for each type known to the compiler
- * or looked up on the class path.  For types which are compiled from 
- * source code, it will hold an EclipseObjectType.  Types that 
- * come from bytecode will be delegated to buildManager.bcelWorld.
  * 
  * @author Jim Hugunin
  */
-public class EclipseWorld extends World {
+public class EclipseFactory {
 	public static boolean DEBUG = false;
 	
 	public AjBuildManager buildManager;
@@ -67,57 +42,73 @@ public class EclipseWorld extends World {
 	//XXX currently unused
 	private Map/*TypeBinding, ResolvedTypeX*/ bindingToResolvedTypeX = new HashMap();
 	
-	public static EclipseWorld forLookupEnvironment(LookupEnvironment env) {
+	public static EclipseFactory forLookupEnvironment(LookupEnvironment env) {
 		AjLookupEnvironment aenv = (AjLookupEnvironment)env;
-		return aenv.world;
+		return aenv.factory;
 	}
 	
-	public static EclipseWorld fromScopeLookupEnvironment(Scope scope) {
+	public static EclipseFactory fromScopeLookupEnvironment(Scope scope) {
 		return forLookupEnvironment(AstUtil.getCompilationUnitScope(scope).environment);
 	}
 	
 	
-	public EclipseWorld(LookupEnvironment lookupEnvironment, IMessageHandler handler) {
+	public EclipseFactory(LookupEnvironment lookupEnvironment) {
 		this.lookupEnvironment = lookupEnvironment;
-		setMessageHandler(handler);
 	}
 	
-    public Advice concreteAdvice(
-       	AjAttribute.AdviceAttribute attribute,
-    	Pointcut pointcut,
-        Member signature)
-    {
-        return new EclipseAdvice(attribute, pointcut, signature);
-    }
-
-    public ConcreteTypeMunger concreteTypeMunger(
-		ResolvedTypeMunger munger, ResolvedTypeX aspectType)
+	public World getWorld() {
+		return buildManager.getWorld();
+	}
+	
+	public void showMessage(
+		Kind kind,
+		String message,
+		ISourceLocation loc1,
+		ISourceLocation loc2)
 	{
-		return null;
+		getWorld().showMessage(kind, message, loc1, loc2);
 	}
 
-	protected ResolvedTypeX resolveObjectType(TypeX typeX) {
-		TypeBinding binding = makeTypeBinding(typeX);
-		
-//		System.err.println("resolvedObjectType: " + typeX + 
-//						" found " + 
-//						(binding == null ? "null" : binding.getClass().getName()));
-		
-		if (!(binding instanceof SourceTypeBinding)) {
-			//System.err.println("missing: " + binding);
-			return ResolvedTypeX.MISSING;
-		}
-		
-		if (binding instanceof BinaryTypeBinding) {
-			//System.err.println("binary: " + typeX);
-			return new EclipseBinaryType(
-					buildManager.bcelWorld.resolve(typeX), 
-					this,
-					(BinaryTypeBinding)binding);
-		}
-		
-		return new EclipseSourceType(typeX.getSignature(), this, 
-							(SourceTypeBinding)binding);
+	
+//    public Advice concreteAdvice(
+//       	AjAttribute.AdviceAttribute attribute,
+//    	Pointcut pointcut,
+//        Member signature)
+//    {
+//        return new EclipseAdvice(attribute, pointcut, signature);
+//    }
+//
+//    public ConcreteTypeMunger concreteTypeMunger(
+//		ResolvedTypeMunger munger, ResolvedTypeX aspectType)
+//	{
+//		return null;
+//	}
+
+//	protected ResolvedTypeX.ConcreteName resolveObjectType(ResolvedTypeX.Name typeX) {
+//		TypeBinding binding = makeTypeBinding(typeX);
+//		
+////		System.err.println("resolvedObjectType: " + typeX + 
+////						" found " + 
+////						(binding == null ? "null" : binding.getClass().getName()));
+//		
+//		if (!(binding instanceof SourceTypeBinding)) {
+//			//System.err.println("missing: " + binding);
+//			return null;
+//		}
+//		
+////		if (binding instanceof BinaryTypeBinding) {
+////			//System.err.println("binary: " + typeX);
+////			return new EclipseBinaryType(
+////					buildManager.bcelWorld.resolve(typeX), 
+////					this,
+////					(BinaryTypeBinding)binding);
+////		}
+//		
+//		return new EclipseSourceType(typeX, this,(SourceTypeBinding)binding);
+//	}
+//	
+	public EclipseSourceType lookupConcreteName(SourceTypeBinding b) {
+		throw new RuntimeException("unimplemented");
 	}
 			
 
@@ -126,7 +117,7 @@ public class EclipseWorld extends World {
 		if (binding == null) return ResolvedTypeX.MISSING;
 		//??? this seems terribly inefficient
 		//System.err.println("resolving: " + binding.getClass() + ", name = " + getName(binding));
-		ResolvedTypeX ret = resolve(fromBinding(binding));
+		ResolvedTypeX ret = getWorld().resolve(fromBinding(binding));
 		//System.err.println("      got: " + ret);
 		return ret;
 	}	
@@ -179,9 +170,14 @@ public class EclipseWorld extends World {
 	public static AstNode astForLocation(IHasPosition location) {
 		return new EmptyStatement(location.getStart(), location.getEnd());
 	}
+	
+	public Collection getDeclareParents() {
+		return getWorld().getDeclareParents();
+	}
 
 	public Collection getTypeMungers() {
-		return crosscuttingMembersSet.getTypeMungers();
+		//XXX almost certainly the wrong types
+		return getWorld().getCrosscuttingMembersSet().getTypeMungers();
 	}
 	
 	public static ResolvedMember makeResolvedMember(MethodBinding binding) {
@@ -312,5 +308,21 @@ public class EclipseWorld extends World {
 	
 	public Shadow makeShadow(ReferenceContext context) {
 		return EclipseShadow.makeShadow(this, (AstNode) context, context);
+	}
+	
+	public void addSourceTypeBinding(SourceTypeBinding binding) {
+		TypeDeclaration decl = binding.scope.referenceContext;
+		ResolvedTypeX.Name name = getWorld().lookupOrCreateName(TypeX.forName(getName(binding)));
+		EclipseSourceType t = new EclipseSourceType(name, this, binding, decl);
+		name.setDelegate(t);
+		if (decl instanceof AspectDeclaration) {
+			((AspectDeclaration)decl).typeX = name;
+			((AspectDeclaration)decl).concreteName = t;
+		}
+		
+		ReferenceBinding[] memberTypes = binding.memberTypes;
+		for (int i = 0, length = memberTypes.length; i < length; i++) {
+			addSourceTypeBinding((SourceTypeBinding) memberTypes[i]);
+		}
 	}
 }

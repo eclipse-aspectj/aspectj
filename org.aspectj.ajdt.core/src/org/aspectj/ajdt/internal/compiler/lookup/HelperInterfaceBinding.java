@@ -60,7 +60,7 @@ public class HelperInterfaceBinding extends SourceTypeBinding {
 		return typeX;
 	}
 	
-	public void addMethod(EclipseWorld world , ResolvedMember member) {
+	public void addMethod(EclipseFactory world , ResolvedMember member) {
 		MethodBinding binding = world.makeMethodBinding(member);
 		this.methods.add(binding);
 	}

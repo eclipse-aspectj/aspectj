@@ -17,20 +17,15 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeScope;
 import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
-import org.aspectj.weaver.AjAttribute;
-import org.aspectj.weaver.CrosscuttingMembers;
-import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeMunger;
-import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.*;
 import org.eclipse.jdt.internal.compiler.ClassFile;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
-import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
-import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
-import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.util.CharOperation;
 
 public abstract class InterTypeDeclaration extends MethodDeclaration {
@@ -74,7 +69,7 @@ public abstract class InterTypeDeclaration extends MethodDeclaration {
 	/**
 	 * Called from AspectDeclarations.buildInterTypeAndPerClause
 	 */
-	public abstract void build(ClassScope classScope, CrosscuttingMembers xcut);
+	public abstract EclipseTypeMunger build(ClassScope classScope);
 
 	public void fixSuperCallsInBody() {
 		SuperFixerVisitor v = new SuperFixerVisitor(this, onTypeBinding);
