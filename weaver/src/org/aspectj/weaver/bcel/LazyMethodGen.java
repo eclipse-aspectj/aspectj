@@ -746,6 +746,7 @@ public final class LazyMethodGen {
 
         LinkedList exnList = new LinkedList();   
 
+		// map from localvariabletag to instruction handle
         Map localVariableStarts = new HashMap();
         Map localVariableEnds = new HashMap();
 
@@ -849,8 +850,28 @@ public final class LazyMethodGen {
         }
         // now add local variables
         gen.removeLocalVariables();
+        
+        // BCEL sometimes creates extra local variables with the same name.  We now
+        // remove them and add back to the gen.
+        
+        Map duplicatedLocalMap = new HashMap();
+        
         for (Iterator iter = localVariableStarts.keySet().iterator(); iter.hasNext(); ) {
             LocalVariableTag tag = (LocalVariableTag) iter.next();
+        	// have we already added one with the same slot number and start location?  
+        	// if so, just continue.
+        	InstructionHandle start = (InstructionHandle) localVariableStarts.get(tag);
+        	Set slots = (Set) duplicatedLocalMap.get(start);
+	       	if (slots == null) {
+	       		slots = new HashSet();
+	       		duplicatedLocalMap.put(start, slots);	
+	       	}
+	       	if (slots.contains(new Integer(tag.getSlot()))) {
+	       		// we already have a var starting at this tag with this slot
+	       		continue;
+	       	}
+	       	slots.add(new Integer(tag.getSlot()));
+
             gen.addLocalVariable(
                 tag.getName(), 
                 BcelWorld.makeBcelType(tag.getType()),
