@@ -17,6 +17,7 @@ import java.io.IOException;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
@@ -31,27 +32,38 @@ import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.ast.Var;
 
 /**
- * A KindedAnnotationPointcut matches iff the kind of a join point 
- * matches the kind of the pointcut (with no distinction between
- * method and constructor for call and execution), AND if the
- * member (field, method or constructor) has an annotation of the
- * given type.
+ * @annotation(@Foo) or @annotation(foo)
+ * 
+ * Matches any join point where the subject of the join point has an
+ * annotation matching the annotationTypePattern:
+ * 
+ * Join Point Kind          Subject
+ * ================================
+ * method call              the target method
+ * method execution         the method
+ * constructor call         the constructor
+ * constructor execution    the constructor
+ * get                      the target field
+ * set                      the target field
+ * adviceexecution          the advice
+ * initialization           the constructor
+ * preinitialization        the constructor
+ * staticinitialization     the type being initialized
+ * handler                  the declared type of the handled exception
  */
-public class KindedAnnotationPointcut extends NameBindingPointcut {
+public class AnnotationPointcut extends NameBindingPointcut {
 
-	private Shadow.Kind kind;
-	private AnnotationTypePattern type;
+	private ExactAnnotationTypePattern annotationTypePattern;
     private ShadowMunger munger = null; // only set after concretization
 	
-	public KindedAnnotationPointcut(Shadow.Kind kind, AnnotationTypePattern type) {
+	public AnnotationPointcut(ExactAnnotationTypePattern type) {
 		super();
-		this.kind = kind;
-		this.type = type;
-		this.pointcutKind = Pointcut.ATKINDED;
+		this.annotationTypePattern =  type;
+		this.pointcutKind = Pointcut.ANNOTATION;
 	}
 
-	public KindedAnnotationPointcut(Shadow.Kind kind, AnnotationTypePattern type, ShadowMunger munger) {
-		this(kind,type);
+	public AnnotationPointcut(ExactAnnotationTypePattern type, ShadowMunger munger) {
+		this(type);
 		this.munger = munger;
 	}
 
@@ -59,31 +71,21 @@ public class KindedAnnotationPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.Pointcut#fastMatch(org.aspectj.weaver.patterns.FastMatchInfo)
 	 */
 	public FuzzyBoolean fastMatch(FastMatchInfo info) {
-		if (info.getKind() != null) {
-			if (info.getKind() != kind) {
-				// no distinction between method and constructors
-				if ((info.getKind() == Shadow.ConstructorExecution) &&
-					 kind == Shadow.MethodExecution) {
-					return FuzzyBoolean.MAYBE;
-				} 
-				if ((info.getKind() == Shadow.ConstructorCall) &&
-						 kind == Shadow.MethodCall) {
-						return FuzzyBoolean.MAYBE;
-				} 				
-			} else {
-				return FuzzyBoolean.NO;
-			}
-    	}
-		return FuzzyBoolean.MAYBE;
+		if (info.getKind() == Shadow.StaticInitialization) {
+			return annotationTypePattern.matches(info.getType());
+		} else {
+			return FuzzyBoolean.MAYBE;
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#match(org.aspectj.weaver.Shadow)
 	 */
 	public FuzzyBoolean match(Shadow shadow) {
-		if (!couldMatch(shadow)) return FuzzyBoolean.NO;
+		AnnotatedElement toMatchAgainst = null;
 		Member member = shadow.getSignature();
 		ResolvedMember rMember = member.resolve(shadow.getIWorld());
+
 		if (rMember == null) {
 		    if (member.getName().startsWith(NameMangler.PREFIX)) {
 		    	return FuzzyBoolean.NO;
@@ -91,21 +93,25 @@ public class KindedAnnotationPointcut extends NameBindingPointcut {
 			shadow.getIWorld().getLint().unresolvableMember.signal(member.toString(), getSourceLocation());
 			return FuzzyBoolean.NO;
 		}
-		return type.matches(rMember);
+
+		Shadow.Kind kind = shadow.getKind();
+		if (kind == Shadow.StaticInitialization) {
+			toMatchAgainst = rMember.getType();
+		} else if ( (kind == Shadow.ExceptionHandler)) {
+			toMatchAgainst = TypeX.forName(rMember.getSignature()).resolve(shadow.getIWorld());
+		} else {
+			toMatchAgainst = rMember;
+		}
+		
+		return annotationTypePattern.matches(toMatchAgainst);
 	}
 	
-	private boolean couldMatch(Shadow shadow) {
-		Shadow.Kind kindToMatch = shadow.getKind();
-		if (kindToMatch == Shadow.ConstructorExecution) kindToMatch = Shadow.MethodExecution;
-		if (kindToMatch == Shadow.ConstructorCall) kindToMatch = Shadow.MethodCall;
-		return (kindToMatch == kind);		
-	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#resolveBindings(org.aspectj.weaver.patterns.IScope, org.aspectj.weaver.patterns.Bindings)
 	 */
 	protected void resolveBindings(IScope scope, Bindings bindings) {
-		type = type.resolveBindings(scope,bindings,true);
+		annotationTypePattern = (ExactAnnotationTypePattern) annotationTypePattern.resolveBindings(scope,bindings,true);
 		// must be either a Var, or an annotation type pattern
 	}
 
@@ -121,8 +127,8 @@ public class KindedAnnotationPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedTypeX, org.aspectj.weaver.IntMap)
 	 */
 	protected Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
-		AnnotationTypePattern newType = type.remapAdviceFormals(bindings);		
-		Pointcut ret = new KindedAnnotationPointcut(kind, newType, bindings.getEnclosingAdvice());
+		ExactAnnotationTypePattern newType = (ExactAnnotationTypePattern) annotationTypePattern.remapAdviceFormals(bindings);		
+		Pointcut ret = new AnnotationPointcut(newType, bindings.getEnclosingAdvice());
         ret.copyLocationFrom(this);
         return ret;
 	}
@@ -131,10 +137,9 @@ public class KindedAnnotationPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.Pointcut#findResidue(org.aspectj.weaver.Shadow, org.aspectj.weaver.patterns.ExposedState)
 	 */
 	public Test findResidue(Shadow shadow, ExposedState state) {
-		if (!couldMatch(shadow)) return Literal.FALSE;
 		
-		if (type instanceof BindingAnnotationTypePattern) {
-			BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern)type;
+		if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
+			BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern)annotationTypePattern;
 			TypeX annotationType = btp.annotationType;
 			Var var = shadow.getKindedAnnotationVar(annotationType);
 			if (var == null) return Literal.FALSE;
@@ -159,38 +164,34 @@ public class KindedAnnotationPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(java.io.DataOutputStream)
 	 */
 	public void write(DataOutputStream s) throws IOException {
-		s.writeByte(Pointcut.ATKINDED);
-		kind.write(s);
-		type.write(s);
+		s.writeByte(Pointcut.ANNOTATION);
+		annotationTypePattern.write(s);
 		writeLocation(s);
 	}
 
 	public static Pointcut read(DataInputStream s, ISourceContext context) throws IOException {
-		Shadow.Kind kind = Shadow.Kind.read(s);
 		AnnotationTypePattern type = AnnotationTypePattern.read(s, context);
-		KindedAnnotationPointcut ret = new KindedAnnotationPointcut(kind, type);
+		AnnotationPointcut ret = new AnnotationPointcut((ExactAnnotationTypePattern)type);
 		ret.readLocation(context, s);
 		return ret;
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof KindedAnnotationPointcut)) return false;
-		KindedAnnotationPointcut o = (KindedAnnotationPointcut)other;
-		return o.kind == this.kind && o.type.equals(this.type);
+		if (!(other instanceof AnnotationPointcut)) return false;
+		AnnotationPointcut o = (AnnotationPointcut)other;
+		return o.annotationTypePattern.equals(this.annotationTypePattern);
 	}
     
     public int hashCode() {
         int result = 17;
-        result = 37*result + kind.hashCode();
-        result = 37*result + type.hashCode();
+        result = 37*result + annotationTypePattern.hashCode();
         return result;
     }
 	
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
-		buf.append(kind.getSimpleName());
-		buf.append("(");
-		buf.append(type.toString());
+		buf.append("@annotation(");
+		buf.append(annotationTypePattern.toString());
 		buf.append(")");
 		return buf.toString();
 	}

@@ -270,13 +270,8 @@ public class PatternParser {
 		IToken t = tokenSource.peek();
 		String kind = parseIdentifier();
 		tokenSource.setIndex(start);
-		if (kind.equals("execution") || kind.equals("call") || 
-						kind.equals("get") || kind.equals("set") ||
-						kind.equals("adviceexecution") ||
-						kind.equals("initialization") || 
-						kind.equals("preinitialization") ||
-						kind.equals("staticinitialization")) {
-			return parseKindedAnnotationPointcut();
+		if (kind.equals("annotation")) {
+			return parseAtAnnotationPointcut();
 		} else if (kind.equals("args")) {
 			return parseArgsAnnotationPointcut();
 		} else if (kind.equals("this") || kind.equals("target")) {
@@ -288,35 +283,15 @@ public class PatternParser {
 		} throw new ParserException("@pointcut name expected, but found " + kind, t);
 	}
 	
-	private Pointcut parseKindedAnnotationPointcut() {
-		String kind = parseIdentifier();
-		Shadow.Kind shadowKind = null;
-		if (kind.equals("execution")) {
-			shadowKind = Shadow.MethodExecution; // also matches cons execution
-		} else if (kind.equals("call")) {
-			shadowKind = Shadow.MethodCall; // also matches cons call
-		} else if (kind.equals("get")) {
-			shadowKind = Shadow.FieldGet;
-		} else if (kind.equals("set")) {
-			shadowKind = Shadow.FieldSet;
-		} else if (kind.equals("adviceexecution")) {
-			shadowKind = Shadow.AdviceExecution;
-		} else if (kind.equals("initialization")) {
-			shadowKind = Shadow.Initialization;
-		} else if (kind.equals("preinitialization")) {
-			shadowKind = Shadow.PreInitialization;
-		} else if (kind.equals("staticinitialization")) {
-			shadowKind = Shadow.StaticInitialization;
-		} else {
-			throw new ParserException(("bad kind: " + kind), tokenSource.peek());
-		}
+	private Pointcut parseAtAnnotationPointcut() {
+		parseIdentifier();
 		eat("(");
 		if (maybeEat(")")) {
-			throw new ParserException("expecting @AnnotationName or parameter, but found ')'", tokenSource.peek());
+			throw new ParserException("@AnnotationName or parameter", tokenSource.peek());
 		}
-		AnnotationTypePattern type = parseAnnotationNameOrVarTypePattern(); 
+		ExactAnnotationTypePattern type = parseAnnotationNameOrVarTypePattern(); 
 		eat(")");
-		return new KindedAnnotationPointcut(shadowKind,type);
+		return new AnnotationPointcut(type);
 	}
 
 	
@@ -648,8 +623,8 @@ public class PatternParser {
 //	}
 	
 	
-	protected AnnotationTypePattern parseAnnotationNameOrVarTypePattern() {
-		AnnotationTypePattern p = null;
+	protected ExactAnnotationTypePattern parseAnnotationNameOrVarTypePattern() {
+		ExactAnnotationTypePattern p = null;
 		int startPos = tokenSource.peek().getStart();
 		if (maybeEat("@")) {
 			p = parseSimpleAnnotationName();
@@ -666,9 +641,9 @@ public class PatternParser {
 	/**
 	 * @return
 	 */
-	private AnnotationTypePattern parseSimpleAnnotationName() {
+	private ExactAnnotationTypePattern parseSimpleAnnotationName() {
 		// the @ has already been eaten...
-		AnnotationTypePattern p;
+		ExactAnnotationTypePattern p;
 		StringBuffer annotationName = new StringBuffer();
 		annotationName.append(parseIdentifier());
 		while (maybeEat(".")) {
