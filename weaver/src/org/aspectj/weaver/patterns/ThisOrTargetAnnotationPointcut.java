@@ -73,7 +73,16 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 		    // we can attempt to match now
 		    ResolvedTypeX toMatchAgainst = 
 		        (isThis ? shadow.getThisType() : shadow.getTargetType() ).resolve(shadow.getIWorld());
-		    return FuzzyBoolean.fromBoolean(toMatchAgainst.hasAnnotation(annotationType));
+		    if (toMatchAgainst.hasAnnotation(annotationType)) {
+		    	return FuzzyBoolean.YES;
+		    } else {
+		    	ResolvedTypeX superC = toMatchAgainst;
+		    	while ((superC = superC.getSuperclass()) != null) {
+		    		if (superC.hasAnnotation(annotationType)) return FuzzyBoolean.YES;
+//		    		if (superC.getName().equals("java.lang.Object")) return FuzzyBoolean.NO;
+		    	}
+		    	return FuzzyBoolean.NO;
+		    }
 		} 
 	    // else we can only do matching via a runtime test
 		return FuzzyBoolean.MAYBE;
