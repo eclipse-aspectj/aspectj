@@ -426,27 +426,31 @@ class SamplesRenderer {
     }
     public static final String EOL = "\n"; // XXX
     public static final String INFO = 
-      "This contains contributions from the AspectJ community of "
+      "<p>This contains contributions from the AspectJ community of "
     + "<ul><li>sample code for AspectJ programs,</li>"
     + "<li>sample code for extensions to AspectJ tools using the public API's,</li>"
     + "<li>sample scripts for invoking AspectJ tools, and </li> "
     + "<li>documentation trails showing how to do given tasks"
     + "    using AspectJ, AJDT, or various IDE or deployment"
-    + "    environments.</li></ul>";
-    
+    + "    environments.</li></ul></p>"
+    + "<p>Find complete source files in the AspectJ CVS repository at "
+    + "<code>org.aspectj/modules/docs/sandbox</code>. "
+    + "For instructions on downloading code from the CVS repository, "
+    + "see the <a href=\"doc/faq.html#q:buildingsource\">FAQ entry "
+    + "\"buildingsource\"</a>.</p>";
+
     public static final String COPYRIGHT = 
-        "This documentation is made available under the Common Public "        + "License version 1.0 available at "
+        "<p><small>Copyright 2003 Contributors. All Rights Reserved. "
+        + "This sample code is made available under the Common Public "        + "License version 1.0 available at "
         + "<a href=\"http://www.eclipse.org/legal/cpl-v10.html\">"
         + "http://www.eclipse.org/legal/cpl-v10.html</a>."
-        + "<p>Copyright 2003 Contributors. All Rights Reserved. "
         + "Contributors are listed in this document as authors. "
-        + "Permission to republish portions of this documentation "
+        + "Permission to republish portions of this sample code "
         + "is hereby granted if the publication acknowledges "
         + "the author by name and "
         + "the source by reference to the AspectJ project home page "
-        + " at http://eclipse.org/aspectj."
-        + EOL
-        ;
+        + " at http://eclipse.org/aspectj.</small></p>"
+        + EOL;
     
     /** template algorithm to render */
     public final StringBuffer render(Samples samples, StringBuffer sink) {
