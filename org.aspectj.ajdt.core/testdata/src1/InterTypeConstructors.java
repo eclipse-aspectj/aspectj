@@ -56,7 +56,7 @@ interface I extends SuperI { }
 
 
 
-aspect A {
+privileged aspect A {
 	public static Target makeT() {
 		return new Target(10);
 	}
