@@ -161,13 +161,13 @@
          depends="bean,intro,intro-clone,intro-compare,intro-hash,
                   observer,spacewar,spacewar-demo,telecom,
                   telecom-timing,tracing-none,tracing-1,
-                  tracing-2,tracing-3,tjp"/>
+                  tracing-2,tracing-3,tracing-lt,tjp"/>
 
     <target name="nonGui" 
      description="build and run non-GUI examples"
          depends="bean,intro,intro-clone,intro-compare,intro-hash,
                   telecom,telecom-timing,tracing-none,tracing-1,
-                  tracing-2,tracing-3,tjp"/>
+                  tracing-2,tracing-3,tracing-lt,tjp"/>
 
     <target name="bean"
      description="build bean example">
