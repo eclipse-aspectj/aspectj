@@ -62,7 +62,12 @@ class JoinPointImpl implements JoinPoint {
 
     public Object getThis() { return _this; }
     public Object getTarget() { return target; }
-    public Object[] getArgs() { return args; }
+    public Object[] getArgs() {
+    	if (args == null) { args = new Object[0]; }
+    	Object[] argsCopy = new Object[args.length];
+    	System.arraycopy(args,0,argsCopy,0,args.length);
+    	return argsCopy; 
+    }
 
     public org.aspectj.lang.JoinPoint.StaticPart getStaticPart() { return staticPart; }
 

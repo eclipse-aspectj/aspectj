@@ -16,6 +16,7 @@
 import java.io.*;
 
 import org.aspectj.lang.*;
+import org.aspectj.runtime.reflect.JoinPointImplTest;
 import org.aspectj.runtime.reflect.SignatureTest;
 
 import junit.framework.*;
@@ -26,6 +27,7 @@ public class RuntimeModuleTests extends TestCase {
         TestSuite suite = new TestSuite(RuntimeModuleTests.class.getName());
         suite.addTestSuite(RuntimeModuleTests.class); // minimum 1 test (testNothing)
         suite.addTestSuite(SignatureTest.class);
+        suite.addTestSuite(JoinPointImplTest.class);
         return suite;
     }
 
