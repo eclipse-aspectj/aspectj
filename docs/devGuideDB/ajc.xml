@@ -1,4 +1,4 @@
-<refentry>
+<refentry id="ajc-ref" xreflabel="The ajc Command-line Reference">
   <refnamediv>
     <refname>ajc</refname>
     <refpurpose>compiler and bytecode weaver for the AspectJ and Java languages </refpurpose>
