@@ -21,7 +21,7 @@ aspect AnotherAspect extends Library2 {
 class Testing {
     static aspect Init {
         
-        declare dominates : Init, Library1, AnotherAspect;
+        declare precedence : Init, Library1, AnotherAspect;
         
         before() : AnotherAspect.targetJoinPoints() {
             Main.i = 1;
