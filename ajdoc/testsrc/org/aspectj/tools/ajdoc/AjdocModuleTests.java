@@ -23,6 +23,7 @@ public class AjdocModuleTests {
 		//$JUnit-BEGIN$
 		suite.addTestSuite(MainTestCase.class);
 		suite.addTestSuite(ExecutionTestCase.class);
+		suite.addTestSuite(SpacewarTestCase.class);
 		//$JUnit-END$
 		return suite;
 	}
