@@ -80,7 +80,7 @@ public class WeaverMessageHandler implements IMessageHandler {
 								severity,
 								startPos,
 								endPos,
-								sLoc != null ? sLoc.getLine() : 1,
+								sLoc != null ? sLoc.getLine() : 0,
 								referenceContext,
 								problemSource
 								);
