@@ -18,7 +18,7 @@ public class PR573 {
 }
 interface Interface { void m(Object o);}
 
-aspect A pertarget(target(Interface)) { // CW 21 will not match containing aspect
+aspect A pertarget(target(Interface)) { // was a warning in 1.0
     public static int num;
     A(){ Tester.event("A.init" + num++); }
 }

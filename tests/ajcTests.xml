@@ -4336,7 +4336,6 @@
       title="pertarget stack overflow getting name of anonymous (Interface) class"
       keywords="from-resolved_10rc3">
         <compile files="PR573.java">
-            <message kind="warning" line="21"/>
         </compile>
         <run class="PR573"/>
     </ajc-test>
@@ -4345,7 +4344,6 @@
       title="pertarget stack overflow getting name of anonymous (Object) class"
       keywords="from-resolved_10rc3">
         <compile files="PR573_1.java">
-            <message kind="warning" line="20"/>
         </compile>
         <run class="PR573_1"/>
     </ajc-test>

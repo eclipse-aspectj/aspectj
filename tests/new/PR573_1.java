@@ -17,7 +17,7 @@ public class PR573_1 {
     }
 }
 // different stack overflow when using Object, not Interface
-aspect A pertarget(target(Object) && !target(A)) {  // CW 20 will not match containing aspect 
+aspect A pertarget(target(Object) && !target(A)) {  // was a warning in 1.0 
     public static int num;
     A(){ Tester.event("A.init" + num++); }
 }
