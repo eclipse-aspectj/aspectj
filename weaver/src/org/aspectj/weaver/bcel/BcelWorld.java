@@ -209,7 +209,7 @@ public class BcelWorld extends World implements Repository {
         }
 	}
 	
-	private BcelObjectType makeBcelObjectType(ResolvedTypeX.Name resolvedTypeX, JavaClass jc, boolean exposedToWeaver) {
+	protected BcelObjectType makeBcelObjectType(ResolvedTypeX.Name resolvedTypeX, JavaClass jc, boolean exposedToWeaver) {
 		BcelObjectType ret = new BcelObjectType(resolvedTypeX, jc, exposedToWeaver);
 		resolvedTypeX.setDelegate(ret);
 		return ret;

@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;

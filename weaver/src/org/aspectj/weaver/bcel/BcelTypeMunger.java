@@ -110,7 +110,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
         		if (parentTM.getNewParent().isInterface()) {
 					weaver.getWorld().getMessageHandler().handleMessage(WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_DECLAREPARENTSIMPLEMENTS,
 					new String[]{weaver.getLazyClassGen().getType().getName(),
-					tName,parentTM.getNewParent().getName(),fName}));
+					tName,parentTM.getNewParent().getName(),fName},
+					weaver.getLazyClassGen().getClassName(), getAspectType().getName()));
         		} else {
         			System.err.println("BANG, you need to fix this.  BcelTypeMunger");
         		}
@@ -119,7 +120,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
         		new String[]{weaver.getLazyClassGen().getType().getName(),
         			         tName,munger.getKind().toString().toLowerCase(),
         			         getAspectType().getName(),
-        					 fName+":'"+munger.getSignature()+"'"}));
+        					 fName+":'"+munger.getSignature()+"'"},
+							 weaver.getLazyClassGen().getClassName(), getAspectType().getName()));
 				// ??? If only type mungers knew their originating line numbers ...
         	}	
 		}
@@ -769,3 +771,4 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		}
 	}
 }
+		

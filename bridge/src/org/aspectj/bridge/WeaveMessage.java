@@ -33,17 +33,21 @@ public class WeaveMessage extends Message {
 	  new WeaveMessageKind(5,"Softening exceptions in type '%1' (%2) as defined by aspect '%3' (%4)");
 
 
+	private String affectedtypename;
+	private String aspectname;
+
+
     // private ctor - use the static factory method
-	private WeaveMessage(String message) {
+	private WeaveMessage(String message, String affectedtypename, String aspectname) {
 		super(message, IMessage.WEAVEINFO, null, null);
+		this.affectedtypename = affectedtypename;
+		this.aspectname = aspectname;
 	}    
 
     /**
      * Static helper method for constructing weaving messages.
      * @param kind what kind of message (e.g. declare parents)
      * @param inserts inserts for the message (inserts are marked %n in the message)
-     * @param affectedtypename the type which is being advised/declaredUpon
-     * @param aspectname the aspect that defined the advice or declares
      * @return new weaving message
      */
 	public static WeaveMessage constructWeavingMessage(
@@ -55,10 +59,44 @@ public class WeaveMessage extends Message {
 			int n = Character.getNumericValue(str.charAt(pos+1));
 			str.replace(pos,pos+2,inserts[n-1]);
 		}
-		return new WeaveMessage(str.toString());
+		return new WeaveMessage(str.toString(), null, null);
 	}
 	
+    /**
+     * Static helper method for constructing weaving messages.
+     * @param kind what kind of message (e.g. declare parents)
+     * @param inserts inserts for the message (inserts are marked %n in the message)
+     * @param affectedtypename the type which is being advised/declaredUpon
+     * @param aspectname the aspect that defined the advice or declares
+     * @return new weaving message
+     */
+	public static WeaveMessage constructWeavingMessage(
+	  WeaveMessageKind kind,
+	  String[] inserts,
+	  String affectedtypename,
+	  String aspectname) {
+		StringBuffer str = new StringBuffer(kind.getMessage());
+		int pos = -1;
+		while ((pos=new String(str).indexOf("%"))!=-1) {
+			int n = Character.getNumericValue(str.charAt(pos+1));
+			str.replace(pos,pos+2,inserts[n-1]);
+		}
+		return new WeaveMessage(str.toString(), affectedtypename, aspectname);
+	}
 	
+	/**
+	 * @return Returns the aspectname.
+	 */
+	public String getAspectname() {
+		return aspectname;
+	}
+	
+	/**
+	 * @return Returns the affectedtypename.
+	 */
+	public String getAffectedtypename() {
+		return affectedtypename;
+	}
 	
 	public static class WeaveMessageKind {
     	

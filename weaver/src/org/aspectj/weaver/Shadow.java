@@ -22,8 +22,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.aspectj.asm.IRelationship;
-import org.aspectj.bridge.*;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
+import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.util.TypeSafeEnum;
@@ -416,14 +419,18 @@ public abstract class Shadow {
 			msg = WeaveMessage.constructWeavingMessage(
 			  WeaveMessage.WEAVEMESSAGE_SOFTENS,
 			    new String[]{advisedType,beautifyLocation(getSourceLocation()),
-			    			 advisingType,beautifyLocation(munger.getSourceLocation())});
+			    			 advisingType,beautifyLocation(munger.getSourceLocation())},
+				advisedType,
+				advisingType);
 		} else {
 			boolean runtimeTest = ((BcelAdvice)advice).hasDynamicTests();
 		    msg = WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ADVISES,
-			  new String[]{ advisedType, beautifyLocation(getSourceLocation()),
+		    		new String[]{ advisedType, beautifyLocation(getSourceLocation()),
 				            description,
 				            advisingType,beautifyLocation(munger.getSourceLocation()),
-				            (runtimeTest?" [with runtime test]":"")});
+				            (runtimeTest?" [with runtime test]":"")},
+					advisedType,
+					advisingType);
 				         // Boolean.toString(runtimeTest)});
 		}
 		getIWorld().getMessageHandler().handleMessage(msg);
