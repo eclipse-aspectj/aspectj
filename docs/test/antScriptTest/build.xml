@@ -1,0 +1,132 @@
+<project default="build-test" basedir=".">
+
+	<target name="info">
+	<echo>
+	This script verifies that the example build script in the
+	Ant section of the development environment guide works.
+	
+	The target "build-test" should be exactly what's copied from
+	the development environment guide, as rendered.
+	
+	To setup for a given version of AspectJ, either build the
+	tools distribution or define the variable aspectj.home.
+	
+	This should build the two input jars and then run the
+	test, which builds and runs an application.  It should 
+	request incremental input (press "q{enter}" to quit)
+	and emit the text:
+
+     [java] called Util.utility("persistMe shouting!")
+     [java] set persistMe to PERSISTME SHOUTING!
+
+	Use the "clean" target to remove generated files.
+	
+	When running from eclipse, set fork.iajc="true" and
+	change build-test iajc call to avoid incremental mode.
+	
+</echo>
+	</target>
+	
+	<target name="init">
+		<property name="fork.iajc"
+			value="false"/>			
+		<property name="home.dir"
+			location="${basedir}"/>
+		<property name="aspectj.modules.dir"
+			location="../../.."/>
+		<property name="aspectj.home"
+			location="${aspectj.modules.dir}/aj-build/dist/tools"/>
+
+		<available property="aspectj.home.available"
+			file="${aspectj.home}/lib/aspectjtools.jar"/>
+
+		<available property="aspectjtools.jar.available"
+			file="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/>
+		<available property="aspectjrt.jar.available"
+			file="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/>
+
+		<available property="persist.jar.available"
+			file="${home.dir}/ec/int/persist.jar"/>
+		<available property="module.jar.available"
+			file="${home.dir}/build/module.jar"/>
+	</target>
+	
+	<target name="taskdef" depends="init,local.aspectj.setup">
+		<taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+			<classpath>
+				<path location="${home.dir}/tools/aspectj/lib/aspectjtools.jar"/>
+			</classpath>
+		</taskdef>	
+	</target>
+
+	<target name="clean" depends="init">
+		<delete quiet="on">
+			<fileset dir="${home.dir}"
+				includes="ec/int/persist.jar,
+						build/module.jar,
+						output/application.jar,
+						tools/aspectj/lib/aspectj*.jar"/>
+		</delete>
+	</target>
+	
+	<target name="local.aspectj.setup" depends="init"
+		unless="aspectjtools.jar.available,aspectjrt.jar.available">
+		<fail unless="aspectj.home.available"
+			message="define or build aspectj.home: ${aspectj.home}"/>
+		<mkdir dir="${home.dir}/tools/aspectj/lib/"/>
+		<copy todir="${home.dir}/tools/aspectj/lib"
+			filtering="off">
+			<fileset dir="${aspectj.home}/lib" includes="aspectj*.jar"/>
+		</copy>
+		<available property="aspectjtools.jar.available"
+			file="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/>
+		<available property="aspectjrt.jar.available"
+			file="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/>
+	</target>
+	
+	<target name="setup" depends="init,taskdef,local.aspectj.setup"
+		unless="module.jar.available,persist.jar.available">
+		<iajc outJar="${home.dir}/ec/int/persist.jar"
+			failonerror="true"
+			fork="${fork.iajc}"
+			sourceroots="${home.dir}/ec/int/src"
+			classpath="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/>
+		<iajc outJar="${home.dir}/build/module.jar"
+			failonerror="true"
+			fork="${fork.iajc}"
+			sourceroots="${home.dir}/ec/module/src"
+			classpath="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/>
+	</target>
+	
+  <target name="build-test" depends="init,taskdef,setup"
+  	description="test Ant script from the devguide">
+  	<!-- copy this from the Ant section of the rendered devguide -->
+  	<!-- in eclipse, must run forked and not incremental -->
+    <iajc outjar="${home.dir}/output/application.jar" 
+            injars="${home.dir}/build/module.jar"
+            copyInjars="true"
+			fork="${fork.iajc}"
+            sourceRootCopyFilter="**/CVS/*,**/*.java"
+            incremental="false" >
+      <sourceroots>
+        <pathelement location="${home.dir}/ec/project/src"/>
+        <pathelement location="${home.dir}/ec/project/testsrc"/>
+      </sourceroots>
+      <aspectpath>
+        <pathelement location="${home.dir}/ec/int/persist.jar"/>
+      </aspectpath>
+      <classpath>
+        <pathelement location="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/>
+      </classpath>
+    </iajc>
+    
+    <java classname="org.smart.app.Main">
+      <classpath>
+        <pathelement location="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/>
+        <pathelement location="${home.dir}/ec/int/persist.jar"/>
+        <pathelement location="${home.dir}/output/application.jar"/>
+      </classpath>
+    </java>
+  </target>
+
+</project>
