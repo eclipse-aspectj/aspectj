@@ -58,7 +58,7 @@ package org.aspectj.apache.bcel.verifier;
  * A VerificationResult is what a PassVerifier returns
  * after verifying.
  *
- * @version $Id: VerificationResult.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: VerificationResult.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  *
  */

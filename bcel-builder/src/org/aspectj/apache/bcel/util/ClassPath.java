@@ -62,23 +62,21 @@ import java.io.*;
  * Responsible for loading (class) files from the CLASSPATH. Inspired by
  * sun.tools.ClassPath.
  *
- * @version $Id: ClassPath.java,v 1.2 2004/11/18 16:00:19 aclement Exp $
+ * @version $Id: ClassPath.java,v 1.3 2004/11/19 16:45:19 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class ClassPath implements Serializable {
-  private static ClassPath SYSTEM_CLASS_PATH;
+  private static ClassPath SYSTEM_CLASS_PATH = null;
 
-  
+  private PathEntry[] paths;
+  private String      class_path;
+
   public static ClassPath getSystemClassPath() {
-  	if (SYSTEM_CLASS_PATH==null) {
+  	if (SYSTEM_CLASS_PATH == null) {
   		SYSTEM_CLASS_PATH = new ClassPath();
   	}
   	return SYSTEM_CLASS_PATH;
   }
-  
-  private PathEntry[] paths;
-  private String      class_path;
-
   /**
    * Search for classes in given path.
    */

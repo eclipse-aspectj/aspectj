@@ -1,5 +1,10 @@
 package org.aspectj.apache.bcel.classfile;
 
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
+
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -62,7 +67,7 @@ package org.aspectj.apache.bcel.classfile;
  * Implemented by wish of 
  * <A HREF="http://www.inf.fu-berlin.de/~bokowski">Boris Bokowski</A>.
  *
- * @version $Id: Visitor.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: Visitor.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface Visitor {
@@ -98,4 +103,13 @@ public interface Visitor {
   public void visitUnknown(Unknown obj);    
   public void visitStackMap(StackMap obj);
   public void visitStackMapEntry(StackMapEntry obj);
+  
+  // Java5
+  public void visitEnclosingMethod(EnclosingMethod obj);
+  public void visitRuntimeVisibleAnnotations(RuntimeVisibleAnnotations obj);
+  public void visitRuntimeInvisibleAnnotations(RuntimeInvisibleAnnotations obj);
+  public void visitRuntimeVisibleParameterAnnotations(RuntimeVisibleParameterAnnotations obj);
+  public void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisibleParameterAnnotations obj);
+  public void visitAnnotationDefault(AnnotationDefault obj);
+  public void visitLocalVariableTypeTable(LocalVariableTypeTable obj);    
 }

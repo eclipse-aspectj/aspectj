@@ -53,7 +53,13 @@ package org.aspectj.apache.bcel.util;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-import org.aspectj.apache.bcel.classfile.*;
+import org.aspectj.apache.bcel.classfile.ClassParser;
+import org.aspectj.apache.bcel.classfile.ConstantValue;
+import org.aspectj.apache.bcel.classfile.Field;
+import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.Utility;
+import org.aspectj.apache.bcel.classfile.tests.*;
 import org.aspectj.apache.bcel.generic.*;
 import org.aspectj.apache.bcel.Repository;
 import org.aspectj.apache.bcel.Constants;
@@ -66,7 +72,7 @@ import java.io.*;
  * are done with BCEL. It does not cover all features of BCEL,
  * but tries to mimic hand-written code as close as possible.
  *
- * @version $Id: BCELifier.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: BCELifier.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A> 
  */
 public class BCELifier extends org.aspectj.apache.bcel.classfile.EmptyVisitor {

@@ -63,7 +63,7 @@ package org.aspectj.apache.bcel.verifier.exc;
  * edition, page 164, 5.4.1 where verification as a part of the linking process is
  * defined to be the verification happening in passes 2 and 3.
  *
- * @version $Id: VerificationException.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: VerificationException.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public abstract class VerificationException extends VerifierConstraintViolatedException{

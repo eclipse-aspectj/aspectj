@@ -58,7 +58,7 @@ package org.aspectj.apache.bcel.generic;
  * I2D - Convert int to double
  * <PRE>Stack: ..., value -&gt; ..., result.word1, result.word2</PRE>
  *
- * @version $Id: I2D.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: I2D.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class I2D extends ConversionInstruction {

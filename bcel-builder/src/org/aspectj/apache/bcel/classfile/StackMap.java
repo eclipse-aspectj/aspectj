@@ -66,7 +66,7 @@ import  java.io.*;
  * within the Code attribute of a method. See CLDC specification
  * §5.3.1.2
  *
- * @version $Id: StackMap.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: StackMap.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Code
  * @see     StackMapEntry

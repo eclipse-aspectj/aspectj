@@ -55,15 +55,25 @@ package org.aspectj.apache.bcel.classfile;
  */
 
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
+import org.aspectj.apache.bcel.generic.ConstantPoolGen;
+import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.util.ByteSequence;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.zip.*;
 
 /**
  * Utility functions that do not really belong to any class in particular.
  *
- * @version $Id: Utility.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: Utility.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class Utility {
@@ -823,11 +833,11 @@ public abstract class Utility {
    * @return Java type declaration
    * @throws ClassFormatException
    */
+  // J5TODO: This will have problems with nest generic types...(but then I think we all will)
   public static final String signatureToString(String signature,
 					       boolean chopit)
   {
     consumed_chars = 1; // This is the default, read just one char like `B'
-
     try {
       switch(signature.charAt(0)) {
       case 'B' : return "byte";
@@ -838,14 +848,26 @@ public abstract class Utility {
       case 'J' : return "long";
 
       case 'L' : { // Full class name
-	int    index = signature.indexOf(';'); // Look for closing `;'
+      	int    index = signature.indexOf(';'); // Look for closing `;'
+      	// Jump to the correct ';'
+      	if (index!=-1 && 
+      		signature.length()>index+1 && 
+		    signature.charAt(index+1)=='>') index = index+2;
 
 	if(index < 0)
 	  throw new ClassFormatException("Invalid signature: " + signature);
 	
-	consumed_chars = index + 1; // "Lblabla;" `L' and `;' are removed
+	int genericStart = signature.indexOf('<');
+	int genericEnd = signature.indexOf('>');
+	if (genericStart !=-1) {
+		return compactClassName(signature.substring(1,genericStart)+"<"+
+				  signatureToString(signature.substring(genericStart+1,genericEnd),chopit)+">",chopit);
+	} else {
+	
+	  consumed_chars = index + 1; // "Lblabla;" `L' and `;' are removed
 
-	return compactClassName(signature.substring(1, index), chopit);
+	  return compactClassName(signature.substring(1, index), chopit);
+	}
       }
 
       case 'S' : return "short";
@@ -872,7 +894,7 @@ public abstract class Utility {
 	Utility.consumed_chars += consumed_chars;
 	return type + brackets.toString();
       }
-
+            	
       case 'V' : return "void";
 
       default  : throw new ClassFormatException("Invalid signature: `" +
@@ -1390,5 +1412,169 @@ public abstract class Utility {
     }
 
     return buf.toString();
+  }
+
+  public static List getListOfAnnotationNames(Annotation a) {
+  	List l = a.getValues();
+    List names = new ArrayList();
+    for (Iterator i = l.iterator(); i.hasNext();) {
+		ElementNameValuePair element = (ElementNameValuePair) i.next();
+		names.add(element.getNameString());
+	}
+    return names;
+  }
+
+  /**
+   * Converts a list of AnnotationGen objects into a set of attributes 
+   * that can be attached to the class file.
+   * @param cp The constant pool gen where we can create the necessary name refs
+   * @param vec A list of AnnotationGen objects
+   */
+  public static Attribute[] getAnnotationAttributes(ConstantPoolGen cp,List vec) {
+  	
+  	if (vec.size()==0) return null;
+  	
+  	try {
+  		int countVisible   = 0;
+  		int countInvisible = 0;
+  	
+  		//  put the annotations in the right output stream
+  		for (int i=0; i<vec.size(); i++) {
+  			AnnotationGen a = (AnnotationGen)vec.get(i);
+  			if (a.isRuntimeVisible()) countVisible++;
+  			else			   countInvisible++;
+  		}
+  	
+  		ByteArrayOutputStream rvaBytes = new ByteArrayOutputStream();
+  		ByteArrayOutputStream riaBytes = new ByteArrayOutputStream();
+  		DataOutputStream rvaDos = new DataOutputStream(rvaBytes);
+  		DataOutputStream riaDos = new DataOutputStream(riaBytes);
+  	
+  		rvaDos.writeShort(countVisible);
+  		riaDos.writeShort(countInvisible);
+
+  		// put the annotations in the right output stream
+  		for (int i=0; i<vec.size(); i++) {
+  			AnnotationGen a = (AnnotationGen)vec.get(i);
+  			if (a.isRuntimeVisible()) a.dump(rvaDos);
+  			else			   a.dump(riaDos);
+  		}
+
+    rvaDos.close();
+    riaDos.close();
+    
+    byte[] rvaData = rvaBytes.toByteArray();
+    byte[] riaData = riaBytes.toByteArray();
+    
+    int rvaIndex = -1;
+    int riaIndex = -1;
+    
+    if (rvaData.length>2) rvaIndex = cp.addUtf8("RuntimeVisibleAnnotations");
+    if (riaData.length>2) riaIndex = cp.addUtf8("RuntimeInvisibleAnnotations");
+
+  	List newAttributes = new ArrayList();
+  	if (rvaData.length>2) {
+  		newAttributes.add(
+  		  new RuntimeVisibleAnnotations(rvaIndex,rvaData.length,rvaData,cp.getConstantPool()));
+  	}
+  	if (riaData.length>2) {
+  		newAttributes.add(
+  		  new RuntimeInvisibleAnnotations(riaIndex,riaData.length,riaData,cp.getConstantPool()));
+  	}
+
+  	return (Attribute[])newAttributes.toArray(new Attribute[]{});
+  	} catch (IOException e) {
+  		System.err.println("IOException whilst processing annotations");
+		e.printStackTrace();
+	}
+  	return null;
+  }
+
+  /**
+   * Annotations against a class are stored in one of four attribute kinds:
+   * - RuntimeVisibleParameterAnnotations
+   * - RuntimeInvisibleParameterAnnotations
+   */
+  public static Attribute[] getParameterAnnotationAttributes(ConstantPoolGen cp,List[] /*Array of lists, array size depends on #params */ vec) {
+  	
+  	int visCount[]   = new int[vec.length]; 
+  	int totalVisCount = 0;
+  	int invisCount[] = new int[vec.length];
+  	int totalInvisCount = 0;
+  	try {
+  	
+  		for (int i=0; i<vec.length; i++) {
+  	  		List l = vec[i];
+  	  		if (l!=null) {
+  	  		  for (Iterator iter = l.iterator(); iter.hasNext();) {
+				AnnotationGen element = (AnnotationGen) iter.next();
+				if (element.isRuntimeVisible()) {visCount[i]++;totalVisCount++;}
+				else                            {invisCount[i]++;totalInvisCount++;}
+			  }
+  	  		}
+  	  	}  		
+  		
+  		// Lets do the visible ones
+  		ByteArrayOutputStream rvaBytes = new ByteArrayOutputStream();
+  		DataOutputStream rvaDos = new DataOutputStream(rvaBytes);
+  		rvaDos.writeByte(vec.length); // First goes number of parameters
+  		
+  		for (int i=0; i<vec.length; i++) {
+  			rvaDos.writeShort(visCount[i]);
+  			if (visCount[i]>0) {
+  				List l = vec[i];
+  				for (Iterator iter = l.iterator(); iter.hasNext();) {
+					AnnotationGen element = (AnnotationGen) iter.next();
+					if (element.isRuntimeVisible()) element.dump(rvaDos);
+				}
+  			}
+  		}
+  	    rvaDos.close();
+  		
+  		// Lets do the invisible ones
+  		ByteArrayOutputStream riaBytes = new ByteArrayOutputStream();
+  		DataOutputStream riaDos = new DataOutputStream(riaBytes);
+  		riaDos.writeByte(vec.length); // First goes number of parameters
+  		
+ 		for (int i=0; i<vec.length; i++) {
+  			riaDos.writeShort(invisCount[i]);
+  			if (invisCount[i]>0) {
+  				List l = vec[i];
+  				for (Iterator iter = l.iterator(); iter.hasNext();) {
+					AnnotationGen element = (AnnotationGen) iter.next();
+					if (!element.isRuntimeVisible()) element.dump(riaDos);
+				}
+  			}
+  		}
+  	    riaDos.close();
+  		
+  	    byte[] rvaData = rvaBytes.toByteArray();
+  	    byte[] riaData = riaBytes.toByteArray();
+    
+  	    int rvaIndex = -1;
+  	    int riaIndex = -1;
+    
+  	    if (totalVisCount>0)   rvaIndex = cp.addUtf8("RuntimeVisibleParameterAnnotations");
+  	    if (totalInvisCount>0) riaIndex = cp.addUtf8("RuntimeInvisibleParameterAnnotations");
+
+  	    List newAttributes = new ArrayList();
+
+  	    if (totalVisCount>0) {
+  		    newAttributes.add(
+  		        new RuntimeVisibleParameterAnnotations(rvaIndex,rvaData.length,rvaData,cp.getConstantPool()));
+  	    }
+  	
+
+  	    if (totalInvisCount>0) {
+  	    	newAttributes.add(
+  	    	    new RuntimeInvisibleParameterAnnotations(riaIndex,riaData.length,riaData,cp.getConstantPool()));
+  	    }
+
+  	    return (Attribute[])newAttributes.toArray(new Attribute[]{});
+  	} catch (IOException e) {
+  		System.err.println("IOException whilst processing parameter annotations");
+		e.printStackTrace();
+	}
+  	return null;
   }
 }

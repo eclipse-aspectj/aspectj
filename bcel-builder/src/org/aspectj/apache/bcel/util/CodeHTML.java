@@ -54,14 +54,27 @@ package org.aspectj.apache.bcel.util;
  * <http://www.apache.org/>.
  */
 
-import org.aspectj.apache.bcel.classfile.*;
+import org.aspectj.apache.bcel.classfile.Attribute;
+import org.aspectj.apache.bcel.classfile.Code;
+import org.aspectj.apache.bcel.classfile.CodeException;
+import org.aspectj.apache.bcel.classfile.ConstantFieldref;
+import org.aspectj.apache.bcel.classfile.ConstantInterfaceMethodref;
+import org.aspectj.apache.bcel.classfile.ConstantMethodref;
+import org.aspectj.apache.bcel.classfile.ConstantNameAndType;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.LocalVariable;
+import org.aspectj.apache.bcel.classfile.LocalVariableTable;
+import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.Utility;
+import org.aspectj.apache.bcel.classfile.tests.*;
+
 import java.io.*;
 import java.util.BitSet;
 
 /**
  * Convert code into HTML file.
  *
- * @version $Id: CodeHTML.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: CodeHTML.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  */

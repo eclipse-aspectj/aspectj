@@ -54,13 +54,29 @@ package org.aspectj.apache.bcel.util;
  * <http://www.apache.org/>.
  */
 
-import org.aspectj.apache.bcel.classfile.*;
+import org.aspectj.apache.bcel.classfile.Attribute;
+import org.aspectj.apache.bcel.classfile.Code;
+import org.aspectj.apache.bcel.classfile.CodeException;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.ConstantUtf8;
+import org.aspectj.apache.bcel.classfile.ConstantValue;
+import org.aspectj.apache.bcel.classfile.ExceptionTable;
+import org.aspectj.apache.bcel.classfile.InnerClass;
+import org.aspectj.apache.bcel.classfile.InnerClasses;
+import org.aspectj.apache.bcel.classfile.LineNumber;
+import org.aspectj.apache.bcel.classfile.LineNumberTable;
+import org.aspectj.apache.bcel.classfile.LocalVariable;
+import org.aspectj.apache.bcel.classfile.LocalVariableTable;
+import org.aspectj.apache.bcel.classfile.SourceFile;
+import org.aspectj.apache.bcel.classfile.Utility;
+import org.aspectj.apache.bcel.classfile.tests.*;
+
 import java.io.*;
 
 /**
  * Convert found attributes into HTML file.
  *
- * @version $Id: AttributeHTML.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: AttributeHTML.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  */

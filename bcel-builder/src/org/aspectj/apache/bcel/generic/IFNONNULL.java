@@ -59,7 +59,7 @@ package org.aspectj.apache.bcel.generic;
  *
  * <PRE>Stack: ..., reference -&gt; ...</PRE>
  *
- * @version $Id: IFNONNULL.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: IFNONNULL.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class IFNONNULL extends IfInstruction {

@@ -60,7 +60,7 @@ import  org.aspectj.apache.bcel.Constants;
  * Super class for all objects that have modifiers like private, final, ...
  * I.e. classes, fields, and methods.
  *
- * @version $Id: AccessFlags.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: AccessFlags.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class AccessFlags implements java.io.Serializable {
@@ -167,5 +167,17 @@ public abstract class AccessFlags implements java.io.Serializable {
   public final void isStrictfp(boolean flag) { setFlag(Constants.ACC_STRICT, flag); }
   public final boolean isStrictfp() {
     return (access_flags & Constants.ACC_STRICT) != 0;
+  }
+  
+  public final void isVarargs(boolean flag) { setFlag(Constants.ACC_VARARGS, flag); }
+  /** J5SUPPORT: Called on methods to determine if they were written with varargs. */
+  public final boolean isVarargs() {
+    return (access_flags & Constants.ACC_VARARGS) != 0;
+  }
+
+  public final void isBridge(boolean flag) { setFlag(Constants.ACC_BRIDGE, flag); }
+  /** J5SUPPORT: Called on methods to determine if they are bridge methods */  
+  public final boolean isBridge() {
+    return (access_flags & Constants.ACC_BRIDGE) != 0;
   }
 }

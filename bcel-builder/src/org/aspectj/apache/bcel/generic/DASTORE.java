@@ -58,7 +58,7 @@ package org.aspectj.apache.bcel.generic;
  * DASTORE -  Store into double array
  * <PRE>Stack: ..., arrayref, index, value.word1, value.word2 -&gt; ...</PRE>
  *
- * @version $Id: DASTORE.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: DASTORE.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class DASTORE extends ArrayInstruction implements StackConsumer {

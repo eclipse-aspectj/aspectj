@@ -54,7 +54,8 @@ package org.aspectj.apache.bcel.verifier.statics;
  * <http://www.apache.org/>.
  */
 
-import org.aspectj.apache.bcel.classfile.*;
+import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.tests.*;
 import org.aspectj.apache.bcel.Repository;
 import org.aspectj.apache.bcel.verifier.*;
 import org.aspectj.apache.bcel.verifier.exc.*;
@@ -66,7 +67,7 @@ import org.aspectj.apache.bcel.verifier.exc.Utility;
  * More detailed information is to be found at the do_verify() method's
  * documentation.
  *
- * @version $Id: Pass1Verifier.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: Pass1Verifier.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #do_verify()
  */

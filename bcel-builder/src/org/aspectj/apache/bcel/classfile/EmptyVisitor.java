@@ -54,6 +54,10 @@ package org.aspectj.apache.bcel.classfile;
  * <http://www.apache.org/>.
  */
 
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
 
 /**
  * Visitor with empty method bodies, can be extended and used in conjunction with the
@@ -62,7 +66,7 @@ package org.aspectj.apache.bcel.classfile;
  * By courtesy of David Spencer.
  *
  * @see DescendingVisitor
- * @version $Id: EmptyVisitor.java,v 1.2 2004/11/18 15:07:05 aclement Exp $
+ * @version $Id: EmptyVisitor.java,v 1.3 2004/11/19 16:45:18 aclement Exp $
  * 
  */
 public class EmptyVisitor implements Visitor {
@@ -100,4 +104,15 @@ public class EmptyVisitor implements Visitor {
   public void visitUnknown(Unknown obj) {}
   public void visitStackMap(StackMap obj) {}
   public void visitStackMapEntry(StackMapEntry obj) {}
+  
+  // J5SUPPORT:
+  public void visitEnclosingMethod(EnclosingMethod obj) {}
+  public void visitRuntimeVisibleAnnotations(RuntimeVisibleAnnotations attribute) {}
+  public void visitRuntimeInvisibleAnnotations(RuntimeInvisibleAnnotations attribute) {}
+  public void visitRuntimeVisibleParameterAnnotations(RuntimeVisibleParameterAnnotations attribute) {}
+  public void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisibleParameterAnnotations attribute) {}
+  public void visitAnnotationDefault(AnnotationDefault attribute) {}
+  public void visitLocalVariableTypeTable(LocalVariableTypeTable obj) {}
+  	 
+
 }

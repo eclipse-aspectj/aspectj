@@ -58,7 +58,7 @@ package org.aspectj.apache.bcel.generic;
  * L2F - Convert long to float
  * <PRE>Stack: ..., value.word1, value.word2 -&gt; ..., result</PRE>
  *
- * @version $Id: L2F.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: L2F.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class L2F extends ConversionInstruction {

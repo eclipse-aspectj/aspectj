@@ -81,7 +81,7 @@ import org.apache.regexp.*;
       ...
     }
 </pre>
- * @version $Id: InstructionFinder.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: InstructionFinder.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author  <A HREF="http://www.berlin.de/~markus.dahm/">M. Dahm</A>
  * @see Instruction
  * @see InstructionList

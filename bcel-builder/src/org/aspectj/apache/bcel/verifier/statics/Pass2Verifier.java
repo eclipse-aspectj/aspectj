@@ -56,10 +56,42 @@ package org.aspectj.apache.bcel.verifier.statics;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.Repository;
-import org.aspectj.apache.bcel.classfile.*;
+import org.aspectj.apache.bcel.classfile.Attribute;
+import org.aspectj.apache.bcel.classfile.Code;
+import org.aspectj.apache.bcel.classfile.CodeException;
+import org.aspectj.apache.bcel.classfile.Constant;
+import org.aspectj.apache.bcel.classfile.ConstantClass;
+import org.aspectj.apache.bcel.classfile.ConstantDouble;
+import org.aspectj.apache.bcel.classfile.ConstantFieldref;
+import org.aspectj.apache.bcel.classfile.ConstantFloat;
+import org.aspectj.apache.bcel.classfile.ConstantInteger;
+import org.aspectj.apache.bcel.classfile.ConstantInterfaceMethodref;
+import org.aspectj.apache.bcel.classfile.ConstantLong;
+import org.aspectj.apache.bcel.classfile.ConstantMethodref;
+import org.aspectj.apache.bcel.classfile.ConstantNameAndType;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.ConstantString;
+import org.aspectj.apache.bcel.classfile.ConstantUtf8;
+import org.aspectj.apache.bcel.classfile.ConstantValue;
+import org.aspectj.apache.bcel.classfile.Deprecated;
 import org.aspectj.apache.bcel.classfile.DescendingVisitor; // Use _this_ one!
 import org.aspectj.apache.bcel.classfile.EmptyVisitor; // Use _this_ one!
+import org.aspectj.apache.bcel.classfile.ExceptionTable;
+import org.aspectj.apache.bcel.classfile.Field;
+import org.aspectj.apache.bcel.classfile.InnerClass;
+import org.aspectj.apache.bcel.classfile.InnerClasses;
+import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.LineNumber;
+import org.aspectj.apache.bcel.classfile.LineNumberTable;
+import org.aspectj.apache.bcel.classfile.LocalVariable;
+import org.aspectj.apache.bcel.classfile.LocalVariableTable;
+import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.Node;
+import org.aspectj.apache.bcel.classfile.SourceFile;
+import org.aspectj.apache.bcel.classfile.Synthetic;
+import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.classfile.Visitor; // Use _this_ one!
+import org.aspectj.apache.bcel.classfile.tests.*;
 import org.aspectj.apache.bcel.generic.*;
 import org.aspectj.apache.bcel.verifier.*;
 import org.aspectj.apache.bcel.verifier.exc.*;
@@ -73,7 +105,7 @@ import java.util.HashSet;
  * More detailed information is to be found at the do_verify()
  * method's documentation.
  *
- * @version $Id: Pass2Verifier.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: Pass2Verifier.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #do_verify()
  */

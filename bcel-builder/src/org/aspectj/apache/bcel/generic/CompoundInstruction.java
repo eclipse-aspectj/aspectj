@@ -65,7 +65,7 @@ package org.aspectj.apache.bcel.generic;
  * The interface provides the possibilty for the user to write
  * `templates' or `macros' for such reuseable code patterns.
  *
- * @version $Id: CompoundInstruction.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: CompoundInstruction.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see PUSH
  * @see SWITCH

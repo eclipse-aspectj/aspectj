@@ -54,27 +54,15 @@ package org.aspectj.apache.bcel.verifier.structurals;
  * <http://www.apache.org/>.
  */
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-
-import org.aspectj.apache.bcel.generic.ATHROW;
-import org.aspectj.apache.bcel.generic.BranchInstruction;
-import org.aspectj.apache.bcel.generic.GotoInstruction;
-import org.aspectj.apache.bcel.generic.Instruction;
-import org.aspectj.apache.bcel.generic.InstructionHandle;
-import org.aspectj.apache.bcel.generic.JsrInstruction;
-import org.aspectj.apache.bcel.generic.MethodGen;
-import org.aspectj.apache.bcel.generic.RET;
-import org.aspectj.apache.bcel.generic.ReturnInstruction;
-import org.aspectj.apache.bcel.generic.Select;
-import org.aspectj.apache.bcel.verifier.exc.AssertionViolatedException;
-import org.aspectj.apache.bcel.verifier.exc.StructuralCodeConstraintException;
+import org.aspectj.apache.bcel.generic.*;
+import org.aspectj.apache.bcel.verifier.VerifierFactory;
+import org.aspectj.apache.bcel.verifier.exc.*;
+import java.util.*;
 
 /**
  * This class represents a control flow graph of a method.
  *
- * @version $Id: ControlFlowGraph.java,v 1.2 2004/11/18 15:07:05 aclement Exp $
+ * @version $Id: ControlFlowGraph.java,v 1.3 2004/11/19 16:45:19 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class ControlFlowGraph{

@@ -65,7 +65,7 @@ import  java.io.*;
  * programatically should see <a href="../generic/ConstantPoolGen.html">
  * ConstantPoolGen</a>.
 
- * @version $Id: ConstantPool.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: ConstantPool.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
  * @see     Constant
  * @see     org.aspectj.apache.bcel.generic.ConstantPoolGen
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>

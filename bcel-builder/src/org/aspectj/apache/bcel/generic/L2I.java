@@ -58,7 +58,7 @@ package org.aspectj.apache.bcel.generic;
  * L2I - Convert long to int
  * <PRE>Stack: ..., value.word1, value.word2 -&gt; ..., result</PRE>
  *
- * @version $Id: L2I.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: L2I.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class L2I extends ConversionInstruction {

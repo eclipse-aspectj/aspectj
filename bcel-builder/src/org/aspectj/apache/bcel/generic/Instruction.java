@@ -54,18 +54,16 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
-
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.Utility;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
+import java.io.*;
 import org.aspectj.apache.bcel.util.ByteSequence;
 
 /** 
  * Abstract super class for all Java byte codes.
  *
- * @version $Id: Instruction.java,v 1.2 2004/11/18 15:07:05 aclement Exp $
+ * @version $Id: Instruction.java,v 1.3 2004/11/19 16:45:19 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class Instruction implements Cloneable, Serializable {

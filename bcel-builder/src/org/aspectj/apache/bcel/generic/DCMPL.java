@@ -59,7 +59,7 @@ package org.aspectj.apache.bcel.generic;
  * <PRE>Stack: ..., value1.word1, value1.word2, value2.word1, value2.word2 -&gt;</PRE>
  *        ..., result
  *
- * @version $Id: DCMPL.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: DCMPL.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class DCMPL extends Instruction

@@ -58,7 +58,7 @@ package org.aspectj.apache.bcel.generic;
  * D2L - Convert double to long
  * <PRE>Stack: ..., value.word1, value.word2 -&gt; ..., result.word1, result.word2</PRE>
  *
- * @version $Id: D2L.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: D2L.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class D2L extends ConversionInstruction {

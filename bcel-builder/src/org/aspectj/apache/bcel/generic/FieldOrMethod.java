@@ -53,13 +53,17 @@ package org.aspectj.apache.bcel.generic;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-import org.aspectj.apache.bcel.classfile.*;
+import org.aspectj.apache.bcel.classfile.ConstantCP;
+import org.aspectj.apache.bcel.classfile.ConstantNameAndType;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.ConstantUtf8;
+import org.aspectj.apache.bcel.classfile.tests.*;
 
 /**
  * Super class for InvokeInstruction and FieldInstruction, since they have
  * some methods in common!
  *
- * @version $Id: FieldOrMethod.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: FieldOrMethod.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldOrMethod extends CPInstruction implements LoadClass {

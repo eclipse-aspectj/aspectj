@@ -58,7 +58,7 @@ package org.aspectj.apache.bcel.generic;
  * L2D - Convert long to double
  * <PRE>Stack: ..., value.word1, value.word2 -&gt; ..., result.word1, result.word2</PRE>
  *
- * @version $Id: L2D.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: L2D.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class L2D extends ConversionInstruction {

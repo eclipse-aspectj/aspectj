@@ -62,7 +62,7 @@ import org.aspectj.apache.bcel.ExceptionConstants;
  *
  * <PRE>Stack: ..., objectref, [arg1, [arg2 ...]] -&gt; ...</PRE>
  *
- * @version $Id: INVOKESPECIAL.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: INVOKESPECIAL.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class INVOKESPECIAL extends InvokeInstruction {

@@ -58,7 +58,7 @@ package org.aspectj.apache.bcel.verifier.exc;
  * a class file does not pass the verification pass 3. Note that the pass 3 used by
  * "JustIce" involves verification that is usually delayed to pass 4.
  *
- * @version $Id: CodeConstraintException.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: CodeConstraintException.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public abstract class CodeConstraintException extends VerificationException{

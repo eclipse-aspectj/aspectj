@@ -55,13 +55,18 @@ package org.aspectj.apache.bcel.classfile;
  */
 import java.util.Stack;
 
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
+
 /**
  * Traverses a JavaClass with another Visitor object 'piggy-backed'
  * that is applied to all components of a JavaClass object. I.e. this
  * class supplies the traversal strategy, other classes can make use
  * of it.
  *
- * @version $Id: DescendingVisitor.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: DescendingVisitor.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A> 
  */
 public class DescendingVisitor implements Visitor {
@@ -334,6 +339,53 @@ public class DescendingVisitor implements Visitor {
   public void visitSignature(Signature attribute) {
     stack.push(attribute);
     attribute.accept(visitor);
+    stack.pop();
+  }
+  
+  // J5SUPPORT:
+  public void visitEnclosingMethod(EnclosingMethod attribute) {
+  	stack.push(attribute);
+  	attribute.accept(visitor);
+  	stack.pop();
+  }
+  
+  public void visitRuntimeVisibleAnnotations(RuntimeVisibleAnnotations attribute) {
+  	stack.push(attribute);
+  	attribute.accept(visitor);
+  	stack.pop();
+  }
+  
+  public void visitRuntimeInvisibleAnnotations(RuntimeInvisibleAnnotations attribute) {
+  	stack.push(attribute);
+  	attribute.accept(visitor);
+  	stack.pop();
+  }
+  
+  public void visitRuntimeVisibleParameterAnnotations(RuntimeVisibleParameterAnnotations attribute) {
+  	stack.push(attribute);
+  	attribute.accept(visitor);
+  	stack.pop();
+  }
+  
+  public void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisibleParameterAnnotations attribute) {
+  	stack.push(attribute);
+  	attribute.accept(visitor);
+  	stack.pop();
+  }
+  
+  public void visitAnnotationDefault(AnnotationDefault attribute) {
+  	stack.push(attribute);
+  	attribute.accept(visitor);
+  	stack.pop();
+  }
+  
+  public void visitLocalVariableTypeTable(LocalVariableTypeTable table) {
+    stack.push(table);
+    table.accept(visitor);
+
+    LocalVariable[] vars = table.getLocalVariableTypeTable();
+    for(int i=0; i < vars.length; i++)
+      vars[i].accept(this);
     stack.pop();
   }
   

@@ -64,7 +64,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
  * INVOKEINTERFACE - Invoke interface method
  * <PRE>Stack: ..., objectref, [arg1, [arg2 ...]] -&gt; ...</PRE>
  *
- * @version $Id: INVOKEINTERFACE.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: INVOKEINTERFACE.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class INVOKEINTERFACE extends InvokeInstruction {

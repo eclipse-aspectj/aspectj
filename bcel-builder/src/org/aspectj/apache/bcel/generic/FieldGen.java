@@ -55,16 +55,28 @@ package org.aspectj.apache.bcel.generic;
  */
 
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.classfile.*;
+import org.aspectj.apache.bcel.classfile.Attribute;
+import org.aspectj.apache.bcel.classfile.Constant;
+import org.aspectj.apache.bcel.classfile.ConstantObject;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.ConstantValue;
+import org.aspectj.apache.bcel.classfile.Field;
+import org.aspectj.apache.bcel.classfile.Utility;
+import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
+import org.aspectj.apache.bcel.classfile.tests.*;
+import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
+
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /** 
  * Template class for building up a field.  The only extraordinary thing
  * one can do is to add a constant value attribute to a field (which must of
  * course be compatible with to the declared type).
  *
- * @version $Id: FieldGen.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: FieldGen.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Field
  */
@@ -100,10 +112,18 @@ public class FieldGen extends FieldGenOrMethodGen {
     Attribute[] attrs = field.getAttributes();
 
     for(int i=0; i < attrs.length; i++) {
-      if(attrs[i] instanceof ConstantValue)
-	setValue(((ConstantValue)attrs[i]).getConstantValueIndex());
-      else
-	addAttribute(attrs[i]);
+      if(attrs[i] instanceof ConstantValue) {
+	    setValue(((ConstantValue)attrs[i]).getConstantValueIndex());
+      } else if (attrs[i] instanceof RuntimeAnnotations) {
+		RuntimeAnnotations runtimeAnnotations = (RuntimeAnnotations)attrs[i];
+		List l = runtimeAnnotations.getAnnotations();
+		for (Iterator it = l.iterator(); it.hasNext();) {
+			Annotation element = (Annotation) it.next();
+			addAnnotation(new AnnotationGen(element,cp));
+		}
+      } else {
+	    addAttribute(attrs[i]);
+      }
     }
   }
 
@@ -211,9 +231,20 @@ public class FieldGen extends FieldGenOrMethodGen {
       addAttribute(new ConstantValue(cp.addUtf8("ConstantValue"),
 				     2, index, cp.getConstantPool()));
     }
+    
+     addAnnotationsAsAttribute(cp);
 
     return new Field(access_flags, name_index, signature_index, getAttributes(),
 		     cp.getConstantPool());
+  }
+  
+  private void addAnnotationsAsAttribute(ConstantPoolGen cp) {
+  	Attribute[] attrs = Utility.getAnnotationAttributes(cp,annotation_vec);
+  	if (attrs!=null) {
+      for (int i = 0; i < attrs.length; i++) {
+		  addAttribute(attrs[i]);
+	  }
+  	}
   }
 
   private int addConstant() {
@@ -295,6 +326,9 @@ public class FieldGen extends FieldGenOrMethodGen {
 
     if(value != null)
       buf.append(" = " + value);
+    
+    
+    // J5TODO: Add attributes and annotations to the string
 
     return buf.toString();
   }

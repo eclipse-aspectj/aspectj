@@ -55,14 +55,18 @@ import org.aspectj.apache.bcel.Constants;
  * <http://www.apache.org/>.
  */
 
-import org.aspectj.apache.bcel.classfile.*;
+import org.aspectj.apache.bcel.classfile.AccessFlags;
+import org.aspectj.apache.bcel.classfile.Attribute;
+import org.aspectj.apache.bcel.classfile.tests.*;
+import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
+
 import java.util.ArrayList;
 
 /**
  * Super class for FieldGen and MethodGen objects, since they have
  * some methods in common!
  *
- * @version $Id: FieldGenOrMethodGen.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: FieldGenOrMethodGen.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldGenOrMethodGen extends AccessFlags
@@ -72,6 +76,7 @@ public abstract class FieldGenOrMethodGen extends AccessFlags
   protected Type            type;
   protected ConstantPoolGen cp;
   private   ArrayList       attribute_vec = new ArrayList();
+  protected ArrayList       annotation_vec= new ArrayList();
 
   protected FieldGenOrMethodGen() {}
 
@@ -100,16 +105,19 @@ public abstract class FieldGenOrMethodGen extends AccessFlags
    * @param a attribute to be added
    */
   public void addAttribute(Attribute a) { attribute_vec.add(a); }
+  public void addAnnotation(AnnotationGen ag) { annotation_vec.add(ag);}
 
   /**
    * Remove an attribute.
    */
   public void removeAttribute(Attribute a) { attribute_vec.remove(a); }
+  public void removeAnnotation(AnnotationGen ag) { annotation_vec.remove(ag);}
 
   /**
    * Remove all attributes.
    */
   public void removeAttributes() { attribute_vec.clear(); }
+  public void removeAnnotations(){ annotation_vec.clear();}
    
   /**
    * @return all attributes of this method.
@@ -118,6 +126,12 @@ public abstract class FieldGenOrMethodGen extends AccessFlags
     Attribute[] attributes = new Attribute[attribute_vec.size()];
     attribute_vec.toArray(attributes);
     return attributes;
+  }
+  
+  public AnnotationGen[] getAnnotations() {
+  	AnnotationGen[] annotations = new AnnotationGen[annotation_vec.size()];
+  	annotation_vec.toArray(annotations);
+  	return annotations;
   }
 
   /** @return signature of method/field.

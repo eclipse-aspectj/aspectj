@@ -54,30 +54,19 @@ package org.aspectj.apache.bcel.verifier.structurals;
  * <http://www.apache.org/>.
  */
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Vector;
-
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.Repository;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.generic.ConstantPoolGen;
-import org.aspectj.apache.bcel.generic.InstructionHandle;
-import org.aspectj.apache.bcel.generic.JsrInstruction;
-import org.aspectj.apache.bcel.generic.MethodGen;
-import org.aspectj.apache.bcel.generic.ObjectType;
-import org.aspectj.apache.bcel.generic.RET;
-import org.aspectj.apache.bcel.generic.ReturnInstruction;
-import org.aspectj.apache.bcel.generic.ReturnaddressType;
-import org.aspectj.apache.bcel.generic.Type;
-import org.aspectj.apache.bcel.verifier.PassVerifier;
-import org.aspectj.apache.bcel.verifier.VerificationResult;
-import org.aspectj.apache.bcel.verifier.Verifier;
-import org.aspectj.apache.bcel.verifier.exc.AssertionViolatedException;
-import org.aspectj.apache.bcel.verifier.exc.VerifierConstraintViolatedException;
+import org.aspectj.apache.bcel.classfile.tests.*;
+import org.aspectj.apache.bcel.generic.*;
+import org.aspectj.apache.bcel.verifier.*;
+import org.aspectj.apache.bcel.verifier.statics.*;
+import org.aspectj.apache.bcel.verifier.exc.*;
 
 /**
  * This PassVerifier verifies a method of class file according to pass 3,
@@ -86,7 +75,7 @@ import org.aspectj.apache.bcel.verifier.exc.VerifierConstraintViolatedException;
  * More detailed information is to be found at the do_verify() method's
  * documentation. 
  *
- * @version $Id: Pass3bVerifier.java,v 1.2 2004/11/18 15:07:05 aclement Exp $
+ * @version $Id: Pass3bVerifier.java,v 1.3 2004/11/19 16:45:19 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #do_verify()
  */
@@ -332,11 +321,11 @@ public final class Pass3bVerifier extends PassVerifier{
 				Frame f = new Frame(mg.getMaxLocals(),mg.getMaxStack());
 				if ( !mg.isStatic() ){
 					if (mg.getName().equals(Constants.CONSTRUCTOR_NAME)){
-						Frame._this = new UninitializedObjectType(new ObjectType(jc.getClassName()));
-						f.getLocals().set(0, Frame._this);
+						f._this = new UninitializedObjectType(new ObjectType(jc.getClassName()));
+						f.getLocals().set(0, f._this);
 					}
 					else{
-						Frame._this = null;
+						f._this = null;
 						f.getLocals().set(0, new ObjectType(jc.getClassName()));
 					}
 				}

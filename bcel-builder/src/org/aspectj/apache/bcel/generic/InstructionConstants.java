@@ -70,7 +70,7 @@ import org.aspectj.apache.bcel.Constants;
  * The Instructions can also accessed directly under their names, so
  * it's possible to write il.append(Instruction.ICONST_0);
  *
- * @version $Id: InstructionConstants.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: InstructionConstants.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface InstructionConstants {

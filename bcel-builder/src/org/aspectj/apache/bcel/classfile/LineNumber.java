@@ -64,7 +64,7 @@ import java.io.Serializable;
  * the source that corresponds to a relative address in the byte code. This
  * is used for debugging purposes.
  *
- * @version $Id: LineNumber.java,v 1.2 2004/11/18 15:07:05 aclement Exp $
+ * @version $Id: LineNumber.java,v 1.3 2004/11/19 16:45:18 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     LineNumberTable
  */

@@ -53,24 +53,38 @@ package org.aspectj.apache.bcel.classfile;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
 import org.aspectj.apache.bcel.generic.Type;
-import java.io.*;
 
 /**
  * This class represents the method info structure, i.e., the representation 
  * for a method in the class. See JVM specification for details.
  * A method has access flags, a name, a signature and a number of attributes.
  *
- * @version $Id: Method.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: Method.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class Method extends FieldOrMethod {
+	
+  private boolean parameterAnnotationsOutOfDate;
+  private RuntimeVisibleParameterAnnotations parameterAnnotationsVis; // annotations on parameters of this method
+  private RuntimeInvisibleParameterAnnotations parameterAnnotationsInvis;
+
   /**
    * Empty constructor, all attributes have to be defined via `setXXX'
    * methods. Use at your own risk.
    */
-  public Method() {}
+  public Method() {
+  	parameterAnnotationsOutOfDate = true;
+  }
 
   /**
    * Initialize from another object. Note that both objects use the same
@@ -78,6 +92,7 @@ public final class Method extends FieldOrMethod {
    */
   public Method(Method c) {
     super(c);
+    parameterAnnotationsOutOfDate = true;
   }
 
   /**
@@ -90,6 +105,7 @@ public final class Method extends FieldOrMethod {
     throws IOException, ClassFormatException
   {
     super(file, constant_pool);
+    parameterAnnotationsOutOfDate = true;
   }
 
   /**
@@ -103,6 +119,7 @@ public final class Method extends FieldOrMethod {
 		Attribute[] attributes, ConstantPool constant_pool)
   {
     super(access_flags, name_index, signature_index, attributes, constant_pool);
+    parameterAnnotationsOutOfDate = true;
   }
 
   /**
@@ -114,6 +131,11 @@ public final class Method extends FieldOrMethod {
    */
   public void accept(Visitor v) {
     v.visitMethod(this);
+  }
+  
+  public void setAttributes(Attribute[] attributes) { 
+    parameterAnnotationsOutOfDate = true;
+    super.setAttributes(attributes);
   }
 
   /**
@@ -225,4 +247,37 @@ public final class Method extends FieldOrMethod {
   public Type[] getArgumentTypes() {
     return Type.getArgumentTypes(getSignature());
   }
+  
+  private void ensureParameterAnnotationsUnpacked() {
+  	if (parameterAnnotationsOutOfDate) { 
+  		// Find attributes that contain annotation data
+  		Attribute[] attrs = getAttributes();
+  		List accumulatedAnnotations = new ArrayList();
+  		
+  		for (int i = 0; i < attrs.length; i++) {
+			Attribute attribute = attrs[i];
+			if (attribute instanceof RuntimeVisibleParameterAnnotations) {				
+				parameterAnnotationsVis = (RuntimeVisibleParameterAnnotations)attribute;
+			}
+			if (attribute instanceof RuntimeInvisibleParameterAnnotations) {				
+				parameterAnnotationsInvis = (RuntimeInvisibleParameterAnnotations)attribute;
+			}
+		}
+  		parameterAnnotationsOutOfDate = false;
+  	}
+  }
+
+  public Annotation[] getAnnotationsOnParameter(int i) {
+  	ensureParameterAnnotationsUnpacked();
+  	
+  	Annotation[] visibleOnes = new Annotation[0];
+  	if (parameterAnnotationsVis!=null) visibleOnes = parameterAnnotationsVis.getAnnotationsOnParameter(i);
+  	Annotation[] invisibleOnes = new Annotation[0];
+  	if (parameterAnnotationsInvis!=null) invisibleOnes = parameterAnnotationsInvis.getAnnotationsOnParameter(i);
+  	Annotation[] complete = new Annotation[visibleOnes.length+invisibleOnes.length];
+  	System.arraycopy(visibleOnes,0,complete,0,visibleOnes.length);
+  	System.arraycopy(invisibleOnes,0,complete,visibleOnes.length,invisibleOnes.length);
+    return complete;
+  }
+    
 }

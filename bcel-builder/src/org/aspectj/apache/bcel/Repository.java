@@ -66,18 +66,16 @@ import java.io.*;
  * @see org.aspectj.apache.bcel.util.Repository
  * @see org.aspectj.apache.bcel.util.SyntheticRepository
  *
- * @version $Id: Repository.java,v 1.2 2004/11/18 16:00:19 aclement Exp $
+ * @version $Id: Repository.java,v 1.3 2004/11/19 16:45:19 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class Repository {
-  private static org.aspectj.apache.bcel.util.Repository _repository =
-  	null;
+  private static org.aspectj.apache.bcel.util.Repository _repository =  null;
 
   /** @return currently used repository instance
    */
   public static org.aspectj.apache.bcel.util.Repository getRepository() {
-  	if (_repository == null) _repository =     SyntheticRepository.getInstance();
-
+  	if (_repository == null) _repository = SyntheticRepository.getInstance();
     return _repository;
   }
 
@@ -127,7 +125,7 @@ public abstract class Repository {
   /** Clear the repository.
    */
   public static void clearCache() {
-  	getRepository().clear();
+    getRepository().clear();
   }
 
   /**
@@ -145,14 +143,14 @@ public abstract class Repository {
    * Remove class with given (fully qualified) name from repository.
    */
   public static void removeClass(String clazz) {
-  	getRepository().removeClass(getRepository().findClass(clazz));
+    getRepository().removeClass(getRepository().findClass(clazz));
   }
 
   /**
    * Remove given class from repository.
    */
   public static void removeClass(JavaClass clazz) {
-  	getRepository().removeClass(clazz);
+    getRepository().removeClass(clazz);
   }
 
   /**

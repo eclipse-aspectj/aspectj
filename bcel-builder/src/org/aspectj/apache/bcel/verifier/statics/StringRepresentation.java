@@ -54,7 +54,40 @@ package org.aspectj.apache.bcel.verifier.statics;
  * <http://www.apache.org/>.
  */
 
-import org.aspectj.apache.bcel.classfile.*;
+import org.aspectj.apache.bcel.classfile.Code;
+import org.aspectj.apache.bcel.classfile.CodeException;
+import org.aspectj.apache.bcel.classfile.ConstantClass;
+import org.aspectj.apache.bcel.classfile.ConstantDouble;
+import org.aspectj.apache.bcel.classfile.ConstantFieldref;
+import org.aspectj.apache.bcel.classfile.ConstantFloat;
+import org.aspectj.apache.bcel.classfile.ConstantInteger;
+import org.aspectj.apache.bcel.classfile.ConstantInterfaceMethodref;
+import org.aspectj.apache.bcel.classfile.ConstantLong;
+import org.aspectj.apache.bcel.classfile.ConstantMethodref;
+import org.aspectj.apache.bcel.classfile.ConstantNameAndType;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.ConstantString;
+import org.aspectj.apache.bcel.classfile.ConstantUtf8;
+import org.aspectj.apache.bcel.classfile.ConstantValue;
+import org.aspectj.apache.bcel.classfile.Deprecated;
+import org.aspectj.apache.bcel.classfile.ExceptionTable;
+import org.aspectj.apache.bcel.classfile.Field;
+import org.aspectj.apache.bcel.classfile.InnerClass;
+import org.aspectj.apache.bcel.classfile.InnerClasses;
+import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.LineNumber;
+import org.aspectj.apache.bcel.classfile.LineNumberTable;
+import org.aspectj.apache.bcel.classfile.LocalVariable;
+import org.aspectj.apache.bcel.classfile.LocalVariableTable;
+import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.Node;
+import org.aspectj.apache.bcel.classfile.Signature;
+import org.aspectj.apache.bcel.classfile.SourceFile;
+import org.aspectj.apache.bcel.classfile.StackMap;
+import org.aspectj.apache.bcel.classfile.Synthetic;
+import org.aspectj.apache.bcel.classfile.Unknown;
+import org.aspectj.apache.bcel.classfile.Visitor;
+import org.aspectj.apache.bcel.classfile.tests.*;
 import org.aspectj.apache.bcel.verifier.exc.*;
 
 /**
@@ -69,7 +102,7 @@ import org.aspectj.apache.bcel.verifier.exc.*;
  * Note that this class also serves as a placeholder for more sophisticated message
  * handling in future versions of JustIce.
  * 
- * @version $Id: StringRepresentation.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: StringRepresentation.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class StringRepresentation extends org.aspectj.apache.bcel.classfile.EmptyVisitor implements Visitor{

@@ -57,7 +57,7 @@ package org.aspectj.apache.bcel;
 /**
  * Constants for the project, mostly defined in the JVM specification.
  *
- * @version $Id: Constants.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: Constants.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface Constants {
@@ -96,6 +96,12 @@ public interface Constants {
   public final static short ACC_INTERFACE    = 0x0200;
   public final static short ACC_ABSTRACT     = 0x0400;
   public final static short ACC_STRICT       = 0x0800;
+  
+  // J5SUPPORT:
+  public final static short ACC_ANNOTATION   = 0x2000;
+  public final static short ACC_ENUM         = 0x4000;
+  public final static short ACC_BRIDGE       = 0x0040;
+  public final static short ACC_VARARGS      = 0x0080;
 
   // Applies to classes compiled by new compilers only
   public final static short ACC_SUPER        = 0x0020;
@@ -754,16 +760,29 @@ public interface Constants {
   public static final byte ATTR_SYNTHETIC            = 7;
   public static final byte ATTR_DEPRECATED           = 8;
   public static final byte ATTR_PMG                  = 9;
-  public static final byte ATTR_SIGNATURE            = 10;
+  public static final byte ATTR_SIGNATURE            = 10; //J5TODO: Is this the same as a Java5 signature attribute?
   public static final byte ATTR_STACK_MAP            = 11;
-
-  public static final short KNOWN_ATTRIBUTES = 12;
+  
+  // J5SUPPORT:
+  public static final byte ATTR_RUNTIME_VISIBLE_ANNOTATIONS             = 12;
+  public static final byte ATTR_RUNTIME_INVISIBLE_ANNOTATIONS           = 13;
+  public static final byte ATTR_RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS   = 14;
+  public static final byte ATTR_RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS = 15;
+  public static final byte ATTR_LOCAL_VARIABLE_TYPE_TABLE               = 16;
+  public static final byte ATTR_ENCLOSING_METHOD                        = 17;
+  public static final byte ATTR_ANNOTATION_DEFAULT                      = 18;
+  
+  public static final short KNOWN_ATTRIBUTES = 19;
 
   public static final String[] ATTRIBUTE_NAMES = {
     "SourceFile", "ConstantValue", "Code", "Exceptions",
     "LineNumberTable", "LocalVariableTable",
     "InnerClasses", "Synthetic", "Deprecated",
-    "PMGClass", "Signature", "StackMap"
+    "PMGClass", "Signature", "StackMap",
+	// J5SUPPORT:
+	"RuntimeVisibleAnnotations","RuntimeInvisibleAnnotations",
+	"RuntimeVisibleParameterAnnotations","RuntimeInvisibleParameterAnnotations",
+	"LocalVariableTypeTable","EnclosingMethod","AnnotationDefault"
   };
 
   /** Constants used in the StackMap attribute.

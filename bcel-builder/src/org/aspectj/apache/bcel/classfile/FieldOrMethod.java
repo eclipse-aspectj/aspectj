@@ -54,12 +54,17 @@ package org.aspectj.apache.bcel.classfile;
  * <http://www.apache.org/>.
  */
 import  org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
+
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /** 
  * Abstract super class for fields and methods.
  *
- * @version $Id: FieldOrMethod.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: FieldOrMethod.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldOrMethod extends AccessFlags implements Cloneable, Node {
@@ -67,7 +72,12 @@ public abstract class FieldOrMethod extends AccessFlags implements Cloneable, No
   protected int          signature_index; // Points to encoded signature
   protected int          attributes_count;// No. of attributes
   protected Attribute[]  attributes;      // Collection of attributes
+  private   Annotation[] annotations;     // annotations defined on the field or method 
   protected ConstantPool constant_pool;
+  
+
+  // Annotations are collected from certain attributes, don't do it more than necessary!
+  private boolean annotationsOutOfDate = true;
 
   FieldOrMethod() {}
   
@@ -141,7 +151,7 @@ public abstract class FieldOrMethod extends AccessFlags implements Cloneable, No
   /**
    * @param attributes Collection of object attributes.
    */
-  public final void setAttributes(Attribute[] attributes) {
+  public void setAttributes(Attribute[] attributes) {
     this.attributes  = attributes;
     attributes_count = (attributes == null)? 0 : attributes.length;
   }
@@ -219,5 +229,28 @@ public abstract class FieldOrMethod extends AccessFlags implements Cloneable, No
       c.attributes[i] = attributes[i].copy(constant_pool);
 
     return c;
+  }
+  
+  /**
+   * Ensure we have unpacked any attributes that contain annotations.
+   * We don't remove these annotation attributes from the attributes list, they
+   * remain there.
+   */
+  public Annotation[] getAnnotations() {
+  	if (annotationsOutOfDate) { 
+  		// Find attributes that contain annotation data
+  		Attribute[] attrs = getAttributes();
+  		List accumulatedAnnotations = new ArrayList();
+  		for (int i = 0; i < attrs.length; i++) {
+			Attribute attribute = attrs[i];
+			if (attribute instanceof RuntimeAnnotations) {				
+				RuntimeAnnotations runtimeAnnotations = (RuntimeAnnotations)attribute;
+				accumulatedAnnotations.addAll(runtimeAnnotations.getAnnotations());
+			}
+		}
+  		annotations = (Annotation[])accumulatedAnnotations.toArray(new Annotation[]{});
+  		annotationsOutOfDate = false;
+  	}
+  	return annotations;
   }
 }

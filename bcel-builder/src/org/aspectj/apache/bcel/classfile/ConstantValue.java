@@ -62,7 +62,7 @@ import  java.io.*;
  * value, i.e., a default value for initializing a class field.
  * This class is instantiated by the <em>Attribute.readAttribute()</em> method.
  *
- * @version $Id: ConstantValue.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: ConstantValue.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Attribute
  */

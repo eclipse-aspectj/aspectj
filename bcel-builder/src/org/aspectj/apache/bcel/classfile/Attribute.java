@@ -55,6 +55,11 @@ package org.aspectj.apache.bcel.classfile;
  */
 
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
+
 import java.io.*;
 import java.util.HashMap;
 
@@ -66,7 +71,7 @@ import java.util.HashMap;
  * <em>Synthetic</em> attributes are supported. The
  * <em>Unknown</em> attribute stands for non-standard-attributes.
  *
- * @version $Id: Attribute.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: Attribute.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     ConstantValue
  * @see     SourceFile
@@ -158,7 +163,7 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
     int          length;
     byte         tag = Constants.ATTR_UNKNOWN; // Unknown attribute
 
-    // Get class name from constant pool via `name_index' indirection
+    // Get class name from constant pool via 'name_index' indirection
     name_index = (int)file.readUnsignedShort();
     c          = (ConstantUtf8)constant_pool.getConstant(name_index, 
 							 Constants.CONSTANT_Utf8);
@@ -221,11 +226,32 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
     case Constants.ATTR_STACK_MAP:
       return new StackMap(name_index, length, file, constant_pool);
 
+    // J5SUPPORT:
+    case Constants.ATTR_RUNTIME_VISIBLE_ANNOTATIONS:
+      return new RuntimeVisibleAnnotations(name_index,length,file,constant_pool);
+    case Constants.ATTR_RUNTIME_INVISIBLE_ANNOTATIONS:
+      return new RuntimeInvisibleAnnotations(name_index,length,file,constant_pool);
+    case Constants.ATTR_RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS:
+      return new RuntimeVisibleParameterAnnotations(name_index,length,file,constant_pool);
+    case Constants.ATTR_RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS:
+      return new RuntimeInvisibleParameterAnnotations(name_index,length,file,constant_pool);
+    case Constants.ATTR_ANNOTATION_DEFAULT:
+      return new AnnotationDefault(name_index,length,file,constant_pool);
+    case Constants.ATTR_LOCAL_VARIABLE_TYPE_TABLE:
+      return new LocalVariableTypeTable(name_index,length,file,constant_pool);
+    case Constants.ATTR_ENCLOSING_METHOD:
+      return new EnclosingMethod(name_index,length,file,constant_pool);
+    
     default: // Never reached
       throw new IllegalStateException("Ooops! default case reached.");
     }
   }    
 
+  public String getName() {
+    ConstantUtf8 c = 
+      (ConstantUtf8)constant_pool.getConstant(name_index,Constants.CONSTANT_Utf8);
+    return c.getBytes();
+  }
   /**
    * @return Length of attribute field in bytes.
    */  

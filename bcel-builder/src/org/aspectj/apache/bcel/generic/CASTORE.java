@@ -58,7 +58,7 @@ package org.aspectj.apache.bcel.generic;
  * CASTORE -  Store into char array
  * <PRE>Stack: ..., arrayref, index, value -&gt; ...</PRE>
  *
- * @version $Id: CASTORE.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: CASTORE.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class CASTORE extends ArrayInstruction implements StackConsumer {

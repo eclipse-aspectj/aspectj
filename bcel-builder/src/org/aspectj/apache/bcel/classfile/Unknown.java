@@ -69,7 +69,7 @@ import java.util.*;
  * org.aspectj.apache.bcel.classfile.AttributeReader)">Attribute.addAttributeReader</a>.
 
  *
- * @version $Id: Unknown.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: Unknown.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
  * @see org.aspectj.apache.bcel.classfile.Attribute
  * @see org.aspectj.apache.bcel.classfile.AttributeReader
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
@@ -170,7 +170,7 @@ public final class Unknown extends Attribute {
   /**
    * @return name of attribute.
    */  
-  public final String getName() { return name; }    
+  public String getName() { return name; }    
 
   /**
    * @param bytes.

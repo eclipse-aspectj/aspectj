@@ -54,9 +54,27 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Stack;
+
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.classfile.*;
-import java.util.*;
+import org.aspectj.apache.bcel.classfile.Attribute;
+import org.aspectj.apache.bcel.classfile.Code;
+import org.aspectj.apache.bcel.classfile.CodeException;
+import org.aspectj.apache.bcel.classfile.ExceptionTable;
+import org.aspectj.apache.bcel.classfile.LineNumber;
+import org.aspectj.apache.bcel.classfile.LineNumberTable;
+import org.aspectj.apache.bcel.classfile.LocalVariable;
+import org.aspectj.apache.bcel.classfile.LocalVariableTable;
+import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.Utility;
+import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeParameterAnnotations;
+import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 
 /** 
  * Template class for building up a method. This is done by defining exception
@@ -68,7 +86,7 @@ import java.util.*;
  * use the `removeNOPs' method to get rid off them.
  * The resulting method object can be obtained via the `getMethod()' method.
  *
- * @version $Id: MethodGen.java,v 1.1 2004/11/18 14:48:12 aclement Exp $
+ * @version $Id: MethodGen.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author  <A HREF="http://www.vmeng.com/beard">Patrick C. Beard</A> [setMaxStack()]
  * @see     InstructionList
@@ -88,6 +106,9 @@ public class MethodGen extends FieldGenOrMethodGen {
   private ArrayList       exception_vec   = new ArrayList();
   private ArrayList       throws_vec      = new ArrayList();
   private ArrayList       code_attrs_vec  = new ArrayList();
+  private List[] param_annotations; // Array of lists containing AnnotationGen objects
+  private boolean hasParameterAnnotations = false;
+  private boolean haveUnpackedParameterAnnotations = false;
 
   /**
    * Declare method. If the method is non-static the constructor
@@ -262,8 +283,16 @@ public class MethodGen extends FieldGenOrMethodGen {
 	String[] names = ((ExceptionTable)a).getExceptionNames();
 	for(int j=0; j < names.length; j++)
 	  addException(names[j]);
-      } else
-	addAttribute(a);
+      } else if (a instanceof RuntimeAnnotations) {
+		RuntimeAnnotations runtimeAnnotations = (RuntimeAnnotations)a;
+		List l = runtimeAnnotations.getAnnotations();
+		for (Iterator it = l.iterator(); it.hasNext();) {
+			Annotation element = (Annotation) it.next();
+			addAnnotation(new AnnotationGen(element,cp));
+		}
+      } else {
+      	addAttribute(a);
+      }
     }
   }
 
@@ -576,6 +605,25 @@ public class MethodGen extends FieldGenOrMethodGen {
    */
   public void addCodeAttribute(Attribute a) { code_attrs_vec.add(a); }
 
+  public void addAnnotationsAsAttribute(ConstantPoolGen cp) {
+  	Attribute[] attrs = Utility.getAnnotationAttributes(cp,annotation_vec);
+  	if (attrs!=null) {
+      for (int i = 0; i < attrs.length; i++) {
+		  addAttribute(attrs[i]);
+	  }
+  	}
+  }
+  
+  public void addParameterAnnotationsAsAttribute(ConstantPoolGen cp) {
+  	if (!hasParameterAnnotations) return;
+  	Attribute[] attrs = Utility.getParameterAnnotationAttributes(cp,param_annotations);
+  	if (attrs!=null) {
+      for (int i = 0; i < attrs.length; i++) {
+		  addAttribute(attrs[i]);
+	  }
+  	}
+  }
+  
   /**
    * Remove a code attribute.
    */
@@ -617,6 +665,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 
     LineNumberTable    lnt = null;
     LocalVariableTable lvt = null;
+    //J5TODO: LocalVariableTypeTable support!
 
     /* Create LocalVariableTable and LineNumberTable attributes (for debuggers, e.g.)
      */
@@ -643,10 +692,9 @@ public class MethodGen extends FieldGenOrMethodGen {
       // Remove any stale code attribute
       Attribute[] attributes = getAttributes();
       for(int i=0; i < attributes.length; i++) {
-	Attribute a = attributes[i];
-
-	if(a instanceof Code)
-	  removeAttribute(a);
+	    Attribute a = attributes[i];
+	    if(a instanceof Code)
+	      removeAttribute(a);
       }
 
       code = new Code(cp.addUtf8("Code"),
@@ -661,6 +709,10 @@ public class MethodGen extends FieldGenOrMethodGen {
       addAttribute(code);
     }
 
+    
+    addAnnotationsAsAttribute(cp);
+    addParameterAnnotationsAsAttribute(cp);
+    
     ExceptionTable et = null;
     
     if(throws_vec.size() > 0)
@@ -674,7 +726,7 @@ public class MethodGen extends FieldGenOrMethodGen {
     if(lnt != null)  removeCodeAttribute(lnt);
     if(code != null) removeAttribute(code);
     if(et != null)   removeAttribute(et);
-
+//J5TODO: Remove the annotation attributes that may have been added
     return m;
   }
 
@@ -971,5 +1023,83 @@ public class MethodGen extends FieldGenOrMethodGen {
     }
 
     return mg;
+  }
+  
+  //J5TODO: Should param_annotations be an array of arrays? Rather than an array of lists, this
+  // is more likely to suggest to the caller it is readonly (which a List does not). 
+  /**
+   * Return a list of AnnotationGen objects representing parameter annotations
+   */
+  public List getAnnotationsOnParameter(int i) {
+  	ensureExistingParameterAnnotationsUnpacked();
+  	if (!hasParameterAnnotations || i>arg_types.length) return null;
+  	return param_annotations[i];
+  }
+  
+  /** 
+   * Goes through the attributes on the method and identifies any that are RuntimeParameterAnnotations, 
+   * extracting their contents and storing them as parameter annotations.  There are two kinds of
+   * parameter annotation - visible and invisible.  Once they have been unpacked, these attributes are
+   * deleted.  (The annotations will be rebuilt as attributes when someone builds a Method object out
+   * of this MethodGen object).
+   */
+  private void ensureExistingParameterAnnotationsUnpacked() { 
+  	if (haveUnpackedParameterAnnotations) return;
+  	// Find attributes that contain parameter annotation data
+  	Attribute[] attrs = getAttributes();
+  	RuntimeParameterAnnotations paramAnnVisAttr = null;
+  	RuntimeParameterAnnotations paramAnnInvisAttr=null;
+  	List accumulatedAnnotations = new ArrayList();
+  	for (int i = 0; i < attrs.length; i++) {
+		Attribute attribute = attrs[i];
+		if (attribute instanceof RuntimeParameterAnnotations) {	
+			
+			// Initialize param_annotations
+			if (!hasParameterAnnotations) {
+				param_annotations = new List[arg_types.length];
+				for (int j=0;j<arg_types.length;j++) param_annotations[j]=new ArrayList();
+			}
+			
+			hasParameterAnnotations = true;
+			RuntimeParameterAnnotations rpa = (RuntimeParameterAnnotations)attribute;
+			if (rpa.areVisible()) paramAnnVisAttr = rpa;
+			else                  paramAnnInvisAttr=rpa;
+			for (int j=0; j<arg_types.length; j++) {
+			  // This returns Annotation[] ...
+			  Annotation[] immutableArray = rpa.getAnnotationsOnParameter(j);
+			  // ... which needs transforming into an AnnotationGen[] ...
+			  List mutable = makeMutableVersion(immutableArray);
+			  // ... then add these to any we already know about
+			  param_annotations[j].addAll(mutable);
+			}
+		}
+	}
+  	if (paramAnnVisAttr != null)  removeAttribute(paramAnnVisAttr);
+  	if (paramAnnInvisAttr!=null)  removeAttribute(paramAnnInvisAttr);
+  	haveUnpackedParameterAnnotations = true;
+  }
+  
+  private List /*AnnotationGen*/ makeMutableVersion(Annotation[] mutableArray) {
+  	List result = new ArrayList();
+  	for (int i = 0; i < mutableArray.length; i++) {
+		result.add(new AnnotationGen(mutableArray[i],getConstantPool()));
+	}
+  	return result;
+  }
+
+  public void addParameterAnnotation(int parameterIndex, AnnotationGen annotation) {
+  	ensureExistingParameterAnnotationsUnpacked();
+  	if (!hasParameterAnnotations) {
+  		param_annotations = new List[arg_types.length];
+  		hasParameterAnnotations = true;
+  	}
+  	List existingAnnotations = param_annotations[parameterIndex];
+  	if (existingAnnotations != null) {
+  		existingAnnotations.add(annotation);
+  	} else {
+  		List l = new ArrayList();
+  		l.add(annotation);
+  		param_annotations[parameterIndex] = l;
+  	}
   }          
 }

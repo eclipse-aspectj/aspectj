@@ -58,9 +58,13 @@ import  org.aspectj.apache.bcel.Constants;
 import  org.aspectj.apache.bcel.util.SyntheticRepository;
 import  org.aspectj.apache.bcel.util.ClassVector;
 import  org.aspectj.apache.bcel.util.ClassQueue;
+import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
 import  org.aspectj.apache.bcel.generic.Type;
 
 import  java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import  java.util.StringTokenizer;
 
 /**
@@ -73,7 +77,7 @@ import  java.util.StringTokenizer;
  * class file.  Those interested in programatically generating classes
  * should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
 
- * @version $Id: JavaClass.java,v 1.2 2004/11/18 16:00:19 aclement Exp $
+ * @version $Id: JavaClass.java,v 1.3 2004/11/19 16:45:18 aclement Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -92,6 +96,7 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
   private Field[]      fields;        // Fields, i.e., variables of class
   private Method[]     methods;       // methods defined in the class
   private Attribute[]  attributes;    // attributes defined in the class
+  private Annotation[] annotations;   // annotations defined on the class
   private byte         source = HEAP; // Generated in memory
 
   public static final byte HEAP = 1;
@@ -101,12 +106,16 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
   static boolean debug = false; // Debugging on/off
   static char    sep   = '/';   // directory separator
 
+  // Annotations are collected from certain attributes, don't do it more than necessary!
+  private boolean annotationsOutOfDate = true;
+
   /**
    * In cases where we go ahead and create something,
    * use the default SyntheticRepository, because we
    * don't know any better.
    */
   private transient org.aspectj.apache.bcel.util.Repository repository = null;
+   
 
   /**
    * Constructor gets all contents as arguments.
@@ -159,6 +168,7 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
     this.fields                = fields;
     this.methods               = methods;
     this.attributes            = attributes;
+    annotationsOutOfDate       = true;
     this.source                = source;
 
     // Get source file name if available
@@ -352,6 +362,23 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
    */
   public Attribute[] getAttributes() { return attributes; }
 
+  public Annotation[] getAnnotations() {
+  	if (annotationsOutOfDate) { 
+  		// Find attributes that contain annotation data
+  		Attribute[] attrs = getAttributes();
+  		List accumulatedAnnotations = new ArrayList();
+  		for (int i = 0; i < attrs.length; i++) {
+			Attribute attribute = attrs[i];
+			if (attribute instanceof RuntimeAnnotations) {				
+				RuntimeAnnotations runtimeAnnotations = (RuntimeAnnotations)attribute;
+				accumulatedAnnotations.addAll(runtimeAnnotations.getAnnotations());
+			}
+		}
+  		annotations = (Annotation[])accumulatedAnnotations.toArray(new Annotation[]{});
+  		annotationsOutOfDate = false;
+  	}
+  	return annotations;
+  }
   /**
    * @return Class name.
    */
@@ -463,6 +490,7 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
    */
   public void setAttributes(Attribute[] attributes) {
     this.attributes = attributes;
+    annotationsOutOfDate       = true;
   }    
 
   /**
@@ -595,6 +623,12 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
       for(int i=0; i < attributes.length; i++)
 	buf.append(indent(attributes[i]));
     }
+    
+    if (annotations!=null && annotations.length>0) {
+    	buf.append("\nAnnotation(s):\n");
+    	for (int i=0; i<annotations.length; i++) 
+    		buf.append(indent(annotations[i]));
+    }
 
     if(fields.length > 0) {
       buf.append("\n" + fields.length + " fields:\n");
@@ -646,6 +680,10 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
     c.attributes = new Attribute[attributes.length];
     for(int i=0; i < attributes.length; i++)
       c.attributes[i] = attributes[i].copy(c.constant_pool);
+      
+    //J5SUPPORT: As the annotations exist as attributes against the class, copying
+    // the attributes will copy the annotations across, so we don't have to
+    // also copy them individually.
 
     return c;
   }
@@ -656,6 +694,22 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
 
   public final boolean isClass() {
     return (access_flags & Constants.ACC_INTERFACE) == 0;
+  }
+  
+  // J5SUPPORT:
+  /** 
+   * Returns true if this class represents an annotation, i.e. it was a
+   * 'public @interface blahblah' declaration
+   */
+  public final boolean isAnnotation() {
+  	return (access_flags & Constants.ACC_ANNOTATION) != 0;
+  }
+  
+  /**
+   * Returns true if this class represents an enum type
+   */
+  public final boolean isEnum() {
+  	return (access_flags & Constants.ACC_ENUM) != 0;
   }
 
   /** @return returns either HEAP (generated), FILE, or ZIP

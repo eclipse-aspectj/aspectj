@@ -55,11 +55,15 @@ package org.aspectj.apache.bcel.generic;
  */
 
 import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.ConstantUtf8;
+import org.aspectj.apache.bcel.classfile.ConstantNameAndType;
+import org.aspectj.apache.bcel.classfile.ConstantCP;
+import org.aspectj.apache.bcel.classfile.tests.*;
 
 /**
  * Super class for the GET/PUTxxx family of instructions.
  *
- * @version $Id: FieldInstruction.java,v 1.2 2004/11/18 15:07:05 aclement Exp $
+ * @version $Id: FieldInstruction.java,v 1.3 2004/11/19 16:45:19 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldInstruction extends FieldOrMethod

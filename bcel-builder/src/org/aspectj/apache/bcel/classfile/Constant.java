@@ -62,7 +62,7 @@ import  java.io.*;
  * in the constant pool of a class file. The classes keep closely to
  * the JVM specification.
  *
- * @version $Id: Constant.java,v 1.1 2004/11/18 14:48:11 aclement Exp $
+ * @version $Id: Constant.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class Constant implements Cloneable, Node, Serializable {
