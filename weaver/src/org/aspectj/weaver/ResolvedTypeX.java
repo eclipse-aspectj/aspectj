@@ -455,6 +455,20 @@ public abstract class ResolvedTypeX extends TypeX {
     	return false;
     }
     
+    /**
+     * Note: Only overridden by Name subtype.
+     */
+    public boolean isEnum() {
+    	return false;
+    }
+    
+    /**
+     * Note: Only overridden by Name subtype.
+     */
+    public boolean isAnnotation() {
+    	return false;
+    }
+    
     
     public boolean isSynthetic() {
     	return signature.indexOf("$ajc") != -1;
@@ -548,6 +562,14 @@ public abstract class ResolvedTypeX extends TypeX {
 	    
 	    public boolean isAspect() {
 	    	return delegate.isAspect();
+	    }
+	    
+	    public boolean isEnum() {
+	    	return delegate.isEnum();
+	    }
+	    
+	    public boolean isAnnotation() {
+	    	return delegate.isAnnotation();
 	    }
 	     
         public final boolean needsNoConversionFrom(TypeX o) {
@@ -692,6 +714,8 @@ public abstract class ResolvedTypeX extends TypeX {
 	    
 	    public abstract boolean isAspect();
 	    public abstract boolean isInterface();
+	    public abstract boolean isEnum();
+	    public abstract boolean isAnnotation();
 
 		public abstract ResolvedMember[] getDeclaredFields();
 

@@ -413,6 +413,20 @@ public class TypeX {
     public final boolean isClass(World world) {
         return world.resolve(this).isClass();
     }
+    
+    /**
+     * Determines if this class represents an enum type.
+     */
+    public final boolean isEnum(World world) {
+    	return world.resolve(this).isEnum();
+    }
+    
+    /**
+     * Determines if this class represents an annotation type.
+     */
+    public final boolean isAnnotation(World world) {
+    	return world.resolve(this).isAnnotation();
+    }
 
 
     /**
