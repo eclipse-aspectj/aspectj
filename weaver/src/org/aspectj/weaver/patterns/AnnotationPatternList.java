@@ -61,7 +61,7 @@ public class AnnotationPatternList extends PatternNode {
 	
 	public FuzzyBoolean matches(ResolvedTypeX[] someArgs) {
 		// do some quick length tests first
-		int numArgsMatchedByEllipsis = (someArgs.length + ellipsisCount) - typePatterns.length;
+  		int numArgsMatchedByEllipsis = (someArgs.length + ellipsisCount) - typePatterns.length;
 		if (numArgsMatchedByEllipsis < 0) return FuzzyBoolean.NO;
 		if ((numArgsMatchedByEllipsis > 0) && (ellipsisCount == 0)) {
 			return FuzzyBoolean.NO;
@@ -81,7 +81,7 @@ public class AnnotationPatternList extends PatternNode {
 				ExactAnnotationTypePattern ap = (ExactAnnotationTypePattern)typePatterns[i];
 				FuzzyBoolean matches = ap.matches(someArgs[argsIndex]);
 				if (matches == FuzzyBoolean.NO) {
-					return FuzzyBoolean.NO;
+					return FuzzyBoolean.MAYBE;  // could still match at runtime
 				} else {
 					argsIndex++;
 					ret = ret.and(matches);

@@ -119,7 +119,7 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 				// match the argument type at argsIndex with the ExactAnnotationTypePattern
 				// we know it is exact because nothing else is allowed in args
 				ExactAnnotationTypePattern ap = (ExactAnnotationTypePattern)arguments.get(i);
-				TypeX argType = shadow.getArgType(i);
+				TypeX argType = shadow.getArgType(argsIndex);
 				ResolvedTypeX rArgType = argType.resolve(shadow.getIWorld());
 				if (rArgType == ResolvedTypeX.MISSING) {
 	                  IMessage msg = new Message(
@@ -127,12 +127,14 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 	                    "",IMessage.ERROR,shadow.getSourceLocation(),null,new ISourceLocation[]{getSourceLocation()});
 	            }
 				if (ap.matches(rArgType).alwaysTrue()) {
+					argsIndex++;
 					continue;
 				} else {
 					// we need a test...
 					// TODO: binding
 					ResolvedTypeX rAnnType = ap.annotationType.resolve(shadow.getIWorld());
-					ret = Test.makeAnd(ret,Test.makeHasAnnotation(shadow.getArgVar(i),rAnnType));
+					ret = Test.makeAnd(ret,Test.makeHasAnnotation(shadow.getArgVar(argsIndex),rAnnType));
+					argsIndex++;
 				}				
 			}
 		}   	
