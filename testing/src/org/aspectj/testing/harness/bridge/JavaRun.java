@@ -40,51 +40,23 @@ import java.util.*;
  * - javarun.classpath: a prefix to the run classpath (optional)
  */
 public class JavaRun implements IAjcRun {
-    public static String FORK_KEY = "javarun.fork";
-    public static String JAVA_KEY = "javarun.java";
-    public static String VM_ARGS_KEY = "javarun.vmargs";
-    public static String JAVA_HOME_KEY = "javarun.java.home";
-    public static String BOOTCLASSPATH_KEY = "javarun.bootclasspath";
-    private static final boolean FORK;
-    private static final String JAVA;
-    private static final String JAVA_HOME;
-    private static final String VM_ARGS;
-    static final String BOOTCLASSPATH;
-    static {
-        FORK = (null != getProperty(FORK_KEY));
-        JAVA = getProperty(JAVA_KEY);
-        JAVA_HOME = getProperty(JAVA_HOME_KEY);
-        BOOTCLASSPATH = getProperty(BOOTCLASSPATH_KEY);
-        VM_ARGS = getProperty(VM_ARGS_KEY);
-        try {
-            System.setSecurityManager(RunSecurityManager.ME);
-        } catch (Throwable t) {
-            System.err.println("JavaRun: Security manager set - no System.exit() protection");
-        }
-        
-    }
-    private static String getProperty(String key) {
-        try {
-            return System.getProperty(key);
-        } catch (Throwable t) {
-            return null;
-        }
-    }
 
-    private static void appendClasspath(StringBuffer cp, File[] libs, File[] dirs) {
-        if (!LangUtil.isEmpty(BOOTCLASSPATH)) {
-            cp.append(BOOTCLASSPATH);
-            cp.append(File.pathSeparator);    
+    private static void appendClasspath(StringBuffer cp, Object[] entries) {
+        if (!LangUtil.isEmpty(entries)) {
+            for (int i = 0; i < entries.length; i++) {
+                Object entry = entries[i];
+                if (entry instanceof String) {
+                    cp.append((String) entry);
+                    cp.append(File.pathSeparator);
+                } else if (entry instanceof File) {
+                    String s = FileUtil.getBestPath((File) entry);
+                    if (null != s) {
+                        cp.append(s);
+                        cp.append(File.pathSeparator);
+                    }
+                }
+            }
         }
-        for (int i = 0; i < dirs.length; i++) {
-            cp.append(dirs[i].getAbsolutePath());
-            cp.append(File.pathSeparator);    
-        }
-        for (int i = 0; i < libs.length; i++) {
-            cp.append(libs[i].getAbsolutePath());
-            cp.append(File.pathSeparator);    
-        }
-        // ok to have trailing path separator I guess...
     }
     
     Spec spec;
@@ -100,7 +72,8 @@ public class JavaRun implements IAjcRun {
      * This checks the spec for a class name
      * and checks the sandbox for a readable test source directory,
      * a writable run dir, and (non-null, possibly-empty) lists
-     * of readable classpath dirs and jars.
+     * of readable classpath dirs and jars,
+     * and, if fork is enabled, that java can be read.
 	 * @return true if all checks pass
      * @see org.aspectj.testing.harness.bridge.AjcTest.IAjcRun#setup(File, File)
 	 */
@@ -112,6 +85,8 @@ public class JavaRun implements IAjcRun {
             && validator.canWriteDir(sandbox.runDir, "run dir")
             && validator.canReadFiles(sandbox.getClasspathJars(true, this), "classpath jars")
             && validator.canReadDirs(sandbox.getClasspathDirectories(true, this, true), "classpath dirs")
+            && (!spec.forkSpec.fork
+                    || validator.canRead(spec.forkSpec.java, "java"))
             );            
         
 	}
@@ -131,7 +106,7 @@ public class JavaRun implements IAjcRun {
             File[] libs = sandbox.getClasspathJars(readable, this);
             boolean includeClassesDir = true;
             File[] dirs = sandbox.getClasspathDirectories(readable, this, includeClassesDir);
-            completedNormally = FORK // || spec.fork
+            completedNormally = spec.forkSpec.fork
                 ? runInOtherVM(status, libs, dirs)
                 : runInSameVM(status, libs, dirs);
         } finally {
@@ -211,34 +186,20 @@ public class JavaRun implements IAjcRun {
      * @return
      */
     protected boolean runInOtherVM(IRunStatus status, File[] libs, File[] dirs) {
+        // assert spec.fork;
         ArrayList cmd = new ArrayList();
-        String classpath;
-        {
-            StringBuffer cp = new StringBuffer();
-            if (!LangUtil.isEmpty(BOOTCLASSPATH)) {
-                cp.append(BOOTCLASSPATH);
-                cp.append(File.pathSeparator);
-            }
-            appendClasspath(cp, libs, dirs);
-            classpath = cp.toString();
-        }
-        String java = JAVA;
-        if (null == java) {
-            File jfile = LangUtil.getJavaExecutable(classpath);
-            if (null == jfile) {
-                throw new IllegalStateException("Unable to get java");
-            }
-            java = jfile.getAbsolutePath();
-        } 
-        cmd.add(java);
-        if (null != VM_ARGS) {
-            String[] args = XMLWriter.unflattenList(VM_ARGS);
-            for (int i = 0; i < args.length; i++) {
-                cmd.add(args[i]);
-            }
+        cmd.add(FileUtil.getBestPath(spec.forkSpec.java));
+        if (!LangUtil.isEmpty(spec.forkSpec.vmargs)) {
+            cmd.addAll(Arrays.asList(spec.forkSpec.vmargs));
         }
         cmd.add("-classpath");
-        cmd.add(classpath);
+        {
+            StringBuffer classpath = new StringBuffer();
+            appendClasspath(classpath, spec.forkSpec.bootclasspath);
+            appendClasspath(classpath, dirs);        
+            appendClasspath(classpath, libs);
+            cmd.add(classpath.toString());
+        }
         cmd.add(spec.className);
         cmd.addAll(spec.options);
         String[] command = (String[]) cmd.toArray(new String[0]);
@@ -291,8 +252,8 @@ public class JavaRun implements IAjcRun {
                 }
             };
         controller.init(command, spec.className);
-        if (null != JAVA_HOME) {
-            controller.setEnvp(new String[] {"JAVA_HOME=" + JAVA_HOME});
+        if (null != spec.forkSpec.javaHome) {
+            controller.setEnvp(new String[] {"JAVA_HOME=" + spec.forkSpec.javaHome});
         }
         commandLabel.append(Arrays.asList(controller.getCommand()).toString());
         final ByteArrayOutputStream errSnoop 
@@ -418,11 +379,85 @@ public class JavaRun implements IAjcRun {
         return "JavaRun(" + spec + ")";
 	}
         
+    /**
+     * Struct class for fork attributes and initialization.
+     * This supports defaults for forking using system properties
+     * which will be overridden by any specification.
+     * (It differs from CompilerRun, which supports option 
+     * overriding by passing values as harness arguments.)
+     */
+    public static class ForkSpec {
+        /**
+         * key for system property for default value for forking
+         * (true if set to true)
+         */
+        public static String FORK_KEY = "javarun.fork";
+        public static String JAVA_KEY = "javarun.java";
+        public static String VM_ARGS_KEY = "javarun.vmargs";
+        public static String JAVA_HOME_KEY = "javarun.java.home";
+        public static String BOOTCLASSPATH_KEY = "javarun.bootclasspath";
+        private static final ForkSpec FORK;
+        static {
+            ForkSpec fork  = new ForkSpec();
+            fork.fork = Boolean.getBoolean(FORK_KEY);
+            fork.java = getFile(JAVA_KEY);
+            if (null == fork.java) {
+                fork.java = LangUtil.getJavaExecutable();
+            }
+            fork.javaHome = getFile(JAVA_HOME_KEY);
+            fork.bootclasspath = XMLWriter.unflattenList(getProperty(BOOTCLASSPATH_KEY));
+            fork.vmargs = XMLWriter.unflattenList(getProperty(VM_ARGS_KEY));
+            FORK = fork;
+        }
+        private static File getFile(String key) {
+            String path = getProperty(key);
+            if (null != path) {
+                File result = new File(path);
+                if (result.exists()) {
+                    return result;
+                }
+            }
+            return null;
+        }
+        private static String getProperty(String key) {
+            try {
+                return System.getProperty(key);
+            } catch (Throwable t) {
+                return null;
+            }
+        }
+        private boolean fork;
+        private String[] bootclasspath;
+        private File java;
+        private File javaHome;
+        private String[] vmargs;
+
+        private ForkSpec() {
+            copy(FORK);
+        }
+        private void copy(ForkSpec forkSpec) {
+            if (null != forkSpec) {
+                fork = forkSpec.fork;
+                bootclasspath = forkSpec.bootclasspath;
+                java = forkSpec.java;
+                javaHome = forkSpec.javaHome;
+                vmargs = forkSpec.vmargs;
+            }
+        }
+    }
+    
     /** 
      * Initializer/factory for JavaRun.
-     * The classpath is not here but precalculated in the Sandbox. XXX libs?
+     * The classpath is not here but precalculated in the Sandbox.
      */
     public static class Spec extends AbstractRunSpec {
+        static {
+            try {
+                System.setSecurityManager(RunSecurityManager.ME);
+            } catch (Throwable t) {
+                System.err.println("JavaRun: Security manager set - no System.exit() protection");
+            }
+        }
         public static final String XMLNAME = "run";
         /**
          * skip description, skip sourceLocation, 
@@ -448,9 +483,12 @@ public class JavaRun implements IAjcRun {
         /** if true, report text to error stream as error */
         protected boolean errStreamIsError = true;
         
+        protected final ForkSpec forkSpec;
+        
         public Spec() {
             super(XMLNAME);
             setXMLNames(NAMES);
+            forkSpec = new ForkSpec();
         }
         
         protected void initClone(Spec spec) 
@@ -461,6 +499,7 @@ public class JavaRun implements IAjcRun {
             spec.javaVersion = javaVersion;
             spec.outStreamIsError = outStreamIsError;
             spec.skipTester = skipTester;
+            spec.forkSpec.copy(forkSpec);
         }
         
         public Object clone() throws CloneNotSupportedException {
@@ -494,6 +533,18 @@ public class JavaRun implements IAjcRun {
         /** @param skip if true, then do not set up Tester */
         public void setSkipTester(boolean skip) {
             skipTester = skip;
+        }
+        
+        public void setFork(boolean fork) {
+            forkSpec.fork = fork;
+        }
+        
+        /**
+         * @param vmargs comma-delimited list of arguments for java,
+         * typically -Dname=value,-DanotherName="another value"
+         */
+        public void setVmArgs(String vmargs) {
+            forkSpec.vmargs = XMLWriter.unflattenList(vmargs);
         }
         
         /** override to set dirToken to Sandbox.RUN_DIR */
@@ -676,4 +727,5 @@ public class JavaRun implements IAjcRun {
         }
         
     }
+
 }
