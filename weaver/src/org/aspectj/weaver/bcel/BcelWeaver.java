@@ -900,11 +900,14 @@ public class BcelWeaver implements IWeaver {
         		if (element instanceof BcelAdvice) { // This will stop us incorrectly reporting deow Checkers
                   BcelAdvice ba = (BcelAdvice)element;
                   if (!ba.hasMatchedSomething()) {
-                    Annotation[] anns = ((BcelMethod)ba.getSignature()).getAnnotations();
-                    // Check if they want to suppress the warning on this piece of advice
-               	    if (!Utility.isSuppressing(anns,"adviceDidNotMatch")) {
-                      world.getLint().adviceDidNotMatch.signal(ba.getDeclaringAspect().getNameAsIdentifier(),element.getSourceLocation());
-                    }
+					BcelMethod meth = ((BcelMethod)ba.getSignature());
+					if (meth != null) {
+	                    Annotation[] anns = meth.getAnnotations();
+	                    // Check if they want to suppress the warning on this piece of advice
+	               	    if (!Utility.isSuppressing(anns,"adviceDidNotMatch")) {
+	                      world.getLint().adviceDidNotMatch.signal(ba.getDeclaringAspect().getNameAsIdentifier(),element.getSourceLocation());
+	                    }
+					}
                   }
         		}
         	}

@@ -1,5 +1,6 @@
+package org.xyz.foo;
 import java.util.*;
-public aspect AJDKExamples pertypewithin(org.xyz..*) {
+public aspect AJDKExamples pertypewithin(org.xyz..* && !AJDKExamples) {
 		     
    // use WeakHashMap for auto-garbage collection of keys  	 
    private Map<Object,Boolean> instances = new WeakHashMap<Object,Boolean>();

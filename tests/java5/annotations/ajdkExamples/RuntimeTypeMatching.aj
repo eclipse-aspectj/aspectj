@@ -89,11 +89,10 @@ public aspect RuntimeTypeMatching {
   	before() : insideCriticalMethod(Critical) {
   		Signature sig = thisEnclosingJoinPointStaticPart.getSignature();
   	  	AnnotatedElement declaringTypeAnnotationInfo = sig.getDeclaringType();
-  	  	if (sig instanceof MemberSignature) {
-  	  	  // this must be an initialization, pre-initialization, call, execution, get, or
-  	  	  // set join point.
-  	  	  AnnotatedElement memberAnnotationInfo = ((MemberSignature)sig).getAccessibleObject();
-  	  	  Critical c = memberAnnotationInfo.getAnnotation(Critical.class);
+  	  	if (sig instanceof MethodSignature) {
+  	  	  // this must be a call or execution join point.
+  	  	  Method method = ((MethodSignature)sig).getMethod();
+  	  	  Critical c = method.getAnnotation(Critical.class);
   	  	  System.out.println("Entering critical join point with reflectively obtained priority " + c.priority());
   	  	}
   	}

@@ -1111,14 +1111,16 @@
 
     <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: runtime annotations">
         <compile files="RuntimeTypeMatching.aj" options="-1.5">
+            <message kind="warning" line="121" text="@within(Foo)"/>
             <message kind="warning" line="122" text="@within(Foo)"/>
-            <message kind="warning" line="123" text="@within(Foo)"/>
         </compile>
         <run class="RuntimeTypeMatching">
             <stdout>
               <line text="This information is TOP-SECRET"/>
               <line text="@target(Classified) at call(void A.a())"/>
               <line text="@this(Foo) at execution(void B.b())"/>
+              <line text="Classified data being passed at call(void B.callA(A))"/>
+              <line text="Classified data being passed at execution(void B.callA(A))"/>
               <line text="This information is TOP-SECRET"/>
               <line text="@target(Classified) at call(Class java.lang.Object.getClass())"/>
               <line text="1 @Foo()"/>
@@ -1234,12 +1236,12 @@
 
     <ajc-test dir="java5/pertypewithin/ajdk" title="ajdk: ptw">
         <compile files="AJDKExamples.aj" options="-1.5"/>
-        <run class="AJDKExamples">
+        <run class="org.xyz.foo.AJDKExamples">
             <stdout>
                 <line text="true"/>
                 <line text="true"/>
-                <line text="There are 3 As"/>
-                <line text="There are 2 Bs"/>
+                <line text="There are 2 As"/>
+                <line text="There are 3 Bs"/>
             </stdout>
         </run>
     </ajc-test>

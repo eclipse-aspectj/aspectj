@@ -82,6 +82,7 @@ public class AnnotationPatternList extends PatternNode {
 			} else {
 				// match the argument type at argsIndex with the ExactAnnotationTypePattern
 				// we know it is exact because nothing else is allowed in args
+				if (someArgs[argsIndex].isPrimitive()) return FuzzyBoolean.NO; // can never match
 				ExactAnnotationTypePattern ap = (ExactAnnotationTypePattern)typePatterns[i];
 				FuzzyBoolean matches = ap.matchesRuntimeType(someArgs[argsIndex]);
 				if (matches == FuzzyBoolean.NO) {

@@ -147,7 +147,7 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 					if (ap instanceof BindingAnnotationTypePattern) {
 						BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern)ap;
 						Var annvar = shadow.getArgAnnotationVar(argsIndex,rAnnType);
-						state.set(argsIndex,annvar);
+						state.set(btp.getFormalIndex(),annvar);
 						ret = Test.makeAnd(ret,Test.makeHasAnnotation(shadow.getArgVar(argsIndex),rAnnType));
 						argsIndex++;
 					} else {
