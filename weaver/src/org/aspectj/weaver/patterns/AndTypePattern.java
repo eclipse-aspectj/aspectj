@@ -97,7 +97,24 @@ public class AndTypePattern extends TypePattern {
 	}
 	
 	public String toString() {
-		return "(" + left.toString() + " && " + right.toString() + ")";
+		StringBuffer buff = new StringBuffer();
+		if (annotationPattern != AnnotationTypePattern.ANY) {
+			buff.append('(');
+			if (! (annotationPattern instanceof ExactAnnotationTypePattern )) {
+				buff.append('@');
+			}
+			buff.append(annotationPattern.toString());
+			buff.append(' ');
+		}
+		buff.append('(');
+		buff.append(left.toString());
+		buff.append(" && ");
+		buff.append(right.toString());
+		buff.append(')');
+		if (annotationPattern != AnnotationTypePattern.ANY) {
+			buff.append(')');
+		}
+		return buff.toString();
 	}
 
 }

@@ -79,5 +79,8 @@ public class AndAnnotationTypePattern extends AnnotationTypePattern {
 	public String toString() {
 		return "(" + left.toString() + " && " + right.toString() + ")";
 	}
+	
+	public AnnotationTypePattern getLeft() { return left; }
+	public AnnotationTypePattern getRight() { return right; }
 
 }

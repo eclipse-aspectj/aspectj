@@ -500,6 +500,10 @@ public class WildTypePattern extends TypePattern {
 
     public String toString() {
     	StringBuffer buf = new StringBuffer();
+    	if (annotationPattern != AnnotationTypePattern.ANY) {
+    		buf.append(annotationPattern.toString());
+    		buf.append(' ');
+    	}
     	for (int i=0, len=namePatterns.length; i < len; i++) {
     		NamePattern name = namePatterns[i];
     		if (name == null) {

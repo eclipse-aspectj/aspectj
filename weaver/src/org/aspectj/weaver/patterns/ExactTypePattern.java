@@ -182,8 +182,21 @@ public class ExactTypePattern extends TypePattern {
 	}
 
     public String toString() {
-    	//Thread.currentThread().dumpStack();
-    	return type.toString() + (includeSubtypes ? "+" : "");
+		StringBuffer buff = new StringBuffer();
+		if (annotationPattern != AnnotationTypePattern.ANY) {
+			buff.append('(');
+			if (! (annotationPattern instanceof ExactAnnotationTypePattern )) {
+				buff.append('@');
+			}
+			buff.append(annotationPattern.toString());
+			buff.append(' ');
+		}
+		buff.append(type.toString());
+    	if (includeSubtypes) buff.append('+');
+		if (annotationPattern != AnnotationTypePattern.ANY) {
+			buff.append(')');
+		}
+		return buff.toString();
     }
 	public TypePattern resolveBindings(IScope scope, Bindings bindings, 
     								boolean allowBinding, boolean requireExactType)

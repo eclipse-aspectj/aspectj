@@ -92,6 +92,20 @@ public class NotTypePattern extends TypePattern {
 	}
 
 	public String toString() {
-		return "!" + pattern;
+		StringBuffer buff = new StringBuffer();
+		if (annotationPattern != AnnotationTypePattern.ANY) {
+			buff.append('(');
+			if (! (annotationPattern instanceof ExactAnnotationTypePattern )) {
+				buff.append('@');
+			}
+			buff.append(annotationPattern.toString());
+			buff.append(' ');
+		}
+		buff.append('!');
+		buff.append(pattern);
+		if (annotationPattern != AnnotationTypePattern.ANY) {
+			buff.append(')');
+		}
+		return buff.toString();
 	}
 }

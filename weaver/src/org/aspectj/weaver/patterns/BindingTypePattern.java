@@ -74,6 +74,6 @@ public class BindingTypePattern extends ExactTypePattern implements BindingPatte
 
     public String toString() {
     	//Thread.currentThread().dumpStack();
-    	return "BindingTypePattern(" + type.toString() + ", " + formalIndex + ")";
+    	return "BindingTypePattern(" + super.toString() + ", " + formalIndex + ")";
     }
 }

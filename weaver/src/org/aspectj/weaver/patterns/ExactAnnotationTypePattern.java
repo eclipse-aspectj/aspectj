@@ -27,6 +27,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 
 	protected TypeX annotationType;
 	protected String formalName;
+	private boolean resolved = true;
 	
 	/**
 	 * 
@@ -37,6 +38,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 
 	public ExactAnnotationTypePattern(String formalName) {
 		this.formalName = formalName;
+		this.resolved = false;
 		// will be turned into BindingAnnotationTypePattern during resolution
 	}
 	
@@ -51,6 +53,8 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	 */
 	public AnnotationTypePattern resolveBindings(IScope scope,
 			Bindings bindings, boolean allowBinding) {
+		if (resolved) return this;
+		resolved = true;
 		if (formalName != null) {
 			FormalBinding formalBinding = scope.lookupFormal(formalName);
 			if (formalBinding != null) {
@@ -85,7 +89,12 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(AnnotationTypePattern.EXACT);
 		s.writeByte(VERSION);
-		annotationType.write(s);
+		s.writeBoolean(resolved);
+		if (resolved) {
+			annotationType.write(s);
+		} else {
+			s.writeUTF(formalName);
+		}
 		writeLocation(s);
 	}
 
@@ -95,7 +104,12 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		if (version > VERSION) {
 			throw new BCException("ExactAnnotationTypePattern was written by a newer version of AspectJ");
 		}
-		ret = new ExactAnnotationTypePattern(TypeX.read(s));
+		boolean isResolved = s.readBoolean();
+		if (isResolved) {
+			ret = new ExactAnnotationTypePattern(TypeX.read(s));			
+		} else {
+			ret = new ExactAnnotationTypePattern(s.readUTF());
+		}
 		ret.readLocation(context,s);
 		return ret;
 	}

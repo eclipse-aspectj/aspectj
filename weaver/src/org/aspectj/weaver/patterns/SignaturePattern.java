@@ -79,6 +79,9 @@ public class SignaturePattern extends PatternNode {
 		if (throwsPattern != null) {
 			throwsPattern = throwsPattern.resolveBindings(scope, bindings);
 		}
+		if (annotationPattern != null) {
+			annotationPattern = annotationPattern.resolveBindings(scope,bindings,false);
+		}
 		
     	return this;
     }
@@ -114,6 +117,11 @@ public class SignaturePattern extends PatternNode {
 	}
 	
 	public boolean matches(Member member, World world) {
+		return (matchesIgnoringAnnotations(member,world) &&
+		        annotationPattern.matches(member).alwaysTrue());
+	}
+	
+	public boolean matchesIgnoringAnnotations(Member member, World world) {
 		//XXX performance gains would come from matching on name before resolving
 		//    to fail fast.  ASC 30th Nov 04 => Not necessarily, it didn't make it faster for me.
 		//    Here is the code I used:
@@ -414,6 +422,12 @@ public class SignaturePattern extends PatternNode {
     
     public String toString() {
     	StringBuffer buf = new StringBuffer();
+    	
+    	if (annotationPattern != AnnotationTypePattern.ANY) {
+    		buf.append(annotationPattern.toString());
+    		buf.append(' ');
+    	}
+    	
     	if (modifiers != ModifiersPattern.ANY) {
     		buf.append(modifiers.toString());
     		buf.append(' ');
@@ -455,7 +469,8 @@ public class SignaturePattern extends PatternNode {
     		&& o.returnType.equals(this.returnType)
     		&& o.declaringType.equals(this.declaringType)
     		&& o.name.equals(this.name)
-    		&& o.parameterTypes.equals(this.parameterTypes);
+    		&& o.parameterTypes.equals(this.parameterTypes)
+			&& o.annotationPattern.equals(this.annotationPattern);
     }
     public int hashCode() {
         int result = 17;
@@ -465,6 +480,7 @@ public class SignaturePattern extends PatternNode {
         result = 37*result + declaringType.hashCode();
         result = 37*result + name.hashCode();
         result = 37*result + parameterTypes.hashCode();
+        result = 37*result + annotationPattern.hashCode();
         return result;
     }
     

@@ -37,10 +37,12 @@ public class PatternsTests extends TestCase {
         suite.addTestSuite(HandlerTestCase.class);
         suite.addTestSuite(KindedTestCase.class);
         suite.addTestSuite(WithinCodeTestCase.class);
+        suite.addTestSuite(AnnotationPatternTestCase.class);
         //$JUnit-END$
         return suite;
     }
 
     public PatternsTests(String name) { super(name); }
 
+    
 }  

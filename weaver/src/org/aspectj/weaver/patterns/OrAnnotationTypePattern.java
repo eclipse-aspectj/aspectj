@@ -74,4 +74,7 @@ public class OrAnnotationTypePattern extends AnnotationTypePattern {
 		return "(" + left.toString() + " || " + right.toString() + ")";
 	}
 
+	public AnnotationTypePattern getLeft() { return left; }
+	public AnnotationTypePattern getRight() { return right; }
+
 }
