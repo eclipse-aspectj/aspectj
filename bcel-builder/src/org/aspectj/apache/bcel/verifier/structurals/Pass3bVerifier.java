@@ -86,7 +86,7 @@ import org.aspectj.apache.bcel.verifier.exc.VerifierConstraintViolatedException;
  * More detailed information is to be found at the do_verify() method's
  * documentation. 
  *
- * @version $Id: Pass3bVerifier.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: Pass3bVerifier.java,v 1.5 2005/02/02 09:11:39 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #do_verify()
  */
@@ -332,11 +332,11 @@ public final class Pass3bVerifier extends PassVerifier{
 				Frame f = new Frame(mg.getMaxLocals(),mg.getMaxStack());
 				if ( !mg.isStatic() ){
 					if (mg.getName().equals(Constants.CONSTRUCTOR_NAME)){
-						f._this = new UninitializedObjectType(new ObjectType(jc.getClassName()));
-						f.getLocals().set(0, f._this);
+						Frame._this = new UninitializedObjectType(new ObjectType(jc.getClassName()));
+						f.getLocals().set(0, Frame._this);
 					}
 					else{
-						f._this = null;
+						Frame._this = null;
 						f.getLocals().set(0, new ObjectType(jc.getClassName()));
 					}
 				}
