@@ -15,6 +15,7 @@
 package org.aspectj.ajde.ui;
 
 import java.awt.BorderLayout;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -37,6 +38,11 @@ import org.aspectj.bridge.ISourceLocation;
  * @author  Mik Kersten
  */
 public class EditorManager {
+
+    /** @return true if input modifiers have shift down */
+    public static boolean isShiftDown(int modifiers) {
+        return (0 != (modifiers & KeyEvent.SHIFT_MASK));
+    }
 
     private EditorAdapter editor = null;
     private BasicEditor basicEditor = null;
