@@ -5527,4 +5527,10 @@
             <message kind="error" line="6"/>        
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs" pr="29691"
+    		title="Static inner aspects cannot reference user defined pointcuts">
+        <compile files="PcdLookup.java" />
+        <run class="PcdLookup"/>
+    </ajc-test>
 </suite>
