@@ -45,6 +45,7 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 	
 	private SourceTypeBinding binding;
 	private TypeDeclaration declaration;
+	private boolean annotationsResolved = false;
 	
 	protected EclipseFactory eclipseWorld() {
 		return factory;
@@ -232,6 +233,12 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 	}
 	
 	public boolean hasAnnotation(TypeX ofType) {
+
+		// Make sure they are resolved
+		if (!annotationsResolved) {
+			TypeDeclaration.resolveAnnotations(declaration.staticInitializerScope, declaration.annotations, binding);
+			annotationsResolved = true;
+		}
 		Annotation[] as = declaration.annotations;
 		if (as == null) return false;
 		for (int i = 0; i < as.length; i++) {
@@ -250,7 +257,22 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 	}
 	
 	public ResolvedTypeX[] getAnnotationTypes() {
-		throw new RuntimeException("How to implement this?  Needs to ask eclipse!");
+		throw new RuntimeException("Missing implementation");
+		// FIXME Finish this off
+//		// Make sure they are resolved
+//		if (!annotationsResolved) {
+//			TypeDeclaration.resolveAnnotations(declaration.staticInitializerScope, declaration.annotations, binding);
+//			annotationsResolved = true;
+//		}
+//		ResolvedTypeX[] rtxAs = new ResolvedTypeX[declaration.annotations.length];
+//		Annotation[] as = declaration.annotations;
+//		if (as == null) return rtxAs;
+//		for (int i = 0; i < as.length; i++) {
+//			Annotation annotation = as[i];
+//			// FIXME - need to implement this !
+//			rtxAs[i] = factory.makeAnnotation(as[i]);
+//		}
+//		return rtxAs;
 	}
 
 	public PerClause getPerClause() {
