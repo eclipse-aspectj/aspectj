@@ -368,8 +368,23 @@
 		</itemizedlist>
 		</para>      
 	</sect2>
+	<sect2 id="ajbrowser-limitations">
+		<title>Limitations</title>
+		<para>      
+		<itemizedlist>
+		<listitem><para>
+		The AJBrowser expects the package and directory structure to match.  If they do not 
+		it will be unable to browse to the corresponding file.
+		</para></listitem>		
+		<listitem><para>
+		The "Run" feature launches applications in the same VM.  As a result, if a Swing application
+		is disposed the AJBrowser will be disposed as well.
+		</para></listitem>			
+		</itemizedlist>
+		</para>
+	</sect2>
 	<sect2 id="ajbrowser-feedback">
-		<title>AspectJ browser questions and bugs</title>
+		<title>AspectJ Browser questions and bugs</title>
 		<para>      
         You can send email to 
         <ulink url="mailto:aspectj-users@dev.eclipse.org">
