@@ -20,6 +20,7 @@ import java.util.List;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Utility;
+import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
@@ -29,6 +30,7 @@ import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.weaver.bcel.BcelAdvice;
+
 
 public class AsmRelationshipProvider {
 	
@@ -356,25 +358,31 @@ public class AsmRelationshipProvider {
 		
 	  IProgramElement typeElem = AsmManager.getDefault().getHierarchy().findElementForType(pkg,type);
 	  if (typeElem == null) return;
-	      
-	    IProgramElement methodElem = null;
-	    String name = method.getName();
-	     
-        String sig   = method.getSignature();
-         
-        try {
-        if (sig.startsWith("(")) sig = sig.substring(1,sig.lastIndexOf(")"));
-        String argsSig = (sig.length()==0?"":Utility.signatureToString(sig));
-        
-	    if (name.startsWith("<init>")) {
-	        // its a ctor
-	    	methodElem = AsmManager.getDefault().getHierarchy().findElementForLabel(typeElem,IProgramElement.Kind.CONSTRUCTOR,type+"("+argsSig+")");
-	    } else {
-	        // its a method
-	     	methodElem = AsmManager.getDefault().getHierarchy().findElementForLabel(typeElem,IProgramElement.Kind.METHOD,method.getName()+"("+argsSig+")");
-	    }
-	     
-
+	  
+	  // FIXME asc tidy this up you lazy git
+	  StringBuffer parmString = new StringBuffer("(");
+	  Type[] args = method.getArgumentTypes();
+	  for (int i = 0; i < args.length; i++) {
+			Type type2 = args[i];
+			String s = Utility.signatureToString(type2.getSignature());
+			if (s.lastIndexOf(".")!=-1) s =s.substring(s.lastIndexOf(".")+1);
+			parmString.append(s);
+			if ((i+1)<args.length) parmString.append(",");
+	  }
+	  parmString.append(")");
+	  IProgramElement methodElem = null;
+		
+	  if (method.getName().startsWith("<init>")) {
+	    // its a ctor
+	  	methodElem = AsmManager.getDefault().getHierarchy().findElementForSignature(typeElem,IProgramElement.Kind.CONSTRUCTOR,type+parmString);
+	  } else {
+	    // its a method
+	  	methodElem = AsmManager.getDefault().getHierarchy().findElementForSignature(typeElem,IProgramElement.Kind.METHOD,method.getName()+parmString);
+	  }
+	  
+	  if (methodElem == null) return;
+	  
+	  try {
 	    String sourceHandle = 
 	      ProgramElement.createHandleIdentifier(sourceLocation.getSourceFile(),sourceLocation.getLine(),
 		 	sourceLocation.getColumn(),sourceLocation.getOffset());
