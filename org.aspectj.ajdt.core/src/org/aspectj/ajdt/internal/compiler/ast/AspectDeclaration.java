@@ -527,6 +527,7 @@ public class AspectDeclaration extends TypeDeclaration {
 				codeStream.areturn();
 				isNull.place();
 				
+				codeStream.incrStackSize(+1);  // the dup trick above confuses the stack counter
 				codeStream.new_(world.makeTypeBinding(AjcMemberMaker.NO_ASPECT_BOUND_EXCEPTION));
 				codeStream.dup();
 				codeStream.ldc(typeX.getNameAsIdentifier());
