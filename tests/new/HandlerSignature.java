@@ -39,7 +39,7 @@ class U {
 aspect A {
     static {
         U.ee("before handler");
-        U.ee("after handler");
+        //U.ee("after handler");
     }
 
     before() : handler(*) {
