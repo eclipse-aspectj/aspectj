@@ -3,7 +3,7 @@
 
 
 # @author Wes Isberg
-# START-SAMPLE scripts-weaveLibraries
+# START-SAMPLE scripts-weaveLibraries Shell script to use ajc to weave jars and then run
 ASPECTJ_HOME="${ASPECTJ_HOME:-c:/aspectj-1.1.0}"
 ajc="$ASPECTJ_HOME/bin/ajc"
 
@@ -13,7 +13,7 @@ $ajc -classpath "$ASPECTJ_HOME/lib/aspectjrt.jar" \
      -injars "app.jar;lib.jar" \
      -outjar system.jar
 
-# XXX copy any resources from input jars to output jars
+# XXX copy any required resources from META-INF directories
 
 # run it
 java -classpath "aspects.jar;system.jar" com.company.app.Main
