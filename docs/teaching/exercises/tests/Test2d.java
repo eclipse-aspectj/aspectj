@@ -17,7 +17,6 @@ import figures.*;
 import junit.framework.*;
 
 public class Test2d extends TestCase {
-    public Test2d(String name) { super(name); }
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(Test.class);

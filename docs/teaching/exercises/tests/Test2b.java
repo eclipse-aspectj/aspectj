@@ -17,8 +17,6 @@ import figures.*;
 import junit.framework.*;
 
 public class Test2b extends TestCase {
-    public Test2b(String name) { super(name); }
-
     public static void main(String[] args) {
         junit.textui.TestRunner.run(Test.class);
         junit.textui.TestRunner.run(Test2b.class);
@@ -40,7 +38,7 @@ public class Test2b extends TestCase {
         Group g  = new Group(p1);
         Point p2 = new Point(20, 200);
 
-	g.add(p2);
+        g.add(p2);
     }
 
 }

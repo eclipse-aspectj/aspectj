@@ -17,8 +17,6 @@ import figures.*;
 import junit.framework.*;
 
 public class Test extends TestCase {
-    public Test(String name) { super(name); }
-    public Test() {}
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(Test.class);

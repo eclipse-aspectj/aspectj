@@ -17,7 +17,6 @@ import figures.*;
 import junit.framework.*;
 
 public class Test2a extends TestCase {
-    public Test2a(String name) { super(name); }
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(Test.class);
@@ -25,7 +24,7 @@ public class Test2a extends TestCase {
     }
 
     public void testTooSmall() {
-	Point p1 = new Point(10, 100);
+        Point p1 = new Point(10, 100);
         try {
             p1.setX(-10);
             fail("should have thrown IllegalArgumentException");
@@ -34,8 +33,8 @@ public class Test2a extends TestCase {
     }
 
     public void testNotTooSmall() {
-	Point p1 = new Point(10, 100);
-	p1.setX(0);
+        Point p1 = new Point(10, 100);
+        p1.setX(0);
     }
 
     public void testMove() {

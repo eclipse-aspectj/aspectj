@@ -17,23 +17,22 @@ import figures.*;
 import junit.framework.*;
 
 public class Test2e extends TestCase {
-    public Test2e(String name) { super(name); }
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(Test.class);
         junit.textui.TestRunner.run(Test2e.class);
     }
 
-    public void testSloth() {
-        Point sp = new SlothfulPoint(10, 10);
+    public void testNonMoving() {
+        Point sp = new Point(10, 10) { public void move(int x, int y) {} };
         try {
             sp.move(10, 10);
             fail("should have thrown IllegalStateException");
         } catch (IllegalStateException e) { }
     }
 
-    public void testNonSloth() {
-	Point p1 = new Point(10, 100);
+    public void testMoving() {
+        Point p1 = new Point(10, 100);
         p1.move(3, 30);
     }
 }

@@ -18,7 +18,6 @@ import support.Log;
 import junit.framework.*;
 
 public class Test3a extends Test {
-    public Test3a(String name) { super(name); }
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(Test3a.class);

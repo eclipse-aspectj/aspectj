@@ -19,8 +19,6 @@ import junit.framework.*;
 
 public class Test4e extends Test {
 
-    public Test4e(String name) { super(name); }
-
     public static void main(String[] args) {
         junit.textui.TestRunner.run(Test4e.class);
     }
