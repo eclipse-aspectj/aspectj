@@ -31,7 +31,7 @@ public class Ajc150TestsRequireJava15 extends TestUtils {
   
   public void testBadASMforEnums() throws IOException {
   	CompilationResult cR = ajc(baseDir,new String[]{"Rainbow.java","-emacssym","-1.5"});
-  	System.err.println(cR);
+  	// System.err.println(cR);
   	
   	ByteArrayOutputStream baos = new ByteArrayOutputStream();
   	PrintWriter pw = new PrintWriter(baos);

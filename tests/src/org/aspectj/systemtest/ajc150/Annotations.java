@@ -55,7 +55,7 @@ public class Annotations extends TestUtils {
   public void testBugWithAnnotationsLostOnWovenMethods() throws ClassNotFoundException {
   	CompilationResult cR = ajc(new File(baseDir+File.separator+"attarget"),
   			new String[]{"Program.java","AtTargetAspect.java","-1.5"});
-  	System.err.println(cR.getStandardError());
+  	//System.err.println(cR.getStandardError());
   	List expectedInfoMessages = new ArrayList();
   	MessageSpec ms = new MessageSpec(null,null);
   	assertMessages(cR,ms);
