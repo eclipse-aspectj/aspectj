@@ -44,7 +44,10 @@ public class Ajc {
 
 	private static final String SANDBOX_NAME = "ajcSandbox";
 	private static final String TESTER_PATH = 
-		"../testing-client/bin" + File.pathSeparator + "../runtime/bin";
+		".."+File.separator+"testing-client"+File.separator+"bin" + File.pathSeparator + 
+		".."+File.separator+"runtime"+File.separator+"bin" + File.pathSeparator +
+		".."+File.separator+"lib"+File.separator+"test"+File.separator+"aspectjrt.jar"+ File.pathSeparator+
+		".."+File.separator+"lib"+File.separator+"test"+File.separator+"testing-client.jar";
 	private CompilationResult result;
 	private File sandbox;
 	private File baseDir;
