@@ -49,7 +49,7 @@ import org.aspectj.internal.tools.build.Util;
  */
 public class AntBuilder extends Builder {
     /*
-     * XXX This just constructs and uses Ant Task objects, 
+     * warning: This just constructs and uses Ant Task objects, 
      * which in some cases causes the tasks to fail.
      */
 
@@ -126,7 +126,7 @@ public class AntBuilder extends Builder {
         }
     }
 
-    private final Project project; // XXX s.b. used only in setupTask
+    private final Project project;
 
     protected AntBuilder(Project project, File tempDir, boolean useEclipseCompiles,
         Messager handler) {
@@ -506,7 +506,7 @@ public class AntBuilder extends Builder {
     static class AspectJSupport {
         static final String AJCTASK = "org.aspectj.tools.ant.taskdefs.AjcTask";
         static final String ASPECTJRT_JAR_VARIABLE = "ASPECTJRT_LIB";
-        static final String ASPECTJLIB_RPATH = "/lib/aspectj/lib";
+        static final String LIBASPECTJ_RPATH = "/lib/aspectj";
         static final Map nameToAspectjrtjar = new HashMap();
         static final String NONE = "NONE";
         
@@ -545,16 +545,26 @@ public class AntBuilder extends Builder {
         }
 
         static Path getAspectJLib(Project project, Module module, String name) {
-            String libDir = project.getProperty("aspectj.home");
-            if (null == libDir) {
-                libDir = project.getProperty("ASPECTJ_HOME");
+            Path result = null;
+            String[] libDirNames = { "aspectj.home", "ASPECTJ_HOME", LIBASPECTJ_RPATH};
+            String[] libDirs = new String[libDirNames.length];
+            for (int i = 0; i < libDirNames.length; i++) {
+                if (LIBASPECTJ_RPATH == libDirNames[i]) {
+                    libDirs[i] = module.getFullPath(LIBASPECTJ_RPATH);
+                } else {
+                    libDirs[i] = project.getProperty(libDirNames[i]);
+                }
+                if (null != libDirs[i]) {
+                    libDirs[i] += File.separator + "lib";
+                    result = new Path(project, libDirs[i] + File.separator + name);
+                    String path = result.toString();
+                    if (new File(path).canRead()) {
+                        return result;
+                    }
+                }                
             }
-            if (null != libDir) {
-                libDir += File.separator + "lib";
-            } else {
-                libDir = module.getFullPath(ASPECTJLIB_RPATH);
-            }
-            return new Path(project, libDir + File.separator + name);
+            String m = "unable to find " + name + " in " + Arrays.asList(libDirs);
+            throw new BuildException(m);
         }
                 
         
@@ -572,8 +582,9 @@ public class AntBuilder extends Builder {
          */
         static Task aspectJTask(Javac javac, Path toolsJar, Path runtimeJar) {        
             Object task = null;
+            String url = null;
             try {
-                String url = "file:" + toolsJar.toString().replace('\\', '/');
+                url = "file:" + toolsJar.toString().replace('\\', '/');
                 ClassLoader loader = new URLClassLoader(new URL[] {new URL(url)});
                 Class c = loader.loadClass(AJCTASK);
                 task = c.newInstance();
@@ -593,7 +604,10 @@ public class AntBuilder extends Builder {
             } catch (BuildException e) {
                 throw e;
             } catch (Throwable t) {
-                throw new BuildException(t);
+                StringBuffer sb = new StringBuffer();
+                sb.append("classpath=");
+                sb.append(url);
+                throw new BuildException(sb.toString(), t);
             }
             return (Task) task;
         }
