@@ -13,7 +13,6 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,7 +22,6 @@ import java.util.Map;
 
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
-import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.weaver.AsmRelationshipProvider;
@@ -432,7 +430,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
 
 	public void warnOnAddedInterface (ResolvedTypeX type, ResolvedTypeX parent) {
 		World world = factory.getWorld();
-		ResolvedTypeX serializable = world.resolve(TypeX.SERIALIZABLE);
+		ResolvedTypeX serializable = world.getCoreType(TypeX.SERIALIZABLE);
 		if (serializable.isAssignableFrom(type)
 			&& !serializable.isAssignableFrom(parent)
 			&& !LazyClassGen.hasSerialVersionUIDField(type)) {

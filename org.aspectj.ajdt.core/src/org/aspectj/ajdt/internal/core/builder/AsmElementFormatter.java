@@ -12,15 +12,32 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.aspectj.ajdt.internal.compiler.ast.*;
+import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.DeclareDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.InterTypeConstructorDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.InterTypeDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.InterTypeFieldDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.InterTypeMethodDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
 import org.aspectj.asm.IProgramElement;
-import org.aspectj.asm.internal.ProgramElement;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.patterns.*;
-import org.eclipse.jdt.internal.compiler.ast.*;
+import org.aspectj.weaver.AdviceKind;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.patterns.AndPointcut;
+import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
+import org.aspectj.weaver.patterns.DeclareParents;
+import org.aspectj.weaver.patterns.DeclarePrecedence;
+import org.aspectj.weaver.patterns.DeclareSoft;
+import org.aspectj.weaver.patterns.OrPointcut;
+import org.aspectj.weaver.patterns.ReferencePointcut;
+import org.aspectj.weaver.patterns.TypePattern;
+import org.aspectj.weaver.patterns.TypePatternList;
+import org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 
 /**
  * @author Mik Kersten

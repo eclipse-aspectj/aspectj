@@ -12,7 +12,6 @@
 package org.aspectj.weaver;
 
 import org.aspectj.util.FuzzyBoolean;
-import org.aspectj.weaver.patterns.FastMatchInfo;
 
 
 /**

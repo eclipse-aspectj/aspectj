@@ -16,8 +16,6 @@ package org.aspectj.weaver.bcel;
 import java.io.IOException;
 import java.util.Arrays;
 
-import javax.print.attribute.ResolutionSyntax;
-
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.Member;

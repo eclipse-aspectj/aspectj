@@ -17,12 +17,18 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 
@@ -48,7 +54,14 @@ public class WithinPointcut extends Pointcut {
 	}
     
 	public FuzzyBoolean match(Shadow shadow) {
-		ResolvedTypeX enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType());
+		ResolvedTypeX enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType(),true);
+		if (enclosingType == ResolvedTypeX.MISSING) {
+			IMessage msg = new Message(
+			    WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_WITHINPCD,
+			    		              shadow.getEnclosingType().getName()),
+				shadow.getSourceLocation(),true,new ISourceLocation[]{getSourceLocation()});
+			shadow.getIWorld().getMessageHandler().handleMessage(msg);
+		}
 		return isWithinType(enclosingType);
 	}
 

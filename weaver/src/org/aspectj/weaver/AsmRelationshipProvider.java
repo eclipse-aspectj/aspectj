@@ -15,8 +15,12 @@ package org.aspectj.weaver;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import org.aspectj.asm.*;
-import org.aspectj.asm.internal.AspectJElementHierarchy;
+
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationship;
+import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;

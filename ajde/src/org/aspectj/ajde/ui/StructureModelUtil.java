@@ -16,10 +16,8 @@ package org.aspectj.ajde.ui;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +29,6 @@ import org.aspectj.ajde.Ajde;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
-import org.aspectj.asm.IRelationshipMap;
 //import org.aspectj.asm.internal.*;
 
 /**
