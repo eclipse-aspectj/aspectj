@@ -39,6 +39,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileFilter;
@@ -152,7 +153,7 @@ public class TopFrame extends JFrame {
             this.setLocation(75, 10);
             this.setSize(900, 650);
             this.setTitle(BrowserManager.TITLE);
-            bindKeys();
+            //bindKeys();
             fixButtonBorders();
             messages_panel.setVisible(false);
 
@@ -206,27 +207,27 @@ public class TopFrame extends JFrame {
         editConfig_button.setBorder(null);
     }
 
-    private void bindKeys() { // XXX broken?
-        this.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-                if (e.getModifiers() == java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()) {
-                    if (e.getKeyCode() == KeyEvent.VK_F11) {
-                        if (e.isShiftDown()) {
-                            buildFresh();
-                        } else {
-                            build();
-                        }
-                    } else if (e.getKeyCode() == KeyEvent.VK_S) {
-                        Ajde.getDefault().getEditorManager().saveContents();
-                    } else if (e.getKeyCode() == KeyEvent.VK_P) {
-                        AjdeUIManager.getDefault().showOptionsFrame();
-                    } else if (e.getKeyCode() == KeyEvent.VK_R) {
-                        runInSameVM();
-                    }
-                }
-            }
-        });
-    }
+//    private void bindKeys() { // XXX broken?
+//        this.addKeyListener(new KeyAdapter() {
+//            public void keyPressed(KeyEvent e) {
+//                if (e.getModifiers() == java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()) {
+//                    if (e.getKeyCode() == KeyEvent.VK_F11) {
+//                        if (e.isShiftDown()) {
+//                            buildFresh();
+//                        } else {
+//                            build();
+//                        }
+//                    } else if (e.getKeyCode() == KeyEvent.VK_S) {
+//                        Ajde.getDefault().getEditorManager().saveContents();
+//                    } else if (e.getKeyCode() == KeyEvent.VK_P) {
+//                        AjdeUIManager.getDefault().showOptionsFrame();
+//                    } else if (e.getKeyCode() == KeyEvent.VK_R) {
+//                        runInSameVM();
+//                    }
+//                }
+//            }
+//        });
+//    }
 
     private void jbInit() throws Exception {
         border1 = BorderFactory.createBevelBorder(BevelBorder.LOWERED,Color.white,Color.white,new Color(148, 145, 140),new Color(103, 101, 98));
@@ -240,10 +241,16 @@ public class TopFrame extends JFrame {
         emptyBorder = BorderFactory.createEmptyBorder(2,2,2,2);
         jMenu1.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenu1.setText("File");
+        jMenu1.setMnemonic(KeyEvent.VK_F);
         jMenu2.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenu2.setText("Project");
+        jMenu2.setMnemonic(KeyEvent.VK_P);
         projectBuild_menuItem.setFont(new java.awt.Font("Dialog", 0, 11));
         projectBuild_menuItem.setText("Build");
+        projectBuild_menuItem.setMnemonic(KeyEvent.VK_B);
+        projectBuild_menuItem.setAccelerator(KeyStroke.getKeyStroke(
+                            KeyEvent.VK_B, ActionEvent.ALT_MASK));
+
         projectBuild_menuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 projectBuild_menuItem_actionPerformed(e);
@@ -252,6 +259,9 @@ public class TopFrame extends JFrame {
         left_flowLayout.setAlignment(FlowLayout.LEFT);
         jMenuItem1.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItem1.setText("Save");
+        jMenuItem1.setMnemonic(KeyEvent.VK_S);
+        jMenuItem1.setAccelerator(KeyStroke.getKeyStroke(
+                            KeyEvent.VK_S, ActionEvent.ALT_MASK));
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 jMenuItem1_actionPerformed(e);
@@ -271,6 +281,9 @@ public class TopFrame extends JFrame {
         projectRun_menuItem.setFont(new java.awt.Font("Dialog", 0, 11));
         projectRun_menuItem.setText("Run in same VM");
         projectRun_menuItem.setToolTipText("Run in same VM (hold shift down to run in separate process)");
+        projectRun_menuItem.setMnemonic(KeyEvent.VK_R);
+        projectRun_menuItem.setAccelerator(KeyStroke.getKeyStroke(
+                                      KeyEvent.VK_R, ActionEvent.ALT_MASK));
         projectRun_menuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 projectRun_menuItem_actionPerformed(e);
@@ -279,6 +292,9 @@ public class TopFrame extends JFrame {
         projectRunOther_menuItem.setEnabled(true);
         projectRunOther_menuItem.setFont(new java.awt.Font("Dialog", 0, 11));
         projectRunOther_menuItem.setText("Run in separate process");
+        projectRunOther_menuItem.setMnemonic(KeyEvent.VK_P);
+        projectRunOther_menuItem.setAccelerator(KeyStroke.getKeyStroke(
+                                      KeyEvent.VK_P, ActionEvent.ALT_MASK));
         projectRunOther_menuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 projectRunOther_menuItem_actionPerformed(e);
@@ -303,6 +319,7 @@ public class TopFrame extends JFrame {
         right_splitPane.setDividerSize(4);
         tools_menu.setFont(new java.awt.Font("Dialog", 0, 11));
         tools_menu.setText("Tools");
+        tools_menu.setMnemonic(KeyEvent.VK_T);
         projectDebug_menuItem.setEnabled(false);
         projectDebug_menuItem.setFont(new java.awt.Font("Dialog", 0, 11));
         projectDebug_menuItem.setText("Debug");
@@ -314,6 +331,9 @@ public class TopFrame extends JFrame {
         svProperties_menuItem.setText("Options...");
         svProperties_menuItem.setActionCommand("AJDE Console...");
         svProperties_menuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        svProperties_menuItem.setMnemonic(KeyEvent.VK_O);
+        svProperties_menuItem.setAccelerator(KeyStroke.getKeyStroke(
+                            KeyEvent.VK_O, ActionEvent.ALT_MASK));
         build_toolBar.setBorder(emptyBorder);
         build_toolBar.setFloatable(false);
         closeConfig_button.setMaximumSize(new Dimension(100, 20));
@@ -335,7 +355,7 @@ public class TopFrame extends JFrame {
         openConfig_button.setBorder(null);
         openConfig_button.setMinimumSize(new Dimension(24, 20));
         openConfig_button.setPreferredSize(new Dimension(20, 20));
-        openConfig_button.setToolTipText("Open build configuration...");
+        openConfig_button.setToolTipText("Select build configuration...");
         openConfig_button.setIcon(AjdeUIManager.getDefault().getIconRegistry().getOpenConfigIcon());
         openConfig_button.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
