@@ -16,6 +16,9 @@ package org.aspectj.weaver.patterns;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.BCException;
@@ -26,6 +29,41 @@ import org.aspectj.weaver.TypeX;
 public class ExactTypePattern extends TypePattern {
 	protected TypeX type;
 
+	public static final Map primitiveTypesMap;
+	public static final Map boxedPrimitivesMap;
+	private static final Map boxedTypesMap;
+	
+	static {
+		primitiveTypesMap = new HashMap();
+		primitiveTypesMap.put("int",int.class);
+		primitiveTypesMap.put("short",short.class);
+		primitiveTypesMap.put("long",long.class);
+		primitiveTypesMap.put("byte",byte.class);
+		primitiveTypesMap.put("char",char.class);
+		primitiveTypesMap.put("float",float.class);
+		primitiveTypesMap.put("double",double.class);
+
+		boxedPrimitivesMap = new HashMap();
+		boxedPrimitivesMap.put("java.lang.Integer",Integer.class);
+		boxedPrimitivesMap.put("java.lang.Short",Short.class);
+		boxedPrimitivesMap.put("java.lang.Long",Long.class);
+		boxedPrimitivesMap.put("java.lang.Byte",Byte.class);
+		boxedPrimitivesMap.put("java.lang.Character",Character.class);
+		boxedPrimitivesMap.put("java.lang.Float",Float.class);
+		boxedPrimitivesMap.put("java.lang.Double",Double.class);
+
+		
+		boxedTypesMap = new HashMap();
+		boxedTypesMap.put("int",Integer.class);
+		boxedTypesMap.put("short",Short.class);
+		boxedTypesMap.put("long",Long.class);
+		boxedTypesMap.put("byte",Byte.class);
+		boxedTypesMap.put("char",Character.class);
+		boxedTypesMap.put("float",Float.class);
+		boxedTypesMap.put("double",Double.class);
+
+	}
+	
 	public ExactTypePattern(TypeX type, boolean includeSubtypes) {
 		super(includeSubtypes);
 		this.type = type;
@@ -50,7 +88,7 @@ public class ExactTypePattern extends TypePattern {
 	
 	public boolean matchesExactly(Class matchType) {
 		try {
-			Class toMatchAgainst = Class.forName(type.getName());
+			Class toMatchAgainst = getClassFor(type.getName());
 			return matchType == toMatchAgainst;
 		} catch (ClassNotFoundException cnfEx) {
 			return false;			
@@ -61,11 +99,27 @@ public class ExactTypePattern extends TypePattern {
 		if (matchType.equals(Object.class)) return FuzzyBoolean.YES;
 		
 		try {
-			Class toMatchAgainst = Class.forName(type.getName());
-			return toMatchAgainst.isAssignableFrom(matchType) ? FuzzyBoolean.YES : FuzzyBoolean.NO;
+			String typeName = type.getName();
+			Class toMatchAgainst = getClassFor(typeName);
+			FuzzyBoolean ret = FuzzyBoolean.fromBoolean(toMatchAgainst.isAssignableFrom(matchType));
+			if (ret == FuzzyBoolean.NO) {
+				if (boxedTypesMap.containsKey(typeName)) {
+					// try again with 'boxed' alternative
+					toMatchAgainst = (Class) boxedTypesMap.get(typeName);
+					ret = FuzzyBoolean.fromBoolean(toMatchAgainst.isAssignableFrom(matchType));
+				}
+			}
+			return ret;
 		} catch (ClassNotFoundException cnfEx) {
 			return FuzzyBoolean.NO;			
 		}
+	}
+	
+	private Class getClassFor(String typeName) throws ClassNotFoundException {
+		Class ret = null;
+		ret = (Class) primitiveTypesMap.get(typeName);
+		if (ret == null) ret = Class.forName(typeName);
+		return ret;
 	}
 	
     public boolean equals(Object other) {

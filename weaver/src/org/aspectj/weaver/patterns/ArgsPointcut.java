@@ -16,11 +16,14 @@ package org.aspectj.weaver.patterns;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.reflect.CodeSignature;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.BetaException;
 import org.aspectj.weaver.ISourceContext;
@@ -55,7 +58,37 @@ public class ArgsPointcut extends NameBindingPointcut {
 	}
 	
 	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart jpsp) {
-		return arguments.matches(jp.getArgs(),TypePattern.DYNAMIC);
+		FuzzyBoolean ret = arguments.matches(jp.getArgs(),TypePattern.DYNAMIC);
+		// this may have given a false match (e.g. args(int) may have matched a call to doIt(Integer x)) due to boxing
+		// check for this...
+		if (ret == FuzzyBoolean.YES) {
+			// are the sigs compatible too...
+			CodeSignature sig = (CodeSignature)jp.getSignature();
+			Class[] pTypes = sig.getParameterTypes();
+			Collection tps = arguments.getExactTypes();
+			int sigIndex = 0;
+			for (Iterator iter = tps.iterator(); iter.hasNext();) {
+				TypeX tp = (TypeX) iter.next();
+				Class lookForClass = getPossiblyBoxed(tp);
+				if (lookForClass != null) {
+					boolean foundMatchInSig = false;
+					while (sigIndex < pTypes.length && !foundMatchInSig) {
+						if (pTypes[sigIndex++] == lookForClass) foundMatchInSig = true;
+					}
+					if (!foundMatchInSig) {
+						ret = FuzzyBoolean.NO;
+						break;
+					}
+				}
+			}
+		}
+		return ret;
+	}
+	
+	private Class getPossiblyBoxed(TypeX tp) {
+		Class ret = (Class) ExactTypePattern.primitiveTypesMap.get(tp.getName());
+		if (ret == null) ret = (Class) ExactTypePattern.boxedPrimitivesMap.get(tp.getName());
+		return ret;
 	}
 
 	public void write(DataOutputStream s) throws IOException {

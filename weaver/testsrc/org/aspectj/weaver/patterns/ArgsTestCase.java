@@ -69,6 +69,30 @@ public class ArgsTestCase extends TestCase {
 
 	}
 	
+	public void testMatchJPWithPrimitiveTypes() {
+		try {
+			Factory f = new Factory("ArgsTestCase.java",ArgsTestCase.A.class);
+			
+			Pointcut oneInt = new PatternParser("args(int)").parsePointcut().resolve();
+			Pointcut oneInteger = new PatternParser("args(Integer)").parsePointcut().resolve();
+
+			JoinPoint.StaticPart oneIntjp = f.makeSJP(JoinPoint.METHOD_EXECUTION,f.makeMethodSig(0,"aMethod",A.class,new Class[] {int.class},new String[] {"i"},new Class[] {},null) ,1);
+			JoinPoint.StaticPart oneIntegerjp = f.makeSJP(JoinPoint.METHOD_EXECUTION,f.makeMethodSig(0,"aMethod",A.class,new Class[] {Integer.class},new String[] {"i"},new Class[] {},null),1);
+
+			JoinPoint oneIntArg = Factory.makeJP(oneIntjp,new A(),new A(),new Integer(3));
+			JoinPoint oneIntegerArg = Factory.makeJP(oneIntegerjp,new A(), new A(), new Integer(7));
+			
+			checkMatches(oneInt,oneIntArg,null,FuzzyBoolean.YES);
+			checkMatches(oneInt,oneIntegerArg,null,FuzzyBoolean.NO);
+			checkMatches(oneInteger,oneIntArg,null,FuzzyBoolean.NO);
+			checkMatches(oneInteger,oneIntegerArg,null,FuzzyBoolean.YES);
+			
+		} catch( Exception ex) {
+			fail("Unexpected exception " + ex);
+		}
+		
+	}
+	
 	private void checkMatches(Pointcut p, JoinPoint jp, JoinPoint.StaticPart jpsp, FuzzyBoolean expected) {
 		assertEquals(expected,p.match(jp,jpsp));
 	}

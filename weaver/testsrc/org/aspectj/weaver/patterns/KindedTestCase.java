@@ -49,6 +49,7 @@ public class KindedTestCase extends TestCase {
 		JoinPoint.StaticPart execonsjp2 = f.makeSJP(JoinPoint.CONSTRUCTOR_EXECUTION,f.makeConstructorSig(0,String.class,new Class[] {String.class},new String[]{"s"},new Class[0]),1);
 		JoinPoint.StaticPart initjp1 = f.makeSJP(JoinPoint.INITIALIZATION,f.makeConstructorSig(0,Hello.class,new Class[0],new String[0],new Class[0]),1);
 		JoinPoint.StaticPart initjp2 = f.makeSJP(JoinPoint.PREINTIALIZATION,f.makeConstructorSig(0,Hello.class,new Class[]{int.class, int.class},new String[]{"a","b"},new Class[0]),1);
+		JoinPoint.StaticPart initjp3 = f.makeSJP(JoinPoint.PREINTIALIZATION,f.makeConstructorSig(0,Hello.class,new Class[]{Integer.class, Integer.class},new String[]{"a","b"},new Class[0]),1);
 		JoinPoint.StaticPart sinitjp1 = f.makeSJP(JoinPoint.STATICINITIALIZATION,f.makeInitializerSig(Modifier.STATIC,Hello.class),1);
 		JoinPoint.StaticPart sinitjp2 = f.makeSJP(JoinPoint.STATICINITIALIZATION,f.makeInitializerSig(Modifier.STATIC,String.class),1);
 		JoinPoint.StaticPart getjp1 = f.makeSJP(JoinPoint.FIELD_GET,f.makeFieldSig(0,"x",Hello.class,int.class),1);
@@ -71,6 +72,7 @@ public class KindedTestCase extends TestCase {
 		checkMatches(initpc,initjp2,FuzzyBoolean.NO);
 		checkMatches(preinitpc,initjp1,FuzzyBoolean.NO);
 		checkMatches(preinitpc,initjp2,FuzzyBoolean.YES);
+		checkMatches(preinitpc,initjp3,FuzzyBoolean.NO);
 		checkMatches(staticinitpc,sinitjp1,FuzzyBoolean.YES);
 		checkMatches(staticinitpc,sinitjp2,FuzzyBoolean.NO);
 		checkMatches(getpc,getjp1,FuzzyBoolean.YES);

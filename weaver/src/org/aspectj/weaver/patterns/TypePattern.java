@@ -97,11 +97,23 @@ public abstract class TypePattern extends PatternNode {
 		}
 	}
 		
+	/**
+	 * This variant is only called by the args and handler pcds when doing runtime
+	 * matching. We need to handle primitive types correctly in this case (an Integer
+	 * should match an int,...).
+	 */
 	public final FuzzyBoolean matches(Object o, MatchKind kind) {
-		if (kind == STATIC) {
+		if (kind == STATIC) {  // handler pcd
 			return FuzzyBoolean.fromBoolean(matchesStatically(o.getClass()));
-		} else if (kind == DYNAMIC) {
-			return FuzzyBoolean.fromBoolean(matchesSubtypes(o.getClass()));
+		} else if (kind == DYNAMIC) {  // args pcd
+//			Class clazz = o.getClass();
+//			FuzzyBoolean ret = FuzzyBoolean.fromBoolean(matchesSubtypes(clazz));
+//			if (ret == FuzzyBoolean.NO) {
+//				// try primitive type instead
+//				if (clazz == Integer.class) ret = FuzzyBoolean.fromBoolean(matchesExactly(int.class));
+//			}
+//			return ret;
+			return matchesInstanceof(o.getClass());
 		} else {
 			throw new IllegalArgumentException("kind must be DYNAMIC or STATIC");			
 		}
