@@ -248,7 +248,7 @@ I'm not sure what user interface features need this...
 17) Version upgrade
 =============================================================================
 17.1) port to Eclipse 3.0 M9
-17.2) port to Eclipse 2.0 final
+17.2) port to Eclipse 3.0 final
 
 18) JDT DEBUG
 =============================================================================
