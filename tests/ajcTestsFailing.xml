@@ -5,6 +5,15 @@
 
 <suite>
 	<ajc-test dir="bugs"
+		pr="40858"
+		comment="shouldn't super ref be permitted?"
+		title="weaver trace on mis-qualified pointcut reference">
+		<compile files="SuperPointcutCE.java">
+			<message kind="error" line="26"/>
+			</compile>
+		</ajc-test>
+
+	<ajc-test dir="bugs"
 		pr="40814"
 		title="compile error expected for interface pointcuts">
 		<compile files="InterfacePointcutCE.java">
