@@ -7,11 +7,16 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC       initial implementation 
+ *     AMC  03.27.2003  changed to allow access to NullIdeManager
+ * 						as a singleton - needed for verifying
+ * 						compiler warning and error messages.
  * ******************************************************************/
 
 
 package org.aspectj.ajde;
+
+import java.util.List;
 
 import javax.swing.JFrame;
 
@@ -25,11 +30,21 @@ import org.aspectj.ajde.ui.swing.*;
  */
 public class NullIdeManager {
 	
+	private static NullIdeManager ideManager = null;
+	private NullIdeTaskListManager taskListManager = null;
+	
+	public static NullIdeManager getIdeManager() {
+		if ( null == ideManager ) {
+			ideManager = new NullIdeManager();
+		}
+		return ideManager;
+	}
+	
 	public void init(String testProjectPath) {
 		try {
 			UserPreferencesAdapter preferencesAdapter = new UserPreferencesStore();
 			ProjectPropertiesAdapter browserProjectProperties = new NullIdeProperties(testProjectPath);
-			TaskListManager taskListManager = new NullIdeTaskListManager();
+			taskListManager = new NullIdeTaskListManager();
 			BasicEditor ajdeEditor = new BasicEditor();
 			IdeUIAdapter uiAdapter = new NullIdeUIAdapter();
 			JFrame nullFrame = new JFrame();
@@ -52,5 +67,9 @@ public class NullIdeManager {
 				"Null IDE failed to initialize.",
 				t);
 		}
+	}
+	
+	public List getCompilationSourceLineTasks() {
+		return taskListManager.getSourceLineTasks();
 	}
 }

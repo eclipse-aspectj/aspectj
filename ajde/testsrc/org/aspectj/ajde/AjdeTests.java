@@ -26,6 +26,7 @@ public class AjdeTests extends TestCase {
         suite.addTestSuite(StructureModelRegressionTest.class); 
         suite.addTestSuite(StructureModelTest.class); 
         suite.addTestSuite(VersionTest.class); 
+		suite.addTestSuite(CompilerMessagesTest.class);
         //$JUnit-END$
         return suite;
     }

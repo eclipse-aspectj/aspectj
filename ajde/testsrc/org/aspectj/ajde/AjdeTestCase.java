@@ -21,7 +21,7 @@ public class AjdeTestCase extends TestCase {
 	private static final String TEST_DATA_PATH = "testdata";
 	//private static final String TEST_DATA_PATH = "C:/Dev/aspectj/modules/ajde/testdata";
 
-	protected NullIdeManager ideManager = new NullIdeManager();
+	protected NullIdeManager ideManager = NullIdeManager.getIdeManager();
 	protected TestBuildListener testerBuildListener = new TestBuildListener();
 	protected String currTestDataPath;
 
