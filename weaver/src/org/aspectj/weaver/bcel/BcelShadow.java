@@ -1517,6 +1517,8 @@ public class BcelShadow extends Shadow {
 	 * Causes the aspect instance to be *set* for later retrievable through localAspectof()/aspectOf()
 	 */
 	public void weavePerTypeWithinAspectInitialization(final BcelAdvice munger,TypeX t) {
+		
+		if (t.isInterface(world)) return; // Don't initialize statics in 
         final InstructionFactory fact = getFactory();        
 
 		InstructionList entryInstructions = new InstructionList();
