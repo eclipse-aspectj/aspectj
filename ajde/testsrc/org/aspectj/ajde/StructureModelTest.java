@@ -84,7 +84,8 @@ public class StructureModelTest extends AjdeTestCase {
 			testFile.getCanonicalPath());
 		assertTrue("find result", node != null) ;	
 		ProgramElementNode pNode = (ProgramElementNode)node;
-		assertTrue("found child", ((StructureNode)pNode.getChildren().get(0)).getName().equals("Figure"));
+		String child = ((StructureNode)pNode.getChildren().get(0)).getName();
+        assertTrue("expected Figure got child " + child, child.equals("Figure"));
 	}
 
 	public void testPointcutName() throws IOException {
@@ -120,7 +121,9 @@ public class StructureModelTest extends AjdeTestCase {
 		assertTrue("find result", node != null);	
 			
 		ProgramElementNode pNode = (ProgramElementNode)((ProgramElementNode)node).getParent();
-        assertTrue("null parent", pNode != null);    
+        if (null == pNode) {
+            assertTrue("null parent of " + node, false);
+        }
 		assertTrue("found node: " + pNode.getName(), pNode.isRunnable());
 	}  
 	

@@ -12,6 +12,8 @@
 
 package org.aspectj.ajde;
 
+import org.aspectj.bridge.MessageUtil;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -38,6 +40,9 @@ public class CompilerMessagesTest extends AjdeTestCase {
 		// The build has happened, what messages did the compiler give, and do they
 		// contain the information we expect?
 		List msgs = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
+        if (1 != msgs.size()) {
+            assertTrue("not one message: " + msgs, false);
+        }
 		assertEquals("One warning message should be produced",1,msgs.size());
 		NullIdeTaskListManager.SourceLineTask task = 
 			(NullIdeTaskListManager.SourceLineTask) msgs.get(0);
