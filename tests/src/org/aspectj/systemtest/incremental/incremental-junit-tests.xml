@@ -195,3 +195,177 @@
         -->
     </ajc-test>
 	
+	 <ajc-test dir="incrementalju/resourceTests/resourceAdded"
+    	pr="54622"
+		title="incremental with addition of resource to inpath directory">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental"
+			inpath="indir">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+
+	 <ajc-test dir="incrementalju/resourceTests/resourceAdded"
+    	pr="54622"
+		title="incremental with addition of resource to inpath jar">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental"
+			inpath="MyJar.jar">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes added="AResourceFile.txt"/>
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+
+	<ajc-test dir="incrementalju/resourceTests/resourceRemoved"
+    	pr="54622"
+		title="incremental with removal of resource from inpath jar">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental"
+			inpath="MyJar.jar">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes removed="AResourceFile.txt"/>
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+
+	 <ajc-test dir="incrementalju/injarTests/classAdded"
+    	pr="54621"
+		title="incremental with addition of class to inpath jar">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental"
+			inpath="MyJar.jar">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes added="Hello2"/>
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+
+	<ajc-test dir="incrementalju/injarTests/classRemoved"
+    	pr="54621"
+		title="incremental with removal of class from inpath jar">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental"
+			inpath="MyJar.jar">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes removed="Hello2"/>
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+   <ajc-test dir="incrementalju/injarTests/classAdded"
+    	pr="54621"
+		title="incremental with addition of class to injar jar">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental,-injars,MyJar.jar">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes added="Hello2"/>
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+
+	<ajc-test dir="incrementalju/injarTests/classRemoved"
+    	pr="54621"
+		title="incremental with removal of class from injar jar">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental,-injars,MyJar.jar"
+			inpath="MyJar.jar">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes removed="Hello2"/>
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+
+
+	 <ajc-test dir="incrementalju/inpathDirTests/classAdded"
+    	pr="54621"
+		title="incremental with addition of class to inpath dir">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental"
+			inpath="indir">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes added="Hello2"/>
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+
+	<ajc-test dir="incrementalju/inpathDirTests/classRemoved"
+    	pr="54621"
+		title="incremental with removal of class from inpath dir">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental"
+			inpath="indir">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes removed="Hello2"/>
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+	 <ajc-test dir="incrementalju/inpathDirTests/classUpdated"
+    	pr="54621"
+		title="incremental with update of class in inpath dir">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental"
+			inpath="indir">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
