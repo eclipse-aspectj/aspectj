@@ -17,7 +17,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
@@ -167,7 +167,7 @@ public class BcelRenderer implements ITestVisitor, IExprVisitor {
     public void visit(Instanceof i) {
         instructions.insert(createJumpBasedOnBooleanOnStack());
         instructions.insert(
-            Utility.createInstanceof(fact, (ObjectType) world.makeBcelType(i.getType())));
+            Utility.createInstanceof(fact, (ReferenceType) world.makeBcelType(i.getType())));
         i.getVar().accept(this);
     }
 

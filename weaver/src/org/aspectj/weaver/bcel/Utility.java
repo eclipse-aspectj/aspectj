@@ -33,6 +33,7 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.InstructionTargeter;
 import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.SIPUSH;
 import org.apache.bcel.generic.TargetLostException;
@@ -149,10 +150,13 @@ public class Utility {
             kind);
 	}
 
-    public static Instruction createInstanceof(InstructionFactory fact, ObjectType t) {
-        return new INSTANCEOF(fact.getConstantPool().addClass(t));        
+    public static Instruction createInstanceof(InstructionFactory fact, ReferenceType t) {
+		int cpoolEntry =
+			(t instanceof ArrayType)
+			? fact.getConstantPool().addArrayClass((ArrayType)t)
+			: fact.getConstantPool().addClass((ObjectType)t);
+		return new INSTANCEOF(cpoolEntry);
     }
-
 
     public static Instruction createInvoke(
             InstructionFactory fact,
