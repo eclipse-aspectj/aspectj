@@ -37,15 +37,19 @@ public class PartiallyExposedHierarchyTestCase extends AjcTestCase {
 	 */
 	public void testPartiallyExposedHierarchy () {
 		Message warning = new Message(11,"no interface constructor-execution join point");
-		Message error   = new Message(15, "type sample.Base must be accessible for weaving interface inter type declaration from aspect sample.Trace");
+        
+        // This error can't happen with the new logic to process types in hierarchical order
+        // when applying declare parents (rather than just processing them in the order encountered
+        // like we have been doing) - this kind of makes the test redundant ?!?
+		// Message error   = new Message(15, "type sample.Base must be accessible for weaving interface inter type declaration from aspect sample.Trace");
 		CompilationResult result = ajc(baseDir,
 				new String[]{"-classpath","fullBase.jar",
 							 "-injars","base.jar",
 							 "sample"+File.separator+"Trace.aj"});
-//		System.err.println(result.getWarningMessages());
-//		System.err.println(result.getErrorMessages());
-//		System.err.println(result.getStandardOutput());
-		MessageSpec spec = new MessageSpec(null,newMessageList(warning),newMessageList(error));
+		System.err.println(result.getWarningMessages());
+		System.err.println(result.getErrorMessages());
+		System.err.println(result.getStandardOutput());
+		MessageSpec spec = new MessageSpec(null,newMessageList(warning),null);//newMessageList(error));
 		assertMessages(result,spec);
 	}
 	
