@@ -56,4 +56,7 @@ public interface ISourceLocation  {
     /** @return getLine()..MAX_LINE */
     int getEndLine();
     
+    /** @return String application-specific context for source */
+    String getContext();
+    
 }

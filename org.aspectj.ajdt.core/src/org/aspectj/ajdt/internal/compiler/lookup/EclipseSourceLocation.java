@@ -15,13 +15,23 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 
 import java.io.File;
 
+import org.aspectj.ajdt.internal.core.builder.EclipseAdapterUtils;
 import org.aspectj.bridge.ISourceLocation;
+import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
+import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.problem.ProblemHandler;
 
 public class EclipseSourceLocation implements ISourceLocation {
-	CompilationResult result;
+    private static String NO_CONTEXT = "USE_NULL--NO_CONTEXT_AVAILABLE";
+	CompilationResult result;    
 	int startPos, endPos;
+    // lazy but final
+    File file;
+    int startLine = -1;
+    int endLine = -1;
+    int column = -1;
+    String context;
 	
 	public EclipseSourceLocation(CompilationResult result, int startPos, int endPos) {
 		super();
@@ -31,20 +41,55 @@ public class EclipseSourceLocation implements ISourceLocation {
 	}
 
 	public File getSourceFile() {
-		return new File(new String(result.fileName));
+		if (null == file) {
+            file = new File(new String(result.fileName)); 
+        }
+        return file;
 	}
 
 	public int getLine() {
-		return ProblemHandler.searchLineNumber(result.lineSeparatorPositions, startPos);
+		if (-1 == startLine) {
+            startLine = ProblemHandler.searchLineNumber(result.lineSeparatorPositions, startPos);
+        }
+        return startLine;
 	}
 
 	public int getColumn() {
-		return 0;  //XXX need better search above to get both
+        if (-1 == column) {
+            int lineNumber = getLine();
+            if (0 < lineNumber) {
+                int lineStart = result.lineSeparatorPositions[getLine()];
+                int col = startPos - lineStart; // 1-based
+                if (0 <= col) { 
+                    column = col;
+                } else {
+                    column = 0;
+                }
+            }
+        }
+		return column;
 	}
 
 	public int getEndLine() {
-		return getLine();  //XXX no real need to do better
+        if (-1 == endLine) {
+            endLine = ProblemHandler.searchLineNumber(result.lineSeparatorPositions, endPos);
+        }
+        return endLine;
 	}
+    
+    public String getContext() {
+        if (null == context) {
+            ICompilationUnit compilationUnit = result.compilationUnit;
+            IProblem[] problems = result.problems;
+            if ((null == compilationUnit) || (null == problems)
+                || (1 != problems.length)) { // ?? which of n>1 problems?
+                context = NO_CONTEXT;
+            } else {
+                context = EclipseAdapterUtils.makeLocationContext(compilationUnit, problems[0]);
+            }
+        }
+        return (NO_CONTEXT == context ? null : context);
+    }
 	
     
     /** @return String {file:}line{:column} */
@@ -61,5 +106,4 @@ public class EclipseSourceLocation implements ISourceLocation {
         }
         return sb.toString();
     }
-
 }

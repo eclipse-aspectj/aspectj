@@ -19,7 +19,6 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.SourceLocation;
-import org.aspectj.util.LangUtil;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.eclipse.jdt.internal.compiler.util.Util;
@@ -110,30 +109,26 @@ public class EclipseAdapterUtils {
         return new String(extract) + "\n" + new String(underneath); //$NON-NLS-2$ //$NON-NLS-1$
     }
     
+    /** 
+     * Extract source location file, start and end lines, and context.
+     * Column is not extracted correctly.
+     * @return ISourceLocation with correct file and lines but not column.
+     */
     public static ISourceLocation makeSourceLocation(ICompilationUnit unit, IProblem problem) {
         int line = problem.getSourceLineNumber();
         File file = new File(new String(problem.getOriginatingFileName()));
-       return new SourceLocation(file, line, line, 0);
+        String context = makeLocationContext(unit, problem);
+        // XXX 0 column is wrong but recoverable from makeLocationContext
+        return new SourceLocation(file, line, line, 0, context);
     }
 
-    /** This renders entire message text, but also sets up source location */
+    /** 
+     * Extract message text and source location, including context. 
+     */
     public static IMessage makeMessage(ICompilationUnit unit, IProblem problem) { 
-        //??? would like to know the column as well as line
-        //??? and also should generate highlighting info
         ISourceLocation sourceLocation = makeSourceLocation(unit, problem);
-                               
-        String locationContext = makeLocationContext(unit, problem);
-        StringBuffer mssg = new StringBuffer();
-
-        mssg.append(problem.getOriginatingFileName());
-        mssg.append(":" + problem.getSourceLineNumber());
-        mssg.append(": ");
-        mssg.append(problem.getMessage());
-        mssg.append(LangUtil.EOL);
-        mssg.append(locationContext);
-        
-        return new Message(mssg.toString(), sourceLocation, problem.isError());
-    }
+        return new Message(problem.getMessage(), sourceLocation, problem.isError());
+    }               
 
 	private EclipseAdapterUtils() {
 	}

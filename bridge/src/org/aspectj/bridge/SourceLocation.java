@@ -55,6 +55,7 @@ public class SourceLocation implements ISourceLocation, java.io.Serializable {
     private final int startLine;
     private final int column;
     private final int endLine;
+    private final String context;
     private boolean noColumn;
 
     /** 
@@ -77,6 +78,10 @@ public class SourceLocation implements ISourceLocation, java.io.Serializable {
      * @param column int character position of starting location - positive number
      */
     public SourceLocation(File file, int line, int endLine, int column) {
+        this(file, line, endLine, column, (String) null);
+    }
+
+    public SourceLocation(File file, int line, int endLine, int column, String context) {
         if (column == NO_COLUMN) {
             column = 0;
             noColumn = true;
@@ -92,6 +97,7 @@ public class SourceLocation implements ISourceLocation, java.io.Serializable {
         this.startLine = line;
         this.column = column;
         this.endLine = endLine;
+        this.context = context;
     }
     
     public File getSourceFile() {
@@ -113,10 +119,18 @@ public class SourceLocation implements ISourceLocation, java.io.Serializable {
         return endLine;
     }
     
-    /** @return String {file:}line{:column} */
+    /** @return null String or application-specific context */
+    public String getContext() {
+        return context;
+    }
+    
+    /** @return String {context\n}{file:}line{:column} */
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        
+        if (null != context) {
+            sb.append(context);
+            sb.append(LangUtil.EOL);
+        }
         if (sourceFile != ISourceLocation.NO_FILE) {
             sb.append(sourceFile.getPath());
             sb.append(":");

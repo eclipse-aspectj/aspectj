@@ -305,7 +305,22 @@ public class FileUtil {
         }
         return path;
     }
-        
+    
+    /**
+     * Render as best path, canonical or absolute.
+     * @param file the File to get the path for (not null)
+     * @return String of the best-available path
+     * @throws IllegalArgumentException if file is null
+     */
+    public static String getBestPath(File file) {
+        LangUtil.throwIaxIfNull(file, "file");
+        try {
+            return file.getCanonicalPath();
+        } catch (IOException e) {
+            return file.getAbsolutePath();
+        }
+    }
+    
     /** @return array same length as input, with String absolute paths */
     public static String[] getAbsolutePaths(File[] files) {
         if ((null == files) || (0 == files.length)) {

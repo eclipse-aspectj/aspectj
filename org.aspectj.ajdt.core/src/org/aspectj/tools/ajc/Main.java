@@ -25,11 +25,13 @@ import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessageHolder;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.ReflectionFactory;
 import org.aspectj.bridge.Version;
+import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 
 /**
@@ -343,7 +345,10 @@ public class Main {
         handler.handleMessage(new Message(message, IMessage.FAIL, thrown, null));
     }  
     
-    /** interceptor IMessageHandler to print as we go */
+    /** 
+     * interceptor IMessageHandler to print as we go.
+     * This formats all messages to the user.
+     */
     public static class MessagePrinter implements IMessageHandler {
    
         public static final IMessageHandler VERBOSE 
@@ -372,6 +377,15 @@ public class Main {
             return false;
 		}
         
+        /**
+         * Render message differently.
+         * If abort, then prefix stack trace with feedback request.
+         * If the actual message is empty, then use toString on the whole.
+         * Prefix message part with file:line;
+         * If it has context, suffix message with context.
+         * @param message the IMessage to render
+         * @return String rendering IMessage (never null)
+         */
         protected String render(IMessage message) {
             IMessage.Kind kind = message.getKind();
             if (kind.equals(IMessage.ABORT)) {
@@ -382,11 +396,36 @@ public class Main {
                     return Main.renderExceptionForUser(t);
                 }
             }
-            String m = message.getMessage();
-            if (LangUtil.isEmpty(m)) {
-                m = message.toString();
+            StringBuffer sb = new StringBuffer();
+            String text = message.getMessage();
+            boolean toString = (LangUtil.isEmpty(text));
+            if (toString) {
+                text = message.toString();
             }
-            return m;
+            ISourceLocation loc = message.getISourceLocation();
+            String context = null;
+            if (null != loc) {
+                File file = loc.getSourceFile();
+                if (null != file) {
+                    String name = file.getName();
+                    if (!toString || (-1 == text.indexOf(name))) {                        
+                        sb.append(FileUtil.getBestPath(file));
+                        sb.append(":" + loc.getLine());
+                        int col = loc.getColumn();
+                        if (0 < col) {
+                            sb.append(":" + col);
+                        }
+                        sb.append(" ");
+                    }
+                }
+                context = loc.getContext();
+            }
+            sb.append(text);
+            if (null != context) {
+                sb.append(LangUtil.EOL);
+                sb.append(context);
+            }
+            return sb.toString();
         }
 
         public boolean isIgnoring(IMessage.Kind kind) {
