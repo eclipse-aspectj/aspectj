@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.aspectj.ajdt.ajc.*;
 import org.aspectj.ajdt.ajc.AjdtCommand;
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
@@ -99,7 +100,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 		args.add("-classpath");
 		args.add(getRuntimeClasspath() + File.pathSeparator +			"../lib/junit/junit.jar;../testing-client/bin");
 		args.add("-Xlint:error");
-		args.add("testdata/src1/Xlint.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/Xlint.java");
 		
 		runCompiler(args, new int[] {2});
 	}
@@ -111,7 +112,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 		
 		args.add("-classpath");
 		args.add(getRuntimeClasspath() + File.pathSeparator +			"../lib/junit/junit.jar;../testing-client/bin;not_found_anywhere.jar");
-		args.add("testdata/src1/ThisAndModifiers.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/ThisAndModifiers.java");
 		
 		ICommand command = new AjdtCommand();
 		MessageHandler myHandler = new MessageHandler();
@@ -131,7 +132,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 		
 		args.add("-classpath");
 		args.add("../lib/junit/junit.jar;../testing-client/bin");
-		args.add("testdata/src1/ThisAndModifiers.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/ThisAndModifiers.java");
 		
 		ICommand command = new AjdtCommand();
 		MessageHandler myHandler = new MessageHandler();
@@ -148,16 +149,16 @@ public class BasicCommandTestCase extends CommandTestCase {
 		args.add(getRuntimeClasspath() + File.pathSeparator +
 			"../lib/junit/junit.jar;../testing-client/bin");
 		
-		File f1 = new File("testdata/src1/p1/Foo.class");
-		File f2 = new File("testdata/src1/WrongPackage.class");
-		File f3 = new File("testdata/src1/WrongPackage$1.class");
+		File f1 = new File(AjdtAjcTests.TESTDATA_PATH + "/src1/p1/Foo.class");
+		File f2 = new File(AjdtAjcTests.TESTDATA_PATH + "/src1/WrongPackage.class");
+		File f3 = new File(AjdtAjcTests.TESTDATA_PATH + "/src1/WrongPackage$1.class");
 		
 		if (f1.exists()) f1.delete();
 		if (f2.exists()) f2.delete();
 		if (f3.exists()) f3.delete();
 		
-		args.add("testdata/src1/p1/Foo.java");
-		args.add("testdata/src1/WrongPackage.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/p1/Foo.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/WrongPackage.java");
 		
 		runCompiler(args, NO_ERRORS);
 		
@@ -184,8 +185,8 @@ public class BasicCommandTestCase extends CommandTestCase {
 		args.add(getRuntimeClasspath() + File.pathSeparator +
 			"../lib/junit/junit.jar;../testing-client/bin");
 		
-		args.add("testdata/src1/SizeIssuesAspect.java");		
-		args.add("testdata/src1/SizeIssues.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/SizeIssuesAspect.java");		
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/SizeIssues.java");
 
 		runCompiler(args, NO_ERRORS);
 		long size = f1.length();

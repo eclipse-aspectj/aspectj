@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.ArrayList;
 
+import org.aspectj.ajdt.ajc.AjdtAjcTests;
+
 public class BcweaverJarMaker {
 
 	public BcweaverJarMaker() {
@@ -45,8 +47,8 @@ public class BcweaverJarMaker {
 		args.add("../runtime/bin" + File.pathSeparator + 
 			System.getProperty("aspectjrt.path"));
 		
-		args.add("testdata/src1/Trace.java");
-		args.add("testdata/src1/MyTrace.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/Trace.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/MyTrace.java");
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 	}
@@ -60,8 +62,8 @@ public class BcweaverJarMaker {
 		args.add("../runtime/bin" + File.pathSeparator + 
 			System.getProperty("aspectjrt.path"));
 		
-		args.add("testdata/src1/trace/MegaTrace.java");
-		args.add("testdata/src1/trace/ExecTrace.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/trace/MegaTrace.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/trace/ExecTrace.java");
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 	}
@@ -76,8 +78,8 @@ public class BcweaverJarMaker {
 		args.add("../runtime/bin" + File.pathSeparator + 
 			System.getProperty("aspectjrt.path"));
 		
-		args.add("testdata/src1/trace/MegaTrace.java");
-		args.add("testdata/src1/trace/ObviousTraceNothing.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/trace/MegaTrace.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/trace/ObviousTraceNothing.java");
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 	}
@@ -91,8 +93,8 @@ public class BcweaverJarMaker {
 		args.add("../runtime/bin" + File.pathSeparator + 
 			System.getProperty("aspectjrt.path"));
 		
-		args.add("testdata/src1/trace/MegaTrace.java");
-		args.add("testdata/src1/trace/HardTraceNothing.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/trace/MegaTrace.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/trace/HardTraceNothing.java");
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 	}
@@ -109,8 +111,8 @@ public class BcweaverJarMaker {
 		args.add("../runtime/bin" + File.pathSeparator + 
 			System.getProperty("aspectjrt.path"));
 		
-		args.add("testdata/src1/trace/MegaTrace.java");
-		args.add("testdata/src1/trace/ExecTrace.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/trace/MegaTrace.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/trace/ExecTrace.java");
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 	}
@@ -125,7 +127,7 @@ public class BcweaverJarMaker {
 		args.add("../runtime/bin" + File.pathSeparator + 
 			System.getProperty("aspectjrt.path"));
 		
-		args.add("testdata/src1/DummyAspect.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/DummyAspect.java");
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 	}	

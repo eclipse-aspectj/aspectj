@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aspectj.ajdt.ajc.AjdtAjcTests;
 import org.aspectj.testing.util.TestUtil;
 
 
@@ -39,8 +40,8 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		args.add("-d");
 		args.add("out");
 		
-		args.add("testdata/src1/binary/lib/ConcreteA.aj");
-		args.add("testdata/src1/binary/lib/AbstractA.aj");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/lib/ConcreteA.aj");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/lib/AbstractA.aj");
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 		
@@ -55,8 +56,8 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		args.add("-d");
 		args.add("out");
 		
-		args.add("testdata/src1/binary/client/Client.java");
-		args.add("testdata/src1/binary/client/Client1.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/Client.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/Client1.java");
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 		
@@ -74,8 +75,8 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		args.add("-d");
 		args.add("out");
 		
-		args.add("testdata/src1/binary/client/MyAspect.aj");
-		args.add("testdata/src1/binary/client/Client1.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/MyAspect.aj");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/Client1.java");
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 		
@@ -92,8 +93,8 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		args.add("-d");
 		args.add("out");
 		
-		args.add("testdata/src1/binary/client/MyAspect1.aj");
-		args.add("testdata/src1/binary/client/Client1.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/MyAspect1.aj");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/Client1.java");
 		
 		CommandTestCase.runCompiler(args, new int[] {24, 30});
 
@@ -105,7 +106,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		args.add("-d");
 		args.add("out");
 		
-		args.add("testdata/src1/binary/client/Client1.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/Client1.java");
 		
 		CommandTestCase.runCompiler(args, new int[] {15, 17, 22});
 		
@@ -118,8 +119,8 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		args.add("-d");
 		args.add("out");
 		
-		args.add("testdata/src1/binary/client/MyAspect.aj");
-		args.add("testdata/src1/binary/client/Client1.java");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/MyAspect.aj");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/Client1.java");
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 	}

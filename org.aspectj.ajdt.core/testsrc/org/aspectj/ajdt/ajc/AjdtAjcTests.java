@@ -14,9 +14,15 @@
 
 package org.aspectj.ajdt.ajc;
 
+import java.io.File;
+
 import junit.framework.*;
 
 public class AjdtAjcTests extends TestCase {
+
+    public static final String TESTDATA_PATH 
+                                = "../org.aspectj.ajdt.core/testdata";
+    public static final File TESTDATA_DIR = new File(TESTDATA_PATH);
 
     public static Test suite() { 
         TestSuite suite = new TestSuite(AjdtAjcTests.class.getName());

@@ -128,7 +128,8 @@ public class AjdtCommandTestCase extends TestCase {
 		
 		outputWriter.flushBuffer();		
 		config = command.genBuildConfig(
-			new String[] { "-incremental", "-sourceroots", "testdata/src1" }, 
+			new String[] { "-incremental", "-sourceroots", 
+                    AjdtAjcTests.TESTDATA_PATH + "/src1" }, 
 			counter);
 	
 		assertTrue(

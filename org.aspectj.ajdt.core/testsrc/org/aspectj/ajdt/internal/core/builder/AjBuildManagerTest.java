@@ -12,6 +12,8 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
+import EajcModuleTests;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,6 +21,7 @@ import java.io.PrintWriter;
 
 import junit.framework.TestCase;
 
+import org.aspectj.ajdt.ajc.*;
 import org.aspectj.ajdt.ajc.BuildArgParser;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
@@ -31,9 +34,9 @@ public class AjBuildManagerTest extends TestCase {
 
 	private StreamPrintWriter outputWriter = new StreamPrintWriter(new PrintWriter(System.out));	
 	private MessageWriter messageWriter = new MessageWriter(outputWriter, false);
-	public static File source1 = new File("testdata/src1/A.java");
-	public static File source2 = new File("testdata/src1/Hello.java");
-	public static File source3 = new File("testdata/src1/X.java");
+	public static File source1 = new File(AjdtAjcTests.TESTDATA_DIR, "src1/A.java");
+	public static File source2 = new File(AjdtAjcTests.TESTDATA_DIR, "src1/Hello.java");
+	public static File source3 = new File(AjdtAjcTests.TESTDATA_DIR, "src1/X.java");
 
     
     /**
@@ -68,8 +71,9 @@ public class AjBuildManagerTest extends TestCase {
 				"-d", "out", 
 				"-classpath",
 				javaClassPath,
-				"testdata/src1/A.java",
-//				"testdata/src1/Hello.java",
+				AjdtAjcTests.TESTDATA_PATH 
+                + "/src1/A.java",
+//				EajcModuleTests.TESTDATA_PATH + "/src1/Hello.java",
 				 }, messageWriter);
         String err = parser.getOtherMessages(true);		
         assertTrue(err, null == err);

@@ -12,6 +12,7 @@
 
 package org.aspectj.ajdt.internal.compiler.batch;
 
+import org.aspectj.ajdt.ajc.*;
 import org.aspectj.ajdt.ajc.AjdtCommand;
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
@@ -57,7 +58,7 @@ public abstract class CommandTestCase extends TestCase {
 		
 		args.add("-g");  //XXX need this to get sourcefile and line numbers, shouldn't
 		
-		args.add("testdata/" + source);
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/" + source);
 		
 		runCompiler(args, expectedErrors);
 	}
@@ -72,7 +73,7 @@ public abstract class CommandTestCase extends TestCase {
 		args.add("-classpath");
 		args.add(getRuntimeClasspath());
 		
-		args.add("testdata/" + source);
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/" + source);
 		
 		ICommand compiler = runCompiler(args, NO_ERRORS);
 		Thread.sleep(100); 
@@ -130,7 +131,7 @@ public abstract class CommandTestCase extends TestCase {
 	}
 	
 	public static void printGenerated(String path, String name) throws IOException {		
-		String fullpath = "testdata/" + path;
+		String fullpath = AjdtAjcTests.TESTDATA_PATH + "/" + path;
 		LazyClassGen.disassemble(fullpath, name, System.out);
 	}
 	
