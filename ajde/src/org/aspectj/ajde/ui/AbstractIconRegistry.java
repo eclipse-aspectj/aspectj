@@ -48,7 +48,9 @@ public abstract class AbstractIconRegistry {
 	
 	protected final AbstractIcon METHOD = createIcon(STRUCTURE_PATH + "method.gif");
 	protected final AbstractIcon FIELD = createIcon(STRUCTURE_PATH + "field.gif");
-	protected final AbstractIcon ENUM_VALUE = createIcon(STRUCTURE_PATH + "field.gif");//???Change to an enum value icon...
+	protected final AbstractIcon ENUM_VALUE = createIcon(STRUCTURE_PATH + "field.gif"); // ??? should be enum value icon
+	protected final AbstractIcon ENUM = createIcon(STRUCTURE_PATH + "enum.gif");
+	protected final AbstractIcon ANNOTATION = createIcon(STRUCTURE_PATH + "annotation.gif");
 	protected final AbstractIcon CLASS = createIcon(STRUCTURE_PATH + "class.gif");
 	protected final AbstractIcon INTERFACE = createIcon(STRUCTURE_PATH + "interface.gif");
 
@@ -138,6 +140,10 @@ public abstract class AbstractIconRegistry {
 			return ERROR;
 		} else if (kind == IProgramElement.Kind.IMPORT_REFERENCE) {
 			return RELATION_REFERENCE_FORWARD;
+		} else if (kind == IProgramElement.Kind.ANNOTATION) {
+			return ANNOTATION;
+		} else if (kind == IProgramElement.Kind.ENUM) {
+			return ENUM;
 		} else {
 			System.err.println("AJDE Message: unresolved icon kind " + kind);
 			return null;
