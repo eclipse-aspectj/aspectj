@@ -121,12 +121,21 @@ public class BuildModule extends Task { // quickie hack...
         final boolean failonerror = buildSpec.failonerror;
         Builder builder = null;
         try  {
-            File buildScript = new File(buildSpec.moduleDir, "build.xml");  // XXXFileLiteral
-            if (buildScript.canRead()) {
-                if (!buildByScript(buildSpec, buildScript)) {
-                    log("unable to build " + buildSpec + " using script: " + buildScript);
-                }
-            } else {
+			// try using script first if not a product
+            boolean built = false;
+			if (null == buildSpec.productDir) { 
+	            File buildScript = new File(buildSpec.moduleDir, "build.xml");  // XXXFileLiteral
+	            if (buildScript.canRead()) {
+	                built = buildByScript(buildSpec, buildScript);
+	                if (!built) {
+	                    log("unable to build " 
+	                    	+ buildSpec 
+	                    	+ " using script: " 
+	                    	+ buildScript.getAbsolutePath());
+	                }
+	            } 
+			}
+            if (!built) {
                 builder = AntBuilder.getBuilder(
                     buildSpec.buildConfig, 
                     getProject(), 
