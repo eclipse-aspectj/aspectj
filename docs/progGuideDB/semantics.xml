@@ -881,6 +881,13 @@
   if(thisJoinPoint.getKind().equals("call"))
 </programlisting>
 
+	    <para>
+	    	Note that the order of evaluation for pointcut expression 
+	    	components at a join point is undefined. Writing <literal>if</literal> 
+	    	pointcuts that have side-effects is considered bad style and may also 
+	    	lead to potentially confusing or even changing behavior with regard 
+	    	to when or if the test code will run.
+	    </para>
       </sect3>
     </sect2>
 
