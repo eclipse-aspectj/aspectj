@@ -19,6 +19,7 @@ package org.aspectj.ajde.ui.internal;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -50,9 +51,10 @@ public class AjcBuildOptions implements BuildOptionsAdapter {
 	private static final String PRESERVE_LOCALS = AJC + ".preserveLocals";
 	private static final String DEFAULT = "default";
 	
-	
 	public AjcBuildOptions(UserPreferencesAdapter userPreferencesAdapter) {
 		this.preferencesAdapter = userPreferencesAdapter;
+		
+		
 	}
 
 	/** @deprecated */	
@@ -305,6 +307,11 @@ public class AjcBuildOptions implements BuildOptionsAdapter {
 			debugOptions.append( d );
 		}
 		return debugOptions.toString();
+	}
+
+
+	public Map getJavaOptionsMap() {
+		return null;
 	}
 
 }

@@ -16,6 +16,7 @@
  
 package org.aspectj.ajde;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -44,6 +45,15 @@ public interface BuildOptionsAdapter {
 	public static final String DEBUG_LINES  = "lines";
 	public static final String DEBUG_VARS   = "vars";
 	public static final String DEBUG_ALL    = "all";
+	
+	
+	/**
+	 * This map shortcuts any other Java-specific options that would get set by return
+	 * values from the other methods.
+	 * 
+	 * @return	a map of all the java-specific options, null if individual options will be passed
+	 */
+	public Map getJavaOptionsMap();  
 	
 	/**
 	 * Use javac to generate .class files.  The default is "false".

@@ -45,6 +45,7 @@ import java.util.StringTokenizer;
 
 public class CompilerAdapter {
 
+	private Map optionsMap;
 	private AjBuildManager buildManager = null;
     private MessageHandlerAdapter messageHandler = null;
     private BuildNotifierAdapter currNotifier = null;
@@ -146,6 +147,8 @@ public class CompilerAdapter {
      *   corresponding AjBuildConfig otherwise
      */
 	public AjBuildConfig genBuildConfig(String configFile) {
+		
+
         init();
 	    File config = new File(configFile);
         if (!config.exists()) {
@@ -201,6 +204,9 @@ public class CompilerAdapter {
      * 
      */
     protected AjBuildConfig fixupBuildConfig(AjBuildConfig local, AjBuildConfig global, BuildOptionsAdapter buildOptions, ProjectPropertiesAdapter projectOptions) {
+		if (Ajde.getDefault().getBuildManager().getBuildOptions().getJavaOptionsMap() != null) {
+			local.getJavaOptions().putAll(Ajde.getDefault().getBuildManager().getBuildOptions().getJavaOptionsMap());
+		}
         return local;
     }
 
