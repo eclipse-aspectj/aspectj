@@ -121,7 +121,7 @@ public class TestDiffs { // XXX pretty dumb implementation
         if ((null == out) || LangUtil.isEmpty(list)) {
             return;
         }
-        int i = 0;
+//        int i = 0;
         final String suffix = " " + label;
         final String LABEL = list.size() + suffix;
         out.println("## START " + LABEL);

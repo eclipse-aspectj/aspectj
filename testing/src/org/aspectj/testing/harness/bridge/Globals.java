@@ -58,7 +58,7 @@ public class Globals {
         J2SE14_RTJAR =
             getRtJarFor(J2SE14_RTJAR_NAME, "c:/home/apps/jdk14");
 
-        String forkSpec = getSystemProperty(FORK_NAME, null);
+//        String forkSpec = getSystemProperty(FORK_NAME, null);
         globalsValid =
             (FileUtil.canReadFile(F_testingclient_jar)
                 && FileUtil.canReadFile(F_aspectjrt_jar)

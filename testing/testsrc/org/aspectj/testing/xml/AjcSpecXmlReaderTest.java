@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import junit.framework.*;
+//import junit.framework.*;
 import junit.framework.TestCase;
 
 import org.aspectj.testing.harness.bridge.AjcSpecTest;
@@ -62,7 +62,7 @@ public class AjcSpecXmlReaderTest extends TestCase {
     
     /** test that all AjcSpecXmlReader.me.expectedProperties() are bean-writable */
     public void testBeanInfo() throws IntrospectionException {
-        AjcSpecXmlReader me = AjcSpecXmlReader.getReader();
+//        AjcSpecXmlReader me = AjcSpecXmlReader.getReader();
         AjcSpecXmlReader.BProps[] expected
             = AjcSpecXmlReader.expectedProperties();
         PropertyDescriptor[] des;

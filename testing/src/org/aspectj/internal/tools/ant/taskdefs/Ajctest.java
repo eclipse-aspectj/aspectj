@@ -35,7 +35,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
-import java.util.Collection;
+//import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -67,7 +67,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.ExecTask;
+//import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.taskdefs.LogOutputStream;
 import org.apache.tools.ant.taskdefs.Mkdir;
@@ -117,7 +117,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
     private Stats ajdocStats = new Stats();
     private Stats ajcStats   = new Stats();
     private Stats runStats   = new Stats();
-    private Stats errorStats   = new Stats();
+//    private Stats errorStats   = new Stats();
     private static final String NO_TESTID = "NONE";    
     private File workingdir = new File("ajworkingdir"); //XXX
 
@@ -1067,22 +1067,22 @@ public class Ajctest extends Task implements PropertyChangeListener {
     // class Run
     // todo: need to run in a wrapper which report non-zero int on exception
     // todo: unused method? see executeJava above.
-    private int java(String classname, Collection args) throws BuildException {
-        Java java = (Java)project.createTask("java");
-        java.setClassname(classname);
-        for (Iterator i = args.iterator(); i.hasNext();) {
-            Object o = i.next();
-            Commandline.Argument arg = java.createArg();
-            if (o instanceof File) {
-                arg.setFile((File)o);
-            } else if (o instanceof Path) {
-                arg.setPath((Path)o);
-            } else {
-                arg.setValue(o+"");
-            }
-        }
-        return java.executeJava();
-    }
+//    private int java(String classname, Collection args) throws BuildException {
+//        Java java = (Java)project.createTask("java");
+//        java.setClassname(classname);
+//        for (Iterator i = args.iterator(); i.hasNext();) {
+//            Object o = i.next();
+//            Commandline.Argument arg = java.createArg();
+//            if (o instanceof File) {
+//                arg.setFile((File)o);
+//            } else if (o instanceof Path) {
+//                arg.setPath((Path)o);
+//            } else {
+//                arg.setValue(o+"");
+//            }
+//        }
+//        return java.executeJava();
+//    }
 
     private static List allErrors = new Vector();
     private List errors = new Vector();
@@ -1547,77 +1547,77 @@ public class Ajctest extends Task implements PropertyChangeListener {
     }
 
     /** implement invocation of ajc */
-    private void java(Testset testset, List args) throws BuildException {
-        Java java = (Java)project.createTask("java");
-        java.setClassname("org.aspectj.tools.ajc.Main");
-        if (classpath != null) {
-            java.setClasspath(classpath);
-        }
-        for (Iterator iter = args.iterator(); iter.hasNext();) {
-            Arg arg = (Arg)iter.next();
-            if (arg.isj) {
-                java.createJvmarg().setValue(arg.name);
-                if (!arg.value.equals("")) {
-                    java.createJvmarg().setValue(arg.value);
-                }
-            }
-        }
-        for (Iterator iter = args.iterator(); iter.hasNext();) {
-            Arg arg = (Arg)iter.next();
-            if (!arg.isj) {
-                java.createArg().setValue(arg.name);
-                if (!arg.value.equals("")) {
-                    java.createArg().setValue(arg.value);
-                }
-            }
-        }
-        for (Iterator iter = testset.files.iterator(); iter.hasNext();) {
-            java.createArg().setFile((File)iter.next());
-        }
-        for (Iterator iter = testset.argfiles.iterator(); iter.hasNext();) {
-            java.createArg().setValue("-argfile");
-            java.createArg().setFile((File)iter.next());
-        }
-        java.setFork(true);
-        java.execute();
-    }
-
-    private void exec(Testset testset, List args) throws BuildException {
-        ExecTask exec = (ExecTask)project.createTask("exec");
-        exec.setExecutable("java");
-        if (classpath != null) {
-            exec.createArg().setValue("-classpath");
-            exec.createArg().setPath(classpath);
-        }
-        for (Iterator iter = args.iterator(); iter.hasNext();) {
-            Arg arg = (Arg)iter.next();
-            if (arg.isj) {
-                exec.createArg().setValue(arg.name);
-                if (!arg.value.equals("")) {
-                    exec.createArg().setValue(arg.value);
-                }
-            }
-        }
-        exec.createArg().setValue("org.aspectj.tools.ajc.Main");
-        for (Iterator iter = args.iterator(); iter.hasNext();) {
-            Arg arg = (Arg)iter.next();
-            if (!arg.isj) {
-                exec.createArg().setValue(arg.name);
-                if (!arg.value.equals("")) {
-                    exec.createArg().setValue(arg.value);
-                }
-            }
-        }
-        for (Iterator iter = testset.files.iterator(); iter.hasNext();) {
-            exec.createArg().setFile((File)iter.next());
-        }
-        for (Iterator iter = testset.argfiles.iterator(); iter.hasNext();) {
-            exec.createArg().setValue("-argfile");
-            exec.createArg().setFile((File)iter.next());
-        }
-        exec.execute();
-    }
-    
+//    private void java(Testset testset, List args) throws BuildException {
+//        Java java = (Java)project.createTask("java");
+//        java.setClassname("org.aspectj.tools.ajc.Main");
+//        if (classpath != null) {
+//            java.setClasspath(classpath);
+//        }
+//        for (Iterator iter = args.iterator(); iter.hasNext();) {
+//            Arg arg = (Arg)iter.next();
+//            if (arg.isj) {
+//                java.createJvmarg().setValue(arg.name);
+//                if (!arg.value.equals("")) {
+//                    java.createJvmarg().setValue(arg.value);
+//                }
+//            }
+//        }
+//        for (Iterator iter = args.iterator(); iter.hasNext();) {
+//            Arg arg = (Arg)iter.next();
+//            if (!arg.isj) {
+//                java.createArg().setValue(arg.name);
+//                if (!arg.value.equals("")) {
+//                    java.createArg().setValue(arg.value);
+//                }
+//            }
+//        }
+//        for (Iterator iter = testset.files.iterator(); iter.hasNext();) {
+//            java.createArg().setFile((File)iter.next());
+//        }
+//        for (Iterator iter = testset.argfiles.iterator(); iter.hasNext();) {
+//            java.createArg().setValue("-argfile");
+//            java.createArg().setFile((File)iter.next());
+//        }
+//        java.setFork(true);
+//        java.execute();
+//    }
+//
+//    private void exec(Testset testset, List args) throws BuildException {
+//        ExecTask exec = (ExecTask)project.createTask("exec");
+//        exec.setExecutable("java");
+//        if (classpath != null) {
+//            exec.createArg().setValue("-classpath");
+//            exec.createArg().setPath(classpath);
+//        }
+//        for (Iterator iter = args.iterator(); iter.hasNext();) {
+//            Arg arg = (Arg)iter.next();
+//            if (arg.isj) {
+//                exec.createArg().setValue(arg.name);
+//                if (!arg.value.equals("")) {
+//                    exec.createArg().setValue(arg.value);
+//                }
+//            }
+//        }
+//        exec.createArg().setValue("org.aspectj.tools.ajc.Main");
+//        for (Iterator iter = args.iterator(); iter.hasNext();) {
+//            Arg arg = (Arg)iter.next();
+//            if (!arg.isj) {
+//                exec.createArg().setValue(arg.name);
+//                if (!arg.value.equals("")) {
+//                    exec.createArg().setValue(arg.value);
+//                }
+//            }
+//        }
+//        for (Iterator iter = testset.files.iterator(); iter.hasNext();) {
+//            exec.createArg().setFile((File)iter.next());
+//        }
+//        for (Iterator iter = testset.argfiles.iterator(); iter.hasNext();) {
+//            exec.createArg().setValue("-argfile");
+//            exec.createArg().setFile((File)iter.next());
+//        }
+//        exec.execute();
+//    }
+//    
     public void handle(Throwable t) {
         log("handling " + t);
         if (t != null) t.printStackTrace();

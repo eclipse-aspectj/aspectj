@@ -104,7 +104,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
 		//final String baseDir = reader.getFile().getParent();
 		String line;
 		String[] words;
-		boolean isRequired = true;
+//		boolean isRequired = true;
 
 		final int startLine = reader.getLineNumber() - 1;
 

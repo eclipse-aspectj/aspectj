@@ -105,7 +105,7 @@ public class OptionsTest extends TestCase {
         return OPTIONS;
     }
 
-    private boolean verbose;
+//    private boolean verbose;
     private OptionChecker localOptionChecker;
 
     public void testDebugCase() {

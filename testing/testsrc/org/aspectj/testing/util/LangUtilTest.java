@@ -70,7 +70,7 @@ public class LangUtilTest extends TestCase {
     
 
 	public void skiptestUnflatten() {
-        LangUtil.FlattenSpec COMMA = LangUtil.FlattenSpec.COMMA;
+//        LangUtil.FlattenSpec COMMA = LangUtil.FlattenSpec.COMMA;
         LangUtil.FlattenSpec LIST = LangUtil.FlattenSpec.LIST;
             
         FTest[] tests = new FTest[]

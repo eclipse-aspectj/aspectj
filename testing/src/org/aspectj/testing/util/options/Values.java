@@ -170,7 +170,7 @@ public class Values {
     private static String resolve(Option.Value[] input, int[] matches) {
         String err = null;
         // seek force-off
-        Option.Value forceOff = null;
+//        Option.Value forceOff = null;
         Option option = null;
         // find and remove any force-off
         for (int i = 0;(null == err) && (i < matches.length); i++) {

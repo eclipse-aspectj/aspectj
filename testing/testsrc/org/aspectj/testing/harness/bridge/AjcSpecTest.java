@@ -193,7 +193,7 @@ public class AjcSpecTest extends TestCase {
 //    }
 
 	public static void sameIAjcRun(IAjcRun lhs, IAjcRun rhs, Assert reporter) {
-        Assert a = reporter;
+//        Assert a = reporter;
         assertTrue(lhs != null);
         assertTrue(rhs != null);
         Class c = lhs.getClass();

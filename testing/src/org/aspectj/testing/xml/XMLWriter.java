@@ -261,7 +261,7 @@ public class XMLWriter {
      * @throws IllegalStateException if start element does not match
      */
     public void endElement(String name) {
-        int level = stack.size();
+//        int level = stack.size();
         String err = null;
         StackElement element = null;
         if (0 == stack.size()) {

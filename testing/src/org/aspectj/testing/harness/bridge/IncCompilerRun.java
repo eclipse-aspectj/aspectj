@@ -16,14 +16,14 @@ package org.aspectj.testing.harness.bridge;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.*;
+//import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+//import java.util.Collections;
+//import java.util.List;
 
 import org.aspectj.bridge.ICommand;
-import org.aspectj.bridge.IMessage;
+//import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.testing.ajde.CompileCommand;
 import org.aspectj.testing.run.IRunIterator;
@@ -224,7 +224,7 @@ public class IncCompilerRun implements IAjcRun {
                     MessageUtil.info(handler, "fresh not supported by compiler: " + compiler);
                 }
             }
-            final long startTime = System.currentTimeMillis();
+//            final long startTime = System.currentTimeMillis();
             commandResult = compiler.repeatCommand(handler);
             // XXX disabled LangUtil.throwIaxIfNotAllAssignable(actualRecompiled, File.class, "recompiled");
             report = true;
@@ -258,9 +258,9 @@ public class IncCompilerRun implements IAjcRun {
         return result;
 	}
 
-	private boolean hasFile(ArrayList changed, File f) {
-		return changed.contains(f); // d
-	}
+//	private boolean hasFile(ArrayList changed, File f) {
+//		return changed.contains(f); // d
+//	}
 
 
 	public String toString() {
@@ -285,9 +285,9 @@ public class IncCompilerRun implements IAjcRun {
          * skip staging (always true),  skip badInput (irrelevant)
          * do dirChanges, do messages but skip children. 
          */
-        private static final XMLNames NAMES = new XMLNames(XMLNames.DEFAULT,
-                "", "", null, "", "classes", null, "", "", false, false, true);
-                
+//        private static final XMLNames NAMES = new XMLNames(XMLNames.DEFAULT,
+//                "", "", null, "", "classes", null, "", "", false, false, true);
+//                
 		/** identifies files this run owns, so {name}.{tag}.java maps to {name}.java */
 		String tag;
 

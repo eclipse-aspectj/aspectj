@@ -231,7 +231,7 @@ class MessageAdder implements Runnable {
         final long waitBetweenAdds = interval * 1000l;
         long curTime = System.currentTimeMillis();
         final long timeout = curTime + MAX_MILLIS;
-        final Thread thread = Thread.currentThread();
+//        final Thread thread = Thread.currentThread();
         int numAdded = 0;
         while (!stop && (timeout > curTime) 
             && (numAdded < numToAdd)) {

@@ -244,7 +244,7 @@ public class LangUtil {
         }
         StringBuffer result = new StringBuffer();
         final String cname = LangUtil.unqualifiedClassName(superType);
-        int index = 0;
+//        int index = 0;
         for (int i = 0; i < ra.length; i++) {
 			if (null == ra[i]) {
                 result.append(", [" + i + "] null");
@@ -354,8 +354,8 @@ public class LangUtil {
         String emptyUnflattened) {
         throwIaxIfNull(input, "input");
         final boolean haveDelim = (!isEmpty(delim));
-        final boolean haveNullFlattened = (null != nullFlattened);
-        final boolean escaping = (haveDelim && (null != escape));
+//        final boolean haveNullFlattened = (null != nullFlattened);
+//        final boolean escaping = (haveDelim && (null != escape));
         if (!isEmpty(prefix)) {
             if (input.startsWith(prefix)) {
                 input = input.substring(prefix.length());
@@ -383,9 +383,9 @@ public class LangUtil {
         }
         
         StringTokenizer st = new StringTokenizer(input, delim, true);
-        StringBuffer cur = new StringBuffer();
-        boolean lastEndedWithEscape = false;
-        boolean lastWasDelim = false;
+//        StringBuffer cur = new StringBuffer();
+//        boolean lastEndedWithEscape = false;
+//        boolean lastWasDelim = false;
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
             System.out.println("reading " + token);

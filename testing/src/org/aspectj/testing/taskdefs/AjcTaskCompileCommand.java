@@ -12,11 +12,11 @@
 
 package org.aspectj.testing.taskdefs;
 
-import java.awt.Frame;
+//import java.awt.Frame;
 import java.io.*;
-import java.lang.reflect.*;
+//import java.lang.reflect.*;
 import java.util.*;
-import java.util.List;
+//import java.util.List;
 
 import org.apache.tools.ant.*;
 import org.apache.tools.ant.Project;
@@ -71,7 +71,7 @@ public class AjcTaskCompileCommand implements ICommand {
         }
         long curTime = System.currentTimeMillis();
         final long timeout = curTime + (timeoutSeconds*1000);
-        final Thread thread = Thread.currentThread();
+//        final Thread thread = Thread.currentThread();
         final long targetQuietTime = 1000 * seconds;
         int numMessages = holder.numMessages(null, true);
         long numMessagesTime = curTime;

@@ -166,27 +166,27 @@ public class MessageListXmlReader {
      * The property setter checks are redundant with tests based on
      * expectedProperties().
      */
-    private static void setupDigesterCompileTimeCheck() { 
-        if (true) { throw new Error("never invoked"); }
-
-        MessageListHolder holder = new MessageListHolder();
-        MessageList ml = new MessageList();
-        SoftMessage m = new SoftMessage();
-        SoftSourceLocation sl = new SoftSourceLocation();
-
-        holder.setMessageList(ml);
-        ml.addMessage((IMessage) null);
-        m.setSourceLocation(sl);
-        m.setText((String) null);
-        m.setKindAsString((String) null);
-        
-        sl.setFile((String) null); 
-        sl.setLine((String) null); 
-        sl.setColumn((String) null); 
-        sl.setEndLine((String) null); 
-        
-        // add attribute setters to validate?
-    }
+//    private static void setupDigesterCompileTimeCheck() { 
+//        if (true) { throw new Error("never invoked"); }
+//
+//        MessageListHolder holder = new MessageListHolder();
+//        MessageList ml = new MessageList();
+//        SoftMessage m = new SoftMessage();
+//        SoftSourceLocation sl = new SoftSourceLocation();
+//
+//        holder.setMessageList(ml);
+//        ml.addMessage((IMessage) null);
+//        m.setSourceLocation(sl);
+//        m.setText((String) null);
+//        m.setKindAsString((String) null);
+//        
+//        sl.setFile((String) null); 
+//        sl.setLine((String) null); 
+//        sl.setColumn((String) null); 
+//        sl.setEndLine((String) null); 
+//        
+//        // add attribute setters to validate?
+//    }
 
     // inner classes, to make public for bean utilities    
     /** a list of messages */

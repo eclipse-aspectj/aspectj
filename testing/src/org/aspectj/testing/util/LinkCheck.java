@@ -23,7 +23,7 @@ import javax.swing.text.html.HTML.Tag;
 import org.aspectj.bridge.*;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.util.LangUtil;
-import org.aspectj.util.FileUtil;
+//import org.aspectj.util.FileUtil;
 
 /**
  * Quick and dirty link checker.
@@ -146,14 +146,14 @@ public class LinkCheck {
         }
     }
 
-    private static boolean isCheckedFileType(URL url) {
-        if (null == url) {
-            return false;
-        } 
-        String file = url.getFile();
-        return !FileUtil.hasZipSuffix(file)
-            && !file.endsWith(".pdf");
-    }
+//    private static boolean isCheckedFileType(URL url) {
+//        if (null == url) {
+//            return false;
+//        } 
+//        String file = url.getFile();
+//        return !FileUtil.hasZipSuffix(file)
+//            && !file.endsWith(".pdf");
+//    }
     
     private final Messages messages;
     private final HTMLEditorKit.Parser parser; // XXX untested - stateful
@@ -353,13 +353,13 @@ public class LinkCheck {
             info("uncommentedReference", link); // XXX bug?
         }
 
-        private void addingNullLinkFrom(URL doc) {
-            info("addingNullLinkFrom", doc);
-        }
-
-        private void noContentCheck(Link link) {
-            info("noContentCheck", link);
-        }
+//        private void addingNullLinkFrom(URL doc) {
+//            info("addingNullLinkFrom", doc);
+//        }
+//
+//        private void noContentCheck(Link link) {
+//            info("noContentCheck", link);
+//        }
 
         private void notTextContentType(Link link) {
             info("notTextContentType", link);
@@ -381,9 +381,9 @@ public class LinkCheck {
             info("acceptingUncheckedLink", "doc=" + doc + " link=" + link);
         }
 
-        private void cantHandleRefsYet(Link link) {
-            info("cantHandleRefsYet", link.url);
-        }
+//        private void cantHandleRefsYet(Link link) {
+//            info("cantHandleRefsYet", link.url);
+//        }
 
         private void namedReferenceNotFound(String ref) {
             // XXX find all references to this unfound named reference

@@ -478,9 +478,9 @@ public class Option implements Comparable {
             return Factory.class.getName() + ": " + factoryName;
         }
 
-        private void checkUnique(Option result) {
-            String name = result.family + "." + result.name;
-        }
+//        private void checkUnique(Option result) {
+//            String name = result.family + "." + result.name;
+//        }
     }
 
     /**

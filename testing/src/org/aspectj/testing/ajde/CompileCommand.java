@@ -200,12 +200,12 @@ public class CompileCommand implements ICommand {
         }
     }
 
-    private Object makeLoggingProxy(Class interfac) {
-        return Proxy.newProxyInstance(
-            interfac.getClassLoader(),
-            new Class[] { interfac },
-            loggingProxy);
-    }
+//    private Object makeLoggingProxy(Class interfac) {
+//        return Proxy.newProxyInstance(
+//            interfac.getClassLoader(),
+//            new Class[] { interfac },
+//            loggingProxy);
+//    }
     
     private Object makeProxy(Class interfac) {
         return Proxy.newProxyInstance(

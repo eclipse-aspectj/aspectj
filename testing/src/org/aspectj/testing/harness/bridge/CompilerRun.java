@@ -413,9 +413,9 @@ public class CompilerRun implements IAjcRun {
             MessageUtil.abort(status, spec.testSetup.failureReason);
             return false;
         }
-        boolean ignoreWarnings =
-            (spec.testSetup.ignoreWarningsSet
-                && spec.testSetup.ignoreWarnings);
+//        boolean ignoreWarnings =
+//            (spec.testSetup.ignoreWarningsSet
+//                && spec.testSetup.ignoreWarnings);
         AjcMessageHandler handler =
             new AjcMessageHandler(spec.getMessages());
         handler.init();
@@ -688,18 +688,18 @@ public class CompilerRun implements IAjcRun {
         }
 
         /** @return true if javac is available on the classpath */
-        private static boolean haveJavac() { // XXX copy/paste from JavaCWrapper.java
-            Class compilerClass = null;
-            try {
-                compilerClass = Class.forName("com.sun.tools.javac.Main");
-            } catch (ClassNotFoundException ce1) {
-                try {
-                    compilerClass = Class.forName("sun.tools.javac.Main");
-                } catch (ClassNotFoundException ce2) {
-                }
-            }
-            return (null != compilerClass);
-        }
+//        private static boolean haveJavac() { // XXX copy/paste from JavaCWrapper.java
+//            Class compilerClass = null;
+//            try {
+//                compilerClass = Class.forName("com.sun.tools.javac.Main");
+//            } catch (ClassNotFoundException ce1) {
+//                try {
+//                    compilerClass = Class.forName("sun.tools.javac.Main");
+//                } catch (ClassNotFoundException ce2) {
+//                }
+//            }
+//            return (null != compilerClass);
+//        }
 
         protected String compiler;
 
@@ -1035,7 +1035,7 @@ public class CompilerRun implements IAjcRun {
             if (null != source) {
                 String sourceVersion = source.unflatten()[1];
                 ArrayList toAdd = new ArrayList();
-                String err =
+                /*String err =*/
                     updateBootclasspathForSourceVersion(
                         sourceVersion,
                         spec.compiler,

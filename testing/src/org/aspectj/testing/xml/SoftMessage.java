@@ -15,7 +15,7 @@ package org.aspectj.testing.xml;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
+//import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -124,7 +124,7 @@ public class SoftMessage implements IMessage {
         if (!LangUtil.isEmpty(extras)) {
             out.endAttributes();
             for (Iterator iter = extras.iterator(); iter.hasNext();) {
-				ISourceLocation element = (ISourceLocation) iter.next();
+				/*ISourceLocation element = (ISourceLocation)*/ iter.next();
                 SoftSourceLocation.writeXml(out, sl);            
 			}
         }

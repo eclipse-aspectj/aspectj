@@ -960,7 +960,7 @@ public class Tester {
         final boolean failed = fail || (null != thrown);
         IMessage.Kind kind = (failed ? IMessage.FAIL : IMessage.INFO);
         IMessage m = new Message(message, kind, thrown, null);
-        final boolean handled = messageHandler.handleMessage(m);
+        /*final boolean handled = */messageHandler.handleMessage(m);
     }
 //    private static void resofhandle(String message, Throwable thrown, boolean fail) {
 //     /* If FAIL and the message handler returns false (normally),

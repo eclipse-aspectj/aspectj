@@ -68,7 +68,7 @@ public class RunSpecIterator implements IRunIterator  {
 
 	private final IMessage.Kind failureKind;
 
-	private boolean didCleanup;
+//	private boolean didCleanup;
     
     /**
      * Create a RunSpecIterator.

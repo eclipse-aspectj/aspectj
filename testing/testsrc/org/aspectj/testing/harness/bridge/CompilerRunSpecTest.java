@@ -240,7 +240,7 @@ public class CompilerRunSpecTest extends TestCase {
             assertTrue(spec != null);
             AbstractRunSpec.RT parentRuntime = new AbstractRunSpec.RT();
             String result;
-            String expResult;
+//            String expResult;
 
             if (null != arg) {
                 parentRuntime.setOptions(new String[] { arg });
@@ -342,7 +342,7 @@ public class CompilerRunSpecTest extends TestCase {
         String resultContains =
             !expectPass ? null : "[-" + name + ", 1." + i;
         String messagesContain = expectedErr;
-        MessageHandler handler =
+        /*MessageHandler handler =*/
             runTest(
                 specOptions,
                 globalOptions,

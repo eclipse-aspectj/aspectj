@@ -487,7 +487,7 @@ public class Validator {
                 fail(failMessage + ": unable to get parent " + dir);
             }
         } else {
-            File result = FileUtil.makeNewChildDir(dir, name);
+            FileUtil.makeNewChildDir(dir, name);
             if (deleteContents) {
                 FileUtil.deleteContents(dir);
             }

@@ -129,9 +129,9 @@ public class OptionChecker {
             options);
     }
 
-    private Values getValues(String[] input, Options options) {
-        return getValuesNegative(input, null, options);
-    }
+//    private Values getValues(String[] input, Options options) {
+//        return getValuesNegative(input, null, options);
+//    }
 
     private Values getValues(String[] input) {
         return getValuesNegative(input, null);

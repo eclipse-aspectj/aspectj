@@ -31,7 +31,7 @@ import org.aspectj.util.LineReader;
  */
 public class BridgeUtil {
 
-    private static final String INDENT = "    ";
+//    private static final String INDENT = "    ";
 
     /** result value when writeMessage is passed null */
     private static final String NULL_MESSAGE_OUTPUT = "<null message output>";
@@ -298,7 +298,7 @@ public class BridgeUtil {
      * file:#:# - file, line, column
      * file:#:#:? - file, line, column, message
      */
-        SourceLocation result = null;
+//        SourceLocation result = null;
         if ((null == input) || (0 == input.length())) {
             if (null == defaultFile) {
                 return null;
@@ -312,7 +312,7 @@ public class BridgeUtil {
         int line = 0;
         int endLine = 0;
         int column = 0;
-        String message = null;
+//        String message = null;
         
         // first try line only
         line = convert(input);
@@ -355,7 +355,7 @@ public class BridgeUtil {
                    //col = "expecting col(number) at \"" + col + "\" in " + input;
                    //throw new IllegalArgumentException(col);
                 } else if (-1 != colon3) { // 3 colon => message
-                    message = input.substring(colon3+1); // do not trim message
+                    input.substring(colon3+1); // do not trim message
                 }
             }
         }

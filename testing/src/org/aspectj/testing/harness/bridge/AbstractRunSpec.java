@@ -30,7 +30,7 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.testing.run.IRunIterator;
-import org.aspectj.testing.util.*;
+//import org.aspectj.testing.util.*;
 import org.aspectj.testing.util.BridgeUtil;
 import org.aspectj.testing.util.options.*;
 import org.aspectj.testing.util.options.Option.InvalidInputException;
@@ -576,23 +576,23 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
         }
     }
     
-    /** @return null if value is null or name="{value}" otherwise */
-    private String makeAttr(XMLWriter out, String name, String value) {
-        if (null == value) {
-            return null;
-        }
-        return XMLWriter.makeAttribute(name, value);
-    }
-    
-    /** @return null if list is null or empty or name="{flattenedList}" otherwise */
-    private String makeAttr(XMLWriter out, String name, List list) {
-        if (LangUtil.isEmpty(list)) {
-            return null;
-        }
-        String flat = XMLWriter.flattenList(list);
-        return XMLWriter.makeAttribute(name, flat);
-    }
-    
+//    /** @return null if value is null or name="{value}" otherwise */
+//    private String makeAttr(XMLWriter out, String name, String value) {
+//        if (null == value) {
+//            return null;
+//        }
+//        return XMLWriter.makeAttribute(name, value);
+//    }
+//    
+//    /** @return null if list is null or empty or name="{flattenedList}" otherwise */
+//    private String makeAttr(XMLWriter out, String name, List list) {
+//        if (LangUtil.isEmpty(list)) {
+//            return null;
+//        }
+//        String flat = XMLWriter.flattenList(list);
+//        return XMLWriter.makeAttribute(name, flat);
+//    }
+//    
     /** @return true if writeAttributes(..) will produce any output */
     protected boolean haveAttributes() {
         return ((!LangUtil.isEmpty(xmlNames.descriptionName)
@@ -981,7 +981,7 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
             if (LangUtil.isEmpty(parentOptions)) {
                 return result;
             }
-            boolean haveOption = false;
+//            boolean haveOption = false;
             String[] parents = (String[]) parentOptions.toArray(new String[0]);
             try {
                 result = validOptions.acceptInput(parents);
@@ -1031,7 +1031,7 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
                 return new String[0];
             }
             ArrayList result = new ArrayList();
-            boolean haveOption = false;
+//            boolean haveOption = false;
             for (int i = 0; i < validOptions.length; i++) {
 				String option = validOptions[i];
                 if (LangUtil.isEmpty(option)) {

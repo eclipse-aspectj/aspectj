@@ -112,7 +112,7 @@ public class ParseTestCase extends TestCase {
 		
 		System.out.println(test);
 		
-		List ret = new ArrayList();
+//		List ret = new ArrayList();
 		
 		NodeList children = node.getChildNodes();
 		for (int i=0; i < children.getLength(); i++) {
@@ -127,7 +127,7 @@ public class ParseTestCase extends TestCase {
 		String kind = node.getNodeName();
 		if (kind.equals("compile")) {
 			List args = parseChildrenStrings(node, "arg");
-			List files = parseChildrenStrings(node, "file");
+			/*List files = */parseChildrenStrings(node, "file");
 			List expectedMessages = parseChildrenMessages(node);
             CompilerRun.Spec spec = new CompilerRun.Spec();
             spec.addOptions((String[]) args.toArray(new String[0]));
@@ -139,7 +139,7 @@ public class ParseTestCase extends TestCase {
             JavaRun.Spec spec = new JavaRun.Spec();
             spec.className = getAttributeString(node, "class");
             spec.addOptions(new String[0]);  //??? could add support here
-            JavaRun run = new JavaRun(spec);
+            /*JavaRun run = */new JavaRun(spec);
 			return spec;
 		}
 		

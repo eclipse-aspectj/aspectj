@@ -35,9 +35,9 @@ public class CompilerRunTest extends TestCase {
         dummyReports.add("run: " + Arrays.asList(args));
     }
     
-    private static void dummyRepeating(String[] args) {
-        dummyReports.add("repeat: " + Arrays.asList(args));
-    }
+//    private static void dummyRepeating(String[] args) {
+//        dummyReports.add("repeat: " + Arrays.asList(args));
+//    }
 
     private File testBaseDir;
         
@@ -67,7 +67,7 @@ public class CompilerRunTest extends TestCase {
     }
     
     public void testExtDirs() {
-        String[] globals = null;
+//        String[] globals = null;
         CompilerRun.Spec spec = new CompilerRun.Spec();
         spec.setExtdirs("one,two"); 
         spec.setFiles("Foo.java");

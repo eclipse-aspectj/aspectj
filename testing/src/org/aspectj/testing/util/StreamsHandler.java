@@ -90,7 +90,7 @@ public class StreamsHandler {
         outDelegate = new ProxyPrintStream(System.out);
         errDelegate = new ProxyPrintStream(System.err);
         this.listening = listen;
-        final PrintStream HIDE = NullPrintStream.NULL_PrintStream;
+//        final PrintStream HIDE = NullPrintStream.NULL_PrintStream;
         outSniffer = new StreamSniffer(outDelegate);
         System.setOut(new PrintStream(outSniffer));
         errSniffer = new StreamSniffer(errDelegate);

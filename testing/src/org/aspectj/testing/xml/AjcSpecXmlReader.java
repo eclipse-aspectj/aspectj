@@ -16,7 +16,7 @@
 package org.aspectj.testing.xml;
 
 import java.io.*;
-import java.util.Vector;
+//import java.util.Vector;
 
 import org.apache.commons.digester.Digester;
 import org.aspectj.bridge.AbortException;
@@ -61,7 +61,7 @@ public class AjcSpecXmlReader {
      *   - property read-only (?)
      */
     
-    private static final String EOL = "\n";
+//    private static final String EOL = "\n";
     
     /** presumed relative-path to dtd file for any XML files written by writeSuiteToXmlFile */
     public static final String DTD_PATH = "../tests/ajcTestSuite.dtd";
@@ -318,63 +318,63 @@ public class AjcSpecXmlReader {
      * The property setter checks are redundant with tests based on
      * expectedProperties().
      */
-    private static void setupDigesterCompileTimeCheck() { 
-        if (true) { throw new Error("never invoked"); }
-        AjcTest.Suite.Spec suite = new AjcTest.Suite.Spec();
-        AjcTest.Spec test = new AjcTest.Spec();
-//        AjcTest test = new AjcTest();
-//        test.addRunSpec((AbstractRunSpec) null);
-////        test.makeIncCompilerRun((IncCompilerRun.Spec) null);
-////        test.makeJavaRun((JavaRun.Spec) null);
-//        test.setDescription((String) null);
-//        test.setTestBaseDirOffset((String) null);
-//        test.setBugId((String) null);
-//        test.setTestSourceLocation((ISourceLocation) null);
-            
-        CompilerRun.Spec crunSpec = new CompilerRun.Spec();
-        crunSpec.addMessage((IMessage) null);
-        // XXX crunSpec.addSourceLocation((ISourceLocation) null);
-        crunSpec.addWrapFile((AbstractRunSpec.WrapFile) null);
-        crunSpec.setOptions((String) null);
-        crunSpec.setPaths((String) null);
-        crunSpec.setIncludeClassesDir(false);
-        crunSpec.setReuseCompiler(false);
-        
-        IncCompilerRun.Spec icrunSpec = new IncCompilerRun.Spec();
-        icrunSpec.addMessage((IMessage) null);
-        icrunSpec.setTag((String) null);
-        icrunSpec.setFresh(false);
-
-        JavaRun.Spec jrunspec = new JavaRun.Spec();
-        jrunspec.addMessage((IMessage) null);
-        jrunspec.setClassName((String) null);
-        jrunspec.addMessage((IMessage) null);
-        // input s.b. interpretable by Boolean.valueOf(String)
-        jrunspec.setSkipTester(true); 
-        jrunspec.setErrStreamIsError(true);
-        jrunspec.setOutStreamIsError(true);
-        
-        DirChanges.Spec dcspec = new DirChanges.Spec();
-        dcspec.setAdded((String) null);
-        dcspec.setRemoved((String) null);
-        dcspec.setUpdated((String) null);
-        dcspec.setDefaultSuffix((String) null);
-        dcspec.setDirToken((String) null);
-
-        SoftMessage m = new SoftMessage();
-        m.setSourceLocation((ISourceLocation) null);
-        m.setText((String) null);
-        m.setKindAsString((String) null);
-        m.setDetails((String) null);
-        
-        SoftSourceLocation sl = new SoftSourceLocation();
-        sl.setFile((String) null); 
-        sl.setLine((String) null); 
-        sl.setColumn((String) null); 
-        sl.setEndLine((String) null); 
-        
-        // add attribute setters to validate?
-    }
+//    private static void setupDigesterCompileTimeCheck() { 
+//        if (true) { throw new Error("never invoked"); }
+//        AjcTest.Suite.Spec suite = new AjcTest.Suite.Spec();
+//        AjcTest.Spec test = new AjcTest.Spec();
+////        AjcTest test = new AjcTest();
+////        test.addRunSpec((AbstractRunSpec) null);
+//////        test.makeIncCompilerRun((IncCompilerRun.Spec) null);
+//////        test.makeJavaRun((JavaRun.Spec) null);
+////        test.setDescription((String) null);
+////        test.setTestBaseDirOffset((String) null);
+////        test.setBugId((String) null);
+////        test.setTestSourceLocation((ISourceLocation) null);
+//            
+//        CompilerRun.Spec crunSpec = new CompilerRun.Spec();
+//        crunSpec.addMessage((IMessage) null);
+//        // XXX crunSpec.addSourceLocation((ISourceLocation) null);
+//        crunSpec.addWrapFile((AbstractRunSpec.WrapFile) null);
+//        crunSpec.setOptions((String) null);
+//        crunSpec.setPaths((String) null);
+//        crunSpec.setIncludeClassesDir(false);
+//        crunSpec.setReuseCompiler(false);
+//        
+//        IncCompilerRun.Spec icrunSpec = new IncCompilerRun.Spec();
+//        icrunSpec.addMessage((IMessage) null);
+//        icrunSpec.setTag((String) null);
+//        icrunSpec.setFresh(false);
+//
+//        JavaRun.Spec jrunspec = new JavaRun.Spec();
+//        jrunspec.addMessage((IMessage) null);
+//        jrunspec.setClassName((String) null);
+//        jrunspec.addMessage((IMessage) null);
+//        // input s.b. interpretable by Boolean.valueOf(String)
+//        jrunspec.setSkipTester(true); 
+//        jrunspec.setErrStreamIsError(true);
+//        jrunspec.setOutStreamIsError(true);
+//        
+//        DirChanges.Spec dcspec = new DirChanges.Spec();
+//        dcspec.setAdded((String) null);
+//        dcspec.setRemoved((String) null);
+//        dcspec.setUpdated((String) null);
+//        dcspec.setDefaultSuffix((String) null);
+//        dcspec.setDirToken((String) null);
+//
+//        SoftMessage m = new SoftMessage();
+//        m.setSourceLocation((ISourceLocation) null);
+//        m.setText((String) null);
+//        m.setKindAsString((String) null);
+//        m.setDetails((String) null);
+//        
+//        SoftSourceLocation sl = new SoftSourceLocation();
+//        sl.setFile((String) null); 
+//        sl.setLine((String) null); 
+//        sl.setColumn((String) null); 
+//        sl.setEndLine((String) null); 
+//        
+//        // add attribute setters to validate?
+//    }
     
     /** top element on Digester stack holds the test suite */
     public static class SuiteHolder {

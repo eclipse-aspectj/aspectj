@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.aspectj.bridge.*;
+//import org.aspectj.bridge.*;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.testing.run.IRunIterator;
@@ -525,8 +525,8 @@ public class AjcTest extends RunSpecIterator {
              * skip dirChanges, skip messages and do children
              * (though we do children directly). 
              */
-            private static final XMLNames NAMES = new XMLNames(XMLNames.DEFAULT,
-                    null, null, null, null, "", null, "", "", true, true, false);
+//            private static final XMLNames NAMES = new XMLNames(XMLNames.DEFAULT,
+//                    null, null, null, null, "", null, "", "", true, true, false);
             File suiteDir;
             public Spec() {
                 super(XMLNAME, false); // do not skip this even if children skip

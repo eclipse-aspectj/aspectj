@@ -65,7 +65,7 @@ public class RunUtils {
                 return 1;
             }
         } else { 
-            int i = 0;
+//            int i = 0;
             for (int j = 0; j < children.length; j++) {
                 if (recurse) {
                     numFails += numFailures(children[j], recurse);

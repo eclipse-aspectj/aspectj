@@ -25,7 +25,7 @@ import org.aspectj.util.LangUtil;
 public class Options {
 
     /** if true, then perform extra checks to debug problems */
-    private static final boolean verifying = false;
+//    private static final boolean verifying = false;
     private static final boolean FROZEN = true;
 
     /**
@@ -139,7 +139,7 @@ public class Options {
 
     private Option.Value firstMatch(String value) {
         LangUtil.throwIaxIfNull(value, "value");
-        ArrayList list = new ArrayList();
+//        ArrayList list = new ArrayList();
         for (Iterator iter = options.iterator(); iter.hasNext();) {
             Option option = (Option) iter.next();
             Option.Value result = option.acceptValue(value);

@@ -63,8 +63,8 @@ public class Runner {
 
     private static final IMessage FAIL_NORUN
         = MessageUtil.fail("Null IRun parameter to Runner.run(IRun..)");
-    private static final IMessage FAIL_NORUN_ITERATOR
-        = MessageUtil.fail("Null IRunterator parameter to Runner.run(IRunterator...)");
+//    private static final IMessage FAIL_NORUN_ITERATOR
+//        = MessageUtil.fail("Null IRunterator parameter to Runner.run(IRunterator...)");
     
     public Runner() {
     }

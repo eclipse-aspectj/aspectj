@@ -190,7 +190,7 @@ public class DirChanges {
         boolean exists,
         List pathList,
         boolean doCompare) {
-        boolean expectStartEarlier = true;
+//        boolean expectStartEarlier = true;
       	return exists(label, exists, pathList,doCompare, true);    
     }
     protected boolean exists(
@@ -201,9 +201,9 @@ public class DirChanges {
         boolean expectStartEarlier) {
         boolean result = true;
         if (!LangUtil.isEmpty(pathList)) {
-            final File expDir = ((!doCompare || (null == spec.expDir))
-                ? null 
-                : new File(baseDir, spec.expDir));
+//            final File expDir = ((!doCompare || (null == spec.expDir))
+//                ? null 
+//                : new File(baseDir, spec.expDir));
             for (Iterator iter = pathList.iterator(); iter.hasNext();) {
                 final String entry = (String) iter.next() ;
                 String path = entry ;
