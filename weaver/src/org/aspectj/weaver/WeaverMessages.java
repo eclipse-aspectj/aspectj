@@ -53,7 +53,7 @@ public class WeaverMessages {
 	public static final String ITD_CONFLICT = "itdConflict";
 	public static final String ITD_MEMBER_CONFLICT = "itdMemberConflict";
 	public static final String ITD_NON_EXPOSED_IMPLEMENTOR = "itdNonExposedImplementor";
-	
+	public static final String ITD_ABSTRACT_MUST_BE_PUBLIC_ON_INTERFACE = "itdAbstractMustBePublicOnInterface";
 	
 	public static final String NON_VOID_RETURN = "nonVoidReturn";
 	public static final String INCOMPATIBLE_RETURN_TYPE="incompatibleReturnType";

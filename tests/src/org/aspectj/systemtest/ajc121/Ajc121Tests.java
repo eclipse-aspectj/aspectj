@@ -248,5 +248,21 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   	runTest("wrong line for method execution join point");
   }
 
+  public void test046_interfaceITD_pr70794_1() {
+    runTest("The introduction on interface causes the interface implementation class error (1)");
+  }
+
+  public void test047_interfaceITD_pr70794_2() {
+    runTest("The introduction on interface causes the interface implementation class error (2)");
+  }
+
+  public void test048_interfaceITD_pr70794_3() {
+    runTest("The introduction on interface causes the interface implementation class error (3)");
+  }
+
+  public void test049_interfaceITD_pr70794_4() {
+    runTest("The introduction on interface causes the interface implementation class error (4)");
+  }
+  
 }
 

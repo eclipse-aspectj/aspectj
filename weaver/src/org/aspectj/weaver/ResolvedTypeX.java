@@ -975,30 +975,74 @@ public abstract class ResolvedTypeX extends TypeX {
         collector.addAll(getInterTypeMungers());
     }
     
+ 
     
     /**
-     * Check that we don't have any abstract type mungers unless this
-     * type is abstract.
+     * Check:
+     * 1) That we don't have any abstract type mungers unless this type is abstract.
+     * 2) That an abstract ITDM on an interface is declared public. (Compiler limitation) (PR70794)
      */
     public void checkInterTypeMungers() {
         if (isAbstract()) return;
         
+        boolean itdProblem = false;
+        
         for (Iterator iter = getInterTypeMungersIncludingSupers().iterator(); iter.hasNext();) {
-			ConcreteTypeMunger element = (ConcreteTypeMunger) iter.next();
-            if (element.getSignature() != null && element.getSignature().isAbstract()) {
-            	ISourceLocation xtraLocation = element.getSourceLocation();
-            	if (xtraLocation == null) {
-            		// Until intertype mungers remember where they came from, the source location
-            		// for the element is null when binary weaving.  In these cases uses the
-            		// source location for the aspect containing the ITD
-     				xtraLocation = element.getAspectType().getSourceLocation();
-            	}
+			ConcreteTypeMunger munger = (ConcreteTypeMunger) iter.next();
+			itdProblem = checkAbstractDeclaration(munger) || itdProblem; // Rule 2
+
+        }
+        
+        if (itdProblem) return; // If the rules above are broken, return right now
+        
+		for (Iterator iter = getInterTypeMungersIncludingSupers().iterator(); iter.hasNext();) {
+			ConcreteTypeMunger munger = (ConcreteTypeMunger) iter.next();
+            if (munger.getSignature() != null && munger.getSignature().isAbstract()) { // Rule 1
                 world.getMessageHandler().handleMessage(
-                    new Message("must implement abstract inter-type declaration: " + element.getSignature(),
+                    new Message("must implement abstract inter-type declaration: " + munger.getSignature(),
                         "", IMessage.ERROR, getSourceLocation(), null, 
-                        new ISourceLocation[] { xtraLocation }));
+                        new ISourceLocation[] { getMungerLocation(munger) }));
             }
 		}
+    }
+    
+    /**
+     * See PR70794.  This method checks that if an abstract inter-type method declaration is made on
+     * an interface then it must also be public.
+     * This is a compiler limitation that could be made to work in the future (if someone
+     * provides a worthwhile usecase)
+     * 
+     * @return indicates if the munger failed the check
+     */
+    private boolean checkAbstractDeclaration(ConcreteTypeMunger munger) {
+		if (munger.getMunger()!=null && (munger.getMunger() instanceof NewMethodTypeMunger)) {
+			ResolvedMember itdMember = munger.getSignature();
+			ResolvedTypeX onType = itdMember.getDeclaringType().resolve(world);
+			if (onType.isInterface() && itdMember.isAbstract() && !itdMember.isPublic()) {
+					world.getMessageHandler().handleMessage(
+							new Message(WeaverMessages.format(WeaverMessages.ITD_ABSTRACT_MUST_BE_PUBLIC_ON_INTERFACE,munger.getSignature(),onType),"",
+									Message.ERROR,getSourceLocation(),null,
+									new ISourceLocation[]{getMungerLocation(munger)})	
+						);
+					return true;
+				}			
+		}
+		return false;
+    }
+    
+    /**
+     * Get a source location for the munger.
+     * Until intertype mungers remember where they came from, the source location
+     * for the munger itself is null.  In these cases use the
+     * source location for the aspect containing the ITD.
+     * 
+     */
+    private ISourceLocation getMungerLocation(ConcreteTypeMunger munger) {
+    	ISourceLocation sloc = munger.getSourceLocation();
+    	if (sloc == null) {
+    		sloc = munger.getAspectType().getSourceLocation();
+    	}
+    	return sloc;
     }
 	
     /**

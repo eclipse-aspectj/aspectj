@@ -378,3 +378,29 @@
 			<message kind="warning" line="47" text="advice"/>
 		</compile>
 	</ajc-test>
+
+	<ajc-test dir="bugs/interfaceITDs" pr="70794"
+	  	title="The introduction on interface causes the interface implementation class error (1)">
+		<compile files="PublicPublic.java"/>
+	</ajc-test>
+		
+	
+	<ajc-test dir="bugs/interfaceITDs" pr="70794"
+	  	title="The introduction on interface causes the interface implementation class error (2)">
+		<compile files="PackagePublic.java"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs/interfaceITDs" pr="70794"
+	  	title="The introduction on interface causes the interface implementation class error (3)">
+		<compile files="PackagePackage.java">
+			<message kind="error" line="17" text="abstract intertype method declaration 'void PackagePackage.world()' on interface PackagePackage must be declared public (compiler limitation)"/>
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs/interfaceITDs" pr="70794"
+	  	title="The introduction on interface causes the interface implementation class error (4)">
+		<compile files="PublicPackage.java">
+			<message kind="error" line="13" text="abstract intertype method declaration 'void PublicPackage.world()' on interface PublicPackage must be declared public (compiler limitation)"/>
+		</compile>
+	</ajc-test>
+		
