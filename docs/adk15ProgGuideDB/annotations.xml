@@ -1337,6 +1337,16 @@
 	          </listitem>
 	        </varlistentry>
 	        
+	         <varlistentry>
+	          <term>declare @constructor : BankAccount+.new(..) : @Secured(role="supervisor")</term>
+	          <listitem>
+	            <para>
+	                All constructors in <literal>BankAccount</literal> and its subtypes have the
+	                annotation <literal>@Secured(role="supervisor")</literal>.
+	            </para>
+	          </listitem>
+	        </varlistentry>
+	        
 	        <varlistentry>
 	          <term>declare @field : * DAO+.* : @Persisted;</term>
 	          <listitem>
