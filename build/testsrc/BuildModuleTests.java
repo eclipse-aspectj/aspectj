@@ -30,9 +30,10 @@ public class BuildModuleTests extends TestCase {
     private static boolean replaceFailed = false;
     
     private static final String BASE_DIR = "../";
-    private static final String[] JDT_SOURCE_DIRS = new String[]
-        {"antadapter", "batch", "codeassist", "compiler", "dom", "eval", "formatter",
-            "model", "search" };
+    private static final String[] JDT_SOURCE_DIRS = new String[] {};
+    // sources moved to shadow/ directory
+//        {"antadapter", "batch", "codeassist", "compiler", 
+//         "dom", "eval", "formatter", "model", "search" };
 
     public static Test suite() { 
         TestSuite suite = new TestSuite("Build module tests");
