@@ -8,11 +8,11 @@ for developers working on source code for AspectJ.
 It covers building with Ant or Eclipse and testing with 
 JUnit or the harness used for compiler tests.
 
-For information on how the build works and debugging failed builds,
-see <a href="readme-build-module.html">
-           readme-build-module.html</a>.
-  
-           
+For information on how the build works and how to 
+debug failed builds, see 
+<a href="readme-build-module.html">
+         readme-build-module.html</a>.
+             
 <ol>
   <li>Quick start</li>
   <li>Requirements</li>
@@ -45,6 +45,7 @@ see <a href="readme-build-module.html">
     <li>Release completion</li>
     </ol>
    </li>  
+  <li>Build Problems</li>
 </ol>
 
 <h3>Quick start</h3>
@@ -55,9 +56,11 @@ This is a minimal introduction to building and testing AspectJ.
   export CVS_ROOT=":pserver:anonymous@dev.eclipse.org:/home/technology"
   cvs co org.aspectj/modules</pre>
 If using Eclipse, check out the subdirectories of 
-<code>org.aspectj/modules</code> as Java projects.
-Skip modules <code>aspectj-attic</code> if not <code>tests</code>
-and <code>testing-*</code>.
+<code>org.aspectj/modules</code> as Java projects.  
+Skip modules <code>aspectj-attic</code> and (unless running
+compiler tests) <code>tests</code> and most <code>testing*</code>
+modules.  Do not skip <code>testing-utils</code>, 
+which is used by other modules.
 
 <p>Build an AspectJ distribution:
 <pre>
@@ -67,13 +70,18 @@ and <code>testing-*</code>.
 To speed the build, Eclipse users can adopt the Eclipse-produced .class files:
 <pre>  ../lib/ant/bin/ant -f build.xml -Dbuild.config=useEclipseCompiles</pre>
 
-Install the distribution (e.g., into build/../aspectj-DEVELOPMENT):
+Install the distribution (e.g., into build/../aspectj-install):
 
 <pre>  java -jar ../aj-build/dist/aspectj-DEVELOPMENT.jar</pre>
 
+You can skip the GUI by specifying an existing, empty writable 
+target directory using <code>-to {targDir}</code>:
+
+<pre>  java -jar ../aj-build/dist/aspectj-DEVELOPMENT.jar -to .</pre>
+
 Test it by running the build script in the examples directory:
 
-<pre>  cd ../aspectj-DEVELOPMENT/doc/examples
+<pre>  cd ../aspectj-install/doc/examples
   ../../ant/bin/ant</pre>
 
 This should build and run the spacewar example.
@@ -267,7 +275,7 @@ use the -help flag to see available options.
 For more information, see
   <a href="../tests/readme-tests-module.html">
            ../tests/readme-tests-module.html</a>.
-  
+<p>
 <hr>
 <h3><a name="releases"></a>Releases</h3>
 <h4>Release builds</h4>
@@ -278,6 +286,9 @@ Release builds differ only in running
 from a clean, up-to-date tree and with correct build version values
 in <a href="build-properties.xml">build-properties.xml</a>, which
 will update <code>org.aspectj.bridge.Version</code>.
+Do not run using the <code>build.config</code> value 
+<code>useEclipseCompiles</code>,
+because this will include testing classes in the release libraries.
 See <a href="#version">Version synchronization</a> below
 for more details on how the version is updated.
 
@@ -285,22 +296,25 @@ for more details on how the version is updated.
 <p>
 Normally, we do releases only after fixing all high-priority
 (P1 and P2) bugs in the bug database
-  (a href="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&priority=P1&priority=P2">
-   All open AspectJ bugs with P1 and P2</a>).
+  (<a href="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&priority=P1&priority=P2">
+All open AspectJ bugs with P1 and P2</a>).
 For bug fixes, associated tests in 
   <code>tests/ajcTestsFailing.xml</code> are fixed and moved to
   <code>tests/ajcTests.xml</code>.
   
 
-<p>Before a release, run the following tests:
-<ul>
+<p>Before a release, run the following tests using a Java 1.3 VM 
+(the minimum required by the AspectJ tools):
+<ol>
   <li>JUnit tests.  Run these before the final build
   using <code>tests/junitModules.xml</code>
   (which runs all the 
   <code>modules/{module}/testsrc/{module}ModuleTests.java</code>).
+  <p>
   </li>
   
-  <li>All compiler tests in <code>tests/ajcTests.xml</code>. 
+  <li>All compiler tests in <code>tests/ajcTests.xml</code>
+    and  <code>tests/ajcTestsFailing.xml</code>.
     Run these before the final build using the test harness,
     as follows:
 <pre>
@@ -319,8 +333,8 @@ FAIL another test identifier()
     definition of the <code>-release</code> alias.)
     Run with and without the <code>-emacssym</code> option, 
     saving the output
-    to the appropriate subdirectory of 
-      <a href="../../releases">the releases directory</a>.
+    to the appropriate subdirectory of the
+      <a href="../../releases">org.aspectj/releases</a> directory
     with the name 
        <code>ajcTests-result-{version}.txt</code> 
     or <code>ajcTests-result-{version}-emacssym.txt</code>.
@@ -331,48 +345,66 @@ FAIL another test identifier()
   java org.aspectj.testing.util.TestDiffs {first-run}.txt {second-run}.txt
 </pre>        
    This will generate lists of tests fixed, broken, missing, or
-   added.  For a release, no tests should be broken, and missing 
-   tests (those in the first run absent from the
+   added.  For a release, no tests from <code>ajcTests.xml</code>
+   should be broken, and missing tests (those in the first run absent from the
    second run) should be justified (usually the test was
    removed as invalid). A test will show up as
    missing from the first run and added to the second run if
    it is renamed between runs.
+   For a final release, no test should be <code>FAIL</code> unless it is 
+   deferred (including those from <code>ajcTestsFailing.xml</code>).
    <p>
     For more information, see the instructions for building and running
     the test harness and the tests
        <a href="../tests/readme-tests-module.html">
                 ../tests/readme-tests-module.html</a>.
-     </li>  
-  <li>Examples.  Run these on the built/installed release:
+  <p>
+  </li>  
+  <li>Examples.  Run these on the built/installed release.
+The following should build and run the spacewar example:
 <pre>
     cd {aspectj-install}/doc/examples
-    ant -f build.xml
+    {ant 1.5.1} -f build.xml
 </pre>
-This should build and run the spacewar example. 
-To run all examples, use target <code>all</code>.
-To run all the examples that do not require manual operation,
-use target <code>nonGui</code>. 
-This quick test verifies that the aspectjtools.jar and aspectjrt.jar
+Also run 2-3 other targets from Ant and some examples directly:
+<ul>
+<li>
+The target <code>all</code>
+runs all examples, and <code>nonGui</code> runs those
+that do not require manual operation; 
+</li>
+
+<li>The target<code>tracing-bc</code> does bytecode weaving;
+</li>
+<li>
+Run some of the compiled examples in a 1.1 VM
+    (the minimum required for running AspectJ code).
+</li>
+</ul>
+<p>
+This quick test verifies that the 
+<code>aspectjtools.jar</code> and <code>aspectjrt.jar</code>
 are installed and have a matching version, that the examples actually
 compile and run, etc.
-</p>
+   <p>
    </li> 
    <li>If there are any bugs which are closed with this release
    but which do not have an automated test case run using
    JUnit or the harness, those bugs should be manually tested 
    against the release.
+   <p>
    </li> 
    <li>Any other tests warranted by release objectives.
    E.g., make sure it works as expected for any demos or 
    for any clients (e.g., Emacs, AJDT).
    </li> 
-</ul>
+</ol>
 <p>Some failures with past releases to consider checking:
 <ul>
   <li>debug info not included in .class files</li>
   <li>Ant variables not filtered into doc files (e.g., ant-tasks.html)</li>
+  <li>Manual dates not changed in docs or readme</li>
   <li>Inconsistent version information between runtime and tools classes</li>
-  <li>Manual dates not changed in documentation.</li>
 </ul>
    
 <h4>Release completion</h4>
@@ -390,7 +422,11 @@ Pushing the release out to the web involves manually updating
   (and documentation, if it is not a preview release),
   verifying the downloads and pages, 
   and sending any release notifications.
-  
+  Save the release installer, test results, and any notes 
+  about deferred bugs or tests in
+  <code>org.aspectj/releases/aspectj-{version}/</code>.
+ 
+<p>
 <hr>
 <h3>Build problems</h3>
 Some build problems and fixes encountered in the past:
