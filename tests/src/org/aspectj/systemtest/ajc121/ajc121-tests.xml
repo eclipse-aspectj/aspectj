@@ -414,8 +414,8 @@
 	
 	<ajc-test dir="bugs/java5/arrayCloning" pr="72150"
 	   title="AJC possible bug with static nested classes">
-	   <compile files="A.java" inpath="OneFiveCode.jar"/>
-	   <!--run class="C"/-->
+	   <compile files="A.java,OneFiveCode.jar" options="-showWeaveInfo"/>
+	   <!-- ARGH - Cant run it because run class is of type '49' run class="C"/-->
     </ajc-test>
 
     <ajc-test dir="bugs" pr="72699"
