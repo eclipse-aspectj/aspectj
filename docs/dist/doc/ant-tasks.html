@@ -189,22 +189,23 @@ When the user has quit, then this runs the application.
 
 
 <h3><a name="adapter">Ajc11CompilerAdapter</a></h3>
-This CompilerAdapter can be used in <tt>javac</tt> tasks calls
-by setting the <code>build.compiler</code>
-property to the class name.  This enables users to
-to easily switch between Javac and the AspectJ compiler.
-However, javac's handling of source files prevents the adapter from
-doing a correct compile in some cases, so use
+This CompilerAdapter can be used in <tt>javac</tt> task calls
+by setting the <code>build.compiler</code> property.
+  This enables users to
+to easily switch between the Javac and AspectJ compilers.
+However, the Javac task's pruning of source files prevents 
+the adapter from doing a correct compile in some cases, so use
 <a href="#ajctask">AjcTask</a> where possible.
 
 <p>To build using the adapter, 
 put the <tt>aspectjtools.jar</tt> on the system/ant
 classpath (e.g., in <tt>${ANT_HOME}/lib</tt>)
 and define the <tt>build.compiler</tt>
-property as the fully-qualified name of the class.
+property as the fully-qualified name of the class,
+  <code>org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter</code>.
 The AspectJ compiler should run for any compile using the <tt>Javac</tt> task
 (for options, see the Ant documentation for the Javac task).
-For example, this passes all out-of-date source files in the 
+For example, the call below passes all out-of-date source files in the 
 <code>src/org/aspectj/</code> subdirectories to the ajc command
 along with the destination directory:
 
@@ -241,9 +242,9 @@ To pass <tt>ajc</tt>-specific arguments, use a <code>compilerarg</code> entry.
 
 The adapter supports any <code>ajc</code> command-line option 
 passed using <tt>compilerarg</tt>, as well as
-the following options available only in AjcTask.  
+the following options available only in <code>AjcTask</code>.  
 Find more details on the following options in the 
-<a href="ant-ajc-task.html">AjcTask</a> documentation.
+<a href="ant-ajc-task.html">AjcTask documentation</a>.
 <ul>
   <li>-Xmaxmem: set maximum memory for forking (also settable in javac)
       </li>
@@ -267,6 +268,11 @@ Find more details on the following options in the
 </ul>
 Note the names above may differ slightly here from what you might
 expect from AjcTask; use these forms when specifying <tt>compilerarg</tt>.
+<p>Also note that 
+      the compiler will mimic the Javac task's copying of resource files
+      by specifying "**/CVS/*,**/*.java,**/*.aj" for the sourceroot
+      copy filter by default.  To change this behavior,
+      supply your own value (e.g., "**/*" to copy nothing).
 
 <p><u>Warning - use <code>build.compiler.clean</code></u> 
       to get all files, when available: 
