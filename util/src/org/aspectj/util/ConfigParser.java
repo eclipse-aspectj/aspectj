@@ -205,11 +205,19 @@ public class ConfigParser {
         return makeFile(getCurrentDir(), name);
     }
 
-    protected File makeFile(File dir, String name) {
+    private File makeFile(File dir, String name) {
         name = name.replace('/', File.separatorChar);
         File ret = new File(name);
-        if (dir == null || ret.isAbsolute()) return ret;
-        return new File(dir, name);
+        if (dir != null && !ret.isAbsolute()) { 
+          ret = new File(dir, name);
+        }
+        try {
+        	ret = ret.getCanonicalFile();
+        } catch (IOException ioEx) {
+        	// proceed without canonicalization
+        	// so nothing to do here
+        }
+        return ret;
     }
 
 
