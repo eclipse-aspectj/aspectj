@@ -111,6 +111,7 @@ aspect Aspect {
 	static int namedIfNeverCounter;
 	static int i;
 	static boolean executedNamedIf() {
+		//System.err.println("named if + " + namedIfCounter);
 		a("executedNamedIf:"+namedIfCounter++);
 		return true;
 	}
@@ -190,14 +191,14 @@ aspect Aspect {
     before(): named_execution_pc() { a("before.execution_pc.namedIf()"); }
     before(): named_initialization_pc() { a("before.initialization_pc.namedIf()"); }
 
-    int around() : set_pc     () { a("around.set_pc.if(true)");  return proceed(); }
+    Object around() : set_pc     () { a("around.set_pc.if(true)");  return proceed(); }
     int around() : get_pc     () { a("around.get_pc.if(true)");  return proceed(); }
     void around() : call_pc     () { a("around.call_pc.if(true)");      proceed(); }
     void around() : callType_pc() { a("around.callType_pc.if(true)"); proceed(); }
     void around() : execution_pc() { a("around.execution_pc.if(true)"); proceed(); }
     void around() : initialization_pc() { a("around.initialization_pc.if(true)"); proceed(); }
 
-    int around() : named_set_pc     () { a("around.set_pc.namedIf()"); return proceed(); }
+    Object around() : named_set_pc     () { a("around.set_pc.namedIf()"); return proceed(); }
     int around() : named_get_pc     () { a("around.get_pc.namedIf()"); return proceed(); }
     void around() : named_call_pc     () { a("around.call_pc.namedIf()");      proceed(); }
     void around() : named_callType_pc() { a("around.callType_pc.namedIf()"); proceed(); }
@@ -254,7 +255,7 @@ aspect Aspect2 {
 	}
 
 	/** @testTarget ifpcd.compile.pcds.unnamed.set.around */
-    int around() : if(true) && set(int BaseApp.i) {
+    Object around() : if(true) && set(int BaseApp.i) {
 		a("around.set_pc.anonymous");
 		return proceed();
 	}
