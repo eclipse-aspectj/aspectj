@@ -72,9 +72,13 @@ public class BasicEditor implements EditorAdapter {
     }
 
     public void showSourceLine(ISourceLocation sourceLocation, boolean highlight) {
-		showSourceLine(sourceLocation.getSourceFile().getAbsolutePath(), sourceLocation.getLine(), highlight);
-	}
-
+    	try {
+    		showSourceLine(sourceLocation.getSourceFile().getAbsolutePath(), sourceLocation.getLine(), highlight);
+    	} catch (NullPointerException npe) {
+    		Ajde.getDefault().getIdeUIAdapter().displayStatusInformation(" no corresponding source line to seek to");
+    	}
+    }
+    	
     public void showSourceLine(int lineNumber, boolean highlight) {
         showSourceLine(filePath, lineNumber, highlight);
     }
