@@ -31,8 +31,8 @@
        test-build-examples    # install/docs/examples
        test-ajc-aspectj       # ajc compiles aspectj
  
- Normally this builds with Java 1.3 and tests with both
- Java 1.3 and 1.4, so define both as properties. You
+ Normally this builds with Java 1.5 and tests with both
+ Java 1.3 and 1.4, so define all properties. You
  can select any target (not prefixed "do-" or "init-").
  The leaf targets will run with Java version set in 
      ${java.home.file}
@@ -45,6 +45,7 @@
     java11.home           JAVA_HOME for latest JDK 1.1
     java13.home           JAVA_HOME for latest J2SE 1.3
     java14.home           JAVA_HOME for latest J2SE 1.4
+    java15.home           JAVA_HOME for latest J2SE 1.5
     
     -- flags to control   
     run.13.only           only use Java 1.3
@@ -71,7 +72,7 @@
   
  - define variable for standard properties
   
-   sp="-Djava13.home=d:/j13 -Djava14.home=d:/j14"
+   sp="-Djava13.home=d:/j13 -Djava14.home=d:/j14 -Djava15.home=d:/j15"
    sp="$${sp} -Daspectj.modules.dir=../.."
 
  - clean first
@@ -160,7 +161,10 @@
 		<property name="java14.command"
 			location="${java14.home}/bin/java"/>
 		
-		<mkdir dir="${aj.build.log.dir}"/>
+		<property name="java15.command"
+			location="${java15.home}/bin/java"/>
+
+        <mkdir dir="${aj.build.log.dir}"/>
 		
 		<path id="lib.classpath">
           <pathelement location="${aspectj.lib.dir}/eclipse2.0/jdtDepends.jar" />
@@ -245,11 +249,25 @@
 
 	<target name="build" unless="skip.build"
 		description="build an AspectJ release and tests">
-		<antcall target="build-release"/>
-		<antcall target="build-tests"/>
+		<antcall target="build-release">
+			<param name="do.ant.vm" value="15"/>
+	    </antcall>
+		<antcall target="build-tests">
+			<param name="do.ant.vm" value="15"/>
+	    </antcall>
 	</target>
 
-	<target name="test" unless="skip.test"
+	<target name="build-13-check" unless="skip.build"
+		description="build an AspectJ release and tests using 1.3">
+		<antcall target="build-release">
+			<param name="do.ant.vm" value="13"/>
+	    </antcall>
+		<antcall target="build-tests">
+			<param name="do.ant.vm" value="13"/>
+	    </antcall>
+	</target>
+
+    <target name="test" unless="skip.test"
 		description="test AspectJ source and distribution">
 		<antcall target="test-sources"/>
 		<antcall target="test-install"/>
@@ -283,22 +301,25 @@
 	</target>
 
 	<target name="build-release" depends="init-variables,create-tree"
-		description="build an AspectJ release under Java 1.3"
+		description="build an AspectJ release under Java ${do.ant.vm} (param)"
 		unless="skip.build.release">
 		
 		<!-- release build destroys test build, but not vice-versa -->
 		<antcall target="do-aspectj-build">
 			<param name="do.ant.target" value="clean"/>
 			<param name="do.ant.props" value=""/>
+			<param name="do.ant.vm" value="${do.ant.vm}"/>
 		</antcall>
 		<antcall target="do-aspectj-build">
 			<param name="do.ant.target" value="aspectj"/>
 			<param name="do.ant.props" value=""/>
+			<param name="do.ant.vm" value="${do.ant.vm}"/>
 		</antcall>
 		
 		<antcall target="do-aspectj-build">
 			<param name="do.ant.target" value="eclipse.plugins"/>
 			<param name="do.ant.props" value=""/>
+			<param name="do.ant.vm" value="${do.ant.vm}"/>
 		</antcall>
 	</target>
 
@@ -309,10 +330,12 @@
 		<antcall target="do-aspectj-build">
 			<param name="do.ant.target" value="clean-jars"/>
 			<param name="do.ant.props" value=""/>
+			<param name="do.ant.vm" value="${do.ant.vm}"/>
 		</antcall>
 		<antcall target="do-aspectj-build">
 			<param name="do.ant.target" value="build-testing-jars"/>
 			<param name="do.ant.props" value="-Dtrim.testing.default=false"/>
+			<param name="do.ant.vm" value="${do.ant.vm}"/>
 		</antcall>
 	</target>
 				
@@ -324,6 +347,11 @@
 		<antcall target="do-14-target">
 			<param name="do.target" value="do-test-install-sequence"/>
 		</antcall>
+	    <!-- TODO: also under 1.5
+		<antcall target="do-14-target">
+			<param name="do.target" value="do-test-install-sequence"/>
+		</antcall>
+		-->
 		<antcall target="test-doc-links"/>
 		<echo message="TODO: Run test-examples-11 manually - AWT not exiting?"/>
 		<!-- antcall target="test-examples-11"/ -->
@@ -407,6 +435,11 @@
 		<antcall target="do-14-target">
 			<param name="do.target" value="do-test-sources-sequence"/>
 		</antcall>
+	    <!-- TODO also under 1.5
+		<antcall target="do-15-target">
+			<param name="do.target" value="do-test-sources-sequence"/>
+		</antcall>
+		-->
 	</target>
 
 	<target name="do-test-sources-sequence">
@@ -610,10 +643,11 @@
 	</target>
 
 	<target name="do-aspectj-build" depends="init-variables"
-		description="build targets in ../build.xml using Java 1.3">
+		description="build targets in ../build.xml using Java ${do.ant.vm}">
 		<fail unless="do.ant.target" message="caller sets do.ant.target"/>	
 		<fail unless="do.ant.props" message="caller sets do.ant.props"/>	
-		<antcall target="do-java13-setup"/>
+		<fail unless="do.ant.vm" message="caller sets do.ant.vm"/>	
+		<antcall target="do-java${do.ant.vm}-setup"/>
 		<antcall target="do-run-ant">
 			<param name="ant.dir" location="${aspectj.build.dir}"/>
 			<param name="run.ant.file" value="build.xml"/>
@@ -697,13 +731,26 @@
 		<antcall target="${do.target}"/>
 	</target>
 	
-	<target name="do-java14-setup">
+	<target name="do-15-target"	unless="run.14.only">
+		<antcall target="do-java15-setup"/>
+		<antcall target="${do.target}"/>
+	</target>
+
+    <target name="do-java15-setup">
+		<antcall target="do-write-javahome-file">
+			<param name="build.java.version" value="15"/>
+			<param name="build.java.home"    value="${java15.home}"/>
+		</antcall>
+	</target>
+
+    <target name="do-java14-setup">
 		<antcall target="do-write-javahome-file">
 			<param name="build.java.version" value="14"/>
 			<param name="build.java.home"    value="${java14.home}"/>
 		</antcall>
 	</target>
-	
+    
+	<!-- legal do.ant.vm values are 13, 14, 15 per these target names -->
 	<target name="do-java13-setup">
 		<antcall target="do-write-javahome-file">
 			<param name="build.java.version" value="13"/>
