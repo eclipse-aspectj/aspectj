@@ -20,6 +20,7 @@ import java.io.IOException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.BetaException;
 import org.aspectj.weaver.ISourceContext;
@@ -36,7 +37,7 @@ import org.aspectj.weaver.ast.Test;
  * @author Erik Hilsdale
  * @author Jim Hugunin
  */
-public class ArgsPointcut extends NameBindingPointcut {
+public class ArgsPointcut extends NameBindingPointcut { 
 	TypePatternList arguments;
 	
 	public ArgsPointcut(TypePatternList arguments) {
@@ -51,6 +52,10 @@ public class ArgsPointcut extends NameBindingPointcut {
 		FuzzyBoolean ret =
 			arguments.matches(shadow.getIWorld().resolve(shadow.getArgTypes()), TypePattern.DYNAMIC);
 		return ret;
+	}
+	
+	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart jpsp) {
+		return arguments.matches(jp.getArgs(),TypePattern.DYNAMIC);
 	}
 
 	public void write(DataOutputStream s) throws IOException {
@@ -82,6 +87,13 @@ public class ArgsPointcut extends NameBindingPointcut {
 			scope.message(IMessage.ERROR, this,
 					"uses more than one .. in args (compiler limitation)");
 		}
+	}
+	
+	public void resolveBindingsFromRTTI() {
+		arguments.resolveBindingsFromRTTI(true, true);
+		if (arguments.ellipsisCount > 1) {
+			throw new UnsupportedOperationException("uses more than one .. in args (compiler limitation)");
+		}		
 	}
 	
 	public void postRead(ResolvedTypeX enclosingType) {

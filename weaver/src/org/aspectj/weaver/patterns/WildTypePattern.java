@@ -82,6 +82,14 @@ public class WildTypePattern extends TypePattern {
 		
 		//System.err.println("match: " + targetTypeName + ", " + knownMatches); //Arrays.asList(importedPrefixes));
 		
+		return matchesExactlyByName(targetTypeName);
+	}
+
+    /**
+	 * @param targetTypeName
+	 * @return
+	 */
+	private boolean matchesExactlyByName(String targetTypeName) {
 		//XXX hack
 		if (knownMatches == null && importedPrefixes == null) {
 			return innerMatchesExactly(targetTypeName);
@@ -122,7 +130,7 @@ public class WildTypePattern extends TypePattern {
 		return innerMatchesExactly(targetTypeName);
 	}
 
-    private int lastIndexOfDotOrDollar(String string) {
+	private int lastIndexOfDotOrDollar(String string) {
     	int dot = string.lastIndexOf('.');
     	int dollar = string.lastIndexOf('$');
     	return Math.max(dot, dollar);
@@ -370,6 +378,53 @@ public class WildTypePattern extends TypePattern {
 		return this;
 	}
 	
+	public TypePattern resolveBindingsFromRTTI(boolean allowBinding, boolean requireExactType) {
+	   	if (isStar()) {
+			return TypePattern.ANY;  //??? loses source location
+		}
+
+		String cleanName = maybeGetCleanName();
+		if (cleanName != null) {
+			Class clazz = null;
+
+			while (clazz == null) {
+				try {
+					clazz = Class.forName(cleanName);
+				} catch (ClassNotFoundException cnf) {
+					int lastDotIndex = cleanName.lastIndexOf('.');
+					if (lastDotIndex == -1) break;
+					cleanName = cleanName.substring(0, lastDotIndex) + '$' + cleanName.substring(lastDotIndex+1);
+				}
+			}
+			
+			if (clazz == null) {
+				try {
+					clazz = Class.forName("java.lang." + cleanName);
+				} catch (ClassNotFoundException cnf) {
+				}
+			}
+
+			if (clazz == null) {
+				if (requireExactType) {
+					return NO;
+				}
+			} else {
+				TypeX type = TypeX.forName(clazz.getName());
+				if (dim != 0) type = TypeX.makeArray(type,dim);
+				TypePattern ret = new ExactTypePattern(type, includeSubtypes);
+				ret.copyLocationFrom(this);
+				return ret;
+			}
+		} else if (requireExactType) {
+		 	return NO;
+		}
+					
+		importedPrefixes = SimpleScope.javaLangPrefixArray;
+		knownMatches = new String[0];
+		
+		return this;	
+	}
+	
 	public boolean isStar() {
 		return namePatterns.length == 1 && namePatterns[0].isAny();
 	}
@@ -428,6 +483,15 @@ public class WildTypePattern extends TypePattern {
             result = 37*result + namePatterns[i].hashCode();
         }
         return result;
+    }
+
+    
+    public FuzzyBoolean matchesInstanceof(Class type) {
+    	return FuzzyBoolean.NO;
+    }
+    
+    public boolean matchesExactly(Class type) {
+    	return matchesExactlyByName(type.getName());
     }
     
 	/**

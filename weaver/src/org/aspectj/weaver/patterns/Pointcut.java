@@ -17,6 +17,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.util.TypeSafeEnum;
 import org.aspectj.weaver.Advice;
@@ -72,7 +73,23 @@ public abstract class Pointcut extends PatternNode {
 	 * XXX implementors need to handle state
 	 */
 	public abstract FuzzyBoolean match(Shadow shadow);
+	
+	/*
+	 * for runtime / dynamic pointcuts.
+	 * Default implementation delegates to StaticPart matcher
+	 */
+	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart enclosingJoinPoint) {
+		return match(jp.getStaticPart());
+	}
 
+	/*
+	 * for runtime / dynamic pointcuts.
+	 * Not all pointcuts can be matched at runtime, those that can should overide either
+	 * match(JoinPoint), or this method, or both.
+	 */
+	public FuzzyBoolean match(JoinPoint.StaticPart jpsp) {
+		throw new UnsupportedOperationException("Pointcut expression " + this.toString() + "cannot be matched at runtime");
+	}
 
 	public static final byte KINDED = 1;
 	public static final byte WITHIN = 2;
@@ -93,6 +110,9 @@ public abstract class Pointcut extends PatternNode {
 	// internal, only called from resolve
 	protected abstract void resolveBindings(IScope scope, Bindings bindings);
 	
+	// internal, only called from resolve
+	protected abstract void resolveBindingsFromRTTI();
+	
     /**
      * Returns this pointcut mutated
      */
@@ -103,6 +123,16 @@ public abstract class Pointcut extends PatternNode {
         bindingTable.checkAllBound(scope);
         this.state = RESOLVED;
         return this;  	
+    }
+    
+    /**
+     * Returns this pointcut with type patterns etc resolved based on available RTTI 
+     */
+    public Pointcut resolve() {
+    	assertState(SYMBOLIC);
+    	this.resolveBindingsFromRTTI();
+    	this.state = RESOLVED;
+    	return this;
     }
 	
 	/**
@@ -218,8 +248,15 @@ public abstract class Pointcut extends PatternNode {
 		public FuzzyBoolean match(Shadow shadow) {
 			return FuzzyBoolean.NO;
 		}
+		
+		public FuzzyBoolean match(JoinPoint.StaticPart jpsp) {
+			return FuzzyBoolean.NO;
+		}
 
 		public void resolveBindings(IScope scope, Bindings bindings) {
+		}
+		
+		public void resolveBindingsFromRTTI() {
 		}
 	
 		public void postRead(ResolvedTypeX enclosingType) {

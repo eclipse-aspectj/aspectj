@@ -54,7 +54,11 @@ public abstract class PerClause extends Pointcut {
             throw new BCException("weird kind " + key);
         }
     }
-    
+
+	public void resolveBindingsFromRTTI() {
+    	throw new UnsupportedOperationException("Can't resolve per-clauses at runtime");
+    }
+
 	public static final Kind SINGLETON = new Kind("issingleton", 1);
 	public static final Kind PERCFLOW  = new Kind("percflow", 2);
 	public static final Kind PEROBJECT  = new Kind("perobject", 3);

@@ -122,6 +122,86 @@ public class TypePatternList extends PatternNode {
             return b;
     	}
     }
+    
+    
+    // TODO Add TypePatternList.matches(Object[] objs)
+    public FuzzyBoolean matches(Object[] objs, TypePattern.MatchKind kind) {
+    	int nameLength = objs.length;
+		int patternLength = typePatterns.length;
+		
+		int nameIndex = 0;
+		int patternIndex = 0;
+		
+		if (ellipsisCount == 0) {
+			if (nameLength != patternLength) return FuzzyBoolean.NO;
+			FuzzyBoolean finalReturn = FuzzyBoolean.YES;
+			while (patternIndex < patternLength) {
+				FuzzyBoolean ret = typePatterns[patternIndex++].matches(objs[nameIndex++],kind);
+				if (ret == FuzzyBoolean.NO) return ret;
+				if (ret == FuzzyBoolean.MAYBE) finalReturn = ret;
+			}
+			return finalReturn;
+		} else if (ellipsisCount == 1) {
+			if (nameLength < patternLength-1) return FuzzyBoolean.NO;
+			FuzzyBoolean finalReturn = FuzzyBoolean.YES;
+			while (patternIndex < patternLength) {
+				TypePattern p = typePatterns[patternIndex++];
+				if (p == TypePattern.ELLIPSIS) {
+					nameIndex = nameLength - (patternLength-patternIndex);
+				} else {
+					FuzzyBoolean ret = p.matches(objs[nameIndex++],kind);
+				    if (ret == FuzzyBoolean.NO) return ret;
+				    if (ret == FuzzyBoolean.MAYBE) finalReturn = ret;
+				}
+			}
+			return finalReturn;
+		} else {
+//            System.err.print("match(" + arguments + ", " + types + ") -> ");
+            FuzzyBoolean b =  outOfStar(typePatterns, objs, 0, 0, patternLength - ellipsisCount, nameLength, ellipsisCount, kind);
+//            System.err.println(b);
+            return b;
+    	}
+    }
+ 
+    // XXX run-time signature matching, too much duplicated code
+    public FuzzyBoolean matches(Class[] types, TypePattern.MatchKind kind) {
+    	int nameLength = types.length;
+		int patternLength = typePatterns.length;
+		
+		int nameIndex = 0;
+		int patternIndex = 0;
+		
+		if (ellipsisCount == 0) {
+			if (nameLength != patternLength) return FuzzyBoolean.NO;
+			FuzzyBoolean finalReturn = FuzzyBoolean.YES;
+			while (patternIndex < patternLength) {
+				FuzzyBoolean ret = typePatterns[patternIndex++].matches(types[nameIndex++], kind);
+				if (ret == FuzzyBoolean.NO) return ret;
+				if (ret == FuzzyBoolean.MAYBE) finalReturn = ret;
+			}
+			return finalReturn;
+		} else if (ellipsisCount == 1) {
+			if (nameLength < patternLength-1) return FuzzyBoolean.NO;
+			FuzzyBoolean finalReturn = FuzzyBoolean.YES;
+			while (patternIndex < patternLength) {
+				TypePattern p = typePatterns[patternIndex++];
+				if (p == TypePattern.ELLIPSIS) {
+					nameIndex = nameLength - (patternLength-patternIndex);
+				} else {
+					FuzzyBoolean ret = p.matches(types[nameIndex++], kind);
+				    if (ret == FuzzyBoolean.NO) return ret;
+				    if (ret == FuzzyBoolean.MAYBE) finalReturn = ret;
+				}
+			}
+			return finalReturn;
+		} else {
+//            System.err.print("match(" + arguments + ", " + types + ") -> ");
+            FuzzyBoolean b =  outOfStar(typePatterns, types, 0, 0, patternLength - ellipsisCount, nameLength, ellipsisCount, kind);
+//            System.err.println(b);
+            return b;
+    	}
+    }
+    
     private static FuzzyBoolean outOfStar(final TypePattern[] pattern, final ResolvedTypeX[] target, 
                                                   int           pi,            int    ti, 
                                                   int           pLeft,         int    tLeft,
@@ -168,6 +248,130 @@ public class TypePatternList extends PatternNode {
             ti++; tLeft--;
         }
     }
+
+    
+    
+    private static FuzzyBoolean outOfStar(final TypePattern[] pattern,
+			final Class[] target, int pi, int ti, int pLeft, int tLeft,
+			final int starsLeft, TypePattern.MatchKind kind) {
+		if (pLeft > tLeft)
+			return FuzzyBoolean.NO;
+		FuzzyBoolean finalReturn = FuzzyBoolean.YES;
+		while (true) {
+			// invariant: if (tLeft > 0) then (ti < target.length && pi <
+			// pattern.length)
+			if (tLeft == 0)
+				return finalReturn;
+			if (pLeft == 0) {
+				if (starsLeft > 0) {
+					return finalReturn;
+				} else {
+					return FuzzyBoolean.NO;
+				}
+			}
+			if (pattern[pi] == TypePattern.ELLIPSIS) {
+				return inStar(pattern, target, pi + 1, ti, pLeft, tLeft,
+						starsLeft - 1, kind);
+			}
+			FuzzyBoolean ret = pattern[pi].matches(target[ti], kind);
+			if (ret == FuzzyBoolean.NO)
+				return ret;
+			if (ret == FuzzyBoolean.MAYBE)
+				finalReturn = ret;
+			pi++;
+			ti++;
+			pLeft--;
+			tLeft--;
+		}
+	}       
+  
+    private static FuzzyBoolean inStar(final TypePattern[] pattern,
+			final Class[] target, int pi, int ti, final int pLeft,
+			int tLeft, int starsLeft, TypePattern.MatchKind kind) {
+		// invariant: pLeft > 0, so we know we'll run out of stars and find a
+		// real char in pattern
+		TypePattern patternChar = pattern[pi];
+		while (patternChar == TypePattern.ELLIPSIS) {
+			starsLeft--;
+			patternChar = pattern[++pi];
+		}
+		while (true) {
+			// invariant: if (tLeft > 0) then (ti < target.length)
+			if (pLeft > tLeft)
+				return FuzzyBoolean.NO;
+			FuzzyBoolean ff = patternChar.matches(target[ti], kind);
+			if (ff.maybeTrue()) {
+				FuzzyBoolean xx = outOfStar(pattern, target, pi + 1, ti + 1,
+						pLeft - 1, tLeft - 1, starsLeft, kind);
+				if (xx.maybeTrue())
+					return ff.and(xx);
+			}
+			ti++;
+			tLeft--;
+		}
+	}
+
+    private static FuzzyBoolean outOfStar(final TypePattern[] pattern,
+			final Object[] target, int pi, int ti, int pLeft, int tLeft,
+			final int starsLeft, TypePattern.MatchKind kind) {
+		if (pLeft > tLeft)
+			return FuzzyBoolean.NO;
+		FuzzyBoolean finalReturn = FuzzyBoolean.YES;
+		while (true) {
+			// invariant: if (tLeft > 0) then (ti < target.length && pi <
+			// pattern.length)
+			if (tLeft == 0)
+				return finalReturn;
+			if (pLeft == 0) {
+				if (starsLeft > 0) {
+					return finalReturn;
+				} else {
+					return FuzzyBoolean.NO;
+				}
+			}
+			if (pattern[pi] == TypePattern.ELLIPSIS) {
+				return inStar(pattern, target, pi + 1, ti, pLeft, tLeft,
+						starsLeft - 1,kind);
+			}
+			FuzzyBoolean ret = pattern[pi].matches(target[ti],kind);
+			if (ret == FuzzyBoolean.NO)
+				return ret;
+			if (ret == FuzzyBoolean.MAYBE)
+				finalReturn = ret;
+			pi++;
+			ti++;
+			pLeft--;
+			tLeft--;
+		}
+	}       
+  
+    private static FuzzyBoolean inStar(final TypePattern[] pattern,
+			final Object[] target, int pi, int ti, final int pLeft,
+			int tLeft, int starsLeft, TypePattern.MatchKind kind) {
+		// invariant: pLeft > 0, so we know we'll run out of stars and find a
+		// real char in pattern
+		TypePattern patternChar = pattern[pi];
+		while (patternChar == TypePattern.ELLIPSIS) {
+			starsLeft--;
+			patternChar = pattern[++pi];
+		}
+		while (true) {
+			// invariant: if (tLeft > 0) then (ti < target.length)
+			if (pLeft > tLeft)
+				return FuzzyBoolean.NO;
+			FuzzyBoolean ff = patternChar.matches(target[ti],kind);
+			if (ff.maybeTrue()) {
+				FuzzyBoolean xx = outOfStar(pattern, target, pi + 1, ti + 1,
+						pLeft - 1, tLeft - 1, starsLeft,kind);
+				if (xx.maybeTrue())
+					return ff.and(xx);
+			}
+			ti++;
+			tLeft--;
+		}
+	}
+  
+
     
 	public TypePatternList resolveBindings(IScope scope, Bindings bindings, boolean allowBinding, boolean requireExactType) {
 		for (int i=0; i<typePatterns.length; i++) {
@@ -177,6 +381,16 @@ public class TypePatternList extends PatternNode {
 			}
 		}
 		return this;
+	}
+	
+	public TypePatternList resolveBindingsFromRTTI(boolean allowBinding, boolean requireExactType) {
+		for (int i=0; i<typePatterns.length; i++) {
+			TypePattern p = typePatterns[i];
+			if (p != null) {
+				typePatterns[i] = typePatterns[i].resolveBindingsFromRTTI(allowBinding, requireExactType);
+			}
+		}
+		return this;		
 	}
 	
 	public TypePatternList resolveReferences(IntMap bindings) {

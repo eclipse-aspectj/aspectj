@@ -48,10 +48,23 @@ public class AndTypePattern extends TypePattern {
 		return left.matchesExactly(type) && right.matchesExactly(type);
 	}
 	
-	public boolean matchesStatically(ResolvedTypeX type) {
+	public boolean matchesStatically(Class type) {
 		return left.matchesStatically(type) && right.matchesStatically(type);
 	}
 
+	public FuzzyBoolean matchesInstanceof(Class type) {
+		return left.matchesInstanceof(type).and(right.matchesInstanceof(type));
+	}
+
+	protected boolean matchesExactly(Class type) {
+		//??? if these had side-effects, this sort-circuit could be a mistake
+		return left.matchesExactly(type) && right.matchesExactly(type);
+	}
+	
+	public boolean matchesStatically(ResolvedTypeX type) {
+		return left.matchesStatically(type) && right.matchesStatically(type);
+	}
+	
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(TypePattern.AND);
 		left.write(s);
@@ -73,6 +86,13 @@ public class AndTypePattern extends TypePattern {
 		if (requireExactType) return notExactType(scope);
 		left = left.resolveBindings(scope, bindings, false, false);
 		right = right.resolveBindings(scope, bindings, false, false);
+		return this;
+	}
+	
+	public TypePattern resolveBindingsFromRTTI(boolean allowBinding, boolean requireExactType) {
+		if (requireExactType) return TypePattern.NO;
+		left = left.resolveBindingsFromRTTI(allowBinding,requireExactType);
+		right = right.resolveBindingsFromRTTI(allowBinding,requireExactType);
 		return this;
 	}
 	

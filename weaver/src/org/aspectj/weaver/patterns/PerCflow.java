@@ -59,7 +59,7 @@ public class PerCflow extends PerClause {
     	// assert bindings == null;
     	entry.resolve(scope);  
     }
-
+    
     public Test findResidue(Shadow shadow, ExposedState state) {
     	Expr myInstance =
     		Expr.makeCallExpr(AjcMemberMaker.perCflowAspectOfMethod(inAspect),

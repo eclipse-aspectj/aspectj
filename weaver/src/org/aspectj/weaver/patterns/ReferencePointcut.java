@@ -199,6 +199,10 @@ public class ReferencePointcut extends Pointcut {
 		}
 	}
 	
+	public void resolveBindingsFromRTTI() {
+		throw new UnsupportedOperationException("Referenced pointcuts are not supported in runtime evaluation");
+	}
+	
 	public void postRead(ResolvedTypeX enclosingType) {
 		arguments.postRead(enclosingType);
 	}

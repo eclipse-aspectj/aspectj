@@ -101,6 +101,12 @@ public class CflowPointcut extends Pointcut {
 		}
 	}
 	
+	public void resolveBindingsFromRTTI() {
+		if (entry.state != RESOLVED) {
+			entry.resolveBindingsFromRTTI();
+		}
+	}
+	
 	public boolean equals(Object other) {
 		if (!(other instanceof CflowPointcut)) return false;
 		CflowPointcut o = (CflowPointcut)other;

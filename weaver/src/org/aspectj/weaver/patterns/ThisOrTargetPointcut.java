@@ -18,6 +18,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.bridge.IMessage;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
@@ -67,6 +68,12 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		return type.matches(typeToMatch.resolve(shadow.getIWorld()), TypePattern.DYNAMIC);
 	}
 
+	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart encJP) {
+		Object toMatch = isThis ? jp.getThis() : jp.getTarget(); 
+		if (toMatch == null) return FuzzyBoolean.NO;
+		return type.matches(toMatch.getClass(), TypePattern.DYNAMIC);
+	}
+	
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.THIS_OR_TARGET);
 		s.writeBoolean(isThis);
@@ -85,6 +92,10 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		type = type.resolveBindings(scope, bindings, true, true);
 		
 		// ??? handle non-formal
+	}
+	
+	public void resolveBindingsFromRTTI() {
+		type = type.resolveBindingsFromRTTI(true,true);
 	}
 	
 	public void postRead(ResolvedTypeX enclosingType) {

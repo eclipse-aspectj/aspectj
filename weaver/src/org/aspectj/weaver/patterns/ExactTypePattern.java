@@ -48,6 +48,26 @@ public class ExactTypePattern extends TypePattern {
 		return matchType.isCoerceableFrom(type) ? FuzzyBoolean.MAYBE : FuzzyBoolean.NO;
 	}
 	
+	public boolean matchesExactly(Class matchType) {
+		try {
+			Class toMatchAgainst = Class.forName(type.getName());
+			return matchType == toMatchAgainst;
+		} catch (ClassNotFoundException cnfEx) {
+			return false;			
+		}
+	}
+	
+	public FuzzyBoolean matchesInstanceof(Class matchType) {
+		if (matchType.equals(Object.class)) return FuzzyBoolean.YES;
+		
+		try {
+			Class toMatchAgainst = Class.forName(type.getName());
+			return toMatchAgainst.isAssignableFrom(matchType) ? FuzzyBoolean.YES : FuzzyBoolean.NO;
+		} catch (ClassNotFoundException cnfEx) {
+			return FuzzyBoolean.NO;			
+		}
+	}
+	
     public boolean equals(Object other) {
     	if (!(other instanceof ExactTypePattern)) return false;
     	ExactTypePattern o = (ExactTypePattern)other;
@@ -80,6 +100,10 @@ public class ExactTypePattern extends TypePattern {
     { 
 		throw new BCException("trying to re-resolve");
 		
+	}
+	
+	public TypePattern resolveBindingsFromRTTI(boolean allowBinding, boolean requireExactType) {
+		throw new IllegalStateException("trying to re-resolve");
 	}
 
 }

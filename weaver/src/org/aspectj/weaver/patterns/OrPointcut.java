@@ -17,6 +17,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
@@ -41,6 +42,14 @@ public class OrPointcut extends Pointcut {
 
 	public FuzzyBoolean match(Shadow shadow) {
 		return left.match(shadow).or(right.match(shadow));
+	}
+	
+	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart encJP) {
+		return left.match(jp,encJP).or(right.match(jp,encJP));
+	}
+	
+	public FuzzyBoolean match(JoinPoint.StaticPart jpsp) {
+		return left.match(jpsp).or(right.match(jpsp));
 	}
 	
 	public String toString() {
@@ -68,6 +77,11 @@ public class OrPointcut extends Pointcut {
 		right.resolveBindings(scope, old);
 		if (bindings != null) bindings.checkEquals(old, scope);
 		
+	}
+	
+	public void resolveBindingsFromRTTI() {
+		left.resolveBindingsFromRTTI();
+		right.resolveBindingsFromRTTI();
 	}
 
 	public void write(DataOutputStream s) throws IOException {

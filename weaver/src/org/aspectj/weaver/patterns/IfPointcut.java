@@ -75,6 +75,8 @@ public class IfPointcut extends Pointcut {
 		//??? all we need is good error messages in here in cflow contexts
 	}
 	
+	public void resolveBindingsFromRTTI() {}
+	
 	public boolean equals(Object other) {
 		if (!(other instanceof IfPointcut)) return false;
 		IfPointcut o = (IfPointcut)other;

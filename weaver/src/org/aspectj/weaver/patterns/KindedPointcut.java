@@ -18,6 +18,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Checker;
 import org.aspectj.weaver.ISourceContext;
@@ -71,6 +72,15 @@ public class KindedPointcut extends Pointcut {
         }
 
 		return FuzzyBoolean.YES;
+	}
+	
+	public FuzzyBoolean match(JoinPoint.StaticPart jpsp) {
+		if (jpsp.getKind().equals(kind.getName())) {
+			if (signature.matches(jpsp)) {
+				return FuzzyBoolean.YES;
+			}
+		}
+		return FuzzyBoolean.NO;
 	}
 	
 	private void warnOnConfusingSig(Shadow shadow) {
@@ -196,6 +206,11 @@ public class KindedPointcut extends Pointcut {
 		  }
 		}
 	}
+	
+	public void resolveBindingsFromRTTI() {
+		signature = signature.resolveBindingsFromRTTI();
+	}
+	
 	public Test findResidue(Shadow shadow, ExposedState state) {
 		return match(shadow).alwaysTrue() ? Literal.TRUE : Literal.FALSE;
 	}
