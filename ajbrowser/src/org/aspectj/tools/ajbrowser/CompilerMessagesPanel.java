@@ -53,7 +53,7 @@ public class CompilerMessagesPanel extends JPanel implements TaskListManager {
                      int index = list.locationToIndex(e.getPoint());
                      if (listModel.getSize() >= index && index != -1) {
                      	IMessage message = (IMessage)listModel.getElementAt(index);
-                     	Ajde.getDefault().getEditorAdapter().showSourceLine(message.getISourceLocation(), true);
+                     	Ajde.getDefault().getEditorAdapter().showSourceLine(message.getSourceLocation(), true);
                      }
                   }
              }
