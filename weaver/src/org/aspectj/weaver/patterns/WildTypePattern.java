@@ -139,7 +139,7 @@ public class WildTypePattern extends TypePattern {
 			return innerMatchesExactly(targetTypeName);
 		}
 		
-		if (isStar()) {
+		if (isNamePatternStar()) {
 			// we match if the dimensions match
 			int numDimensionsInTargetType = 0;
 			if (dim > 0) {
@@ -367,7 +367,7 @@ public class WildTypePattern extends TypePattern {
 	public TypePattern resolveBindings(IScope scope, Bindings bindings, 
     								boolean allowBinding, boolean requireExactType)
     { 		
-    	if (isStar()) {
+    	if (isNamePatternStar()) {
     	    // If there is an annotation specified we have to
     	    // use a special variant of Any TypePattern called
     	    // AnyWithAnnotation
@@ -516,6 +516,11 @@ public class WildTypePattern extends TypePattern {
 	}
 	
 	public boolean isStar() {
+		boolean annPatternStar = annotationPattern == AnnotationTypePattern.ANY;
+		return (isNamePatternStar() && annPatternStar);
+	}
+	
+	private boolean isNamePatternStar() {
 		return namePatterns.length == 1 && namePatterns[0].isAny();
 	}
 
