@@ -250,15 +250,13 @@ public class BuildArgParser extends Main {
 		while (tokenizer.hasMoreTokens()) {
 //			classpathCollector.add(tokenizer.nextToken());
 			File dirFile = new File((String)tokenizer.nextToken());
-			if (dirFile.exists() && dirFile.isDirectory()) {
-				File[] files = FileUtil.listFiles(dirFile, new FileFilter() {
-					public boolean accept(File pathname) {
-						return pathname.isFile() && pathname.getName().endsWith(".jar"); 
-					}
-				});
+			if (dirFile.canRead() && dirFile.isDirectory()) {
+				File[] files = dirFile.listFiles(FileUtil.ZIP_FILTER);
 				for (int i = 0; i < files.length; i++) {
 					classpathCollector.add(files[i].getAbsolutePath());	
 				}
+			} else {
+                // XXX alert on invalid -extdirs entries
 			}
 		}	
 	}
