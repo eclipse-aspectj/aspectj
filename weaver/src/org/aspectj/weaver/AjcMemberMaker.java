@@ -120,7 +120,7 @@ public class AjcMemberMaker {
 		return new ResolvedMember(
 				Member.FIELD, 
 				declaringType,
-				PRIVATE_STATIC,//ALEX Andy. Make this field synthetic
+				PRIVATE_STATIC,//FIXME ATAJ. Make this field synthetic
 				NameMangler.INITFAILURECAUSE_FIELD_NAME,
 				TypeX.THROWABLE.getSignature());
 	}
@@ -234,8 +234,8 @@ public class AjcMemberMaker {
 	
 	public static ResolvedMember perSingletonAspectOfMethod(TypeX declaringType) {
 		return new ResolvedMember(Member.METHOD,
-			declaringType, PUBLIC_STATIC, "aspectOf", 
-			"()" + declaringType.getSignature());		
+			declaringType, PUBLIC_STATIC, "aspectOf",
+			"()" + declaringType.getSignature());
 	}
 	
 	public static ResolvedMember perSingletonHasAspectMethod(TypeX declaringType) {

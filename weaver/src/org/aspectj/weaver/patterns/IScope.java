@@ -21,7 +21,7 @@ import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.World;
 
 public interface IScope {
-
+    
     /** returns the type corresponding to the name in this scope
      *  returns ResolvedTypeX.MISSING if no such type exists and reports a problem
      */

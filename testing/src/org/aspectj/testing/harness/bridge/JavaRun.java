@@ -14,7 +14,7 @@ package org.aspectj.testing.harness.bridge;
 
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
-import org.aspectj.testing.Tester;
+//ALEX import org.aspectj.testing.Tester;
 import org.aspectj.testing.run.IRunIterator;
 import org.aspectj.testing.run.IRunStatus;
 import org.aspectj.testing.run.WrappedRunIterator;
@@ -380,22 +380,23 @@ public class JavaRun implements IAjcRun {
      * @return null if successful, error message otherwise
      */
     protected void setupTester(File baseDir, IMessageHandler handler) {
-        File baseDirSet = null;
-        try {
-            if (!spec.skipTester) {                
-                Tester.clear();
-                Tester.setMessageHandler(handler);
-                Tester.setBASEDIR(baseDir);
-                baseDirSet = Tester.getBASEDIR();
-                if (!baseDirSet.equals(baseDir)) {
-                    String l = "AjcScript.setupTester() setting "
-                             + baseDir + " returned " + baseDirSet;
-                    MessageUtil.debug(handler, l);
-                }
-            }
-        } catch (Throwable t) {
-            MessageUtil.abort(handler, "baseDir=" + baseDir, t);
-        }
+//ALEX
+//        File baseDirSet = null;
+//        try {
+//            if (!spec.skipTester) {
+//                Tester.clear();
+//                Tester.setMessageHandler(handler);
+//                Tester.setBASEDIR(baseDir);
+//                baseDirSet = Tester.getBASEDIR();
+//                if (!baseDirSet.equals(baseDir)) {
+//                    String l = "AjcScript.setupTester() setting "
+//                             + baseDir + " returned " + baseDirSet;
+//                    MessageUtil.debug(handler, l);
+//                }
+//            }
+//        } catch (Throwable t) {
+//            MessageUtil.abort(handler, "baseDir=" + baseDir, t);
+//        }
     }
 	public String toString() {
         return "JavaRun(" + spec + ")";

@@ -48,6 +48,7 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedMember;
 
 public class Utility {
 
@@ -118,7 +119,14 @@ public class Utility {
             kind);
 	}
 
-    //ALEX
+    /**
+     * Creae a field GET instruction
+     *
+     * @param fact
+     * @param signature
+     * @param declaringType
+     * @return
+     */
     public static Instruction createGetOn(InstructionFactory fact, Member signature, TypeX declaringType) {
         short kind;
         if (signature.isStatic()) {
@@ -211,9 +219,28 @@ public class Utility {
             m.getReturnType(),
             m.getArgumentTypes(),
             kind);
-    }   
-    
-    
+    }
+
+    /**
+     * Create an invoke instruction
+     *
+     * @param fact
+     * @param kind INVOKEINTERFACE, INVOKEVIRTUAL..
+     * @param member
+     * @return
+     */
+    public static Instruction createInvoke(
+            InstructionFactory fact,
+            short kind,
+            Member member) {
+        return fact.createInvoke(
+            member.getDeclaringType().getName(),
+            member.getName(),
+            BcelWorld.makeBcelType(member.getReturnType()),
+            BcelWorld.makeBcelTypes(member.getParameterTypes()),
+            kind);
+    }
+
     // ??? these should perhaps be cached.  Remember to profile this to see if it's a problem.
     public static String[] makeArgNames(int n) {
         String[] ret = new String[n];

@@ -12,17 +12,19 @@ import org.aspectj.weaver.ast.IExprVisitor;
 import org.aspectj.weaver.ResolvedTypeX;
 
 /**
- * Note: Used when aspectOf is not existing in the aspect class (no pre-processing of aspects)
+ * Represents a String constant instruction.
+ * <p/>
+ * Used when aspectOf is not existing in the aspect class (no pre-processing of aspects)
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class StringConstExpr extends Expr {
+
     private String m_stringConst;
-    private ResolvedTypeX m_inAspect;
-    public StringConstExpr(String stringConst, ResolvedTypeX inAspect) {
+
+    public StringConstExpr(String stringConst) {
         super();
         m_stringConst = stringConst;
-        m_inAspect = inAspect;//TODO useless
     }
 
     public void accept(IExprVisitor v) {

@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
  *******************************************************************************/
-package org.aspectj.weaver.annotationStyle;
+package org.aspectj.weaver.ataspectj;
 
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.TypeX;
@@ -43,11 +43,13 @@ public class Ajc5MemberMaker {
     public static ResolvedMember perSingletonAspectOfMethod(TypeX declaringType) {
         return new ResolvedMember(
                 Member.METHOD,
-                TypeX.forName("org.aspectj.lang.Aspects"),
+                TypeX.forName("alex.lang.Aspects"),
                 Modifier.PUBLIC | Modifier.STATIC,
                 "aspectOf$singleton",
                 "(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;"
         );
+
+
     }
 
 }

@@ -25,7 +25,7 @@ import java.util.List;
 import org.aspectj.util.TypeSafeEnum;
 
 public class Member implements Comparable, AnnotatedElement {
-
+    
     private final Kind kind;
     private final TypeX declaringType;
     protected final int modifiers; // protected because ResolvedMember uses it
@@ -524,14 +524,15 @@ public class Member implements Comparable, AnnotatedElement {
     public static final Kind HANDLER   = new Kind("HANDLER", 7);    
   
     
-    //ALEX Andy.  ?? What is stored in the aj$class field? Should probably be ajc$
-    public static final Member ajClassField = new Member(
-            FIELD,
-            TypeX.OBJECT,//any one
-            Modifier.PRIVATE | Modifier.STATIC | Modifier.FINAL,
-            "aj$class",
-            TypeX.JAVA_LANG_CLASS.getSignature()
-    );
+
+//    //ATAJ.  Should probably be ajc$, used only for slow impl of Aspects.aspectOf()
+//    public static final Member ajClassField = new Member(
+//            FIELD,
+//            TypeX.OBJECT,//any one
+//            Modifier.PRIVATE | Modifier.STATIC | Modifier.FINAL,
+//            "aj$class",
+//            TypeX.JAVA_LANG_CLASS.getSignature()
+//    );
 
 
     

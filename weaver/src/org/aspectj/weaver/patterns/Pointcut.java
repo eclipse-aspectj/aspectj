@@ -86,7 +86,13 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 			super(name, key);
 		}
 	}
-	
+
+    /**
+     * ATAJ the name of the formal for which we don't want any warning when unbound since
+     * we consider them as implicitly bound. f.e. JoinPoint for @AJ advices
+     */
+    public String[] m_ignoreUnboundBindingForNames = new String[0];
+
 	public static final State SYMBOLIC = new State("symbolic", 0);
 	public static final State RESOLVED = new State("resolved", 1);
 	public static final State CONCRETE = new State("concrete", 2);
@@ -229,7 +235,10 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	 * Only used by test cases
 	 */
     public final Pointcut concretize(ResolvedTypeX inAspect, int arity) {
-        return concretize(inAspect, IntMap.idMap(arity));
+        Pointcut ret = concretize(inAspect, IntMap.idMap(arity));
+        // copy the unbound ignore list
+        ret.m_ignoreUnboundBindingForNames = m_ignoreUnboundBindingForNames;
+        return ret;
     }
 	
 	
@@ -255,6 +264,8 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 		Pointcut ret = this.concretize1(inAspect, bindings);
         if (shouldCopyLocationForConcretize()) ret.copyLocationFrom(this);
 		ret.state = CONCRETE;
+        // copy the unbound ignore list
+        ret.m_ignoreUnboundBindingForNames = m_ignoreUnboundBindingForNames;
 		return ret;
 	}
 	

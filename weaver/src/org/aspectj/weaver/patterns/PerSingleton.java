@@ -16,14 +16,19 @@ package org.aspectj.weaver.patterns;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Set;
+import java.lang.reflect.Modifier;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.Member;
 import org.aspectj.weaver.VersionedDataInputStream;
-import org.aspectj.weaver.annotationStyle.Ajc5MemberMaker;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ataspectj.Ajc5MemberMaker;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
@@ -49,7 +54,7 @@ public class PerSingleton extends PerClause {
     }
 
     public Test findResidueInternal(Shadow shadow, ExposedState state) {
-        //ALEX
+        // TODO: the commented code is for slow Aspects.aspectOf() style - keep or remove
         //
         //    	Expr myInstance =
         //    		Expr.makeCallExpr(AjcMemberMaker.perSingletonAspectOfMethod(inAspect),
@@ -91,31 +96,21 @@ public class PerSingleton extends PerClause {
 	public PerClause concretize(ResolvedTypeX inAspect) {
 		PerSingleton ret = new PerSingleton();
 
-        //ALEX added as in PerTypeWithin (?)
+        //TODO checkme (Alex: added as in PerTypeWithin (?), seems to miss..)
         ret.copyLocationFrom(this);
 
 		ret.inAspect = inAspect;
 
-        //ALEX: do stuff to add hasAspect and co.
-        if (inAspect.isAbstract() || !Ajc5MemberMaker.isAnnotationStyleAspect(inAspect)) {
-            return ret;
-        } else {
-            System.err.println("PerSingleton.concretize " + inAspect.getName());
-
+        //ATAJ: add a munger to add the aspectOf(..) to the @AJ aspects
+        if (!inAspect.isAbstract() && Ajc5MemberMaker.isAnnotationStyleAspect(inAspect)) {
             //TODO will those change be ok if we add a serializable aspect ?
-            // dig: 		// can't be Serializable/Cloneable unless -XserializableAspects
+            // dig: "can't be Serializable/Cloneable unless -XserializableAspects"
             inAspect.crosscuttingMembers.addTypeMunger(
                     inAspect.getWorld().makePerClauseAspect(inAspect, getKind())
             );
-
-            return ret;
         }
 
-
-
-
-
-
+        return ret;
 	}
 
     public void write(DataOutputStream s) throws IOException {

@@ -67,8 +67,12 @@ public class AjcTestCase extends TestCase {
 		".." + File.separator + "bridge" + File.separator + "bin" +
 		File.pathSeparator +
 		".." + File.separator + "util" + File.separator + "bin"
-        //ALEX Andy. ?? What does _IDE add?
-		// + File.pathSeparator+ ".."+File.separator+"_IDE"
+        //Alex: adding "_IDE" since there is no "bin" output when working within IDEA.
+        // my convention is thus to have a "modules/_IDE" folder where IDEA will write
+        // Since modules/* have circular dependancies, there is no way to have multiple "modules"
+        // (like Eclipse projects in one workspace) in IDEA, so all will be build there.
+		+ File.pathSeparator +
+        ".." + File.separator + "_IDE"
 		+ File.pathSeparator+ ".."+File.separator+"lib"+File.separator+"junit"+File.separator+"junit.jar";
 
     

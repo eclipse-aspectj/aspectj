@@ -10,7 +10,10 @@ package org.aspectj.weaver.ast;
 import org.aspectj.weaver.ResolvedTypeX;
 
 /**
- * Note: Used when aspectOf is not existing in the aspect class (no pre-processing of aspects)
+ * Represents a cast expression.
+ * <p/>
+ * Used when aspectOf is not existing in the aspect class (no pre-processing of aspects) ie when
+ * Object Aspects.aspectOf(..) API is used.
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */

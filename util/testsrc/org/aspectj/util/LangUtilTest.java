@@ -223,12 +223,13 @@ public class LangUtilTest extends TestCase {
     
     public void testElideEndingLines() {
         StringBuffer stackBuffer = LangUtil.stackToString(new RuntimeException(""), true);
-        LangUtil.elideEndingLines(LangUtil.StringChecker.TEST_PACKAGES, stackBuffer, 100);
+        LangUtil.elideEndingLines(LangUtil.StringChecker.TEST_PACKAGES, stackBuffer, 10);
         String result = stackBuffer.toString();
+
         if (-1 == result.indexOf("(... ")) {
             // brittle - will fail under different top-level drivers
-            String m = "when running under eclipse or Ant, expecting (... in trace: "; 
-            assertTrue( m + result, false);            
+            String m = "when running under eclipse or Ant, expecting (... in trace: ";
+            assertTrue( m + result, false);
         }
         
         stackBuffer = new StringBuffer("java.lang.RuntimeException: unimplemented"

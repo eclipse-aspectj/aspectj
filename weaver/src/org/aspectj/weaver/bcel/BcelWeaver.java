@@ -1,13 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Common Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/cpl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Common Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
+ *     Alexandre Vasseur    support for @AJ aspects
  * ******************************************************************/
 
 
@@ -64,6 +65,7 @@ import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.BindingAnnotationTypePattern;
 import org.aspectj.weaver.patterns.BindingTypePattern;
@@ -79,6 +81,7 @@ import org.aspectj.weaver.patterns.OrPointcut;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.PointcutRewriter;
 import org.aspectj.weaver.patterns.WithinPointcut;
+import org.aspectj.weaver.ataspectj.Aj5Attributes;
 
 
 public class BcelWeaver implements IWeaver {
@@ -123,11 +126,13 @@ public class BcelWeaver implements IWeaver {
     }
 
 
+    /**
+     * Add the given aspect to the weaver.
+     * The type is resolved to support DOT for static inner classes as well as DOLLAR
+     *
+     * @param aspectName
+     */
     public void addLibraryAspect(String aspectName) {
-        //ALEX was:
-    	//ResolvedTypeX type = world.resolve(aspectName);
-
-        //ALEX
         // 1 - resolve as is
         ResolvedTypeX type = world.resolve(TypeX.forName(aspectName), true);
         if (type.equals(ResolvedTypeX.MISSING)) {
@@ -135,7 +140,7 @@ public class BcelWeaver implements IWeaver {
             String fixedName = aspectName;
             int hasDot = fixedName.lastIndexOf('.');
             while (hasDot > 0) {
-                System.out.println("BcelWeaver.addLibraryAspect " + fixedName);
+                //System.out.println("BcelWeaver.addLibraryAspect " + fixedName);
                 char[] fixedNameChars = fixedName.toCharArray();
                 fixedNameChars[hasDot] = '$';
                 fixedName = new String(fixedNameChars);
@@ -151,7 +156,8 @@ public class BcelWeaver implements IWeaver {
 		if (type.isAspect()) {
 			xcutSet.addOrReplaceAspect(type);
 		} else {
-			throw new RuntimeException("Cannot register non aspect: " + type.getName() + " , " + aspectName);//ALEX
+            // FIXME : Alex: better warning upon no such aspect from aop.xml
+			throw new RuntimeException("Cannot register non aspect: " + type.getName() + " , " + aspectName);
 		}
     }
     
@@ -382,9 +388,10 @@ public class BcelWeaver implements IWeaver {
 		declareParentsList = xcutSet.getDeclareParents();
     	
 		//XXX this gets us a stable (but completely meaningless) order
-        //ALEX TODO this breaks @AJ advice source code based precedence
-        //ALEX: commented that block out - might have some side effect on AJ somewhere ?
-		//ALEX ANDY Can we not sort on a more sensible key - like source location? that
+        //FIXME this breaks @AJ advice source code based precedence
+        // Alex: clean that based on Andy comments and hacks
+        //: commented that block out - might have some side effect on AJ somewhere ?
+		//ANDY Can we not sort on a more sensible key - like source location? that
 		// ought to keep both sides happy ...
 		//Actually we'll need to start filling in source locations for mungers originating from
 		// @AJ so that the tools work correctly - this will probably involve setting the source locations
@@ -417,7 +424,7 @@ public class BcelWeaver implements IWeaver {
 //			}
 //		}
 
-        //ALEX debug precedence
+        //debug precedence
 //        for (Iterator iterator = shadowMungerList.iterator(); iterator.hasNext();) {
 //            Object o = (Object) iterator.next();
 //            System.out.println(((org.aspectj.weaver.Advice)o).getSignature());
@@ -446,11 +453,24 @@ public class BcelWeaver implements IWeaver {
 			if (munger instanceof Advice) {
 				Advice advice = (Advice) munger;
 				if (advice.getSignature() != null) {
-					int numFormals = advice.getBaseParameterCount();
-					if (numFormals > 0) {
-						String[] names = advice.getBaseParameterNames(world);
-						validateBindings(newP,p,numFormals,names);
-					}
+					final int numFormals;
+                    final String names[];
+                    //ATAJ for @AJ aspect, the formal have to be checked according to the argument number
+                    // since xxxJoinPoint presence or not have side effects
+                    if (advice.getConcreteAspect().isAnnotationStyleAspect()) {
+                        numFormals = advice.getBaseParameterCount();
+                        int numArgs = advice.getSignature().getParameterTypes().length;
+                        if (numFormals > 0) {
+                            names = advice.getSignature().getParameterNames(world);
+                            validateBindings(newP,p,numArgs,names);
+                        }
+                    } else {
+                        numFormals = advice.getBaseParameterCount();
+                        if (numFormals > 0) {
+                            names = advice.getBaseParameterNames(world);
+                            validateBindings(newP,p,numFormals,names);
+                        }
+                    }
 				}
 			}
 			munger.setPointcut(newP);
@@ -562,7 +582,17 @@ public class BcelWeaver implements IWeaver {
     	validateSingleBranchRecursion(pc, userPointcut, foundFormals, names, bindings);
     	for (int i = 0; i < foundFormals.length; i++) {
 			if (!foundFormals[i]) {
-				raiseUnboundFormalError(names[i],userPointcut);
+                boolean ignore = false;
+                // ATAJ soften the unbound error for implicit bindings like JoinPoint in @AJ style
+                for (int j = 0; j < userPointcut.m_ignoreUnboundBindingForNames.length; j++) {
+                    if (names[i] != null && names[i].equals(userPointcut.m_ignoreUnboundBindingForNames[j])) {
+                        ignore = true;
+                        break;
+                    }
+                }
+                if (!ignore) {
+                    raiseUnboundFormalError(names[i],userPointcut);
+                }
 			}
 		}
     }
@@ -586,7 +616,12 @@ public class BcelWeaver implements IWeaver {
     		for (Iterator iter = btps.iterator(); iter.hasNext();) {
 				BindingTypePattern btp = (BindingTypePattern) iter.next();
 				int index = btp.getFormalIndex();
-				bindings[index] = pc; 
+				try {
+                    bindings[index] = pc;
+                } catch (Throwable t) {
+                    //FIXME Alex: better error reporting on AIOOBE
+                    t.printStackTrace();
+                }
 				if (foundFormals[index]) {
 					raiseAmbiguousBindingError(names[index],userPointcut);
 				} else {
@@ -663,7 +698,7 @@ public class BcelWeaver implements IWeaver {
 	}
 
 	/**
-	 * @param string
+	 * @param name
 	 * @param userPointcut
 	 */
 	private void raiseAmbiguousBindingError(String name, Pointcut userPointcut) {
@@ -688,7 +723,7 @@ public class BcelWeaver implements IWeaver {
 	}
 
     /**
-	 * @param string
+	 * @param name
 	 * @param userPointcut
 	 */
 	private void raiseUnboundFormalError(String name, Pointcut userPointcut) {
@@ -1143,8 +1178,7 @@ public class BcelWeaver implements IWeaver {
 				}
 			} catch (RuntimeException re) {
 				System.err.println("trouble in: ");
-				//XXXclazz.print(System.err);
-                //ALEX
+                clazz.print(System.err);
                 re.printStackTrace();
 				throw re;
 			} catch (Error re) {
@@ -1159,6 +1193,12 @@ public class BcelWeaver implements IWeaver {
 			dumpUnchanged(classFile);
 			return clazz;
 		} else {
+            // ATAJ: the class was not weaved, but since it gets there early it may have new generated inner classes
+            // attached to it to support LTW perX aspectOf support (see BcelPerClauseAspectAdder)
+            // that aggressively defines the inner <aspect>$mayHaveAspect interface.
+            if (clazz != null && !clazz.getChildClasses(world).isEmpty()) {
+                return clazz;
+            }
 			return null;
 		}
 	}

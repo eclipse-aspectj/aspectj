@@ -15,6 +15,8 @@
 package org.aspectj.runtime.internal;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 
 public abstract class AroundClosure {
     //private Object[] state;
@@ -40,9 +42,15 @@ public abstract class AroundClosure {
 	 */
     public abstract Object run(Object[] args) throws Throwable;
 
-    //ALEX Andy. Added by Alex for some caller??
-    public JoinPoint getJoinPoint() {
-        JoinPoint jp = (JoinPoint)state[state.length-1];
+    /**
+     * This method is called to implicitly associate the closure with the joinpoint
+     * as required for @AJ aspect proceed()
+     *
+     * @return
+     */
+    public ProceedingJoinPoint linkClosureAndJoinPoint() {
+        //TODO is this cast safe ?
+        ProceedingJoinPoint jp = (ProceedingJoinPoint)state[state.length-1];
         jp.set$AroundClosure(this);
         return jp;
     }

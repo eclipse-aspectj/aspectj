@@ -95,6 +95,14 @@ public class PerCflow extends PerClause {
 		xcut.addConcreteShadowMunger(
 				Advice.makePerCflowEntry(world, concreteEntry, isBelow, cflowStackField, 
 									inAspect, innerCflowEntries));
+
+        //ATAJ: add a munger to add the aspectOf(..) to the @AJ aspects
+        if (inAspect.isAnnotationStyleAspect()) {
+            inAspect.crosscuttingMembers.addTypeMunger(
+                    inAspect.getWorld().makePerClauseAspect(inAspect, getKind())
+            );
+        }
+
 		return ret;
 	}
 

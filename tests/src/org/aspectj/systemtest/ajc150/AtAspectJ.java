@@ -36,7 +36,6 @@ public class AtAspectJ extends TestUtils {
   	RunResult rR = run("SimpleAfter");
   }
   
-  // !!! -XnoInline set for around advice to work
   public void testSingletonAspectBindingsTest() {
   	CompilationResult cR = null;
   

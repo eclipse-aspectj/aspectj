@@ -78,6 +78,14 @@ public class Checker extends ShadowMunger {
 	
 	public Collection getThrownExceptions() { return Collections.EMPTY_LIST; }
 
+    /**
+     * Default to true
+     * TODO: ATAJ is that ok in all cases ? 
+     * @return
+     */
+    public boolean mustCheckExceptions() { return true; }
+
+
 	public boolean isError() {
 		return isError;
 	}

@@ -16,10 +16,12 @@ package org.aspectj.runtime.reflect;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.SourceLocation;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.runtime.internal.AroundClosure;
 
-class JoinPointImpl implements JoinPoint {
+class JoinPointImpl implements ProceedingJoinPoint {
     static class StaticPartImpl implements JoinPoint.StaticPart {
         String kind;
         Signature signature;
@@ -86,22 +88,39 @@ class JoinPointImpl implements JoinPoint {
     public final String toShortString() { return staticPart.toShortString(); }
     public final String toLongString() { return staticPart.toLongString(); }
 
-    // ALEX Andy. Alex is adding the closure as state in the join point.
+    //ALEX
     private AroundClosure arc;
-
+    //ALEX
     public void set$AroundClosure(AroundClosure arc) {
         this.arc = arc;
     }
-////    public Object proceed(Object[] args) throws Throwable {
-////        return arc.run(args);//TODO what is in args ??
-////    }
+//    public Object proceed(Object[] args) throws Throwable {
+//        return arc.run(args);//TODO what is in args ??
+//    }
     public Object proceed() throws Throwable {
         // when called from a before advice, but be a no-op
-    	System.err.println("In proceed!!!");
-        if (arc == null) // likely if we are in before/after...
+        if (arc == null)
             return null;
         else
             return arc.run(arc.state);
     }
+
+    //ALEX
+    public Object proceed(Object[] adviceBindings) throws Throwable {
+        // when called from a before advice, but be a no-op
+        if (arc == null)
+            return null;
+        else {
+            // state is always consistent with caller?,callee?,formals...,jp
+            for (int i = arc.state.length-2; i >= 0; i--) {
+                int formalIndex = (adviceBindings.length - 1) - (arc.state.length-2) + i;
+                if (formalIndex >= 0 && formalIndex < adviceBindings.length) {
+                    arc.state[i] = adviceBindings[formalIndex];
+                }
+            }
+            return arc.run(arc.state);
+        }
+    }
+
 
 }

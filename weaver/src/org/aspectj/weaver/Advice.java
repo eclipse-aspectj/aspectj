@@ -236,6 +236,9 @@ public abstract class Advice extends ShadowMunger {
         	p = new AndPointcut(clause, p);
         	p.copyLocationFrom(oldP);
         	p.state = Pointcut.CONCRETE;
+
+            //ATAJ copy unbound bindings to ignore
+            p.m_ignoreUnboundBindingForNames  =oldP.m_ignoreUnboundBindingForNames;
         }
         
 		Advice munger = world.concreteAdvice(attribute, p, signature);

@@ -70,7 +70,7 @@ public abstract class ResolvedTypeMunger {
     public boolean matches(ResolvedTypeX matchType, ResolvedTypeX aspectType) {
     	ResolvedTypeX onType = matchType.getWorld().resolve(signature.getDeclaringType());
     	//System.err.println("matching: " + this + " to " + matchType + " onType = " + onType);
-   		if (matchType.equals(onType)) { 
+   		if (matchType.equals(onType)) {
    			if (!onType.isExposedToWeaver()) {
    				if (onType.getWeaverState() == null) {
 	   				if (matchType.getWorld().getLint().typeNotExposedToWeaver.isEnabled()) {

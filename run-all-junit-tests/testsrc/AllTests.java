@@ -27,7 +27,7 @@ public class AllTests extends TestCase {
         suite.addTest(TestingModuleTests.suite());
         suite.addTest(TestingDriversModuleTests.suite());
         suite.addTest(UtilModuleTests.suite());
-        suite.addTest(BcweaverModuleTests.suite());
+        //suite.addTest(BcweaverModuleTests.suite());
         return suite;
     }
 

@@ -12,6 +12,7 @@ package org.aspectj.systemtest.ajc150;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.aspectj.systemtest.ajc150.ataspectj.AtAjc150Tests;
 
 /**
  * This is a superset of AllTestsAspectJ150 that includes tests that must be run on Java 1.5
@@ -22,10 +23,13 @@ public class AllTestsAspectJ150_NeedJava15 {
 		TestSuite suite = new TestSuite("Java5");
 		//$JUnit-BEGIN$
 		suite.addTestSuite(Ajc150TestsRequireJava15.class);
-		suite.addTestSuite(Autoboxing.class);		
+		suite.addTestSuite(Autoboxing.class);
 		suite.addTestSuite(Annotations.class);
 		suite.addTestSuite(AnnotationBinding.class);
 		
+        //@AJ tests
+        suite.addTest(AtAjc150Tests.suite());
+
 		//$JUnit-END$
 		return suite;
 	}

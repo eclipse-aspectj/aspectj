@@ -118,4 +118,12 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 	 *          might be thrown by this munger
 	 */
 	public abstract Collection getThrownExceptions();
+
+    /**
+     * Does the munger has to check that its exception are accepted by the shadow ?
+     * ATAJ: It s not the case for @AJ around advice f.e. that can throw Throwable, even if the advised
+     * method does not throw any exceptions. 
+     * @return true if munger has to check that its exceptions can be throwned based on the shadow
+     */
+    public abstract boolean mustCheckExceptions();
 }

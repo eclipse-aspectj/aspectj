@@ -1,13 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Common Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/cpl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Common Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
+ *     Alexandre Vasseur    perClause support for @AJ aspects
  * ******************************************************************/
 
 
@@ -55,7 +56,6 @@ import org.aspectj.weaver.patterns.PerClause;
 public class BcelWorld extends World implements Repository {
 	private ClassPathManager classPath;
 
-    //ALEX
     private Repository delegate;
 
 	//private ClassPathManager aspectPath = null;
@@ -95,10 +95,9 @@ public class BcelWorld extends World implements Repository {
 		setMessageHandler(handler);	
 		setXRefHandler(xrefHandler);
 		// Tell BCEL to use us for resolving any classes
-
-        //ALEX Andy. Replace static delegate setting with local delegate field (see code at start of lookupJavaClass())
         delegate = this;
-		// org.aspectj.apache.bcel.Repository.setRepository(delegate);
+		// TODO Alex do we need to call org.aspectj.apache.bcel.Repository.setRepository(delegate);
+        // if so, how can that be safe in J2EE ?? (static stuff in Bcel)
 	}
 	
 	public BcelWorld(ClassPathManager cpm, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
@@ -106,22 +105,26 @@ public class BcelWorld extends World implements Repository {
 		setMessageHandler(handler);
 		setXRefHandler(xrefHandler);
 		// Tell BCEL to use us for resolving any classes
-
-        //ALEX Andy. Replace static delegate setting with local delegate field (see code at start of lookupJavaClass())
         delegate = this;
-		// org.aspectj.apache.bcel.Repository.setRepository(delegate);
+        // TODO Alex do we need to call org.aspectj.apache.bcel.Repository.setRepository(delegate);
+        // if so, how can that be safe in J2EE ?? (static stuff in Bcel)
 	}
 
-    //ALEX
+    /**
+     * Build a World from a ClassLoader, for LTW support
+     *
+     * @param loader
+     * @param handler
+     * @param xrefHandler
+     */
     public BcelWorld(ClassLoader loader, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
         this.classPath = null;
         setMessageHandler(handler);
         setXRefHandler(xrefHandler);
         // Tell BCEL to use us for resolving any classes
-
-        //ALEX Andy. Replace static delegate setting with local delegate field (see code at start of lookupJavaClass())
         delegate = new ClassLoaderRepository(loader);
-        // org.aspectj.apache.bcel.Repository.setRepository(delegate);
+        // TODO Alex do we need to call org.aspectj.apache.bcel.Repository.setRepository(delegate);
+        // if so, how can that be safe in J2EE ?? (static stuff in Bcel)
     }
 
 	public void addPath (String name) {
@@ -240,15 +243,10 @@ public class BcelWorld extends World implements Repository {
 	
 	
 	private JavaClass lookupJavaClass(ClassPathManager classPath, String name) {
-        //ALEX
-		//if (classPath == null) return null;
-
         if (classPath == null) {
             try {
                 return delegate.loadClass(name);
             } catch (ClassNotFoundException e) {
-                //ALEX - issue when resolve tries to use the import (java.lang.int etc)
-                //was: e.printStackTrace();
                 return null;
             }
         }
@@ -402,7 +400,13 @@ public class BcelWorld extends World implements Repository {
 		return new BcelCflowCounterFieldAdder(cflowField);
 	}
 
-    //ALEX
+    /**
+     * Register a munger for perclause @AJ aspect so that we add aspectOf(..) to them as needed
+     *
+     * @param aspect
+     * @param kind
+     * @return
+     */
     public ConcreteTypeMunger makePerClauseAspect(ResolvedTypeX aspect, PerClause.Kind kind) {
         return new BcelPerClauseAspectAdder(aspect, kind);
     }

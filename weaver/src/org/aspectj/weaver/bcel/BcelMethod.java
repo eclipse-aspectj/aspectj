@@ -32,7 +32,7 @@ import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.annotationStyle.Aj5Attributes;
+import org.aspectj.weaver.ataspectj.Aj5Attributes;
 
 final class BcelMethod extends ResolvedMember {
 
@@ -92,7 +92,6 @@ final class BcelMethod extends ResolvedMember {
 
 	private void unpackAjAttributes(World world) {
         List as = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),method.getAttributes(), getSourceContext(world),world.getMessageHandler());
-        //ALEX Andy. Process annotations on methods and add them as aj attributes
         as.addAll(Aj5Attributes.readAj5MethodAttributes(method, world.resolve(getDeclaringType()), getSourceContext(world), world.getMessageHandler()));
 
 		//System.out.println("unpack: " + this + ", " + as);

@@ -14,8 +14,10 @@ package org.aspectj.testing;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import junit.extensions.TestSetup;
 import junit.framework.Test;
@@ -25,6 +27,10 @@ import org.apache.commons.digester.Digester;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.tools.ajc.CompilationResult;
 import org.aspectj.util.FileUtil;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.Locator;
 
 /**
  * Root class for all Test suites that are based on an AspectJ XML test suite
@@ -126,7 +132,17 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	 * be very easy to maintain and extend should you ever need to.
 	 */
 	private Digester getDigester() {
-		Digester digester = new Digester();
+		Digester digester = new Digester();/* {
+            //ALEX
+            public InputSource resolveEntity(String s, String s1) throws SAXException {
+                System.out.println("**********XMLBasedAjcTestCase.resolveEntity");
+                if (s1.indexOf("org.aspectj/tests/") > 0) {
+                    String newS1 = s1.substring(s1.indexOf("org.aspectj/tests/")+"org.aspectj/tests/".length());
+                    return new InputSource("tests/"+newS1);
+                }
+                return super.resolveEntity(s, s1);
+            }
+        };*/
 		digester.push(this);
 		digester.addObjectCreate("suite/ajc-test",AjcTest.class);
 		digester.addSetProperties("suite/ajc-test");
@@ -152,11 +168,27 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 			testMap = new HashMap();
 			System.out.println("LOADING SUITE: " + getSpecFile().getPath());
 			Digester d = getDigester();
+            d.getXMLReader().setEntityResolver(new EntityResolver() {
+                public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+                    System.out.println("!!!!!!!!!XMLBasedAjcTestCase.resolveEntity");
+                    return null;  //To change body of implemented methods use File | Settings | File Templates.
+                }
+            });
 			try {
 				InputStreamReader isr = new InputStreamReader(new FileInputStream(getSpecFile()));
 				d.parse(isr);
 			} catch (Exception ex) {
+                //ALEX was: but painfull in IntelliJ single module styled config
 				fail("Unable to load suite " + getSpecFile().getPath() + " : " + ex);
+//                ALEX is below
+//                ex.printStackTrace();
+//                try {
+//                    InputStreamReader isr = new InputStreamReader(new FileInputStream(new File(getSpecFile().getPath().substring(3))));
+//                    d.parse(isr);
+//                } catch (Exception ex2) {
+//                    ex2.printStackTrace();
+//                    fail("Unable to load suite " + getSpecFile().getPath() + " : " + ex + " : " + ex2);
+//                }
 			}
 			suiteLoaded = true;
 		}

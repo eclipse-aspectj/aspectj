@@ -194,7 +194,7 @@ public final class LazyClassGen {
     }
 
 	private BcelObjectType myType; // XXX is not set for types we create
-	private ClassGen myGen;//ALEX Andy. Alex wants this public?
+	private ClassGen myGen;
 	private ConstantPoolGen constantPoolGen;
 
     private List /*LazyMethodGen*/
@@ -405,7 +405,8 @@ public final class LazyClassGen {
 				getConstantPoolGen()));
     	}
 
-        //ALEX TODO make a lot of test fail since the test compare weaved class file
+        //FIXME ATAJ needed only for slow Aspects.aspectOf() - keep or remove
+        //make a lot of test fail since the test compare weaved class file
         // based on some test data as text files...
 //        if (!myGen.isInterface()) {
 //        	addAjClassField();
@@ -675,7 +676,6 @@ public final class LazyClassGen {
     private static final ObjectType classType = 
     	new ObjectType("java.lang.Class");
 
-    //ALEX : added boolean for ESJP
     public Field getTjpField(BcelShadow shadow, final boolean isEnclosingJp) {
     	Field ret = (Field)tjpFields.get(shadow);
     	if (ret != null) return ret;
@@ -712,30 +712,31 @@ public final class LazyClassGen {
     }
 
 
-    //ALEX
-    private void addAjClassField() {
-    // Why build it again??
-        Field ajClassField = new FieldGen(
-                Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC,
-                classType,
-                "aj$class",
-                getConstantPoolGen()).getField();
-        addField(ajClassField);
-
-        InstructionList il = new InstructionList();
-        il.append(new PUSH(getConstantPoolGen(), getClassName()));
-        il.append(fact.createInvoke("java.lang.Class", "forName", classType,
-                    new Type[] {Type.STRING}, Constants.INVOKESTATIC));
-        il.append(fact.createFieldAccess(getClassName(), ajClassField.getName(),
-            classType, Constants.PUTSTATIC));
-
-        getStaticInitializer().getBody().insert(il);
-    }
+    //FIXME ATAJ needed only for slow Aspects.aspectOf - keep or remove
+//    private void addAjClassField() {
+//    // Andy: Why build it again??
+//        Field ajClassField = new FieldGen(
+//                Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC,
+//                classType,
+//                "aj$class",
+//                getConstantPoolGen()).getField();
+//        addField(ajClassField);
+//
+//        InstructionList il = new InstructionList();
+//        il.append(new PUSH(getConstantPoolGen(), getClassName()));
+//        il.append(fact.createInvoke("java.lang.Class", "forName", classType,
+//                    new Type[] {Type.STRING}, Constants.INVOKESTATIC));
+//        il.append(fact.createFieldAccess(getClassName(), ajClassField.getName(),
+//            classType, Constants.PUTSTATIC));
+//
+//        getStaticInitializer().getBody().insert(il);
+//    }
 
     private void addAjcInitializers() {
     	if (tjpFields.size() == 0) return;
     	
     	InstructionList il = initializeAllTjps();
+
     	getStaticInitializer().getBody().insert(il);
     }
     
@@ -808,7 +809,6 @@ public final class LazyClassGen {
     	//XXX should load source location from shadow
     	list.append(Utility.createConstant(fact, shadow.getSourceLine()));
 
-        //ALEX added logic
         final String factoryMethod;
         if (staticTjpType.equals(field.getType())) {
             factoryMethod = "makeSJP";
@@ -818,13 +818,13 @@ public final class LazyClassGen {
             throw new Error("should not happen");
         }
     	list.append(fact.createInvoke(factoryType.getClassName(),
-    			factoryMethod, field.getType()/*ALEX was: staticTjpType*/,
+    			factoryMethod, field.getType(),
     			new Type[] { Type.STRING, sigType, Type.INT},
     			Constants.INVOKEVIRTUAL));
     	
     	// put it in the field	
     	list.append(fact.createFieldAccess(getClassName(), field.getName(),
-    		field.getType()/*ALEX was: staticTjpType*/, Constants.PUTSTATIC));
+    		field.getType(), Constants.PUTSTATIC));
     }
     
 

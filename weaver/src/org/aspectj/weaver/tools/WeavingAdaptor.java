@@ -38,10 +38,10 @@ import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
 import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ataspectj.Ajc5MemberMaker;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
-import org.aspectj.weaver.annotationStyle.Ajc5MemberMaker;
 
 /**
  * This adaptor allows the AspectJ compiler to be embedded in an existing
@@ -190,13 +190,17 @@ public class WeavingAdaptor {
 	private boolean shouldWeaveName (String name) {
 		return !((name.startsWith("org.apache.bcel.") || name.startsWith("org.aspectj.") || name.startsWith("java.") || name.startsWith("javax.")));
 	}
-	
+
+    /**
+     * We allow @AJ aspect weaving so that we can add aspectOf() as part of the weaving
+     * (and not part of the source compilation)
+     *
+     * @param name
+     * @return
+     */
 	private boolean shouldWeaveAspect (String name) {
 		ResolvedTypeX type = bcelWorld.resolve(name);
-		//ALEX
-        //was: return (type == null || !type.isAspect());
         return (type == null || !type.isAspect() || Ajc5MemberMaker.isAnnotationStyleAspect(type));
-
 	}
 
 	/**

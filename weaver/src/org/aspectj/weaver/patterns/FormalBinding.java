@@ -74,4 +74,16 @@ public class FormalBinding implements IHasPosition {
     
     public static final FormalBinding[] NONE = new FormalBinding[0];
 
+    /**
+     * A marker class for bindings for which we want to ignore unbound issue and consider
+     * them as implicit binding - f.e. to handle JoinPoint in @AJ advices
+     *
+     * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+     */ 
+    public static class ImplicitFormalBinding extends FormalBinding {
+        public ImplicitFormalBinding(TypeX type, String name, int index) {
+            super(type, name, index);
+        }
+    }
+
 }

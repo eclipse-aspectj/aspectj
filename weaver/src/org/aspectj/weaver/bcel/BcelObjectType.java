@@ -35,9 +35,9 @@ import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverStateInfo;
-import org.aspectj.weaver.annotationStyle.Aj5Attributes;
-import org.aspectj.weaver.annotationStyle.Ajc5MemberMaker;
 import org.aspectj.weaver.patterns.PerClause;
+import org.aspectj.weaver.ataspectj.Aj5Attributes;
+import org.aspectj.weaver.ataspectj.Ajc5MemberMaker;
 
 // ??? exposed for testing
 public class BcelObjectType extends ResolvedTypeX.ConcreteName {
@@ -82,7 +82,8 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
         super(resolvedTypeX, exposedToWeaver);
         this.javaClass = javaClass;
 
-        //ALEX, else done too late to lookup @AJ pc refs annotation in class hierarchy
+        //ATAJ: set the delegate right now for @AJ poincut, else it is done too late to lookup
+        // @AJ pc refs annotation in class hierarchy
         resolvedTypeX.setDelegate(this);
 
         if (resolvedTypeX.getSourceContext() == null) {
@@ -169,9 +170,14 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 		return perClause != null;
     }
 
-    //ALEX
+    /**
+     * Check if the type is an @AJ aspect (no matter if used from an LTW point of view).
+     * Such aspects are annotated with @Aspect
+     *
+     * @return true for @AJ aspect
+     */
     public boolean isAnnotationStyleAspect() {
-        //TODO optimize
+        //FIXME optimize by keeping the result, lazily
         return hasAnnotation(Ajc5MemberMaker.ASPECT);
     }
 
@@ -181,7 +187,6 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 		declares = new ArrayList();
 		// Pass in empty list that can store things for readAj5 to process
         List l = BcelAttributes.readAjAttributes(javaClass.getClassName(),javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld().getMessageHandler());
-        //ALEX Andy. Process annotations on types and add them as aj attributes
         l.addAll(Aj5Attributes.readAj5ClassAttributes(javaClass, getResolvedTypeX(), getResolvedTypeX().getSourceContext(), getResolvedTypeX().getWorld().getMessageHandler()));
 
 		for (Iterator iter = l.iterator(); iter.hasNext();) {

@@ -1,13 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Common Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/cpl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Common Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
+ *     Alexandre Vasseur    support for @AJ aspects
  * ******************************************************************/
 
 
@@ -49,6 +50,9 @@ import org.aspectj.apache.bcel.generic.SWAP;
 import org.aspectj.apache.bcel.generic.StoreInstruction;
 import org.aspectj.apache.bcel.generic.TargetLostException;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.generic.POP;
+import org.aspectj.apache.bcel.generic.INVOKEINTERFACE;
+import org.aspectj.apache.bcel.generic.ALOAD;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
@@ -66,8 +70,9 @@ import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.annotationStyle.Ajc5MemberMaker;
+import org.aspectj.weaver.ataspectj.Ajc5MemberMaker;
 import org.aspectj.weaver.ast.Var;
+import org.aspectj.weaver.ataspectj.Ajc5MemberMaker;
 
 
 /*
@@ -1084,10 +1089,19 @@ public class BcelShadow extends Shadow {
 		return il;
 	}
 
-    //ALEX added boolean param to say it is a ESJP that we want
+    /**
+     * Get the Var for the jpStaticPart
+     * @return
+     */
     public BcelVar getThisJoinPointStaticPartBcelVar() {
         return getThisJoinPointStaticPartBcelVar(false);
     }
+
+    /**
+     * Get the Var for the xxxxJpStaticPart, xxx = this or enclosing
+     * @param isEnclosingJp true to have the enclosingJpStaticPart
+     * @return
+     */
     public BcelVar getThisJoinPointStaticPartBcelVar(final boolean isEnclosingJp) {
     	if (thisJoinPointStaticPartVar == null) {
     		Field field = getEnclosingClass().getTjpField(this, isEnclosingJp);
@@ -1103,8 +1117,10 @@ public class BcelShadow extends Shadow {
     	return thisJoinPointStaticPartVar;
     }
 
-    //ALEX added true to say it is a ESJP that we want
-    //ALEX Note: weird to delegate since there is another check on thisJoinPointStaticPartVar==null then
+    /**
+     * Get the Var for the enclosingJpStaticPart
+     * @return
+     */
     public BcelVar getThisEnclosingJoinPointStaticPartBcelVar() {
     	if (enclosingShadow == null) {
     		// the enclosing of an execution is itself
@@ -1893,9 +1909,9 @@ public class BcelShadow extends Shadow {
 		for (int i=extraParamOffset; i < nVars; i++) {
 			varMap.put(i-extraParamOffset, i);
 		}
-		
+
 		localAdviceMethod.getBody().insert(
-			BcelClassWeaver.genInlineInstructions(adviceMethod, 
+			BcelClassWeaver.genInlineInstructions(adviceMethod,
 					localAdviceMethod, varMap, fact, true));
 
 
@@ -1923,7 +1939,9 @@ public class BcelShadow extends Shadow {
 				munger.getAdviceArgSetup(
 					this,
 					null,
-					new InstructionList(InstructionConstants.ACONST_NULL)));
+                    (munger.getConcreteAspect().isAnnotationStyleAspect())?
+                        this.loadThisJoinPoint():
+					    new InstructionList(InstructionConstants.ACONST_NULL)));
 		    // adviceMethodInvocation =
 		        advice.append(
 		        	Utility.createInvoke(fact, localAdviceMethod)); //(fact, getWorld(), munger.getSignature()));
@@ -1969,31 +1987,62 @@ public class BcelShadow extends Shadow {
         // now search through the advice, looking for a call to PROCEED.  
         // Then we replace the call to proceed with some argument setup, and a 
         // call to the extracted method.
-        String proceedName = 
-        	NameMangler.proceedMethodName(munger.getSignature().getName());
 
-        InstructionHandle curr = localAdviceMethod.getBody().getStart();
-        InstructionHandle end = localAdviceMethod.getBody().getEnd();
-        ConstantPoolGen cpg = localAdviceMethod.getEnclosingClass().getConstantPoolGen();
-        while (curr != end) {
-			InstructionHandle next = curr.getNext();
-			Instruction inst = curr.getInstruction();
-			if ((inst instanceof INVOKESTATIC)
-				&& proceedName.equals(((INVOKESTATIC) inst).getMethodName(cpg))) {
+        // inlining support for code style aspects
+        if (!munger.getConcreteAspect().isAnnotationStyleAspect()) {
+            String proceedName =
+                NameMangler.proceedMethodName(munger.getSignature().getName());
 
-				localAdviceMethod.getBody().append(
-					curr,
-					getRedoneProceedCall(
-						fact,
-						extractedMethod,
-						munger,
-						localAdviceMethod,
-						proceedVarList));
-				Utility.deleteInstruction(curr, localAdviceMethod);
-			}
-			curr = next;
+            InstructionHandle curr = localAdviceMethod.getBody().getStart();
+            InstructionHandle end = localAdviceMethod.getBody().getEnd();
+            ConstantPoolGen cpg = localAdviceMethod.getEnclosingClass().getConstantPoolGen();
+            while (curr != end) {
+                InstructionHandle next = curr.getNext();
+                Instruction inst = curr.getInstruction();
+                if ((inst instanceof INVOKESTATIC)
+                    && proceedName.equals(((INVOKESTATIC) inst).getMethodName(cpg))) {
+
+                    localAdviceMethod.getBody().append(
+                        curr,
+                        getRedoneProceedCall(
+                            fact,
+                            extractedMethod,
+                            munger,
+                            localAdviceMethod,
+                            proceedVarList));
+                    Utility.deleteInstruction(curr, localAdviceMethod);
+                }
+                curr = next;
+            }
+            // and that's it.
+        } else {
+            //ATAJ inlining support for @AJ aspects
+            // [TODO document @AJ code rule: don't manipulate 2 jps proceed at the same time.. in an advice body]
+            InstructionHandle curr = localAdviceMethod.getBody().getStart();
+            InstructionHandle end = localAdviceMethod.getBody().getEnd();
+            ConstantPoolGen cpg = localAdviceMethod.getEnclosingClass().getConstantPoolGen();
+            while (curr != end) {
+                InstructionHandle next = curr.getNext();
+                Instruction inst = curr.getInstruction();
+                if ((inst instanceof INVOKEINTERFACE)
+                    && "proceed".equals(((INVOKEINTERFACE) inst).getMethodName(cpg))) {
+                    //TODO proceed(...varargs) will need some stuff there
+                    InstructionList insteadProceedIl =
+                        getRedoneProceedCallForAnnotationStyle(
+                            fact,
+                            extractedMethod,
+                            munger,
+                            localAdviceMethod,
+                            proceedVarList);
+                    //TODO optimize, a POP is added somewhere, what for non void ?
+                    localAdviceMethod.getBody().append(
+                        curr, insteadProceedIl);
+
+                    Utility.deleteInstruction(curr, localAdviceMethod);
+                }
+                curr = next;
+            }
         }
-        // and that's it.
 	}
 
 	private InstructionList getRedoneProceedCall(
@@ -2010,8 +2059,8 @@ public class BcelShadow extends Shadow {
 		BcelVar[] adviceVars = munger.getExposedStateAsBcelVars();		
 		IntMap proceedMap =  makeProceedArgumentMap(adviceVars);
 
-//		System.out.println(proceedMap + " for " + this);
-//		System.out.println(argVarList);
+		System.out.println(proceedMap + " for " + this);
+		System.out.println(argVarList);
 		
 		ResolvedTypeX[] proceedParamTypes =
 			world.resolve(munger.getSignature().getParameterTypes());
@@ -2022,11 +2071,10 @@ public class BcelShadow extends Shadow {
 			System.arraycopy(proceedParamTypes, 0, newTypes, 0, len);
 			proceedParamTypes = newTypes;
 		}
-		
+
 		//System.out.println("stateTypes: " + Arrays.asList(stateTypes));
-		BcelVar[] proceedVars = 
+		BcelVar[] proceedVars =
 			Utility.pushAndReturnArrayOfVars(proceedParamTypes, ret, fact, localAdviceMethod);
-		
 
 		Type[] stateTypes = callbackMethod.getArgumentTypes();
 //		System.out.println("stateTypes: " + Arrays.asList(stateTypes));
@@ -2046,8 +2094,117 @@ public class BcelShadow extends Shadow {
 		ret.append(Utility.createConversion(fact, callbackMethod.getReturnType(), 
 				BcelWorld.makeBcelType(munger.getSignature().getReturnType())));
 		return ret;
-	}   
-    
+	}
+
+    /**
+     * ATAJ Handle the inlining for @AJ aspects
+     *
+     * @param fact
+     * @param callbackMethod
+     * @param munger
+     * @param localAdviceMethod
+     * @param argVarList
+     * @return
+     */
+    private InstructionList getRedoneProceedCallForAnnotationStyle(
+        InstructionFactory fact,
+        LazyMethodGen callbackMethod,
+        BcelAdvice munger,
+        LazyMethodGen localAdviceMethod,
+        List argVarList)
+    {
+        //if (true) return new InstructionList();
+
+        //TODO I think we just don't care about the proceed map
+        // since that one must be the exact same of the advice sig.
+        // perhaps with custom jp ?
+
+        // we have on stack all the arguments for the ADVICE call.
+        // we have in frame somewhere all the arguments for the non-advice call.
+        BcelVar[] adviceVars = munger.getExposedStateAsBcelVars();
+        IntMap proceedMap =  makeProceedArgumentMap(adviceVars);
+
+        //System.out.println(proceedMap + " for " + this);
+        //System.out.println(argVarList);
+
+        ResolvedTypeX[] proceedParamTypes =
+            world.resolve(munger.getSignature().getParameterTypes());
+        //System.out.println(proceedParamTypes);
+
+        InstructionList ret = new InstructionList();
+        ret.append(new POP());//the joinpoint instance is there
+
+        for (int i=0, len=callbackMethod.getArgumentTypes().length; i < len; i++) {
+            Type stateType = callbackMethod.getArgumentTypes()[i];
+            ResolvedTypeX stateTypeX = BcelWorld.fromBcel(stateType).resolve(world);
+            if (proceedMap.hasKey(i)) {
+                ret.append(new ALOAD(i));
+                //throw new RuntimeException("unimplemented");
+                //proceedVars[proceedMap.get(i)].appendLoadAndConvert(ret, fact, stateTypeX);
+            } else {
+                //FIXME Alex: odd code there
+                //((BcelVar) argVarList.get(i)).appendLoad(ret, fact);
+                //ret.append(new ALOAD(i));
+                if ("Lorg/aspectj/lang/JoinPoint;".equals(stateType.getSignature())) {
+                    ret.append(new ALOAD(i));
+                } else {
+                    ret.append(new ALOAD(i));
+                }
+            }
+        }
+
+        ret.append(Utility.createInvoke(fact, callbackMethod));
+        ret.append(Utility.createConversion(fact, callbackMethod.getReturnType(),
+                BcelWorld.makeBcelType(munger.getSignature().getReturnType())));
+
+        ret.append(new ACONST_NULL());//will be POPed //FIXME Alex: if so clean up
+        if (true) return ret;
+
+
+
+//        // we have on stack all the arguments for the ADVICE call.
+//        // we have in frame somewhere all the arguments for the non-advice call.
+//
+//        BcelVar[] adviceVars = munger.getExposedStateAsBcelVars();
+//        IntMap proceedMap =  makeProceedArgumentMap(adviceVars);
+//
+//        System.out.println(proceedMap + " for " + this);
+//        System.out.println(argVarList);
+//
+//        ResolvedTypeX[] proceedParamTypes =
+//            world.resolve(munger.getSignature().getParameterTypes());
+        // remove this*JoinPoint* as arguments to proceed
+        if (munger.getBaseParameterCount()+1 < proceedParamTypes.length) {
+            int len = munger.getBaseParameterCount()+1;
+            ResolvedTypeX[] newTypes = new ResolvedTypeX[len];
+            System.arraycopy(proceedParamTypes, 0, newTypes, 0, len);
+            proceedParamTypes = newTypes;
+        }
+
+        //System.out.println("stateTypes: " + Arrays.asList(stateTypes));
+        BcelVar[] proceedVars =
+            Utility.pushAndReturnArrayOfVars(proceedParamTypes, ret, fact, localAdviceMethod);
+
+        Type[] stateTypes = callbackMethod.getArgumentTypes();
+//		System.out.println("stateTypes: " + Arrays.asList(stateTypes));
+
+        for (int i=0, len=stateTypes.length; i < len; i++) {
+            Type stateType = stateTypes[i];
+            ResolvedTypeX stateTypeX = BcelWorld.fromBcel(stateType).resolve(world);
+            if (proceedMap.hasKey(i)) {
+                //throw new RuntimeException("unimplemented");
+                proceedVars[proceedMap.get(i)].appendLoadAndConvert(ret, fact, stateTypeX);
+            } else {
+                ((BcelVar) argVarList.get(i)).appendLoad(ret, fact);
+            }
+        }
+
+        ret.append(Utility.createInvoke(fact, callbackMethod));
+        ret.append(Utility.createConversion(fact, callbackMethod.getReturnType(),
+                BcelWorld.makeBcelType(munger.getSignature().getReturnType())));
+        return ret;
+    }
+
     public void weaveAroundClosure(
         BcelAdvice munger, 
         boolean hasDynamicTest) 
@@ -2138,29 +2295,32 @@ public class BcelShadow extends Shadow {
 					InstructionFactory.createReturn(callbackMethod.getReturnType()));
 			}
 		}
-        
-        InstructionList advice = new InstructionList();
-        advice.append(munger.getAdviceArgSetup(this, null, closureInstantiation));
-//        advice.append(closureInstantiation);
 
-        //ALEX
+        // ATAJ for @AJ aspect we need to link the closure with the joinpoint instance
         if (Ajc5MemberMaker.isAnnotationStyleAspect(munger.getConcreteAspect())) {
             //advice.append(new POP());
-            advice.append(Utility.createInvoke(
+            closureInstantiation.append(Utility.createInvoke(
                     getFactory(),
                     getWorld(),
                     new Member(
                             Member.METHOD,
                             TypeX.forName("org.aspectj.runtime.internal.AroundClosure"),
                             Modifier.PUBLIC,
-                            "getJoinPoint",
-                            "()Lorg/aspectj/lang/JoinPoint;"
+                            "linkClosureAndJoinPoint",
+                            "()Lorg/aspectj/lang/ProceedingJoinPoint;"
                             )
             ));
         }
+        //System.err.println(closureInstantiation);
 
-        advice.append(munger.getNonTestAdviceInstructions(this));//ALEX invoke the advice
-        advice.append(returnConversionCode);         
+
+        InstructionList advice = new InstructionList();
+        advice.append(munger.getAdviceArgSetup(this, null, closureInstantiation));
+//        advice.append(closureInstantiation);
+
+        // invoke the advice
+        advice.append(munger.getNonTestAdviceInstructions(this));
+        advice.append(returnConversionCode);
         
 		if (!hasDynamicTest) {
 			range.append(advice);
@@ -2284,7 +2444,7 @@ public class BcelShadow extends Shadow {
 	private LazyMethodGen makeClosureClassAndReturnConstructor(
 		String closureClassName,
         LazyMethodGen callbackMethod, 
-        IntMap proceedMap) 
+        IntMap proceedMap)
     {
 		String superClassName = "org.aspectj.runtime.internal.AroundClosure";
         Type objectArrayType = new ArrayType(Type.OBJECT, 1);

@@ -1,13 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Common Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/cpl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Common Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
+ *     Alexandre Vasseur    support for @AJ aspects
  * ******************************************************************/
 
 
@@ -34,7 +35,7 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.annotationStyle.Ajc5MemberMaker;
+import org.aspectj.weaver.ataspectj.Ajc5MemberMaker;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.patterns.ExactTypePattern;
@@ -148,6 +149,9 @@ public class BcelAdvice extends Advice {
         } else if (getKind() == AdviceKind.Around) {
         	if (!canInline(s)) {
         		shadow.weaveAroundClosure(this, hasDynamicTests());
+                //FIXME : check Inlining and LTW
+                //ALEX : uncomment to force inlining for LTW - else inlining does not seems to happen.
+                //shadow.weaveAroundInline(this, hasDynamicTests());
         	} else {
             	shadow.weaveAroundInline(this, hasDynamicTests());
         	}
@@ -215,6 +219,17 @@ public class BcelAdvice extends Advice {
 		}
 		return thrownExceptions;
 	}
+
+    /**
+     * The munger must not check for the advice exceptions to be declared by the shadow in the case
+     * of @AJ aspects so that around can throws Throwable
+     *
+     * @return
+     */
+    public boolean mustCheckExceptions() {
+        return !getConcreteAspect().isAnnotationStyleAspect();
+    }
+
 
 
     // only call me after prepare has been called
@@ -306,13 +321,13 @@ public class BcelAdvice extends Advice {
         for (int i = 0, len = exposedState.size(); i < len; i++) {
         	if (exposedState.isErroneousVar(i)) continue; // Erroneous vars have already had error msgs reported!
             BcelVar v = (BcelVar) exposedState.get(i);
-            //ALEX
-            // was: if (v == null) continue;
-            // TODO optimize isSlowAspect
+
             if (v == null) {
+                // if not @AJ aspect, go on with the regular binding handling
             	if (!Ajc5MemberMaker.isAnnotationStyleAspect(getConcreteAspect())) {
             		continue;
             	} else {
+                    // ATAJ: for @AJ aspects, handle implicit binding of xxJoinPoint
 	                if (getKind() == AdviceKind.Around) {
 	                    il.append(closureInstantiation);
 	                    continue;
@@ -334,7 +349,9 @@ public class BcelAdvice extends Advice {
 	                        fact,
 	                        getExtraParameterType().resolve(world));
 	                } else {
-	                    continue;
+                        //FIXME this code  will throw an error if ProceedingJP is used in a before advice f.e. ok ??
+                        throw new Error("Should not happen - unbound advice argument at index " + i + " in [" +
+                                toString() + "]");
 	                }
             	}
             } else {
@@ -344,7 +361,8 @@ public class BcelAdvice extends Advice {
         }
 
         
-        //ALEX added if
+        // ATAJ: for code style aspect, handles the extraFlag as usual ie not
+        // in the middle of the formal bindings but at the end, in a rock solid ordering
         if (!Ajc5MemberMaker.isAnnotationStyleAspect(getConcreteAspect())) {
             if (getKind() == AdviceKind.Around) {
                 il.append(closureInstantiation);
@@ -451,6 +469,12 @@ public class BcelAdvice extends Advice {
 	}
 
 	public BcelVar[] getExposedStateAsBcelVars() {
+        // ATAJ aspect
+        // the closure instantiation has the same mapping as the extracted method from wich it is called
+        if (getConcreteAspect().isAnnotationStyleAspect()) {
+            return BcelVar.NONE;
+        }
+
 		//System.out.println("vars: " + Arrays.asList(exposedState.vars));
 		if (exposedState == null) return BcelVar.NONE;
 		int len = exposedState.vars.length;

@@ -304,12 +304,20 @@ public abstract class Shadow {
 			throw new BCException("unknown kind: " + key);
 		}		
 	}
-	
+
+    /**
+     * Only does the check if the munger requires it (@AJ aspects don't)
+     *
+     * @param munger
+     * @return
+     */
 	protected boolean checkMunger(ShadowMunger munger) {
-		for (Iterator i = munger.getThrownExceptions().iterator(); i.hasNext(); ) {
-			if (!checkCanThrow(munger,  (ResolvedTypeX)i.next() )) return false;
-		}
-		return true;
+        if (munger.mustCheckExceptions()) {
+            for (Iterator i = munger.getThrownExceptions().iterator(); i.hasNext(); ) {
+                if (!checkCanThrow(munger,  (ResolvedTypeX)i.next() )) return false;
+            }
+        }
+        return true;
 	}
 
 	protected boolean checkCanThrow(ShadowMunger munger, ResolvedTypeX resolvedTypeX) {
@@ -457,8 +465,8 @@ public abstract class Shadow {
 		ak.getKey()==AdviceKind.PerThisEntry.getKey() ||
 		ak.getKey()==AdviceKind.PerTargetEntry.getKey() ||
 		ak.getKey()==AdviceKind.Softener.getKey()) {
-			  //ALEX Andy. ?? Alex doesn't want to print this message - why?
-              //System.err.println("Dont want a message about this: "+ak);
+        //FIXME: Alex: why this System.err was there ?? It prints nasty thing in my LTW. 
+          //System.err.println("Dont want a message about this: "+ak);
 			  return null;
 		}
 		throw new RuntimeException("Shadow.determineRelKind: What the hell is it? "+ak);

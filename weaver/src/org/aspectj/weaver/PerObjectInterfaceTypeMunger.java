@@ -17,6 +17,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.FastMatchInfo;
+import org.aspectj.util.FuzzyBoolean;
 
 public class PerObjectInterfaceTypeMunger extends ResolvedTypeMunger {
 	private ResolvedMember getMethod;
@@ -60,8 +62,13 @@ public class PerObjectInterfaceTypeMunger extends ResolvedTypeMunger {
 	}
 	
 	public boolean matches(ResolvedTypeX matchType, ResolvedTypeX aspectType) {
-		//??? this matches many more types than are needed
-		return !matchType.isInterface();
-	}
+        //FIXME ATAJ waiting Andy patch...
+        // right now I filter @AJ aspect else it end up with duplicate members
+        return !matchType.isInterface() && !matchType.isAnnotationStyleAspect();
+    }
+
+    private FuzzyBoolean isWithinType(ResolvedTypeX type) {
+        return testPointcut.fastMatch(new FastMatchInfo(type, null));
+    }
 
 }

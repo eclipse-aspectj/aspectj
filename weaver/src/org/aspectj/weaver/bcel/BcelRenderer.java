@@ -20,6 +20,9 @@ import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.ReferenceType;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.generic.LDC;
+import org.aspectj.apache.bcel.generic.ObjectType;
+import org.aspectj.apache.bcel.generic.DUP;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.TypeX;
@@ -281,16 +284,26 @@ public class BcelRenderer implements ITestVisitor, IExprVisitor {
 		instructions.insert(callIl);		
 	}
 
-    //ALEX Andy. New visit methods added for @AJ support
+    /**
+     * Visit a string constant
+     * @param stringConst
+     */
     public void visit(StringConstExpr stringConst) {
         instructions.insert(fact.createConstant(stringConst.getStringConst()));
     }
 
+    /**
+     * Visit a CHECKCAST
+     * @param castExpr
+     */
     public void visit(CastExpr castExpr) {
-        //instructions.insert(new DUP());
         instructions.append(fact.createCheckCast(new ObjectType(castExpr.getTypeName())));
     }
 
+    /**
+     * Visit a field GET (static or not, depends on the field)
+     * @param fieldGet
+     */
     public void visit(FieldGetOn fieldGet) {
 		Member field = fieldGet.getField();
 		instructions.insert(Utility.createGetOn(fact, field, fieldGet.getDeclaringType()));		

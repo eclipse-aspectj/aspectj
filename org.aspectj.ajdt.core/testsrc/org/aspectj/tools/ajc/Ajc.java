@@ -48,8 +48,11 @@ public class Ajc {
 		".."+File.separator+"runtime"+File.separator+"bin" + File.pathSeparator +
 		".."+File.separator+"lib"+File.separator+"test"+File.separator+"aspectjrt.jar"+ File.pathSeparator+
 		".."+File.separator+"lib"+File.separator+"test"+File.separator+"testing-client.jar"
-        // ALEX Andy. ?? What does _IDE add?
-		// + File.pathSeparator+ ".."+File.separator+"_IDE"
+        //Alex: adding "_IDE" since there is no "bin" output when working within IDEA.
+        // my convention is thus to have a "modules/_IDE" folder where IDEA will write
+        // Since modules/* have circular dependancies, there is no way to have multiple "modules"
+        // (like Eclipse projects in one workspace) in IDEA, so all will be build there.
+		+ File.pathSeparator+ ".."+File.separator+"_IDE"
         + File.pathSeparator+ ".."+File.separator+"lib"+File.separator+"junit"+File.separator+"junit.jar"
         + File.pathSeparator+".."+File.separator+"java5"+File.separator+"runtime-bin";
 

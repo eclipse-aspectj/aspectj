@@ -751,31 +751,31 @@ class BcelClassWeaver implements IClassWeaver {
 		}
 	}
 
-    void addPerSingletonField(Member field) {
-        //ALEX: dead code here
-    	ObjectType aspectType = (ObjectType) BcelWorld.makeBcelType(field.getReturnType());
-    	String aspectName = field.getReturnType().getName();
-
-		LazyMethodGen clinit = clazz.getStaticInitializer();
-		InstructionList setup = new InstructionList();
-		InstructionFactory fact = clazz.getFactory();
-
-		setup.append(fact.createNew(aspectType));
-		setup.append(InstructionFactory.createDup(1));
-		setup.append(fact.createInvoke(
-			aspectName, 
-			"<init>", 
-			Type.VOID, 
-			new Type[0], 
-			Constants.INVOKESPECIAL));
-		setup.append(
-			fact.createFieldAccess(
-				aspectName,
-				field.getName(),
-				aspectType,
-				Constants.PUTSTATIC));
-		clinit.getBody().insert(setup);
-    }
+    //FIXME: remove dead code
+//    void addPerSingletonField(Member field) {
+//    	ObjectType aspectType = (ObjectType) BcelWorld.makeBcelType(field.getReturnType());
+//    	String aspectName = field.getReturnType().getName();
+//
+//		LazyMethodGen clinit = clazz.getStaticInitializer();
+//		InstructionList setup = new InstructionList();
+//		InstructionFactory fact = clazz.getFactory();
+//
+//		setup.append(fact.createNew(aspectType));
+//		setup.append(InstructionFactory.createDup(1));
+//		setup.append(fact.createInvoke(
+//			aspectName,
+//			"<init>",
+//			Type.VOID,
+//			new Type[0],
+//			Constants.INVOKESPECIAL));
+//		setup.append(
+//			fact.createFieldAccess(
+//				aspectName,
+//				field.getName(),
+//				aspectType,
+//				Constants.PUTSTATIC));
+//		clinit.getBody().insert(setup);
+//    }
 
 	/**
 	 * Returns null if this is not a Java constructor, and then we won't 

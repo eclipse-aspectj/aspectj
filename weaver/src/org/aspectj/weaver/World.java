@@ -285,11 +285,17 @@ public abstract class World implements Dump.INode {
 		throw new RuntimeException("unimplemented");
 	}
 
-    //ALEX Andy. Make per clause aspect - see subclass for impl
+    /**
+     * Register a munger for perclause @AJ aspect so that we add aspectOf(..) to them as needed
+     * @see org.aspectj.weaver.bcel.BcelWorld#makePerClauseAspect(ResolvedTypeX, org.aspectj.weaver.patterns.PerClause.Kind)
+     * 
+     * @param aspect
+     * @param kind
+     * @return
+     */
     public ConcreteTypeMunger makePerClauseAspect(ResolvedTypeX aspect, PerClause.Kind kind) {
         throw new RuntimeException("unimplemented");
     }
-
 
     public abstract ConcreteTypeMunger concreteTypeMunger(ResolvedTypeMunger munger, ResolvedTypeX aspectType);
 

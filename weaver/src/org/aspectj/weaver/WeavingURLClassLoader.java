@@ -88,22 +88,6 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 	protected Class defineClass(String name, byte[] b, CodeSource cs) throws IOException {
 //		System.err.println("? WeavingURLClassLoader.defineClass(" + name + ", [" + b.length + "])");
 		b = adaptor.weaveClass(name,b);
-
-        //ALEX Andy. Dump logic for the result of the weave
-//        String className = name.replace('.', '/');
-//        final File dir;
-//        if (className.indexOf('/') > 0) {
-//            dir = new File("_dump" + File.separator + className.substring(0, className.lastIndexOf('/')));
-//        } else {
-//            dir = new File("_dump");
-//        }
-//        dir.mkdirs();
-//        String fileName = "_dump" + File.separator + className + ".class";
-//        System.out.println("INFO: dumping class " + className + " to " + "_dump");
-//        FileOutputStream os = new FileOutputStream(fileName);
-//        os.write(b);
-//        os.close();
-
 		return super.defineClass(name, b, cs);
 	}
 

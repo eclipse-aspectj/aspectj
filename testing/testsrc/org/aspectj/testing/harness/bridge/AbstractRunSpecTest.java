@@ -38,7 +38,8 @@ public class AbstractRunSpecTest extends TestCase {
         spec.setDescription("some description, with extra");
         XMLWriter out = new XMLWriter(new PrintWriter(System.out));
         spec.writeXml(out);
-        out.close();
+        //ALEX: was: but this fucked up the IntelliJ runner since closes the System.out
+        //out.close();
     }
 
     public void testSetOptions() {
