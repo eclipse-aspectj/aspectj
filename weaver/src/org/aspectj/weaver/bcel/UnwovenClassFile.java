@@ -28,7 +28,7 @@ public class UnwovenClassFile {
 	protected String filename;
 	protected byte[] bytes;
 //	protected JavaClass javaClass = null;
-	protected byte[] writtenBytes = null;
+	//protected byte[] writtenBytes = null;
 	protected List /* ChildClass */ writtenChildClasses = new ArrayList(0);
 	protected String className = null;
 	
@@ -75,16 +75,20 @@ public class UnwovenClassFile {
 	public void writeWovenBytes(byte[] bytes, List childClasses) throws IOException {	
 		writeChildClasses(childClasses);
 		
+		//System.err.println("should write: " + getClassName());
+		
 		//System.err.println("about to write: " + this + ", " + writtenBytes + ", ");
 //					+ writtenBytes != null + " && " + unchanged(bytes, writtenBytes) );
 			
-		if (writtenBytes != null && !unchanged(bytes, writtenBytes)) return;
+		//if (writtenBytes != null && unchanged(bytes, writtenBytes)) return;
+		
+		//System.err.println("    actually wrote it");
 		
 		BufferedOutputStream os = FileUtil.makeOutputStream(new File(filename));
 		os.write(bytes);
 		os.close();
 		
-		writtenBytes = bytes;
+		//writtenBytes = bytes;
 	}
 
 	private void writeChildClasses(List childClasses) throws IOException {
@@ -140,9 +144,6 @@ public class UnwovenClassFile {
 	public String getClassName() {
 		if (className == null) className = getJavaClass().getClassName();
 		return className;
-	}
-	public byte[] getWrittenBytes() {
-		return writtenBytes;
 	}
 	
 	public String toString() {
