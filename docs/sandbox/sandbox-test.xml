@@ -1,4 +1,4 @@
-<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+<!DOCTYPE suite SYSTEM "../../tests/ajcTestSuite.dtd">
 <!-- ../ path when running, ../../ when editing? -->
 
 
@@ -38,6 +38,12 @@
 				text="handles"/>
 			</compile>
 		</ajc-test>
+
+	<ajc-test dir="common" 
+		title="caching-dirty-reflectiveSetters">
+		<compile files="caching/WatchSetters.java"/>
+		<run class="caching.WatchSetters"/>
+	</ajc-test>
 
 	<ajc-test dir="common" 
 		title="ensure company compiles and runs without aspects">
@@ -134,51 +140,62 @@
 		<compile files="common/org/aspectj/langlib/Pointcuts.java"/>
 	</ajc-test>
 
-	<!--
 	<ajc-test dir="." title="library-pointcutIdioms test all pointcuts"
-		comment="disabled pending fix for BCException"
 		>
 		<compile files="common/org/aspectj/langlib/Pointcuts.java,
 			            testsrc/org/aspectj/langlib/PointcutsCW.java">
-			<message kind="warning" line="67" text="anyMethodExecution"/>
-			<message kind="warning" line="67" text="anyPublicMethodExecution"/>
-			<message kind="warning" line="67" text="anyNonPrivateMethodExecution"/>
+			            
+			<message kind="warning" line="159" text="anyConstructorExecution" file="Pointcuts.java"/>
+
+			<message kind="warning" line="20" text="anyConstructorExecution"/>
+			<message kind="warning" line="20" text="anyPublicConstructorExecution"/>
+			<message kind="warning" line="20" text="anyNonPrivateConstructorExecution"/>
+			<message kind="warning" line="59" text="mainExecution"/>
+			<message kind="warning" line="59" text="anyMethodExecution"/>
+			<message kind="warning" line="59" text="anyPublicMethodExecution"/>
+			<message kind="warning" line="59" text="anyNonPrivateMethodExecution"/>
+			<message kind="warning" line="70" text="anyConstructorExecution"/>
 			<message kind="warning" line="72" text="anyConstructorExecution"/>
-			<message kind="warning" line="74" text="anyConstructorExecution"/>
-			<message kind="warning" line="74" text="anyPublicConstructorExecution"/>
-			<message kind="warning" line="74" text="anyNonPrivateConstructorExecution"/>
+			<message kind="warning" line="72" text="anyPublicConstructorExecution"/>
+			<message kind="warning" line="72" text="anyNonPrivateConstructorExecution"/>
 			<message kind="warning" line="76" text="anyConstructorExecution"/>
 			<message kind="warning" line="76" text="anyNonPrivateConstructorExecution"/>
-			<message kind="warning" line="78" text="anyNonPrivateFieldSet"/>
+			<message kind="warning" line="76" text="anyNonPrivateFieldSet"/>
 			<message kind="warning" line="82" text="anyMethodExecution"/>
 			<message kind="warning" line="82" text="anyPublicMethodExecution"/>
 			<message kind="warning" line="82" text="anyNonPrivateMethodExecution"/>
-			<message kind="warning" line="83" text="toStringExecution "/>
-			<message kind="warning" line="87" text="anyMethodExecution"/>
-			<message kind="warning" line="89" text="anyMethodExecution, "/>
-			<message kind="warning" line="91" text="anyNonPrivateFieldSet"/>
-			<message kind="warning" line="91" text="withinSetter"/>
-			<message kind="warning" line="97" text="anyNonPrivateFieldGet"/>
-			<message kind="warning" line="97" text="withinGetter"/>
+			<message kind="warning" line="82" text="toStringExecution "/>
+			<message kind="warning" line="85" text="anyMethodExecution "/>
+			<message kind="warning" line="89" text="anyMethodExecution"/>
+			<message kind="warning" line="89" text="anyNonPrivateFieldSet"/>
+			<message kind="warning" line="89" text="withinSetter"/>
+			<message kind="warning" line="95" text="anyMethodExecution"/>
+			<message kind="warning" line="95" text="anyNonPrivateFieldGet"/>
+			<message kind="warning" line="95" text="withinGetter"/>
+			<message kind="warning" line="99" text="anyConstructorExecution"/>
+			<message kind="warning" line="99" text="anyNonPrivateConstructorExecution"/>
 			<message kind="warning" line="102" text="anyMethodExecution"/>
 			<message kind="warning" line="102" text="anyPublicMethodExecution"/>
 			<message kind="warning" line="102" text="anyNonPrivateMethodExecution"/>
-			<message kind="warning" line="103" text="runImplementationsInNonRunnable"/>
-			<message kind="warning" line="107" text="anyRunnableImplementation"/>
-			<message kind="warning" line="109" text="anyMethodExecution"/>
-			<message kind="warning" line="109" text="anyPublicMethodExecution"/>
-			<message kind="warning" line="109" text="anyNonPrivateMethodExecution"/>
+			<message kind="warning" line="102" text="runImplementationsInNonRunnable"/>
+			<message kind="warning" line="105" text="anyRunnableImplementation"/>
+			<message kind="warning" line="105" text="anyConstructorExecution"/>
+			<message kind="warning" line="105" text="anyNonPrivateConstructorExecution"/>
+			<message kind="warning" line="105" text="anyPublicConstructorExecution"/>
+			<message kind="warning" line="110" text="anyMethodExecution"/>
+			<message kind="warning" line="110" text="anyPublicMethodExecution"/>
+			<message kind="warning" line="110" text="anyNonPrivateMethodExecution"/>
 			<message kind="warning" line="114" text="anyMethodExecution"/>
 			<message kind="warning" line="114" text="anyPublicMethodExecution"/>
 			<message kind="warning" line="114" text="anyNonPrivateMethodExecution"/>
-			<message kind="warning" line="115" text="cloneImplementationsInNonCloneable"/>
-			<message kind="warning" line="121" text="anyMethodExecution"/>
-			<message kind="warning" line="121" text="anyPublicMethodExecution"/>
-			<message kind="warning" line="121" text="anyNonPrivateMethodExecution"/>
+			<message kind="warning" line="114" text="cloneImplementationsInNonCloneable"/>
+			<message kind="warning" line="122" text="anyMethodExecution"/>
+			<message kind="warning" line="122" text="anyPublicMethodExecution"/>
+			<message kind="warning" line="122" text="anyNonPrivateMethodExecution"/>
+			<message kind="warning" line="122" text="anyPublicFieldGet"/>
+			<message kind="warning" line="122" text="anyNonPrivateFieldGet"/>
 			<message kind="warning" line="124" text="anyPublicFieldGet"/>
 			<message kind="warning" line="124" text="anyNonPrivateFieldGet"/>
-			<message kind="warning" line="126" text="anyPublicFieldGet"/>
-			<message kind="warning" line="126" text="anyNonPrivateFieldGet"/>
 			<message kind="warning" line="132" text="anyNonPrivateFieldGet"/>
 			<message kind="warning" line="134" text="anyNonPrivateFieldGet"/>
 			<message kind="warning" line="136" text="anyPublicFieldSet"/>
@@ -191,12 +208,14 @@
 			<message kind="warning" line="147" text="anyNonPublicFieldSetOutsideConstructorOrSetter"/>
 			<message kind="warning" line="145" text="anyNonPrivateFieldSet"/>
 			<message kind="warning" line="147" text="anyNonPrivateFieldSet"/>
+			<message kind="warning" line="149" text="anyJavaIOCalls"/>
 			<message kind="warning" line="149" text="anyGetSystemErrOut"/>
 			<message kind="warning" line="149" text="anyNonPrivateFieldGet"/>
 			<message kind="warning" line="149" text="anyPublicFieldGet"/>
 			<message kind="warning" line="151" text="anyGetSystemErrOut"/>
 			<message kind="warning" line="151" text="anyNonPrivateFieldGet"/>
 			<message kind="warning" line="151" text="anyPublicFieldGet"/>
+			<message kind="warning" line="151" text="anyJavaIOCalls"/>
 			<message kind="warning" line="153" text="anyThreadConstruction"/>
 			<message kind="warning" line="155" text="anyJavaIOCalls"/>
 			<message kind="warning" line="157" text="anyJavaIOCalls"/>
@@ -204,16 +223,19 @@
 			<message kind="warning" line="161" text="anyJavaAWTOrSwingCalls"/>
 			<message kind="warning" line="163" text="anyJavaAWTOrSwingCalls"/>
 			<message kind="warning" line="165" text="anyJavaAWTOrSwingCalls"/>
+			<message kind="warning" line="167" text="anySystemClassLoadingCalls"/>
+			<message kind="warning" line="167" text="mostThrowableReadCalls"/>
 			<message kind="warning" line="169" text="anySystemClassLoadingCalls"/>
 			<message kind="warning" line="171" text="anySystemReflectiveCalls"/>
 			<message kind="warning" line="173" text="anySystemProcessSpawningCalls"/>
 			<message kind="warning" line="177" text="mostThrowableReadCalls"/>
 			<message kind="warning" line="179" text="mostThrowableReadCalls"/>
-			<message kind="warning" line="181" text="mostThrowableReadCalls"/>
+			<message kind="warning" line="190" text="anyConstructorExecution"/>
+			<message kind="warning" line="190" text="anyNonPrivateConstructorExecution"/>
 		</compile>
 		<run class="org.aspectj.langlib.PointcutsCW"/>
 	</ajc-test>
-   -->
+
 </suite>
 
 	
