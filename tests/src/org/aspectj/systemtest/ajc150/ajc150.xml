@@ -125,7 +125,12 @@
     <ajc-test dir="bugs150" title="bad asm for enums" vm="1.5">
         <compile files="Rainbow.java" options="-emacssym,-1.5"/>
     </ajc-test>
-    
+
+    <ajc-test dir="bugs150" pr="83645" title="pertypewithin({interface}) illegal field modifier">
+        <compile files="PR83645.aj"/>
+        <run class="PR83645"/>
+    </ajc-test>
+        
     <ajc-test dir="../docs/dist/doc/examples/introduction" title="introduction sample" vm="1.5">
         <compile files="CloneablePoint.java,ComparablePoint.java,HashablePoint.java,Point.java" options="-1.5"/>
     </ajc-test>

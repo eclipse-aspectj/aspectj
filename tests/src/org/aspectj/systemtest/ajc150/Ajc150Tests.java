@@ -153,6 +153,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("introduction sample");
   }
   
+  public void testPTWInterface() {
+	  runTest("pertypewithin({interface}) illegal field modifier");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
