@@ -836,8 +836,8 @@ public class LangUtil {
     
     /** check if input contains any packages to elide. */
     public static class StringChecker {
-        static StringChecker TEST_PACKAGES = new StringChecker( new String[] 
-            { "org.aspectj.testing.",
+        static StringChecker TEST_PACKAGES = new StringChecker(new String[] 
+            { "org.aspectj.testing",
               "org.eclipse.jdt.internal.junit",
               "junit.framework.",
               "org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner"
@@ -860,5 +860,465 @@ public class LangUtil {
             }
             return result;
 		}
-    }    
+    }
+
+    /**
+     * Gen classpath.     
+     * @param bootclasspath
+     * @param classpath
+     * @param classesDir
+     * @param outputJar
+     * @return String combining classpath elements
+     */
+    public static String makeClasspath( // XXX dumb implementation
+        String bootclasspath, 
+        String classpath, 
+        String classesDir, 
+        String outputJar) {
+        StringBuffer sb = new StringBuffer();
+        addIfNotEmpty(bootclasspath, sb, File.pathSeparator);
+        addIfNotEmpty(classpath, sb, File.pathSeparator);
+        if (!addIfNotEmpty(classesDir, sb, File.pathSeparator)) {
+            addIfNotEmpty(outputJar, sb, File.pathSeparator);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * @param input ignored if null
+     * @param sink the StringBuffer to add input to - return false if null
+     * @param delimiter the String to append to input when added - ignored if empty
+     * @return true if input + delimiter added to sink
+     */
+    private static boolean addIfNotEmpty(String input, StringBuffer sink, String delimiter) {
+        if (LangUtil.isEmpty(input) || (null == sink)) {
+            return false;
+        }
+        sink.append(input);
+        if (!LangUtil.isEmpty(delimiter)) {
+            sink.append(delimiter);
+        }
+        return true;
+    }
+
+    
+    /**
+     * Create or initialize a process controller to run 
+     * a process in another VM asynchronously.
+     * @param controller the ProcessController to initialize, if not null
+     * @param classpath
+     * @param mainClass
+     * @param args
+     * @return initialized ProcessController
+     */
+    public static ProcessController makeProcess(
+        ProcessController controller,
+        String classpath, 
+        String mainClass, 
+        String[] args) {
+        File java = LangUtil.getJavaExecutable(classpath);
+        ArrayList cmd = new ArrayList();
+        cmd.add(java.getAbsolutePath());
+        cmd.add("-classpath");
+        cmd.add(classpath);
+        cmd.add(mainClass);
+        if (!LangUtil.isEmpty(args)) {
+            cmd.addAll(Arrays.asList(args));
+        }
+        String[] command = (String[]) cmd.toArray(new String[0]);
+        if (null == controller) {
+            controller = new ProcessController();
+        }
+        controller.init(command, mainClass);
+        return controller;
+    }
+    
+    /**
+     * Create a process to run asynchronously.
+     * @param controller if not null, initialize this one
+     * @param command the String[] command to run
+     * @param controller the ProcessControl for streams and results
+     */
+    public static ProcessController makeProcess( // not needed?
+        ProcessController controller, 
+        String[] command, 
+        String label) {
+        if (null == controller) {
+            controller = new ProcessController();
+        }
+        controller.init(command, label);
+        return controller;
+    }
+    
+    /**
+     * Find java executable File path from java.home system property.
+     * @param classpath ignored for now
+     * @return File associated with the java command, or null if not found.
+     */
+    public static File getJavaExecutable(String classpath) { // XXX weak
+        String javaHome = null;
+        File result = null;
+        //java.home
+        // java.class.path
+        // java.ext.dirs
+        try {
+            javaHome = System.getProperty("java.home");
+        } catch (Throwable t) {
+            // ignore
+        }
+        if (null != javaHome) {
+            File binDir = new File(javaHome, "bin");
+            if (binDir.isDirectory() && binDir.canRead()) {
+                String[] execs = new String[] { "java", "java.exe" };
+                for (int i = 0; i < execs.length; i++) {
+                    result = new File(binDir, execs[i]);
+                    if (result.canRead()) {
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }  
+      
+    /**
+     * Handle an external process asynchrously.
+     * <code>start()</code> launches a main thread to wait for the process 
+     * and pipes streams (in child threads) through to the corresponding
+     * streams (e.g., the process System.err to this System.err).
+     * This can complete normally, by exception, or on demand by a client.
+     * Clients can implement <code>doCompleting(..)</code> to get notice
+     * when the process completes.
+     * <p>The following sample code creates a process with a completion 
+     * callback starts it, and some time later retries the process.
+     * <pre>
+     * LangUtil.ProcessController controller 
+     *   = new LangUtil.ProcessController() {
+     *   protected void doCompleting(LangUtil.ProcessController.Thrown thrown, 
+     *                               int result) {
+     *      // signal result 
+     *   }
+     * };
+     * controller.init(new String[] { "java", "-version" }, "java version");
+     * controller.start();
+     * // some time later...
+     * // retry...
+     * if (!controller.completed()) {
+     *     controller.stop();
+     *     controller.reinit();
+     *     controller.start();
+     * }
+     * </pre>
+     * <u>warning</u>: Currently this does not close the input or output
+     * streams, since doing so prevents their use later.
+     */
+    public static class ProcessController {
+        /*
+         * XXX not verified thread-safe, but should be.  Known problems:
+         * - user stops (completed = true) then exception thrown
+         *   from destroying process (stop() expects !completed)
+         * ...
+         */
+        private String[] command;
+        private String label;
+        
+        private boolean init;
+        private boolean started;
+        private boolean completed;
+        /** if true, stopped by user when not completed */
+        private boolean userStopped;
+
+        private Process process;
+        private FileUtil.Pipe errStream;
+        private FileUtil.Pipe outStream;
+        private FileUtil.Pipe inStream;
+
+        private int result;
+        private Thrown thrown;     
+        
+        public ProcessController() {
+        }
+        
+        /**
+         * Permit re-running using the same command
+         * if this is not started or if completed.
+         * Can also call this when done with results to release 
+         * references associated with results
+         * (e.g., stack traces).
+         */
+        public final void reinit() {
+            if (!init) {
+                throw new IllegalStateException("must init(..) before reinit()");
+            }
+            if (started && !completed) {
+                throw new IllegalStateException("not completed - do stop()");
+            }
+            // init everything but command and label
+            started = false;
+            completed = false;
+            result = Integer.MIN_VALUE;
+            thrown = null;
+            process = null;
+            errStream = null;
+            outStream = null;
+            inStream = null;
+        }
+
+        public final void init(
+                String classpath, 
+                String mainClass, 
+                String[] args) {
+            init(LangUtil.getJavaExecutable(classpath),
+                    classpath, mainClass, args);
+        }
+
+        public final void init(File java,
+                String classpath, 
+                String mainClass, 
+                String[] args) {
+            LangUtil.throwIaxIfNull(java, "java");
+            LangUtil.throwIaxIfNull(mainClass, "mainClass");
+            LangUtil.throwIaxIfNull(args, "args");
+            ArrayList cmd = new ArrayList();
+            cmd.add(java.getAbsolutePath());
+            cmd.add("-classpath");
+            cmd.add(classpath);
+            cmd.add(mainClass);
+            if (!LangUtil.isEmpty(args)) {
+                cmd.addAll(Arrays.asList(args));
+            }
+            init((String[]) cmd.toArray(new String[0]), mainClass);
+        }        
+        
+        public final void init(String[] command, String label) {
+            LangUtil.throwIaxIfNotAssignable(command, String.class, "command");
+            if (1 > command.length) {
+                throw new IllegalArgumentException("empty command");
+            }
+            this.command = new String[command.length];
+            System.arraycopy(command, 0, this.command, 0, command.length);
+            this.label = LangUtil.isEmpty(label) ? command[0] : label;
+            this.init = true;
+            reinit();
+        }
+
+        /** 
+         * Start running the process and pipes asynchronously.
+         * @return Thread started or null if unable to start thread
+         *         (results available via <code>getThrown()</code>, etc.) 
+         */
+        public final Thread start() {
+            if (!init) { 
+                throw new IllegalStateException("not initialized");
+            }
+            synchronized (this) {
+                if (started) {
+                    throw new IllegalStateException("already started");
+                }
+                started = true;
+            }
+            try {
+                process = Runtime.getRuntime().exec(command);
+            } catch (IOException e) {
+                stop(e, Integer.MIN_VALUE);
+                return null;
+            }
+            errStream = new FileUtil.Pipe(process.getErrorStream(), System.err);
+            outStream = new FileUtil.Pipe(process.getInputStream(), System.out);
+            inStream = new FileUtil.Pipe(System.in, process.getOutputStream());
+            // start 4 threads, process & pipes for in, err, out
+            Runnable processRunner = new Runnable() {
+                public void run() {
+                    Throwable thrown = null;
+                    int result = Integer.MIN_VALUE;
+                    try {
+                        // pipe threads are children
+                        new Thread(errStream).start();
+                        new Thread(outStream).start();
+                        new Thread(inStream).start();
+                        process.waitFor();
+                        result = process.exitValue();
+                    } catch (Throwable e) {
+                        thrown = e;
+                    } finally {
+                        stop(thrown, result);
+                    }
+                }
+            };
+            Thread result = new Thread(processRunner, label);
+            result.start();
+            return result;
+        }
+
+        /** 
+         * Destroy any process, stop any pipes.
+         * This waits for the pipes to clear (reading until
+         * no more input is available), but does not wait
+         * for the input stream for the pipe to close
+         * (i.e., not waiting for end-of-file on input stream). 
+         */
+        public final synchronized void stop() {
+            if (completed) {
+                return;
+            }
+            userStopped = true;
+            stop(null, Integer.MIN_VALUE);
+        }
+        
+        public final String[] getCommand() {
+            String[] toCopy = command;
+            if (LangUtil.isEmpty(toCopy)) {
+                return new String[0];
+            }
+            String[] result = new String[toCopy.length];
+            System.arraycopy(toCopy, 0, result, 0, result.length);
+            return result;
+        }
+        
+        public final boolean completed() {
+            return completed;
+        }
+        
+        public final boolean started() {
+            return started;
+        }
+        
+        public final boolean userStopped() {
+            return userStopped;
+        }
+        
+        /**
+         * Get any Throwable thrown.
+         * Note that the process can complete normally (with a valid return
+         * value), at the same time the pipes throw exceptions,
+         * and that this may return some exceptions even if the process
+         * is not complete.
+         * @return null if not complete or 
+         *         Thrown containing exceptions thrown by the process and streams.
+         */
+        public final Thrown getThrown() { // cache this
+            return makeThrown(null);
+        }
+        
+        public final int getResult() {
+            return result;
+        }
+        
+        /** 
+         * Subclasses implement this to get synchronous notice of completion.
+         * All pipes and processes should be complete at this time. 
+         * To get the exceptions thrown for the pipes, use
+         * <code>getThrown()</code>.
+         * If there is an exception, the process completed abruptly
+         * (including side-effects of the user halting the process).
+         * If <code>userStopped()</code> is true, then some client asked
+         * that the process be destroyed using <code>stop()</code>.
+         * Otherwise, the result code should be the result value
+         * returned by the process.
+         * @param thrown same as <code>getThrown().fromProcess</code>.
+         * @param result same as <code>getResult()</code>
+         * @see getThrown()
+         * @see getResult()
+         * @see stop()
+         */
+        protected void doCompleting(Thrown thrown, int result) {
+        }
+
+        /**
+         * Handle termination (on-demand, abrupt, or normal)
+         * by destroying and/or halting process and pipes. 
+         * @param thrown ignored if null
+         * @param result ignored if Integer.MIN_VALUE
+         */
+        private final synchronized void stop(Throwable thrown, int result) {
+            if (completed) {
+                throw new IllegalStateException("already completed");
+            } else if (null != this.thrown) {
+                throw new IllegalStateException("already set thrown: " + thrown);
+            }
+            // assert null == this.thrown
+            this.thrown = makeThrown(thrown);
+            if (null != process) {
+                process.destroy();        
+            }
+            if (null != inStream) {
+                inStream.halt(true,true);
+                inStream = null;
+            }
+            if (null != outStream) {
+                outStream.halt(true, true);
+                outStream = null;
+            }
+            if (null != errStream) {
+                errStream.halt(true, true);
+                errStream = null;
+            }
+            if (Integer.MIN_VALUE != result) {
+                this.result = result;
+            }
+            completed = true;
+            doCompleting(this.thrown, result);
+        }
+        
+        /**
+         * Create snapshot of Throwable's thrown.
+         * @param thrown ignored if null or if this.thrown is not null
+         */
+        private final synchronized Thrown makeThrown(Throwable processThrown) {
+            if (null != thrown) {
+                return thrown;
+            }
+            return new Thrown(
+                processThrown,
+                (null == outStream ? null : outStream.getThrown()),
+                (null == errStream ? null : errStream.getThrown()),
+                (null == inStream ? null : inStream.getThrown())
+            );
+        }
+        
+        public static class Thrown {
+            public final Throwable fromProcess; 
+            public final Throwable fromErrPipe; 
+            public final Throwable fromOutPipe; 
+            public final Throwable fromInPipe;
+            /** true only if some Throwable is not null */
+            public final boolean thrown;
+            private Thrown(
+                Throwable fromProcess,
+                Throwable fromOutPipe, 
+                Throwable fromErrPipe, 
+                Throwable fromInPipe) {
+                this.fromProcess = fromProcess;
+                this.fromErrPipe = fromErrPipe;
+                this.fromOutPipe = fromOutPipe;
+                this.fromInPipe = fromInPipe;
+                thrown = ((null != fromProcess)
+                            || (null != fromInPipe)
+                            || (null != fromOutPipe)
+                            || (null != fromErrPipe));
+            }
+            
+            public String toString() {
+                StringBuffer sb = new StringBuffer();
+                append(sb, fromProcess, "process");
+                append(sb, fromOutPipe, " stdout");
+                append(sb, fromErrPipe, " stderr");
+                append(sb, fromInPipe,  "  stdin");
+                if (0 == sb.length()) {
+                    return "Thrown (none)";
+                } else {
+                    return sb.toString();
+                }
+            }
+            private void append(StringBuffer sb, Throwable thrown, String label) {
+                if (null != thrown) {
+                    sb.append("from " + label + ": ");
+                    sb.append(LangUtil.renderExceptionShort(thrown));
+                    sb.append(LangUtil.EOL);
+                }
+            }
+        } // class Thrown
+    }  // class ProcessController
 }
+
+
