@@ -995,6 +995,7 @@ public class BcelShadow extends Shadow {
     				world.resolve(TypeX.forName("org.aspectj.lang.JoinPoint$StaticPart")),
     				getEnclosingClass().getClassName(),
     				field.getName());
+//    		getEnclosingClass().warnOnAddedStaticInitializer(this,munger.getSourceLocation());
     	}
     	return thisJoinPointStaticPartVar;
     }
@@ -1434,7 +1435,9 @@ public class BcelShadow extends Shadow {
         	extractMethod(
         		NameMangler.aroundCallbackMethodName(
         			getSignature(),
-        			getEnclosingClass()));
+        			getEnclosingClass()),
+				    Modifier.PRIVATE,
+				    munger);
         			
         			
         // now extract the advice into its own method
@@ -1498,7 +1501,7 @@ public class BcelShadow extends Shadow {
 
         LazyMethodGen localAdviceMethod =
 					new LazyMethodGen(
-						Modifier.FINAL | Modifier.STATIC, 
+						Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC, 
 						adviceMethod.getReturnType(), 
 						adviceMethodName,
 						parameterTypes,
@@ -1694,7 +1697,9 @@ public class BcelShadow extends Shadow {
         	extractMethod(
         		NameMangler.aroundCallbackMethodName(
         			getSignature(),
-        			getEnclosingClass()));
+        			getEnclosingClass()),
+        		    0,
+        		    munger);
         			    
     	BcelVar[] adviceVars = munger.getExposedStateAsBcelVars();
     	
@@ -1979,10 +1984,10 @@ public class BcelShadow extends Shadow {
     // ---- extraction methods
     
 
-    public LazyMethodGen extractMethod(String newMethodName) {
+    public LazyMethodGen extractMethod(String newMethodName, int visibilityModifier, ShadowMunger munger) {
 		LazyMethodGen.assertGoodBody(range.getBody(), newMethodName);
         if (!getKind().allowsExtraction()) throw new BCException();
-        LazyMethodGen freshMethod = createMethodGen(newMethodName);
+        LazyMethodGen freshMethod = createMethodGen(newMethodName,visibilityModifier);
 
 //        System.err.println("******");
 //        System.err.println("ABOUT TO EXTRACT METHOD for" + this);
@@ -2000,7 +2005,7 @@ public class BcelShadow extends Shadow {
 				freshMethod,
 				getSuperConstructorParameterTypes());
 		}
-        getEnclosingClass().addMethodGen(freshMethod);
+        getEnclosingClass().addMethodGen(freshMethod,munger.getSourceLocation());
         
         return freshMethod;
     }
@@ -2101,9 +2106,9 @@ public class BcelShadow extends Shadow {
      * If it's argsOnFrame, it shares this and target.
      * ??? rewrite this to do less array munging, please
      */
-    private LazyMethodGen createMethodGen(String newMethodName) {
+    private LazyMethodGen createMethodGen(String newMethodName, int visibilityModifier) {
         Type[] parameterTypes = BcelWorld.makeBcelTypes(getArgTypes()); 
-        int modifiers = Modifier.FINAL;
+        int modifiers = Modifier.FINAL | visibilityModifier;
 
         // XXX some bug
 //        if (! isExpressionKind() && getSignature().isStrict(world)) {

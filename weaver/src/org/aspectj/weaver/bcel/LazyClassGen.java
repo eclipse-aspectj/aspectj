@@ -48,14 +48,18 @@ import org.apache.bcel.generic.PUSH;
 import org.apache.bcel.generic.RETURN;
 import org.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.CollectionUtil;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.World;
 
 public final class LazyClassGen {
 	
@@ -203,6 +207,10 @@ public final class LazyClassGen {
     }
     
     private InstructionFactory fact;
+    
+	private boolean isSerializable = false;
+	private boolean hasSerialVersionUIDField = false;
+	private boolean hasClinit = false;
     // ---- 
 
     public LazyClassGen(
@@ -224,11 +232,48 @@ public final class LazyClassGen {
 		fact = new InstructionFactory(myGen, constantPoolGen);        
 		this.myType = myType;
 
+		/* Does this class support serialization */
+		if (TypeX.SERIALIZABLE.isAssignableFrom(getType(),getType().getWorld())) {
+			isSerializable = true;       
+
+//			ResolvedMember[] fields = getType().getDeclaredFields();
+//			for (int i = 0; i < fields.length; i++) {
+//				ResolvedMember field = fields[i];
+//				if (field.getName().equals("serialVersionUID")
+//					&& field.isStatic() && field.getType().equals(ResolvedTypeX.LONG)) {
+//					hasSerialVersionUIDField = true;					
+//				}
+//			}
+			hasSerialVersionUIDField = hasSerialVersionUIDField(getType());					
+
+			ResolvedMember[] methods = getType().getDeclaredMethods();
+			for (int i = 0; i < methods.length; i++) {
+				ResolvedMember method = methods[i];
+				if (method.getName().equals("<clinit>")) {
+					hasClinit = true;					
+				}
+			}
+		}
+
         Method[] methods = myGen.getMethods();
         for (int i = 0; i < methods.length; i++) {
             addMethodGen(new LazyMethodGen(methods[i], this));
         }
     }
+
+	public static boolean hasSerialVersionUIDField (ResolvedTypeX type) {
+
+		ResolvedMember[] fields = type.getDeclaredFields();
+		for (int i = 0; i < fields.length; i++) {
+			ResolvedMember field = fields[i];
+			if (field.getName().equals("serialVersionUID")
+				&& field.isStatic() && field.getType().equals(ResolvedTypeX.LONG)) {
+				return true;					
+			}
+		}
+		
+		return false;
+	}
 
 //	public void addAttribute(Attribute i) {
 //		myGen.addAttribute(i);
@@ -271,11 +316,59 @@ public final class LazyClassGen {
     }
 
 
-    public void addMethodGen(LazyMethodGen gen) {
-        //assert gen.getClassName() == super.getClassName();
-        methodGens.add(gen);
-        if (highestLineNumber < gen.highestLineNumber) highestLineNumber = gen.highestLineNumber;
-    }
+	public void addMethodGen(LazyMethodGen gen) {
+		//assert gen.getClassName() == super.getClassName();
+		methodGens.add(gen);
+		if (highestLineNumber < gen.highestLineNumber) highestLineNumber = gen.highestLineNumber;
+	}
+
+	public void addMethodGen(LazyMethodGen gen, ISourceLocation sourceLocation) {
+		addMethodGen(gen);
+		if (!gen.getMethod().isPrivate()) { 
+			warnOnAddedMethod(gen.getMethod(),sourceLocation);
+		}
+	}
+
+	public void errorOnAddedField (Field field, ISourceLocation sourceLocation) {
+		if (isSerializable && !hasSerialVersionUIDField) {
+			getWorld().getLint().serialVersionUIDBroken.signal(
+				new String[] {
+					myType.getResolvedTypeX().getName().toString(),
+					field.getName()
+				},
+				sourceLocation,
+				null);               
+		}
+	}
+
+	public void warnOnAddedInterface (String name, ISourceLocation sourceLocation) {
+		warnOnModifiedSerialVersionUID(sourceLocation,"added interface " + name);
+	}
+
+	public void warnOnAddedMethod (Method method, ISourceLocation sourceLocation) {
+		warnOnModifiedSerialVersionUID(sourceLocation,"added non-private method " + method.getName());
+	}
+
+	public void warnOnAddedStaticInitializer (Shadow shadow, ISourceLocation sourceLocation) {
+		if (!hasClinit) {
+			warnOnModifiedSerialVersionUID(sourceLocation,"added static initializer");
+		}
+	}
+
+	public void warnOnModifiedSerialVersionUID (ISourceLocation sourceLocation, String reason) {
+		if (isSerializable && !hasSerialVersionUIDField)
+		getWorld().getLint().needsSerialVersionUIDField.signal(
+			new String[] {
+				myType.getResolvedTypeX().getName().toString(),
+				reason
+			},
+			sourceLocation,
+			null);               
+	}
+
+	public World getWorld () {
+		return myType.getResolvedTypeX().getWorld();
+	}
 
     public List getMethodGens() {
         return methodGens; //???Collections.unmodifiableList(methodGens);
@@ -336,8 +429,9 @@ public final class LazyClassGen {
         classGens.add(newClass);
     }
     
-    public void addInterface(TypeX typeX) {
+    public void addInterface(TypeX typeX, ISourceLocation sourceLocation) {
     	myGen.addInterface(typeX.getName());
+		warnOnAddedInterface(typeX.getName(),sourceLocation);
     }
     
 	public void setSuperClass(TypeX typeX) {
@@ -551,7 +645,14 @@ public final class LazyClassGen {
     	Field ret = (Field)tjpFields.get(shadow);
     	if (ret != null) return ret;
     	
-    	ret = new FieldGen(Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL,
+		int modifiers = Modifier.STATIC | Modifier.FINAL;
+		if (getType().isInterface()) {
+			modifiers |= Modifier.PUBLIC;
+		}
+		else {
+			modifiers |= Modifier.PRIVATE;
+		}
+		ret = new FieldGen(modifiers,
     		staticTjpType,
     		"ajc$tjp_" + tjpFields.size(),
     		getConstantPoolGen()).getField();
@@ -661,8 +762,16 @@ public final class LazyClassGen {
 		return myGen.getFileName();
 	}
 
-	public void addField(Field field) {
+	private void addField(Field field) {
 		myGen.addField(field);
+	}
+	
+	public void addField(Field field, ISourceLocation sourceLocation) {
+		addField(field);
+		if (!(field.isPrivate() 
+			&& (field.isStatic() || field.isTransient()))) {
+			errorOnAddedField(field,sourceLocation);
+		}
 	}
 
 	public String getClassName() {

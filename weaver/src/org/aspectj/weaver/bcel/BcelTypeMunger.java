@@ -87,7 +87,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		if (newParent.isClass()) {
 			//gen.setSuperClass(newParent);
 		} else {
-			gen.addInterface(newParent);
+			gen.addInterface(newParent,getSourceLocation());
 		}
 		return true;
 	}
@@ -158,7 +158,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		il.append(InstructionFactory.createReturn(BcelWorld.makeBcelType(field.getType())));
 		mg.getBody().insert(il);
 				
-		gen.addMethodGen(mg);
+		gen.addMethodGen(mg,getSignature().getSourceLocation());
 	}
 	
 	private void addFieldSetter(
@@ -188,7 +188,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		il.append(InstructionFactory.createReturn(Type.VOID));
 		mg.getBody().insert(il);
 				
-		gen.addMethodGen(mg);
+		gen.addMethodGen(mg,getSignature().getSourceLocation());
 	}
 	
 	private void addMethodDispatch(
@@ -260,7 +260,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			FieldGen fg = makeFieldGen(gen, 
 				AjcMemberMaker.perObjectField(gen.getType(), aspectType));
 
-	    	gen.addField(fg.getField());
+	    	gen.addField(fg.getField(),getSourceLocation());
 	    	
 	    	
 	    	Type fieldType = BcelWorld.makeBcelType(aspectType);
@@ -301,7 +301,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				
 			gen.addMethodGen(mg1);
 			
-			gen.addInterface(munger.getInterfaceType());
+			gen.addInterface(munger.getInterfaceType(),getSourceLocation());
 
 			return true;
 		} else {
@@ -357,6 +357,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 			// XXX make sure to check that we set exceptions properly on this guy.
 			weaver.addLazyMethodGen(mg);
+			weaver.getLazyClassGen().warnOnAddedMethod(mg.getMethod(),getSignature().getSourceLocation());
 			
 			addNeededSuperCallMethods(weaver, onType, munger.getSuperMethodsCalled());
 			
@@ -593,7 +594,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				weaver.addInitializer(this);
 				FieldGen fg = makeFieldGen(gen,
 					AjcMemberMaker.interFieldClassField(field, aspectType));
-	    		gen.addField(fg.getField());
+	    		gen.addField(fg.getField(),getSourceLocation());
 			}
     		return true;
 		} else if (onInterface && gen.getType().isTopmostImplementor(onType)) {
@@ -605,7 +606,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			
 			FieldGen fg = makeFieldGen(gen,
 					AjcMemberMaker.interFieldInterfaceField(field, onType, aspectType));
-	    	gen.addField(fg.getField());
+	    	gen.addField(fg.getField(),getSourceLocation());
 			
 	    	//this uses a shadow munger to add init method to constructors
 	    	//weaver.getShadowMungers().add(makeInitCallShadowMunger(initMethod));

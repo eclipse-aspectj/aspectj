@@ -23,6 +23,7 @@ import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 //import org.aspectj.asm.internal.Relationship;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.*;
+import org.aspectj.weaver.bcel.LazyClassGen;
 import org.aspectj.weaver.patterns.*;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
@@ -359,8 +360,25 @@ public class AjLookupEnvironment extends LookupEnvironment {
 				newI[n] = parentBinding;
 			}
 			sourceType.superInterfaces = newI;
+			warnOnAddedInterface(factory.fromEclipse(sourceType),parent);
 		}
 		
+	}
+
+	public void warnOnAddedInterface (ResolvedTypeX type, ResolvedTypeX parent) {
+		World world = factory.getWorld();
+		ResolvedTypeX serializable = world.resolve(TypeX.SERIALIZABLE);
+		if (serializable.isAssignableFrom(type)
+			&& !serializable.isAssignableFrom(parent)
+			&& !LazyClassGen.hasSerialVersionUIDField(type)) {
+			world.getLint().needsSerialVersionUIDField.signal(
+				new String[] {
+					type.getName().toString(),
+					"added interface " + parent.getName().toString()
+				},
+				null,
+				null);               
+		}
 	}
 	
 	

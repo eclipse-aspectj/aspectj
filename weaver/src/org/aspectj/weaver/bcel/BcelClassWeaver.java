@@ -1115,6 +1115,9 @@ class BcelClassWeaver implements IClassWeaver {
             if (munger.match(shadow, world)) {
                 shadow.addMunger(munger);
                 isMatched = true;
+			    if (shadow.getKind() == Shadow.StaticInitialization) {
+				  clazz.warnOnAddedStaticInitializer(shadow,munger.getSourceLocation());
+			    }
             }
         }       
         if (isMatched) shadowAccumulator.add(shadow);

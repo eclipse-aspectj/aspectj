@@ -47,12 +47,18 @@ public class Lint {
 	public final Kind shadowNotInStructure = 
 		new Kind("shadowNotInStructure", "the shadow for this join point is not exposed in the structure model: {0}");
 
-    public final Kind unmatchedSuperTypeInCall = 
-        new Kind("unmatchedSuperTypeInCall", "does not match because declaring type is {0}, if match desired use target({1})");
-            
+	public final Kind unmatchedSuperTypeInCall = 
+		new Kind("unmatchedSuperTypeInCall", "does not match because declaring type is {0}, if match desired use target({1})");
+
 	public final Kind canNotImplementLazyTjp = 
 		new Kind("canNotImplementLazyTjp", "can not implement lazyTjp on this joinpoint {0} because around advice is used");
 
+	public final Kind needsSerialVersionUIDField = 
+		new Kind("needsSerialVersionUIDField", "serialVersionUID of type {0} needs to be set because of {1}");
+
+	public final Kind serialVersionUIDBroken = 
+		new Kind("brokeSerialVersionCompatibility", "serialVersionUID of type {0} is broken because of added field {1}");
+            
 	public Lint(World world) {
 		this.world = world;
 	}

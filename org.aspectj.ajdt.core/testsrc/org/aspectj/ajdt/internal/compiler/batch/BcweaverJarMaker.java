@@ -165,6 +165,18 @@ public class BcweaverJarMaker {
 		args.add("../tests/new/options11/injar/*.java");
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+		
+		args = new ArrayList();
+
+		args.add("-classpath"); 
+		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar"  +
+			File.pathSeparator + System.getProperty("aspectjrt.path"));
+		args.add("-outjar");
+		args.add("../tests/bugs/serialVersionUID/injar.jar");		
+		args.add("../tests/bugs/serialVersionUID/Test.java");
+		args.add("../tests/bugs/serialVersionUID/Util.java");
+		
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 	}	
 	
 	

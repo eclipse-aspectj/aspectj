@@ -13,15 +13,29 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.util.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.apache.bcel.generic.*;
-import org.aspectj.weaver.*;
+import org.apache.bcel.generic.InstructionFactory;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
+import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.AdviceKind;
+import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
-import org.aspectj.weaver.patterns.*;
+import org.aspectj.weaver.patterns.ExactTypePattern;
+import org.aspectj.weaver.patterns.ExposedState;
+import org.aspectj.weaver.patterns.Pointcut;
 
 /**
  * Advice implemented for bcel.
@@ -89,14 +103,17 @@ public class BcelAdvice extends Advice {
         // make sure thisJoinPoint parameters are initialized
         if ((getExtraParameterFlags() & ThisJoinPointStaticPart) != 0) {
         	((BcelShadow)shadow).getThisJoinPointStaticPartVar();
+			((BcelShadow)shadow).getEnclosingClass().warnOnAddedStaticInitializer(shadow,getSourceLocation());
         }
 
         if ((getExtraParameterFlags() & ThisJoinPoint) != 0) {
-        	((BcelShadow)shadow).requireThisJoinPoint(pointcutTest != Literal.TRUE && getKind() != AdviceKind.Around);
+			((BcelShadow)shadow).requireThisJoinPoint(pointcutTest != Literal.TRUE && getKind() != AdviceKind.Around);
+			((BcelShadow)shadow).getEnclosingClass().warnOnAddedStaticInitializer(shadow,getSourceLocation());
         }
         
         if ((getExtraParameterFlags() & ThisEnclosingJoinPointStaticPart) != 0) {
         	((BcelShadow)shadow).getThisEnclosingJoinPointStaticPartVar();
+			((BcelShadow)shadow).getEnclosingClass().warnOnAddedStaticInitializer(shadow,getSourceLocation());
         }
     }   
        
