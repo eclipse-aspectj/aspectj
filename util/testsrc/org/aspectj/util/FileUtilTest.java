@@ -675,7 +675,7 @@ public class FileUtilTest extends TestCase {
         // halt
         assertTrue(pipe.halt(true, true));
         assertTrue(result.set);
-        assertTrue(null == result.thrown);
+        assertTrue("Expected null but result.thrown = "+result.thrown,null == result.thrown);
         assertTrue(null == pipe.getThrown());
         assertEquals("total written", result.totalWritten, pipe.totalWritten());
         if (minWritten > pipe.totalWritten()) {
