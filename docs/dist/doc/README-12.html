@@ -22,7 +22,8 @@ All rights reserved.
 
 <p> The definition of the AspectJ language is unchanged in the 1.2 release.
 Instead, AspectJ 1.2 provides major improvements to the functionality of the 
-supporting tools.
+supporting tools
+and enforces some language limits that went unchecked before.
 This document describes the tools differences between
 AspectJ versions 1.2 and 1.1.1.
 Users new to AspectJ need only read
@@ -31,7 +32,8 @@ since it describes the 1.2 language.
 Users familiar with AspectJ 1.1 may find this document
 a quicker way to learn what changed in the tools, 
 and should use it as a guide for porting
-programs from 1.1 to 1.2.
+programs from 1.1 to 1.2,
+together with <a href="porting.html">porting.html</a>.
 </p>
 
 <p>This document first summarizes changes from the 1.1.1 release in
@@ -45,8 +47,8 @@ programs from 1.1 to 1.2.
 </ul>
 
 <p> then <a href="#details">details</a> some of the changes,
-    and finally points readers to the bug database for any
-    <a href="#knownLimitations">known limitations</a>.
+    and finally points readers to the bug database for 
+    <a href="#allchanges">all the changes</a>.
 </p>
 
 <!-- ============================== -->
@@ -513,7 +515,7 @@ s1.area() = 1.0
   scripts.</p>
   
 <!-- ============================== -->
-<hr>
+<hr/>
   
   <h3><a name="SOFTEX">SoftException now supports getCause()</a></h3>  
   
@@ -528,5 +530,14 @@ s1.area() = 1.0
   to integrate load-time weaving into an existing class loader hierachy. The package implementation
   is included in <code>aspectjtools.jar</code>. For an example of how to use these APIs, see the
   <code>org.aspectj.weaver.WeavingURLClassLoader</code> implementation.
+
+<hr/>
+	<a name="allchanges"></a>
+	<h2>All changes are listed in the bug database</h2>
+	For a complete list of changes in the 1.2 release, search for 
+	<code>target 1.2</code> in the bug database:
+	<a href="https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler&target_milestone=1.2">
+		https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler&target_milestone=1.2
+	</a>
   
 </body> </html>
