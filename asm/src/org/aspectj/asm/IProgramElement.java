@@ -239,6 +239,10 @@ public interface IProgramElement extends Serializable {
 		public static final Kind DECLARE_PRECEDENCE= new Kind("declare precedence");
 		public static final Kind CODE = new Kind("code");
 		public static final Kind ERROR = new Kind("error");
+		public static final Kind DECLARE_ANNOTATION_AT_CONSTRUCTOR = new Kind("declare @constructor");
+		public static final Kind DECLARE_ANNOTATION_AT_FIELD = new Kind("declare @field");
+		public static final Kind DECLARE_ANNOTATION_AT_METHOD = new Kind("declare @method");
+		public static final Kind DECLARE_ANNOTATION_AT_TYPE = new Kind("declare @type");
 
  
 
