@@ -113,17 +113,90 @@ public class AnnotationBinding extends TestUtils {
   
   ///////////////////////////////////// @ANNOTATION and SET
   
-//  // 'set() && @annotation()' 
-//  public void testFieldAnnotationBinding1() {
-//  	CompilationResult cR = ajc(baseDir,new String[]{"FieldAnnBinding1.aj","-1.5"});
-//  	System.err.println(cR);
-//  	assertMessages(cR,new EmptyMessageSpec()); 
-//  	RunResult rR = run("FieldAnnBinding1");
-//  	System.err.println(rR.getStdErr());
-//  }
+  // 'set() && @annotation()' 
+  public void testFieldAnnotationBinding1() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"FieldAnnBinding1.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("FieldAnnBinding1");
+  }
   
-
+  // 'get() && @annotation()' 
+  public void testFieldAnnotationBinding2() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"FieldAnnBinding2.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("FieldAnnBinding2");
+  }
   
+  // 'get() && @annotation()' when using array fields
+  public void testFieldAnnotationBinding3() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"FieldAnnBinding3.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("FieldAnnBinding3");
+  }
+  
+  ///////////////////////////////////// @ANNOTATION and CTOR-CALL
+  
+  // 'ctor-call(new) && @annotation()' 
+  public void testCtorCallAnnotationBinding1() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"CtorAnnBinding1.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("CtorAnnBinding1");
+  }
+  
+  ///////////////////////////////////// @ANNOTATION and CTOR-CALL
+  
+  // 'ctor-execution() && @annotation()' 
+  public void testCtorExecAnnotationBinding1() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"CtorAnnBinding2.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("CtorAnnBinding2");
+  }
+  
+  
+  ///////////////////////////////////// @ANNOTATION and STATICINITIALIZATION
+  
+  // 'staticinitialization() && @annotation()' 
+  public void testStaticInitAnnotationBinding1() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"StaticInitBinding.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("StaticInitBinding");
+  }
+  
+  ///////////////////////////////////// @ANNOTATION and PREINITIALIZATION
+  
+  // 'preinitialization() && @annotation()' 
+  public void testPreInitAnnotationBinding1() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"PreInitBinding.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("PreInitBinding");
+  }
+  
+  ///////////////////////////////////// @ANNOTATION and INITIALIZATION
+  
+  // 'initialization() && @annotation()' 
+  public void testInitAnnotationBinding1() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"InitBinding.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("InitBinding");
+  }
+  
+  ///////////////////////////////////// @ANNOTATION and ADVICEEXECUTION
+  
+  // 'adviceexecution() && @annotation()' 
+  public void testAdviceExecAnnotationBinding1() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"AdviceExecBinding.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("AdviceExecBinding");
+  }
+  
+  ///////////////////////////////////// @ANNOTATION and HANDLER
+  
+  // 'handler() && @annotation()' 
+  public void testHandlerAnnotationBinding1() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"HandlerBinding.aj","-1.5"});
+  	assertMessages(cR,new EmptyMessageSpec()); 
+  	RunResult rR = run("HandlerBinding");
+  }
   
 
   ///////////////////////////////////// @ANNOTATION complex tests
@@ -132,7 +205,6 @@ public class AnnotationBinding extends TestUtils {
   public void testPackageNamedTypesNoBinding() {
   	CompilationResult cR = ajc(new File(baseDir,"complexExample"),
   			new String[]{"A.java","B.java","Color.java","X.java","-1.5","-d","."});
-  	System.err.println(cR.getStandardError());
   	assertMessages(cR,new EmptyMessageSpec());
   	RunResult rR = run("a.b.c.A");
   }
