@@ -98,6 +98,17 @@
     <literal>java.lang.String</literal> unless
     <literal>java.lang.String</literal> is part of the compile.
   </para>
+  <para>
+  	When declaring members on interfaces, the implementation must
+  	control both the interface and the top-level implementors of 
+  	that interface (the classes that implement the interface but
+  	do not have a superclass that implements the interface).
+  	You may weave these separately, but be aware that you will get
+  	runtime exceptions if you run the affected top-level classes
+  	without the interface as produced by the same ajc implementation.
+  	Finally, note that one cannot define static fields or methods 
+  	on interfaces.
+  </para>
   
   <para>
     Other AspectJ implementations, indeed, future versions of ajc, may
