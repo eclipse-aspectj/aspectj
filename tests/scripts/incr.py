@@ -6,7 +6,7 @@ from java.io import File
 sourcedir = "incr_test_scratch_sources"
 outdir = "incr_test_scratch_classes"
 errorList = []
-VERBOSE = 0
+VERBOSE = 1
 
 def createEmpty(dir):
 	if os.path.exists(dir):
@@ -184,6 +184,7 @@ def test(batch=0, couldChange=[], changed=[], deleted=[], errors=[]):
 	print ">>>>test changed=%s, couldChange=%s, deleted=%s, errors=%s<<<<" % (changed, couldChange, deleted, errors)
 	
 	start = snapshot(outdir)
+	#print start
 	handler.errors = []
 	
 	time.sleep(0.1)
@@ -195,24 +196,12 @@ def test(batch=0, couldChange=[], changed=[], deleted=[], errors=[]):
 	if len(handler.errors) > 0: return
 
 	end = snapshot(outdir)
+	#print "end", end
 	u, c, d = diffSnapshots(start, end)
 	checkClasses("changed", c, makeList(changed) + makeList(couldChange)) 
 	checkClasses("deleted", d, deleted) 
 
-"""
-Stress testing
-"""
-N = 2000
-l = []
-for i in range(N):
-	name = "p1.Hello" + str(i)
-	makeType(name)
-	l.append("Hello" + str(i))
 
-test(batch=1, changed=l)
-
-print "done", errorList
-sys.exit(0)
 
 
 """
@@ -246,6 +235,35 @@ test(changed="Hello")
 print "done", errorList
 sys.exit(0)
 
+"""
+Bugzilla Bug 28807  
+   incremental compilation always fails with NullPointerException in 1.1 beta 2 
+"""
+makeType("incremental.BasicAspect")
+makeType("incremental.Basic")
+test(batch=1, changed=["Basic", "BasicAspect"])
+
+makeType("incremental.BasicAspect")
+test()
+
+print "done", errorList
+sys.exit(0)
+
+
+"""
+Stress testing
+"""
+N = 2000
+l = []
+for i in range(N):
+	name = "p1.Hello" + str(i)
+	makeType(name)
+	l.append("Hello" + str(i))
+
+test(batch=1, changed=l)
+
+print "done", errorList
+sys.exit(0)
 
 
 """
