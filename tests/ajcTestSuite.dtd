@@ -14,6 +14,7 @@
 
    <!ELEMENT compile (dir-changes*,file*,message*)>
    <!ATTLIST compile staging CDATA #IMPLIED >
+   <!ATTLIST compile badInput CDATA #IMPLIED >
    <!ATTLIST compile files CDATA #IMPLIED >
    <!ATTLIST compile reuseCompiler CDATA #IMPLIED >
    <!ATTLIST compile includeClassesDir CDATA #IMPLIED >
@@ -37,8 +38,8 @@
    <!ATTLIST file path CDATA #IMPLIED >
 
    <!ELEMENT message (#PCDATA)>
-   <!ATTLIST message kind (error | warning | info | Xlint) #REQUIRED >
-   <!ATTLIST message line CDATA #REQUIRED >
+   <!ATTLIST message kind (abort | fail | error | warning | info | Xlint) #REQUIRED >
+   <!ATTLIST message line CDATA #IMPLIED >
    <!ATTLIST message text CDATA #IMPLIED >
    <!ATTLIST message file CDATA #IMPLIED >
 
