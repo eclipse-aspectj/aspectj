@@ -19,7 +19,7 @@ import org.aspectj.weaver.patterns.*;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.asm.StructureModel;
 import org.aspectj.bridge.*;
-import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.IMessage.Kind;
 
 public abstract class World {
 	protected IMessageHandler messageHandler = IMessageHandler.SYSTEM_ERR;
@@ -223,6 +223,25 @@ public abstract class World {
 	public void setMessageHandler(IMessageHandler messageHandler) {
 		this.messageHandler = messageHandler;
 	}
+	
+	public void showMessage(
+		Kind kind,
+		String message,
+		ISourceLocation loc1,
+		ISourceLocation loc2)
+	{
+		if (loc1 != null) {
+			messageHandler.handleMessage(new Message(message, kind, null, loc1));
+			if (loc2 != null) {
+				messageHandler.handleMessage(new Message(message, kind, null, loc2));
+			}
+		} else {
+			messageHandler.handleMessage(new Message(message, kind, null, loc2));
+		}
+	}
+
+
+	
 
 //	public void addDeclare(ResolvedTypeX onType, Declare declare, boolean forWeaving) {
 //		// this is not extensible, oh well

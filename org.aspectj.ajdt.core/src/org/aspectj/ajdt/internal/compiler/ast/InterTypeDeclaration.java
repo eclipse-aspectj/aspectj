@@ -17,6 +17,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 
 import org.aspectj.ajdt.internal.compiler.lookup.*;
+import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
 import org.aspectj.weaver.*;
 import org.eclipse.jdt.internal.compiler.*;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -113,8 +114,14 @@ public abstract class InterTypeDeclaration extends MethodDeclaration {
 		return l;
 	}
 	
-	protected int generateInfoAttributes(ClassFile classFile) {
+	protected void setMunger(ResolvedTypeMunger munger) {
 		munger.getSignature().setPosition(sourceStart, sourceEnd);
+		munger.getSignature().setSourceContext(new EclipseSourceContext(compilationResult));
+		this.munger = munger;
+	}
+	
+	protected int generateInfoAttributes(ClassFile classFile) {
+		//munger.getSignature().setPosition(sourceStart, sourceEnd);
 		
 		//System.out.println("generating effective for " + this);
 		List l;;

@@ -149,9 +149,11 @@ public class EclipseObjectType extends ResolvedTypeX.Name {
 			}
 		}
 		
-		//XXX now check all inherited pointcuts to be sure that they're handled reasonably
+		//now check all inherited pointcuts to be sure that they're handled reasonably
+		if (!isAspect()) return;
 		
-		
+//		for (Iterator i = getSuperclass().getFields(); )
+//		XXX
 		
 		
 	}

@@ -16,6 +16,7 @@ package org.aspectj.weaver;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
+import org.aspectj.bridge.*;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.patterns.*;
@@ -273,7 +274,7 @@ public abstract class ResolvedTypeX extends TypeX {
      * We keep a hashSet of interfaces that we've visited so we don't spiral
      * out into 2^n land.
      */
-    private Iterator getPointcuts() {
+    public Iterator getPointcuts() {
         final Iterators.Filter dupFilter = Iterators.dupFilter();
         // same order as fields
         Iterators.Getter typeGetter = new Iterators.Getter() {
@@ -840,9 +841,11 @@ public abstract class ResolvedTypeX extends TypeX {
 					//System.err.println("       compare: " + c);
 					if (c < 0) {
 						// the existing munger dominates the new munger
+						checkLegalOverride(existingMunger.getSignature(), munger.getSignature());
 						return;
 					} else if (c > 0) {
 						// the new munger dominates the existing one
+						checkLegalOverride(munger.getSignature(), existingMunger.getSignature());
 						i.remove();
 						break;
 					} else {
@@ -866,11 +869,16 @@ public abstract class ResolvedTypeX extends TypeX {
 			
 			if (conflictingSignature(existingMember, munger.getSignature())) {
 				//System.err.println("conflict: " + existingMember + " with " + munger);
+				//System.err.println(munger.getSourceLocation() + ", " + munger.getSignature() + ", " + munger.getSignature().getSourceLocation());
+				
 				if (isVisible(existingMember.getModifiers(), this, munger.getAspectType())) {
 					int c = compareMemberPrecedence(sig, existingMember);
 					//System.err.println("   c: " + c);
-					if (c < 0) return false;
-					else if (c > 0) {
+					if (c < 0) {
+						checkLegalOverride(existingMember, munger.getSignature());
+						return false;
+					} else if (c > 0) {
+						checkLegalOverride(munger.getSignature(), existingMember);
 						//interTypeMungers.add(munger);  
 						//??? might need list of these overridden abstracts
 						continue;
@@ -891,11 +899,27 @@ public abstract class ResolvedTypeX extends TypeX {
 		return true;
 	}
 	
-	
-	
+	public boolean checkLegalOverride(ResolvedMember parent, ResolvedMember child) {
+		if (!parent.getReturnType().equals(child.getReturnType())) {
+			world.showMessage(IMessage.ERROR,
+				"can't override " + parent +
+				" with " + child + " return types don't match",
+				child.getSourceLocation(), parent.getSourceLocation());
+			return false;
+		}
+		if (isMoreVisible(child.getModifiers(), parent.getModifiers())) {
+			world.showMessage(IMessage.ERROR,
+				"can't override " + parent +
+				" with " + child + " visibility is reduced",
+				child.getSourceLocation(), parent.getSourceLocation());
+			return false;
+		}
+		return true;
+		
+	}
 	
 	private int compareMemberPrecedence(ResolvedMember m1, ResolvedMember m2) {
-		if (!m1.getReturnType().equals(m2.getReturnType())) return 0;
+		//if (!m1.getReturnType().equals(m2.getReturnType())) return 0;
 		
 		if (Modifier.isAbstract(m1.getModifiers())) return -1;
 		if (Modifier.isAbstract(m2.getModifiers())) return +1;
@@ -905,20 +929,20 @@ public abstract class ResolvedTypeX extends TypeX {
 		ResolvedTypeX t1 = m1.getDeclaringType().resolve(world);
 		ResolvedTypeX t2 = m2.getDeclaringType().resolve(world);
 		if (t1.isAssignableFrom(t2)) {
-			checkVisibility(m1.getModifiers(), m2.getModifiers());  //XXX needs to be before abstract
 			return -1;
 		}
 		if (t2.isAssignableFrom(t1)) {
-			checkVisibility(m2.getModifiers(), m1.getModifiers());
 			return +1;
 		}
 		return 0;
 	}
 	
 
-	private void checkVisibility(int parentMods, int childMods) {
-		//childMods must be equal to or greater than parentMods visibility
-		
+	public static boolean isMoreVisible(int m1, int m2) {
+		if (Modifier.isPublic(m1)) return !Modifier.isPublic(m2);
+		else if (Modifier.isPrivate(m1)) return false;
+		else if (Modifier.isProtected(m1)) return !(Modifier.isPublic(m2) || Modifier.isProtected(m2));
+		else return Modifier.isPrivate(m1);
 	}
 
 		
@@ -971,5 +995,4 @@ public abstract class ResolvedTypeX extends TypeX {
 		}
 		return true;
 	}
-
 }

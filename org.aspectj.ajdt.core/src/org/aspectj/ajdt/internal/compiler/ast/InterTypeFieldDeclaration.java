@@ -123,7 +123,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 					new String(declaredSelector), TypeX.NONE);
 		
 		NewFieldTypeMunger myMunger = new NewFieldTypeMunger(sig, null);
-		this.munger = myMunger;
+		setMunger(myMunger);
 		ResolvedTypeX aspectType = world.fromEclipse(classScope.referenceContext.binding);
 		ResolvedMember me = 
 			myMunger.getInitMethod(aspectType);
