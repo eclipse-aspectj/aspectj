@@ -38,6 +38,14 @@ each component in the chain may accept and interpret:
   <tr><td><u><code>-keepTemp</code></u>: Normally the harness saves temp files until
      the end of the run, and deletes them.  If you abort the run or specify
      <code>-keepTemp</code>, then temporary (sandbox) directories will remain for analysis.
+     In either case, the file system accumulates all temporary directories
+     and files used for a give harness run.
+     </td></tr>
+  <tr><td><u><code>-killTemp</code></u>: The opposite of <code>-keepTemp</code>,
+     this causes the harness to delete temporary (sandbox) directories at 
+     the end of each test run. 
+     In this case, the file system only accumulates files for 
+     the current test.
      </td></tr>
   <tr><td><u>*- variants</u>: Options with a trailing "-" cause two sets of
       option lists to be produced, one with and one without the corresponding

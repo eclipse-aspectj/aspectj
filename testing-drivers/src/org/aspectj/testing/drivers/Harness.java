@@ -170,8 +170,11 @@ public class Harness {
     /** map of feature names to features */
     private HashMap features;
 
-	/** if true, do not delete temporary files */
+	/** if true, do not delete temporary files. */
 	private boolean keepTemp;
+
+    /** if true, delete temporary files as each test completes. */
+    private boolean killTemp;
 
 	/** if true, then log results in report(..) when done */
 	private boolean logResults;
@@ -305,7 +308,9 @@ public class Harness {
         status.setIdentifier(spec);
         // validator is used for all setup in entire tree...
         Validator validator = new Validator(status);
-        validator.lock(this);
+        if (!killTemp) {
+            validator.lock(this);
+        }
         Sandbox sandbox = null;
         try {
             sandbox = new Sandbox(spec.getSuiteDirFile(), validator);
@@ -315,8 +320,10 @@ public class Harness {
                 numIncomplete = ((RunSpecIterator) tests).getNumIncomplete();
             }
         } finally {
-            validator.unlock(this);
         	if (!keepTemp) {
+                if (!killTemp) {
+                    validator.unlock(this);
+                }
 	            validator.deleteTempFiles(verboseHarness);
         	}
         }
@@ -401,6 +408,8 @@ public class Harness {
             quietHarness = true;
         } else if ("-keepTemp".equals(option)) {
             keepTemp = true; 
+        } else if ("-killTemp".equals(option)) {
+            killTemp = true; 
         } else if ("-logResults".equals(option)) {
             logResults = true; 
         } else {
