@@ -52,6 +52,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedTypeX;
 
 
@@ -1222,9 +1223,9 @@ public final class LazyMethodGen {
     }
     
 	public String getSignature() {
-		return memberView.getSignature();
-//		return Member.typesToSignature(BcelWorld.fromBcel(getReturnType()), 
-//										BcelWorld.fromBcel(getArgumentTypes()));
+		if (memberView!=null) return memberView.getSignature();
+		return Member.typesToSignature(BcelWorld.fromBcel(getReturnType()), 
+										BcelWorld.fromBcel(getArgumentTypes()));
 	}
 
 	public BcelMethod getMemberView() {
