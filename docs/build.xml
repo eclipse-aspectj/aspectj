@@ -153,7 +153,7 @@
     </target>
 
     <target name="do-local-dist" 
-         depends="init,init-filters,api,faq,devguide,progguide"
+         depends="init,init-filters,api,faq,devguide,progguide, adk15guide"
       description="finish products by copying dist files">
         <copy todir="${docs.dist.dir}" filtering="on">
             <fileset dir="${docs.src.dir}/dist" 
@@ -201,6 +201,14 @@
       </antcall>
     </target>
 
+   <target name="adk15guide" depends="init">
+	      <antcall target="build-guide">
+	        <param name="guide.dir" value="adk15ProgGuideDB"/>
+	        <param name="guide.name" value="adk15notebook"/>
+	      </antcall>
+	</target>
+
+	
     <target name="devguide" depends="init">
     
 <!-- GCH -->
