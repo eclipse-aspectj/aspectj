@@ -75,7 +75,12 @@ public class PointcutDeclaration extends MethodDeclaration {
 	}
 
 	public void resolveStatements() {
-		if (isAbstract()) this.modifiers |= AccSemicolonBody;
+		if (isAbstract()) {
+			this.modifiers |= AccSemicolonBody;
+			if (pointcutDesignator != null) {
+				scope.problemReporter().signalError(sourceStart, sourceEnd, "abstract pointcut can't have body");
+			}
+		} 
 		
 		if (binding == null || ignoreFurtherInvestigation) return;
 		
