@@ -63,6 +63,9 @@
     bytecode of the type being initialized, and execution join points
     can be advised only if ajc controls the bytecode for the method or
     constructor body in question.
+  	The end of an exception handler is underdetermined in bytecode,
+  	so ajc will not implement after or around advice on handler join 
+  	points, instead signalling a compile-time error.
   </para>
 
   <para>
@@ -87,8 +90,8 @@
     MyInterface</literal> will not work for
     <literal>java.lang.String</literal> unless
     <literal>java.lang.String</literal> is part of the compile.
-  </para> 
-
+  </para>
+  
   <para>
     Other AspectJ implementations, indeed, future versions of ajc, may
     define <emphasis>code the implementation controls</emphasis> more
