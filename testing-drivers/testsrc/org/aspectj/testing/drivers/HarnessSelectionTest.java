@@ -66,8 +66,14 @@ public class HarnessSelectionTest extends TestCase {
             } catch (IOException e) {
                 e.printStackTrace(System.err);
             }
+        }        
+        try {
+            return (AjcTest.Suite.Spec) result.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace(System.err);
+            assertTrue("clone failed: " + e, false);
+            return null; // keep compiler happy
         }
-        return result;
     }
     
     private boolean verbose;
@@ -104,7 +110,7 @@ public class HarnessSelectionTest extends TestCase {
         }
         String[] options = new String[] 
             { "-ajctestRequireKeywords=requireKeyword", 
-            "-ajctestSkipKeywords=skipKeyword",
+            "-ajctestSkipKeywords=skipKeyword,skipUnenforcedAjcLimit",
             "!verbose",
             "-eclipse",
             };
@@ -175,8 +181,9 @@ public class HarnessSelectionTest extends TestCase {
     
     public void testEclipseConflict() {
         String[] options = new String[] 
-            { "^eclipse"
-            };
+            { "^eclipse",
+              "-ajctestSkipKeywords=skipUnenforcedAjcLimit"
+            };            
         Exp exp = new Exp(17, 3, 14, 3, 0, 0, 6);
         checkSelection(SELECT, options, "conflict between arg=!eclipse and global=^eclipse", exp);
     }
