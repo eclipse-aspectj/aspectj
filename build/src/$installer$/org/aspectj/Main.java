@@ -1344,8 +1344,9 @@ class InstallPane extends WizardPane {
                     //lsm.writeScript("ajdb");
                     lsm.writeScript("ajbrowser");
                     
-                    // While the experimental aj(.bat) launch script is 
-                    // shipped in the docs path
+                    // Moved to the bin dir in 1.2.1
+                    // we should now come back and make the generation of this
+                    // script uniform with those above.
                     lsm.writeAJLaunchScript();
                 }
                 if (hasGui()) {
@@ -1526,7 +1527,7 @@ class LaunchScriptMaker {
 			}
 		}
 
-		File destDir = new File(context.getOutputDir(), "doc/examples/ltw");
+		File destDir = new File(context.getOutputDir(), "bin");
 		destDir.mkdirs();
 		File file = new File(destDir, name);
 
@@ -1559,7 +1560,7 @@ class LaunchScriptMaker {
 	private void writeAJWindowsLaunchLine(PrintStream ps) {
 		ps.println(
 			"\"%JAVA_HOME%\\bin\\java\" -classpath " +
-			"\"%ASPECTJ_HOME%\\lib\\aspectjtools.jar\"" +
+			"\"%ASPECTJ_HOME%\\lib\\aspectjweaver.jar\"" +
 			" \"-Djava.system.class.loader=org.aspectj.weaver.WeavingURLClassLoader\"" +
 			" \"-Daj.class.path=%ASPECTPATH%;%CLASSPATH%\"" +
 			" \"-Daj.aspect.path=%ASPECTPATH%\"" +
@@ -1572,7 +1573,7 @@ class LaunchScriptMaker {
 	private void writeAJUnixLaunchLine(PrintStream ps) {
 		ps.println(
 			"\"$JAVA_HOME/bin/java\" -classpath" +
-		    " \"$ASPECTJ_HOME/lib/aspectjtools.jar\"" +
+		    " \"$ASPECTJ_HOME/lib/aspectjweaver.jar\"" +
 		    " \"-Djava.system.class.loader=org.aspectj.weaver.WeavingURLClassLoader\"" +
 		    " \"-Daj.class.path=$ASPECTPATH:$CLASSPATH\"" +
 		    " \"-Daj.aspect.path=$ASPECTPATH\"" +
