@@ -113,7 +113,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 			if (node.getKind() == kind && label.equals(node.toLabelString())) {
 				return node;
 			} else {
-				IProgramElement childSearch = findElementForSignature(node, kind, label);
+				IProgramElement childSearch = findElementForLabel(node, kind, label);
 				if (childSearch != null) return childSearch;
 			}
 		}
