@@ -425,7 +425,9 @@ public final class LazyClassGen {
 					null,
 					null);
 			}
-			myGen.addAttribute(getSourceDebugExtensionAttribute());
+			// 17Feb05 - ASC - Skip this for now - it crashes IBM 1.4.2 jvms (pr80430).  Will be revisited when contents
+			// of attribute are confirmed to be correct.
+			// myGen.addAttribute(getSourceDebugExtensionAttribute());
 		}
     }
 
