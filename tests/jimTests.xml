@@ -1,7 +1,19 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 <suite>
 
+    <ajc-test dir="errors"  
+    		title="type not imported in around advice">
+        <compile files="TypeNotImportedInAroundCE.java">
+        	<message kind="error" line="10"/>
+        </compile>
+	</ajc-test>
 
+    <ajc-test dir="errors"  
+    		title="type not imported in aspect">
+        <compile files="TypeInAspectNotImportedCE.java">
+        	<message kind="error" line="6"/>
+        </compile>
+	</ajc-test>
 
 
     <!--

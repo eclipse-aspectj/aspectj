@@ -5685,4 +5685,16 @@
             <message kind="error" line="85"/>
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs" pr="34858"
+      title="cflow binding issues with ignoring state">
+        <compile files="CflowBinding.java"/>
+        <run class="CflowBinding"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs" pr="34858"
+      title="cflow binding -- original weaver crash">
+        <compile files="CflowBindingOrig.java"/>
+        <run class="CflowBindingOrig"/>
+    </ajc-test>
 </suite>

@@ -167,6 +167,11 @@ public class CflowPointcut extends Pointcut {
 		List slots = new ArrayList();
 		for (int i=0, len=freeVars.length; i < len; i++) {
 			int freeVar = freeVars[i];
+			
+			// we don't need to keep state that isn't actually exposed to advice
+			//??? this means that we will store some state that we won't actually use, optimize this later
+			if (!bindings.hasKey(freeVar)) continue; 
+			
 			int formalIndex = bindings.get(freeVar);
 			ResolvedTypeX formalType =
 				bindings.getAdviceSignature().getParameterTypes()[formalIndex].resolve(world);
