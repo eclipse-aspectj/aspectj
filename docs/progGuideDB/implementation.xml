@@ -1,6 +1,9 @@
-<appendix id="limitations" xreflabel="Implementation Limitations">
+<appendix id="implementation" xreflabel="Implementation Notes">
 
-  <title>Implementation Limitations</title>
+  <title>Implementation Notes</title>
+
+<sect1>
+  <title>Compiler Notes</title>
 
   <para> 
     The initial implementations of AspectJ have all been
@@ -109,5 +112,67 @@
     be aware of the limitations of the ajc compiler you're using, but
     these limitations should not drive the design of your aspects.
   </para>
+</sect1>
+
+<sect1>
+  <title>Bytecode Notes</title>
+
+  <para>The end of exception handlers cannot reliably be found in Java
+  bytecode.  Instead of removing the handler join point entirely, the
+  current AspectJ compiler restricts what can be done with the handler
+  join point:
+  </para>
+
+  <itemizedlist>
+    <listitem>After and around advice cannot apply to handler
+    join points.</listitem>
+
+    <listitem>The control flow of a handler join point cannot be
+    detected. </listitem>
+  </itemizedlist>
+
+  <para>
+  The first of these is relatively straightforward.  If any piece of
+  after advice (returning, throwing, or "finally") would normally
+  apply to a handler join point, it will not in code output by the
+  current AspectJ compiler.  A compiler warning is generated whenever
+  this is detected to be the case.  Before advice is allowed.
+  </para>
+
+  <para> The second is that the control flow of a handler join point
+  is not picked out.  For example, the following pointcut
+  </para>
+
+<programlisting><![CDATA[
+  cflow(call(void foo()) || handler(java.io.IOException))
+]]></programlisting>
+
+  <para> will capture all join points in the control flow of a call to
+  <literal>void foo()</literal>, but it will <emphasis>not</emphasis>
+  capture those in the control flow of an
+  <literal>IOException</literal> handler.  It is equivalent to
+  <literal>cflow(call(void foo()))</literal>.  In general,
+  <literal>cflow(handler(<replaceable>Type</replaceable>))</literal>
+  will pick out no join points.
+  </para>
+
+  <para> This does not restrict programs from placing before advice on
+  handlers inside <emphasis>other</emphasis> control flows.  This
+  advice, for example, is perfectly fine:
+  </para>
+
+<programlisting><![CDATA[
+  before(): handler(java.io.IOException) && cflow(void parse()) {
+      System.out.println("about to handle an exception while parsing");
+  }
+]]></programlisting>
+
+  <para>
+    A source-code implementation of AspectJ (such as AspectJ 1.0.6) is
+    able to detect the endpoint of a handler join point, and as such
+    will likely have fewer such restrictions.
+  </para>
+
+</sect1>
 
 </appendix>

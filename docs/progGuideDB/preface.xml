@@ -24,7 +24,7 @@
 
     It includes appendices that give a reference to the syntax of AspectJ,
     a more formal description of AspectJ's semantics, and a description of
-    limitations allowed by AspectJ implementations.
+    notes about the AspectJ implementation.
   </para>
 
   <para>
@@ -60,7 +60,7 @@
     linkend="quick">quick reference</xref> to the language's syntax, a more
     in depth coverage of its <xref linkend="semantics">semantics</xref>,
     and a description of the latitude enjoyed by its <xref
-    linkend="limitations">implementations</xref>.
+    linkend="implementation">implementations</xref>.
   </para>
 
 </preface>

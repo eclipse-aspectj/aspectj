@@ -11,7 +11,7 @@
 <!ENTITY pitfalls       SYSTEM "pitfalls.xml">
 <!ENTITY quickreference SYSTEM "quickreference.xml">
 <!ENTITY semantics      SYSTEM "semantics.xml">
-<!ENTITY limitations    SYSTEM "limitations.xml">
+<!ENTITY implementation SYSTEM "implementation.xml">
 ]>
 
 <book>
@@ -58,6 +58,6 @@
   &pitfalls;
   &quickreference;
   &semantics;
-  &limitations;
+  &implementation;
 
 </book>

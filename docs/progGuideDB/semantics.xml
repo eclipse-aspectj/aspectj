@@ -2591,7 +2591,7 @@
 
         <para> Both <literal>perthis</literal> and <literal>pertarget</literal>
         aspects may be affected by code the AspectJ compiler controls, as
-        discussed in the <xref linkend="limitations"/> appendix.  </para>
+        discussed in the <xref linkend="implementation"/> appendix.  </para>
       </sect3>
 
       <sect3>

@@ -1452,8 +1452,8 @@ aspect PublicErrorLogging {
           </para>
           <para>
           To find out about known issues, see the
-          <ulink url="progguide/limitations.html">
-          AspectJ Programming Guide Appendix, "Limitations"</ulink>
+          <ulink url="progguide/implementation.html">
+          AspectJ Programming Guide Appendix, "Implementation Notes"</ulink>
           and the AspectJ bugs in the database at
           <ulink url="http://bugs.eclipse.org/bugs">http://bugs.eclipse.org/bugs</ulink>
           (using the product <literal>AspectJ</literal>).  Here are direct links to
@@ -3678,8 +3678,8 @@ vmparam -Xmx384m
           a system, so AspectJ program semantics may be limited to code
           the implementation controls.  For our implementation, these 
           limitations are stated in 
-          <ulink url="progguide/limitations.html">
-             Programming Guide Appendix C</ulink>.
+          <ulink url="progguide/implementation.html">
+             Programming Guide Appendix:  Implementation Notes</ulink>.
 		  Aside from understanding the use and limitations of the 
 		  implementation, there is no need to understand the underlying 
 		  technology when writing AspectJ programs.
