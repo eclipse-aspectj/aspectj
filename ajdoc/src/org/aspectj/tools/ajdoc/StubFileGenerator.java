@@ -46,7 +46,7 @@ class StubFileGenerator {
              
             String packageName = StructureUtil.getPackageDeclarationFromFile(inputFile);
             
-            if (packageName != null ) {
+            if (packageName != null && packageName != "") {
                 writer.println( "package " + packageName + ";" );
             }
 

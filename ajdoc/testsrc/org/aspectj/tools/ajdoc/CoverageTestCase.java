@@ -25,6 +25,7 @@ public class CoverageTestCase extends TestCase {
 	public void testCoverage() {
 		  
 //		System.err.println(new File("testdata/figures-demo").exists());
+		File file0 = new File("testdata/coverage/InDefaultPackage.java");
 		File file1 = new File("testdata/coverage/foo/ClassA.java");
 		File aspect1 = new File("testdata/coverage/foo/UseThisAspectForLinkCheck.aj");
 		File file2 = new File("testdata/coverage/foo/InterfaceI.java");
@@ -43,7 +44,8 @@ public class CoverageTestCase extends TestCase {
 			"-private",
 			"-d", 
 			outdir.getAbsolutePath(),
-			aspect1.getAbsolutePath(),  
+			aspect1.getAbsolutePath(), 
+			file0.getAbsolutePath(), 
 			file1.getAbsolutePath(), 
 			file2.getAbsolutePath(),
 			file3.getAbsolutePath(),
