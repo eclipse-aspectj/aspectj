@@ -13,14 +13,14 @@ cases.  They progress, as most users do in their adoption of AspectJ,
 from non-functional, development-only aspects to aspects which augment
 a deployed program with crosscutting features.  </p>
 
-<p> We have made available a package that includes the tests, the base
-code, JUnit, and a distribution of AspectJ.  All it needs is
-information about where Java lives (so set your JAVA_HOME environment
-variable).  It assumes that you unzip it in c:\ (on Windows) or in
-your home directory (on Linux): If you put it somewhere else, edit
-setpaths or setpaths.bat, as appropriate.  Once all this is done, run
-<code>setpaths.bat</code> or <code>source setpaths</code> to export
-some other needed environment variables. </p>
+<p> Before the tutorial we will make available a package that includes
+the tests, the base code, JUnit, and a distribution of AspectJ.  All
+it needs is information about where Java lives (so set your JAVA_HOME
+environment variable).  It assumes that you unzip it in c:\ (on
+Windows) or in your home directory (on Linux): If you put it somewhere
+else, edit setpaths or setpaths.bat, as appropriate.  Once all this is
+done, run <code>setpaths.bat</code> or <code>source setpaths</code> to
+export some other needed environment variables. </p>
 
 <p> All the files in the program are listed in base.lst, including
 test cases and an empty answer aspect,
@@ -72,16 +72,39 @@ you go from one exercise to the next, make sure to save your work in a
 file and go on to work in a different file, even if you plan to
 duplicate some code.  </p>
 
+<h3>Environment</h3>
+
+<p> You may use whatever editor or environment you choose to work
+through these exercises.  We provide a simple code-browser that can
+work well as an editor for these short exercises, in addition to
+providing better visualization of how aspects affect the system: </p>
+
+<blockquote><PRE>
+$ ajbrowser base.lst
+</PRE></blockquote>
+
+<p> With the browser you can edit code (including the
+<code>answers/Answer.java</code> file), and after saving hit the build
+button to start an ajc compile.  We recommend you start up another
+shell, though, to run the JUnit tests (and don't forget to run the
+<code>setpaths</code> script when you open the new shell):  You could
+set up the run button to run a test through the Options menu, but
+we've found this is fairly cumbersome. </p>
+
+
 <hr>
-<!-- page break  -->
+<!-- ============================== -->
+
+<br style="page-break-after: always" />
 <h2>1. Static Invariants</h2>
 
 <h3>a. Catch old tracing</h3>
 
 <p> <strong>Sample Exercise</strong>: The main point of this exercise
-is to make sure your configuration works.  We have provided the
-answer to this exercise below, so XXX.  You need not go through the
-thought process of fixing this </p>
+is to make sure your configuration works.  Type in the answer below
+into your answer file, make sure you get the desired compile-time
+error, remove the offending line, and make sure you pass the JUnit
+test.  </p>
 
 <p> <strong>Task:</strong> Signal a warning for calls to
 <code>System.out.println</code>. 
@@ -100,10 +123,9 @@ trace in <code>SlothfulPoint</code>.
 
 <blockquote><PRE>
 $ ajc -argfile base.lst
-./figures/SlothfulPoint.java:29:9: illegal access to System.out
-        System.out.println("Slothful moving");
-               ^
-1 errors
+./figures/SlothfulPoint.java:38 illegal access to System.out
+
+1 error
 </PRE></blockquote>
 
 <p> Remove the illegal tracing call. 
@@ -116,7 +138,7 @@ all exercises) before continuing.  </p>
 <blockquote><PRE>
 $ java tests.Test
 ....
-Time: 0.076
+Time: 0.03
 
 OK (4 tests)
 </PRE></blockquote>
@@ -215,20 +237,17 @@ the convention.  Make sure your program still passes the JUnit test
 your left and right.  If they're stuck somewhere, see if you can help
 them.  </p>
 
-<!-- ============================== -->
-
 <hr />
 
-<h2>2. Dynamic invariants</h2>
+<!-- ============================== -->
 
+<br style="page-break-after: always" />
+<h2>2. Dynamic invariants</h2>
 
 <h3>a. Check a simple precondition</h3>
 
-<p> <strong>Sample Exercise</strong>: The main point of this exercise
-is to make sure your configuration works.  We have provided the
-answer to this exercise below, so XXX.  You need not go through the
-thought process of fixing this </p>
-
+<p> <strong>Sample Exercise</strong>: We've provided the answer to
+this exercise below to get you started.  </p>
 
 <p> <strong>Task:</strong> Pass <code>tests.Test2a</code>.
 </p>
@@ -283,7 +302,7 @@ import figures.*;
 
 aspect Answer2a {
     before(int newValue): set(int Point.*) &amp;&amp; args(newValue) {
-        if (newValue < 0) {
+        if (newValue &lt; 0) {
             throw new IllegalArgumentException("too small");
         } 
     }
@@ -321,8 +340,6 @@ an attempt is made to call <code>Group.add()</code> on a
 <code>Group</code> object that is the target of the <code>add</code>
 call. 
 </p>
-
-XXX RENUMBER LATER
 
 <h3>d. Assure input</h3>
 
@@ -380,83 +397,12 @@ throw an <code>IllegalStateException</code> if it is violated.  </p>
 <p> At this point, check the people to your left and right.  If
 they're stuck somewhere, see if you can help them.  </p>
 
+<hr />
+
 <!-- ============================== -->
 
-<hr />
-<!-- page break -->
-
-<h2>3. Logging</h2>
-
-<h3>d. Check a simple postcondition</h3>
-
-<p> One of the simplest postconditions to check is that a setter
-actually sets its value.  Write an aspect that throws a
-<code>java.lang.RuntimeException</code> if, after calling
-<code>setX()</code> on <code>SlothfulPoint</code> objects,
-<code>getX()</code> doesn't return the new value. </p>
-
-<p> You'll want to use an <code>args</code> pointcut to expose the
-argument to <code>setX()</code> and a <code>target</code> pointcut to
-expose the <code>SlothfulPoint</code> object itself (so you can later
-call <code>getX()</code> on it).  
-</p>
-
-<p> An interesting question to think about for discussion is whether
-this postcondition should apply when getX() throws an exception, or
-when it returns normally, or both?  </p>
-
-<p> With this aspect in place, your code should pass
-<code>tests.Test2d</code>. 
-</p>
-
-
-<h3>e. Check invariant</h3>
-
-<p> There is a method on the <code>Box</code> class, <code>void
-checkBoxness()</code>, that checks whether the four points making up a
-box are correctly positioned relative to each other (i.e., they form a
-rectangle).  Write an aspect that will make sure that after every time
-the <code>void move(int, int)</code> method on <code>Box</code> is
-called, that you also call <code>Box.checkBoxness()</code> to ensure
-that the <code>move</code> didn't break this invariant. </p>
-
-<p> With this aspect in place, your code should pass
-<code>tests.Test2e</code>. 
-</p>
-
-<h3>f. Refine your invariant</h3>
-
-<p> <code>move</code> is not the only interesting method on
-<code>Box</code>.  It may be that a box gets malformed between calls
-to <code>move</code>.  So instead of checking boxness only 
-after the <code>move</code> method of <code>Box</code>, check
-after the call to every one of <code>Box</code>'s public methods.
-</p>
-
-<p> When testing this aspect, you may find yourself facing a
-<code>StackOverflowException</code>.  If so, carefully look at your
-pointcuts.  Needless to say, there should not be an infinite loop in
-your program.  You might want to look at using a <code>within</code>
-pointcut for a filter. </p>
-
-<p> (You might even find that this test case aborts with no message,
-i.e., 
-</p>
-
-<blockquote><pre>
-$ java tests.test2f
-.
-$
-</pre></blockquote>
-
-<p> this is a bug in Sun's JVM where a particular stack overflow
-causes the VM to abort.)
-</p>
-
-<p> Make sure to pass the JUnit test <code>tests.Test2f</code>
-before continuing.  </p>
-
-==================================================
+<br style="page-break-after: always" />
+<h2>3. Tracing</h2>
 
 <p> The crosscutting feature you will be adding in part (4) will be
 support for caching the bound objects of <code>Group</code> figure
@@ -465,7 +411,7 @@ it's useful to explore the system with some tracing aspects.  </p>
 
 <h3>a. Simple logging</h3>
 
-<p> <strong>Problem:</strong> Pass <code>tests.Test3a</code>.</p>
+<p> <strong>Task:</strong> Pass <code>tests.Test3a</code>.</p>
 
 <p> <strong>Tools:</strong> <code>Log.log(String)</code>, 
 		<code>thisJoinPoint.toString()</code>, <code>execution</code>,
@@ -479,7 +425,7 @@ and call <code>Log.log(String)</code></p>
 
 <h3>b. Simple logging</h3>
 
-<p> <strong>Problem:</strong> Pass <code>tests.Test3b</code>.</p>
+<p> <strong>Task:</strong> Pass <code>tests.Test3b</code>.</p>
 
 <p> <strong>Tools:</strong> <code>target</code>
 </p>
@@ -487,7 +433,7 @@ and call <code>Log.log(String)</code></p>
 
 <h3>c. More specialized logging</h3>
 
-<p> <strong>Problem:</strong> Pass <code>tests.Test3c</code>.</p>
+<p> <strong>Task:</strong> Pass <code>tests.Test3c</code>.</p>
 
 <p> <strong>Tools:</strong>
 </p>
@@ -520,7 +466,7 @@ based on the type of a parameter to a method call. </em> </p>
 
 <h3>d. Logging extended to checking an invariant</h3>
 
-<p> <strong>Problem:</strong> Pass <code>tests.Test3d</code>.</p>
+<p> <strong>Task:</strong> Pass <code>tests.Test3d</code>.</p>
 
 <p> <strong>Tools:</strong> <code>inter-type field declaration</code>
 </p>
@@ -530,7 +476,7 @@ based on the type of a parameter to a method call. </em> </p>
 
 <h3>e. Better error messages for 3d</h3>
 
-<p> <strong>Problem:</strong> Pass <code>tests.Test3e</code>.</p>
+<p> <strong>Task:</strong> Pass <code>tests.Test3e</code>.</p>
 
 <p> <strong>Tools:</strong>
 </p>
@@ -581,13 +527,12 @@ previous exercises, you'll be most of the way there. </em> </p>
 <p> At this point, check the people to your left and right.  If
 they're stuck somewhere, see if you can help them.  </p>
 
+<hr />
 
 <!-- ============================== -->
 
-<hr />
-
-<!-- page break -->
-<h3>4.  Caching</h3>
+<br style="page-break-after: always" />
+<h2>4.  Caching</h2>
 
 <p> Computation of the bounding box of <code>Group</code> objects
 needs to deal with all aggregate parts of the group, and this
@@ -602,7 +547,7 @@ handle those points contained in Lines and Boxes only if time permits.
 
 <h3>a. Make a constant override</h3>
 
-<p> <strong>Problem:</strong> Pass <code>tests.Test4a</code>.</p>
+<p> <strong>Task:</strong> Pass <code>tests.Test4a</code>.</p>
 
 <p> <strong>Tools:</strong> <code>around</code>, 
 		<code>FigureElement.MAX_BOUNDS</code>
@@ -623,7 +568,7 @@ around advice intercepting the method.
 
 <h3>b. Make a constant cache</h3>
 
-<p> <strong>Problem:</strong> Pass <code>tests.Test4b</code>.
+<p> <strong>Task:</strong> Pass <code>tests.Test4b</code>.
 </p>
 
 <p> <strong>Tools:</strong> <code>private Rectangle Group.mumble;</code>
@@ -642,7 +587,7 @@ state for every <code>Group</code> object.</em> </p>
 
 <h3>c. Invalidate, part 1</h3>
 
-<p> <strong>Problem:</strong> Pass <code>tests.Test4c</code>.
+<p> <strong>Task:</strong> Pass <code>tests.Test4c</code>.
 </p>
 
 <p> <strong>Tools:</strong> <code>before</code>
@@ -656,7 +601,7 @@ Change your aspect so that it invalidates the cache whenever the
 
 <h3>d. Invalidate, part 2</h3>
 
-<p> <strong>Problem:</strong> Pass <code>tests.Test4d</code>.</p>
+<p> <strong>Task:</strong> Pass <code>tests.Test4d</code>.</p>
 
 <p> <strong>Tools:</strong> <code>your solution to 3c</code></p>
 
@@ -670,7 +615,7 @@ where there you cared about method calls. </p>
 
 <h3>e. Invalidate, part 3</h3>
 
-<p> <strong>Problem:</strong> Pass <code>tests.Test4e</code>.</p>
+<p> <strong>Task:</strong> Pass <code>tests.Test4e</code>.</p>
 
 <p> <strong>Tools:</strong> <em>You're on you're own</em></p>
 
