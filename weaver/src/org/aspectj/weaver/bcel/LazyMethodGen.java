@@ -100,7 +100,7 @@ public final class LazyMethodGen {
     // build from an existing method
     public LazyMethodGen(Method m, LazyClassGen enclosingClass) {
         this.enclosingClass = enclosingClass;
-        if (!m.isAbstract() && m.getCode() == null) {
+        if (!(m.isAbstract() || m.isNative()) && m.getCode() == null) {
         	throw new RuntimeException("bad non-abstract method with no code: " + m + " on " + enclosingClass);
         }
         MethodGen gen = new MethodGen(m, enclosingClass.getName(), enclosingClass.getConstantPoolGen());
@@ -348,6 +348,7 @@ public final class LazyMethodGen {
         }
 
         void run() {
+        	killNops();
             assignLabels();
             print();
         }
@@ -407,6 +408,7 @@ public final class LazyMethodGen {
           			for (InstructionHandle xx = r.getStart(); Range.isRangeHandle(xx); xx = xx.getNext()) {
           				 if (xx == r.getEnd()) continue bodyPrint;
           			}
+
                     // doesn't handle nested: if (r.getStart().getNext() == r.getEnd()) continue;
                     if (r.getStart() == ih) {
                         printRangeString(r, depth++);
@@ -634,6 +636,7 @@ public final class LazyMethodGen {
     // ---- packing!
     
     public MethodGen pack() {
+    	//killNops();
         MethodGen gen =
             new MethodGen(
                 getAccessFlags(),
@@ -667,7 +670,7 @@ public final class LazyMethodGen {
         
         /* Make copies of all instructions, append them to the new list
          * and associate old instruction references with the new ones, i.e.,
-         * a 1:1 mapping.  
+         * a 1:1 mapping.
          */
         for (InstructionHandle ih = getBody().getStart(); ih != null; ih = ih.getNext()) {
             if (Range.isRangeHandle(ih)) {
@@ -804,7 +807,31 @@ public final class LazyMethodGen {
                 (InstructionHandle) localVariableStarts.get(tag),
                 (InstructionHandle) localVariableEnds.get(tag));
         }
+
     }
+
+
+	public void killNops() {
+    	InstructionHandle curr = body.getStart();
+    	while (true) {
+			if (curr == null) break;
+			InstructionHandle next = curr.getNext();
+    		if (curr.getInstruction() instanceof NOP) {
+    			InstructionTargeter[] targeters = curr.getTargeters();
+    			if (targeters != null) {
+    				for (int i = 0, len = targeters.length; i < len; i++) {
+						InstructionTargeter targeter = targeters[i];
+						targeter.updateTarget(curr, next);
+    				}
+    			}
+				try {
+					body.delete(curr);
+				} catch (TargetLostException e) {
+				}
+    		}
+			curr = next;
+    	}
+	}
 
     private static InstructionHandle remap(InstructionHandle ih, Map map) {
         while (true) {
