@@ -68,7 +68,7 @@
     <programlisting>
     <![CDATA[
   <taskdef 
-      resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+      resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties"/>
 ]]>
     </programlisting>
 
