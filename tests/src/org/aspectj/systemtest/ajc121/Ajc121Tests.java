@@ -279,5 +279,14 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void test053_bogusMessage2() {
     runTest("Bogus error message: The abstract method ajc$pointcut$$tracingScope$a2 in type Tracing can only be defined by an abstract class (2)");
   }
+  
+  public void test054_cnfe() {
+        runTest("passing null to array arguments confuzes static join point signature. (1)");
+  }
+
+  public void test055_cnfe() {
+    runTest("passing null to array arguments confuzes static join point signature. (2)");
+  }
+   
 }
 

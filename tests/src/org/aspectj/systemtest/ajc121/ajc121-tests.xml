@@ -403,8 +403,7 @@
 			<message kind="error" line="13" text="abstract intertype method declaration 'void PublicPackage.world()' on interface PublicPackage must be declared public (compiler limitation)"/>
 		</compile>
 	</ajc-test>
-		
-	
+
 	<ajc-test dir="bugs/pr72531" pr="72531"
 	  	title="declare warning warns at wrong points">
 		<compile files="de/rohith/HelloWorld.java,de/rohith/HelloWorldAspect.java,de/rohith/PrinterWorld.java">
@@ -432,5 +431,15 @@
 	     <message kind="error" line="2" text="The abstract pointcut tracingScope can only be defined in an aspect"/>
 	   </compile>
     </ajc-test>
-    
 	
+	<ajc-test dir="bugs/pr70404" pr="70404" 
+		title="passing null to array arguments confuzes static join point signature. (1)">
+	  <compile files="Main.java,MainAspect.java"/>
+	  <run class="dk.infimum.aspectjtest.Main"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs/pr70404" pr="70404" 
+		title="passing null to array arguments confuzes static join point signature. (2)">
+	  <compile files="Main2.java,MainAspect.java"/>
+	  <run class="dk.infimum.aspectjtest.Main2"/>
+	</ajc-test>
