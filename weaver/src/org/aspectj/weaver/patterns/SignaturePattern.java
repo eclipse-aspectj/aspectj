@@ -48,11 +48,13 @@ public class SignaturePattern extends PatternNode {
 	private NamePattern name;
     private TypePatternList parameterTypes;
     private ThrowsPattern throwsPattern;
+    private AnnotationTypePattern annotationPattern;
     	
 	public SignaturePattern(Member.Kind kind, ModifiersPattern modifiers,
 	                         TypePattern returnType, TypePattern declaringType,
 	                         NamePattern name, TypePatternList parameterTypes,
-	                         ThrowsPattern throwsPattern) {
+	                         ThrowsPattern throwsPattern,
+							 AnnotationTypePattern annotationPattern) {
 		this.kind = kind;
 		this.modifiers = modifiers;
 		this.returnType = returnType;
@@ -60,6 +62,7 @@ public class SignaturePattern extends PatternNode {
 		this.declaringType = declaringType;
 		this.parameterTypes = parameterTypes;
 		this.throwsPattern = throwsPattern;
+		this.annotationPattern = annotationPattern;
 	}
 	
 	
@@ -287,7 +290,6 @@ public class SignaturePattern extends PatternNode {
 		return false;
 	}
 	
-	
 	public boolean matches(Class declaringClass, java.lang.reflect.Member member) {
 	    if (kind == Member.ADVICE) return true;
 	    if (kind == Member.POINTCUT) return false;
@@ -474,6 +476,7 @@ public class SignaturePattern extends PatternNode {
 		name.write(s);
 		parameterTypes.write(s);
 		throwsPattern.write(s);
+		annotationPattern.write(s);
 		writeLocation(s);
 	}
 
@@ -485,8 +488,9 @@ public class SignaturePattern extends PatternNode {
 		NamePattern name = NamePattern.read(s);
 		TypePatternList parameterTypes = TypePatternList.read(s, context);
 		ThrowsPattern throwsPattern = ThrowsPattern.read(s, context);
+		AnnotationTypePattern annotationPattern = AnnotationTypePattern.read(s,context);
 		SignaturePattern ret = new SignaturePattern(kind, modifiers, returnType, declaringType,
-					name, parameterTypes, throwsPattern);
+					name, parameterTypes, throwsPattern,annotationPattern);
 		ret.readLocation(context, s);
 		return ret;
 	}
@@ -531,5 +535,8 @@ public class SignaturePattern extends PatternNode {
 		return false;
 	}
 	
+	public AnnotationTypePattern getAnnotationPattern() {
+		return annotationPattern;
+	}
 
 }

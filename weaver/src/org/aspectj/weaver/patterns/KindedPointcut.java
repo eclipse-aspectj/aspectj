@@ -83,13 +83,13 @@ public class KindedPointcut extends Pointcut {
 		if (shadow.getIWorld().getLint().noJoinpointsForBridgeMethods.isEnabled()) {
 			ResolvedMember rm = shadow.getSignature().resolve(shadow.getIWorld());
 			if (rm!=null) {
-				int shadowModifiers = shadow.getSignature().getModifiers(shadow.getIWorld());
-				if (ResolvedTypeX.hasBridgeModifier(shadowModifiers)) {
-					shadow.getIWorld().getLint().noJoinpointsForBridgeMethods.signal(new String[]{},getSourceLocation(),
+             	int shadowModifiers = shadow.getSignature().getModifiers(shadow.getIWorld());
+			    if (ResolvedTypeX.hasBridgeModifier(shadowModifiers)) {
+				  shadow.getIWorld().getLint().noJoinpointsForBridgeMethods.signal(new String[]{},getSourceLocation(),
 						new ISourceLocation[]{shadow.getSourceLocation()});
-				}
-			}
-		}
+			    }
+            }
+        }
 	}
 	
 	public FuzzyBoolean match(JoinPoint.StaticPart jpsp) {
@@ -176,7 +176,8 @@ public class KindedPointcut extends Pointcut {
 				TypePattern.ANY,
 				signature.getName(), 
 				signature.getParameterTypes(),
-				signature.getThrowsPattern());
+				signature.getThrowsPattern(),
+				signature.getAnnotationPattern());
 
 		if (nonConfusingPattern
 			.matches(shadow.getSignature(), shadow.getIWorld())) {
