@@ -76,6 +76,12 @@ public interface IMessage {
 	/** Return the ID of the message where applicable, see IProblem for list of valid IDs */
 	int getID();
 	
+	/** Return the start position of the problem (inclusive), or -1 if unknown. */
+	int getSourceStart();
+	
+	/** Return the end position of the problem (inclusive), or -1 if unknown. */
+	int getSourceEnd();
+	
 	/** @return Throwable associated with this message, or null if none */
 	Throwable getThrown();
 

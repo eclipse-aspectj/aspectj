@@ -151,7 +151,10 @@ public class EclipseAdapterUtils {
 								   problem.isError() ? IMessage.ERROR : IMessage.WARNING,
 								   sourceLocation, 
 								   null,
-								   seeAlsoLocations,declared,problem.getID());
+								   seeAlsoLocations,
+								   declared,
+								   problem.getID(),
+								   problem.getSourceStart(),problem.getSourceEnd());
         return msg;
     }               
 

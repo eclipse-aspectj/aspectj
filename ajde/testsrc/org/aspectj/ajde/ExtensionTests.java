@@ -43,9 +43,9 @@ public class ExtensionTests extends AjcTestCase {
 	 * 
 	 *   ajc -warn:unusedImport UnusedImport.java
 	 * 
-	 * Expected result = id 
+	 * Expected result is that id matches IProblem.UnusedImport
 	 */
-	public void testOutjarInInjars () {
+	public void testMessageID () {
 		String[] args = new String[] {"UnusedImport.java","-warn:unusedImport"};
 		CompilationResult result = ajc(baseDir,args);
 		List l = result.getWarningMessages();
@@ -127,5 +127,23 @@ public class ExtensionTests extends AjcTestCase {
 	  }
 	}
 	
+
+	/**
+	 * Aim: Check that the start/end of certain warnings are correct
+	 * 
+	 *   ajc -warn:unusedImport UnusedImport.java
+	 * 
+	 * Expected result is first warning message has start=7 end=20
+	 */
+	public void testMessageSourceStartEnd() {
+		String[] args = new String[] {"UnusedImport.java","-warn:unusedImport"};
+		CompilationResult result = ajc(baseDir,args);
+		List l = result.getWarningMessages();
+		IMessage m = ((IMessage)l.get(0));
+		assertTrue("Expected source start to be 7 but was "+m.getSourceStart(),
+			m.getSourceStart()==7);
+		assertTrue("Expected source end to be 20 but was "+m.getSourceEnd(),
+				m.getSourceEnd()==20);
+	}	
 
 }

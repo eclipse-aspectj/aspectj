@@ -52,7 +52,9 @@ public class Checker extends ShadowMunger {
 				isError ? IMessage.ERROR : IMessage.WARNING,
 				shadow.getSourceLocation(),
                 null,
-                new ISourceLocation[]{this.getSourceLocation()},true,0);
+                new ISourceLocation[]{this.getSourceLocation()},true,
+				0, // id
+				-1,-1); // source start/end
             
             world.getMessageHandler().handleMessage(message);
 			

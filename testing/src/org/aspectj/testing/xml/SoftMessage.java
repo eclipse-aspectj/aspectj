@@ -40,6 +40,7 @@ public class SoftMessage implements IMessage {
 	private ISourceLocation sourceLocation;
 	private String details;
 	private int id;
+	private int sourceStart,sourceEnd;
 	private final ArrayList extraSourceLocations = new ArrayList();
 
 	//private ISourceLocation pseudoSourceLocation;  // set directly
@@ -331,6 +332,22 @@ public class SoftMessage implements IMessage {
 	
 	public void setID(int id) {
 		this.id = id;
+	}
+	
+	public int getSourceStart() {
+		return sourceStart;
+	}
+
+	public void setSourceStart(int s) {
+		sourceStart = s;
+	}
+
+	public int getSourceEnd() {
+		return sourceStart;
+	}
+
+	public void setSourceEnd(int s) {
+		sourceEnd = s;
 	}
 
 	/* (non-Javadoc)
