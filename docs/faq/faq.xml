@@ -23,15 +23,12 @@
        2003 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated March 3, 2003.
+  <para>Last updated April 9, 2003.
   </para>
   <para>
    
    For a list of recently-updated FAQ entries, see <xref linkend="q:faqchanges"/>
-   AspectJ 1.1 is currently in development, and 
-   some answers may change after it is released;  
-   for more information, see the README
-   included with the AspectJ 1.1 distribution.
+   This FAQ covers AspectJ versions 1.0 and 1.1.
   </para>
   <qandaset defaultlabel="number">
     <qandadiv id="overview" xreflabel="Overview">
@@ -215,11 +212,12 @@
             The latest release is 1.0.6 <!-- XXX todo Update me! --> 
 	        which can be downloaded from the 1.0 AspectJ
             <ulink url="http://aspectj.org/dl.html">download</ulink> page.
-            The current release train is 1.1, <!-- XXX todo Update me! --> 
-	        which can be downloaded from the 
-             <ulink url="http://eclipse.org/aspectj">AspectJ home page</ulink>.
-             This development is focused on supporting applications, 
-	         improving performance of the 1.1 compiler, 
+             To download the current source tree from the
+             <ulink url="http://eclipse.org/aspectj">AspectJ project</ulink>,
+             see
+             <xref linkend="q:buildingsource"/>.
+             Development is focused on supporting applications, 
+	         improving quality and performance, 
              enhancing integration with IDE's,
              and building the next generations of the language.
           </para>
@@ -2366,9 +2364,9 @@ class Test extends Super implements I {
       </qandaentry>
       <qandaentry>
         <question id="q:andingpointcuts"
-            xreflabel="Q:I want advice to run at two pointcuts, but it doesn't run at all.">
+            xreflabel="Q:I want advice to run at two join points, but it doesn't run at all.">
           <para>
-            I want advice to run at two pointcuts, but it doesn't run at all.  What gives?
+            I want advice to run at two join points, but it doesn't run at all.  What gives?
           </para>
         </question>
         <answer>
@@ -2735,12 +2733,24 @@ aspect A {
           </para>
         </question>
         <answer>
+          <para><literal>ajc</literal> can use more memory than a javac
+           compile of the corresponding pure-java sources when aspects
+           are added to the mix.  You'll need to increase the memory
+           available.
+          </para>
           <para>The command <literal>ajc</literal> is actually a script that
             launches a Java virtual machine with the correct classpath. You
             should make a copy of this script, rename it, and then edit it.
             Change the -Xmx option, size of memory allocation pool (heap). You
             might try <literal>-Xmx128M</literal> or even
             <literal>-Xmx256M</literal>.
+          </para>
+          <para>When running under Ant, give Ant more memory or
+          use the <literal>fork</literal> fork option together with
+          the <literal>Xmaxmem</literal> option.
+          </para>
+          <para>When running under an IDE, look to the documentation
+          for the IDE to determine how to increase available memory.
           </para>
         </answer>
       </qandaentry>
@@ -2755,11 +2765,10 @@ aspect A {
         <answer>
           <para>
             <literal>ajc</literal> 1.0 does not currently support incremental
-          compilation, but we are working on this for the 1.1 release.
-          </para>
-          <para>As a limited workaround, many build systems enable you to avoid 
-            doing a compile if no sources have changed.  (See, e.g., Ant's
-            "uptodate" task.)
+          compilation, but the 1.1 release does.  It may still recompile
+          files that have not changed, if they are affected by aspects
+          in particular ways, but the files compiled should be fewer
+          and result in faster compiles.
           </para>
         </answer>
       </qandaentry>
@@ -2847,6 +2856,21 @@ vmparam -Xmx384m
         </answer>
       </qandaentry>
       <qandaentry>
+        <question id="q:noaspectbound"
+            xreflabel="Q:When I run, I get a ClassNotFound message for NoAspectBoundException.">
+          <para>
+            When I run, I get a ClassNotFound message for NoAspectBoundException.
+          </para>
+        </question>
+        <answer>
+          <para>This is what happens when <literal>aspectjrt.jar</literal> classes
+          are not on the runtime classpath.  Add the jar to the classpath and
+          try again.
+          </para> 
+        </answer>
+      </qandaentry>
+		
+      <qandaentry>
         <question id="q:stacktraces"
             xreflabel="Q:My stack traces don't make sense.  What gives?">
           <para>
@@ -2854,13 +2878,17 @@ vmparam -Xmx384m
           </para>
         </question>
         <answer>
-          <para>Unless you are using the <literal>ajdb</literal> debugger, 
+          <para>In 1.0, unless you are using the <literal>ajdb</literal> debugger, 
           stack traces may
           have synthetic methods in the stack, and the line numbers may
           not track your source code.  The 
           <ulink url="devguide/index.html">Development Environment Guide</ulink>.
           discusses how to interpret stack at the end of the section
           on the <literal>ajc</literal> compiler.
+          </para>
+          <para>In 1.1, line numbers should work correctly.
+          The only difference from a normal stack might be the addition
+          of extra stack frames for call-backs.
           </para>
         </answer>
       </qandaentry>
@@ -2919,15 +2947,15 @@ vmparam -Xmx384m
       </qandaentry>
       <qandaentry>
         <question id="q:cantfindjavac"
-            xreflabel="Q:ajc complains that it can't find javac. What's wrong?">
+            xreflabel="Q:ajc 1.0 complains that it can't find javac. What's wrong?">
           <para>
-            <literal>ajc</literal> complains that it can't find
+            <literal>ajc</literal> 1.0 complains that it can't find
             <literal>javac</literal>. What's wrong?
           </para>
         </question>
         <answer>
           <para>
-            <literal>ajc</literal> does not try to locate
+            <literal>ajc</literal> 1.0 does not try to locate
             <literal>javac</literal> in your path: it uses the
             <literal>javac</literal> classes directly. In JDK 1.2 and 1.3 these
             classes are found in <literal>tools.jar</literal> (in the
@@ -2993,8 +3021,8 @@ vmparam -Xmx384m
       </qandaentry>
       <qandaentry>
         <question id="q:readingpreprocessedcode"
-            xreflabel="Q:I'm reading the code generated by ajc in -preprocess mode, and it seems like it would not work.">
-          <para>I'm reading the code generated by <literal>ajc</literal>
+            xreflabel="Q:I'm reading the code generated by ajc 1.0 in -preprocess mode, and it seems like it would not work.">
+          <para>I'm reading the code generated by <literal>ajc</literal> 1.0
         in <literal>-preprocess</literal> mode, and it seems like it would not
         work (or "like it works this way").
           </para>
@@ -3253,18 +3281,18 @@ vmparam -Xmx384m
           </para>
         </question>
         <answer>
-          <para>Not now, but it should be possible soon. 
+          <para>
           AspectJ 1.1 can weave binary aspects
           into classes in bytecode form.  Hooked up to a class loader,
           this can weave class bytecodes after they are read in,
           before the
-          class is defined by the VM.  In the final 1.1 release,
-          we hope to document a small class loader as a proof-of-concept,
+          class is defined by the VM.  In the 1.1 release (or soon
+          thereafter) we will provide a proof-of-concept class loader,
           but we expect most people will already have a custom 
           class loader which they will adapt to invoke our weaver.
           </para> 
-          <para>Some have asked about only weaving classes specified 
-          at run-time.
+          <para>Some have asked about only weaving particular classes 
+          specified at run-time.
 		  Aspects should work across an entire namespace, and problems 
 		  will likely result from weaving
           some classes but not others.  Also, it's confusing to 
@@ -3378,6 +3406,10 @@ vmparam -Xmx384m
           </para>
         </question>
         <answer>
+          <para>AspectJ 1.0 source code is available in an archive available 
+           with the 1.0 downloads.  It contains instructions for building
+           from sources.
+          </para>
           <para>AspectJ 1.1 source code is available through CVS using the CVS Root 
            <literal>dev.eclipse.org:/home/technology</literal>.  For more information
            on accessing the CVS tree at eclipse.org, see the documentation 
@@ -3884,25 +3916,12 @@ vmparam -Xmx384m
         </question>
         <answer>
           <para>
-          The FAQ has been updated to reflect the move to eclipse.org;
-          but some answers apply to the released 1.0 version
-          rather than the 1.1 version in development.
-          Entries changes to reflect the move are not listed here.
-    Other entries changed since the earlier November 26 version:
+          The FAQ has been updated to reflect the move 
+          to eclipse.org and changes in the 1.1 version.
+          Entries changed since the earlier March 3, 2003 version:
             <itemizedlist>
-        <listitem><para><xref linkend="q:implementation"/></para></listitem>
-        <listitem><para><xref linkend="q:whitepapers"/></para></listitem>
-        <listitem><para><xref linkend="q:reflection"/></para></listitem>
-        <listitem><para><xref linkend="q:loadtimeWeaving"/></para></listitem>
-        <listitem><para><xref linkend="q:adviseconstructors"/></para></listitem>
-        <listitem><para><xref linkend="q:whyeclipse"/></para></listitem>
-        <listitem><para><xref linkend="q:eclipserequired"/></para></listitem>
-        <listitem><para><xref linkend="q:contributions"/></para></listitem>
-        <listitem><para><xref linkend="q:harnesstestcases"/></para></listitem>
-        <listitem><para><xref linkend="q:buildingsource"/></para></listitem>
-        <listitem><para><xref linkend="q:testharness"/></para></listitem>
-        <listitem><para><xref linkend="q:integrateWithDevTools"/></para></listitem>
-        <listitem><para><xref linkend="q:versioninfo"/></para></listitem>
+        <listitem><para><xref linkend="q:noaspectbound"/></para></listitem>
+        <listitem><para><xref linkend="q:stacktraces"/></para></listitem>
             </itemizedlist>
           </para>
         </answer>
@@ -3997,8 +4016,8 @@ vmparam -Xmx384m
           </para>
         </question>
         <answer>
-          <para>Bytecode weaving is scheduled for AspectJ 1.1.  We believe it
-	  will work as described in an email to the users list by Jim Hugugin:
+          <para>Bytecode weaving is in AspectJ 1.1.  We believe it
+	   works as described in an email to the users list by Jim Hugugin:
           </para>
           <para>
               The AspectJ language was designed to support weaving at many different times: 
@@ -4018,6 +4037,8 @@ vmparam -Xmx384m
           </para>
           <para>If you have an application for using aspects and bytecode, 
               please let the AspectJ team know of your requirements.
+              We expect to have a demonstration classloader available in
+              the 1.1 release or soon thereafter.
           </para>
         </answer>
       </qandaentry>
