@@ -6,7 +6,7 @@
 This describes how to build and test AspectJ
 for developers working on source code for AspectJ.
 It covers building with Ant or Eclipse and testing with 
-JUnit or the harness used for compiler tests.
+JUnit and the harness used for compiler tests.
 
 For information on how the build works and how to 
 debug failed builds, see 
@@ -241,11 +241,13 @@ for each package
 for the module as a whole  
   (<code>{module}/testsrc/{module}ModuleTests.java</code>). 
 
-The AspectJ project also has custom tests in the 
+<p>The AspectJ project also has <i>additional</i> custom tests in the 
   <a href="../tests">tests module</a>,
 mainly the compiler tests run by the harness in 
-  <a href="../tests/ajcTests.xml">ajcTests.xml</a>.
-
+  <a href="../tests/ajcTests.xml">ajcTests.xml</a>. <u>It is important
+to run these additional compiler tests (not covered by the JUnit
+suite) before and after any change to the compiler.</u>
+</p>
 <h4>Running JUnit tests in Eclipse</h4>
 JUnit tests may be run under eclipse by selecting any JUnit source file
 and creating a run configuration for it.
@@ -438,6 +440,23 @@ Some build problems and fixes encountered in the past:
       when the <code>BuildModule</code> taskdef runs.  I think it either
       gets it from <code>$JAVA_HOME</code> or if the <code>bin</code>
       directory is on the <code>PATH</code>.
+   </li>
+   <li>If using an IBM JDK at version 1.4 or higher within Eclipse,
+   then the default value of JRE_LIB will point to the jar file
+   "core.jar." Unlike the Sun JDK, IBM does not package the full
+   runtime into a single jar ("rt.jar"), but instead has multiple
+   jar files. Since core.jar does not contain the graphics libraries,
+   several of the AspectJ projects will fail to build as checked out
+   of CVS - there are missing dependencies on AWT and swing. The
+   solution is to add graphics.jar to the project classpaths... BUT
+   if this is added as an ordinary (external jar), then the main
+   ant build script will pick up the contents of graphics.jar and
+   include it in the aspectj distribution (obvious clue, the size of
+   the built aspectjtools.jar doubles to about 10MB). Instead, from the 
+   Java Build Path properties page of the project, select "Add Library"
+   and add the JDK library. You now have to remove the JRE_LIB entry
+   from the project or Eclipse complains about duplicate jar files
+   in the path.
    </li>
 <ul>
 
