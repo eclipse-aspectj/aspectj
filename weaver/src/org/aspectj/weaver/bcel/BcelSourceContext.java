@@ -31,9 +31,15 @@ public class BcelSourceContext implements ISourceContext {
 		this.inObject = inObject;
 		sourceFileName = inObject.getJavaClass().getSourceFileName();
 		
-		String pname = inObject.getResolvedTypeX().getPackageName();
-		if (pname != null) {
-			sourceFileName = pname.replace('.', '/') + '/' + sourceFileName;
+		
+		// <Unknown> is the default when we don't know where it came from (see JavaClass.source_file_name)
+		if (sourceFileName!=null && sourceFileName.equals("<Unknown>")) { 
+			sourceFileName = "Type '"+ inObject.getResolvedTypeX().getName()+"' (no debug info available)";
+		} else {
+			String pname = inObject.getResolvedTypeX().getPackageName();
+			if (pname != null) {
+				sourceFileName = pname.replace('.', '/') + '/' + sourceFileName;
+			}
 		}
 	}
 	
