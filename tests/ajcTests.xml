@@ -5448,4 +5448,21 @@
         <run class="ConstructorArgTracing"/>
     </ajc-test>
     
+    <ajc-test dir="bugs" pr="29106" title="declared exceptions in inter-type decls">
+        <compile files="ExceptionsOnInters.java"/>
+        <run class="ExceptionsOnInters"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs" pr="28921"
+      title="Verify error on non-Throwable in declare soft">
+        <compile files="DeclareSoftCf.java" options="-Xlint:warning">
+		  <message kind="warning" line="28"/>
+		  <message kind="error" line="29"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs" pr="29113" title="inter-type fields with array types">
+        <compile files="InterFieldArrays.java"/>
+        <run class="InterFieldArrays"/>
+    </ajc-test>
 </suite>

@@ -1,7 +1,11 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 <suite>
+    <ajc-test dir="new" title="various declared exception permutations"
+      keywords="from-resolved_10x">
+        <compile files="DeclaredExcs.java"/>
+        <run class="DeclaredExcs"/>
+    </ajc-test>
 
-    
        <!--
     <ajc-test dir="base/test129"
       title="DEPRECATED: introduce of abstract methods works"
