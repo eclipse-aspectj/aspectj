@@ -47,6 +47,8 @@ public class PointcutDeclaration extends MethodDeclaration {
 	public PointcutDesignator pointcutDesignator;
 	private int declaredModifiers;
 	private String declaredName;
+    
+    private ResolvedPointcutDefinition resolvedPointcutDeclaration = null;
 
 	public PointcutDeclaration(CompilationResult compilationResult) {
 		super(compilationResult);
@@ -89,12 +91,21 @@ public class PointcutDeclaration extends MethodDeclaration {
 			pointcutDesignator.postParse(typeDec, this);
 		}
 	}
+    
+    public void resolve(ClassScope upperScope) {
+        // this method should do nothing, use the entry point below...
+    }
+
+    public void resolvePointcut(ClassScope upperScope) {
+        super.resolve(upperScope);
+    }
+
 
 	public void resolveStatements() {
 		if (isAbstract()) {
 			this.modifiers |= AccSemicolonBody;
 		}
-
+		
 		
 		if (binding == null || ignoreFurtherInvestigation) return;
 
@@ -108,23 +119,27 @@ public class PointcutDeclaration extends MethodDeclaration {
 			pointcutDesignator.finishResolveTypes(this, this.binding, arguments.length, 
 					scope.enclosingSourceType());
 		}
-		
+        
+        //System.out.println("resolved: " + getPointcut() + ", " + getPointcut().state);
+		makeResolvedPointcutDefinition();
+        resolvedPointcutDeclaration.setPointcut(getPointcut());
 		super.resolveStatements();
 	}
 	
 
 	public ResolvedPointcutDefinition makeResolvedPointcutDefinition() {
-		//System.out.println("pc: " + getPointcut());
-		ResolvedPointcutDefinition ret = new ResolvedPointcutDefinition(
+        if (resolvedPointcutDeclaration != null) return resolvedPointcutDeclaration;
+		//System.out.println("pc: " + getPointcut() + ", " + getPointcut().state);
+		resolvedPointcutDeclaration = new ResolvedPointcutDefinition(
             EclipseFactory.fromBinding(this.binding.declaringClass), 
             declaredModifiers, 
             declaredName,
 			EclipseFactory.fromBindings(this.binding.parameters),
-			getPointcut());
+			getPointcut()); //??? might want to use null 
 			
-		ret.setPosition(sourceStart, sourceEnd);
-		ret.setSourceContext(new EclipseSourceContext(compilationResult));
-		return ret;
+		resolvedPointcutDeclaration.setPosition(sourceStart, sourceEnd);
+		resolvedPointcutDeclaration.setSourceContext(new EclipseSourceContext(compilationResult));
+		return resolvedPointcutDeclaration;
 	}
 
 

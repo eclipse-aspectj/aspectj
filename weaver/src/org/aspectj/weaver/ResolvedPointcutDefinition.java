@@ -91,4 +91,8 @@ public class ResolvedPointcutDefinition extends ResolvedMember {
 	    new ResolvedPointcutDefinition(TypeX.OBJECT, 0, "missing", 
 	    				TypeX.NONE, Pointcut.makeMatchesNothing(Pointcut.RESOLVED));
 
+	public void setPointcut(Pointcut pointcut) {
+		this.pointcut = pointcut;
+	}
+
 }

@@ -16,12 +16,15 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 import java.util.*;
 
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.DeclareDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.asm.*;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.internal.Relationship;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.*;
+import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.env.IBinaryType;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
@@ -85,12 +88,25 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		}
 		
 		// need to build inter-type declarations for all AspectDeclarations at this point
-		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
-			SourceTypeBinding[] b = units[i].scope.topLevelTypes;
-			for (int j = 0; j < b.length; j++) {
-				buildInterTypeAndPerClause(b[j].scope);
-			}
-		}
+        for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
+            SourceTypeBinding[] b = units[i].scope.topLevelTypes;
+            for (int j = 0; j < b.length; j++) {
+                buildInterTypeAndPerClause(b[j].scope);
+            }
+        }
+        for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
+            SourceTypeBinding[] b = units[i].scope.topLevelTypes;
+            for (int j = 0; j < b.length; j++) {
+                resolvePointcutDeclarations(b[j].scope);
+            }
+        }
+        
+        for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
+            SourceTypeBinding[] b = units[i].scope.topLevelTypes;
+            for (int j = 0; j < b.length; j++) {
+                addCrosscuttingStructures(b[j].scope);
+            }
+        }
 		factory.finishTypeMungers();
 	
 		// now do weaving
@@ -102,9 +118,9 @@ public class AjLookupEnvironment extends LookupEnvironment {
 
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			weaveInterTypeDeclarations(units[i].scope, typeMungers, declareParents);
-			units[i] = null; // release unnecessary reference to the parsed unit
+            units[i] = null; // release unnecessary reference to the parsed unit
 		}
-		
+                
 		stepCompleted = BUILD_FIELDS_AND_METHODS;
 		lastCompletedUnitIndex = lastUnitIndex;
 	}
@@ -116,6 +132,51 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		}
 		pendingTypesToWeave.clear();
 	}
+
+    private void addCrosscuttingStructures(ClassScope s) {
+        TypeDeclaration dec = s.referenceContext;
+        
+        if (dec instanceof AspectDeclaration) {
+            ResolvedTypeX typeX = factory.fromEclipse(dec.binding);
+            factory.getWorld().getCrosscuttingMembersSet().addOrReplaceAspect(typeX);
+        
+            if (typeX.getSuperclass().isAspect() && !typeX.getSuperclass().isExposedToWeaver()) {
+                factory.getWorld().getCrosscuttingMembersSet().addOrReplaceAspect(typeX.getSuperclass());
+            }
+        }
+        
+        SourceTypeBinding sourceType = s.referenceContext.binding;
+        ReferenceBinding[] memberTypes = sourceType.memberTypes;
+        for (int i = 0, length = memberTypes.length; i < length; i++) {
+            addCrosscuttingStructures(((SourceTypeBinding) memberTypes[i]).scope);
+        }
+    }
+    
+    private void resolvePointcutDeclarations(ClassScope s) {
+        TypeDeclaration dec = s.referenceContext;
+        SourceTypeBinding sourceType = s.referenceContext.binding;
+        
+        AbstractMethodDeclaration[] methods = dec.methods;
+        boolean initializedMethods = false;
+        if (methods != null) {
+            for (int i=0; i < methods.length; i++) {
+                if (methods[i] instanceof PointcutDeclaration) {
+                    if (!initializedMethods) {
+                        sourceType.methods(); //force initialization
+                        initializedMethods = true;
+                    }
+                    ((PointcutDeclaration)methods[i]).resolvePointcut(s);
+                }
+            }
+        }
+        
+        ReferenceBinding[] memberTypes = sourceType.memberTypes;
+        for (int i = 0, length = memberTypes.length; i < length; i++) {
+            resolvePointcutDeclarations(((SourceTypeBinding) memberTypes[i]).scope);
+        }
+    }
+    
+    
 
 	
 	private void buildInterTypeAndPerClause(ClassScope s) {

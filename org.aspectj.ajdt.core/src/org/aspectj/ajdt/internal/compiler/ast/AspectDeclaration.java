@@ -749,13 +749,8 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 				}
 			}
 		}
-
-		//??? timing is weird
-		factory.getWorld().getCrosscuttingMembersSet().addOrReplaceAspect(typeX);
-		
-		if (typeX.getSuperclass().isAspect() && !typeX.getSuperclass().isExposedToWeaver()) {
-			factory.getWorld().getCrosscuttingMembersSet().addOrReplaceAspect(typeX.getSuperclass());
-		}
+        
+        concreteName.getDeclaredPointcuts();
 	}
 
 

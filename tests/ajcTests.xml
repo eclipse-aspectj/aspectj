@@ -6736,4 +6736,19 @@
         <compile files="InterPerCall.java"/>
         <run class="InterPerCall"/>
     </ajc-test>
+    
+	<ajc-test dir="bugs/declareBinding"
+		pr="42740"
+		title="declare error fails on pointcuts composed from multiple classes">
+		<compile files="SampleExceptionHandling1.java">
+		    <message line="2" kind="error" text="no checked exceptions"/>
+		</compile>
+	</ajc-test>
+
+	<ajc-test dir="bugs/declareSoftWithin"
+		pr="42740"
+		title="declare error fails on pointcuts composed from multiple classes">
+		<compile files="aspects/Softener.aj,test/NoSoftener.java"/>
+		<run class="test.NoSoftener"/>
+	</ajc-test>
 </suite>
