@@ -73,6 +73,8 @@
             location="${aspectj.lib.dir}/aspectjrt.jar"/> 
       <property name="aspectjtools.jar"
             location="${aspectj.lib.dir}/aspectjtools.jar"/> 
+      <property name="aspectjweaver.jar"
+    		location="${aspectj.lib.dir}/aspectjweaver.jar"/>
 
       <!-- created directories -->
       <property name="classes.dir"
@@ -440,8 +442,7 @@
        <java classname="tracing.ExampleMain"
          fork="true">
          <classpath>
-            <pathelement path="${aspectjrt.jar}"/> 
-            <pathelement path="${aspectjtools.jar}"/> 
+            <pathelement path="${aspectjweaver.jar}"/> 
          </classpath>
 		 <jvmarg line="-showversion"/>
 		 <sysproperty key="java.system.class.loader" value="org.aspectj.weaver.WeavingURLClassLoader"/>

@@ -360,7 +360,37 @@ To use testing client jar in tests,
 	  </antcall>
 	  <!-- TODO : remove call -->
 	  <antcall target="filter-tools-jar" />
+	  <antcall target="aspectjweaver.jar" />
     </target>
+	
+	<target name="aspectjweaver.jar"
+		description="pull out the subset of aspecttools.jar needed for load-time weaving">
+    	<!--
+    		TODO : get rid of this!
+    		Temp hack ahoy. Open up the aspectjtools.jar to a temp
+    		location and then do a re-jar of it including only the 
+    		stuff we want to be in there.
+    	-->
+    	<mkdir dir="${aj.dist.dir}/tools_tmp"/>
+    	<unjar dest="${aj.dist.dir}/tools_tmp"
+    		   src="${aj.dist.dir}/tools/lib/aspectjtools.jar"/>
+   		<jar manifest="${aj.dist.dir}/tools_tmp/META-INF/MANIFEST.MF" 
+			destfile="${aj.dist.dir}/tools/lib/aspectjweaver.jar">
+    		<fileset dir="${aj.dist.dir}/tools_tmp">
+    			<include name="org/aspectj/lang/**"/>
+    			<include name="org/aspectj/runtime/**"/>
+    			<include name="org/aspectj/asm/**"/>
+    			<include name="org/aspectj/bridge/**"/>
+    			<include name="org/aspectj/util/**"/>
+    			<include name="org/aspectj/weaver/**"/>
+    			<include name="org/aspectj/apache/bcel/**"/>
+    			<include name="copyright.txt"/>
+    			<include name="META-INF/**"/>
+    		</fileset>
+  		</jar>    		   
+	 	<delete dir="${aj.dist.dir}/tools_tmp" />		
+	</target>
+	
     
     <target name="filter-tools-jar">
     	<!--

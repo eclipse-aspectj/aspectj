@@ -1,6 +1,7 @@
 
-This directory contains a script "aj" to demonstrate load-time weaving. Java
-classes on the CLASSPATH are loaded and woven with aspects on the ASPECTPATH.
+The bin directory of your AspectJ distribution contains a script "aj" to 
+perform load-time weaving. Java classes on the CLASSPATH are loaded and 
+woven with aspects on the ASPECTPATH. 
 This feature is only supported on JDK 1.4 and later.
 
 --To compile the tracing example--
