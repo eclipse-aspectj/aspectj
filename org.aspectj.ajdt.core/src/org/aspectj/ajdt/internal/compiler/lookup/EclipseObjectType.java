@@ -17,6 +17,7 @@ import java.util.*;
 
 import org.aspectj.ajdt.internal.compiler.ast.*;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.*;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.lookup.*;
@@ -82,7 +83,8 @@ public class EclipseObjectType extends ResolvedTypeX.Name {
 			if (amd == null) continue; //???
 			if (amd instanceof PointcutDeclaration) {
 				PointcutDeclaration d = (PointcutDeclaration)amd;
-				declaredPointcuts.add(d.makeResolvedPointcutDefinition());
+				ResolvedPointcutDefinition df = d.makeResolvedPointcutDefinition();
+				declaredPointcuts.add(df);
 			} else {
 				//XXX this doesn't handle advice quite right
 				declaredMethods.add(eclipseWorld().makeResolvedMember(m));
@@ -118,6 +120,40 @@ public class EclipseObjectType extends ResolvedTypeX.Name {
 	}
 	public CrosscuttingMembers collectCrosscuttingMembers() {
 		return crosscuttingMembers;
+	}
+
+
+	//XXX make sure this is applied to classes and interfaces
+	public void checkPointcutDeclarations() {
+		ResolvedMember[] pointcuts = getDeclaredPointcuts();
+		for (int i=0, len=pointcuts.length; i < len; i++) {
+			if (pointcuts[i].isAbstract()) {
+				if (!this.isAspect()) {
+					MessageUtil.error(
+							"abstract pointcut only allowed in aspect" + pointcuts[i].getName(),
+							pointcuts[i].getSourceLocation());
+				} else if (!this.isAbstract()) {
+					MessageUtil.error(
+							"abstract pointcut in concrete aspect" + pointcuts[i].getName(),
+							pointcuts[i].getSourceLocation());
+				}
+			}
+				
+			for (int j=i+1; j < len; j++) {
+				if (pointcuts[i].getName().equals(pointcuts[j].getName())) {
+					eclipseWorld().getMessageHandler().handleMessage(
+						MessageUtil.error(
+							"duplicate pointcut name: " + pointcuts[j].getName(),
+							pointcuts[j].getSourceLocation()));
+				}
+			}
+		}
+		
+		//XXX now check all inherited pointcuts to be sure that they're handled reasonably
+		
+		
+		
+		
 	}
 
 }

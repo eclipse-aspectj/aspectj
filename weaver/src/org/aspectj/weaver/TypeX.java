@@ -58,6 +58,13 @@ public class TypeX {
     public final int hashCode() {
         return signature.hashCode();
     }
+    
+    public static TypeX makeArray(TypeX base, int dims) {
+    	StringBuffer sig = new StringBuffer();
+    	for (int i=0; i < dims; i++) sig.append("[");
+    	sig.append(base.getSignature());
+    	return TypeX.forSignature(sig.toString());
+    }
 
     /**
      * Constructs a TypeX for a java language type name.  For example:

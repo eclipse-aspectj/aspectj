@@ -324,6 +324,7 @@ public class WildTypePattern extends TypePattern {
 					scope.getWorld().getLint().invalidAbsoluteTypeName.signal(cleanName, getSourceLocation());
 				}
 			} else {
+				if (dim != 0) type = TypeX.makeArray(type, dim);
 				TypePattern ret = new ExactTypePattern(type, includeSubtypes);
 				ret.copyLocationFrom(this);
 				return ret;

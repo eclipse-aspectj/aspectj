@@ -14,6 +14,7 @@
 package org.aspectj.weaver;
 
 import java.io.*;
+import java.lang.reflect.Modifier;
 
 import org.aspectj.bridge.ISourceLocation;
 
@@ -150,6 +151,14 @@ public class ResolvedMember extends Member implements IHasPosition {
 	public void setPosition(int sourceStart, int sourceEnd) {
 		this.start = sourceStart;
 		this.end = sourceEnd;
+	}
+
+	public void setSourceContext(ISourceContext sourceContext) {
+		this.sourceContext = sourceContext;
+	}
+	
+	public boolean isAbstract() {
+		return Modifier.isAbstract(modifiers);
 	}
 
 }

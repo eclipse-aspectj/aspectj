@@ -15,6 +15,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.*;
 
+import org.aspectj.bridge.IMessage;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.ast.*;
@@ -68,6 +69,10 @@ public class ArgsPointcut extends NameBindingPointcut {
   
 	public void resolveBindings(IScope scope, Bindings bindings) {
 		arguments.resolveBindings(scope, bindings, true);
+		if (arguments.ellipsisCount > 1) {
+			scope.message(IMessage.ERROR, this,
+					"uses more than one .. in args (compiler limitation)");
+		}
 	}
 	
 	public void postRead(ResolvedTypeX enclosingType) {

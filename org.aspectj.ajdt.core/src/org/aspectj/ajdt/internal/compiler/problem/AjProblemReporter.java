@@ -16,6 +16,7 @@
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 
+import org.aspectj.ajdt.internal.compiler.ast.*;
 import org.aspectj.ajdt.internal.compiler.ast.Proceed;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
 import org.aspectj.util.FuzzyBoolean;
@@ -29,7 +30,16 @@ import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
+import org.eclipse.jdt.internal.compiler.util.CharOperation;
 
+/**
+ * Extends problem reporter to support compiler-side implementation of declare soft. 
+ * Also overrides error reporting for the need to implement abstract methods to
+ * account for inter-type declarations and pointcut declarations.  This second
+ * job might be better done directly in the SourceTypeBinding/ClassScope classes.
+ * 
+ * @author Jim Hugunin
+ */
 public class AjProblemReporter extends ProblemReporter {
 	private static final boolean DUMP_STACK = false;
 	
@@ -87,6 +97,50 @@ public class AjProblemReporter extends ProblemReporter {
 		super.unhandledException(exceptionType, location);
 	}
 
+	private boolean isPointcutDeclaration(MethodBinding binding) {
+		return CharOperation.startsWith(binding.selector, PointcutDeclaration.mangledPrefix);
+	}
+
+	public void abstractMethodCannotBeOverridden(
+		SourceTypeBinding type,
+		MethodBinding concreteMethod)
+	{
+		if (isPointcutDeclaration(concreteMethod)) {
+			return;
+		}
+		super.abstractMethodCannotBeOverridden(type, concreteMethod);
+	}
+
+
+
+	public void abstractMethodMustBeImplemented(
+		SourceTypeBinding type,
+		MethodBinding abstractMethod)
+	{
+		// if this is a PointcutDeclaration then there is no error
+		if (isPointcutDeclaration(abstractMethod)) {
+			return;
+		}
+		
+		
+		// if we implemented this method by an inter-type declaration, then there is no error
+		//??? be sure this is always right
+		ResolvedTypeX onTypeX = world.fromEclipse(type); //abstractMethod.declaringClass);
+		for (Iterator i = onTypeX.getInterTypeMungers().iterator(); i.hasNext(); ) {
+			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
+			if (m.matches(onTypeX)) {
+				ResolvedMember sig = m.getSignature();
+				if (Modifier.isPublic(sig.getModifiers()) && !Modifier.isAbstract(sig.getModifiers())) {
+					if (ResolvedTypeX.matches(sig, world.makeResolvedMember(abstractMethod))) {
+						return;
+					}
+				}
+			}
+		}
+
+		super.abstractMethodMustBeImplemented(type, abstractMethod);
+	}
+
 	public void handle(
 		int problemId,
 		String[] problemArguments,
@@ -110,26 +164,5 @@ public class AjProblemReporter extends ProblemReporter {
 	}
 
 
-	public void abstractMethodMustBeImplemented(
-		SourceTypeBinding type,
-		MethodBinding abstractMethod)
-	{
-		// if we implemented this method by an inter-type declaration, then there is no error
-		//??? be sure this is always right
-		ResolvedTypeX onTypeX = world.fromEclipse(type); //abstractMethod.declaringClass);
-		for (Iterator i = onTypeX.getInterTypeMungers().iterator(); i.hasNext(); ) {
-			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
-			if (m.matches(onTypeX)) {
-				ResolvedMember sig = m.getSignature();
-				if (Modifier.isPublic(sig.getModifiers()) && !Modifier.isAbstract(sig.getModifiers())) {
-					if (ResolvedTypeX.matches(sig, world.makeResolvedMember(abstractMethod))) {
-						return;
-					}
-				}
-			}
-		}
-
-		super.abstractMethodMustBeImplemented(type, abstractMethod);
-	}
 
 }

@@ -17,6 +17,7 @@ import java.io.*;
 import java.io.IOException;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseWorld;
+import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -25,39 +26,28 @@ import org.eclipse.jdt.internal.compiler.ast.*;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
+import org.eclipse.jdt.internal.compiler.util.CharOperation;
 
-
-public class PointcutDeclaration extends MethodDeclaration implements IAjDeclaration {
+/**
+ * pointcut [declaredModifiers] [declaredName]([arguments]): [pointcutDesignator];
+ * 
+ * <p>No method will actually be generated for this node but an attribute
+ * will be added to the enclosing class.</p>
+ * 
+ * @author Jim Hugunin
+ */
+public class PointcutDeclaration extends MethodDeclaration {
+	public static final char[] mangledPrefix = "ajc$pointcut$".toCharArray();
+	
 	public PointcutDesignator pointcutDesignator;
+	private int declaredModifiers;
+	private String declaredName;
 
 	public PointcutDeclaration(CompilationResult compilationResult) {
 		super(compilationResult);
 		this.returnType = TypeReference.baseTypeReference(T_void, 0);
 	}
 
-//	public PointcutDeclaration(MethodDeclaration decl, Parser parser) {
-//		this(decl.compilationResult);
-//		this.sourceEnd = decl.sourceEnd;
-//		this.sourceStart = decl.sourceStart;
-//		
-//		this.arguments = decl.arguments;
-//		if (this.arguments == null) this.arguments = new Argument[0];
-//		this.modifiers = decl.modifiers;
-////		if ((modifiers & AccAbstract) == 0) {
-////			modifiers |= AccNative;
-////		}
-////		modifiers |= AccSemicolonBody; //XXX hack to make me have no body
-//		
-//		this.modifiersSourceStart = decl.modifiersSourceStart;
-//		this.selector = decl.selector;
-//		if (decl.thrownExceptions != null && decl.thrownExceptions.length > 0) {
-//			//XXX need a better problem to report
-//			TypeReference e1 = decl.thrownExceptions[0];
-//			parser.problemReporter().parseError(e1.sourceStart, e1.sourceEnd,
-//							new char[0], "throws", new String[] {":"});
-//		}
-//	}
-	
 	private Pointcut getPointcut() {
 		if (pointcutDesignator == null) {
 			return Pointcut.makeMatchesNothing(Pointcut.RESOLVED);
@@ -66,26 +56,54 @@ public class PointcutDeclaration extends MethodDeclaration implements IAjDeclara
 		}
 	}
 	
+	
+	public void parseStatements(
+		Parser parser,
+		CompilationUnitDeclaration unit) {
+		// do nothing
+	}
+
+	public void postParse(TypeDeclaration typeDec) {
+		if (arguments == null) arguments = new Argument[0];
+		this.declaredModifiers = modifiers;
+		this.declaredName = new String(selector);
+		selector = CharOperation.concat(mangledPrefix, '$', selector, '$',
+				Integer.toHexString(sourceStart).toCharArray());
+		if (pointcutDesignator == null) return; //XXX
+		pointcutDesignator.postParse(typeDec, this);
+	}
+
+	public void resolveStatements(ClassScope upperScope) {
+		if (isAbstract()) this.modifiers |= AccSemicolonBody;
+		
+		if (binding == null || ignoreFurtherInvestigation) return;
+		
+		if (pointcutDesignator != null) {
+			pointcutDesignator.finishResolveTypes(this, this.binding, arguments.length, 
+					upperScope.referenceContext.binding);
+		}
+		
+		super.resolveStatements(upperScope);
+	}
+	
 
 	public ResolvedPointcutDefinition makeResolvedPointcutDefinition() {
 		//System.out.println("pc: " + getPointcut());
-		return new ResolvedPointcutDefinition(
+		ResolvedPointcutDefinition ret = new ResolvedPointcutDefinition(
             EclipseWorld.fromBinding(this.binding.declaringClass), 
-            this.modifiers, // & ~AccNative, 
-            new String(selector),
+            declaredModifiers, 
+            declaredName,
 			EclipseWorld.fromBindings(this.binding.parameters),
 			getPointcut());
+			
+		ret.setPosition(sourceStart, sourceEnd);
+		ret.setSourceContext(new EclipseSourceContext(compilationResult));
+		return ret;
 	}
 
 
 	public AjAttribute makeAttribute() {
 		return new AjAttribute.PointcutDeclarationAttribute(makeResolvedPointcutDefinition());
-//		return new Attribute() {
-//			public char[] getAttributeName() { return ResolvedPointcutDefinition.AttributeName.toCharArray(); }
-//			public void writeTo(DataOutputStream s) throws IOException {
-//				makeResolvedPointcut().writeAttribute(s);
-//			}
-//		};
 	}
 	
 	/**
@@ -99,28 +117,13 @@ public class PointcutDeclaration extends MethodDeclaration implements IAjDeclara
 		return;
 	}
 	
-	
-	
-//	public boolean finishResolveTypes(SourceTypeBinding sourceTypeBinding) {
-//		if (!super.finishResolveTypes(sourceTypeBinding)) return false;
-//		if (pointcutDesignator != null) {
-//			return pointcutDesignator.finishResolveTypes(this, this.binding, arguments.length, sourceTypeBinding);
-//		} else {
-//			return true;
-//		}
-//	}
-	
 	public String toString(int tab) {
 		StringBuffer buf = new StringBuffer();
 		buf.append(tabString(tab));
 		if (modifiers != 0) {
 			buf.append(modifiersString(modifiers));
 		}
-		
-//		if (modifiers != AccNative) {
-//			buf.append(modifiersString(modifiers & ~AccNative));
-//		}
-		
+
 		buf.append("pointcut ");
 		buf.append(new String(selector));
 		buf.append("(");
@@ -137,35 +140,4 @@ public class PointcutDeclaration extends MethodDeclaration implements IAjDeclara
 		buf.append(";");
 		return buf.toString();
 	}
-
-	public void parseStatements(
-		Parser parser,
-		CompilationUnitDeclaration unit) {
-		if (pointcutDesignator == null) {
-			//XXXthrow new RuntimeException("unimplemented");
-		} else {
-			// do nothing
-		}
-	}
-
-	public void postParse(TypeDeclaration typeDec) {
-		if (arguments == null) arguments = new Argument[0];
-		if (pointcutDesignator == null) return; //XXX
-		pointcutDesignator.postParse(typeDec, this);
-	}
-
-	public void resolveStatements(ClassScope upperScope) {
-		if (isAbstract()) this.modifiers |= AccSemicolonBody;
-		
-		if (binding == null || ignoreFurtherInvestigation) return;
-		
-		if (pointcutDesignator != null) {
-			pointcutDesignator.finishResolveTypes(this, this.binding, arguments.length, 
-					upperScope.referenceContext.binding);
-		}
-		
-		
-		super.resolveStatements(upperScope);
-	}
-
 }

@@ -29,14 +29,20 @@ import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.eclipse.jdt.internal.core.util.CharArrayOps;
 
-
-public class AdviceDeclaration extends MethodDeclaration implements IAjDeclaration {
+/**
+ * Represents before, after and around advice in an aspect.
+ * Will generate a method corresponding to the body of the advice with an
+ * attribute including additional information.
+ * 
+ * @author Jim Hugunin
+ */
+public class AdviceDeclaration extends MethodDeclaration {
 	public PointcutDesignator pointcutDesignator;
 	int baseArgumentCount;
 	
 	public Argument extraArgument;
 	
-	public AdviceKind kind; // adviceMunger;
+	public AdviceKind kind;
 	
 	private int extraArgumentFlags = 0;
 	
@@ -154,21 +160,6 @@ public class AdviceDeclaration extends MethodDeclaration implements IAjDeclarati
 
 
 	public void generateCode(ClassScope classScope, ClassFile classFile) {
-		if (proceedMethodBinding != null) {
-//			MethodDeclaration dec =
-//				AstUtil.makeMethodDeclaration(proceedMethodBinding);
-//			
-//			List stmts = new ArrayList();
-//			
-//			Expression expr = AstUtil.makeLocalVariableReference(dec.arguments[0].binding);
-//			
-//			
-//			stmts.add(AstUtil.makeReturnStatement(expr));
-//			
-//			AstUtil.setStatements(dec, stmts);
-//			dec.scope = this.scope;
-//			dec.generateCode(classScope, classFile);
-		}
 		super.generateCode(classScope, classFile);
 		if (proceedMethodBinding != null) {
 			generateProceedMethod(classScope, classFile);
@@ -192,12 +183,9 @@ public class AdviceDeclaration extends MethodDeclaration implements IAjDeclarati
 
 
 	
-	public void finishParsing() {
-		//kind = AdviceKind.stringToKind(new String(selector));
-		//System.out.println(this + " kind " + kind + " name " + new String(selector));
-		//selector = ("ajc_" + kind.toString() + "_" + Integer.toHexString(position)).toCharArray();
-		//System.out.println(this + " kind " + kind + " name " + new String(selector));
-		
+	public void postParse(TypeDeclaration typeDec) {
+		this.selector =
+			NameMangler.adviceName(EclipseWorld.fromBinding(typeDec.binding), kind, sourceStart).toCharArray();
 		if (arguments != null) {
 			baseArgumentCount = arguments.length;
 		}
@@ -222,15 +210,11 @@ public class AdviceDeclaration extends MethodDeclaration implements IAjDeclarati
 		arguments[index++] = makeFinalArgument("thisJoinPointStaticPart", AjTypeConstants.getJoinPointStaticPartType());
 		arguments[index++] = makeFinalArgument("thisJoinPoint", AjTypeConstants.getJoinPointType());
 		arguments[index++] = makeFinalArgument("thisEnclosingJoinPointStaticPart", AjTypeConstants.getJoinPointStaticPartType());
-
-		//modifiers = checkAndSetModifiers(modifiers);
 		
 		if (pointcutDesignator.isError()) {
-			//System.err.println("ignoring further investigation for: " + this);
 			this.ignoreFurtherInvestigation = true;
 		}
-		
-		
+		pointcutDesignator.postParse(typeDec, this);
 	}
 
 	private int checkAndSetModifiers(int modifiers, ClassScope scope) {
@@ -317,34 +301,4 @@ public class AdviceDeclaration extends MethodDeclaration implements IAjDeclarati
 		s += toStringStatements(tab + 1);
 		return s;
 	}
-
-	public void modifyKind(char[] name) {
-		this.selector = CharArrayOps.concat(selector, name);
-	}
-
-//	public boolean finishResolveTypes(SourceTypeBinding sourceTypeBinding) {
-//		if (this.ignoreFurtherInvestigation) {
-//			return false;
-//		}
-//		
-//		if ((binding.modifiers & AccUnresolved) == 0) return true;
-//			
-//		//System.err.println("this " + this + ", " + binding.modifiers);
-//		binding.modifiers ^= AccUnresolved;
-//		//System.err.println("     post " + binding.modifiers);
-//		
-//		
-//		return super.finishResolveTypes(sourceTypeBinding) &&
-//		    pointcutDesignator.finishResolveTypes(this, this.binding, baseArgumentCount, sourceTypeBinding)
-//		    ;
-//	}
-    
-    
-	public void postParse(TypeDeclaration typeDec) {
-		this.selector =
-			NameMangler.adviceName(EclipseWorld.fromBinding(typeDec.binding), kind, sourceStart).toCharArray();
-		finishParsing();
-		pointcutDesignator.postParse(typeDec, this);
-	}
-
 }

@@ -24,7 +24,7 @@ import org.eclipse.jdt.internal.compiler.ast.*;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.util.CharOperation;
 
-public abstract class InterTypeDeclaration extends MethodDeclaration implements IAjDeclaration {
+public abstract class InterTypeDeclaration extends MethodDeclaration {
 	//public AstNode myDeclaration;
 	public TypeReference onType;
 	protected ReferenceBinding onTypeBinding;

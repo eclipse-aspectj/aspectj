@@ -15,12 +15,17 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 
 import java.util.*;
 
+import org.aspectj.bridge.*;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.*;
-import org.aspectj.bridge.*;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.util.CharOperation;
 
+/**
+ * Adaptor from org.eclipse.jdt.internal.compiler.lookup.Scope to org.aspectj.weaver.IScope
+ * 
+ * @author Jim Hugunin
+ */
 public class EclipseScope implements IScope {
 	private Scope scope;
 	private EclipseWorld world;

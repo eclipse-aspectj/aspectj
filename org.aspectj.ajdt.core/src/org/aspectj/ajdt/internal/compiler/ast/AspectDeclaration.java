@@ -58,6 +58,19 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 		return (modifiers & AccAbstract) != 0;
 	}
 	
+	public void resolve() {
+		if (binding == null || ignoreFurtherInvestigation) {
+			ignoreFurtherInvestigation = true;
+			return;
+		}
+		
+		if (typeX != null) typeX.checkPointcutDeclarations();
+		
+		super.resolve();
+		
+	}
+	
+	
 	public void checkSpec(ClassScope scope) {
 		if (ignoreFurtherInvestigation) return;
 		if (dominatesPattern != null) {
@@ -132,18 +145,6 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 				return;
 			}
 		}
-		
-		//XXX need to move this somewhere that it will be applied to classes and interfaces
-		//    as well as to aspects, also need to handle inheritance and overriding
-//		ResolvedMember[] pointcuts = myType.getDeclaredPointcuts();
-//		for (int i=0, len=pointcuts.length; i < len; i++) {
-//			for (int j=i+1; j < len; j++) {
-//				if (pointcuts[i].getName().equals(pointcuts[j].getName())) {
-//					scope.problemReporter().signalError(0, 0, 
-//						"duplicate pointcut name: " + pointcuts[i].getName());
-//				}
-//			}
-//		}
 	}
 	
 	
