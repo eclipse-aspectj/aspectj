@@ -293,15 +293,14 @@ public class BcelWeaver implements IWeaver {
 			DeclareParents p = (DeclareParents)i.next();
 			List newParents = p.findMatchingNewParents(onType);
 			if (!newParents.isEmpty()) {
-				//???
-				BcelObjectType classType = BcelWorld.getBcelObjectType(world.resolve(onType.getClassName()));
+				BcelObjectType classType = BcelWorld.getBcelObjectType(onType);
 				//System.err.println("need to do declare parents for: " + onType);
 				for (Iterator j = newParents.iterator(); j.hasNext(); ) {
 					ResolvedTypeX newParent = (ResolvedTypeX)j.next();
 					if (newParent.isClass()) {
 						world.showMessage(IMessage.ERROR,
 							"can't use declare parents to change superclass of binary form \'" +
-							onType.getClassName() + "\' (implementation limitation)",
+							onType.getName() + "\' (implementation limitation)",
 							p.getSourceLocation(), null);
 						continue;
 					}
