@@ -627,7 +627,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		argumentsSignature.append("(");
 		if (constructorDeclaration.arguments!=null) {
 		  for (int i = 0;i<constructorDeclaration.arguments.length;i++) {
-			argumentsSignature.append(constructorDeclaration.arguments[i]);
+			argumentsSignature.append(constructorDeclaration.arguments[i].type);
 			if (i+1<constructorDeclaration.arguments.length) argumentsSignature.append(",");
 		  }
 		}
