@@ -145,6 +145,9 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void test026_bindingThisAndTargetToTheSameFormal() {
   	runTest("ajc crashes when compiling the following program (binding this() and target())");
   }
-
+  
+  public void test027_itdsOnInnerClassesAsStatic() {
+      runTest("ITDs on inner classes should be static context");
+  }
 }
 
