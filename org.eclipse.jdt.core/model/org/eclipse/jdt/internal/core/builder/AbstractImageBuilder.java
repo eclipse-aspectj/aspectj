@@ -53,7 +53,9 @@ protected boolean compiledAllAtOnce;
 
 private boolean inCompiler;
 
-public static int MAX_AT_ONCE = 1000;
+// There are memory issues with increasing this, but better memory issues than
+// forgetting to compile some files
+public static int MAX_AT_ONCE = Integer.MAX_VALUE;
 
 protected AbstractImageBuilder(JavaBuilder javaBuilder) {
 	this.javaBuilder = javaBuilder;
