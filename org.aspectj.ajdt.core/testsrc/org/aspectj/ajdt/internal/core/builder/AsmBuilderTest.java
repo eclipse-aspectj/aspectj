@@ -25,6 +25,8 @@ import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 
 public class AsmBuilderTest extends TestCase {
 
+	private AsmHierarchyBuilder builder = new AsmHierarchyBuilder();
+	
     public static Test suite() { 
         TestSuite suite = new TestSuite(AsmBuilderTest.class.getName());
         //$JUnit-BEGIN$
@@ -60,7 +62,8 @@ public class AsmBuilderTest extends TestCase {
 		BlockScope scope = null;
 		
 		try { 
-			new AsmHierarchyBuilder(new CompilationResult(cu, 0, 0, 0), null).visit(local, scope);
+//			builder.internalBuild(new CompilationResult(cu, 0, 0, 0), null);
+			builder.visit(local, scope);
 		} 
 		catch (Exception e) {
 			assertTrue(e instanceof NullPointerException);

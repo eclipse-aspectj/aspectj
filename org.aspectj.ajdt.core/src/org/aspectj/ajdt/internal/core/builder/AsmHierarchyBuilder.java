@@ -13,52 +13,94 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.Stack;
 
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
-import org.aspectj.asm.*;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.internal.ProgramElement;
-import org.aspectj.bridge.*;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.Member;
-import org.eclipse.jdt.internal.compiler.*;
-import org.eclipse.jdt.internal.compiler.ast.*;
-import org.eclipse.jdt.internal.compiler.lookup.*;
+import org.eclipse.jdt.internal.compiler.ASTVisitor;
+import org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.ExtendedStringLiteral;
+import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.ImportReference;
+import org.eclipse.jdt.internal.compiler.ast.Initializer;
+import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
+import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
+import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
+import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.problem.ProblemHandler;
 
 /**
+ * At each iteration of <CODE>processCompilationUnit</CODE> the declarations for a 
+ * particular compilation unit are added to the hierarchy passed as a a parameter.
+ * 
+ * Clients who extend this class need to ensure that they do not override any of the existing
+ * behavior.  If they do, the structure model will not be built properly and tools such as IDE
+ * structure views and ajdoc will fail.
+ * 
  * @author Mik Kersten
  */
 public class AsmHierarchyBuilder extends ASTVisitor {
 	
-    public static void build(    
-        CompilationUnitDeclaration unit,
-		IHierarchy structureModel, AjBuildConfig buildConfig) {
-        LangUtil.throwIaxIfNull(unit, "unit");
-        new AsmHierarchyBuilder(unit.compilationResult(), buildConfig).internalBuild(unit, structureModel);
-    }
+//    public static void build(    
+//        CompilationUnitDeclaration unit,
+//		IHierarchy structureModel, AjBuildConfig buildConfig) {
+//        LangUtil.throwIaxIfNull(unit, "unit");
+//        new AsmHierarchyBuilder(unit., ).;
+//    }
 
-	private final Stack stack;
-	private final CompilationResult currCompilationResult;
-	private AsmElementFormatter formatter = new AsmElementFormatter();
-	private AjBuildConfig buildConfig;
+	protected AsmElementFormatter formatter = new AsmElementFormatter();
 	
-    protected AsmHierarchyBuilder(CompilationResult result, AjBuildConfig buildConfig) {
-        LangUtil.throwIaxIfNull(result, "result");
-        currCompilationResult = result;
+	/**
+	 * Reset for every compilation unit.
+	 */
+	protected AjBuildConfig buildConfig;
+	
+	/**
+	 * Reset for every compilation unit.
+	 */
+	protected Stack stack;
+
+	/**
+	 * Reset for every compilation unit.
+	 */
+	private CompilationResult currCompilationResult;
+	
+	/**
+	 * 
+	 * @param cuDeclaration
+	 * @param buildConfig
+	 * @param structureModel	hiearchy to add this unit's declarations to
+	 */
+    public void buildStructureForCompilationUnit(CompilationUnitDeclaration cuDeclaration, IHierarchy structureModel, AjBuildConfig buildConfig) {
+    	currCompilationResult = cuDeclaration.compilationResult();
+    	LangUtil.throwIaxIfNull(currCompilationResult, "result");
         stack = new Stack();
         this.buildConfig = buildConfig;
+        internalBuild(cuDeclaration, structureModel);
+//        throw new RuntimeException("not implemented");
     }
 	   
-    /** 
-     * Called only by 
-     * build(CompilationUnitDeclaration unit, StructureModel structureModel) 
-     */
-    private void internalBuild(
-        CompilationUnitDeclaration unit, 
-		IHierarchy structureModel) {
+    private void internalBuild(CompilationUnitDeclaration unit, IHierarchy structureModel) {
         LangUtil.throwIaxIfNull(structureModel, "structureModel");        
         if (!currCompilationResult.equals(unit.compilationResult())) {
             throw new IllegalArgumentException("invalid unit: " + unit);
