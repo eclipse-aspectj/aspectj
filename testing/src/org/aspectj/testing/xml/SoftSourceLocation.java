@@ -107,4 +107,7 @@ public class SoftSourceLocation implements ISourceLocation  { // XXX endLine?
     public String toString() {
     	return getSourceFile().getPath() + ":" + getLine() + ":" + getColumn();
     }
+    
+    //XXX making the build work again, Wes needs to implement the correct fix
+    public String getContext() { return null; }
 }
