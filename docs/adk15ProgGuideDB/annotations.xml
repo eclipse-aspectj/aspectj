@@ -287,11 +287,10 @@
       </para>
       
       <programlisting><![CDATA[
-		AnnotationPattern := '@' AnnotationTypePattern AnnotationPattern* |
-  		                     '!' AnnotationPattern
+		AnnotationPattern := '!'? '@' AnnotationTypePattern AnnotationPattern* 
         
-        AnnotationTypePattern := FullyQualifiedName |
-                                 '(' TypePattern ')'
+		AnnotationTypePattern := FullyQualifiedName |
+		                         '(' TypePattern ')'
   		                     
   		FullyQualifiedName := JavaIdentifierCharacter+ ('.' JavaIdentifierCharacter+)*  		
       ]]></programlisting>
@@ -363,11 +362,11 @@
 	prefix. (Extensions to this definition for generics are shown in the next chapter).</para>
 
   	<programlisting><![CDATA[
-  	    TypePattern := SimpleTypePattern |
-  	                   '!' TypePattern |
-  	                   '(' AnnotationPattern? TypePattern ')'
-  	                   TypePattern '&&' TypePattern |
-  	                   TypePattern '||' TypePattern |
+  	  	TypePattern := SimpleTypePattern |
+  	  	               '!' TypePattern |
+  	  	               '(' AnnotationPattern? TypePattern ')'
+  	  	               TypePattern '&&' TypePattern |
+  	  	               TypePattern '||' TypePattern |
   	  	
   	  	SimpleTypePattern := DottedNamePattern '+'? '[]'*
   	  	
@@ -473,7 +472,7 @@
 		FieldModifier := 'public' | 'private' | 'protected' | 'static' | 
 		                 'transient' | 'final' 
 
-        DotOrDotDot := '.' | '..'		            		      
+		DotOrDotDot := '.' | '..'		            		      
 		            		      		            			
 		SimpleNamePattern := JavaIdentifierChar+ ('*' SimpleNamePattern)?		            
 	]]></programlisting>
@@ -729,18 +728,18 @@
   	<programlisting><![CDATA[  	
   	    AtThis := '@this' '(' AnnotationOrIdentifer ')'
     
-        AtTarget := '@target' '(' AnnotationOrIdentifier ')'
+  	    AtTarget := '@target' '(' AnnotationOrIdentifier ')'
   	
   	    AnnotationOrIdentifier := '@' FullyQualifiedName | Identifier
         
-        AtArgs := '@args' '(' AnnotationsOrIdentifiersPattern ')'
+  	    AtArgs := '@args' '(' AnnotationsOrIdentifiersPattern ')'
         
-        AnnotationsOrIdentifiersPattern :=
-                          '..' (',' AnnotationsOrIdentifiersPatternAfterDotDot)? |
-		                  AnnotationOrIdentifier (',' AnnotationsOrIdentifiersPattern)* |
-		                  '*' (',' AnnotationsOrIdentifiersPattern)*
+  	    AnnotationsOrIdentifiersPattern :=
+  	                      '..' (',' AnnotationsOrIdentifiersPatternAfterDotDot)? |
+  	                      AnnotationOrIdentifier (',' AnnotationsOrIdentifiersPattern)* |
+  	                      '*' (',' AnnotationsOrIdentifiersPattern)*
 		                  
-		AnnotationsOrIdentifiersPatternAfterDotDot := 
+  	    AnnotationsOrIdentifiersPatternAfterDotDot := 
 		                  AnnotationOrIdentifier (',' AnnotationsOrIdentifiersPatternAfterDotDot)* |
 		                  '*' (',' AnnotationsOrIdentifiersPatternAfterDotDot)*
   	

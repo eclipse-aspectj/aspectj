@@ -5,29 +5,29 @@
       <programlisting><![CDATA[
         === type patterns ===
       
-   	    TypePattern := SimpleTypePattern |
+        TypePattern := SimpleTypePattern |
   	                   '!' TypePattern |
   	                   '(' AnnotationPattern? TypePattern ')'
   	                   TypePattern '&&' TypePattern |
   	                   TypePattern '||' TypePattern |
   	  	
-  	  	SimpleTypePattern := DottedNamePattern '+'? '[]'*
+        SimpleTypePattern := DottedNamePattern '+'? '[]'*
   	  	
-  		DottedNamePattern := FullyQualifiedName RestOfNamePattern? |
+        DottedNamePattern := FullyQualifiedName RestOfNamePattern? |
   		                     '*' NotStarNamePattern?
   		
-  		RestOfNamePattern := '..' DottedNamePattern |
+        RestOfNamePattern := '..' DottedNamePattern |
   		                     '*' NotStarNamePattern?
   		                     
-  		NotStarNamePattern := FullyQualifiedName RestOfNamePattern? |
+        NotStarNamePattern := FullyQualifiedName RestOfNamePattern? |
   		                      '..' DottedNamePattern               
 
-  		FullyQualifiedName := JavaIdentifierCharacter+ ('.' JavaIdentifierCharacter+)*  				  		  		  		               									 				  		             
+        FullyQualifiedName := JavaIdentifierCharacter+ ('.' JavaIdentifierCharacter+)*  				  		  		  		               									 				  		             
  
         === annotation patterns ===
  
-		AnnotationPattern := '@' AnnotationTypePattern AnnotationPattern* |
-  		                     '!' AnnotationPattern
+        AnnotationPattern := '!'? '@' AnnotationTypePattern AnnotationPattern* 
+
         
         AnnotationTypePattern := FullyQualifiedName |
                                  '(' TypePattern ')'
@@ -40,14 +40,14 @@
   		    AnnotationPattern? FieldModifiersPattern? 
   		    TypePattern (TypePattern DotOrDotDot)? SimpleNamePattern
 
-		FieldModifiersPattern := '!'? FieldModifier FieldModifiersPattern*
+        FieldModifiersPattern := '!'? FieldModifier FieldModifiersPattern*
 		                         		
-		FieldModifier := 'public' | 'private' | 'protected' | 'static' | 
+        FieldModifier := 'public' | 'private' | 'protected' | 'static' | 
 		                 'transient' | 'final' 
 		            			
-		DotOrDotDot := '.' | '..'
+        DotOrDotDot := '.' | '..'
 		
-		SimpleNamePattern := JavaIdentifierChar+ ('*' SimpleNamePattern)?		            
+        SimpleNamePattern := JavaIdentifierChar+ ('*' SimpleNamePattern)?		            
         
         -- method --
         
@@ -56,33 +56,33 @@
   		                       (TypePattern DotOrDotDot)? SimpleNamePattern 
   		                       '(' FormalsPattern ')' ThrowsPattern?
 
-		MethodModifiersPattern := '!'? MethodModifier MethodModifiersPattern*
+        MethodModifiersPattern := '!'? MethodModifier MethodModifiersPattern*
 		
-		MethodModifier := 'public' | 'private' | 'protected' | 'static' | 
+        MethodModifier := 'public' | 'private' | 'protected' | 'static' | 
 		                  'synchronized' | 'final' 
 		            		      
-		FormalsPattern := '..' (',' FormalsPatternAfterDotDot)? |
+        FormalsPattern := '..' (',' FormalsPatternAfterDotDot)? |
 		                  OptionalParensTypePattern (',' FormalsPattern)* |
 		                  TypePattern '...'
 		                  
-		FormalsPatternAfterDotDot := 
+        FormalsPatternAfterDotDot := 
 		        OptionalParensTypePattern (',' FormalsPatternAfterDotDot)* |
 		        TypePattern '...'
 		                  
-		ThrowsPattern := 'throws' TypePatternList
+        ThrowsPattern := 'throws' TypePatternList
 		
-		TypePatternList := TypePattern (',' TypePattern)*
+        TypePatternList := TypePattern (',' TypePattern)*
 		
-		-- constructor --
+        -- constructor --
 		            					            
         ConstructorPattern := 
   		    AnnotationPattern? ConstructorModifiersPattern?  
   		                       (TypePattern DotOrDotDot)? 'new' '(' FormalsPattern ')'
   		                       ThrowsPattern?
 	
-		ConstructorModifiersPattern := '!'? ConstructorModifier ConstructorModifiersPattern*
+        ConstructorModifiersPattern := '!'? ConstructorModifier ConstructorModifiersPattern*
 		
-		ConstructorModifier := 'public' | 'private' | 'protected'
+        ConstructorModifier := 'public' | 'private' | 'protected'
         
         === Pointcuts ===
         
@@ -128,7 +128,7 @@
 		                  TypeOrIdentifier (',' FormalsOrIdentifiersPattern)* |
 		                  '*' (',' FormalsOrIdentifiersPattern)* 
 		                  
-		FormalsOrIdentifiersPatternAfterDotDot := 
+        FormalsOrIdentifiersPatternAfterDotDot := 
 		                  TypeOrIdentifier (',' FormalsOrIdentifiersPatternAfterDotDot)* |
 		                  '*' (',' FormalsOrIdentifiersPatternAfterDotDot)*
         
@@ -144,10 +144,10 @@
         
         AnnotationsOrIdentifiersPattern :=
                           '..' (',' AnnotationsOrIdentifiersPatternAfterDotDot)? |
-		                  AnnotationOrIdentifier (',' AnnotationsOrIdentifiersPattern)* |
-		                  '*' (',' AnnotationsOrIdentifiersPattern)*
+                          AnnotationOrIdentifier (',' AnnotationsOrIdentifiersPattern)* |
+                          '*' (',' AnnotationsOrIdentifiersPattern)*
 		                  
-		AnnotationsOrIdentifiersPatternAfterDotDot := 
+        AnnotationsOrIdentifiersPatternAfterDotDot := 
 		                  AnnotationOrIdentifier (',' AnnotationsOrIdentifiersPatternAfterDotDot)* |
 		                  '*' (',' AnnotationsOrIdentifiersPatternAfterDotDot)*
         
