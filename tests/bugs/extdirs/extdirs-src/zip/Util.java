@@ -1,7 +1,7 @@
 
-package pack2;
+package zip;
 
-public class Util2 {
+public class Util {
     public static void main(String[] args) {
     }
 }

@@ -10,20 +10,27 @@
 		<mkdir dir="${classes.dir}"/>
 		<javac destdir="${classes.dir}"
 			target="1.1"
-			includes="**/*.java"
-			srcdir="${basedir}/extdirs-src/dir-1"/>		
-		<zip destfile="${basedir}/dir-1/util-1.JAR">
+			includes="jar/Util.java"
+			srcdir="${basedir}/extdirs-src"/>		
+		<zip destfile="${basedir}/lib/lowercase/util-jar.jar">
 			<fileset dir="${classes.dir}"/>	
 		</zip>
+		<zip destfile="${basedir}/lib/uppercase/util-jar.JAR">
+			<fileset dir="${classes.dir}"/>	
+		</zip>
+		
 		
 		<mkdir dir="${classes.dir}"/>
 		<delete	dir="${classes.dir}"/>
 		<mkdir dir="${classes.dir}"/>
 		<javac destdir="${classes.dir}"
 			target="1.1"
-			includes="**/*.java"
-			srcdir="${basedir}/extdirs-src/dir-2"/>		
-		<zip destfile="${basedir}/dir-2/util-2.ZIP">
+			includes="zip/Util.java"
+			srcdir="${basedir}/extdirs-src"/>		
+		<zip destfile="${basedir}/lib/lowercase/util-zip.zip">
+			<fileset dir="${classes.dir}"/>	
+		</zip>
+		<zip destfile="${basedir}/lib/uppercase/util-zip.ZIP">
 			<fileset dir="${classes.dir}"/>	
 		</zip>
 		
@@ -36,15 +43,32 @@
 			srcdir="${basedir}/extdirs-src/main"
 			includes="Main.java">
 			<classpath>
-				<pathelement path="${basedir}/dir-2/util-2.ZIP"/>
-				<pathelement path="${basedir}/dir-1/util-1.JAR"/>
+				<pathelement path="${basedir}/lib/uppercase/util-jar.JAR"/>
+				<pathelement path="${basedir}/lib/uppercase/util-zip.ZIP"/>
 			</classpath>		
 		</javac>
 		<java classname="Main">
 			<classpath>
 				<pathelement path="${classes.dir}"/>
-				<pathelement path="${basedir}/dir-2/util-2.ZIP"/>
-				<pathelement path="${basedir}/dir-1/util-1.JAR"/>
+				<pathelement path="${basedir}/lib/uppercase/util-jar.JAR"/>
+				<pathelement path="${basedir}/lib/uppercase/util-zip.ZIP"/>
+			</classpath>		
+		</java>
+
+		<javac 
+			destdir="${classes.dir}"
+			srcdir="${basedir}/extdirs-src/main"
+			includes="Main.java">
+			<classpath>
+				<pathelement path="${basedir}/lib/uppercase/util-jar.JAR"/>
+				<pathelement path="${basedir}/lib/uppercase/util-zip.ZIP"/>
+			</classpath>		
+		</javac>
+		<java classname="Main">
+			<classpath>
+				<pathelement path="${classes.dir}"/>
+				<pathelement path="${basedir}/lib/lowercase/util-jar.jar"/>
+				<pathelement path="${basedir}/lib/lowercase/util-zip.zip"/>
 			</classpath>		
 		</java>
 		<mkdir dir="${classes.dir}"/>
