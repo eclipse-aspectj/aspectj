@@ -15,7 +15,7 @@
       <listitem>
         <para>
 	<xref linkend="antTasks-iajc"/>, 
-	a task to run the new AspectJ 1.1 compiler, 
+	a task to run the AspectJ post-1.1 compiler, 
 	which supports all the eclipse and ajc options, including incremental mode.
         </para>
       </listitem>
@@ -74,7 +74,7 @@
 
     <para>
 	The current resource file retains the name "ajc" for the Ajc10 task, 
-	and uses "iajc" for the AspectJ 1.1 task.
+	and uses "iajc" for the AspectJ post-1.1 task.
     </para>
     <para>
 	For more information on using Ant, please refer to Jakarta's 
@@ -86,16 +86,19 @@
   <sect1 id="antTasks-iajc" xreflabel="AjcTask (iajc)">
     <title>AjcTask (iajc)</title>
     <para>
-	This task uses the AspectJ 1.1 compiler ajc. 
+	This task uses the AspectJ post-1.1 compiler ajc. 
 	The AspectJ compiler can be used like Javac to compile Java sources, 
 	but it can also compile AspectJ sources or weave binary aspects 
 	with Java bytecode. 
 	It can run in normal "batch" mode or in an "incremental" mode, 
 	where it only recompiles files it has to revisit. 
 	For more information on ajc, see <xref linkend="ajc-ref"/>.
+	Unlike Javac or the Javac Ant task, this task always compiles the 
+	specified files since aspects can apply to other (updated) files.
+	For a workaround, see <xref linkend="antTasks-iajc-uptodate"/>.
     </para>
     <para>
-		Beyond the normal ajc 1.1 compiler options, this task also supports
+		Beyond the normal ajc compiler options, this task also supports
 		an experimental option for an incremental "tag" file, and it
 		can copy resources from source directories or 
 		input jars to the output jar or directory.
@@ -792,6 +795,37 @@
 		</para>
   	</sect2>
 
+  	<sect2 id="antTasks-iajc-uptodate" xreflabel="Avoiding clean compiles">
+	    <title>Avoiding clean compiles</title>
+		<para>
+		Unlike javac, the ajc compiler always processes all input because
+		new aspects can apply to updated classes and vice-versa.
+		However, in the case where no files have been updated, there
+		is no reason to recompile sources.  One way to implement that
+		is with an explicit dependency check using the uptodate task:
+		</para>
+		<programlisting>
+		<![CDATA[
+  <target name="check.aspects.jar">
+    <uptodate property="build.unnecessary" 
+        targetfile="${aspects.module-jar}" >
+       <srcfiles dir="${src1}" includes="**/*.aj"/>
+       <srcfiles dir="${src2}/" includes="**/*.aj"/>
+    </uptodate>
+  </target>
+
+  <target name="compile.aspects" depends="prepare,check.aspects.jar" 
+          unless="build.unnecessary">
+     <iajc ... 
+]]>
+		</programlisting>
+		<para>
+		When using this technique, be careful to verify that binary
+		input jars are themselves up-to-date after they would have been
+		modified by any build commands.
+		</para>
+  	</sect2>
+
   	<sect2>
     <title>Programmatically handling compiler messages</title>
     <para>
@@ -999,12 +1033,12 @@
     <para>
 	This task handles the same arguments as those used by the AspectJ 1.0 task.
 	This should permit those with existing build scripts using the Ajc Ant 
-	task to continue using the same scripts when compiling with 1.1. 
+	task to continue using the same scripts when compiling with 1.1.
 	This will list any use of options no longer supported in 1.1 
 	(e.g., <literal>lenient, strict, workingdir, preprocess, usejavac</literal>,...), 
 	and does not provide access to the new features of AspectJ 1.1. 
 	(Developers using AspectJ 1.1 only should upgrade their scripts 
-	to use AjcTask instead.)
+	to use AjcTask instead.  This will not work for AspectJ 1.2 or later.)
 	</para>
 	
   	<sect2 id="antTasks-ajc-options" xreflabel="Ajc10 (ajc) Options">
