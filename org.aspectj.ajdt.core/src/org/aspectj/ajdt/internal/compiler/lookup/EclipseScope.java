@@ -24,6 +24,7 @@ import org.aspectj.weaver.IHasPosition;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.patterns.*;
 import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.IScope;
 import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
@@ -60,6 +61,17 @@ public class EclipseScope implements IScope {
 	
 	
 	public TypeX lookupType(String name, IHasPosition location) {
+		TypeBinding b = scope.getType(WildTypePattern.splitNames(name));
+		//FIXME need reasonable error handling...
+		if (!b.isValidBinding()) {
+			return ResolvedTypeX.MISSING;
+		}
+		
+		//System.err.println("binding: " + b);
+		//  Binding(tokens, bits & RestrictiveFlagMASK, this)
+		return world.fromBinding(b);
+		
+		/*
 		computeImports();
 		
 //		System.out.println("lookup: " + name + " in " + 
@@ -98,6 +110,7 @@ public class EclipseScope implements IScope {
 		}
 
 		return resolveVisible(name);
+		*/
 	}
 	
 	

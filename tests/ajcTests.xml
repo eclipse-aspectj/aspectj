@@ -5599,5 +5599,15 @@
         <run class="WeaveLocal"/>
     </ajc-test>
     
+    <ajc-test dir="bugs" pr="32428" 
+    		title="can't use pointcuts defined in inner aspects ">
+        <compile files="InnerPointcut.java"/>
+        <run class="InnerPointcut"/>
+    </ajc-test>
 
+    <ajc-test dir="bugs/interfaceNames" pr="32421" 
+    		title="can't resolve nested public interfaces (also PR#32399)">
+        <compile files="TransactionTest.java,sub/ExecutionMonitor.java,sub/ObserverProtocol.aj"/>
+        <run class="TransactionTest"/>
+    </ajc-test>
 </suite>
