@@ -29,6 +29,19 @@ functionality of the tools.   </p>
 
 <p> This document is intended to completely describe the 1.1 language
 and tools in relation to AspectJ 1.0.6.
+For the most up-to-date information about known issues in AspectJ 1.1,
+see the bug database at 
+  <a href="http://dev.eclipse.org/bugs">http://dev.eclipse.org/bugs</a>,
+especially the open bugs for the 
+<a href="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED">
+  compiler</a>, 
+<a href="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=IDE&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED">
+  IDE support</a>,
+<a href="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Doc&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED">
+  documentation</a>, and 
+<a href="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Ant&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED">
+  Ant tasks</a>.
+  
 </p>
 
 <p>The information in this document has been folded into the semantics
@@ -74,7 +87,8 @@ are now part of a single downloadable distribution from
 <a href="http://aspectj4emacs.sourceforge.net/">Emacs</a>,
 <a href="http://aspectj4netbean.sourceforge.net/">NetBeans</a> and
 <a href="http://aspectj4jbuildr.sourceforge.net/">JBuilder</a> are now
-individual SourceForge projects. </p>
+individual SourceForge projects, and their 1.1 releases may trail
+the main AspectJ release. </p>
 
 <!-- ============================== -->
 <hr>
@@ -159,32 +173,34 @@ individual SourceForge projects. </p>
 
   <p><a name="NEW_LIMITATIONS">There</a> are a couple of language
   limitations for things that are rarely used that make the
-  implementation simpler.  If no one speaks up in defense of these,
-  they will probably become official simplifications of the language.
-  If defenders speak up, then they will be listed as limitations of
-  the current compiler implementation. </p>
+  implementation simpler, so we have restricted the language accordingly.
+  </p>
 
   <ul>
     <li><a href="#VOID_FIELD_SET">Field set join points now have a
     <code>void</code> return type.</a>  This will require 
     porting of code that uses the <code>set</code> PCD in conjunction
-    with after-returning or around advice.</li>
+    with after-returning or around advice.<p></p></li>
 
     <li>'declare soft: TYPE: POINTCUT;' In 1.0 a TYPE_PATTERN was
     allowed rather than a TYPE.  This limitation makes declare soft
-    much easier to implement efficiently.</li>
+    much easier to implement efficiently.<p></p></li>
 
     <li>Inter-type field declarations only allow a single field per
     line, i.e. this is now illegal 'int C.field1, D.field2;' This must
-    instead be, 'int C.field1; int D.field2;'</li>
+    instead be, 'int C.field1; int D.field2;'<p></p></li>
+    
+    <li>We did not implement the handling of more than one
+    <code>..</code> wildcard in args PCDs (rarely encountered in the
+    wild) because we didn't have the time.  This might be available
+    in later releases if there is significant outcry.</li>
+    
   </ul>
 
-  <p>Finally, we did not implement the handling of multiple
-  <code>..</code> wildcards in args PCDs (rarely encountered in the
-  wild) because we didn't have the time.  It should be available in
-  1.1rc1.  Also, we did not implement the <a href="#PER_TYPE">new
+  <p>Finally, 
+  we did not implement the <a href="#PER_TYPE">new
   pertype aspect specifier</a>.  It has been taken off the table for
-  1.1rc, though it may well be in a future release.</p>
+  1.1, though it may well be in a future release.</p>
   
 
 <!-- ============================== -->
@@ -240,21 +256,20 @@ individual SourceForge projects. </p>
     1.1 compiler supports incremental compilation. </li>
   </ul>
 
-  <p> Some other features we plan to support for 1.1, but did not make
-  it into this beta release: </p>
+  <p> Some other features we wanted to support for 1.1, but did not make
+  it into this release: </p>
 
   <ul>
-    <li><a href="#EXCEPTION_CHECKING">Exception checking is not
-        handled completely during weaving</a></li>
-
     <li><a href="#ERROR_MESSAGES">Error messages will sometimes be scary</a></li>
+    <li><a href="#MESSAGE_CONTEXT">Source code context is not shown
+                for errors and warnings detected during bytecode weaving</a></li>
   </ul>
   
   <p> But some features of the 1.0 compiler are not supported in the
   1.1 compiler: </p>
 
   <ul>
-    <li><a href="#NO_SOURCE">Source-specific options</a>: The -source,
+    <li><a href="#NO_SOURCE">Source-specific options</a>: The -preprocess,
     -usejavac, -nocomment and -workingdir options are no longer
     supported</li>
 
@@ -279,7 +294,9 @@ individual SourceForge projects. </p>
   </ul>
   
   <p> A short description of the options ajc accepts is available with
-  "<code>ajc -help</code>".  </p>
+  "<code>ajc -help</code>". 
+  Longer descriptions are available in the Development Environment Guide
+  section on ajc. </p>
   <p> </p>
 
 <!-- ============================== -->
@@ -294,8 +311,8 @@ individual SourceForge projects. </p>
   </p>
 
   <p>This release does not include <code>ajdoc</code>, the
-  documentation tool for AspectJ sources, and its 1.1 release looks
-  doubtful. Ajdoc is deeply dependent on the
+  documentation tool for AspectJ sources.
+  Ajdoc is deeply dependent on the
   abstract syntax tree classes from the old compiler, so it needs a
   bottom-up rewrite. We think it best to use this opportunity to
   implement more general API's for publishing and rendering static
@@ -337,10 +354,10 @@ individual SourceForge projects. </p>
   distributed from Sourceforge, AJDE for JBuilder, AJDE for Netbeans,
   and AJDE for Emacs haven't changed much either. They use the
   batch-build mode of the new compiler.  Incremental building and
-  bytecode weaving are not available in the AJDE tools in the beta
-  release, but might be in a future release.</p>
+  bytecode weaving are not available in the AJDE tools in this release,
+  but might be in a future release.</p>
 
-  <p> Of note for the beta is that NetBeans 3.4 is supported, and there is now
+  <p> Of note is that NetBeans 3.4 is supported, and there is now
   better integration for the compiler messages output window.</p>
 
 <!-- ============================== -->
@@ -940,19 +957,14 @@ individual SourceForge projects. </p>
   <h3><a name="INCREMENTAL">Incremental compilation</a></h3>
 
     <p> The AspectJ 1.1 compiler now supports incremental compilation.
-    For the final release, this will work from the various IDE plugins we
-    ship, but for the beta release, it is only supported on the
-    command-line compiler.
-    </p>
-
-    <p> When ajc is called with the -incremental option, it must also be
+    When ajc is called with the -incremental option, it must also be
     passed a -sourceroots option specifying a directory to incrementally
     compile.  Once the initial compile is done, ajc waits for console
     input.  Every time it reads a new line (i.e., every time the user
     hits return) ajc recompiles those input files that need recompiling.
     </p>
 
-    <h4>Limitations for beta</h4>
+    <h4>Limitations</h4>
 
     <p> This new functionality is still only lightly tested. </p>
 
@@ -1127,19 +1139,15 @@ individual SourceForge projects. </p>
     </p>
 
     <ul>
-      <li>-XOcodeSize: Though the beta does not turn
-      <a href="#NO_AROUND_OPTIMIZATION">inlining of around advice</a>
-      on, we expect that it will be on by default in the final, and so
-      <code>-XOcodeSize</code> is no longer necessary.  We will be
-      supporting its inverse,
-      <a href="#XNOINLINE"><code>-XnoInline</code></a> in the final.
+      <li>-XOcodeSize: This is no longer necessary because inlining
+      of around advice is on by default.  We support its inverse,
+      <a href="#XNOINLINE"><code>-XnoInline</code></a>.
       </li>
 
       <li><a href="#XNOWEAVE">-XnoWeave, a compiler option to suppress
            weaving</a></li>
 
-      <li>-XtargetNearSource: Not supported in 1.1beta5, may not be
-      supported in 1.1 final. </li>
+      <li>-XtargetNearSource: Not supported in this release. </li>
 
       <li>-XserializableAspects: Supported. </li>
 
@@ -1151,8 +1159,7 @@ individual SourceForge projects. </p>
       options</a>. </li>
     </ul>
 
-  <h3><a name="ERROR_MESSAGES">Some confusing error messages in
-  1.1beta</a></h3>
+  <h3><a name="ERROR_MESSAGES">Some confusing error messages</a></h3>
 
     <p>Building on the eclipse compiler has given us access to a very
     sophisticated problem reporting system as well as highly optimized
@@ -1164,28 +1171,17 @@ individual SourceForge projects. </p>
     bugs.</p>
 
 
-  <h3><a name="EXCEPTION_CHECKING">No exception checking during
-  weaving in 1.1beta5</a></h3>
+  <h3><a name="MESSAGE_CONTEXT">Source code context is not shown
+                for errors and warnings detected during bytecode weaving</a></h3>
 
-    <p>Advice that has an explicit throws clause needs to have that
-    throws clause checked during weaving for each join point that is
-    matched.  This checking is not implemented in 1.1beta5 which can
-    lead to checked exceptions being thrown from places they are not
-      allowed by the Java language.</p>
+	<p>For compiler errors and warnings detected during bytecode weaving,
+	source code context will not be displayed.  In particular, for declare
+	error and declare warning statements, the compiler now only emits the 
+	file and line.  We are investigating ways to overcome this in cases
+	where the source code is available; in cases where source code is 
+	not available, we might specify the signature of the offending code.
+	For more information, see bug 31724.</p>
 
-    <pre>    before() throws IOException : execution (void m()) {
-        InputStream s = new FileInputStream("m.out");
-        ...
-    }
-    ...
-    public void m() { ... }
-    </pre>
-
-    <p>This code should result in a link-time weaving error that the
-    throws clause in the advice is incompatible with the checked
-    exceptions which can be legally thrown from the matched join
-    point.  In beta5 this will just silently weave in the advice and
-    it will be possible for an IOException to be thrown from m().</p>
 
   <h3><a name="XLINT">The -Xlint option</a></h3>
 
@@ -1198,17 +1194,17 @@ individual SourceForge projects. </p>
     <code>org/aspectj/weaver/XlintDefault.properties</code> for the
     default behavior and a template to copy. </p>
 
-    <p> Though more <code>-Xlint</code> warnings are supported in
-    1.1beta5 than previously, we expect even more to be supported in
-    1.1final.  Because the configurability allows users to turn off
-    warnings, we will also be able to warn about more potentially
+    <p> More <code>-Xlint</code> warnings are supported now, and
+    we may add disabled warnings in subsequent bug-fix releases of 1.1.    
+    Because the configurability allows users to turn off
+    warnings, we will be able to warn about more potentially
     dangerous situations, such as the potentially unsafe casts used by
     very polymorphic uses of proceed in around advice.  </p>
 
   <h3><a name="NO_SOURCE">Source-specific options</a></h3>
 
-    <p> Because AspectJ 1.1beta5 does not generate source code after
-    weaving, the source-code-specific options -source, -usejavac,
+    <p> Because AspectJ 1.1 does not generate source code after
+    weaving, the source-code-specific options -preprocess, -usejavac,
     -nocomment and -workingdir options are meaningless and so not
     supported.  </p>
 
@@ -1360,9 +1356,7 @@ individual SourceForge projects. </p>
 
     <p> So, because it's easier to implement, and because we believe that
     this is the last possibility to make the semantics more useful, we
-    have made set join points have a void return type in 1.1beta5.
-    Please complain vociferously if you believe this is wrong, and we
-    can revert for the final version.  </p>
+    have made set join points have a void return type in 1.1. </p>
 
   <h3><a name="XNOINLINE">The -XnoInline Option</a></h3>
 
