@@ -1,9 +1,0 @@
-<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
-<suite> 
-    <ajc-test dir="bugs" pr="39479"
-   	 title="NPE in bcel.LazyMethodGen when delegating from one ctor to a second that includes a switch">
-        <compile files="NewSwitch.java"/>
-        <run class="NewSwitch"/>
-    </ajc-test>
-
-</suite>
