@@ -64,7 +64,24 @@ public class DeclareDominates extends Declare {
 	}
 	
     public void resolve(IScope scope) {
-    	patterns = patterns.resolveBindings(scope, Bindings.NONE, false, false); 	
+    	patterns = patterns.resolveBindings(scope, Bindings.NONE, false, false); 
+    	
+    	for (int i=0; i < patterns.size(); i++) {
+    		TypePattern pi = patterns.get(i);
+    		if (pi.isStar()) continue;
+    		ResolvedTypeX exactType = pi.getExactType().resolve(scope.getWorld());
+    		if (exactType == ResolvedTypeX.MISSING) continue;
+    		for (int j=0; j < patterns.size(); j++) {
+    			if (j == i) continue;
+    			TypePattern pj = patterns.get(j);
+    			if (pj.isStar()) continue;
+    			if (pj.matchesStatically(exactType)) {
+    				scope.getWorld().showMessage(IMessage.ERROR,
+    					"circularity in declare dominates, '" + exactType.getName() + 
+    						"' matches two patterns", pi.getSourceLocation(), pj.getSourceLocation());
+    			}
+    		}
+    	}    	
     }
 
 	public TypePatternList getPatterns() {
