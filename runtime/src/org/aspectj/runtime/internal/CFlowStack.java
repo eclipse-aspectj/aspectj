@@ -39,7 +39,8 @@ public class CFlowStack {
             }
             change_count++;
             // Collect more often if there are many threads, but not *too* often
-            if (change_count > Math.max(MIN_COLLECT_AT, COLLECT_AT/stacks.size())) {
+            int size = Math.max(1, stacks.size()); // should be >1 b/c always live threads, but...
+            if (change_count > Math.max(MIN_COLLECT_AT, COLLECT_AT/size)) {
                 Stack dead_stacks = new Stack();
                 for (Enumeration e = stacks.keys(); e.hasMoreElements(); ) {
                     Thread t = (Thread)e.nextElement();
@@ -79,7 +80,8 @@ public class CFlowStack {
     }
     
     public Object get(int index) {
-    	return peekCFlow().get(index);
+        CFlow cf = peekCFlow();
+        return (null == cf ? null : cf.get(index));
     }
 
     public Object peekInstance() {
