@@ -5539,4 +5539,11 @@
         <compile files="SoftWithin.java" />
         <run class="SoftWithin"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs" pr="29689"
+    		title="Declare precedence should not allow multiple * patterns">
+        <compile files="CircularPrecedence.java">
+            <message kind="error" line="14"/> 
+        </compile>
+    </ajc-test>
 </suite>
