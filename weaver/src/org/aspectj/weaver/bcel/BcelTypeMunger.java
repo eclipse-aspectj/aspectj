@@ -71,6 +71,10 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			} else if (member.getKind() == Member.METHOD) {
 				addMethodDispatch(gen, member,
 					AjcMemberMaker.privilegedAccessMethodForMethod(aspectType, member));
+				return true;
+			} else if (member.getKind() == Member.STATIC_INITIALIZATION) {
+				gen.forcePublic();
+				return true;
 			} else {
 				throw new RuntimeException("unimplemented");
 			}

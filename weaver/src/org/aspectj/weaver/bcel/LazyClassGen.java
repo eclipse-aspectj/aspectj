@@ -487,4 +487,8 @@ public final class LazyClassGen {
 		throw new BCException("Class " + this.getName() + " does not have a method " 	
 			+ name + " with signature " + signature);
 	}
+	
+	public void forcePublic() {
+		myGen.setAccessFlags(Utility.makePublic(myGen.getAccessFlags()));
+	}
 }

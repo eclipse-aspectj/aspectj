@@ -49,6 +49,13 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 		return ret;
 	}
 	
+	public void notePrivilegedTypeAccess(ReferenceBinding type) {
+		ResolvedMember key =
+			new ResolvedMember(Member.STATIC_INITIALIZATION,
+				inAspect.world.fromEclipse(type), 0, ResolvedTypeX.VOID, "", TypeX.NONE);
+		accessors.put(key, key);
+	}
+	
 	public ResolvedMember[] getMembers() {
 		Collection m = accessors.keySet();
 		int len = m.size();
@@ -59,5 +66,7 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 		}
 		return ret;
 	}
+
+
 
 }
