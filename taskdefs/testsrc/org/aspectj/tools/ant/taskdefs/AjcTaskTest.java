@@ -69,7 +69,47 @@ public class AjcTaskTest extends TestCase {
         }
     }
     
-    private static void deleteTempDir() {
+    /** 
+      * Check that aspectjtools are found on the classpath,
+      * reporting any errors to System.err.
+      * 
+      * Run multiple times with different classpaths.
+      * This should find variants
+      * aspectjtools.jar,
+      * aspectj-tools.jar,
+      * aspectj-tools-1.1.jar, and
+      * aspectjtools-1.0.6.jar
+      * but not
+      * aspectjrt.jar or
+      * aspectj/tools.jar.
+      * XXX use testing aspect to stub out 
+      * <code>System.getProperty("java.class.path")</code>
+      * @param args a String[], first is expected path, if any
+      */
+     public static void main(String[] args) {
+         java.io.File toolsjar = AjcTask.findAspectjtoolsJar();
+         if ((null == args) || (0 == args.length)) {
+             if (null != toolsjar) {
+                 System.err.println("FAIL - not expected: " + toolsjar);
+             }
+         } else if ("-help".equals(args[0])) {
+             System.out.println("java " + AjcTaskTest.class.getName()
+                   + " <expectedPathToAspectjtoolsJar>");
+         } else if (null == toolsjar) {
+             System.err.println("FAIL - expected: " + args[0]);
+         } else {
+             String path = toolsjar.getAbsolutePath();
+             if (!path.equals(args[0])) {
+                 System.err.println("FAIL - expected: "
+                     + args[0]
+                     + " actual: "
+                     + path
+                     );
+             }
+         }
+     }
+     
+     private static void deleteTempDir() {
         if ((null != tempDir) && tempDir.exists()) {
             FileUtil.deleteContents(tempDir);
             tempDir.delete();
