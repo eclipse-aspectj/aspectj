@@ -40,6 +40,11 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	protected ResolvedTypeMunger munger;
 	protected int declaredModifiers;
 	protected char[] declaredSelector;
+	
+	// XXXAJ5 - When the compiler is changed, these will exist somewhere in it...
+	private final static short ACC_ANNOTATION   = 0x2000;
+	private final static short ACC_ENUM         = 0x4000;
+
 
 	public InterTypeDeclaration(CompilationResult result, TypeReference onType) {
 		super(result);
@@ -54,6 +59,35 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	public void setSelector(char[] selector) {
 		declaredSelector = selector;
 		this.selector = CharOperation.concat(selector, Integer.toHexString(sourceStart).toCharArray());
+	}
+	
+	/**
+	 * Checks that the target for the ITD is not an annotation.  If it is, an error message
+	 * is signaled.  We return true if it is annotation so the caller knows to stop processing.
+	 * kind is 'constructor', 'field', 'method'
+	 */
+	public boolean isTargetAnnotation(ClassScope classScope,String kind) {
+		if ((onTypeBinding.getAccessFlags() & ACC_ANNOTATION)!=0) { 
+			classScope.problemReporter().signalError(sourceStart,sourceEnd,
+			  "can't make inter-type "+kind+" declarations on annotation types.");
+			ignoreFurtherInvestigation = true;
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks that the target for the ITD is not an enum.  If it is, an error message
+	 * is signaled.  We return true if it is enum so the caller knows to stop processing.
+	 */
+	public boolean isTargetEnum(ClassScope classScope,String kind) {
+		if ((onTypeBinding.getAccessFlags() & ACC_ENUM)!=0) { 
+			classScope.problemReporter().signalError(sourceStart,sourceEnd,
+			  "can't make inter-type "+kind+" declarations on enum types.");
+			ignoreFurtherInvestigation = true;
+			return true;
+		}
+		return false;
 	}
 	
 	public void resolve(ClassScope upperScope) {

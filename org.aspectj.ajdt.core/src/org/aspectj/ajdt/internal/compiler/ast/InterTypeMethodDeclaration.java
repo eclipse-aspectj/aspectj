@@ -117,6 +117,9 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 			//return null;
 			throw new AbortCompilationUnit(compilationResult,null);
 		}
+		if (isTargetAnnotation(classScope,"method")) return null; // Error message output in isTargetAnnotation
+		if (isTargetEnum(classScope,"method")) return null; // Error message output in isTargetEnum
+		
 		ResolvedMember sig = new ResolvedMember(Member.METHOD, EclipseFactory.fromBinding(onTypeBinding),
 			declaredModifiers, EclipseFactory.fromBinding(binding.returnType), new String(declaredSelector),
 			EclipseFactory.fromBindings(binding.parameters),

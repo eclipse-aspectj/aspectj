@@ -153,6 +153,9 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		binding = classScope.referenceContext.binding.resolveTypesFor(binding);
 		if (ignoreFurtherInvestigation) return null;
 		
+		if (isTargetAnnotation(classScope,"field")) return null; // Error message output in isTargetAnnotation
+		if (isTargetEnum(classScope,"field")) return null; // Error message output in isTargetEnum
+		
 		if (!Modifier.isStatic(declaredModifiers)) {
 			super.binding.parameters = new TypeBinding[] {
 				onTypeBinding,
