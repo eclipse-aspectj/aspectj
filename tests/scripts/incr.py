@@ -203,6 +203,105 @@ def test(batch=0, couldChange=[], changed=[], deleted=[], errors=[]):
 	checkClasses("deleted", d, deleted) 
 
 
+"""
+Pure Java tests
+"""
+
+makeType("p1.Hello")
+test(batch=1, changed="Hello")
+
+test()
+
+makeType("p1.Hello", stmts="Target.staticM();")
+test(errors="Hello:5")
+
+test(errors="Hello:5")
+
+makeType("p1.Target", body="static void staticM() {}")
+test(changed=["Hello", "Target"])
+
+deleteType("p1.Target")
+test(errors="Hello:5")
+
+makeType("p1.Target", body="static void staticM() { int x = 2; }")
+test(changed=["Target", "Hello"])
+
+makeType("p1.Target", body="""static void staticM() { System.out.println("foo"); }""")
+test(changed=["Target"])
+
+makeType("p1.Target", body="static int staticM() { return 2; }")
+test(changed=["Hello", "Target"])
+
+makeType("p1.Hello", body="static class Inner {}")
+test(changed=["Hello", "Hello$Inner"])
+
+
+deleteType("p1.Hello")
+test(deleted=["Hello", "Hello$Inner"])
+
+makeType("p1.Hello", body="static class NewInner {}")
+test(changed=["Hello", "Hello$NewInner"])
+
+makeType("p1.Hello", body="")
+test(changed=["Hello"], deleted=["Hello$NewInner"])
+
+print "done", errorList
+sys.exit(0)
+
+
+
+"""
+Simple tests with aspects
+"""
+
+makeType("p1.Hello")
+test(batch=1, changed="Hello")
+
+makeType("p1.A", kind="aspect", body="before(): within(String) { }")
+test(changed=["A"], couldChange=["Hello"])
+
+makeType("p1.Hello")
+makeType("p1.A", kind="aspect", body="before(): execution(* main(..)) { }")
+test(changed=["A", "Hello"])
+
+makeType("p1.A", kind="aspect", body="before(): within(Hello) { }")
+test(changed=["A", "Hello"])
+
+makeType("p1.Target")
+test(changed="Target")
+
+makeType("p1.Hello", stmts="new Target().m();")
+test(errors=["Hello:5"])
+
+makeType("p1.ATypes", kind="aspect", body="int Target.m() { return 10; }")
+test(changed=["Hello", "ATypes", "Target"], couldChange=["A"])
+
+makeType("p1.ATypes", kind="aspect", body="int Target.m(int x) { return x + 10; }")
+test(errors=["Hello:5"])
+
+makeType("p1.Hello", stmts="new Target().m(2);")
+test(changed="Hello")
+
+makeType("p1.Hello", stmts="new Target().m(5);")
+test(changed="Hello")
+
+makeType("p1.Hello", stmts="new Target().m(42);")
+test(changed="Hello")
+
+
+
+print "done", errorList
+sys.exit(0)
+
+
+
+
+
+
+
+
+
+
 
 """
 Bugzilla Bug 29684  
@@ -265,36 +364,6 @@ print "done", errorList
 sys.exit(0)
 
 
-"""
-Simple tests with aspects
-"""
-
-makeType("p1.Hello")
-test(batch=1, changed="Hello")
-
-makeType("p1.A", kind="aspect", body="before(): within(String) { }")
-test(changed=["A"], couldChange=["Hello"])
-
-makeType("p1.A", kind="aspect", body="before(): within(Hello) { }")
-test(changed=["A", "Hello"])
-
-makeType("p1.Target")
-test(changed="Target")
-
-makeType("p1.Hello", stmts="new Target().m();")
-test(errors=["Hello:5"])
-
-makeType("p1.ATypes", kind="aspect", body="int Target.m() { return 10; }")
-test(changed=["Hello", "ATypes", "Target"], couldChange=["A"])
-
-makeType("p1.ATypes", kind="aspect", body="int Target.m(int x) { return x + 10; }")
-test(errors=["Hello:5"])
-
-makeType("p1.Hello", stmts="new Target().m(2);")
-test(changed="Hello")
-
-print "done", errorList
-sys.exit(0)
 
 """
 Bugzilla Bug 28807  
@@ -327,31 +396,3 @@ print "done", errorList
 sys.exit(0)
 
 
-"""
-Pure Java tests
-"""
-
-makeType("p1.Hello")
-test(batch=1, changed="Hello")
-
-test()
-
-makeType("p1.Hello", stmts="Target.staticM();")
-test(errors="Hello:5")
-
-makeType("p1.Target", body="static void staticM() {}")
-test(changed=["Hello", "Target"])
-
-makeType("p1.Target", body="""static void staticM() { System.out.println("foo"); }""")
-test(changed=["Target"])
-
-makeType("p1.Target", body="static int staticM() { return 2; }")
-test(changed=["Hello", "Target"])
-
-makeType("p1.Hello", body="static class Inner {}")
-test(changed=["Hello", "Hello$Inner"])
-
-deleteType("p1.Hello")
-test(deleted=["Hello", "Hello$Inner"])
-
-print "done", errorList
