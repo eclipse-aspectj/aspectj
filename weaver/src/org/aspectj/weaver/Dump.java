@@ -284,7 +284,7 @@ public class Dump {
 			+ FILENAME_SUFFIX;
 		try {
 			print = new PrintStream(new FileOutputStream(fileName),true);
-			//System.out.println("Dumping to " + fileName);
+			System.out.println("Dumping to " + fileName);
 		}
 		catch (FileNotFoundException ex) {
 			print = System.err;
