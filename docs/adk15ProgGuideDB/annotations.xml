@@ -419,7 +419,7 @@
 
   </sect2>
   
-  <sect2>
+  <sect2 id="signaturePatterns" xreflabel="Signature Patterns"/>
   	<title>Signature Patterns</title>
   	
   	<para>A <literal>FieldPattern</literal> is described by the following

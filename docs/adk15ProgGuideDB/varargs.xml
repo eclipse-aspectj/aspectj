@@ -2,5 +2,189 @@
 
   <title>Varargs</title>
   
+    <sect1 id="varargs-inJava5">
+        <title>Variable-length Argument Lists in Java 5</title>
+        
+        <para>
+          Java 5 (and hence AspectJ 1.5) allows you to specify methods that take a 
+          variable number of arguments of a specified type. This is achieved using
+          an ellipsis (...) in the method signature as shown:    
+        </para>
+
+		<programlisting><![CDATA[
+		public void foo(int i, String... strings) { 
+		}
+		]]></programlisting>
+        
+        <para>
+            A method or constructor may take at most one variable length argument, and
+            this must always be the last declared argument in the signature.
+        </para>
+
+        <sect2>
+            <title>Calling Methods and Constructors with variable-length arguments</title>
+            
+            <para>
+             A <emphasis>varargs</emphasis> method may be called with zero or more arguments
+             in the variable argument position. For example, given the definition of 
+             <literal>foo</literal> above, the following calls are all legal:
+            </para>
+
+    	<programlisting><![CDATA[
+    	foo(5);
+    	foo(5,"One String");
+    	foo(7,"One String","Two Strings");
+    	foo(3,"One String","Two Strings","Three Strings");	
+    	]]></programlisting>
+
+            <para>A <emphasis>varargs</emphasis> parameter is treated as an array within the 
+            defining member. So in the body of <literal>foo</literal> we could write for example:
+            </para>
+
+    	<programlisting><![CDATA[
+    	public void foo(int i, String... strings) {
+    	  String[] someStrings = strings;
+    	  // rest of method body
+    	}
+    	]]></programlisting>
+
+            <para>One consequence of this treatment of a varargs parameter as an array
+            is that you can also call a varargs method with an array:</para>
+
+    	<programlisting><![CDATA[
+    	foo(7,new String[] {"One String","Two Strings"});
+    	]]></programlisting>
+            
+        </sect2>
+        
+    </sect1>
+
+    <sect1>
+        <title>Using Variable-length arguments in advice and pointcut expressions</title>
+        
+        <para>AspectJ 1.5 allows variable-length arguments to be used for methods declared within
+        aspects, and for inter-type declared methods and constructors, in accordance with the rules
+        outlined in the previous section.</para>
+        
+        <para>
+        AspectJ 1.5 also allows variable length arguments to be specified in pointcut expressions and
+        bound as formals in advice.
+        </para>
+        
+        <sect2>
+            <title>Matching signatures based on variable length arguments</title>
+            
+            <para>
+            Building on the definition of signature patterns given in the chapter on
+            annotations (<xref linkend="signaturePatterns"/>), <literal>MethodPattern</literal>
+            and <literal>ConstructorPattern</literal> are extended to allow a <literal>varargs</literal>
+            pattern in the last argument position of a method or constructor signature.
+            </para>
+            
+       	<programlisting><![CDATA[  	
+  		MethodPattern := 
+  		    AnnotationPattern? ModifiersPattern? TypePattern 
+  		                       (TypePattern '.')? SimpleNamePattern '(' FormalsPattern ')'
+  		                       ThrowsPattern?
+
+  		ConstructorPattern := 
+  		    AnnotationPattern? ModifiersPattern?  
+  		                       (TypePattern '.')? 'new' '(' FormalsPattern ')'
+  		                       ThrowsPattern?
+
+		ModifiersPattern := Modifier*
+		
+		Modifier := 'public' | 'private' | 'protected' | 'static' | 
+		            'synchronized' | 'final' 
+		            		      
+		FormalsPattern := TypePattern '...' |
+		                  '..' (',' FormalsPatternAfterDotDot)* |
+		                  OptionalParensTypePattern (',' FormalsPattern)*
+		                  
+		FormalsPatternAfterDotDot := OptionalParensTypePattern (',' FormalsPatternAfterDotDot)*                  
+		                  
+		ThrowsPattern := 'throws' TypePatternList
+		
+		TypePatternList := TypePattern (',' TypePattern)*
+		            					            
+    	]]></programlisting>
+    
+            <para>
+                Method and constructor patterns are used in the <literal>call</literal>,
+                <literal>execution</literal>, <literal>initialization</literal>,
+                <literal>preinitialization</literal>, and <literal>withincode</literal>
+                pointcut designators. Some examples of usage follow:
+            </para>        
+  
+      <variablelist>
+
+        <varlistentry>
+          <term>call(* org.xyz.*.*(int, String...))</term>
+          <listitem>
+            <para>
+            	Matches a call join point for a call to a method defined in the
+            	<literal>org.xyz</literal> package, taking an <literal>int</literal>
+            	and a <literal>String vararg</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>execution(* org.xyz.*.*(Integer...))</term>
+          <listitem>
+            <para>
+            	Matches an execution join point for the execution of a method defined in the
+            	<literal>org.xyz</literal> package, taking an <literal>Integer vararg</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+  
+          <varlistentry>
+          <term>initialization(org.xyz.*.new((Foo || Goo)...))</term>
+          <listitem>
+            <para>
+            	Matches the initialization join point for the construction of an
+            	object in the <literal>org.xyz</literal> package via a constructor
+            	taking either a variable number of <literal>Foo</literal> parameters or
+            	a variable number of <literal>Goo</literal> parameters. (This example
+            	illustrating the use of a type pattern with ...).
+            </para>
+          </listitem>
+        </varlistentry>
+  
+      </variablelist>
+        
+        <para>A variable argument parameter and an array parameter are treated as distinct
+        signature elements, so given the method definitions:
+        </para>
+
+    	<programlisting><![CDATA[
+    	void foo(String...);
+    	void bar(String[]);
+    	]]></programlisting>
+        
+        <para>
+            The pointcut <literal>execution(* *.*(String...))</literal> matches the execution join point
+            for <literal>foo</literal>, but not <literal>bar</literal>. The pointcut 
+            <literal>execution(* *.*(String[]))</literal> matches the execution join point
+            for <literal>bar</literal> but not <literal>foo</literal>.
+        </para>
+        
+        <para>
+            The <literal>args</literal> pointcut designator can also now take a <literal>varargs</literal>
+            pattern as the last argument in the list. For example, you can write:
+        </para>
+
+    	<programlisting><![CDATA[
+    	args(int, String...)
+    	]]></programlisting>
+        
+        </sect2>
+        
+        <sect2>
+            <title>Exposing variable-length arguments as context in pointcuts and advice</title>
+        </sect2>
+    </sect1>
+  
 </chapter>
 
