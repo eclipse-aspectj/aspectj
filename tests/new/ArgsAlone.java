@@ -22,7 +22,7 @@ aspect Aspect {
            || execution(void TargetClass.callInt(int)));
 
     before(int i) 
-        : !target(Aspect) && args(i)  
+        : !target(Aspect) && args(i)  && !target(StringBuffer)
         //&& pc() // uncomment to avoid InternalCompilerError
         {
             Tester.event("within " + i 
