@@ -1224,8 +1224,9 @@ public class FileUtil {
      */
     public static class Pipe implements Runnable {
         private final InputStream in;
-        private final OutputStream out;
+        private final OutputStream out;        
         private final long sleep;
+        private ByteArrayOutputStream snoop;
         private long totalWritten;
         private Throwable thrown;
         private boolean halt;
@@ -1274,7 +1275,11 @@ public class FileUtil {
             this.closeOutput = closeOutput;
             this.sleep = Math.min(0l, Math.max(60l*1000l, sleep));
         }
-    
+
+        public void setSnoop(ByteArrayOutputStream snoop) {
+            this.snoop = snoop;
+        }
+
         /**
          * Run the pipe.
          * This halts on the first Throwable thrown or when a read returns
@@ -1289,9 +1294,14 @@ public class FileUtil {
                 final int MAX = 4096;
                 byte[] buf = new byte[MAX];
                 int count = in.read(buf, 0, MAX);
+                ByteArrayOutputStream mySnoop;
                 while ((halt && finishStream && (0 < count))
                     || (!halt && (-1 != count))) {
                     out.write(buf, 0, count);
+                    mySnoop = snoop;
+                    if (null != mySnoop) {
+                        mySnoop.write(buf, 0, count);
+                    }
                     totalWritten += count;
                     if (halt && !finishStream) { 
                         break; 

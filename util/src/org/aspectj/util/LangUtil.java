@@ -14,6 +14,7 @@
 package org.aspectj.util;
 
 
+import java.io.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -1020,6 +1021,7 @@ public class LangUtil {
          * ...
          */
         private String[] command;
+        private String[] envp;
         private String label;
         
         private boolean init;
@@ -1032,6 +1034,7 @@ public class LangUtil {
         private FileUtil.Pipe errStream;
         private FileUtil.Pipe outStream;
         private FileUtil.Pipe inStream;
+        private ByteArrayOutputStream errSnoop;
 
         private int result;
         private Thrown thrown;     
@@ -1091,17 +1094,29 @@ public class LangUtil {
         }        
         
         public final void init(String[] command, String label) {
-            LangUtil.throwIaxIfNotAssignable(command, String.class, "command");
-            if (1 > command.length) {
+            this.command = (String[]) LangUtil.safeCopy(command, new String[0]);
+            if (1 > this.command.length) {
                 throw new IllegalArgumentException("empty command");
             }
-            this.command = new String[command.length];
-            System.arraycopy(command, 0, this.command, 0, command.length);
             this.label = LangUtil.isEmpty(label) ? command[0] : label;
             this.init = true;
             reinit();
         }
 
+        public final void setEnvp(String[] envp) {
+            this.envp = (String[]) LangUtil.safeCopy(envp, new String[0]);
+            if (1 > this.envp.length) {
+                throw new IllegalArgumentException("empty envp");
+            }
+        }
+
+        public final void setErrSnoop(ByteArrayOutputStream snoop) {        
+            errSnoop = snoop;
+            if (null != errStream) {
+                errStream.setSnoop(errSnoop);
+            }
+        }
+        
         /** 
          * Start running the process and pipes asynchronously.
          * @return Thread started or null if unable to start thread
@@ -1124,6 +1139,9 @@ public class LangUtil {
                 return null;
             }
             errStream = new FileUtil.Pipe(process.getErrorStream(), System.err);
+            if (null != errSnoop) {
+                errStream.setSnoop(errSnoop);
+            }
             outStream = new FileUtil.Pipe(process.getInputStream(), System.out);
             inStream = new FileUtil.Pipe(System.in, process.getOutputStream());
             // start 4 threads, process & pipes for in, err, out
@@ -1242,7 +1260,7 @@ public class LangUtil {
                 process.destroy();        
             }
             if (null != inStream) {
-                inStream.halt(true,true);
+                inStream.halt(false, true); // this will block if waiting
                 inStream = null;
             }
             if (null != outStream) {
