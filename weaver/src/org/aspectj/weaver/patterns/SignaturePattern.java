@@ -573,11 +573,12 @@ public class SignaturePattern extends PatternNode {
 	 * was declared with varargs (Object...).  We shouldn't be matching if this is the case.
 	 */
 	private boolean isNotMatchBecauseOfVarargsIssue(TypePatternList params,int modifiers) {
-		if (params.size()>0 && (modifiers & Constants.ACC_VARARGS)!=0 &&  // XXX Promote this to an isVarargs() on MethodSignature?
-			!params.get(params.size()-1).isVarArgs) {
-			return true;
+		if (params.size()>0 && (modifiers & Constants.ACC_VARARGS)!=0) {
+			// we have at least one parameter in the pattern list, and the method has a varargs signature
+			TypePattern lastPattern = params.get(params.size()-1);
+			if (lastPattern.isArray() && !lastPattern.isVarArgs) return true;
 		}
-		return false;
+	    return false;
 	}
 	
 	public AnnotationTypePattern getAnnotationPattern() {

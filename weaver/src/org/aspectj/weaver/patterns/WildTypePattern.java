@@ -140,6 +140,10 @@ public class WildTypePattern extends TypePattern {
 		return dim;
 	}
 	
+	public boolean isArray() {
+		return dim > 1;
+	}
+	
     /**
 	 * @param targetTypeName
 	 * @return

@@ -126,6 +126,13 @@
         <compile files="Rainbow.java" options="-emacssym,-1.5"/>
     </ajc-test>
 
+    <ajc-test dir="java5/varargs" title="varargs in constructor sig" vm="1.5">
+        <compile files="Pr88652.aj" options="-1.5">
+            <message kind="warning" line="8" text="should match"/>
+            <message kind="warning" line="9" text="should match"/>        
+        </compile>
+    </ajc-test>
+
     <ajc-test dir="java5/annotations" title="invalid cons syntax" vm="1.5">
         <compile files="SyntaxError.aj" options="-1.5">
             <message kind="error" line="3" text="Syntax error on token &quot;new&quot;, &quot;method name (not constructor)&quot; expected"/>

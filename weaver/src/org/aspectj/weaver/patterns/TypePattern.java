@@ -64,6 +64,10 @@ public abstract class TypePattern extends PatternNode {
 		return annotationPattern == AnnotationTypePattern.ANY;
 	}
 	
+	public boolean isArray() {
+		return false;
+	}
+	
 	protected TypePattern(boolean includeSubtypes) {
 		this(includeSubtypes,false);
 	}

@@ -70,6 +70,10 @@ public class ExactTypePattern extends TypePattern {
 		this.type = type;
 	}
 	
+	public boolean isArray() { 
+		return type.isArray();
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.TypePattern#couldEverMatchSameTypesAs(org.aspectj.weaver.patterns.TypePattern)
 	 */

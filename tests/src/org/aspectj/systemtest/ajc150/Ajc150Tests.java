@@ -141,6 +141,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("invalid cons syntax");
   }
   
+  public void testVarargsInConsBug() {
+	  runTest("varargs in constructor sig");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
