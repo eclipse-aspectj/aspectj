@@ -19,24 +19,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.aspectj.ajde.internal.CompilerAdapter;
-import org.aspectj.ajde.ui.UserPreferencesAdapter;
-import org.aspectj.ajde.ui.internal.AjcBuildOptions;
-import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
-import org.aspectj.bridge.MessageHandler;
 import org.aspectj.util.FileUtil;
 
 public class ReweavableTestCase extends AjdeTestCase {
 
-	private MessageHandler messageHandler;
-	private NullIdeProperties projectProperties;
-	private AjcBuildOptions buildOptions;
-	private UserPreferencesAdapter preferencesAdapter = null;
 	private CompilerAdapter compilerAdapter;
-	private static final String configFile = 
-		AjdeTests.TESTDATA_PATH + "/examples/figures-coverage/all.lst";
 	public static final String PROJECT_DIR = "ReweavableTest";
 
-	private AjBuildConfig buildConfig = null;
 	public static final String binDir = "bin";
 
 	public static final String indir1Name = "indir1";
