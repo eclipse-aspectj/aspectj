@@ -190,6 +190,11 @@ public abstract class TypePattern extends PatternNode {
 		}
 		throw new BCException("unknown TypePattern kind: " + key);
 	}
+
+	public boolean isIncludeSubtypes() {
+		return includeSubtypes;
+	}
+
 }
 
 class EllipsisTypePattern extends TypePattern {
