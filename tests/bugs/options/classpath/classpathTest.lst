@@ -1,0 +1,4 @@
+// @testcase PR#41170 combine classpath on command line and in .lst file
+-classpath
+lib.jar
+Client.java

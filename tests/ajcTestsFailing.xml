@@ -5,4 +5,11 @@
 
 <suite>
 
+	<ajc-test dir="bugs/options/classpath"
+		pr="41170"
+		title="combine classpath on command line and in .lst file">
+		<compile options="-verbose" argfiles="classpathTest.lst"/>
+		<run class="Client"/>
+		</ajc-test>
+
 </suite>
