@@ -10,11 +10,11 @@
 
 package org.aspectj.ajde;
 
-import java.util.Iterator;
+//import java.util.Iterator;
 
-import org.aspectj.ajdt.internal.core.builder.AsmElementFormatter;
+//import org.aspectj.ajdt.internal.core.builder.AsmElementFormatter;
 import org.aspectj.asm.*;
-import org.aspectj.asm.IProgramElement.Kind;
+//import org.aspectj.asm.IProgramElement.Kind;
 
 
 // TODO: add tests for java kinds, expand coverage
@@ -22,7 +22,7 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 
 	private IHierarchy model = null;
 	private static final String CONFIG_FILE_PATH = "../examples/coverage/coverage.lst";
-	private static final int DEC_MESSAGE_LENGTH = AsmElementFormatter.MAX_MESSAGE_LENGTH;
+//	private static final int DEC_MESSAGE_LENGTH = AsmElementFormatter.MAX_MESSAGE_LENGTH;
 
 	public AsmDeclarationsTest(String name) {
 		super(name);  

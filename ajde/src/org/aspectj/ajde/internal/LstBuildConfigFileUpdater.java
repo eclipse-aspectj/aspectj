@@ -154,17 +154,17 @@ class LstBuildConfigFileUpdater {
     	} 
 	}
 
-	private synchronized List getUniqueFileList(List list, Set set) {
-		List uniqueList = new ArrayList();
-		for (Iterator it = list.iterator(); it.hasNext(); ) {
-			BuildConfigNode node = (BuildConfigNode)it.next();
-			String file1 = node.getResourcePath();
-			if (set.contains(file1) && !uniqueList.contains(file1)) {
-				uniqueList.add(file1);
-			}
-		}
-		return uniqueList;
-	}
+//	private synchronized List getUniqueFileList(List list, Set set) {
+//		List uniqueList = new ArrayList();
+//		for (Iterator it = list.iterator(); it.hasNext(); ) {
+//			BuildConfigNode node = (BuildConfigNode)it.next();
+//			String file1 = node.getResourcePath();
+//			if (set.contains(file1) && !uniqueList.contains(file1)) {
+//				uniqueList.add(file1);
+//			}
+//		}
+//		return uniqueList;
+//	}
 
 	public String relativizePath(String path, String rootPath) {
 		path = path.replace('\\', '/');

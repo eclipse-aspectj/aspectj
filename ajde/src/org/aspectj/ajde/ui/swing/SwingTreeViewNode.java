@@ -19,7 +19,7 @@ import java.util.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.aspectj.ajde.ui.*;
-import org.aspectj.ajde.ui.IStructureViewNode.Kind;
+//import org.aspectj.ajde.ui.IStructureViewNode.Kind;
 import org.aspectj.asm.*;
 
 /**

@@ -18,7 +18,7 @@ import java.util.*;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.ui.*;
-import org.aspectj.asm.*;
+//import org.aspectj.asm.*;
 
 /**
  * Responsible for displaying and controlling the configuration and output of a
@@ -29,13 +29,13 @@ import org.aspectj.asm.*;
 public class BrowserViewManager {
 
 	private StructureViewPanel browserPanel = null;
-    private boolean globalMode = true;
-    private boolean splitViewMode = false;
-    private IconRegistry icons;
-  
-    private Stack backHistory = new Stack();
-    private Stack forwardHistory = new Stack();
-    private IProgramElement currNode = null;
+//    private boolean globalMode = true;
+//    private boolean splitViewMode = false;
+//    private IconRegistry icons;
+//  
+//    private Stack backHistory = new Stack();
+//    private Stack forwardHistory = new Stack();
+//    private IProgramElement currNode = null;
 
 	private final GlobalStructureView DECLARATION_VIEW;
 	private final GlobalStructureView CROSSCUTTING_VIEW;

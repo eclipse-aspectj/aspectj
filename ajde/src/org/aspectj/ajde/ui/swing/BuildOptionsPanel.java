@@ -34,12 +34,12 @@ public class BuildOptionsPanel extends OptionsPanel {
 
 	protected static BuildOptionsPanel INSTANCE = new BuildOptionsPanel();
 
-	private ButtonGroup compilerMode_buttonGroup = new ButtonGroup();
+//	private ButtonGroup compilerMode_buttonGroup = new ButtonGroup();
 	private TitledBorder titledBorder1;
 	private Border border3;
 	private Border border4;
 //	private TitledBorder titledBorder2;
-	private Border border5;
+//	private Border border5;
 	private Border border1;
 	private Border border2;
 	private JPanel jPanel3 = new JPanel();

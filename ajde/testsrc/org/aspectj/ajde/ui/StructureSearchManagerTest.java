@@ -43,7 +43,7 @@ public class StructureSearchManagerTest extends AjdeTestCase {
 	}
 
 	public void testFindPatternMatch() {
-		List matches = Ajde.getDefault().getStructureSearchManager().findMatches(
+		Ajde.getDefault().getStructureSearchManager().findMatches(
 			"Point",
 			null
 		);
@@ -51,7 +51,7 @@ public class StructureSearchManagerTest extends AjdeTestCase {
 	}
 
 	public void testFindPatternAndKindMatch() {
-		List matches = Ajde.getDefault().getStructureSearchManager().findMatches(
+		Ajde.getDefault().getStructureSearchManager().findMatches(
 			"Point",
 			IProgramElement.Kind.CONSTRUCTOR
 		);

@@ -27,7 +27,7 @@ import org.aspectj.util.ConfigParser;
  */
 public class LstBuildConfigManager implements BuildConfigManager {
 	
-	private List configFiles = new ArrayList();	
+//	private List configFiles = new ArrayList();	
 	private List listeners = new ArrayList();
 	private LstBuildConfigFileUpdater fileUpdater = new LstBuildConfigFileUpdater();
 	protected String currConfigFilePath = null;
@@ -163,11 +163,11 @@ public class LstBuildConfigManager implements BuildConfigManager {
 				} 
 			}
 			node.addChild(dir); 
-			boolean foundMatch = false;
+//			boolean foundMatch = false;
 			for (Iterator it = importedFiles.iterator(); it.hasNext(); ) {
 				File importedFile = (File)it.next();
 				if (importedFile.getParentFile().getAbsolutePath().equals(dirs[i].getAbsolutePath())) {
-					foundMatch = true;
+//					foundMatch = true;
 					BuildConfigNode importedFileNode = new BuildConfigNode(
 						importedFile.getName(), 
 						BuildConfigNode.Kind.FILE_LST, 
@@ -219,7 +219,7 @@ public class LstBuildConfigManager implements BuildConfigManager {
 				node.setActive(true);
 				upPath.addChild(node);
 			} else if (!(new File(path).isAbsolute())) {
-				String name = new File(path).getName();
+//				String name = new File(path).getName();
 				BuildConfigNode existingNode = model.getNodeForPath(path);
 				existingNode.setActive(true);
 			} else {
@@ -277,12 +277,12 @@ public class LstBuildConfigManager implements BuildConfigManager {
         }
     }
 
-    private void notifyConfigsListUpdated() {
-        for (Iterator it = listeners.iterator(); it.hasNext(); ) {
-            ((BuildConfigListener)it.next()).configsListUpdated(configFiles);
-        }
-    }
-    
+//    private void notifyConfigsListUpdated() {
+//        for (Iterator it = listeners.iterator(); it.hasNext(); ) {
+//            ((BuildConfigListener)it.next()).configsListUpdated(configFiles);
+//        }
+//    }
+//    
 	private void sortModel(BuildConfigNode node, Comparator comparator) {
 		if (node == null || node.getChildren() == null) return;
 		Collections.sort(node.getChildren(), comparator);

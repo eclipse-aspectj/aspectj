@@ -19,7 +19,7 @@ import java.util.*;
 
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.tree.TreePath;
+//import javax.swing.tree.TreePath;
 
 import org.aspectj.asm.IProgramElement;
 
@@ -71,7 +71,7 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
     }
 
         public void doubleClickNavigation(MouseEvent e) {
-            int clickCount = e.getClickCount();
+//            int clickCount = e.getClickCount();
             SwingTreeViewNode treeNode = (SwingTreeViewNode)tree.getLastSelectedPathComponent();
             if (treeNode != null) {
                 IProgramElement currNode = (IProgramElement)treeNode.getUserObject();
@@ -97,14 +97,14 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
      */
     private void maybeShowPopup(MouseEvent e) {
         if (e.getModifiers() == InputEvent.BUTTON3_MASK && tree.getSelectionCount() > 0) {
-            TreePath[] selectionPaths = tree.getSelectionPaths();
+//            TreePath[] selectionPaths = tree.getSelectionPaths();
             final List signatures = new ArrayList();
-            for (int i = 0; i < selectionPaths.length; i++) {
-                IProgramElement currNode = (IProgramElement)((SwingTreeViewNode)selectionPaths[i].getLastPathComponent()).getUserObject();
-//                if (currNode instanceof LinkNode || currNode instanceof IProgramElement) {
-//                    signatures.add(currNode);
-//                }
-            }
+//            for (int i = 0; i < selectionPaths.length; i++) {
+//                IProgramElement currNode = (IProgramElement)((SwingTreeViewNode)selectionPaths[i].getLastPathComponent()).getUserObject();
+////                if (currNode instanceof LinkNode || currNode instanceof IProgramElement) {
+////                    signatures.add(currNode);
+////                }
+//            }
 
             JPopupMenu popup = new JPopupMenu();
             JMenuItem showSourcesItem = new JMenuItem("Display sources", AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.CODE));

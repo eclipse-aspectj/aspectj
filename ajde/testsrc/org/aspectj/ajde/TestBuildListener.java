@@ -26,7 +26,7 @@ public class TestBuildListener implements BuildListener {
 	public void compileStarted(String buildConfigFile) { }
 	
     public void compileFinished(String buildConfigFile, int buildTime, boolean succeeded, boolean warnings) {
-        int timeInSeconds = buildTime/1000;
+//        int timeInSeconds = buildTime/1000;
         buildSucceeded = succeeded;
         buildFinished = true;
     } 

@@ -56,7 +56,7 @@ import org.aspectj.asm.IProgramElement;
 public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEditor {
 
 	private ConfigTreeNode root;
-	private ConfigTreeNode currNode;
+//	private ConfigTreeNode currNode;
 	private BuildConfigModel model = null;
 	
     private static java.util.List selectedEntries = new ArrayList();

@@ -35,8 +35,8 @@ public class AjdeUIManager {
 
 	protected static final AjdeUIManager INSTANCE = new AjdeUIManager();
 	private BrowserViewManager viewManager = null;
-	private BuildProgressMonitor buildProgressMonitor = null;
-	private ErrorHandler errorHandler = null;
+//	private BuildProgressMonitor buildProgressMonitor = null;
+//	private ErrorHandler errorHandler = null;
 	private UserPreferencesAdapter userPreferencesAdapter = null;
 	private AjcBuildOptions buildOptionsAdapter = null;
 	private IdeUIAdapter ideUIAdapter = null;

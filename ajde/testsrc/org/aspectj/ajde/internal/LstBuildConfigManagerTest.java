@@ -21,14 +21,14 @@ import junit.framework.TestSuite;
 import org.aspectj.ajde.*;
 import org.aspectj.ajde.NullIdeTaskListManager.SourceLineTask;
 import org.aspectj.ajde.ui.BuildConfigModel;
-import org.aspectj.ajde.ui.internal.AjcBuildOptions;
-import org.aspectj.bridge.Message;
+//import org.aspectj.ajde.ui.internal.AjcBuildOptions;
+//import org.aspectj.bridge.Message;
 
 public class LstBuildConfigManagerTest extends AjdeTestCase {
 	
-	private AjcBuildOptions buildOptions = null;
+//	private AjcBuildOptions buildOptions = null;
 	private BuildConfigManager buildConfigManager = new LstBuildConfigManager();
-	private LstBuildConfigFileUpdater fileUpdater = new LstBuildConfigFileUpdater();
+//	private LstBuildConfigFileUpdater fileUpdater = new LstBuildConfigFileUpdater();
 
 	public LstBuildConfigManagerTest(String name) {
 		super(name);
@@ -76,35 +76,35 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 
 	public void testFileRelativePathSameDir() throws IOException {
 		File file = openFile("file-relPath-sameDir.lst");
-		BuildConfigModel model = buildConfigManager.buildModel(file.getCanonicalPath());
+		buildConfigManager.buildModel(file.getCanonicalPath());
 		assertTrue("single file", true);
 	}  
 	
-	private void verifyFile(String configFile, String fileContents) {
-		StringTokenizer st = new StringTokenizer(fileContents, ";");
-		BuildConfigModel model1 = buildConfigManager.buildModel(configFile);
-		File testFile = new File(configFile + "-test.lst");
-		model1.setSourceFile(testFile.getPath());
-		buildConfigManager.writeModel(model1);
-		List newList = fileUpdater.readConfigFile(testFile.getPath());
-		testFile.delete();
-		
-		assertTrue("contents: " + newList, verifyLists(st, newList));
-	}
-	
-	private boolean verifyLists(StringTokenizer st, List list) {
-		Iterator it = list.iterator();
-		while (st.hasMoreElements()) {
-			String s1 = (String)st.nextElement();
-			String s2 = (String)it.next();
-			if (!s1.equals(s2)) return false;
-		}
-		if (it.hasNext()) {
-			return false;
-		} else {
-			return true;
-		}
-	}
+//	private void verifyFile(String configFile, String fileContents) {
+//		StringTokenizer st = new StringTokenizer(fileContents, ";");
+//		BuildConfigModel model1 = buildConfigManager.buildModel(configFile);
+//		File testFile = new File(configFile + "-test.lst");
+//		model1.setSourceFile(testFile.getPath());
+//		buildConfigManager.writeModel(model1);
+//		List newList = fileUpdater.readConfigFile(testFile.getPath());
+//		testFile.delete();
+//		
+//		assertTrue("contents: " + newList, verifyLists(st, newList));
+//	}
+//	
+//	private boolean verifyLists(StringTokenizer st, List list) {
+//		Iterator it = list.iterator();
+//		while (st.hasMoreElements()) {
+//			String s1 = (String)st.nextElement();
+//			String s2 = (String)it.next();
+//			if (!s1.equals(s2)) return false;
+//		}
+//		if (it.hasNext()) {
+//			return false;
+//		} else {
+//			return true;
+//		}
+//	}
 	
 	protected void setUp() throws Exception {
 		super.setUp("LstBuildConfigManagerTest");
@@ -114,9 +114,9 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 		super.tearDown();
 	}
 	
-	private static final String WILDCARDS_FILE = "C:/Dev/aspectj/tests/ajde/examples/figures-coverage/test-config.lst";
-	private static final String BAD_PATHS_FILE = "C:/Dev/aspectj/tests/ajde/examples/figures-coverage/test-error.lst";
-	private static final String INCLUDES_FILE = "C:/Dev/aspectj/tests/ajde/examples/spacewar/spacewar/demo.lst";
+//	private static final String WILDCARDS_FILE = "C:/Dev/aspectj/tests/ajde/examples/figures-coverage/test-config.lst";
+//	private static final String BAD_PATHS_FILE = "C:/Dev/aspectj/tests/ajde/examples/figures-coverage/test-error.lst";
+//	private static final String INCLUDES_FILE = "C:/Dev/aspectj/tests/ajde/examples/spacewar/spacewar/demo.lst";
 
 	private static final String WILDCARDS_FILE_CONTENTS;
 	private static final String BAD_PATHS_FILE_CONTENTS;

@@ -20,8 +20,8 @@ import org.aspectj.bridge.IProgressListener;
 public class BuildNotifierAdapter implements IProgressListener {
 
     private BuildProgressMonitor progressMonitor;
-    private int numCompilationUnitPasses = 1;
-    private int completedPasses = 0;
+//    private int numCompilationUnitPasses = 1;
+//    private int completedPasses = 0;
 	private boolean cancelled = false;
 
 	// ??? get rid of project coupling

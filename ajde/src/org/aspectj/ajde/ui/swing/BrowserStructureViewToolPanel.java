@@ -285,11 +285,11 @@ public class BrowserStructureViewToolPanel extends JPanel {
 //        treeManager.navigationAction(node, true, true);
 //    }
 
-    private void order_comboBox_actionPerformed(ActionEvent e) {
-		Ajde.getDefault().getStructureViewManager().refreshView(
-			currentView
-		);
-    }
+//    private void order_comboBox_actionPerformed(ActionEvent e) {
+//		Ajde.getDefault().getStructureViewManager().refreshView(
+//			currentView
+//		);
+//    }
 
     private void jbInit() throws Exception {
         this.setLayout(borderLayout2);
@@ -314,13 +314,13 @@ public class BrowserStructureViewToolPanel extends JPanel {
 
     }
 
-    private void order_button_actionPerformed(ActionEvent e) {
-
-    }
-
-    private void orderPopup_button_actionPerformed(ActionEvent e) {
-
-    }
+//    private void order_button_actionPerformed(ActionEvent e) {
+//
+//    }
+//
+//    private void orderPopup_button_actionPerformed(ActionEvent e) {
+//
+//    }
 
     void separator_button_actionPerformed(ActionEvent e) {
 

@@ -35,7 +35,7 @@ public class AspectJBuildManager implements BuildManager {
     private String configFile = "";
     private String lastConfigFile = null;
     private int lastCompileTime = 50;
-    private boolean buildStructureOnly = false;
+//    private boolean buildStructureOnly = false;
 	private boolean buildModelMode = true;
 
     public AspectJBuildManager(
@@ -134,11 +134,11 @@ public class AspectJBuildManager implements BuildManager {
         }
     }
 
-    private void notifyCompileAborted(String configFile, String message) {
-        for (Iterator it = compilerListeners.iterator(); it.hasNext(); ) {
-            ((BuildListener)it.next()).compileAborted(configFile, message);
-        }
-    }
+//    private void notifyCompileAborted(String configFile, String message) {
+//        for (Iterator it = compilerListeners.iterator(); it.hasNext(); ) {
+//            ((BuildListener)it.next()).compileAborted(configFile, message);
+//        }
+//    }
 
 
     public BuildOptionsAdapter getBuildOptions() {

@@ -18,8 +18,8 @@ import java.util.*;
 
 import org.aspectj.ajde.ui.*;
 import org.aspectj.asm.*;
-import org.aspectj.asm.internal.*;
-import org.aspectj.asm.internal.ProgramElement;
+//import org.aspectj.asm.internal.*;
+//import org.aspectj.asm.internal.ProgramElement;
 
 /**
  * @author Mik Kersten
@@ -36,14 +36,14 @@ public class TreeStructureViewBuilder {
 	 * @todo	get rid of instanceof tests
 	 */
 	public void buildView(StructureView view, IHierarchy model) {
-		StructureViewProperties properties = view.getViewProperties();
+//		StructureViewProperties properties = view.getViewProperties();
 		IProgramElement modelRoot = null;
-		boolean noStructure = false;
+//		boolean noStructure = false;
 		if (isFileView(view)) {
 			FileStructureView fileView = (FileStructureView)view;
 			if (fileView.getSourceFile() == null) {	
 				modelRoot = IHierarchy.NO_STRUCTURE;
-				noStructure = true;
+//				noStructure = true;
 			} else {
 				modelRoot = model.findElementForSourceFile(fileView.getSourceFile());
 			}
@@ -258,8 +258,8 @@ public class TreeStructureViewBuilder {
     }
 
     private IStructureViewNode getInheritanceChildren(IProgramElement node, List associations) {
-    	IStructureViewNode treeNode = nodeFactory.createNode(node);
-        //StructureViewNode treeNode = new StructureViewNodeAdapter(node);
+//    	IStructureViewNode treeNode = nodeFactory.createNode(node);
+//        //StructureViewNode treeNode = new StructureViewNodeAdapter(node);
 //        List relations = ((IProgramElement)node).getRelations();
         throw new RuntimeException("unimplemented");
 //        if (relations != null) {
@@ -314,10 +314,10 @@ public class TreeStructureViewBuilder {
 //        return treeNode;
     }
 
-    private IStructureViewNode buildTree(IProgramElement node, List associations) {
-        //StructureViewNode treeNode = new StructureViewNodeAdapter(node);
-        IStructureViewNode treeNode = nodeFactory.createNode(node);
-//        if (node instanceof IProgramElement) {
+//    private IStructureViewNode buildTree(IProgramElement node, List associations) {
+//        //StructureViewNode treeNode = new StructureViewNodeAdapter(node);
+//        IStructureViewNode treeNode = nodeFactory.createNode(node);
+////        if (node instanceof IProgramElement) {
 //            List relations = ((IProgramElement)node).getRelations();
 //            if (relations != null) {
 //                for (Iterator it = relations.iterator(); it.hasNext(); ) {
@@ -328,56 +328,56 @@ public class TreeStructureViewBuilder {
 //                }
 //            }
 //        }
-        if (node != null) {
-            List children = null;
-            children = node.getChildren();
-            if (children != null) {
-                List childList = new ArrayList();
-                for (Iterator itt = children.iterator(); itt.hasNext(); ) {
-                    IProgramElement child = (IProgramElement)itt.next();
-                    if (child instanceof IProgramElement) {
-                        IProgramElement progNode = (IProgramElement)child;
-//                        if (progNode.getKind() != IProgramElement.Kind.CODE) {
-                            childList.add(buildTree(child, associations));
-//                        }
-                    } else {
-                        childList.add(buildTree(child, associations));
-                    }
-                }
-                //sortNodes(childList);
-                for (Iterator it = childList.iterator(); it.hasNext(); ) {
-                    treeNode.add((IStructureViewNode)it.next());
-                }
-            }
-
-        }
-        return treeNode;
-    }
-
-    private IStructureViewNode getRelations(IRelationship node) {
-    	return null;
-        //StructureViewNode treeNode = new StructureViewNode(node);
-//        IStructureViewNode treeNode = nodeFactory.c(node);
-//        for (Iterator it = node.getTargets().iterator(); it.hasNext(); ) {
-//            treeNode.add(
-//            	nodeFactory.createNode((IProgramElement)it.next())
-//            );
-//        } 
+//        if (node != null) {
+//            List children = null;
+//            children = node.getChildren();
+//            if (children != null) {
+//                List childList = new ArrayList();
+//                for (Iterator itt = children.iterator(); itt.hasNext(); ) {
+//                    IProgramElement child = (IProgramElement)itt.next();
+//                    if (child instanceof IProgramElement) {
+//                        IProgramElement progNode = (IProgramElement)child;
+////                        if (progNode.getKind() != IProgramElement.Kind.CODE) {
+//                            childList.add(buildTree(child, associations));
+////                        }
+//                    } else {
+//                        childList.add(buildTree(child, associations));
+//                    }
+//                }
+//                //sortNodes(childList);
+//                for (Iterator it = childList.iterator(); it.hasNext(); ) {
+//                    treeNode.add((IStructureViewNode)it.next());
+//                }
+//            }
+//
+//        }
 //        return treeNode;
-    }
+//    }
 
-	/**
-	 * For debugging only.
-	 */
-	private void dumpView(IStructureViewNode root, int level) {
-		System.out.println(root.getStructureNode());
-		for (Iterator it = root.getChildren().iterator(); it.hasNext(); ) {
-			dumpView((IStructureViewNode)it.next(), level++);	
-		}
-		for (int i = 0; i < level; i++) {
-			System.out.print(' ');
-		}		
-	}
+//    private IStructureViewNode getRelations(IRelationship node) {
+//    	return null;
+//        //StructureViewNode treeNode = new StructureViewNode(node);
+////        IStructureViewNode treeNode = nodeFactory.c(node);
+////        for (Iterator it = node.getTargets().iterator(); it.hasNext(); ) {
+////            treeNode.add(
+////            	nodeFactory.createNode((IProgramElement)it.next())
+////            );
+////        } 
+////        return treeNode;
+//    }
+//
+//	/**
+//	 * For debugging only.
+//	 */
+//	private void dumpView(IStructureViewNode root, int level) {
+//		System.out.println(root.getStructureNode());
+//		for (Iterator it = root.getChildren().iterator(); it.hasNext(); ) {
+//			dumpView((IStructureViewNode)it.next(), level++);	
+//		}
+//		for (int i = 0; i < level; i++) {
+//			System.out.print(' ');
+//		}		
+//	}
 
 	/**
 	 * Does not sort imports alphabetically.

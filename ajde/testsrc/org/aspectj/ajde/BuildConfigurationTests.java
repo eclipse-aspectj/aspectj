@@ -349,7 +349,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		buildOptions.setNoImportError( true );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
         assertTrue(configFile + " failed", null != buildConfig);            
-		Map options = buildConfig.getJavaOptions();
+//		Map options = buildConfig.getJavaOptions();
 //		String noImport = (String) options.get( CompilerOptions.OPTION_ReportInvalidImport );
 //		assertEquals( "no import", CompilerOptions.WARNING, noImport );
 //		buildOptions.setNoImportError( false );
@@ -508,7 +508,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
         };
         
         try {
-            String s = null;
+//            String s = null;
             Ajde.init(            
                 null,
                 null,

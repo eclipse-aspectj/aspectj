@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.util.Date;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.ButtonGroup;
+//import javax.swing.Box;
+//import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -75,7 +75,7 @@ public class OptionsFrame extends JFrame {
     private TitledBorder titledBorder5;
     private Border border2;
     private TitledBorder titledBorder6;
-    private Box temp_box = Box.createVerticalBox();
+//    private Box temp_box = Box.createVerticalBox();
     private Border border3;
     private TitledBorder titledBorder7;
     private Border border4;
@@ -84,7 +84,7 @@ public class OptionsFrame extends JFrame {
     private TitledBorder titledBorder9;
     private Border border6;
     private TitledBorder titledBorder10;
-    private ButtonGroup views_buttonGroup = new ButtonGroup();
+//    private ButtonGroup views_buttonGroup = new ButtonGroup();
     private Border border7;
     private TitledBorder titledBorder11;
     private Border border8;

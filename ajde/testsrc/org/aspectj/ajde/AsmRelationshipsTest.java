@@ -120,9 +120,9 @@ public class AsmRelationshipsTest extends AjdeTestCase {
 
 		IProgramElement clazz = AsmManager.getDefault().getHierarchy().findElementForType(null, toType);
 		assertNotNull(clazz);
-		String set = to;
+//		String set = to;
 		IRelationship rel2 = manager.getRelationshipMap().get(clazz, IRelationship.Kind.DECLARE_INTER_TYPE, backRelName);
-		String handle2 = (String)rel2.getTargets().get(0);
+//		String handle2 = (String)rel2.getTargets().get(0);
 		for (Iterator it = rel2.getTargets().iterator(); it.hasNext(); ) {
 			String currHandle = (String)it.next();
 			if (manager.getHierarchy().findElementForHandle(currHandle).toLabelString().equals(from)) return;

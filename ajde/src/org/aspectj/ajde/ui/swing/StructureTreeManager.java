@@ -95,7 +95,7 @@ class StructureTreeManager {
 		Runnable update = new Runnable() {
             public void run() {
                 structureTree.removeAll();
-                SwingTreeViewNode currNode;
+//                SwingTreeViewNode currNode;
                 if (structureView.getRootNode() == null) {
                 	structureTree.setModel(NO_STRUCTURE_MODEL);	
                 } else {

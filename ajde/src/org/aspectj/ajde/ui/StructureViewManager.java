@@ -27,7 +27,7 @@ import org.aspectj.asm.internal.*;
 public class StructureViewManager {
 
 	private TreeStructureViewBuilder treeViewBuilder;
-	private String buildConfigFilePath = null;
+//	private String buildConfigFilePath = null;
 
 	private NavigationHistoryModel historyModel = new NavigationHistoryModel();
 	private ArrayList structureViews = new ArrayList();	

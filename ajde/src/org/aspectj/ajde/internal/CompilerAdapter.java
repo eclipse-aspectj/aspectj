@@ -29,7 +29,7 @@ import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 public class CompilerAdapter {
 
-	private Map optionsMap;
+//	private Map optionsMap;
 	private AjBuildManager buildManager = null;
     private MessageHandlerAdapter messageHandler = null;
     private BuildNotifierAdapter currNotifier = null;

@@ -344,7 +344,7 @@ public class InpathTestcase extends AjdeTestCase {
 		String outdirName,
 		Set expectedOutdirContents) {
 
-		byte[] inManifest = null;
+//		byte[] inManifest = null;
 
 		File binBase = openFile(outdirName);
 		String[] toResources = FileUtil.listFiles(binBase);
@@ -364,13 +364,13 @@ public class InpathTestcase extends AjdeTestCase {
 	/**
 	 * @param resources
 	 */
-	private void dumpResources(HashSet resources) {
-		System.err.println("Dump: " + resources.size() + " resources");
-		for (Iterator iter = resources.iterator(); iter.hasNext();) {
-			Object element = (Object) iter.next();
-			System.err.println("  Resource: " + element);
-		}
-	}
+//	private void dumpResources(HashSet resources) {
+//		System.err.println("Dump: " + resources.size() + " resources");
+//		for (Iterator iter = resources.iterator(); iter.hasNext();) {
+//			Object element = (Object) iter.next();
+//			System.err.println("  Resource: " + element);
+//		}
+//	}
 
 	private void listSourceResources(String indirName, Set resources) {
 		File srcBase = openFile(indirName);
@@ -387,46 +387,46 @@ public class InpathTestcase extends AjdeTestCase {
 		}
 	}
 
-	private byte[] listDirResources(File directory, Set resources) {
-		return listDirResources(
-			directory.getAbsolutePath(),
-			directory,
-			resources);
-	}
+//	private byte[] listDirResources(File directory, Set resources) {
+//		return listDirResources(
+//			directory.getAbsolutePath(),
+//			directory,
+//			resources);
+//	}
 
-	private byte[] listDirResources(
-		String prefix,
-		File directory,
-		Set resources) {
-		byte[] manifest = null;
-
-		File[] resourceFiles = directory.listFiles(new FileFilter() {
-			public boolean accept(File arg0) {
-				boolean accept =
-					!arg0.getName().endsWith(".class") && !arg0.isDirectory();
-				return accept;
-			}
-		});
-		for (int i = 0; i < resourceFiles.length; i++) {
-			File f = resourceFiles[i];
-			String name = f.getAbsolutePath();
-			if (f.getAbsolutePath().startsWith(prefix))
-				name = name.substring(prefix.length());
-			name = name.replace('\\', '/');
-
-			resources.add(resourceFiles[i]);
-		}
-		File[] subdirs = directory.listFiles(new FileFilter() {
-			public boolean accept(File arg0) {
-				return arg0.isDirectory();
-			}
-		});
-		for (int i = 0; i < subdirs.length; i++) {
-			listDirResources(prefix, subdirs[i], resources);
-		}
-
-		return manifest;
-	}
+//	private byte[] listDirResources(
+//		String prefix,
+//		File directory,
+//		Set resources) {
+//		byte[] manifest = null;
+//
+//		File[] resourceFiles = directory.listFiles(new FileFilter() {
+//			public boolean accept(File arg0) {
+//				boolean accept =
+//					!arg0.getName().endsWith(".class") && !arg0.isDirectory();
+//				return accept;
+//			}
+//		});
+//		for (int i = 0; i < resourceFiles.length; i++) {
+//			File f = resourceFiles[i];
+//			String name = f.getAbsolutePath();
+//			if (f.getAbsolutePath().startsWith(prefix))
+//				name = name.substring(prefix.length());
+//			name = name.replace('\\', '/');
+//
+//			resources.add(resourceFiles[i]);
+//		}
+//		File[] subdirs = directory.listFiles(new FileFilter() {
+//			public boolean accept(File arg0) {
+//				return arg0.isDirectory();
+//			}
+//		});
+//		for (int i = 0; i < subdirs.length; i++) {
+//			listDirResources(prefix, subdirs[i], resources);
+//		}
+//
+//		return manifest;
+//	}
 
 	public static final FileFilter aspectjResourceFileFilter =
 		new FileFilter() {

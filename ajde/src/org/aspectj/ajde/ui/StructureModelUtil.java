@@ -18,7 +18,7 @@ import java.util.*;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.asm.*;
-import org.aspectj.asm.internal.*;
+//import org.aspectj.asm.internal.*;
 
 /**
  * Prototype functionality for package view clients.
@@ -37,14 +37,14 @@ public class StructureModelUtil {
 	 */
 	public static Map getLinesToAspectMap(String sourceFilePath) {
 
-		Map annotationsMap =
-			AsmManager.getDefault().getInlineAnnotations(
-				sourceFilePath,
-				true,
-				true);
+//		Map annotationsMap =
+//			AsmManager.getDefault().getInlineAnnotations(
+//				sourceFilePath,
+//				true,
+//				true);
 
 		Map aspectMap = new HashMap();
-		Set keys = annotationsMap.keySet();
+//		Set keys = annotationsMap.keySet();
 //		for (Iterator it = keys.iterator(); it.hasNext();) {
 //			Object key = it.next();
 //			List annotations = (List) annotationsMap.get(key);
@@ -164,54 +164,54 @@ public class StructureModelUtil {
 	/**
 	 * Helper function sorts a list of resources into alphabetical order
 	 */
-	private List sortElements(List oldElements) {
-		Object[] temp = oldElements.toArray();
-		SortingComparator comparator = new SortingComparator();
+//	private List sortElements(List oldElements) {
+//		Object[] temp = oldElements.toArray();
+//		SortingComparator comparator = new SortingComparator();
+//
+//		Arrays.sort(temp, comparator);
+//
+//		List newResources = Arrays.asList(temp);
+//
+//		return newResources;
+//	}
+//
+//	private static List sortArray(List oldElements) {
+//		Object[] temp = oldElements.toArray();
+//		SortArrayComparator comparator = new SortArrayComparator();
+//
+//		Arrays.sort(temp, comparator);
+//		
+//		List newElements = Arrays.asList(temp);
+//
+//		return newElements;
+//	}
 
-		Arrays.sort(temp, comparator);
-
-		List newResources = Arrays.asList(temp);
-
-		return newResources;
-	}
-
-	private static List sortArray(List oldElements) {
-		Object[] temp = oldElements.toArray();
-		SortArrayComparator comparator = new SortArrayComparator();
-
-		Arrays.sort(temp, comparator);
-		
-		List newElements = Arrays.asList(temp);
-
-		return newElements;
-	}
-
-	private class SortingComparator implements Comparator {
-		public int compare(Object o1, Object o2) {
-			IProgramElement p1 = (IProgramElement) o1;
-			IProgramElement p2 = (IProgramElement) o2;
-
-			String name1 = p1.getName();
-			String name2 = p2.getName();
-
-			return name1.compareTo(name2);
-		}
-	}
-
-	private static class SortArrayComparator implements Comparator {
-		public int compare(Object o1, Object o2) {
-			Object[] array1 = (Object[]) o1;
-			Object[] array2 = (Object[]) o2;
-
-			IProgramElement p1 = (IProgramElement) array1[1];
-			IProgramElement p2 = (IProgramElement) array2[1];
-
-			String name1 = p1.getName();
-			String name2 = p2.getName();
-
-			return name1.compareTo(name2);
-		}
-	}
+//	private class SortingComparator implements Comparator {
+//		public int compare(Object o1, Object o2) {
+//			IProgramElement p1 = (IProgramElement) o1;
+//			IProgramElement p2 = (IProgramElement) o2;
+//
+//			String name1 = p1.getName();
+//			String name2 = p2.getName();
+//
+//			return name1.compareTo(name2);
+//		}
+//	}
+//
+//	private static class SortArrayComparator implements Comparator {
+//		public int compare(Object o1, Object o2) {
+//			Object[] array1 = (Object[]) o1;
+//			Object[] array2 = (Object[]) o2;
+//
+//			IProgramElement p1 = (IProgramElement) array1[1];
+//			IProgramElement p2 = (IProgramElement) array2[1];
+//
+//			String name1 = p1.getName();
+//			String name2 = p2.getName();
+//
+//			return name1.compareTo(name2);
+//		}
+//	}
 
 	/**
 	 * @return		all of the AspectJ and Java source files in a package

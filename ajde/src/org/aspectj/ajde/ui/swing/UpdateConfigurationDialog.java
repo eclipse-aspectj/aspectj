@@ -113,8 +113,8 @@ public class UpdateConfigurationDialog extends JFrame {
         this.dispose();
     }
     void ok_button_actionPerformed(ActionEvent e) {
-        Object[] selected = buildConfigList.getSelectedValues();
-        //LstBuildConfigFileUpdater.updateBuildConfigFiles(buildConfigFiles, filesToUpdate, addToConfiguration);
+//        Object[] selected = buildConfigList.getSelectedValues();
+//        //LstBuildConfigFileUpdater.updateBuildConfigFiles(buildConfigFiles, filesToUpdate, addToConfiguration);
         this.dispose();
     }
 

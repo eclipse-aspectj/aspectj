@@ -308,7 +308,7 @@ public class Ajde {
     	 * The strucutre model is annotated with error messages after an unsuccessful compile.
     	 */
         public void compileFinished(String buildConfig, int buildTime, boolean succeeded, boolean warnings) { 
-        	String configFilePath = projectProperties.getDefaultBuildConfigFile();
+//        	String configFilePath = projectProperties.getDefaultBuildConfigFile();
         	if (!succeeded) {
 	        	AsmManager.getDefault().fireModelUpdated();	
     	    }

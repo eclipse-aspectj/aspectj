@@ -18,7 +18,7 @@ import java.util.*;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.asm.*;
-import org.aspectj.asm.internal.*;
+//import org.aspectj.asm.internal.*;
 
 /**
  * @author	Mik Kersten

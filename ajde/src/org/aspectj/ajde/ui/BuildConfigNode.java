@@ -135,12 +135,12 @@ public class BuildConfigNode {
 		this.parent = parent;
 	}
 
-	private void setParents() {
-		if (children == null) return;
-		for (Iterator it = children.iterator(); it.hasNext(); ) {
-			((BuildConfigNode)it.next()).setParent(this);	
-		}	
-	}
+//	private void setParents() {
+//		if (children == null) return;
+//		for (Iterator it = children.iterator(); it.hasNext(); ) {
+//			((BuildConfigNode)it.next()).setParent(this);	
+//		}	
+//	}
 
 	public void setName(String string) {
 		name = string;
