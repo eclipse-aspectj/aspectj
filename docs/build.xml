@@ -11,82 +11,14 @@
 <!--     Xerox/PARC     initial implementation                                 -->
 <!-- ========================================================================= -->
 
-<!-- 
-
-Using this:
-  - default target (dist) creates deployment-like dir in build output dir
-  - target download.files deploys locally and creates installers
-  - individual targets build pieces (api, etc.)
-  - clean only cleans the build directory
-
-Understanding this:
-
-  The documentation output structure is (ignoring alpha order):
-
-  aspectj/
-    README-DOC.html
-    style.css
-    examples/
-    doc/
-      index.html
-      changes.html
-      porting.html
-      oldversions/
-      faq.html
-      quickref.html
-
-      devguide.pdf
-      progguide.pdf
-      quickref.pdf
-    
-      api/
-      progguide/
-      devguide/
-
-  The input structure is
-
-  aspectj/
-    README-DOC.html
-    style.css
-    examples/
-    doc/
-      index.html
-      changes.html
-      porting.html
-      oldversions/
-      faq/faq.html
-
-      devGuideDB/  to devguide/ devguide.pdf
-      progGuideDB/ to progguide/ progguide.pdf
-      ?? to quickref.pdf quickref.html  
-   src/org/aspectj/lang/*.java          | to api
-   src/org/aspectj/lang/reflect/*.java  |
-
-data flow and operations (in terms of script names):
-  - input -           - target -          - output -
-  ${docs.src.dir}      dist                ${docs.dist.dir}
-  ${docs.src.dir}        api               ${docs.dist.dir}
-  ${docs.src.dir}        faq               ${docs.dist.dir}
-  ${docs.src.dir}        examples          ${docs.dist.dir}
-  ${docs.src.dir}        devguide          ${docs.dist.dir}
-  ${docs.src.dir}        progguide         ${docs.dist.dir}
-  ${docs.src.dir}        allTheRest        ${docs.dist.dir}
-  ${docs.dist.dir}    web.deploy           ${web.doc.dir}
-  ${aj.release.dir}/.. download.push      (ajpush)
-
-XXX no update to avoid builds in this script
- -->
-
 <!DOCTYPE project [
 <!ENTITY build-properties SYSTEM "file:../build/build-properties.xml">
 ]>
 <project name="build-docs" default="dist" basedir=".">
-  <!-- todo: download.files requires build-installer -->
+
   <property name="project.name" value="build-docs"/>
 
-    <target name="quicklook"      depends="dist"/>
     <target name="product"        depends="local-dist"/>
-    <target name="download.files" depends="dist"/>
     <target name="clean" 
          depends="clean-directories,clean-doc-directories"/>
 
@@ -152,7 +84,7 @@ XXX no update to avoid builds in this script
     </target>
 
     <target name="dist" depends="init,local-dist"
-     description="create doc distribution zip"
+     description="create unused doc zip - see ../build/build.xml for installer"
           unless="dist.uptodate">
         <delete file="${docs.product.zip}"/>
         <zip zipfile="${docs.product.zip}"
@@ -268,7 +200,7 @@ XXX no update to avoid builds in this script
 
     <target name="devguide" depends="init">
       <copy todir="${docs.src.dir}/devGuideDB" filtering="off" >
-         <fileset dir="${aspectj.modules.dir}/ajde/src/org/aspectj/ajde/resources/actions"
+         <fileset dir="${devguide.icons.dir}"
              includes="${include.devguide.icons}" />
         </copy>
       <antcall target="build-guide">

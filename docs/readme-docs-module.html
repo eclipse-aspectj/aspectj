@@ -15,8 +15,10 @@ contain sources for the FAQ and the Programming and Development Guides,
 generated using the Ant <a href="build.xml">build.xml</a> script.
 
 <p>
-<u>Build</u>: The script uses a taskdefs defined in ../lib/build/build.jar
-to generate the installers, and others to do misc. text-conversion.
+<u>Build</u>: <a href="build.xml">build.xml</a> assembles a local
+distribution which is gathered into the product distribution by
+the master build script, 
+<a href="../build/build.xml">../build/build.xml</a>.
 Dependencies outside this directory:
 <ul>
 <li>.xml files refer to their docbook dtds using relative
@@ -26,6 +28,9 @@ Dependencies outside this directory:
     </li>
 <li>When building installer, using ../lib/build/build.jar
     and the ../build/installer-resources.
+    </li>
+<li><a href="dist/doc/quick.pdf">dist/doc/quick.pdf</a>
+     is generated manually from <a href="quick.doc">quick.doc</a>.
     </li>
 </ul>
 </body>
