@@ -972,7 +972,13 @@ public class BcelShadow extends Shadow {
     }      
 
 
+	//??? this shares a lot of code with the above weaveAfterThrowing
+	//??? would be nice to abstract that to say things only once
     public void weaveSoftener(BcelAdvice munger, TypeX catchType) {
+    	// a good optimization would be not to generate anything here
+    	// if the shadow is GUARANTEED empty (i.e., there's NOTHING, not even
+    	// a shadow, inside me).
+    	if (getRange().getStart().getNext() == getRange().getEnd()) return;
         InstructionFactory fact = getFactory();        
         InstructionList handler = new InstructionList();        
         BcelVar exceptionVar = genTempVar(catchType);
