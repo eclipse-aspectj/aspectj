@@ -13,6 +13,8 @@
 package org.aspectj.ajdt.internal.compiler.parser;
 
 import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.AjConstructorDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.AjMethodDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.DeclareDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.IfPseudoToken;
@@ -31,6 +33,7 @@ import org.aspectj.weaver.patterns.Declare;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
@@ -46,7 +49,21 @@ import org.eclipse.jdt.internal.compiler.parser.Parser.IDeclarationFactory;
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class DeclarationFactory implements IDeclarationFactory {
- 
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.internal.compiler.parser.Parser.IDeclarationFactory#createMethodDeclaration(org.eclipse.jdt.internal.compiler.CompilationResult)
+	 */
+	public MethodDeclaration createMethodDeclaration(CompilationResult result) {
+		return new AjMethodDeclaration(result);
+	}
+		
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.internal.compiler.parser.Parser.IDeclarationFactory#createConstructorDeclaration(org.eclipse.jdt.internal.compiler.CompilationResult)
+	 */
+	public ConstructorDeclaration createConstructorDeclaration(CompilationResult result) {
+		return new AjConstructorDeclaration(result);
+	}
+		
 	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.compiler.parser.Parser.IDeclarationFactory#createProceed(org.eclipse.jdt.internal.compiler.ast.MessageSend)
 	 */

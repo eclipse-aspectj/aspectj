@@ -132,7 +132,7 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void test012() throws Exception {
     runTest("incremental with aspect-driven full rebuild");
     nextIncrement(false);
-    MessageSpec messageSpec = new MessageSpec(newMessageList(new Message(4,"Main.java",null,null)),null);
+    MessageSpec messageSpec = new MessageSpec(newMessageList(new Message(3,"Main.java",null,null)),null);
     copyFileAndDoIncrementalBuild("changes/Aspect.20.java","src/Aspect.java",messageSpec);
     run("Main");
   }

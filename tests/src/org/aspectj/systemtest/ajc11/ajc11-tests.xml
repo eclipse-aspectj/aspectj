@@ -237,7 +237,7 @@
     <ajc-test dir="new" pr="838"
       title="checking around join point for advice return type - numeric">
         <compile files="AroundNumericCastCE.java">
-            <message kind="error" line="12"/>
+            <message kind="error" line="11"/>
             <message kind="error" line="17"/>
         </compile>
     </ajc-test>
@@ -406,7 +406,7 @@
             <message kind="warning" line="33" text="handler(OutOfMemoryError) &amp;&amp; within(DeclareWarning)"/>
             <message kind="warning" line="36" text="handler(Error)"/>
             <message kind="warning" line="39" text="handler(RuntimeException) &amp;&amp; withincode(DeclareWarning.new())"/>
-            <message kind="warning" line="74" text="adviceExecution() &amp;&amp; within(A)"/>
+            <message kind="warning" line="72" text="adviceExecution() &amp;&amp; within(A)"/>
         </compile>
     </ajc-test>
     

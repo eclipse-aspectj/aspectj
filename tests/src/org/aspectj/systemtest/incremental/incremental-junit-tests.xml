@@ -189,7 +189,7 @@
         	</compile>
         <!--
         <inc-compile tag="20">
-        	<message kind="warning" line="4" file="Main.java"/>
+        	<message kind="warning" line="3" file="Main.java"/>
         </inc-compile>
         <run class="Main"/>
         -->

@@ -89,12 +89,15 @@
         <run class="main.Main"/>
     </ajc-test>
 
+	<!-- this test cannot work with new AjAttribute.MethodDeclarationLineNumberAttribute attribute
+	     since the attribute will be generated for the main method, and has a different reference
+	     on each serialization
     <ajc-test dir="expClasses" title="expected class tree" keywords="incremental-test" >
         <compile files="Main.java">
             <dir-changes expDir="exp"/>
         </compile>
         <run class="Main"/>
     </ajc-test>
-
+    -->
 
 </suite>

@@ -99,7 +99,7 @@ public class HarnessSelectionTest extends TestCase {
         String[] options = new String[] 
             { "!verbose", "!eclipse",
             };
-        Exp exp = new Exp(7, 7, 0, 7, 0, 0, 0);
+        Exp exp = new Exp(6, 6, 0, 6, 0, 0, 0);
         checkSelection(INCREMENTAL, options, "INFIX IGNORED", exp);
     }
     

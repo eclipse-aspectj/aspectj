@@ -303,6 +303,21 @@ public class BcelShadow extends Shadow {
 	}
 	
     public int getSourceLine() {
+    	// if the kind of join point for which we are a shadow represents
+    	// a method or constructor execution, then the best source line is
+    	// the one from the enclosingMethod declarationLineNumber if available.
+    	Kind kind = getKind();
+    	if ( (kind == MethodExecution)  ||
+    		 (kind == ConstructorExecution) ||
+			 (kind == AdviceExecution) || 
+			 (kind == StaticInitialization) ||
+			 (kind == PreInitialization) ||
+			 (kind == Initialization)) {
+    		if (getEnclosingMethod().hasDeclaredLineNumberInfo()) {
+    			return getEnclosingMethod().getDeclarationLineNumber();
+    		}
+    	}
+    	
     	if (range == null) {
     		if (getEnclosingMethod().hasBody()) {
     			return Utility.getSourceLine(getEnclosingMethod().getBody().getStart());

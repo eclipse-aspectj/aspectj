@@ -72,7 +72,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 		checkCompile("src1/ThisAndModifiers.java", NO_ERRORS);
 	}
 	public void testDeclares() {
-		checkCompile("src1/Declares.java", new int[] {3});
+		checkCompile("src1/Declares.java", new int[] {2});
 	}	
 	
 	public void testDeclareWarning() {

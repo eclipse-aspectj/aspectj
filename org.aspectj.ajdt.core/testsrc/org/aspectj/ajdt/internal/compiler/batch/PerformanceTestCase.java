@@ -36,7 +36,7 @@ public class PerformanceTestCase extends CommandTestCase {
 	}
 	
 	public void testLazyTjp() throws IOException {
-		checkCompile("src1/LazyTjp.aj", new String[] {"-XlazyTjp","-Xlint:error"}, new int[] {97});
+		checkCompile("src1/LazyTjp.aj", new String[] {"-XlazyTjp","-Xlint:error"}, new int[] {96});
 		TestUtil.runMain("out", "LazyTjp");
 	}
 }

@@ -34,6 +34,7 @@ final class BcelMethod extends ResolvedMember {
 	private boolean isAjSynthetic;
 	private ShadowMunger associatedShadowMunger;
 	private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
+	private AjAttribute.MethodDeclarationLineNumberAttribute declarationLineNumber;
 
 	BcelMethod(BcelObjectType declaringType, Method method) {
 		super(
@@ -84,7 +85,9 @@ final class BcelMethod extends ResolvedMember {
 		//System.out.println("unpack: " + this + ", " + as);
 		for (Iterator iter = as.iterator(); iter.hasNext();) {
 			AjAttribute a = (AjAttribute) iter.next();
-			if (a instanceof AjAttribute.AdviceAttribute) {
+			if (a instanceof AjAttribute.MethodDeclarationLineNumberAttribute) {
+				declarationLineNumber = (AjAttribute.MethodDeclarationLineNumberAttribute)a;
+			} else if (a instanceof AjAttribute.AdviceAttribute) {
 				associatedShadowMunger = ((AjAttribute.AdviceAttribute)a).reify(this, world);
 				return;
 			} else if (a instanceof AjAttribute.AjSynthetic) {
@@ -111,6 +114,18 @@ final class BcelMethod extends ResolvedMember {
 	
 	public AjAttribute.EffectiveSignatureAttribute getEffectiveSignature() {
 		return effectiveSignature;
+	}
+	
+	public boolean hasDeclarationLineNumberInfo() {
+		return declarationLineNumber != null;
+	}
+	
+	public int getDeclarationLineNumber() {
+		if (declarationLineNumber != null) {
+			return declarationLineNumber.getLineNumber();
+		} else {
+			return -1;
+		}
 	}
 	
 	public Kind getKind() {

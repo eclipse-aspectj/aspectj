@@ -161,6 +161,18 @@ public final class LazyMethodGen {
 		this.name = m.getName();
     }
     
+    public boolean hasDeclaredLineNumberInfo() {
+    	return (memberView != null && memberView.hasDeclarationLineNumberInfo());
+    }
+    
+    public int getDeclarationLineNumber() {
+    	if (hasDeclaredLineNumberInfo()) {
+    		return memberView.getDeclarationLineNumber();
+    	} else {
+    		return -1;
+    	}
+    }
+    
     private void initialize() {
     	if (returnType != null) return;
     	

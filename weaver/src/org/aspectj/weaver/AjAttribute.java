@@ -87,6 +87,8 @@ public abstract class AjAttribute {
 			DataInputStream s = new DataInputStream(new ByteArrayInputStream(bytes));
 			if (name.equals(Aspect.AttributeName)) {
 				return new Aspect(PerClause.readPerClause(s, context));
+			} else if (name.equals(MethodDeclarationLineNumberAttribute.AttributeName)) {
+			   return MethodDeclarationLineNumberAttribute.read(s);
 			} else if (name.equals(WeaverState.AttributeName)) {
 				return new WeaverState(WeaverStateInfo.read(s, context));
 			} else if (name.equals(AdviceAttribute.AttributeName)) {
@@ -206,6 +208,32 @@ public abstract class AjAttribute {
 		}
 	}
 
+	public static class MethodDeclarationLineNumberAttribute extends AjAttribute {
+
+		public static final String AttributeName = "org.aspectj.weaver.MethodDeclarationLineNumber";
+		
+		public String getNameString() {
+			return AttributeName;
+		}
+		
+		private int lineNumber;
+		
+		public MethodDeclarationLineNumberAttribute(int line) {
+			this.lineNumber = line;
+		}
+		
+		public int getLineNumber() { return lineNumber; }
+		
+		public void write(DataOutputStream s) throws IOException {
+			s.writeInt(lineNumber);
+		}
+		
+		public static MethodDeclarationLineNumberAttribute read(DataInputStream s) throws IOException {
+			return new MethodDeclarationLineNumberAttribute(s.readInt());
+		}
+
+	}
+	
 	public static class PointcutDeclarationAttribute extends AjAttribute {
 		public static final String AttributeName = "org.aspectj.weaver.PointcutDeclaration";
 		

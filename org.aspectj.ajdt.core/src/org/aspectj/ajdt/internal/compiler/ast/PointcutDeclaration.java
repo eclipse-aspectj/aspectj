@@ -26,7 +26,6 @@ import org.eclipse.jdt.internal.compiler.ClassFile;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
@@ -41,7 +40,7 @@ import org.eclipse.jdt.core.compiler.CharOperation;
  * 
  * @author Jim Hugunin
  */
-public class PointcutDeclaration extends MethodDeclaration {
+public class PointcutDeclaration extends AjMethodDeclaration {
 	public static final char[] mangledPrefix = "ajc$pointcut$".toCharArray();
 	
 	public PointcutDesignator pointcutDesignator;

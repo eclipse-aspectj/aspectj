@@ -1860,7 +1860,7 @@
     <ajc-test dir="new" title="simple declare warning (NPE)"
       keywords="from-resolved_105">
         <compile files="DeclareWarningMain.java">
-            <message kind="warning" line="5"/>
+            <message kind="warning" line="4"/>
         </compile>
         <run class="DeclareWarningMain"/>
     </ajc-test>

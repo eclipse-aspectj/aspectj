@@ -24,7 +24,6 @@ import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
 import org.aspectj.weaver.*;
 import org.eclipse.jdt.internal.compiler.ClassFile;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.core.compiler.CharOperation;
@@ -34,7 +33,7 @@ import org.eclipse.jdt.core.compiler.CharOperation;
  *
  * @author Jim Hugunin
  */
-public abstract class InterTypeDeclaration extends MethodDeclaration {
+public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	public TypeReference onType;
 	protected ReferenceBinding onTypeBinding;
 
@@ -134,6 +133,7 @@ public abstract class InterTypeDeclaration extends MethodDeclaration {
 		} else {
 			l = new ArrayList(0);
 		}
+		addDeclarationStartLineAttribute(l,classFile);
 
 		return classFile.generateMethodInfoAttribute(binding, l);
 	}

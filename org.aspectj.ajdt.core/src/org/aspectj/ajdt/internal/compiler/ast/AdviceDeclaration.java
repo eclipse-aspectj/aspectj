@@ -29,7 +29,6 @@ import org.aspectj.weaver.TypeX;
 import org.eclipse.jdt.internal.compiler.ClassFile;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
-import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.codegen.CodeStream;
@@ -47,7 +46,7 @@ import org.eclipse.jdt.core.compiler.CharOperation;
  * 
  * @author Jim Hugunin
  */
-public class AdviceDeclaration extends MethodDeclaration {
+public class AdviceDeclaration extends AjMethodDeclaration {
 	public PointcutDesignator pointcutDesignator;
 	int baseArgumentCount;
 	
@@ -76,6 +75,7 @@ public class AdviceDeclaration extends MethodDeclaration {
 	protected int generateInfoAttributes(ClassFile classFile) {
 		List l = new ArrayList(1);
 		l.add(new EclipseAttributeAdapter(makeAttribute()));
+		addDeclarationStartLineAttribute(l,classFile);
 
 		return classFile.generateMethodInfoAttribute(binding, l);
 	}

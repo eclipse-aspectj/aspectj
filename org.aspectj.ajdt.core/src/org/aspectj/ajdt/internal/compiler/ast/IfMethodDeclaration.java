@@ -21,11 +21,10 @@ import org.aspectj.weaver.patterns.IfPointcut;
 import org.eclipse.jdt.internal.compiler.ClassFile;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 //import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 
-public class IfMethodDeclaration extends MethodDeclaration {
+public class IfMethodDeclaration extends AjMethodDeclaration {
 	IfPointcut ifPointcut;
 
 	public IfMethodDeclaration(CompilationResult compilationResult, IfPointcut ifPointcut) {
