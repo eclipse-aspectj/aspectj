@@ -170,6 +170,7 @@ public class Ajc {
 				main.runMain(args,false);
 			}
 			addMessagesTo(infos,holder.getMessages(IMessage.INFO,false));
+			addMessagesTo(infos,holder.getMessages(IMessage.WEAVEINFO,false));
 			addMessagesTo(warnings,holder.getWarnings());
 			addMessagesTo(errors,holder.getErrors());
 			addMessagesTo(fails,holder.getMessages(IMessage.FAIL,true));
