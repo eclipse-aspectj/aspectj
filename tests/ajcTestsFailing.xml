@@ -11,15 +11,6 @@
         <compile files="AspectStaticInit.java"/>
         <run class="AspectStaticInit"/>
     </ajc-test>
-
-    <ajc-test dir="new/PR862" pr="862"
-      title="import any inner from interface implementor"
-      keywords="purejava">
-        <compile files="pack/ImportInnerFromInterfaceImplementor.java">
-          <dir-changes added="pack.ImportInnerFromInterfaceImplementor"/>
-        </compile>
-        <run class="pack.ImportInnerFromInterfaceImplementor"/>
-    </ajc-test>
     
     <ajc-test dir="new"
       title="incompatible advice throws clause are a compile-time error"

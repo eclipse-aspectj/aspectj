@@ -5499,4 +5499,32 @@
 		  <message kind="warning" line="23"/>
         </compile>
     </ajc-test>    
+
+    <ajc-test dir="new/PR862" pr="862"
+      title="import any inner from interface implementor"
+      keywords="purejava">
+        <compile files="pack/ImportInnerFromInterfaceImplementor.java">
+          <dir-changes added="pack.ImportInnerFromInterfaceImplementor"/>
+        </compile>
+        <run class="pack.ImportInnerFromInterfaceImplementor"/>
+    </ajc-test>
+    
+    <ajc-test dir="new/finalfield" pr="28974"
+      title="introducing final fields (simple)">
+        <compile files="Introducer.java,Receiver.java,User1.java"/>
+        <run class="User1"/>
+    </ajc-test>
+
+    <ajc-test dir="new/finalfield" pr="28974"
+      title="introducing final fields and using as constants">
+        <compile files="Introducer.java,Receiver.java,User2.java"/>
+        <run class="User2"/>
+    </ajc-test>
+
+    <ajc-test dir="new/finalfield" pr="28974"
+      title="introducing final fields and checking errors">
+        <compile files="Introducer.java,Receiver.java,UserCf.java">
+            <message kind="error" line="6"/>        
+        </compile>
+    </ajc-test>
 </suite>
