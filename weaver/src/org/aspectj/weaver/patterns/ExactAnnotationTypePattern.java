@@ -48,7 +48,6 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		// will be turned into BindingAnnotationTypePattern during resolution
 	}
 	
-	
 	public FuzzyBoolean matches(AnnotatedElement annotated) {
 		if (!resolved) {
 			throw new IllegalStateException("Can't match on an unresolved annotation type pattern");
