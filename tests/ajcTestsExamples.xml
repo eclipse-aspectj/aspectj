@@ -3,18 +3,44 @@
 
 <!-- 
 	Test documentation examples.
-	Results unverified except for compiler messages, runtime exceptions,
-	and System.exit codes
+	Results unverified except for compiler messages, 
+	runtime exceptions, System.exit codes, and System.err
+	messages (the latter not for all tests).
+
+  To run the example classes using a forked 1.1 vm:
+	
+  java -Djavarun.fork=true \
+       -Djavarun.java.home=d:\\jdk11 \
+       -Djavarun.java=d:\\jdk11\\bin\\javaw \
+       -Djavarun.bootclasspath=d:\\jdk11\\lib\\classes.zip \
+       -jar ../aj-build/jars/testing-drivers-all.jar \
+       ajcTestsExamples.xml \
+       -ajctestSkipKeywords=knownLimitation-run11 \
+       -logFail 
+
+  Note that unless two 1.2 API's are removed from
+  telecom, that will fail when forked, too.
+  (Vector.[add|remove](..) to [add|remove]Element(..))
+
 -->
 <suite>
     <ajc-test dir="../docs/dist/doc/examples"
     	keywords="doc-examples"
+		title="bean example">
+        <compile argfiles="bean/files.lst"/>
+        <run class="bean.Demo"
+			errStreamIsError="false"/>
+		<!-- ??: error security properties not found. using defaults. -->
+    </ajc-test>   
+
+    <ajc-test dir="../docs/dist/doc/examples"
+    	keywords="doc-examples,knownLimitation-run11"
 		title="introduction">
         <compile argfiles="introduction/files.lst"/>
-        <run class="introduction.Point"/>
-        <run class="introduction.CloneablePoint"/>
-        <run class="introduction.ComparablePoint"/>
-        <run class="introduction.HashablePoint"/>
+        <run vm="1.2" class="introduction.Point"/>
+        <run vm="1.2" class="introduction.CloneablePoint"/>
+        <run vm="1.2" class="introduction.ComparablePoint"/>
+        <run vm="1.2" class="introduction.HashablePoint"/>
     </ajc-test>   
 
     <ajc-test dir="../docs/dist/doc/examples"
@@ -48,9 +74,9 @@
 
     <ajc-test dir="../docs/dist/doc/examples"
     	keywords="doc-examples"
-		title="telecom billing example">
-        <compile argfiles="telecom/billing.lst"/>
-        <run class="telecom.BillingSimulation"/>
+		title="telecom timing example">
+        <compile argfiles="telecom/timing.lst"/>
+        <run class="telecom.TimingSimulation"/>
     </ajc-test>   
 
     <ajc-test dir="../docs/dist/doc/examples"
@@ -71,20 +97,23 @@
     	keywords="doc-examples"
 		title="tracing example - version 1">
         <compile argfiles="tracing/tracev1.lst"/>
-        <run class="tracing.version1.TraceMyClasses"/>
+        <run class="tracing.version1.TraceMyClasses"
+			errStreamIsError="false"/>
     </ajc-test>   
 
     <ajc-test dir="../docs/dist/doc/examples"
     	keywords="doc-examples"
 		title="tracing example - version 2">
         <compile argfiles="tracing/tracev2.lst"/>
-        <run class="tracing.version2.TraceMyClasses"/>
+        <run class="tracing.version2.TraceMyClasses"
+			errStreamIsError="false"/>
     </ajc-test>   
 
     <ajc-test dir="../docs/dist/doc/examples"
     	keywords="doc-examples"
 		title="tracing example - version 3">
         <compile argfiles="tracing/tracev3.lst"/>
-        <run class="tracing.version3.TraceMyClasses"/>
+        <run class="tracing.version3.TraceMyClasses"
+			errStreamIsError="false"/>
     </ajc-test>   
 </suite>
