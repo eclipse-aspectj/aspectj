@@ -62,9 +62,13 @@ import java.util.ListIterator;
  * </ul>
  */
 public class CompilerRun implements IAjcRun {
+    static final String BUILDER_COMPILER = 
+        "org.aspectj.ajdt.internal.core.builder.Builder.Command";
     static final String AJDE_COMPILER = CompileCommand.class.getName();
     static final String AJCTASK_COMPILER 
         = AjcTaskCompileCommand.class.getName();
+    static final String JAVAC_COMPILER 
+        = JavacCompileCommand.class.getName();
 
 	static final String[] RA_String = new String[0];
     
@@ -142,7 +146,7 @@ public class CompilerRun implements IAjcRun {
         if ((null == rdir) || (0 == rdir.length())) {
             testBaseSrcDir = sandbox.testBaseDir;
         } else {
-            testBaseSrcDir = new File(sandbox.testBaseDir, rdir);
+            testBaseSrcDir = new File(sandbox.testBaseDir, rdir); // XXX what if rdir is two levels deep?
             if (!validator.canReadDir(testBaseSrcDir, "sandbox.testBaseSrcDir")) {
                 return false;
             }
@@ -296,9 +300,11 @@ public class CompilerRun implements IAjcRun {
             sandbox.setAspectpath(aspectFiles, checkReadable, this);
         }
         
-        // set bootclasspath, if set as system property - urk!
-        if (!LangUtil.isEmpty(JavaRun.BOOTCLASSPATH)) {
-            sandbox.setBootclasspath(JavaRun.BOOTCLASSPATH, this);
+        // set bootclasspath if set for forking
+        AbstractRunSpec.Fork fork = spec.getFork();
+        String bootclasspath = fork.getJavaBootclasspath();
+        if (fork.fork() && (!LangUtil.isEmpty(bootclasspath))) {
+            sandbox.setBootclasspath(bootclasspath, this);
         }
         return true;
     }
@@ -466,7 +472,17 @@ public class CompilerRun implements IAjcRun {
         private static final String[] INVALID_OPTIONS = new String[]
             { "-workingdir", "-argfile", "-sourceroots", "-outjar"}; 
             // when updating these, update tests/harness/selectionTest.xml
+        
 
+        /** no support in the javac for these otherwise-valid options */
+        private static final String[] INVALID_JAVAC_OPTIONS = new String[]
+            { "-lenient", "-strict", "-usejavac", "-preprocess",
+              "-XOcodeSize", "-XSerializable", "-XaddSafePrefix",
+              "-XtargetNearSource",
+              "-incremental", "-Xlint", "-aspectpath",
+              "workingdir", "-argfile", "-sourceroots", "-outjar",
+               };
+               
         /** no support in the eclipse-based compiler for these otherwise-valid options */
         private static final String[] INVALID_ECLIPSE_OPTIONS = new String[]
             { "-lenient", "-strict", "-usejavac", "-preprocess",
@@ -478,12 +494,12 @@ public class CompilerRun implements IAjcRun {
             {
                 SEEK_PREFIX,
                 // eajc does not support -usejavac, -preprocess
-                // testFlag() handles -ajc, -eclipse, -ajdeCompiler, -ignoreWarnings 
+                // testFlag() handles -ajc, -eclipse, -javac, -ajdeCompiler, -ignoreWarnings 
                 "-usejavac", "-preprocess",          
                 "-Xlint",  "-lenient", "-strict", 
                 "-source14", "-verbose", "-emacssym", 
-                "-ajc", "-eclipse", "-ajdeCompiler", "-ajctaskCompiler", 
-                "-ignoreWarnings",
+                "-ajc", "-eclipse", "-ajdeCompiler", "-ajctaskCompiler", "-javac",
+                "-ignoreWarnings", "-1.3", "-1.4", "-1.5",
                 // XXX consider adding [!^]ajdeCompiler
                 "!usejavac", "!preprocess",          
                 "!Xlint",  "!lenient", "!strict", 
@@ -738,6 +754,9 @@ public class CompilerRun implements IAjcRun {
          * as this will otherwise fail to process it correctly.  
          * This converts it back to -source 1.4.
          * <p>
+         * This also interprets any relevant System properties,
+         * e.g., from <code>JavaRun.BOOTCLASSPATH_KEY</code>.
+         * <p>
          * Finally, compiler limitations are enforced here by skipping
          * tests which the compiler cannot do:
          * <ul>
@@ -959,11 +978,21 @@ public class CompilerRun implements IAjcRun {
                 }
             } else if (ReflectionFactory.ECLIPSE.equals(result.compilerName)
                 || AJDE_COMPILER.equals(result.compilerName)
-                || AJCTASK_COMPILER.equals(result.compilerName)) {
+                || AJCTASK_COMPILER.equals(result.compilerName)
+                || BUILDER_COMPILER.equals(result.compilerName)) {
                 badOptions = LangUtil.selectOptions(argList, Spec.INVALID_ECLIPSE_OPTIONS);
                 if (!LangUtil.isEmpty(badOptions)) {                    
                     result.failureReason = "no support in eclipse-based compiler"
                         + " for (normally-valid) options "+ Arrays.asList(badOptions);
+                } else {
+                    result.result = true;
+                }
+            } else if (JAVAC_COMPILER.equals(result.compilerName)) {
+                // XXX vet
+                badOptions = LangUtil.selectOptions(argList, Spec.INVALID_JAVAC_OPTIONS);
+                if (!LangUtil.isEmpty(badOptions)) {                    
+                    result.failureReason = "no support in javac"
+                        + " for (normally-valid) options " + Arrays.asList(badOptions);
                 } else {
                     result.result = true;
                 }
@@ -1001,8 +1030,14 @@ public class CompilerRun implements IAjcRun {
             if ("-ajdeCompiler".equals(arg)) {
                 result.compilerName = AJDE_COMPILER;
                 return true;
+            } else if ("-builderCompiler".equals(arg)) {
+                result.compilerName = BUILDER_COMPILER;
+                return true;
             } else if ("-ajctaskCompiler".equals(arg)) {
                 result.compilerName = AJCTASK_COMPILER;
+                return true;
+            } else if ("-javac".equals(arg)) {
+                result.compilerName = JAVAC_COMPILER;
                 return true;
             } else if ("-eclipse".equals(arg) || "!eclipse".equals(arg) || "^ajc".equals(arg)) {
                 result.compilerName = ReflectionFactory.ECLIPSE;
