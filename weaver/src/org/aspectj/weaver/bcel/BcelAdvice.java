@@ -90,6 +90,7 @@ public class BcelAdvice extends Advice {
             shadow.weaveAfter(this);
         } else if (getKind() == AdviceKind.Around) {
             shadow.weaveAroundClosure(this, hasDynamicTests());
+            //shadow.weaveAroundInline(this, hasDynamicTests());
         } else if (getKind() == AdviceKind.InterInitializer) {
         	 shadow.weaveAfterReturning(this);
         } else if (getKind().isCflow()) {

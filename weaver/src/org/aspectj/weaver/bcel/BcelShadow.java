@@ -829,7 +829,8 @@ public class BcelShadow extends Shadow {
     	InstructionFactory fact = getFactory();
         int len = getArgCount();
         argVars = new BcelVar[len];
-        int positionOffset = (hasTarget() ? 0 : 1) + (hasThis() ? 0 : 1);
+        int positionOffset = (hasTarget() ? 1 : 0) + 
+        		((hasThis() && !getKind().isTargetSameAsThis()) ? 1 : 0);
                      
         if (getKind().argsOnStack()) {
             // we move backwards because we're popping off the stack
@@ -838,7 +839,7 @@ public class BcelShadow extends Shadow {
                 BcelVar tmp = genTempVar(type, "ajc$arg" + i);
                 range.insert(tmp.createStore(getFactory()), Range.OutsideBefore);
                 int position = i;
-                if (hasTarget()) position += positionOffset;
+                position += positionOffset;
                 tmp.setPositionInAroundState(position);
                 argVars[i] = tmp;
             }
@@ -852,7 +853,9 @@ public class BcelShadow extends Shadow {
                 range.insert(tmp.createCopyFrom(fact, index), Range.OutsideBefore);
                 argVars[i] = tmp;
                 int position = i;
-                if (hasTarget()) position += positionOffset;
+                position += positionOffset;
+//                System.out.println("set position: " + tmp + ", " + position + " in " + this);
+//                System.out.println("   hasThis: " + hasThis() + ", hasTarget: " + hasTarget());
                 tmp.setPositionInAroundState(position);
                 index += type.getSize();
             }       
@@ -862,6 +865,7 @@ public class BcelShadow extends Shadow {
         initializeArgVars();
         if (hasTarget()) initializeTargetVar();
         if (hasThis()) initializeThisVar();
+//        System.out.println("initialized: " + this + " thisVar = " + thisVar);
     }
 
             
@@ -1225,9 +1229,18 @@ public class BcelShadow extends Shadow {
 		List argVarList = new ArrayList();
 		
 		// start w/ stuff
-		if (targetVar != null) argVarList.add(targetVar);
+		if (thisVar != null) {
+			argVarList.add(thisVar);
+		}
+		
+        if (targetVar != null && targetVar != thisVar) {
+            argVarList.add(targetVar);
+        }
 		for (int i = 0, len = getArgCount(); i < len; i++) {
 			argVarList.add(argVars[i]);
+		}
+		if (thisJoinPointVar != null) {
+			argVarList.add(thisJoinPointVar);
 		}
 		
 		BcelVar[] adviceVars = munger.getExposedStateAsBcelVars();		
@@ -1240,16 +1253,25 @@ public class BcelShadow extends Shadow {
 
 		IntMap proceedMap =  makeProceedArgumentMap(adviceVars);
 
-//		System.out.println(proceedMap);
-//		System.out.println(Arrays.asList(adviceVars));
+//		System.out.println(proceedMap + " for " + this);
+//		System.out.println(argVarList);
 		
 		ResolvedTypeX[] proceedParamTypes = world.resolve(munger.getSignature().getParameterTypes());
+		// remove this*JoinPoint* as arguments to proceed
+		if (munger.getBaseParameterCount()+1 < proceedParamTypes.length) {
+			int len = munger.getBaseParameterCount()+1;
+			ResolvedTypeX[] newTypes = new ResolvedTypeX[len];
+			System.arraycopy(proceedParamTypes, 0, newTypes, 0, len);
+			proceedParamTypes = newTypes;
+		}
 		
+		//System.out.println("stateTypes: " + Arrays.asList(stateTypes));
 		BcelVar[] proceedVars = 
 			Utility.pushAndReturnArrayOfVars(proceedParamTypes, ret, fact, enclosingMethod);
 		
 
 		Type[] stateTypes = callbackMethod.getArgumentTypes();
+//		System.out.println("stateTypes: " + Arrays.asList(stateTypes));
 		
 		for (int i=0, len=stateTypes.length; i < len; i++) {
             Type stateType = stateTypes[i];
