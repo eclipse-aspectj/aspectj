@@ -20,14 +20,14 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 public class PointcutBinding extends Binding {
 
 	/**
-	 * @see org.eclipse.jdt.internal.compiler.lookup.Binding#bindingType()
+	 * @see org.eclipse.jdt.internal.compiler.lookup.BindingPattern#bindingType()
 	 */
 	public int bindingType() {
 		return 0;
 	}
 
 	/**
-	 * @see org.eclipse.jdt.internal.compiler.lookup.Binding#readableName()
+	 * @see org.eclipse.jdt.internal.compiler.lookup.BindingPattern#readableName()
 	 */
 	public char[] readableName() {
 		return null;

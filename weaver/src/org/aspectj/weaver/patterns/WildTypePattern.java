@@ -24,6 +24,7 @@ import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
@@ -38,7 +39,7 @@ public class WildTypePattern extends TypePattern {
 	int dim;
 
 	WildTypePattern(NamePattern[] namePatterns, boolean includeSubtypes, int dim) {
-		super(includeSubtypes);
+		super(includeSubtypes,false);
 		this.namePatterns = namePatterns;
 		this.dim = dim;
 		ellipsisCount = 0;
@@ -332,12 +333,14 @@ public class WildTypePattern extends TypePattern {
 	public TypePattern resolveBindings(IScope scope, Bindings bindings, 
     								boolean allowBinding, boolean requireExactType)
     { 		
-    	if (isStar()) {
+    	if (isStar() && (annotationPattern == AnnotationTypePattern.ANY)) {
     		if (dim == 0) { // pr72531
     			return TypePattern.ANY;  //??? loses source location
     		} 
 		}
 
+    	annotationPattern = annotationPattern.resolveBindings(scope,bindings,allowBinding);
+    	
 		String simpleName = maybeGetSimpleName();
 		if (simpleName != null) {
 			FormalBinding formalBinding = scope.lookupFormal(simpleName);
@@ -352,7 +355,7 @@ public class WildTypePattern extends TypePattern {
 					return this;
 				}
 				
-				BindingTypePattern binding = new BindingTypePattern(formalBinding);
+				BindingTypePattern binding = new BindingTypePattern(formalBinding,isVarArgs);
 				binding.copyLocationFrom(this);
 				bindings.register(binding, scope);
 				
@@ -396,7 +399,7 @@ public class WildTypePattern extends TypePattern {
 				}
 			} else {
 				if (dim != 0) type = TypeX.makeArray(type, dim);
-				TypePattern ret = new ExactTypePattern(type, includeSubtypes);
+				TypePattern ret = new ExactTypePattern(type, includeSubtypes,isVarArgs);
 				ret.copyLocationFrom(this);
 				return ret;
 			}
@@ -450,7 +453,7 @@ public class WildTypePattern extends TypePattern {
 			} else {
 				TypeX type = TypeX.forName(clazz.getName());
 				if (dim != 0) type = TypeX.makeArray(type,dim);
-				TypePattern ret = new ExactTypePattern(type, includeSubtypes);
+				TypePattern ret = new ExactTypePattern(type, includeSubtypes,isVarArgs);
 				ret.copyLocationFrom(this);
 				return ret;
 			}
@@ -517,7 +520,7 @@ public class WildTypePattern extends TypePattern {
     	for (int i=0; i < len; i++) {
     		if (!o.namePatterns[i].equals(this.namePatterns[i])) return false;
     	}
-    	return true;
+    	return (o.annotationPattern.equals(this.annotationPattern));    	
 	}
 
     public int hashCode() {
@@ -525,6 +528,7 @@ public class WildTypePattern extends TypePattern {
         for (int i = 0, len = namePatterns.length; i < len; i++) {
             result = 37*result + namePatterns[i].hashCode();
         }
+        result = 37*result + annotationPattern.hashCode();
         return result;
     }
 
@@ -537,11 +541,14 @@ public class WildTypePattern extends TypePattern {
     	return matchesExactlyByName(type.getName());
     }
     
+    
+    private static final byte VERSION = 1; // rev on change
 	/**
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(DataOutputStream)
 	 */
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(TypePattern.WILD);
+		s.writeByte(VERSION);
 		s.writeShort(namePatterns.length);
 		for (int i = 0; i < namePatterns.length; i++) {
 			namePatterns[i].write(s);
@@ -553,9 +560,14 @@ public class WildTypePattern extends TypePattern {
 		FileUtil.writeStringArray(knownMatches, s);
 		FileUtil.writeStringArray(importedPrefixes, s);
 		writeLocation(s);
+		annotationPattern.write(s);
 	}
 	
 	public static TypePattern read(DataInputStream s, ISourceContext context) throws IOException {
+		byte version = s.readByte();
+		if (version > VERSION) {
+			throw new BCException("WildTypePattern was written by a more recent version of AspectJ, cannot read");
+		}
 		int len = s.readShort();
 		NamePattern[] namePatterns = new NamePattern[len];
 		for (int i=0; i < len; i++) {
@@ -567,6 +579,7 @@ public class WildTypePattern extends TypePattern {
 		ret.knownMatches = FileUtil.readStringArray(s);
 		ret.importedPrefixes = FileUtil.readStringArray(s);
 		ret.readLocation(context, s);
+		ret.setAnnotationTypePattern(AnnotationTypePattern.read(s,context));
 		return ret;
 	}
 

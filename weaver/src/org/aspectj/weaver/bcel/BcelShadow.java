@@ -15,8 +15,10 @@ package org.aspectj.weaver.bcel;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Field;
@@ -868,6 +870,12 @@ public class BcelShadow extends Shadow {
     private BcelVar thisVar = null;
     private BcelVar targetVar = null;
     private BcelVar[] argVars = null;
+    private Map/*<TypeX,BcelVar>*/ kindedAnnotationVars = null;
+    private Map/*<TypeX,BcelVar>*/ thisAnnotationVars = null;
+    private Map/*<TypeX,BcelVar>*/ targetAnnotationVars = null;
+    private Map/*<TypeX,BcelVar>*/[] argAnnotationVars = null;
+    private Map/*<TypeX,BcelVar>*/ withinAnnotationVars = null;
+    private Map/*<TypeX,BcelVar>*/ withincodeAnnotationVars = null;
 
     public Var getThisVar() {
         if (!hasThis()) {
@@ -876,18 +884,48 @@ public class BcelShadow extends Shadow {
         initializeThisVar();
         return thisVar;
     }
+	public Var getThisAnnotationVar(TypeX forAnnotationType) {
+        if (!hasThis()) {
+            throw new IllegalStateException("no this");
+        }
+        initializeThisAnnotationVars();
+        return (Var) thisAnnotationVars.get(forAnnotationType);
+	}
     public Var getTargetVar() {
         if (!hasTarget()) {
             throw new IllegalStateException("no target");
         }
 	    initializeTargetVar();
 	    return targetVar;
+    }
+    public Var getTargetAnnotationVar(TypeX forAnnotationType) {
+        if (!hasTarget()) {
+            throw new IllegalStateException("no target");
         }
-    public Var getArgVar(int i) {
+	    initializeTargetAnnotationVars();
+	    return (Var) targetAnnotationVars.get(forAnnotationType);
+   }
+   public Var getArgVar(int i) {
         initializeArgVars();
         return argVars[i];
-    }
-
+   }
+   public Var getArgAnnotationVar(int i,TypeX forAnnotationType) {
+		initializeArgAnnotationVars();
+		return (Var) argAnnotationVars[i].get(forAnnotationType);
+   }   
+   public Var getKindedAnnotationVar(TypeX forAnnotationType) {
+   		initializeKindedAnnotationVars();
+   		return (Var) kindedAnnotationVars.get(forAnnotationType);
+   }
+	public Var getWithinAnnotationVar(TypeX forAnnotationType) {
+		initializeWithinAnnotationVars();
+		return (Var) withinAnnotationVars.get(forAnnotationType);
+	}	
+	public Var getWithinCodeAnnotationVar(TypeX forAnnotationType) {
+		initializeWithinCodeAnnotationVars();
+		return (Var) withincodeAnnotationVars.get(forAnnotationType);
+	}
+    
     // reflective thisJoinPoint support
     private BcelVar thisJoinPointVar = null;
     private boolean isThisJoinPointLazy;
@@ -1227,6 +1265,50 @@ public class BcelShadow extends Shadow {
 //        System.out.println("initialized: " + this + " thisVar = " + thisVar);
     }
 
+    public void initializeThisAnnotationVars() {
+    	if (thisAnnotationVars != null) return;
+    	thisAnnotationVars = new HashMap();
+    	// populate..
+    }
+    public void initializeTargetAnnotationVars() {
+    	if (targetAnnotationVars != null) return;
+        if (getKind().isTargetSameAsThis()) {
+            if (hasThis()) initializeThisAnnotationVars();
+            targetAnnotationVars = thisAnnotationVars;
+        } else {
+        	targetAnnotationVars = new HashMap();
+        	// populate.
+        }
+    }
+    public void initializeArgAnnotationVars() {
+    	if (argAnnotationVars != null) return;
+    	int numArgs = getArgCount();
+    	argAnnotationVars = new Map[numArgs];
+    	for (int i = 0; i < argAnnotationVars.length; i++) {
+			argAnnotationVars[i] = new HashMap();
+			// populate
+		}
+    }
+    public void initializeKindedAnnotationVars() {
+    	if (kindedAnnotationVars != null) return;
+    	kindedAnnotationVars = new HashMap();
+    	// by determining what "kind" of shadow we are, we can find out the
+    	// annotations on the appropriate element (method, field, constructor, type).
+    	// Then create one BcelVar entry in the map for each annotation, keyed by
+    	// annotation type (TypeX).
+    	
+    }
+    public void initializeWithinAnnotationVars() {
+    	if (withinAnnotationVars != null) return;
+    	withinAnnotationVars = new HashMap();
+    	// populate
+    }
+    public void initializeWithinCodeAnnotationVars() {
+    	if (withincodeAnnotationVars != null) return;
+    	withincodeAnnotationVars = new HashMap();
+    	// populate
+    }
+    
             
     // ---- weave methods
 

@@ -70,4 +70,46 @@ public class TestShadow extends Shadow {
 		throw new RuntimeException("unimplemented");
 	}
 
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.Shadow#getKindedAnnotationVar()
+	 */
+	public Var getKindedAnnotationVar(TypeX annotationType) {
+		throw new RuntimeException("unimplemented");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.Shadow#getWithinAnnotationVar()
+	 */
+	public Var getWithinAnnotationVar(TypeX annotationType) {
+		throw new RuntimeException("unimplemented");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.Shadow#getWithinCodeAnnotationVar()
+	 */
+	public Var getWithinCodeAnnotationVar(TypeX annotationType) {
+		throw new RuntimeException("unimplemented");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.Shadow#getThisAnnotationVar()
+	 */
+	public Var getThisAnnotationVar(TypeX annotationType) {
+		throw new RuntimeException("unimplemented");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.Shadow#getTargetAnnotationVar()
+	 */
+	public Var getTargetAnnotationVar(TypeX annotationType) {
+		throw new RuntimeException("unimplemented");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.Shadow#getArgAnnotationVar(int)
+	 */
+	public Var getArgAnnotationVar(int i,TypeX annotationType) {
+		throw new RuntimeException("unimplemented");
+	}
+
 }

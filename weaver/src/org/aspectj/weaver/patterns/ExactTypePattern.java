@@ -63,8 +63,8 @@ public class ExactTypePattern extends TypePattern {
 
 	}
 	
-	public ExactTypePattern(TypeX type, boolean includeSubtypes) {
-		super(includeSubtypes);
+	public ExactTypePattern(TypeX type, boolean includeSubtypes,boolean isVarArgs) {
+		super(includeSubtypes,isVarArgs);
 		this.type = type;
 	}
 	
@@ -151,22 +151,32 @@ public class ExactTypePattern extends TypePattern {
     public boolean equals(Object other) {
     	if (!(other instanceof ExactTypePattern)) return false;
     	ExactTypePattern o = (ExactTypePattern)other;
-    	return o.type.equals(this.type);
+    	return (o.type.equals(this.type) && o.annotationPattern.equals(this.annotationPattern));
     }
     
     public int hashCode() {
-        return type.hashCode();
+        int result = 17;
+        result = 37*result + type.hashCode();
+        result = 37*result + annotationPattern.hashCode();
+        return result;
     }
-	
+
+    private static final byte EXACT_VERSION = 1; // rev if changed
 	public void write(DataOutputStream out) throws IOException {
 		out.writeByte(TypePattern.EXACT);
+		out.writeByte(EXACT_VERSION);
 		type.write(out);
 		out.writeBoolean(includeSubtypes);
+		out.writeBoolean(isVarArgs);
+		annotationPattern.write(out);
 		writeLocation(out);
 	}
 	
 	public static TypePattern read(DataInputStream s, ISourceContext context) throws IOException {
-		TypePattern ret = new ExactTypePattern(TypeX.read(s), s.readBoolean());
+		byte version = s.readByte();
+		if (version > EXACT_VERSION) throw new BCException("ExactTypePattern was written by a more recent version of AspectJ");
+		TypePattern ret = new ExactTypePattern(TypeX.read(s), s.readBoolean(), s.readBoolean());
+		ret.setAnnotationTypePattern(AnnotationTypePattern.read(s,context));
 		ret.readLocation(context, s);
 		return ret;
 	}

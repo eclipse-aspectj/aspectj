@@ -21,16 +21,16 @@ import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.TypeX;
 
-public class BindingTypePattern extends ExactTypePattern {
+public class BindingTypePattern extends ExactTypePattern implements BindingPattern {
 	private int formalIndex;
 
-	public BindingTypePattern(TypeX type, int index) {
-		super(type, false);
+	public BindingTypePattern(TypeX type, int index,boolean isVarArgs) {
+		super(type, false,isVarArgs);
 		this.formalIndex = index;
 	}
 
-	public BindingTypePattern(FormalBinding binding) {
-		this(binding.getType(), binding.getIndex());
+	public BindingTypePattern(FormalBinding binding, boolean isVarArgs) {
+		this(binding.getType(), binding.getIndex(),isVarArgs);
 	}
 	
 	public int getFormalIndex() {
@@ -53,21 +53,22 @@ public class BindingTypePattern extends ExactTypePattern {
 		out.writeByte(TypePattern.BINDING);
 		type.write(out);
 		out.writeShort((short)formalIndex);
+		out.writeBoolean(isVarArgs);
 		writeLocation(out);
 	}
 	
 	public static TypePattern read(DataInputStream s, ISourceContext context) throws IOException {
-		TypePattern ret = new BindingTypePattern(TypeX.read(s), s.readShort());
+		TypePattern ret = new BindingTypePattern(TypeX.read(s), s.readShort(), s.readBoolean());
 		ret.readLocation(context, s);
 		return ret;
 	}
 	
 	public TypePattern remapAdviceFormals(IntMap bindings) {			
 		if (!bindings.hasKey(formalIndex)) {
-			return new ExactTypePattern(type, false);
+			return new ExactTypePattern(type, false, isVarArgs);
 		} else {
 			int newFormalIndex = bindings.get(formalIndex);
-			return new BindingTypePattern(type, newFormalIndex);
+			return new BindingTypePattern(type, newFormalIndex, isVarArgs);
 		}
 	}
 

@@ -1,0 +1,99 @@
+/* *******************************************************************
+ * Copyright (c) 2004 IBM Corporation.
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * ******************************************************************/
+package org.aspectj.weaver.patterns;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
+import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.AnnotatedElement;
+import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.IntMap;
+
+public abstract class AnnotationTypePattern extends PatternNode {
+
+	public static final AnnotationTypePattern ANY = new AnyAnnotationTypePattern();
+	public static final AnnotationTypePattern ELLIPSIS = new EllipsisAnnotationTypePattern();
+	
+	/**
+	 * TODO: write, read, equals & hashcode both in annotation hierarachy and
+	 * in altered TypePattern hierarchy
+	 */
+	protected AnnotationTypePattern() {
+		super();
+	}
+	
+	public abstract FuzzyBoolean matches(AnnotatedElement annotated);
+	
+	public AnnotationTypePattern remapAdviceFormals(IntMap bindings) {
+		return this;
+	}
+	
+	/**
+	 * This can modify in place, or return a new TypePattern if the type changes.
+	 */
+    public AnnotationTypePattern resolveBindings(IScope scope, Bindings bindings, 
+    								             boolean allowBinding)
+    { 
+    	return this;
+    }
+
+
+	public static final byte EXACT = 1;
+	public static final byte BINDING = 2;
+	public static final byte NOT = 3;
+	public static final byte OR = 4;
+	public static final byte AND = 5;
+	public static final byte ELLIPSIS_KEY = 6;
+	public static final byte ANY_KEY = 7;
+
+	public static AnnotationTypePattern read(DataInputStream s, ISourceContext context) throws IOException {
+		byte key = s.readByte();
+		switch(key) {
+			case EXACT: return ExactAnnotationTypePattern.read(s, context);
+//			case BINDING: return BindingAnnotationTypePattern.read(s, context);
+			case NOT: return NotAnnotationTypePattern.read(s, context);
+			case OR: return OrAnnotationTypePattern.read(s, context);
+			case AND: return AndAnnotationTypePattern.read(s, context);
+			case ELLIPSIS_KEY: return ELLIPSIS;
+			case ANY_KEY: return ANY;
+		}
+		throw new BCException("unknown TypePattern kind: " + key);
+	}
+
+}
+
+class AnyAnnotationTypePattern extends AnnotationTypePattern {
+
+	public FuzzyBoolean matches(AnnotatedElement annotated) {
+		return FuzzyBoolean.YES;
+	}
+
+	public void write(DataOutputStream s) throws IOException {
+		s.writeByte(AnnotationTypePattern.ANY_KEY);
+	}
+	
+	public String toString() { return "@ANY"; }
+}
+
+class EllipsisAnnotationTypePattern extends AnnotationTypePattern {
+
+	public FuzzyBoolean matches(AnnotatedElement annotated) {
+		return FuzzyBoolean.NO;
+	}
+
+	public void write(DataOutputStream s) throws IOException {
+		s.writeByte(AnnotationTypePattern.ELLIPSIS_KEY);
+	}
+	
+	public String toString() { return ".."; }
+}

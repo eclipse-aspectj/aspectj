@@ -33,7 +33,7 @@ public class AndTypePattern extends TypePattern {
 	private TypePattern left, right;
 	
 	public AndTypePattern(TypePattern left, TypePattern right) {
-		super(false);  //??? we override all methods that care about includeSubtypes
+		super(false,false);  //??? we override all methods that care about includeSubtypes
 		this.left = left;
 		this.right = right;
 		setLocation(left.getSourceContext(), left.getStart(), right.getEnd());

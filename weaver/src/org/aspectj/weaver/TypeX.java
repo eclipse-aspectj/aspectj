@@ -18,7 +18,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 
-public class TypeX {
+public class TypeX implements AnnotatedElement {
 	/**
 	 * This is the bytecode string representation of this Type
 	 */
@@ -552,6 +552,11 @@ public class TypeX {
 		return world.resolve(this);
 	}
 
+	public boolean hasAnnotation(TypeX ofType) {
+		//TODO implement TypeX.hasAnnotation
+		return false;
+	}
+	
     // ---- fields
 
     public static final TypeX[] NONE         = new TypeX[0];

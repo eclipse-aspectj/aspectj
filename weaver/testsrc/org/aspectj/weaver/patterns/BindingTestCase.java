@@ -31,8 +31,8 @@ public class BindingTestCase extends TestCase {
 	
 	
 	public void testResolveBindings() {
-		BindingTypePattern at = new BindingTypePattern(world.resolve("java.lang.Object"), 0);
-		BindingTypePattern bt = new BindingTypePattern(world.resolve("java.lang.Object"), 1);
+		BindingTypePattern at = new BindingTypePattern(world.resolve("java.lang.Object"), 0, false);
+		BindingTypePattern bt = new BindingTypePattern(world.resolve("java.lang.Object"), 1, false);
 		
 		BindingTypePattern[] all = new BindingTypePattern[] {at, bt};
 		BindingTypePattern[] none = new BindingTypePattern[] {null, null};

@@ -19,19 +19,19 @@ import org.aspectj.weaver.BCException;
 public class Bindings {
 	public static final Bindings NONE = new Bindings(0);
 	
-	private BindingTypePattern[] bindings;
+	private BindingPattern[] bindings;
 	
-	public Bindings(BindingTypePattern[] bindings) {
+	public Bindings(BindingPattern[] bindings) {
 		this.bindings = bindings;
 	}
 	
 	public Bindings(int count) {
-		this(new BindingTypePattern[count]);
+		this(new BindingPattern[count]);
 	}
 	
-	public void register(BindingTypePattern binding, IScope scope) {
+	public void register(BindingPattern binding, IScope scope) {
 		int index = binding.getFormalIndex();
-		BindingTypePattern existingBinding = bindings[index];
+		BindingPattern existingBinding = bindings[index];
 		if (existingBinding != null) {
 			scope.message(IMessage.ERROR, existingBinding, binding,
 						"multiple bindings" + index + ", " + binding);
@@ -53,8 +53,8 @@ public class Bindings {
 	 * signals an error if one has a binding and other doesn't
 	 */
 	public void checkEquals(Bindings other, IScope scope) {
-		BindingTypePattern[] b1 = this.bindings;
-		BindingTypePattern[] b2 = other.bindings;
+		BindingPattern[] b1 = this.bindings;
+		BindingPattern[] b2 = other.bindings;
 		int len = b1.length;
 		if (len != b2.length) {
 			throw new BCException("INSANE");
@@ -102,7 +102,7 @@ public class Bindings {
 //		int len = bindings.length;
 //		boolean[] a = new boolean[len];
 //		System.arraycopy(bindings, 0, a, 0, len);
-		return new Bindings((BindingTypePattern[])bindings.clone());
+		return new Bindings((BindingPattern[])bindings.clone());
 	}
 
 	public void checkAllBound(IScope scope) {

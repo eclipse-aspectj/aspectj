@@ -104,6 +104,7 @@ public class BasicTokenSource implements ITokenSource {
 				case ',':
 				case '!':
 				case ':':
+				case '@':
 				    tokens.add(BasicToken.makeOperator(makeString(ch), i-1, i-1));
 				    continue;
 				case '&':

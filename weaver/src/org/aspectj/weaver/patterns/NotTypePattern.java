@@ -34,7 +34,7 @@ public class NotTypePattern extends TypePattern {
 	private TypePattern pattern;
 	
 	public NotTypePattern(TypePattern pattern) {
-		super(false);  //??? we override all methods that care about includeSubtypes
+		super(false,false);  //??? we override all methods that care about includeSubtypes
 		this.pattern = pattern;
 		setLocation(pattern.getSourceContext(), pattern.getStart(), pattern.getEnd());
 	}

@@ -124,6 +124,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	public static final byte HANDLER = 13;
 	public static final byte IF_TRUE = 14;
 	public static final byte IF_FALSE = 15;
+	public static final byte ATKINDED = 16;
 	
 	public static final byte NONE = 20;
 
@@ -241,7 +242,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 			case HANDLER: ret = HandlerPointcut.read(s, context); break;
 			case IF_TRUE: ret = IfPointcut.makeIfTruePointcut(RESOLVED); break;
 			case IF_FALSE: ret = IfPointcut.makeIfFalsePointcut(RESOLVED); break;
-			
+			case ATKINDED: ret = KindedAnnotationPointcut.read(s, context); break;
 			case NONE: ret = makeMatchesNothing(RESOLVED); break;
 			default:
 				throw new BCException("unknown kind: " + kind);

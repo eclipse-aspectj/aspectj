@@ -100,7 +100,31 @@ public class EclipseShadow extends Shadow {
 	public Var getThisEnclosingJoinPointStaticPartVar() {
 		throw new RuntimeException("unimplemented");
 	}
+
+	public Var getArgAnnotationVar(int i, TypeX annotationType) {
+		throw new RuntimeException("unimplemented");
+	}
+
+	public Var getKindedAnnotationVar(TypeX annotationType) {
+		throw new RuntimeException("unimplemented");
+	}
 	
+	public Var getTargetAnnotationVar(TypeX annotationType) {
+		throw new RuntimeException("unimplemented");
+	}
+	
+	public Var getThisAnnotationVar(TypeX annotationType) {
+		throw new RuntimeException("unimplemented");
+	}
+	
+	public Var getWithinAnnotationVar(TypeX annotationType) {
+		throw new RuntimeException("unimplemented");
+	}
+	
+	public Var getWithinCodeAnnotationVar(TypeX annotationType) {
+		throw new RuntimeException("unimplemented");
+	}
+
 	// --- factory methods
 	
 	public static EclipseShadow makeShadow(EclipseFactory world, ASTNode astNode, 

@@ -148,6 +148,14 @@ public abstract class Shadow {
 	public abstract Var getThisJoinPointStaticPartVar();
 	public abstract Var getThisEnclosingJoinPointStaticPartVar();
     
+	// annotation variables
+	public abstract Var getKindedAnnotationVar(TypeX forAnnotationType);
+	public abstract Var getWithinAnnotationVar(TypeX forAnnotationType);
+	public abstract Var getWithinCodeAnnotationVar(TypeX forAnnotationType);
+	public abstract Var getThisAnnotationVar(TypeX forAnnotationType);
+	public abstract Var getTargetAnnotationVar(TypeX forAnnotationType);
+	public abstract Var getArgAnnotationVar(int i, TypeX forAnnotationType);
+	
 	public abstract Member getEnclosingCodeSignature();
 	
 

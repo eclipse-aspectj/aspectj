@@ -51,9 +51,20 @@ public abstract class TypePattern extends PatternNode {
 	
 	
 	protected boolean includeSubtypes;
+	protected boolean isVarArgs = false;
+	protected AnnotationTypePattern annotationPattern = AnnotationTypePattern.ANY;
+	
+	protected TypePattern(boolean includeSubtypes,boolean isVarArgs) {
+		this.includeSubtypes = includeSubtypes;
+		this.isVarArgs = isVarArgs;
+	}
 	
 	protected TypePattern(boolean includeSubtypes) {
-		this.includeSubtypes = includeSubtypes;
+		this(includeSubtypes,false);
+	}
+	
+	public void setAnnotationTypePattern(AnnotationTypePattern annPatt) {
+		this.annotationPattern = annPatt;
 	}
 	
 	//XXX non-final for Not, && and ||
@@ -66,18 +77,19 @@ public abstract class TypePattern extends PatternNode {
 	}
 	public abstract FuzzyBoolean matchesInstanceof(ResolvedTypeX type);	
 	
-	
 	public final FuzzyBoolean matches(ResolvedTypeX type, MatchKind kind) {
+		FuzzyBoolean typeMatch = null;
 		//??? This is part of gracefully handling missing references
 		if (type == ResolvedTypeX.MISSING) return FuzzyBoolean.NO;
 		
 		if (kind == STATIC) {
-			return FuzzyBoolean.fromBoolean(matchesStatically(type));
+			typeMatch = FuzzyBoolean.fromBoolean(matchesStatically(type));
+			return typeMatch.and(annotationPattern.matches(type));
 		} else if (kind == DYNAMIC) {
 			//System.err.println("matching: " + this + " with " + type);
-			FuzzyBoolean ret = matchesInstanceof(type);
+			typeMatch = matchesInstanceof(type);
 			//System.err.println("    got: " + ret);
-			return ret;
+			return typeMatch.and(annotationPattern.matches(type));
 		} else {
 			throw new IllegalArgumentException("kind must be DYNAMIC or STATIC");
 		}
@@ -142,6 +154,7 @@ public abstract class TypePattern extends PatternNode {
 	}
 	
 	protected abstract boolean matchesExactly(ResolvedTypeX type);
+
 	protected boolean matchesSubtypes(ResolvedTypeX type) {
 		//System.out.println("matching: " + this + " to " + type);
 		if (matchesExactly(type)) {
@@ -189,6 +202,7 @@ public abstract class TypePattern extends PatternNode {
     public TypePattern resolveBindings(IScope scope, Bindings bindings, 
     								boolean allowBinding, boolean requireExactType)
     { 
+    	annotationPattern = annotationPattern.resolveBindings(scope,bindings,allowBinding);
     	return this;
     }
     
@@ -267,7 +281,7 @@ class EllipsisTypePattern extends TypePattern {
 	 * @param includeSubtypes
 	 */
 	public EllipsisTypePattern() {
-		super(false);
+		super(false,false);
 	}
 
 	/**
@@ -314,7 +328,7 @@ class AnyTypePattern extends TypePattern {
 	 * @param includeSubtypes
 	 */
 	public AnyTypePattern() {
-		super(false);
+		super(false,false);
 	}
 
 	/**
@@ -376,7 +390,7 @@ class AnyTypePattern extends TypePattern {
 class NoTypePattern extends TypePattern {
 	
 	public NoTypePattern() {
-		super(false);
+		super(false,false);
 	}
 
 	/**

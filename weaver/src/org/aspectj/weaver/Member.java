@@ -24,7 +24,7 @@ import java.util.List;
 
 import org.aspectj.util.TypeSafeEnum;
 
-public class Member implements Comparable {
+public class Member implements Comparable, AnnotatedElement {
 
     private final Kind kind;
     private final TypeX declaringType;
@@ -464,6 +464,13 @@ public class Member implements Comparable {
     	else return name;
     }
 
+    /* (non-Javadoc)
+	 * @see org.aspectj.weaver.AnnotatedElement#hasAnnotation(org.aspectj.weaver.TypeX)
+	 */
+	public boolean hasAnnotation(TypeX ofType) {
+		// TODO complete this method
+		return false;
+	}
     // ---- fields 'n' stuff
 
     public static final Member[] NONE = new Member[0];

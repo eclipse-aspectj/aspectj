@@ -19,9 +19,13 @@ import java.util.List;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.TypeX;
 
 //XXX doesn't handle errors for extra tokens very well (sometimes ignores)
 public class PatternParser {
+	
+	private static final String AT = "@";
+	
 	private ITokenSource tokenSource;
 	
 	private ISourceContext sourceContext;
@@ -185,6 +189,13 @@ public class PatternParser {
 			eat(")");
 			return p;
 		}
+		if (maybeEat(AT)) {
+			int startPos = tokenSource.peek().getStart();
+			Pointcut p = parseAnnotationPointcut();
+		    int endPos = tokenSource.peek(-1).getEnd();
+		    p.setLocation(sourceContext, startPos, endPos);
+			return p;
+		}
 		int startPos = tokenSource.peek().getStart();
 	    Pointcut p = parseSinglePointcut();
 	    int endPos = tokenSource.peek(-1).getEnd();
@@ -227,7 +238,8 @@ public class PatternParser {
 				new SignaturePattern(Member.ADVICE, ModifiersPattern.ANY, 
 					TypePattern.ANY, TypePattern.ANY, NamePattern.ANY, 
 					TypePatternList.ANY, 
-					ThrowsPattern.ANY));
+					ThrowsPattern.ANY,
+					AnnotationTypePattern.ANY));
 		} else  if (kind.equals("handler")) {
 			parseIdentifier(); eat("(");
 			TypePattern typePat = parseTypePattern();
@@ -245,7 +257,7 @@ public class PatternParser {
 			return new KindedPointcut(Shadow.StaticInitialization,
 					new SignaturePattern(Member.STATIC_INITIALIZATION, ModifiersPattern.ANY, 
 					TypePattern.ANY, typePat, NamePattern.ANY, TypePatternList.EMPTY, 
-					ThrowsPattern.ANY));
+					ThrowsPattern.ANY,AnnotationTypePattern.ANY));
 		} else  if (kind.equals("preinitialization")) {
 			parseIdentifier(); eat("(");
 			SignaturePattern sig = parseConstructorSignaturePattern();
@@ -256,6 +268,61 @@ public class PatternParser {
 		}
 	}
 
+	public Pointcut parseAnnotationPointcut() {		
+		int start = tokenSource.getIndex();
+		IToken t = tokenSource.peek();
+		String kind = parseIdentifier();
+		tokenSource.setIndex(start);
+		if (kind.equals("execution") || kind.equals("call") || 
+						kind.equals("get") || kind.equals("set") ||
+						kind.equals("adviceexecution") ||
+						kind.equals("initialization") || 
+						kind.equals("preinitialization") ||
+						kind.equals("staticinitialization")) {
+			return parseKindedAnnotationPointcut();
+		} else if (kind.equals("args")) {
+			return parseArgsAnnotationPointcut();
+		} else if (kind.equals("this") || kind.equals("target")) {
+			return parseThisOrTargetAnnotationPointcut();
+		} else if (kind.equals("within")) {
+			return parseWithinAnnotationPointcut();
+		} else if (kind.equals("withincode")) {
+			return parseWithinCodeAnnotationPointcut();
+		} throw new ParserException("@pointcut name expected, but found " + kind, t);
+	}
+	
+	private Pointcut parseKindedAnnotationPointcut() {
+		String kind = parseIdentifier();
+		Shadow.Kind shadowKind = null;
+		if (kind.equals("execution")) {
+			shadowKind = Shadow.MethodExecution; // also matches cons execution
+		} else if (kind.equals("call")) {
+			shadowKind = Shadow.MethodCall; // also matches cons call
+		} else if (kind.equals("get")) {
+			shadowKind = Shadow.FieldGet;
+		} else if (kind.equals("set")) {
+			shadowKind = Shadow.FieldSet;
+		} else if (kind.equals("adviceexecution")) {
+			shadowKind = Shadow.AdviceExecution;
+		} else if (kind.equals("initialization")) {
+			shadowKind = Shadow.Initialization;
+		} else if (kind.equals("preinitialization")) {
+			shadowKind = Shadow.PreInitialization;
+		} else if (kind.equals("staticinitialization")) {
+			shadowKind = Shadow.StaticInitialization;
+		} else {
+			throw new ParserException(("bad kind: " + kind), tokenSource.peek());
+		}
+		eat("(");
+		if (maybeEat(")")) {
+			throw new ParserException("expecting @AnnotationName or parameter, but found ')'", tokenSource.peek());
+		}
+		AnnotationTypePattern type = parseAnnotationNameOrVarTypePattern(); 
+		eat(")");
+		return new KindedAnnotationPointcut(shadowKind,type);
+	}
+
+	
 	private SignaturePattern parseConstructorSignaturePattern() {
 		SignaturePattern ret = parseMethodOrConstructorSignaturePattern();
 		if (ret.getKind() == Member.CONSTRUCTOR) return ret;
@@ -306,6 +373,38 @@ public class PatternParser {
 		return new ThisOrTargetPointcut(kind.equals("this"), type);
 	}
 
+	private Pointcut parseThisOrTargetAnnotationPointcut() {
+		String kind = parseIdentifier();
+		eat("(");
+		if (maybeEat(")")) {
+			throw new ParserException("expecting @AnnotationName or parameter, but found ')'", tokenSource.peek());
+		}
+		AnnotationTypePattern type = parseAnnotationNameOrVarTypePattern(); 
+		eat(")");
+		return new ThisOrTargetAnnotationPointcut(kind.equals("this"),type);		
+	}
+
+	private Pointcut parseWithinAnnotationPointcut() {
+		String kind = parseIdentifier();
+		eat("(");
+		if (maybeEat(")")) {
+			throw new ParserException("expecting @AnnotationName or parameter, but found ')'", tokenSource.peek());
+		}
+		AnnotationTypePattern type = parseAnnotationNameOrVarTypePattern(); 
+		eat(")");
+		return new WithinAnnotationPointcut(type);		
+	}
+
+	private Pointcut parseWithinCodeAnnotationPointcut() {
+		String kind = parseIdentifier();
+		eat("(");
+		if (maybeEat(")")) {
+			throw new ParserException("expecting @AnnotationName or parameter, but found ')'", tokenSource.peek());
+		}
+		AnnotationTypePattern type = parseAnnotationNameOrVarTypePattern(); 
+		eat(")");
+		return new WithinCodeAnnotationPointcut(type);		
+	}
 
 	/**
 	 * Method parseArgsPointcut.
@@ -316,7 +415,12 @@ public class PatternParser {
 		TypePatternList arguments = parseArgumentsPattern();
 		return new ArgsPointcut(arguments);
 	}
-
+	
+	private Pointcut parseArgsAnnotationPointcut() {
+		parseIdentifier();
+		AnnotationPatternList arguments = parseArgumentsAnnotationPattern();
+		return new ArgsAnnotationPointcut(arguments);
+	}
 
 	private Pointcut parseReferencePointcut() {
 		TypePattern onType = parseTypePattern();
@@ -378,23 +482,109 @@ public class PatternParser {
 	}
 	
 	public TypePattern parseTypePattern() {
-		TypePattern p = parseAtomicTypePattern(); 
+		AnnotationTypePattern ap = null;
+		TypePattern tp = null;
+		PatternNode p = parseAtomicPattern();
+		if (isAnnotationPattern(p)) {
+			ap = completeAnnotationPattern((AnnotationTypePattern)p);
+			IToken tok = tokenSource.peek();
+			PatternNode typepat = parseTypePattern();
+			if (isAnnotationPattern(p)) {
+				throw new ParserException("Duplicate annotation pattern",tok);
+			} else {
+				tp = (TypePattern) typepat;
+				tp.setAnnotationTypePattern(ap);
+			}
+		} else {
+			tp = (TypePattern)p;
+		}
 		if (maybeEat("&&")) {
-			p = new AndTypePattern(p, parseNotOrTypePattern());
+			tp = new AndTypePattern(tp, parseNotOrTypePattern());
 		}  
 		
 		if (maybeEat("||")) {
-			p = new OrTypePattern(p, parseTypePattern());
+			tp = new OrTypePattern(tp, parseTypePattern());
 		}		
+		return tp;
+	}
+	
+	private AnnotationTypePattern completeAnnotationPattern(AnnotationTypePattern p) {
+		if (maybeEat("&&")) {
+			return new AndAnnotationTypePattern(p,parseNotOrAnnotationPattern());
+		}
+		if (maybeEat("||")) {
+			return new OrAnnotationTypePattern(p,parseAnnotationTypePattern(false));
+		}
+		return p;
+	}
+	
+	private AnnotationTypePattern parseNotOrAnnotationPattern() {
+		AnnotationTypePattern p = parseAnnotationTypePattern(false);
+		if (maybeEat("&&")) {
+			p = new AndAnnotationTypePattern(p,parseAnnotationTypePattern(false));
+		}
+		return p;
+	}
+	
+	private AnnotationTypePattern parseAnnotationTypePattern(boolean isOptional) {
+		IToken tok = tokenSource.peek();
+		PatternNode p = parseAtomicPattern();
+		if (!isAnnotationPattern(p)) {
+			if (isOptional) return null;
+			throw new ParserException("Expecting annotation pattern",tok);
+		}
+		AnnotationTypePattern ap = (AnnotationTypePattern) p;
+		if (maybeEat("&&")) {
+			ap = new AndAnnotationTypePattern(ap, parseNotOrAnnotationPattern());
+		}  
+		
+		if (maybeEat("||")) {
+			ap = new OrAnnotationTypePattern(ap, parseAnnotationTypePattern(false));
+		}		
+		return ap;
+	}
+	
+	private AnnotationTypePattern parseAnnotationNameOrVarTypePattern() {
+		AnnotationTypePattern p = null;
+		int startPos = tokenSource.peek().getStart();
+		if (maybeEat(AT)) {
+			StringBuffer annotationName = new StringBuffer();
+			annotationName.append(parseIdentifier());
+			while (maybeEat(".")) {
+				annotationName.append(parseIdentifier());
+			}
+			TypeX type = TypeX.forName(annotationName.toString());
+			p = new ExactAnnotationTypePattern(type);
+		} else {
+			String formal = parseIdentifier();
+			p = new ExactAnnotationTypePattern(formal); // will get replaced when bindings resolved
+		}
+		int endPos = tokenSource.peek(-1).getEnd();
+		p.setLocation(sourceContext,startPos,endPos);
 		return p;
 	}
 	
 	private TypePattern parseNotOrTypePattern() {
-		TypePattern p = parseAtomicTypePattern();
+		AnnotationTypePattern ap = null;
+		TypePattern tp = null;
+		PatternNode p = parseAtomicPattern();
+		if (isAnnotationPattern(p)) {
+			ap = completeAnnotationPattern((AnnotationTypePattern)p);
+			IToken tok = tokenSource.peek();
+			PatternNode typepat = parseTypePattern();
+			if (isAnnotationPattern(p)) {
+				throw new ParserException("Duplicate annotation pattern",tok);
+			} else {
+				tp = (TypePattern) typepat;
+				tp.setAnnotationTypePattern(ap);
+			}
+		} else {
+			tp = (TypePattern) p;			
+		}
 		if (maybeEat("&&")) {			
-			p = new AndTypePattern(p, parseTypePattern());
+			tp = new AndTypePattern(tp, parseTypePattern());
 		} 
-		return p;		
+		return tp;		
 	}
 	
 	private TypePattern parseAtomicTypePattern() {
@@ -416,6 +606,40 @@ public class PatternParser {
 	    return p;
 	}
 
+	private PatternNode parseAtomicPattern() {
+		if (maybeEat("!")) {
+			PatternNode p = parseAtomicPattern();
+			if (isAnnotationPattern(p)) {
+				return new NotAnnotationTypePattern((AnnotationTypePattern)p);
+			} else {
+				return new NotTypePattern((TypePattern)p);
+			}
+		}
+		if (maybeEat("(")) {
+			TypePattern p = parseTypePattern();
+			eat(")");
+			return p;
+		}
+		if (maybeEat(AT)) {
+			StringBuffer annotationName = new StringBuffer();
+			annotationName.append(parseIdentifier());
+			while (maybeEat(".")) {
+				annotationName.append(parseIdentifier());
+			}
+			TypeX type = TypeX.forName(annotationName.toString());
+			return new ExactAnnotationTypePattern(type);
+		}
+		int startPos = tokenSource.peek().getStart();
+	    TypePattern p = parseSingleTypePattern();
+	    int endPos = tokenSource.peek(-1).getEnd();
+	    p.setLocation(sourceContext, startPos, endPos);
+	    return p;
+	}
+
+	private boolean isAnnotationPattern(PatternNode p) {
+		return (p instanceof AnnotationTypePattern);
+	}
+	
 	public TypePattern parseSingleTypePattern() {
 		List names = parseDottedNamePattern(); 
 //		new ArrayList();
@@ -617,6 +841,28 @@ public class PatternParser {
 		return new TypePatternList(patterns);
 	}
 	
+	public AnnotationPatternList parseArgumentsAnnotationPattern() {
+		List patterns = new ArrayList();
+		eat("(");
+		if (maybeEat(")")) {
+			return new AnnotationPatternList();
+		}
+		
+		do {
+			if (maybeEat(".")) {
+				eat(".");
+				patterns.add(AnnotationTypePattern.ELLIPSIS);
+			} else if (maybeEat("*")) {
+				patterns.add(AnnotationTypePattern.ANY);
+			} else {
+				patterns.add(parseAnnotationNameOrVarTypePattern());
+			}
+		} while (maybeEat(","));
+		eat(")");
+		return new AnnotationPatternList(patterns);
+	}
+	
+	
 	public ThrowsPattern parseOptionalThrowsPattern() {
 		IToken t = tokenSource.peek();
 		if (t.isIdentifier() && t.getString().equals("throws")) {
@@ -638,6 +884,7 @@ public class PatternParser {
 	
 	public SignaturePattern parseMethodOrConstructorSignaturePattern() {
 		int startPos = tokenSource.peek().getStart();
+		AnnotationTypePattern annotationPattern = maybeParseAnnotationPattern();
 		ModifiersPattern modifiers = parseModifiersPattern();
 		TypePattern returnType = parseTypePattern();
 		
@@ -679,7 +926,7 @@ public class PatternParser {
 		TypePatternList parameterTypes = parseArgumentsPattern();
 		
 		ThrowsPattern throwsPattern = parseOptionalThrowsPattern();
-		SignaturePattern ret = new SignaturePattern(kind, modifiers, returnType, declaringType, name, parameterTypes, throwsPattern);
+		SignaturePattern ret = new SignaturePattern(kind, modifiers, returnType, declaringType, name, parameterTypes, throwsPattern, annotationPattern);
 	    int endPos = tokenSource.peek(-1).getEnd();
 	    ret.setLocation(sourceContext, startPos, endPos);
 		return ret;
@@ -703,6 +950,7 @@ public class PatternParser {
 	
 	public SignaturePattern parseFieldSignaturePattern() {
 		int startPos = tokenSource.peek().getStart();
+		AnnotationTypePattern annotationPattern = maybeParseAnnotationPattern();
 		ModifiersPattern modifiers = parseModifiersPattern();
 		TypePattern returnType = parseTypePattern();
 		TypePattern declaringType = parseTypePattern();
@@ -717,7 +965,7 @@ public class PatternParser {
 	    	}
 		}
 		SignaturePattern ret = new SignaturePattern(Member.FIELD, modifiers, returnType,
-					declaringType, name, TypePatternList.ANY, ThrowsPattern.ANY);
+					declaringType, name, TypePatternList.ANY, ThrowsPattern.ANY,annotationPattern);
 					
 		int endPos = tokenSource.peek(-1).getEnd();
 	    ret.setLocation(sourceContext, startPos, endPos);
@@ -820,6 +1068,18 @@ public class PatternParser {
 		} else {
 			return null;
 		}
+	}
+	
+	public AnnotationTypePattern maybeParseAnnotationPattern() {
+		AnnotationTypePattern ret = null;
+		int start = tokenSource.getIndex();
+		ret = parseAnnotationTypePattern(true);
+		if (ret == null) {
+			// failed to find one...
+			tokenSource.setIndex(start);
+			ret = AnnotationTypePattern.ANY;
+		}
+		return ret;
 	}
 	
 	public boolean peek(String token) {
