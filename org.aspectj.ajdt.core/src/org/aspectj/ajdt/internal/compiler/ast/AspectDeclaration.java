@@ -127,7 +127,7 @@ public class AspectDeclaration extends TypeDeclaration {
 		ResolvedTypeX superType = myType.getSuperclass();		
 		
 		// can't be Serializable/Cloneable unless -XserializableAspects
-		if (!world.buildManager.buildConfig.isXserializableAspects()) {
+		if (!world.isXSerializableAspects()) {
 			if (world.getWorld().resolve(TypeX.SERIALIZABLE).isAssignableFrom(myType)) {
 				scope.problemReporter().signalError(sourceStart, sourceEnd,
 								"aspects may not implement Serializable");
