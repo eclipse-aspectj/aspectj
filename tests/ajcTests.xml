@@ -3060,6 +3060,14 @@
         <run class="ThrowsMatching"/>
     </ajc-test>
 
+	<!-- we will handle this by signalling a weave-time error for any around
+	     advice that is applied to a join point which throws checked exceptions
+	     that it can't handle.  proceeds in closures change the exceptions that
+	     around advice can handle to include the greatest lower bound of the
+	     checked exceptions that are legally throwable by the proceed.
+	     Ideally their should be an -Xlint compile-time warning for ALL 
+	     cases that could produce weave-time errors.
+	-->
     <ajc-test dir="new" title="holding onto proceed calls in a closure-like way"
       keywords="from-resolved_10x">
         <compile files="HoldProceed.java"/>
@@ -3538,7 +3546,6 @@
       title="Priviledged aspect methods are missing for privates. [eachobject]"
       keywords="from-resolved_10x">
         <compile files="TheAspect.java,TheObject.java">
-            <message kind="warning" line="7"  text="TheAspect.java:7"/>
         </compile>
         <run class="TheObject"/>
     </ajc-test>
