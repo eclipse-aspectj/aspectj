@@ -644,9 +644,11 @@ commands to your environment as needed.
             When the Java VM generates stack traces, it uses this attribute
             to specify the source file.
       </para>
-      <para>(The compiler also supports the .class file extensions of JSR-45.
+      <para>(The AspectJ 1.0 compiler also supports the .class file extensions of JSR-45.
       These permit compliant debuggers (such as jdb in Java 1.4.1) to identify 
-      the right file and line even given many source files for a single class.)  
+      the right file and line even given many source files for a single class.
+      JSR-45 support is planned for ajc in AspectJ 1.1, but is not in the initial
+      release.  To get fully debuggable .class files, use the -Xnoinline option.)  
       </para>
 
       <para>Probably the only time you may see this format is when you view
