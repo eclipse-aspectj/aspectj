@@ -26,17 +26,22 @@
 
       <legalnotice>
 	   <para>Copyright (c) 1998-2001 Xerox Corporation, 
-         2002 Palo Alto Research Center, Incorporated.  
+         2002 Palo Alto Research Center, Incorporated,
+         2003 Contributors.  
          All rights reserved.
         </para>
       </legalnotice>
 
     <abstract>
       <para>
-	This guide describes the tools which are part of the AspectJ
-	development environment.  They currently describe the 1.0.6 versions of
-	the tools: See README-11.html in the distribution for a description of
-	changes.  A companion guide describes the AspectJ language.
+	This guide describes the tools in the AspectJ 1.1 development environment.  
+    See also 
+      <ulink url="../progguide/index.html">The AspectJ Programming Guide</ulink>,
+      the documentation for the AspectJ 
+      <ulink url="../ant-tasks.html">Ant tasks</ulink>,
+    and the documentation available with the AspectJ support available for
+    various integrated development environments 
+    (e.g., Eclipse, Emacs, JBuilder, and NetBeans).
       </para>
     </abstract>
   </bookinfo>
