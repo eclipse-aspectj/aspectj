@@ -1,10 +1,12 @@
-<project default="extractAndPatchAndJar" basedir=".">
+<project default="packageAndPush" basedir=".">
 
   <!-- top-level -->
   <target name="extractAndPatchAndJar" depends="extractAndPatch,jar,srcjar" />
 
   <target name="extractAndPatch" depends="unzipSource,createPatchedSource" />
-
+  
+	<target name="packageAndPush" depends="buildTheJars,push"/>
+	
   <target name="jar" depends="pack">
     <copy file="../lib/regexp/jakarta-regexp-1.2.jar"
         tofile="bcel/lib/Regex.jar" />
@@ -19,6 +21,11 @@
   <target name="push">
     <copy file="bcel.jar" todir="../lib/bcel" />
     <copy file="bcel-src.zip" todir="../lib/bcel" />
+  </target>
+	
+  <target name="buildTheJars">
+  	<zip file="bcel.jar" basedir="bin" includes="**/*" excludes="**/tests/*.class"/>
+  	<zip file="bcel-src.zip" basedir="src" includes="**/*"/>
   </target>
   
   <target name="diff" depends="transformFromAJ,pack">
