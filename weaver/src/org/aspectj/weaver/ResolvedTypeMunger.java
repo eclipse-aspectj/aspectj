@@ -15,6 +15,7 @@ package org.aspectj.weaver;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -38,7 +39,7 @@ public abstract class ResolvedTypeMunger {
 	protected Kind kind;
 	protected ResolvedMember signature;
 	
-	public static transient boolean persistSourceLocation = false;
+	public static transient boolean persistSourceLocation = true;
 	
 	private Set /* resolvedMembers */ superMethodsCalled = Collections.EMPTY_SET;
 	
@@ -145,20 +146,29 @@ public abstract class ResolvedTypeMunger {
 	protected static ISourceLocation readSourceLocation(DataInputStream s) throws IOException {
 		if (!persistSourceLocation) return null;
 		ISourceLocation ret = null;
-		ObjectInputStream ois = new ObjectInputStream(s);
+		ObjectInputStream ois = null;
 		try {
+			// This logic copes with the location missing from the attribute - an EOFException will 
+			// occur on the next line and we ignore it.
+		    ois = new ObjectInputStream(s);
 			Boolean validLocation = (Boolean)ois.readObject();
 			if (validLocation.booleanValue()) {
 				File f 	   = (File) ois.readObject();
 				Integer ii = (Integer)ois.readObject();
 				ret = new SourceLocation(f,ii.intValue());
 			}
+		} catch (EOFException eof) {
+			return null; // This exception occurs if processing an 'old style' file where the
+			             // type munger attributes don't include the source location.
 		} catch (IOException ioe) {
-			// Something went wrong, maybe this is an 'old style' file that doesnt attach locations to mungers
+			// Something went wrong, maybe this is an 'old style' file that doesnt attach locations to mungers?
+			// (but I thought that was just an EOFException?)
 			ioe.printStackTrace();
 			return null;
-		} catch (ClassNotFoundException e) { }
-		ois.close();
+		} catch (ClassNotFoundException e) {
+		} finally {
+			if (ois!=null) ois.close();
+		}
 		return ret;
 	}
 	
