@@ -34,6 +34,7 @@ import org.aspectj.apache.bcel.generic.PUTSTATIC;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.Repository;
+import org.aspectj.apache.bcel.util.ClassLoaderRepository;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
@@ -49,10 +50,14 @@ import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.SimpleScope;
+import org.aspectj.weaver.patterns.PerClause;
 
 public class BcelWorld extends World implements Repository {
 	private ClassPathManager classPath;
-	
+
+    //ALEX
+    private Repository delegate;
+
 	//private ClassPathManager aspectPath = null;
 	// private List aspectPathEntries;
 	
@@ -90,7 +95,10 @@ public class BcelWorld extends World implements Repository {
 		setMessageHandler(handler);	
 		setXRefHandler(xrefHandler);
 		// Tell BCEL to use us for resolving any classes
-		org.aspectj.apache.bcel.Repository.setRepository(this);
+
+        //ALEX Andy. Replace static delegate setting with local delegate field (see code at start of lookupJavaClass())
+        delegate = this;
+		// org.aspectj.apache.bcel.Repository.setRepository(delegate);
 	}
 	
 	public BcelWorld(ClassPathManager cpm, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
@@ -98,9 +106,24 @@ public class BcelWorld extends World implements Repository {
 		setMessageHandler(handler);
 		setXRefHandler(xrefHandler);
 		// Tell BCEL to use us for resolving any classes
-		org.aspectj.apache.bcel.Repository.setRepository(this);
+
+        //ALEX Andy. Replace static delegate setting with local delegate field (see code at start of lookupJavaClass())
+        delegate = this;
+		// org.aspectj.apache.bcel.Repository.setRepository(delegate);
 	}
-	
+
+    //ALEX
+    public BcelWorld(ClassLoader loader, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
+        this.classPath = null;
+        setMessageHandler(handler);
+        setXRefHandler(xrefHandler);
+        // Tell BCEL to use us for resolving any classes
+
+        //ALEX Andy. Replace static delegate setting with local delegate field (see code at start of lookupJavaClass())
+        delegate = new ClassLoaderRepository(loader);
+        // org.aspectj.apache.bcel.Repository.setRepository(delegate);
+    }
+
 	public void addPath (String name) {
 		classPath.addPath(name, this.getMessageHandler());
 	}
@@ -217,7 +240,19 @@ public class BcelWorld extends World implements Repository {
 	
 	
 	private JavaClass lookupJavaClass(ClassPathManager classPath, String name) {
-		if (classPath == null) return null;
+        //ALEX
+		//if (classPath == null) return null;
+
+        if (classPath == null) {
+            try {
+                return delegate.loadClass(name);
+            } catch (ClassNotFoundException e) {
+                //ALEX - issue when resolve tries to use the import (java.lang.int etc)
+                //was: e.printStackTrace();
+                return null;
+            }
+        }
+
 		try {
 	        ClassPathManager.ClassFile file = classPath.find(TypeX.forName(name));
 	        if (file == null) return null;
@@ -366,6 +401,11 @@ public class BcelWorld extends World implements Repository {
 	public ConcreteTypeMunger makeCflowCounterFieldAdder(ResolvedMember cflowField) {
 		return new BcelCflowCounterFieldAdder(cflowField);
 	}
+
+    //ALEX
+    public ConcreteTypeMunger makePerClauseAspect(ResolvedTypeX aspect, PerClause.Kind kind) {
+        return new BcelPerClauseAspectAdder(aspect, kind);
+    }
 
 	public static BcelObjectType getBcelObjectType(ResolvedTypeX concreteAspect) {
 		//XXX need error checking

@@ -514,7 +514,11 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
     public boolean isAspect() {
     	return false;
     }
-    
+
+    public boolean isAnnotationStyleAspect() {
+    	return false;
+    }
+
     /**
      * Note: Only overridden by Name subtype.
      */
@@ -637,7 +641,11 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 	    public boolean isAspect() {
 	    	return delegate.isAspect();
 	    }
-	    
+
+        public boolean isAnnotationStyleAspect() {
+            return delegate.isAnnotationStyleAspect();
+        }
+
 	    public boolean isEnum() {
 	    	return delegate.isEnum();
 	    }
@@ -794,6 +802,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 	    }
 	    
 	    public abstract boolean isAspect();
+        public abstract boolean isAnnotationStyleAspect();
 	    public abstract boolean isInterface();
 	    public abstract boolean isEnum();
 	    public abstract boolean isAnnotation();

@@ -13,20 +13,33 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
-import org.aspectj.ajdt.internal.compiler.ast.*;
+import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.DeclareDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.InterTypeDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
 import org.aspectj.bridge.IMessage;
-//import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.patterns.PerClause;
-import org.aspectj.weaver.patterns.PerSingleton;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilerModifiers;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedPointcutDefinition;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.patterns.PerClause;
+import org.aspectj.weaver.patterns.PerSingleton;
 
 /**
  * Supports viewing eclipse TypeDeclarations/SourceTypeBindings as a ResolvedTypeX
@@ -67,6 +80,19 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 	public boolean isAspect() {
 		return declaration instanceof AspectDeclaration;
 	}
+
+    //ALEX Andy. ??  isAnnotationStyleAspect() needs implementing?
+    public boolean isAnnotationStyleAspect() {
+        if (declaration.annotations == null) {
+            return false;
+        }
+        for (int i = 0; i < declaration.annotations.length; i++) {
+            Annotation annotation = declaration.annotations[i];
+            // do something there
+            ;
+        }
+        return false;
+    }
 
 	public WeaverStateInfo getWeaverState() {
 		return null;
@@ -236,11 +262,6 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 		if (as == null) return false;
 		for (int i = 0; i < as.length; i++) {
 			Annotation annotation = as[i];
-			if (annotation.resolvedType == null) {
-				// Something has gone wrong - probably we have a 1.4 rt.jar around
-				// which will result in a separate error message.
-				return false;
-			}
 			String tname = CharOperation.charToString(annotation.resolvedType.constantPoolName());
 			if (TypeX.forName(tname).equals(ofType)) {
 				return true;

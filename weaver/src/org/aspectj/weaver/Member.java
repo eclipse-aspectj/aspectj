@@ -524,6 +524,15 @@ public class Member implements Comparable, AnnotatedElement {
     public static final Kind HANDLER   = new Kind("HANDLER", 7);    
   
     
+    //ALEX Andy.  ?? What is stored in the aj$class field? Should probably be ajc$
+    public static final Member ajClassField = new Member(
+            FIELD,
+            TypeX.OBJECT,//any one
+            Modifier.PRIVATE | Modifier.STATIC | Modifier.FINAL,
+            "aj$class",
+            TypeX.JAVA_LANG_CLASS.getSignature()
+    );
+
 
     
 	public Collection/*ResolvedTypeX*/ getDeclaringTypes(World world) {

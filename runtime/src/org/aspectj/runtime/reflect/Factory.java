@@ -43,7 +43,22 @@ public final class Factory {
     public JoinPoint.StaticPart makeSJP(String kind, Signature sig, int l) {
         return new JoinPointImpl.StaticPartImpl(kind, sig, makeSourceLoc(l, -1));
     }
-    
+
+    //ALEX Andy. Adding makeESJP method
+    public JoinPoint.EnclosingStaticPart makeESJP(String kind, Signature sig, SourceLocation loc) {
+        return new JoinPointImpl.EnclosingStaticPartImpl(kind, sig, loc);
+    }
+
+    //ALEX Andy. Adding makeESJP method
+    public JoinPoint.EnclosingStaticPart makeESJP(String kind, Signature sig, int l, int c) {
+        return new JoinPointImpl.EnclosingStaticPartImpl(kind, sig, makeSourceLoc(l, c));
+    }
+
+    //ALEX Andy. Adding makeESJP method
+    public JoinPoint.EnclosingStaticPart makeESJP(String kind, Signature sig, int l) {
+        return new JoinPointImpl.EnclosingStaticPartImpl(kind, sig, makeSourceLoc(l, -1));
+    }
+
     public static JoinPoint.StaticPart makeEncSJP(Member member) {
     	Signature sig = null;
     	String kind = null;
@@ -64,7 +79,7 @@ public final class Factory {
     	} else {
     		throw new IllegalArgumentException("member must be either a method or constructor");
     	}
-    	return new JoinPointImpl.StaticPartImpl(kind,sig,null);
+        return new JoinPointImpl.EnclosingStaticPartImpl(kind,sig,null);
     }
     
     private static Object[] NO_ARGS = new Object[0];

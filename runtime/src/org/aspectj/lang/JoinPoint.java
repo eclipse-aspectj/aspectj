@@ -15,6 +15,7 @@
 package org.aspectj.lang;
 
 import org.aspectj.lang.reflect.SourceLocation;
+import org.aspectj.runtime.internal.AroundClosure;
 
 /**
  * <p>Provides reflective access to both the state available at a join point and
@@ -155,6 +156,7 @@ public interface JoinPoint {
         String toLongString();
     }
 
+    public interface EnclosingStaticPart extends StaticPart {}
 
     /** 
      * Returns an object that encapsulates the static parts of this join point.
@@ -177,4 +179,9 @@ public interface JoinPoint {
     static String EXCEPTION_HANDLER = "exception-handler";
 
     static String ADVICE_EXECUTION = "advice-execution"; //??? consider this vs. pcd
+
+    //ALEX Andy. Added to support proceed on a join point
+    void set$AroundClosure(AroundClosure arc);
+    public Object proceed() throws Throwable ;
+
 }

@@ -457,7 +457,8 @@ public abstract class Shadow {
 		ak.getKey()==AdviceKind.PerThisEntry.getKey() ||
 		ak.getKey()==AdviceKind.PerTargetEntry.getKey() ||
 		ak.getKey()==AdviceKind.Softener.getKey()) {
-			  System.err.println("Dont want a message about this: "+ak);
+			  //ALEX Andy. ?? Alex doesn't want to print this message - why?
+              //System.err.println("Dont want a message about this: "+ak);
 			  return null;
 		}
 		throw new RuntimeException("Shadow.determineRelKind: What the hell is it? "+ak);

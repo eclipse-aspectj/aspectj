@@ -120,7 +120,7 @@ public class AjcMemberMaker {
 		return new ResolvedMember(
 				Member.FIELD, 
 				declaringType,
-				PRIVATE_STATIC,
+				PRIVATE_STATIC,//ALEX Andy. Make this field synthetic
 				NameMangler.INITFAILURECAUSE_FIELD_NAME,
 				TypeX.THROWABLE.getSignature());
 	}
@@ -693,4 +693,5 @@ public class AjcMemberMaker {
 			"<init>",
 			"()V");
 	}
+	
 }

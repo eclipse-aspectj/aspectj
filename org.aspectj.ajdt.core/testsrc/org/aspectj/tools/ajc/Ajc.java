@@ -47,7 +47,14 @@ public class Ajc {
 		".."+File.separator+"testing-client"+File.separator+"bin" + File.pathSeparator + 
 		".."+File.separator+"runtime"+File.separator+"bin" + File.pathSeparator +
 		".."+File.separator+"lib"+File.separator+"test"+File.separator+"aspectjrt.jar"+ File.pathSeparator+
-		".."+File.separator+"lib"+File.separator+"test"+File.separator+"testing-client.jar";
+		".."+File.separator+"lib"+File.separator+"test"+File.separator+"testing-client.jar"
+        // ALEX Andy. ?? What does _IDE add?
+		// + File.pathSeparator+ ".."+File.separator+"_IDE"
+        + File.pathSeparator+ ".."+File.separator+"lib"+File.separator+"junit"+File.separator+"junit.jar"
+        + File.pathSeparator+".."+File.separator+"java5"+File.separator+"runtime-bin";
+
+
+
 	private CompilationResult result;
 	private File sandbox;
 	private File baseDir;

@@ -124,12 +124,34 @@ public class BcelWeaver implements IWeaver {
 
 
     public void addLibraryAspect(String aspectName) {
-    	ResolvedTypeX type = world.resolve(aspectName);
+        //ALEX was:
+    	//ResolvedTypeX type = world.resolve(aspectName);
+
+        //ALEX
+        // 1 - resolve as is
+        ResolvedTypeX type = world.resolve(TypeX.forName(aspectName), true);
+        if (type.equals(ResolvedTypeX.MISSING)) {
+            // fallback on inner class lookup mechanism
+            String fixedName = aspectName;
+            int hasDot = fixedName.lastIndexOf('.');
+            while (hasDot > 0) {
+                System.out.println("BcelWeaver.addLibraryAspect " + fixedName);
+                char[] fixedNameChars = fixedName.toCharArray();
+                fixedNameChars[hasDot] = '$';
+                fixedName = new String(fixedNameChars);
+                hasDot = fixedName.lastIndexOf('.');
+                type = world.resolve(TypeX.forName(fixedName), true);
+                if (!type.equals(ResolvedTypeX.MISSING)) {
+                    break;
+                }
+            }
+        }
+
     	//System.out.println("type: " + type + " for " + aspectName);
 		if (type.isAspect()) {
 			xcutSet.addOrReplaceAspect(type);
 		} else {
-			throw new RuntimeException("unimplemented");
+			throw new RuntimeException("Cannot register non aspect: " + type.getName() + " , " + aspectName);//ALEX
 		}
     }
     
@@ -360,13 +382,46 @@ public class BcelWeaver implements IWeaver {
 		declareParentsList = xcutSet.getDeclareParents();
     	
 		//XXX this gets us a stable (but completely meaningless) order
+        //ALEX TODO this breaks @AJ advice source code based precedence
+        //ALEX: commented that block out - might have some side effect on AJ somewhere ?
+		//ALEX ANDY Can we not sort on a more sensible key - like source location? that
+		// ought to keep both sides happy ...
+		//Actually we'll need to start filling in source locations for mungers originating from
+		// @AJ so that the tools work correctly - this will probably involve setting the source locations
+		// in the AJ attributes built by the @Aj attribute reader code.
+		
+		//List oldList = new ArrayList();oldList.addAll(shadowMungerList);
+		
 		Collections.sort(
-			shadowMungerList, 
+			shadowMungerList,
 			new Comparator() {
 				public int compare(Object o1, Object o2) {
-					return o1.toString().compareTo(o2.toString());
+					// HACK
+					ShadowMunger sm1 = (ShadowMunger)o1;
+					ShadowMunger sm2 = (ShadowMunger)o2;	
+					if (sm1.getSourceLocation()==null) return (sm2.getSourceLocation()==null?0:1);//System.err.println("no loc="+sm1);
+					if (sm2.getSourceLocation()==null) return -1;//System.err.println("no loc="+sm2);
+					
+					return (sm2.getSourceLocation().getOffset()-sm1.getSourceLocation().getOffset());
+//					return o1.toString().compareTo(o2.toString());
 				}
 			});
+		
+//		boolean changed =false;
+//		for (int i =0 ; i<oldList.size();i++) {
+//			if (!oldList.get(i).equals(shadowMungerList.get(i))) changed = true;
+//		}
+//		if (changed) {
+//			for (int i =0 ; i<oldList.size();i++) {
+//				System.err.println(i+"] "+oldList.get(i)+" "+shadowMungerList.get(i));
+//			}
+//		}
+
+        //ALEX debug precedence
+//        for (Iterator iterator = shadowMungerList.iterator(); iterator.hasNext();) {
+//            Object o = (Object) iterator.next();
+//            System.out.println(((org.aspectj.weaver.Advice)o).getSignature());
+//        }
     }
     
     /*
@@ -1089,6 +1144,8 @@ public class BcelWeaver implements IWeaver {
 			} catch (RuntimeException re) {
 				System.err.println("trouble in: ");
 				//XXXclazz.print(System.err);
+                //ALEX
+                re.printStackTrace();
 				throw re;
 			} catch (Error re) {
 				System.err.println("trouble in: ");

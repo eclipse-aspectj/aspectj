@@ -29,6 +29,7 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.PerClause;
 
 public abstract class World implements Dump.INode {
 	protected IMessageHandler messageHandler = IMessageHandler.SYSTEM_ERR;
@@ -283,6 +284,12 @@ public abstract class World implements Dump.INode {
 	public ConcreteTypeMunger makeCflowCounterFieldAdder(ResolvedMember cflowField) {
 		throw new RuntimeException("unimplemented");
 	}
+
+    //ALEX Andy. Make per clause aspect - see subclass for impl
+    public ConcreteTypeMunger makePerClauseAspect(ResolvedTypeX aspect, PerClause.Kind kind) {
+        throw new RuntimeException("unimplemented");
+    }
+
 
     public abstract ConcreteTypeMunger concreteTypeMunger(ResolvedTypeMunger munger, ResolvedTypeX aspectType);
 

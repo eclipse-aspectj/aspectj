@@ -26,6 +26,7 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.annotationStyle.Aj5Attributes;
 
 final class BcelField extends ResolvedMember {
 
@@ -52,7 +53,10 @@ final class BcelField extends ResolvedMember {
 	
 	private void unpackAttributes(World world) {
 		Attribute[] attrs = field.getAttributes();
-		List as = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),attrs, getSourceContext(world),world.getMessageHandler());
+        List as = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),attrs, getSourceContext(world),world.getMessageHandler());
+        //ALEX Andy. Process annotations on fields and add them as aj attributes
+        as.addAll(Aj5Attributes.readAj5FieldAttributes(field, world.resolve(getDeclaringType()), getSourceContext(world), world.getMessageHandler()));
+
 		for (Iterator iter = as.iterator(); iter.hasNext();) {
 			AjAttribute a = (AjAttribute) iter.next();
 			if (a instanceof AjAttribute.AjSynthetic) {

@@ -14,6 +14,8 @@
 
 package org.aspectj.runtime.internal;
 
+import org.aspectj.lang.JoinPoint;
+
 public abstract class AroundClosure {
     //private Object[] state;
 
@@ -21,7 +23,8 @@ public abstract class AroundClosure {
         // this.state = state;
     }
     
-    protected Object[] state;
+    public Object[] state; // ALEX Andy. Made public so can be accessed from JoinPointImpl.proceed()
+    
     protected Object[] preInitializationState;
     public AroundClosure(Object[] state) {
     	this.state = state;
@@ -36,4 +39,11 @@ public abstract class AroundClosure {
 	 * call in the around advice (with primitives coerced to Object types)
 	 */
     public abstract Object run(Object[] args) throws Throwable;
+
+    //ALEX Andy. Added by Alex for some caller??
+    public JoinPoint getJoinPoint() {
+        JoinPoint jp = (JoinPoint)state[state.length-1];
+        jp.set$AroundClosure(this);
+        return jp;
+    }
 }

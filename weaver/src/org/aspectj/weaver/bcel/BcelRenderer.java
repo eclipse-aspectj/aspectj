@@ -26,9 +26,11 @@ import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.ast.And;
 import org.aspectj.weaver.ast.Call;
 import org.aspectj.weaver.ast.CallExpr;
+import org.aspectj.weaver.ast.CastExpr;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.FieldGet;
 import org.aspectj.weaver.ast.FieldGetCall;
+import org.aspectj.weaver.ast.FieldGetOn;
 import org.aspectj.weaver.ast.HasAnnotation;
 import org.aspectj.weaver.ast.IExprVisitor;
 import org.aspectj.weaver.ast.ITestVisitor;
@@ -36,6 +38,7 @@ import org.aspectj.weaver.ast.Instanceof;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Not;
 import org.aspectj.weaver.ast.Or;
+import org.aspectj.weaver.ast.StringConstExpr;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.ast.Var;
 
@@ -188,8 +191,8 @@ public class BcelRenderer implements ITestVisitor, IExprVisitor {
         // aload annotationClass
         il.append(fact.createConstant(new ObjectType(hasAnnotation.getAnnotationType().getClassName())));
 //        int annClassIndex = fact.getConstantPool().addClass(hasAnnotation.getAnnotationType().getSignature());
-//        il.append(new LDC_W(annClassIndex));
-        Member isAnnotationPresent = Member.method(TypeX.forName("java/lang/Class"),0,
+//        il.append(new LDC_W(annClassIndex));        
+		Member isAnnotationPresent = Member.method(TypeX.forName("java/lang/Class"),0,
                 "isAnnotationPresent","(Ljava/lang/Class;)Z");
         il.append(Utility.createInvoke(fact,world,isAnnotationPresent));
         il.append(createJumpBasedOnBooleanOnStack());
@@ -277,4 +280,19 @@ public class BcelRenderer implements ITestVisitor, IExprVisitor {
 		callIl.append(Utility.createInvoke(fact, world, method));
 		instructions.insert(callIl);		
 	}
+
+    //ALEX Andy. New visit methods added for @AJ support
+    public void visit(StringConstExpr stringConst) {
+        instructions.insert(fact.createConstant(stringConst.getStringConst()));
+    }
+
+    public void visit(CastExpr castExpr) {
+        //instructions.insert(new DUP());
+        instructions.append(fact.createCheckCast(new ObjectType(castExpr.getTypeName())));
+    }
+
+    public void visit(FieldGetOn fieldGet) {
+		Member field = fieldGet.getField();
+		instructions.insert(Utility.createGetOn(fact, field, fieldGet.getDeclaringType()));		
+    }
 }

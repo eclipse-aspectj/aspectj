@@ -14,9 +14,10 @@
 
 package org.aspectj.runtime.reflect;
 
-import org.aspectj.lang.*;
-
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.SourceLocation;
+import org.aspectj.runtime.internal.AroundClosure;
 
 class JoinPointImpl implements JoinPoint {
     static class StaticPartImpl implements JoinPoint.StaticPart {
@@ -46,6 +47,12 @@ class JoinPointImpl implements JoinPoint {
         public final String toString() { return toString(StringMaker.middleStringMaker); }
         public final String toShortString() { return toString(StringMaker.shortStringMaker); }
         public final String toLongString() { return toString(StringMaker.longStringMaker); }
+    }
+
+    static class EnclosingStaticPartImpl extends StaticPartImpl implements EnclosingStaticPart {
+        public EnclosingStaticPartImpl(String kind, Signature signature, SourceLocation sourceLocation) {
+            super(kind, signature, sourceLocation);
+        }
     }
 
     Object _this;
@@ -78,4 +85,23 @@ class JoinPointImpl implements JoinPoint {
     public final String toString() { return staticPart.toString(); }
     public final String toShortString() { return staticPart.toShortString(); }
     public final String toLongString() { return staticPart.toLongString(); }
+
+    // ALEX Andy. Alex is adding the closure as state in the join point.
+    private AroundClosure arc;
+
+    public void set$AroundClosure(AroundClosure arc) {
+        this.arc = arc;
+    }
+////    public Object proceed(Object[] args) throws Throwable {
+////        return arc.run(args);//TODO what is in args ??
+////    }
+    public Object proceed() throws Throwable {
+        // when called from a before advice, but be a no-op
+    	System.err.println("In proceed!!!");
+        if (arc == null) // likely if we are in before/after...
+            return null;
+        else
+            return arc.run(arc.state);
+    }
+
 }

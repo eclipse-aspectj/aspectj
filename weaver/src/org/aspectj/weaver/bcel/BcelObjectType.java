@@ -35,6 +35,8 @@ import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.annotationStyle.Aj5Attributes;
+import org.aspectj.weaver.annotationStyle.Ajc5MemberMaker;
 import org.aspectj.weaver.patterns.PerClause;
 
 // ??? exposed for testing
@@ -79,7 +81,10 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
     BcelObjectType(ResolvedTypeX.Name resolvedTypeX, JavaClass javaClass, boolean exposedToWeaver) {
         super(resolvedTypeX, exposedToWeaver);
         this.javaClass = javaClass;
-        
+
+        //ALEX, else done too late to lookup @AJ pc refs annotation in class hierarchy
+        resolvedTypeX.setDelegate(this);
+
         if (resolvedTypeX.getSourceContext() == null) {
         	resolvedTypeX.setSourceContext(new BcelSourceContext(this));
         }
@@ -164,11 +169,21 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 		return perClause != null;
     }
 
+    //ALEX
+    public boolean isAnnotationStyleAspect() {
+        //TODO optimize
+        return hasAnnotation(Ajc5MemberMaker.ASPECT);
+    }
+
 	private void unpackAspectAttributes() {
 		List pointcuts = new ArrayList();
 		typeMungers = new ArrayList();
 		declares = new ArrayList();
-		List l = BcelAttributes.readAjAttributes(javaClass.getClassName(),javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld().getMessageHandler());
+		// Pass in empty list that can store things for readAj5 to process
+        List l = BcelAttributes.readAjAttributes(javaClass.getClassName(),javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld().getMessageHandler());
+        //ALEX Andy. Process annotations on types and add them as aj attributes
+        l.addAll(Aj5Attributes.readAj5ClassAttributes(javaClass, getResolvedTypeX(), getResolvedTypeX().getSourceContext(), getResolvedTypeX().getWorld().getMessageHandler()));
+
 		for (Iterator iter = l.iterator(); iter.hasNext();) {
 			AjAttribute a = (AjAttribute) iter.next();
 			//System.err.println("unpacking: " + this + " and " + a);

@@ -14,10 +14,16 @@
 package org.aspectj.weaver.ast;
 
 
+
 public interface IExprVisitor {
 
 	void visit(Var i);
     void visit(FieldGet fieldGet);
 	void visit(CallExpr callExpr);
+	
+	// ALEX Andy. New kinds of expression for visiting...
+    void visit(StringConstExpr stringConstExpr);
+    void visit(CastExpr castExpr);
+    void visit(FieldGetOn fieldGetOn);
 
 }

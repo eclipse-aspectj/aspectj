@@ -58,6 +58,7 @@ public class CompilerDumpTestCase extends AjcTestCase {
 		assertNoMessages(result);
 		String fileName = Dump.dump("DumpTestCase.testDump()");
 		dumpFile = new File(fileName);
+		///ALEX Andy. Alex commented out this line?
 		org.aspectj.weaver.DumpTestCase.assertContents(dumpFile,"Command Line","HelloWorld.java");
 	}
 	
@@ -75,6 +76,7 @@ public class CompilerDumpTestCase extends AjcTestCase {
 		CompilationResult result = ajc(baseDir,args);
 		String fileName = Dump.dump("DumpTestCase.testDumpWithWarnings()");
 		dumpFile = new File(fileName);
+		// ALEX Andy. Alex commented out this line?
 		org.aspectj.weaver.DumpTestCase.assertContents(dumpFile,"Compiler Messages","warning");
 	}
 	
@@ -94,6 +96,7 @@ public class CompilerDumpTestCase extends AjcTestCase {
 		String fileName = Dump.getLastDumpFileName();
 		assertTrue("Dump file should be created",!fileName.equals(previousFileName));
 		dumpFile = new File(fileName);
+		//ALEX Andy. Alex commented out this line?
 		org.aspectj.weaver.DumpTestCase.assertContents(dumpFile,"Compiler Messages","error");
 	}
 

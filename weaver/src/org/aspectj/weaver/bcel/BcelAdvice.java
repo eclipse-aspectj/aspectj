@@ -34,6 +34,7 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.annotationStyle.Ajc5MemberMaker;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.patterns.ExactTypePattern;
@@ -305,38 +306,72 @@ public class BcelAdvice extends Advice {
         for (int i = 0, len = exposedState.size(); i < len; i++) {
         	if (exposedState.isErroneousVar(i)) continue; // Erroneous vars have already had error msgs reported!
             BcelVar v = (BcelVar) exposedState.get(i);
-            if (v == null) continue;
-            TypeX desiredTy = getSignature().getParameterTypes()[i];
-            v.appendLoadAndConvert(il, fact, desiredTy.resolve(world));
+            //ALEX
+            // was: if (v == null) continue;
+            // TODO optimize isSlowAspect
+            if (v == null) {
+            	if (!Ajc5MemberMaker.isAnnotationStyleAspect(getConcreteAspect())) {
+            		continue;
+            	} else {
+	                if (getKind() == AdviceKind.Around) {
+	                    il.append(closureInstantiation);
+	                    continue;
+	                } else if ("Lorg/aspectj/lang/JoinPoint$StaticPart;".equals(getSignature().getParameterTypes()[i].getSignature())) {
+	                    if ((getExtraParameterFlags() & ThisJoinPointStaticPart) != 0) {
+	                        shadow.getThisJoinPointStaticPartBcelVar().appendLoad(il, fact);
+	                    }
+	                } else if ("Lorg/aspectj/lang/JoinPoint;".equals(getSignature().getParameterTypes()[i].getSignature())) {
+	                    if ((getExtraParameterFlags() & ThisJoinPoint) != 0) {
+	                        il.append(shadow.loadThisJoinPoint());
+	                    }
+	                } else if ("Lorg/aspectj/lang/JoinPoint$EnclosingStaticPart;".equals(getSignature().getParameterTypes()[i].getSignature())) {
+	                    if ((getExtraParameterFlags() & ThisEnclosingJoinPointStaticPart) != 0) {
+	                        shadow.getThisEnclosingJoinPointStaticPartBcelVar().appendLoad(il, fact);
+	                    }
+	                } else if (hasExtraParameter()) {
+	                    extraVar.appendLoadAndConvert(
+	                        il,
+	                        fact,
+	                        getExtraParameterType().resolve(world));
+	                } else {
+	                    continue;
+	                }
+            	}
+            } else {
+                TypeX desiredTy = getSignature().getParameterTypes()[i];
+                v.appendLoadAndConvert(il, fact, desiredTy.resolve(world));
+            }
         }
 
         
-		if (getKind() == AdviceKind.Around) {
-			il.append(closureInstantiation);
-		} else if (hasExtraParameter()) {
-			extraVar.appendLoadAndConvert(
-				il,
-				fact,
-				getExtraParameterType().resolve(world));
-		}
-        
-        // handle thisJoinPoint parameters
-        // these need to be in that same order as parameters in 
-        // org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration
-        if ((getExtraParameterFlags() & ThisJoinPointStaticPart) != 0) {
-        	shadow.getThisJoinPointStaticPartBcelVar().appendLoad(il, fact);
-        }
-        
-        if ((getExtraParameterFlags() & ThisJoinPoint) != 0) {
-        	il.append(shadow.loadThisJoinPoint());
-        }
-        
+        //ALEX added if
+        if (!Ajc5MemberMaker.isAnnotationStyleAspect(getConcreteAspect())) {
+            if (getKind() == AdviceKind.Around) {
+                il.append(closureInstantiation);
+            } else if (hasExtraParameter()) {
+                extraVar.appendLoadAndConvert(
+                    il,
+                    fact,
+                    getExtraParameterType().resolve(world));
+            }
 
-        if ((getExtraParameterFlags() & ThisEnclosingJoinPointStaticPart) != 0) {
-        	shadow.getThisEnclosingJoinPointStaticPartBcelVar().appendLoad(il, fact);
+            // handle thisJoinPoint parameters
+            // these need to be in that same order as parameters in
+            // org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration
+            if ((getExtraParameterFlags() & ThisJoinPointStaticPart) != 0) {
+                shadow.getThisJoinPointStaticPartBcelVar().appendLoad(il, fact);
+            }
+
+            if ((getExtraParameterFlags() & ThisJoinPoint) != 0) {
+                il.append(shadow.loadThisJoinPoint());
+            }
+
+            if ((getExtraParameterFlags() & ThisEnclosingJoinPointStaticPart) != 0) {
+                shadow.getThisEnclosingJoinPointStaticPartBcelVar().appendLoad(il, fact);
+            }
         }
-        
-        
+
+
         return il;
     }
     

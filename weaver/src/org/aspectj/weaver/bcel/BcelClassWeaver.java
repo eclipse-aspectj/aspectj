@@ -752,6 +752,7 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 
     void addPerSingletonField(Member field) {
+        //ALEX: dead code here
     	ObjectType aspectType = (ObjectType) BcelWorld.makeBcelType(field.getReturnType());
     	String aspectName = field.getReturnType().getName();
 

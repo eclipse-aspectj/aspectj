@@ -118,6 +118,22 @@ public class Utility {
             kind);
 	}
 
+    //ALEX
+    public static Instruction createGetOn(InstructionFactory fact, Member signature, TypeX declaringType) {
+        short kind;
+        if (signature.isStatic()) {
+            kind = Constants.GETSTATIC;
+        } else {
+            kind = Constants.GETFIELD;
+        }
+
+        return fact.createFieldAccess(
+            declaringType.getName(),
+            signature.getName(),
+            BcelWorld.makeBcelType(signature.getReturnType()),
+            kind);
+    }
+
 	public static Instruction createSet(InstructionFactory fact, Member signature) {
         short kind;
         if (signature.isStatic()) {

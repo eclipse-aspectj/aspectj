@@ -41,6 +41,7 @@ import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
+import org.aspectj.weaver.annotationStyle.Ajc5MemberMaker;
 
 /**
  * This adaptor allows the AspectJ compiler to be embedded in an existing
@@ -64,13 +65,13 @@ public class WeavingAdaptor {
 	public static final String WEAVING_ADAPTOR_VERBOSE = "aj.weaving.verbose"; 
 	public static final String SHOW_WEAVE_INFO_PROPERTY = "org.aspectj.weaver.showWeaveInfo"; 
 
-	private boolean enabled = true;
-	private boolean verbose = getVerbose();
-	private BcelWorld bcelWorld = null;
-	private BcelWeaver weaver = null;
-	private WeavingAdaptorMessageHandler messageHandler = null;
-	private GeneratedClassHandler generatedClassHandler;
-	private Map generatedClasses = new HashMap(); /* String -> UnwovenClassFile */ 
+	protected boolean enabled = true;
+	protected boolean verbose = getVerbose();
+	protected BcelWorld bcelWorld = null;
+	protected BcelWeaver weaver = null;
+	protected WeavingAdaptorMessageHandler messageHandler = null;
+	protected GeneratedClassHandler generatedClassHandler;
+	protected Map generatedClasses = new HashMap(); /* String -> UnwovenClassFile */
 
 	/**
 	 * Construct a WeavingAdaptor with a reference to a weaving class loader. The
@@ -192,7 +193,10 @@ public class WeavingAdaptor {
 	
 	private boolean shouldWeaveAspect (String name) {
 		ResolvedTypeX type = bcelWorld.resolve(name);
-		return (type == null || !type.isAspect());
+		//ALEX
+        //was: return (type == null || !type.isAspect());
+        return (type == null || !type.isAspect() || Ajc5MemberMaker.isAnnotationStyleAspect(type));
+
 	}
 
 	/**
@@ -278,7 +282,7 @@ public class WeavingAdaptor {
 	 * Processes messages arising from weaver operations. 
 	 * Tell weaver to abort on any message more severe than warning.
 	 */
-	private class WeavingAdaptorMessageHandler extends MessageWriter {
+	protected class WeavingAdaptorMessageHandler extends MessageWriter {
 
 		private Set ignoring = new HashSet();
 		private IMessage.Kind failKind;

@@ -23,6 +23,7 @@ import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.annotationStyle.Ajc5MemberMaker;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
@@ -47,23 +48,74 @@ public class PerSingleton extends PerClause {
     	// this method intentionally left blank
     }
 
-    protected Test findResidueInternal(Shadow shadow, ExposedState state) {
-    	Expr myInstance =
-    		Expr.makeCallExpr(AjcMemberMaker.perSingletonAspectOfMethod(inAspect),
-    							Expr.NONE, inAspect);
-    	
-    	state.setAspectInstance(myInstance);
-    	
-    	// we have no test
-    	// a NoAspectBoundException will be thrown if we need an instance of this
-    	// aspect before we are bound
-        return Literal.TRUE;
+    public Test findResidueInternal(Shadow shadow, ExposedState state) {
+        //ALEX
+        //
+        //    	Expr myInstance =
+        //    		Expr.makeCallExpr(AjcMemberMaker.perSingletonAspectOfMethod(inAspect),
+        //    							Expr.NONE, inAspect);
+        //
+        //    	state.setAspectInstance(myInstance);
+        //
+        //    	// we have no test
+        //    	// a NoAspectBoundException will be thrown if we need an instance of this
+        //    	// aspect before we are bound
+        //        return Literal.TRUE;
+//        if (!Ajc5MemberMaker.isSlowAspect(inAspect)) {
+            Expr myInstance =
+                Expr.makeCallExpr(AjcMemberMaker.perSingletonAspectOfMethod(inAspect),
+                                    Expr.NONE, inAspect);
+
+            state.setAspectInstance(myInstance);
+
+            // we have no test
+            // a NoAspectBoundException will be thrown if we need an instance of this
+            // aspect before we are bound
+            return Literal.TRUE;
+//        } else {
+//            CallExpr callAspectOf =Expr.makeCallExpr(
+//                    Ajc5MemberMaker.perSingletonAspectOfMethod(inAspect),
+//                    new Expr[]{
+//                        Expr.makeStringConstantExpr(inAspect.getName(), inAspect),
+//                        //FieldGet is using ResolvedType and I don't need that here
+//                        new FieldGetOn(Member.ajClassField, shadow.getEnclosingType())
+//                    },
+//                    inAspect
+//            );
+//            Expr castedCallAspectOf = new CastExpr(callAspectOf, inAspect.getName());
+//            state.setAspectInstance(castedCallAspectOf);
+//            return Literal.TRUE;
+//        }
     }
 
 	public PerClause concretize(ResolvedTypeX inAspect) {
 		PerSingleton ret = new PerSingleton();
+
+        //ALEX added as in PerTypeWithin (?)
+        ret.copyLocationFrom(this);
+
 		ret.inAspect = inAspect;
-		return ret;
+
+        //ALEX: do stuff to add hasAspect and co.
+        if (inAspect.isAbstract() || !Ajc5MemberMaker.isAnnotationStyleAspect(inAspect)) {
+            return ret;
+        } else {
+            System.err.println("PerSingleton.concretize " + inAspect.getName());
+
+            //TODO will those change be ok if we add a serializable aspect ?
+            // dig: 		// can't be Serializable/Cloneable unless -XserializableAspects
+            inAspect.crosscuttingMembers.addTypeMunger(
+                    inAspect.getWorld().makePerClauseAspect(inAspect, getKind())
+            );
+
+            return ret;
+        }
+
+
+
+
+
+
 	}
 
     public void write(DataOutputStream s) throws IOException {

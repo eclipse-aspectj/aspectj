@@ -30,8 +30,13 @@ public abstract class Expr extends ASTNode {
     public static FieldGet makeFieldGet(Member myField, ResolvedTypeX inAspect) {
         return new FieldGet(myField, inAspect);
     }
-	public static Expr makeCallExpr(Member member, Expr[] exprs, ResolvedTypeX returnType) {
+	public static CallExpr makeCallExpr(Member member, Expr[] exprs, ResolvedTypeX returnType) {
 		return new CallExpr(member, exprs, returnType);
 	}
+
+    //ALEX
+    public static Expr makeStringConstantExpr(final String stringConst, final ResolvedTypeX inAspect) {
+        return new StringConstExpr(stringConst, inAspect);
+    }
 
 }
