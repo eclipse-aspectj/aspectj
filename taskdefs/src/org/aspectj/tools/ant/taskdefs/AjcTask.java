@@ -1310,8 +1310,30 @@ public class AjcTask extends MatchingTask {
     protected int execInOtherVM(String[] args) {
         try {
             Project project = getProject();
-            LogStreamHandler handler = new LogStreamHandler(this,
-                                 Project.MSG_INFO, Project.MSG_WARN);
+          LogStreamHandler handler = new LogStreamHandler(this,
+          Project.MSG_INFO, Project.MSG_WARN);
+// replace above two lines with what follows as an aid to debugging when running the unit tests....
+//            LogStreamHandler handler = new LogStreamHandler(this,
+//                                 Project.MSG_INFO, Project.MSG_WARN) {
+//            	
+//            	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//            	/* (non-Javadoc)
+//				 * @see org.apache.tools.ant.taskdefs.PumpStreamHandler#createProcessOutputPump(java.io.InputStream, java.io.OutputStream)
+//				 */
+//				protected void createProcessErrorPump(InputStream is,
+//						OutputStream os) {
+//					super.createProcessErrorPump(is, baos);
+//				}
+//				
+//				/* (non-Javadoc)
+//				 * @see org.apache.tools.ant.taskdefs.LogStreamHandler#stop()
+//				 */
+//				public void stop() {
+//					byte[] written = baos.toByteArray();
+//					System.err.print(new String(written));
+//					super.stop();
+//				}
+//            };
             Execute exe = new Execute(handler);
             exe.setAntRun(project);
             exe.setWorkingDirectory(project.getBaseDir());
