@@ -104,10 +104,11 @@ public abstract class Pointcut extends PatternNode {
 	
 	
 	//XXX this is the signature we're moving to
-	public Pointcut concretize(ResolvedTypeX inAspect, int arity, Advice advice) {
+	public Pointcut concretize(ResolvedTypeX inAspect, int arity, ShadowMunger advice) {
 		//if (state == CONCRETE) return this; //???
 		IntMap map = IntMap.idMap(arity);
 		map.setEnclosingAdvice(advice);
+		map.setConcreteAspect(inAspect);
 		return concretize(inAspect, map);
 	}
 	

@@ -84,4 +84,8 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 
 
 
+	public Pointcut getPointcut() {
+		return pointcut;
+	}
+
 }

@@ -144,7 +144,8 @@ public class EclipseScope implements IScope {
 
 		String packageName = 
 			new String(CharOperation.concatWith(cuScope.currentPackageName, '.'));
-		if (packageName.length() > 1) {
+		//System.err.println("package: " + packageName);
+		if (packageName.length() > 0) {
 			importedPrefixesList.add(packageName + ".");
 		}
 		

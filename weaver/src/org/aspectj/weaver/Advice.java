@@ -15,6 +15,7 @@ package org.aspectj.weaver;
 
 import java.util.*;
 
+import org.aspectj.bridge.*;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.patterns.*;
 
@@ -85,6 +86,16 @@ public abstract class Advice extends ShadowMunger {
 	
 	public boolean match(Shadow shadow, World world) {
 		if (super.match(shadow, world)) {
+			if (shadow.getKind() == Shadow.ExceptionHandler) {
+				if (kind.isAfter() || kind == AdviceKind.Around) {
+					world.showMessage(IMessage.WARNING,
+	    				"Only before advice is supported on handler join points (compiler limitation)", 
+	    				getSourceLocation(), shadow.getSourceLocation());
+					return false;
+				}
+			}
+			
+			
     		if (hasExtraParameter() && kind == AdviceKind.AfterReturning) {
     			return getExtraParameterType().isConvertableFrom(shadow.getReturnType(), world);
     		} else if (kind == AdviceKind.PerTargetEntry) {
@@ -93,12 +104,9 @@ public abstract class Advice extends ShadowMunger {
     			return shadow.hasThis();
     		} else if (kind == AdviceKind.Around) {
     			if (shadow.getKind() == Shadow.PreInitialization) {
-	    			world.getMessageHandler().handleMessage(
-	    				MessageUtil.error("Around on pre-initialization not supported in 1.1",
-	    					getSourceLocation()));
-	    			world.getMessageHandler().handleMessage(
-	    				MessageUtil.error("Around on pre-initialization not supported in 1.1",
-	    					shadow.getSourceLocation()));
+	    			world.showMessage(IMessage.WARNING,
+	    				"around on pre-initialization not supported (compiler limitation)", 
+	    				getSourceLocation(), shadow.getSourceLocation());
 					return false;
     			} else {
     				if (!getSignature().getReturnType().isConvertableFrom(shadow.getReturnType(), world)) {

@@ -18,12 +18,13 @@ import java.util.*;
 public class IntMap {
 	public static final IntMap EMPTY = new IntMap(0) {
 		public boolean directlyInAdvice() { return true; }
-		public Advice getEnclosingAdvice() { return null; }  //XXX possible
+		public ShadowMunger getEnclosingAdvice() { return null; }  //XXX possible
 	};
 	
 	
 	// XXX begin hack to avoid a signature refactoring in Pointcut
-	private Advice enclosingAdvice;
+	private ResolvedTypeX concreteAspect;
+	private ShadowMunger enclosingAdvice;
 	private List/*ResolvedPointcutDefinition*/ enclosingDefinition = new ArrayList();
 	
 	public void pushEnclosingDefinition(ResolvedPointcutDefinition def) {
@@ -44,21 +45,32 @@ public class IntMap {
 		return enclosingDefinition.isEmpty();
 	}
 	
-	public Advice getEnclosingAdvice() {
+	public ShadowMunger getEnclosingAdvice() {
 		return enclosingAdvice;
 	}
 	
-	public void setEnclosingAdvice(Advice advice) {
+	public void setEnclosingAdvice(ShadowMunger advice) {
 		this.enclosingAdvice = advice;
 	}
 	
 	public Member getAdviceSignature() {
-		return getEnclosingAdvice().signature;
+		if (enclosingAdvice instanceof Advice) return ((Advice)enclosingAdvice).signature;
+		else return null;
+	}
+	
+
+	public ResolvedTypeX getConcreteAspect() {
+		return concreteAspect;
+	}
+
+	public void setConcreteAspect(ResolvedTypeX concreteAspect) {
+		this.concreteAspect = concreteAspect;
 	}
 	
 	public void copyContext(IntMap bindings) {
 		this.enclosingAdvice = bindings.enclosingAdvice;
 		this.enclosingDefinition = bindings.enclosingDefinition;
+		this.concreteAspect = bindings.concreteAspect;
 	}
 	
 	// XXX end hack to avoid a signature refactoring in Pointcut
@@ -129,6 +141,7 @@ public class IntMap {
     	buf.append("]");
     	return buf.toString();
     }
+
 
 
 }

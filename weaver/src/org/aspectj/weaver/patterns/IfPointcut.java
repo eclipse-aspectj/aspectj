@@ -125,8 +125,8 @@ public class IfPointcut extends Pointcut {
 		IfPointcut ret = new IfPointcut(testMethod, extraParameterFlags);
 		partiallyConcretized = ret;
 		if (bindings.directlyInAdvice()) {
-			Advice advice = bindings.getEnclosingAdvice();
-			ret.baseArgsCount = advice.getBaseParameterCount();
+			ShadowMunger advice = bindings.getEnclosingAdvice();
+			ret.baseArgsCount = ((Advice)advice).getBaseParameterCount();
 			ret.residueSource = advice.getPointcut().concretize(inAspect, ret.baseArgsCount, advice);
 		} else {
 			ResolvedPointcutDefinition def = bindings.peekEnclosingDefinitition();

@@ -62,14 +62,16 @@ public class ResolvedPointcutDefinition extends ResolvedMember {
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("poincut ");
+		buf.append(getDeclaringType().getName());
+		buf.append(".");
 		buf.append(getName());
 		buf.append("(");
 		for (int i=0; i < getParameterTypes().length; i++) {
 			if (i > 0) buf.append(", ");
 			buf.append(getParameterTypes()[i].toString());
 		}
-		buf.append("): ");
-		buf.append(pointcut);
+		buf.append(")");
+		//buf.append(pointcut);
 		
 		return buf.toString();
 	}
@@ -86,6 +88,5 @@ public class ResolvedPointcutDefinition extends ResolvedMember {
 	public static final ResolvedPointcutDefinition DUMMY =
 	    new ResolvedPointcutDefinition(TypeX.OBJECT, 0, "missing", 
 	    				TypeX.NONE, Pointcut.makeMatchesNothing(Pointcut.RESOLVED));
-
 
 }

@@ -118,7 +118,7 @@ public class CflowPointcut extends Pointcut {
 		
 		Pointcut concreteEntry;
 		
-		CrosscuttingMembers xcut = inAspect.crosscuttingMembers;		
+		CrosscuttingMembers xcut = bindings.getConcreteAspect().crosscuttingMembers;		
 		Collection previousCflowEntries = xcut.getCflowEntries();
 		
 		entryBindings.pushEnclosingDefinition(CFLOW_MARKER);
@@ -140,10 +140,10 @@ public class CflowPointcut extends Pointcut {
 		// add field and initializer to inAspect
 		//XXX and then that info above needs to be mapped down here to help with
 		//XXX getting the exposed state right
-		inAspect.crosscuttingMembers.addConcreteShadowMunger(
+		bindings.getConcreteAspect().crosscuttingMembers.addConcreteShadowMunger(
 				Advice.makeCflowEntry(world, concreteEntry, isBelow, cflowField, freeVars.length, innerCflowEntries));
 		
-		inAspect.crosscuttingMembers.addTypeMunger(
+		bindings.getConcreteAspect().crosscuttingMembers.addTypeMunger(
 			world.makeCflowStackFieldAdder(cflowField));
 			
 			

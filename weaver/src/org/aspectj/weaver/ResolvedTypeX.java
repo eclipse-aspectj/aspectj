@@ -1019,8 +1019,6 @@ public abstract class ResolvedTypeX extends TypeX {
 	public List getExposedPointcuts() {
 		List ret = new ArrayList();
 		if (getSuperclass() != null) ret.addAll(getSuperclass().getExposedPointcuts());
-
-		
 		
 		for (Iterator i = Arrays.asList(getDeclaredInterfaces()).iterator(); i.hasNext(); ) {
 			ResolvedTypeX t = (ResolvedTypeX)i.next();
@@ -1032,7 +1030,7 @@ public abstract class ResolvedTypeX extends TypeX {
 			if (inherited.isAbstract()) {
 				if (!this.isAbstract()) {
 					getWorld().showMessage(IMessage.ERROR,
-						"inherited abstract pointcut " + inherited + 
+						"inherited abstract pointcut " + inherited.getSignature() + 
 						" is not made concrete in " + this.getName(),
 						inherited.getSourceLocation(), this.getSourceLocation());
 				}

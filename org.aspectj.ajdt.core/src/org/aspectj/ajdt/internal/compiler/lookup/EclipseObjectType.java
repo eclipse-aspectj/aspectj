@@ -128,31 +128,34 @@ public class EclipseObjectType extends ResolvedTypeX.Name {
 	//XXX make sure this is applied to classes and interfaces
 	public void checkPointcutDeclarations() {
 		ResolvedMember[] pointcuts = getDeclaredPointcuts();
+		boolean sawError = false;
 		for (int i=0, len=pointcuts.length; i < len; i++) {
 			if (pointcuts[i].isAbstract()) {
 				if (!this.isAspect()) {
-					MessageUtil.error(
-							"abstract pointcut only allowed in aspect" + pointcuts[i].getName(),
-							pointcuts[i].getSourceLocation());
+					eclipseWorld().showMessage(IMessage.ERROR,
+						"abstract pointcut only allowed in aspect" + pointcuts[i].getName(),
+						pointcuts[i].getSourceLocation(), null);
+					sawError = true;
 				} else if (!this.isAbstract()) {
-					MessageUtil.error(
-							"abstract pointcut in concrete aspect" + pointcuts[i].getName(),
-							pointcuts[i].getSourceLocation());
+					eclipseWorld().showMessage(IMessage.ERROR,
+						"abstract pointcut in concrete aspect" + pointcuts[i],
+						pointcuts[i].getSourceLocation(), null);
+					sawError = true;
 				}
 			}
 				
 			for (int j=i+1; j < len; j++) {
 				if (pointcuts[i].getName().equals(pointcuts[j].getName())) {
-					eclipseWorld().getMessageHandler().handleMessage(
-						MessageUtil.error(
-							"duplicate pointcut name: " + pointcuts[j].getName(),
-							pointcuts[j].getSourceLocation()));
+					eclipseWorld().showMessage(IMessage.ERROR,
+						"duplicate pointcut name: " + pointcuts[j].getName(),
+						pointcuts[i].getSourceLocation(), pointcuts[j].getSourceLocation());
+					sawError = true;
 				}
 			}
 		}
 		
 		//now check all inherited pointcuts to be sure that they're handled reasonably
-		if (!isAspect()) return;
+		if (sawError || !isAspect()) return;
 		
 
 		

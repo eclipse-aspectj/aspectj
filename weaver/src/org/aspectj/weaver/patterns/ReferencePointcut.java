@@ -228,6 +228,14 @@ public class ReferencePointcut extends Pointcut {
 				);
 				return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 			}
+			
+			if (pointcutDec.isAbstract()) {
+				Thread.currentThread().dumpStack();
+				searchStart.getWorld().showMessage(IMessage.ERROR,
+					pointcutDec + " is abstract", 
+					getSourceLocation(), bindings.getEnclosingAdvice().getSourceLocation());
+				return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
+			}
 					
 			//System.err.println("start: " + searchStart);
 			ResolvedTypeX[] parameterTypes = searchStart.getWorld().resolve(pointcutDec.getParameterTypes());

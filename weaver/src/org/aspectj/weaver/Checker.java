@@ -30,7 +30,7 @@ public class Checker extends ShadowMunger {
 	}		 
 
     public ShadowMunger concretize(ResolvedTypeX fromType, World world, PerClause clause) {
-        pointcut = pointcut.concretize(fromType, 0);
+        pointcut = pointcut.concretize(fromType, 0, this);
         return this;
     }
 
