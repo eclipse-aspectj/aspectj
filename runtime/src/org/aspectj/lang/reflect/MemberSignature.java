@@ -14,7 +14,10 @@
 
 package org.aspectj.lang.reflect;
 
+import java.lang.reflect.AccessibleObject;
+
 import org.aspectj.lang.Signature;
 
 public interface MemberSignature extends Signature {
+	AccessibleObject getAccessibleObject();
 }

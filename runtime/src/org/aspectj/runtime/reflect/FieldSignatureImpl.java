@@ -14,6 +14,8 @@
 
 package org.aspectj.runtime.reflect;
  
+import java.lang.reflect.AccessibleObject;
+
 import org.aspectj.lang.reflect.FieldSignature;
 
 public class FieldSignatureImpl extends MemberSignatureImpl implements FieldSignature {
@@ -45,4 +47,16 @@ public class FieldSignatureImpl extends MemberSignatureImpl implements FieldSign
         buf.append(getName());        
         return buf.toString();
     } 
+    
+    /* (non-Javadoc)
+	 * @see org.aspectj.runtime.reflect.MemberSignatureImpl#createAccessibleObject()
+	 */
+	protected AccessibleObject createAccessibleObject() {
+		try {
+			return declaringType.getDeclaredField(getName());
+		} catch (Exception ex) {
+			; // nothing we can do, caller will see null
+		}
+		return null;
+	}
 }

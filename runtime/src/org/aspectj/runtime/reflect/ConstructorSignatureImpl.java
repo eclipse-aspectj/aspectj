@@ -14,6 +14,8 @@
 
 package org.aspectj.runtime.reflect;
 
+import java.lang.reflect.AccessibleObject;
+
 import org.aspectj.lang.reflect.ConstructorSignature;
 
 class ConstructorSignatureImpl extends CodeSignatureImpl implements ConstructorSignature {
@@ -37,4 +39,16 @@ class ConstructorSignatureImpl extends CodeSignatureImpl implements ConstructorS
         sm.addThrows(buf, getExceptionTypes());
         return buf.toString();
     }
+    
+    /* (non-Javadoc)
+	 * @see org.aspectj.runtime.reflect.MemberSignatureImpl#createAccessibleObject()
+	 */
+	protected AccessibleObject createAccessibleObject() {
+		try {
+			return declaringType.getDeclaredConstructor(getParameterTypes());
+		} catch (Exception ex) {
+			; // nothing we can do, caller will see null
+		}
+		return null;
+	}
 }

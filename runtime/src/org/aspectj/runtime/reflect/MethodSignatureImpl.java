@@ -14,6 +14,8 @@
 
 package org.aspectj.runtime.reflect;
 
+import java.lang.reflect.AccessibleObject;
+
 import org.aspectj.lang.reflect.MethodSignature;
 
 class MethodSignatureImpl extends CodeSignatureImpl implements MethodSignature {
@@ -50,4 +52,16 @@ class MethodSignatureImpl extends CodeSignatureImpl implements MethodSignature {
         sm.addThrows(buf, getExceptionTypes());
         return buf.toString();
     }
+    
+    /* (non-Javadoc)
+	 * @see org.aspectj.lang.reflect.MemberSignature#getAccessibleObject()
+	 */
+	public AccessibleObject createAccessibleObject() {
+		try {
+			return declaringType.getDeclaredMethod(getName(),getParameterTypes());
+		} catch (NoSuchMethodException nsmEx) {
+			; // nothing we can do, user will see null return
+		}
+		return null;
+	}
 }
