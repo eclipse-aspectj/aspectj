@@ -1,0 +1,110 @@
+<project name="build" default="dist" basedir=".">
+  <description>
+    Build the exercises we do at various conferences
+  </description>
+
+  <!-- this directory needs to hold tools and docs, unpacked -->
+  <property name="aj.home" value="c:/apps/aspectj106" />
+
+  <!-- this is the name of the tutorial event -->
+  <property name="aj.event" value="aosd2003" />
+
+  <!-- now real targets -->
+
+  <target name="dist"
+        depends="clean,distdir,exercises.zip,answers.zip" />
+
+  <target name="event.zip" depends="tools,exercises">
+    <zip destfile="dist/${aj.event}.zip">
+      <zipfileset dir="dist/aj-${aj.event}"
+        prefix="aj-${aj.event}"
+	excludes="answers/*.java"
+      />
+      <zipfileset dir="dist/aj-${aj.event}"
+        prefix="aj-${aj.event}"
+	includes="answers/Answer.java"
+      />
+    </zip>		 
+  </target>
+
+  <target name="exercises.zip" depends="exercises">
+    <zip destfile="dist/${aj.event}-exercises.zip">
+      <zipfileset dir="dist/aj-${aj.event}"
+        prefix="aj-${aj.event}"
+	includes="junit.jar,base.lst,guibase.lst,*.html,support/**/*.java,figures/**/*.java,tests/**/*.java,answers/Answer.java"
+      />
+    </zip>		 
+  </target>
+
+  <target name="answers.zip" depends="answers">
+    <zip destfile="dist/${aj.event}-answers.zip">
+      <zipfileset dir="dist/aj-${aj.event}"
+        prefix="aj-${aj.event}"
+	includes="answers/*.java"
+	excludes="answers/Answer.java"
+      />
+    </zip>		 
+  </target>
+
+  <target name="tools" depends="eventdir">
+    <mkdir dir="dist/aj-${aj.event}" />
+    <mkdir dir="dist/aj-${aj.event}/aspectj" />
+    <filter token="aj.event" value="${aj.event}" /> 
+
+    <copy toDir="dist/aj-${aj.event}/aspectj">
+      <fileset dir="${aj.home}" excludes="bin/**" />
+    </copy>
+    <copy toDir="dist/aj-${aj.event}/aspectj/bin" filtering="yes">
+      <fileset dir="scripts" excludes="setpaths*" />
+    </copy>
+    <copy toDir="dist/aj-${aj.event}" filtering="yes">
+      <fileset dir="scripts" includes="setpaths*" />
+    </copy>
+    <fixcrlf srcDir="dist/aj-${aj.event}"
+      includes="setpaths.bat,aspectj/bin/ajbrowser.bat,aspectj/bin/ajc.bat"
+      eol="crlf" />
+    <fixcrlf srcDir="dist/aj-${aj.event}"
+      includes="setpaths.sh,setpaths.csh,aspectj/bin/ajbrowser,aspectj/bin/ajc"
+      eol="lf" />
+  </target>
+
+  <target name="exercises" depends="eventdir">
+    <filter token="aj.event" value="${aj.event}" /> 
+    <copy file="install.txt" toDir="dist/aj-${aj.event}" filtering="yes" />
+    <copy toDir="dist/aj-${aj.event}">
+     <fileset dir="."
+     includes="junit.jar,base.lst,guibase.lst,*.html,support/**/*.java,figures/**/*.java,tests/**/*.java,answers/Answer.java"
+     />
+    </copy>
+  </target>
+
+  <target name="answers" depends="eventdir">
+    <copy toDir="dist/aj-${aj.event}">
+     <fileset dir="."
+       includes="answers/*.java"
+       excludes="answers/Answer.java"
+     />
+    </copy>
+  </target>
+
+  <target name="allcontent.zip" depends="exercises.zip,answers.zip">
+    <zip destfile="dist/${aj.event}-notools.zip">
+      <zipfileset src="dist/${aj.event}-exercises.zip" />
+      <zipfileset src="dist/${aj.event}-answers.zip" />
+    </zip>
+  </target>
+
+  <target name="distdir">
+    <mkdir dir="dist" />
+  </target>
+
+  <target name="eventdir" depends="distdir">
+    <mkdir dir="dist/aj-${aj.event}" />
+  </target>
+
+  <target name="clean">
+    <delete dir="dist" />
+  </target>
+
+</project>
+
