@@ -1,7 +1,6 @@
 
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 
-
 <suite>
     <ajc-test dir="new" pr="774"
       title="interface self-reference in anonymous instance (correct test in knownbugs)"
@@ -18,14 +17,6 @@
       comment="correct behavior for 1.0 is good error message, see real test in knownbugs">
         <compile files="MethodSelfReference.java">
             <message kind="error" line="16"/>
-        </compile>
-    </ajc-test>
-
-    <ajc-test dir="ng"
-      title="parenthesized type name as qualifying expr is illegal (in j2sdk1.4.1beta)"
-      keywords="tofix">
-        <compile files="Parens1.java">
-            <message kind="error" line="3"/>
         </compile>
     </ajc-test>
 
@@ -50,14 +41,6 @@
         <compile files="DominatesTypePattern.java"/>
         <run class="DominatesTypePattern"/>
     </ajc-test>
-
-    <ajc-test dir="ng"
-      title="long-standing bug in javac and ajc about non-verifiable try stmt"
-      keywords="tofix">
-        <compile files="TryVerification.java"/>
-        <run class="TryVerification"/>
-    </ajc-test>
-
     <ajc-test dir="new"
       title="unmatched type name in a declare parents should result in a warning in -Xlint mode"
       keywords="tofix">
@@ -86,20 +69,6 @@
       keywords="tofix">
         <compile files="AfterThrowingNonThrowable.java"/>
         <run class="AfterThrowingNonThrowable"/>
-    </ajc-test>
-
-    <ajc-test dir="new" pr="823"
-      title="declaring a private method on an inner interface"
-      keywords="tofix">
-        <compile files="PrivateMethodOnInnerInterface.java"/>
-        <run class="PrivateMethodOnInnerInterface"/>
-    </ajc-test>
-
-    <ajc-test dir="new" pr="829"
-      title="CE expected when declaring fields on arrays" keywords="tofix">
-        <compile files="ArrayFieldDeclarationCE.java">
-            <message kind="error" line="14"/>
-        </compile>
     </ajc-test>
 
     <ajc-test dir="new" pr="829" title="declare array field using postfix"
@@ -173,39 +142,6 @@
         </compile>
         <run class="pack.ImportInnerFromInterfaceImplementor"/>
     </ajc-test>
-    
-    <ajc-test dir="ng"
-      title="wrong scope for inner class creation expression">
-        <compile files="InnerClassCreate.java"/>
-        <run class="InnerClassCreate"/>
-    </ajc-test>
-
-    <ajc-test dir="ng"
-      title="definite unassignment versus try-finally">
-        <compile files="DefiniteUnassignmentTry.java"/>
-        <run class="DefiniteUnassignmentTry"/>
-    </ajc-test>
-
-    <ajc-test dir="ng"
-      title="definite assignment with constant subexpression in control-flow ops">
-        <compile files="DefiniteAssignmentControlFlow.java">
-          <dir-changes added="DefiniteAssignmentControlFlow"/>
-        </compile>
-        <run class="DefiniteAssignmentControlFlow"/>
-    </ajc-test>
-
-    <ajc-test dir="ng"
-      title="conversion from null">
-        <compile files="ConvertFromNull.java">
-           <message kind="error" line="8"/>
-        </compile>
-    </ajc-test>
-
-    <ajc-test dir="ng"
-      title="conflicting throws on inherited abstract methods">
-        <compile files="ConflictingThrows.java"/>
-        <run class="ConflictingThrows"/>
-    </ajc-test>
 
     <ajc-test dir="new"
       title="if and cflow arg binding">
@@ -213,7 +149,20 @@
           <message kind="error" line="13"/>
         </compile>
     </ajc-test>
-    
 
- 
+    <ajc-test dir="bugs" pr="902"
+      title="circularity in declare dominates">
+        <compile files="CircularDominates.java">
+		  <message kind="error" line="18"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs" pr="906"
+      title="privileged access to code outside the control of the compiler">
+        <compile files="PrivilegeBeyondScope.java">
+		  <message kind="error" line="21"/>
+        </compile>
+        <run class="PrivilegeBeyondScope"/>
+    </ajc-test>
+
 </suite>

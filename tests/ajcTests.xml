@@ -4234,8 +4234,7 @@
 
     <ajc-test dir="new" pr="694" title="after returning advice param"
       keywords="from-resolved_10x">
-        <compile files="AfterReturningParam.java">
-        </compile>
+        <compile files="AfterReturningParam.java"/>
         <run class="AfterReturningParam"/>
     </ajc-test>
 
@@ -4331,16 +4330,14 @@
     <ajc-test dir="new" pr="573"
       title="pertarget stack overflow getting name of anonymous (Interface) class"
       keywords="from-resolved_10rc3">
-        <compile files="PR573.java">
-        </compile>
+        <compile files="PR573.java"/>
         <run class="PR573"/>
     </ajc-test>
 
     <ajc-test dir="new" pr="573"
       title="pertarget stack overflow getting name of anonymous (Object) class"
       keywords="from-resolved_10rc3">
-        <compile files="PR573_1.java">
-        </compile>
+        <compile files="PR573_1.java"/>
         <run class="PR573_1"/>
     </ajc-test>
 
@@ -5105,6 +5102,20 @@
         <run class="AssertInAdviceBug" vm="1.4"/>
     </ajc-test>
 
+    <ajc-test dir="new" pr="823"
+      title="declaring a private method on an inner interface"
+      keywords="tofix">
+        <compile files="PrivateMethodOnInnerInterface.java"/>
+        <run class="PrivateMethodOnInnerInterface"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="829"
+      title="CE expected when declaring fields on arrays" keywords="tofix">
+        <compile files="ArrayFieldDeclarationCE.java">
+            <message kind="error" line="14"/>
+        </compile>
+    </ajc-test>
+
     <ajc-test dir="pureJava" pr="866"
       title="non-constant static final fields marked as final in .class">
         <compile files="FinalStaticField.java"/>
@@ -5134,6 +5145,31 @@
       title="after returning advice on interface constructor">
         <compile files="AfterReturningInterfaceConstructor.java"/>
         <run class="AfterReturningInterfaceConstructor"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs" pr="900"
+      title="after advice on static call join point">
+        <compile files="AfterStaticCall.java"/>
+        <run class="AfterStaticCall"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs" pr="901"
+      title="incompatible class change error"
+      comment="XXX Jim and Erik found/fixed this - need basis">
+        <compile files="IncompatibleClassChangeErrorBug.java"/>
+        <run class="IncompatibleClassChangeErrorBug"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs" pr="903"
+      title="simple cflow of method execution">
+        <compile files="ExecutionCflow.java"/>
+        <run class="ExecutionCflow"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs" pr="909"
+      title="using instance as class reference to constant field"
+      comment="XXX need to verify run">
+        <compile files="InstanceAsClassRefToConstant.java"/>
     </ajc-test>
 
     <!-- .................................... option tests -->
@@ -5249,7 +5285,7 @@
         <compile files="Main.java,injar.jar,Aspect.java" 
             aspectpath="aspectlib1.jar,aspectlib2.jar"/>
         <!-- can't run until we support classpath including the above jars
-             <run class="Main"/>
+        <run class="Main"/>
         -->
     </ajc-test>
     
