@@ -211,6 +211,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		NewConstructorTypeMunger myMunger = 
 			new NewConstructorTypeMunger(signature, syntheticInterMember, null, null);
 		setMunger(myMunger);
+		myMunger.check(world);
 		
 		this.selector = binding.selector =
 			NameMangler.postIntroducedConstructor(

@@ -16,6 +16,7 @@ package org.aspectj.weaver;
 import java.io.*;
 import java.util.Set;
 
+import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.ResolvedTypeMunger.Kind;
 
 public class NewConstructorTypeMunger extends ResolvedTypeMunger {
@@ -73,6 +74,13 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 		ResolvedMember ret = getSyntheticConstructor();
 		if (ResolvedTypeX.matches(ret, member)) return getSignature();
 		return super.getMatchingSyntheticMember(member, aspectType);
+	}
+	
+	public void check(World world) {
+		if (getSignature().getDeclaringType().isAspect(world)) {
+			world.showMessage(IMessage.ERROR, "can't declare constructor on an aspect",
+						getSignature().getSourceLocation(), null);
+		}
 	}
 
 }
