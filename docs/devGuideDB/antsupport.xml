@@ -1386,7 +1386,7 @@
 		All source files under spacewar/ and coordination/ are used, except Debug.java.		
 		</para>
 		<para>
-		See <ulink url="../examples/builds.xml">../examples/builds.xml</ulink>
+		See <ulink url="../examples/build.xml">../examples/build.xml</ulink>
 		for an example build script.
 		</para>
 	  </sect2>
@@ -1631,12 +1631,12 @@
 		<para>
 		For the most up-to-date information on known problems, 
 		see the 
-		<ulink url="http://dev.eclipse.org/bugs">bug database</ulink>
+		<ulink url="http://bugs.eclipse.org/bugs">bug database</ulink>
 		for unresolved 
-		<ulink url="http://dev.eclipse.org/bugs/buglist.cgi?&amp;product=AspectJ&amp;component=Compiler&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">
+		<ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?&amp;product=AspectJ&amp;component=Compiler&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">
 			compiler bugs
 			</ulink> or 
-		<ulink url="http://dev.eclipse.org/bugs/buglist.cgi?&amp;product=AspectJ&amp;component=Ant&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">
+		<ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?&amp;product=AspectJ&amp;component=Ant&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">
 			taskdef bugs
 			</ulink>.
 		</para>
@@ -1666,8 +1666,8 @@
         (Do join the list to participate!) 
         We also welcome any bug reports, patches, and features; 
         you can submit them to the bug database at 
-        <ulink url="http://dev.eclipse.org/bugs">
-           http://dev.eclipse.org/bugs</ulink>
+        <ulink url="http://bugs.eclipse.org/bugs">
+           http://bugs.eclipse.org/bugs</ulink>
         using the AspectJ product and Ant component. 
 		</para>
 	</sect2>

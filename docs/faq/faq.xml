@@ -250,7 +250,7 @@
         </question>
         <answer>
           <para>From AspectJ's
-            <ulink url="http://elipse.org/aspectj">web page
+            <ulink url="http://eclipse.org/aspectj">web page
             </ulink>, download the AspectJ distribution.
             The <literal>jar</literal> file is installed by executing
           </para>
@@ -1341,9 +1341,7 @@ aspect PublicErrorLogging {
             approved a proposal to add generic types to Java that is largely
             based on GJ (JSR 14).  A draft specification was submitted for
             public review, which closed on 01 August 2001, and a
-            <ulink url="http://plan9.bell-labs.com/who/wadler/pizza/gj/">
-              prototype implementation
-            </ulink> has been released.
+              prototype implementation has been released by Sun.
           </para>
           <para>We are committed to moving very rapidly to add support for
             generic types in AspectJ when generic types become part of the Java
