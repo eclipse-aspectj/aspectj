@@ -1,0 +1,49 @@
+
+<!-- to test incremental task, run setup then test -->
+<project default="setup" basedir=".">
+	<target name="init">
+		<property name="test.dir"
+			location="${basedir}"/>
+		<property name="aspectjrt.jar"
+			location="${test.dir}/../../../lib/test/aspectjrt.jar"/>
+		<taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+        	<classpath> 
+            	<pathelement path="${aspectjtools.jar}"/> 
+          	</classpath>
+      	</taskdef>
+		<available property="aspectjrt.jar.available"
+			file="${aspectjrt.jar}"/>
+		<fail unless="aspectjrt.jar.available"
+			message="expecting aspectjrt.jar: ${aspectjrt.jar}"/>
+		<available property="aspectjtools.jar.available"
+			file="${aspectjtools.jar}"/>
+		<fail unless="aspectjtools.jar.available"
+			message="expecting aspectjtools.jar: ${aspectjtools.jar}"/>
+	</target>
+
+	<target name="call-makeInjar">
+		<!-- when XCopyInjars support rolled out, use that -->
+		<iajc outjar="${test.dir}/${name}Classes.jar"
+			classpath="${aspectjrt.jar}"
+			sourceroots="${test.dir}/${name}"/>
+
+		<zip zipfile="${test.dir}/${name}Injar.jar">
+			<zipfileset src="${test.dir}/${name}Classes.jar"/>
+			<fileset dir="${test.dir}/${name}"
+				includes="**/*"
+				excludes="**/*.java"/>
+		</zip>
+		<delete file="${test.dir}/${name}Classes.jar"/>
+	</target>
+
+	<target name="setup" depends="init"
+		description="create input jars">
+		<antcall target="call-makeInjar">
+			<param name="name" value="one"/>
+		</antcall>
+		<antcall target="call-makeInjar">
+			<param name="name" value="two"/>
+		</antcall>
+	</target>
+
+</project>
