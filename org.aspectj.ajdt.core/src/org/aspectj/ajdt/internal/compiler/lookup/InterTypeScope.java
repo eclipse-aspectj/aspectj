@@ -17,16 +17,19 @@ import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 
 public class InterTypeScope extends ClassScope {
+	ReferenceBinding onType;
 
-	public InterTypeScope(Scope parent, TypeBinding onType) {
+	public InterTypeScope(Scope parent, ReferenceBinding onType) {
 		super(parent, null);
-		if (onType instanceof SourceTypeBinding) {
-			referenceContext = new TypeDeclaration(null);
-			referenceContext.binding = ((SourceTypeBinding)onType);
-		} else {
-			throw new RuntimeException("unimplemented");
-		}
-		//System.out.println("encolsingSource: " + this.enclosingSourceType());
+		referenceContext = new TypeDeclaration(null);
+		referenceContext.binding = makeSourceTypeBinding(onType);
+		this.onType = onType;
+	}
+
+	private SourceTypeBinding makeSourceTypeBinding(ReferenceBinding onType) {
+		if (onType instanceof SourceTypeBinding) return (SourceTypeBinding)onType;
+		else throw new RuntimeException("can't handle: " + onType);
+		//return new FakeSourceTypeBinding(onType);
 	}
 
 	public FieldBinding findField(
@@ -40,6 +43,10 @@ public class InterTypeScope extends ClassScope {
 
 	public SourceTypeBinding invocationType() {
 		return parent.enclosingSourceType();
+	}
+	
+	public ReferenceBinding effectiveThisType() {
+		return onType;
 	}
 	
 	public int addDepth() {

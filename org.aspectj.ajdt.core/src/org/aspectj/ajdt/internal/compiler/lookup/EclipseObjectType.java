@@ -43,6 +43,7 @@ public class EclipseObjectType extends ResolvedTypeX.Name {
 
 
 	public boolean isAspect() {
+		if (binding instanceof BinaryTypeBinding) return false;
 		if (!(binding instanceof SourceTypeBinding)) return false;
 		//XXX assume SourceBinding throughout
 		return ((SourceTypeBinding)binding).scope.referenceContext instanceof AspectDeclaration;

@@ -561,7 +561,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 	
 	
 	private PerClause.Kind lookupPerClauseKind(ReferenceBinding binding) {
-		if (binding instanceof SourceTypeBinding) {
+		if (binding instanceof SourceTypeBinding && !(binding instanceof BinaryTypeBinding)) {
 			SourceTypeBinding sourceSc = (SourceTypeBinding)binding;
 			if (sourceSc.scope.referenceContext instanceof AspectDeclaration) {
 				PerClause perClause = ((AspectDeclaration)sourceSc.scope.referenceContext).perClause;
