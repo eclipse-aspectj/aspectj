@@ -21,7 +21,7 @@ import java.io.*;
  * 
  * @author Wes Isberg
  */
-public class Pointcuts {
+public final class Pointcuts {
 
     // ------- not staticly-determinable
     public pointcut adviceCflow() : cflow(adviceexecution());
@@ -37,8 +37,8 @@ public class Pointcuts {
         execution(public static void main(String[]));
         
     /** staticly-determinable to never match any join point */
-    public pointcut never() : if(false) 
-        && execution(ThreadDeath *(ThreadDeath, ThreadDeath));
+    public pointcut never();
+       // if(false) && execution(ThreadDeath *(ThreadDeath, ThreadDeath));
         
     public pointcut anyMethodExecution() : 
         execution(* *(..));
@@ -70,11 +70,11 @@ public class Pointcuts {
     public pointcut anyNonPrivateFieldSet() : 
         set(!private * *); // also !transient?
 
-    public pointcut withinSetter() : 
-        withincode(* set*(..));
+    public pointcut withinSetter() :  // require !static?
+        withincode(void set*(*)); // use any return type? multiple parms?
 
     public pointcut withinGetter() : 
-        withincode(Object+ get*(..));
+        withincode(!void get*()); // permit parms? require !static?
     
     public pointcut anyNonPublicFieldSetOutsideConstructorOrSetter() : 
         set(!public * *) && !withincode(new(..)) 
@@ -110,7 +110,7 @@ public class Pointcuts {
         call(* java.io..*.*(..)) || call(java.io..*.new(..));
 
     /** 
-     * Any calls to java.awt or javax.swing classes 
+     * Any calls to java.awt or javax.swing methods or constructors 
      * (but not methods declared only on their subclasses).
      */
     public pointcut anyJavaAWTOrSwingCalls() :
@@ -129,7 +129,10 @@ public class Pointcuts {
         || (!call(* Class.getName())
             && call(* Class.get*(..)));
 
-    /** standard class-loading calls by Class and ClassLoader */
+    /** standard class-loading calls by Class and ClassLoader
+     * Note that `Foo.class` in bytecode is `Class.forName("Foo")`,
+     * so 'Foo.class' will also be picked out by this pointcut.
+     */
     public pointcut anySystemClassLoadingCalls() :
         call(Class Class.forName(..))
         || call(Class ClassLoader.loadClass(..));
@@ -149,26 +152,26 @@ public class Pointcuts {
             || (call(* Throwable+.*(..)) 
                 || call(Throwable+.new(..))));
 
-    private Pointcuts() {}
-    
+    public pointcut anyCodeThrowingException() :
+        execution(* *(..) throws Exception+)
+            || execution(new(..) throws Exception+);
+            
+    private Pointcuts() {} // XXX avoid this? else pointcuts match it...
 }
 //END-SAMPLE library-pointcutIdioms
 
-aspect A {
-    private static aspect PointcutsOnly {
-        /** require this library to only contain pointcuts */
-        declare error : within(Pointcuts) &&
-            (Pointcuts.anyMethodExecution() 
-                || Pointcuts.anyNonPrivateConstructorExecution()
-                || set(* *)) : "only pointcuts permitted in Pointcuts";
-             // does not pick out field definitions -- too costly
-             // set(* Pointcuts.*) || get(* Pointcuts.*)
-    }
-}
-
-class PointcutQuestions {
-    public pointcut anyCodeThrowingException() : // XXX broken?
-        execution(* *(..) throws Exception+)
-        || execution(new(..) throws Exception+);
-
-}
+//aspect A {
+//    private static aspect PointcutsOnly {
+//    /** require this library to only contain pointcuts */
+//    declare error : within(Pointcuts) &&
+//        (Pointcuts.anyMethodExecution() || Pointcuts.anyConstructorExecution()
+//            || set(* *)) : "only pointcuts permitted in Pointcuts";
+//    }
+//}
+//
+//class PointcutQuestions {
+//    public pointcut anyCodeThrowingException() : // XXX broken?
+//        execution(* *(..) throws Exception+)
+//        || execution(new(..) throws Exception+);
+//
+//}
