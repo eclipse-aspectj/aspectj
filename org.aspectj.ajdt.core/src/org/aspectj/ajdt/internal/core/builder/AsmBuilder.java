@@ -288,12 +288,23 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 		} else if (methodDeclaration instanceof DeclareDeclaration) { 
 			DeclareDeclaration declare = (DeclareDeclaration)methodDeclaration;
 			label = translateDeclareName(declare.toString());
-			if (label.indexOf("warning") != -1) kind = ProgramElementNode.Kind.DECLARE_WARNING;
-			if (label.indexOf("error") != -1) kind = ProgramElementNode.Kind.DECLARE_ERROR;
+			
+			// TODO: fix this horrible way of checking what kind of declare it is
+			if (label.indexOf("warning") != -1) {
+				kind = ProgramElementNode.Kind.DECLARE_WARNING;
+			} else if (label.indexOf("error") != -1) {
+				kind = ProgramElementNode.Kind.DECLARE_ERROR;
+			} else if (label.indexOf("parents") != -1) {
+				kind = ProgramElementNode.Kind.DECLARE_PARENTS;
+			} else if (label.indexOf("soft") != -1) {
+				kind = ProgramElementNode.Kind.DECLARE_SOFT;
+		    } else {
+				kind = ProgramElementNode.Kind.ERROR;	
+			}
 		} else if (methodDeclaration instanceof InterTypeDeclaration) {
 			kind = ProgramElementNode.Kind.INTRODUCTION;
 			label = translateInterTypeDecName(new String(((InterTypeDeclaration)methodDeclaration).selector));
-		} 
+		}
 		
 		ProgramElementNode peNode = new ProgramElementNode(
 			label,
