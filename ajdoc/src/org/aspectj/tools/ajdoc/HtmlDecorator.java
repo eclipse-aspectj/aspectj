@@ -417,8 +417,9 @@ class HtmlDecorator {
             
             String adviceDoc
             = "<TABLE WIDTH=\"100%\" BGCOLOR=#FFFFFF><TR>" +
-              "<TD width=\"15%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>&nbsp;Advised by:</font></b></td><td>";
+              "<TD width=\"15%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>&nbsp;Advised&nbsp;by:</font></b></td><td>";
 
+            List addedNames = new ArrayList();
             for (Iterator it = targets.iterator(); it.hasNext(); ) {
             	String currHandle = (String)it.next();
             	IProgramElement currDecl = AsmManager.getDefault().getHierarchy().findElementForHandle(currHandle);
@@ -436,11 +437,14 @@ class HtmlDecorator {
                 hrefLink += currDecl.getParent().toLinkLabelString() + ".html"
 					  + "#" + currDecl.toLabelString(); 
 
-                adviceDoc = adviceDoc +
-                        "<A HREF=\"" + hrefLink + "\"><tt>"
-                        + hrefName.replace('/', '.') + "</tt></A>";  
-                
-                if (it.hasNext()) adviceDoc += ", ";
+                if (!addedNames.contains(hrefName)) {
+	                adviceDoc = adviceDoc +
+	                        "<A HREF=\"" + hrefLink + "\"><tt>"
+	                        + hrefName.replace('/', '.') + "</tt></A>";  
+	                
+	                if (it.hasNext()) adviceDoc += ", ";
+	                addedNames.add(hrefName);
+                }
             }
             adviceDoc += "</TR></TD></TABLE>\n";
             fileContentsBuffer.insert( index, adviceDoc );
@@ -459,6 +463,7 @@ class HtmlDecorator {
         = "<TABLE WIDTH=\"100%\" BGCOLOR=#FFFFFF><TR>" +
           "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>&nbsp;Advises:</b></font></td><td>";
     
+        List addedNames = new ArrayList(); // for ensuring that we don't add duplciates
         for (Iterator it = targets.iterator(); it.hasNext(); ) {
         	String currHandle = (String)it.next();
         	IProgramElement currDecl = AsmManager.getDefault().getHierarchy().findElementForHandle(currHandle);
@@ -485,16 +490,13 @@ class HtmlDecorator {
         				linkRef = currDecl.getParent().getParent().getName() + "." + linkRef;
         			}
         		}
-                entry += "<A HREF=\"" + linkRef +
-                             "\"><tt>" + linkName.replace('/', '.') + "</tt></A>";  // !!! don't replace
-                if (it.hasNext()) entry += ", ";
-//             if ( isIntroduction ) {
-//             if ( !addedDecls.contains(currDecl.getSourceSignature() ) ) {
-//                 //addedDecls.add(currDecl.getPackageName() + "." + currDecl.getSignature());
-//                 addedDecls.add(packageName + currDecl.getSourceSignature());
-//             }
-//         } 
-            }
+        		if (!addedNames.contains(linkName)) {
+	                entry += "<A HREF=\"" + linkRef +
+	                             "\"><tt>" + linkName.replace('/', '.') + "</tt></A>";  // !!! don't replace
+	                if (it.hasNext()) entry += ", ";
+	                addedNames.add(linkName);
+        		}
+        	}
         }
         entry += "</B></FONT></TD></TR></TABLE>\n</TR></TD>\n";
         return entry;

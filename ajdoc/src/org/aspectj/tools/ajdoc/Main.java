@@ -80,10 +80,12 @@ public class Main implements Config {
 
     public static void main(String[] args) {
     	aborted = false;
-    	
+    	  
+//    	System.err.println("> command invoked: " + Arrays.asList(args).toString());
+    	  
         // STEP 1: parse the command line and do other global setup
         sourcepath.addElement("."); // add the current directory to the classapth
-        parseCommandLine(args);
+        parseCommandLine(args);  
         rootDir = getRootDir();
         symbolManager = SymbolManager.getDefault();
         File[] inputFiles      = new File[filenames.size()];
@@ -361,6 +363,8 @@ public class Main implements Config {
     static void parseCommandLine(String[] args) {
         if (args.length == 0) {
             displayHelpAndExit( null );
+        } else if (args.length == 1 && args[0].startsWith("@")) {
+        	System.err.println("!!!!!!!!");  
         }
         List vargs = new LinkedList(Arrays.asList(args));
 
@@ -553,7 +557,7 @@ public class Main implements Config {
                       else {
                            // didn't find it on that element of the classpath but that's ok
                       }
-                    }
+                    }  
                 }
             }
         }
