@@ -32,7 +32,7 @@ public class PR559 {
 }
 
 interface AspectMarker {
-    pointcut notInAspect()   : ! within(AspectMarker+);
+    pointcut notInAspect()   : ! within(AspectMarker+) && !preinitialization(new(..));
     pointcut allTarget()     : execution(* Target.*(..)) ;
     pointcut allTargetFlow() : cflow(allTarget()); 
     pointcut inTarget()      : notInAspect() && allTarget();
@@ -45,17 +45,17 @@ class Target {
 
 class Base implements AspectMarker {
     pointcut TargetRun () 
-        : within(Target) && execution(* *(..)) && !within(AspectMarker+);
+        : within(Target) && execution(* *(..)) && notInAspect() ;
         ;
     pointcut TargetRunFlow () 
-        : cflow(within(Target) && execution(* *(..))) && !within(AspectMarker+)
+        : cflow(within(Target) && execution(* *(..))) && notInAspect() 
         ;
 }
 
 /** @testcase PR#559 subaspect advice not run for superclass cflow-based pointcut */
 aspect Derived extends Base {
     pointcut TargetSubRunFlow () 
-        : cflow(within(Target) && execution(* *(..))) && !within(AspectMarker+)
+        : cflow(within(Target) && execution(* *(..))) && notInAspect() 
         ;
     Object around () : inTarget() {
         Tester.event("inTarget class");
@@ -81,17 +81,17 @@ aspect Derived extends Base {
 
 abstract aspect BaseAspect implements AspectMarker {
     pointcut TargetRun () 
-        : within(Target) && execution(* *(..)) && !within(AspectMarker+);
+        : within(Target) && execution(* *(..)) && notInAspect() ;
         ;
     pointcut TargetRunFlow () 
-        : cflow(within(Target) && execution(* *(..))) && !within(AspectMarker+)
+        : cflow(within(Target) && execution(* *(..))) && notInAspect() 
         ;
 }
 
 /** @testcase PR#559 subaspect advice not run for superaspect cflow-based pointcut */
 aspect DerivedAspect extends BaseAspect implements AspectMarker {
     pointcut TargetSubRunFlow () 
-        : cflow(within(Target) && execution(* *(..))) && !within(AspectMarker+)
+        : cflow(within(Target) && execution(* *(..))) && notInAspect() 
         ;
     Object around () : TargetRun() {
         Tester.event("target aspect");
