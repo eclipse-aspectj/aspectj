@@ -3,7 +3,7 @@
     <target name="default" >
        <delete dir="output" failonerror="false"/>
        <mkdir dir="output"/>
-       <javac destdir="output" debug="on" srcdir="." includes="SimpleEnum.java"/>
+       <javac destdir="output" debug="on" srcdir="." includes="SimpleEnum*.java"/>
        <javac destdir="output" debug="on" srcdir="." includes="Enum.java"/>
        <zip file="testcode.jar" basedir="output" includes="**/*"/>
        <delete dir="output"/>
