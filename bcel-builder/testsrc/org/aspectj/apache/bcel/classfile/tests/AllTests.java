@@ -49,6 +49,7 @@ public class AllTests {
 		suite.addTestSuite(ParameterAnnotationsTest.class);
 		suite.addTestSuite(GeneratingAnnotatedClassesTest.class);
 		suite.addTestSuite(TypeAnnotationsTest.class);
+		suite.addTestSuite(UtilTests.class);
 		//$JUnit-END$
 		return suite;
 	}

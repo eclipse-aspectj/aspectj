@@ -161,8 +161,8 @@ public class ElementValueGenTest extends BcelTestCase {
 		EnumElementValueGen evg = new EnumElementValueGen(enumType,"Red",cp);
 		// Creation of an element like that should leave a new entry in the cpool
 		assertTrue("The new ElementValue value index should match the contents of the constantpool but "+
-				evg.getValueIndex()+"!="+cp.lookupString("Red"),
-				evg.getValueIndex()==cp.lookupString("Red"));
+				evg.getValueIndex()+"!="+cp.lookupUtf8("Red"),
+				evg.getValueIndex()==cp.lookupUtf8("Red"));
 		//BCELBUG: Should the class signature or class name be in the constant pool? (see note in ConstantPool)
 //		assertTrue("The new ElementValue type index should match the contents of the constantpool but "+
 //				evg.getTypeIndex()+"!="+cp.lookupClass(enumType.getSignature()),

@@ -235,7 +235,8 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		Annotation[] anns = clazz.getAnnotations();
 		ClassGen cg = new ClassGen(clazz);
 		// Checks we can copy class values in an annotation
-		new AnnotationGen(anns[0],cg.getConstantPool());
+		new AnnotationGen(anns[0],cg.getConstantPool(),true);
+		new AnnotationGen(anns[0],cg.getConstantPool(),false);
 	}
 	
 	public void testAnnotationClassElementReadWrite() throws ClassNotFoundException,IOException {
