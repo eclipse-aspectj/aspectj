@@ -251,8 +251,8 @@ public class AjcSpecXmlReader {
         digester.addSetProperties(compileX + "/file");
         digester.addSetProperties(inccompileX, "classes", "paths");
         digester.addSetProperties(runX, 
-            new String[] { "class", "vm", "skipTester", "fork", "vmargs"},
-            new String[] { "className", "javaVersion", "skipTester", "fork", "vmArgs"});
+            new String[] { "class", "vm", "skipTester", "fork", "vmargs", "aspectpath"},
+            new String[] { "className", "javaVersion", "skipTester", "fork", "vmArgs", "aspectpath"});
         digester.addSetProperties(dirchangesX);
         digester.addSetProperties(messageX);
         digester.addSetProperties(messageSrcLocX, "line", "lineAsString");
@@ -304,7 +304,8 @@ public class AjcSpecXmlReader {
                     new String[] { "tag" }),
                 new BProps(JavaRun.Spec.class, 
                     new String[] { "className", "skipTester", "options", 
-                    "javaVersion", "errStreamIsError", "outStreamIsError"}),
+                    "javaVersion", "errStreamIsError", "outStreamIsError",
+                    "fork", "vmArgs", "aspectpath"}),
                     // mapped from { "class", ...}
                 new BProps(DirChanges.Spec.class, 
                     new String[] { "added", "removed", "updated", "unchanged", "dirToken", "defaultSuffix"}),
