@@ -3,8 +3,9 @@
 
 <!--
   known keywords:
-  
-  purejava
+ 
+  knownLimitation     Accepted limitation of current implementation (fails)
+  purejava            Sources compile under javac as well
   broken-test         ??
   messages-vary       one of many (usually two) test specs that differ only in 
                       messages expected by the different compilers.
