@@ -153,18 +153,26 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#findResidue(org.aspectj.weaver.Shadow, org.aspectj.weaver.patterns.ExposedState)
 	 */
+	/**
+	 * The guard here is going to be the hasAnnotation() test - if it gets through (which we cannot determine until runtime) then
+	 * we must have a TypeAnnotationAccessVar in place - this means we must *always* have one in place.
+	 */
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 	    if (!couldMatch(shadow)) return Literal.FALSE;
 	    boolean alwaysMatches = match(shadow).alwaysTrue();
 	    Var var = isThis ? shadow.getThisVar() : shadow.getTargetVar();
 	    Var annVar = null;
+	    
+	    // Are annotations being bound?
 	    TypeX annotationType = annotationTypePattern.annotationType;
 		if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
 			BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern)annotationTypePattern;
 			annotationType = btp.annotationType;
+			
 			annVar = isThis ? shadow.getThisAnnotationVar(annotationType) :
-			                   shadow.getTargetAnnotationVar(annotationType);
-			if (annVar == null) return Literal.TRUE;  // should be exception when we implement properly
+				shadow.getTargetAnnotationVar(annotationType);
+			if (annVar == null)
+				throw new RuntimeException("Impossible!");
 			// Check if we have already bound something to this formal
 			if ((state.get(btp.getFormalIndex())!=null) &&(lastMatchedShadowId == shadow.shadowId)) {
 //				ISourceLocation pcdSloc = getSourceLocation(); 
@@ -180,16 +188,11 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 			state.set(btp.getFormalIndex(),annVar);
 		}
 
-		if (alwaysMatches && (annVar == null)) {
+		if (alwaysMatches && (annVar == null)) {//change check to verify if its the 'generic' annVar that is being used
 		    return Literal.TRUE;
 		} else {
-		    if (annVar != null) { 
-		        // TODO - need to bind it, next line is a placeholder
-		        return Literal.FALSE;
-		    } else {
-		        ResolvedTypeX rType = annotationType.resolve(shadow.getIWorld());
-		        return Test.makeHasAnnotation(var,rType);
-		    }
+	        ResolvedTypeX rType = annotationType.resolve(shadow.getIWorld());
+	        return Test.makeHasAnnotation(var,rType);
 		}
 	}
 
