@@ -1551,7 +1551,7 @@ public class CompilerRun implements IAjcRun {
                             "source",
                             Option.FORCE_PREFIXES,
                             false,
-                            new String[][] { new String[] { "1.3", "1.4" }
+                            new String[][] { new String[] { "1.3", "1.4", "1.5" }
                 });
 
                 // ajc 1.0 options
@@ -1626,6 +1626,11 @@ public class CompilerRun implements IAjcRun {
                             "compliance",
                             Option.FORCE_PREFIXES,
                             false),
+                        factory.create(
+                            "1.5",
+                            "compliance",
+                            Option.FORCE_PREFIXES,
+                            false),
                         factory
                             .create(
                                 "target",
@@ -1634,7 +1639,10 @@ public class CompilerRun implements IAjcRun {
                                 false,
                                 new String[][] { new String[] {
                                     "1.1",
-                                    "1.2" }}),
+                                    "1.2",
+                                    "1.3",
+                                    "1.4",
+                                    "1.5" }}),
                         factory.create("XnoInline"),
                         factory.create("XnoWeave"),
                         factory.create("XserializableAspects")
