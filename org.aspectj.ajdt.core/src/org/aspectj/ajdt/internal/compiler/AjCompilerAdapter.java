@@ -116,7 +116,14 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 		} catch (IOException ex) {
 			AbortCompilation ac = new AbortCompilation(null,ex);
 			throw ac;
-		} 
+		} catch (RuntimeException rEx) {
+			if (rEx instanceof AbortCompilation) throw rEx; // Don't wrap AbortCompilation exceptions!
+
+			// This will be unwrapped in Compiler.handleInternalException() and the nested
+			// RuntimeException thrown back to the original caller - which is AspectJ
+			// which will then then log it as a compiler problem.
+			throw new AbortCompilation(true,rEx);
+		}
 	}
 
 	public void beforeProcessing(CompilationUnitDeclaration unit) {
