@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 5 Development Kit v1.5.0 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2004 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ 5 Readme</h1>
+
+<p>AspectJ 5 introduces several important changes to the language and tools
+in order to support Java 5, and to extend the capabilities of AspectJ in
+general. These changes are too extensive to describe in a simple readme file,
+so instead we have created the <a href="adk15notebook/index.html">AspectJ 5
+Developer's Notebook</a> to describe them.</p>
+
+<p>The 1.5.0 M1 milestone release supports a subset of the changes described
+in the developer's notebook. Currently implemented features are:</p>
+
+<ul>
+  <li><a href="adk15notebook/varargs.html">Varargs</a>
+  <li><a href="adk15notebook/enumeratedtypes.html">Enums</a>
+  <li><a href="adk15notebook/covariance.html">Covariance</a>
+  <li><a href="adk15notebook/annotations.html">Annotations</a>, with the following
+  exceptions: declare annotation is not yet implemented, and the @pcd forms
+  can be used for matching, but not yet for binding of formals.
+  <li><a href="adk15notebook/autoboxing.html">Autoboxing</a>
+  <li>Bridge methods created by Java compilers to support generics are treated
+  as synthetic and have no join points.
+</ul>
+
+<p>These are implemented as changes to the weaver, not the front-end compiler.
+The 1.5.0 M1 release cannot be used to <i>compile</i> code using Java 5 
+features, but can be used to weave (inpath) Java classes created by a Java 5
+compiler.</p>
+
+<p>For information on bug fixes in AspectJ 5 v1.5.0, see the <a href="changes.html">
+changes</a> document.</p>
+
+</body> </html>
