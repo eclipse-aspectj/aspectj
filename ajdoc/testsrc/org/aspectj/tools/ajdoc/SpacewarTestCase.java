@@ -23,7 +23,7 @@ public class SpacewarTestCase extends TestCase {
 	public void testSimpleExample() {
 		
 //		System.err.println(new File("testdata/figures-demo").exists());
-		File outdir = new File("testdata/spacewar/doc");
+		File outdir = new File("testdata/spacewar/docdir");
 		File sourcepath = new File("testdata/spacewar");
 		
 		String[] args = { "-d", 

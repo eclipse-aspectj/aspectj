@@ -11,6 +11,7 @@
  * ******************************************************************/
 import org.aspectj.tools.ajdoc.CoverageTestCase;
 import org.aspectj.tools.ajdoc.ExecutionTestCase;
+import org.aspectj.tools.ajdoc.PatternsTestCase;
 import org.aspectj.tools.ajdoc.SpacewarTestCase;
 
 import junit.framework.Test;
@@ -24,6 +25,7 @@ public class AjdocModuleTests {
 		TestSuite suite = new TestSuite("Test for org.aspectj.tools.ajdoc");
 		//$JUnit-BEGIN$
 		suite.addTestSuite(SpacewarTestCase.class);
+		suite.addTestSuite(PatternsTestCase.class);
 		suite.addTestSuite(CoverageTestCase.class); 
 		suite.addTestSuite(ExecutionTestCase.class);// !!! must be last because it exists
 		//$JUnit-END$
