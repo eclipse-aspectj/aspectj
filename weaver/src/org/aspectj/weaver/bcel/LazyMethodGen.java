@@ -256,10 +256,8 @@ public final class LazyMethodGen {
                         LocalVariableGen lng = (LocalVariableGen) targeter;
                         LocalVariableTag lr = new LocalVariableTag(BcelWorld.fromBcel(lng.getType()), lng.getName(), lng.getIndex());
                         if (lng.getStart() == ih) {
-                            lng.setStart(null);
                             locals.add(lr);
                         } else {
-                            lng.setEnd(null);
                             ends.add(lr);
                         }
                     }
@@ -835,15 +833,10 @@ public final class LazyMethodGen {
                             }
                         } else if (targeter instanceof LocalVariableTag) {
                             LocalVariableTag lvt = (LocalVariableTag) targeter;
-                            if (i instanceof LocalVariableInstruction) {
-                                int index = ((LocalVariableInstruction)i).getIndex();
-                                if (lvt.getSlot() == index) {
-                                    if (localVariableStarts.get(lvt) == null) {
-                                        localVariableStarts.put(lvt, jh);
-                                    }
-                                    localVariableEnds.put(lvt, jh);
-                                }
-                            }
+			    if (localVariableStarts.get(lvt) == null) {
+				localVariableStarts.put(lvt, jh);
+			    }
+			    localVariableEnds.put(lvt, jh);
                         }
                     }
                 }
@@ -852,7 +845,7 @@ public final class LazyMethodGen {
                 jh = jh.getNext();
             }
         }
-
+	
         // now add exception handlers
         for (Iterator iter = exnList.iterator(); iter.hasNext();) {
             ExceptionRange r = (ExceptionRange) iter.next();
@@ -872,16 +865,34 @@ public final class LazyMethodGen {
         // remove them and add back to the gen.
         
         Map duplicatedLocalMap = new HashMap();
-        
+        // Reverse sort these keys
 	List keys = new ArrayList(); 
-	keys.addAll(localVariableStarts.keySet()); 
-	Collections.sort(keys,new Comparator() { 
-		public int compare(Object a,Object b) { 
-                         LocalVariableTag taga = (LocalVariableTag)a; 
-                         LocalVariableTag tagb = (LocalVariableTag)b; 
-                         return taga.getName().compareTo(tagb.getName()); 
-                 }}); 
-         for (Iterator iter = keys.iterator(); iter.hasNext(); ) { 
+        keys.addAll(localVariableStarts.keySet());
+//		System.err.println("Keys for local variable tags"); 
+//		for (int i = 0;i <keys.size();i++) {
+//			System.err.println("Before sort: #"+i+"="+keys.get(i));
+//		}
+        Collections.sort(keys, new Comparator() {
+            public int compare(Object a, Object b) {
+                LocalVariableTag taga = (LocalVariableTag) a;
+                LocalVariableTag tagb = (LocalVariableTag) b;
+                if (taga.getName().startsWith("arg")) {
+                    if (tagb.getName().startsWith("arg")) {
+                        return -taga.getName().compareTo(tagb.getName());
+                    } else {
+                        return 1; // Whatever tagb is, it must come out before 'arg'
+                    }
+                } else if (tagb.getName().startsWith("arg")) {
+                    return -1; // Whatever taga is, it must come out before 'arg'
+                } else {
+                    return -taga.getName().compareTo(tagb.getName());
+                }
+            }
+        });
+//		for (int i = 0;i <keys.size();i++) {
+//			System.err.println("After  sort: #"+i+"="+keys.get(i));
+//		}
+        for (Iterator iter = keys.iterator(); iter.hasNext(); ) {
             LocalVariableTag tag = (LocalVariableTag) iter.next();
         	// have we already added one with the same slot number and start location?  
         	// if so, just continue.
