@@ -133,4 +133,19 @@
         <run class="InterfaceInitializerOrder"/>
     </ajc-test>
 
+    <ajc-test dir="incremental/full-rebuild"
+    	pr="59895"
+		title="incremental with aspect-driven full rebuild">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental">
+        	<message kind="error" line="3" file="Aspect.java"/>
+        	</compile>
+        <inc-compile tag="20">
+        	<message kind="warning" line="4" file="Main.java"/>
+        	</inc-compile>
+        <run class="Main"/>
+    </ajc-test>
+
 </suite>
