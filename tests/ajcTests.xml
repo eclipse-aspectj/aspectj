@@ -7474,12 +7474,15 @@
         </compile>
     </ajc-test>
     
+    <!-- this test unreliable - can't always delete sandbox afterwards, need to get
+         to the bottom of why...
      <ajc-test dir="bugs"  pr="43714"
     	title="weaving from an input jar into that same jar.."  >
         <compile files="notAJar.jar" outjar="notAJar.jar"> 
         	<message kind="error" line="0"/>
         </compile>
     </ajc-test>
+	-->
 	
 	 <ajc-test dir="bugs"  pr="43714"
     	title="weaving from an aspectpath jar into that same jar.."  >
