@@ -45,7 +45,12 @@ release schedule closely, however, these are the changes since the
 
 <ul>
   <li>The documentation, core tools and ant tasks are now part of a
-  single downloadable distribution. </li>
+  single downloadable distribution from
+  <a href="http://eclipse.org/aspectj">eclipse.org</a>.  Ajde for
+  <a href="http://aspectj4emacs.sourceforge.net/">Emacs</a>,
+  <a href="http://aspectj4netbean.sourceforge.net/">NetBeans</a> and
+  <a href="http://aspectj4jbuildr.sourceforge.net/">JBuilder</a> are
+  now available from individual SourceForge projects. </li>
 
   <li>More 1.0 features have been implemented: inter-type constructor
   definitions, instance initialization and pre-initialization join
@@ -325,26 +330,26 @@ release schedule closely, however, these are the changes since the
 <hr>
 <h2><a name="tools">Support Tools</a></h2>
 
-  <p>This release includes two new experimental Ant variants,
-     a CompilerAdapter to support running <tt>ajc</tt> with the Javac task
-     by setting the build.compiler property and a task that supports
-     incremental mode by watching a file.
-  </p>
+  <p>This release includes an Ant task for old-style 1.0 build
+  scripts, a new task for all the new compiler options, and a
+  CompilerAdapter to support running <code>ajc</code> with the Javac
+  task by setting the <code>build.compiler</code> property.  </p>
 
-  <p>This release does not include <tt>ajdoc</tt>, the documentation tool for
-     AspectJ sources, and its 1.1 release will trail the others' by weeks.
-     <tt>Ajdoc</tt> is deeply dependent on the abstract syntax tree
-     classes from the old compiler, so it needs a bottom-up rewrite.
-     We think it best to use this opportunity to implement more general
-     API's for publishing and rendering static structure.  Because those API's
-     are last to settle in the new architecture, and because the compiler itself
-     is a higher priority, we are delaying work on <tt>ajdoc</tt> until
-     after the 1.1 release.</p>
+  <p>This release does not include <code>ajdoc</code>, the
+  documentation tool for AspectJ sources, and its 1.1 release will
+  trail the others' by weeks. Ajdoc is deeply dependent on the
+  abstract syntax tree classes from the old compiler, so it needs a
+  bottom-up rewrite. We think it best to use this opportunity to
+  implement more general API's for publishing and rendering static
+  structure. Because those API's are last to settle in the new
+  architecture, and because the compiler itself is a higher priority,
+  we are delaying work on ajdoc until after the 1.1 release.</p>
 
-  <p>AspectJ 1.1 will not include <tt>ajdb</tt>, the AspectJ stand-alone debugger.
-  It is no longer necessary because more third-party debuggers are starting
-  to work according to JSR 45, "Debugging support for other languages",
-  which we plan to support in AspectJ 1.1. </p>
+  <p>AspectJ 1.1 will not include <tt>ajdb</tt>, the AspectJ
+  stand-alone debugger.  It is no longer necessary because more
+  third-party debuggers are starting to work according to JSR 45,
+  "Debugging support for other languages", which we plan to support in
+  AspectJ 1.1. </p>
 
 <!-- ============================== -->
 <hr>
