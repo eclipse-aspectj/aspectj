@@ -30,7 +30,7 @@ public class AbstractRunSpecTest extends TestCase {
 		super(name);
 	}
 
-    public void skiptestXmlWrite() {
+    public void testXmlWrite() {
         AbstractRunSpec spec = new TestSpec();
         spec.setOptions("-option1,-option2");
         spec.setKeywords("keyword1, keyword2");

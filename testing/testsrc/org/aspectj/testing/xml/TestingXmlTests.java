@@ -24,6 +24,8 @@ public class TestingXmlTests extends TestCase {
         TestSuite suite = new TestSuite(TestingXmlTests.class.getName());
         //$JUnit-BEGIN$
         suite.addTestSuite(AjcSpecXmlReaderTest.class); 
+        suite.addTestSuite(MessageListXmlReaderTest.class); 
+        suite.addTestSuite(XMLWriterTest.class); 
         //$JUnit-END$
         return suite;
     }

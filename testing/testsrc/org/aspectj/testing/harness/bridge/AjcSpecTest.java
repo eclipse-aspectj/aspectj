@@ -136,7 +136,7 @@ public class AjcSpecTest extends TestCase {
     }
         
     /** @return true if both are empty (null or no entries) or if all match after trimming */
-    public static void sameListSize(List lhs, List rhs, Assert a) {
+    public static void sameListSize(List lhs, List rhs) {
         if (null == lhs) {
             assertTrue((null == rhs) || (0 == rhs.size()));
         } else if (null == rhs) {
@@ -148,7 +148,7 @@ public class AjcSpecTest extends TestCase {
 
     /** @return true if both are empty (null or no entries) or if all match after trimming */
     public static void sameList(List lhs, List rhs, Assert a) {
-        sameListSize(lhs, rhs, a);
+        sameListSize(lhs, rhs);
         String l = normal(lhs);
         String r = normal(rhs);
         String label = l + NOTSAME + r;
@@ -257,7 +257,7 @@ public class AjcSpecTest extends TestCase {
         }
         assertTrue(rhs != null);
         assertTrue(lhs != null);
-        sameListSize(lhs, rhs, a);
+        sameListSize(lhs, rhs);
         Iterator lhsIter = lhs.iterator();
         Iterator rhsIter = rhs.iterator();
         while (lhsIter.hasNext() && rhsIter.hasNext()) {
@@ -302,11 +302,30 @@ public class AjcSpecTest extends TestCase {
         assertTrue(rhs != null);
         assertTrue(lhs.getKind() == rhs.getKind());
         same(lhs.getMessage(), rhs.getMessage(), a);
+        same(lhs.getDetails(), rhs.getDetails(), a);
         assertEquals(lhs.getThrown(), rhs.getThrown());
-        sameSourceLocation(lhs.getSourceLocation(), rhs.getSourceLocation(), a);        
+        sameSourceLocation(lhs.getSourceLocation(), rhs.getSourceLocation());
+        sameSourceLocations(lhs.getExtraSourceLocations(), rhs.getExtraSourceLocations());        
 	}
+    public static void sameSourceLocations(List lhs, List rhs) {
+        sameListSize(lhs, rhs);
+        if ((null == lhs) || (0 == lhs.size())) {
+            return;
+        }
+        // ok, do order-dependent check..
+        ListIterator iterLeft = lhs.listIterator(); 
+        ListIterator iterRight = rhs.listIterator(); 
+        while (iterLeft.hasNext() && iterRight.hasNext()) {
+            ISourceLocation left = (ISourceLocation) iterLeft.next();
+            ISourceLocation right = (ISourceLocation) iterRight.next();
+            sameSourceLocation(left, right);
+        }
+        assertTrue(!iterLeft.hasNext());
+        assertTrue(!iterRight.hasNext());
+        
+    }
 
-	public static void sameSourceLocation(ISourceLocation lhs, ISourceLocation rhs, Assert a) {
+	public static void sameSourceLocation(ISourceLocation lhs, ISourceLocation rhs) {
         if ((null == lhs) && (null == rhs)) {
             return;
         }
