@@ -144,4 +144,11 @@ public class AnnotationBinding extends TestUtils {
   	assertMessages(cR,new EmptyMessageSpec());
   	RunResult rR = run("a.b.c.A");
   }
+  
+  // Binding with calls/executions of static methods
+  public void testCallsAndExecutionsOfStaticMethods() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"StaticMethods.java","-1.5","-d","."});
+  	assertMessages(cR,new EmptyMessageSpec());
+  	RunResult rR = run("StaticMethods");
+  }
 }
