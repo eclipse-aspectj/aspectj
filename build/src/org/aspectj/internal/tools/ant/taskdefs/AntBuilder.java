@@ -387,6 +387,9 @@ public class AntBuilder extends Builder {
 
         try {
             handler.log("assembling all " + module  + " in " + module.getAssembledJar());
+            if (verbose) {
+	            handler.log("knownAntecedants: " + known);
+            }
             return executeTask(zip);
         } catch (BuildException e) {
             handler.logException("BuildException zipping " + module, e);
