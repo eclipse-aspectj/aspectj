@@ -41,8 +41,9 @@ class StubFileGenerator {
 
     static void processFile(SymbolManager symbolManager, File inputFile, File signatureFile) {
         try {
-            PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(signatureFile.getCanonicalPath())));
-            
+        	String path = StructureUtil.translateAjPathName(signatureFile.getCanonicalPath());
+            PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(path)));
+             
             String packageName = StructureUtil.getPackageDeclarationFromFile(inputFile);
             
             if (packageName != null ) {

@@ -109,7 +109,7 @@ public class Main implements Config {
             }
 
             for (int i = 0; i < filenames.size(); i++) {
-                inputFiles[i]     = findFile((String)filenames.elementAt(i));
+                inputFiles[i]     = new File((String)filenames.elementAt(i));
                 //signatureFiles[i] = createSignatureFile(inputFiles[i]);
             }
 
@@ -191,7 +191,7 @@ public class Main implements Config {
                     javadocargs[k] = (String)options.elementAt(k);
                 }
                 for (int k = 0; k < signatureFiles.length; k++) {
-                    javadocargs[options.size() + k] = signatureFiles[k].getCanonicalPath();
+                    javadocargs[options.size() + k] = StructureUtil.translateAjPathName(signatureFiles[k].getCanonicalPath());
                 }
             }
          
@@ -269,31 +269,6 @@ public class Main implements Config {
         catch (IOException ioe) {
               // be siltent
         }
-    }
-
-    /**
-     * If the file doesn't exist on the specified path look for it in all the other
-     * paths specified by the "sourcepath" option.
-     */
-    static File findFile( String filename ) throws IOException {
-
-        return new File( filename );
-        /*
-        File file = new File(filename);
-        if (file.exists()) {
-            return file;
-        }
-        else {
-            for ( int i = 0; i < sourcePath.size(); i++ ) {
-                File currPath = new File((String)sourcePath.elementAt(i));
-                File currFile = new File(currPath + "/" + filename); // !!!
-                if ( file.exists()) {
-                    return file;
-                }
-            }
-        }
-        throw new IOException("couldn't find source file: " + filename);
-        */
     }
 
     static Vector getSourcePath() {
@@ -425,8 +400,6 @@ public class Main implements Config {
 				System.err.println("> could not read arg file: " + argFile);
 				ioe.printStackTrace();
 			}
-
-        	
         }
         List vargs = new LinkedList(Arrays.asList(args));
 
@@ -469,7 +442,7 @@ public class Main implements Config {
             displayHelpAndExit( null );
         }
         for (int i = 0; i < vargs.size() ; i++) {
-            String arg = (String)vargs.get(i);
+            String arg = (String)vargs.get(i);  
             ignoreArg = false;
             if ( addNextToAJCOptions ) {
                 ajcOptions.addElement( arg );
@@ -581,9 +554,10 @@ public class Main implements Config {
                 // check if this is a file or a package
 //            	System.err.println(">>>>>>>> " + );
             	String entryName = arg.substring(arg.lastIndexOf(File.separator)+1);
-                if ((arg.endsWith(".java") && entryName.indexOf('.') == entryName.length()-5) ||
-                     arg.endsWith(".lst") &&
-                     arg != null ) {
+                if ((arg.endsWith(".java") && entryName.indexOf('.') == entryName.length()-5) 
+                	|| (arg.endsWith(".aj") && entryName.indexOf('.') == entryName.length()-3) 	
+                	|| arg.endsWith(".lst") 
+					&& arg != null ) {
                     File f = new File(arg);
                     if (f.isAbsolute()) {
                          filenames.addElement(arg);
@@ -611,7 +585,8 @@ public class Main implements Config {
                                   int index1 = name.lastIndexOf( "." );
                                   int index2 = name.length();
                                   if ( (index1 >= 0 && index2 >= 0 ) &&
-                                        (name.substring(index1, index2).equals( ".java" ) ) ) {
+                                        (name.substring(index1, index2).equals( ".java" )
+										 || name.substring(index1, index2).equals( ".aj" ))) {
                                       return true;
                                   }
                                   else  {
@@ -642,8 +617,7 @@ public class Main implements Config {
              !options.contains( "-protected" ) &&
              !options.contains( "-public" ) ) {
             options.addElement( "-package" );
-        }
-
+        }        
     }
 
     static void expandAtSignFile(String filename, File currentWorkingDir) {

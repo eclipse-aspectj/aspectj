@@ -109,4 +109,14 @@ public class StructureUtil {
 //			return false; 
 //		}
 	}
+
+	/**
+	 * @return	same path, but ending in ".java" instead of ".aj"
+	 */
+	public static String translateAjPathName(String path) {
+    	if (path.endsWith(".aj")) {
+    		path = path.substring(0, path.lastIndexOf(".aj")) + ".java";
+    	} 
+    	return path;
+	}
 }

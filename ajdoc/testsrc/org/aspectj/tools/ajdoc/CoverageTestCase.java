@@ -26,7 +26,7 @@ public class CoverageTestCase extends TestCase {
 		  
 //		System.err.println(new File("testdata/figures-demo").exists());
 		File file1 = new File("testdata/coverage/foo/ClassA.java");
-		File aspect1 = new File("testdata/coverage/foo/UseThisAspectForLinkCheck.java");
+		File aspect1 = new File("testdata/coverage/foo/UseThisAspectForLinkCheck.aj");
 		File file2 = new File("testdata/coverage/foo/InterfaceI.java");
 		File file3 = new File("testdata/coverage/foo/PlainJava.java");
 		File file4 = new File("testdata/coverage/foo/ModelCoverage.java");
@@ -35,7 +35,7 @@ public class CoverageTestCase extends TestCase {
 		File file7 = new File("testdata/coverage/fluffy/bunny/rocks/Rocks.java");
 		File file8 = new File("testdata/coverage/fluffy/bunny/rocks/UseThisAspectForLinkCheckToo.java");
 		File outdir = new File("testdata/coverage/doc");
-		
+		    
 		String[] args = { 
 //			"-XajdocDebug",
 			"-source", 
@@ -43,7 +43,7 @@ public class CoverageTestCase extends TestCase {
 			"-private",
 			"-d", 
 			outdir.getAbsolutePath(),
-			aspect1.getAbsolutePath(),
+			aspect1.getAbsolutePath(),  
 			file1.getAbsolutePath(), 
 			file2.getAbsolutePath(),
 			file3.getAbsolutePath(),
