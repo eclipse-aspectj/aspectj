@@ -23,7 +23,7 @@
        2003 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated November 25, 2003.
+  <para>Last updated April 18, 2004
   </para>
   <para>
    This FAQ covers AspectJ versions 1.0 and 1.1.
@@ -208,7 +208,7 @@
             aspect-oriented programming language and tool set.
           </para>
           <para>
-            The latest release is 1.1 <!-- XXX todo Update me! --> 
+            The latest release is 1.2 <!-- XXX todo Update me! --> 
 	        which can be downloaded from the 
              <ulink url="http://eclipse.org/aspectj">AspectJ project page</ulink>,
              including sources as described
