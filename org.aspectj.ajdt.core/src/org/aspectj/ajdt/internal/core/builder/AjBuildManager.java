@@ -205,7 +205,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
         		closeOutputStream();
         	}
             ret = !handler.hasErrors();
-            handler = null;
+            // bug 59895, don't release reference to handler as may be needed by a nested call
+            //handler = null;
         }
         return ret;
     }
