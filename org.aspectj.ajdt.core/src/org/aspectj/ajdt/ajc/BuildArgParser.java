@@ -163,7 +163,7 @@ public class BuildArgParser extends Main {
 			}
 			
 			setDebugOptions();
-			buildConfig.setJavaOptions(options);
+			buildConfig.getOptions().set(options);
 		} catch (InvalidInputException iie) {
 			ISourceLocation location = null;
 			if (buildConfig.getConfigFile() != null) {
@@ -318,7 +318,7 @@ public class BuildArgParser extends Main {
                 showWarning("empty arg found");
             } else if (arg.equals("-inpath")) {;
             	if (args.size() > nextArgIndex) {
-					buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_Inpath, CompilerOptions.PRESERVE);
+//					buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_Inpath, CompilerOptions.PRESERVE);
 					
 					List inPath = buildConfig.getInpath();
 					StringTokenizer st = new StringTokenizer(
@@ -342,7 +342,7 @@ public class BuildArgParser extends Main {
             	}
             } else if (arg.equals("-injars")) {;
 				if (args.size() > nextArgIndex) {
-					buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_InJARs, CompilerOptions.PRESERVE);
+//					buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_InJARs, CompilerOptions.PRESERVE);
 					
 					StringTokenizer st = new StringTokenizer(
 						((ConfigParser.Arg)args.get(nextArgIndex)).getValue(), 
@@ -404,7 +404,7 @@ public class BuildArgParser extends Main {
 				}
 			} else if (arg.equals("-outjar")) { 
 				if (args.size() > nextArgIndex) {
-					buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_OutJAR, CompilerOptions.GENERATE);
+//					buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_OutJAR, CompilerOptions.GENERATE);
 					File jarFile = makeFile(((ConfigParser.Arg)args.get(nextArgIndex)).getValue());
 					if (FileUtil.hasZipSuffix(jarFile)) {
 						try {
@@ -470,9 +470,9 @@ public class BuildArgParser extends Main {
 					showError("-Xlintfile requires .properties file argument");
 				}
             } else if (arg.equals("-Xlint")) {
-                buildConfig.getAjOptions().put(
-                    AjCompilerOptions.OPTION_Xlint,
-                    CompilerOptions.GENERATE);
+//                buildConfig.getAjOptions().put(
+//                    AjCompilerOptions.OPTION_Xlint,
+//                    CompilerOptions.GENERATE);
                 buildConfig.setLintMode(AjBuildConfig.AJLINT_DEFAULT);
             } else if (arg.startsWith("-Xlint:")) {
                 if (7 < arg.length()) {
