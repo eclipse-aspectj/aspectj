@@ -336,7 +336,7 @@ public class AjcTest extends RunSpecIterator {
                 this.suiteDir = suiteDir;
             }
             
-            /** @get suiteDir from any set or source location if set */
+            /** @return suiteDir from any set or source location if set */
             public File getSuiteDirFile() {
                 if (null == suiteDir) {
                     ISourceLocation loc = getSourceLocation();
