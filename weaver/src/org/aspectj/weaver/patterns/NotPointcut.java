@@ -38,6 +38,7 @@ public class NotPointcut extends Pointcut {
 		setLocation(pointcut.getSourceContext(), startPos, pointcut.getEnd());		
 	}
 
+	public Pointcut getNegatedPointcut() { return body; }
 
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return body.fastMatch(type).not();

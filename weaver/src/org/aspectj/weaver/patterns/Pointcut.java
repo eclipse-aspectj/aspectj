@@ -52,6 +52,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	public static final State RESOLVED = new State("resolved", 1);
 	public static final State CONCRETE = new State("concrete", 2);
 
+	private byte pointcutKind;
 
 	public State state;
 
@@ -126,6 +127,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	
 	public static final byte NONE = 20;
 
+	public byte getPointcutKind() { return pointcutKind; }
 
 	// internal, only called from resolve
 	protected abstract void resolveBindings(IScope scope, Bindings bindings);
@@ -245,7 +247,9 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 				throw new BCException("unknown kind: " + kind);
 		}
 		ret.state = RESOLVED;
+		ret.pointcutKind = kind;
 		return ret;
+		
 	}
 	
 
