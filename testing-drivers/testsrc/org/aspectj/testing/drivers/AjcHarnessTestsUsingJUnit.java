@@ -29,9 +29,7 @@ public class AjcHarnessTestsUsingJUnit extends TestCase {
         result.addTest(
             HarnessJUnitUtil.suite("harness", 
                 new String[] {"../tests/ajcHarnessTests.xml"},
-                new String[][] { 
-                    new String[] {"-ajctestSkipKeywords=expect-fail"}
-                    }
+                null
                 ));
         result.addTest(
             HarnessJUnitUtil.suite("harness selection tests", 

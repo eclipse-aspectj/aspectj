@@ -207,7 +207,8 @@ public class AjctestsAdapter extends TestSuite {
     }
 
     /** Wrap AjcTest.Spec as a TestCase. Run by delegation to suite */
-    private static class AjcTestSpecAsTest extends TestCase {
+    private static class AjcTestSpecAsTest extends TestCase 
+        implements HarnessJUnitUtil.IHasAjcSpec {
         // this could implement Test, but Ant batchtest fails to pull name 
         final String name;
         final AjcTest.Spec spec;
@@ -221,6 +222,9 @@ public class AjctestsAdapter extends TestSuite {
         }
         public int countTestCases() {
             return 1;
+        }
+        public AjcTest.Spec getAjcTestSpec() {
+            return spec;
         }
         public void run(TestResult result) {
             if (null == suite) {

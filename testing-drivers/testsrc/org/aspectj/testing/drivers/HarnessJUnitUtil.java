@@ -91,6 +91,8 @@ public class HarnessJUnitUtil {
      * FAIL is a failure,
      * ERROR and ABORT are errors,
      * and INFO, WARNING, and DEBUG are ignored.
+     * If test instanceof IHasAjcSpec, and the keywords contain "expect-fail",
+     * then failures are not reported (but passes are reported as a failure).
      * @param result the TestResult sink
      * @param status the IRunStatus source
      * @param test the Test to associate with the results
@@ -102,12 +104,24 @@ public class HarnessJUnitUtil {
             IRunStatus status,
             Test test,
             int numIncomplete) {
-      if (!status.runResult()) {
-          if (status.hasAnyMessage(IMessage.FAIL, false)) {
+      boolean expectFail = false;
+      if (test instanceof IHasAjcSpec) {
+          AjcTest.Spec spec = ((IHasAjcSpec) test).getAjcTestSpec();
+          expectFail = spec.getKeywordsList().contains("expect-fail");
+      }
+      if (status.runResult()) {
+          if (expectFail) {
+              String m = "did not fail as expected per expect-fail keyword";
+              AssertionFailedError failure = new AssertionFailedError(m);
+              result.addFailure(test, failure);
+          }
+      } else if (!expectFail) {
+          final boolean includeChildren = true;
+          if (status.hasAnyMessage(IMessage.FAIL, false, includeChildren)) {
               String m = render(status, null);
               AssertionFailedError failure = new AssertionFailedError(m);
               result.addFailure(test, failure);
-          } else if (status.hasAnyMessage(IMessage.ERROR, true)) {
+          } else if (status.hasAnyMessage(IMessage.ERROR, true, includeChildren)) {
               String m = render(status, null);
               AssertionFailedError failure = new AssertionFailedError(m);
               result.addError(test, failure);
@@ -264,6 +278,9 @@ public class HarnessJUnitUtil {
         public ArrayList getChildren() {
             return children;
         }
+    }
+    public interface IHasAjcSpec {
+        AjcTest.Spec getAjcTestSpec();
     }
 }
 
