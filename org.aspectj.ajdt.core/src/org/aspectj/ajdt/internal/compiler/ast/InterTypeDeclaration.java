@@ -140,7 +140,10 @@ public abstract class InterTypeDeclaration extends MethodDeclaration {
 
 	protected abstract Shadow.Kind getShadowKindForBody();
 	
-	public ResolvedMember getSignature() { return munger.getSignature(); }
+	public ResolvedMember getSignature() { 
+		if (munger==null) return null; // Can be null in an erroneous program I think
+		return munger.getSignature(); 
+	}
 
 	public char[] getDeclaredSelector() {
 		return declaredSelector;
