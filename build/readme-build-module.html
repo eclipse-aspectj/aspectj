@@ -1,5 +1,7 @@
 <html>
+<head>
 <title>AspectJ build module</title>
+</head>
 <body>
 <h1>AspectJ build</h1>
 
@@ -15,7 +17,7 @@ on running builds and doing testing for the AspectJ project, see
 <h3>Approach</h3>
 The AspectJ project source files are broken into modules, 
 the subdirectories of the modules directory.
-(To eclipse users, each module is a Java project.)
+(To eclipse users, each module is a Java or AspectJ project.)
 The modules are compiled independently and may be assembled
 by the build script into the release jar files.
 All required libraries are checked into the <code>lib</code> module.
@@ -49,8 +51,8 @@ The scripts avoid bootstrapping by using a build library jar
 checked in to
   <code>lib/build/build.jar</code>.
 That means code updates in the build module are not reflected in
-the build process until the <code>build.jar<code> produced by 
-building this <code>build<code> module replaces that found in
+the build process until the <code>build.jar</code> produced by 
+building this <code>build</code> module replaces that found in
   <code>lib/build/build.jar</code>.  Once the module update is
   confirmed, the new <code>lib/build/build.jar</code> must be checked in
   to propogate the changes to other users.
@@ -62,7 +64,7 @@ The
 <a href="src/org/aspectj/internal/tools/ant/taskdefs/BuildModule.java">
    BuildModule</a>
 taskdef implements an integrated module or product build.
-<p><u>Module builds</u> are based on the Eclipse <code>.classpath</code>
+<p/><u>Module builds</u> are based on the Eclipse <code>.classpath</code>
 file, and can produce
 a jar with the module classes, with two variations: 
 <ul>
@@ -77,7 +79,7 @@ If there is a file {moduleName}.mf.txt
 in the module directory, it will be used as the manifest for the
 module jar file.
 
-<p><u>Product builds</u> are defined by introspection of a 
+<p/><u>Product builds</u> are defined by introspection of a 
 <a href="products">products</a> subdirectory like 
 <a href="products/tools">products/tools</a> for the AspectJ installer.
 
@@ -85,9 +87,9 @@ These have an <code>install</code> directory for installer resources
 and a <code>dist</code> directory containing all files belonging in
 the distribution, including 0-length placeholders for the module build
 results.  These placeholder file names are mapped to the originating
-module by the task itself (yes, an awful hack).
+module by <code>Builder.moduleAliasFor(String)</code> (yes, an awful hack).
 
-<p>
+<p/>
 <a name="version"></a>
 <h4>Version synchronization</h4>
 The version is expressed in the jar manifests, in the <code>Version</code> class, 
@@ -96,7 +98,7 @@ ensures all version expressions
 are aligned.  When not doing or testing release builds, 
 developers use the default "DEVELOPMENT" version.
 
-<p>The build version is set in 
+<p/>The build version is set in 
 <a href="build-properties.xml">build-properties.xml</a> and propogated
 using Ant copy filters out to
 the <a href="../runtime/runtime.mf.txt">aspectjrt.jar manifest</a>,
@@ -117,7 +119,7 @@ The scan is dim-witted; do not change the lines flagged in the template
 without also changing the scanning code in the task.
 
 <h4>Temporary aj-{name} and persistant aspectj-{name}</h4>
-<p>
+<p/>
 Top-level temporary build directories are prefixed "aj-",
 so you can safely destroy any such directory or ignore it
 in CVS or the Eclipse package explorer.  By default the build script
@@ -131,7 +133,12 @@ When running Ant from eclipse,
 do not use the default Eclipse Ant classpath; remove those jars and
 add all the libraries in <a href="../lib/ant/lib">../lib/ant/lib</a>
 as well as in <a href="../lib/junit">../lib/junit</a>.
-<p>
+If the build is failing under eclipse or Ant and the problem appears
+to be in the build module, you can run the build directly in eclipse
+(not using the Ant script) by running the skipped JUnit tests in
+<a href="testsrc/org/aspectj/internal/build/ModulesTests.java">
+	testsrc/org/aspectj/internal/build/ModulesTests.java</a>.
+<p/>
 
 <h4>Why new or changed modules might not work</h4>
 The BuildModule taskdef makes some assumptions about the naming, 
@@ -148,7 +155,7 @@ This affects build products (e.g., installers) which are run under eclipse
 (e.g., by opening with the "default system editor") and libraries used
 when compiling under Javac (if not zip products or input).  This problem
 presents as files not being writable, i.e., deleted or modified.
-<p>
+<p/>
 One workaround is to delete any existing build products 
 before re-creating them.  The problem with this is that Ant provides no 
 notice of that deletes fail when deleting with quiet="on", but when not
@@ -157,7 +164,7 @@ The workaround-workaround would be to create any required directories
 before trying to deleting any files, with the result of creating unused
 empty directories.
 
-<p>
+<p/>
 Currently BuildModule tasks forks the Javac command to try to work around
 this problem, but the Zip commands do not work around it.
 
@@ -165,6 +172,6 @@ If under Eclipse, you get strange behavior with Ant builds, clear
 out everything and build from the command line. In some cases, you
 have to exit Eclipse before files can be deleted.  (*sigh*)
 
-<p>
+<p/>
 </body>
 </html>
