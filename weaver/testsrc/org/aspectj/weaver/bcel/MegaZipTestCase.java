@@ -17,13 +17,25 @@ import java.io.*;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
+import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.*;
 
 public class MegaZipTestCase extends WeaveTestCase {
 
+    private File outDir;
+
 	public MegaZipTestCase(String arg0) {
 		super(arg0);
 	}
+
+    public void setUp() {
+        outDir = BcweaverTests.getOutdir();
+    }
+
+    public void tearDown() {
+        BcweaverTests.removeOutDir();
+        outDir = null;
+    }
 
 
     private BcelAdvice makeAroundMunger(final boolean matchOnlyPrintln) {
@@ -86,8 +98,8 @@ public class MegaZipTestCase extends WeaveTestCase {
 	
 	public void zipTest(String fileName) throws IOException {
 		long startTime = System.currentTimeMillis();
-		File inFile = new File("testdata", fileName);
-		File outFile = new File("out", fileName);
+		File inFile = new File(BcweaverTests.TESTDATA_PATH, fileName);
+		File outFile = new File(outDir, fileName);
 		outFile.delete();
 		
 		world = new BcelWorld("c:/apps/java-1.3.1_04/lib/tools.jar");

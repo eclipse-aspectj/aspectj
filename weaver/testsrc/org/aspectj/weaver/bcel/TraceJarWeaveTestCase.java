@@ -29,8 +29,8 @@ public class TraceJarWeaveTestCase extends WeaveTestCase {
 		world = new BcelWorld(getTraceJar());
 		BcelWeaver weaver = new BcelWeaver(world);
 		weaver.addLibraryAspect("MyTrace");
-		
-		UnwovenClassFile classFile = makeUnwovenClassFile(classDir, "DynamicHelloWorld", outDir);
+		UnwovenClassFile classFile 
+            = makeUnwovenClassFile(classDir, "DynamicHelloWorld", outDirPath);
         
         weaver.addClassFile(classFile);
         weaver.prepareForWeave();

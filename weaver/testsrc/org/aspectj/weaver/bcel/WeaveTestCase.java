@@ -28,13 +28,26 @@ public abstract class WeaveTestCase extends TestCase {
 
 	public boolean regenerate = false;
 	public boolean runTests = true;
-	
+
+    File outDir;
+    String outDirPath;
+    	
 	public BcelWorld world = new BcelWorld();
 
     public WeaveTestCase(String name) {
         super(name);
     }
     
+    public void setUp() {
+        outDir = BcweaverTests.getOutdir();
+        outDirPath = outDir.getAbsolutePath();
+    }
+    public void tearDown() {
+        BcweaverTests.removeOutDir();
+        outDir = null;
+        outDirPath = null;
+    }
+
 	public static InstructionList getAdviceTag(BcelShadow shadow, String where) {
 		String methodName =
 			"ajc_" + where + "_" + shadow.getKind().toLegalJavaIdentifier();
@@ -53,13 +66,12 @@ public abstract class WeaveTestCase extends TestCase {
     }
     
     static String classDir = "../weaver/bin";
-    static String outDir = "out";
     
     
 	public void weaveTest(String name, String outName, List planners) throws IOException {
         BcelWeaver weaver = new BcelWeaver(world);
         
-        UnwovenClassFile classFile = makeUnwovenClassFile(classDir, name, outDir);
+        UnwovenClassFile classFile = makeUnwovenClassFile(classDir, name, outDirPath); 
         
         weaver.addClassFile(classFile);
         weaver.setShadowMungers(planners);
@@ -83,11 +95,11 @@ public abstract class WeaveTestCase extends TestCase {
 			gen = classType.getLazyClassGen(); //new LazyClassGen(classType);
 		}
 		try {
-			checkClass(gen, outDir, outName + ".txt");
+			checkClass(gen, outDirPath, outName + ".txt");
 			if (runTests) {
 				System.out.println(
 					"*******RUNNING: " + outName + "  " + name + " *******");
-				TestUtil.runMain(makeClassPath(outDir), name);
+                TestUtil.runMain(makeClassPath(outDirPath), name);
 			}
 		} catch (Error e) {
 			gen.print(System.err);
@@ -130,7 +142,7 @@ public abstract class WeaveTestCase extends TestCase {
         if (regenerate) genClass(gen, outDir, expectedFile);
         else realCheckClass(gen, outDir, expectedFile);
     }
-    static final File TESTDATA_DIR = new File("../weaver/testdata");    				
+    static final File TESTDATA_DIR = new File(BcweaverTests.TESTDATA_PATH);    				
     void genClass(LazyClassGen gen, String outDir, String expectedFile) throws IOException {
     	//ClassGen b = getJavaClass(outDir, className);
     	FileOutputStream out = new FileOutputStream(new File(TESTDATA_DIR, expectedFile));

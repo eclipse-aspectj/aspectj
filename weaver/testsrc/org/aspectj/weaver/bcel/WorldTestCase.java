@@ -26,7 +26,8 @@ public class WorldTestCase extends AbstractWorldTestCase {
         super(name);
     }
         
-    private final BcelWorld world = new BcelWorld("testdata/tracing.jar");
+    private final BcelWorld world 
+        = new BcelWorld(BcweaverTests.TESTDATA_PATH + "/tracing.jar");
 
 	protected World getWorld() {
 		return world;

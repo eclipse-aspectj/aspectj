@@ -22,6 +22,8 @@ import junit.framework.TestCase;
 
 public class ZipTestCase extends TestCase {
 
+    File outDir;
+
 	/**
 	 * Constructor for ZipTestCase.
 	 * @param arg0
@@ -29,6 +31,15 @@ public class ZipTestCase extends TestCase {
 	public ZipTestCase(String arg0) {
 		super(arg0);
 	}
+
+    public void setUp() {
+        outDir = BcweaverTests.getOutdir();
+    }
+    
+    public void tearDown() {
+        BcweaverTests.removeOutDir();
+        outDir = null;
+    }
 	
 	
 	public void zipTest(String fileName, String aspectjar) throws IOException {
@@ -37,7 +48,7 @@ public class ZipTestCase extends TestCase {
 	
 	public void zipTest(String fileName, String aspectjar, boolean isInJar) throws IOException {
 		File inFile = new File(fileName);
-		File outFile = new File("out", inFile.getName());
+		File outFile = new File(outDir, inFile.getName());
 		
 		
 		BcelWorld world = new BcelWorld();
