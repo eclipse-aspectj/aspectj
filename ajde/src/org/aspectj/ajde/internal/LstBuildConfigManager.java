@@ -30,6 +30,8 @@ import org.aspectj.ajde.ui.BuildConfigModel;
 import org.aspectj.ajde.ui.BuildConfigNode;
 import org.aspectj.asm.StructureNode;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.ConfigParser;
 
@@ -74,10 +76,12 @@ public class LstBuildConfigManager implements BuildConfigManager {
 		} catch (ConfigParser.ParseException pe) {
 //			String filePath = "<unknown>";
 //			if (pe.getFile() != null) filePath = pe.getFile().getAbsolutePath();
-        	Ajde.getDefault().getTaskListManager().addSourcelineTask(
-    			pe.getMessage(), 
-    			new SourceLocation(pe.getFile(), pe.getLine(), 1), 
-    			IMessage.ERROR);
+            IMessage message = new Message(
+                pe.getMessage(),
+                IMessage.ERROR,
+                pe,
+                new SourceLocation(pe.getFile(), pe.getLine(), 1));
+            Ajde.getDefault().getTaskListManager().addSourcelineTask(message);
     	} 
     	
   		List relativePaths = relativizeFilePaths(configFiles, rootPath);
