@@ -16,6 +16,7 @@ package org.aspectj.tools.ajbrowser;
 
 import junit.framework.*;
 
+//FIXME: obviously does nothing
 public class AjbrowserTests extends TestCase {
 
     public static Test suite() { 
@@ -28,5 +29,6 @@ public class AjbrowserTests extends TestCase {
     }
 
     public AjbrowserTests(String name) { super(name); }
+
     public void testNothing() {}
 }  

@@ -25,6 +25,7 @@ public class AllTests14 {
 		suite.addTest(AllTests.suite());
 		suite.addTest(Java14Tests.suite());
 		//$JUnit-END$
+
 		return suite;
 	}
 }

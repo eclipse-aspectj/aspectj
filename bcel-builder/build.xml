@@ -47,10 +47,11 @@
 	<target name="packageAndPush" depends="buildTheJars,push"/>
 	
   <target name="jar" depends="pack">
-    <copy file="../lib/regexp/jakarta-regexp-1.2.jar"
-        tofile="bcel/lib/Regex.jar" />
-    <ant dir="bcel" target="jar" />
-    <copy file="bcel/bin/bcel.jar" toDir="." />
+      <!-- FIXME av -->
+<!--    <copy file="../lib/regexp/jakarta-regexp-1.2.jar"-->
+<!--        tofile="bcel/lib/Regex.jar" />-->
+<!--    <ant dir="bcel" target="jar" />-->
+<!--    <copy file="bcel/bin/bcel.jar" toDir="." />-->
   </target>
   
   <target name="srcjar" depends="pack">

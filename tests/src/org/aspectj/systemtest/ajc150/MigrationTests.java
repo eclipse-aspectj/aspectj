@@ -19,7 +19,7 @@ import org.aspectj.tools.ajc.CompilationResult;
  * Checks if we are obeying migration rules. 
  */
 public class MigrationTests extends TestUtils {
-	
+
   protected void setUp() throws Exception {
 	super.setUp();
 	baseDir = new File("../tests/migration");
@@ -37,7 +37,7 @@ public class MigrationTests extends TestUtils {
   	assertTrue("Should not coredump: "+cR.getStandardError(),cR.getStandardError().indexOf("Dumping to ajcore")==-1);
     assertTrue("Should be no error messages: \n"+cR.getErrorMessages(),cR.getErrorMessages().size()==0);
     File f = new File(ajc.getSandboxDirectory()+File.separator+"Program.class");
-    assertTrue("Missing class file",f.exists());
+    assertTrue("Missing class file " + f.getAbsolutePath(), f.exists());
   	run("Program");
   }
   

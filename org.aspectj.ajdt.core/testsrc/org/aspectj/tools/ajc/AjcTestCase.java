@@ -656,9 +656,14 @@ public class AjcTestCase extends TestCase {
 	 * @see junit.framework.TestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
-		super.setUp();
-		ajc = new Ajc();
-	}
+        try {
+            super.setUp();
+            ajc = new Ajc();
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#tearDown()
 	 */

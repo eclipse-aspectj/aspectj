@@ -62,26 +62,31 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	 * @return
 	 */
 	public static Test loadSuite(Class testCaseClass) {
-		TestSuite suite = new TestSuite(testCaseClass.getName());
-		suite.addTestSuite(testCaseClass);
-		TestSetup wrapper = new TestSetup(suite) {
-			/* (non-Javadoc)
-			 * @see junit.extensions.TestSetup#setUp()
-			 */
-			protected void setUp() throws Exception {
-				super.setUp();
-				suiteLoaded = false;
-			}
-			/* (non-Javadoc)
-			 * @see junit.extensions.TestSetup#tearDown()
-			 */
-			protected void tearDown() throws Exception {
-				super.tearDown();
-				suiteLoaded = false;
-			}
-		};
-		return wrapper;
-	}
+        try {
+            TestSuite suite = new TestSuite(testCaseClass.getName());
+            suite.addTestSuite(testCaseClass);
+            TestSetup wrapper = new TestSetup(suite) {
+                /* (non-Javadoc)
+                 * @see junit.extensions.TestSetup#setUp()
+                 */
+                protected void setUp() throws Exception {
+                    super.setUp();
+                    suiteLoaded = false;
+                }
+                /* (non-Javadoc)
+                 * @see junit.extensions.TestSetup#tearDown()
+                 */
+                protected void tearDown() throws Exception {
+                    super.tearDown();
+                    suiteLoaded = false;
+                }
+            };
+            return wrapper;
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
 	
 	/**
 	 * The file containing the XML specification for the tests.

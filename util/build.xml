@@ -25,6 +25,14 @@
         <testrun project="util" path="util.test.src.path" suite="UtilModuleTests"/>
     </target>
 
+    <target name="jar" depends="compile">
+        <delete file="${build.ajdir}/jars/util.jar"/>
+        <zip destfile="${build.ajdir}/jars/util.jar">
+            <fileset dir="bin">
+                <include name="**/*"/>
+            </fileset>
+        </zip>
+    </target>
 
 </project>
 

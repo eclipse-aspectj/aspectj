@@ -262,7 +262,12 @@ public class Ajc {
 		// in c:\documents and settings\......... for the results of a failed test.
 		if (os.startsWith("Windows")) {
 			tempDir = new File("C:\\temp");
-			if (!tempDir.exists()) {tempDir.mkdir();}
+			if (!tempDir.exists()) {
+                boolean created = tempDir.mkdir();
+                if (!created) {
+                    throw new RuntimeException("could not create sandbox " + tempDir.getAbsolutePath());
+                }
+            }
 		} else {
 		 	tempDir = new File("/tmp");
 		}

@@ -33,6 +33,10 @@
                                     org.aspectj.ajdt.core.compile,
                                     util.compile">
         <srccompile project="taskdefs" path="taskdefs.src.path"/>
+        <!-- copy resources -->
+        <copy todir="../taskdefs/bin">
+            <fileset dir="../taskdefs/src" includes="**/*.properties"/>
+        </copy>
     </target>
 
     <target name="test:compile" depends="compile">
@@ -47,6 +51,14 @@
         <testrun project="taskdefs" path="taskdefs.test.src.path" suite="TaskdefsModuleTests"/>
     </target>
 
+    <target name="jar" depends="compile">
+        <delete file="${build.ajdir}/jars/taskdefs.jar"/>
+        <zip destfile="${build.ajdir}/jars/taskdefs.jar">
+            <fileset dir="bin">
+                <include name="**/*"/>
+            </fileset>
+        </zip>
+    </target>
 
 </project>
 

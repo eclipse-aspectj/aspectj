@@ -59,6 +59,15 @@
         </delete>
     </target>
 
+    <target name="jar" depends="compile">
+        <delete file="${build.ajdir}/jars/ajdoc.jar"/>
+        <copy file="ajdoc.mf.txt" todir="${build.ajdir}/temp" filtering="yes"/>
+        <jar destfile="${build.ajdir}/jars/ajdoc.jar" manifest="${build.ajdir}/temp/ajdoc.mf.txt">
+            <fileset dir="bin">
+                <include name="**/*"/>
+            </fileset>
+        </jar>
+    </target>
 
 </project>
 

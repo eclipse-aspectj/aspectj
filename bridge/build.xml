@@ -28,5 +28,14 @@
         <testrun project="bridge" path="bridge.test.src.path" suite="BridgeModuleTests"/>
     </target>
 
+    <target name="jar" depends="compile">
+        <delete file="${build.ajdir}/jars/bridge.jar"/>
+        <zip destfile="${build.ajdir}/jars/bridge.jar">
+            <fileset dir="bin">
+                <include name="**/*"/>
+            </fileset>
+        </zip>
+    </target>
+
 </project>
 

@@ -62,9 +62,9 @@ public class BindingTest extends TestCase {
         void pc(int arg2, int arg1) {}// see rather fancy ordering here..
 
         @Around("pc(argAdvice2, argAdvice1) && target(t)")//see here ordering remade consistent
-        public Object aaround(ProceedingJoinPoint jp, BindingTest t, int argAdvice1, int argAdvice2) throws Throwable {
+        public int aaround(ProceedingJoinPoint jp, BindingTest t, int argAdvice1, int argAdvice2) throws Throwable {
             int res = ((Integer)jp.proceed()).intValue();
-            return new Integer(res-1);
+            return res-1;
         }
 
         @Pointcut("call(int dup(int)) && within(ataspectj.BindingTest) && args(arg1)")

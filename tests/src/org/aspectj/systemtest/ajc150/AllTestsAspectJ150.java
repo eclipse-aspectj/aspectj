@@ -23,9 +23,9 @@ public class AllTestsAspectJ150 {
 		//$JUnit-BEGIN$
 		suite.addTestSuite(MigrationTests.class);
 		suite.addTest(Ajc150Tests.suite());
-		suite.addTestSuite(Ajc150TestsNoHarness.class); 
+		suite.addTestSuite(Ajc150TestsNoHarness.class);
         suite.addTestSuite(SCCSFixTests.class);
-		
+
 		// These are binary weaving tests
 		suite.addTest(AccBridgeMethods.suite());
 		suite.addTestSuite(CovarianceTests.class);
@@ -35,8 +35,7 @@ public class AllTestsAspectJ150 {
 		suite.addTestSuite(VarargsTests.class);
 		suite.addTestSuite(AnnotationRuntimeTests.class);
 		suite.addTestSuite(PerTypeWithinTests.class);
-		
-		
+
 		//$JUnit-END$
 		return suite;
 	}

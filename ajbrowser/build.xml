@@ -36,6 +36,15 @@
         <testrun project="ajbrowser" path="ajbrowser.test.src.path" suite="AjbrowserModuleTests"/>
     </target>
 
+    <target name="jar" depends="compile">
+        <delete file="${build.ajdir}/jars/ajbrowser.jar"/>
+        <copy file="ajbrowser.mf.txt" todir="${build.ajdir}/temp" filtering="yes"/>
+        <jar destfile="${build.ajdir}/jars/ajbrowser.jar" manifest="${build.ajdir}/temp/ajbrowser.mf.txt">
+            <fileset dir="bin">
+                <include name="**/*"/>
+            </fileset>
+        </jar>
+    </target>
 
 </project>
 

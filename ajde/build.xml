@@ -49,5 +49,14 @@
         <testrun project="ajde" path="ajde.test.src.path" suite="AjdeModuleTests"/>
     </target>
 
+    <target name="jar" depends="compile">
+        <delete file="${build.ajdir}/jars/ajde.jar"/>
+        <zip destfile="${build.ajdir}/jars/ajde.jar">
+            <fileset dir="bin">
+                <include name="**/*"/>
+            </fileset>
+        </zip>
+    </target>
+
 </project>
 

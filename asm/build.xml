@@ -28,5 +28,13 @@
         <testrun project="asm" path="asm.test.src.path" suite="AsmModuleTests"/>
     </target>
 
+    <target name="jar" depends="compile">
+        <delete file="${build.ajdir}/jars/asm.jar"/>
+        <zip destfile="${build.ajdir}/jars/asm.jar">
+            <fileset dir="bin">
+                <include name="**/*"/>
+            </fileset>
+        </zip>
+    </target>
 </project>
 

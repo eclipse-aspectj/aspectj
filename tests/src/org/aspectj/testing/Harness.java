@@ -24,6 +24,8 @@
 package org.aspectj.testing;
 
 /**
+ * FIXME: (Alex) who we call that main ??
+ *
  * @see org.aspectj.testing.drivers.Harness
  */
 public class Harness {

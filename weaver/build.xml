@@ -47,5 +47,16 @@
         <testrun project="weaver" path="weaver.test.src.path" suite="org.aspectj.weaver.BcweaverModuleTests"/>
     </target>
 
+    <target name="jar" depends="compile">
+        <delete file="${build.ajdir}/jars/weaver.jar"/>
+        <copy file="weaver.mf.txt" todir="${build.ajdir}/temp" filtering="yes"/>
+        <jar destfile="${build.ajdir}/jars/weaver.jar" manifest="${build.ajdir}/temp/weaver.mf.txt">
+            <fileset dir="bin">
+                <include name="**/*"/>
+            </fileset>
+        </jar>
+    </target>
+    <!-- FIXME av weaver-all needed ? -->
+
 </project>
 

@@ -56,5 +56,14 @@
         <testrun project="org.aspectj.ajdt.core" path="org.aspectj.ajdt.core.test.src.path" suite="EajcModuleTests"/>
     </target>
 
+    <target name="jar" depends="compile">
+        <delete file="${build.ajdir}/jars/org.aspectj.ajdt.core.jar"/>
+        <zip destfile="${build.ajdir}/jars/org.aspectj.ajdt.core.jar">
+            <fileset dir="bin">
+                <include name="**/*"/>
+            </fileset>
+        </zip>
+    </target>
+
 </project>
 

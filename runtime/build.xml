@@ -27,5 +27,15 @@
 
     <target name="all" depends="init, compile, test:compile"/>
 
+    <target name="jar" depends="compile">
+        <delete file="${build.ajdir}/jars/aspectjrt.jar"/>
+        <copy file="runtime.mf.txt" todir="${build.ajdir}/temp" filtering="yes"/>
+        <jar destfile="${build.ajdir}/jars/aspectjrt.jar" manifest="${build.ajdir}/temp/runtime.mf.txt">
+            <fileset dir="bin">
+                <include name="**/*"/>
+            </fileset>
+        </jar>
+    </target>
+
 </project>
 

@@ -15,12 +15,15 @@
 // default package
 
 import junit.framework.*;
+import org.aspectj.tools.ajbrowser.InteractiveBrowserTest;
 
+//FIXME: obviously does nothing
 public class AjbrowserModuleTests extends TestCase {
 
-    public static TestSuite suite() { 
+    public static TestSuite suite() {
         TestSuite suite = new TestSuite(AjbrowserModuleTests.class.getName());
-        suite.addTest(org.aspectj.tools.ajbrowser.AjbrowserTests.suite()); 
+        suite.addTest(org.aspectj.tools.ajbrowser.AjbrowserTests.suite());
+        //suite.addTestSuite(InteractiveBrowserTest.class);
         return suite;
     }
 
