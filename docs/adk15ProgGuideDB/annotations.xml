@@ -902,7 +902,7 @@
       through the <literal>getSignature</literal> method of the <literal>JoinPoint</literal>
       and <literal>JoinPoint.StaticPart</literal> interfaces. The <literal>MemberSignature</literal>
       interface is extended with the additional operation 
-      <literal>java.lang.reflect.Member getMember()</literal>. The following fragment
+      <literal>java.lang.reflect.AccessibleObject getAccessibleObject()</literal>. The following fragment
       illustrates an example use of this interface to access annotation information.
     </para>
 
@@ -912,12 +912,7 @@
   	if (sig instanceof MemberSignature) {
   	  // this must be an initialization, pre-initialization, call, execution, get, or
   	  // set join point.
-  	  Member member = ((MemberSignature)sig).getMember();
-  	  // unfortunately, Member does not extend AnnotatedElement, so a further cast is
-  	  // needed:
-  	  if (member instanceof Field) { // a set or get join point...
-  	      AnnotatedElement fieldAnnotationInfo = ((Field)member);
-  	  }
+  	  AnnotatedElement memberAnnotationInfo = ((MemberSignature)sig).getAccessibleObject();
   	}
 	]]></programlisting>
     
