@@ -20,6 +20,7 @@ import java.util.List;
 
 /**
  * @author Mik Kersten
+ * @deprecated BuildConfigListener XXX unused - delete ConfigurationListener
  */
 public interface ConfigurationListener extends EventListener {
 
