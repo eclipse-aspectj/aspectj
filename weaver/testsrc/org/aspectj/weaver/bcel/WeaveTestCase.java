@@ -54,7 +54,7 @@ public abstract class WeaveTestCase extends TestCase {
         weaveTest(name, outName, l);
     }
     
-    static String classDir = "../bcweaver/bin";
+    static String classDir = "../weaver/bin";
     static String outDir = "out";
     
     
