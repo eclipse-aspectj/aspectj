@@ -111,7 +111,8 @@ public class RelationshipMap extends HashMap implements IRelationshipMap {
 		super.remove(source);	
 	}
 	
-	public Object put(Object o, Object p) {throw new RuntimeException("Fuck off!");
+	public Object put(Object o, Object p) {
+		return super.put(o,p);
 	}
 	public void put(String source, IRelationship relationship) {
 		System.err.println(">> for: " + source + ", put::" + relationship);

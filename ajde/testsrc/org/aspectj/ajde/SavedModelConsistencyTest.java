@@ -49,14 +49,15 @@ public class SavedModelConsistencyTest extends AjdeTestCase {
 		assertTrue(testFile.exists());
 		
 		IProgramElement nodePreBuild = model.findElementForSourceLine(testFile.getAbsolutePath(), 5);	
-//		System.err.println(nodePreBuild.getKind());
+		//System.err.println(nodePreBuild.getKind());
 
 		doSynchronousBuild(CONFIG_FILE_PATH);	
 
 		IProgramElement nodePostBuild = model.findElementForSourceLine(testFile.getAbsolutePath(), 5);	
-//		System.err.println(nodePostBuild.getKind());
+		//System.err.println(nodePostBuild.getKind());
 		
-		assertTrue(nodePreBuild.getKind().equals(nodePostBuild.getKind()));
+		assertTrue("Nodes should be identical: Prebuild kind = "+nodePreBuild.getKind()+
+				   "   Postbuild kind = "+nodePostBuild.getKind(),nodePreBuild.getKind().equals(nodePostBuild.getKind()));
 		
 	}
 
@@ -88,7 +89,7 @@ public class SavedModelConsistencyTest extends AjdeTestCase {
 //		System.err.println(preBuildKinds);
 //		System.err.println(postBuildKinds);
 		
-		assertTrue(preBuildKinds.equals(postBuildKinds));
+		assertTrue("Lists should be the same: PRE"+preBuildKinds.toString()+"  POST"+postBuildKinds.toString(),preBuildKinds.equals(postBuildKinds));
 		
 	}
 	  
