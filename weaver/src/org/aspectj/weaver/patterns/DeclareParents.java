@@ -113,12 +113,18 @@ public class DeclareParents extends Declare {
 		if (typePattern == TypePattern.NO) return null;  // already had an error here
 		TypeX iType = typePattern.getExactType();
 		ResolvedTypeX parentType = iType.resolve(world);
+		
+		if (targetType.equals(world.resolve(TypeX.OBJECT))) {
+			world.showMessage(IMessage.ERROR, "can't change the parents of java.lang.Object",
+			                  this.getSourceLocation(), null);
+			return null;
+		}
 			
 		if (parentType.isAssignableFrom(targetType)) return null;  // already a parent
 					
 		if (targetType.isAssignableFrom(parentType)) {
 			world.showMessage(IMessage.ERROR,
-				"type can not extend itself", this.getSourceLocation(), null
+				"type \'" + targetType.getName() + "\'can not extend itself", this.getSourceLocation(), null
 			);
 			return null;
 		}
