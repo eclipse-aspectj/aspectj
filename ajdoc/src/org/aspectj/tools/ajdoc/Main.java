@@ -93,7 +93,7 @@ public class Main implements Config {
             if ( !(new File( Config.WORKING_DIR ).isDirectory()) ) {
                 File dir = new File( Config.WORKING_DIR );
                 dir.mkdir();
-//                dir.deleteOnExit();
+                dir.deleteOnExit();
             }
 
             for (int i = 0; i < filenames.size(); i++) {
@@ -302,7 +302,7 @@ public class Main implements Config {
             File packageDir = new File(pathName);
             if ( !packageDir.exists() ) {
                 packageDir.mkdirs();
-                //packageDir.deleteOnExit();
+                packageDir.deleteOnExit();
             }
             //verifyPackageDirExists(packageName, null);
             packageName = packageName.replace( '.','/' ); // !!!
@@ -313,7 +313,7 @@ public class Main implements Config {
             filename = Config.WORKING_DIR + Config.DIR_SEP_CHAR + inputFile.getName();
         }
         File signatureFile = new File( filename );
-        //signatureFile.deleteOnExit();
+        signatureFile.deleteOnExit();
         return signatureFile;
     }
 
@@ -336,7 +336,7 @@ public class Main implements Config {
             File packageDir = new File( filePath );
             if ( !packageDir.exists() ) {
                 packageDir.mkdir();
-//                packageDir.deleteOnExit();
+                packageDir.deleteOnExit();
             }
             if ( remainingPkg != "" ) {
                 verifyPackageDirExists( remainingPkg, currPkgDir );
@@ -353,7 +353,7 @@ public class Main implements Config {
             File packageDir = new File( filePath );
             if ( !packageDir.exists() ) {
                 packageDir.mkdir();
-//                packageDir.deleteOnExit();
+                packageDir.deleteOnExit();
             }
         }
     }
