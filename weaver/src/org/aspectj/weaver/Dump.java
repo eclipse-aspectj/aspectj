@@ -38,8 +38,8 @@ public class Dump {
 
 	/* Format for unique filename based on date & time */
 	private static final String FILENAME_PREFIX = "ajcore";
-	private static final DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd"); 
-	private static final DateFormat timeFormat = new SimpleDateFormat("HHmmss.SSS"); 
+//	private static final DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd"); 
+//	private static final DateFormat timeFormat = new SimpleDateFormat("HHmmss.SSS"); 
 	private static final String FILENAME_SUFFIX = "txt";
 	
 	public static final String UNKNOWN_FILENAME = "Unknown";
@@ -280,8 +280,8 @@ public class Dump {
 		
 		Date now = new Date();
 		fileName = FILENAME_PREFIX + "."
-			+ dateFormat.format(now) + "."
-			+ timeFormat.format(now) + "."
+			+ new SimpleDateFormat("yyyyMMdd").format(now) + "."
+			+ new SimpleDateFormat("HHmmss.SSS").format(now) + "."
 			+ FILENAME_SUFFIX;
 		try {
 			print = new PrintStream(new FileOutputStream(fileName),true);
