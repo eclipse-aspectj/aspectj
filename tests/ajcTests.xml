@@ -23,6 +23,7 @@
                       java, bigjava, resolved_1*, 14tests, errors, design, base... 
 
   incremental-test    uses inc-compile step
+  command-error       command-line error test
   -->
 
 <suite>
@@ -2262,11 +2263,14 @@
         <compile
           files="typepatternmatch/pack1/IntroErrorLocation.java,typepatternmatch/pack2/TargetClass.java">
             <message kind="error" line="28"
-              text="typepatternmatch/pack1/IntroErrorLocation.java:28"/>
+              file="pack1/IntroErrorLocation.java"
+              text="TargetClass cannot be resolved"/>
             <message kind="warning" line="33"
-              text="typepatternmatch/pack1/IntroErrorLocation.java:33"/>
+              file="pack1/IntroErrorLocation.java"
+              text="no match for this type name: TargetClass"/>
             <message kind="error" line="39"
-              text="typepatternmatch/pack1/IntroErrorLocation.java:39"/>
+              file="pack1/IntroErrorLocation.java"
+              text="undefined for the type TargetClass"/>
         </compile>
     </ajc-test>
 
@@ -2274,7 +2278,9 @@
       title="Compiler should suggest using aspect when advice, pointcuts, or introduction is in a class"
       keywords="from-errors">
         <compile files="RecognizeAspectCE.java">
-            <message kind="error" line="6"  text="RecognizeAspectCE.java:6"/>
+            <message kind="error" line="6"  
+            	file="RecognizeAspectCE.java"
+            	text="Syntax error on token"/>
         </compile>
     </ajc-test>
 
@@ -5928,108 +5934,77 @@
     <ajc-test dir="new/binaryWarnings/src" pr="37020"
    	 title="declare warnings on main">
         <compile files="aspects/MainWarnings.java,app/Main.java">
-        	<message kind="warning" file="app/Main.java"
-        	  line="6" text="set(String Main.staticString)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="8" text="set(String Main.s)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="12" text="get(String Main.staticString)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="14" text="set(String Main.staticString)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="16" text="call(Main.new())"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="19" text="call(void Main.go(String))"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="23" text="execution(Main.new())"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="26" text="execution(void Main.go(String))"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="29" text="get(String Main.s)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="31" text="set(String Main.s)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="33" text="handler(RuntimeException)"/>        	  
-        	<message kind="warning" file="app/Main.java"
-        	  line="35" text="withincode(void Main.go(String))"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="42" text="withincode(void Main.stop())"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="50" text="preinitialization(app.C.new())"/>
+        	<message line="6"  text="staticinitialization(Main)" kind="warning" file="app/Main.java" />
+        	<message line="6"  text="set(String Main.staticString)" kind="warning" file="app/Main.java" />
+        	<message line="8"  text="set(String Main.s)" kind="warning" file="app/Main.java" />
+        	<message line="12" text="get(String Main.staticString)" kind="warning" file="app/Main.java" />
+        	<message line="14" text="set(String Main.staticString)" kind="warning" file="app/Main.java" />
+        	<message line="16" text="call(Main.new())" kind="warning" file="app/Main.java" />
+        	<message line="19" text="call(void Main.go(String))" kind="warning" file="app/Main.java" />
+        	<message line="23" text="initialization(Main.new())" kind="warning" file="app/Main.java" />
+        	<message line="23" text="get(String Main.s)" kind="warning" file="app/Main.java" />
+        	<message line="23" text="set(String Main.s)" kind="warning" file="app/Main.java" />
+        	<message line="26" text="execution(void Main.go(String))" kind="warning" file="app/Main.java" />
+        	<message line="29" text="get(String Main.s)" kind="warning" file="app/Main.java" />
+        	<message line="31" text="set(String Main.s)" kind="warning" file="app/Main.java" />
+        	<message line="32" text="D.go withincode(void Main.go(String))" kind="warning" file="app/Main.java" />
+        	<message line="33" text="handler(RuntimeException)" kind="warning" file="app/Main.java" />
+        	<message line="35" text="withincode(void Main.go(String))" kind="warning" file="app/Main.java" />
+        	<message line="42" text="withincode(void Main.stop())" kind="warning" file="app/Main.java" />
+        	<message line="50" text="preinitialization(app.C.new())" kind="warning" file="app/Main.java" />
         </compile>
-        
         <run class="app.Main"/>
     </ajc-test>
 
     <ajc-test dir="new/binaryWarnings/src"  pr="37020"
    	title="declare warnings on binary javac 1.4 classes">
         <compile files="aspects/MainWarnings.java,../injars/app-javac-1.4.jar">
-        	<message kind="warning" file="app/Main.java"
-        	  line="6" text="set(String Main.staticString)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="8" text="set(String Main.s)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="12" text="get(String Main.staticString)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="14" text="set(String Main.staticString)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="16" text="call(Main.new())"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="19" text="call(void Main.go(String))"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="23" text="execution(Main.new())"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="26" text="execution(void Main.go(String))"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="29" text="get(String Main.s)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="31" text="set(String Main.s)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="33" text="handler(RuntimeException)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="35" text="withincode(void Main.go(String))"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="42" text="withincode(void Main.stop())"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="50" text="preinitialization(app.C.new())"/>
+        	<message line="6"  text="staticinitialization(Main)" kind="warning" file="app/Main.java" />
+        	<message line="6"  text="set(String Main.staticString)" kind="warning" file="app/Main.java" />
+        	<message line="8"  text="set(String Main.s)" kind="warning" file="app/Main.java" />
+        	<message line="12" text="get(String Main.staticString)" kind="warning" file="app/Main.java" />
+        	<message line="14" text="set(String Main.staticString)" kind="warning" file="app/Main.java" />
+        	<message line="16" text="call(Main.new())" kind="warning" file="app/Main.java" />
+        	<message line="19" text="call(void Main.go(String))" kind="warning" file="app/Main.java" />
+        	<message line="23" text="initialization(Main.new())" kind="warning" file="app/Main.java" />
+        	<message line="23" text="get(String Main.s)" kind="warning" file="app/Main.java" />
+        	<message line="23" text="set(String Main.s)" kind="warning" file="app/Main.java" />
+        	<message line="26" text="execution(void Main.go(String))" kind="warning" file="app/Main.java" />
+        	<message line="29" text="get(String Main.s)" kind="warning" file="app/Main.java" />
+        	<message line="31" text="set(String Main.s)" kind="warning" file="app/Main.java" />
+        	<message line="32" text="D.go withincode(void Main.go(String))" kind="warning" file="app/Main.java" />
+        	<message line="33" text="handler(RuntimeException)" kind="warning" file="app/Main.java" />
+        	<message line="35" text="withincode(void Main.go(String))" kind="warning" file="app/Main.java" />
+        	<message line="42" text="withincode(void Main.stop())" kind="warning" file="app/Main.java" />
+        	<message line="50" text="preinitialization(app.C.new())" kind="warning" file="app/Main.java" />
         </compile>
         <run class="app.Main"/>
     </ajc-test>
+    
    <ajc-test dir="new/binaryWarnings/src" pr="37023"
    	title="declare warnings on binary ajc 1.1 classes">
         <compile files="aspects/MainWarnings.java,../injars/app-ajc-1.1.jar">
-        	<message kind="warning" file="app/Main.java"
-        	  line="6" text="set(String Main.staticString)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="8" text="set(String Main.s)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="12" text="get(String Main.staticString)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="14" text="set(String Main.staticString)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="16" text="call(Main.new())"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="19" text="call(void Main.go(String))"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="23" text="execution(Main.new())"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="26" text="execution(void Main.go(String))"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="29" text="get(String Main.s)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="31" text="set(String Main.s)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="33" text="handler(RuntimeException)"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="35" text="withincode(void Main.go(String))"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="42" text="withincode(void Main.stop())"/>
-        	<message kind="warning" file="app/Main.java"
-        	  line="50" text="preinitialization(app.C.new())"/>
-        	  
+        	<message line="6"  text="staticinitialization(Main)" kind="warning" file="app/Main.java" />
+        	<message line="6"  text="set(String Main.staticString)" kind="warning" file="app/Main.java" />
+        	<message line="8"  text="set(String Main.s)" kind="warning" file="app/Main.java" />
+        	<message line="12" text="get(String Main.staticString)" kind="warning" file="app/Main.java" />
+        	<message line="14" text="set(String Main.staticString)" kind="warning" file="app/Main.java" />
+        	<message line="16" text="call(Main.new())" kind="warning" file="app/Main.java" />
+        	<message line="19" text="call(void Main.go(String))" kind="warning" file="app/Main.java" />
+        	<message line="23" text="initialization(Main.new())" kind="warning" file="app/Main.java" />
+        	<message line="23" text="get(String Main.s)" kind="warning" file="app/Main.java" />
+        	<message line="23" text="set(String Main.s)" kind="warning" file="app/Main.java" />
+        	<message line="26" text="execution(void Main.go(String))" kind="warning" file="app/Main.java" />
+        	<message line="29" text="get(String Main.s)" kind="warning" file="app/Main.java" />
+        	<message line="31" text="set(String Main.s)" kind="warning" file="app/Main.java" />
+        	<message line="32" text="D.go withincode(void Main.go(String))" kind="warning" file="app/Main.java" />
+        	<message line="33" text="handler(RuntimeException)" kind="warning" file="app/Main.java" />
+        	<message line="35" text="withincode(void Main.go(String))" kind="warning" file="app/Main.java" />
+        	<message line="42" text="withincode(void Main.stop())" kind="warning" file="app/Main.java" />
+        	<message line="50" text="preinitialization(app.C.new())" kind="warning" file="app/Main.java" />
         </compile>
         <run class="app.Main"/>
-    </ajc-test>
+	</ajc-test>
 
    <ajc-test dir="new/binaryWarnings/src" pr="37020"
    	keywords="knownLimitation"
@@ -6189,10 +6164,66 @@
         <inc-compile tag="20"/>
         <run class="app.Main"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="37325"  
       title="Weaver fails with NPE for very large source files ">
         <compile files="LongFile.java"/>
         <run class="LongFile"/>
     </ajc-test>   
+
+    <ajc-test dir="harness" 
+    	keywords="command-line-error,knownLimitation"
+    	comment="can't test -help: has to abort, but returns 0, normal status"    
+		title="CLE: -help usage">
+        <compile  badInput="true" options="-help">
+            <message kind="abort" text="Usage"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness" keywords="command-line-error"
+      title="CLE: no sources">
+        <compile badInput="true">
+            <message kind="error" text="no sources"/>
+            <message kind="abort" text="Usage"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness" keywords="command-line-error"
+      title="CLE: bad filename">
+        <compile  badInput="true" files="NoSuchFile.java">
+            <message kind="error" text="NoSuchFile.java"/>
+            <message kind="abort" text="Usage"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness" keywords="command-line-error"
+      title="CLE: no dir specified for sourceroots">
+        <compile badInput="true" files="ErrorTest.java" 
+        	options="-sourceroots">
+            <message kind="error" text="no sources specified"/>
+            <message kind="error" text="bad sourceroot"/>
+            <message kind="abort" text="Usage"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness" keywords="command-line-error"
+      title="CLE: no sourceroot specified for incremental">
+        <compile badInput="true" options="-incremental">
+            <message kind="error" text="no sources specified"/>
+            <message kind="error" text="specify a source root"/>
+            <message kind="abort" text="Usage"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness" keywords="command-line-error"
+      title="CLE: file specified with incremental">
+        <compile badInput="true" files="ErrorTest.java"
+        	options="-incremental">
+            <message kind="error" text="incremental mode only handles source files using -sourceroots"/>
+            <message kind="error" text="no sources specified"/>
+            <message kind="error" text="specify a source root"/>
+            <message kind="abort" text="Usage"/>
+        </compile>
+    </ajc-test>
+
 </suite>
