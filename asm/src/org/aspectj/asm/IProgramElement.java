@@ -120,7 +120,7 @@ public interface IProgramElement extends Serializable {
 		public static final Modifiers STRICTFP = new Modifiers("strictfp");
 		public static final Modifiers TRANSIENT = new Modifiers("transient");
 		public static final Modifiers NATIVE = new Modifiers("native");
-		public static final Modifiers[] ALL = { STATIC, FINAL, ABSTRACT, SYNCHRONIZED, TRANSIENT, VOLATILE, STRICTFP, NATIVE };
+		public static final Modifiers[] ALL = { STATIC, FINAL, ABSTRACT, SYNCHRONIZED, VOLATILE, STRICTFP, TRANSIENT, NATIVE };
 		private final String name;
 		
 		private Modifiers(String name) {
@@ -211,9 +211,9 @@ public interface IProgramElement extends Serializable {
 				FILE_JAVA,
 				FILE_ASPECTJ,
 				FILE_LST,
+				IMPORT_REFERENCE,
 				CLASS,
 				INTERFACE,
-				IMPORT_REFERENCE,
 				ASPECT,
 				INITIALIZER,
 				INTER_TYPE_FIELD,
@@ -231,7 +231,9 @@ public interface IProgramElement extends Serializable {
 				DECLARE_SOFT,
 				DECLARE_PRECEDENCE,
 				CODE,
-				ERROR };
+				ERROR
+
+			};
 		
 		public static Kind getKindForString(String kindString) {
 			for (int i = 0; i < ALL.length; i++) {

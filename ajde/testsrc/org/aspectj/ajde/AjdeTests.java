@@ -33,6 +33,7 @@ public class AjdeTests extends TestCase {
 		suite.addTestSuite(InpathTestcase.class);
 		suite.addTestSuite(ResourceCopyTestCase.class);
 		suite.addTestSuite(ModelPerformanceTest.class);
+		suite.addTestSuite(SavedModelConsistencyTest. class);
 		
         //$JUnit-END$
         return suite;
