@@ -49,7 +49,7 @@
 	  
 	  <property name="company.name"         value="aspectj.org"/>
 	  <property name="copyright.allRights.from1998"
-               value="Copyright (c) 1998-2001 Xerox Corporation, 2002 Palo Alto Research Center, Incorporated, 2003 Contributors.  All rights reserved." />
+               value="Copyright (c) 1998-2001 Xerox Corporation, 2002 Palo Alto Research Center, Incorporated, 2003-2004 Contributors.  All rights reserved." />
 
       <!-- callers define basedir as dir of build file? -->
       <property name="aspectj.modules.dir"
