@@ -283,78 +283,76 @@ pointcut ioHandler(): within(MyClass) && handler(IOException);
       <para>
         Here are examples of designators of
       </para>
-      <glosslist>
+      <variablelist>
 
-        <glossentry>
-          <glossterm>when a particular method body executes</glossterm>
-          <glossdef>
+        <varlistentry>
+          <term>when a particular method body executes</term>
+          <listitem>
             <para>
               <literal>execution(void Point.setX(int))</literal>
             </para>
-          </glossdef>
-        </glossentry>
+          </listitem>
+        </varlistentry>
 
-        <glossentry>
-          <glossterm>when a method is called</glossterm>
-          <glossdef>
+        <varlistentry>
+          <term>when a method is called</term>
+          <listitem>
             <para>
               <literal>call(void Point.setX(int))</literal>
             </para>
-          </glossdef>
-        </glossentry>
+          </listitem>
+        </varlistentry>
 
-        <glossentry>
-          <glossterm>when an exception handler executes</glossterm>
-          <glossdef>
+        <varlistentry>
+          <term>when an exception handler executes</term>
+          <listitem>
             <para>
               <literal>handler(ArrayOutOfBoundsException)</literal>
             </para>
-          </glossdef>
-        </glossentry>
+          </listitem>
+        </varlistentry>
 
-        <glossentry>
-          <glossterm>when the object currently executing
-            (i.e. <literal>this</literal>) is of type <literal>SomeType</literal></glossterm>
-          <glossdef>
+        <varlistentry>
+          <term>when the object currently executing
+            (i.e. <literal>this</literal>) is of type <literal>SomeType</literal></term>
+          <listitem>
             <para>
               <literal>this(SomeType)</literal>
             </para>
-          </glossdef>
-        </glossentry>
+          </listitem>
+        </varlistentry>
 
-        <glossentry>
-          <glossterm>when the target object is of type
-            <literal>SomeType</literal></glossterm>
-          <glossdef>
+        <varlistentry>
+          <term>when the target object is of type
+            <literal>SomeType</literal></term>
+          <listitem>
             <para>
               <literal>target(SomeType)</literal>
             </para>
-          </glossdef>
-        </glossentry>
+          </listitem>
+        </varlistentry>
 
-        <glossentry>
-          <glossterm>when the executing code belongs to
-            class <literal>MyClass</literal></glossterm>
-          <glossdef>
+        <varlistentry>
+          <term>when the executing code belongs to
+            class <literal>MyClass</literal></term>
+          <listitem>
             <para>
               <literal>within(MyClass)</literal>
             </para>
-          </glossdef>
-        </glossentry>
+          </listitem>
+        </varlistentry>
 
-        <glossentry>
-          <glossterm>when the join point is in the control flow of a call to a
+        <varlistentry>
+          <term>when the join point is in the control flow of a call to a
           <literal>Test</literal>'s no-argument <literal>main</literal> method
-	  </glossterm>
-          <glossdef>
+	  </term>
+          <listitem>
             <para>
               <literal>cflow(void Test.main())</literal>
             </para>
-          </glossdef>
-        </glossentry>
-
-
-      </glosslist>
+          </listitem>
+        </varlistentry>
+      </variablelist>
 
       <para>
         Designators compose through the operations <literal>or</literal>

@@ -13,8 +13,8 @@
 <!ENTITY quickreference SYSTEM "quickreference.xml">
 <!ENTITY semantics      SYSTEM "semantics.xml">
 <!ENTITY limitations    SYSTEM "limitations.xml">
-<!ENTITY glossary       SYSTEM "glossary.xml">
-<!ENTITY bibliography   SYSTEM "bibliography.xml">
+<!-- <!ENTITY glossary       SYSTEM "glossary.xml"> -->
+<!-- <!ENTITY bibliography   SYSTEM "bibliography.xml"> -->
 <!ENTITY index          SYSTEM "index.xml">
 
 <!ENTITY % early	"ignore">
@@ -33,7 +33,7 @@
       
       <legalnotice>
 	   <para>Copyright (c) 1998-2001 Xerox Corporation, 
-         2002 Palo Alto Research Center, Incorporated.  
+         2002-2003 Palo Alto Research Center, Incorporated.  
          All rights reserved.
         </para>
       </legalnotice>
@@ -65,8 +65,8 @@
   &quickreference;
   &semantics;
   &limitations;
-  &glossary;
-  &bibliography;
+<!--   &glossary; -->
+<!--   &bibliography; -->
 <!--   &index; -->
 
 
