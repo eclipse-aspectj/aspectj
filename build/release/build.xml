@@ -25,6 +25,7 @@
     - ajcTests.xml ajc/harness tests in the build
     - junitModules.xml junit tests in the build
     - build installed examples
+    ... and more
   
   Targets of note:
 
@@ -179,12 +180,26 @@
 			message="install first in ${aj.build.install.dir}"/>
 	</target>
 
+	<target name="harness-available" depends="init-variables"
+		unless="harness.available">
+		<available property="harness.available"
+			classname="org.aspectj.testing.drivers.Harness"
+			classpath="${harness.jar}"/>
+		<fail unless="harness.available" 
+			message="harness not found - first build-tests"/>
+	</target>
+
 	<target name="tests-available" depends="init-variables"
 		unless="tests.available">
 		<available property="tests.available"
-			file="${aj.build.jar.dir}" type="dir"/>
+			classname="AjbrowserModuleTests">
+			<classpath>
+				<path refid="jar.classpath"/>
+				<path location="${aspectj.lib.dir}/junit/junit.jar"/>
+			</classpath>
+		</available>
 		<fail unless="tests.available" 
-			message="first build-tests"/>
+			message="test classe not found - first build-tests"/>
 	</target>
 
 <!-- ========================================================================= -->
@@ -351,42 +366,76 @@
 	</target>
 	
 	<target name="run-harness-tests" depends="aspectj-available">
+		<!-- we could use harness variants, e.g., "-emacssym-",
+		     but separating runs puts each variant in a different 
+		     output file, which makes them easier to analyze.
+		-->
 		<antcall target="run-harness-once">
 			<param name="suite.filename" value="ajcHarnessTests"/>
-			<param name="emacssym" value=""/>
+			<param name="harness.args" value=""/>
+			<param name="harness.suffix" value=""/>
 		</antcall>
 		
 		<antcall target="run-harness-once">
 			<param name="suite.filename" value="ajcTestsFailing"/>
-			<param name="emacssym" value=""/>
+			<param name="harness.args" value=""/>
+			<param name="harness.suffix" value=""/>
 		</antcall>
 
 		<antcall target="run-harness-once">
 			<param name="suite.filename" value="ajcTestsFailing"/>
-			<param name="emacssym" value="-emacssym"/>
+			<param name="harness.args" value="-emacssym"/>
+			<param name="harness.suffix" value="-emacssym"/>
 		</antcall>
 		
 		<antcall target="run-harness-once">
 			<param name="suite.filename" value="ajcTests"/>
-			<param name="emacssym" value=""/>
+			<param name="harness.args" value=""/>
+			<param name="harness.suffix" value=""/>
 		</antcall>
 
 		<antcall target="run-harness-once">
 			<param name="suite.filename" value="ajcTests"/>
-			<param name="emacssym" value="-emacssym"/>
+			<param name="harness.args" value="-emacssym"/>
+			<param name="harness.suffix" value="-emacssym"/>
+		</antcall>
+
+		<antcall target="run-harness-once">
+			<param name="suite.filename" value="ajcTests"/>
+			<param name="harness.args" value="-ajctaskCompiler -ajctestSkipKeywords=knownLimitations-ajctaskCompiler"/>
+			<param name="harness.suffix" value="-ajctaskCompiler"/>
 		</antcall>
 	</target>
 
-	<target name="run-harness-once" 
+	<!-- move when tested -->
+	<target name="run-harness-ajctaskCompiler" 
 		depends="init-variables">
+		<antcall target="run-harness-once">
+			<param name="suite.filename" value="ajcTests"/>
+			<param name="harness.args" value="-ajctaskCompiler -ajctestSkipKeywords=knownLimitations-ajctaskCompiler"/>
+			<param name="harness.suffix" value="-ajctaskCompiler"/>
+		</antcall>
+	</target>
+	
+	<target name="run-harness-once" 
+		depends="init-variables,harness-available">
 		<fail unless="suite.filename" 
 		     message="define suite.filename"/>
-		<available property="harness.available"
-			file="${harness.jar}"/>
-		<fail unless="harness.available" message="build harness first"/>
+		<fail unless="harness.args" 
+		     message="define harness.args"/>
+		<fail unless="harness.suffix" 
+		     message="define harness.suffix"/>
+
+		<property name="rho.default.options"
+			value="-release -logFail -killTemp"/>
+
 		<property name="harness.output.file"
 			location="${aj.build.log.dir}/${suite.filename}${emacssym}.txt"/>
-		<echo message="run-harness-once ${suite.filename}.xml to ${harness.output.file}"/>
+		<echo>
+  run-harness-once ${suite.filename}.xml 
+      with options ${rho.default.options} ${harness.args}
+                to ${harness.output.file}
+</echo>
 		<java 
 			fork="true"
 			dir="${aspectj.tests.dir}"
@@ -394,7 +443,7 @@
 			maxmemory="250m"
 			output="${harness.output.file}">
 			<arg value="${suite.filename}.xml"/>
-			<arg line="-killTemp -release -logFail ${emacssym}"/>			
+			<arg line="${rho.default.options} ${harness.args}"/>			
 		</java>
 	</target>
 
