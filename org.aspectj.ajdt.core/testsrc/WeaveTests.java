@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import abc.main.Main;
 
 /**
  * @author Noel Markham
@@ -482,10 +481,8 @@ public class WeaveTests {
 	private static long performCompile() throws IOException {
 		
 		String ajcargs = 
-			"-outjar " + OUTPUT_PACKAGE + File.separatorChar + "classes.jar " + 
-			"-argfile " + OUTPUT_PACKAGE + File.separatorChar + "build.lst";
-//		"-noExit -outjar " + OUTPUT_PACKAGE + File.separatorChar + "classes.jar " + 
-//		"-argfile " + OUTPUT_PACKAGE + File.separatorChar + "build.lst";
+		  "-noExit -outjar " + OUTPUT_PACKAGE + File.separatorChar + "classes.jar " + 
+		  "-argfile " + OUTPUT_PACKAGE + File.separatorChar + "build.lst";
 
 		// split method creates a String array delimited on a space
 		String[] parsedArgs = RunWeaveTests.split(ajcargs); 
@@ -493,8 +490,7 @@ public class WeaveTests {
 		
 		long start = System.currentTimeMillis();
 		
-		Main.main(parsedArgs);
-//		org.aspectj.tools.ajc.Main.main(parsedArgs);
+		org.aspectj.tools.ajc.Main.main(parsedArgs);
 		
 		long stop = System.currentTimeMillis();
 		
