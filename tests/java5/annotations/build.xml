@@ -3,8 +3,9 @@
     <target name="default">
        <delete dir="output" failonerror="false"/>
        <mkdir dir="output"/>
-       <javac destdir="output" debug="on" srcdir="." includes="*.java"/>
-       <zip file="testcode.jar" basedir="output" includes="*"/>
+       <javac destdir="output" debug="on" srcdir="." includes="SimpleAnnotation.java"/>
+       <javac destdir="output" debug="on" srcdir="." includes="Annotation.java"/>
+       <zip file="testcode.jar" basedir="output" includes="**/*"/>
        <delete dir="output"/>
     </target>
 
