@@ -1,6 +1,7 @@
 /* *******************************************************************
  * Copyright (c) 2001-2001 Xerox Corporation, 
- *               2002 Palo Alto Research Center, Incorporated (PARC).
+ *               2002 Palo Alto Research Center, Incorporated (PARC)
+ *               2003 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -31,6 +32,7 @@ import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.PatternSet;
 import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.types.ZipFileSet;
+import org.aspectj.bridge.*;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessageHolder;
@@ -75,9 +77,36 @@ import java.util.StringTokenizer;
  * @since AspectJ 1.1, Ant 1.5
  */
 public class AjcTask extends MatchingTask {
+    /*
+     * This task mainly converts ant specification for ajc,
+     * verbosely ignoring improper input.
+     * It also has some special features for non-obvious clients:
+     * (1) Javac compiler adapter supported in 
+     *    <code>setupAjc(AjcTask, Javac, File)</code>
+     * and
+     *    <code>readArguments(String[])</code>;
+     * (2) testing is supported by
+     * (a) permitting the same specification to be re-run
+     *     with added flags (settings once made cannot be
+     *     removed); and
+     * (b) permitting recycling the task with 
+     *     <code>reset()</code> (untested).
+     * 
+     * The parts that do more than convert ant specs are
+     * (a) code for forking;
+     * (b) code for copying resources.
+     * 
+     * If you maintain/upgrade this task, keep in mind:
+     * (1) changes to the semantics of ajc (new options, new
+     *     values permitted, etc.) will have to be reflected here. 
+     * (2) the clients:
+     * the iajc ant script, Javac compiler adapter,
+     * maven clients of iajc, and testing code.
+     */
 
+    // XXX move static methods after static initializer
     /**
-     * Extract javac arguments to ajc,
+     * This method extracts javac arguments to ajc,
      * and add arguments to make ajc behave more like javac
      * in copying resources.
      * <p>
@@ -154,17 +183,39 @@ public class AjcTask extends MatchingTask {
     
    /**
      * Find aspectjtools.jar in the system classpath.
+     * Accept <code>aspectj{-}tools{...}.jar</code>
+     * mainly to support build systems using maven-style 
+     * re-naming 
+     * (e.g., <code>aspectj-tools-1.1.0.jar</code>.
      * @return readable File for aspectjtools.jar, or null if not found.
      */            
     public static File findAspectjtoolsJar() {
-        Path classpath = Path.systemClasspath;
-        String[] paths = classpath.list();
+        final Path classpath = Path.systemClasspath;
+        final String[] paths = classpath.list();
+        final String prefix = "aspectj";        
+        final String infix = "tools";        
+        final String altInfix = "-tools";        
+        final String suffix = ".jar";
+        final int prefixLength = prefix.length();
+        final int minLength = prefixLength + infix.length() 
+                            + suffix.length();        
         for (int i = 0; i < paths.length; i++) {
             String path = paths[i];
-            if (-1 != paths[i].indexOf("aspectjtools.jar")) {
-                File result = new File(path);
-                if (result.canRead() && result.isFile()) {
-                    return result;
+            if (!paths[i].endsWith(suffix)) {
+                continue;
+            }
+            int loc = path.lastIndexOf(prefix);
+            if ((-1 != loc) && ((loc + minLength) <= path.length())) {
+                String rest = path.substring(loc+prefixLength);
+                if (-1 != rest.indexOf(File.pathSeparator)) {
+                    continue;
+                }
+                if (rest.startsWith(infix)
+                    || rest.startsWith(altInfix)) {
+                    File result = new File(path);
+                    if (result.canRead() && result.isFile()) {
+                        return result;
+                    }
                 }
             }
         }
@@ -234,6 +285,7 @@ public class AjcTask extends MatchingTask {
     private Path injars;
     private Path classpath;
     private Path bootclasspath;
+    private Path forkclasspath;
     private Path extdirs;
     private Path aspectpath;
     private Path argfiles;
@@ -257,6 +309,9 @@ public class AjcTask extends MatchingTask {
     
     /** zip file sink for classes */
     private File outjar;
+    
+    /** track whether we've supplied any temp outjar */
+    private boolean outjarFixedup;
 
     /** 
      * When possibly copying resources to the output jar,
@@ -268,32 +323,55 @@ public class AjcTask extends MatchingTask {
 
     private boolean executing;
 
+    /** non-null only while executing in same vm */
+    private Main main;
+    
+    /** true only when executing in other vm */
+    private boolean executingInOtherVM;
+
+    /** true if -incremental  */
+    private boolean inIncrementalMode;
+
+    /** true if -XincrementalFile (i.e, setTagFile)*/
+    private boolean inIncrementalFileMode; 
     // also note MatchingTask grabs source files...
     
     public AjcTask() {
     	reset();
     }
 
-	/** to use this same Task more than once */
-    public void reset() {
+	/** to use this same Task more than once (testing) */
+    public void reset() { // XXX possible to reset MatchingTask?
         // need declare for "all fields initialized in ..."
-        verbose = false;
-        failonerror = false;
-    	cmd = new GuardedCommand();
-    	srcdir = null;
-    	injars = null;
-    	classpath = null;
-    	aspectpath = null;
-    	argfiles = null;
-    	ignored = new ArrayList();
-		sourceRoots = null;
-        copyInjars = false;
-        sourceRootCopyFilter = null;
-        destDir = DEFAULT_DESTDIR;
-        outjar = null;
-        tmpOutjar = null;
-        executing = false;
+        adapterArguments = null;
         adapterFiles = new ArrayList();
+        argfiles = null;
+        executing = false;
+        aspectpath = null;
+        bootclasspath = null;
+        classpath = null;
+        cmd = new GuardedCommand();
+        cmdLength = 0;
+        copyInjars = false;
+        destDir = DEFAULT_DESTDIR;
+        executing = false;
+        executingInOtherVM = false;
+        extdirs = null;
+        failonerror = false;
+        forkclasspath = null;
+        inIncrementalMode = false;
+        inIncrementalFileMode = false;
+        ignored = new ArrayList();
+        injars = null;
+        listFileArgs = false;
+        maxMem = null;
+        messageHolder = null;
+        outjar = null;
+        sourceRootCopyFilter = null;
+        sourceRoots = null;
+        srcdir = null;
+        tmpOutjar = null;
+        verbose = false;
     }
 
     protected void ignore(String ignored) {
@@ -338,6 +416,7 @@ public class AjcTask extends MatchingTask {
     
     public void setIncremental(boolean incremental) {  
         cmd.addFlag("-incremental", incremental);
+        inIncrementalMode = true;
     }
 
     public void setHelp(boolean help) {  
@@ -464,8 +543,10 @@ public class AjcTask extends MatchingTask {
 
 	// ----------------
     public void setTagFile(File file) {
+        inIncrementalMode = true;
         cmd.addFlagged(Main.CommandController.TAG_FILE_OPTION,
-	        file.getAbsolutePath());        
+	        file.getAbsolutePath());
+        inIncrementalFileMode = true;
     }
     
     public void setOutjar(File file) {
@@ -478,6 +559,8 @@ public class AjcTask extends MatchingTask {
             throw new BuildException(e);
         }
         outjar = file;
+        outjarFixedup = false;
+        tmpOutjar = null;
     }
 
     public void setDestdir(File dir) {
@@ -572,7 +655,7 @@ public class AjcTask extends MatchingTask {
     }
 
     /** direct API for testing */
-    void setMessageHolder(IMessageHolder holder) {
+    public void setMessageHolder(IMessageHolder holder) {
         this.messageHolder = holder;
     }
     
@@ -674,6 +757,21 @@ public class AjcTask extends MatchingTask {
         return bootclasspath.createPath();
     }        
     
+    public void setForkclasspath(Path path) {
+        forkclasspath = incPath(forkclasspath, path);  
+    }
+    
+    public void setForkclasspathref(Reference forkclasspathref) {
+        createForkclasspath().setRefid(forkclasspathref);
+    }
+    
+    public Path createForkclasspath() {
+        if (forkclasspath == null) {
+            forkclasspath = new Path(project);
+        }
+        return forkclasspath.createPath();
+    }        
+    
     public void setExtdirs(Path path) {
         extdirs = incPath(extdirs, path);
     }
@@ -719,6 +817,16 @@ public class AjcTask extends MatchingTask {
         }
         return srcdir.createPath();
     }
+    
+    /** @return true if in incremental mode (command-line or file) */
+    public boolean isInIncrementalMode() {
+        return inIncrementalMode;
+    }
+
+    /** @return true if in incremental file mode */
+    public boolean isInIncrementalFileMode() {
+        return inIncrementalFileMode;
+    }
 
     public void setArgfilesref(Reference ref) {
         createArgfiles().setRefid(ref);
@@ -749,16 +857,14 @@ public class AjcTask extends MatchingTask {
             executing = true;
         }
         try {
-            boolean copyArgs = false;
-            setupCommand(copyArgs);
+            String[] args = makeCommand();
             if (verbose || listFileArgs) { // XXX if listFileArgs, only do that
-                String[] args = cmd.extractArguments();
                 log("ajc " + Arrays.asList(args), Project.MSG_VERBOSE);
             }
             if (!fork) {
-                executeInSameVM();
+                executeInSameVM(args);
             } else { // when forking, Adapter handles failonerror
-                executeInOtherVM();
+                executeInOtherVM(args);
             }
         } catch (BuildException e) {
             throw e;
@@ -775,7 +881,27 @@ public class AjcTask extends MatchingTask {
         }        
     }
 
-    String[] setupCommand(boolean copyArgs) {
+    /** 
+     * Halt processing.
+     * This tells main in the same vm to quit.
+     * It fails when running in forked mode.
+     * @return true if not in forked mode
+     *         and main has quit or been told to quit
+     */
+    public boolean quit() {
+        if (executingInOtherVM) {
+            return false;
+        }
+        Main me = main;
+        if (null != me) {
+            me.quit();
+        }
+        return true;
+    }
+
+    // package-private for testing
+    String[] makeCommand() {
+        ArrayList result = new ArrayList();
         if (0 < ignored.size()) {
             for (Iterator iter = ignored.iterator(); iter.hasNext();) {
                 log("ignored: " + iter.next(), Project.MSG_INFO);                   
@@ -783,7 +909,7 @@ public class AjcTask extends MatchingTask {
         }
         // when copying resources, use temp jar for class output
         // then copy temp jar contents and resources to output jar
-        if (null != outjar) {
+        if ((null != outjar) && !outjarFixedup) {
             if (copyInjars || (null != sourceRootCopyFilter)) {
                 String path = outjar.getAbsolutePath();
                 int len = FileUtil.zipSuffixLength(path);
@@ -799,14 +925,12 @@ public class AjcTask extends MatchingTask {
             } else {
                 cmd.addFlagged("-outjar", tmpOutjar.getAbsolutePath());        
             }
+            outjarFixedup = true;
         }
-        
-        addListArgs();
-        String[] result = null;
-        if (copyArgs) {
-            result = cmd.extractArguments();
-        }
-        return result;
+
+        result.addAll(cmd.extractArguments());        
+        addListArgs(result);
+        return (String[]) result.toArray(new String[0]);
     }   
 
     /**
@@ -820,7 +944,7 @@ public class AjcTask extends MatchingTask {
      *         or if errors and failonerror.
      * 
      */
-    protected void executeInSameVM() {
+    protected void executeInSameVM(String[] args) {
         if (null != maxMem) {
             log("maxMem ignored unless forked: " + maxMem, Project.MSG_WARN);
         }
@@ -839,14 +963,25 @@ public class AjcTask extends MatchingTask {
         } else {
             numPreviousErrors = holder.numMessages(IMessage.ERROR, true);
         }
-        Main main = new Main();
-        main.setHolder(holder);
-        main.setCompletionRunner(new Runnable() {
-            public void run() {
-                doCompletionTasks();
+        {
+            Main newmain = new Main();
+            newmain.setHolder(holder);
+            newmain.setCompletionRunner(new Runnable() {
+                public void run() {
+                    doCompletionTasks();
+                }
+            });
+            if (null != main) {
+                MessageUtil.fail(holder, "still running prior main");
+                return;
             }
-        });
-        main.runMain(cmd.extractArguments(), false);
+            main = newmain;          
+        }
+        try {
+            main.runMain(args, false);
+        } finally {
+            main = null;
+        }
         if (failonerror) {
             int errs = holder.numMessages(IMessage.ERROR, false);
             errs -= numPreviousErrors;
@@ -913,28 +1048,51 @@ public class AjcTask extends MatchingTask {
      * @throws BuildException if ajc aborts (negative value)
      *         or if failonerror and there were compile errors.
      */
-    protected void executeInOtherVM() {
+    protected void executeInOtherVM(String[] args) {
         if (null != messageHolder) {
             log("message holder ignored when forking: "
                 + messageHolder.getClass().getName(), Project.MSG_WARN);
         }
         CommandlineJava javaCmd = new CommandlineJava();
         javaCmd.setClassname(org.aspectj.tools.ajc.Main.class.getName());
-        Path vmClasspath = javaCmd.createClasspath(getProject());
-        File aspectjtools = findAspectjtoolsJar();
-        if (null != aspectjtools) {
-            vmClasspath.createPathElement().setLocation(aspectjtools);
+        
+        final Path vmClasspath = javaCmd.createClasspath(getProject());
+        if ((null != forkclasspath) 
+            && (0 != forkclasspath.size())) {
+            vmClasspath.addExisting(forkclasspath);
+        } else {
+            File aspectjtools = findAspectjtoolsJar();
+            if (null != aspectjtools) {
+                vmClasspath.createPathElement().setLocation(aspectjtools);
+            }
         }
         if (null != maxMem) {
             javaCmd.setMaxmemory(maxMem);
         }
-        File tempFile = cmd.limitTo(MAX_COMMANDLINE, getLocation());
+        File tempFile = null;
+        int numArgs = args.length;
+        args = GuardedCommand.limitTo(args, MAX_COMMANDLINE, getLocation());
+        if (args.length != numArgs) {
+            tempFile = new File(args[1]);
+        }
         try {
             String[] javaArgs = javaCmd.getCommandline();
-            String[] args = cmd.extractArguments();
             String[] both = new String[javaArgs.length + args.length];
             System.arraycopy(javaArgs,0,both,0,javaArgs.length);
             System.arraycopy(args,0,both,javaArgs.length,args.length);
+            // try to use javaw instead on windows
+            if (both[0].endsWith("java.exe")) {
+                String path = both[0];
+                path = path.substring(0, path.length()-4);
+                path = path + "w.exe";
+                File javaw = new File(path);
+                if (javaw.canRead() && javaw.isFile()) {
+                    both[0] = path;
+                }
+            }
+            if (verbose) { // XXX also when ant is verbose...
+                log("forking " + Arrays.asList(both));
+            }
             int result = execInOtherVM(both);
             if (0 > result) {
                 throw new BuildException("failure[" + result + "] running ajc");
@@ -965,7 +1123,16 @@ public class AjcTask extends MatchingTask {
             exe.setAntRun(project);
             exe.setWorkingDirectory(project.getBaseDir());
             exe.setCommandline(args);
-            exe.execute();
+            try {
+                if (executingInOtherVM) {
+                    String s = "already running in other vm?";
+                    throw new BuildException(s, location);
+                }
+                executingInOtherVM = true;
+                exe.execute();
+            } finally {
+                executingInOtherVM = false;
+            }
             return exe.getExitValue();
         } catch (IOException e) {
             String m = "Error executing command " + Arrays.asList(args);
@@ -975,30 +1142,32 @@ public class AjcTask extends MatchingTask {
 
     // ------------------------------ setup and reporting
     /** @return null if path null or empty, String rendition otherwise */
-    void addFlaggedPathToCommand(String flag, Path path) {
-        if ((null != path) && (0 < path.size())) {
-            cmd.addFlagged(flag, path.toString());
+    protected static void addFlaggedPath(String flag, Path path, List list) {
+        if (!LangUtil.isEmpty(flag) 
+            && ((null != path) && (0 < path.size()))) {
+            list.add(flag);
+            list.add(path.toString());
         }
     }
     
     /** 
-     * Add to cmd any plural arguments, which might be set
-     * repeatedly.
+     * Add to list any path or plural arguments.
      */
-	protected void addListArgs() throws BuildException {
-        addFlaggedPathToCommand("-classpath", classpath);       
-        addFlaggedPathToCommand("-bootclasspath", bootclasspath);
-        addFlaggedPathToCommand("-extdirs", extdirs);
-        addFlaggedPathToCommand("-aspectpath", aspectpath);
-        addFlaggedPathToCommand("-injars", injars);
-        addFlaggedPathToCommand("-sourceroots", sourceRoots);
+	protected void addListArgs(List list) throws BuildException {
+        addFlaggedPath("-classpath", classpath, list);       
+        addFlaggedPath("-bootclasspath", bootclasspath, list);
+        addFlaggedPath("-extdirs", extdirs, list);
+        addFlaggedPath("-aspectpath", aspectpath, list);
+        addFlaggedPath("-injars", injars, list);
+        addFlaggedPath("-sourceroots", sourceRoots, list);
         
         if (argfiles != null) {
             String[] files = argfiles.list();
             for (int i = 0; i < files.length; i++) {
                 File argfile = project.resolveFile(files[i]);
                 if (check(argfile, files[i], false, location)) {
-		            cmd.addFlagged("-argfile", argfile.getAbsolutePath());
+                    list.add("-argfile");
+                    list.add(argfile.getAbsolutePath());
                 }
             }
         }
@@ -1013,7 +1182,7 @@ public class AjcTask extends MatchingTask {
                 for (int j = 0; j < files.length; j++) {
                     File file = new File(dir, files[j]);
                     if (FileUtil.hasSourceSuffix(file)) {
-                        cmd.addFile(file);
+                        list.add(file.getAbsolutePath());
                     }
                 }
             }
@@ -1022,7 +1191,7 @@ public class AjcTask extends MatchingTask {
             for (Iterator iter = adapterFiles.iterator(); iter.hasNext();) {
                 File file = (File) iter.next();
                 if (file.canRead() && FileUtil.hasSourceSuffix(file)) {
-                    cmd.addFile(file);
+                    list.add(file.getAbsolutePath());
                 } else {
                     log("skipping file: " + file, Project.MSG_WARN);
                 }
@@ -1204,7 +1373,7 @@ public class AjcTask extends MatchingTask {
      * 
      * @param args the String[] of arguments to read
      */
-    void readArguments(String[] args) { // XXX slow, stupid, unmaintainable
+    public void readArguments(String[] args) { // XXX slow, stupid, unmaintainable
         if ((null == args) || (0 == args.length)) {
             return;
         }
@@ -1272,6 +1441,8 @@ public class AjcTask extends MatchingTask {
                 setFailonerror(true);
             } else if ("-fork".equals(flag)) {
                 setFork(true);
+            } else if ("-forkclasspath".equals(flag)) {
+                setForkclasspath(new Path(project, in.next()));
             } else if ("-help".equals(flag)) {
                 setHelp(true);
             } else if ("-incremental".equals(flag)) {
@@ -1355,17 +1526,15 @@ public class AjcTask extends MatchingTask {
             }
         }
     }
-}
 
 /**
  * Commandline wrapper that 
- * only permits addition of non-empty values,
- * counts size as it goes,
+ * only permits addition of non-empty values
  * and converts to argfile form if necessary.
  */
-class GuardedCommand {
+public static class GuardedCommand {
     Commandline command;
-    int size;
+    //int size;
 
     static boolean isEmpty(String s) {
         return ((null == s) || (0 == s.trim().length()));
@@ -1374,34 +1543,39 @@ class GuardedCommand {
     GuardedCommand() {
         command = new Commandline();
     }
-    
+
     void addFlag(String flag, boolean doAdd) {
         if (doAdd && !isEmpty(flag)) {
             command.createArgument().setValue(flag);
-            size += 1 + flag.length();
+            //size += 1 + flag.length();
         }
     }
     
     void addFlagged(String flag, String argument) {
         if (!isEmpty(flag) && !isEmpty(argument)) {
             command.addArguments(new String[] {flag, argument});
-            size += 1 + flag.length() + argument.length();
+            //size += 1 + flag.length() + argument.length();
         }
     }
     
-    void addFile(File file) {
+    private void addFile(File file) {
         if (null != file) {
             String path = file.getAbsolutePath();
             addFlag(path, true);
         }
     }
     
-    String[] extractArguments() {
-        return command.getArguments();
+    List extractArguments() {
+        ArrayList result = new ArrayList();
+        String[] cmds = command.getArguments();
+        if (!LangUtil.isEmpty(cmds)) {
+            result.addAll(Arrays.asList(cmds));
+        }
+        return result;
     }
 
      /**
-     * Adjust command for size if necessary by creating
+     * Adjust args for size if necessary by creating
      * an argument file, which should be deleted by the client
      * after the compiler run has completed.
      * @param max the int maximum length of the command line (in char)
@@ -1409,15 +1583,19 @@ class GuardedCommand {
      *         for deletion when done.
      * @throws IllegalArgumentException if max is negative
      */
-    protected File limitTo(int max, Location location) { // XXX sync         
+    static String[] limitTo(String[] args, int max, 
+        Location location) {       
         if (max < 0) {
             throw new IllegalArgumentException("negative max: " + max);
         }
-        if (size < max) {
-            return null;
+        // sigh - have to count anyway for now
+        int size = 0;
+        for (int i = 0; (i < args.length) && (size < max); i++) {
+            size += 1 + (null == args[i] ? 0 : args[i].length());    
         }
-        // limit interference, but not thread-safe
-        String[] args = extractArguments();
+        if (size <= max) {
+            return args;
+        }
         File tmpFile = null;
         PrintWriter out = null;
         // adapted from DefaultCompilerAdapter.executeExternalCompile
@@ -1430,9 +1608,7 @@ class GuardedCommand {
                 out.println(args[i]);
             }
             out.flush();
-            this.command = new Commandline();
-            addFlagged("-argfile", tmpFile.getAbsolutePath());
-            return tmpFile;
+            return new String[] {"-argfile", tmpFile.getAbsolutePath()};
         } catch (IOException e) {
             throw new BuildException("Error creating temporary file", 
                                      e, location);
@@ -1442,5 +1618,6 @@ class GuardedCommand {
             }
         }
     }     
+}
 }
 
