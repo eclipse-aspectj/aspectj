@@ -6225,5 +6225,12 @@
             <message kind="abort" text="Usage"/>
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs" pr="37739"
+   	 title="Unexpected Xlint:unresolvableMember warning with withincode">
+        <compile files="CatchSig.java">
+        </compile>
+        <run class="CatchSig"/>
+    </ajc-test>
 
 </suite>

@@ -828,9 +828,12 @@ public class BcelShadow extends Shadow {
     	}
     }
     
+    //??? need to better understand all the enclosing variants
     public Member getEnclosingCodeSignature() {
-    	if (enclosingShadow == null) {
+    	if (getKind().isEnclosingKind()) {
     		return getSignature();
+    	} else if (enclosingShadow == null) {
+    		return getEnclosingMethod().getMemberView();
     	} else {
     		return enclosingShadow.getSignature();
     	}
