@@ -242,7 +242,8 @@ public class AntBuilder extends Builder {
             errors.add("unable to create classes directory");
             return false;
         }
-        
+        // misc
+        javac.setDebug(true);
         // compile
         try {
             return executeTask(javac);
