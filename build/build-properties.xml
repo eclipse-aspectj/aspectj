@@ -114,8 +114,10 @@
     </target>
 
     <target name="init-directories" 
-         depends="init-properties"
-          unless="init-directories.done" >
+         depends="init-properties">
+<!-- some flows take us through this target twice in one build and it needs to
+	 successfully execute twice -->
+<!-- unless="init-directories.done" -->
       <mkdir dir="${aj.results.dir}" />
       <mkdir dir="${aj.build.dir}" />
       <mkdir dir="${aj.temp.dir}" />
