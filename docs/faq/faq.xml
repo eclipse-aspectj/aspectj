@@ -23,12 +23,11 @@
        2003 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated June 4, 2003.
+  <para>Last updated July 15, 2003.
   </para>
   <para>
-   
-   For a list of recently-updated FAQ entries, see <xref linkend="q:faqchanges"/>
    This FAQ covers AspectJ versions 1.0 and 1.1.
+   For a list of recently-updated FAQ entries, see <xref linkend="q:faqchanges"/>
   </para>
   <qandaset defaultlabel="number">
     <qandadiv id="overview" xreflabel="Overview">
@@ -1420,21 +1419,54 @@ aspect PublicErrorLogging {
         </question>
         <answer>
           <para>
+          	The mailing lists provide the primary support for everyone
+          	in the community
+          	(See <xref linkend="q:mailingLists"/>).
+            To request commercial support, tutorials, or presentations,
+            use the developer mailing list,
+            <literal>aspectj-dev@eclipse.org</literal>.
+          </para>
+          <para>
+          To find out about known issues, see the
+          <ulink url="progguide/limitations.html">
+          AspectJ Programming Guide Appendix, "Limitations"</ulink>
+          and the AspectJ bugs in the database at
+          <ulink url="http://bugs.eclipse.org/bugs">http://bugs.eclipse.org/bugs</ulink>
+          (using the product <literal>AspectJ</literal>).  Here are direct links to
+              <ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;component=Compiler&amp;bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">
+               view open compiler bugs</ulink>,
+              <ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ">
+               view all Aspectj bugs (open or closed)</ulink>, or
+              <ulink url="http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ">
+               add new bugs</ulink>.
+          </para>
+        </answer>
+      </qandaentry>
+      
+      <qandaentry>
+        <question id="q:mailingLists"
+            xreflabel="Q: What mailing lists are there?">
+          <para>What mailing lists are there?</para>
+        </question>
+        <answer>
+          <para>
             The AspectJ users mailing list 
             (<literal>aspectj-users@eclipse.org</literal>)
-            provides an informal network of AspectJ language experts who
+            provides an informal network of AspectJ language users who
             can answer usage questions about AspectJ programs
             and the AspectJ tools.
+            This is the place to ask how to code something in AspectJ
+            or how to write Ant or shell scripts to invoke the tools.
           </para>
           <para>
             The AspectJ developers mailing list 
             (<literal>aspectj-dev@eclipse.org</literal>)
             provides an informal network of AspectJ technology experts who
             aim to understand the technology behind AspectJ.
-            They can answer questions about what's possible and about
+            The committers to the AspectJ project use this list
+            for open technical and planning discussions.
+            Developers can answer questions about what's possible and about
             integrating AspectJ technology with other technologies.
-            This is also the place to request commercial support, 
-            tutorials, or presentations.
           </para>
           <para>
             For both mailing lists, only subscribed members may post messages.
@@ -1442,16 +1474,13 @@ aspect PublicErrorLogging {
             <ulink url="http://eclipse.org/aspectj">AspectJ web site</ulink>.
           </para>
           <para>
-          You may view and submit bug reports and feature requests at 
-          <ulink url="http://bugs.eclipse.org/bugs">http://bugs.eclipse.org/bugs</ulink>,
-          using the product <literal>AspectJ</literal>.  Here are direct links to
-              <ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;component=Compiler&amp;bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">
-               view open compiler bugs</ulink>,
-              <ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ">
-               view all Aspectj bugs (open or closed)</ulink>, or
-              <ulink url="http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ">
-               add new bugs</ulink>.
-            
+            There you can also subscribe to 
+            <literal>aspectj-announce@eclipse.org</literal>,
+            a low-traffic list containing only announcements
+            about significant AspectJ events and product releases.
+            To get on a similar list for aspect-oriented software 
+            development generally, see
+            <ulink url="http://aosd.net">http://aosd.net</ulink>.
           </para>
         </answer>
       </qandaentry>
@@ -1466,21 +1495,30 @@ aspect PublicErrorLogging {
           </para>
         </question>
         <answer>
-          <para>You need to specify to the compiler the source files that
-            contain your aspects and the source files that contain the 
+          <para>You need to specify to the compiler the files that
+            contain your aspects and the files that contain the 
             types affected by your aspects.
 	    See <xref linkend="q:knowWhenAspectsAffectClasses"/>.
 	    The AspectJ compiler will not search the source path for types
-	    that may be affected (unlike Javac and Jikes), and it only uses
-            aspects in source form.
+	    that may be affected (unlike Javac and Jikes).
+	    In AspectJ 1.0, ajc requires all code to be in source form;
+	    in AspectJ 1.1, Java and AspectJ code may be in either source
+	    or binary form.  
           </para>
           <para>In some cases you should compile your entire system all at once.
            If this is too slow, then you can try to make reasonable divisions
            between sets of source files whose aspects do not interact to 
            achieve a shorter compile cycle (particularly for development 
-	   aspects).  However, if you get any problems
+	       aspects).  However, if you get any problems
            or if you wish to run tests or do a release, you should recompile
            the entire system.
+          </para>
+          <para>
+          For more information, see the 
+            <ulink url="devguide/devguide/index.html">
+              Development Environment Guide</ulink>
+            <ulink url="devguide/devguide/ajc-ref.html">
+              Reference for ajc</ulink>.
           </para>
         </answer>
       </qandaentry>
@@ -1503,16 +1541,16 @@ ajc -argfile sources.lst
           </programlisting>
           <para>Another way in AspectJ 1.1 is to use the 
           	<literal>-sourceroots</literal> options, which reads all
-          	source files in a given set of diretories:
+          	source files in a given set of directories:
           </para>
           <programlisting>ajc -sourceroots "src;testsrc"
           </programlisting>
           <para>
-          For more information, see the <literal>ajc</literal> tool 
-          section of the
-            <ulink url="devguide/index.html">
-              Development Environment Guide
-            </ulink>.
+          For more information, see the 
+            <ulink url="devguide/devguide/index.html">
+              Development Environment Guide</ulink>
+            <ulink url="devguide/devguide/ajc-ref.html">
+              Reference for ajc</ulink>.
           </para>
         </answer>
       </qandaentry>
@@ -1625,11 +1663,11 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
         <answer>
           <para>Yes. As with <literal>Javac</literal>,
           use the <literal>-source 1.4</literal> option as described
-          in the <literal>ajc</literal> tool section  
-          of the
-            <ulink url="devguide/index.html">
-              Development Environment Guide
-            </ulink>.
+          in the
+            <ulink url="devguide/devguide/index.html">
+              Development Environment Guide</ulink>
+            <ulink url="devguide/devguide/ajc-ref.html">
+              Reference for ajc</ulink>.
           </para>
         </answer>
       </qandaentry>
@@ -1655,13 +1693,14 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
           </para>
         </question>
         <answer>
-          <para> No.  Some previous versions of AspectJ had this requirement,
-          and <literal>javac</literal> can still be used as
+          <para> No.  Some previous versions of AspectJ had this requirement.
+          In AspectJ 1.0, <literal>javac</literal> can still be used as
           <literal>ajc</literal> back end by using the
           <literal>-usejavac</literal> flag.  You can also run <literal>ajc</literal>
           in preprocessor mode to generate Java source
           (<literal>.java</literal>) files to be compiled using
           <literal>javac</literal> or another java compiler.
+          Neither option is supported in AspectJ 1.1.
           </para>
         </answer>
       </qandaentry>
@@ -1767,10 +1806,11 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
             access to what aspects affect a class.
           </para>
           <para>For example, the
-            <ulink url="devguide/index.html">
-              Development Environment Guide
-            </ulink> section
-          on <literal>ajbrowser</literal> shows that you can list or navigate
+            <ulink url="devguide/devguide/index.html.html">
+              Development Environment Guide</ulink>
+            <ulink url="devguide/devguide/ajbrowser.html.html">
+              ajbrowser section</ulink>.
+          shows that you can list or navigate
           between method and advice affecting that method and between a type
           and declarations in an aspect on that type.  (The IDE support may
           have more features than <literal>ajbrowser</literal>, depending
@@ -1780,7 +1820,7 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
             supported.)
           </para>
           <para>
-            When you are looking at documentation for AspectJ 1.0,
+            When you are looking at documentation for AspectJ 1.0 programs,
             <literal>ajdoc</literal> will provide links from aspects and
             advice to the affected code, but it provides less information
             than the IDE support because it only parses declarations.
@@ -2019,7 +2059,7 @@ import java.io.*;
 public abstract aspect TraceJoinPoints {
     protected abstract pointcut entry();
     protected pointcut exit(): call(* java..*.*(..));
-
+    // this line is for AspectJ 1.1; for 1.0, use "dominates"
     declare precedence : TraceJoinPoints, *;
     final pointcut start(): entry() && !cflowbelow(entry());
 
@@ -2796,12 +2836,14 @@ aspect A {
         </question>
         <answer>
           <para>
-            <literal>ajc</literal> 1.0 does not currently support incremental
+            <literal>ajc</literal> 1.0 does not support incremental
           compilation, but the 1.1 release does when passed the 
           	<literal>-incremental</literal> option.  It may still recompile
           files that have not changed, if they could be affected by aspects
           in particular ways, but the files compiled should be fewer
           and result in faster compiles.
+          Further, the 1.1 release supports binary weaving, so you
+          need not recompile if you already have .class files.
           </para>
         </answer>
       </qandaentry>
@@ -2915,9 +2957,11 @@ vmparam -Xmx384m
           stack traces may
           have synthetic methods in the stack, and the line numbers may
           not track your source code.  The 
-          <ulink url="devguide/index.html">Development Environment Guide</ulink>.
-          discusses how to interpret stack at the end of the section
-          on the <literal>ajc</literal> compiler.
+            <ulink url="devguide/devguide/index.html">
+              Development Environment Guide</ulink>
+          discusses how to interpret stack at the end of the
+            <ulink url="devguide/devguide/ajc-ref.html">
+              Reference for ajc</ulink>.
           </para>
           <para>In 1.1, line numbers should work correctly.
           The only difference from a normal stack might be the addition
@@ -3011,7 +3055,7 @@ vmparam -Xmx384m
         </question>
         <answer>
           <para>
-          The current implementation of <literal>ajdoc</literal> uses
+          The 1.0 implementation of <literal>ajdoc</literal> uses
 	      specific javadoc classes in the J2SE 1.3 tools.jar.
 	      We are working on addressing this limitation, but in the interim
 	      it is best to run ajdoc under 1.3.
@@ -3960,14 +4004,19 @@ vmparam -Xmx384m
         </question>
         <answer>
           <para>
-          The FAQ has been updated to reflect the move 
-          to eclipse.org and changes in the 1.1 version.
-          The most recent changes corrected 1.0-specific statements
-          in many entries.
-          Entries changed since the earlier March 3, 2003 version:
+          This revision had still
+          more 1.1-driven changes and updated some process questions.
+          Entries changed since the earlier June, 2003 version:
             <itemizedlist>
-        <listitem><para><xref linkend="q:noaspectbound"/></para></listitem>
-        <listitem><para><xref linkend="q:stacktraces"/></para></listitem>
+        <listitem><para><xref linkend="q:support"/></para></listitem>
+        <listitem><para><xref linkend="q:mailingLists"/></para></listitem>
+        <listitem><para><xref linkend="q:requiredsources"/></para></listitem>
+        <listitem><para><xref linkend="q:javacbytecode"/></para></listitem>
+        <listitem><para><xref linkend="q:knowWhenAspectsAffectClasses"/></para></listitem>
+        <listitem><para><xref linkend="q:ajcrecompile"/></para></listitem>
+        <listitem><para><xref linkend="q:ajdocneeds13"/></para></listitem>
+        <listitem><para><xref linkend="q:differences"/></para></listitem>
+        <listitem><para><xref linkend="q:schedule"/></para></listitem>
             </itemizedlist>
           </para>
         </answer>
@@ -4114,7 +4163,11 @@ vmparam -Xmx384m
                   <entry>AspectJ 1.1</entry>
                   <entry>A few language changes and clarifications;
                   	bytecode weaving and incremental compilation.
+                  	See <ulink url="README-11.html">README-11.html</ulink>
+                  	for more detail.
                   </entry>
+                </row>
+                <row>
                   <entry>AspectJ 1.0</entry>
                   <entry>Many language changes, fixes, cleanup and
                     clarifications, some significant.
@@ -4176,9 +4229,8 @@ vmparam -Xmx384m
               </tbody>
             </tgroup>
           </table>
-          <para> More detailed comments are available in the
-            <literal>doc/changes.html</literal> file in the
-            distribution.
+          <para> More details for 1.0 and earlier releases are available in 
+            <ulink url="changes.html">changes.html</ulink>.
           </para>
         </answer>
       </qandaentry>
@@ -4190,6 +4242,18 @@ vmparam -Xmx384m
           </para>
         </question>
         <answer>
+          <para>
+            Below is a table describing the goals for the major releases.
+            For information about specific features, search the bug database
+            for <literal>RFE</literal>'s ("requests for enhancement") by
+            <ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;bug_severity=enhancement">
+            	selecting severity of "enhancement"</ulink>.
+     
+            Like many open-source projects, we don't make or promise
+            schedules, but we do follow a pattern of issuing preview releases 
+            which can give observers an idea of when
+            a particular release might be available.
+          </para>
           <table>
             <title>The AspectJ Development Schedule</title>
             <tgroup cols="2">
@@ -4221,7 +4285,8 @@ vmparam -Xmx384m
       </qandaentry>
     </qandadiv>
   </qandaset>
-  <para>AspectJ is a registered trademark of Palo Alto Research Center, Incorporated (PARC).
+  <para>AspectJ is a registered trademark of Palo Alto Research Center, Incorporated (PARC),
+  	used with permission.
 	Java and all Java-based marks are trademarks or registered trademarks of
     Sun Microsystems, Inc. in the United States and other countries. All other
     trademarks are the property of their respective owners.
