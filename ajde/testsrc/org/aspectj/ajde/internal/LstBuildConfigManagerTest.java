@@ -13,20 +13,16 @@
 
 package org.aspectj.ajde.internal; 
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 import junit.framework.TestSuite;
 
-import org.aspectj.ajde.AjdeTestCase;
-import org.aspectj.ajde.BuildConfigManager;
-import org.aspectj.ajde.NullIdeManager;
+import org.aspectj.ajde.*;
 import org.aspectj.ajde.NullIdeTaskListManager.SourceLineTask;
 import org.aspectj.ajde.ui.BuildConfigModel;
 import org.aspectj.ajde.ui.internal.AjcBuildOptions;
+import org.aspectj.bridge.Message;
 
 public class LstBuildConfigManagerTest extends AjdeTestCase {
 	
@@ -48,40 +44,41 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 		return result;
 	}
 
+	public void testConfigParserErrorMessages() {
+		doSynchronousBuild("dir-entry.lst");
+		List messages = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
+		NullIdeTaskListManager.SourceLineTask message = (NullIdeTaskListManager.SourceLineTask)messages.get(0);
+		
+		assertEquals(message.location.getSourceFile().getAbsolutePath(), openFile("dir-entry.lst").getAbsolutePath());
+
+		doSynchronousBuild("bad-injar.lst");
+		messages = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
+		message = (NullIdeTaskListManager.SourceLineTask)messages.get(0);
+		assertTrue(message.message.indexOf("invalid") != -1);
+	}
+
 	public void testErrorMessages() throws IOException {
 		doSynchronousBuild("invalid-entry.lst");
-		assertTrue("compile failed", !testerBuildListener.getBuildSucceeded());
-		
+		assertTrue("compile failed", testerBuildListener.getBuildSucceeded());
+		  
 		List messages = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
-		SourceLineTask message = (SourceLineTask)messages.get(0);
-
-		System.err.println(">>>> " + message.message);	
+		SourceLineTask message = (SourceLineTask)messages.get(0);	
 		assertEquals("invalid option: aaa.bbb", message.message);		
+	
 	}
 
 	public void testNonExistentConfigFile() throws IOException {
 		File file = openFile("mumbleDoesNotExist.lst");
 		assertTrue("valid non-existing file", !file.exists());
 		BuildConfigModel model = buildConfigManager.buildModel(file.getCanonicalPath());
-		System.err.println(model.getRoot().getChildren());
 		assertTrue("root: " + model.getRoot(), model.getRoot() != null);		
 	}
 
 	public void testFileRelativePathSameDir() throws IOException {
 		File file = openFile("file-relPath-sameDir.lst");
-		System.err.println("> " + file.getCanonicalPath());
 		BuildConfigModel model = buildConfigManager.buildModel(file.getCanonicalPath());
-		System.err.println("> " + model.getRoot());
 		assertTrue("single file", true);
 	}  
-
-//	public void testWildcards() {
-//		verifyFile(WILDCARDS_FILE, WILDCARDS_FILE_CONTENTS);
-//	}
-//
-//	public void testIncludes() {
-//		verifyFile(INCLUDES_FILE, INCLUDES_FILE_CONTENTS);
-//	}
 	
 	private void verifyFile(String configFile, String fileContents) {
 		StringTokenizer st = new StringTokenizer(fileContents, ";");
@@ -169,4 +166,13 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 			"Timer.java;";
 	}
 }
+
+
+//public void testWildcards() {
+//	verifyFile(WILDCARDS_FILE, WILDCARDS_FILE_CONTENTS);
+//}
+//
+//public void testIncludes() {
+//	verifyFile(INCLUDES_FILE, INCLUDES_FILE_CONTENTS);
+//}
 
