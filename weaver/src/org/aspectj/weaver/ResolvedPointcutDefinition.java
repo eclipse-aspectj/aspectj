@@ -61,7 +61,7 @@ public class ResolvedPointcutDefinition extends ResolvedMember {
 	
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
-		buf.append("poincut ");
+		buf.append("pointcut ");
 		buf.append(getDeclaringType().getName());
 		buf.append(".");
 		buf.append(getName());
