@@ -109,97 +109,176 @@ public class BridgeUtil {
     }
     
 
-    public static class Comparators {        
+    public static class Comparators {
+        /**
+         * Compare based solely on null-inequality:
+         * -1 if one is not null and two is null,
+         *  1 if one is null and two is not null,
+         *  0 otherwise.
+         */
+        static int compareNull(Object one, Object two) {        
+            return (null == one
+                 ? (null == two ? 0 : 1)
+                 : (null == two ? -1 : 0));
+        }
+        
+        /**
+         * Soft comparison of String returns 0 if either is empty
+         * or a substring of the other, and the case-insensitive
+         * ordering otherwise.
+         * @param lhs_s
+         * @param rhs_s
+         * @return
+         */
+        static int compareStringsSoftly(String lhs_s, String rhs_s) {
+            if (LangUtil.isEmpty(lhs_s)
+                || LangUtil.isEmpty(rhs_s)) {
+                return 0;
+            }
+            if ((-1 != lhs_s.indexOf(rhs_s))
+                || (-1 != rhs_s.indexOf(lhs_s))) {
+                return 0;
+            }
+            return String.CASE_INSENSITIVE_ORDER.compare(lhs_s, rhs_s);
+        }
+
         /** 
-         * This is a weak ordering
-         * so use only for sorts, not to maintain maps.
-         * It returns 0 if one file path is a suffix of the other
+         * This returns 0 if one file path is a suffix of the other
          * or a case-insensitive string comparison otherwise.
+         * WARNING: it returns 0 if either file is 
+         * ISourceLocation.NO_FILE to permit tests to 
+         * not specify file paths.
+         * 
+         * Use only for sorts, not to maintain maps.
          */
         public static final Comparator WEAK_File = new Comparator() {
             public int compare(Object o1, Object o2) {
+                if ((o1 == o2) 
+                    || (o1 == ISourceLocation.NO_FILE) 
+                    || (o2 == ISourceLocation.NO_FILE) ) {
+                    return 0;
+                }
+                int result = compareNull(o1, o2);
+                if (0 != result) {
+                    return result;
+                }
                 File one = (File) o1;
                 File two = (File) o2;
-                if (null == one) {
-                    return (null == two ? 0 : 1);
-                } else if (null == two) {
-                    return -1;
-                } else if (one == two) {
+                String s1 = one.getPath();
+                String s2 = two.getPath();
+                // check if normalize needed
+                if (s1.endsWith(s2) || s2.endsWith(s1)) {
                     return 0;
-                } else {
-                    String s1 = FileUtil.weakNormalize(one.getPath());
-                    String s2 = FileUtil.weakNormalize(two.getPath());
-                    if (s1.endsWith(s2) || s2.endsWith(s1)) {
-                        return 0;
-                    } else {
-                        return String.CASE_INSENSITIVE_ORDER.compare(s1, s2);
-                    }
                 }
-        }};
+                s1 = FileUtil.weakNormalize(s1);
+                s2 = FileUtil.weakNormalize(s2);
+                if (s1.endsWith(s2) || s2.endsWith(s1)) {
+                    return 0;
+                }
+                return String.CASE_INSENSITIVE_ORDER.compare(s1, s2);
+                
+            }
+        };
         /** 
-         * Ordering ignores filename,
-         * so use only for sorts, not to maintain maps
+         * Ordering only uses line number.
+         * Use only for sorts, not to maintain maps.
          */
         public static final Comparator WEAK_ISourceLocation = new Comparator() {
             public int compare(Object o1, Object o2) {
+                if (o1 == o2) {
+                    return 0;
+                }
+                int result = compareNull(o1, o2);
+                if (0 != result) {
+                    return result;
+                }
                 ISourceLocation one = (ISourceLocation) o1;
                 ISourceLocation two = (ISourceLocation) o2;
-                if (null == one) {
-                    return (null == two ? 0 : 1);
-                } else if (null == two) {
-                    return -1;
-                } else if (one == two) {
-                    return 0;
-                } else { // XXX start with File to make strong
-                    int i1 = one.getLine();
-                    int i2 = two.getLine(); 
-                    return i1 - i2;
-//                    // defer subcomparisons until messages complete                                       
-//                    if (i1 != i2) {
-//                        return i1 - i2;
-//                    } else {
-//                        i1 = one.getColumn();
-//                        i2 = two.getColumn();
-//                        if (i1 != i2) {
-//                            return i1 - i2;
-//                        } else {
-//                            i1 = one.getEndLine();
-//                            i2 = two.getEndLine();
-//                            return i1 - i2;
-//                        }
-//                    }
-                }
-        }};
-
+                int i1 = one.getLine();
+                int i2 = two.getLine(); 
+                return i1 - i2;
+            }
+        };
+        
         /** 
-         * Ordering ignores filename and message
+         * Like WEAK_ISourceLocation, except it also 
+         * uses WEAK_FILE on the sourceFile.
+         * Use only for sorts, not to maintain maps.
+         */
+        public static final Comparator MEDIUM_ISourceLocation = new Comparator() {
+            public int compare(Object o1, Object o2) {
+                int result = WEAK_ISourceLocation.compare(o1, o2);
+                if (0 != result) {
+                    return result;
+                }
+                ISourceLocation one = (ISourceLocation) o1;
+                ISourceLocation two = (ISourceLocation) o2;
+                result = compareNull(one, two);
+                if (0 != result) {  // one but not other is null
+                    return result;
+                }
+                if (null == one) { // both null
+                    return 0;
+                }
+                // neither null
+                return WEAK_File.compare(one.getSourceFile(), two.getSourceFile());
+            }
+        };
+                    
+        /** 
+         * Ordering uses kind and weak source location, 
+         * and ignores message
          * so use only for sorts, not to maintain maps
          */
         public static final Comparator WEAK_IMessage = new Comparator() {
             public int compare(Object o1, Object o2) {
+                if (o1 == o2) {
+                    return 0;
+                }
+                int result = compareNull(o1, o2);
+                if (0 != result) {
+                    return result;
+                }
                 IMessage one = (IMessage) o1;
                 IMessage two = (IMessage) o2;
-                if (null == one) {
-                    return (null == two ? 0 : 1);
-                } else if (null == two) {
-                    return -1;
-                } else if (one == two) {
-                    return 0;
-                } else {
-                    IMessage.Kind kind1 = one.getKind();
-                    IMessage.Kind kind2= two.getKind();
-                    if (kind1 != kind2) {
-                        return IMessage.Kind.COMPARATOR.compare(kind1, kind2);
-                    } else {
-                        ISourceLocation sl1 = one.getISourceLocation();
-                        ISourceLocation sl2 = two.getISourceLocation();
-                        return WEAK_ISourceLocation.compare(sl1, sl2);
-                    }
+                IMessage.Kind kind1 = one.getKind();
+                IMessage.Kind kind2= two.getKind();
+                result = IMessage.Kind.COMPARATOR.compare(kind1, kind2);
+                if (0 != result) {
+                    return result;
                 }
-        }};
-        
-    }
+                ISourceLocation sl1 = one.getISourceLocation();
+                ISourceLocation sl2 = two.getISourceLocation();
+                return WEAK_ISourceLocation.compare(sl1, sl2);
+            }
+        };       
 
+    /** 
+     * Ordering uses line and weak filename and message
+     * (message matches if either is a substring of the other,
+     *  or if either is empty, i.e., none specified).
+     * so use only for sorts, not to maintain maps
+     */
+    public static final Comparator MEDIUM_IMessage = new Comparator() {
+        public int compare(Object o1, Object o2) {
+            int result = WEAK_IMessage.compare(o1, o2);
+            if (0 != result) {
+                return result;
+            }
+            IMessage rhs_m= (IMessage) o1;
+            IMessage lhs_m = (IMessage) o2;
+            ISourceLocation rhs_sl = rhs_m.getISourceLocation();
+            ISourceLocation lhs_sl = lhs_m.getISourceLocation();
+            result = MEDIUM_ISourceLocation.compare(lhs_sl, rhs_sl);
+            if (0 != result) {
+                return result;
+            }
+            String lhs_s =lhs_m.getMessage();
+            String rhs_s = rhs_m.getMessage();
+            return compareStringsSoftly(lhs_s, rhs_s);
+        }
+    };       
+}
     public static SourceLocation makeSourceLocation(String input) { // XXX only for testing, not production
         return makeSourceLocation(input, (File) null);
     }
