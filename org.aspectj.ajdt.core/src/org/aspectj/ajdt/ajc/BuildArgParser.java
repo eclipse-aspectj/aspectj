@@ -90,16 +90,29 @@ public class BuildArgParser extends Main {
 	public BuildArgParser() { 
 		this(new StringPrintWriter(new StringWriter()));
 	}
-    
+
+	/**
+	 * Generate build configuration for the input args,
+	 * passing to handler any error messages.
+	 * @param args the String[] arguments for the build configuration
+	 * @param handler the IMessageHandler handler for any errors
+	 * @return AjBuildConfig per args, 
+	 *         which will be invalid unless there are no handler errors.
+	 */
+	public AjBuildConfig genBuildConfig(String[] args, IMessageHandler handler) {
+		return genBuildConfig(args, handler, true);
+	}  
+      
     /**
      * Generate build configuration for the input args,
      * passing to handler any error messages.
      * @param args the String[] arguments for the build configuration
      * @param handler the IMessageHandler handler for any errors
+     * @param setClasspath	determines if the classpath should be parsed and set on the build configuration
      * @return AjBuildConfig per args, 
      *         which will be invalid unless there are no handler errors.
      */
-	public AjBuildConfig genBuildConfig(String[] args, IMessageHandler handler) {
+	public AjBuildConfig genBuildConfig(String[] args, IMessageHandler handler, boolean setClasspath) {
 		AjBuildConfig buildConfig = new AjBuildConfig();
 		try {
 			// sets filenames to be non-null in order to make sure that file paramters are ignored
@@ -153,7 +166,9 @@ public class BuildArgParser extends Main {
 				buildConfig.setOutputDir(new File(destinationPath));
 			}
 			
-			buildConfig.setClasspath(getClasspath(parser));
+			if (setClasspath) {
+				buildConfig.setClasspath(getClasspath(parser));
+			}
 			
 			if (incrementalMode 
                 && (0 == buildConfig.getSourceRoots().size())) {

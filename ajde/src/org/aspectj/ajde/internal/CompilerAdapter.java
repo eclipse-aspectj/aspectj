@@ -16,12 +16,22 @@
 
 package org.aspectj.ajde.internal;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.BuildOptionsAdapter;
 import org.aspectj.ajde.BuildProgressMonitor;
 import org.aspectj.ajde.ProjectPropertiesAdapter;
 import org.aspectj.ajde.TaskListManager;
 import org.aspectj.ajdt.ajc.AjdtCommand;
+import org.aspectj.ajdt.ajc.BuildArgParser;
 import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
 import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
 import org.aspectj.bridge.AbortException;
@@ -33,15 +43,6 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.LangUtil;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 public class CompilerAdapter {
 
@@ -158,10 +159,13 @@ public class CompilerAdapter {
         String[] args = new String[] { "@" + config.getAbsolutePath() };
         CountingMessageHandler counter 
             = CountingMessageHandler.makeCountingMessageHandler(messageHandler);
-        AjBuildConfig local = AjdtCommand.genBuildConfig(args, counter);
+		BuildArgParser parser = new BuildArgParser();
+        AjBuildConfig local = parser.genBuildConfig(args, counter, false);  
+             
         if (counter.hasErrors()) {
             return null; 
-        }
+        } 
+        
         local.setConfigFile(config);
 
         // -- get globals, treat as defaults used if no local values

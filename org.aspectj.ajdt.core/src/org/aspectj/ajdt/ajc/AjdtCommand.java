@@ -120,7 +120,7 @@ public class AjdtCommand implements ICommand {
         } 
         return false;
     }
-
+	
     /** 
      * This creates a build configuration for the arguments.
      * Errors reported to the handler:
@@ -138,7 +138,7 @@ public class AjdtCommand implements ICommand {
         AjBuildConfig config = parser.genBuildConfig(args, handler);
         String message = parser.getOtherMessages(true);
 
-        if (null != message) {
+        if (null != message) {  
             IMessage.Kind kind = inferKind(message);
             IMessage m = new Message(message, kind, null, null);            
             handler.handleMessage(m);
