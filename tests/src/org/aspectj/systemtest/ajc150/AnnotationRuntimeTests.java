@@ -65,8 +65,17 @@ public class AnnotationRuntimeTests extends TestUtils {
         // TODO need to RUN the result of these tests...
         System.out.println(cR);
     }
-    
-    public void test006_Within_Code() {
+
+    public void test006_CantUseinDecEoW() {
+    	baseDir = new File("../tests/java5/annotations/args");
+        CompilationResult cR = binaryWeave("TestingArgsAnnotations.jar","DeclareEoW.java",2,0);
+        List errors = new ArrayList();
+        errors.add(new Message(3,"args() pointcut designator cannot be used in declare statement"));
+        MessageSpec messageSpec = new MessageSpec(new ArrayList(), errors);
+        assertMessages(cR, messageSpec);
+    }
+
+    public void test007_Within_Code() {
     	baseDir = new File("../tests/java5/annotations/within_code");
         CompilationResult cR = binaryWeave("TestingAnnotations.jar","WithinAndWithinCodeTests.java",0,5);
         List warnings = new ArrayList();
