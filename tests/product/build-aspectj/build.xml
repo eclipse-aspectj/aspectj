@@ -87,6 +87,7 @@
       <!-- created directories -->
       <property name="output.dir"
             location="${basedir}/output"/> 
+      <mkdir dir="${output.dir}"/>
 
       <!-- checking required libraries -->
       <available file="${aspectjtools.jar}"
