@@ -325,7 +325,7 @@ public class MessageUtil {
     }
     
     /** @return int number of message of this kind (optionally or greater) in list */
-    public static int numMessages(ArrayList messages, Kind kind, boolean orGreater) {
+    public static int numMessages(List messages, Kind kind, boolean orGreater) {
         if (LangUtil.isEmpty(messages)) {
             return 0;
         }
