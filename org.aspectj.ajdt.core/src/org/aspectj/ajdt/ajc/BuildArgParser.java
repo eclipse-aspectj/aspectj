@@ -501,5 +501,15 @@ public class BuildArgParser extends Main {
 //            MessageUtil.warn(handler, message);
         }
 
+		protected File makeFile(File dir, String name) {
+			name = name.replace('/', File.separatorChar);
+			File ret = new File(name);
+			if (dir == null || ret.isAbsolute()) return ret;
+			try {
+				dir = dir.getCanonicalFile();
+			} catch (IOException ioe) { }
+			return new File(dir, name);
+		}
+
     }
 }
