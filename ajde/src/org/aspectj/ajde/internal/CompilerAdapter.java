@@ -177,29 +177,32 @@ public class CompilerAdapter {
 
 		Set debugOptions = options.getDebugLevel();
 		if (!LangUtil.isEmpty(debugOptions)) {
-			// default is all options off, so just need to selectively
-			// enable
+			// default is all options on, so just need to selectively
+			// disable
+			boolean sourceLine = false;
+			boolean varAttr = false;
+			boolean lineNo = false;
 			Iterator it = debugOptions.iterator();
 			while (it.hasNext()){
 				String debug = (String) it.next();
 				if ( debug.equals( BuildOptionsAdapter.DEBUG_ALL )) {
-					javaOptions.put( CompilerOptions.OPTION_LineNumberAttribute,
-									 CompilerOptions.GENERATE);
-					javaOptions.put( CompilerOptions.OPTION_SourceFileAttribute,
-									 CompilerOptions.GENERATE);
-					javaOptions.put( CompilerOptions.OPTION_LocalVariableAttribute,
-									 CompilerOptions.GENERATE);									 
+					sourceLine = true;
+					varAttr = true;
+					lineNo = true;
 				} else if ( debug.equals( BuildOptionsAdapter.DEBUG_LINES )) {
-					javaOptions.put( CompilerOptions.OPTION_LineNumberAttribute,
-									 CompilerOptions.GENERATE);					
+					lineNo = true;
 				}  else if ( debug.equals( BuildOptionsAdapter.DEBUG_SOURCE )) {
-					javaOptions.put( CompilerOptions.OPTION_SourceFileAttribute,
-									 CompilerOptions.GENERATE);					
+					sourceLine = true;
 				}  else if ( debug.equals( BuildOptionsAdapter.DEBUG_VARS)) {
-					javaOptions.put( CompilerOptions.OPTION_LocalVariableAttribute,
-									 CompilerOptions.GENERATE);					
+					varAttr = true;
 				}
 			}
+			if (sourceLine) javaOptions.put(CompilerOptions.OPTION_SourceFileAttribute,
+											CompilerOptions.GENERATE);
+			if (varAttr) javaOptions.put(CompilerOptions.OPTION_LocalVariableAttribute,
+											CompilerOptions.GENERATE);		
+			if (lineNo)  javaOptions.put(CompilerOptions.OPTION_LineNumberAttribute,
+											CompilerOptions.GENERATE);
 		}
 
 		if ( options.getNoImportError() ) {
