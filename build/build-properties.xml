@@ -86,7 +86,11 @@
       <fail unless="aspectj.build.jar.available"
           message="unable to find aspectj.build.jar: ${aspectj.build.jar}"/>
       <taskdef resource="org/aspectj/internal/tools/ant/taskdefs/taskdefs.properties"
-         classpath="${aspectj.build.jar}"/>
+              classpath="${aspectj.build.jar}"/>
+     <!-- when debugging, etc.
+      <taskdef resource="org/aspectj/internal/tools/ant/taskdefs/taskdefs.properties"
+         classpath="${aspectj.modules.dir}/build/bin"/>
+      -->
       <property name="init-taskdefs.done" value="done"/>
     </target>
 
