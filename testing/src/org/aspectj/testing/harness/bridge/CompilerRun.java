@@ -389,12 +389,7 @@ public class CompilerRun implements IAjcRun {
             sandbox.setAspectpath(aspectFiles, checkReadable, this);
         }
 
-        // set bootclasspath if set for forking
-        AbstractRunSpec.Fork fork = spec.getFork();
-        String bootclasspath = fork.getJavaBootclasspath();
-        if (fork.fork() && (!LangUtil.isEmpty(bootclasspath))) {
-            sandbox.setBootclasspath(bootclasspath, this);
-        }
+        // XXX todo set bootclasspath if set for forking?
         return true;
     }
 
@@ -700,20 +695,6 @@ public class CompilerRun implements IAjcRun {
             System.arraycopy(input, 0, result, 0, input.length);
             return result;
         }
-
-        /** @return true if javac is available on the classpath */
-//        private static boolean haveJavac() { // XXX copy/paste from JavaCWrapper.java
-//            Class compilerClass = null;
-//            try {
-//                compilerClass = Class.forName("com.sun.tools.javac.Main");
-//            } catch (ClassNotFoundException ce1) {
-//                try {
-//                    compilerClass = Class.forName("sun.tools.javac.Main");
-//                } catch (ClassNotFoundException ce2) {
-//                }
-//            }
-//            return (null != compilerClass);
-//        }
 
         protected String compiler;
 
