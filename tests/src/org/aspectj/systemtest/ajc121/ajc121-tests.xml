@@ -155,3 +155,12 @@
     	<compile files="FieldGetJoinPointsInAroundAdvice.java"/>
     	<run class="FieldGetJoinPointsInAroundAdvice"/>
    	</ajc-test>
+
+<!--
+	commented out as test takes over 5 minutes to run - reinstate if you need to investigate 70201 for
+	any reason.
+	<ajc-test dir="bugs" pr="70201"
+    	title="Branch target offset too large for short">
+        <compile files="VeryLongBranch.java"/>
+	</ajc-test>
+-->

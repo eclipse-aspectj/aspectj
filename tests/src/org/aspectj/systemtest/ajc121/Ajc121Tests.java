@@ -114,5 +114,10 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
     runTest("Cannot advise private field gets in around advice");
     System.err.println(getLastRunResult().getStdErr());
   }
+  
+// test takes over 5 minutes to run, so not included in normal suite run  
+//  public void test020_branchTargetOffsetTooLargeForShort() {
+//      runTest("Branch target offset too large for short");
+//  }
 }
 
