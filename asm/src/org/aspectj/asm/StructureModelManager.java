@@ -25,9 +25,9 @@ import org.aspectj.bridge.ISourceLocation;
 public class StructureModelManager {
 	
 	/**
-	 * Singleton instance.
-	 */
-	private static StructureModelManager INSTANCE = new StructureModelManager();
+	 * @deprecated	use getDefault() method instead
+	 */ 
+	public static StructureModelManager INSTANCE = new StructureModelManager();
 	private boolean shouldSaveModel = true;
     protected StructureModel model = new StructureModel();
     private List structureListeners = new ArrayList();
