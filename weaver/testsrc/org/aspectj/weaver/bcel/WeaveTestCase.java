@@ -42,7 +42,8 @@ public abstract class WeaveTestCase extends TestCase {
         outDir = BcweaverTests.getOutdir();
         outDirPath = outDir.getAbsolutePath();
     }
-    public void tearDown() {
+    public void tearDown() throws Exception {
+    	super.tearDown();
         BcweaverTests.removeOutDir();
         outDir = null;
         outDirPath = null;

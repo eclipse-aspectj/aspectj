@@ -32,7 +32,7 @@ public class BuildOptionsPanel extends OptionsPanel {
 		+ "AspectJ compiler.  The Document Outline View will fail to refresh correctly when\n"
 		+ "incremental mode is enabled.  Submit any other bugs at http://eclipse.org/aspectj";
 
-	protected static BuildOptionsPanel INSTANCE = new BuildOptionsPanel();
+	protected static final BuildOptionsPanel INSTANCE = new BuildOptionsPanel();
 
 //	private ButtonGroup compilerMode_buttonGroup = new ButtonGroup();
 	private TitledBorder titledBorder1;

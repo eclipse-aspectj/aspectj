@@ -55,15 +55,16 @@ public class StructureSearchManager {
 				matches.add(node);	
 			} 
 		}
-		
-		for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
-			IProgramElement nextNode = (IProgramElement)it.next();
-			if (nextNode instanceof IProgramElement) {
-				findMatchesHelper(
-					(IProgramElement)nextNode, 
-					pattern, 
-					kind,
-					matches); 		
+		if (node.getChildren() != null) {
+			for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
+				IProgramElement nextNode = (IProgramElement)it.next();
+				if (nextNode instanceof IProgramElement) {
+					findMatchesHelper(
+							(IProgramElement)nextNode, 
+							pattern, 
+							kind,
+							matches);
+				}
 			}
 		}
 		 

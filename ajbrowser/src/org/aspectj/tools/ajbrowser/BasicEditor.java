@@ -123,10 +123,10 @@ public class BasicEditor implements EditorAdapter {
 	}
 
     public void saveContents() throws IOException {
-        if (filePath != NO_FILE && filePath != "" && editorPane.getText() != "") {
+        if (!filePath.equals(NO_FILE) && !filePath.equals("") && !editorPane.getText().equals("")) {
             BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
             writer.write(editorPane.getText());
-            writer.flush();
+            writer.close();
         }
     }
 
@@ -169,6 +169,7 @@ public class BasicEditor implements EditorAdapter {
                 contents.append('\n');
                 line = reader.readLine();
             }
+            reader.close();
             return contents.toString();
         } catch (IOException ioe) {
             return "ERROR: could not read file \"" + filePath + "\", make sure that you have mounted /project/aop on X:\\";

@@ -24,7 +24,7 @@ public class ConcretizationTestCase extends WeaveTestCase {
 		super(name);
 	}
 		
-    String[] none = new String[0];
+   // String[] none = new String[0];
 	
 	
 	

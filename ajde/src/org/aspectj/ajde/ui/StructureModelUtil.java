@@ -166,7 +166,7 @@ public class StructureModelUtil {
 		List packages = new ArrayList();
 		IHierarchy model =
 			Ajde.getDefault().getStructureModelManager().getHierarchy();
-		if (model.equals(IHierarchy.NO_STRUCTURE)) {
+		if (model.getRoot().equals(IHierarchy.NO_STRUCTURE)) {
 			return null;
 		} else {
 			return getPackagesHelper(

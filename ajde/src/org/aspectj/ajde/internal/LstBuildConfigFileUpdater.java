@@ -105,6 +105,7 @@ class LstBuildConfigFileUpdater {
                 fileContents.add(line.replace('\\', '/'));
                 line = reader.readLine();
             }
+            reader.close();
             return fileContents;
         } catch (IOException ioe) {
             Ajde.getDefault().getErrorHandler().handleError("Could not update build config file.", ioe);
@@ -193,13 +194,15 @@ class LstBuildConfigFileUpdater {
     }
     
     private void writeFile(String contents, String filePath) {
+    	FileOutputStream fos = null;
         try {
-            FileOutputStream fos = new FileOutputStream(filePath, false);
+            fos = new FileOutputStream(filePath, false);
             fos.write(contents.getBytes());
-            fos.close();
         } catch (IOException ioe) {
             Ajde.getDefault().getErrorHandler().handleError("Could not update build config file: " + filePath, ioe);
-        }    	
+        } finally {
+        	if (fos!=null) try {fos.close();} catch (IOException ioe) {}
+        }
     }
 }
 

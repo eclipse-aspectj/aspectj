@@ -95,10 +95,10 @@ public class CompilerAdapter {
 		init();
 		try { 
 			AjBuildConfig buildConfig = genBuildConfig(configFile);
-			buildConfig.setGenerateModelMode(buildModel);
-			if (null == buildConfig) {
+			if (buildConfig == null) {
                 return false;
 			}
+			buildConfig.setGenerateModelMode(buildModel);
 			currNotifier = new BuildNotifierAdapter(progressMonitor, buildManager);		
 			buildManager.setProgressListener(currNotifier);
 			messageHandler.setBuildNotifierAdapter(currNotifier);

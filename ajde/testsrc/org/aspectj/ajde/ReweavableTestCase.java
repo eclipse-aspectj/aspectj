@@ -34,10 +34,10 @@ public class ReweavableTestCase extends AjdeTestCase {
 	public static final String outjarName = "/bin/output.jar";
 
 
-	public static int nonreweavesize_CalculatePI;
-	public static int nonreweavesize_Logger;
-	public static int reweavablesize_CalculatePI;
-	public static int reweavablesize_Logger;
+	private static int nonreweavesize_CalculatePI;
+	private static int nonreweavesize_Logger;
+	private static int reweavablesize_CalculatePI;
+	private static int reweavablesize_Logger;
 			
 	/**
 	 * Constructor for JarResourceCopyTestCase.
