@@ -438,13 +438,15 @@ public class BcelShadow extends Shadow {
 			int slot = ((StoreInstruction)startOfHandler.getInstruction()).getIndex();
 			//System.out.println("got store: " + startOfHandler.getInstruction() + ", " + index);
 			InstructionTargeter[] targeters = startOfHandler.getNext().getTargeters();
-			for (int i=targeters.length-1; i >= 0; i--) {
-				if (targeters[i] instanceof LocalVariableTag) {
-					LocalVariableTag t = (LocalVariableTag)targeters[i];
-					if (t.getSlot() == slot) {
-						return t.getName();
+			if (targeters!=null) {
+				for (int i=targeters.length-1; i >= 0; i--) {
+					if (targeters[i] instanceof LocalVariableTag) {
+						LocalVariableTag t = (LocalVariableTag)targeters[i];
+						if (t.getSlot() == slot) {
+							return t.getName();
+						}
+						//System.out.println("tag: " + targeters[i]);
 					}
-					//System.out.println("tag: " + targeters[i]);
 				}
  			}
 		}
