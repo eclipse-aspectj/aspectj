@@ -7840,4 +7840,10 @@
           <message kind="warning" line="11" text="In String ctor"/>
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs" pr="60015"
+      title="NPE, Incorrect XLint:unmatchedSuperTypeInCall warning">
+      <compile files="IncorrectXlintOnInterface.java">
+      </compile>
+    </ajc-test>
 </suite>

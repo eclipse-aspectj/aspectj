@@ -114,6 +114,11 @@ public class KindedPointcut extends Pointcut {
 				exactDeclaringType.resolve(world))) {
 			return;
 		}
+		
+		// PR60015 - Don't report the warning if the declaring type is object and 'this' is an interface
+		if (exactDeclaringType.isInterface(world) && shadowDeclaringType.equals(world.resolve("java.lang.Object"))) {
+			return;
+		}
 
 		SignaturePattern nonConfusingPattern =
 			new SignaturePattern(
