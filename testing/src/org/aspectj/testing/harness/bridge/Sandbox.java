@@ -182,6 +182,11 @@ public class Sandbox {
         if (null != command) {
             command = null;
         }
+        // also try to clear sandbox/filesystem.  
+        // If locked by suite, we can't.
+        if (null != validator) {
+            validator.deleteTempFiles(true);
+        }
     }
     
 //    /** 

@@ -507,12 +507,16 @@ public class Validator {
     public void deleteTempFiles(boolean reportFailures) {
         if (null == locker) {
             for (ListIterator iter = tempFiles.listIterator(); iter.hasNext();) {
-                deleteFile((File) iter.next(), reportFailures);
+                if (deleteFile((File) iter.next(), reportFailures)) {
+                    iter.remove();
+                }
             }
             for (ListIterator iter = sandboxes.listIterator(); iter.hasNext();) {
                 Sandbox sandbox = (Sandbox) iter.next();                
                 // XXX assumes all dirs are in sandboxDir
-                deleteFile(sandbox.sandboxDir, reportFailures);
+                if (deleteFile(sandbox.sandboxDir, reportFailures)) {
+                    iter.remove();
+                }
             }
         }
     }                
@@ -528,20 +532,23 @@ public class Validator {
     }
     
     
-    private void deleteFile(File file, boolean reportFailures) {
+    private boolean deleteFile(File file, boolean reportFailures) {
         if (null == file) {
             if (reportFailures) {
                 fail("unable to delete null file");
             }
-            return;
+            return true; // null file - skip
         }
         FileUtil.deleteContents(file);
         if (file.exists()) {
             file.delete();
         }
-        if (reportFailures && file.exists()) {
-            fail("unable to delete " + file);
+        if (!file.exists()) {
+            return true;
+        } else if (reportFailures) {
+            fail("unable to delete " + file);        
         }
+        return false;
     }
     
     /** @throws IllegalStateException if handler is null */
