@@ -131,8 +131,9 @@ public class AjState {
 			if (!file.exists()) continue;
 			
 			long modTime = file.lastModified();
-			//System.out.println("check: " + file + " mod " + modTime + " build " + lastBuildTime);			
-			if (modTime >= lastBuildTime) {
+			//System.out.println("check: " + file + " mod " + modTime + " build " + lastBuildTime);	
+			// need to add 1000 since lastModTime is only accurate to a second on some (all?) platforms
+			if (modTime + 1000 >= lastBuildTime) {
 				ret.add(file);
 			} 
 		}
@@ -153,7 +154,8 @@ public class AjState {
 			
 			long modTime = file.lastModified();
 			//System.out.println("check: " + file + " mod " + modTime + " build " + lastBuildTime);			
-			if (modTime >= lastBuildTime) {
+			// need to add 1000 since lastModTime is only accurate to a second on some (all?) platforms
+			if (modTime + 1000 >= lastBuildTime) {
 				ret.add(bsfile);
 			} 
 		}
