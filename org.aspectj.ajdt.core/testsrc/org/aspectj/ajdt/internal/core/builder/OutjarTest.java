@@ -108,7 +108,7 @@ public class OutjarTest extends AjcTestCase {
 	 * 
 	 * Expected result = Compile fails with error message.
 	 */
-	public void xtestOutjarDeletedOnError () {
+	public void testOutjarDeletedOnError () {
 		String[] args = new String[] {"-aspectpath", aspectjarName, "-injars", injarName, "-outjar", outjarName};
 		Message error = new Message(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,"jar1.Parent"));
 		MessageSpec spec = new MessageSpec(null,newMessageList(error));
