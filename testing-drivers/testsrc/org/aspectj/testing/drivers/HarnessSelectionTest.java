@@ -34,15 +34,26 @@ import java.util.List;
 import junit.framework.TestCase;
 
 /**
- * 
+ * The harness supports custom-coded queries based on
+ * -ajctest{kind}={query} parameters
+ * (until we move to an XML database with real queries).
  */
 public class HarnessSelectionTest extends TestCase {
+    private static final String TESTDATA = "../testing-drivers/testdata";
+    private static final String INC_HARNESS_DIR 
+        = TESTDATA + "/incremental/harness";
     private static final String SELECT 
-        = "testdata/incremental/harness/selectionTest.xml";
+        = INC_HARNESS_DIR + "/selectionTest.xml";
         
     /** @see testIncrementalSuite() */
     private static final String INCREMENTAL 
-        = "testdata/incremental/harness/suite.xml";
+        = INC_HARNESS_DIR + "/suite.xml";
+
+    private static final String TITLE_LIST_ONE 
+        = INC_HARNESS_DIR + "/titleListOne.txt";
+
+    private static final String TITLE_LIST_PLURAL 
+        = INC_HARNESS_DIR + "/titleListPlural.txt";
     
     private static Hashtable SPECS = new Hashtable();    
     
@@ -65,6 +76,15 @@ public class HarnessSelectionTest extends TestCase {
 		super(name);
 	}
     
+    public void testFilesAvailable() {
+        String[] files = new String[] {
+            SELECT, INCREMENTAL, TITLE_LIST_ONE, TITLE_LIST_PLURAL
+        };
+        for (int i = 0; i < files.length; i++) {
+            assertTrue(files[i], new File(files[i]).canRead());
+        }
+    }
+
     public void testIncrementalSuite() {
         if (!eclipseAvailable()) {
             System.err.println("skipping test - eclipse classes not available");
@@ -175,6 +195,78 @@ public class HarnessSelectionTest extends TestCase {
             };
         Exp exp = new Exp(17, 2, 15, 2, 0, 0, 15);
         checkSelection(SELECT, options, "bugId required", exp);
+    }
+    
+    public void testTitleContainsSubstringSelection() {
+        String[] options = new String[] 
+            { "-ajctestTitleContains=run and " 
+            };
+        Exp exp = new Exp(17, 1, 16, 1, 0, 0, 16);
+        checkSelection(SELECT, options, "run and", exp);
+    }
+    
+    public void testTitleContainsSubstringSelectionPlural() {
+        String[] options = new String[] 
+            { "-ajctestTitleContains= run and , if skipKeyword " 
+            };
+        Exp exp = new Exp(17, 2, 15, 2, 0, 0, 15);
+        checkSelection(SELECT, options, "title", exp);
+    }
+
+    public void testTitleContainsExactSelection() {
+        String[] options = new String[] 
+            { "-ajctestTitleContains=run and pass" 
+            };
+        Exp exp = new Exp(17, 1, 16, 1, 0, 0, 16);
+        checkSelection(SELECT, options, "run and pass", exp);
+    }
+    
+    public void testTitleContainsExactSelectionPlural() {
+        String[] options = new String[] 
+            { "-ajctestTitleContains= run and pass , omit if skipKeyword " 
+            };
+        Exp exp = new Exp(17, 2, 15, 2, 0, 0, 15);
+        checkSelection(SELECT, options, "title", exp);
+    }
+
+    public void testTitleListSelection() {
+        String[] options = new String[] 
+            { "-ajctestTitleList=run and pass" 
+            };
+        Exp exp = new Exp(17, 1, 16, 1, 0, 0, 16);
+        checkSelection(SELECT, options, "run and pass", exp);
+    }
+    
+    public void testTitleListSelectionPlural() {
+        String[] options = new String[] 
+            { "-ajctestTitleList= run and pass , omit if skipKeyword " 
+            };
+        Exp exp = new Exp(17, 2, 15, 2, 0, 0, 15);
+        checkSelection(SELECT, options, "title", exp);
+    }
+
+    public void testTitleListFileSelection() {
+        String[] options = new String[] 
+            { "-ajctestTitleList=" + TITLE_LIST_ONE
+            };
+        Exp exp = new Exp(17, 1, 16, 1, 0, 0, 16);
+        checkSelection(SELECT, options, TITLE_LIST_ONE, exp);
+    }
+    
+    public void testTitleListFileSelectionPlural() {
+        String[] options = new String[] 
+            { "-ajctestTitleList=" + TITLE_LIST_PLURAL
+            };
+        Exp exp = new Exp(17, 2, 15, 2, 0, 0, 15);
+        checkSelection(SELECT, options, TITLE_LIST_PLURAL, exp);
+    }
+    
+    public void testTitleListFileSelectionPluralFailOnly() {
+        String[] options = new String[] 
+            { "-ajctestTitleFailList=" + TITLE_LIST_PLURAL
+            };
+        Exp exp = new Exp(17, 1, 16, 1, 0, 0, 16);
+        checkSelection(SELECT, options, TITLE_LIST_PLURAL, exp);
     }
 
     /** 

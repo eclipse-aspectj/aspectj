@@ -1,0 +1,17 @@
+
+This is for the harness selection tests
+that pick up test titles from -traceTestsMin harness output
+(where lines start with PASS or FAIL).
+
+All other lines should be ignored, as should the Suite.Spec summary.
+
+PASS run and pass()
+stuff
+
+ FAIL omit if skipKeyword() Not this line either
+
+more stuff
+
+with empty lines
+
+FAIL Suite.Spec(ignore this line...)

@@ -11,7 +11,7 @@
    	    -eclipse
    	  
    	  This is used by a JUnit test HarnessSelectionTest.	  
-   	  Do not change the outcome without changing that test.
+   	  Do not change the outcome or attributes without passing that test.
     -->
     
     <ajc-test dir="." title="run and pass" 
