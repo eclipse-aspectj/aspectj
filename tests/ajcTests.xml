@@ -5417,7 +5417,7 @@
     </ajc-test>
     
     <ajc-test dir="bugs" pr="28703" title="assert and pertarget crashes compiler">
-        <compile files="EnsureOverriding.java" options="-1.4"/>
+        <compile files="EnsureOverriding.java" options="-source14"/>
         <run class="EnsureOverriding" vm="1.4"/>
     </ajc-test>
     
@@ -5796,12 +5796,23 @@
         </compile>
     </ajc-test>
     
-
     <ajc-test dir="options/injars/simple"  pr="35865"
       title="options -injars checking declare parents interactions">
         <compile files="DecParents.java,main.jar"
         	options="!eclipse"/>
         <run class="DecParents"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs/interSpecials" title="IllegalAccessError while accessing introduced variable / 1.1rc1"
+      pr="36110">
+        <compile files="p1/C.java,p2/A1.java"/>
+        <run class="p2.A1"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs/interSpecials" title="testing that assert works like .class"
+      pr="36110">
+        <compile files="p1/C.java,p2/A2.java" options="-source14"/>
+        <run class="p2.A2" vm="1.4"/>
     </ajc-test>
     
 </suite>
