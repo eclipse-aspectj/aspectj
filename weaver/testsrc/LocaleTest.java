@@ -3,8 +3,8 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.util.ByteSequence;
+import org.aspectj.apache.bcel.generic.Instruction;
+import org.aspectj.apache.bcel.util.ByteSequence;
 
 public class LocaleTest extends TestCase {
 
