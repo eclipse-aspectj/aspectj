@@ -28,7 +28,7 @@ import org.aspectj.weaver.ResolvedTypeX;
 public class BcelCflowStackFieldAdder extends BcelTypeMunger {
 	private ResolvedMember cflowStackField;
 	public BcelCflowStackFieldAdder(ResolvedMember cflowStackField) {
-		super(null, null);
+		super(null,(ResolvedTypeX)cflowStackField.getDeclaringType());
 		this.cflowStackField = cflowStackField;
 	}
 

@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -468,6 +469,16 @@ public final class LazyClassGen {
 
 	public boolean isWoven() {
 		return myType.getWeaverState() != null;
+	}
+	
+	public boolean isReweavable() {
+		if (myType.getWeaverState()==null) return false;
+		return myType.getWeaverState().isReweavable();
+	}
+	
+	public Set getAspectsAffectingType() {
+		if (myType.getWeaverState()==null) return null;
+		return myType.getWeaverState().getAspectsAffectingType();
 	}
 	
 	public WeaverStateInfo getOrCreateWeaverStateInfo() {

@@ -110,7 +110,7 @@ public class CrosscuttingMembers {
 			DeclareSoft d = (DeclareSoft)declare;
 			Pointcut concretePointcut = d.getPointcut().concretize(inAspect, 0);
 			declareSofts.add(new DeclareSoft(d.getException(), concretePointcut));
-			ShadowMunger m = Advice.makeSoftener(world, concretePointcut, d.getException());
+			ShadowMunger m = Advice.makeSoftener(world, concretePointcut, d.getException(),inAspect);
 			addConcreteShadowMunger(m);
 		} else {
 			throw new RuntimeException("unimplemented");

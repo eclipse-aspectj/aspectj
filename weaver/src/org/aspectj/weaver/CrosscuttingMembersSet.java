@@ -15,10 +15,14 @@ package org.aspectj.weaver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.aspectj.weaver.bcel.BcelTypeMunger;
+import org.aspectj.weaver.patterns.DeclareParents;
 
 /**
  * This holds on to all CrosscuttingMembers for a world.  It handles 
@@ -144,5 +148,21 @@ public class CrosscuttingMembersSet {
 			declareDominates = ret;
 		}
 		return declareDominates;
-	}	
+	}
+
+
+	public ResolvedTypeX findAspectDeclaringParents(DeclareParents p) {
+		Set result = new HashSet();
+		Set keys = this.members.keySet();
+		for (Iterator iter = keys.iterator(); iter.hasNext();) {
+			ResolvedTypeX element = (ResolvedTypeX) iter.next();
+			for (Iterator i = ((CrosscuttingMembers)members.get(element)).getDeclareParents().iterator(); i.hasNext(); ) {
+				DeclareParents dp = (DeclareParents)i.next();
+				return element;
+			}
+		}
+		return null;
+	}
+
+	
 }

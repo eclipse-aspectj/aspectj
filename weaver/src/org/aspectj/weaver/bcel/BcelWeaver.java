@@ -29,12 +29,14 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
+import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IProgressListener;
 import org.aspectj.util.FileUtil;
@@ -46,6 +48,7 @@ import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.FastMatchInfo;
 
@@ -55,7 +58,10 @@ public class BcelWeaver implements IWeaver {
     private IProgressListener progressListener = null;
     private double progressMade;
     private double progressPerClassFile;
-
+    
+    private boolean inReweavableMode = false;
+    private boolean compressReweavableAttributes = false;
+    
     public BcelWeaver(BcelWorld world) {
         super();
         this.world = world;
@@ -354,12 +360,47 @@ public class BcelWeaver implements IWeaver {
     	
     	//System.err.println("typeMungers: " + typeMungerList);
     	
+
+		if (inReweavableMode)
+			world.showMessage(IMessage.INFO, "weaver operating in reweavable mode.  Need to verify any required types exist.", null, null);
+    	 	
+    	
+    	Set alreadyConfirmedOK = new HashSet();
 		// clear all state from files we'll be reweaving
         for (Iterator i = filesToWeave.iterator(); i.hasNext(); ) {
             UnwovenClassFile classFile = (UnwovenClassFile)i.next();
 	    	String className = classFile.getClassName();
             BcelObjectType classType = BcelWorld.getBcelObjectType(world.resolve(className));
-            classType.resetState();
+
+			
+            // If the class is marked reweavable, check any aspects around when it was built are in this world
+			WeaverStateInfo wsi = classType.getWeaverState();		
+			if (wsi!=null && wsi.isReweavable()) { // Check all necessary types are around!
+				world.showMessage(IMessage.INFO,"processing reweavable type "+className+": "+classType.getSourceLocation().getSourceFile(),null,null);
+        		Set aspectsPreviouslyInWorld = wsi.getAspectsAffectingType();
+				if (aspectsPreviouslyInWorld!=null) {
+					for (Iterator iter = aspectsPreviouslyInWorld.iterator(); iter.hasNext();) {
+						String requiredTypeName = (String) iter.next();
+						if (!alreadyConfirmedOK.contains(requiredTypeName)) {
+							ResolvedTypeX rtx = world.resolve(TypeX.forName(requiredTypeName),true);
+							boolean exists = rtx!=ResolvedTypeX.MISSING;
+							if (!exists) {
+								world.showMessage(IMessage.ERROR, "type " + requiredTypeName + 
+									" is needed by reweavable type " + className,
+									classType.getSourceLocation(), null);
+							} else {
+								if (!world.getMessageHandler().isIgnoring(IMessage.INFO))
+								  world.showMessage(IMessage.INFO,"successfully verified type "+requiredTypeName+
+                                    " exists.  Originates from "+rtx.getSourceLocation().getSourceFile(),null,null);
+								alreadyConfirmedOK.add(requiredTypeName);
+							}
+						}		
+					}
+				}
+				classType.setJavaClass(Utility.makeJavaClass(classType.getJavaClass().getFileName(), wsi.getUnwovenClassFileData()));
+			} else {
+            	classType.resetState();
+			}
         }
     	
     	
@@ -431,7 +472,7 @@ public class BcelWeaver implements IWeaver {
 					
 					classType.addParent(newParent);
 					ResolvedTypeMunger newParentMunger = new NewParentTypeMunger(newParent);
-					onType.addInterTypeMunger(new BcelTypeMunger(newParentMunger, null));
+					onType.addInterTypeMunger(new BcelTypeMunger(newParentMunger, xcutSet.findAspectDeclaringParents(p)));
 				}
 			}
 		}
@@ -462,6 +503,7 @@ public class BcelWeaver implements IWeaver {
 		
 		return ret;
 	}
+
 	
 	private LazyClassGen weave(UnwovenClassFile classFile, BcelObjectType classType, boolean dump) throws IOException {		
 		if (classType.isSynthetic()) {
@@ -572,6 +614,13 @@ public class BcelWeaver implements IWeaver {
 		progressListener = listener;
 		this.progressMade = previousProgress;
 		this.progressPerClassFile = progressPerClassFile;
+	}
+
+	public void setReweavableMode(boolean mode,boolean compress) {
+		inReweavableMode = mode;
+		compressReweavableAttributes = compress;
+		WeaverStateInfo.setReweavableModeDefaults(mode,compress);
+		BcelClassWeaver.setReweavableMode(mode,compress);
 	}
 
 }

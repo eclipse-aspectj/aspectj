@@ -1645,6 +1645,7 @@ public class CompilerRun implements IAjcRun {
                                     "1.5" }}),
                         factory.create("XnoInline"),
                         factory.create("XnoWeave"),
+                        factory.create("Xreweavable"),
                         factory.create("XserializableAspects")
                     };
                     

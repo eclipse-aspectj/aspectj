@@ -56,6 +56,8 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 	private boolean XserializableAspects = false;
 	private boolean XlazyTjp = false;
 	private boolean XnoInline = false;
+	private boolean Xreweavable = false;
+	private boolean XreweavableCompressClasses = false;
 	private String lintMode = AJLINT_DEFAULT;
 	private File lintSpecFile = null;
     
@@ -213,6 +215,10 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 
 	public void setInJars(List sourceJars) {
 		this.inJars = sourceJars;
+	}
+	
+	public void setInPath(List dirsOrJars) {
+		inPath = dirsOrJars;
 	}
 
 	public List getSourceRoots() {
@@ -460,6 +466,22 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 
 	public void setXlazyTjp(boolean b) {
 		XlazyTjp = b;
+	}
+
+	public void setXreweavable(boolean b) {
+		Xreweavable = true;
+	}
+	
+	public boolean isXreweavable() {
+		return Xreweavable;
+	}
+	
+	public void setXreweavableCompressClasses(boolean b) {
+		XreweavableCompressClasses = true;
+	}
+	
+	public boolean getXreweavableCompressClasses() {
+		return XreweavableCompressClasses;
 	}
 
 }

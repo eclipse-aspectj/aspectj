@@ -39,6 +39,7 @@ public abstract class Shadow {
 	protected final Shadow enclosingShadow;
     protected List mungers = new ArrayList(1);
 
+
 	// ----
     protected Shadow(Kind kind, Member signature, Shadow enclosingShadow) {
         this.kind = kind;
@@ -49,7 +50,11 @@ public abstract class Shadow {
 	// ----
 
     public abstract World getIWorld();
-    
+
+	public List /*ShadowMunger*/ getMungers() {
+		return mungers;
+	}
+	    
     /**
      * could this(*) pcd ever match
      */

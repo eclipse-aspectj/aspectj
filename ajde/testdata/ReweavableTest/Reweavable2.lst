@@ -1,0 +1,4 @@
+SecondAspect.aj
+-Xreweavable
+-verbose
+-noExit

@@ -85,6 +85,13 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
         unpackAspectAttributes();
     }
     
+    
+    // repeat initialization
+    public void setJavaClass(JavaClass newclass) {
+    	this.javaClass = newclass;
+    	resetState();
+    }
+    
     public int getModifiers() {
         return javaClass.getAccessFlags();
     }

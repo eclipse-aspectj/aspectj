@@ -454,6 +454,10 @@ public class AjcTask extends MatchingTask {
     public void setXNoweave(boolean noweave) {  
         cmd.addFlag("-XnoWeave", noweave);
     }
+    
+    public void setXReweavable(boolean reweavable) {
+    	cmd.addFlag("-Xreweavable",reweavable);
+    }
 
     public void setNowarn(boolean nowarn) {  
         cmd.addFlag("-nowarn", nowarn);
@@ -1699,6 +1703,8 @@ public class AjcTask extends MatchingTask {
                 setXlintfile(new File(in.next()));
             } else if ("-Xnoweave".equals(flag)) {
                 setXNoweave(true);
+			} else if ("-Xreweavable".equals(flag)) {
+				setXReweavable(true);
             } else if (flag.startsWith("@")) {
                 File file = new File(flag.substring(1));
                 if (file.canRead()) {

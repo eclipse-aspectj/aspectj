@@ -380,6 +380,14 @@
         for input using -injars.
         </para></listitem>
       </varlistentry>
+      
+      <varlistentry>
+        <term>-Xreweavable[:compress]</term>
+        <listitem><para>(Experimental) runs weaver in reweavable mode which causes
+        it to create woven classes that can be rewoven, subject to the restriction that
+        on attempting a reweave all the types that advised the woven type must be accessible.
+        </para></listitem>
+      </varlistentry>
 
       <varlistentry>
         <term>-XnoInline</term>

@@ -161,7 +161,7 @@ public class CflowPointcut extends Pointcut {
 		//XXX and then that info above needs to be mapped down here to help with
 		//XXX getting the exposed state right
 		concreteAspect.crosscuttingMembers.addConcreteShadowMunger(
-				Advice.makeCflowEntry(world, concreteEntry, isBelow, cflowField, freeVars.length, innerCflowEntries));
+				Advice.makeCflowEntry(world, concreteEntry, isBelow, cflowField, freeVars.length, innerCflowEntries,inAspect));
 		
 		concreteAspect.crosscuttingMembers.addTypeMunger(
 			world.makeCflowStackFieldAdder(cflowField));

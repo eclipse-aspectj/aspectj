@@ -62,6 +62,7 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.Shadow.Kind;
 import org.aspectj.weaver.patterns.FastMatchInfo;
 
@@ -96,6 +97,11 @@ class BcelClassWeaver implements IClassWeaver {
     
     private final List        addedLazyMethodGens           = new ArrayList();
     private final Set         addedDispatchTargets          = new HashSet();
+    
+
+	// Static setting across BcelClassWeavers
+	private static boolean inReweavableMode = false;
+	private static boolean compressReweavableAttributes = false;
     
     
     private        List addedSuperInitializersAsList = null; // List<IfaceInitList>
@@ -279,12 +285,17 @@ class BcelClassWeaver implements IClassWeaver {
     // ----
     
     public boolean weave() {
-        if (clazz.isWoven()) {
+		
+        if (clazz.isWoven() && !clazz.isReweavable()) {
         	world.showMessage(IMessage.ERROR, 
-				"class \'" + clazz.getType().getName() + "\' is already woven",
+				"class \'" + clazz.getType().getName() + "\' is already woven and has not been built with -Xreweavable",
 				ty.getSourceLocation(), null);
         	return false;
         }
+       
+
+        Set aspectsAffectingType = null;
+        if (inReweavableMode) aspectsAffectingType = new HashSet();
         
         boolean isChanged = false;
         
@@ -300,7 +311,11 @@ class BcelClassWeaver implements IClassWeaver {
         		continue;
         	}
         	BcelTypeMunger munger = (BcelTypeMunger)o;
-        	isChanged |= munger.munge(this);
+        	boolean typeMungerAffectedType = munger.munge(this);
+        	if (typeMungerAffectedType) {
+        		isChanged = true;
+        		if (inReweavableMode) aspectsAffectingType.add(munger.getAspectType().getName());
+        	}
         }
         
         // XXX do major sort of stuff
@@ -327,7 +342,12 @@ class BcelClassWeaver implements IClassWeaver {
             LazyMethodGen mg = (LazyMethodGen)i.next();
             //mg.getBody();
 			if (! mg.hasBody()) continue;
-            isChanged |= match(mg);
+			boolean shadowMungerMatched = match(mg);
+			if (shadowMungerMatched) {
+				// For matching mungers, add their declaring aspects to the list that affected this type
+				if (inReweavableMode) aspectsAffectingType.addAll(findAspectsForMungers(mg));
+              isChanged = true;
+			}
         }
         if (! isChanged) return false;
         
@@ -352,8 +372,35 @@ class BcelClassWeaver implements IClassWeaver {
 			weaveInAddedMethods();
         }
         
+        if (inReweavableMode) {
+        	WeaverStateInfo wsi = clazz.getOrCreateWeaverStateInfo();
+        	wsi.addAspectsAffectingType(aspectsAffectingType);
+        	wsi.setUnwovenClassFileData(ty.getJavaClass().getBytes());
+        	wsi.setReweavable(true,compressReweavableAttributes);
+        } else {
+        	clazz.getOrCreateWeaverStateInfo().setReweavable(false,false);
+        }
+        
         return isChanged;
     }
+
+	private Set findAspectsForMungers(LazyMethodGen mg) {
+		Set aspectsAffectingType = new HashSet();
+		for (Iterator iter = mg.matchedShadows.iterator(); iter.hasNext();) {
+			BcelShadow aShadow = (BcelShadow) iter.next();	
+			// Mungers in effect on that shadow
+			for (Iterator iter2 = aShadow.getMungers().iterator();iter2.hasNext();) {
+				ShadowMunger aMunger = (ShadowMunger) iter2.next();
+				if (aMunger instanceof BcelAdvice) {
+					BcelAdvice bAdvice = (BcelAdvice)aMunger;
+					aspectsAffectingType.add(bAdvice.getConcreteAspect().getName());
+				} else {
+				// It is a 'Checker' - we don't need to remember aspects that only contributed Checkers...
+				}		
+			}
+		}
+		return aspectsAffectingType;
+	}
 
 
 	private void inlineSelfConstructors(List methodGens) {
@@ -1094,6 +1141,12 @@ class BcelClassWeaver implements IClassWeaver {
 
 	public BcelWorld getWorld() {
 		return world;
+	}
+	
+	// Called by the BcelWeaver to let us know all BcelClassWeavers need to collect reweavable info
+	public static void setReweavableMode(boolean mode,boolean compress) {
+		inReweavableMode = mode;
+		compressReweavableAttributes = compress;
 	}
 
 }

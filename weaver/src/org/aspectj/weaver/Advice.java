@@ -37,12 +37,13 @@ public abstract class Advice extends ShadowMunger {
     
     protected TypePattern exceptionType; // just for Softener kind
 
-    public static Advice makeCflowEntry(World world, Pointcut entry, boolean isBelow, Member stackField, int nFreeVars, List innerCflowEntries) {
+    public static Advice makeCflowEntry(World world, Pointcut entry, boolean isBelow, Member stackField, int nFreeVars, List innerCflowEntries, ResolvedTypeX inAspect){
     	Advice ret = world.concreteAdvice(isBelow ? AdviceKind.CflowBelowEntry : AdviceKind.CflowEntry,
     	      entry, stackField, 0, entry);
     	      //0);
     	ret.innerCflowEntries = innerCflowEntries;
     	ret.nFreeVars = nFreeVars;
+    	ret.concreteAspect = inAspect;
     	return ret;
     }
 
@@ -66,12 +67,13 @@ public abstract class Advice extends ShadowMunger {
     	return ret;
     }
     
-    public static Advice makeSoftener(World world, Pointcut entry, TypePattern exceptionType) {
+    public static Advice makeSoftener(World world, Pointcut entry, TypePattern exceptionType,ResolvedTypeX inAspect) {
     	Advice ret = world.concreteAdvice(AdviceKind.Softener,
     	      entry, null, 0, entry);  
   
     	ret.exceptionType = exceptionType;
-    	//System.out.println("made ret: " + ret + " with " + exceptionType);
+    	ret.concreteAspect = inAspect;
+    	// System.out.println("made ret: " + ret + " with " + exceptionType);
     	return ret;
     }
     	

@@ -31,6 +31,7 @@ public class AjdeTests extends TestCase {
 		suite.addTestSuite(AsmDeclarationsTest.class);
 		suite.addTestSuite(AsmRelationshipsTest.class);
 		suite.addTestSuite(InpathTestcase.class);
+		suite.addTestSuite(ReweavableTestCase.class);
 		suite.addTestSuite(ResourceCopyTestCase.class);
 		suite.addTestSuite(ModelPerformanceTest.class);
 		suite.addTestSuite(SavedModelConsistencyTest. class);

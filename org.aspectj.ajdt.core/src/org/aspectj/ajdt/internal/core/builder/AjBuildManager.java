@@ -226,6 +226,9 @@ public class AjBuildManager {
 	//			bcelWeaver.addResource(resource, buildConfig.getOutputDir());
 			}
 		}
+		
+		bcelWeaver.setReweavableMode(buildConfig.isXreweavable(),buildConfig.getXreweavableCompressClasses());
+
 		//check for org.aspectj.runtime.JoinPoint
 		bcelWorld.resolve("org.aspectj.lang.JoinPoint");
 	}
