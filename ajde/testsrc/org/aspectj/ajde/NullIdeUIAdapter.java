@@ -18,7 +18,7 @@ import org.aspectj.ajde.ui.*;
 public class NullIdeUIAdapter implements IdeUIAdapter {
 	
 	public void displayStatusInformation(String message) {
-		System.out.println("> status message: " + message);
+		System.out.println("> NullIdeUIAdapter status : " + message);
 	}
 	
     public void resetGUI() {
