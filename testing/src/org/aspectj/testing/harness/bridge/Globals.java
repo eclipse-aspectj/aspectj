@@ -1,6 +1,7 @@
 /* *******************************************************************
  * Copyright (c) 1999-2001 Xerox Corporation, 
- *               2002 Palo Alto Research Center, Incorporated (PARC).
+ *               2002 Palo Alto Research Center, Incorporated (PARC)
+ *               2003 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -9,10 +10,10 @@
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
+ *     Wes Isberg     removed unused globals.
  * ******************************************************************/
-
  
- package org.aspectj.testing.harness.bridge;
+package org.aspectj.testing.harness.bridge;
 
 import java.io.File;
 
@@ -32,16 +33,14 @@ public class Globals {
     public static final String LIBDIR = getSystemProperty(LIBDIR_NAME, "../lib/test");
 
     /** Path to J2SE_HOME */
-    public static final File J2SE14_RTJAR;
+    public static final File J2SE14_RTJAR; // XXX used only by 1.0 compiler tests - deprecate?
 
     /** array of parameter types for main(String[]) */
     public static final Class[] MAIN_PARM_TYPES = new Class[] {String[].class};    
     public static final String S_testingclient_jar  = LIBDIR + "/testing-client.jar";
     public static final String S_aspectjrt_jar      = LIBDIR + "/aspectjrt.jar";
-    public static final String S_bridge_jar         = LIBDIR + "/bridge.jar";
     public static final File F_testingclient_jar    = new File(S_testingclient_jar);
     public static final File F_aspectjrt_jar        = new File(S_aspectjrt_jar);
-    public static final File F_bridge_jar           = new File(S_bridge_jar);
     public static final boolean globalsValid;
     
     static {
@@ -58,7 +57,6 @@ public class Globals {
     	globalsValid = 
     		(FileUtil.canReadFile(F_testingclient_jar)
     		  && FileUtil.canReadFile(F_aspectjrt_jar)
-    		  && FileUtil.canReadFile(F_bridge_jar)
               && FileUtil.canReadFile(J2SE14_RTJAR)
             );
     }

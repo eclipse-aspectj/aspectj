@@ -17,6 +17,7 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
 
+import org.aspectj.testing.harness.bridge.Globals;
 import org.aspectj.ajde.*;
 import org.aspectj.ajde.ui.*;
 import org.aspectj.ajde.ui.internal.*;
@@ -367,7 +368,7 @@ class ProjectProperties implements ProjectPropertiesAdapter {
     public Set getSourceRoots() { return sourceRoots; }
     public void setAspectPath(Set path) { aspectPath = path; }        
     public Set getAspectPath() { return aspectPath; }
-    public String getClasspath() { return "../lib/test/aspectjrt.jar";  }
+    public String getClasspath() { return Globals.S_aspectjrt_jar;  }
     public String getBootClasspath() { return null; }
     public void setOutJar(String input){ outJar = input; }
     public String getOutJar() { return outJar; }

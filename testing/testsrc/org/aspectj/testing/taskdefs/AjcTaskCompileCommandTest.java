@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import org.aspectj.bridge.*;
 import org.aspectj.bridge.MessageHandler;
+import org.aspectj.testing.harness.bridge.Globals;
 import org.aspectj.util.*;
 import org.aspectj.util.LangUtil;
 
@@ -42,7 +43,7 @@ public class AjcTaskCompileCommandTest extends TestCase {
         list.add("-d");
         list.add(getClassesDir().getAbsolutePath());
         list.add("-classpath");
-        list.add(new File("../lib/test/aspectjrt.jar").getAbsolutePath());
+        list.add(Globals.F_aspectjrt_jar.getAbsolutePath());
     }
 
     static boolean doWait(IMessageHolder holder, int seconds, int timeout) {
