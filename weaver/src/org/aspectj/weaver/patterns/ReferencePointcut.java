@@ -230,7 +230,7 @@ public class ReferencePointcut extends Pointcut {
 			}
 			
 			if (pointcutDec.isAbstract()) {
-				Thread.currentThread().dumpStack();
+				//Thread.currentThread().dumpStack();
 				searchStart.getWorld().showMessage(IMessage.ERROR,
 					pointcutDec + " is abstract", 
 					getSourceLocation(), bindings.getEnclosingAdvice().getSourceLocation());
