@@ -5198,6 +5198,13 @@
             <message kind="warning" line="10"/>
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="options" 
+      title="options -warn:deprecation not enabled">
+        <compile files="WarnDeprecated.java"
+        	options="!eclipse">
+        </compile>
+    </ajc-test>
  
     <!-- .................................... -Xlint tests -->
     <!-- ............... positive -Xlint tests -->

@@ -116,7 +116,9 @@ public class BuildArgParser extends Main {
             }
 				
 			List javaArgList = parser.getUnparsedArgs();
-			javaArgList.add("-warn:deprecation"); //!!! need to make this more flexible
+			//	disable all special eclipse warnings by default
+			//??? might want to instead override getDefaultOptions()
+			javaArgList.add(0, "-warn:none"); 
 			if (javaArgList.size() != 0) {
 				super.configure((String[])javaArgList.toArray(new String[javaArgList.size()]));
 			}

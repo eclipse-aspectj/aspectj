@@ -1,32 +1,16 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 <suite> 
-
-    <ajc-test dir="bugs/interSpecials" title="IllegalAccessError while accessing introduced variable / 1.1rc1"
-      pr="36110">
-        <compile files="p1/C.java,p2/A1.java"/>
-        <run class="p2.A1"/>
+    <ajc-test dir="options" 
+      title="options -warn:deprecation">
+        <compile files="WarnDeprecated.java"
+        	options="!eclipse,-warn:deprecation">
+            <message kind="warning" line="10"/>
+        </compile>
     </ajc-test>
-    
-    <ajc-test dir="bugs/interSpecials" title="testing that assert works like .class"
-      pr="36110">
-        <compile files="p1/C.java,p2/A2.java" options="-source14"/>
-        <run class="p2.A2" vm="1.4"/>
+    <ajc-test dir="options" 
+      title="options -warn:deprecation turned off">
+        <compile files="WarnDeprecated.java"
+        	options="!eclipse">
+        </compile>
     </ajc-test>
-
-    <!--
-  
-    <ajc-test dir="options/injars/simple" 
-      title="options -injars">
-        <compile files="Simple.java,main.jar"
-        	options="!eclipse"/>
-        <run class="Main"/>
-    </ajc-test>
-
-    
-    <ajc-test dir="new" pr="885"
-      title="source locations within expressions">
-        <compile files="SourceLocationWithinExpr.java" options="-1.4"/>
-        <run class="SourceLocationWithinExpr"/>
-    </ajc-test>
-	-->
 </suite>
