@@ -2,10 +2,13 @@
 <project name="interfaceDefinition" default="all" basedir=".">
 	<target name="info">
 	<echo>
-This reproduces a bug found on the mailing list by Eric Jain.
-When the implementation of a method is defined by an aspect,
-the implementing type does not appear to javac to have
-the method.
+This reproduces bug 43972.
+When the implementation of an interface-declared method is defined 
+by an aspect, the implementing type does not appear to javac to have
+the method.  To run, build the tree as usual or define aspectj.lib.dir:
+
+  ant -Daspectj.lib.dir="c:\aspectj-1.1.1\lib" 
+
 </echo>
 	</target>	
 	<target name="init">
@@ -27,7 +30,6 @@ the method.
 
     <target name="init.taskdefs" depends="init" 
          unless="taskdefs.init">
-      <!-- sets name of new task to iajc, old task to ajc -->
       <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
           <classpath> 
             <pathelement path="${aspectjtools.jar}"/> 
@@ -66,6 +68,7 @@ the method.
           		<pathelement path="${classes.dir}"/>
 	      	</classpath>
       	</java>
+		<delete dir="${classes.dir}"/>
 
 	</target>
 </project>

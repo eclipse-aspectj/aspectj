@@ -124,6 +124,7 @@
 	</ajc-test>
 
     <ajc-test dir="bugs/interfaceDefinition" 
+    	pr="43972"
     	title="Use class implementing interface via aspect">
         <compile 
         	files="pack/DefineInterface.java,

@@ -1,4 +1,5 @@
 
+/** @testcase PR#43972 Use class implementing interface via aspect */
 public class Main implements pack.MyInterface {
 	public static void main(String[] args) {
 		new Main().m();
