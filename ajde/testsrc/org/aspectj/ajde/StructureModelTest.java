@@ -92,8 +92,10 @@ public class StructureModelTest extends AjdeTestCase {
 
 	public void testPointcutName() throws IOException {
 		File testFile = createFile("figures-coverage/figures/Main.java");	
+		//System.err.println("PointcutName, testFile: " + testFile.getCanonicalPath() + " exists: " + testFile.exists());
 		StructureNode node = Ajde.getDefault().getStructureModelManager().getStructureModel().findRootNodeForSourceFile(
 			testFile.getCanonicalPath());
+		//System.err.println("   node: " + node);
 		assertTrue("find result", node != null) ;	
 		ProgramElementNode pNode = (ProgramElementNode)((ProgramElementNode)node).getChildren().get(1);
 		ProgramElementNode pointcut = (ProgramElementNode)pNode.getChildren().get(0);
@@ -103,10 +105,13 @@ public class StructureModelTest extends AjdeTestCase {
 	}
 
 	public void testFileNodeFind() throws IOException {
-		File testFile = createFile("testdata/examples/figures-coverage/figures/Main.java");	
+		File testFile = createFile("figures-coverage/figures/Main.java");
+		//System.err.println("NodeFind, testFile: " + testFile.getCanonicalPath() + " exists: " + testFile.exists());
 		StructureNode node = Ajde.getDefault().getStructureModelManager().getStructureModel().findNodeForSourceLine(
 			testFile.getCanonicalPath(), 1);
+		//System.err.println("   node: " + node);
 		assertTrue("find result", node != null) ;	
+		assertEquals("find result has children", 2, node.getChildren().size()) ;	
 		ProgramElementNode pNode = (ProgramElementNode)node;
 		assertTrue("found node: " + pNode.getName(), pNode.getProgramElementKind().equals(ProgramElementNode.Kind.FILE_JAVA));
 	}
