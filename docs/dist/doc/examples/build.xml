@@ -442,7 +442,6 @@
          <classpath>
             <pathelement path="${aspectjrt.jar}"/> 
             <pathelement path="${aspectjtools.jar}"/> 
-            <pathelement path="d:/eclipse_aspectj/workspace/weaver/bin"/> 
          </classpath>
 		 <jvmarg line="-showversion"/>
 		 <sysproperty key="java.system.class.loader" value="org.aspectj.weaver.WeavingURLClassLoader"/>
