@@ -6,6 +6,8 @@
  * which accompanies this distribution and is available at 
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
+ * Contributors: 
+ *     PARC     initial implementation 
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.core.builder;
@@ -18,6 +20,9 @@ import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.*;
 import org.eclipse.jdt.internal.compiler.ast.*;
 
+/**
+ * @author Mik Kersten
+ */
 public class AsmElementFormatter {
 
 	public static final String DECLARE_PRECEDENCE = "precedence";

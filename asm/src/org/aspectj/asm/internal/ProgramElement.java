@@ -251,6 +251,8 @@ public class ProgramElement implements IProgramElement {
 //	private static int AccInterface = 0x0200;
 	private static int AccAbstract = 0x0400;
 //	private static int AccStrictfp = 0x0800;
+
+	private String sourceSignature;
 	
 	
 	public String getBytecodeName() {
@@ -268,14 +270,14 @@ public class ProgramElement implements IProgramElement {
 	public void setBytecodeSignature(String bytecodeSignature) {
 		this.bytecodeSignature = bytecodeSignature;
 	}
+ 
+	public String getSourceSignature() {
+		return sourceSignature;
+	}
 
-//	public String getFullSignature() {
-//		return fullSignature;
-//	}
-//
-//	public void setFullSignature(String string) {
-//		fullSignature = string;
-//	}
+	public void setSourceSignature(String string) {
+		sourceSignature = string;
+	}
 	
 	public void setKind(Kind kind) {
 		this.kind = kind;

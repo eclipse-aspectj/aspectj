@@ -29,6 +29,9 @@ import org.eclipse.jdt.internal.compiler.ast.*;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.problem.ProblemHandler;
 
+/**
+ * @author Mik Kersten
+ */
 public class AsmHierarchyBuilder extends ASTVisitor {
 	
     public static void build(    
@@ -169,7 +172,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		}
 		return addToNode;
 	}
-
+	
 	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
 		String name = new String(typeDeclaration.name);
 		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
@@ -183,6 +186,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			typeDeclaration.modifiers,			
 			"",
 			new ArrayList());
+		peNode.setSourceSignature(genSourceSignature(typeDeclaration));
 		
 		((IProgramElement)stack.peek()).addChild(peNode);
 		stack.push(peNode);
@@ -208,6 +212,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			memberTypeDeclaration.modifiers,
 			"",
 			new ArrayList());
+		peNode.setSourceSignature(genSourceSignature(memberTypeDeclaration));
 		
 		((IProgramElement)stack.peek()).addChild(peNode);
 		stack.push(peNode);
@@ -228,10 +233,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		 
 		int dollar = fullName.indexOf('$');
 		fullName = fullName.substring(dollar+1);
-//		
-//		System.err.println("member type with name: " + name + ", " + 
-//				new String(fullName));
-		
+
 		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
 		if (memberTypeDeclaration.isInterface()) kind = IProgramElement.Kind.INTERFACE;
 
@@ -242,6 +244,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			memberTypeDeclaration.modifiers,
 			"",
 			new ArrayList());
+		peNode.setSourceSignature(genSourceSignature(memberTypeDeclaration));
 		
 		//??? we add this to the compilation unit
 		findEnclosingClass(stack).addChild(peNode);
@@ -252,6 +255,11 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		stack.pop();
 	}
 	
+	private String genSourceSignature(TypeDeclaration typeDeclaration) {
+		StringBuffer output = new StringBuffer();
+		typeDeclaration.printHeader(0, output);
+		return output.toString();
+	}
 	
 	private IProgramElement findEnclosingClass(Stack stack) {
 		for (int i = stack.size()-1; i >= 0; i--) {
@@ -277,7 +285,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		genBytecodeInfo(methodDeclaration, peNode);
 		peNode.setModifiers(methodDeclaration.modifiers);
 		peNode.setCorrespondingType(methodDeclaration.returnType.toString());
-
+		peNode.setSourceSignature(genSourceSignature(methodDeclaration));
+		
 		// TODO: add return type test
 		if (peNode.getKind().equals(IProgramElement.Kind.METHOD)) {
 			if (peNode.toLabelString().equals("main(String[])")
@@ -291,6 +300,27 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return true;
 	}
 
+	private String genSourceSignature(MethodDeclaration methodDeclaration) {
+		StringBuffer output = new StringBuffer();
+		methodDeclaration.printModifiers(methodDeclaration.modifiers, output);
+		methodDeclaration.printReturnType(0, output).append(methodDeclaration.selector).append('(');
+		if (methodDeclaration.arguments != null) {
+			for (int i = 0; i < methodDeclaration.arguments.length; i++) {
+				if (i > 0) output.append(", "); //$NON-NLS-1$
+				methodDeclaration.arguments[i].print(0, output);
+			}
+		}
+		output.append(')');
+		if (methodDeclaration.thrownExceptions != null) {
+			output.append(" throws "); //$NON-NLS-1$
+			for (int i = 0; i < methodDeclaration.thrownExceptions.length; i++) {
+				if (i > 0) output.append(", "); //$NON-NLS-1$
+				methodDeclaration.thrownExceptions[i].print(0, output);
+			}
+		}
+		return output.toString();
+	}
+	
 	private void genBytecodeInfo(MethodDeclaration methodDeclaration, IProgramElement peNode) {
 		if (methodDeclaration.binding != null) {
 			String memberName = "";
@@ -301,8 +331,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				memberBytecodeSignature = member.getSignature();
 			} catch (NullPointerException npe) {
 				memberName = "<undefined>";
-			}
-		
+			} 
+			
 			peNode.setBytecodeName(memberName);
 			peNode.setBytecodeSignature(memberBytecodeSignature);
 		}
@@ -354,8 +384,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			fieldDeclaration.modifiers,
 			"",
 			new ArrayList());
-		
 		peNode.setCorrespondingType(fieldDeclaration.type.toString());
+		peNode.setSourceSignature(genSourceSignature(fieldDeclaration));
 		
 		((IProgramElement)stack.peek()).addChild(peNode);
 		stack.push(peNode);
@@ -363,6 +393,12 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	}
 	public void endVisit(FieldDeclaration fieldDeclaration, MethodScope scope) {
 		stack.pop();
+	}
+	
+	private String genSourceSignature(FieldDeclaration fieldDeclaration) {
+		StringBuffer output = new StringBuffer();
+		fieldDeclaration.print(0, output);
+		return output.toString();
 	}
 
 

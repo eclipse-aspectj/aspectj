@@ -2,6 +2,8 @@
 import java.io.*;
 import java.util.List;
  
+interface I { } 
+
 class Point { 
 	int x;
 	static int sx;

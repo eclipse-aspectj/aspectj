@@ -117,6 +117,12 @@ public interface IProgramElement extends Serializable {
 	public void setBytecodeName(String bytecodeName);
 	public void setBytecodeSignature(String bytecodeSignature);
 
+	/**
+	 * @return the full signature of this element, as it appears in the source
+	 */
+	public String getSourceSignature();
+	public void setSourceSignature(String string);
+	
 	public IProgramElement walk(HierarchyWalker walker);
 	
 	/**
