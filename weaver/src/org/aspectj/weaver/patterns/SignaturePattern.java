@@ -119,17 +119,17 @@ public class SignaturePattern extends PatternNode {
 
 		ResolvedMember sig = member.resolve(world);
 		
-		// Java5 introduces bridge methods, we don't want to match on them at all...
-		if (sig.isBridgeMethod()) {
-			return false;
-		}
-		
 		if (sig == null) {
 			//XXX
 			if (member.getName().startsWith(NameMangler.PREFIX)) {
 				return false;
 			}
 			world.getLint().unresolvableMember.signal(member.toString(), getSourceLocation());
+			return false;
+		}
+		
+		// Java5 introduces bridge methods, we don't want to match on them at all...
+		if (sig.isBridgeMethod()) {
 			return false;
 		}
 		
