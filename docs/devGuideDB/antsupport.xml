@@ -1655,6 +1655,12 @@
 			</ulink>.
 		</para>
 		<para>
+	    When running Ant build scripts under Eclipse 2.x variants, you will get a 
+	    VerifyError because the Eclipse Ant support fails to isolate the Ant runtime
+	    properly.  To run in this context, set up iajc to fork (and use forkclasspath).
+	    Eclipse 3.0 will fork Ant processes to avoid problems like this.
+		</para>
+		<para>
 	    Memory and forking: Users email most often about the ajc task running 
 	    out of memory. 
 	    This is not a problem with the task; some compiles take a lot of 
