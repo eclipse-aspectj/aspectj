@@ -1539,7 +1539,7 @@ public class BcelShadow extends Shadow {
         InstructionList closureInstantiation =
             makeClosureInstantiation(constructorSig, closureHolder);
 
-        LazyMethodGen constructor = 
+        /*LazyMethodGen constructor = */ 
             makeClosureClassAndReturnConstructor(
             	closureClassName,
                 callbackMethod, 

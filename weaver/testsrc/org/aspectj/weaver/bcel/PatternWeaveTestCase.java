@@ -70,9 +70,9 @@ public class PatternWeaveTestCase extends WeaveTestCase {
 		checkPointcut("get(* java.lang.System.out)", getOutHello, getOutHello);
 	}	
 	
-	private Pointcut makePointcut(String s) {
-		return new PatternParser(s).parsePointcut();
-	}
+//	private Pointcut makePointcut(String s) {
+//		return new PatternParser(s).parsePointcut();
+//	}
 		
     private void checkPointcut(String pointcutSource, String[] expectedHelloShadows, 
                                 String[] expectedFancyShadows) throws IOException

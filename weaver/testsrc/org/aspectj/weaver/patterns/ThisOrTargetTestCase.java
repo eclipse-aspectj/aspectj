@@ -47,14 +47,14 @@ public class ThisOrTargetTestCase extends TestCase {
 		
 	}
 
-	private Pointcut makePointcut(String pattern) {
-		return new PatternParser(pattern).parsePointcut();
-	}
+//	private Pointcut makePointcut(String pattern) {
+//		return new PatternParser(pattern).parsePointcut();
+//	}
 	
-	private void checkEquals(String pattern, Pointcut p) throws IOException {
-		assertEquals(pattern, p, makePointcut(pattern));
-		checkSerialization(pattern);
-	}
+//	private void checkEquals(String pattern, Pointcut p) throws IOException {
+//		assertEquals(pattern, p, makePointcut(pattern));
+//		checkSerialization(pattern);
+//	}
 
 	
 //	private void checkMatch(Pointcut p, Signature[] matches, boolean shouldMatch) {
@@ -83,18 +83,18 @@ public class ThisOrTargetTestCase extends TestCase {
 	 * Method checkSerialization.
 	 * @param string
 	 */
-	private void checkSerialization(String string) throws IOException {
-		Pointcut p = makePointcut(string);
-		ByteArrayOutputStream bo = new ByteArrayOutputStream();
-		DataOutputStream out = new DataOutputStream(bo);
-		p.write(out);
-		out.close();
-		
-		ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
-		DataInputStream in = new DataInputStream(bi);
-		Pointcut newP = Pointcut.read(in, null);
-		
-		assertEquals("write/read", p, newP);	
-	}
+//	private void checkSerialization(String string) throws IOException {
+//		Pointcut p = makePointcut(string);
+//		ByteArrayOutputStream bo = new ByteArrayOutputStream();
+//		DataOutputStream out = new DataOutputStream(bo);
+//		p.write(out);
+//		out.close();
+//		
+//		ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
+//		DataInputStream in = new DataInputStream(bi);
+//		Pointcut newP = Pointcut.read(in, null);
+//		
+//		assertEquals("write/read", p, newP);	
+//	}
 	
 }

@@ -73,7 +73,7 @@ public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparab
 	}
 
 	public int fallbackCompareTo(Object other) {
-		ConcreteTypeMunger o = (ConcreteTypeMunger) other;
+//		ConcreteTypeMunger o = (ConcreteTypeMunger) other;
 		return 0;
 	}
 

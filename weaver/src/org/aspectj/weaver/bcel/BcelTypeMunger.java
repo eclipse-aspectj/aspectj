@@ -571,7 +571,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	}	
 	
 	private boolean mungeNewField(BcelClassWeaver weaver, NewFieldTypeMunger munger) {
-		ResolvedMember initMethod = munger.getInitMethod(aspectType);
+		/*ResolvedMember initMethod = */munger.getInitMethod(aspectType);
 		
 		LazyClassGen gen = weaver.getLazyClassGen();
 		ResolvedMember field = munger.getSignature();

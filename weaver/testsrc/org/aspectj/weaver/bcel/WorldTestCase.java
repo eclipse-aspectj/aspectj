@@ -38,7 +38,7 @@ public class WorldTestCase extends AbstractWorldTestCase {
         ResolvedTypeX trace = world.resolve(TypeX.forName("Trace"));
 
         fieldsTest(trace, Member.NONE);
-        Member constr = Member.methodFromString("void Trace.<init>()"); 
+        /*Member constr = */Member.methodFromString("void Trace.<init>()"); 
         //XXX need attribute fix - 
         //methodsTest(trace, new Member[] { constr });
 

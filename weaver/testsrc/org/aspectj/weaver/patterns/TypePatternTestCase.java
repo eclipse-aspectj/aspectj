@@ -206,7 +206,7 @@ public class TypePatternTestCase extends TestCase {
 		try {
 			TypePattern p = makeTypePattern(pattern);
 			ResolvedTypeX type = world.resolve(name);
-			FuzzyBoolean result = p.matchesInstanceof(type);
+			/*FuzzyBoolean result = */p.matchesInstanceof(type);
 		} catch (AbortException e) {
 			return;
 		}

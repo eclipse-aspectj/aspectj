@@ -15,7 +15,7 @@ package org.aspectj.weaver;
 
 import java.lang.reflect.Modifier;
 
-import org.aspectj.weaver.ResolvedTypeX.Name;
+//import org.aspectj.weaver.ResolvedTypeX.Name;
 
 
 public class AjcMemberMaker {

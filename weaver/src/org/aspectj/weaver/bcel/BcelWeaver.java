@@ -468,7 +468,7 @@ public class BcelWeaver implements IWeaver {
 			return null;
 		}
 		
-		JavaClass javaClass = classType.getJavaClass();
+//		JavaClass javaClass = classType.getJavaClass();
 		List shadowMungers = fastMatch(shadowMungerList, classType.getResolvedTypeX());
 		List typeMungers = classType.getResolvedTypeX().getInterTypeMungers();
         

@@ -529,8 +529,8 @@ public final class LazyClassGen {
     	new ObjectType("org.aspectj.lang.JoinPoint$StaticPart");
     private static final ObjectType sigType = 
     	new ObjectType("org.aspectj.lang.Signature");
-    private static final ObjectType slType = 
-    	new ObjectType("org.aspectj.lang.reflect.SourceLocation");
+//    private static final ObjectType slType = 
+//    	new ObjectType("org.aspectj.lang.reflect.SourceLocation");
     private static final ObjectType factoryType = 
     	new ObjectType("org.aspectj.runtime.reflect.Factory");
     private static final ObjectType classType = 
