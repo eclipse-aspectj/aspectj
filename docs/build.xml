@@ -154,7 +154,7 @@
 
     <target name="do-local-dist" 
          depends="init,init-filters,api,faq,devguide,progguide, adk15guide"
-      description="finish products by copying dist files">
+      description="finish products by copying dist files and library sources">
         <copy todir="${docs.dist.dir}" filtering="on">
             <fileset dir="${docs.src.dir}/dist" 
                 excludes="${binary.pattern}"/>
@@ -162,6 +162,16 @@
         <copy todir="${docs.dist.dir}" filtering="off">
             <fileset dir="${docs.src.dir}/dist" 
                 includes="${binary.pattern}"/>
+        </copy>
+        <available 
+            file="${docs.src.dir}/../org.aspectj.lib/build-aspectjlib.xml" 
+            property="org.aspectj.lib.available"/>
+        <fail unless="org.aspectj.lib.available"
+        	message="unable to find org.aspectj.lib"/>
+        <mkdir dir="${docs.dist.dir}/aspectjlib"/>
+        <copy todir="${docs.dist.dir}/doc/aspectjlib" filtering="off">
+            <fileset dir="${docs.src.dir}/../org.aspectj.lib" 
+                includes="build-aspectjlib.xml,src"/>
         </copy>
     </target>
 
