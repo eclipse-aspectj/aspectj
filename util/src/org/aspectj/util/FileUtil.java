@@ -814,6 +814,27 @@ public class FileUtil {
 
 
 	/**
+	 * Reads a boolean array with our encoding
+	 */
+	public static boolean[] readBooleanArray(DataInputStream s) throws IOException {
+		int len = s.readInt();
+		boolean[] ret = new boolean[len];
+		for (int i=0; i < len; i++) ret[i] = s.readBoolean();
+		return ret;
+	}
+
+
+	/**
+	 * Writes a boolean array with our encoding
+	 */
+	public static void writeBooleanArray(boolean[] a, DataOutputStream s) throws IOException {
+		int len = a.length;
+		s.writeInt(len);
+		for (int i=0; i < len; i++) s.writeBoolean(a[i]);
+	}
+
+
+	/**
 	 * Reads an int array with our encoding
 	 */
 	public static int[] readIntArray(DataInputStream s) throws IOException {
@@ -827,7 +848,7 @@ public class FileUtil {
 	/**
 	 * Writes an int array with our encoding
 	 */
-	public static void writeIntArray(DataOutputStream s, int[] a) throws IOException {
+	public static void writeIntArray(int[] a, DataOutputStream s) throws IOException {
 		int len = a.length;
 		s.writeInt(len);
 		for (int i=0; i < len; i++) s.writeInt(a[i]);
@@ -849,7 +870,7 @@ public class FileUtil {
 	/**
 	 * Writes an int array with our encoding
 	 */
-	public static void writeStringArray(DataOutputStream s, String[] a) throws IOException {
+	public static void writeStringArray(String[] a, DataOutputStream s) throws IOException {
 		if (a == null) {
 			s.writeInt(0);
 			return;
