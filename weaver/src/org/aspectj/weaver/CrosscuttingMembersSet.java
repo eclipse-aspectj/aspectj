@@ -23,8 +23,9 @@ import org.aspectj.bridge.*;
 /**
  * This holds on to all CrosscuttingMembers for a world.  It handles 
  * management of change.
+ * 
+ * @author Jim Hugunin
  */
-
 public class CrosscuttingMembersSet {
 	private World world;
 	private Map members = new HashMap();
@@ -59,9 +60,10 @@ public class CrosscuttingMembersSet {
 		}
 	}
 	
-	public void deleteAspect(TypeX aspectType) {
-		members.remove(aspectType);
+	public boolean deleteAspect(TypeX aspectType) {
+		boolean isAspect = members.remove(aspectType) != null;
 		clearCaches();
+		return isAspect;
 	}
 	
 	//XXX only for testing

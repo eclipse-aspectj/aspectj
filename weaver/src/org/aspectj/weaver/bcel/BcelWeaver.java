@@ -19,6 +19,7 @@ import java.util.zip.*;
 
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.classfile.JavaClass;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.*;
 
@@ -157,6 +158,7 @@ public class BcelWeaver implements IWeaver {
     		UnwovenClassFile jc = (UnwovenClassFile)i.next();
     		String name = jc.getClassName();
     		ResolvedTypeX type = world.resolve(name);
+    		//System.err.println("added: " + type + " aspect? " + type.isAspect());
     		if (type.isAspect()) {
     			needToReweaveWorld |= xcutSet.addOrReplaceAspect(type);
     		}
@@ -164,8 +166,7 @@ public class BcelWeaver implements IWeaver {
 
     	for (Iterator i = deletedTypenames.iterator(); i.hasNext(); ) { 
     		String name = (String)i.next();
-    		xcutSet.deleteAspect(TypeX.forName(name));
-    		needToReweaveWorld = true;
+    		if (xcutSet.deleteAspect(TypeX.forName(name))) needToReweaveWorld = true;
     	}
 
 		shadowMungerList = xcutSet.getShadowMungers();
@@ -211,6 +212,7 @@ public class BcelWeaver implements IWeaver {
     public Collection weave() throws IOException {
     	prepareForWeave();
     	Collection filesToWeave;
+    	
     	if (needToReweaveWorld) {
     		filesToWeave = sourceJavaClasses.values();
     	} else {
@@ -218,6 +220,9 @@ public class BcelWeaver implements IWeaver {
     	}
     	
     	Collection wovenClassNames = new ArrayList();
+    	world.showMessage(IMessage.INFO, "might need to weave " + filesToWeave + 
+    					"(world=" + needToReweaveWorld + ")", null, null);
+    	
     	
     	//XXX this isn't quite the right place for this...
     	for (Iterator i = filesToWeave.iterator(); i.hasNext(); ) {

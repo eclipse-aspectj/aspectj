@@ -196,6 +196,9 @@ public class BcelObjectType extends ResolvedTypeX.Name {
     	this.perClause = null;
     	this.weaverState = null;
     	this.lazyClassGen = null;
+    	
+    	isObject = (javaClass.getSuperclassNameIndex() == 0);
+        unpackAspectAttributes();
     	//XXX is clearing these caches sufficient
 	}
 

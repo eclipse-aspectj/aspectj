@@ -29,8 +29,9 @@ import org.aspectj.bridge.*;
  * up before the inter-type declaration weaving stage (unsurprisingly).
  * 
  * All members are concrete.
+ * 
+ * @author Jim Hugunin
  */
-
 public class CrosscuttingMembers {
 	private ResolvedTypeX inAspect;
 	private World world;
@@ -153,12 +154,14 @@ public class CrosscuttingMembers {
 
 	public boolean replaceWith(CrosscuttingMembers other) {
 		boolean changed = false;
+		//XXX what if perClause is null
 		if (!perClause.equals(other.perClause)) {
 			changed = true;
 			perClause = other.perClause;
 		}
 		
 		//XXX all of the below should be set equality rather than list equality
+		//System.err.println("old: " + shadowMungers + " new: " + other.shadowMungers);
 		if (!shadowMungers.equals(other.shadowMungers)) {
 			changed = true;
 			shadowMungers = other.shadowMungers;
