@@ -2,12 +2,17 @@ public class SimpleVarargs {
 
   public SimpleVarargs(Integer... strings) {}
 
-  public void foo(Integer... strings) { }
+  public void foo(Integer... strings) { 
+  	moo();
+  }
 
 //public void bar(Integer[] array) { }
 
-  public void fooInt(int i,Integer... strings)  {}
+  public void fooInt(int i,Integer... strings)  {
+  	moo();
+  }
 
+  private void moo() {}
 //public void barInt(int i,Integer[] strings) {}
 
   public static void main(String[] argv) {

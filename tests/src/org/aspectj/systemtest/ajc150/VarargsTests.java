@@ -56,15 +56,9 @@ public class VarargsTests extends TestUtils {
   }
 
   // check when signature is from an withincode PCD
-  // In this test, it can be tricky to understand the results!!  The reason being that the shadow 
-  // isn't included in the error message (it really should be, but thats a bit hard to do cleanly)
   public void test003_cantMatchVarargsWithObjectArray_withincodePCD() {
-  	CompilationResult cR = binaryWeave("testcode.jar","VarargsAspect04.aj",0,6,true);
+  	CompilationResult cR = binaryWeave("testcode.jar","VarargsAspect04.aj",0,1,true);
   	
-  	// There are 7.  Each piece of the pointcut is matched against all the shadows, so both
-  	// the 'withincode' PCD and the 'call' PCD are matched against every join point.
-  	// AMC - there are now SIX. We detect early that a call(* *(..)) pcd cannot match 
-  	//       constructor call shadows and never do the match.
   	assertTrue("Did not get expected message about a varargs mismatch, instead got: "+cR.getWarningMessages(),
   			((IMessage)cR.getWarningMessages().get(0)).toString().indexOf("varargs declared method")!=-1);
   	  	
@@ -79,9 +73,9 @@ public class VarargsTests extends TestUtils {
   	System.err.println(cR.getErrorMessages());
   	System.err.println(cR.getInfoMessages());
   	verifyWeavingMessagesOutput(cR,new String[]{
-  		"weaveinfo Type 'SimpleVarargs' (SimpleVarargs.java:15) advised by before advice from 'VarargsAspect05' (VarargsAspect05.aj:3)",
-  		"weaveinfo Type 'SimpleVarargs' (SimpleVarargs.java:16) advised by before advice from 'VarargsAspect05' (VarargsAspect05.aj:3)",
-  		"weaveinfo Type 'SimpleVarargs' (SimpleVarargs.java:17) advised by before advice from 'VarargsAspect05' (VarargsAspect05.aj:3)"});
+  		"weaveinfo Type 'SimpleVarargs' (SimpleVarargs.java:20) advised by before advice from 'VarargsAspect05' (VarargsAspect05.aj:3)",
+  		"weaveinfo Type 'SimpleVarargs' (SimpleVarargs.java:21) advised by before advice from 'VarargsAspect05' (VarargsAspect05.aj:3)",
+  		"weaveinfo Type 'SimpleVarargs' (SimpleVarargs.java:22) advised by before advice from 'VarargsAspect05' (VarargsAspect05.aj:3)"});
   }
   
   // before(): call(* *(int,Integer...)) { } - slightly more complex pcut
@@ -92,9 +86,9 @@ public class VarargsTests extends TestUtils {
   	System.err.println(cR.getInfoMessages());
   	 
   	verifyWeavingMessagesOutput(cR,new String[]{
-  		"weaveinfo Type 'SimpleVarargs' (SimpleVarargs.java:20) advised by before advice from 'VarargsAspect06' (VarargsAspect06.aj:3)",
-  		"weaveinfo Type 'SimpleVarargs' (SimpleVarargs.java:21) advised by before advice from 'VarargsAspect06' (VarargsAspect06.aj:3)",
-  		"weaveinfo Type 'SimpleVarargs' (SimpleVarargs.java:22) advised by before advice from 'VarargsAspect06' (VarargsAspect06.aj:3)"});
+  		"weaveinfo Type 'SimpleVarargs' (SimpleVarargs.java:25) advised by before advice from 'VarargsAspect06' (VarargsAspect06.aj:3)",
+  		"weaveinfo Type 'SimpleVarargs' (SimpleVarargs.java:26) advised by before advice from 'VarargsAspect06' (VarargsAspect06.aj:3)",
+  		"weaveinfo Type 'SimpleVarargs' (SimpleVarargs.java:27) advised by before advice from 'VarargsAspect06' (VarargsAspect06.aj:3)"});
  }
   
 }

@@ -53,7 +53,9 @@ public class AndPointcut extends Pointcut {
 	}
 
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
-		return left.match(shadow).and(right.match(shadow));
+		FuzzyBoolean leftMatch = left.match(shadow);
+		if (leftMatch.alwaysFalse()) return leftMatch;
+		return leftMatch.and(right.match(shadow));
 	}
 	
 	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart encJP) {

@@ -51,7 +51,9 @@ public class OrPointcut extends Pointcut {
 	}
 
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
-		return left.match(shadow).or(right.match(shadow));
+		FuzzyBoolean leftMatch = left.match(shadow);
+		if (leftMatch.alwaysTrue()) return leftMatch;
+		return leftMatch.or(right.match(shadow));
 	}
 	
 	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart encJP) {
