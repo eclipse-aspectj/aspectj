@@ -156,7 +156,8 @@ public interface JoinPoint {
     }
 
 
-    /** <p> Returns an object that encapsulates the static parts of this join point </p>
+    /** 
+     * Returns an object that encapsulates the static parts of this join point.
      */
     StaticPart getStaticPart();
 

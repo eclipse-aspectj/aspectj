@@ -55,7 +55,7 @@ public interface Signature {
 
 
     /**
-     * Returns the identifier part of this signature; i.e. for methods this
+     * Returns the identifier part of this signature.  For methods this
      * will return the method name.
      * 
      * @see java.lang.reflect.Member#getName

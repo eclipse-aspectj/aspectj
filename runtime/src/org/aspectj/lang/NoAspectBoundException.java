@@ -14,7 +14,8 @@
 
 package org.aspectj.lang;
 
-/** Thrown by the <code>aspectOf(..)</code> special method on aspect types
+/** 
+ * Thrown by the <code>aspectOf</code> special method on aspect types
  *  when there is no aspect of that type currently bound.
  */
 public class NoAspectBoundException extends RuntimeException {
