@@ -31,6 +31,24 @@ public class FileUtil {
     public static final List SOURCE_SUFFIXES
         = Collections.unmodifiableList(Arrays.asList(new String[] { ".java", ".aj"}));
     
+    public static final FileFilter ZIP_FILTER = new FileFilter() {
+        public boolean accept(File file) {
+            return hasZipSuffix(file);
+        }
+        public String toString() { 
+            return "ZIP_FILTER"; 
+        }
+    };
+
+    public static final FileFilter SOURCE_FILTER = new FileFilter() {
+        public boolean accept(File file) {
+            return hasSourceSuffix(file);
+        }
+        public String toString() { 
+            return "SOURCE_FILTER"; 
+        }
+    };
+
     final static int[] INT_RA = new int[0];
     
     /** accept all files */
