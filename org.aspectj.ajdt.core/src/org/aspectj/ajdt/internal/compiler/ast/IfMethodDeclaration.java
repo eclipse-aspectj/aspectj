@@ -39,7 +39,7 @@ public class IfMethodDeclaration extends AjMethodDeclaration {
 	}
 	
 	protected int generateInfoAttributes(ClassFile classFile) {
-		return classFile.generateMethodInfoAttribute(binding, AstUtil.getAjSyntheticAttribute());
+		return classFile.generateMethodInfoAttribute(binding, false, AstUtil.getAjSyntheticAttribute());
 	}
 	
 	public void resolveStatements() {

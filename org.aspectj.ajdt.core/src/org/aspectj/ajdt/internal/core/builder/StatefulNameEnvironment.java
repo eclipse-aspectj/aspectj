@@ -64,7 +64,9 @@ public class StatefulNameEnvironment implements INameEnvironment {
 
 		try {
 			//System.out.println("from cache: " + name);
-			return new NameEnvironmentAnswer(new ClassFileReader(cf.getBytes(), cf.getFilename().toCharArray()));
+			return new NameEnvironmentAnswer(
+					new ClassFileReader(cf.getBytes(), cf.getFilename().toCharArray()),
+					null /* no access restriction */);
 		} catch (ClassFormatException e) {
 			return null; //!!! seems to match FileSystem behavior
 		}

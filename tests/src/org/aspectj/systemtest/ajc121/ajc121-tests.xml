@@ -347,7 +347,7 @@
 			<message kind="error" line="9" text="The method ancientI() from the type Foo is not visible"/>
 			<message kind="error" line="10" text="The method ancientJ() from the type AncientFoo is not visible"/>
 			<message kind="error" line="11" text="The method clone() from the type Object is not visible"/>
-			<message kind="error" line="12" text="The method clone() from the type Object is not static"/>
+			<message kind="error" line="12" text="Cannot make a static reference to the non-static method clone() from the type Object"/>
 		</compile>
 	</ajc-test>
 	

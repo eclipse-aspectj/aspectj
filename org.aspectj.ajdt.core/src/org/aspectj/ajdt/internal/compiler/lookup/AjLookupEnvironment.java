@@ -24,18 +24,10 @@ import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.WeaveMessage;
-import org.aspectj.weaver.AsmRelationshipProvider;
-import org.aspectj.weaver.ConcreteTypeMunger;
-import org.aspectj.weaver.ResolvedTypeMunger;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
-import org.aspectj.weaver.WeaverStateInfo;
-import org.aspectj.weaver.World;
-import org.aspectj.weaver.bcel.LazyClassGen;
-import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.AccessRestriction;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
@@ -48,6 +40,15 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
+import org.aspectj.weaver.AsmRelationshipProvider;
+import org.aspectj.weaver.ConcreteTypeMunger;
+import org.aspectj.weaver.ResolvedTypeMunger;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.LazyClassGen;
+import org.aspectj.weaver.patterns.DeclareParents;
 
 /**
  * Overrides the default eclipse LookupEnvironment for two purposes.
@@ -463,7 +464,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
         sourceType.rememberTypeHierarchy();
 		if (parentBinding.isClass()) {
 			sourceType.superclass = parentBinding;
-
+			
             // this used to be true, but I think I've fixed it now, decp is done at weave time!			
 			// TAG: WeavingMessage    DECLARE PARENTS: EXTENDS
 			// Compiler restriction: Can't do EXTENDS at weave time
@@ -520,14 +521,16 @@ public class AjLookupEnvironment extends LookupEnvironment {
 	public BinaryTypeBinding createBinaryTypeFrom(
 		IBinaryType binaryType,
 		PackageBinding packageBinding,
-		boolean needFieldsAndMethods)
+		boolean needFieldsAndMethods,
+		AccessRestriction accessRestriction)
 	{
 
 		if (inBinaryTypeCreationAndWeaving) {
 			BinaryTypeBinding ret = super.createBinaryTypeFrom(
 				binaryType,
 				packageBinding,
-				needFieldsAndMethods);
+				needFieldsAndMethods,
+				accessRestriction);
 			pendingTypesToFinish.add(ret);
 			return ret;
 		}
@@ -537,7 +540,8 @@ public class AjLookupEnvironment extends LookupEnvironment {
 			BinaryTypeBinding ret = super.createBinaryTypeFrom(
 				binaryType,
 				packageBinding,
-				needFieldsAndMethods);
+				needFieldsAndMethods,
+				accessRestriction);
 			weaveInterTypeDeclarations(ret);			
 			return ret;
 		} finally {

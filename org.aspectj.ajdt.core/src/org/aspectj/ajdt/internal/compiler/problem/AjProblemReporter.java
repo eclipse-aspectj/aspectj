@@ -15,13 +15,19 @@
 
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
+import java.util.List;
 
 import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.Proceed;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
-import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
-import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
+import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.ConcreteTypeMunger;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.patterns.DeclareSoft;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
 import org.aspectj.org.eclipse.jdt.internal.compiler.IProblemFactory;
@@ -37,13 +43,8 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
-import org.aspectj.util.FuzzyBoolean;
-import org.aspectj.weaver.AjcMemberMaker;
-import org.aspectj.weaver.ConcreteTypeMunger;
-import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.patterns.DeclareSoft;
+import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
+import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
 
 /**
  * Extends problem reporter to support compiler-side implementation of declare soft. 
@@ -214,31 +215,16 @@ public class AjProblemReporter extends ProblemReporter {
 
 
     // PR71076
-    public void javadocMissingParamTag(Argument arg, int modifiers) {
+    public void javadocMissingParamTag(char[] name, int sourceStart, int sourceEnd, int modifiers) {
         boolean reportIt = true;
-        if (arg.binding!=null && (arg.binding.declaringScope instanceof MethodScope) ) {
-            MethodScope ms = (MethodScope) arg.binding.declaringScope;
-            if (ms.referenceContext!=null && (ms.referenceContext instanceof AdviceDeclaration)) {
-                AdviceDeclaration adviceDecl = (AdviceDeclaration)ms.referenceContext;
-                if (arg.name!=null) {
-                  if (adviceDecl.selector.length>4 &&
-                    adviceDecl.selector[0] == 'a' &&
-                    adviceDecl.selector[1] == 'j' &&
-                    adviceDecl.selector[2] == 'c' &&
-                    adviceDecl.selector[3] == '$') {
-                  
-                    String stringArgName = new String(arg.name);
-                    if (stringArgName.equals("thisJoinPoint")) reportIt = false;
-                    if (stringArgName.equals("thisJoinPointStaticPart")) reportIt = false;
-                    if (stringArgName.equals("thisEnclosingJoinPointStaticPart")) reportIt = false;
-                    if (arg.type.toString().indexOf("AroundClosure")!=-1) reportIt = false;
-                  }
-              }
-            }
-        }
-        if (arg.name!=null && new String(arg.name).startsWith("ajc$")) reportIt = false;
+        String sName = new String(name);
+        if (sName.startsWith("ajc$")) reportIt = false;
+        if (sName.equals("thisJoinPoint")) reportIt = false;
+        if (sName.equals("thisJoinPointStaticPart")) reportIt = false;
+        if (sName.equals("thisEnclosingJoinPointStaticPart")) reportIt = false;
+        if (sName.equals("ajc_aroundClosure")) reportIt = false;
         if (reportIt) 
-        	super.javadocMissingParamTag(arg, modifiers);
+        	super.javadocMissingParamTag(name,sourceStart,sourceEnd,modifiers);
     }
     
     public void abstractMethodInAbstractClass(SourceTypeBinding type, AbstractMethodDeclaration methodDecl) {

@@ -22,13 +22,13 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SyntheticAccessMethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SyntheticMethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 
 public class InterTypeFieldBinding extends FieldBinding {
 	public ReferenceBinding targetType;
-	public SyntheticAccessMethodBinding reader;
-	public SyntheticAccessMethodBinding writer;
+	public SyntheticMethodBinding reader;
+	public SyntheticMethodBinding writer;
 	public AbstractMethodDeclaration sourceMethod;
 	
 	public InterTypeFieldBinding(EclipseFactory world, ResolvedMember signature, TypeX withinType,
@@ -39,8 +39,9 @@ public class InterTypeFieldBinding extends FieldBinding {
 		
 		targetType = (ReferenceBinding)world.makeTypeBinding(signature.getDeclaringType());
 		this.declaringClass = (ReferenceBinding)world.makeTypeBinding(withinType);
-		
-		reader = new SimpleSyntheticAccessMethodBinding(world.makeMethodBinding(
+	
+		reader = new SimpleSyntheticAccessMethodBinding(
+								world.makeMethodBinding(
 			AjcMemberMaker.interFieldGetDispatcher(signature, withinType)
 		));
 		
@@ -100,7 +101,7 @@ public class InterTypeFieldBinding extends FieldBinding {
 	}
 
 
-	public SyntheticAccessMethodBinding getAccessMethod(boolean isReadAccess) {
+	public SyntheticMethodBinding getAccessMethod(boolean isReadAccess) {
 		if (isReadAccess) return reader;
 		else return writer;
 	}

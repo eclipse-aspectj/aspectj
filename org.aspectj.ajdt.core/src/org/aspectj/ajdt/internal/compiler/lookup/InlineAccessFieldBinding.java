@@ -20,7 +20,8 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SyntheticAccessMethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SyntheticMethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SyntheticMethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 
 
@@ -63,7 +64,7 @@ public class InlineAccessFieldBinding extends FieldBinding {
 		return true;
 	}
 
-	public SyntheticAccessMethodBinding getAccessMethod(boolean isReadAccess) {
+	public SyntheticMethodBinding getAccessMethod(boolean isReadAccess) {
 		if (isReadAccess) return reader;
 		else return writer;
 	}

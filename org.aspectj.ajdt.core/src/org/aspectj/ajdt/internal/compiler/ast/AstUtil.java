@@ -37,7 +37,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BaseTypes;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BindingIds;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
@@ -83,7 +83,8 @@ public class AstUtil {
 	public static TypeReference makeTypeReference(TypeBinding binding) {
 		// ??? does this work for primitives	
 		QualifiedTypeReference ref =
-			new QualifiedTypeReference(new char[][] {binding.sourceName()}, binding, new long[] {0}); //???
+			new QualifiedTypeReference(new char[][] {binding.sourceName()}, new long[] {0}); //???
+		ref.resolvedType = binding;
 		ref.constant = Constant.NotAConstant;
 		return ref;
 	}
@@ -136,7 +137,7 @@ public class AstUtil {
 		ret.codegenBinding = binding;
 		ret.constant = ASTNode.NotAConstant;
 		ret.bits &= ~ASTNode.RestrictiveFlagMASK;  // clear bits
-		ret.bits |= BindingIds.VARIABLE; 
+		ret.bits |= Binding.VARIABLE; 
 		return ret;
 	}
 	
@@ -148,7 +149,7 @@ public class AstUtil {
 		ret.codegenBinding = binding;
 		ret.constant = ASTNode.NotAConstant;
 		ret.bits &= ~ASTNode.RestrictiveFlagMASK;  // clear bits
-		ret.bits |= BindingIds.LOCAL; 
+		ret.bits |= Binding.LOCAL; 
 		return ret;
 	}
 	

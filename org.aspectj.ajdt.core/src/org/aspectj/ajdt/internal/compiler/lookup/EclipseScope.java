@@ -61,7 +61,8 @@ public class EclipseScope implements IScope {
 	
 	
 	public TypeX lookupType(String name, IHasPosition location) {
-		TypeBinding b = scope.getType(WildTypePattern.splitNames(name));
+		char[][] splitName = WildTypePattern.splitNames(name);
+		TypeBinding b = scope.getType(splitName,splitName.length);
 		//FIXME need reasonable error handling...
 		if (!b.isValidBinding()) {
 			return ResolvedTypeX.MISSING;

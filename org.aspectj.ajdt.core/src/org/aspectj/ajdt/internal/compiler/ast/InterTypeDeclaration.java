@@ -126,7 +126,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 
 	protected void resolveOnType(ClassScope classScope) {
 		checkSpec();		
-		onTypeBinding = (ReferenceBinding)onType.getTypeBinding(classScope);
+		onTypeBinding = (ReferenceBinding)onType.getTypeBindingPublic(classScope);
 		if (!onTypeBinding.isValidBinding()) {
 			classScope.problemReporter().invalidType(onType, onTypeBinding);
 			ignoreFurtherInvestigation = true;
@@ -169,7 +169,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		}
 		addDeclarationStartLineAttribute(l,classFile);
 
-		return classFile.generateMethodInfoAttribute(binding, l);
+		return classFile.generateMethodInfoAttribute(binding, false, l);
 	}
 
 	protected abstract Shadow.Kind getShadowKindForBody();

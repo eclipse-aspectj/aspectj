@@ -39,7 +39,7 @@ public class AjConstructorDeclaration extends ConstructorDeclaration {
 		// add extra attributes into list then call 2-arg version of generateInfoAttributes...
 		List extras = new ArrayList();
 		addDeclarationStartLineAttribute(extras,classFile);
-		return classFile.generateMethodInfoAttribute(binding,extras);
+		return classFile.generateMethodInfoAttribute(binding,false,extras);
 	}
 	
 	protected void addDeclarationStartLineAttribute(List extraAttributeList, ClassFile classFile) {

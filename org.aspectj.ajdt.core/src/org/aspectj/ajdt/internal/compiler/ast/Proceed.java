@@ -16,6 +16,7 @@
 package org.aspectj.ajdt.internal.compiler.ast;
 
 import org.aspectj.weaver.AdviceKind;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CastExpression;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
@@ -45,10 +46,16 @@ public class Proceed extends MessageSend {
 		this.arguments  = parent.arguments;
 		this.binding  = parent.binding;
 		this.codegenBinding = parent.codegenBinding;
+		this.syntheticAccessor = parent.syntheticAccessor;
+		this.expectedType = parent.expectedType;
 
 		this.nameSourcePosition = parent.nameSourcePosition;
-		this.receiverType = parent.receiverType;
-		this.qualifyingType = parent.qualifyingType;
+		this.actualReceiverType = parent.actualReceiverType;
+		//this.qualifyingType = parent.qualifyingType;
+		
+		this.valueCast = parent.valueCast;
+		this.typeArguments = parent.typeArguments;
+		this.genericTypeArguments = parent.genericTypeArguments;
 		
 		this.sourceStart = parent.sourceStart;
 		this.sourceEnd = parent.sourceEnd;
@@ -66,7 +73,7 @@ public class Proceed extends MessageSend {
 		constant = NotAConstant;
 		binding = codegenBinding = aroundDecl.proceedMethodBinding;
 		
-		this.qualifyingType = this.receiverType = binding.declaringClass;
+		this.actualReceiverType = binding.declaringClass;
 		
 		int baseArgCount = 0;
 		if (arguments != null) {
@@ -95,7 +102,14 @@ public class Proceed extends MessageSend {
 			return null; //binding.returnType;
 		}
 
-		
+		boolean argsContainCast = false;
+		for (int i=0; i<arguments.length;i++) {
+			if (arguments[i] instanceof CastExpression) argsContainCast = true;
+		}
+
+		checkInvocationArguments(scope,null,this.actualReceiverType,binding,
+				this.arguments,binding.parameters,argsContainCast,this);
+
 		for (int i=0, len=arguments.length; i < len; i++) {
 			Expression arg = arguments[i];
 			TypeBinding argType = arg.resolveType(scope);
@@ -104,7 +118,6 @@ public class Proceed extends MessageSend {
 				if (!argType.isCompatibleWith(paramType)) {
 					scope.problemReporter().typeMismatchError(argType, paramType, arg);
 				}
-				arg.implicitWidening(binding.parameters[i], argType);
 			}
 		}
 	

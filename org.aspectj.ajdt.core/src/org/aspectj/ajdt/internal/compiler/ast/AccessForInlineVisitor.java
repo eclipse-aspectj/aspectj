@@ -116,7 +116,7 @@ public class AccessForInlineVisitor extends ASTVisitor {
 			MethodBinding superAccessBinding = getSuperAccessMethod(send.binding);
 			AstUtil.replaceMethodBinding(send, superAccessBinding);
 		} else if (!isPublic(send.binding)) {
-			send.syntheticAccessor = getAccessibleMethod(send.binding, send.receiverType);
+			send.syntheticAccessor = getAccessibleMethod(send.binding, send.actualReceiverType);
 		}
 	}
 	public void endVisit(AllocationExpression send, BlockScope scope) {

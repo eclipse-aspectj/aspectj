@@ -13,6 +13,7 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 
 /**
@@ -31,6 +32,13 @@ public class PointcutBinding extends Binding {
 	 */
 	public char[] readableName() {
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding#kind()
+	 */
+	public int kind() {
+		return ASTNode.Bit14;
 	}
 
 }

@@ -109,7 +109,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 		reportedErrors = false;		
 	}
 
-	public void afterCompiling() {
+	public void afterCompiling(CompilationUnitDeclaration[] units) {
 		try {
 			if (isXNoWeave || (reportedErrors && !proceedOnError)) {
 				// no point weaving... just tell the requestor we're done

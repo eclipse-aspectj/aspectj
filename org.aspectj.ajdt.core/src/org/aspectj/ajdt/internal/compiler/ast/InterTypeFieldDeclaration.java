@@ -223,7 +223,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		}
 		classFile.generateMethodInfoHeader(binding);
 		int methodAttributeOffset = classFile.contentsOffset;
-		int attributeNumber = classFile.generateMethodInfoAttribute(binding, 
+		int attributeNumber = classFile.generateMethodInfoAttribute(binding, false, 
 				makeEffectiveSignatureAttribute(sig, isGetter ? Shadow.FieldGet : Shadow.FieldSet, false));
 		int codeAttributeOffset = classFile.contentsOffset;
 		classFile.generateCodeAttributeHeader();

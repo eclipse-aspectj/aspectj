@@ -19,7 +19,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SyntheticAccessMethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SyntheticMethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 
 public class PrivilegedFieldBinding extends FieldBinding {
@@ -53,7 +53,7 @@ public class PrivilegedFieldBinding extends FieldBinding {
 	}
 
 
-	public SyntheticAccessMethodBinding getAccessMethod(boolean isReadAccess) {
+	public SyntheticMethodBinding getAccessMethod(boolean isReadAccess) {
 		if (baseField.alwaysNeedsAccessMethod(isReadAccess)) {
 			return baseField.getAccessMethod(isReadAccess);
 		}

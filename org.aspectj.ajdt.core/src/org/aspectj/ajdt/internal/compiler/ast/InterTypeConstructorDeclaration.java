@@ -74,7 +74,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		TypeX aspectTypeX = EclipseFactory.fromBinding(binding.declaringClass);
 		TypeX targetTypeX = EclipseFactory.fromBinding(onTypeBinding);
 		
-		ArrayBinding objectArrayBinding = scope.createArray(scope.getJavaLangObject(), 1);
+		ArrayBinding objectArrayBinding = scope.createArrayType(scope.getJavaLangObject(), 1);
 		
 		
 		MethodDeclaration pre = new MethodDeclaration(compilationResult);

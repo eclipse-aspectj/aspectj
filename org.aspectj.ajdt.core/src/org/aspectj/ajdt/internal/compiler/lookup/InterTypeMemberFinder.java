@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.IMemberFinder;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
@@ -289,9 +290,10 @@ public class InterTypeMemberFinder implements IMemberFinder {
 	public MethodBinding getExactMethod(
 		SourceTypeBinding sourceTypeBinding,
 		char[] selector,
-		TypeBinding[] argumentTypes)
+		TypeBinding[] argumentTypes,
+		CompilationUnitScope refScope)
 	{
-		MethodBinding ret = sourceTypeBinding.getExactMethodBase(selector, argumentTypes);
+		MethodBinding ret = sourceTypeBinding.getExactMethodBase(selector, argumentTypes,refScope);
 		
 		// An intertype declaration may override an inherited member (Bug#50776)
 		for (int i=0, len=interTypeMethods.size(); i < len; i++) {

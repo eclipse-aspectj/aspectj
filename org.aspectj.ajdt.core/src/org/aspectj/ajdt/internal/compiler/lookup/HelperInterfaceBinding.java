@@ -41,8 +41,9 @@ public class HelperInterfaceBinding extends SourceTypeBinding {
 		this.sourceName = enclosingType.scope.referenceContext.name;
 		this.enclosingType = enclosingType;
 		this.typeX = typeX;
-		
+		this.typeVariables = NoTypeVariables;
 		this.scope = enclosingType.scope;
+		this.superInterfaces = new ReferenceBinding[0];
 	}
 
 	public HelperInterfaceBinding(

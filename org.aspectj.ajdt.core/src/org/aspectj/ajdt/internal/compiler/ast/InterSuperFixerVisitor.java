@@ -44,7 +44,11 @@ public class InterSuperFixerVisitor extends ASTVisitor {
 		this.onType = dec.onTypeBinding;
 		this.world = world;
 		
-		if (onType.superclass() != null) {
+		// AMC with the java 5 compiler the superclass() of an interface is object,
+		// not a parent interface (if one exists)
+		if (onType.isInterface() && onType.superInterfaces().length == 1) {
+			superType=onType.superInterfaces()[0];
+		} else if (onType.superclass() != null) {
 			superType = onType.superclass();
 		} else if (onType.superInterfaces() == null || onType.superInterfaces().length == 0) {
 			superType = scope.getJavaLangObject();

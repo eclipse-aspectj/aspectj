@@ -223,7 +223,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
                         }
                         if (!satisfiedByITD) {
                           error(weaver,
-                                "Class must implement the inherited abstract method "+o.getDeclaringType()+"."+o.getName()+o.getParameterSignature(),
+                                "The type " + newParentTarget.getName() + " must implement the inherited abstract method "+o.getDeclaringType()+"."+o.getName()+o.getParameterSignature(),
                                 newParentTarget.getType().getSourceLocation(),new ISourceLocation[]{o.getSourceLocation(),mungerLoc});
                           ruleCheckingSucceeded=false;
                         }

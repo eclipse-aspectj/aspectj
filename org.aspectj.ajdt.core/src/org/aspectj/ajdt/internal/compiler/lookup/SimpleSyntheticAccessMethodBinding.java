@@ -14,15 +14,19 @@
 package org.aspectj.ajdt.internal.compiler.lookup;
 
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SyntheticAccessMethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SyntheticMethodBinding;
 
-public class SimpleSyntheticAccessMethodBinding extends SyntheticAccessMethodBinding {
-	public SimpleSyntheticAccessMethodBinding(MethodBinding method) {
-		super(method);
-		this.declaringClass = method.declaringClass;
+public class SimpleSyntheticAccessMethodBinding extends SyntheticMethodBinding {
+//	public SimpleSyntheticAccessMethodBinding(MethodBinding method) {
+//		super(method);
+//		this.declaringClass = method.declaringClass;
 //		this.selector = method.selector;
 //		this.modifiers = method.modifiers;
 //		this.parameters = method.parameters;
 //		this.returnType = method.returnType;
+//	}
+	
+	public SimpleSyntheticAccessMethodBinding(MethodBinding binding) {
+		super(binding);
 	}
 }

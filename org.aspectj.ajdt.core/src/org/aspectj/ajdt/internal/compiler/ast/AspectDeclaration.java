@@ -28,6 +28,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.Label;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.IGenericType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
 //import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 
@@ -315,9 +316,9 @@ public class AspectDeclaration extends TypeDeclaration {
 			List attrs = new ArrayList();
 			attrs.addAll(AstUtil.getAjSyntheticAttribute());
 			attrs.addAll(additionalAttributes);
-			attributeNumber = classFile.generateMethodInfoAttribute(methodBinding, attrs);
+			attributeNumber = classFile.generateMethodInfoAttribute(methodBinding, false, attrs);
 		} else {
-			attributeNumber = classFile.generateMethodInfoAttribute(methodBinding, AstUtil.getAjSyntheticAttribute());
+			attributeNumber = classFile.generateMethodInfoAttribute(methodBinding, false, AstUtil.getAjSyntheticAttribute());
 		}
 
 		int codeAttributeOffset = classFile.contentsOffset;
@@ -875,7 +876,7 @@ public class AspectDeclaration extends TypeDeclaration {
 			superclass.print(0, output);
 		}
 		if (superInterfaces != null && superInterfaces.length > 0) {
-			output.append(isInterface() ? " extends " : " implements ");//$NON-NLS-2$ //$NON-NLS-1$
+			output.append((kind() == IGenericType.INTERFACE_DECL) ? " extends " : " implements ");//$NON-NLS-2$ //$NON-NLS-1$
 			for (int i = 0; i < superInterfaces.length; i++) {
 				if (i > 0) output.append( ", "); //$NON-NLS-1$
 				superInterfaces[i].print(0, output);

@@ -59,7 +59,7 @@ public class Enums extends TestUtils {
   
   // Deals with the cases where an explicit type is specified and it is an enum type
   public void test003_decpOnEnumNotAllowed_errors() {
-  	CompilationResult cR = binaryWeave("testcode.jar","EnumAspect03.aj",3,0,true);
+  	CompilationResult cR = binaryWeave("testcode.jar","EnumAspect03.aj",4,0,true);
   	// THE ORDERING CAN BE SENSITIVE HERE... OUGHT TO FIX IT PROPERLY AND ALLOW FOR THEM
   	// IN ANY POSITION
   	IMessage msg = (IMessage)cR.getErrorMessages().get(1);
@@ -71,6 +71,9 @@ public class Enums extends TestUtils {
   	msg = (IMessage)cR.getErrorMessages().get(0);
   	assertTrue("Expected a message about can't use decp to make Enum parent of another type: "+msg,
   			msg.toString().indexOf("the parent of type")!=-1);
+  	msg = (IMessage)cR.getErrorMessages().get(3);
+  	assertTrue("Excpected message about not subclassing Enum: "+msg,
+  			msg.toString().indexOf("The type C may not subclass Enum explicitly")!=-1);
   	verifyWeavingMessagesOutput(cR,new String[]{});
   }
 

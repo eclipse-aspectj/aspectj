@@ -54,7 +54,9 @@ public class AjTypeConstants {
 	}
 
 	public static ReferenceBinding getConversionsType(Scope scope) {
-		return (ReferenceBinding)scope.getType(ORG_ASPECTJ_RUNTIME_INTERNAL_CONVERSIONS);
+		return (ReferenceBinding)scope.getType(
+				ORG_ASPECTJ_RUNTIME_INTERNAL_CONVERSIONS,
+				ORG_ASPECTJ_RUNTIME_INTERNAL_CONVERSIONS.length);
 	}
 
 	public static MethodBinding getConversionMethodToObject(Scope scope, TypeBinding fromType) {

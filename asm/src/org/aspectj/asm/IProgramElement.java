@@ -219,6 +219,8 @@ public interface IProgramElement extends Serializable {
 		public static final Kind CLASS = new Kind("class");
 		public static final Kind INTERFACE = new Kind("interface");
 		public static final Kind ASPECT = new Kind("aspect");
+		public static final Kind ENUM = new Kind("enum");
+		public static final Kind ANNOTATION = new Kind("annotation");
 		public static final Kind INITIALIZER = new Kind("initializer");
 		public static final Kind INTER_TYPE_FIELD = new Kind("inter-type field");
 		public static final Kind INTER_TYPE_METHOD = new Kind("inter-type method");
@@ -251,6 +253,8 @@ public interface IProgramElement extends Serializable {
 				CLASS,
 				INTERFACE,
 				ASPECT,
+				ENUM,
+				ANNOTATION,
 				INITIALIZER,
 				INTER_TYPE_FIELD,
 				INTER_TYPE_METHOD,

@@ -29,23 +29,35 @@ public abstract class TestUtils extends AjcTestCase {
 	}
 
 	protected CompilationResult binaryWeave(String inpath, String insource,int expErrors,int expWarnings,boolean xlinterror) {
-		return binaryWeave(inpath,insource,expErrors,expWarnings,xlinterror,"");
+		return binaryWeave(inpath,insource,expErrors,expWarnings,xlinterror,(String[])null);
 	}
 	
 	protected CompilationResult binaryWeave(String inpath, String insource,int expErrors,int expWarnings,String extraOption) {
 		return binaryWeave(inpath,insource,expErrors,expWarnings,false,extraOption);
 	}
-	
+
 	protected CompilationResult binaryWeave(String inpath, String insource,int expErrors,int expWarnings,boolean xlinterror,String extraOption) {
+		return binaryWeave(inpath, insource, expErrors, expWarnings,xlinterror,new String[] {extraOption});
+	}
+
+	protected CompilationResult binaryWeave(String inpath, String insource,int expErrors,int expWarnings,boolean xlinterror,String[] extraOptions) {
 		String[] args = null;
 		if (xlinterror) {
-			if (extraOption!=null && extraOption.length()>0) 
-				args = new String[] {"-inpath",inpath,insource,"-showWeaveInfo","-proceedOnError","-Xlint:warning",extraOption};
+			if (extraOptions!=null && extraOptions.length > 0) { 
+				String[] firstargs = new String[] {"-inpath",inpath,insource,"-showWeaveInfo","-proceedOnError","-Xlint:warning"};
+				args = new String[firstargs.length + extraOptions.length];
+				System.arraycopy(firstargs,0,args,0,firstargs.length);
+				System.arraycopy(extraOptions,0,args,firstargs.length,extraOptions.length);
+			}
 			else 
 				args = new String[] {"-inpath",inpath,insource,"-showWeaveInfo","-proceedOnError","-Xlint:warning"};
 		} else {
-			if (extraOption!=null && extraOption.length()>0) 
-				args = new String[] {"-inpath",inpath,insource,"-showWeaveInfo","-proceedOnError",extraOption};
+			if (extraOptions!=null && extraOptions.length>0) { 
+				String[] firstargs = new String[] {"-inpath",inpath,insource,"-showWeaveInfo","-proceedOnError"};
+				args = new String[firstargs.length + extraOptions.length];
+				System.arraycopy(firstargs,0,args,0,firstargs.length);
+				System.arraycopy(extraOptions,0,args,firstargs.length,extraOptions.length);
+			}
 			else
 				args = new String[] {"-inpath",inpath,insource,"-showWeaveInfo","-proceedOnError"};
 		}

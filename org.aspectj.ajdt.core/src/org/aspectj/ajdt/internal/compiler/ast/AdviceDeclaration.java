@@ -77,7 +77,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		l.add(new EclipseAttributeAdapter(makeAttribute()));
 		addDeclarationStartLineAttribute(l,classFile);
 
-		return classFile.generateMethodInfoAttribute(binding, l);
+		return classFile.generateMethodInfoAttribute(binding, false, l);
 	}
 	
 	public AjAttribute makeAttribute() {
@@ -184,7 +184,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		
 		classFile.generateMethodInfoHeader(binding);
 		int methodAttributeOffset = classFile.contentsOffset;
-		int attributeNumber = classFile.generateMethodInfoAttribute(binding, AstUtil.getAjSyntheticAttribute());
+		int attributeNumber = classFile.generateMethodInfoAttribute(binding, false, AstUtil.getAjSyntheticAttribute());
 		int codeAttributeOffset = classFile.contentsOffset;
 		classFile.generateCodeAttributeHeader();
 		CodeStream codeStream = classFile.codeStream;
@@ -203,7 +203,12 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		// build the Object[]
 
 		codeStream.generateInlinedValue(nargs-1);
-		codeStream.newArray(classScope, new ArrayBinding(classScope.getType(TypeBinding.JAVA_LANG_OBJECT), 1));
+		codeStream.newArray(
+				new ArrayBinding(
+						classScope.getType(TypeBinding.JAVA_LANG_OBJECT, 
+								TypeBinding.JAVA_LANG_OBJECT.length), 
+								1,
+								classScope.environment()));
 		
 		int index = 0;
 		for (int i=0; i < nargs-1; i++) {

@@ -16,53 +16,31 @@ package org.aspectj.ajdt.internal.core.builder;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Stack;
+import java.util.*;
 
-import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.*;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.InterTypeDeclaration;
-import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
-import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.*;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
-import org.aspectj.asm.IRelationship;
 import org.aspectj.asm.internal.ProgramElement;
+import org.aspectj.asm.internal.Relationship;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExtendedStringLiteral;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ImportReference;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Initializer;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.IGenericType;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemHandler;
 import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.*;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.TypeX;
-import org.aspectj.weaver.World;
-import org.aspectj.weaver.patterns.AndPointcut;
-import org.aspectj.weaver.patterns.OrPointcut;
-import org.aspectj.weaver.patterns.Pointcut;
-import org.aspectj.weaver.patterns.ReferencePointcut;
+import org.aspectj.weaver.patterns.*;
 
 /**
  * At each iteration of <CODE>processCompilationUnit</CODE> the declarations for a 
@@ -236,7 +214,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		String name = new String(typeDeclaration.name);
 		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
 		if (typeDeclaration instanceof AspectDeclaration) kind = IProgramElement.Kind.ASPECT;
-		else if (typeDeclaration.isInterface()) kind = IProgramElement.Kind.INTERFACE;
+		else if (typeDeclaration.kind() == IGenericType.INTERFACE_DECL) kind = IProgramElement.Kind.INTERFACE;
+		else if (typeDeclaration.kind() == IGenericType.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
+		else if (typeDeclaration.kind() == IGenericType.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
 
 		IProgramElement peNode = new ProgramElement(
 			name,
@@ -262,7 +242,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		
 		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
 		if (memberTypeDeclaration instanceof AspectDeclaration) kind = IProgramElement.Kind.ASPECT;
-		else if (memberTypeDeclaration.isInterface()) kind = IProgramElement.Kind.INTERFACE;
+		else if (memberTypeDeclaration.kind() == IGenericType.INTERFACE_DECL) kind = IProgramElement.Kind.INTERFACE;
+		else if (memberTypeDeclaration.kind() == IGenericType.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
+		else if (memberTypeDeclaration.kind() == IGenericType.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
 
 		IProgramElement peNode = new ProgramElement(
 			name,
@@ -298,7 +280,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		}
 
 		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
-		if (memberTypeDeclaration.isInterface()) kind = IProgramElement.Kind.INTERFACE;
+		if (memberTypeDeclaration.kind() == IGenericType.INTERFACE_DECL) kind = IProgramElement.Kind.INTERFACE;
+		else if (memberTypeDeclaration.kind() == IGenericType.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
+		else if (memberTypeDeclaration.kind() == IGenericType.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
 
 		IProgramElement peNode = new ProgramElement(
 			fullName,

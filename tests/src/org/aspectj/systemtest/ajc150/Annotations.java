@@ -54,7 +54,7 @@ public class Annotations extends TestUtils {
   
   // Deals with the cases where an explicit type is specified and it is an annotation type
   public void test002_decpOnAnnotationNotAllowed_errors() {
-  	CompilationResult cR = binaryWeave("testcode.jar","AnnotationAspect04.aj",3,0,true);
+  	CompilationResult cR = binaryWeave("testcode.jar","AnnotationAspect04.aj",3,0,true,new String[]{"-source","1.5"});
   	IMessage msg = (IMessage)cR.getErrorMessages().get(1);
   	assertTrue("Expected a message about can't use decp to alter supertype of an annotation: "+msg,
   			msg.toString().indexOf("to alter supertype of annotation type")!=-1);

@@ -286,7 +286,7 @@
       title="pre 0.7 introduction form outside aspect body causes an EmptyStackException"
       keywords="from-errors">
         <compile files="BadIntroduction.java">
-            <message kind="error" line="3"/>
+            <message kind="error" line="1" />
         </compile>
     </ajc-test>
 
@@ -301,7 +301,7 @@
       title="a before() clause at the class-level causes an EmptyStackException"
       keywords="from-errors">
         <compile files="TopLevelBefore.java">
-            <message kind="error" line="3"/>
+            <message kind="error" line="1"/>
         </compile>
     </ajc-test>
 
@@ -309,7 +309,7 @@
       title="an after() clause at the class-level causes an EmptyStackException"
       keywords="from-errors">
         <compile files="TopLevelAfter.java">
-            <message kind="error" line="3"/>
+            <message kind="error" line="1"/>
         </compile>
     </ajc-test>
 
@@ -317,7 +317,7 @@
       title="an around() clause at the class-level causes an EmptyStackException"
       keywords="from-errors">
         <compile files="TopLevelAround.java">
-            <message kind="error" line="3"/>
+            <message kind="error" line="1"/>
         </compile>
     </ajc-test>
 

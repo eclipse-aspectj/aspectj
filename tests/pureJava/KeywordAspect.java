@@ -8,7 +8,7 @@ public class KeywordAspect {
 
     public void realMain(String[] args) {
         int aspect = 0;
-	aspect += 10;
+        aspect += 10;
 
         Tester.checkEqual(aspect, 10);
         Tester.checkEqual(pointcut, "hi-bye");

@@ -170,7 +170,8 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		
 		classFile.generateMethodInfoHeader(dispatchBinding);
 		int methodAttributeOffset = classFile.contentsOffset;
-		int attributeNumber = classFile.generateMethodInfoAttribute(dispatchBinding, 
+		int attributeNumber = classFile.generateMethodInfoAttribute(dispatchBinding,
+				false,
 				makeEffectiveSignatureAttribute(signature, Shadow.MethodCall, false));
 		int codeAttributeOffset = classFile.contentsOffset;
 		classFile.generateCodeAttributeHeader();

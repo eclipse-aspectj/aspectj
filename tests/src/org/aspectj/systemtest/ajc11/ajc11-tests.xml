@@ -671,7 +671,8 @@
     <ajc-test dir="bugs" pr="39460"
    	 title="Missing import crashes compiler">
         <compile files="MissingImport.java">
-            <message kind="error" line="13"/>       
+            <message kind="error" line="13"/> 
+            <message kind="error" line="14"/>      
         </compile>
     </ajc-test>
     

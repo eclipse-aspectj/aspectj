@@ -169,7 +169,7 @@ public class ThisJoinPointVisitor extends ASTVisitor {
 		ReferenceBinding thisJoinPointStaticPartType = 
 			(ReferenceBinding)thisJoinPointStaticPartDec.type;
 			
-		receiver.receiverType = receiver.actualReceiverType =
+		receiver.actualReceiverType =
 			receiver.resolvedType = thisJoinPointStaticPartType;
 			
 		call.setActualReceiverType(thisJoinPointStaticPartType);
