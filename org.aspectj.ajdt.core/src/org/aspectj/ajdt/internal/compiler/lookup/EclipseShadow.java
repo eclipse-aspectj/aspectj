@@ -18,6 +18,7 @@ import org.aspectj.ajdt.internal.compiler.ast.InterTypeConstructorDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.InterTypeDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.InterTypeFieldDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.InterTypeMethodDeclaration;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.Shadow;
@@ -65,7 +66,7 @@ public class EclipseShadow extends Shadow {
 		return world.fromBinding(enclosingMethod.binding.declaringClass);
 	}
 	
-	public SourceLocation getSourceLocation() {
+	public ISourceLocation getSourceLocation() {
 		//XXX need to fill this in ASAP
 		return null;
 	}

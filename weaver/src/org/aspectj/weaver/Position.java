@@ -13,9 +13,20 @@
 
 package org.aspectj.weaver;
 
-import org.aspectj.bridge.ISourceLocation;
+public class Position implements IHasPosition {
+	private int start, end;
+	
+	public Position(int start, int end) {
+		this.start = start;
+		this.end = end;
+	}
 
-public interface ISourceContext {
-	public ISourceLocation makeSourceLocation(IHasPosition position);
-	public ISourceLocation makeSourceLocation(int line);
+	public int getEnd() {
+		return end;
+	}
+
+	public int getStart() {
+		return start;
+	}
+
 }

@@ -499,6 +499,9 @@ public abstract class ResolvedTypeX extends TypeX {
     
     public static class Name extends ResolvedTypeX {
     	private ConcreteName delegate = null;
+    	private ISourceContext sourceContext = null;
+    	private int startPos = 0;
+    	private int endPos = 0;
 
 		//??? should set delegate before any use
         public Name(String signature, World world) {
@@ -556,10 +559,13 @@ public abstract class ResolvedTypeX extends TypeX {
         }
 
 		public ISourceContext getSourceContext() {
-			return delegate.getSourceContext();
+			return sourceContext;
 		}
 		
-		public ISourceLocation getSourceLocation() { return delegate.getSourceLocation(); }
+		public ISourceLocation getSourceLocation() {
+			if (sourceContext == null) return null;
+			return sourceContext.makeSourceLocation(new Position(startPos, endPos));
+		}
 
 		public boolean isExposedToWeaver() {
 			return delegate.isExposedToWeaver();  //??? where does this belong
@@ -608,10 +614,30 @@ public abstract class ResolvedTypeX extends TypeX {
 		public void setDelegate(ConcreteName delegate) {
 			this.delegate = delegate;
 		}
+		public int getEndPos() {
+			return endPos;
+		}
+
+		public int getStartPos() {
+			return startPos;
+		}
+
+		public void setEndPos(int endPos) {
+			this.endPos = endPos;
+		}
+
+		public void setSourceContext(ISourceContext sourceContext) {
+			this.sourceContext = sourceContext;
+		}
+
+		public void setStartPos(int startPos) {
+			this.startPos = startPos;
+		}
+
     }
     
     public static abstract class ConcreteName {
-    	protected ISourceContext sourceContext;
+    	//protected ISourceContext sourceContext;
     	protected boolean exposedToWeaver;
     	ResolvedTypeX.Name resolvedTypeX;
 	
@@ -648,13 +674,13 @@ public abstract class ResolvedTypeX extends TypeX {
 
 		public abstract ResolvedTypeX getSuperclass();
 
-		public abstract ISourceLocation getSourceLocation();
+//		public abstract ISourceLocation getSourceLocation();
 
 		public abstract boolean isWovenBy(ResolvedTypeX aspectType);
 
-		public ISourceContext getSourceContext() {
-			return sourceContext;
-		}
+//		public ISourceContext getSourceContext() {
+//			return sourceContext;
+//		}
 
 		public boolean isExposedToWeaver() {
 			return exposedToWeaver;

@@ -14,6 +14,7 @@
 package org.aspectj.weaver;
 
 import org.aspectj.weaver.ast.Var;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 
 public class TestShadow extends Shadow {
@@ -62,7 +63,7 @@ public class TestShadow extends Shadow {
 		throw new RuntimeException("unimplemented");
 	}
 
-	public SourceLocation getSourceLocation() {
+	public ISourceLocation getSourceLocation() {
 		throw new RuntimeException("unimplemented");
 	}
 

@@ -25,6 +25,7 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.weaver.*;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ResolvedMember;
@@ -76,7 +77,9 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
         super(resolvedTypeX, exposedToWeaver);
         this.javaClass = javaClass;
         
-        sourceContext = new BcelSourceContext(this);
+        if (resolvedTypeX.getSourceContext() == null) {
+        	resolvedTypeX.setSourceContext(new BcelSourceContext(this));
+        }
         
         // this should only ever be java.lang.Object which is 
         // the only class in Java-1.4 with no superclasses
@@ -155,7 +158,7 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 		List pointcuts = new ArrayList();
 		typeMungers = new ArrayList();
 		declares = new ArrayList();
-		List l = BcelAttributes.readAjAttributes(javaClass.getAttributes(), getSourceContext());
+		List l = BcelAttributes.readAjAttributes(javaClass.getAttributes(), getResolvedTypeX().getSourceContext());
 		for (Iterator iter = l.iterator(); iter.hasNext();) {
 			AjAttribute a = (AjAttribute) iter.next();
 			//System.err.println("unpacking: " + this + " and " + a);
@@ -172,7 +175,9 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 			} else if (a instanceof AjAttribute.PrivilegedAttribute) {
 				privilegedAccess = ((AjAttribute.PrivilegedAttribute)a).getAccessedMembers();
 			} else if (a instanceof AjAttribute.SourceContextAttribute) {
-				((BcelSourceContext)sourceContext).addAttributeInfo((AjAttribute.SourceContextAttribute)a);
+				if (getResolvedTypeX().getSourceContext() instanceof BcelSourceContext) {
+					((BcelSourceContext)getResolvedTypeX().getSourceContext()).addAttributeInfo((AjAttribute.SourceContextAttribute)a);
+				}
 			} else {
 				throw new BCException("bad attribute " + a);
 			}
@@ -257,7 +262,7 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 	}
 
 	public ISourceLocation getSourceLocation() {
-		return null; //FIXME, we can do much better than this
+		return getResolvedTypeX().getSourceContext().makeSourceLocation(0); //FIXME, we can do better than this
 	}
 } 
     

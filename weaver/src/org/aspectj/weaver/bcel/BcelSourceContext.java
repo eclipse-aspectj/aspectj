@@ -31,22 +31,52 @@ public class BcelSourceContext implements ISourceContext {
 		this.inObject = inObject;
 	}
 	
-
-	public ISourceLocation makeSourceLocation(IHasPosition position) {
+	private File getSourceFile() {
+		//XXX make this work better borrowing code from below
 		String fileName = sourceFileName;
 		if (fileName == null) inObject.getJavaClass().getFileName();
 		if (fileName == null) fileName = inObject.getResolvedTypeX().getName() + ".class";
 		
+		return new File(fileName);
+	}
+		
+		/*
+		// AMC - a temporary "fudge" to give as much information as possible about the identity of the
+		// source file this source location points to.
+		String internalClassName = getEnclosingClass().getInternalClassName();
+		String fileName = getEnclosingClass().getFileName();
+		String extension = fileName.substring( fileName.lastIndexOf("."), fileName.length());
+		String filePrefix = fileName.substring( 0, fileName.lastIndexOf("."));
+		// internal class name is e.g. figures/Point, we don't know whether the file was
+		// .aj or .java so we put it together with the file extension of the enclosing class
+		// BUT... sometimes internalClassName is a different class (an aspect), so we only use it if it 
+		// matches the file name.
+		String mostAccurateFileNameGuess;
+		if ( internalClassName.endsWith(filePrefix)) {
+			mostAccurateFileNameGuess = internalClassName + extension;
+		} else {
+			mostAccurateFileNameGuess = fileName;
+		}
+		return new SourceLocation(new File(mostAccurateFileNameGuess), getSourceLine());
+		*/
+
+
+
+	public ISourceLocation makeSourceLocation(IHasPosition position) {
+		
+		
 		if (lineBreaks != null) {
 			int line = Arrays.binarySearch(lineBreaks, position.getStart());
 			if (line < 0) line = -line;
-			return new SourceLocation(new File(fileName), line); //??? have more info
+			return new SourceLocation(getSourceFile(), line); //??? have more info
 		} else {
-			return new SourceLocation(new File(fileName), 0);
+			return new SourceLocation(getSourceFile(), 0);
 		}
 	}
 	
-	
+	public ISourceLocation makeSourceLocation(int line) {
+		return new SourceLocation(getSourceFile(), line);
+	}
 
 	public void addAttributeInfo(SourceContextAttribute sourceContextAttribute) {
 		this.sourceFileName = sourceContextAttribute.getSourceFileName();

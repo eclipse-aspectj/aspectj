@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.aspectj.bridge.*;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.lang.JoinPoint;
@@ -315,7 +316,7 @@ public abstract class Shadow {
 		return null; //XXX
 	}
 	
-	public abstract SourceLocation getSourceLocation();
+	public abstract ISourceLocation getSourceLocation();
 
 	// ---- utility
     

@@ -16,6 +16,7 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 import java.util.*;
 
 import org.aspectj.ajdt.internal.compiler.ast.*;
+import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.*;
@@ -54,6 +55,10 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 		this.factory = factory;
 		this.binding = binding;
 		this.declaration = declaration;
+		
+		resolvedTypeX.setSourceContext(new EclipseSourceContext(declaration.compilationResult));
+		resolvedTypeX.setStartPos(declaration.sourceStart);
+		resolvedTypeX.setEndPos(declaration.sourceEnd);
 	}
 
 
@@ -195,10 +200,10 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 //		return crosscuttingMembers;
 //	}
 
-	public ISourceLocation getSourceLocation() {
-		TypeDeclaration dec = binding.scope.referenceContext;
-		return new EclipseSourceLocation(dec.compilationResult, dec.sourceStart, dec.sourceEnd);
-	}
+//	public ISourceLocation getSourceLocation() {
+//		TypeDeclaration dec = binding.scope.referenceContext;
+//		return new EclipseSourceLocation(dec.compilationResult, dec.sourceStart, dec.sourceEnd);
+//	}
 
 	public boolean isInterface() {
 		return binding.isInterface();

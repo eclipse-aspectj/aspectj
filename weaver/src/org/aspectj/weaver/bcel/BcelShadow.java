@@ -42,6 +42,7 @@ import org.apache.bcel.generic.ReturnInstruction;
 import org.apache.bcel.generic.SWAP;
 import org.apache.bcel.generic.TargetLostException;
 import org.apache.bcel.generic.Type;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -294,7 +295,13 @@ public class BcelShadow extends Shadow {
 	}
 	
     public int getSourceLine() {
-    	if (range == null) return 0;
+    	if (range == null) {
+    		if (getEnclosingMethod().hasBody()) {
+    			return Utility.getSourceLine(getEnclosingMethod().getBody().getStart());
+    		} else {
+    			return 0;
+    		}
+    	}
     	int ret = Utility.getSourceLine(range.getStart());
     	if (ret < 0) return 0;
     	return ret;
@@ -1867,24 +1874,15 @@ public class BcelShadow extends Shadow {
         return getEnclosingClass().getFactory();
     }
     
-	public SourceLocation getSourceLocation() {
-		// AMC - a temporary "fudge" to give as much information as possible about the identity of the
-		// source file this source location points to.
-		String internalClassName = getEnclosingClass().getInternalClassName();
-		String fileName = getEnclosingClass().getFileName();
-		String extension = fileName.substring( fileName.lastIndexOf("."), fileName.length());
-		String filePrefix = fileName.substring( 0, fileName.lastIndexOf("."));
-		// internal class name is e.g. figures/Point, we don't know whether the file was
-		// .aj or .java so we put it together with the file extension of the enclosing class
-		// BUT... sometimes internalClassName is a different class (an aspect), so we only use it if it 
-		// matches the file name.
-		String mostAccurateFileNameGuess;
-		if ( internalClassName.endsWith(filePrefix)) {
-			mostAccurateFileNameGuess = internalClassName + extension;
+	public ISourceLocation getSourceLocation() {
+		int sourceLine = getSourceLine();
+		if (sourceLine == 0) {
+//			Thread.currentThread().dumpStack();
+//			System.err.println(this + ": " + range);
+			return getEnclosingClass().getType().getSourceLocation();
 		} else {
-			mostAccurateFileNameGuess = fileName;
+			return getEnclosingClass().getType().getSourceContext().makeSourceLocation(sourceLine);
 		}
-		return new SourceLocation(new File(mostAccurateFileNameGuess), getSourceLine());
 	}
 
 	public Shadow getEnclosingShadow() {

@@ -5630,4 +5630,33 @@
         	<message kind="error" line="25"/>
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="new/declare" pr="31724"
+            title="omnibus declare warning context with no initializer/constructor">
+        <compile files="DeclareWarningEmpty.java">
+            <message kind="warning" line="3"/>
+        </compile>
+    </ajc-test>
+    
+
+    <ajc-test dir="new/declare" pr="31724"
+            title="omnibus declare warning context">
+        <compile files="DeclareWarning.java">
+            <message kind="warning" line="5"/>
+            <message kind="warning" line="12"/>
+            <message kind="warning" line="13"/>
+            <message kind="warning" line="14"/>
+            <message kind="warning" line="15"/>
+            <message kind="warning" line="16"/>
+            <message kind="warning" line="17"/>
+            <message kind="warning" line="18"/>
+            <message kind="warning" line="21"/>
+            <message kind="warning" line="22"/>
+            <message kind="warning" line="23"/>
+            <message kind="warning" line="33"/>
+            <message kind="warning" line="36"/>
+            <message kind="warning" line="39"/>
+            <message kind="warning" line="74"/>
+        </compile>
+    </ajc-test>
 </suite>
