@@ -304,6 +304,12 @@ public class AjcTestCase extends TestCase {
 		}
 	}
 	
+	public static class EmptyMessageSpec extends MessageSpec {
+		public EmptyMessageSpec() {
+			super(null,null);
+		}
+	}
+	
 	/**
 	 * Helper class representing the results of running a test program built
 	 * by the compiler. Provides access to the standard out and error of the
