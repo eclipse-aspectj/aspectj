@@ -29,32 +29,34 @@ import java.util.Iterator;
 
 import junit.framework.*;
 import junit.framework.TestCase;
+
 /**
- * 
+ * Test our integrated taskdef build.
+ * This responds to two environment variables:
+ * (1) run.build.tests must be defined before
+ *   tests that build the tree (and hence take minutes)
+ *   will run;
+ * (2) build.config takes the same form as it does for the
+ *   builder task, e.g., "useEclipseCompiles" will avoid
+ *   recompiling with Javac and adopt classes in the 
+ *   {module}/bin directories.
  */
 public class BuildModuleTest extends TestCase {
 
     private static final String SKIP_MESSAGE = 
         "Define \"run.build.tests\" as a system property to run tests to build ";
-    private static boolean delete(File file) { // XXX Util
-        if ((null == file) || !file.exists()) {
-            return true;
+    private static final String BUILD_CONFIG;
+    static {
+        String config = null;
+        try {
+            config = System.getProperty("build.config");
+        } catch (Throwable t) {
+            // ignore
         }
-        if (file.isFile()) {
-            return file.delete();
-        } else {
-            File[] files = file.listFiles();
-            boolean result = true;
-            for (int i = 0; i < files.length; i++) {
-                if (!BuildModuleTest.delete(files[i])
-                    && result) {
-                    result = false;
-                }
-            }
-            return (file.delete() && result);
-        }
+        BUILD_CONFIG = config;
+        System.out.println("BuildModuleTest build.config: " + config);
     }
-
+    
     ArrayList tempFiles = new ArrayList();
     private File jarDir;
     boolean building;  // must be enabled for tests to run
@@ -68,8 +70,20 @@ public class BuildModuleTest extends TestCase {
 		super.tearDown();
         for (Iterator iter = tempFiles.iterator(); iter.hasNext();) {
 			File file = (File) iter.next();
-            if (!BuildModuleTest.delete(file)) {
-                System.err.println("warning: BuildModuleTest unable to delete " + file);
+            if (!Util.delete(file)) {
+                File[] list = file.listFiles();
+                if (!Util.isEmpty(list)) {                
+                    StringBuffer sb = new StringBuffer();
+                    sb.append("warning: BuildModuleTest unable to delete ");
+                    sb.append(file.toString());
+                    sb.append("\n"); // XXX platform
+                    for (int i = 0; i < list.length; i++) {
+                        sb.append("  ");
+                        sb.append(list[i].toString());
+                        sb.append("\n"); // XXX platform
+                    }
+                    System.err.println(sb.toString());
+                }
             }
 		}
 	}
@@ -128,7 +142,7 @@ public class BuildModuleTest extends TestCase {
     
     void checkAntClipping(String moduleName, boolean expectAnt) {
         File baseDir = new File("..").getAbsoluteFile();
-        File jarDir = new File("../aj-build/jars").getAbsoluteFile();
+        File jarDir = getJarDir().getAbsoluteFile();
         Messager handler = new Messager();
         Modules modules = new Modules(baseDir, jarDir, false, handler);
         Module td = modules.getModule(moduleName);
@@ -162,12 +176,15 @@ public class BuildModuleTest extends TestCase {
         Project project = new Project();
         task.setProject(project);
         assertTrue(jarDir.canWrite() || jarDir.mkdirs());
-        // XXX restore tempFiles.add(jarDir);
+        tempFiles.add(jarDir);
         task.setJardir(new Path(project, jarDir.getAbsolutePath()));
         task.setProductdir(new Path(project, productDir.getAbsolutePath()));
         task.setBasedir(new Path(project, baseDir.getAbsolutePath()));
         task.setDistdir(new Path(project, distDir.getAbsolutePath()));
         task.setFailonerror(true);
+        if (null != BUILD_CONFIG) {
+            task.setBuildConfig(BUILD_CONFIG);
+        }
         //task.setVerbose(true);
         task.setCreateinstaller(true);
         task.execute();
@@ -183,6 +200,9 @@ public class BuildModuleTest extends TestCase {
             jarDir = new File("tempJarDir");
             tempFiles.add(jarDir);
         }
+        if (!jarDir.exists()) {
+            assertTrue(jarDir.mkdirs());
+        }
         return jarDir;
     }
     
@@ -193,8 +213,14 @@ public class BuildModuleTest extends TestCase {
         File jarDir = getJarDir();
         assertTrue(jarDir.canWrite() || jarDir.mkdirs());
         tempFiles.add(jarDir);
-        task.setModuledir(new Path(project, "../" + module));
+        File moduleDir = new File("../" + module);
+        assertTrue(moduleDir.canRead());
+        task.setModuledir(new Path(project, moduleDir.getAbsolutePath()));
         task.setJardir(new Path(project, jarDir.getAbsolutePath()));
+        task.setFailonerror(true);
+        if (null != BUILD_CONFIG) {
+            task.setBuildConfig(BUILD_CONFIG);
+        }
         return task;
     }
     
@@ -221,9 +247,9 @@ public class BuildModuleTest extends TestCase {
         
         // run without assembly
         BuildModule task = getTask(module);
+        File jar = new File(getJarDir(), module + ".jar");
         task.setAssembleall(false);
         task.execute();
-        File jar = new File(getJarDir(), module + ".jar");
         assertTrue("cannot read " + jar, jar.canRead());
         assertTrue("cannot delete " + jar, jar.delete());
 
@@ -242,6 +268,7 @@ public class BuildModuleTest extends TestCase {
         Java java = new Java();
         Project project = task.getProject();
         java.setProject(project);
+        java.setFailonerror(true);
         Path cp = new Path(project);
         cp.append(new Path(project, jar.getAbsolutePath()));
         if (addAnt) {
@@ -249,11 +276,12 @@ public class BuildModuleTest extends TestCase {
         }
         java.setClasspath(cp);
         java.setClassname(classname);
-        for (int i = 0; i < args.length; i++) {
-            Argument arg = java.createArg();
-            arg.setValue(args[i]);
-		}
-        java.setFailonerror(true);
+        if (null != args) {
+            for (int i = 0; i < args.length; i++) {
+                Argument arg = java.createArg();
+                arg.setValue(args[i]);
+            }
+        }
         try {
             java.execute();
         } catch (BuildException e) {
