@@ -7689,4 +7689,14 @@
         </compile>
     </ajc-test>
 	
+   <ajc-test dir="bugs/compileOrdering" 
+		pr="59778"
+		title=" InterTypeMethodDeclaration.java:104">
+        <compile files="B.java,D.java" >
+          <message kind="error" line="2" file="B.java"/>
+        </compile>
+        <compile files="D.java,B.java">
+          <message kind="error" line="2" file="B.java"/>
+        </compile>
+    </ajc-test>
 </suite>
