@@ -103,6 +103,8 @@ final class BcelMethod extends ResolvedMember {
 		return isAjSynthetic; // || getName().startsWith(NameMangler.PREFIX);
 	}
 	
+	//FIXME needs an isSynthetic method
+	
 	public ShadowMunger getAssociatedShadowMunger() {
 		return associatedShadowMunger;
 	}

@@ -833,9 +833,7 @@ class BcelClassWeaver implements IClassWeaver {
 		Instruction i = ih.getInstruction();
 		if (i instanceof FieldInstruction) {
 			FieldInstruction fi = (FieldInstruction) i;
-			
-
-			
+						
 			if (i instanceof PUTFIELD || i instanceof PUTSTATIC) {
 				// check for sets of constant fields.  We first check the previous 
 				// instruction.  If the previous instruction is a LD_WHATEVER (push
@@ -852,19 +850,13 @@ class BcelClassWeaver implements IClassWeaver {
 						// it's final, so it's the set of a final constant, so it's
 						// not a join point according to 1.0.6 and 1.1.
 					} else {
-						match(
-							BcelShadow.makeFieldSet(world, mg, ih, enclosingShadow),
-							shadowAccumulator);
+						matchSetInstruction(mg, ih, enclosingShadow, shadowAccumulator);
 					}						
 				} else {
-					match(
-						BcelShadow.makeFieldSet(world, mg, ih, enclosingShadow),
-						shadowAccumulator);
+					matchSetInstruction(mg, ih, enclosingShadow, shadowAccumulator);
 				}
 			} else {
-				match(
-					BcelShadow.makeFieldGet(world, mg, ih, enclosingShadow),
-					shadowAccumulator);
+				matchGetInstruction(mg, ih, enclosingShadow, shadowAccumulator);
 			}
 		} else if (i instanceof InvokeInstruction) {
 			InvokeInstruction ii = (InvokeInstruction) i;
@@ -904,6 +896,43 @@ class BcelClassWeaver implements IClassWeaver {
 						shadowAccumulator);
 				}
 			}
+		}
+	}
+
+
+	private void matchSetInstruction(LazyMethodGen mg, InstructionHandle ih, BcelShadow enclosingShadow, List shadowAccumulator) {
+		FieldInstruction fi = (FieldInstruction) ih.getInstruction();
+		Member field = world.makeFieldSignature(clazz, fi);
+		ResolvedMember resolvedField = field.resolve(world);
+		if (resolvedField == null) {
+			// we can't find the field, so it's not a join point.
+			return;
+		} else if (Modifier.isFinal(resolvedField.getModifiers()) && 
+					Utility.isConstantPushInstruction(ih.getPrev().getInstruction()))
+		{
+			// it's the set of a final constant, so it's
+			// not a join point according to 1.0.6 and 1.1.
+			return;
+		} else if (resolvedField.isSynthetic()) {
+			// sets of synthetics aren't join points in 1.1
+			return;
+		} else {
+			match(BcelShadow.makeFieldSet(world, mg, ih, enclosingShadow), shadowAccumulator);
+		}
+	}
+
+	private void matchGetInstruction(LazyMethodGen mg, InstructionHandle ih, BcelShadow enclosingShadow, List shadowAccumulator) {
+		FieldInstruction fi = (FieldInstruction) ih.getInstruction();
+		Member field = world.makeFieldSignature(clazz, fi);
+		ResolvedMember resolvedField = field.resolve(world);
+		if (resolvedField == null) {
+			// we can't find the field, so it's not a join point.
+			return;
+		} else if (resolvedField.isSynthetic()) {
+			// sets of synthetics aren't join points in 1.1
+			return;
+		} else {
+			match(BcelShadow.makeFieldGet(world, mg, ih, enclosingShadow), shadowAccumulator);
 		}
 	}
 

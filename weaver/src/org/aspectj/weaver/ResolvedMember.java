@@ -88,6 +88,10 @@ public class ResolvedMember extends Member implements IHasPosition {
     	return true;
     }
     
+	public boolean isSynthetic() {
+		return false;
+	}
+    
     public void write(DataOutputStream s) throws IOException {
     	getKind().write(s);
     	getDeclaringType().write(s);
@@ -194,6 +198,5 @@ public class ResolvedMember extends Member implements IHasPosition {
 	public void setCheckedExceptions(TypeX[] checkedExceptions) {
 		this.checkedExceptions = checkedExceptions;
 	}
-
 }
    

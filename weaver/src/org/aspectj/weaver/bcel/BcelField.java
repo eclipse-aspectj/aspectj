@@ -16,7 +16,9 @@ package org.aspectj.weaver.bcel;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.Synthetic;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ResolvedMember;
@@ -27,6 +29,7 @@ final class BcelField extends ResolvedMember {
 
 	private Field field;
 	private boolean isAjSynthetic;
+	private boolean isSynthetic = false;
 
 	BcelField(BcelObjectType declaringType, Field field) {
 		super(
@@ -43,7 +46,8 @@ final class BcelField extends ResolvedMember {
 	// ----
 	
 	private void unpackAttributes(World world) {
-		List as = BcelAttributes.readAjAttributes(field.getAttributes(), getSourceContext(world));
+		Attribute[] attrs = field.getAttributes();
+		List as = BcelAttributes.readAjAttributes(attrs, getSourceContext(world));
 		for (Iterator iter = as.iterator(); iter.hasNext();) {
 			AjAttribute a = (AjAttribute) iter.next();
 			if (a instanceof AjAttribute.AjSynthetic) {
@@ -53,9 +57,20 @@ final class BcelField extends ResolvedMember {
 			}
 		}
 		isAjSynthetic = false;
+		
+		
+		for (int i = attrs.length - 1; i >= 0; i--) {
+			if (attrs[i] instanceof Synthetic) isSynthetic = true;
+		}
 	}
+	
+	
 
 	public boolean isAjSynthetic() {
 		return isAjSynthetic; // || getName().startsWith(NameMangler.PREFIX);
+	}
+	
+	public boolean isSynthetic() {
+		return isSynthetic;
 	}
 }
