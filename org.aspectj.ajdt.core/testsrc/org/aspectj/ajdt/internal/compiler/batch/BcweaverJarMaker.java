@@ -191,7 +191,9 @@ public class BcweaverJarMaker {
 		args.add("../tests/bugs/StringToString/helloworld.jar");		
 		args.add("../tests/bugs/StringToString/HW.java");		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
-	}	
+
+		buildShowWeaveInfoTestingJars();		
+	}
 	
 	public static void makeURLWeavingClassLoaderJars() throws IOException {
 		List args = new ArrayList();
@@ -296,7 +298,37 @@ public class BcweaverJarMaker {
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/LTWPerthis.aj");
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 	}	
-
+	
+	private static void buildJarWithClasspath(String outjar,String input,String deps,boolean nodebug) {
+		System.out.println("  Building "+outjar);
+		List args = new ArrayList();
+		if (nodebug) args.add("-g:none");		
+		args.add("-classpath"); 
+		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar"  +
+				 File.pathSeparator + System.getProperty("aspectjrt.path") +
+				 (deps!=null?File.pathSeparator + "../ajde/testdata/WeaveInfoMessagesTest/"+deps:""));
+		args.add("-outjar");
+		args.add("../ajde/testdata/WeaveInfoMessagesTest/"+outjar);		
+		args.add("../ajde/testdata/WeaveInfoMessagesTest/"+input);
+		
+		System.err.println(args);
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);	
+	}
+	
+	private static void buildShowWeaveInfoTestingJars() {
+		System.out.println("For binary weave info message testing (ShowWeaveMessagesTestCase.java)");
+		buildJarWithClasspath("Simple.jar","Simple.java",null,false);
+		// Build with javac and jar
+		// buildJarWithClasspath("Simple_nodebug.jar","Simple.java",null,true);
+		buildJarWithClasspath("AspectAdvice.jar","AspectAdvice.aj",null,false);
+		buildJarWithClasspath("AspectAdvice_nodebug.jar","AspectAdvice.aj","Simple.jar",true);
+		buildJarWithClasspath("AspectDeclare.jar","AspectDeclare.aj","Simple.jar",false);
+		buildJarWithClasspath("AspectDeclare_nodebug.jar","AspectDeclare.aj","Simple.jar",true);
+		buildJarWithClasspath("AspectITD.jar","AspectITD.aj","Simple.jar",false);
+		buildJarWithClasspath("AspectITD_nodebug.jar","AspectITD.aj","Simple.jar",true);
+		buildJarWithClasspath("AspectDeclareSoft.jar","AspectDeclareSoft.aj","Simple.jar",false);
+		buildJarWithClasspath("AspectDeclareSoft_nodebug.jar","AspectDeclareSoft.aj","Simple.jar",true);
+	}	
 	
 	public static void makeDuplicateManifestTestJars() throws IOException {
 		List args = new ArrayList();

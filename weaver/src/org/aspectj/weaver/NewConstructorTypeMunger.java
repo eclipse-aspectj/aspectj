@@ -49,14 +49,17 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 		syntheticConstructor.write(s);
 		explicitConstructor.write(s);
 		writeSuperMethodsCalled(s);
+		if (ResolvedTypeMunger.persistSourceLocation) writeSourceLocation(s);
 	}
 	
 	public static ResolvedTypeMunger readConstructor(DataInputStream s, ISourceContext context) throws IOException {
-		return new NewConstructorTypeMunger(
+		ResolvedTypeMunger munger = new NewConstructorTypeMunger(
 				ResolvedMember.readResolvedMember(s, context),
 				ResolvedMember.readResolvedMember(s, context),
 				ResolvedMember.readResolvedMember(s, context),
 				readSuperMethodsCalled(s));
+		if (ResolvedTypeMunger.persistSourceLocation) munger.setSourceLocation(readSourceLocation(s));
+		return munger;
 	}
 
 	public ResolvedMember getExplicitConstructor() {

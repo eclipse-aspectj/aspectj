@@ -23,6 +23,8 @@ import java.util.List;
 //import java.util.Collections;
 //import java.util.List;
 
+import org.aspectj.ajde.ui.StructureModelUtil;
+import org.aspectj.ajde.ui.StructureModelUtil.ModelIncorrectException;
 import org.aspectj.bridge.ICommand;
 //import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageUtil;
@@ -241,6 +243,9 @@ public class IncCompilerRun implements IAjcRun {
             }
 //            final long startTime = System.currentTimeMillis();
             commandResult = compiler.repeatCommand(handler);
+            if (!spec.checkModel.equals("")) {
+					StructureModelUtil.checkModel(spec.checkModel);
+            }
             // XXX disabled LangUtil.throwIaxIfNotAllAssignable(actualRecompiled, File.class, "recompiled");
             report = true;
             // handler does not verify sandbox...
@@ -258,6 +263,8 @@ public class IncCompilerRun implements IAjcRun {
                     result = dirChanges.end(status, sandbox.testBaseDir);
                 }
             }
+        } catch (ModelIncorrectException e) {
+        	MessageUtil.fail(status,e.getMessage());
         } finally {
             if (!result || spec.runtime.isVerbose()) { // more debugging context in case of failure
                 MessageUtil.info(handler, "spec: " + spec.toLongString());
@@ -293,6 +300,8 @@ public class IncCompilerRun implements IAjcRun {
         protected ArrayList classesAdded;
         protected ArrayList classesRemoved;
         protected ArrayList classesUpdated;
+        
+        protected String checkModel;
 
         /**
          * skip description, skip sourceLocation, 
@@ -312,6 +321,7 @@ public class IncCompilerRun implements IAjcRun {
             classesAdded = new ArrayList();
             classesRemoved = new ArrayList();
             classesUpdated = new ArrayList();
+            checkModel="";
 		}
         
         protected void initClone(Spec spec) 
@@ -341,8 +351,13 @@ public class IncCompilerRun implements IAjcRun {
 		public void setTag(String input) {
 			tag = input;
 		}
+		
+		public void setCheckModel(String thingsToCheck) {
+			this.checkModel=thingsToCheck;
+		}
+		
         public String toString() {
-            return "IncCompile.Spec(" + tag + ", " + super.toString() + ")";
+            return "IncCompile.Spec(" + tag + ", " + super.toString() + ",["+checkModel+"])";
         }
         
         /** override to set dirToken to Sandbox.CLASSES and default suffix to ".class" */

@@ -222,6 +222,8 @@ public class SoftMessage implements IMessage {
 	public boolean isFailed() {
 		return kind == IMessage.FAIL;
 	}
+	
+	public boolean getDeclared() { return false; }
 
 	/** @return non-null String with simple message */
 	final public String getMessage() {

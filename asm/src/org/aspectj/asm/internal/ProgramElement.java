@@ -8,16 +8,22 @@
  *  
  * Contributors: 
  *     Mik Kersten     initial implementation 
+ *     Andy Clement    Extensions for better IDE representation
  * ******************************************************************/
 
 
 package org.aspectj.asm.internal;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import org.aspectj.asm.*;
-import org.aspectj.bridge.*;
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.HierarchyWalker;
+import org.aspectj.asm.IProgramElement;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
 
 
 /**
@@ -55,6 +61,8 @@ public class ProgramElement implements IProgramElement {
 	private List parameterTypes = null;
 	
 	private String details = null;
+	
+	private ExtraInformation info;
     
 	/**
 	 * Used during de-externalization.
@@ -125,6 +133,10 @@ public class ProgramElement implements IProgramElement {
 
 	public Accessibility getAccessibility() {
 		return accessibility;
+	}
+	
+	public void setAccessibility(Accessibility a) {
+		accessibility=a;
 	}
 
 	public String getDeclaringType() {
@@ -388,6 +400,9 @@ public class ProgramElement implements IProgramElement {
 		return sb.toString();
 	}
 
+	
+	public static boolean shortITDNames = true;
+	
 	/**
 	 * TODO: move the "parent != null"==>injar heuristic to more explicit 
 	 */
@@ -396,13 +411,20 @@ public class ProgramElement implements IProgramElement {
 		if (kind == Kind.CODE || kind == Kind.INITIALIZER) {
 			label = parent.getParent().getName() + ": ";
 		} else if (kind.isInterTypeMember()) {
-			int dotIndex = name.indexOf('.');  
-			if (dotIndex != -1) {
-				return parent.getName() + ": " + toLabelString().substring(dotIndex+1);
+			if (shortITDNames) {
+				// if (name.indexOf('.')!=-1) return toLabelString().substring(name.indexOf('.')+1);
+				label="";
 			} else {
+			  int dotIndex = name.indexOf('.');  
+			  if (dotIndex != -1) {
+				return parent.getName() + ": " + toLabelString().substring(dotIndex+1);
+			  } else {
 				label = parent.getName() + '.';	
+			  }
 			}
-		} else if (kind == Kind.CLASS || kind == Kind.ASPECT) {
+		} else if (kind == Kind.CLASS || kind == Kind.ASPECT || kind == Kind.INTERFACE) {
+			label = "";
+		} else if (kind.equals(Kind.DECLARE_PARENTS)) {
 			label = "";
 		} else { 
 			if (parent != null) {
@@ -487,5 +509,15 @@ public class ProgramElement implements IProgramElement {
 			hierarchy.cache(handle,this);
 		}
 	}
+
+	public void setExtraInfo(ExtraInformation info) {
+		this.info = info;
+		
+	}
+
+	public ExtraInformation getExtraInfo() {
+		return info;
+	}
+
 }
 

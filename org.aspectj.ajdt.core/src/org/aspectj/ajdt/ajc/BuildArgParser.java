@@ -114,6 +114,20 @@ public class BuildArgParser extends Main {
 			
 			AjcConfigParser parser = new AjcConfigParser(buildConfig, handler);
 			parser.parseCommandLine(args);
+			
+			boolean swi = buildConfig.getShowWeavingInformation();
+			// Now jump through firey hoops to turn them on/off
+			if (handler instanceof CountingMessageHandler) {
+				IMessageHandler delegate = ((CountingMessageHandler)handler).delegate;
+				// Without dontIgnore() on the IMessageHandler interface, we have to do this *blurgh*
+				if (delegate instanceof MessageHandler) {
+					if (swi) 
+					  ((MessageHandler)delegate).dontIgnore(IMessage.WEAVEINFO);
+					else 
+					  ((MessageHandler)delegate).ignore(IMessage.WEAVEINFO);
+				}
+			}
+			
             
             boolean incrementalMode = buildConfig.isIncrementalMode()
             	|| buildConfig.isIncrementalFileMode();
@@ -460,6 +474,8 @@ public class BuildArgParser extends Main {
             	}
 			} else if (arg.equals("-XnoInline")) {
 				buildConfig.setXnoInline(true);
+            } else if (arg.startsWith("-showWeaveInfo")) {
+            	 buildConfig.setShowWeavingInformation(true);
 			} else if (arg.equals("-Xlintfile")) { 
 				if (args.size() > nextArgIndex) {
 					File lintSpecFile = makeFile(((ConfigParser.Arg)args.get(nextArgIndex)).getValue());

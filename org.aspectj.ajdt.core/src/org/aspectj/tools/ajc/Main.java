@@ -188,6 +188,10 @@ public class Main {
         ourHandler = new MessageHandler(true);
     }    
     
+    public MessageHandler getMessageHandler() {
+    	return ourHandler;
+    }
+    
     /**
      * Run without throwing exceptions but optionally using System.exit(..).
      * This sets up a message handler which emits messages immediately,
@@ -525,13 +529,15 @@ public class Main {
 		}
         
         /** @return System.err for FAIL, ABORT, ERROR, and WARNING, 
-         *           System.out for INFO if verbose.
+         *           System.out for INFO if -verbose and WEAVEINFO if -showWeaveInfo.
          */
         protected PrintStream getStreamFor(IMessage.Kind kind) {
             if (IMessage.WARNING.isSameOrLessThan(kind)) {
                 return System.err;
             } else if (verbose && IMessage.INFO.equals(kind)) {
                 return System.out;
+            } else if (IMessage.WEAVEINFO.equals(kind)) {
+            	return System.out;
             } else {
                 return null;
             }

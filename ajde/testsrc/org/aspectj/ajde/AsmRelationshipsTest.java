@@ -35,12 +35,13 @@ public class AsmRelationshipsTest extends AjdeTestCase {
 		IProgramElement dp = manager.getHierarchy().findElementForLabel(
 				aspect, 
 				IProgramElement.Kind.DECLARE_PARENTS, 
-				"declare parents: Point");
+				"declare parents: implements Serializable"/*Point"*/);
 		
 		assertNotNull(dp);
 		List relations = manager.getRelationshipMap().get(dp);
-		
-//		assertTrue(false);
+				
+		List rels = AsmManager.getDefault().getRelationshipMap().get(dp);
+		assertTrue(rels.size()>0);
 		
 //		assertTrue(rel.getTargets().size() > 0);
 //		

@@ -30,6 +30,7 @@
    <!ELEMENT inc-compile (dir-changes*,message*)>
    <!ATTLIST inc-compile tag CDATA #REQUIRED >
    <!ATTLIST inc-compile fresh CDATA #IMPLIED >
+   <!ATTLIST inc-compile checkModel CDATA #IMPLIED >
 
    <!ELEMENT run (dir-changes*,message*)>
    <!ATTLIST run class CDATA #REQUIRED >

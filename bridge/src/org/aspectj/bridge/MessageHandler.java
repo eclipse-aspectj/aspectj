@@ -55,6 +55,7 @@ public class MessageHandler implements IMessageHolder {
         messages = new ArrayList();
         ignoring = new ArrayList();
         init(accumulateOnly);
+        ignore(IMessage.WEAVEINFO); // Off by default, need to explicitly be enabled (see -showWeaveInfo)
     }
     
     /**
@@ -76,7 +77,9 @@ public class MessageHandler implements IMessageHolder {
             messages.clear();
         }
         if (0 < ignoring.size()) {
+        	boolean ignoringWeaveMessages = isIgnoring(IMessage.WEAVEINFO);
             ignoring.clear();
+            if (ignoringWeaveMessages) ignore(IMessage.WEAVEINFO);
         }
         if (null != interceptor) {
             interceptor = null;

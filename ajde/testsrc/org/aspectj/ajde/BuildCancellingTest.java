@@ -217,7 +217,7 @@ public class BuildCancellingTest extends AjdeTestCase {
 			programmableBPM,
 			false);
 	
-//		Should just be A1 on the disk - uncomment this line to verify that!
+//		Should just be A1 on the disk - uncomment this line to verify that! (and uncomment diskContents())
 //		assertTrue("Incorrect disk contents found",diskContents("A1"));
 
 		assertTrue("Should have cancelled after first class weave?:"+programmableBPM.numWovenClassMessages,
@@ -258,7 +258,7 @@ public class BuildCancellingTest extends AjdeTestCase {
 			programmableBPM,
 			false);
 	
-//		Uncomment this line to verify disk contents
+//		Uncomment this line to verify disk contents(and uncomment diskContents())
 //		assertTrue("Incorrect disk contents found",diskContents("A1 Cl1 A2"));
 
 		assertTrue("Should have cancelled after first class weave?:"+programmableBPM.numWovenClassMessages,
@@ -350,43 +350,43 @@ public class BuildCancellingTest extends AjdeTestCase {
 
 	}
 	
-	private boolean diskContents(String shouldExist) {
-		String[] fullList = new String[] { "A1","A2","A3","A4","Cl1","Cl2","Cl3","HW"};
-		boolean isOK = true;
-		for (int i = 0; i < fullList.length; i++) {
-			String file = fullList[i];
-			if (shouldExist.indexOf(file)!=-1) {
-				// There should be a class file called this
-				if (!openFile("bin/"+file+".class").exists()) {
-					isOK=false; 
-					System.out.println("Couldn't find this expected file: "+file+".class");
-				}
-			} else {
-				// There should NOT be a class file called this
-				if (openFile("bin/"+file+".class").exists()) {
-					isOK=false;
-					System.out.println("Found this file when not expected: "+file+".class");
-				}
-			}
-		}
-		return isOK;
-	}
-	
-	private int wovenClassesFound() {
-		int found = 0;
-		File fA1 = openFile("bin/A1.class");
-		File fA2 = openFile("bin/A2.class");
-		File fA3 = openFile("bin/A3.class");
-		File fA4 = openFile("bin/A4.class");
-		File fHW = openFile("bin/HW.class");
-
-		found+=(fA1.exists()?1:0);
-		found+=(fA2.exists()?1:0);
-		found+=(fA3.exists()?1:0);
-		found+=(fA4.exists()?1:0);
-		found+=(fHW.exists()?1:0);
-		return found;
-	}
+//	private boolean diskContents(String shouldExist) {
+//		String[] fullList = new String[] { "A1","A2","A3","A4","Cl1","Cl2","Cl3","HW"};
+//		boolean isOK = true;
+//		for (int i = 0; i < fullList.length; i++) {
+//			String file = fullList[i];
+//			if (shouldExist.indexOf(file)!=-1) {
+//				// There should be a class file called this
+//				if (!openFile("bin/"+file+".class").exists()) {
+//					isOK=false; 
+//					System.out.println("Couldn't find this expected file: "+file+".class");
+//				}
+//			} else {
+//				// There should NOT be a class file called this
+//				if (openFile("bin/"+file+".class").exists()) {
+//					isOK=false;
+//					System.out.println("Found this file when not expected: "+file+".class");
+//				}
+//			}
+//		}
+//		return isOK;
+//	}
+//	
+//	private int wovenClassesFound() {
+//		int found = 0;
+//		File fA1 = openFile("bin/A1.class");
+//		File fA2 = openFile("bin/A2.class");
+//		File fA3 = openFile("bin/A3.class");
+//		File fA4 = openFile("bin/A4.class");
+//		File fHW = openFile("bin/HW.class");
+//
+//		found+=(fA1.exists()?1:0);
+//		found+=(fA2.exists()?1:0);
+//		found+=(fA3.exists()?1:0);
+//		found+=(fA4.exists()?1:0);
+//		found+=(fHW.exists()?1:0);
+//		return found;
+//	}
 	
 
 	private boolean checkFor(String what) {

@@ -30,6 +30,7 @@ public class Message implements IMessage {
     private final ISourceLocation sourceLocation;
     private final String details;
     private final List/*SourceLocation*/ extraSourceLocations;
+    private final boolean declared; // Is it a DEOW ?
         
     /**
      * Create a (compiler) error or warning message
@@ -46,7 +47,7 @@ public class Message implements IMessage {
     	this(message, "",(isError ? IMessage.ERROR : IMessage.WARNING), location, null, 
     			(extraSourceLocations.length > 0 ? extraSourceLocations : null));
     }
-    
+        
 	/**
 	 * Create a message, handling null values for message and kind
 	 * if thrown is not null.
@@ -61,25 +62,31 @@ public class Message implements IMessage {
 	 */
 	public Message(String message, String details, IMessage.Kind kind, 
 		ISourceLocation sourceLocation, Throwable thrown, ISourceLocation[] extraSourceLocations) {
+		this(message,details,kind,sourceLocation,thrown,extraSourceLocations,false);
+	}
+	
+	public Message(String message, String details, IMessage.Kind kind,
+	               ISourceLocation sLoc, Throwable thrown, ISourceLocation[] otherLocs,
+	               boolean declared) {
 		this.details = details;
 		this.message = ((message!=null) ? message : ((thrown==null) ? null : thrown.getMessage()));
 		this.kind = kind;
-		this.sourceLocation = sourceLocation;
+		this.sourceLocation = sLoc;
 		this.thrown = thrown;
-        
-		if (extraSourceLocations != null) {
+        if (otherLocs != null) {
 			this.extraSourceLocations 
-                = Collections.unmodifiableList(Arrays.asList(extraSourceLocations));
+			= Collections.unmodifiableList(Arrays.asList(otherLocs));
 		}
-        else {
-            this.extraSourceLocations = Collections.EMPTY_LIST;
-        }
+		else {
+			this.extraSourceLocations = Collections.EMPTY_LIST;
+		}
 		if (null == this.kind) {
 			 throw new IllegalArgumentException("null kind");
 		}
-        if (null == this.message) {
-            throw new IllegalArgumentException("null message");
-        }
+		if (null == this.message) {
+			throw new IllegalArgumentException("null message");
+		}        	
+		this.declared = declared;
 	}
     
     /**
@@ -129,6 +136,11 @@ public class Message implements IMessage {
     public boolean isAbort() {
         return kind == IMessage.ABORT;
     }    
+    
+    /** Caller can verify if this message came about because of a DEOW */
+    public boolean getDeclared() {
+    	return declared;
+    }
     
     /** 
      * @return true if kind == IMessage.FAIL

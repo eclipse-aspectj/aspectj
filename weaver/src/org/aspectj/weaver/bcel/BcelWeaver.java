@@ -48,11 +48,13 @@ import org.aspectj.bridge.IProgressListener;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.FileUtil;
+import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.CrosscuttingMembersSet;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
 import org.aspectj.weaver.IWeaver;
+import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.NewParentTypeMunger;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedTypeX;
@@ -75,6 +77,7 @@ public class BcelWeaver implements IWeaver {
     
     public BcelWeaver(BcelWorld world) {
         super();
+        WeaverMetrics.reset();
         this.world = world;
         this.xcutSet = world.getCrosscuttingMembersSet();
     }
@@ -815,7 +818,9 @@ public class BcelWeaver implements IWeaver {
 		Iterator iter = list.iterator();
 		while (iter.hasNext()) {
 			ShadowMunger munger = (ShadowMunger)iter.next();
-			if (munger.getPointcut().fastMatch(info).maybeTrue()) {
+			FuzzyBoolean fb = munger.getPointcut().fastMatch(info);
+			WeaverMetrics.recordFastMatchTypeResult(fb); // Could pass: munger.getPointcut().toString(),info
+			if (fb.maybeTrue()) {
 				result.add(munger);
 			}
 		}

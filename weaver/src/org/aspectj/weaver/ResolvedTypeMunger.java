@@ -15,7 +15,10 @@ package org.aspectj.weaver;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -23,6 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.TypeSafeEnum;
 
 /** This is an abstraction over method/field introduction.  It might not have the chops
@@ -33,11 +38,23 @@ public abstract class ResolvedTypeMunger {
 	protected Kind kind;
 	protected ResolvedMember signature;
 	
+	public static transient boolean persistSourceLocation = false;
+	
 	private Set /* resolvedMembers */ superMethodsCalled = Collections.EMPTY_SET;
+	
+	private ISourceLocation location; // Lost during serialize/deserialize !
 
 	public ResolvedTypeMunger(Kind kind, ResolvedMember signature) {
 		this.kind = kind;
 		this.signature = signature;
+	}
+	
+	public void setSourceLocation(ISourceLocation isl) {
+		location = isl;
+	}
+	
+	public ISourceLocation getSourceLocation() {
+		return location;
 	}
 
 	// ----
@@ -95,7 +112,10 @@ public abstract class ResolvedTypeMunger {
 		}
 	}
 
+
+	
 	protected static Set readSuperMethodsCalled(DataInputStream s) throws IOException {
+		
 		Set ret = new HashSet();
 		int n = s.readInt();
 		for (int i=0; i < n; i++) {
@@ -105,6 +125,7 @@ public abstract class ResolvedTypeMunger {
 	}
 	
 	protected void writeSuperMethodsCalled(DataOutputStream s) throws IOException {
+		
 		if (superMethodsCalled == null) {
 			s.writeInt(0);
 			return;
@@ -118,6 +139,40 @@ public abstract class ResolvedTypeMunger {
 			ResolvedMember m = (ResolvedMember)i.next();
 			m.write(s);
 		}
+		
+	}
+
+	protected static ISourceLocation readSourceLocation(DataInputStream s) throws IOException {
+		if (!persistSourceLocation) return null;
+		ISourceLocation ret = null;
+		ObjectInputStream ois = new ObjectInputStream(s);
+		try {
+			Boolean validLocation = (Boolean)ois.readObject();
+			if (validLocation.booleanValue()) {
+				File f 	   = (File) ois.readObject();
+				Integer ii = (Integer)ois.readObject();
+				ret = new SourceLocation(f,ii.intValue());
+			}
+		} catch (IOException ioe) {
+			// Something went wrong, maybe this is an 'old style' file that doesnt attach locations to mungers
+			ioe.printStackTrace();
+			return null;
+		} catch (ClassNotFoundException e) { }
+		ois.close();
+		return ret;
+	}
+	
+	protected void writeSourceLocation(DataOutputStream s) throws IOException {	
+		if (!persistSourceLocation) return;
+		ObjectOutputStream oos = new ObjectOutputStream(s);
+		// oos.writeObject(location);
+		oos.writeObject(new Boolean(location!=null));
+		if (location !=null) {
+		  oos.writeObject(location.getSourceFile());
+		  oos.writeObject(new Integer(location.getLine()));
+		}
+		oos.flush();
+		oos.close();
 	}
 
 	

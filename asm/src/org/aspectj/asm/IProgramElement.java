@@ -28,6 +28,23 @@ public interface IProgramElement extends Serializable {
 
 	public void setChildren(List children);	
 	public void addChild(IProgramElement child);
+	
+	// Extra stuff
+	// Could be just a string but may prove more useful as an object in the long run ...
+	public static class ExtraInformation implements Serializable {
+		private String extraInfo;
+		public ExtraInformation() { extraInfo = "";}
+	
+		public void   setExtraAdviceInformation(String string) {extraInfo = string;}
+		public String getExtraAdviceInformation()              {return extraInfo;}
+		
+		public String toString() {
+			return "ExtraInformation: ["+extraInfo+"]";
+		}
+	}
+	
+	public void setExtraInfo(ExtraInformation info);
+	public ExtraInformation getExtraInfo();
 
 	public IProgramElement getParent();
 	public void setParent(IProgramElement parent);

@@ -48,6 +48,7 @@ import org.apache.bcel.generic.ReturnInstruction;
 import org.apache.bcel.generic.Select;
 import org.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -56,6 +57,7 @@ import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.IClassWeaver;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
@@ -172,7 +174,9 @@ class BcelClassWeaver implements IClassWeaver {
 		FastMatchInfo info = new FastMatchInfo(clazz.getType(), kind);
 		for (Iterator i = shadowMungers.iterator(); i.hasNext();) {
 			ShadowMunger munger = (ShadowMunger) i.next();
-			if (munger.getPointcut().fastMatch(info).maybeTrue()) mungers.add(munger);
+			FuzzyBoolean fb = munger.getPointcut().fastMatch(info);
+			WeaverMetrics.recordFastMatchResult(fb);// Could pass: munger.getPointcut().toString()
+			if (fb.maybeTrue()) mungers.add(munger);
 		}
 	}
 
@@ -1120,13 +1124,19 @@ class BcelClassWeaver implements IClassWeaver {
         for (Iterator i = shadowMungers.iterator(); i.hasNext(); ) {
             ShadowMunger munger = (ShadowMunger)i.next();
             if (munger.match(shadow, world)) {
+            	
+				WeaverMetrics.recordMatchResult(true);// Could pass: munger
                 shadow.addMunger(munger);
                 isMatched = true;
 			    if (shadow.getKind() == Shadow.StaticInitialization) {
 				  clazz.warnOnAddedStaticInitializer(shadow,munger.getSourceLocation());
 			    }
-            }
+				
+            } else {
+            	WeaverMetrics.recordMatchResult(false); // Could pass: munger
+        	}
         }       
+
         if (isMatched) shadowAccumulator.add(shadow);
         return isMatched;
     }

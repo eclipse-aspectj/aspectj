@@ -64,6 +64,7 @@ public class AjCompilerOptions extends CompilerOptions {
 	public boolean xNoInline = false;
 	public boolean xReweavable = false;
 	public boolean xReweavableCompress = false;
+	public boolean showWeavingInformation = false;
 	
 	// these next three not exposed by IDEs
 	public boolean generateModel = false;

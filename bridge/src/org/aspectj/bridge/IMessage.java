@@ -27,6 +27,7 @@ public interface IMessage {
 	public static final IMessage[] RA_IMessage = new IMessage[0];
 
 	// int values must sync with KINDS order below
+	public static final Kind WEAVEINFO = new Kind("weaveinfo",5);
 	public static final Kind INFO = new Kind("info", 10);
 	public static final Kind DEBUG = new Kind("debug", 20);
 	public static final Kind WARNING = new Kind("warning", 30);
@@ -43,7 +44,7 @@ public interface IMessage {
 	public static final List KINDS =
 		Collections.unmodifiableList(
 			Arrays.asList(
-				new Kind[] { INFO, DEBUG, WARNING, ERROR, FAIL, ABORT }));
+				new Kind[] { WEAVEINFO, INFO, DEBUG, WARNING, ERROR, FAIL, ABORT }));
 
 	/** @return non-null String with simple message */
 	String getMessage();
@@ -69,6 +70,9 @@ public interface IMessage {
 	/** @return true if something failed   */
 	boolean isFailed();
 
+	/** Caller can verify if this message came about because of a DEOW */
+	boolean getDeclared();
+	
 	/** @return Throwable associated with this message, or null if none */
 	Throwable getThrown();
 

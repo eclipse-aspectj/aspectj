@@ -73,16 +73,16 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 		assertNotNull(decWarnNode);
 		assertEquals(decWarnNode.toLabelString(), decWarnMessage);	
 		
-		String decParentsMessage = "declare parents: Point";
+		String decParentsMessage = "declare parents: implements Serializable";
 		IProgramElement decParentsNode = model.findElementForSignature(aspect, IProgramElement.Kind.DECLARE_PARENTS, "declare parents");
 		assertNotNull(decParentsNode);		
 		assertEquals(decParentsNode.toLabelString(), decParentsMessage);		
 		// check the next two relative to this one
 		int declareIndex = decParentsNode.getParent().getChildren().indexOf(decParentsNode);
-		String decParentsPtnMessage = "declare parents: Point+";		
-		assertEquals(((IProgramElement)aspect.getChildren().get(declareIndex+1)).toLabelString(), decParentsPtnMessage);			
-		String decParentsTPMessage = "declare parents: <type pattern>";	
-		assertEquals(((IProgramElement)aspect.getChildren().get(declareIndex+2)).toLabelString(), decParentsTPMessage);
+		String decParentsPtnMessage = "declare parents: extends Observable";		
+		assertEquals(decParentsPtnMessage,((IProgramElement)aspect.getChildren().get(declareIndex+1)).toLabelString());			
+		String decParentsTPMessage = "declare parents: extends Observable";	
+		assertEquals(decParentsTPMessage,((IProgramElement)aspect.getChildren().get(declareIndex+2)).toLabelString());
 		
 		String decSoftMessage = "declare soft: SizeException";
 		IProgramElement decSoftNode = model.findElementForSignature(aspect, IProgramElement.Kind.DECLARE_SOFT, "declare soft");

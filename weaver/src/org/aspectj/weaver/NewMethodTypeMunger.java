@@ -37,12 +37,15 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 		kind.write(s);
 		signature.write(s);
 		writeSuperMethodsCalled(s);
+		if (ResolvedTypeMunger.persistSourceLocation) writeSourceLocation(s);
 	}
 	
 	public static ResolvedTypeMunger readMethod(DataInputStream s, ISourceContext context) throws IOException {
-		return new NewMethodTypeMunger(
+		ResolvedTypeMunger munger = new NewMethodTypeMunger(
 				ResolvedMember.readResolvedMember(s, context),
 				readSuperMethodsCalled(s));
+		if (ResolvedTypeMunger.persistSourceLocation) munger.setSourceLocation(readSourceLocation(s));
+		return munger;
 	}
 	
 	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedTypeX aspectType) {	

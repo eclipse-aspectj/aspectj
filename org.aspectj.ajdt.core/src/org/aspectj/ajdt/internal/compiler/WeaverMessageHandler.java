@@ -100,8 +100,18 @@ public class WeaverMessageHandler implements IMessageHandler {
 												  problemSource,	
 												  usedBinarySourceFileName);
 		problem.setSeeAlsoProblems(seeAlso);
+		
+		StringBuffer details = new StringBuffer();
+		// Stick more info in supplementary message info
 		if (message.getDetails() != null) {
-			problem.setSupplementaryMessageInfo(message.getDetails());
+			details.append(message.getDetails());
+		}
+		// Remember if this message was due to a deow
+		if (message.getDeclared()) {
+			details.append("[deow=true]");
+		}
+		if (details.length()!=0) { 
+			problem.setSupplementaryMessageInfo(details.toString());
 		}
 		compiler.problemReporter.record(problem, problemSource, referenceContext);
 		return true;

@@ -26,6 +26,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.util.TypeSafeEnum;
 import org.aspectj.weaver.ast.Var;
+import org.aspectj.weaver.bcel.BcelAdvice;
 
 /*
  * The superclass of anything representing a the shadow of a join point.  A shadow represents
@@ -345,6 +346,89 @@ public abstract class Shadow {
 	protected void prepareForMungers() {
 		throw new RuntimeException("Generic shadows cannot be prepared");		
 	}
+	
+	/*
+	 * Ensure we report a nice source location - particular in the case
+	 * where the source info is missing (binary weave).
+	 */
+	private String beautifyLocation(ISourceLocation isl) {
+		StringBuffer nice = new StringBuffer();
+		if (isl==null || isl.getSourceFile()==null || isl.getSourceFile().getName().indexOf("no debug info available")!=-1) {
+			nice.append("no debug info available");
+	    } else {
+	    	nice.append(isl.getSourceFile().getName());
+	    	if (isl.getLine()!=0) nice.append(":").append(isl.getLine());
+		}
+		return nice.toString();
+	}
+	
+	/*
+	 * Report a message about the advice weave that has occurred.  Some messing about
+	 * to make it pretty !  This code is just asking for an NPE to occur ...
+	 */
+	private void reportWeavingMessage(ShadowMunger munger) {
+		Advice advice = (Advice)munger;
+		AdviceKind aKind = advice.getKind();
+		// Only report on interesting advice kinds ...
+		if (aKind == null || advice.getConcreteAspect()==null) {
+			// We suspect someone is programmatically driving the weaver 
+			// (e.g. IdWeaveTestCase in the weaver testcases)
+			return;
+		}
+		if (!( aKind.equals(AdviceKind.Before) ||
+		       aKind.equals(AdviceKind.After) ||
+		       aKind.equals(AdviceKind.AfterReturning) ||
+		       aKind.equals(AdviceKind.AfterThrowing) ||
+		       aKind.equals(AdviceKind.Around) ||
+		       aKind.equals(AdviceKind.Softener))) return;
+		
+		String description = advice.getKind().toString();
+		String advisedType = this.getEnclosingType().getName();
+		String advisingType= advice.getConcreteAspect().getName();
+		Message msg = null;
+		if (advice.getKind().equals(AdviceKind.Softener)) {
+			msg = WeaveMessage.constructWeavingMessage(
+			  WeaveMessage.WEAVEMESSAGE_SOFTENS,
+			    new String[]{advisedType,beautifyLocation(getSourceLocation()),
+			    			 advisingType,beautifyLocation(munger.getSourceLocation())});
+		} else {
+			boolean runtimeTest = ((BcelAdvice)advice).hasDynamicTests();
+		    msg = WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ADVISES,
+			  new String[]{ advisedType, beautifyLocation(getSourceLocation()),
+				            description,
+				            advisingType,beautifyLocation(munger.getSourceLocation()),
+				            (runtimeTest?" [with runtime test]":"")});
+				         // Boolean.toString(runtimeTest)});
+		}
+		getIWorld().getMessageHandler().handleMessage(msg);
+	}
+
+
+	public IRelationship.Kind determineRelKind(ShadowMunger munger) {
+		AdviceKind ak = ((Advice)munger).getKind();
+		if (ak.getKey()==AdviceKind.Before.getKey()) 
+				return IRelationship.Kind.ADVICE_BEFORE;
+		else if (ak.getKey()==AdviceKind.After.getKey())
+				return IRelationship.Kind.ADVICE_AFTER;
+		else if (ak.getKey()==AdviceKind.AfterThrowing.getKey())
+				return IRelationship.Kind.ADVICE_AFTERTHROWING;
+		else if (ak.getKey()==AdviceKind.AfterReturning.getKey())
+				return IRelationship.Kind.ADVICE_AFTERRETURNING;
+		else if (ak.getKey()==AdviceKind.Around.getKey())
+				return IRelationship.Kind.ADVICE_AROUND;
+		else if (ak.getKey()==AdviceKind.CflowEntry.getKey() ||
+		ak.getKey()==AdviceKind.CflowBelowEntry.getKey() ||
+		ak.getKey()==AdviceKind.InterInitializer.getKey() ||
+		ak.getKey()==AdviceKind.PerCflowEntry.getKey() ||
+		ak.getKey()==AdviceKind.PerCflowBelowEntry.getKey() ||
+		ak.getKey()==AdviceKind.PerThisEntry.getKey() ||
+		ak.getKey()==AdviceKind.PerTargetEntry.getKey() ||
+		ak.getKey()==AdviceKind.Softener.getKey()) {
+			  System.err.println("Dont want a message about this: "+ak);
+			  return null;
+		}
+		throw new RuntimeException("Shadow.determineRelKind: What the hell is it? "+ak);
+	}
 
  	/** Actually implement the (non-empty) mungers associated with this shadow */
 	private void implementMungers() {
@@ -354,8 +438,18 @@ public abstract class Shadow {
 			munger.implementOn(this);
 			
 			if (world.xrefHandler != null) {
-				world.xrefHandler.addCrossReference(munger.getSourceLocation(),this.getSourceLocation(),IRelationship.Kind.ADVICE);
+				world.xrefHandler.addCrossReference(
+				  munger.getSourceLocation(), // What is being applied
+				  this.getSourceLocation(),   // Where is it being applied
+				  determineRelKind(munger),   // What kind of advice?
+				  ((BcelAdvice)munger).hasDynamicTests() // Is a runtime test being stuffed in the code?
+				  );
 			}
+			
+			// TAG: WeavingMessage
+			if (!getIWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
+				reportWeavingMessage(munger);
+			}			
 			
 			if (world.getModel() != null) {
 				//System.err.println("munger: " + munger + " on " + this);

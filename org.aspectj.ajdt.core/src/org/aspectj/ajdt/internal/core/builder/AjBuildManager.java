@@ -141,11 +141,11 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
             // if (batch) {
                 setBuildConfig(buildConfig);
             //}
-//            if (batch) {
-//                if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {  
-                	setupModel();
+            if (batch || !AsmManager.attemptIncrementalModelRepairs) {
+//                if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) { 
+                	setupModel(buildConfig);
 //                }
-//            }
+            }
             if (batch) {
                 initBcelWorld(handler);
             }
@@ -168,6 +168,10 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
                 if (handler.hasErrors()) {
                     return false;
                 }
+
+				if (AsmManager.isReporting())
+				    AsmManager.getDefault().reportModelInfo("After a batch build");
+		
             } else {
 // done already?
 //                if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {  
@@ -176,9 +180,13 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
                 // System.err.println("XXXX start inc ");
                 binarySourcesForTheNextCompile = state.getBinaryFilesToCompile(true);
                 List files = state.getFilesToCompile(true);
-                               boolean hereWeGoAgain = !(files.isEmpty() && binarySourcesForTheNextCompile.isEmpty());
+				if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode())
+				if (AsmManager.attemptIncrementalModelRepairs)
+				    AsmManager.getDefault().processDelta(files,state.addedFiles,state.deletedFiles);
+                boolean hereWeGoAgain = !(files.isEmpty() && binarySourcesForTheNextCompile.isEmpty());
                 for (int i = 0; (i < 5) && hereWeGoAgain; i++) {
                     // System.err.println("XXXX inc: " + files);
+               
                     performCompilation(files);
                     if (handler.hasErrors() || (progressListener!=null && progressListener.isCancelledRequested())) {
                         return false;
@@ -186,9 +194,21 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
                     binarySourcesForTheNextCompile = state.getBinaryFilesToCompile(false);
                     files = state.getFilesToCompile(false);
                     hereWeGoAgain = !(files.isEmpty() && binarySourcesForTheNextCompile.isEmpty());
+                    // TODO Andy - Needs some thought here...
+                    // I think here we might want to pass empty addedFiles/deletedFiles as they were
+                    // dealt with on the first call to processDelta - we are going through this loop
+                    // again because in compiling something we found something else we needed to
+                    // rebuild.  But what case causes this?
+                    if (hereWeGoAgain) 
+					  if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode())
+					    if (AsmManager.attemptIncrementalModelRepairs)
+						  AsmManager.getDefault().processDelta(files,state.addedFiles,state.deletedFiles);
                 }
                 if (!files.isEmpty()) {
                     return batchBuild(buildConfig, baseHandler);
+                } else {                
+                	if (AsmManager.isReporting()) 
+			    	    AsmManager.getDefault().reportModelInfo("After an incremental build");
                 }
             }
 
@@ -391,30 +411,71 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		}
 	}
 	
+
+//	public static void dumprels() {
+//		IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
+//		int ctr = 1;
+//		Set entries = irm.getEntries();
+//		for (Iterator iter = entries.iterator(); iter.hasNext();) {
+//			String hid = (String) iter.next();
+//			List rels =  irm.get(hid);
+//			for (Iterator iterator = rels.iterator(); iterator.hasNext();) {
+//				IRelationship ir = (IRelationship) iterator.next();
+//				List targets = ir.getTargets();
+//				for (Iterator iterator2 = targets.iterator();
+//					iterator2.hasNext();
+//					) {
+//					String thid = (String) iterator2.next();
+//					System.err.println("Hid:"+(ctr++)+":(targets="+targets.size()+") "+hid+" ("+ir.getName()+") "+thid);
+//				}
+//			}
+//		}
+//	}
+	
+	
     /**
      * Responsible for managing the ASM model between builds.  Contains the policy for
      * maintaining the persistance of elements in the model.
      * 
      * TODO: implement incremental policy.
      */
-     private void setupModel() {
-        String rootLabel = "<root>";
+     private void setupModel(AjBuildConfig config) {
 		IHierarchy model = AsmManager.getDefault().getHierarchy();
-		AsmManager.getDefault().getRelationshipMap().clear();
+        	String rootLabel = "<root>";
+        	
+			AsmManager.getDefault().getRelationshipMap().clear();
 		
-        IProgramElement.Kind kind = IProgramElement.Kind.FILE_JAVA;
-        if (buildConfig.getConfigFile() != null) {
-            rootLabel = buildConfig.getConfigFile().getName();
-            model.setConfigFile(
-                buildConfig.getConfigFile().getAbsolutePath()
-            );
-            kind = IProgramElement.Kind.FILE_LST;  
-        }
-        model.setRoot(new ProgramElement(rootLabel, kind, new ArrayList()));
+        	IProgramElement.Kind kind = IProgramElement.Kind.FILE_JAVA;
+        	if (buildConfig.getConfigFile() != null) {
+            	rootLabel = buildConfig.getConfigFile().getName();
+            	model.setConfigFile(
+                	buildConfig.getConfigFile().getAbsolutePath()
+            	);
+            	kind = IProgramElement.Kind.FILE_LST;  
+        	}
+        	model.setRoot(new ProgramElement(rootLabel, kind, new ArrayList()));
                 
-        model.setFileMap(new HashMap());
-        setStructureModel(model);            
+        	model.setFileMap(new HashMap());
+        	setStructureModel(model);
     }
+    
+//    
+//    private void dumplist(List l) {
+//    	System.err.println("---- "+l.size());
+//    	for (int i =0 ;i<l.size();i++) System.err.println(i+"\t "+l.get(i));
+//    }
+//    private void accumulateFileNodes(IProgramElement ipe,List store) {
+//    	if (ipe.getKind()==IProgramElement.Kind.FILE_JAVA ||
+//    	    ipe.getKind()==IProgramElement.Kind.FILE_ASPECTJ) {
+//    	    	if (!ipe.getName().equals("<root>")) {
+//    	    		store.add(ipe);
+//    	    		return;
+//    	    	}
+//    	}
+//    	for (Iterator i = ipe.getChildren().iterator();i.hasNext();) {
+//    		accumulateFileNodes((IProgramElement)i.next(),store);
+//    	}
+//    }
     
     /** init only on initial batch compile? no file-specific options */
 	private void initBcelWorld(IMessageHandler handler) throws IOException {

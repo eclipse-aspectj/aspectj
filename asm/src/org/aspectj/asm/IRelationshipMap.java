@@ -14,6 +14,7 @@ package org.aspectj.asm;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 //import org.aspectj.asm.IRelationship.Kind;
 
@@ -50,21 +51,33 @@ public interface IRelationshipMap extends Serializable {
 	 * 
 	 * @return	null if the relationship is not found.
 	 */
-	public IRelationship get(IProgramElement source, IRelationship.Kind kind, String relationshipName);
+	public IRelationship get(IProgramElement source, IRelationship.Kind kind, 
+	                         String relationshipName,boolean runtimeTest,
+	                         boolean createIfMissing);
 
+	/**
+	 * Return a relationship matching the kind and name for the given element.  
+	 * 
+	 * @return	null if the relationship is not found.
+	 */
+    public IRelationship get(IProgramElement source, IRelationship.Kind kind,
+      String relationshipName);
+      
 	/**
 	 * Return a relationship matching the kind and name for the given element.
 	 * Creates the relationship if not found.
 	 * 
 	 * @return	null if the relationship is not found.
 	 */
-	public IRelationship get(String source, IRelationship.Kind kind, String relationshipName);
+	public IRelationship get(String source, IRelationship.Kind kind,
+	                         String relationshipName, boolean runtimeTest,
+	                         boolean createIfMissing);
 	
 	public void put(IProgramElement source, IRelationship relationship);
 
 	public void put(String handle, IRelationship relationship);
 	
-	public void remove(String handle, IRelationship relationship);
+	public boolean remove(String handle, IRelationship relationship);
 	
 	public void removeAll(String source);
 	
@@ -72,5 +85,7 @@ public interface IRelationshipMap extends Serializable {
 	 * Clear all of the relationships in the map.
 	 */
 	public void clear();
+	
+	public Set getEntries();
  
 }

@@ -23,7 +23,10 @@ import org.apache.bcel.generic.InstructionConstants;
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.Type;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.AsmRelationshipProvider;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
@@ -54,6 +57,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 	public boolean munge(BcelClassWeaver weaver) {
 		boolean changed = false;
+		boolean worthReporting = true;
 		
 		if (munger.getKind() == ResolvedTypeMunger.Field) {
 			changed = mungeNewField(weaver, (NewFieldTypeMunger)munger);
@@ -61,8 +65,10 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			changed = mungeNewMethod(weaver, (NewMethodTypeMunger)munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.PerObjectInterface) {
 			changed = mungePerObjectInterface(weaver, (PerObjectInterfaceTypeMunger)munger);
+			worthReporting = false;
 		} else if (munger.getKind() == ResolvedTypeMunger.PrivilegedAccess) {
 			changed = mungePrivilegedAccess(weaver, (PrivilegedAccessMunger)munger);
+			worthReporting = false;
 		} else if (munger.getKind() == ResolvedTypeMunger.Constructor) {
 			changed = mungeNewConstructor(weaver, (NewConstructorTypeMunger)munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.Parent) {
@@ -75,6 +81,43 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			WeaverStateInfo info = 
 				weaver.getLazyClassGen().getOrCreateWeaverStateInfo();
 			info.addConcreteMunger(this);
+		}
+		// Whilst type mungers aren't persisting their source locations, we add this relationship during
+		// compilation time (see other reference to ResolvedTypeMunger.persist)
+		if (ResolvedTypeMunger.persistSourceLocation) {
+			if (changed) {
+				if (munger.getKind().equals(ResolvedTypeMunger.Parent)) {
+			  	  AsmRelationshipProvider.addRelationship(weaver.getLazyClassGen().getType(), munger,getAspectType());
+				} else {
+			  	  AsmRelationshipProvider.addRelationship(weaver.getLazyClassGen().getType(), munger,getAspectType());	
+				}
+			}
+		}
+		
+		// TAG: WeavingMessage
+		if (worthReporting  && munger!=null && !weaver.getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
+			String tName = weaver.getLazyClassGen().getType().getSourceLocation().getSourceFile().getName();
+			if (tName.indexOf("no debug info available")!=-1) tName = "no debug info available";
+			String fName = getAspectType().getSourceLocation().getSourceFile().getName();
+        	if (munger.getKind().equals(ResolvedTypeMunger.Parent)) {
+        		// This message will come out of AjLookupEnvironment.addParent if doing a source
+        		// compilation.
+        		NewParentTypeMunger parentTM = (NewParentTypeMunger)munger;
+        		if (parentTM.getNewParent().isInterface()) {
+					weaver.getWorld().getMessageHandler().handleMessage(WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_DECLAREPARENTSIMPLEMENTS,
+					new String[]{weaver.getLazyClassGen().getType().getName(),
+					tName,parentTM.getNewParent().getName(),fName}));
+        		} else {
+        			System.err.println("BANG, you need to fix this.  BcelTypeMunger");
+        		}
+        	} else {
+        		weaver.getWorld().getMessageHandler().handleMessage(WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ITD,
+        		new String[]{weaver.getLazyClassGen().getType().getName(),
+        			         tName,munger.getKind().toString().toLowerCase(),
+        			         getAspectType().getName(),
+        					 fName+":'"+munger.getSignature()+"'"}));
+				// ??? If only type mungers knew their originating line numbers ...
+        	}	
 		}
 		
 		return changed;

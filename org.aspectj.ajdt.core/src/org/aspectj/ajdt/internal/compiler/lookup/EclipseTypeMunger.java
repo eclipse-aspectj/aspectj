@@ -48,6 +48,9 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 			this.sourceLocation =
 				new EclipseSourceLocation(sourceMethod.compilationResult, 
 						sourceMethod.sourceStart, sourceMethod.sourceEnd);
+			// Piece of magic that tells type mungers where they came from.
+			// Won't be persisted unless ResolvedTypeMunger.persistSourceLocation is true.
+			munger.setSourceLocation(sourceLocation);
 		}
 		targetTypeX = munger.getSignature().getDeclaringType().resolve(world.getWorld());
 		//targetBinding = (ReferenceBinding)world.makeTypeBinding(targetTypeX);

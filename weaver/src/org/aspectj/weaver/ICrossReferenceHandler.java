@@ -20,6 +20,10 @@ import org.aspectj.bridge.ISourceLocation;
  */
 public interface ICrossReferenceHandler {
 
-	void addCrossReference(ISourceLocation from, ISourceLocation to, IRelationship.Kind kind);
+	void addCrossReference(
+	  ISourceLocation from, 
+	  ISourceLocation to,
+	  IRelationship.Kind kind,
+	  boolean runtimeTest);
 	
 }

@@ -38,7 +38,9 @@ public abstract class StructureViewNodeFactory {
 
 		IStructureViewNode svNode = createDeclaration(node, icon, children);
 		String nodeHandle = node.getHandleIdentifier();
-		if (nodeHandle != null) {	
+		// Don't put relationships on fields as they can then appear twice when building the outline - 
+		// once under clinit field-set nodes and once under the field declaration.
+		if (nodeHandle != null && !node.getKind().equals(IProgramElement.Kind.FIELD)) {	
 			List relationships = AsmManager.getDefault().getRelationshipMap().get(nodeHandle);
 			if (relationships != null) {
 				for (Iterator it = relationships.iterator(); it.hasNext(); ) {

@@ -348,6 +348,15 @@ public class AjBuildConfig { // XXX needs bootclasspath?
         if (!isXserializableAspects() && global.isXserializableAspects()) {
             setXserializableAspects(true);
         }
+        if (!isXlazyTjp() && global.isXlazyTjp()) {
+        	setXlazyTjp(true);
+        }
+        if (!isXreweavable() && global.isXreweavable()) {
+        	setXreweavable(true);
+        }
+        if (!getXreweavableCompressClasses() && global.getXreweavableCompressClasses()) {
+        	setXreweavableCompressClasses(true);
+        }
     }
 
     void join(Collection local, Collection global) {
@@ -490,4 +499,12 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 		options.generateModel = structureModelMode;
 	}
 	
+	
+	public void setShowWeavingInformation(boolean b) {
+		options.showWeavingInformation = true;
+	}
+	
+	public boolean getShowWeavingInformation() { 
+		return options.showWeavingInformation;
+	}
 }

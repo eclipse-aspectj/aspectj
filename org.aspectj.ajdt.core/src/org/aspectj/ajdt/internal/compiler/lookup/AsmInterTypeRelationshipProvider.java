@@ -55,11 +55,11 @@ public class AsmInterTypeRelationshipProvider {
 				
 			IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
 			if (sourceHandle != null && targetHandle != null) {
-				IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARES);
-				foreward.getTargets().add(targetHandle);
+				IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARES,false,true);
+				foreward.addTarget(targetHandle);
 				
-				IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARED_BY);
-				back.getTargets().add(sourceHandle);  
+				IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARED_BY,false,true);
+				back.addTarget(sourceHandle);
 			}
 		}
 	}

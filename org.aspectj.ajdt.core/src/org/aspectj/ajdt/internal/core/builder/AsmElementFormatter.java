@@ -15,7 +15,9 @@ package org.aspectj.ajdt.internal.core.builder;
 import java.util.*;
 
 import org.aspectj.ajdt.internal.compiler.ast.*;
+import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.*;
 import org.eclipse.jdt.internal.compiler.ast.*;
@@ -98,11 +100,36 @@ public class AsmElementFormatter {
 				node.setDetails("\"" + genDeclareMessage(deow.getMessage()) + "\"");
 				
 			} else if (declare.declareDecl instanceof DeclareParents) {
+
 				node.setKind( IProgramElement.Kind.DECLARE_PARENTS);
 				DeclareParents dp = (DeclareParents)declare.declareDecl;
 				node.setName(name + DECLARE_PARENTS);
-				node.setDetails(genTypePatternLabel(dp.getChild()));	
 				
+				String kindOfDP = null;
+				StringBuffer details = new StringBuffer("");
+				TypePattern[] newParents = dp.getParents().getTypePatterns();
+				for (int i = 0; i < newParents.length; i++) {
+					TypePattern tp = newParents[i];
+					TypeX tx = tp.getExactType();
+					if (kindOfDP == null) {
+					  kindOfDP = "implements ";
+					  try {
+					  	ResolvedTypeX rtx = tx.resolve(((AjLookupEnvironment)declare.scope.environment()).factory.getWorld());
+						if (!rtx.isInterface()) kindOfDP = "extends ";
+					  } catch (Throwable t) {
+					  	// What can go wrong???? who knows!
+					  }
+					  
+					}
+					String typename= tp.toString();
+					if (typename.lastIndexOf(".")!=-1) {
+						typename=typename.substring(typename.lastIndexOf(".")+1);
+					}
+					details.append(typename);
+					if ((i+1)<newParents.length) details.append(",");
+				}
+				node.setDetails(kindOfDP+details.toString());
+
 			} else if (declare.declareDecl instanceof DeclareSoft) {
 				node.setKind( IProgramElement.Kind.DECLARE_SOFT);
 				DeclareSoft ds = (DeclareSoft)declare.declareDecl;
@@ -125,17 +152,30 @@ public class AsmElementFormatter {
 			InterTypeDeclaration itd = (InterTypeDeclaration)methodDeclaration;
 			String name = itd.onType.toString() + "." + new String(itd.getDeclaredSelector()); 
 			if (methodDeclaration instanceof InterTypeFieldDeclaration) {
-				node.setKind(IProgramElement.Kind.INTER_TYPE_FIELD);				
+				node.setKind(IProgramElement.Kind.INTER_TYPE_FIELD);
+				node.setName(name);
 			} else if (methodDeclaration instanceof InterTypeMethodDeclaration) {
 				node.setKind(IProgramElement.Kind.INTER_TYPE_METHOD);
-//				InterTypeMethodDeclaration itmd = (InterTypeMethodDeclaration)methodDeclaration;
+				node.setName(name);
 			} else if (methodDeclaration instanceof InterTypeConstructorDeclaration) {
 				node.setKind(IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR);
+				
+	//			StringBuffer argumentsSignature = new StringBuffer("fubar");
+//				argumentsSignature.append("(");
+//				if (methodDeclaration.arguments!=null && methodDeclaration.arguments.length>1) {
+//		
+//				for (int i = 1;i<methodDeclaration.arguments.length;i++) {
+//					argumentsSignature.append(methodDeclaration.arguments[i]);
+//					if (i+1<methodDeclaration.arguments.length) argumentsSignature.append(",");
+//				}
+//				}
+//				argumentsSignature.append(")");
 //				InterTypeConstructorDeclaration itcd = (InterTypeConstructorDeclaration)methodDeclaration;				
+				node.setName(itd.onType.toString() + "." + itd.onType.toString()/*+argumentsSignature.toString()*/);
 			} else {
 				node.setKind(IProgramElement.Kind.ERROR);
+				node.setName(name);
 			}
-			node.setName(name);
 			node.setCorrespondingType(itd.returnType.toString());
 			if (node.getKind() != IProgramElement.Kind.INTER_TYPE_FIELD) {
 				setParameters(methodDeclaration, node);

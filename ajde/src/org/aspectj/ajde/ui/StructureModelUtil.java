@@ -14,17 +14,69 @@
 
 package org.aspectj.ajde.ui;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.asm.*;
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationshipMap;
 //import org.aspectj.asm.internal.*;
 
 /**
  * Prototype functionality for package view clients.
  */  
 public class StructureModelUtil {
-
+	
+	public static class ModelIncorrectException extends Exception {
+		public ModelIncorrectException(String s) {
+			super(s);
+		}
+	}
+	
+	/**
+	 * Check the properties of the current model.  The parameter string lists properties of the model
+	 * that should be correct.  If any of the properties are incorrect, a ModelIncorrectException is
+	 * thrown.
+	 * 
+	 * @param toCheck comma separated list of name=value pairs that should be found in the ModelInfo object
+	 * @throws ModelIncorrectException thrown if any of the name=value pairs in toCheck are not found
+	 */
+	public static void checkModel(String toCheck) throws ModelIncorrectException {
+		Properties modelProperties = AsmManager.ModelInfo.summarizeModel().getProperties();
+		
+		// Break toCheck into pieces and check each exists
+		StringTokenizer st = new StringTokenizer(toCheck,",=");
+		while (st.hasMoreTokens()) {
+			String key = st.nextToken();
+			String expValue = st.nextToken();
+			boolean expectingZero = false;
+			try {
+				expectingZero = (Integer.parseInt(expValue)==0);
+			} catch (NumberFormatException nfe) {
+				// this is ok as expectingZero will be false
+			}
+		    String value = modelProperties.getProperty(key);
+		    if (value == null) {
+		    	if (!expectingZero)
+		    	  throw new ModelIncorrectException("Couldn't find '"+key+"' property for the model");	
+		    } else if (!value.equals(expValue)) {
+		    	throw new ModelIncorrectException("Model property '"+key+"' incorrect:  Expected "+expValue+" but found "+value);
+		    }
+		}	
+	}
+	
 	/**
 	 * This method returns a map from affected source lines in a class to
 	 * a List of aspects affecting that line.

@@ -8,6 +8,7 @@
  *  
  * Contributors: 
  *     Mik Kersten     initial implementation 
+ *     Andy Clement    Extensions for better IDE representation
  * ******************************************************************/
 
 
@@ -32,7 +33,19 @@ public class AspectJElementHierarchy implements IHierarchy {
     private Map typeMap = null;
     
 	public IProgramElement getElement(String handle) {
-		throw new RuntimeException("unimplemented");
+		IProgramElement cachedEntry = (IProgramElement)handleMap.get(handle);
+		if (cachedEntry!=null) return cachedEntry;
+		
+		StringTokenizer st = new StringTokenizer(handle, ProgramElement.ID_DELIM);
+		String file = st.nextToken();
+		int line = new Integer(st.nextToken()).intValue();
+		// int col = new Integer(st.nextToken()).intValue(); TODO: use column number when available
+		String canonicalSFP = AsmManager.getDefault().getCanonicalFilePath(new File(file));
+		IProgramElement ret = findNodeForSourceLineHelper(root,canonicalSFP, line);
+		if (ret!=null) {
+			handleMap.put(handle,ret);
+		}
+		return ret;
 	}
 
     public IProgramElement getRoot() {
@@ -47,6 +60,10 @@ public class AspectJElementHierarchy implements IHierarchy {
 
 	public void addToFileMap( Object key, Object value ){
 		fileMap.put( key, value );
+	}
+	
+	public boolean removeFromFileMap(Object key) {
+		return (fileMap.remove(key)!=null);
 	}
 
 	public void setFileMap(HashMap fileMap) {
@@ -335,6 +352,15 @@ public class AspectJElementHierarchy implements IHierarchy {
 
 	protected void cache(String handle, ProgramElement pe) {
 		handleMap.put(handle,pe);
+	}
+
+	public void flushTypeMap() {
+		typeMap.clear();
+		
+	}
+
+	public void flushHandleMap() {
+		handleMap.clear();
 	}
 }
 

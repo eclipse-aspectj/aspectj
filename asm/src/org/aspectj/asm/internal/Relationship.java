@@ -8,6 +8,7 @@
  *  
  * Contributors: 
  *     Mik Kersten     initial implementation 
+ *     Andy Clement    Extensions for better IDE representation
  * ******************************************************************/
 
 
@@ -15,7 +16,6 @@ package org.aspectj.asm.internal;
 
 import java.util.List;
 
-//import org.aspectj.asm.*;
 import org.aspectj.asm.IRelationship;
 //import org.aspectj.asm.IRelationship.Kind;
 
@@ -29,17 +29,20 @@ public class Relationship implements IRelationship {
 	private Kind kind;
 	private String sourceHandle;
 	private List targets;
+	private boolean hasRuntimeTest;
 	
 	public Relationship(
 		String name, 
 		Kind kind,
 		String sourceHandle,
-		List targets) {
+		List targets,
+		boolean runtimeTest) {
 			
 		this.name = name;
 		this.kind = kind;
 		this.sourceHandle = sourceHandle;
 		this.targets = targets;
+		this.hasRuntimeTest = runtimeTest;
 	}	
 	
 	public String getName() {
@@ -60,6 +63,16 @@ public class Relationship implements IRelationship {
 
 	public List getTargets() {
 		return targets;
+	}
+	
+	public boolean addTarget(String handle) {
+		if (targets.contains(handle)) return false;
+		targets.add(handle);
+		return true;
+	}
+	
+	public boolean hasRuntimeTest() {
+		return hasRuntimeTest;
 	}
 
 }

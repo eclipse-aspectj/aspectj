@@ -52,11 +52,15 @@ public class Checker extends ShadowMunger {
 				isError ? IMessage.ERROR : IMessage.WARNING,
 				shadow.getSourceLocation(),
                 null,
-                new ISourceLocation[]{this.getSourceLocation()});
-			world.getMessageHandler().handleMessage(message);
+                new ISourceLocation[]{this.getSourceLocation()},true);
+            
+            world.getMessageHandler().handleMessage(message);
 			
 			if (world.xrefHandler != null) {
-				world.xrefHandler.addCrossReference(this.getSourceLocation(),shadow.getSourceLocation(),IRelationship.Kind.DECLARE);
+				world.xrefHandler.addCrossReference(this.getSourceLocation(),
+				  shadow.getSourceLocation(),
+				  (this.isError?IRelationship.Kind.DECLARE_ERROR:IRelationship.Kind.DECLARE_WARNING),false);
+			
 			}
 			
 			if (world.getModel() != null) {

@@ -31,6 +31,7 @@ public interface IHierarchy extends Serializable {
 	public IProgramElement getRoot();
 	public void setRoot(IProgramElement root);
 	public void addToFileMap(Object key, Object value);
+	public boolean removeFromFileMap(Object key);
 	public void setFileMap(HashMap fileMap);
 	public Object findInFileMap(Object key);
 	public Set getFileMapEntrySet();
@@ -94,4 +95,8 @@ public interface IHierarchy extends Serializable {
 	public String getConfigFile();
 	
 	public void setConfigFile(String configFile);
+
+	public void flushTypeMap();
+
+	public void flushHandleMap();
 }

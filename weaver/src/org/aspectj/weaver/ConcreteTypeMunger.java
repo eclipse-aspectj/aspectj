@@ -44,7 +44,8 @@ public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparab
 	}
 	
 	public ISourceLocation getSourceLocation() {
-		return null; //XXX
+		if (munger == null) return null;
+		return munger.getSourceLocation(); //XXX
 	}
 
 	public boolean matches(ResolvedTypeX onType) {

@@ -432,6 +432,16 @@ public class CompilerAdapter {
 	}
 
 
+	/** Local helper method for splitting option strings */
+	private static List tokenizeString(String str) {
+		List tokens = new ArrayList();
+		StringTokenizer tok = new StringTokenizer(str);
+		while ( tok.hasMoreTokens() ) {
+			tokens.add(tok.nextToken());	
+		}
+		return tokens;
+	}
+	
 	/**
 	 * Helper method for configure build options.
      * This reads all command-line options specified
@@ -448,13 +458,25 @@ public class CompilerAdapter {
             return true;
         }
 		
-		StringTokenizer tok = new StringTokenizer( nonStdOptions );
-		String[] args = new String[ tok.countTokens() ];
-		int argCount = 0;
-		while ( tok.hasMoreTokens() ) {
-			args[argCount++] = tok.nextToken();	
+		// Break a string into a string array of non-standard options.
+		// Allows for one option to include a ' '.   i.e. assuming it has been quoted, it
+		// won't accidentally get treated as a pair of options (can be needed for xlint props file option)
+		List tokens = new ArrayList();
+		int ind = nonStdOptions.indexOf('\"');
+		int ind2 = nonStdOptions.indexOf('\"',ind+1);
+		if ((ind > -1) && (ind2 > -1)) { // dont tokenize within double quotes
+			String pre = nonStdOptions.substring(0,ind);
+			String quoted = nonStdOptions.substring(ind+1,ind2);
+			String post = nonStdOptions.substring(ind2+1,nonStdOptions.length());
+			tokens.addAll(tokenizeString(pre));
+			tokens.add(quoted);
+			tokens.addAll(tokenizeString(post));
+		} else {
+			tokens.addAll(tokenizeString(nonStdOptions));
 		}
-
+		String[] args = (String[])tokens.toArray(new String[]{});
+		
+		
 		// set the non-standard options in an alternate build config
 		// (we don't want to lose the settings we already have)
         CountingMessageHandler counter 

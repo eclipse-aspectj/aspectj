@@ -39,5 +39,9 @@ public class FastMatchInfo {
 	public ResolvedTypeX getType() {
 		return type;
 	}
+	
+	public String toString() {
+		return "FastMatchInfo [type="+type.getName()+"] ["+(kind==null?"AllKinds":"Kind="+kind)+"]";
+	}
 
 }

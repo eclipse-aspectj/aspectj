@@ -16,9 +16,11 @@ package org.aspectj.weaver;
 import java.util.ArrayList;
 import java.util.Iterator;
 import org.aspectj.asm.*;
+import org.aspectj.asm.internal.AspectJElementHierarchy;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
+import org.aspectj.weaver.bcel.BcelAdvice;
 
 public class AsmRelationshipProvider {
 	
@@ -28,6 +30,8 @@ public class AsmRelationshipProvider {
 	public static final String DECLAREDY_BY = "declared by";
 	public static final String MATCHED_BY = "matched by";
 	public static final String MATCHES_DECLARE = "matches declare";
+	public static final String INTER_TYPE_DECLARES = "declared on";
+	public static final String INTER_TYPE_DECLARED_BY = "aspect declarations";
 
 	public static void checkerMunger(IHierarchy model, Shadow shadow, Checker checker) {
 		if (shadow.getSourceLocation() == null || checker.getSourceLocation() == null) return;
@@ -44,37 +48,116 @@ public class AsmRelationshipProvider {
 
 		IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
 		if (sourceHandle != null && targetHandle != null) {
-			IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE, MATCHED_BY);
-			foreward.getTargets().add(targetHandle);
+			IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE, MATCHED_BY,false,true);
+			foreward.addTarget(targetHandle);
+//			foreward.getTargets().add(targetHandle);
 				
-			IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE, MATCHES_DECLARE);
+			IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE, MATCHES_DECLARE,false,true);
 			if (back != null && back.getTargets() != null) {
-				back.getTargets().add(sourceHandle);   
+				back.addTarget(sourceHandle);
+				//back.getTargets().add(sourceHandle);   
 			}
 		}
+	}
+
+    // For ITDs
+	public static void addRelationship(
+		ResolvedTypeX onType,
+		ResolvedTypeMunger munger,
+		ResolvedTypeX originatingAspect) {
+
+		String sourceHandle = "";
+		if (munger.getSourceLocation()!=null) {
+			sourceHandle = ProgramElement.createHandleIdentifier(
+										munger.getSourceLocation().getSourceFile(),
+										munger.getSourceLocation().getLine(),
+										munger.getSourceLocation().getColumn());
+		} else {
+			sourceHandle = ProgramElement.createHandleIdentifier(
+							originatingAspect.getSourceLocation().getSourceFile(),
+							originatingAspect.getSourceLocation().getLine(),
+							originatingAspect.getSourceLocation().getColumn());
+		}
+		if (originatingAspect.getSourceLocation() != null) {
+				
+			String targetHandle = ProgramElement.createHandleIdentifier(
+				onType.getSourceLocation().getSourceFile(),
+				onType.getSourceLocation().getLine(),
+				onType.getSourceLocation().getColumn());
+				
+			IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
+			if (sourceHandle != null && targetHandle != null) {
+				IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARES,false,true);
+				foreward.addTarget(targetHandle);
+//				foreward.getTargets().add(targetHandle);
+				
+				IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARED_BY,false,true);
+				back.addTarget(sourceHandle);
+//				back.getTargets().add(sourceHandle);  
+			}
+		}
+	}
+	
+	public static void addDeclareParentsRelationship(ISourceLocation decp,ResolvedTypeX targetType) {
+
+		String sourceHandle = ProgramElement.createHandleIdentifier(decp.getSourceFile(),decp.getLine(),decp.getColumn());
+		
+		IProgramElement ipe = AsmManager.getDefault().getHierarchy().findElementForHandle(sourceHandle);
+		
+	
+		String targetHandle = ProgramElement.createHandleIdentifier(
+				targetType.getSourceLocation().getSourceFile(),
+				targetType.getSourceLocation().getLine(),
+				targetType.getSourceLocation().getColumn());
+				
+		IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
+		if (sourceHandle != null && targetHandle != null) {
+			IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARES,false,true);
+			foreward.addTarget(targetHandle);
+				
+			IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARED_BY,false,true);
+			back.addTarget(sourceHandle);
+		}
+		
 	}
 	
 	public static void adviceMunger(IHierarchy model, Shadow shadow, ShadowMunger munger) {
 		if (munger instanceof Advice) {
 			Advice advice = (Advice)munger;
+			
 			if (advice.getKind().isPerEntry() || advice.getKind().isCflow()) {
 				// TODO: might want to show these in the future
 				return;
 			}
 			
+
 			IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
-			IProgramElement targetNode = getNode(AsmManager.getDefault().getHierarchy(), shadow);			
+			IProgramElement targetNode = getNode(AsmManager.getDefault().getHierarchy(), shadow);
+			boolean runtimeTest = ((BcelAdvice)munger).hasDynamicTests();
+			
+			// Work out extra info to inform interested UIs !
+			IProgramElement.ExtraInformation ai = new IProgramElement.ExtraInformation();
+
 			String adviceHandle = advice.getHandle(); 
+			
+			// What kind of advice is it?
+			// TODO: Prob a better way to do this but I just want to
+			// get it into CVS !!!
+			AdviceKind ak = ((Advice)munger).getKind();
+			ai.setExtraAdviceInformation(ak.getName());
+			IProgramElement adviceElement = AsmManager.getDefault().getHierarchy().findElementForHandle(adviceHandle);
+			adviceElement.setExtraInfo(ai);		
+			
 			if (adviceHandle != null && targetNode != null) {
 		
 				if (targetNode != null) {
 					String targetHandle = targetNode.getHandleIdentifier();	
 				
-					IRelationship foreward = mapper.get(adviceHandle, IRelationship.Kind.ADVICE, ADVISES);
-					if (foreward != null) foreward.getTargets().add(targetHandle);
+					IRelationship foreward = mapper.get(adviceHandle, IRelationship.Kind.ADVICE, ADVISES,runtimeTest,true);
+					if (foreward != null) foreward.addTarget(targetHandle);//foreward.getTargets().add(targetHandle);
 					
-					IRelationship back = mapper.get(targetHandle, IRelationship.Kind.ADVICE, ADVISED_BY);
-					if (back != null) back.getTargets().add(adviceHandle);
+					IRelationship back = mapper.get(targetHandle, IRelationship.Kind.ADVICE, ADVISED_BY,runtimeTest,true);
+					if (back != null)     back.addTarget(adviceHandle);//back.getTargets().add(adviceHandle);
 				}
 			}
 
@@ -102,12 +185,19 @@ public class AsmRelationshipProvider {
 		}
 	}
 	
+	private static boolean sourceLinesMatch(ISourceLocation loc1,ISourceLocation loc2) {
+		if (loc1.getLine()!=loc2.getLine()) return false;
+		return true;
+	}
+	
+	
 	private static IProgramElement findOrCreateCodeNode(IProgramElement enclosingNode, Member shadowSig, Shadow shadow)
 	{
 		for (Iterator it = enclosingNode.getChildren().iterator(); it.hasNext(); ) {
 			IProgramElement node = (IProgramElement)it.next();
 			if (shadowSig.getName().equals(node.getBytecodeName()) &&
-				shadowSig.getSignature().equals(node.getBytecodeSignature()))
+				shadowSig.getSignature().equals(node.getBytecodeSignature()) &&
+				sourceLinesMatch(node.getSourceLocation(),shadow.getSourceLocation()))
 			{
 				return node;
 			}

@@ -13,25 +13,42 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
-import java.util.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
-//import org.aspectj.ajdt.internal.compiler.ast.DeclareDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
-//import org.aspectj.asm.*;
-//import org.aspectj.asm.IProgramElement;
-//import org.aspectj.asm.internal.Relationship;
+import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
-import org.aspectj.weaver.*;
+import org.aspectj.bridge.WeaveMessage;
+import org.aspectj.weaver.AsmRelationshipProvider;
+import org.aspectj.weaver.ConcreteTypeMunger;
+import org.aspectj.weaver.ResolvedTypeMunger;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.LazyClassGen;
-import org.aspectj.weaver.patterns.*;
+import org.aspectj.weaver.patterns.DeclareParents;
+import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.env.IBinaryType;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.impl.ITypeRequestor;
-import org.eclipse.jdt.internal.compiler.lookup.*;
+import org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
+import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
+import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 
 /**
@@ -304,8 +321,17 @@ public class AjLookupEnvironment extends LookupEnvironment {
 					needOldStyleWarning = false;
 				}
 				onType.addInterTypeMunger(munger);
-
-				AsmInterTypeRelationshipProvider.addRelationship(onType, munger);
+				//TODO: Andy Should be done at weave time.
+				// Unfortunately we can't do it at weave time unless the type mungers remember where
+				// they came from.  Thats why we do it here during complation because at this time
+				// they do know their source location.  I've put a flag in ResolvedTypeMunger that
+				// records whether type mungers are currently set to remember their source location.
+				// The flag is currently set to false, it should be set to true when we do the
+				// work to version all AspectJ attributes.
+				// (When done at weave time, it is done by invoking addRelationship() on 
+				// AsmRelationshipProvider (see BCELTypeMunger)
+				if (!ResolvedTypeMunger.persistSourceLocation) // Do it up front if we bloody have to
+				 AsmInterTypeRelationshipProvider.addRelationship(onType, munger);
 			}
 		}
 		
@@ -338,15 +364,39 @@ public class AjLookupEnvironment extends LookupEnvironment {
 										onType + ": " + dangerousInterfaces.get(parent),
 										onType.getSourceLocation(), null);
 				}
+				AsmRelationshipProvider.addDeclareParentsRelationship(declareParents.getSourceLocation(),factory.fromEclipse(sourceType));
 				addParent(sourceType, parent);
 			}
 		}
 	}
 
+	private void reportDeclareParentsMessage(WeaveMessage.WeaveMessageKind wmk,SourceTypeBinding sourceType,ResolvedTypeX parent) {
+		if (!factory.getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
+			String filename = new String(sourceType.getFileName());
+			if (filename.lastIndexOf(File.separator)!=-1)
+			filename = filename.substring(filename.lastIndexOf(File.separator)+1);
+
+			factory.getWorld().getMessageHandler().handleMessage(
+			WeaveMessage.constructWeavingMessage(wmk,
+				new String[]{CharOperation.toString(sourceType.compoundName),
+						filename,
+						parent.getClassName(),
+						parent.getSourceLocation().getSourceFile().getName()}));
+		}
+	}
+
+
 	private void addParent(SourceTypeBinding sourceType, ResolvedTypeX parent) {
 		ReferenceBinding parentBinding = (ReferenceBinding)factory.makeTypeBinding(parent); 
+		
 		if (parentBinding.isClass()) {
 			sourceType.superclass = parentBinding;
+			
+			// TAG: WeavingMessage    DECLARE PARENTS: EXTENDS
+			// Compiler restriction: Can't do EXTENDS at weave time
+			// So, only see this message if doing a source compilation
+			reportDeclareParentsMessage(WeaveMessage.WEAVEMESSAGE_DECLAREPARENTSEXTENDS,sourceType,parent);
+			
 		} else {
 			ReferenceBinding[] oldI = sourceType.superInterfaces;
 			ReferenceBinding[] newI;
@@ -361,6 +411,12 @@ public class AjLookupEnvironment extends LookupEnvironment {
 			}
 			sourceType.superInterfaces = newI;
 			warnOnAddedInterface(factory.fromEclipse(sourceType),parent);
+			
+
+			// TAG: WeavingMessage    DECLARE PARENTS: IMPLEMENTS
+			// This message will come out of BcelTypeMunger.munge if doing a binary weave
+			reportDeclareParentsMessage(WeaveMessage.WEAVEMESSAGE_DECLAREPARENTSIMPLEMENTS,sourceType,parent);
+			
 		}
 		
 	}

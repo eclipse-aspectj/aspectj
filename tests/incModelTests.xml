@@ -1,0 +1,102 @@
+
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+
+<suite>
+<!-- 
+     In order for these tests to pass you have to flip this flag to true:
+       AsmManager.attemptIncrementalModelRepairs
+       
+     If you want to debug the output from the tests, you might want uncomment
+     the static initializer in AsmManager which will enable you to collect
+     detailed information on model processing.
+-->
+
+<!-- 
+     These tests utilise the inc-compile test harness option but I've extended it
+     with a checkModel option which enables me to check information about the model
+     after a incremental compilation step.
+-->
+
+<!--
+	asm relationships for inter type declarations are tricky things.  
+	Today, because type mungers don't remember where they came from in attribute form, 
+	the relationships for ITDs are created during source compilation.  When building incrementally,
+	we are really doing a binary weave of 'everything else' with the source for the file that
+	has changed.  In this case the relationships for ITDs are not added.  This makes managing
+	them incrementally in the model rather tough!
+	
+	The solution is to make them remember where they came from.  This would mean we can create
+	the relationships during weave time and so they will be created when either doing a 
+	source compilation or a binary weave.  The support is in ResolvedTypeMunger to remember
+	where they came from (you just have to flick a switch) but I haven't switched it on
+	because we need to version *all* aspectj attributes properly so that we don't end up with 
+	a migration nightmare.  If ITD attributes remembered their location in a particular version
+	of AspectJ then everyone would need to recompile their code from source with that version.
+	If we keep changing the attributes, we keep having this problem.  If we include a *version*
+	number in every attribute we can make the compiler more robust to coping with 'old' attributes
+	that might be missing certain options or values.
+	
+	Hence the first test here is not complete...
+	
+-->
+    <ajc-test dir="incremental/model/introduction" 
+    	title="Testing incremental structure model: Intertype declarations (and a declare parents)" 
+    	keywords="incremental-test,model-test" >
+        <compile staging="true" options="-incremental,-emacssym" sourceroots="."/>
+        <inc-compile tag="20"/> <!-- Just 'touched' one file -->
+        <inc-compile tag="30"/> <!-- Just 'touched another aspect -->
+     </ajc-test>
+     
+	 <ajc-test dir="incremental/model/intertype" 
+    	title="Testing incremental structure model: Intertype field declarations" 
+    	keywords="incremental-test,model-test" >
+        <compile staging="true" options="-incremental,-emacssym" sourceroots="."/>
+        <inc-compile tag="20" checkModel="inter-type field=2,RelationshipMapSize=3"/> <!-- BetaA intertypes int i and String s -->
+        <inc-compile tag="30" checkModel="inter-type field=1,RelationshipMapSize=2"/> <!-- BetaA takes the String intertype away -->
+     </ajc-test>
+     
+	<ajc-test dir="incremental/model/weaving2" 
+    	title="Testing incremental structure model: Weaving handlers" 
+    	keywords="incremental-test,model-test" >
+        <compile staging="true" options="-incremental,-emacssym" sourceroots="."/>
+        <inc-compile tag="20" checkModel="code=1,advice=1,RelationshipMapSize=2"/> <!-- BetaA has a new piece of handler advice added -->
+        <inc-compile tag="30" checkModel="code=1,advice=2,RelationshipMapSize=3"/> <!-- secondary.GammaA added, also advises the same handler -->
+        <inc-compile tag="40" checkModel="code=1,advice=1,RelationshipMapSize=2"/> <!-- primary.BetaA deleted -->
+    </ajc-test>
+    
+	<ajc-test dir="incremental/model/weaving" 
+    	title="Testing incremental structure model: Weaving" 
+    	keywords="incremental-test,model-test" >
+        <compile staging="true" options="-incremental,-emacssym" sourceroots="."/>
+        <inc-compile tag="20" checkModel="code=2,advice=2,java source file=3,RelationshipMapSize=4"/> <!-- BetaA has a new piece of advice added -->
+        <inc-compile tag="30" checkModel="code=1,advice=1,RelationshipMapSize=2"/> <!-- BetaA has a piece of advice removed -->
+        <inc-compile tag="40" checkModel="code=0,RelationshipMapSize=0,advice=0"/> <!-- BetaA other piece of advice removed (now empty) -->
+    </ajc-test>
+
+
+    <ajc-test dir="incremental/model/sourcefiles_updating" 
+    	title="Testing incremental structure model: Updating files"
+    	keywords="incremental-test,model-test" >
+        <compile staging="true" options="-incremental,-emacssym" sourceroots="."/>
+        <!-- On first compile, 5 source files in model, 'root','Alpha','Beta','Gamma','Delta' -->
+        <inc-compile tag="20" checkModel="java source file=5,method=4,class=3,FileMapSize=4"/> <!-- Beta changed, method added -->
+        <inc-compile tag="30" checkModel="java source file=5,method=4,class=4,advice=1"/> <!-- Delta changed, class added -->
+        <inc-compile tag="40" checkModel="advice=2"/> <!-- Gamma changed, advice added -->
+        <inc-compile tag="50" checkModel="advice=2,pointcut=1"/> <!-- Gamma changed, pointcut added -->
+        <inc-compile tag="60" checkModel="advice=0,pointcut=1"/> <!-- Gamma changed, both advice removed -->
+	</ajc-test>
+	
+	<ajc-test dir="incremental/model/sourcefiles_addremove" 
+    	title="Testing incremental structure model: Adding and removing files" 
+    	keywords="incremental-test,model-test" >
+        <compile staging="true" options="-incremental,-emacssym" sourceroots="."/>
+        <!-- On first compile, two source files in model, 'root' and 'Alpha' -->
+        <inc-compile tag="20" checkModel="java source file=3,FileMapSize=2"/> <!-- Adds primary.Beta class -->   
+        <inc-compile tag="30" checkModel="java source file=4"/> <!-- Adds secondary.Gamma aspect -->
+        <inc-compile tag="40" checkModel="java source file=5,package=2,FileMapSize=4"/> <!-- Adds seconday.Delta class -->
+        <inc-compile tag="50" checkModel="java source file=4,package=2"/> <!-- Deletes Gamma aspect -->
+        <inc-compile tag="60" checkModel="java source file=2,FileMapSize=1"/> <!-- Deletes Beta and Delta classes -->
+    </ajc-test>
+       
+       
+</suite>  

@@ -135,12 +135,23 @@ public class EclipseAdapterUtils {
         											 seeAlso[i].getSourceLineNumber());
 													 
 		}
+		// We transform messages from AJ types to eclipse IProblems
+		// and back to AJ types.  During their time as eclipse problems,
+		// we remember whether the message originated from a declare
+		// in the extraDetails.
+		String extraDetails = problem.getSupplementaryMessageInfo();
+		boolean declared = false;
+		if (extraDetails!=null && extraDetails.endsWith("[deow=true]")) {
+			declared = true;
+			extraDetails = extraDetails.substring(0,extraDetails.length()-"[deow=true]".length());
+		}
+		
         IMessage msg = new Message(problem.getMessage(), 
-        						   problem.getSupplementaryMessageInfo(),
+        						   extraDetails,
 								   problem.isError() ? IMessage.ERROR : IMessage.WARNING,
 								   sourceLocation, 
 								   null,
-								   seeAlsoLocations);
+								   seeAlsoLocations,declared);
         return msg;
     }               
 
