@@ -73,7 +73,7 @@ public interface IMessage {
 	Throwable getThrown();
 
 	/** @return source location associated with this message, or null if none */
-	ISourceLocation getISourceLocation();
+	ISourceLocation getSourceLocation();
 
 	public static final class Kind implements Comparable {
 		public static final Comparator COMPARATOR = new Comparator() {

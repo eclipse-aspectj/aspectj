@@ -43,8 +43,8 @@ public class NullIdeTaskListManager implements TaskListManager {
         if (!hasWarning && IMessage.WARNING.isSameOrLessThan(message.getKind())) {
             hasWarning = true;
         }
-    	System.out.println("> added sourceline task: " + message + ", file: " + message.getISourceLocation().getSourceFile().getAbsolutePath()
-    		+ ": " +  message.getISourceLocation().getLine());
+    	System.out.println("> added sourceline task: " + message + ", file: " + message.getSourceLocation().getSourceFile().getAbsolutePath()
+    		+ ": " +  message.getSourceLocation().getLine());
     }
    
     public void addProjectTask(String message, IMessage.Kind kind) {
@@ -61,8 +61,7 @@ public class NullIdeTaskListManager implements TaskListManager {
     public void clearTasks() {
     	sourceLineTasks = new ArrayList();
         hasWarning = false;
-//    	System.out.println("> cleared tasks");
-    }
+    } 
     
 	/**
 	 * Return the list of source line compiler messages resulting from a compile, so
@@ -75,23 +74,24 @@ public class NullIdeTaskListManager implements TaskListManager {
 
 
 	public static class SourceLineTask {
-		public String message;
-		public ISourceLocation location;
-		public IMessage.Kind kind;
+		IMessage message;
 		
 		public SourceLineTask(IMessage m) {
-			message = m.getMessage();
-			location = m.getISourceLocation();
-			kind = m.getKind();
+			message = m;
 		}
+		
+		public IMessage getContainedMessage() {
+			return message;
+		}
+		
         public String toString() {
-            String loc = "<no location";
-            if (null != location) {
-                loc = location.getSourceFile() + ":" + location.getLine();
+            String loc = "<no location>";
+            if (null != message.getSourceLocation()) {
+                loc = message.getSourceLocation().getSourceFile() + ":" + message.getSourceLocation().getLine();
             }
-            return "SourceLineTask [" + message 
+            return "SourceLineTask [" + message.getMessage()
                 + ", " + loc
-                + ", " + kind
+                + ", " + message.getKind()
                 + "]";
         }
 	}

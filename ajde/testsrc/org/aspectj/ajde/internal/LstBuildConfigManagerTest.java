@@ -49,12 +49,12 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 		List messages = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
 		NullIdeTaskListManager.SourceLineTask message = (NullIdeTaskListManager.SourceLineTask)messages.get(0);
 		
-		assertEquals(message.location.getSourceFile().getAbsolutePath(), openFile("dir-entry.lst").getAbsolutePath());
+		assertEquals(message.getContainedMessage().getSourceLocation().getSourceFile().getAbsolutePath(), openFile("dir-entry.lst").getAbsolutePath());
 
 		doSynchronousBuild("bad-injar.lst");
 		messages = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
 		message = (NullIdeTaskListManager.SourceLineTask)messages.get(0);
-		assertTrue(message.message.indexOf("invalid") != -1);
+		assertTrue(message.getContainedMessage().getMessage().indexOf("invalid") != -1);
 	}
 
 	public void testErrorMessages() throws IOException {
@@ -63,7 +63,7 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 		  
 		List messages = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
 		SourceLineTask message = (SourceLineTask)messages.get(0);	
-		assertEquals("invalid option: aaa.bbb", message.message);		
+		assertEquals("invalid option: aaa.bbb", message.getContainedMessage().getMessage());		
 	
 	}
 

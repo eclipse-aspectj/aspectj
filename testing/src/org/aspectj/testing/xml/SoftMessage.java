@@ -96,7 +96,7 @@ public class SoftMessage implements IMessage { // XXX mutable dup of Message
        if (null != value) {
            out.printAttribute("message", value);
        }
-       ISourceLocation sl = message.getISourceLocation();
+       ISourceLocation sl = message.getSourceLocation();
        if (null != sl) {
            out.endAttributes();
            SoftSourceLocation.writeXml(out, sl);
@@ -204,7 +204,7 @@ public class SoftMessage implements IMessage { // XXX mutable dup of Message
      * @return ISourceLocation associated with this message, 
      * a mock-up if file or line is available, or null if none 
      */
-    final public ISourceLocation getISourceLocation() {
+    final public ISourceLocation getSourceLocation() {
         if ((null == sourceLocation) 
             && ((null != file) || (line != Integer.MAX_VALUE))) {
             File f = (null == file ? NO_FILE : new File(file));
@@ -270,7 +270,7 @@ public class SoftMessage implements IMessage { // XXX mutable dup of Message
             result.append(messageString);
         }
 
-        ISourceLocation loc = getISourceLocation();
+        ISourceLocation loc = getSourceLocation();
         if ((null != loc) && (loc != ISourceLocation.NO_FILE)) {
             result.append(" at " + loc);
         }

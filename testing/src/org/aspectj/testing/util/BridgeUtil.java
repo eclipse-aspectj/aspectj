@@ -105,7 +105,7 @@ public class BridgeUtil {
             + KIND_DELIM 
             + message.getMessage() 
             + MESSAGE_DELIM
-            + message.getISourceLocation(); // XXX implement
+            + message.getSourceLocation(); // XXX implement
     }
     
 
@@ -247,8 +247,8 @@ public class BridgeUtil {
                 if (0 != result) {
                     return result;
                 }
-                ISourceLocation sl1 = one.getISourceLocation();
-                ISourceLocation sl2 = two.getISourceLocation();
+                ISourceLocation sl1 = one.getSourceLocation();
+                ISourceLocation sl2 = two.getSourceLocation();
                 return WEAK_ISourceLocation.compare(sl1, sl2);
             }
         };       
@@ -267,8 +267,8 @@ public class BridgeUtil {
             }
             IMessage rhs_m= (IMessage) o1;
             IMessage lhs_m = (IMessage) o2;
-            ISourceLocation rhs_sl = rhs_m.getISourceLocation();
-            ISourceLocation lhs_sl = lhs_m.getISourceLocation();
+            ISourceLocation rhs_sl = rhs_m.getSourceLocation();
+            ISourceLocation lhs_sl = lhs_m.getSourceLocation();
             result = MEDIUM_ISourceLocation.compare(lhs_sl, rhs_sl);
             if (0 != result) {
                 return result;

@@ -126,7 +126,7 @@ public class Message implements IMessage { // XXX toString or renderer?
     }
 
     /** @return ISourceLocation associated with this message, or null if none */
-    final public ISourceLocation getISourceLocation() {
+    final public ISourceLocation getSourceLocation() {
         return sourceLocation;
     }
     
@@ -135,7 +135,7 @@ public class Message implements IMessage { // XXX toString or renderer?
     }
     
     public static String renderToString(IMessage message) { 
-        ISourceLocation loc = message.getISourceLocation();
+        ISourceLocation loc = message.getSourceLocation();
         String locString = (null == loc ? "" : " at " + loc);
         Throwable thrown = message.getThrown();
         return message.getKind() + locString + ": " + message.getMessage()

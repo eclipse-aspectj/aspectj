@@ -770,7 +770,7 @@ public class MessageUtil {
             result.append(" ");
         }
 
-        ISourceLocation loc = message.getISourceLocation();
+        ISourceLocation loc = message.getSourceLocation();
         if ((null != loc) && (loc != ISourceLocation.EMPTY)) {
             result.append("at " + renderSourceLocation(loc));
         }
@@ -849,7 +849,7 @@ public class MessageUtil {
 
         String text = message.getMessage();
         Throwable thrown = message.getThrown();
-        ISourceLocation sl = message.getISourceLocation();
+        ISourceLocation sl = message.getSourceLocation();
         IMessage.Kind kind = message.getKind();
         StringBuffer result = new StringBuffer();
         result.append(kind.toString());

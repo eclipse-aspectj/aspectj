@@ -223,7 +223,7 @@ public class MessageTest extends TestCase {
             assertTrue(""+kind, kind == m.getKind());
             assertTrue(""+thrown, equals(thrown, m.getThrown()));
             assertTrue(""+sourceLocation, 
-                equals(sourceLocation, m.getISourceLocation()));
+                equals(sourceLocation, m.getSourceLocation()));
             String err = new KindTest().testKindSet(message, kind);
             if (null != err) {
                 assertTrue(err, false);

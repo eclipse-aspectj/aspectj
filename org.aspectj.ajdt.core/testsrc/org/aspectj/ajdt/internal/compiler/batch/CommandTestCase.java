@@ -112,7 +112,7 @@ public abstract class CommandTestCase extends TestCase {
 				boolean found = false;
 				for (Iterator iter = errors.iterator(); iter.hasNext(); ) {
 					IMessage m = (IMessage)iter.next();
-					if (m.getISourceLocation() != null && m.getISourceLocation().getLine() == line) {
+					if (m.getSourceLocation() != null && m.getSourceLocation().getLine() == line) {
 						found = true;
 						iter.remove();
 					}

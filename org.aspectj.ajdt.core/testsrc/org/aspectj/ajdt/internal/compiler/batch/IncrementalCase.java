@@ -336,7 +336,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 			final int expLine = exp[i];
 			boolean found = false;
 			for (int j = 0; !found && (j < messages.length); j++) {
-				ISourceLocation sl = messages[j].getISourceLocation();
+				ISourceLocation sl = messages[j].getSourceLocation();
 				found = ((null != sl) && (expLine == sl.getLine()));
 				if (found) {
 					info(handler, "found " + label + " for: " + exp[i]);

@@ -299,7 +299,7 @@ public class AjcSpecTest extends TestCase {
         assertTrue(lhs.getKind() == rhs.getKind());
         same(lhs.getMessage(), rhs.getMessage(), a);
         assertEquals(lhs.getThrown(), rhs.getThrown());
-        sameSourceLocation(lhs.getISourceLocation(), rhs.getISourceLocation(), a);        
+        sameSourceLocation(lhs.getSourceLocation(), rhs.getSourceLocation(), a);        
 	}
 
 	public static void sameSourceLocation(ISourceLocation lhs, ISourceLocation rhs, Assert a) {

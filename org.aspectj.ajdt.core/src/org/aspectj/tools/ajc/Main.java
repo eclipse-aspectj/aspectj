@@ -403,7 +403,7 @@ public class Main {
             if (toString) {
                 text = message.toString();
             }
-            ISourceLocation loc = message.getISourceLocation();
+            ISourceLocation loc = message.getSourceLocation();
             String context = null;
             if (null != loc) {
                 File file = loc.getSourceFile();
