@@ -1447,13 +1447,13 @@ aspect PublicErrorLogging {
           </para>
           <para>
           You may view and submit bug reports and feature requests at 
-          <ulink url="http://dev.eclipse.org/bugs">http://dev.eclipse.org/bugs</ulink>,
+          <ulink url="http://bugs.eclipse.org/bugs">http://bugs.eclipse.org/bugs</ulink>,
           using the product <literal>AspectJ</literal>.  Here are direct links to
               <ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;component=Compiler&amp;bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">
                view open compiler bugs</ulink>,
               <ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ">
                view all Aspectj bugs (open or closed)</ulink>, or
-              <ulink url="http://dev.eclipse.org/bugs/enter_bug.cgi?product=AspectJ">
+              <ulink url="http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ">
                add new bugs</ulink>.
             
           </para>
@@ -1546,16 +1546,15 @@ ajc -argfile sources.lst
               <listitem>
                 <para>
                   <ulink
-                      url="http://www.ibm.com/java/jdk/download/">
-                    developerWorks : J
-                    ava technology : Tools and products - Developer kits
+                      url="http://www-106.ibm.com/developerworks/java/jdk/">
+                    developerWorks : Java technology : Tools and products - Developer kits
                   </ulink>
                 </para>
               </listitem>
               <listitem>
                 <para>
                   <ulink
-                      url="http://oss.software.ibm.com/developerworks/projects/jikes/?dwzone=opensource">
+                      url="http://www-124.ibm.com/developerworks/oss/jikes/">
                     developerWorks : Open Source - Jikes Project
                   </ulink>
                 </para>
@@ -2498,8 +2497,7 @@ aspect MyMarker extends MarkerExample {
             and many developers already use alternative solutions.  For one
             possibly standard solution, see
             <ulink url="http://jcp.org/jsr/detail/057.jsp">
-              Lon
-              g-Term Persistence for JavaBeans Specification
+              Long-Term Persistence for JavaBeans Specification
             </ulink>.
           </para>
         </answer>
@@ -3680,8 +3678,8 @@ vmparam -Xmx384m
         </question>
         <answer>
           <para>You can submit a bug from 
-              <ulink url="http://dev.eclipse.org/bugs/enter_bug.cgi?product=AspectJ">
-                          http://dev.eclipse.org/bugs/enter_bug.cgi?product=AspectJ
+              <ulink url="http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ">
+                          http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ
               </ulink>.
             If it seems to be a bug in the compiler,
             please attach a small test case (source code) 
