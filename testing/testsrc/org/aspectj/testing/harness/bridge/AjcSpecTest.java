@@ -206,10 +206,13 @@ public class AjcSpecTest extends TestCase {
             CompilerRun.Spec r = ((CompilerRun) rhs).spec;
             lhsSpec = l;
             rhsSpec = r;
+            assertEquals(l.argfiles, r.argfiles);
+            assertEquals(l.aspectpath, r.aspectpath);
             assertEquals(l.testSrcDirOffset, r.testSrcDirOffset);
             assertEquals(l.compiler, r.compiler);
             assertEquals(l.includeClassesDir, r.includeClassesDir);
             assertEquals(l.reuseCompiler, r.reuseCompiler);
+            assertEquals(l.sourceroots, r.sourceroots);
         } else if (c == JavaRun.class) {
             JavaRun.Spec l = ((JavaRun) lhs).spec;
             JavaRun.Spec r = ((JavaRun) rhs).spec;
