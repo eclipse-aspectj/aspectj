@@ -372,7 +372,7 @@
       </varlistentry>
 
       <varlistentry>
-        <term>-Xnoinline</term>
+        <term>-XnoInline</term>
         <listitem><para>(Experimental) do not inline around advice
         </para></listitem>
       </varlistentry>
@@ -655,7 +655,7 @@ commands to your environment as needed.
       These permit compliant debuggers (such as jdb in Java 1.4.1) to identify 
       the right file and line even given many source files for a single class.
       JSR-45 support is planned for ajc in AspectJ 1.1, but is not in the initial
-      release.  To get fully debuggable .class files, use the -Xnoinline option.)  
+      release.  To get fully debuggable .class files, use the -XnoInline option.)  
       </para>
 
       <para>Probably the only time you may see this format is when you view
