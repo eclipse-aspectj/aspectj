@@ -40,16 +40,17 @@ import java.util.List;
  */
 public class Main {
 	/** Header used when rendering exceptions for users */
-    public static final String THROWN_PREFIX // XXX change as needed before each release
+    public static final String THROWN_PREFIX
     	= "Exception thrown from AspectJ "+ Version.text + LangUtil.EOL
     + ""+ LangUtil.EOL
-    + "This might be logged as a bug already -- see the bug database at" + LangUtil.EOL
-	+ "  http://dev.eclipse.org (product: AspectJ, component: compiler)"  + LangUtil.EOL
+    + "This might be logged as a bug already -- find current bugs at" + LangUtil.EOL
+	+ "  http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler" + LangUtil.EOL
     + ""  + LangUtil.EOL
     + "Bugs for exceptions thrown have titles File:line from the top stack, "  + LangUtil.EOL
     + "e.g., \"SomeFile.java:243\"" + LangUtil.EOL
     + ""  + LangUtil.EOL
     + "If you don't find the exception below in a bug, please add a new bug" + LangUtil.EOL
+    + "at http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ" + LangUtil.EOL
     + "To make the bug a priority, please include a test program" + LangUtil.EOL
     + "that can reproduce this exception."  + LangUtil.EOL;
     
