@@ -22,6 +22,7 @@ import java.util.List;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.Checker;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedMember;
@@ -146,6 +147,16 @@ public class IfPointcut extends Pointcut {
 	private IfPointcut partiallyConcretized = null;
 	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
 		//System.err.println("concretize: " + this + " already: " + partiallyConcretized);
+		
+		if (bindings.getEnclosingAdvice() instanceof Checker) {
+			// Enforce rule about which designators are supported in deow
+			inAspect.getWorld().showMessage(IMessage.ERROR,
+			  "if() pointcut designator cannot be used in declare statement",
+			  bindings.getEnclosingAdvice().getSourceLocation(),
+			  null);
+			return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
+		}
+		
 		if (partiallyConcretized != null) {
 			return partiallyConcretized;
 		}
@@ -153,7 +164,11 @@ public class IfPointcut extends Pointcut {
 		partiallyConcretized = ret;
 		if (bindings.directlyInAdvice()) {
 			ShadowMunger advice = bindings.getEnclosingAdvice();
-			ret.baseArgsCount = ((Advice)advice).getBaseParameterCount();
+			if (advice instanceof Advice) {
+				ret.baseArgsCount = ((Advice)advice).getBaseParameterCount();
+			} else {
+				ret.baseArgsCount = 0;
+			}
 			ret.residueSource = advice.getPointcut().concretize(inAspect, ret.baseArgsCount, advice);
 		} else {
 			ResolvedPointcutDefinition def = bindings.peekEnclosingDefinitition();

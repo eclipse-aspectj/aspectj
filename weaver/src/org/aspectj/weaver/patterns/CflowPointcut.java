@@ -21,9 +21,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.aspectj.bridge.IMessage;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.Checker;
 import org.aspectj.weaver.CrosscuttingMembers;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
@@ -121,6 +123,13 @@ public class CflowPointcut extends Pointcut {
 	
 	
 	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+		if (bindings.getEnclosingAdvice() instanceof Checker) {
+			// Enforce rule about which designators are supported in deow
+			inAspect.getWorld().showMessage(IMessage.ERROR,
+			  "cflow"+(isBelow?"below":"")+"() pointcut designator cannot be used in declare statement",
+			  bindings.getEnclosingAdvice().getSourceLocation(), null);
+			return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
+		}
 		//make this remap from formal positions to arrayIndices
 		IntMap entryBindings = new IntMap();
 		for (int i=0, len=freeVars.length; i < len; i++) {
