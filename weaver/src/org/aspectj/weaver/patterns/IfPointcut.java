@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.ast.*;
+import org.aspectj.bridge.*;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.*;
 
@@ -131,9 +132,9 @@ public class IfPointcut extends Pointcut {
 		} else {
 			ResolvedPointcutDefinition def = bindings.peekEnclosingDefinitition();
 			if (def == CflowPointcut.CFLOW_MARKER) {
-				inAspect.getWorld().getMessageHandler().handleMessage(
-				    MessageUtil.error("if not supported lexically within cflow (compiler limitation)",
-				    					null));
+				inAspect.getWorld().showMessage(IMessage.ERROR,
+					"if not supported lexically within cflow (compiler limitation)",
+					getSourceLocation(), null);
 				return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 			}
 			ret.baseArgsCount = def.getParameterTypes().length;
