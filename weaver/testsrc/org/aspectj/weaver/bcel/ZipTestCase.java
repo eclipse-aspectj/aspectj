@@ -56,6 +56,12 @@ public class ZipTestCase extends TestCase {
 		BcelWeaver weaver = new BcelWeaver(world);
 		
 		long startTime = System.currentTimeMillis();
+		// ensure that a fast cpu doesn't complete file write within 1000ms of start
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} 
 		weaver.addJarFile(inFile, new File("."),false);
 		if (aspectjar != null) {
 			if (isInJar) {
@@ -73,6 +79,9 @@ public class ZipTestCase extends TestCase {
 		
 		System.out.println("handled " + woven.size() + " entries, in " + 
 				(stopTime-startTime)/1000. + " seconds");
+		// last mod times on linux (at least) are only accurate to the second.
+		// with fast disks and a fast cpu the following test can fail if the write completes less than
+		// 1000 milliseconds after the start of the test, hence the 1000ms delay added above.
 		assertTrue(outFile.lastModified() > startTime);
 	}	
 	
