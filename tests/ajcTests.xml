@@ -6908,5 +6908,11 @@
 			<message kind="error" line="23" />
 		</compile>
 	</ajc-test>
-    
+
+   <ajc-test dir="bugs/faultingInSource" pr="46671"
+      title="Ensure we don't look for source on the classpath when binary not found">
+        <compile files="SimpleTracing.java" classpath="." options="-verbose">
+		  <message kind="warning" line="4" text="no match for this type name: SampleClass"/>
+        </compile>
+    </ajc-test>   
 </suite>
