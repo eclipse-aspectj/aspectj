@@ -318,6 +318,30 @@ public class LangUtil {
         return (String[]) result.toArray(new String[0]);
     }
     
+    /**
+     * Select from input String[] if readable directories
+     * @param inputs String[] of input - null ignored
+     * @param baseDir the base directory of the input
+     * @return String[] of input that end with any input
+     */
+    public static String[] selectDirectories(String[] inputs, File baseDir) {
+        if (LangUtil.isEmpty(inputs)) {
+            return new String[0];
+        }
+        ArrayList result = new ArrayList();
+        for (int i = 0; i < inputs.length; i++) {
+            String input = inputs[i];
+            if (null == input) {
+                continue;
+            }
+            File inputFile = new File(baseDir, input);
+            if (inputFile.canRead() && inputFile.isDirectory()) {
+                result.add(input);
+            }
+        }
+        return (String[]) result.toArray(new String[0]);
+    }
+
     /** 
      * copy non-null two-dimensional String[][] 
      * @see extractOptions(String[], String[][]) 
