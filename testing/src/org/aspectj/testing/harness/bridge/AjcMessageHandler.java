@@ -13,6 +13,7 @@
 
 package org.aspectj.testing.harness.bridge;
 
+import java.util.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -24,73 +25,75 @@ import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
+import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.testing.util.BridgeUtil;
 import org.aspectj.testing.util.Diffs;
 import org.aspectj.util.LangUtil;
 
 
 /**
- * Adapter to pass messages through to handler,
- * suppress output of expected errors and warnings,
- * and calculate differences between expected and
- * actual messages.
+ * Handle messages during test and calculate differences
+ * between expected and actual messages.
  */
 public class AjcMessageHandler extends MessageHandler {     
 
-    /** Comparator for enclosed IMessage diffs, etc. */
+    /** Comparator for enclosed IMessage diffs */
     public static final Comparator COMP_IMessage
-        = BridgeUtil.Comparators.WEAK_IMessage;
+        = BridgeUtil.Comparators.MEDIUM_IMessage;
         
-    /** Comparator for enclosed File diffs, etc. */
+    /** Comparator for enclosed File diffs */
     public static final Comparator COMP_File
         = BridgeUtil.Comparators.WEAK_File;
 
-
-    /** unmodifiable list of IMessage messages of type IMesssage.ERROR */
-    final List expectedErrors; // revert to IMessageHolder for generality?
+    /** unmodifiable list of IMessage messages of any type */
+    private final List expectedMessagesAsList;
     
-    /** unmodifiable list of IMessage messages of type IMesssage.WARNING */
-    final List expectedWarnings;
+    /** IMessageHolder variant of expectedMessagesAsList */
+    private final IMessageHolder expectedMessages; 
+    
+    /** number of messages FAIL or worse */
+    private final int numExpectedFailed;
+
+    /** true if there were no error or worse messages expected */
+    private final boolean expectingCommandTrue;
 
     /** unmodifiable list of File expected to be recompiled */
-    final List expectedRecompiled;
-    
-    /** list of File actually recompiled */
-    List actualRecompiled;
+    private final List expectedRecompiled; // Unused now, but reinstate when supported
     
     /** if true, ignore warnings when calculating diffs and passed() */
-    boolean ignoreWarnings;
+    private final boolean ignoreWarnings;
+    
+    /** list of File actually recompiled */
+    private List actualRecompiled;
     
     /** cache expected/actual diffs, nullify if any new message */
-    transient CompilerDiffs diffs;
-
-	private boolean expectingCommandTrue;
+    private transient CompilerDiffs diffs;
     
+    AjcMessageHandler(IMessageHolder expectedMessages) {
+        this(expectedMessages, false);
+    }
     /** 
-     * @param messages List of IMessage to extract ERROR and WARNING from 
+     * @param messages the (constant) IMessageHolder with expected messages
      */
-    AjcMessageHandler(List messages) {
-        this(MessageUtil.getMessages(messages, IMessage.ERROR),
-            MessageUtil.getMessages(messages, IMessage.WARNING));
-    }
-
-   /** 
-     * @param errors unmodifiable List of IMessage of kind ERROR to adopt
-     * @param warnings unmodifiable List of IMessage of kind WARNING to adopt 
-     */
-    AjcMessageHandler(List errors, List warnings) {
-        this(errors, warnings, null);
-    }
-
-    AjcMessageHandler(List errors, List warnings, List recompiled) {
-        this.expectedErrors = LangUtil.safeList(errors);
-        this.expectedWarnings = LangUtil.safeList(warnings);
-        this.expectedRecompiled = LangUtil.safeList(recompiled);
-        expectingCommandTrue = (0 == expectedErrors.size());
-    }
-    
-    public void setIgnoreWarnings(boolean ignoreWarnings) {
+    AjcMessageHandler(IMessageHolder expectedMessages, boolean ignoreWarnings) {
+        LangUtil.throwIaxIfNull(messages, "messages");
+        this.expectedMessages = expectedMessages;
+        expectedMessagesAsList = expectedMessages.getUnmodifiableListView();
+        expectedRecompiled = Collections.EMPTY_LIST;
         this.ignoreWarnings = ignoreWarnings;
+        int fails = 0;
+        int errors = 0;
+        for (Iterator iter = expectedMessagesAsList.iterator(); iter.hasNext();) {
+            IMessage m = (IMessage) iter.next();
+            IMessage.Kind kind = m.getKind();
+            if (IMessage.FAIL.isSameOrLessThan(kind)) {
+                fails++;
+            } else if (m.isError()) {
+                errors++;
+            }
+        }
+        expectingCommandTrue = (0 == (errors + fails));
+        numExpectedFailed = fails;
     }
     
     /** clear out any actual values to be re-run */
@@ -110,9 +113,8 @@ public class AjcMessageHandler extends MessageHandler {
         if (null == message) {
             throw new IllegalArgumentException("null message");
         }
-        messages.add(message);
-        IMessage.Kind kind = message.getKind();
-        return expecting(message, getExpected(kind));
+        super.handleMessage(message);
+        return expecting(message);
     }
     
     /** 
@@ -126,59 +128,38 @@ public class AjcMessageHandler extends MessageHandler {
         }
         this.actualRecompiled = LangUtil.safeList(list);
     }
-    
-    /** @return immutable List of IMessage expected of this kind */
-    public List getExpected(IMessage.Kind kind) {
-        if (IMessage.ERROR == kind) {
-            return expectedErrors;
-        } else if (IMessage.WARNING == kind) {
-            return expectedWarnings;
-        } else {
-            return Collections.EMPTY_LIST;
-        }
-    }
-    
-    /** 
-     * Check if the message was expected, and clear diffs if not.
-     * @return true if we expect a message of this kind with this line number 
-     */
-    protected boolean expecting(IMessage message, List sink) { // XXX ignores File
-        if ((null != message) && (0 < sink.size())) {
-            // XXX need to cache list: int[] errLines, warningLines;
-            for (Iterator iter = sink.iterator(); iter.hasNext();) {
-    			IMessage m = (IMessage) iter.next();
-                if (0 == COMP_IMessage.compare(message, m)) {
-                    return true;
-                }
-    		}
-        }
-        if (null != diffs) {
-            diffs = null;
-        }
-        return false;
-    }
-
+        
     /** Generate differences between expected and actual errors and warnings */
     public CompilerDiffs getCompilerDiffs() {
         if (null == diffs) {
-            final List actualErrors = Arrays.asList(getMessages(IMessage.ERROR, IMessageHolder.EQUAL));
-            final List actualWarnings = Arrays.asList(getMessages(IMessage.WARNING, IMessageHolder.EQUAL));
-            Diffs errors = new Diffs("error", expectedErrors, actualErrors, COMP_IMessage);
-            Diffs warnings = new Diffs("warning", expectedWarnings, actualWarnings, COMP_IMessage);
-            Diffs recompiled = new Diffs("recompiled", expectedRecompiled, actualRecompiled, COMP_File);
-            diffs = new CompilerDiffs(errors, warnings, recompiled);
+            final List expected;
+            final List actual;
+            if (!ignoreWarnings) {
+                expected = expectedMessages.getUnmodifiableListView();
+                actual = this.getUnmodifiableListView();
+            } else {
+                expected = Arrays.asList(
+                    expectedMessages.getMessages(IMessage.ERROR, true));
+                actual = Arrays.asList(
+                    this.getMessages(IMessage.ERROR, true));
+            }
+            // we ignore unexpected info messages,
+            // but we do test for expected ones
+            Diffs messages = new Diffs(
+                "message", 
+                expected, 
+                actual, 
+                COMP_IMessage, 
+                Diffs.ACCEPT_ALL, 
+                CompilerDiffs.SKIP_UNEXPECTED_INFO);
+            Diffs recompiled = new Diffs(
+                "recompiled", 
+                expectedRecompiled, 
+                actualRecompiled, 
+                COMP_File);
+            diffs = new CompilerDiffs(messages, recompiled);
         }
         return diffs;        
-    }
-    
-    /** calculate passed based on default or set value for ignoreWarnings */
-    public boolean passed() {
-        return passed(ignoreWarnings);
-    }
-    
-    /** @return true if we are expecting the command to fail - i.e., any expected errors */
-    public boolean expectingCommandTrue() {
-        return expectingCommandTrue;
     }
     
     /**
@@ -188,19 +169,14 @@ public class AjcMessageHandler extends MessageHandler {
      * @return false 
      * if there are any fail or abort messages,
      * or if the expected errors, warnings, or recompiled do not match actual.
-     * 
      */
-    public boolean passed(boolean ignoreWarnings) {
-        if (hasAnyMessage(IMessage.FAIL, IMessageHolder.EQUAL)) {
-            return false;
-        }   
-        
-        CompilerDiffs diffs = getCompilerDiffs();
-        if (!ignoreWarnings) {
-            return (!diffs.different);
-        } else {
-            return ((!diffs.errors.different) && (!diffs.recompiled.different));
-        }
+    public boolean passed() {
+        return !getCompilerDiffs().different;
+    }
+    
+    /** @return true if we are expecting the command to fail - i.e., any expected errors */
+    public boolean expectingCommandTrue() {
+        return expectingCommandTrue;
     }
     
     /**
@@ -212,14 +188,20 @@ public class AjcMessageHandler extends MessageHandler {
         if (null == handler) {
             MessageUtil.debug(this, "report got null handler");
         }
-        IMessage[] messages = getMessages(null, IMessageHolder.EQUAL);
-        for (int i = 0; i < messages.length; i++) {
-			handler.handleMessage(messages[i]);
-		}
+        // Report all messages except expected fail+ messages,
+        // which will cause the reported-to handler client to gack.
+        // XXX need some verbose way to report even expected fail+
+        final boolean fastFail = false; // do all messages
+        if (0 == numExpectedFailed) {
+            MessageUtil.handleAll(handler, this, fastFail);
+        } else {
+            IMessage[] ra = getMessagesWithoutExpectedFails();
+            MessageUtil.handleAll(handler, ra, fastFail);
+        }
+
         CompilerDiffs diffs = getCompilerDiffs();
         if (diffs.different) {
-            diffs.errors.report(handler, IMessage.FAIL);
-            diffs.warnings.report(handler, IMessage.FAIL);
+            diffs.messages.report(handler, IMessage.FAIL);
             diffs.recompiled.report(handler, IMessage.FAIL);
         }
     }
@@ -230,14 +212,70 @@ public class AjcMessageHandler extends MessageHandler {
         StringBuffer sb = new StringBuffer(super.toString());
         final String EOL = "\n";
         sb.append(EOL);
-        render(sb, "  unexpected error ", EOL, diffs.errors.unexpected);
-        render(sb, "unexpected warning ", EOL, diffs.warnings.unexpected);
-        render(sb, "     missing error ", EOL, diffs.errors.missing);
-        render(sb, "   missing warning ", EOL, diffs.warnings.missing);
-        render(sb, "              fail ", EOL, getList(IMessage.FAIL));
-        render(sb, "             abort ", EOL, getList(IMessage.ABORT));
-        render(sb, "              info ", EOL, getList(IMessage.INFO));
+        render(sb, " unexpected message ", EOL, diffs.messages.unexpected);
+        render(sb, "    missing message ", EOL, diffs.messages.missing);
+        render(sb, "               fail ", EOL, getList(IMessage.FAIL));
+        render(sb, "              abort ", EOL, getList(IMessage.ABORT));
+        render(sb, "               info ", EOL, getList(IMessage.INFO));
         return sb.toString(); // XXX cache toString
+    }
+
+    /** 
+     * Check if the message was expected, and clear diffs if not.
+     * @return true if we expect a message of this kind with this line number 
+     */
+    private boolean expecting(IMessage message) {
+        if (null != message) {
+            for (Iterator iter = expectedMessagesAsList.iterator(); 
+                iter.hasNext();
+                ) {
+                if (0 == COMP_IMessage.compare(message, iter.next())) {
+                    return true;
+                }
+            }
+        }
+        if (null != diffs) {
+            diffs = null;
+        }
+        return false;
+    }
+
+    private IMessage[] getMessagesWithoutExpectedFails() {
+        IMessage[] result = super.getMessages(null, true);
+        // remove all expected fail+ (COSTLY)
+        ArrayList list = new ArrayList();
+        int leftToFilter = numExpectedFailed;
+        for (int i = 0; i < result.length; i++) {
+            if ((0 == leftToFilter) 
+                || !IMessage.FAIL.isSameOrLessThan(result[i].getKind())) {
+                list.add(result[i]);
+            } else {
+                // see if this failure was expected
+                if (expectedMessagesHasMatchFor(result[i])) {
+                    leftToFilter--; // ok, don't add
+                } else {
+                    list.add(result[i]);
+                }
+            }
+        }
+        result = (IMessage[]) list.toArray(new IMessage[0]);
+        return result;
+    }
+
+    
+    /**
+     * @param actual the actual IMessage to seek a match for in expected messages
+     * @return true if actual message is matched in the expected messages
+     */
+    private boolean expectedMessagesHasMatchFor(IMessage actual) {
+        for (Iterator iter = expectedMessagesAsList.iterator(); 
+            iter.hasNext();) {
+            IMessage expected = (IMessage) iter.next();
+            if (0 == COMP_IMessage.compare(expected, actual)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /** @return immutable list of a given kind - use  null for all kinds */
@@ -263,20 +301,24 @@ public class AjcMessageHandler extends MessageHandler {
     
     /** compiler results for errors, warnings, and recompiled files */
     public static class CompilerDiffs {
-        public final Diffs errors;
-        public final Diffs warnings;
+        /** Skip info messages when reporting unexpected messages */
+        static final Diffs.Filter SKIP_UNEXPECTED_INFO 
+            = new Diffs.Filter(){
+                public boolean accept(Object o) {
+                    return ((o instanceof IMessage)
+                            && !((IMessage)o).isInfo());
+                }
+            };
+        public final Diffs messages;
         public final Diffs recompiled;
         public final boolean different;
         
-        public CompilerDiffs(Diffs errors, Diffs warnings) {
-            this(errors, warnings, Diffs.NONE);
-        }
-        public CompilerDiffs(Diffs errors, Diffs warnings, Diffs recompiled) {
-            this.errors = errors;
-            this.warnings = warnings;
+        public CompilerDiffs(
+            Diffs messages,
+            Diffs recompiled) {
             this.recompiled = recompiled;
-            different = (warnings.different || errors.different
-                         || recompiled.different);
+            this.messages = messages;
+            different = (messages.different || recompiled.different);
         }
     }
 }
