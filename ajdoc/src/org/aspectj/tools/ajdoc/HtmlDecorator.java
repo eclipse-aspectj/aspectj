@@ -401,11 +401,12 @@ class HtmlDecorator {
         String MARKER_2 = "<!-- ======== CONSTRUCTOR SUMMARY ======== -->";
         int index1 = fbs.indexOf(MARKER_1, index);
         int index2 = fbs.indexOf(MARKER_2, index);
-        if (index1 < index2) {
+        if (index1 < index2 && index1 != -1) {
             return index1;
-        }
-        else {
+        } else if (index2 != -1){
             return index2;
+        } else {
+            return index;
         }
     }
 
@@ -416,15 +417,15 @@ class HtmlDecorator {
         String MARKER_3 = "<!-- ============ METHOD DETAIL ========== -->";
         int index1 = fbs.indexOf(MARKER_1, index);
         int index2 = fbs.indexOf(MARKER_2, index);
-        int index3 = fbs.indexOf(MARKER_3, index);
-        if (index1 < index2 && index1 < index3) {
+        int index3 = fbs.indexOf(MARKER_3, index); 
+        if (index1 != -1 && index1 < index2 && index1 < index3) {
             return index1;
-        }
-        else if (index2 < index1 && index2 < index3) {
+        } else if (index2 != -1 && index2 < index1 && index2 < index3) {
             return index2;
-        }
-        else {
+        } else if (index3 != -1) {
             return index3;
+        } else {
+            return index;
         }
     }
 

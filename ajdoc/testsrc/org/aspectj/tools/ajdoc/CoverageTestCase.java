@@ -33,7 +33,8 @@ public class CoverageTestCase extends TestCase {
 	File file7 = new File("testdata/coverage/fluffy/bunny/rocks/Rocks.java");
 	File file8 = new File("testdata/coverage/fluffy/bunny/rocks/UseThisAspectForLinkCheckToo.java");
 	File file9 = new File("testdata/coverage/foo/PkgVisibleClass.java");
-	 
+	File file10 = new File("testdata/coverage/foo/NoMembers.java");
+    
 	File outdir = new File("testdata/coverage/doc");
 	
 	public void testOptions() {
@@ -54,6 +55,20 @@ public class CoverageTestCase extends TestCase {
 	    assertTrue(true);
 	}
 	
+    public void testCoveragePublicMode() {
+        outdir.delete();
+        String[] args = { 
+            "-public",
+            "-source", 
+            "1.4",
+            "-d", 
+            outdir.getAbsolutePath(),
+            file3.getAbsolutePath(),
+            file9.getAbsolutePath() 
+        };
+        org.aspectj.tools.ajdoc.Main.main(args);
+    }
+    
 	public void testCoverage() {
 		outdir.delete();
 		String[] args = { 
@@ -73,21 +88,8 @@ public class CoverageTestCase extends TestCase {
 			file6.getAbsolutePath(),
 			file7.getAbsolutePath(),
 			file8.getAbsolutePath(),
-			file9.getAbsolutePath()
-		};
-		org.aspectj.tools.ajdoc.Main.main(args);
-	}
-	
-	public void testCoveragePublicMode() {
-		outdir.delete();
-		String[] args = { 
-			"-public",
-			"-source", 
-			"1.4",
-			"-d", 
-			outdir.getAbsolutePath(),
-			file3.getAbsolutePath(),
-			file9.getAbsolutePath() 
+			file9.getAbsolutePath(),
+            file10.getAbsolutePath()
 		};
 		org.aspectj.tools.ajdoc.Main.main(args);
 	}

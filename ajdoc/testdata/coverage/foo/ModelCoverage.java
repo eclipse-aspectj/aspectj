@@ -119,7 +119,7 @@ aspect DeclareCoverage {
     declare warning: call(* Point.setX(..)): "Illegal call.";
 
     declare parents: Point extends java.io.Serializable;
-    declare parents: Point+ implements java.util.Observable;
+//    declare parents: Point+ implements java.util.Observable;
 	declare parents: Point && Line implements java.util.Observable;
     declare soft: SizeException : call(* Point.getX());
 	declare precedence: AdviceCoverage, InterTypeDecCoverage, *;
