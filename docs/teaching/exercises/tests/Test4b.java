@@ -18,15 +18,8 @@ import java.awt.Rectangle;
 import junit.framework.*;
 
 public class Test4b extends Test {
-
-    public Test4b(String name) { super(name); }
-
     public static void main(String[] args) {
         junit.textui.TestRunner.run(Test4b.class);
-    }
-
-    public void setUp() {
-        super.setUp();
     }
 
     public void testBasicEquality() {
@@ -58,12 +51,9 @@ public class Test4b extends Test {
 
     public void testNotWholeCanvas() {
         assertTrue("bounds for this group should not be the whole canvas",
-                   g.getBounds().getWidth() <
-                   (FigureElement.MAX_VALUE - FigureElement.MIN_VALUE));
+            g.getBounds().getWidth() < FigureElement.MAX_BOUNDS.getWidth());
         assertTrue("bounds for this group should not be the whole canvas",
-                   g.getBounds().getHeight() <
-                   (FigureElement.MAX_VALUE - FigureElement.MIN_VALUE));
-
+            g.getBounds().getHeight() < FigureElement.MAX_BOUNDS.getHeight());
     }
 }
 

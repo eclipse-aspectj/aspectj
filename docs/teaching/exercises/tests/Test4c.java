@@ -18,15 +18,8 @@ import java.awt.Rectangle;
 import junit.framework.*;
 
 public class Test4c extends Test {
-
-    public Test4c(String name) { super(name); }
-
     public static void main(String[] args) {
         junit.textui.TestRunner.run(Test4c.class);
-    }
-
-    public void setUp() {
-        super.setUp();
     }
 
     public void testBasicEquality() {

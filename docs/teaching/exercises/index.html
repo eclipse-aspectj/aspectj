@@ -638,50 +638,32 @@ handle those points contained in Lines and Boxes only if time permits.
 
 <h3>a. Make a constant override</h3>
 
+<p> <strong>Problem:</strong> Pass <code>tests.Test4a</code>.</p>
+
+<p> <strong>Tools:</strong> <code>around</code>, 
+		<code>FigureElement.MAX_BOUNDS</code>
+</p>
+
 <p> <code>Group</code>'s <code>getBounds()</code> method could be
 understood to be a conservative approximation of the bounding box of a
 group.  If that is true, then it would be a legal (and much faster)
 implementation of <code>getBounds()</code> to simply always return a
-rectangle consisting of the entire canvas, that is
+rectangle consisting of the entire canvas.  The entire canvas is returned
+by the static method <code>FigureElement.MAX_BOUNDS</code>.
 </p>
-
-<blockquote><PRE>
-new Rectangle(FigureElement.MIN_VALUE, FigureElement.MIN_VALUE, 
-              FigureElement.MAX_VALUE - FigureElement.MIN_VALUE,
-              FigureElement.MAX_VALUE - FigureElement.MIN_VALUE)
-</PRE></blockquote>
 
 <p> Write an aspect to implement this change.  You can override
 <code>Group</code>'s <code>getBounds()</code> method entirely with
 around advice intercepting the method.  
 </p>
 
-<p> Your code should pass the JUnit test case
-<code>tests.Test4a</code> with this change.
-</p>
-
-<p> <strong>Answer: </strong>
-</p>
-
-<blockquote><PRE>
-package answers;
-
-import figures.*;
-import java.awt.Rectangle;
-
-aspect Answer4a {
-    private Rectangle wholeCanvas =
-        new Rectangle(FigureElement.MIN_VALUE, FigureElement.MIN_VALUE, 
-                      FigureElement.MAX_VALUE - FigureElement.MIN_VALUE,
-                      FigureElement.MAX_VALUE - FigureElement.MIN_VALUE);
-
-    Rectangle around(): execution(Rectangle Group.getBounds()) {
-        return wholeCanvas;
-    }
-}
-</PRE></blockquote>
-
 <h3>b. Make a constant cache</h3>
+
+<p> <strong>Problem:</strong> Pass <code>tests.Test4b</code>.
+</p>
+
+<p> <strong>Tools:</strong> <code>private Rectangle Group.mumble;</code>
+</p>
 
 <p> Instead of making the (very) conservative approximation of
 <code>getBounds()</code> from part (a), write an aspect instead that
@@ -693,12 +675,14 @@ call. </p>
 <p> <em>Hint: You can use an inter-type declaration to keep some
 state for every <code>Group</code> object.</em> </p>
 
-<p> Your code should pass the JUnit test case
-<code>tests.Test4b</code> with this change.
-</p>
-
 
 <h3>c. Invalidate, part 1</h3>
+
+<p> <strong>Problem:</strong> Pass <code>tests.Test4c</code>.
+</p>
+
+<p> <strong>Tools:</strong> <code>before</code>
+</p>
 
 <p> While caching in this way does save computation, it will lead to
 incorrect bounding boxes if a <code>Group</code> is ever moved.
@@ -706,11 +690,11 @@ Change your aspect so that it invalidates the cache whenever the
 <code>move()</code> method of <code>Group</code> is called. 
 </p>
 
-<p> Your code should pass the JUnit test case
-<code>tests.Test4c</code> with this change.
-</p>
-
 <h3>d. Invalidate, part 2</h3>
+
+<p> <strong>Problem:</strong> Pass <code>tests.Test4d</code>.</p>
+
+<p> <strong>Tools:</strong> <code>your solution to 3c</code></p>
 
 <p> Of course, part (c) didn't really solve the problem.  What if a
 <code>Point</code> that is part of a <code>Group</code> moves?
@@ -720,11 +704,11 @@ modify your invalidation criteria in this way, but note that this is
 slightly different than the problem in 3c: Here you care about fields,
 where there you cared about method calls. </p>
 
-<p> Your code should pass the JUnit test case
-<code>tests.Test4d</code> with this change.
-</p>
-
 <h3>e. Invalidate, part 3</h3>
+
+<p> <strong>Problem:</strong> Pass <code>tests.Test4e</code>.</p>
+
+<p> <strong>Tools:</strong> <em>You're on you're own</em></p>
 
 <p> Did you really do part (d) correctly?  Run the JUnit test
 <code>tests.Test4e</code> to see.  If you pass, congratulations, now

@@ -17,12 +17,7 @@ import figures.Group;
 import java.awt.Rectangle;
 
 aspect Answer4a {
-    private Rectangle wholeCanvas =
-        new Rectangle(FigureElement.MIN_VALUE, FigureElement.MIN_VALUE,
-                      FigureElement.MAX_VALUE - FigureElement.MIN_VALUE,
-                      FigureElement.MAX_VALUE - FigureElement.MIN_VALUE);
-
     Rectangle around(): execution(Rectangle Group.getBounds()) {
-        return wholeCanvas;
+        return FigureElement.MAX_BOUNDS;
     }
 }

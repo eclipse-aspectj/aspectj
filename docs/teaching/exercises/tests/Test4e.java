@@ -25,10 +25,6 @@ public class Test4e extends Test {
         junit.textui.TestRunner.run(Test4e.class);
     }
 
-    public void setUp() {
-        super.setUp();
-    }
-
     public void testBasicEquality() {
         assertTrue(g.getBounds() == g.getBounds());
     }

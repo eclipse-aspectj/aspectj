@@ -17,8 +17,8 @@ import java.awt.*;
 import java.awt.geom.*;
 
 public interface FigureElement {
-    public static final int MIN_VALUE = 0;
-    public static final int MAX_VALUE = 500;
+    public static final Rectangle MAX_BOUNDS = 
+        new Rectangle(0, 0, 500, 500);
 
     public abstract void move(int dx, int dy);
 

@@ -22,12 +22,14 @@ aspect Answer4d {
     private Group Point.enclosingGroup = null;
 
     before(Point p, Group g):
-        execution(void add(FigureElement)) && args(p) && target(g) {
+        execution(void add(FigureElement)) && args(p) && target(g)
+    {
         p.enclosingGroup = g;
     }
 
     Rectangle around(Group g):
-            execution(Rectangle Group.getBounds()) && this(g) {
+            execution(Rectangle Group.getBounds()) && this(g)
+    {
         if (g.cache == null) {
             g.cache = proceed(g);
         }

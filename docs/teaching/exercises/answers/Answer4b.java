@@ -20,7 +20,8 @@ aspect Answer4b {
     private Rectangle Group.cache = null;
 
     Rectangle around(Group g):
-            execution(Rectangle Group.getBounds()) && this(g) {
+            execution(Rectangle Group.getBounds()) && this(g)
+    {
         if (g.cache == null) {
             g.cache = proceed(g);
         }

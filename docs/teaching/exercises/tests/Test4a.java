@@ -18,21 +18,11 @@ import java.awt.Rectangle;
 import junit.framework.*;
 
 public class Test4a extends Test {
-    Rectangle wholeCanvas =
-        new Rectangle(FigureElement.MIN_VALUE, FigureElement.MIN_VALUE,
-                      FigureElement.MAX_VALUE, FigureElement.MAX_VALUE);
-
-    public Test4a(String name) { super(name); }
-
     public static void main(String[] args) {
         junit.textui.TestRunner.run(Test4a.class);
     }
 
-    public void setUp() {
-        super.setUp();
-    }
-
     public void testGroupBounds() {
-        assertEquals(g.getBounds(), wholeCanvas);
+        assertEquals(g.getBounds(), FigureElement.MAX_BOUNDS);
     }
 }
