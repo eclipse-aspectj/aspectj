@@ -406,6 +406,7 @@ public class AjcTestCase extends TestCase {
 				failureReport.append(args[i]);
 			}
 			String report = failureReport.toString();
+			System.err.println(failureReport);
 			fail(message + "\n" + report);
 		}
 	}
