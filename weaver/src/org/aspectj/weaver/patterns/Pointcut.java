@@ -19,7 +19,10 @@ import java.io.IOException;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.util.TypeSafeEnum;
+import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.Checker;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedTypeX;
@@ -119,6 +122,12 @@ public abstract class Pointcut extends PatternNode {
 		return concretize(inAspect, map);
 	}
 	
+	public boolean isDeclare(ShadowMunger munger) {
+		if (munger == null) return false; // ??? Is it actually an error if we get a null munger into this method.
+		if (munger instanceof Checker) return true;
+		if (((Advice)munger).getKind().equals(AdviceKind.Softener)) return true;
+		return false;
+	}
 	
 	
 	public Pointcut concretize(ResolvedTypeX inAspect, IntMap bindings) {
