@@ -1,11 +1,16 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
-<suite>    
+<suite> 
 
 
 
     <!--
   
-
+    <ajc-test dir="options/injars/simple" 
+      title="options -injars">
+        <compile files="Simple.java,main.jar"
+        	options="!eclipse"/>
+        <run class="Main"/>
+    </ajc-test>
 
     
     <ajc-test dir="new" pr="885"

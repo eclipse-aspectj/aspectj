@@ -46,6 +46,7 @@ import org.apache.bcel.generic.RET;
 import org.apache.bcel.generic.ReturnInstruction;
 import org.apache.bcel.generic.Select;
 import org.apache.bcel.generic.Type;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -241,7 +242,10 @@ class BcelClassWeaver implements IClassWeaver {
     
     public boolean weave() {
         if (clazz.getWeaverState().isWoven()) {
-        	throw new RuntimeException("already woven: " + clazz);
+        	world.showMessage(IMessage.ERROR, 
+				"class \'" + clazz.getType().getName() + "\' is already woven",
+				ty.getSourceLocation(), null);
+        	return false;
         }
         
         boolean isChanged = false;

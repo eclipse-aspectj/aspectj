@@ -306,10 +306,16 @@ public class WildTypePattern extends TypePattern {
 		if (simpleName != null) {
 			FormalBinding formalBinding = scope.lookupFormal(simpleName);
 			if (formalBinding != null) {
-				if (!allowBinding || bindings == null) {
+				if (bindings == null) {
 					scope.message(IMessage.ERROR, this, "negation doesn't allow binding");
 					return this;
 				}
+				if (!allowBinding) {
+					scope.message(IMessage.ERROR, this, 
+						"name binding only allowed in target, this, and args pcds");
+					return this;
+				}
+				
 				BindingTypePattern binding = new BindingTypePattern(formalBinding);
 				binding.copyLocationFrom(this);
 				bindings.register(binding, scope);

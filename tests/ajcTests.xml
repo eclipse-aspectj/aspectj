@@ -5878,4 +5878,24 @@
         <run class="CflowConcrete"/>
     </ajc-test>
     
+   <ajc-test dir="new/options11"  pr="36329"
+   	  comment="the line number might change, we're really interested only in the files here"
+      title="The compiler crashes when using aspect libraries created without using -noweave">
+        <compile files="Main.java,injar.jar,Aspect.java,aspectlib1.jar,aspectlib2.jar">
+            <message kind="error" line="0"/>
+        </compile>
+   </ajc-test>
+   
+    <ajc-test dir="bugs" title="lame error message: negation doesn't allow binding"
+      pr="30663">
+        <compile files="BadBindingError.java">
+            <message kind="error" line="7"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs/interSpecials" pr="36936"
+      title="Error when introducing members of type Class">
+        <compile files="Trg.java,Asp.java"/>
+        <run class="Trg"/>
+    </ajc-test>
 </suite>

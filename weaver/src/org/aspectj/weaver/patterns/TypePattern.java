@@ -67,6 +67,9 @@ public abstract class TypePattern extends PatternNode {
 	
 	
 	public final FuzzyBoolean matches(ResolvedTypeX type, MatchKind kind) {
+		//??? This is part of gracefully handling missing references
+		if (type == ResolvedTypeX.MISSING) return FuzzyBoolean.NO;
+		
 		if (kind == STATIC) {
 			return FuzzyBoolean.fromBoolean(matchesStatically(type));
 		} else if (kind == DYNAMIC) {
