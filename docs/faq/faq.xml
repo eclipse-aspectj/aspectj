@@ -2180,7 +2180,7 @@ public abstract aspect TraceJoinPoints dominates * {
 	type depends on the enclosing class.
         Second, you may choose one over another if you cannot bring all
 	your sources within the code the compiler controls
-	(described in the <ulink url="progguide/apb.html">appendix</ulink>
+	(described in the <ulink url="progguide/semantics.html">appendix</ulink>
      to the <literal>Programming Guide</literal>).
 	For example, to trace calls into a 
 	method from classes which are outside the code the compiler controls
@@ -2576,7 +2576,7 @@ java.lang.Integer
           </programlisting>
           <para>
 	For more information, see the Programming Guide
-            <ulink url="progguide/apbs02.html">
+            <ulink url="progguide/semantics-pointcuts.html">
               semantics section "Context Exposure"
             </ulink>.
           </para>
@@ -3217,7 +3217,7 @@ vmparam -Xmx384m
           a system, so AspectJ program semantics may be limited to code
           the implementation controls.  For our implementation, these 
           limitations are stated in 
-          <ulink url="progguide/apc.html">
+          <ulink url="progguide/limitations.html">
              Programming Guide Appendix C</ulink>.
 		  Aside from understanding the use and limitations of the 
 		  implementation, there is no need to understand the underlying 
@@ -3417,6 +3417,10 @@ vmparam -Xmx384m
            Find specific instructions in the AspectJ tree at
            <ulink url="http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/readme-build-and-test-aspectj.html?rev=HEAD&amp;content-type=text/html&amp;cvsroot=Technology_Project">
            org.aspectj/modules/build/readme-build-and-test-aspectj.html</ulink>.
+		   If you would like to use Ant to checkout the sources,
+		   build the distribution, and test everything, see
+           <ulink url="http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/release/build.xml?rev=HEAD&amp;content-type=text/xml&amp;cvsroot=Technology_Project">
+           org.aspectj/modules/build/release/build.xml</ulink>.		   
           </para>
           <para>The AspectJ tree is organized into modules as follows:
           <programlisting>
