@@ -30,7 +30,7 @@ import org.aspectj.apache.bcel.classfile.Utility;
  */
 public class Annotation {
 	private int typeIndex;
-	private List /* ElementNameValuePair */ evs;
+	private List /* ElementNameValuePair */ evs = new ArrayList();
 	private ConstantPool cpool;
 	private boolean isRuntimeVisible;
 	
@@ -74,7 +74,6 @@ public class Annotation {
 	}
 	
 	public void addElementNameValuePair(ElementNameValuePair evp) {
-		if (evs == null) evs = new ArrayList();
 		evs.add(evp);
 	}
 	

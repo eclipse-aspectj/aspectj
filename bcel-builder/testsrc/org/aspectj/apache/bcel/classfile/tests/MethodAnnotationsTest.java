@@ -30,7 +30,6 @@ public class MethodAnnotationsTest extends BcelTestCase {
 		super.setUp();
 	}
 	
-	
 	public void testMethodAnnotations() throws ClassNotFoundException {
 		JavaClass clazz = getClassFromJar("AnnotatedMethods");
 		
