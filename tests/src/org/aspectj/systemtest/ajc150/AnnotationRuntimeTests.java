@@ -45,15 +45,37 @@ public class AnnotationRuntimeTests extends TestUtils {
     public void test003_InheritableOrNot() {
         CompilationResult cR = binaryWeave("TestingAnnotations.jar","ThisOrTargetTests.aj",0,0);   
     }
-    
+
+    public void test004_CantUseinDecEoW() {
+        CompilationResult cR = binaryWeave("TestingAnnotations.jar","DeclareEoW.java",4,0);
+        List errors = new ArrayList();
+        errors.add(new Message(3,"this() pointcut designator cannot be used in declare statement"));
+        errors.add(new Message(5,"target() pointcut designator cannot be used in declare statement"));
+        MessageSpec messageSpec = new MessageSpec(new ArrayList(), errors);
+        assertMessages(cR, messageSpec);
+    }
+
     // TODO extra tests
     // run the result of test003 and validate matches (needs 1.5 runtime)
     // test inheritable annotation not present on type [should generate runtime test]
     
-    public void test004_ArgsSuite() {
+    public void test005_ArgsSuite() {
     	baseDir = new File("../tests/java5/annotations/args");
         CompilationResult cR = binaryWeave("TestingArgsAnnotations.jar","AtArgsAspect.java",0,0);  
         // TODO need to RUN the result of these tests...
         System.out.println(cR);
+    }
+    
+    public void test006_Within_Code() {
+    	baseDir = new File("../tests/java5/annotations/within_code");
+        CompilationResult cR = binaryWeave("TestingAnnotations.jar","WithinAndWithinCodeTests.java",0,5);
+        List warnings = new ArrayList();
+        warnings.add(new Message(32,"@within match on non-inherited annotation"));
+        warnings.add(new Message(39,"@within match on non-inherited annotation"));
+        warnings.add(new Message(39,"@within match on inheritable annotation"));
+        warnings.add(new Message(43,"@within match on inheritable annotation"));
+        warnings.add(new Message(32,"@withincode match"));
+        MessageSpec mSpec = new MessageSpec(warnings,new ArrayList());
+        assertMessages(cR,mSpec); 	
     }
 }
