@@ -1,7 +1,7 @@
 <refentry>
   <refnamediv>
     <refname>ajc</refname>
-    <refpurpose>compiler for the AspectJ language </refpurpose>
+    <refpurpose>compiler and bytecode weaver for the AspectJ and Java languages </refpurpose>
   </refnamediv>
 
   <refsynopsisdiv>
@@ -19,15 +19,18 @@
   <refsect1 id="ajc" xreflabel="ajc">
     <title>Description</title>
 
-    <para>The command <command>ajc</command> compiles AspectJ and Java
-      language source files into class files. Options and files may be
-      specified directly on the command line, or indirectly by naming a
-      file which contains them.</para>
+    <para>The <command>ajc</command> command compiles AspectJ and Java
+      language files, weaving aspects as necessary to produce .class files 
+      compliant with any Java VM (1.1 or later). 
+      To do bytecode weaving, it also accepts input classes or aspects 
+      in binary form.
+      </para>
 
-    <para> The arguments after the options specify the file(s) to compile.
+    <para> The arguments after the options specify the source file(s) to compile.
+        (Specify source classes using the <parameter>-injars</parameter> option, below.)
         Files may be listed directly on the command line, or listed in a file.
-        The <parameter>@<replaceable>file</replaceable></parameter> and
-        <parameter>-argfile <replaceable>file</replaceable></parameter> forms
+        The <parameter>-argfile <replaceable>file</replaceable></parameter> 
+        and <parameter>@<replaceable>file</replaceable></parameter> forms
         are equivalent, and are interpreted as meaning all the files listed in
         the specified file.  Each line in these files should contain one option
         or filename. Comments, as in Java, start with <literal>//</literal> and
@@ -35,14 +38,18 @@
     </para>
 
     <para>
-        <command>NB:</command> You must explicitly pass ajc all of the source files necessary 
-        for the compilation.  When you are compiling source files containing aspects
+        <command>NB:</command> 
+        You must explicitly pass <command>ajc</command> all sources necessary 
+        for the compilation.  When compiling source files containing aspects
         or pointcuts, be sure 
         to include the source files for any types affected by the aspects or
         picked out by the pointcuts.  
-        (If you wish to exclude types from the scope affected by the
-        aspect, change the corresponding pointcut or declaration.)
-        This is necessary because, unlike javac, ajc does not search the sourcepath for classes.
+        (To exclude types from the scope affected by the aspect, 
+         change the corresponding pointcut or declaration.)
+        This is necessary because, unlike javac, ajc does not search the 
+        sourcepath for classes.
+        You may use the <parameter>-sourceroots</parameter> option to specify
+        as source all the .aj and .java files in a set of directory trees.
     </para>
 
     <refsect2>
@@ -51,162 +58,332 @@
      <variablelist>
 
       <varlistentry>
-        <term>-verbose</term>
+        <term>-injars <replaceable>JarList</replaceable></term>
         <listitem><para>
-          Output messages about what ajc is doing
+        Accept as source bytecode any .class files inside the 
+        specified .jar files.  The output will include these
+        classes, possibly as woven with any applicable aspects.
+        JarList, like classpath, is a single argument containing
+        a list of paths to jar files, delimited by the platform-
+        specific classpath delimiter.
         </para></listitem>
       </varlistentry>
 
       <varlistentry>
-        <term>-version</term>
+        <term>-aspectpath <replaceable>JarList</replaceable></term>
         <listitem><para>
-          Print the version of ajc
-        </para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term>-nocomments</term>
-        <listitem><para>
-          Don't generate any comments into the woven code.
-          Only relevant with -preprocess mode.
-        </para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term>-emacssym</term>
-        <listitem><para>
-          Generate symbols used by AJDE for Emacs
-        </para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term>-usejavac</term>
-        <listitem><para>
-          Use javac to generate .class files
-        </para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term>-preprocess</term>
-        <listitem><para>
-          Don't try to generate any .class files.
-          Generate regular Java code into <replaceable>workingdir</replaceable>
-        </para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term>-workingdir <replaceable>Directory</replaceable></term>
-        <listitem><para>
-          Specify where to place intermediate .java files
-          <replaceable>Directory</replaceable> defaults to ./ajworkingdir.
-          Only relevant with -usejavac or -preprocess modes.
-        </para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term></term>
-        <listitem><para>
-        </para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term></term>
-        <listitem><para>
-
-        </para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term>-O</term>
-        <listitem><para>
-          Optimize; may hinder debugging or enlarge class files
-        </para></listitem>
-      </varlistentry>
-
-      <!-- We don't actually warn about deprecated methods ever
-      <varlistentry>
-        <term>-deprecation</term>
-        <listitem><para>
-          Output source locations where deprecated APIs are used
-        </para></listitem>
-      </varlistentry>
-      -->
-
-      <varlistentry>
-        <term>-d <replaceable>Directory</replaceable></term>
-        <listitem><para>
-          Specify where to place generated .class files
-          <replaceable>Directory</replaceable> defaults to the current working dir
-        </para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term></term>
-        <listitem><para>
-
-        </para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term>-classpath <replaceable>Path</replaceable></term>
-        <listitem><para>
-          Specify where to find user class files
-        </para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term>-bootclasspath <replaceable>Path</replaceable></term>
-        <listitem><para>
-          Override location of bootstrap class files
-        </para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term>-extdirs <replaceable>Path</replaceable></term>
-        <listitem><para>
-          Override location of installed extensions
+        Weave binary aspects from JarList zip files into all sources.
+        The aspects should have been output by the same version
+        of the compiler.
+        To run the output classes requires putting all the 
+        aspectpath entries on the run classpath.
+        JarList, like classpath, is a single argument containing
+        a list of paths to jar files, delimited by the platform-
+        specific classpath delimiter.
         </para></listitem>
       </varlistentry>
 
       <varlistentry>
         <term>-argfile <replaceable>File</replaceable></term>
         <listitem><para>
-          the file is a line-delimited list of arguments
-          these arguments are inserted into the argument list
+          The file is a line-delimited list of arguments.
+          These arguments are inserted into the argument list.
         </para></listitem>
       </varlistentry>
 
       <varlistentry>
-        <term>-encoding <replaceable>Encoding</replaceable></term>
-        <listitem><para>
-          Specify character encoding used by source files
+        <term>-outjar <replaceable>output.jar</replaceable></term>
+        <listitem><para>Put output classes in zip file output.jar.
         </para></listitem>
       </varlistentry>
 
       <varlistentry>
-        <term>-source <replaceable>1.4</replaceable></term>
+        <term>-incremental</term>
+        <listitem><para>Run the compiler continuously.
+        After the initial compilation, the compiler will
+        wait to recompile until it reads a newline from the standard
+        input, and will quit when it reads a 'q'.
+        It will only recompile necessary components, so a recompile
+        should be much faster than doing a second compile.
+        This requires -sourceroots.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-sourceroots <replaceable>DirPaths</replaceable></term>
+        <listitem><para>Find and build all .java or .aj source files under 
+        any directory listed in DirPaths. 
+        DirPaths, like classpath, is a single argument containing
+        a list of paths to directories, delimited by the platform-
+        specific classpath delimiter.
+        Required by -incremental.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-emacssym</term>
         <listitem><para>
-          Specify support for assertions according to the 1.4 Java language.
-          This will treat <literal>assert</literal> as a keyword and will
+          Generate .ajesym symbol files for emacs support
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-Xlint</term>
+        <listitem><para>Same as -Xlint:warning
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-Xlint:{level}</term>
+        <listitem><para>Set default level for messages about potential
+           programming mistakes in crosscutting code.
+           {level} may be ignore, warning, or error.
+           This overrides entries in 
+	       org/aspectj/weaver/XlintDefault.properties
+           from aspectjtools.jar, but does not override levels set
+           using the -Xlintfile option.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-Xlintfile <replaceable>PropertyFile</replaceable></term>
+        <listitem><para>Specify properties file to set levels for
+           specific crosscutting messages.   
+           PropertyFile is a path to a Java .properties file that
+           takes the same property names and values as
+	       org/aspectj/weaver/XlintDefault.properties
+           from aspectjtools.jar, which it also overrides.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-help</term>
+        <listitem><para>
+          Emit information on compiler options and usage
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-version</term>
+        <listitem><para>
+          Emit the version of the AspectJ compiler
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-classpath <replaceable>Path</replaceable></term>
+        <listitem><para>
+          Specify where to find user class files.
+        Path is a single argument containing
+        a list of paths to zip files or directories, 
+        delimited by the platform-specific path delimiter.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-d <replaceable>Directory</replaceable></term>
+        <listitem><para>
+          Specify where to place generated .class files.
+          If not specified, <replaceable>Directory</replaceable> 
+          defaults to the current working dir.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>target <replaceable>[1.1|1.2]</replaceable></term>
+        <listitem><para>Specify classfile target setting (1.1 or 1.2, default is 1.1)
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-1.3</term>
+        <listitem><para>Set compliance level to 1.3 (default)
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-1.4</term>
+        <listitem><para>Set compliance level to 1.4
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-source <replaceable>[1.3|1.4]</replaceable></term>
+        <listitem><para>Toggle assertions (1.3 or 1.4, default is 1.3 
+			in -1.3 mode and 1.4 in -1.4 mode).
+            When using -source 1.3, an assert() statement valid under
+            Java 1.4 will result in a compiler error.
+          When using -source 1.4, 
+          treat <literal>assert</literal> as a keyword and 
           implement assertions according to the 1.4 language spec.
         </para></listitem>
       </varlistentry>
 
       <varlistentry>
-        <term>-lenient</term>
-        <listitem><para>
-          Be extra-lenient in interpreting the java specification
-          This allows some statements that some compilers consider errors.
+        <term>-nowarn</term>
+        <listitem><para>Emit no warnings (equivalent to '-warn:none')
         </para></listitem>
       </varlistentry>
 
       <varlistentry>
-        <term>-strict</term>
-        <listitem><para>
-          Be extra-strict in interpreting the java specification
-          This signals errors for some statements that many compilers don't
-          catch, and generates code strictly according to the Java Language
-          Specification, even though such code may not run on 1.2 VMs.
+        <term>-warn: <replaceable>items</replaceable></term>
+        <listitem><para>Emit warnings for any instances of
+        the comma-delimited list of questionable code 
+        (eg '-warn:unusedLocals,deprecation'):
+        <programlisting><!-- unable to embed simplelist? -->
+    constructorName        method with constructor name
+    packageDefaultMethod   attempt to override package-default method
+    deprecation            usage of deprecated type or member
+    maskedCatchBlocks      hidden catch block
+    unusedLocals           local variable never read
+    unusedArguments        method argument never read
+    unusedImports          import statement not used by code in file
+        </programlisting>
+
+        <!-- old simplelist form
+        <simplelist>
+	     <listitem>constructorName: method with constructor name
+         </listitem>
+	     <listitem>packageDefaultMethod: attempt to override package-default method
+         </listitem>
+	     <listitem>deprecation: usage of deprecated type or member
+         </listitem>
+	     <listitem>maskedCatchBlocks: hidden catch block
+         </listitem>
+	     <listitem>unusedLocals: local variable never read
+         </listitem>
+	     <listitem>unusedArguments: method argument never read
+         </listitem>
+	     <listitem>unusedImports: import statement not used by code in file
+         </listitem>
+	     <listitem>syntheticAccess: performing synthetic access for innerclass
+         </listitem>
+        </simplelist>
+        end of comment with old simplelist form -->
+        
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-deprecation</term>
+        <listitem><para>Same as -warn:deprecation
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-noImportError</term>
+        <listitem><para>Emit no errors for unresolved imports
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-proceedOnError</term>
+        <listitem><para>Keep compiling after error, 
+                        dumping class files with problem methods
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-g<replaceable>:[lines,vars,source]</replaceable></term>
+        <listitem><para>debug attributes level, that may take three forms:
+        <programlisting>
+    -g         all debug info ('-g:lines,vars,source')
+    -g:none    no debug info
+    -g:{items} debug info for any/all of [lines, vars, source], e.g.,
+               -g:lines,source
+        </programlisting>
+        <!-- simplelist failed ?? -->
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-preserveAllLocals</term>
+        <listitem><para>Preserve all local variables during code generation
+        (to facilitate debugging).
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-referenceInfo</term>
+        <listitem><para>Compute reference information.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-encoding <replaceable>format</replaceable></term>
+        <listitem><para>Specify default source encoding format.
+            Specify custom encoding on a per file basis by suffixing
+			each input source file/folder name with '[encoding]'.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-verbose</term>
+        <listitem><para>Emit messages about accessed/processed compilation units 
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-log <replaceable>file</replaceable></term>
+        <listitem><para>Specify a log file for compiler messages.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-progress</term>
+        <listitem><para>Show progress (requires -log mode).
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-time</term>
+        <listitem><para>Display speed information.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-noExit</term>
+        <listitem><para>Do not call System.exit(n) at end of compilation
+			(n=0 if no error)
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-repeat <replaceable>N</replaceable></term>
+        <term></term>
+        <listitem><para>Repeat compilation process N times 
+        (typically to do performance analysis).
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-Xnoweave</term>
+        <listitem><para>(Experimental) produce unwoven class files
+        for input using -injars.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-Xnoinline</term>
+        <listitem><para>(Experimental) do not inline around advice
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-XincrementalFile <replaceable>file</replaceable></term>
+        <term></term>
+        <listitem><para>(Experimental) This works like incremental mode, 
+        but using a file rather than standard input to control the compiler.  
+        It will recompile each time file is changed and
+        and halt when file is deleted.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-XserializableAspects</term>
+        <term></term>
+        <listitem><para>(Experimental) Normally it is an error to declare
+        aspects Serializable.  This option removes that restriction.
         </para></listitem>
       </varlistentry>
      </variablelist>
@@ -227,7 +404,7 @@
     naming conventions or sub-packages in favor of the <filename>.aj</filename>
     extension.</para>
 
-    <itemizedlist>
+    <simplelist>
 
     <listitem>Filename conventions are hard to enforce and lead to awkward names
     for your aspects.  Instead of <filename>TracingAspect.java</filename> we
@@ -240,7 +417,7 @@
     <filename>.aj</filename> extension and including these files in your existing
     packages instead.</listitem>
 
-    </itemizedlist>
+    </simplelist>
 
     </refsect2>
 
@@ -301,86 +478,131 @@ ajc -argfile sources.lst
 ajc @sources.lst</programlisting></para>
         </para>
         <para>
-        Argfiles are also supported by jikes, javac, and ajdoc, so you 
+        Argfiles are also supported by jikes and javac, so you 
         can use the files in hybrid builds.  However, the support varies:
         </para>
 
-	<simplelist>
-        <listitem>Only ajc accepts command-line options</listitem>
-        <listitem>Jikes and Javac do not accept internal @argfile references.
-          </listitem>
-        <listitem>Jikes and Javac only accept the @file form on the command line.</listitem>
-	</simplelist>
+	    <simplelist>
+            <listitem>Only ajc accepts command-line options</listitem>
+            <listitem>Jikes and Javac do not accept internal @argfile references.
+              </listitem>
+            <listitem>Jikes and Javac only accept the @file form on the command line.</listitem>
+	    </simplelist>
 
       </example>
+      <example id="examplebytecode">
+        <title>An example using -injars and -aspectpath</title>
+        <para>Bytecode weaving using -injars:
+          AspectJ 1.1 supports weaving from input zip or jar files containing 
+          class files.  Using input jars is like compiling the corresponding 
+          source files, and all binaries are emitted to output.  Although 
+          Java-compliant compilers may differ in their output, ajc should 
+          take as input any class files produced by javac, jikes, eclipse, 
+          and, of course, ajc.  Aspects included in -injars will be woven into
+          like other .class files, but they will specify any crosscutting
+          code (i.e., they will not be woven into other types).  To use
+          aspects in their binary form to specify crosscutting,
+          see -aspectpath below.
+        </para>
+        <para>Aspect libraries using -aspectpath:
+          AspectJ 1.1 supports weaving from read-only libraries containing 
+          aspects.  Like input jars, they affect all input; unlike input 
+          jars, they themselves are not affected or emitted as output.  
+          Sources compiled with aspect libraries must be run with the same 
+          aspect libraries on their classpath. 
+        </para>
+        <para>The following example builds the tracing example in a 
+        command-line environment; it creates a read-only aspect library, 
+      compiles some classes for use as input bytecode, and 
+       compiles the classes and other sources with the aspect library.
+        </para>
+        <para>The tracing example is in the AspectJ distribution 
+        ({aspectj}/doc/examples/tracing).  This uses the following files:
+        </para>
+        <para><programlisting>
+ aspectj1.1/ 
+   bin/ 
+     ajc 
+   lib/ 
+     aspectjrt.jar 
+   examples/ 
+     tracing/ 
+       Circle.java 
+       ExampleMain.java 
+       lib/ 
+         AbstractTrace.java 
+         TraceMyClasses.java 
+       notrace.lst 
+       Square.java 
+       tracelib.lst 
+       tracev3.lst 
+       TwoDShape.java 
+       version3/ 
+         Trace.java 
+         TraceMyClasses.java 
+        </programlisting></para>
 
-      <!-- these examples suck
-      <example id="mixingoptionsandfiles">
-        <title>Mixing directly and indirectly specified options and
-        files</title>
+<para>Below, the path separator is taken as ";", but file separators 
+are "/".  All commands are on one line.  Adjust paths and 
+commands to your environment as needed. 
 
-        <para>Invoke the AspectJ compiler with the options <literal>-threads
-          2</literal>, <literal>-deprecation</literal>,
-        <literal>-verbose</literal> and the options listed in the file
-        <filename>standard_ajc_options</filename> on the files listed in
-        <filename>prog_src_files</filename>. </para>
+</para><para>Setup the path, classpath, and current directory: 
+    
+        <para><programlisting>
+    cd examples 
+    export ajrt=../lib/aspectjrt.jar 
+    export CLASSPATH="$ajrt" 
+    export PATH="../bin:$PATH" 
+        </programlisting></para>
 
-        <programlisting>
-        ajc -threads 2 -deprecation @standard_ajc_options -argfile prog_src_files -verbose
-        </programlisting>
+</para><para>Build a read-only tracing library: 
+        <para><programlisting>
+    ajc -argfile tracing/tracelib.lst -outjar tracelib.jar 
+        </programlisting></para>
+
+</para><para>Build the application with tracing in one step: 
+
+        <para><programlisting>
+    ajc -aspectpath tracelib.jar -argfile tracing/notrace.lst -outjar tracedapp.jar 
+        </programlisting></para>
+
+</para><para>Run the application with tracing: 
+
+        <para><programlisting>
+    java -classpath "$ajrt;tracedapp.jar;tracelib.jar" tracing.ExampleMain 
+        </programlisting></para>
+
+</para><para>Build the application with tracing from binaries in two steps: 
+    <listitem><para>
+(a) Build the application classes (using javac for demonstration's sake): 
+        <para><programlisting>
+    mkdir classes 
+    javac -d classes tracing/*.java 
+    jar cfM app.jar -C classes . 
+        </programlisting></para>
+
+    </para></listitem>
+    <listitem><para>
+(b) Build the application with tracing: 
+        <para><programlisting>
+    ajc -injars app.jar -aspectpath tracelib.jar -outjar tracedapp.jar 
+        </programlisting></para>
+    </para></listitem>
+
+</para><para>Run the application with tracing (same as above): 
+
+        <para><programlisting>
+    java -classpath "$ajrt;tracedapp.jar;tracelib.jar" tracing.ExampleMain 
+        </programlisting></para>
+
+</para><para>Run the application without tracing: 
+
+        <para><programlisting>
+    java -classpath "app.jar" tracing.ExampleMain
+        </programlisting></para>
+</para>
 
       </example>
-
-      <example id="optionsnotinajc">
-
-        <title>Compiling with options not directly supported by
-        <command>ajc</command></title>
-
-        <para>Run the AspectJ compiler on the file
-        <filename>figures/FigureElement.java</filename> but do not generate
-        <filename>.class</filename> (bytecode) files. Keep the generated
-        Java source files and place them in the directory
-        <filename>tmp</filename>.</para>
-
-<programlisting>
-        ajc -preprocess -workingdir tmp figures/FigureElement.java
-</programlisting>
-
-        <para>You may then compile those files with:</para>
-
-        <programlisting>
-        cd tmp
-        javac -g figures/FigureElement.java
-        </programlisting>
-
-      </example>
-
-      <example id="usingjikes">
-        <title>Using <command>jikes</command></title>
-
-        <para>Invoke the AspectJ compiler on the file
-        <filename>figures/FigureElement.java</filename>, saving the
-        generated Java files in the directory
-        <filename>ajworkingdir</filename>. Then invoke the Jikes compiler
-        on the generated Java files.</para>
-
-        <programlisting>
-        JIKESPATH=$JAVA_HOME/jre/lib/rt.jar:$CLASSPATH
-        ajc -preprocess figures/FigureElement.java
-        cd ajworkingdir
-        jikes figures/FigureElement.java
-        </programlisting>
-
-        <para>Since <command>jikes</command> cannot infer the location of the
-        standard class files the way <command>javac</command> can, you must
-        tell it explicitly how to find the system and user class files it
-        needs. You may either use the <literal>-classpath</literal> option to
-        both <command>ajc</command> and to <command>jikes</command>, or you
-        may define the enviroment variables <envar>CLASSPATH</envar> and
-        <envar>JIKESPATH</envar> appropriately.</para>
-
-      </example>
-      -->
 
     </refsect2>
 
@@ -389,10 +611,10 @@ ajc @sources.lst</programlisting></para>
 
       <para>The AspectJ compiler is implemented completely in Java and can be
         called as a Java class.  The only interface that should be considered
-        public is the method <literal>org.aspectj.tools.ajc.Main.main(String[]
-        args)</literal>
-        where <literal>args</literal> are the standard <command>ajc</command>
-        command line arguments. This means that an alternative way to run the
+        public are the public methods in <literal>org.aspectj.tools.ajc.Main</literal>.
+        E.g., <literal>main(String[] args)</literal> takes the
+        the standard <command>ajc</command> command line arguments. 
+        This means that an alternative way to run the
         compiler is </para>
 
       <cmdsynopsis>
@@ -400,14 +622,11 @@ ajc @sources.lst</programlisting></para>
         <arg><replaceable>option...</replaceable></arg>
         <arg><replaceable>file...</replaceable></arg>
       </cmdsynopsis>
+      <para>To access compiler messages programmatically, use the methods
+         <literal>setHolder(IMessageHolder holder)</literal> and/or
+         <literal>run(String[] args, IMessageHolder holder)</literal>.
+      </para>
 
-<!--        <note> -->
-	<para>
-        To run in <literal>-usejavac</literal> mode,
-        you must include in your classpath the
-        <filename>tools.jar</filename> from your Java 2 developer's kit.
-    </para>
-<!--        </note> -->
     </refsect2>
 
     <refsect2>
