@@ -419,9 +419,12 @@ public class AjBuildManager {
 				
 				File destinationPath = buildConfig.getOutputDir();
 				if (destinationPath == null) {
-					destinationPath = new File(extractDestinationPathFromSourceFile(unitResult));
+					filename = new File(filename).getName();
+					filename = new File(extractDestinationPathFromSourceFile(unitResult), filename).getPath();
+				} else {
+					filename = new File(destinationPath, filename).getPath();
 				}
-				filename = new File(destinationPath, filename).getPath();
+				
 				//System.out.println("classfile: " + filename);
 				unwovenClassFiles.add(new UnwovenClassFile(filename, classFile.getBytes()));
 			}

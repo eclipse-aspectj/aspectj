@@ -12,6 +12,7 @@
 
 package org.aspectj.ajdt.internal.compiler.batch;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -138,5 +139,35 @@ public class BasicCommandTestCase extends CommandTestCase {
 		boolean result = command.runCommand((String[])args.toArray(new String[args.size()]), myHandler);
 
 		assertEquals("error for org.aspectj.lang.JoinPoint not found", 1, myHandler.getErrors().length);
+	}
+	
+	public void testImplicitOutputDir() {
+		List args = new ArrayList();
+		
+		args.add("-classpath");
+		args.add("../runtime/bin;../lib/junit/junit.jar;../testing-client/bin");
+		
+		File f1 = new File("testdata/src1/p1/Foo.class");
+		File f2 = new File("testdata/src1/WrongPackage.class");
+		File f3 = new File("testdata/src1/WrongPackage$1.class");
+		
+		if (f1.exists()) f1.delete();
+		if (f2.exists()) f2.delete();
+		if (f3.exists()) f3.delete();
+		
+		args.add("testdata/src1/p1/Foo.java");
+		args.add("testdata/src1/WrongPackage.java");
+		
+		runCompiler(args, NO_ERRORS);
+		
+		assertTrue(f1.getPath(), f1.exists());
+		assertTrue(f2.getPath(), f2.exists());
+		assertTrue(f3.getPath(), f3.exists());
+		
+		if (f1.exists()) f1.delete();
+		if (f2.exists()) f2.delete();
+		if (f3.exists()) f3.delete();
+		
+
 	}
 }
