@@ -61,7 +61,7 @@
 
     <!-- ................... ajc limitations -->
     <ajc-test dir="." title="skip - forced ajc with incremental tests" 
-    	 keywords="requireKeyword" >
+    	 keywords="requireKeyword,skipUnenforcedAjcLimit" >
         <compile staging="true" files="TestNoTester.java" options="!ajc"/>
         <run class="TestNoTester"/>
     </ajc-test>
