@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <meta name="GENERATOR" content="Microsoft FrontPage 5.0">
 <meta name="ProgId" content="FrontPage.Editor.Document">
-<title>AJDT Project Proposal</title>
+<title>ASM</title>
 <STYLE TYPE="text/css">
 <!--
  
@@ -35,9 +35,9 @@
 		line-height:110%; 
 	}
 	H3 {
-		font:18px/18px Verdana, Arial, Helvetica, sans-serif; 
+		font:17px/17px Verdana, Arial, Helvetica, sans-serif; 
 		color:black; 
-		font-weight:bold; 
+		//font-weight:bold; 
 		margin-left: 10px;
 		line-height:110%; 
 	}
@@ -140,20 +140,22 @@
 
 <BODY BGCOLOR="white">
 
-<h3 align="center">Abstract Structure Model (ASM)</h3>
-<h4 align="left">Aspect Member Labels </h4>
+<h2 align="center">Abstract Structure Model (ASM) &amp; Views&nbsp; </h2>
+<h4 align="left" class="paragraph">...</h4>
+<h3 align="left">Model </h3>
+<h4 align="left">AspectJ Members </h4>
 <ul>
 	<li>pointcut<ul>
 		<li>pointcut <i>Id</i>(<i>Types</i>)</li>
 	</ul>
 	</li>
 	<li>advice<ul>
-		<li>after(<i>Types</i>)</li>
-		<li>after(<i>Types</i>) returning [(<i>Formal</i>)]</li>
-		<li>after(<i>Types</i>) throwing [(<i>Formal</i>)]</li>
-		<li>around(<i>Types</i>) : <i>Type</i></li>
-		<li>[throws <i>Type]</i></li>
-		<li>before </li>
+		<li><font color="#FF0000">after(<i>Types</i>)</font></li>
+		<li><font color="#FF0000">after(<i>Types</i>) returning [(<i>Formal</i>)]</font></li>
+		<li><font color="#FF0000">after(<i>Types</i>) throwing [(<i>Formal</i>)]</font></li>
+		<li><font color="#FF0000">around(<i>Types</i>) : <i>Type</i></font></li>
+		<li><font color="#FF0000">[throws <i>Type]</i></font></li>
+		<li><font color="#FF0000">before </font> </li>
 	</ul>
 	</li>
 	<li>inter-type member declarations<ul>
@@ -239,15 +241,6 @@
 		</li>
 	</ul>
 	</li>
-	<li><font color="#999999">uses dynamic test / dynamic test used by 
-	</font>
-	<ul>
-		<li><font color="#999999">if 
-		</font>
-		<ul>
-			<li><font color="#999999">conditional expression </font></li>
-		</ul></li>
-	</ul></li>
 </ul>
 <h4>Additional Inheritance Relationships </h4>
 <ul>
@@ -263,19 +256,26 @@
 	<li><font color="#0000FF">specifies / specified by 
 	</font> 
 	<ul>
-		<li><font color="#0000FF">abstract pointcut 
-		</font> 
+		<li><font color="#0000FF">concrete pointcut </font> 
 		<ul>
-			<li><font color="#0000FF">concrete pointcut </font> </li>
+			<li><font color="#0000FF">abstract pointcut 
+			</font> </li>
 		</ul>
 		</li>
 	</ul>
 	</li>
+	<li><font color="#0000FF">uses dynamic test / dynamic test used by 
+	</font>
+	<ul>
+		<li><font color="#0000FF">if 
+		</font>
+		<ul>
+			<li><font color="#0000FF">conditional expression </font></li>
+		</ul></li>
+	</ul></li>
 </ul>
 <h4>Additional Referential Relationships </h4>
 <ul>
-	<li><font color="#800000">matches deffered </font>
-	</li>
 	<li>uses pointcut / pointcut used by
 	<ul>
 		<li>advice declaration
@@ -338,15 +338,60 @@
 	</ul>
 	</li>
 </ul>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p><b>Issues</b></p>
+<h4>&nbsp;</h4>
+<h4><span style="font-weight: 400">Runtime Stuff </span> </h4>
 <ul>
+	<li>Stack mapper for thread tree and error handler </li>
+</ul>
+<h3 align="left">Edit Semantics (Refactoring)&nbsp; </h3>
+<h4><b><span style="font-weight: 400">Refactorings</span></b></h4>
+<ul>
+	<li>update PCD when refactoring method affected by some advice using that 
+	PCD</li>
+</ul>
+<p>&nbsp;</p>
+<h3 align="left">Views </h3>
+<p><b>Declaration Hierarchy </b></p>
+<p>...</p>
+<p>Used by</p>
+<ul>
+	<li>Navigator</li>
+	<li>Outline view</li>
+	<li>Code assist</li>
+</ul>
+<p><b>Relationships</b></p>
+<ul>
+	<li>joinpoint ordering</li>
+</ul>
+<p>Used by:</p><ul>
+	<li>editor &amp; outline assist </li>
+	<li>gutter annotations</li>
+	<li>debugger </li>
+</ul>
+
+	<p>&nbsp;</p>
+<p><b>Editor </b></p>
+<ul>
+	<li>create keyword highlighting guideline</li>
+</ul>
+<p><b>Javadoc Documentation</b></p>
+<p>...</p>
+<p><b>UML Static Structure </b></p>
+<p>...</p>
+<p>&nbsp;</p>
+<p><b>UI Stuff</b></p>
+<ul>
+	<li></li>
 	<li>default constructors &amp; initializers: promote to relation to type 
 	declaration, or just move source location to type declaration, but show 
 	nodes in tree ??</li>
+	<li>declare warning/error UI: messages should have annotation</li>
+	<li></li>
+	<li>declare error/warning task list items should the declare member's icons</li>
+	<li>matches deferred (pointcut search, join point probe)&nbsp; </li>
 </ul>
+
+<p>&nbsp;</p>
 
 </body>
 
