@@ -186,7 +186,12 @@ public class BcelRenderer implements ITestVisitor, IExprVisitor {
 		// assert method.isStatic()
 		Expr[] args = call.getArgs();
 		//System.out.println("args: " + Arrays.asList(args));
-		InstructionList callIl = renderExprs(fact, world, args);	
+		InstructionList callIl = new InstructionList();
+		for (int i=0, len=args.length; i < len; i++) {
+			//XXX only correct for static method calls
+			Type desiredType = BcelWorld.makeBcelType(method.getParameterTypes()[i]);
+			callIl.append(renderExpr(fact, world, args[i], desiredType));
+		}
 		//System.out.println("rendered args: " + callIl);
 		callIl.append(Utility.createInvoke(fact, world, method));
 		callIl.append(createJumpBasedOnBooleanOnStack());

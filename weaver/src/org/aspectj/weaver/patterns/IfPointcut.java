@@ -80,7 +80,9 @@ public class IfPointcut extends Pointcut {
 		try {
 			ExposedState myState = new ExposedState(baseArgsCount);
 			//System.out.println(residueSource);
-			residueSource.findResidue(shadow, myState); // don't care about Test
+			//??? some of these tests are preconditions for the if to run correctly
+			//    this implementation will duplicate those tests, we should be more careful
+			Test preTest = residueSource.findResidue(shadow, myState); // might need this
 			
 			//System.out.println(myState);
 			
@@ -101,8 +103,9 @@ public class IfPointcut extends Pointcut {
 	        if ((extraParameterFlags & Advice.ThisEnclosingJoinPointStaticPart) != 0) {
 	        	args.add(shadow.getThisEnclosingJoinPointStaticPartVar());
 	        }
-	
-			return Test.makeCall(testMethod, (Expr[])args.toArray(new Expr[args.size()]));
+			Test myTest = Test.makeCall(testMethod, (Expr[])args.toArray(new Expr[args.size()]));
+			return Test.makeAnd(preTest, myTest);
+			
 		} finally {
 			findingResidue = false;
 		}

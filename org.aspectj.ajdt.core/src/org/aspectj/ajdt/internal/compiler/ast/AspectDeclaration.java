@@ -499,7 +499,17 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 				// body starts here
 				codeStream.getstatic(world.makeFieldBinding(AjcMemberMaker.perSingletonField(
 						typeX)));
+				Label isNull = new Label(codeStream);
+				codeStream.dup();
+				codeStream.ifnull(isNull);
 				codeStream.areturn();
+				isNull.place();
+				codeStream.new_(world.makeTypeBinding(AjcMemberMaker.NO_ASPECT_BOUND_EXCEPTION));
+				codeStream.dup();
+				codeStream.invokespecial(world.makeMethodBindingForCall(
+					AjcMemberMaker.noAspectBoundExceptionInit()
+				));
+				codeStream.athrow();
 				// body ends here
 			}});
 	}

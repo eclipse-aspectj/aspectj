@@ -33,9 +33,15 @@ public class PerSingleton extends PerClause {
     }
 
     public Test findResidue(Shadow shadow, ExposedState state) {
-    	state.setAspectInstance(
-    		Expr.makeFieldGet(AjcMemberMaker.perSingletonField(inAspect), inAspect));
-		// XXX we need to think about whether it's null...
+    	Expr myInstance =
+    		Expr.makeCallExpr(AjcMemberMaker.perSingletonAspectOfMethod(inAspect),
+    							Expr.NONE, inAspect);
+    	
+    	state.setAspectInstance(myInstance);
+    	
+    	// we have no test
+    	// a NoAspectBoundException will be thrown if we need an instance of this
+    	// aspect before we are bound
         return Literal.TRUE;
     }
 
