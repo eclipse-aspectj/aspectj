@@ -15,6 +15,7 @@ package org.aspectj.testing.ajde;
 import java.awt.Frame;
 import java.io.*;
 import java.lang.reflect.*;
+import java.util.*;
 import java.util.List;
 
 import org.aspectj.ajde.*;
@@ -23,6 +24,7 @@ import org.aspectj.ajde.ui.internal.*;
 import org.aspectj.ajde.ui.swing.*;
 import org.aspectj.asm.StructureNode;
 import org.aspectj.bridge.*;
+import org.aspectj.util.*;
 import org.aspectj.util.FileUtil;
 
 /**
@@ -35,6 +37,7 @@ public class CompileCommand implements ICommand {
     long MAX_TIME = 180 * 1000;
     // this proxy ignores calls
     InvocationHandler proxy = new VoidInvocationHandler();
+    InvocationHandler loggingProxy = new LoggingInvocationHandler();
     MyTaskListManager myHandler = new MyTaskListManager();
     long endTime;
     boolean buildNextFresh;
@@ -83,18 +86,18 @@ public class CompileCommand implements ICommand {
         if (null != tempDir) {
             FileUtil.deleteContents(tempDir);
             tempDir.delete();
-        } 
+        }
     }
-    
+
     // set by build progress monitor when done
     void setEndTime(long endTime) {
         this.endTime = endTime;
     }
-    
+
     private void waitForCompletion(long startTime) {
         long maxTime = startTime + MAX_TIME;
-        while ((startTime > endTime) 
-                && (maxTime > System.currentTimeMillis())){
+        while ((startTime > endTime)
+            && (maxTime > System.currentTimeMillis())) {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
@@ -106,55 +109,66 @@ public class CompileCommand implements ICommand {
         File config = writeConfig(args);
         if (null == config) {
             throw new Error("unable to write config file");
-        }         
-        EditorAdapter editorAdapter 
-            = (EditorAdapter) makeProxy(EditorAdapter.class);
+        }
+        EditorAdapter editorAdapter =
+            (EditorAdapter) makeProxy(EditorAdapter.class);
         TaskListManager taskListManager = myHandler;
-        BuildProgressMonitor buildProgressMonitor 
-            = new DefaultBuildProgressMonitor(new Frame()){
-                public void finish() {
-                    super.finish();
-                    setEndTime(System.currentTimeMillis());
-                }                
-            };
-        ProjectPropertiesAdapter projectPropertiesAdapter 
-            = new NullIdeProperties("");
-        BuildOptionsAdapter buildOptionsAdapter 
-            = new AjcBuildOptions(new UserPreferencesStore(false));
-        IdeUIAdapter ideUIAdapter 
-            = (IdeUIAdapter) makeProxy(IdeUIAdapter.class);
-        ErrorHandler errorHandler 
-            = (ErrorHandler) makeProxy(ErrorHandler.class);
-        
+        BuildProgressMonitor buildProgressMonitor =
+            new DefaultBuildProgressMonitor(new Frame()) {
+            public void finish() {
+                super.finish();
+                setEndTime(System.currentTimeMillis());
+            }
+        };
+        String classesDir = "../testing/bin/classes";
+        for (int i = 0; i < args.length; i++) {
+            if ("-d".equals(args[i]) && ((1 +i) < args.length)) {
+                classesDir = args[1 + i];
+                break;
+            }
+        }
+
+        ProjectPropertiesAdapter projectPropertiesAdapter =
+            new ProjectProperties(classesDir);
+            // neither of these are in the true classpath
+        //            new NullIdeProperties("");  // in testsrc
+        //            = new BrowserProperties();  // in ajbrowser
+        BuildOptionsAdapter buildOptionsAdapter =
+            new AjcBuildOptions(new UserPreferencesStore(false));
+        IdeUIAdapter ideUIAdapter =
+            (IdeUIAdapter) makeProxy(IdeUIAdapter.class);
+        ErrorHandler errorHandler =
+            (ErrorHandler) makeProxy(ErrorHandler.class);
+
         AbstractIconRegistry iconRegistry = new AbstractIconRegistry() {
             protected AbstractIcon createIcon(String path) {
                 return new AbstractIcon(new Object());
             }
         };
-        StructureViewNodeFactory structureViewNodeFactory = 
+        StructureViewNodeFactory structureViewNodeFactory =
             new StructureViewNodeFactory(iconRegistry) {
-                protected StructureViewNode createConcreteNode(
-                    StructureNode node,
-                    AbstractIcon icon,
-                    List children) {
-                    return new SwingTreeViewNode(node, icon, children);
-                }
-            };
-        
+            protected StructureViewNode createConcreteNode(
+                StructureNode node,
+                AbstractIcon icon,
+                List children) {
+                return new SwingTreeViewNode(node, icon, children);
+            }
+        };
+
         Ajde.init(
-            editorAdapter, 
-            taskListManager, 
-            buildProgressMonitor, 
-            projectPropertiesAdapter, 
-            buildOptionsAdapter, 
+            editorAdapter,
+            taskListManager,
+            buildProgressMonitor,
+            projectPropertiesAdapter,
+            buildOptionsAdapter,
             structureViewNodeFactory,
             ideUIAdapter,
-            errorHandler
-        );
-        
-        Ajde.getDefault().getConfigurationManager().setActiveConfigFile(config.getAbsolutePath());
+            errorHandler);
+
+        Ajde.getDefault().getConfigurationManager().setActiveConfigFile(
+            config.getAbsolutePath());
     }
-    
+
     private File writeConfig(String[] args) {
         tempDir = FileUtil.getTempDir("CompileCommand");
         File result = new File(tempDir, "config.lst");
@@ -168,23 +182,31 @@ public class CompileCommand implements ICommand {
             return result;
         } catch (IOException e) {
             return null;
-        } finally{
+        } finally {
             try {
                 out.close();
             } catch (IOException e) {
             }
         }
     }
-    
-    private Object makeProxy(Class interfac){
+
+    private Object makeLoggingProxy(Class interfac) {
         return Proxy.newProxyInstance(
             interfac.getClassLoader(),
             new Class[] { interfac },
-            proxy);          
+            loggingProxy);
+    }
+    
+    private Object makeProxy(Class interfac) {
+        return Proxy.newProxyInstance(
+            interfac.getClassLoader(),
+            new Class[] { interfac },
+            proxy);
     }
 }
 
-class MyTaskListManager extends MessageHandler 
+class MyTaskListManager
+    extends MessageHandler
     implements TaskListManager {
     boolean hasError;
     boolean hasWarning;
@@ -204,7 +226,8 @@ class MyTaskListManager extends MessageHandler
         String message,
         ISourceLocation sourceLocation,
         IMessage.Kind kind) {
-        addSourcelineTask(new Message(message, kind, null, sourceLocation));
+        addSourcelineTask(
+            new Message(message, kind, null, sourceLocation));
     }
 
     public void clearTasks() {
@@ -216,15 +239,15 @@ class MyTaskListManager extends MessageHandler
         }
         init(true);
     }
-    
+
     public boolean hasWarning() {
         return hasWarning;
     }
-    
+
     boolean hasError() {
         return hasError;
     }
-    
+
     void start() {
         clearTasks();
     }
@@ -251,15 +274,113 @@ class MyTaskListManager extends MessageHandler
 }
 
 class VoidInvocationHandler implements InvocationHandler {
-   public Object invoke(Object me, Method method, Object[] args)
-       throws Throwable {
-//       System.err.println("Proxying"
-//       // don't call toString on self b/c proxied
-//        // + " me=" + me.getClass().getName() 
-//        + " method=" + method
-//        + " args=" + (LangUtil.isEmpty(args) 
-//            ? "[]" : Arrays.asList(args).toString()));
-       return null;
-   }   
+    public Object invoke(Object me, Method method, Object[] args)
+        throws Throwable {
+        //       System.err.println("Proxying"
+        //       // don't call toString on self b/c proxied
+        //        // + " me=" + me.getClass().getName() 
+        //        + " method=" + method
+        //        + " args=" + (LangUtil.isEmpty(args) 
+        //            ? "[]" : Arrays.asList(args).toString()));
+        return null;
+    }
 }
 
+class LoggingInvocationHandler implements InvocationHandler {
+    public Object invoke(Object me, Method method, Object[] args)
+        throws Throwable {
+        System.err.println("Proxying " + render(method, args));
+        return null;
+    }
+    public static String render(Class c) {
+        if (null == c) {
+            return "(Class) null";
+        }
+        String result = c.getName();
+        if (result.startsWith("java")) {
+            int loc = result.lastIndexOf(".");
+            if (-1 != loc) {
+                result = result.substring(loc+1);
+            }
+        }
+        return result;
+    }
+
+    public static String render(Method method, Object[] args) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(render(method.getReturnType()));
+        sb.append(" ");
+        sb.append(method.getName());
+        sb.append("(");
+        Class[] parmTypes = method.getParameterTypes();
+        int parmTypesLength = (null == parmTypes ? 0 : parmTypes.length);
+        int argsLength = (null == args ? 0 : args.length);
+        boolean doType = (parmTypesLength == argsLength);
+        for (int i = 0; i < argsLength; i++) {
+            if (i > 0) {
+                sb.append(", ");
+            }
+            if (doType) {
+                sb.append("(");
+                sb.append(render(parmTypes[i]));
+                sb.append(") ");
+            }
+            if (null == args[i]) {
+                sb.append("null");                
+            } else { // also don't recurse into proxied toString?
+                sb.append(args[i].toString());
+            }
+        }
+        sb.append(")");
+        return sb.toString();
+    }
+}
+
+
+class ProjectProperties implements ProjectPropertiesAdapter {
+    final private static String PREFIX 
+        = ProjectProperties.class.getName() + ": ";
+    final private String outputDir;
+    private Set inJars;
+    private Set sourceRoots;
+    private Set aspectPath;
+    private String outJar;
+
+    public ProjectProperties(String outputDir) {
+        this.outputDir = outputDir;
+    }
+
+    // known used, per logging proxy
+    public String getDefaultBuildConfigFile() { return null; }
+    public void setInJars(Set input) { inJars = input; }
+    public Set getInJars( ) { return inJars; }
+    public void setSourceRoots(Set input) { sourceRoots = input; }
+    public Set getSourceRoots() { return sourceRoots; }
+    public void setAspectPath(Set path) { aspectPath = path; }        
+    public Set getAspectPath() { return aspectPath; }
+    public String getClasspath() { return "../lib/test/aspectjrt.jar";  }
+    public String getBootClasspath() { return null; }
+    public void setOutJar(String input){ outJar = input; }
+    public String getOutJar() { return outJar; }
+    public String getOutputPath() { return outputDir; }
+
+    // not known if used - log any calls to it
+    public List getBuildConfigFiles() { return logs("buildConfigFiles"); }
+    public String getLastActiveBuildConfigFile() { return log("lastActiveBuildConfigFile"); }
+    public String getProjectName() { return log("projectName"); } 
+    public String getRootProjectDir() { return log("rootProjectDir"); }
+    public List getProjectSourceFiles() { return logs("projectSourceFiles"); }
+    public String getProjectSourcePath() { return log("projectSourcePath"); }
+    public String getAjcWorkingDir() { return log("ajcWorkingDir"); }
+    public String getClassToExecute() { return log("classToExecute"); }
+    public String getExecutionArgs() { return log("executionArgs"); }
+    public String getVmArgs() { return log("vmArgs"); }
+    private String log(String s) {
+        System.out.println(PREFIX + s);
+        return null;
+    }
+    private List logs(String s) {
+        log(s);
+        return null;
+    }
+}
