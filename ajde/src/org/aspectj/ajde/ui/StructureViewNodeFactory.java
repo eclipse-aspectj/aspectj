@@ -50,16 +50,18 @@ public abstract class StructureViewNodeFactory {
 							rel, 
 							iconRegistry.getIcon(rel.getKind())
 						);
+						if (relNode != null) {
 						svNode.add(relNode, 0);					
-						for (Iterator it2 = rel.getTargets().iterator(); it2.hasNext(); ) {
-							String handle = (String)it2.next();
-							IProgramElement link = AsmManager.getDefault().getHierarchy().findElementForHandle(handle);
-							if (link != null) {
-								IStructureViewNode linkNode = createLink(
-									link,   
-									iconRegistry.getStructureIcon(link.getKind(), link.getAccessibility())  
-								);	
-								relNode.add(linkNode);
+							for (Iterator it2 = rel.getTargets().iterator(); it2.hasNext(); ) {
+								String handle = (String)it2.next();
+								IProgramElement link = AsmManager.getDefault().getHierarchy().findElementForHandle(handle);
+								if (link != null) {
+									IStructureViewNode linkNode = createLink(
+										link,   
+										iconRegistry.getStructureIcon(link.getKind(), link.getAccessibility())  
+									);	
+									relNode.add(linkNode);
+								}
 							}
 						}
 					}
@@ -76,6 +78,8 @@ public abstract class StructureViewNodeFactory {
 	
 	/**
 	 * Implementors must override this method in order to create new relationship nodes.
+	 * 
+	 * If returned node is null it will not be added to the tree.
 	 */ 	
 	protected abstract IStructureViewNode createRelationship(IRelationship relationship, AbstractIcon icon);
 
