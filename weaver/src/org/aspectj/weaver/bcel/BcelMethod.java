@@ -22,8 +22,11 @@ import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.SourceLocation;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.ShadowMunger;
@@ -51,6 +54,7 @@ final class BcelMethod extends ResolvedMember {
 			method.getName(), 
 			method.getSignature());
 		this.method = method;
+		this.sourceContext = declaringType.getResolvedTypeX().getSourceContext();
 		this.world = declaringType.getResolvedTypeX().getWorld();
 		unpackAjAttributes(world);
 		unpackJavaAttributes();
@@ -132,6 +136,17 @@ final class BcelMethod extends ResolvedMember {
 			return -1;
 		}
 	}
+    
+    public ISourceLocation getSourceLocation() {
+      ISourceLocation ret = super.getSourceLocation(); 
+      if ((ret == null || ret.getLine()==0) && hasDeclarationLineNumberInfo()) {
+        // lets see if we can do better
+        ISourceContext isc = getSourceContext();
+        if (isc !=null) ret = isc.makeSourceLocation(getDeclarationLineNumber());
+        else            ret = new SourceLocation(null,getDeclarationLineNumber());
+      }
+      return ret;
+    }
 	
 	public Kind getKind() {
 		if (associatedShadowMunger != null) {
