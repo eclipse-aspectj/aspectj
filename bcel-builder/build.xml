@@ -43,7 +43,7 @@
     <delete dir="bcel" />
     <delete file="bcel.jar" />
     <delete file="bcel-src.zip" />
-    <delete dir="src" />
+    <!--delete dir="src" /-->
     <mkdir dir="src" /> <!-- empty src dir -->
   </target>
  
