@@ -7287,4 +7287,11 @@
         <run class="Main"/>
     </ajc-test>
     
+    <ajc-test dir="bugs/deprecated" pr="54098"
+    	title="-deprecation not working?" >
+    	 <compile files="Deprecation.java, Deprecated.java" options="-deprecation">
+            <message kind="warning" line="5"/>
+            <message kind="warning" line="6"/>
+        </compile>
+    </ajc-test>
 </suite>
