@@ -1,9 +1,15 @@
-/*
- * Created on 31-Jul-2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
+/* *******************************************************************
+ * Copyright (c) 2003 Contributors.
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Mik Kersten     initial implementation 
+ * ******************************************************************/
+
 package org.aspectj.ajde;
 
 import java.io.*;
@@ -14,9 +20,6 @@ import org.aspectj.util.FileUtil;
 
 /**
  * @author websterm
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class ResourceCopyTestCase extends AjdeTestCase {
 
