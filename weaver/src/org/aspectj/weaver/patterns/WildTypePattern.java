@@ -386,6 +386,7 @@ public class WildTypePattern extends TypePattern {
 		String cleanName = maybeGetCleanName();
 		if (cleanName != null) {
 			Class clazz = null;
+			clazz = maybeGetPrimitiveClass(cleanName);
 
 			while (clazz == null) {
 				try {
@@ -423,6 +424,10 @@ public class WildTypePattern extends TypePattern {
 		knownMatches = new String[0];
 		
 		return this;	
+	}
+
+	private Class maybeGetPrimitiveClass(String typeName) {
+		return (Class) ExactTypePattern.primitiveTypesMap.get(typeName);
 	}
 	
 	public boolean isStar() {
