@@ -88,7 +88,7 @@ public final class Iterators {
     public static Iterator array(final Object[] o) {
         return new Iterator() {
             int i = 0;
-            int len = o.length;
+            int len = (o==null)?0:o.length;
             public boolean hasNext() {
                 return i < len;
             }
