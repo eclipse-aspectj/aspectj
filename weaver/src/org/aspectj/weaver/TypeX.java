@@ -322,15 +322,20 @@ public class TypeX {
 
    /**
      * Determines if variables of this type could be assigned values of another
-     * with lots of help.  This is the same as isCoercableFrom, but java.lang.Object
-     * is convertable from and to all types. 
+     * with lots of help.  
+     * java.lang.Object is convertable from all types.
+     * A primitive type is convertable from X iff it's assignable from X.
+     * A reference type is convertable from X iff it's coerceable from X.
+     * In other words, X isConvertableFrom Y iff the compiler thinks that _some_ value of Y
+     * could be assignable to a variable of type X without loss of precision. 
      * 
      * @param other the other type
      * @param world the {@link World} in which the possible assignment should be checked.
      * @return true iff variables of this type could be assigned values of other with possible conversion
      */    
     public final boolean isConvertableFrom(TypeX other, World world) {
-        if (this.equals(OBJECT) || other.equals(OBJECT)) return true;
+        if (this.equals(OBJECT)) return true;
+        if (this.isPrimitive() || other.isPrimitive()) return this.isAssignableFrom(other, world);
         return this.isCoerceableFrom(other, world);
     }
 
@@ -353,7 +358,7 @@ public class TypeX {
     /**
      * Determines if the variables of this type could be assigned values
      * of another type without casting.  This still allows for assignment conversion
-     * as per JLS 2ed 5.2.
+     * as per JLS 2ed 5.2.  For object types, this means supertypeOrEqual(THIS, OTHER).
      * 
      * @param other the other type
      * @param world the {@link World} in which the possible assignment should be checked.
@@ -366,6 +371,27 @@ public class TypeX {
 		if (other.isPrimitive()) return false;
         return world.isAssignableFrom(this, other);
     }
+
+	/**
+	 * Determines if the variables of this type could be assigned values
+	 * of another type without conversion.  In other words, if the compiler can't tell whether
+	 * such an assignment would be impossible.  This still allows for assignment conversion
+	 * for primitive types and casting conversion for reference types.  For reference
+	 * types, this is equivalent to isCastableFrom(THIS, OTHER).  For primitive types,
+	 * this is equivalent to isAssignableFrom(THIS, OTHER).
+	 * 
+	 * @param other the other type
+	 * @param world the {@link World} in which the possible assignment should be checked.
+	 * @return true iff variables of this type could be assigned values of other without casting
+	 * @exception NullPointerException if other is null
+	 */
+	public final boolean couldBeAssignableFrom(TypeX other, World world) {
+		// primitives override this method, so we know we're not primitive.
+		// So if the other is primitive, don't bother asking the world anything.
+		if (other.isPrimitive()) return false;
+		return world.isCoerceableFrom(this, other);
+	}
+
 
     /**
      * Determines if values of another type could possibly be cast to
