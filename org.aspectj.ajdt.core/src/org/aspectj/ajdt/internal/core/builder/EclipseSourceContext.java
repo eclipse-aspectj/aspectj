@@ -20,7 +20,7 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.weaver.IHasPosition;
 import org.aspectj.weaver.ISourceContext;
-import org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 
 
 

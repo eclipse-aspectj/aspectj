@@ -19,11 +19,11 @@ import org.aspectj.ajdt.internal.compiler.lookup.EclipseScope;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.FormalBinding;
-import org.eclipse.jdt.internal.compiler.ClassFile;
-import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.ast.*;
-import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
-import org.eclipse.jdt.internal.compiler.parser.Parser;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
+import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 
 public class DeclareDeclaration extends AjMethodDeclaration {
 	public Declare declareDecl;

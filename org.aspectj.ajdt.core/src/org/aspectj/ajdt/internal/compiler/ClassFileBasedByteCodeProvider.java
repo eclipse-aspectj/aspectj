@@ -12,8 +12,8 @@ package org.aspectj.ajdt.internal.compiler;
 
 import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.aspectj.weaver.bcel.UnwovenClassFileWithThirdPartyManagedBytecode;
-import org.eclipse.jdt.internal.compiler.ClassFile;
-import org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
+import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 
 /**
  * @author colyer

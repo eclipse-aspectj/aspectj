@@ -39,19 +39,19 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jdt.core.IJavaModelMarker;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.Compiler;
-import org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
-import org.eclipse.jdt.internal.compiler.ICompilerAdapter;
-import org.eclipse.jdt.internal.compiler.ICompilerAdapterFactory;
-import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
-import org.eclipse.jdt.internal.core.builder.BatchImageBuilder;
-import org.eclipse.jdt.internal.core.builder.BuildNotifier;
-import org.eclipse.jdt.internal.core.builder.IncrementalImageBuilder;
-import org.eclipse.jdt.internal.core.builder.JavaBuilder;
+import org.aspectj.org.eclipse.jdt.core.IJavaModelMarker;
+import org.aspectj.org.eclipse.jdt.core.JavaCore;
+import org.aspectj.org.eclipse.jdt.core.JavaModelException;
+import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.Compiler;
+import org.aspectj.org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ICompilerAdapter;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ICompilerAdapterFactory;
+import org.aspectj.org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
+import org.aspectj.org.eclipse.jdt.internal.core.builder.BatchImageBuilder;
+import org.aspectj.org.eclipse.jdt.internal.core.builder.BuildNotifier;
+import org.aspectj.org.eclipse.jdt.internal.core.builder.IncrementalImageBuilder;
+import org.aspectj.org.eclipse.jdt.internal.core.builder.JavaBuilder;
 
 /**
  * @author colyer

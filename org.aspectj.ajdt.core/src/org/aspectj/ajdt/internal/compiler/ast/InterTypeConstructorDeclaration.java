@@ -15,11 +15,11 @@ package org.aspectj.ajdt.internal.compiler.ast;
 
 import org.aspectj.ajdt.internal.compiler.lookup.*;
 import org.aspectj.weaver.*;
-import org.eclipse.jdt.internal.compiler.ClassFile;
-import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.ast.*;
-import org.eclipse.jdt.internal.compiler.lookup.*;
-import org.eclipse.jdt.internal.compiler.parser.Parser;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
+import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 
 /**
  * An inter-type constructor declaration.

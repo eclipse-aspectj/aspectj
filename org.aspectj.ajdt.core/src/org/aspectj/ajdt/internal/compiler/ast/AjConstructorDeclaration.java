@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.aspectj.weaver.AjAttribute;
-import org.eclipse.jdt.internal.compiler.ClassFile;
-import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
+import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
 
 /**
  * Root class for all ConstructorDeclaration objects created by the parser.

@@ -14,7 +14,7 @@
 package org.aspectj.ajdt.internal.compiler.ast;
 
 import org.aspectj.weaver.AjAttribute;
-import org.eclipse.jdt.internal.compiler.IAttribute;
+import org.aspectj.org.eclipse.jdt.internal.compiler.IAttribute;
 
 public class EclipseAttributeAdapter implements IAttribute {
 	AjAttribute attr;

@@ -26,7 +26,7 @@ import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
 import org.aspectj.bridge.*;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.util.LangUtil;
-import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 /**
  * Tests that a correctly populated AjBuildConfig object is created

@@ -36,8 +36,8 @@ import org.aspectj.weaver.patterns.OrPointcut;
 import org.aspectj.weaver.patterns.ReferencePointcut;
 import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.patterns.TypePatternList;
-import org.eclipse.jdt.internal.compiler.ast.Argument;
-import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 
 /**
  * @author Mik Kersten

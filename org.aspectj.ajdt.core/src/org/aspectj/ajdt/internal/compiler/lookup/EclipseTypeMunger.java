@@ -23,11 +23,11 @@ import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedTypeX;
 //import org.aspectj.weaver.TypeX;
-import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
-import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
-import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
-//import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
-import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+//import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 
 
 public class EclipseTypeMunger extends ConcreteTypeMunger {

@@ -16,7 +16,7 @@ package org.aspectj.ajdt.ajc;
 import org.aspectj.ajdt.internal.core.builder.*;
 import org.aspectj.bridge.*;
 import org.aspectj.weaver.Dump;
-import org.eclipse.jdt.internal.core.builder.MissingSourceFileException;
+import org.aspectj.org.eclipse.jdt.internal.core.builder.MissingSourceFileException;
 
 /**
  * ICommand adapter for the AspectJ compiler.

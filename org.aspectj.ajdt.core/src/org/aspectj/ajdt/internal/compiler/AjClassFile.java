@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.aspectj.ajdt.internal.compiler;
 
-import org.eclipse.jdt.internal.compiler.ClassFile;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 
 /**
  * @author colyer

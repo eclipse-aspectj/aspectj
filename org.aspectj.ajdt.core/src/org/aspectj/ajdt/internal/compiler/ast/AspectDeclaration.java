@@ -19,17 +19,17 @@ import java.util.*;
 import org.aspectj.ajdt.internal.compiler.lookup.*;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.*;
-import org.eclipse.jdt.internal.compiler.ClassFile;
-import org.eclipse.jdt.internal.compiler.CompilationResult;
-//import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.Clinit;
-import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
-//import org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
-import org.eclipse.jdt.internal.compiler.codegen.CodeStream;
-import org.eclipse.jdt.internal.compiler.codegen.Label;
-import org.eclipse.jdt.internal.compiler.lookup.*;
-//import org.eclipse.jdt.internal.compiler.parser.Parser;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
+import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+//import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Clinit;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+//import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
+import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.Label;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
+//import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 
 
 // (we used to...) making all aspects member types avoids a nasty hierarchy pain

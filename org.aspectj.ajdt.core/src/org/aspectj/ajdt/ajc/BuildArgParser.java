@@ -22,9 +22,9 @@ import org.aspectj.bridge.*;
 import org.aspectj.util.*;
 import org.aspectj.weaver.Dump;
 import org.aspectj.weaver.WeaverMessages;
-import org.eclipse.jdt.core.compiler.InvalidInputException;
-import org.eclipse.jdt.internal.compiler.batch.Main;
-import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.aspectj.org.eclipse.jdt.core.compiler.InvalidInputException;
+import org.aspectj.org.eclipse.jdt.internal.compiler.batch.Main;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 public class BuildArgParser extends Main {
 

@@ -10,9 +10,9 @@
  *******************************************************************************/
 package org.aspectj.ajdt.internal.core.builder;
 
-import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.core.builder.BatchImageBuilder;
-import org.eclipse.jdt.internal.core.builder.SourceFile;
+import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.core.builder.BatchImageBuilder;
+import org.aspectj.org.eclipse.jdt.internal.core.builder.SourceFile;
 
 /**
  * @author colyer

@@ -15,7 +15,7 @@ package org.aspectj.ajdt.internal.core.builder;
 
 import java.util.Map;
 
-import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 
 /**

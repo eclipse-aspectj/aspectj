@@ -17,10 +17,10 @@ import java.io.File;
 
 import org.aspectj.ajdt.internal.core.builder.EclipseAdapterUtils;
 import org.aspectj.bridge.ISourceLocation;
-import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
-import org.eclipse.jdt.core.compiler.IProblem;
-import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.problem.ProblemHandler;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
+import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
+import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemHandler;
 
 public class EclipseSourceLocation implements ISourceLocation {
     private static String NO_CONTEXT = "USE_NULL--NO_CONTEXT_AVAILABLE";

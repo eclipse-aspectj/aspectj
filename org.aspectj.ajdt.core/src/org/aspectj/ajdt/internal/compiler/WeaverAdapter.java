@@ -19,7 +19,7 @@ import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 
 /**
  * @author colyer

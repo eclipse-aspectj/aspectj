@@ -18,11 +18,11 @@ import java.util.List;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.bcel.ClassPathManager;
-import org.eclipse.jdt.core.compiler.CharOperation;
-import org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
-import org.eclipse.jdt.internal.compiler.env.IBinaryType;
-import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
-import org.eclipse.jdt.internal.compiler.env.NameEnvironmentAnswer;
+import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.NameEnvironmentAnswer;
 
 /**
  * @author colyer

@@ -19,12 +19,12 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.IMessage.Kind;
-import org.eclipse.jdt.core.compiler.IProblem;
-import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.Compiler;
-import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
-import org.eclipse.jdt.internal.compiler.problem.DefaultProblem;
-import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities;
+import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
+import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.Compiler;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
+import org.aspectj.org.eclipse.jdt.internal.compiler.problem.DefaultProblem;
+import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemSeverities;
 
 /**
  * @author colyer

@@ -13,7 +13,7 @@ package org.aspectj.ajdt.core;
 import java.util.Map;
 
 import org.aspectj.ajdt.internal.core.builder.AjCompilerOptions;
-import org.eclipse.jdt.core.JavaCore;
+import org.aspectj.org.eclipse.jdt.core.JavaCore;
 
 /**
  * This is the plugin class for AspectJ.

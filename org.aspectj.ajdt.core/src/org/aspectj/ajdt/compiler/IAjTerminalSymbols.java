@@ -13,7 +13,7 @@
 
 package org.aspectj.ajdt.compiler;
 
-import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
+import org.aspectj.org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
  
 /**
  * This should contain a list of symbols unique to AspectJ grammar, but

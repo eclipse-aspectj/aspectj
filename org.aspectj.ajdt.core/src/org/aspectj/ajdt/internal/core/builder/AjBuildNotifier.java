@@ -13,7 +13,7 @@ package org.aspectj.ajdt.internal.core.builder;
 import org.aspectj.bridge.IProgressListener;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jdt.internal.core.builder.BuildNotifier;
+import org.aspectj.org.eclipse.jdt.internal.core.builder.BuildNotifier;
 
 /**
  * @author colyer

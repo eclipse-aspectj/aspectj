@@ -31,11 +31,11 @@ import org.aspectj.bridge.Message;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
-import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
-import org.eclipse.jdt.internal.compiler.classfmt.ClassFormatException;
-import org.eclipse.jdt.internal.core.builder.ReferenceCollection;
-import org.eclipse.jdt.internal.core.builder.StringSet;
+import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFormatException;
+import org.aspectj.org.eclipse.jdt.internal.core.builder.ReferenceCollection;
+import org.aspectj.org.eclipse.jdt.internal.core.builder.StringSet;
 
 
 /**

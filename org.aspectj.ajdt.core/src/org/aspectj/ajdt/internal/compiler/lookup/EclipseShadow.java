@@ -18,8 +18,8 @@ import org.aspectj.ajdt.internal.compiler.ast.*;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.ast.Var;
-import org.eclipse.jdt.internal.compiler.ast.*;
-import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 
 /**
  * This is only used for declare soft right now.

@@ -34,16 +34,16 @@ import org.aspectj.weaver.Dump;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.*;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.jdt.core.compiler.*;
-import org.eclipse.jdt.internal.compiler.*;
-import org.eclipse.jdt.internal.compiler.batch.*;
-import org.eclipse.jdt.internal.compiler.batch.FileSystem;
-import org.eclipse.jdt.internal.compiler.env.*;
-import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
-import org.eclipse.jdt.internal.compiler.parser.Parser;
-import org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
-import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
-//import org.eclipse.jdt.internal.compiler.util.HashtableOfObject;
+import org.aspectj.org.eclipse.jdt.core.compiler.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.batch.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
+import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
+//import org.aspectj.org.eclipse.jdt.internal.compiler.util.HashtableOfObject;
 
 public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourceProvider,ICompilerAdapterFactory {
 	private static final String CANT_WRITE_RESULT = "unable to write compilation result";
@@ -664,9 +664,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			environment = new StatefulNameEnvironment(environment, state.classesFromName);
 		}
 		
-		org.eclipse.jdt.internal.compiler.Compiler.setCompilerAdapterFactory(this);
-		org.eclipse.jdt.internal.compiler.Compiler compiler = 
-			new org.eclipse.jdt.internal.compiler.Compiler(environment,
+		org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.setCompilerAdapterFactory(this);
+		org.aspectj.org.eclipse.jdt.internal.compiler.Compiler compiler = 
+			new org.aspectj.org.eclipse.jdt.internal.compiler.Compiler(environment,
 					DefaultErrorHandlingPolicies.proceedWithAllProblems(),
 				    buildConfig.getOptions().getMap(),
 					getBatchRequestor(),
@@ -941,7 +941,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.compiler.ICompilerAdapterFactory#getAdapter(org.eclipse.jdt.internal.compiler.Compiler)
 	 */
-	public ICompilerAdapter getAdapter(org.eclipse.jdt.internal.compiler.Compiler forCompiler) {
+	public ICompilerAdapter getAdapter(org.aspectj.org.eclipse.jdt.internal.compiler.Compiler forCompiler) {
 		// complete compiler config and return a suitable adapter...
 		AjProblemReporter pr =
 			new AjProblemReporter(DefaultErrorHandlingPolicies.proceedWithAllProblems(),

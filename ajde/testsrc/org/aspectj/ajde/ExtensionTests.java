@@ -20,7 +20,7 @@ import org.aspectj.asm.IProgramElement;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.tools.ajc.CompilationResult;
-import org.eclipse.jdt.core.compiler.IProblem;
+import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
 
 /**
  * Tests the 'extensions' to AJDE:

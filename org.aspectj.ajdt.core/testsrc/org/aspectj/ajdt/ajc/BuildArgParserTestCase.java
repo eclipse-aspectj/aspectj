@@ -23,8 +23,8 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageWriter;
 import org.aspectj.testing.util.TestUtil;
-import org.eclipse.jdt.core.compiler.InvalidInputException;
-import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.aspectj.org.eclipse.jdt.core.compiler.InvalidInputException;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 /**
  * Some black-box test is happening here.

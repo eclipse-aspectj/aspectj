@@ -13,8 +13,8 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
-import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
-import org.eclipse.jdt.internal.compiler.lookup.SyntheticAccessMethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SyntheticAccessMethodBinding;
 
 public class SimpleSyntheticAccessMethodBinding extends SyntheticAccessMethodBinding {
 	public SimpleSyntheticAccessMethodBinding(MethodBinding method) {

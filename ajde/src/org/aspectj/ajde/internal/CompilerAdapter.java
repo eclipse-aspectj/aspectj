@@ -25,7 +25,7 @@ import org.aspectj.ajdt.internal.core.builder.*;
 import org.aspectj.bridge.*;
 import org.aspectj.util.LangUtil;
 //import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 public class CompilerAdapter {
 	
@@ -524,7 +524,7 @@ public class CompilerAdapter {
                 Ajde.getDefault().logEvent("building with classpath: " + both);
             }
         }
-       
+
         // Handle boot classpath
         propcp = properties.getBootClasspath();
         if (!LangUtil.isEmpty(propcp)) {
