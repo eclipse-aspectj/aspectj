@@ -16,6 +16,7 @@
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 
+import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.Proceed;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
@@ -30,9 +31,11 @@ import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
 import org.eclipse.jdt.internal.compiler.IProblemFactory;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
@@ -48,6 +51,7 @@ import org.eclipse.jdt.core.compiler.CharOperation;
  * @author Jim Hugunin
  */
 public class AjProblemReporter extends ProblemReporter {
+    
 	private static final boolean DUMP_STACK = false;
 	
 	public EclipseFactory factory;
@@ -187,5 +191,35 @@ public class AjProblemReporter extends ProblemReporter {
 			referenceContext,
 			unitResult);
 	}
+    
+
+
+    // PR71076
+    public void javadocMissingParamTag(Argument arg, int modifiers) {
+        boolean reportIt = true;
+        if (arg.binding!=null && (arg.binding.declaringScope instanceof MethodScope) ) {
+            MethodScope ms = (MethodScope) arg.binding.declaringScope;
+            if (ms.referenceContext!=null && (ms.referenceContext instanceof AdviceDeclaration)) {
+                AdviceDeclaration adviceDecl = (AdviceDeclaration)ms.referenceContext;
+                if (arg.name!=null) {
+                  if (adviceDecl.selector.length>4 &&
+                    adviceDecl.selector[0] == 'a' &&
+                    adviceDecl.selector[1] == 'j' &&
+                    adviceDecl.selector[2] == 'c' &&
+                    adviceDecl.selector[3] == '$') {
+                  
+                    String stringArgName = new String(arg.name);
+                    if (stringArgName.equals("thisJoinPoint")) reportIt = false;
+                    if (stringArgName.equals("thisJoinPointStaticPart")) reportIt = false;
+                    if (stringArgName.equals("thisEnclosingJoinPointStaticPart")) reportIt = false;
+                    if (arg.type.toString().indexOf("AroundClosure")!=-1) reportIt = false;
+                  }
+              }
+            }
+        }
+        if (arg.name!=null && new String(arg.name).startsWith("ajc$")) reportIt = false;
+        if (reportIt) 
+        	super.javadocMissingParamTag(arg, modifiers);
+    }
 
 }
