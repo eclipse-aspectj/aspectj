@@ -1007,9 +1007,9 @@ class LocationPane extends WizardPane implements ActionListener {
     public String getDefaultLocation() {
         if (context.onWindows()) {
             //XXX hard-coded majorminor version needs to be fixed by 1.1 release
-            return "c:\\aspectj1.1";
+            return "c:\\aspectj1.2";
         } else {
-            return new File(System.getProperty("user.home"), "aspectj1.1").getAbsolutePath();
+            return new File(System.getProperty("user.home"), "aspectj1.2").getAbsolutePath();
         }
     }
 
@@ -1338,7 +1338,7 @@ class InstallPane extends WizardPane {
                 if (makeLaunchScripts) {
                     LaunchScriptMaker lsm = new LaunchScriptMaker(context);
                     lsm.writeScript("ajc");
-                    //lsm.writeScript("ajdoc");
+                    lsm.writeScript("ajdoc");
                     //lsm.writeScript("ajdb");
                     lsm.writeScript("ajbrowser");
                 }
@@ -1527,8 +1527,8 @@ class LaunchScriptMaker {
         ps.println("echo please fix the JAVA_HOME environment variable");
         ps.println(":haveJava");
         ps.println("\"%JAVA_HOME%\\bin\\java\" -classpath " +
-                   "\"%ASPECTJ_HOME%\\lib\\aspectjtools.jar;%CLASSPATH%\""+
-//                   "\"%ASPECTJ_HOME%\\lib\\aspectjtools.jar;%JAVA_HOME%\\lib\\tools.jar;%CLASSPATH%\""+
+//                   "\"%ASPECTJ_HOME%\\lib\\aspectjtools.jar;%CLASSPATH%\""+
+                   "\"%ASPECTJ_HOME%\\lib\\aspectjtools.jar;%JAVA_HOME%\\lib\\tools.jar;%CLASSPATH%\""+
                    " -Xmx64M " + className + //" -defaultClasspath " + "\"%CLASSPATH%\"" +
                    " " + makeScriptArgs(false));
     }
@@ -1553,7 +1553,7 @@ class LaunchScriptMaker {
 
         ps.println("\"$JAVA_HOME/bin/java\" -classpath "+
                    "\"$ASPECTJ_HOME/lib/aspectjtools.jar" + sep +
-//                   "$JAVA_HOME/lib/tools.jar" + sep +
+                   "$JAVA_HOME/lib/tools.jar" + sep +
                    "$CLASSPATH\""+
                    " -Xmx64M " + className +
                    " " + makeScriptArgs(true));
