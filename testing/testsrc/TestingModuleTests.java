@@ -25,6 +25,7 @@ public class TestingModuleTests extends TestCase {
         suite.addTest(org.aspectj.testing.harness.bridge.TestingBridgeTests.suite()); 
         suite.addTest(org.aspectj.testing.taskdefs.TaskdefTests.suite()); 
         suite.addTest(org.aspectj.testing.util.UtilTests.suite()); 
+        suite.addTest(org.aspectj.testing.util.options.OptionsTests.suite()); 
         suite.addTest(org.aspectj.testing.xml.TestingXmlTests.suite()); 
         return suite;
     }

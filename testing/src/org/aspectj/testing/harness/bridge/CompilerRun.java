@@ -1,5 +1,6 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC),
+ *               2003 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -8,34 +9,22 @@
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
+ *     Wes Isberg     2003 updates
  * ******************************************************************/
 
 package org.aspectj.testing.harness.bridge;
 
-import org.aspectj.bridge.ICommand;
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.MessageUtil;
-import org.aspectj.bridge.ReflectionFactory;
-import org.aspectj.testing.ajde.CompileCommand;
-import org.aspectj.testing.run.IRunIterator;
-import org.aspectj.testing.run.IRunStatus;
-import org.aspectj.testing.run.WrappedRunIterator;
-import org.aspectj.testing.taskdefs.AjcTaskCompileCommand;
-import org.aspectj.testing.xml.SoftMessage;
-import org.aspectj.testing.xml.XMLWriter;
-import org.aspectj.util.FileUtil;
-import org.aspectj.util.LangUtil;
+import java.io.*;
+import java.util.*;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import org.aspectj.bridge.*;
+import org.aspectj.testing.ajde.CompileCommand;
+import org.aspectj.testing.run.*;
+import org.aspectj.testing.taskdefs.AjcTaskCompileCommand;
+import org.aspectj.testing.util.options.*;
+import org.aspectj.testing.util.options.Option.*;
+import org.aspectj.testing.xml.*;
+import org.aspectj.util.*;
 
 /**
  * Run the compiler once.
@@ -62,40 +51,37 @@ import java.util.ListIterator;
  * </ul>
  */
 public class CompilerRun implements IAjcRun {
-    static final String BUILDER_COMPILER = 
-        "org.aspectj.ajdt.internal.core.builder.Builder.Command";
-    static final String AJDE_COMPILER = CompileCommand.class.getName();
-    static final String AJCTASK_COMPILER 
-        = AjcTaskCompileCommand.class.getName();
-//    static final String JAVAC_COMPILER 
-//        = JavacCompileCommand.class.getName();
+    //    static final String JAVAC_COMPILER 
+    //        = JavacCompileCommand.class.getName();
 
-	static final String[] RA_String = new String[0];
-    
+    static final String[] RA_String = new String[0];
+
     static final String[] JAR_SUFFIXES = new String[] { ".jar", ".zip" };
 
-    static final String[] SOURCE_SUFFIXES 
-        = (String[]) FileUtil.SOURCE_SUFFIXES.toArray(new String[0]);
-        
+    static final String[] SOURCE_SUFFIXES =
+        (String[]) FileUtil.SOURCE_SUFFIXES.toArray(new String[0]);
+
     /** specifications, set on construction */
     Spec spec;
 
     //------------ calculated during setup
-    /** get shared stuff during setup */       
+    /** get shared stuff during setup */
     Sandbox sandbox;
-    
+
     /** 
      * During run, these String are passed as the source and arg files to compile.
      * The list is set up in setupAjcRun(..), when arg files are prefixed with "@".
      */
-    final List /*String*/ arguments;
-    
+    final List /*String*/
+    arguments;
+
     /** 
      * During run, these String are collapsed and passed as the injar option.
      * The list is set up in setupAjcRun(..).
      */
-    final List /*String*/ injars;
-   
+    final List /*String*/
+    injars;
+
     private CompilerRun(Spec spec) {
         if (null == spec) {
             throw new IllegalArgumentException("null spec");
@@ -103,8 +89,8 @@ public class CompilerRun implements IAjcRun {
         this.spec = spec;
         arguments = new ArrayList();
         injars = new ArrayList();
-    }           
-    
+    }
+
     /** 
      * This checks that the spec is reasonable and does setup:
      * <ul>
@@ -124,72 +110,98 @@ public class CompilerRun implements IAjcRun {
      * for incremental tests.   Note that (as of this writing) the
      * compiler only handles source roots for incremental tests.
      * @param classesDir the File
-	 * @see org.aspectj.testing.harness.bridge.AjcTest.IAjcRun#setup(File, File)
+     * @see org.aspectj.testing.harness.bridge.AjcTest.IAjcRun#setup(File, File)
      * @throws AbortException containing IOException or IllegalArgumentException
      *          if the staging operations fail
-	 */
-	public boolean setupAjcRun(Sandbox sandbox, Validator validator) {
+     */
+    public boolean setupAjcRun(Sandbox sandbox, Validator validator) {
 
         if (!validator.nullcheck(spec.getOptionsArray(), "localOptions")
             || !validator.nullcheck(sandbox, "sandbox")
             || !validator.nullcheck(spec.compiler, "compilerName")
             || !validator.canRead(Globals.F_aspectjrt_jar, "aspectjrt.jar")
-            || !validator.canRead(Globals.F_testingclient_jar, "testing-client.jar")
-            ) {
+            || !validator.canRead(
+                Globals.F_testingclient_jar,
+                "testing-client.jar")) {
             return false;
         }
-         
+
         this.sandbox = sandbox;
-        
+
         String rdir = spec.testSrcDirOffset;
         File testBaseSrcDir;
         if ((null == rdir) || (0 == rdir.length())) {
             testBaseSrcDir = sandbox.testBaseDir;
         } else {
-            testBaseSrcDir = new File(sandbox.testBaseDir, rdir); // XXX what if rdir is two levels deep?
-            if (!validator.canReadDir(testBaseSrcDir, "sandbox.testBaseSrcDir")) {
+            testBaseSrcDir = new File(sandbox.testBaseDir, rdir);
+            // XXX what if rdir is two levels deep?
+            if (!validator
+                .canReadDir(testBaseSrcDir, "sandbox.testBaseSrcDir")) {
                 return false;
             }
         }
         sandbox.setTestBaseSrcDir(testBaseSrcDir, this);
-        
-        
+
         // Sources come as relative paths - check read, copy if staging.
         // This renders paths absolute before run(RunStatusI) is called.
         // For a compile run to support relative paths + source base,
         // change so the run calculates the paths (differently when staging)
 
-        final String[] injarPaths; 
+        final String[] injarPaths;
         final String[] srcPaths;
-        { 
+        {
             final String[] paths = spec.getPathsArray();
-            srcPaths = LangUtil.endsWith(paths, CompilerRun.SOURCE_SUFFIXES, true);
-            injarPaths = LangUtil.endsWith(paths, CompilerRun.JAR_SUFFIXES, true);
-        } 
+            srcPaths =
+                LangUtil.endsWith(
+                    paths,
+                    CompilerRun.SOURCE_SUFFIXES,
+                    true);
+            injarPaths =
+                LangUtil.endsWith(paths, CompilerRun.JAR_SUFFIXES, true);
+        }
         // validate readable for sources
         if (!spec.badInput) {
             if (!validator.canRead(testBaseSrcDir, srcPaths, "sources")
                 || !validator.canRead(testBaseSrcDir, injarPaths, "injars")
-                || !validator.canRead(testBaseSrcDir, spec.argfiles, "argfiles")
-                || !validator.canRead(testBaseSrcDir, spec.classpath, "classpath")
-                || !validator.canRead(testBaseSrcDir, spec.aspectpath, "aspectpath")
-                || !validator.canRead(testBaseSrcDir, spec.sourceroots, "sourceroots")
-                ) {
+                || !validator.canRead(
+                    testBaseSrcDir,
+                    spec.argfiles,
+                    "argfiles")
+                || !validator.canRead(
+                    testBaseSrcDir,
+                    spec.classpath,
+                    "classpath")
+                || !validator.canRead(
+                    testBaseSrcDir,
+                    spec.aspectpath,
+                    "aspectpath")
+                || !validator.canRead(
+                    testBaseSrcDir,
+                    spec.sourceroots,
+                    "sourceroots")) {
                 return false;
             }
         }
-        
-        int numSources = srcPaths.length + injarPaths.length 
-            + spec.argfiles.length + spec.sourceroots.length;
+
+        int numSources =
+            srcPaths.length
+                + injarPaths.length
+                + spec.argfiles.length
+                + spec.sourceroots.length;
         if (!spec.badInput && (numSources < 1)) {
-            validator.fail("no input jars, arg files, or source files or roots");
-        	return false;
-        } 
-        
-        final File[] argFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, spec.argfiles);
-        final File[] injarFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, injarPaths);
-        final File[] aspectFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, spec.aspectpath);
-        final File[] classFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, spec.classpath);
+            validator.fail(
+                "no input jars, arg files, or source files or roots");
+            return false;
+        }
+
+        final File[] argFiles =
+            FileUtil.getBaseDirFiles(testBaseSrcDir, spec.argfiles);
+        final File[] injarFiles =
+            FileUtil.getBaseDirFiles(testBaseSrcDir, injarPaths);
+        final File[] aspectFiles =
+            FileUtil.getBaseDirFiles(testBaseSrcDir, spec.aspectpath);
+        final File[] classFiles =
+            FileUtil.getBaseDirFiles(testBaseSrcDir, spec.classpath);
         // hmm - duplicates validation above, verifying getBaseDirFiles?
         if (!spec.badInput) {
             if (!validator.canRead(argFiles, "argFiles")
@@ -203,34 +215,53 @@ public class CompilerRun implements IAjcRun {
         final File[] srcFiles;
         File[] sourcerootFiles = new File[0];
         // source text files are copied when staging incremental tests
-        if (!spec.isStaging()) { // XXX why this? was always? || (testBaseSrcDir != sandbox.stagingDir))) {
-            srcFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, srcPaths, CompilerRun.SOURCE_SUFFIXES);
+        if (!spec.isStaging()) {
+            // XXX why this? was always? || (testBaseSrcDir != sandbox.stagingDir))) {
+            srcFiles =
+                FileUtil.getBaseDirFiles(
+                    testBaseSrcDir,
+                    srcPaths,
+                    CompilerRun.SOURCE_SUFFIXES);
             if (!LangUtil.isEmpty(spec.sourceroots)) {
-                sourcerootFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, spec.sourceroots, null);
+                sourcerootFiles =
+                    FileUtil.getBaseDirFiles(
+                        testBaseSrcDir,
+                        spec.sourceroots,
+                        null);
             }
         } else { // staging - copy files
             if (spec.badInput) {
-                validator.info("badInput ignored - files checked when staging");
+                validator.info(
+                    "badInput ignored - files checked when staging");
             }
             try {
                 // copy all files, then remove tagged ones
                 // XXX make copyFiles support a filter?
-                srcFiles = FileUtil.copyFiles(testBaseSrcDir, srcPaths, sandbox.stagingDir);
+                srcFiles =
+                    FileUtil.copyFiles(
+                        testBaseSrcDir,
+                        srcPaths,
+                        sandbox.stagingDir);
                 if (!LangUtil.isEmpty(spec.sourceroots)) {
-                    sourcerootFiles = FileUtil.copyFiles(testBaseSrcDir, spec.sourceroots, sandbox.stagingDir);
+                    sourcerootFiles =
+                        FileUtil.copyFiles(
+                            testBaseSrcDir,
+                            spec.sourceroots,
+                            sandbox.stagingDir);
                     // delete incremental files in sourceroot after copying // XXX inefficient
                     FileFilter pickIncFiles = new FileFilter() {
-                        // an incremental file has an extra "." in name
-                        // most .java files don't, because they are named after
-                        // the principle type they contain, and simple type names
-                        // have no dots.
-                        public boolean accept(File file) {
-                            if (file.isDirectory()) { // continue recursion
+                            // an incremental file has an extra "." in name
+        // most .java files don't, because they are named after
+        // the principle type they contain, and simple type names
+        // have no dots.
+    public boolean accept(File file) {
+                            if (file.isDirectory()) {
+                                // continue recursion
                                 return true;
                             }
                             String path = file.getPath();
                             // only source files are relevant to staging
-                            if (!FileUtil.hasSourceSuffix(path)) { 
+                            if (!FileUtil.hasSourceSuffix(path)) {
                                 return false;
                             }
                             int first = path.indexOf(".");
@@ -239,13 +270,18 @@ public class CompilerRun implements IAjcRun {
                         }
                     };
                     for (int i = 0; i < sourcerootFiles.length; i++) {
-                        FileUtil.deleteContents(sourcerootFiles[i], pickIncFiles, false);
+                        FileUtil.deleteContents(
+                            sourcerootFiles[i],
+                            pickIncFiles,
+                            false);
                     }
                     if (0 < sourcerootFiles.length) {
-                        FileUtil.sleepPastFinalModifiedTime(sourcerootFiles);
+                        FileUtil.sleepPastFinalModifiedTime(
+                            sourcerootFiles);
                     }
                 }
-                File[] files = FileUtil.getBaseDirFiles(sandbox.stagingDir, srcPaths); 
+                File[] files =
+                    FileUtil.getBaseDirFiles(sandbox.stagingDir, srcPaths);
                 if (0 < files.length) {
                     FileUtil.sleepPastFinalModifiedTime(files);
                 }
@@ -257,7 +293,8 @@ public class CompilerRun implements IAjcRun {
                 return false;
             }
         }
-        if (!spec.badInput && !validator.canRead(srcFiles, "copied paths")) {
+        if (!spec.badInput
+            && !validator.canRead(srcFiles, "copied paths")) {
             return false;
         }
         arguments.clear();
@@ -279,12 +316,13 @@ public class CompilerRun implements IAjcRun {
                 arguments.add("@" + ra[j]);
             }
             if (!spec.badInput && spec.isStaging) {
-                validator.fail("warning: files listed in argfiles not staged");
-            }               
+                validator.fail(
+                    "warning: files listed in argfiles not staged");
+            }
         }
 
         // save classpath and aspectpath in sandbox for this and other clients
-        final boolean checkReadable = !spec.badInput; 
+        final boolean checkReadable = !spec.badInput;
         int size = spec.includeClassesDir ? 3 : 2;
         File[] cp = new File[size + classFiles.length];
         System.arraycopy(classFiles, 0, cp, 0, classFiles.length);
@@ -299,7 +337,7 @@ public class CompilerRun implements IAjcRun {
         if (0 < aspectFiles.length) {
             sandbox.setAspectpath(aspectFiles, checkReadable, this);
         }
-        
+
         // set bootclasspath if set for forking
         AbstractRunSpec.Fork fork = spec.getFork();
         String bootclasspath = fork.getJavaBootclasspath();
@@ -308,7 +346,7 @@ public class CompilerRun implements IAjcRun {
         }
         return true;
     }
-    
+
     /**
      * Setup result evaluation and command line, run, and evaluate result.
      * <li>setup an AjcMessageHandler using the expected messages from
@@ -325,20 +363,23 @@ public class CompilerRun implements IAjcRun {
      * <li>After running, report AjcMessageHandler results to the status parameter.
      *     If the AjcMessageHandler reports a failure, then send info messages
      *     for the Spec, TestSetup, and command line.<li>
-	 * @see org.aspectj.testing.run.IRun#run(IRunStatus)
-	 */
-	public boolean run(IRunStatus status) {
+     * @see org.aspectj.testing.run.IRun#run(IRunStatus)
+     */
+    public boolean run(IRunStatus status) {
         if (null == spec.testSetup) {
-            MessageUtil.abort(status, "no test setup - adoptParentValues not called");
+            MessageUtil.abort(
+                status,
+                "no test setup - adoptParentValues not called");
             return false;
         } else if (!spec.testSetup.result) {
             MessageUtil.abort(status, spec.testSetup.failureReason);
             return false;
         }
-        boolean ignoreWarnings = (spec.testSetup.ignoreWarningsSet
+        boolean ignoreWarnings =
+            (spec.testSetup.ignoreWarningsSet
                 && spec.testSetup.ignoreWarnings);
-        AjcMessageHandler handler 
-            = new AjcMessageHandler(spec.getMessages());
+        AjcMessageHandler handler =
+            new AjcMessageHandler(spec.getMessages());
         handler.init();
         boolean handlerResult = false;
         boolean result = false;
@@ -349,9 +390,12 @@ public class CompilerRun implements IAjcRun {
             argList.add("-d");
             String outputDirPath = sandbox.classesDir.getAbsolutePath();
             try { // worth it to try for canonical?
-                outputDirPath = sandbox.classesDir.getCanonicalPath();        
+                outputDirPath = sandbox.classesDir.getCanonicalPath();
             } catch (IOException e) {
-                MessageUtil.abort(status, "canonical " + sandbox.classesDir, e);
+                MessageUtil.abort(
+                    status,
+                    "canonical " + sandbox.classesDir,
+                    e);
             }
             argList.add(outputDirPath);
 
@@ -365,7 +409,7 @@ public class CompilerRun implements IAjcRun {
                 argList.add("-bootclasspath");
                 argList.add(path);
             }
-            
+
             path = sandbox.aspectpathToString(this);
             if (!LangUtil.isEmpty(path)) {
                 argList.add("-aspectpath");
@@ -374,54 +418,81 @@ public class CompilerRun implements IAjcRun {
 
             if (0 < injars.size()) {
                 argList.add("-injars");
-                argList.add(FileUtil.flatten((String[]) injars.toArray(new String[0]), null));
+                argList.add(
+                    FileUtil.flatten(
+                        (String[]) injars.toArray(new String[0]),
+                        null));
             }
-            
+
             // put specified arguments last, for better badInput tests
             argList.addAll(setupResult.commandOptions);
 
             // add both java/aspectj and argfiles
             argList.addAll(arguments);
-            
+
             // XXX hack - seek on request as a side effect. reimplement as listener 
             if (null != setupResult.seek) {
                 String slopPrefix = Spec.SEEK_MESSAGE_PREFIX + " slop - ";
-                PrintStream slop = MessageUtil.handlerPrintStream(
-                    status, 
-                    IMessage.INFO, 
-                    System.err, 
-                    slopPrefix);
-                List found = FileUtil.lineSeek(setupResult.seek, arguments, false, slop);
+                PrintStream slop =
+                    MessageUtil.handlerPrintStream(
+                        status,
+                        IMessage.INFO,
+                        System.err,
+                        slopPrefix);
+                List found =
+                    FileUtil.lineSeek(
+                        setupResult.seek,
+                        arguments,
+                        false,
+                        slop);
                 if (!LangUtil.isEmpty(found)) {
-                    for (Iterator iter = found.iterator(); iter.hasNext();) {
-                        MessageUtil.info(status, Spec.SEEK_MESSAGE_PREFIX + iter.next());
-					}
+                    for (Iterator iter = found.iterator();
+                        iter.hasNext();
+                        ) {
+                        MessageUtil.info(
+                            status,
+                            Spec.SEEK_MESSAGE_PREFIX + iter.next());
+                    }
                 }
             }
-            ICommand compiler = spec.reuseCompiler 
-                ? sandbox.getCommand(this) // throws IllegalStateException if null
-                : ReflectionFactory.makeCommand(setupResult.compilerName, status);            
+            ICommand compiler = spec.reuseCompiler
+                // throws IllegalStateException if null
+    ? sandbox.getCommand(this)
+    : ReflectionFactory.makeCommand(setupResult.compilerName, status);
             DirChanges dirChanges = null;
             if (null == compiler) {
-                MessageUtil.fail(status, "unable to make compiler " + setupResult.compilerName);
+                MessageUtil.fail(
+                    status,
+                    "unable to make compiler " + setupResult.compilerName);
                 return false;
             } else {
                 if (setupResult.compilerName != Spec.DEFAULT_COMPILER) {
-                    MessageUtil.info(status, "compiler: " + setupResult.compilerName);
+                    MessageUtil.info(
+                        status,
+                        "compiler: " + setupResult.compilerName);
                 }
                 if (status.aborted()) {
-                    MessageUtil.debug(status, "aborted, but compiler valid?: " + compiler);
+                    MessageUtil.debug(
+                        status,
+                        "aborted, but compiler valid?: " + compiler);
                 } else {
                     // same DirChanges handling for JavaRun, CompilerRun, IncCompilerRun 
                     // XXX around advice or template method/class
                     if (!LangUtil.isEmpty(spec.dirChanges)) {
-                        LangUtil.throwIaxIfFalse(1 == spec.dirChanges.size(), "expecting 0..1 dirChanges");
-                        dirChanges = new DirChanges((DirChanges.Spec) spec.dirChanges.get(0));
-                        if (!dirChanges.start(status, sandbox.classesDir)) {
+                        LangUtil.throwIaxIfFalse(
+                            1 == spec.dirChanges.size(),
+                            "expecting 0..1 dirChanges");
+                        dirChanges =
+                            new DirChanges(
+                                (DirChanges.Spec) spec.dirChanges.get(0));
+                        if (!dirChanges
+                            .start(status, sandbox.classesDir)) {
                             return false; // setup failed
                         }
                     }
-                    MessageUtil.info(status, compiler + "(" + argList + ")");
+                    MessageUtil.info(
+                        status,
+                        compiler + "(" + argList + ")");
                     sandbox.setCommand(compiler, this);
                     String[] args = (String[]) argList.toArray(RA_String);
                     commandResult = compiler.runCommand(args, handler);
@@ -431,11 +502,12 @@ public class CompilerRun implements IAjcRun {
             if (!handlerResult) {
                 return false;
             } else {
-                result = (commandResult == handler.expectingCommandTrue()); 
-                if (! result) {
-                    String m = commandResult 
-                        ? "compile did not fail as expected"
-                        : "compile failed unexpectedly";                        
+                result = (commandResult == handler.expectingCommandTrue());
+                if (!result) {
+                    String m =
+                        commandResult
+                            ? "compile did not fail as expected"
+                            : "compile failed unexpectedly";
                     MessageUtil.fail(status, m);
                 } else if (null != dirChanges) {
                     result = dirChanges.end(status, sandbox.testBaseDir);
@@ -450,100 +522,116 @@ public class CompilerRun implements IAjcRun {
                     MessageUtil.info(handler, "" + setupResult);
                 }
             }
-            handler.report(status); // XXX weak - actual messages not reported in real-time, no fast-fail
-        }             
+            handler.report(status);
+            // XXX weak - actual messages not reported in real-time, no fast-fail
+        }
     }
-    
 
     public String toString() {
         return "CompilerRun(" + spec + ")";
     }
-    
+
     /** 
      * Initializer/factory for CompilerRun
      * any path or file is relative to this test base dir
      */
     public static class Spec extends AbstractRunSpec {
         public static final String XMLNAME = "compile";
+        public static final String DEFAULT_COMPILER =
+            ReflectionFactory.ECLIPSE;
         static final String SEEK_PREFIX = "-seek:";
         static final String SEEK_MESSAGE_PREFIX = "found: ";
-        
-        /** can't specify these as options */
-        private static final String[] INVALID_OPTIONS = new String[]
-            { "-workingdir", "-argfile", "-sourceroots", "-outjar"}; 
-            // when updating these, update tests/harness/selectionTest.xml
-        
 
-        /** no support in the javac for these otherwise-valid options */
-        private static final String[] INVALID_JAVAC_OPTIONS = new String[]
-            { "-lenient", "-strict", "-usejavac", "-preprocess",
-              "-XOcodeSize", "-XSerializable", "-XaddSafePrefix",
-              "-XtargetNearSource",
-              "-incremental", "-Xlint", "-aspectpath",
-              "workingdir", "-argfile", "-sourceroots", "-outjar",
-               };
-               
-        /** no support in the eclipse-based compiler for these otherwise-valid options */
-        private static final String[] INVALID_ECLIPSE_OPTIONS = new String[]
-            { "-lenient", "-strict", "-usejavac", "-preprocess",
-              "-XOcodeSize", "-XSerializable", "-XaddSafePrefix",
-              "-XtargetNearSource" };
-
-        /** options supported by the harness */
-        private static final String[] VALID_OPTIONS = new String[]
-            {
-                SEEK_PREFIX,
-                // eajc does not support -usejavac, -preprocess
-                // testFlag() handles -ajc, -eclipse, -javac, -ajdeCompiler, -ignoreWarnings 
-                "-usejavac", "-preprocess",          
-                "-Xlint",  "-lenient", "-strict", 
-                "-source14", "-verbose", "-emacssym", 
-                "-ajc", "-eclipse", "-ajdeCompiler", "-ajctaskCompiler", "-javac",
-                "-ignoreWarnings", "-1.3", "-1.4", "-1.5",
-                // XXX consider adding [!^]ajdeCompiler
-                "!usejavac", "!preprocess",          
-                "!Xlint",  "!lenient", "!strict", 
-                "!source14", "!verbose", "!emacssym", 
-                "!ajc", "!eclipse", 
-
-                "^usejavac", "^preprocess",          
-                "^Xlint",  "^lenient", "^strict", 
-                "^source14", "^verbose", "^emacssym", 
-                "^ajc", "^eclipse"
-            };
-        public static final String DEFAULT_COMPILER 
-            = ReflectionFactory.ECLIPSE;
+        private static final CRSOptions CRSOPTIONS = new CRSOptions();
+        /**
+          * Retitle description to title, paths to files, do comment,
+          * staging, badInput,
+          * do dirChanges, and print no chidren. 
+          */
+        private static final AbstractRunSpec.XMLNames NAMES =
+            new AbstractRunSpec.XMLNames(
+                AbstractRunSpec.XMLNames.DEFAULT,
+                "title",
+                null,
+                null,
+                null,
+                "files",
+                null,
+                null,
+                null,
+                false,
+                false,
+                true);
 
         /**
-         * Retitle description to title, paths to files, do comment,
-         * staging, badInput,
-         * do dirChanges, and print no chidren. 
+         * If the source version warrants, add a -bootclasspath
+         * entry to the list of arguments to add. 
+         * This will fail and return an error String if the 
+         * required library is not found.
+         * @param sourceVersion the String (if any) describing the -source option
+         *        (expecting one of [null, "1.3", "1.4", "1.5"].
+         * @param compilerName the String name of the target compiler
+         * @param toAdd the ArrayList to add -bootclasspath to
+         * @return the String describing any errors, or null if no errors
          */
-        private static final XMLNames NAMES = new XMLNames(XMLNames.DEFAULT,
-            "title", null, null, null, "files", null, null, null, false, false, true);
-        
-        protected String compiler;
-        
-        // use same command - see also IncCompiler.Spec.fresh
-        protected boolean reuseCompiler;
-        protected boolean includeClassesDir;
-        
-        protected TestSetup testSetup;
-        
-        protected String[] argfiles = new String[0];
-        protected String[] aspectpath = new String[0];
-        protected String[] classpath = new String[0]; // XXX unused
-        protected String[] sourceroots = new String[0];
-        
-        /** src path = {suiteParentDir}/{testBaseDirOffset}/{testSrcDirOffset}/{path} */
-        protected String testSrcDirOffset;
-        
-        public Spec() {
-            super(XMLNAME);
-            setXMLNames(NAMES);
-            compiler = DEFAULT_COMPILER;
+        private static String updateBootclasspathForSourceVersion(
+            String sourceVersion,
+            String compilerName,
+            ArrayList toAdd) {
+            if (null == sourceVersion) {
+                return null;
+            }
+            if (3 != sourceVersion.length()) {
+                throw new IllegalArgumentException(
+                    "bad version: " + sourceVersion);
+            }
+            if (null == toAdd) {
+                throw new IllegalArgumentException("null toAdd");
+            }
+            int version = sourceVersion.charAt(2) - '0';
+            switch (version) {
+                case (3) :
+                    if (LangUtil.supportsJava("1.4")) {
+                        if (!FileUtil.canReadFile(Globals.J2SE13_RTJAR)) {
+                            return "no 1.3 libraries to handle -source 1.3";
+                        }
+                        toAdd.add("-bootclasspath");
+                        toAdd.add(Globals.J2SE13_RTJAR.getAbsolutePath());
+                    }
+                    break;
+                case (4) :
+                    if (!LangUtil.supportsJava("1.4")) {
+                        if (ReflectionFactory
+                            .ECLIPSE
+                            .equals(compilerName)) {
+                            return "run eclipse under 1.4 to handle -source 1.4";
+                        }
+                        if (!FileUtil.canReadFile(Globals.J2SE14_RTJAR)) {
+                            return "no 1.4 libraries to handle -source 1.4";
+                        }
+                        toAdd.add("-bootclasspath");
+                        toAdd.add(Globals.J2SE14_RTJAR.getAbsolutePath());
+                    }
+                    break;
+                case (5) :
+                    return "1.5 not supported in CompilerRun";
+                case (0) :
+                    // ignore - no version specified
+                    break;
+                default :
+                    throw new Error("unexpected version: " + version);
+            }
+            return null;
         }
-        
+
+        static CRSOptions testAccessToCRSOptions() {
+            return CRSOPTIONS;
+        }
+
+        static Options testAccessToOptions() {
+            return CRSOPTIONS.getOptions();
+        }
+
         private static String[] copy(String[] input) {
             if (null == input) {
                 return null;
@@ -553,8 +641,44 @@ public class CompilerRun implements IAjcRun {
             return result;
         }
 
-        protected void initClone(Spec spec) 
-                throws CloneNotSupportedException {
+        /** @return true if javac is available on the classpath */
+        private static boolean haveJavac() { // XXX copy/paste from JavaCWrapper.java
+            Class compilerClass = null;
+            try {
+                compilerClass = Class.forName("com.sun.tools.javac.Main");
+            } catch (ClassNotFoundException ce1) {
+                try {
+                    compilerClass = Class.forName("sun.tools.javac.Main");
+                } catch (ClassNotFoundException ce2) {
+                }
+            }
+            return (null != compilerClass);
+        }
+
+        protected String compiler;
+
+        // use same command - see also IncCompiler.Spec.fresh
+        protected boolean reuseCompiler;
+        protected boolean includeClassesDir;
+
+        protected TestSetup testSetup;
+
+        protected String[] argfiles = new String[0];
+        protected String[] aspectpath = new String[0];
+        protected String[] classpath = new String[0]; // XXX unused
+        protected String[] sourceroots = new String[0];
+
+        /** src path = {suiteParentDir}/{testBaseDirOffset}/{testSrcDirOffset}/{path} */
+        protected String testSrcDirOffset;
+
+        public Spec() {
+            super(XMLNAME);
+            setXMLNames(NAMES);
+            compiler = DEFAULT_COMPILER;
+        }
+
+        protected void initClone(Spec spec)
+            throws CloneNotSupportedException {
             super.initClone(spec);
             spec.argfiles = copy(argfiles);
             spec.aspectpath = copy(aspectpath);
@@ -569,11 +693,11 @@ public class CompilerRun implements IAjcRun {
             }
             spec.testSrcDirOffset = testSrcDirOffset;
         }
-        
+
         public Object clone() throws CloneNotSupportedException {
             Spec result = new Spec();
             initClone(result);
-            return result;    
+            return result;
         }
 
         public void setIncludeClassesDir(boolean include) {
@@ -582,17 +706,17 @@ public class CompilerRun implements IAjcRun {
         public void setReuseCompiler(boolean reuse) {
             this.reuseCompiler = reuse;
         }
-        
+
         public void setCompiler(String compilerName) {
             this.compiler = compilerName;
-        }        
+        }
 
         public void setTestSrcDirOffset(String s) {
             if (null != s) {
                 testSrcDirOffset = s;
             }
         }
-        
+
         /** override to set dirToken to Sandbox.CLASSES and default suffix to ".class" */
         public void addDirChanges(DirChanges.Spec spec) {
             if (null == spec) {
@@ -602,7 +726,7 @@ public class CompilerRun implements IAjcRun {
             spec.setDefaultSuffix(".class");
             super.addDirChanges(spec);
         }
-        
+
         public String toLongString() {
             return getPrintName() + "(" + super.containedSummary() + ")";
         }
@@ -611,11 +735,11 @@ public class CompilerRun implements IAjcRun {
             return getPrintName() + "(" + super.containedSummary() + ")";
         }
 
-        /** bean mapping for writers */        
+        /** bean mapping for writers */
         public void setFiles(String paths) {
             addPaths(paths);
         }
-        
+
         /**
          * Add to default classpath
          * (which includes aspectjrt.jar and testing-client.jar).
@@ -632,7 +756,7 @@ public class CompilerRun implements IAjcRun {
          * Set source roots, deleting any old ones
          * @param files comma-delimited list of directories
          *  - ignored if null or empty
-         */        
+         */
         public void setSourceroots(String dirs) {
             if (!LangUtil.isEmpty(dirs)) {
                 sourceroots = XMLWriter.unflattenList(dirs);
@@ -643,7 +767,7 @@ public class CompilerRun implements IAjcRun {
          * Set aspectpath, deleting any old ones
          * @param files comma-delimited list of aspect jars - ignored if null or
          * empty
-         */        
+         */
         public void setAspectpath(String files) {
             if (!LangUtil.isEmpty(files)) {
                 aspectpath = XMLWriter.unflattenList(files);
@@ -653,7 +777,7 @@ public class CompilerRun implements IAjcRun {
         /** 
          * Set argfiles, deleting any old ones
          * @param files comma-delimited list of argfiles - ignored if null or empty
-         */        
+         */
         public void setArgfiles(String files) {
             if (!LangUtil.isEmpty(files)) {
                 argfiles = XMLWriter.unflattenList(files);
@@ -668,20 +792,22 @@ public class CompilerRun implements IAjcRun {
             }
             return (String[]) LangUtil.copy(argfiles);
         }
-        
+
         /**
          * This implementation skips if:
          * <ul>
          * <li>incremental test, but using ajc (not eclipse)</li>
          * <li>usejavac, but javac is not available on the classpath</li>
          * <li>eclipse, but -usejavac or -preprocess test</li>
-         * <li>-source14, but running under 1.2 (XXX design)</li>
+         * <li>-source 1.4, but running under 1.2 (XXX design)</li>
          * <li>local/global option conflicts (-lenient/-strict)</li>
          * <li>semantic conflicts (e.g., -lenient/-strict)</li>
          * </ul>
          * @return false if this wants to be skipped, true otherwise
          */
-        protected boolean doAdoptParentValues(RT parentRuntime, IMessageHandler handler) {
+        protected boolean doAdoptParentValues(
+            RT parentRuntime,
+            IMessageHandler handler) {
             if (!super.doAdoptParentValues(parentRuntime, handler)) {
                 return false;
             }
@@ -690,33 +816,35 @@ public class CompilerRun implements IAjcRun {
                 skipMessage(handler, testSetup.failureReason);
             }
             return testSetup.result;
-        }  
-        
+        }
 
-	    private String getShortCompilerName() {
-			String cname = compiler;
+        private String getShortCompilerName() {
+            String compilerClassName = compiler;
             if (null != testSetup) {
-                cname = testSetup.compilerName;
+                compilerClassName = testSetup.compilerName;
             }
-			if (null != cname) {
-			    int loc = cname.lastIndexOf(".");
-			    if (-1 != loc) {
-			        cname = cname.substring(loc+1);
-			    }
-			}
-			return cname;
-		}
-        
+            if (null != compilerClassName) {
+                int loc = compilerClassName.lastIndexOf(".");
+                if (-1 != loc) {
+                    compilerClassName =
+                        compilerClassName.substring(loc + 1);
+                }
+            }
+            return compilerClassName;
+        }
+
         /** @return a CompilerRun with this as spec if setup completes successfully. */
-		public IRunIterator makeRunIterator(Sandbox sandbox, Validator validator) {
-			CompilerRun run = new CompilerRun(this);
+        public IRunIterator makeRunIterator(
+            Sandbox sandbox,
+            Validator validator) {
+            CompilerRun run = new CompilerRun(this);
             if (run.setupAjcRun(sandbox, validator)) {
                 // XXX need name for compilerRun
                 return new WrappedRunIterator(this, run);
             }
             return null;
-		}
-        
+        }
+
         protected String getPrintName() {
             return "CompilerRun.Spec " + getShortCompilerName();
         }
@@ -750,9 +878,6 @@ public class CompilerRun implements IAjcRun {
          * <li>lenient, strict</li>
          * </ul>
          * <p>
-         * The -source 1.4 flag should always be specified as -source14, 
-         * as this will otherwise fail to process it correctly.  
-         * This converts it back to -source 1.4.
          * <p>
          * This also interprets any relevant System properties,
          * e.g., from <code>JavaRun.BOOTCLASSPATH_KEY</code>.
@@ -773,298 +898,346 @@ public class CompilerRun implements IAjcRun {
          * and commandOptions is not null, and any test flags (ignore warning,
          * compiler) are reflected in the TestSetup.
          * If this fails, then TestSetup.result is false,
-         * and a TestSetup.failreason is set.  
+         * and a TestSetup.failreason is set. 
+         * This means the test is skipped. 
          * @return TestSetup with results 
          *          (TestSetup result=false if the run should not continue)
          */
         protected TestSetup setupArgs(IMessageHandler handler) {
             // warning: HarnessSelectionTest checks for specific error wording
-            ArrayList argList = new ArrayList();
-            argList.addAll(getOptionsList());
             final Spec spec = this;
-            TestSetup result = new TestSetup();
-            if (argList.contains("-source")) {
-                result.failureReason = "use -source14 for -source 1.4: " + argList;
-                return result;                
-            }
+            final TestSetup result = new TestSetup();
             result.compilerName = spec.compiler;
-            String[] globalOptions = spec.runtime.extractOptions(Spec.VALID_OPTIONS, true);
-            if ((null != globalOptions) && (globalOptions.length > 0)) {
-                // --- fold in globals, removing conflicts, etc.
-                for (int i = 0; i < globalOptions.length; i++) {
-                    String globalArg = globalOptions[i];
-                    if ((null == globalArg) || (2 > globalArg.length())) {
-                        continue;
-                    } else if (globalArg.startsWith(SEEK_PREFIX)) { 
-                        result.seek = globalArg.substring(SEEK_PREFIX.length());
-                        continue;
-                    } else if ("-source".equals(globalArg)) {
-                        result.failureReason = "use -source14 for -source 1.4 [" + i + "]";
-                        return result;                
-                    }
-                    char first = globalArg.charAt(0);
-                    globalArg = globalArg.substring(1);
-                    boolean globalForceOn   = (first == '!');
-                    boolean globalForceOff  = (first == '^');
-                    boolean globalSet       = (first == '-');
-                    if (!globalSet && !globalForceOn && !globalForceOff) {
-                        MessageUtil.info(handler, "ignoring bad global: " + globalOptions[i]);
-                        continue;
-                    }
-                    int argIndex = indexOf(globalArg, argList);
-                    if (-1 == argIndex) { // no apparent conflict - look for eclipse/ajc conflicts XXX unresolved
-                        boolean ajcGlobal = true;
-                        if ("ajc".equals(globalArg)) {
-                            argIndex = indexOf("eclipse", argList);
-                        } else if ("eclipse".equals(globalArg)) {
-                            argIndex = indexOf("ajc", argList);                            
-                            ajcGlobal = false;
-                        }
-                        if (-1 != argIndex) {   // resolve eclipse/ajc conflict
-                            String arg = ((String) argList.get(argIndex));
-                            char argFirst = arg.charAt(0);
-                            argList.remove(arg);      // replace with resolved variant...
-                            char ajcFirst;
-                            char eclipseFirst;
-                            if (ajcGlobal) {
-                                ajcFirst = first;
-                                eclipseFirst = argFirst;
-                            } else {
-                                ajcFirst = argFirst;
-                                eclipseFirst = first;
-                            }
-                            if ('!' == eclipseFirst) {
-                                if ('!' == ajcFirst) {
-                                    result.failureReason = "conflict between !eclipse and !ajc";
-                                    return result;
-                                } else {
-                                    argList.add("-eclipse");
-                                }
-                            } else if (('!' == ajcFirst)  || ('^' == eclipseFirst)) {
-                                argList.add("-ajc");
-                            } else if ('^' == ajcFirst) {
-                                argList.add("-eclipse");
-                            } else if (('-' != ajcFirst) || ('-' != eclipseFirst)) {
-                                result.failureReason = "harness logic error resolving "
-                                    + arg + " and global " + globalArg;
-                                return result;
-                            } else if (ajcGlobal) {
-                                argList.add("-ajc");
-                            } else {
-                                argList.add("-eclipse");
-                            }
-                            continue; // resolved 
-                        }
-                    }
-                    
-                    if (-1 == argIndex) { // no dup, so no conflict
-                        if (!globalForceOff) {
-                            argList.add("-" + globalArg);
-                        }
-                    } else { // have conflict - resolve
-                        String arg = (String) argList.get(argIndex);
-                        first = arg.charAt(0);
-                        boolean localForceOn   = (first == '!');
-                        boolean localForceOff  = (first == '^');
-                        boolean localSet       = (first == '-');
-                        if (!localSet && !localForceOn && !localForceOff) {
-                            result.failureReason = "only handling [-^!]{arg}: " + arg;
-                            return result;
-                        }
-                        if ((localForceOn && globalForceOff)
-                            || (localForceOff && globalForceOn)) {
-                            result.failureReason = "force conflict between arg=" 
-                                + arg + " and global=" + globalOptions[i];
-                            return result;
-                        } 
-                        if (globalForceOn) {
-                            if (localForceOn) { // localSet is already correct, localForceOff was conflict
-                                argList.remove(arg);      // no !funkiness
-                                argList.add("-" + globalArg);
-                            }
-                        } else if (globalSet) {
-                            if (localSet) {
-                                // do nothing - already correct
-                            } else if (localForceOn) {
-                                argList.remove(arg);      // no !funkiness
-                                argList.add("-" + globalArg);
-                            }
-                        } else if (globalForceOff) {
-                            argList.remove(arg);
-                        } else {
-                            throw new Error("illegal arg state?? : " + arg);
-                            //MessageUtil.info(handler, "illegal arg state??: " + arg);
-                        }
-                    }
-                }
+            // urk - s.b. null, but expected
+            Values values = gatherValues(result);
+
+            if ((null == values) || (null != result.failureReason)) {
+                return checkResult(result);
             }
+
             // send info messages about
             // forced staging when -incremental
             // or staging but no -incremental flag
-            int incLoc = argList.indexOf("-incremental");
+            Option.Family getFamily =
+                CRSOPTIONS.crsIncrementalOption.getFamily();
+            final boolean haveIncrementalFlag =
+                (null != values.firstInFamily(getFamily));
+
             if (spec.isStaging()) {
-                if (-1 == incLoc) { // staging and no flag
-                    MessageUtil.info(handler, "staging but no -incremental flag");
+                if (!haveIncrementalFlag) {
+                    MessageUtil.info(
+                        handler,
+                        "staging but no -incremental flag");
                 }
-            } else if (-1 != incLoc) { // flagged but not staging - stage
+            } else if (haveIncrementalFlag) {
                 spec.setStaging(true);
                 MessageUtil.info(handler, "-incremental forcing staging");
             }
-            // remove funky prefixes from remainder, fixup two-part flags
-            // and interpret special flags
-            boolean source14 = false;
-            ArrayList toAdd = new ArrayList();
-            for (ListIterator iter = argList.listIterator(); iter.hasNext();) {
-                String arg = (String) iter.next();
-                if (testFlag(arg, result)) {
-                    iter.remove();
-                    continue;
-                }
-                char c = arg.charAt(0);
-                String rest = arg.substring(1);
-                if (c == '^') {
-                    iter.remove();
-                    continue;
-                }
-                if (c == '!') {
-                    iter.remove();
-                    if (!("source14".equals(rest))) {
-                        toAdd.add("-" + rest);
-                    } else {
-                        source14 = true;
-                    }
-                    rest = null;
-                } else if ("source14".equals(rest)) {
-                    iter.remove();
-                    source14 = true;
+
+            if (hasInvalidOptions(values, result)) {
+                return checkResult(result);
+            }
+
+            // set compiler in result
+            getFamily = CRSOPTIONS.ajccompilerOption.getFamily();
+            Option.Value compiler = values.firstInFamily(getFamily);
+            if (null != compiler) {
+                result.compilerName 
+                    = CRSOPTIONS.compilerClassName(compiler.option);
+                if (null == result.compilerName) {
+                    result.failureReason =
+                        "unable to get class name for " + compiler;
+                    return checkResult(result);
                 }
             }
-            if (source14) {
-                // must run under 1.4 VM or (if ajc) set up bootclasspath
-                if (!LangUtil.supportsJava("1.4")) {
-                    if (ReflectionFactory.ECLIPSE.equals(result.compilerName)) {
-                        result.failureReason 
-                            = "eclipse must run under 1.4 to implement -source 1.4";
-                        return result;                        
-                    }
-                    
-                    if (!FileUtil.canReadFile(Globals.J2SE14_RTJAR)) {
-                        result.failureReason 
-                            = "unable to get 1.4 libraries to implement -source 1.4";
-                        return result;
-                    }
-                    toAdd.add("-bootclasspath");
-                    toAdd.add(Globals.J2SE14_RTJAR.getAbsolutePath());
-                }
-                toAdd.add("-source");
-                toAdd.add("1.4");
+            String compilerName =
+                (null == result.compilerName
+                    ? spec.compiler
+                    : result.compilerName);
+            // check compiler semantics
+            if (hasCompilerSpecErrors(compilerName, values, result)) {
+                return checkResult(result);
             }
-            argList.addAll(toAdd);
-    
-            // finally, check for semantic conflicts
-            String[] badOptions = LangUtil.selectOptions(argList, Spec.INVALID_OPTIONS);
-            if (!LangUtil.isEmpty(badOptions)) {
-                result.failureReason = "no support for (normally-valid) options "
-                     + Arrays.asList(badOptions);
-            } else if (argList.contains("-lenient") && argList.contains("-strict")) {
-                result.failureReason = "semantic conflict -lenient | -strict";
-            } else if (ReflectionFactory.OLD_AJC.equals(result.compilerName)) {
-                if (spec.isStaging) {
-                    result.failureReason = "OLD_AJC does not do incremental compiles";
-                } else if (argList.contains("-usejavac") && !haveJavac()) {
-                    result.failureReason = "-usejavac but no javac on classpath";
-                } else {
-                    result.result = true;
-                }
-            } else if (ReflectionFactory.ECLIPSE.equals(result.compilerName)
-                || AJDE_COMPILER.equals(result.compilerName)
-                || AJCTASK_COMPILER.equals(result.compilerName)
-                || BUILDER_COMPILER.equals(result.compilerName)) {
-                badOptions = LangUtil.selectOptions(argList, Spec.INVALID_ECLIPSE_OPTIONS);
-                if (!LangUtil.isEmpty(badOptions)) {                    
-                    result.failureReason = "no support in eclipse-based compiler"
-                        + " for (normally-valid) options "+ Arrays.asList(badOptions);
-                } else {
-                    result.result = true;
-                }
-//            } else if (JAVAC_COMPILER.equals(result.compilerName)) {
-//                // XXX vet
-//                badOptions = LangUtil.selectOptions(argList, Spec.INVALID_JAVAC_OPTIONS);
-//                if (!LangUtil.isEmpty(badOptions)) {                    
-//                    result.failureReason = "no support in javac"
-//                        + " for (normally-valid) options " + Arrays.asList(badOptions);
-//                } else {
-//                    result.result = true;
-//                }
-            } else {
-                result.failureReason = "unrecognized compiler: " + result.compilerName;
+            // add toadd and finish result
+            ArrayList args = new ArrayList();
+            String[] rendered = values.render();
+            if (!LangUtil.isEmpty(rendered)) {
+                args.addAll(Arrays.asList(rendered));
             }
-            if (result.result) {
-                result.commandOptions = argList;
+            // update bootclasspath
+            getFamily = CRSOPTIONS.crsSourceOption.getFamily();
+            Option.Value source = values.firstInFamily(getFamily);
+            if (null != source) {
+                String sourceVersion = source.unflatten()[1];
+                ArrayList toAdd = new ArrayList();
+                String err =
+                    updateBootclasspathForSourceVersion(
+                        sourceVersion,
+                        spec.compiler,
+                        toAdd);
+                args.addAll(toAdd);
             }
-            return result; 
+            result.commandOptions = args;
+            result.result = true;
+            return checkResult(result);
         }
 
-		/** @return true if javac is available on the classpath */
-		private boolean haveJavac() { // XXX copy/paste from JavaCWrapper.java
-            Class compilerClass = null;
-            try {
-                compilerClass = Class.forName("com.sun.tools.javac.Main");
-            } catch (ClassNotFoundException ce1) {
-                try {
-                    compilerClass = Class.forName("sun.tools.javac.Main");
-                } catch (ClassNotFoundException ce2) {
-                }
-            }
-            return (null != compilerClass);
-		}
-
-        
         /**
-         * Handle flags that are interpreted by the test rather than the
-         * underlying command.  These flags are to be removed from the
-         * arg list.
-         *  @return true if this is a flag to remove from the arg list
+         * Ensure exit invariant:
+         * <code>result.result == (null == result.failureReason)
+         *       == (null != result.commandOptions)</code>
+         * @param result the TestSetup to verify
+         * @return result
+         * @throws Error if invariant is not true
          */
-        protected boolean testFlag(String arg, TestSetup result) {
-            if ("-ajdeCompiler".equals(arg)) {
-                result.compilerName = AJDE_COMPILER;
-                return true;
-            } else if ("-builderCompiler".equals(arg)) {
-                result.compilerName = BUILDER_COMPILER;
-                return true;
-            } else if ("-ajctaskCompiler".equals(arg)) {
-                result.compilerName = AJCTASK_COMPILER;
-                return true;
-//            } else if ("-javac".equals(arg)) {
-//                result.compilerName = JAVAC_COMPILER;
-//                return true;
-            } else if ("-eclipse".equals(arg) || "!eclipse".equals(arg) || "^ajc".equals(arg)) {
-                result.compilerName = ReflectionFactory.ECLIPSE;
-                return true;
-            } else if ("-ajc".equals(arg) || "!ajc".equals(arg) || "^eclipse".equals(arg)) {
-                result.compilerName = ReflectionFactory.OLD_AJC;
-                return true;
-            } else if ("-ignoreWarnings".equals(arg)) {
-                result.ignoreWarnings = true;
-                result.ignoreWarningsSet = true;
-                return true;
+        TestSetup checkResult(TestSetup result) {
+            String err = null;
+            if (null == result) {
+                err = "null result";
+            } else if (result.result != (null == result.failureReason)) {
+                err =
+                    result.result
+                        ? "expected no failure: " + result.failureReason
+                        : "fail for no reason";
+            } else if (result.result != (null != result.commandOptions)) {
+                err =
+                    result.result
+                        ? "expected command options"
+                        : "unexpected command options";
+            }
+            if (null != err) {
+                throw new Error(err);
+            }
+            return result;
+        }
+
+        boolean hasInvalidOptions(Values values, TestSetup result) {
+            // not supporting 1.0 options any more
+            for (Iterator iter = CRSOPTIONS.invalidOptions.iterator();
+                iter.hasNext();
+                ) {
+                Option option = (Option) iter.next();
+                if (null != values.firstOption(option)) {
+                    result.failureReason =
+                        "invalid option in harness: " + option;
+                    return true;
+                }
             }
             return false;
         }
-        
+
+        boolean hasCompilerSpecErrors(
+            String compilerName,
+            Values values,
+            TestSetup result) {
+            /*
+             * Describe any semantic conflicts between options.
+             * This skips:
+             * - old 1.0 options, including lenient v. strict
+             * - old ajc options, include !incremental and usejavac w/o javac
+             * - invalid eclipse options (mostly ajc) 
+             * @param compilerName the String name of the target compiler
+             * @return a String describing any conflicts, or null if none
+             */
+            if (!(ReflectionFactory.ECLIPSE.equals(compilerName)
+                || ReflectionFactory.OLD_AJC.equals(compilerName)
+                || CRSOPTIONS.AJDE_COMPILER.equals(compilerName)
+                || CRSOPTIONS.AJCTASK_COMPILER.equals(compilerName) 
+                )) {
+                //|| BUILDER_COMPILER.equals(compilerName))
+                result.failureReason =
+                    "unrecognized compiler: " + compilerName;
+                return true;
+            }
+            // not supporting ajc right now
+            if (null
+                != values.firstOption(CRSOPTIONS.ajccompilerOption)) {
+                result.failureReason = "ajc not supported";
+                return true;
+            }
+            // not supporting 1.0 options any more
+            for (Iterator iter = CRSOPTIONS.ajc10Options.iterator();
+                iter.hasNext();
+                ) {
+                Option option = (Option) iter.next();
+                if (null != values.firstOption(option)) {
+                    result.failureReason = "old ajc 1.0 option: " + option;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        protected Values gatherValues(TestSetup result) {
+            final Spec spec = this;
+            // ---- local option values
+            final Values localValues;
+            final Options options = CRSOPTIONS.getOptions();
+            try {
+                String[] input = getOptionsArray();
+                // this handles reading options, 
+                // flattening two-String options, etc.
+                localValues = options.acceptInput(input);
+                // all local values should be picked up
+                String err = Options.missedMatchError(input, localValues);
+                if (!LangUtil.isEmpty(err)) {
+                    result.failureReason = err;
+                    return null;
+                }
+            } catch (InvalidInputException e) {
+                result.failureReason = e.getFullMessage();
+                return null;
+            }
+
+            // ---- global option values
+            StringBuffer errs = new StringBuffer();
+            final Values globalValues =
+                spec.runtime.extractOptions(options, true, errs);
+            if (errs.length() > 0) {
+                result.failureReason = errs.toString();
+                return null;
+            }
+            final Values combined =
+                Values.wrapValues(
+                    new Values[] { localValues, globalValues });
+
+            String err = combined.resolve();
+            if (null != err) {
+                result.failureReason = err;
+                return null;
+            }
+
+            return handleTestArgs(combined, result);
+        }
+
+        //            final int len = globalValues.length() + localValues.length();
+        //            final Option.Value[] combinedValues = new Option.Value[len];
+        //            System.arraycopy(
+        //                globalValues,
+        //                0,
+        //                combinedValues,
+        //                0,
+        //                globalValues.length());
+        //            System.arraycopy(
+        //                localValues,
+        //                0,
+        //                combinedValues,
+        //                globalValues.length(),
+        //                localValues.length());
+        //
+        //            result.compilerName = spec.compiler;
+        //            if (0 < combinedValues.length) {
+        //                // this handles option forcing, etc.
+        //                String err = Options.resolve(combinedValues);
+        //                if (null != err) {
+        //                    result.failureReason = err;
+        //                    return null;
+        //                }
+        //                if (!handleTestArgs(combinedValues, result)) {
+        //                    return null;
+        //                }
+        //            }
+        //            return Values.wrapValues(combinedValues);
+        //        }
+        /**
+         * This interprets and nullifies values for the test.
+         * @param values the Option.Value[] being processed
+         * @param result the TestSetup to modify
+         * @return false if error (caller should return), true otherwise
+         */
+        Values handleTestArgs(Values values, final TestSetup result) {
+            final Option.Family compilerFamily =
+                CRSOPTIONS.ajccompilerOption.getFamily();
+            Values.Selector selector = new Values.Selector() {
+                protected boolean accept(Option.Value value) {
+                    if (null == value) {
+                        return false;
+                    }
+                    Option option = value.option;
+                    if (compilerFamily.sameFamily(option.getFamily())) {
+                        if (value.prefix.isSet()) {
+                            String compilerClass
+                                = CRSOPTIONS.compilerClassName(option);
+                            if (null == compilerClass) {
+                                result.failureReason =
+                                    "unrecognized compiler: " + value;
+                                throw Values.Selector.STOP;
+                            }
+                            if (!CRSOPTIONS.compilerIsLoadable(option)) {
+                                result.failureReason =
+                                    "unable to load compiler: " + option;
+                                throw Values.Selector.STOP;
+                            }
+                            result.compilerName = compilerClass;
+                        }
+                        return true;
+                    } else if (
+                        CRSOPTIONS.crsIgnoreWarnings.sameOptionIdentifier(
+                            option)) {
+                        result.ignoreWarnings = value.prefix.isSet();
+                        result.ignoreWarningsSet = true;
+                        return true;
+                    }
+                    return false;
+                }
+            };
+            return values.nullify(selector);
+        }
+
+        //        /**
+        //         * This interprets and nullifies values for the test.
+        //         * @param values the Option.Value[] being processed
+        //         * @param result the TestSetup to modify
+        //         * @return false if error (caller should return), true otherwise
+        //         */
+        //        boolean handleTestArgs(Option.Value[] values, TestSetup result) {
+        //            if (!LangUtil.isEmpty(values)) {
+        //                for (int i = 0; i < values.length; i++) {
+        //                    Option.Value value = values[i];
+        //                    if (null == value) {
+        //                        continue;
+        //                    }
+        //                    Option option = value.option;
+        //                    if (option.sameOptionFamily(ECLIPSE_OPTION)) {
+        //                        if (!value.prefix.isSet()) {
+        //                            values[i] = null;
+        //                            continue;
+        //                        }
+        //                        String compilerClass =
+        //                            (String) COMPILER_OPTION_TO_CLASSNAME.get(
+        //                                option);
+        //                        if (null == compilerClass) {
+        //                            result.failureReason =
+        //                                "unrecognized compiler: " + value;
+        //                            return false;
+        //                        }
+        //                        result.compilerName = compilerClass;
+        //                        values[i] = null;
+        //                    } else if (
+        //                        option.sameOptionFamily(crsIgnoreWarnings)) {
+        //                        result.ignoreWarnings = value.prefix.isSet();
+        //                        result.ignoreWarningsSet = true;
+        //                        values[i] = null;
+        //                    }
+        //                }
+        //            }
+        //            return true;
+        //        }
+
         // XXX need keys, cache...
         /** @return index of global in argList, ignoring first char */
         protected int indexOf(String global, ArrayList argList) {
             int max = argList.size();
             for (int i = 0; i < max; i++) {
-                 if (global.equals(((String) argList.get(i)).substring(1))) {
+                if (global
+                    .equals(((String) argList.get(i)).substring(1))) {
                     return i;
-                 }
+                }
             }
             return -1;
         }
-        
+
         /** 
          * Write this out as a compile element as defined in
          * AjcSpecXmlReader.DOCTYPE.
@@ -1087,13 +1260,19 @@ public class CompilerRun implements IAjcRun {
                 out.printAttribute("includeClassesDir", "true");
             }
             if (!LangUtil.isEmpty(argfiles)) {
-                out.printAttribute("argfiles", XMLWriter.flattenFiles(argfiles));
+                out.printAttribute(
+                    "argfiles",
+                    XMLWriter.flattenFiles(argfiles));
             }
             if (!LangUtil.isEmpty(aspectpath)) {
-                out.printAttribute("aspectpath", XMLWriter.flattenFiles(argfiles));
+                out.printAttribute(
+                    "aspectpath",
+                    XMLWriter.flattenFiles(argfiles));
             }
             if (!LangUtil.isEmpty(sourceroots)) {
-                out.printAttribute("sourceroots", XMLWriter.flattenFiles(argfiles));
+                out.printAttribute(
+                    "sourceroots",
+                    XMLWriter.flattenFiles(argfiles));
             }
             out.endAttributes();
             if (!LangUtil.isEmpty(dirChanges)) {
@@ -1102,7 +1281,7 @@ public class CompilerRun implements IAjcRun {
             SoftMessage.writeXml(out, getMessages());
             out.endElement(xmlElementName);
         }
-        
+
         /** 
          * Encapsulate the directives that can be set using
          * global arguments supplied in {@link Spec.getOptions()}.
@@ -1116,22 +1295,22 @@ public class CompilerRun implements IAjcRun {
              * to ignore warnings in its result evaluation
              */
             boolean ignoreWarningsSet;
-            
+
             /** if telling AjcMessageHandler, what we tell it */
             boolean ignoreWarnings;
-            
+
             /** false if setup failed */
             boolean result;
-            
+
             /** if setup failed, this has the reason why */
             String failureReason;
-            
+
             /** beyond running test, also seek text in sources */
             String seek;
-            
+
             /** if setup completed, this has the combined global/local options */
             ArrayList commandOptions;
-            
+
             public Object clone() {
                 TestSetup testSetup = new TestSetup();
                 testSetup.compilerName = compilerName;
@@ -1149,13 +1328,326 @@ public class CompilerRun implements IAjcRun {
             public String toString() {
                 return "TestSetup("
                     + (null == compilerName ? "" : compilerName + " ")
-                    + (!ignoreWarningsSet ?  "" 
+                    + (!ignoreWarningsSet
+                        ? ""
                         : (ignoreWarnings ? "" : "do not ")
                             + "ignore warnings ")
                     + (result ? "" : "setup failed")
                     + ")";
             }
         }
+
+        /**
+         * Options-related stuff in the spec.
+         */
+        static class CRSOptions {
+            //    static final String BUILDER_COMPILER =
+            //        "org.aspectj.ajdt.internal.core.builder.Builder.Command";
+            static final String AJDE_COMPILER =
+                CompileCommand.class.getName();
+
+            static final String AJCTASK_COMPILER =
+                AjcTaskCompileCommand.class.getName();
+
+            private final Map compilerOptionToLoadable = new TreeMap();
+            /*
+            * The options field in a compiler test permits some arbitrary
+            * command-line options to be set.  It does not permit things
+            * like classpath,  aspectpath, files, etc. which are set
+            * using other fields in the test specification, so the options
+            * permitted are a subset of those permitted on the command-line.
+            * 
+            * Global options specified on the harness command-line are
+            * adopted for the compiler command-line if they are permitted
+            * in the options field.  That means we have to detect each
+            * permitted option, rather than just letting all through
+            * for the compiler.
+            * 
+            * Conversely, some options are targeted not at the compiler,
+            * but at the test itself (e.g., to ignore warnings, or to 
+            * select a compiler.
+            * 
+            * The harness can run many compilers, and they differ in
+            * which options are permitted.  You can specify a compiler
+            * as an option (e.g., -eclipse).  So the set of constraints
+            * on the list of permitted options can differ from test to test.
+            * 
+            * The following code sets up the lists of permitted options
+            * and breaks out subsets for different compiler-variant checks.
+            * Most options are created but not named, but some options
+            * are named to detect corresponding values for further 
+            * processing.  e.g., the compiler options are saved so 
+            * we can do per-compiler option verification.
+            *
+            */
+            private final Options crsOptions;
+            private final Family compilerFamily;
+            private final Option crsIncrementalOption;
+            private final Option crsSourceOption;
+            // these are options handled/absorbed by CompilerRun
+            private final Option crsIgnoreWarnings;
+            private final Option eclipseOption;
+            private final Option buildercompilerOption;
+            private final Option ajdecompilerOption;
+            private final Option javacOption;
+            private final Option ajctaskcompilerOption;
+            private final Option ajccompilerOption;
+            private final Map compilerOptionToClassname;
+            private final Set compilerOptions;
+            // compiler verification - permit but flag ajc 1.0 options
+            private final List ajc10Options;
+            private final List invalidOptions;
+
+            private CRSOptions() {
+                crsOptions = new Options(true);
+                Option.Factory factory = new Option.Factory("CompilerRun");
+                // compiler options go in map            
+                eclipseOption =
+                    factory.create(
+                        "eclipse",
+                        "compiler",
+                        Option.FORCE_PREFIXES,
+                        false);
+                compilerFamily = eclipseOption.getFamily();
+                buildercompilerOption =
+                    factory.create(
+                        "builderCompiler",
+                        "compiler",
+                        Option.FORCE_PREFIXES,
+                        false);
+                ajctaskcompilerOption =
+                    factory.create(
+                        "ajctaskCompiler",
+                        "compiler",
+                        Option.FORCE_PREFIXES,
+                        false);
+                ajdecompilerOption =
+                    factory.create(
+                        "ajdeCompiler",
+                        "compiler",
+                        Option.FORCE_PREFIXES,
+                        false);
+                ajccompilerOption =
+                    factory.create(
+                        "ajc",
+                        "compiler",
+                        Option.FORCE_PREFIXES,
+                        false);
+                javacOption =
+                    factory.create(
+                        "javac",
+                        "compiler",
+                        Option.FORCE_PREFIXES,
+                        false);
+
+                Map map = new TreeMap();
+                map.put(eclipseOption, ReflectionFactory.ECLIPSE);
+                //map.put(BUILDERCOMPILER_OPTION, BUILDER_COMPILER);
+                map.put(
+                    ajctaskcompilerOption,
+                    AJCTASK_COMPILER);
+                map.put(ajdecompilerOption, AJDE_COMPILER);
+                map.put(ajccompilerOption, ReflectionFactory.OLD_AJC);
+                //map.put(JAVAC_OPTION, "XXX javac option not supported");
+                compilerOptionToClassname =
+                    Collections.unmodifiableMap(map);
+
+                compilerOptions =
+                    Collections.unmodifiableSet(
+                        compilerOptionToClassname.keySet());
+                // options not permitted in the harness
+                List list = new ArrayList();
+                list.add(factory.create("workingdir"));
+                list.add(factory.create("argfile"));
+                list.add(factory.create("sourceroots"));
+                list.add(factory.create("outjar"));
+                invalidOptions = Collections.unmodifiableList(list);
+
+                // other options added directly
+                crsIncrementalOption = factory.create("incremental");
+
+                crsIgnoreWarnings = factory.create("ignoreWarnings");
+
+                crsSourceOption =
+                    factory
+                        .create(
+                            "source",
+                            "source",
+                            Option.FORCE_PREFIXES,
+                            false,
+                            new String[][] { new String[] { "1.3", "1.4" }
+                });
+
+                // ajc 1.0 options
+                // workingdir above in invalid options
+                list = new ArrayList();
+                list.add(factory.create("usejavac"));
+                list.add(factory.create("preprocess"));
+                list.add(factory.create("nocomment"));
+                list.add(factory.create("porting"));
+                list.add(factory.create("XOcodeSize"));
+                list.add(factory.create("XTargetNearSource"));
+                list.add(factory.create("XaddSafePrefix"));
+                list.add(
+                    factory.create(
+                        "lenient",
+                        "lenient",
+                        Option.FORCE_PREFIXES,
+                        false));
+                list.add(
+                    factory.create(
+                        "strict",
+                        "lenient",
+                        Option.FORCE_PREFIXES,
+                        false));
+                ajc10Options = Collections.unmodifiableList(list);
+
+                // -warn:.. and -g/-g:.. are not exclusive
+                if (!(factory.setupFamily("debug", true)
+                    && factory.setupFamily("warning", true))) {
+                    System.err.println("CompilerRun debug/warning fail!");
+                }
+                Option[] options =
+                    new Option[] {
+                        crsIncrementalOption,
+                        crsIgnoreWarnings,
+                        crsSourceOption,
+                        factory.create(
+                            "Xlint",
+                            "XLint",
+                            Option.FORCE_PREFIXES,
+                            true),
+                        factory.create("verbose"),
+                        factory.create("emacssym"),
+                        factory.create("referenceInfo"),
+                        factory.create("nowarn"),
+                        factory.create("deprecation"),
+                        factory.create("noImportError"),
+                        factory.create("proceedOnError"),
+                        factory.create("preserveAllLocals"),
+                        factory.create(
+                            "warn",
+                            "warning",
+                            Option.STANDARD_PREFIXES,
+                            true),
+                        factory.create(
+                            "g",
+                            "debug",
+                            Option.STANDARD_PREFIXES,
+                            false),
+                        factory.create(
+                            "g:",
+                            "debug",
+                            Option.STANDARD_PREFIXES,
+                            true),
+                        factory.create(
+                            "1.3",
+                            "compliance",
+                            Option.FORCE_PREFIXES,
+                            false),
+                        factory.create(
+                            "1.4",
+                            "compliance",
+                            Option.FORCE_PREFIXES,
+                            false),
+                        factory
+                            .create(
+                                "target",
+                                "target",
+                                Option.FORCE_PREFIXES,
+                                false,
+                                new String[][] { new String[] {
+                                    "1.1",
+                                    "1.2" }}),
+                        factory.create("XnoInline"),
+                        factory.create("XnoWeave"),
+                        factory.create("XserializableAspects")
+                    };
+                for (int i = 0; i < options.length; i++) {
+                    crsOptions.addOption(options[i]);
+                }
+                for (Iterator iter = compilerOptions.iterator();
+                    iter.hasNext();
+                    ) {
+                    crsOptions.addOption((Option) iter.next());
+                }
+                // these are recognized but records with them are skipped
+                for (Iterator iter = ajc10Options.iterator();
+                    iter.hasNext();
+                    ) {
+                    crsOptions.addOption((Option) iter.next());
+                }
+                crsOptions.freeze();
+            }
+
+            Options getOptions() {
+                return crsOptions;
+            }
+            
+            /** 
+             * @return unmodifiable Set of options sharing the
+             * family "compiler".
+             */
+            Set compilerOptions() {
+                return compilerOptions;
+            }
+
+            /**
+             * @param option the compiler Option to get name for
+             * @return null if option is null or not a compiler option,
+             *     or the fully-qualified classname of the ICommand
+             *     implementing the compiler.
+             */
+            String compilerClassName(Option option) {
+                if ((null == option)
+                    || (!compilerFamily.sameFamily(option.getFamily()))) {
+                    return null;
+                }
+                return (String) compilerOptionToClassname.get(option);
+            }
+
+            /**
+             * Check that the compiler class associated with a compiler
+             * option can be loaded.  This check only happens once;
+             * the result is cached (by compilerOption key) for later calls.
+             * @param compilerOption the Option (family compiler) to check
+             * @return true if compiler class for this option can be loaded
+             */
+            boolean compilerIsLoadable(Option compilerOption) {
+                LangUtil.throwIaxIfNull(compilerOption, "compilerName");
+                synchronized (compilerOptionToLoadable) {
+                    Boolean result =
+                        (Boolean) compilerOptionToLoadable.get(
+                            compilerOption);
+                    if (null == result) {
+                        MessageHandler sink = new MessageHandler();
+                        String compilerClassname =
+                            (String) compilerOptionToClassname.get(
+                                compilerOption);
+                        if (null == compilerClassname) {
+                            result = Boolean.FALSE;
+                        } else {
+                            ICommand c =
+                                ReflectionFactory.makeCommand(
+                                    compilerClassname,
+                                    sink);
+
+                            if ((null == c)
+                                || sink.hasAnyMessage(
+                                    IMessage.ERROR,
+                                    true)) {
+                                result = Boolean.FALSE;
+                            } else {
+                                result = Boolean.TRUE;
+                            }
+                        }
+                        compilerOptionToLoadable.put(
+                            compilerOption,
+                            result);
+                    }
+                    return result.booleanValue();
+                }
+            }
+        } // CompilerRun.Spec.CRSOptions
     } // CompilerRun.Spec
 } // CompilerRun
- 

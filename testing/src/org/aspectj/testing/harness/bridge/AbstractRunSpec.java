@@ -30,7 +30,10 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.testing.run.IRunIterator;
+import org.aspectj.testing.util.*;
 import org.aspectj.testing.util.BridgeUtil;
+import org.aspectj.testing.util.options.*;
+import org.aspectj.testing.util.options.Option.InvalidInputException;
 import org.aspectj.testing.xml.IXmlWritable;
 import org.aspectj.testing.xml.SoftMessage;
 import org.aspectj.testing.xml.XMLWriter;
@@ -955,6 +958,66 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
             verbose = toCopy.verbose;
         }
         
+        /** 
+         * Return any parent option accepted by validOptions,
+         * optionally removing the parent option.
+         * @param validOptions String[] of options to extract
+         * @param remove if true, then remove any parent option matched
+         * @return String[] containing any validOptions[i] in parentOptions
+         *          
+         */
+        public Values extractOptions(
+            Options validOptions, 
+            boolean remove,
+            StringBuffer errors) {
+            Values result = Values.EMPTY;
+            if (null == errors) {
+                errors = new StringBuffer();
+            }
+            if (null == validOptions) {
+                errors.append("null options");
+                return result;                
+            }
+            if (LangUtil.isEmpty(parentOptions)) {
+                return result;
+            }
+            boolean haveOption = false;
+            String[] parents = (String[]) parentOptions.toArray(new String[0]);
+            try {
+                result = validOptions.acceptInput(parents);
+            } catch (InvalidInputException e) {
+                errors.append(e.getFullMessage());
+                return result;
+            }
+            if (remove) {
+                Option.Value[] values = result.asArray();
+                for (int i = 0; i < values.length; i++) {
+                    Option.Value value = values[i];
+                    if (null == value) {
+                        continue;
+                    }
+                    final int max = i + value.option.numArguments();
+                    if (max > i) {
+                        if (max >= parents.length) {
+                            errors.append("expecting more args for "
+                                + value.option
+                                + " at ["
+                                + i
+                                + "]: "
+                                + Arrays.asList(parents));
+                            return result;
+                        }
+                        // XXX verify
+                        for (int j = i;  j < max ; j++) {
+                            parentOptions.remove(parents[j]);
+                        }
+                        i = max-1;
+                    }
+                }
+            }
+            return result;
+        }
+
         /** 
          * Return any parent option which has one of validOptions as a prefix,
          * optionally absorbing (removing) the parent option.
