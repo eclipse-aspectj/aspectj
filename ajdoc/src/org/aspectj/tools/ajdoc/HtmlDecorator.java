@@ -479,7 +479,11 @@ class HtmlDecorator {
         		String linkName = rootDir.getAbsolutePath() + "/";
         		if (currDecl.getKind().isType()) {
         			linkName = packagePath + currDecl.getName();
-        			linkRef = currDecl.toLabelString() + ".html";
+					linkRef =
+						getRelativeComponent(packagePath)
+							+ packagePath
+							+ currDecl.toLabelString()
+							+ ".html";
         		} else {
         			
         			linkName = packagePath + currDecl.getParent().getName() + "." + currDecl.getName();
@@ -510,7 +514,8 @@ class HtmlDecorator {
 
     /**
      * Generates a relative directory path fragment that can be 
-     * usd to navigate "upwards".
+     * used to navigate "upwards" from the directory location
+     * implied by the argument.
 	 * @param packagePath
 	 * @return String consisting of multiple "../" parts, one for 
 	 * 		each component part of the input <code>packagePath</code>. 
