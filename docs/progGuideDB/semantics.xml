@@ -652,9 +652,12 @@
 </programlisting>
 
       <para>
-        picks out join points where an <literal>int</literal> is being
-        passed as an argument.  Second, though, it makes the value of that
-        argument available to the enclosing advice or pointcut.
+        picks out join points where an <literal>int</literal> (or
+        a <literal>byte</literal>, <literal>short</literal>, or
+        <literal>char</literal>; anything assignable to an
+        <literal>int</literal>) is being passed as an argument.
+        Second, though, it makes the value of that argument
+        available to the enclosing advice or pointcut.  
       </para>
 
       <para>
@@ -695,6 +698,38 @@
         will pick out all unary methods that take any argument: And if the
         argument was an <literal>int</literal>, then the value passed to
         advice will be of type <literal>java.lang.Integer</literal>.
+      </para>
+
+      <para>
+        The "boxing" of the primitive value is based on the
+        <emphasis>original</emphasis> primitive type.  So in the
+        following program
+      </para>
+
+<programlisting>
+  public class InstanceOf {
+
+    public static void main(String[] args) {
+      doInt(5);
+    }
+
+    static void doInt(int i) {  }
+  }
+
+  aspect IntToLong {
+    pointcut el(long l) : 
+        execution(* doInt(..)) <![CDATA[&&]]> args(l);
+
+    before(Object o) : el(o) {
+         System.out.println(o.getClass());
+    }
+  }
+</programlisting>
+
+      <para>
+        The pointcut will match and expose the integer argument,
+        but it will expose it as an <literal>Integer</literal>,
+        not a <literal>Long</literal>.
       </para>
 
     </sect2>
