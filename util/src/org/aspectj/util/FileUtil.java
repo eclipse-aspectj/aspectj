@@ -55,9 +55,13 @@ public class FileUtil {
     
     /** @return 0 if no zip/jar suffix or 4 otherwise */
     public static int zipSuffixLength(String path) {
-        return (null == path ? 0 
-            : path.endsWith(".zip") ? 4 
-            : path.endsWith(".jar") ? 4 : 0);
+        if ((null != path) && (4 < path.length())){
+            String test = path.substring(path.length()-4).toLowerCase();
+            if (".zip".equals(test) || ".jar".equals(test)) {
+                return 4;
+            } 
+        }
+        return 0;
     }
 
     /** @return true if file path has a source suffix */
