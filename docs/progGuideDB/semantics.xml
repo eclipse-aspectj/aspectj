@@ -460,8 +460,8 @@
         <listitem>
           Picks out each join point where the currently executing object
           (the object bound to <literal>this</literal>) is an instance of
-          <replaceable>Type</replaceable>, or of the type of
-          <replaceable>Id</replaceable> (which must be bound in the enclosing
+          <replaceable>Type</replaceable>, or of the type of the
+          identifier <replaceable>Id</replaceable> (which must be bound in the enclosing
           advice or pointcut definition).
           Will not match any join points from static contexts.
         </listitem>
@@ -472,7 +472,7 @@
         <listitem>
           Picks out each join point where the target object (the object
           on which a call or field operation is applied to) is an instance of
-          <replaceable>Type</replaceable>, or of the type of
+          <replaceable>Type</replaceable>, or of the type of the identifier
           <replaceable>Id</replaceable> (which must be bound in the enclosing
           advice or pointcut definition).
           Will not match any calls, gets, or sets of static members.
@@ -1480,6 +1480,40 @@
           not Foo itself, is constructed.
         </para>
       </sect3>
+    </sect2>
+
+    <sect2>
+      <title>Pattern Summary</title>
+
+      <para>
+        Here is a summary of the pattern syntax used in AspectJ:
+      </para>
+
+<programlisting>
+MethodPattern = 
+  [ModifiersPattern] TypePattern 
+        [TypePattern . ] IdPattern (TypePattern | ".." , ... ) 
+        [ throws ThrowsPattern ]
+ConstructorPattern = 
+  [ModifiersPattern ] 
+        [TypePattern . ] new (TypePattern | ".." , ...) 
+        [ throws ThrowsPattern ]
+FieldPattern = 
+  [ModifiersPattern] TypePattern [TypePattern . ] IdPattern
+ThrowsPattern = 
+  [ ! ] TypePattern , ...
+TypePattern = 
+    IdPattern [ + ] [ [] ... ]
+    | ! TypePattern
+    | TypePattern <![CDATA[&&]]> TypePattern
+    | TypePattern || TypePattern
+    | ( TypePattern )  
+IdPattern =
+  Sequence of characters, possibly with special * and .. wildcards
+ModifiersPattern =
+  [ ! ] JavaModifier  ...
+</programlisting>
+
     </sect2>
 
   </sect1>
