@@ -1570,7 +1570,6 @@ class LaunchScriptMaker {
 	 * @param ps
 	 */
 	private void writeAJUnixLaunchLine(PrintStream ps) {
-		String sep = File.pathSeparator;
 		ps.println(
 			"\"$JAVA_HOME/bin/java\" -classpath" +
 		    " \"$ASPECTJ_HOME/lib/aspectjtools.jar\"" +
