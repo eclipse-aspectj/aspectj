@@ -414,6 +414,17 @@ public class AjcTaskTest extends TestCase {
 		task.setFailonerror(false);
 		runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR);
 	}
+	
+	public void testShowWeaveInfo() {
+		AjcTask task = getTask("showweaveinfo.lst");
+		task.setShowWeaveInfo(true);
+		MessageHandler mh = new MessageHandler(false);
+		mh.dontIgnore(IMessage.WEAVEINFO);
+		MessageHolderChecker mhc = new MessageHolderChecker(0,0,0,0,MessageHolderChecker.IGNORE);
+		mhc.weaveinfos = 2; // Expect 2 weaving messages
+		runTest(task,NO_EXCEPTION,mhc);
+		mhc.weaveinfos = MessageHolderChecker.IGNORE;
+	}
 
 	public void testCompileWarningList() {
 		AjcTask task = getTask("compileWarning.lst");
@@ -634,8 +645,10 @@ public class AjcTaskTest extends TestCase {
 		/** one warning, any number of info messages */
 		static MessageHolderChecker ONE_WARNING =
 			new MessageHolderChecker(0, 0, 0, 1, IGNORE);
+		
 
 		int aborts, fails, errors, warnings, infos;
+		int weaveinfos;
 		public MessageHolderChecker(
 			int aborts,
 			int fails,
@@ -647,6 +660,7 @@ public class AjcTaskTest extends TestCase {
 			this.errors = errors;
 			this.warnings = warnings;
 			this.infos = infos;
+			this.weaveinfos = IGNORE;
 		}
 
 		public boolean expectFail() {
@@ -661,6 +675,7 @@ public class AjcTaskTest extends TestCase {
 				check(holder, errors, IMessage.ERROR);
 				check(holder, warnings, IMessage.WARNING);
 				check(holder, infos, IMessage.INFO);
+				check(holder, weaveinfos, IMessage.WEAVEINFO);
 				failed = false;
 			} finally {
 				if (failed) {
