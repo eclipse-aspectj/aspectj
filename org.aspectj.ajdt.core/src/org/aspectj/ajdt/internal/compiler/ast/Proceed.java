@@ -1,5 +1,6 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ *               2004 contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -7,7 +8,8 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     PARC     initial implementation 
+ *     PARC     initial implementation
+ *     IBM      ongoing maintenance 
  * ******************************************************************/
 
 
@@ -26,7 +28,8 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 /**
  * Used to represent any method call to a method named <code>proceed</code>.  During
  * <code>resolvedType</code> it will be determined if this is actually in the body
- * of an <code>around</code> advice and if not this will be treated like any other
+ * of an <code>around</code> advice and has no receiver (must be a bare proceed call, 
+ * see pr 53981), and if not this will be treated like any other
  * MessageSend.
  * 
  * @author Jim Hugunin
@@ -111,13 +114,15 @@ public class Proceed extends MessageSend {
 
 	private AdviceDeclaration findEnclosingAround(Scope scope) {
 		if (scope == null) return null;
-		
+				
 		if (scope instanceof MethodScope) {
 			MethodScope methodScope = (MethodScope)scope;
 			ReferenceContext context = methodScope.referenceContext;
 			if (context instanceof AdviceDeclaration) {
 				AdviceDeclaration adviceDecl = (AdviceDeclaration)context;
 				if (adviceDecl.kind == AdviceKind.Around) {
+					// pr 53981 only match "bare" calls to proceed
+					if((receiver != null) && (!receiver.isThis())) { return null; }
 					adviceDecl.proceedCalls.add(this);
 					return adviceDecl;
 				} else {

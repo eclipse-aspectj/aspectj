@@ -184,3 +184,21 @@
 	    </compile>
 	</ajc-test>
 -->
+
+  	<ajc-test dir="bugs/pr53981" pr="538981"
+    	title="proceed used as method name in around advice (1)">
+    	<compile files="Proceeding1.aj"/>
+    	<run class="Proceeding1"/>
+   	</ajc-test>
+
+  	<ajc-test dir="bugs/pr53981" pr="538981"
+    	title="proceed used as method name in around advice (2)">
+    	<compile files="Proceeding2.aj"/>
+    	<run class="Proceeding2"/>
+   	</ajc-test>
+
+  	<ajc-test dir="bugs/pr53981" pr="538981"
+    	title="proceed used as method name in around advice (3)">
+    	<compile files="Proceeding3.aj"/>
+    	<run class="Proceeding3"/>
+   	</ajc-test>

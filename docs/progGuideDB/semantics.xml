@@ -1560,6 +1560,32 @@
   }
 </programlisting>
 
+	<para>
+		Any occurence of <literal>proceed(..)</literal> within the body of
+		around advice is treated as the special proceed form (even if the
+		aspect defines a method named <literal>proceed</literal>) unless a 
+		target other than the aspect instance is specified as the recipient of
+		the call.
+		For example, in the following program the first 
+		call to proceed will be treated as a method call to
+		the <literal>ICanProceed</literal> instance, whereas the second call to
+		proceed is treated as the special proceed form.
+	</para>
+
+<programlisting>
+  aspect A {
+     Object around(ICanProceed canProceed) : execution(* *(..)) <![CDATA[&&]]> this(canProceed) {
+        canProceed.proceed();         // a method call
+        return proceed(canProceed);   // the special proceed form
+     }
+     
+     private Object proceed(ICanProceed canProceed) {
+        // this method cannot be called from inside the body of around advice in
+        // the aspect
+     }
+  }	
+</programlisting>
+
     <para>
       In all kinds of advice, the parameters of the advice behave exactly like
       method parameters.  In particular, assigning to any parameter affects

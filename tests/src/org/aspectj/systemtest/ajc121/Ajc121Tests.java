@@ -127,5 +127,17 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //  public void test022_BcelFailureWithVeryLargeClasses_Binary() {
 //      runTest("Weaver fails in BCEL for large classes (binary)");
 //  }
+  
+  public void test023_proceedInAround1() {
+      runTest("proceed used as method name in around advice (1)");
+  }
+
+  public void test024_proceedInAround2() {
+      runTest("proceed used as method name in around advice (2)");
+  }
+
+  public void test025_proceedInAround3() {
+      runTest("proceed used as method name in around advice (3)");
+  }
 }
 
