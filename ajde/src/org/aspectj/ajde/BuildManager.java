@@ -33,11 +33,23 @@ public interface BuildManager {
 	 * Build the default build configuration.
 	 */
     public void build();
+
+    /**
+     * Batch-build the default build configuration
+     * when in incremental mode.
+     */
+    public void buildFresh();
     
     /**
      * Build the specified build configuration.
      */
     public void build(String configFile);
+
+    /**
+     * Batch-build the specified build configuration
+     * when in incremental mode.
+     */
+    public void buildFresh(String configFile);
 
 	/**
 	 * Exit the build immediately, before completion.
