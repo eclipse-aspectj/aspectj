@@ -85,6 +85,10 @@ public class PerTypeWithinTests extends XMLBasedAjcTestCase {
     public void testBinaryWeaving_AspectsAreBinary() {
     	runTest("ptw binary aspect");
     }
+	
+  public void testAJDKExamples() {
+	  runTest("ajdk: ptw");
+  }
 //  	// Compile the aspect H.java into classes3
 //  	CompilationResult cR = ajc(new File("../tests/java5/pertypewithin"),new String[]{"H.java","-outjar","aspects.jar"});
 //  	setShouldEmptySandbox(false);

@@ -160,4 +160,7 @@ public class CovarianceTests extends XMLBasedAjcTestCase {
 		runTest("covariance 10");
 	}	
 
+	public void testAJDKExamples() {
+		runTest("ajdk: covariance");
+	}
 }

@@ -153,6 +153,22 @@ public class Annotations extends XMLBasedAjcTestCase {
   	runTest("ajdk: @inherited");
   }
   
+  public void testAnnotationDEOW() {
+	  runTest("ajdk: deow-ann");
+  }
+  
+  public void testAnnotationDecp() {
+	  runTest("ajdk: decp-ann");
+  }
+  
+  public void testAnnotationDecPrecedence() {
+	  runTest("ajdk: dec precedence");
+  }
+  
+  public void testAnnotationDecAnnotation() {
+	  runTest("ajdk: dec annotation");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

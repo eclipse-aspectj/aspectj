@@ -1151,5 +1151,95 @@
             <message kind="warning" line="17" text="c1MethodCall()"/>
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: deow-ann">
+        <compile files="DeclaresWithAnnotations.aj,org/xyz/model/Model.java" options="-1.5">
+            <message kind="warning" line="27" text="Expensive operation called from within performance critical section"/>
+            <message kind="error" line="26" text="Untrusted code should not call the model classes directly"/>
+        </compile>
+    </ajc-test>    
+    
+      <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: decp-ann">
+        <compile files="DecpAnnotations.aj" options="-1.5">
+        </compile>
+        <run class="DecpAnnotations">
+            <stdout>
+                <line text="Test Foo is not secured: PASS"/>
+                <line text="Test Goo is secured: PASS"/>
+                <line text="goo credentials: none"/>
+                <line text="Test BankAccount is not secured: PASS"/>
+                <line text="Test PrivateBankAccount is not secured: PASS"/>
+                <line text="Test BusinessBankAccount is secured: PASS"/>
+            </stdout>
+        </run>
+    </ajc-test>    
+
+    <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: dec precedence">
+        <compile files="PrecedenceAnnotations.aj" options="-1.5">
+        </compile>
+        <run class="PrecedenceAnnotations">
+            <stdout>
+                <line text="@Security S2"/>
+                <line text="S1"/>
+                <line text="@Performance P2"/>
+                <line text="P1"/>
+            </stdout>
+        </run>
+    </ajc-test>  
+
+   <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: dec annotation">
+        <compile files="DeclareAnnotation.aj,org/xyz/model/Model.java" options="-1.5">
+            <message kind="warning" line="3" text="@BusinessDomain"/>
+            <message kind="warning" line="39" text="@Secured"/>
+            <message kind="warning" line="40" text="@Secured"/>
+            <message kind="warning" line="47" text="@Secured"/>
+            <message kind="warning" line="54" text="@Persisted"/>
+            <message kind="warning" line="60" text="@Persisted"/>
+        </compile>
+        <run class="PrecedenceAnnotations"/>
+    </ajc-test>  
+    
+    <ajc-test dir="java5/covariance/ajdk" title="ajdk: covariance">
+        <compile files="AJDKExamples.aj" options="-1.5">
+            <message kind="warning" line="43" text="call(* whoAreYou())"/>
+            <message kind="warning" line="44" text="call(* whoAreYou())"/>
+            <message kind="warning" line="43" text="call(* A.whoAreYou())"/>
+            <message kind="warning" line="44" text="call(* A.whoAreYou())"/>
+            <message kind="warning" line="43" text="call(A whoAreYou())"/>
+            <message kind="warning" line="44" text="call(A whoAreYou())"/>
+            <message kind="warning" line="44" text="call(A+ B.whoAreYou())"/>
+            <message kind="warning" line="44" text="call(B whoAreYou())"/>
+            <message kind="warning" line="44" text="call(B B.whoAreYou())"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/varargs/ajdk" title="ajdk: varargs">
+        <compile files="AJDKExamples.aj,org/xyz/Foo.java,org/xyz/Goo.java,org/xyz/Hoo.java" options="-1.5">
+            <message kind="warning" line="8" text="call vararg match"/>
+            <message kind="warning" line="14" text="execution vararg match"/>
+            <message kind="warning" line="5" text="init vararg match"/>
+            <message kind="warning" line="6" text="init vararg match"/>
+            <message kind="warning" line="26" text="single vararg"/>
+            <message kind="warning" line="27" text="single String[]"/>
+            <message kind="warning" line="17" text="single String[]"/>
+        </compile>
+        <run class="AJDKExamples">
+            <stdout>
+                <line text="Matched at xxx"/>
+            </stdout>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="java5/pertypewithin/ajdk" title="ajdk: ptw">
+        <compile files="AJDKExamples.aj" options="-1.5"/>
+        <run class="AJDKExamples">
+            <stdout>
+                <line text="true"/>
+                <line text="true"/>
+                <line text="There are 3 As"/>
+                <line text="There are 2 Bs"/>
+            </stdout>
+        </run>
+    </ajc-test>
 </suite>
 

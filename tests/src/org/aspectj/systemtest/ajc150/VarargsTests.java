@@ -64,5 +64,9 @@ public class VarargsTests extends XMLBasedAjcTestCase {
   public void test_usingVarargsInPointcuts2() {
   	runTest("call with varargs multi-signature");
   }
+  
+  public void testAJDKExamples() {
+	  runTest("ajdk: varargs");
+  }
 
 }
