@@ -86,9 +86,14 @@ module jar file.
 These have an <code>install</code> directory for installer resources
 and a <code>dist</code> directory containing all files belonging in
 the distribution, including 0-length placeholders for the module build
-results.  These placeholder file names are mapped to the originating
-module by <code>Builder.moduleAliasFor(String)</code> (yes, an awful hack).
-
+results (e.g., <a href="products/tools/dist/lib">products/tools/dist/lib</a>).
+These placeholder file names are mapped to the originating
+module by <code>Builder.moduleAliasFor(String)</code>
+using values in 
+	<a href="src/org/aspectj/internal/tools/build/Builder.properties">
+       Builder.properties</a>.
+(The "-all" suffix in the source jars means that the module and all required
+modules are included.)
 <p/>
 <a name="version"></a>
 <h4>Version synchronization</h4>
@@ -101,9 +106,8 @@ developers use the default "DEVELOPMENT" version.
 <p/>The build version is set in 
 <a href="build-properties.xml">build-properties.xml</a> and propogated
 using Ant copy filters out to
-the <a href="../runtime/runtime.mf.txt">aspectjrt.jar manifest</a>,
+the <a href="../aspectj5rt/aspectj5rt.mf.txt">aspectjrt.jar manifest</a>,
 the <a href="../ajbrowser/ajbrowser.mf.txt">aspectjtools.jar manifest</a>
-
 and to 
 <a href="../bridge/src/org/aspectj/bridge/Version.java">
          ../bridge/src/org/aspectj/bridge/Version.java</a>
@@ -126,6 +130,13 @@ in CVS or the Eclipse package explorer.  By default the build script
 puts them at the same level as other modules.  In build scripts, property names 
 follow a similar convention; those prefixed "aj-" may be deleted at will, while
 "aspectj-" names are source directories which should never be deleted.
+
+<h4>Building Java 5 sources</h4>
+<p/>
+Java 5 source is supported in <code>{module}/java5-src</code> directories.
+Under Ant, when building in a pre-Java-5 VM, this source will be ignored
+(hence, it must not be required to compile).  Under Eclipse, developers
+not using Java 5 should close the corresponding modules.
 
 <h3>Debugging build problems</h3>
 <h4>Running under Eclipse</h4>

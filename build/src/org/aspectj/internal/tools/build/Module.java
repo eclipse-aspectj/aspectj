@@ -433,9 +433,7 @@ public class Module {
                 messager.error("no such library jar " + libJar + " from " + entry);                
              }
         } else if ("var".equals(kind)) {
-            if (!"JRE_LIB".equals(path) && !"ASPECTJRT_LIB".equals(path)) {
-                messager.log("cannot handle var yet: " + entry);
-            }
+            warnVariable(path, entry);
             classpathVariables.add(path);
         } else if ("con".equals(kind)) {
             if (-1 == path.indexOf("JRE")) { // warn non-JRE containers
@@ -447,6 +445,15 @@ public class Module {
             messager.log("unrecognized kind " + kind + " in " + entry);
         }
         return false;
+    }
+    private void warnVariable(String path, XMLEntry entry) {
+        String[] known = {"JRE_LIB", "ASPECTJRT_LIB", "JRE15_LIB"};
+        for (int i = 0; i < known.length; i++) {
+            if (known[i].equals(path)) {
+                return;
+            }
+        }
+        messager.log("Module cannot handle var yet: " + entry);
     }
 
     /** @return true if any properties were read correctly */
@@ -483,16 +490,21 @@ public class Module {
      * @return true if initialization post-processing worked 
      */
     protected boolean reviewInit() {   
-        if (!trimTesting) {
-            return true;
-        }
         try {
             for (ListIterator iter = srcDirs.listIterator(); iter.hasNext();) {
                 File srcDir = (File) iter.next();
-                String name = srcDir.getName();
-                if ("testsrc".equals(name.toLowerCase())) { // XXXFileLiteral
-                    iter.remove(); // XXX if verbose log
-                }   
+                String lcname = srcDir.getName().toLowerCase();
+                if (trimTesting 
+                        && Util.Constants.TESTSRC.equals(lcname)) { 
+                    iter.remove();
+                } else if (!Util.JAVA5_VM 
+                        && Util.Constants.JAVA5_SRC.equals(lcname)) {
+                    // assume optional for pre-1.5 builds
+                    iter.remove();
+                }
+            }
+            if (!trimTesting) {
+                return true;
             }
             if (!name.startsWith("testing")) {
                 for (ListIterator iter = libJars.listIterator(); iter.hasNext();) {

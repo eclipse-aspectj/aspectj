@@ -1,5 +1,7 @@
 <html>
-<title>Build and Test AspectJ</title>
+<head>
+<title>Build and Test AspectJ</title>	
+</head>
 <body>
 <h1>Build and Test AspectJ</h1>
 
@@ -16,13 +18,14 @@ debug failed builds, see
 <ol>
   <li>Quick start</li>
   <li>Requirements</li>
-  <li>Standard builds</li>
+  <li>Standard builds
     <ol>
     <li>Building using Ant</li>
     <li>Building with Eclipse</li>
     <li>Running the Ant build scripts from Eclipse</li>
     <li>Using Eclipse to compile but Ant to assemble</li>
     </ol>
+	</li>
   <li>Running build products
     <ol>
     <li>Running the compiler, browser, or harness from the command-line</li>
@@ -51,7 +54,7 @@ debug failed builds, see
 <h3>Quick start</h3>
 This is a minimal introduction to building and testing AspectJ.
 
-<p>Command-line users use CVS to check out something like this:
+<p/>Command-line users use CVS to check out something like this:
 <pre>
   export CVS_ROOT=":pserver:anonymous@dev.eclipse.org:/home/technology"
   cvs co org.aspectj/modules</pre>
@@ -62,7 +65,7 @@ compiler tests) <code>tests</code> and most <code>testing*</code>
 modules.  Do not skip <code>testing-utils</code>, 
 which is used by other modules.
 
-<p>Build an AspectJ distribution:
+<p/>Build an AspectJ distribution:
 <pre>
   cd org.aspectj/modules/build
   ../lib/ant/bin/ant -f build.xml</pre>
@@ -98,10 +101,13 @@ that usually means checking out the modules directory:
 Eclipse users should check out subdirectories of 
  <code>org.aspectj/modules</code> as a Java project.  
 
-<p>Not all modules are required.
+<p/>Not all modules are required.
 The <code>aspectj-attic</code> module only has old code,
 and the <code>tests</code> and <code>testing-*</code> modules
-are only needed to run tests.
+are only needed to run tests.  Also modules with Java 5 source
+in <code>{module}/java5-src</code> require Java 5 to build
+for the release; the Java 5 source files are ignored when building
+under 1.4 or earlier VM's.
 
 <h3>Standard builds</h3>
 <h4>Building using Ant</h4>
@@ -113,7 +119,7 @@ The default target builds the AspectJ distribution;
 see the <a href="build.xml">build.xml</a> for other targets.
 
 Consider defining the following flag properties:
-<p>
+<p/>
 <table cellpadding="1" border="1">
 <tr><th>Property</th><th>Meaning</th>
     </tr>
@@ -136,7 +142,7 @@ Consider defining the following flag properties:
 	</td></tr>
 </table>
 
-<p>
+<p/>
 For example, to build everything into a release bundle,
 with verbose logging
 <pre>
@@ -171,7 +177,7 @@ specified by Eclipse and add all the libraries in
 as well as in <a href="../lib/junit">../lib/junit</a>.
 (Do not add <code>../lib/build/build.jar</code>, which is
 added via a taskdef declaration.)
-<p>
+<p/>
 If you find on rebuilding that the build products are not
 being regenerated, you may need to manually delete them
 or restart eclipse (the files are not being closed); see
@@ -193,7 +199,7 @@ The build produces jar files in
 some of which have manifests specifying the main class, so they
 can be run using <code>java -jar {file} {arguments}</code>.
 
-<p>To run the compiler from the command-line, use the <code>ajbrowser</code> jar file:
+<p/>To run the compiler from the command-line, use the <code>ajbrowser</code> jar file:
 <pre>
    java -jar aj-build/jars/ajbrowser-all.jar {compile arguments}
 </pre>
@@ -207,7 +213,7 @@ This will run <code>ajbrowser</code> if you provide no arguments or
 <h4>Running the compiler, browser, or harness from Eclipse</h4>
 To run things within Eclipse, create a run configuration from the
 defining module using the main class:
-<p>
+<p/>
 
 <table border="1" cellpadding="1">
 <tr><th>Program</th><th>Module</th><th>Main</th></tr>
@@ -241,13 +247,13 @@ for each package
 for the module as a whole  
   (<code>{module}/testsrc/{module}ModuleTests.java</code>). 
 
-<p>The AspectJ project also has <i>additional</i> custom tests in the 
+<p/>The AspectJ project also has <i>additional</i> custom tests in the 
   <a href="../tests">tests module</a>,
 mainly the compiler tests run by the harness in 
   <a href="../tests/ajcTests.xml">ajcTests.xml</a>. <u>It is important
 to run these additional compiler tests (not covered by the JUnit
 suite) before and after any change to the compiler.</u>
-</p>
+
 <h4>Running JUnit tests in Eclipse</h4>
 JUnit tests may be run under eclipse by selecting any JUnit source file
 and creating a run configuration for it.
@@ -277,8 +283,8 @@ use the -help flag to see available options.
 For more information, see
   <a href="../tests/readme-tests-module.html">
            ../tests/readme-tests-module.html</a>.
-<p>
-<hr>
+<p/>
+<hr/>
 <h3><a name="releases"></a>Releases</h3>
 <h4>Release builds</h4>
 Committers do official release builds to create the distribution
@@ -295,17 +301,17 @@ See <a href="#version">Version synchronization</a> below
 for more details on how the version is updated.
 
 <h4>Release preconditions and testing</h4>
-<p>
+<p/>
 Normally, we do releases only after fixing all high-priority
 (P1 and P2) bugs in the bug database
-  (<a href="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&priority=P1&priority=P2">
+  (<a href="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;priority=P1&amp;priority=P2">
 All open AspectJ bugs with P1 and P2</a>).
 For bug fixes, associated tests in 
   <code>tests/ajcTestsFailing.xml</code> are fixed and moved to
   <code>tests/ajcTests.xml</code>.
   
 
-<p>Before a release, run the release tests as described in
+<p/>Before a release, run the release tests as described in
   <a href="../tests/readme-release-tests.html">
            ../tests/readme-release-tests.html</a>
   (deprecated? using:
@@ -322,7 +328,7 @@ based on the release code.  E.g., from the command line:
    cd org.aspectj/
    cvs tag -R -c v1_1_0
 </pre>
-<p>
+<p/>
 Pushing the release out to the web involves manually updating
   <code>aspectj-home/</code> with the release files 
   (and documentation, if it is not a preview release),
@@ -332,8 +338,8 @@ Pushing the release out to the web involves manually updating
   about deferred bugs or tests in
   <code>org.aspectj/releases/aspectj-{version}/</code>.
  
-<p>
-<hr>
+<p/>
+<hr/>
 <h3>Build problems</h3>
 Some build problems and fixes encountered in the past:
 <ul>
@@ -362,7 +368,7 @@ Some build problems and fixes encountered in the past:
    from the project or Eclipse complains about duplicate jar files
    in the path.
    </li>
-<ul>
+</ul>
 
 </body>
 </html>
