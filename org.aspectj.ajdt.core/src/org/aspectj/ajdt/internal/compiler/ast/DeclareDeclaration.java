@@ -26,7 +26,7 @@ import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 
 public class DeclareDeclaration extends MethodDeclaration {
-	public Declare declare;
+	public Declare declareDecl;
 
 	/**
 	 * Constructor for IntraTypeDeclaration.
@@ -34,12 +34,12 @@ public class DeclareDeclaration extends MethodDeclaration {
 	static int counter = 0; //XXX evil
 	public DeclareDeclaration(CompilationResult result, Declare symbolicDeclare) {
 		super(result);
-		this.declare = symbolicDeclare;
-		if (declare != null) {
+		this.declareDecl = symbolicDeclare;
+		if (declareDecl != null) {
 			// AMC added init of declarationSourceXXX fields which are used
 			// in AsmBuilder for processing of MethodDeclaration locations. 
-			declarationSourceStart = sourceStart = declare.getStart();
-			declarationSourceEnd = sourceEnd = declare.getEnd();
+			declarationSourceStart = sourceStart = declareDecl.getStart();
+			declarationSourceEnd = sourceEnd = declareDecl.getEnd();
 		}
 		//??? we might need to set parameters to be empty
 		this.returnType = TypeReference.baseTypeReference(T_void, 0);
@@ -53,7 +53,7 @@ public class DeclareDeclaration extends MethodDeclaration {
 	 * method.
 	 */
 	public void generateCode(ClassScope classScope, ClassFile classFile) {
-		classFile.extraAttributes.add(new EclipseAttributeAdapter(new AjAttribute.DeclareAttribute(declare)));
+		classFile.extraAttributes.add(new EclipseAttributeAdapter(new AjAttribute.DeclareAttribute(declareDecl)));
 		return;
 	}
 
@@ -80,12 +80,12 @@ public class DeclareDeclaration extends MethodDeclaration {
 
 	
 	public Declare build(ClassScope classScope) {
-		if (declare == null) return null;
+		if (declareDecl == null) return null;
         
         EclipseScope scope = new EclipseScope(new FormalBinding[0], classScope);
 
-        declare.resolve(scope);
-        return declare;
+        declareDecl.resolve(scope);
+        return declareDecl;
 	}
 
 
@@ -94,7 +94,7 @@ public class DeclareDeclaration extends MethodDeclaration {
 
 
     public String toString(int tab) {
-    	if (declare == null) return tabString(tab) + "<declare>";
-    	else return tabString(tab) + declare.toString();
+    	if (declareDecl == null) return tabString(tab) + "<declare>";
+    	else return tabString(tab) + declareDecl.toString();
     }
 }

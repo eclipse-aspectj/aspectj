@@ -79,8 +79,8 @@ public class AsmElementFormatter {
 		} else if (methodDeclaration instanceof DeclareDeclaration) { 
 			DeclareDeclaration declare = (DeclareDeclaration)methodDeclaration;
 			String name = DEC_LABEL + " ";
-			if (declare.declare instanceof DeclareErrorOrWarning) {
-				DeclareErrorOrWarning deow = (DeclareErrorOrWarning)declare.declare;
+			if (declare.declareDecl instanceof DeclareErrorOrWarning) {
+				DeclareErrorOrWarning deow = (DeclareErrorOrWarning)declare.declareDecl;
 				
 				if (deow.isError()) {
 					node.setKind( IProgramElement.Kind.DECLARE_ERROR);
@@ -92,21 +92,21 @@ public class AsmElementFormatter {
 				node.setName(name) ;
 				node.setDetails("\"" + genDeclareMessage(deow.getMessage()) + "\"");
 				
-			} else if (declare.declare instanceof DeclareParents) {
+			} else if (declare.declareDecl instanceof DeclareParents) {
 				node.setKind( IProgramElement.Kind.DECLARE_PARENTS);
-				DeclareParents dp = (DeclareParents)declare.declare;
+				DeclareParents dp = (DeclareParents)declare.declareDecl;
 				node.setName(name + DECLARE_PARENTS);
 				node.setDetails(genTypePatternLabel(dp.getChild()));	
 				
-			} else if (declare.declare instanceof DeclareSoft) {
+			} else if (declare.declareDecl instanceof DeclareSoft) {
 				node.setKind( IProgramElement.Kind.DECLARE_SOFT);
-				DeclareSoft ds = (DeclareSoft)declare.declare;
+				DeclareSoft ds = (DeclareSoft)declare.declareDecl;
 				node.setName(name + DECLARE_SOFT);
 				node.setDetails(genTypePatternLabel(ds.getException()));
 				
-			} else if (declare.declare instanceof DeclarePrecedence) {
+			} else if (declare.declareDecl instanceof DeclarePrecedence) {
 				node.setKind( IProgramElement.Kind.DECLARE_PRECEDENCE);
-				DeclarePrecedence ds = (DeclarePrecedence)declare.declare;
+				DeclarePrecedence ds = (DeclarePrecedence)declare.declareDecl;
 				node.setName(name + DECLARE_PRECEDENCE);
 				node.setDetails(genPrecedenceListLabel(ds.getPatterns()));
 				
