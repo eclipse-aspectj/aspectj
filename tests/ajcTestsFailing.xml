@@ -2,16 +2,6 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 
 <suite>
-	<!-- This is an open question.  Is it better for aspect static initializers
-	     to run before or after the instance is constructed???
-	-->
-    <ajc-test dir="new" pr="804"
-      title="aspect static initializers should run before instance constructed"
-      keywords="tofix">
-        <compile files="AspectStaticInit.java"/>
-        <run class="AspectStaticInit"/>
-    </ajc-test>
-    
     <ajc-test dir="new"
       title="incompatible advice throws clause are a compile-time error"
       keywords="from-resolved_10x">
@@ -23,7 +13,7 @@
         </compile>
     </ajc-test>
     
-    <ajc-test dir="new"
+    <ajc-test dir="new" pr="29934"
       title="can't apply around advice to the execution of around advice"
       keywords="from-resolved_10x">
         <compile files="CflowCycles.java"/>

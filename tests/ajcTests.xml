@@ -5553,4 +5553,11 @@
         </compile>
         <run class="AroundAccess"/>
     </ajc-test>
+    
+    <ajc-test dir="new" pr="804"
+      title="aspect static initializers should run before instance constructed"
+      keywords="tofix">
+        <compile files="AspectStaticInit.java"/>
+        <run class="AspectStaticInit"/>
+    </ajc-test>
 </suite>
