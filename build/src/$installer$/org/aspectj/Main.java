@@ -695,7 +695,9 @@ class InstallContext {
     }
 
     public boolean onWindowsPro() {
-        return getOS().equals("Windows NT") || getOS().equals("Windows 2000");
+		return getOS().equals("Windows NT")
+			|| getOS().equals("Windows 2000")
+			|| getOS().equals("Windows XP");
     }
 
     public boolean onMacintosh() {
