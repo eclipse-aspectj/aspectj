@@ -61,6 +61,7 @@ public class ThisJoinPointVisitor extends AbstractSyntaxTreeVisitorAdapter {
 		method.traverse(this, (ClassScope) null);
 
 		//??? add support for option to disable this optimization
+		//System.err.println("walked: " + method);
 		//System.err.println("check:  "+ hasEffectivelyStaticRef + ", " + needsDynamic);
 		if (hasEffectivelyStaticRef && !needsDynamic) {
 			// replace effectively static refs with thisJoinPointStaticPart
@@ -68,40 +69,29 @@ public class ThisJoinPointVisitor extends AbstractSyntaxTreeVisitorAdapter {
 			needsStatic = true;
 			method.traverse(this, (ClassScope) null);
 		}
+		//System.err.println("done: " + method);
 	}
 
 	boolean isRef(NameReference ref, Binding binding) {
+		//System.err.println("check ref: " + ref + " is " + System.identityHashCode(ref));
 		return ref.binding == binding;
 	}
 
 	boolean isRef(Expression expr, Binding binding) {
-		//System.err.println("isRef: " + expr + ", " + binding);
 		return expr != null
 			&& expr instanceof NameReference
 			&& isRef((NameReference) expr, binding);
 	}
 
 	public void endVisit(SingleNameReference ref, BlockScope scope) {
-		if (isRef(ref, thisJoinPointDec))
+		if (isRef(ref, thisJoinPointDec)) {
 			needsDynamic = true;
-		else if (isRef(ref, thisJoinPointStaticPartDec))
+		} else if (isRef(ref, thisJoinPointStaticPartDec)) {
 			needsStatic = true;
-		else if (isRef(ref, thisEnclosingJoinPointStaticPartDec))
+		} else if (isRef(ref, thisEnclosingJoinPointStaticPartDec)) {
 			needsStaticEnclosing = true;
+		}
 	}
-
-	//        public void checkAndFix(ASTObject body) {
-	//            this.process(body);
-	//            if (needsFakeStatic && !needsDynamic) {
-	//                if (!this.getCompiler().getOptions().noMetaJoinPointOptimization) {
-	//                    makeFakeStatics = true;
-	//                    needsStatic = true;
-	//                    this.process(body);
-	//                } else {
-	//                    needsDynamic = true;
-	//                }
-	//            }
-	//        }
 
 	boolean canTreatAsStatic(String id) {
 		return id.equals("toString")
@@ -158,13 +148,17 @@ public class ThisJoinPointVisitor extends AbstractSyntaxTreeVisitorAdapter {
 	}
 
 	private void replaceEffectivelyStaticRef(MessageSend call) {
-		//System.err.println("replace static ref");
 		NameReference receiver = (NameReference) call.receiver;
+		//System.err.println("replace static ref: " + receiver + " is " + System.identityHashCode(receiver));
 		receiver.binding = thisJoinPointStaticPartDecLocal; //thisJoinPointStaticPartDec;
 		receiver.codegenBinding = thisJoinPointStaticPartDecLocal;
 
-		call.binding.declaringClass =
-			(ReferenceBinding) thisJoinPointStaticPartDec.type;
+		call.binding = call.codegenBinding = getEquivalentStaticBinding(call.binding);
+	}
+	
+	private MethodBinding getEquivalentStaticBinding(MethodBinding template) {
+		ReferenceBinding b = (ReferenceBinding)thisJoinPointStaticPartDec.type;
+		return b.getExactMethod(template.selector, template.parameters);
 	}
 
 	public int removeUnusedExtraArguments() {

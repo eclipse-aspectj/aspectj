@@ -5566,4 +5566,11 @@
         <compile files="SuperToIntro.java"/>
         <run class="SuperToIntro"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs/crashes" pr="30168" 
+    		title="Error with certain combination of advice">
+        <compile files="test/Test3.java"/>
+        <run class="test.Test3"/>
+    </ajc-test>
+
 </suite>
