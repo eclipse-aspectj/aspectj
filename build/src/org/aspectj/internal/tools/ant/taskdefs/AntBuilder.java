@@ -359,7 +359,8 @@ public class AntBuilder extends Builder {
         File manifest = new File(module.moduleDir, module.name + ".mf.txt");  // XXXFileLiteral
         if (Util.canReadFile(manifest)) {
             if (Util.canReadDir(metaInfDir) || metaInfDir.mkdirs()) {
-                copyFile(manifest, new File(metaInfDir, "manifest.mf"), FILTER_ON);  // XXXFileLiteral
+				// Jar spec requires a MANIFEST.MF not a manifest.mf
+				copyFile(manifest, new File(metaInfDir, "MANIFEST.MF"), FILTER_ON);  // XXXFileLiteral
             } else {
                 errors.add("have manifest, but unable to create " + metaInfDir);
                 return false;
