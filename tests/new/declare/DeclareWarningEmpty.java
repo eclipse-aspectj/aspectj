@@ -10,7 +10,7 @@ public class DeclareWarningEmpty {  // CE 3
 
 aspect A {
     declare warning: staticinitialization(DeclareWarningEmpty)   
-        : "staticinitialization(DeclareWarningEmpty)";
+        : "1 - staticinitialization(DeclareWarningEmpty)";
     declare warning: initialization(DeclareWarningEmpty.new(..))   
-        : "initialization(DeclareWarningEmpty)";
+        : "2 - initialization(DeclareWarningEmpty)";
 }
