@@ -77,9 +77,9 @@ import java.util.StringTokenizer;
 public class AjcTask extends MatchingTask {
 
     /**
-     * Extract javac arguments to ajc.
-     * Use this by setting the build.compiler property to the name
-     * of this class.
+     * Extract javac arguments to ajc,
+     * and add arguments to make ajc behave more like javac
+     * in copying resources.
      * <p>
      * Pass ajc-specific options using compilerarg sub-element:
      * <pre>
@@ -95,10 +95,10 @@ public class AjcTask extends MatchingTask {
      * </pre>
      * Other javac arguments are not supported in ajc 1.1:
      * <pre>
-     * boolean optimize = false;
-     * String forkedExecutable = null;
-     * FacadeTaskHelper facade = null;
-     * boolean depend = false;
+     * boolean optimize;
+     * String forkedExecutable;
+     * FacadeTaskHelper facade;
+     * boolean depend;
      * String debugLevel;
      * Path compileSourcepath;
      * </pre>
@@ -118,10 +118,11 @@ public class AjcTask extends MatchingTask {
                 destDir = new File(".");
             }
         }
-        // note AjcTask handles null input gracefully
+        // no null checks b/c AjcTask handles null input gracefully
         ajc.setProject(javac.getProject());
         ajc.setLocation(javac.getLocation());
-
+        ajc.setTaskName("javac-iajc");
+        
         ajc.setDebug(javac.getDebug());
         ajc.setDeprecation(javac.getDeprecation());
         ajc.setFailonerror(javac.getFailonerror());
@@ -137,16 +138,17 @@ public class AjcTask extends MatchingTask {
         ajc.setSource(javac.getSource());        
         ajc.setEncoding(javac.getEncoding());        
         ajc.setDestdir(destDir);        
-        ajc.setXbootclasspath(javac.getBootclasspath());
-        ajc.setXextdirs(javac.getExtdirs());
+        ajc.setBootclasspath(javac.getBootclasspath());
+        ajc.setExtdirs(javac.getExtdirs());
         ajc.setClasspath(javac.getClasspath());        
         // ignore srcDir -- all files picked up in recalculated file list
 //      ajc.setSrcDir(javac.getSrcdir());        
         ajc.addFiles(javac.getFileList());
+        // mimic javac's behavior in copying resources,
+        ajc.setSourceRootCopyFilter("**/CVS/*,**/*.java,**/*.aj");
+        // arguments can override the filter, add to paths, override options
         ajc.readArguments(javac.getCurrentCompilerArgs());
         
-        // mimic javac's behavior in copying resources
-        ajc.setSourceRootCopyFilter("**/CVS/*,**/*.java,**/*.aj");
         return null;
     }
     
@@ -228,6 +230,8 @@ public class AjcTask extends MatchingTask {
     private Path srcdir;
     private Path injars;
     private Path classpath;
+    private Path bootclasspath;
+    private Path extdirs;
     private Path aspectpath;
     private Path argfiles;
     private List ignored;
@@ -342,7 +346,7 @@ public class AjcTask extends MatchingTask {
     }
 
     public void setXNoweave(boolean noweave) {  
-        cmd.addFlag("-Xnoweave", noweave);
+        cmd.addFlag("-XnoWeave", noweave);
     }
 
     public void setNowarn(boolean nowarn) {  
@@ -591,18 +595,20 @@ public class AjcTask extends MatchingTask {
     //---------------------- Path lists
 
     /**
-     * Add path to source path and return result.
+     * Add path elements to source path and return result.
+     * Elements are added even if they do not exist.
      * @param source the Path to add to - may be null
      * @param toAdd the Path to add - may be null
-     * @return the Path that results
+     * @return the (never-null) Path that results
      */
     protected Path incPath(Path source, Path toAdd) {
         if (null == source) {
-            return toAdd;        
-        } else {
-            source.append(toAdd);
-            return source;
+            source = new Path(project); 
         }
+        if (null != toAdd) {
+            source.append(toAdd);
+        }
+        return source;
     }
 
     public void setSourcerootsref(Reference ref) {
@@ -610,11 +616,7 @@ public class AjcTask extends MatchingTask {
     }
     
     public void setSourceRoots(Path roots) {
-        if (this.sourceRoots == null) {
-            this.sourceRoots = roots;
-        } else {
-            this.sourceRoots.append(roots);
-        }
+        sourceRoots = incPath(sourceRoots, roots);
     }
 
     public Path createSourceRoots() {
@@ -639,59 +641,52 @@ public class AjcTask extends MatchingTask {
         return injars.createPath();
     }        
     
-    public void setClasspathref(Reference classpathref) {
-        createClasspath().setRefid(classpathref);
-    }
-        
-    /**
-     * Mimic bootclasspath by adding to classpath
-     * (Does not override bootclasspath)
-     * @param path
-     */
-    public void setXbootclasspath(Path path) {
-        setClasspath(path);
-    }
-    
-    /**
-     * Mimic extdirs by adding jar/zip files in them to classpath.
-     * (Does not override extdirs)
-     * @param path
-     */
-    public void setXextdirs(Path path) {
-        if (null == path) {
-            return;
-        }
-        String[] paths = path.list();
-        Path jars = new Path(project);
-        for (int i = 0; i < paths.length; i++) {
-            File dir = new File(paths[i]);
-            if (dir.isDirectory() && dir.canRead()) {
-                File[] files = dir.listFiles();
-                for (int j = 0; j < files.length; j++) {
-                    File jar = files[i];
-                    if (jar.canRead() && jar.isFile()
-                        && FileUtil.hasZipSuffix(jar)) {
-                        jars.createPathElement().setLocation(jar);
-                    }
-                }
-            }
-        }
-        if (0 < jars.size()) {
-            setClasspath(jars);
-        }
-    }
-    
     public void setClasspath(Path path) {
         classpath = incPath(classpath, path);
     }
 
+    public void setClasspathref(Reference classpathref) {
+        createClasspath().setRefid(classpathref);
+    }
+        
     public Path createClasspath() {
+        if (bootclasspath == null) {
+            bootclasspath = new Path(project);
+        }
+        return bootclasspath.createPath();
+    }        
+
+    public void setBootclasspath(Path path) {
+        bootclasspath = incPath(bootclasspath, path);  
+    }
+    
+    public void setBootclasspathref(Reference bootclasspathref) {
+        createBootclasspath().setRefid(bootclasspathref);
+    }
+    
+    public Path createBootclasspath() {
         if (classpath == null) {
             classpath = new Path(project);
         }
         return classpath.createPath();
     }        
     
+    public void setExtdirs(Path path) {
+        extdirs = incPath(extdirs, path);
+    }
+
+    public void setExtdirsref(Reference ref) {
+        createExtdirs().setRefid(ref);
+    }
+        
+    public Path createExtdirs() {
+        if (extdirs == null) {
+            extdirs = new Path(project);
+        }
+        return extdirs.createPath();
+    }        
+   
+
     public void setAspectpathref(Reference ref) {
         createAspectpath().setRefid(ref);
     }
@@ -955,24 +950,25 @@ public class AjcTask extends MatchingTask {
     }
 
     // ------------------------------ setup and reporting
+    /** @return null if path null or empty, String rendition otherwise */
+    void addFlaggedPathToCommand(String flag, Path path) {
+        if ((null != path) && (0 < path.size())) {
+            cmd.addFlagged(flag, path.toString());
+        }
+    }
+    
     /** 
      * Add to cmd any plural arguments, which might be set
      * repeatedly.
      */
 	protected void addListArgs() throws BuildException {
-		
-        if (classpath != null) {
-            cmd.addFlagged("-classpath", classpath.toString());
-        }
-        if (aspectpath != null) {
-            cmd.addFlagged("-aspectpath", aspectpath.toString());
-        }
-        if (injars != null) {
-            cmd.addFlagged("-injars", injars.toString());
-        }
-        if (sourceRoots != null) {
-            cmd.addFlagged("-sourceroots", sourceRoots.toString());
-        }
+        addFlaggedPathToCommand("-classpath", classpath);       
+        addFlaggedPathToCommand("-bootclasspath", bootclasspath);
+        addFlaggedPathToCommand("-extdirs", extdirs);
+        addFlaggedPathToCommand("-aspectpath", aspectpath);
+        addFlaggedPathToCommand("-injars", injars);
+        addFlaggedPathToCommand("-sourceroots", sourceRoots);
+        
         if (argfiles != null) {
             String[] files = argfiles.list();
             for (int i = 0; i < files.length; i++) {
@@ -1325,10 +1321,12 @@ public class AjcTask extends MatchingTask {
                 }
             } else {
                 File file = new File(flag);
-                if (file.canRead() && FileUtil.hasSourceSuffix(file)) {
+                if (file.isFile() 
+                	&& file.canRead() 
+                	&& FileUtil.hasSourceSuffix(file)) {
                     addFile(file);
                 } else {
-                    ignore(flag);            
+                    ignore(flag);
                 }
             }
         }
