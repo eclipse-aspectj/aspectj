@@ -52,7 +52,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	public static final State RESOLVED = new State("resolved", 1);
 	public static final State CONCRETE = new State("concrete", 2);
 
-	private byte pointcutKind;
+	protected byte pointcutKind;
 
 	public State state;
 

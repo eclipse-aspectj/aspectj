@@ -64,6 +64,7 @@ public class CflowPointcut extends Pointcut {
 		this.entry = entry;
 		this.isBelow = isBelow;
 		this.freeVars = freeVars;
+		this.pointcutKind = CFLOW;
 	}
     
     public FuzzyBoolean fastMatch(FastMatchInfo type) {

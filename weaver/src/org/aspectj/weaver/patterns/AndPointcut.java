@@ -33,6 +33,7 @@ public class AndPointcut extends Pointcut {
 		super();
 		this.left = left;
 		this.right = right;
+		this.pointcutKind = AND;
 		setLocation(left.getSourceContext(), left.getStart(), right.getEnd());
 	}
 

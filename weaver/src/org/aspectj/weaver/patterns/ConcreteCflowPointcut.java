@@ -40,6 +40,7 @@ public class ConcreteCflowPointcut extends Pointcut {
 		this.cflowField  = cflowField;
 		this.slots       = slots;
 		this.usesCounter = usesCounter;
+		this.pointcutKind = CFLOW;
 	}
     
     public FuzzyBoolean fastMatch(FastMatchInfo type) {

@@ -74,6 +74,48 @@ public class TypePatternList extends PatternNode {
     	return buf.toString();
     }
     
+    
+    /**
+     * Used by reflection-based matching for args pcds.
+     * Returns YES if types will always be matched by the pattern,
+     *         NO if types do not match the pattern,
+     *         MAYBE if types may match the pattern dependent on a runtime test
+     */
+    public FuzzyBoolean matchesArgsPatternSubset(Class[] types) {
+    	int argsLength = types.length;
+    	int patternLength = typePatterns.length;
+    	int argsIndex = 0;
+    	
+    	if ((argsLength < patternLength) && (ellipsisCount == 0)) return FuzzyBoolean.NO;
+    	if (argsLength < (patternLength -1)) return FuzzyBoolean.NO;
+    	
+    	int ellipsisMatchCount = argsLength - (patternLength - ellipsisCount);
+    	
+    	FuzzyBoolean ret = FuzzyBoolean.YES;
+    	
+    	for (int i = 0; i < typePatterns.length; i++) {
+			if (typePatterns[i] == TypePattern.ELLIPSIS) {
+				// match ellipsisMatchCount args
+				argsIndex += ellipsisMatchCount;
+			} else if (typePatterns[i] == TypePattern.ANY) {
+				argsIndex++;
+			} else {
+				// match the argument type at argsIndex with the ExactTypePattern
+				// we it is exact because nothing else is allowed in args
+				ExactTypePattern tp = (ExactTypePattern)typePatterns[i];
+				FuzzyBoolean matches = tp.willMatchDynamically(types[argsIndex]);
+				if (matches == FuzzyBoolean.NO) {
+					return FuzzyBoolean.NO;
+				} else {
+					argsIndex++;
+					ret = ret.and(matches);
+				}
+			}
+		}
+    	
+    	return ret;
+    }
+    
     //XXX shares much code with WildTypePattern and with NamePattern
     /**
      * When called with TypePattern.STATIC this will always return either

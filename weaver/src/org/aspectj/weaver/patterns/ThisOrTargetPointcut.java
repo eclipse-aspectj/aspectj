@@ -54,6 +54,7 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 	public ThisOrTargetPointcut(boolean isThis, TypePattern type) {
 		this.isThis = isThis;
 		this.type = type;
+		this.pointcutKind = THIS_OR_TARGET;
 	}
 	
 	public boolean isThis() { return isThis; }
@@ -87,7 +88,7 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 			Object[] args) {
 		Object toMatch = isThis ? thisObject : targetObject; 
 		if (toMatch == null) return false;
-		return (type.matches(toMatch.getClass(), TypePattern.DYNAMIC)).alwaysTrue();
+		return type.matchesSubtypes(toMatch.getClass());
 	}
 	
 	/* (non-Javadoc)
@@ -95,8 +96,11 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 	 */
 	public FuzzyBoolean matchesStatically(String joinpointKind, Member member,
 			Class thisClass, Class targetClass, Member withinCode) {
-		Class typeToMatch = isThis ? thisClass : targetClass; 
-		return type.matches(typeToMatch, TypePattern.DYNAMIC);
+		Class staticType = isThis ? thisClass : targetClass; 
+		if (joinpointKind.equals(Shadow.StaticInitialization.getName())) {
+			return FuzzyBoolean.NO;  // no this or target at these jps
+		}
+		return(((ExactTypePattern)type).willMatchDynamically(staticType));
 	}
 	
 	public void write(DataOutputStream s) throws IOException {

@@ -33,6 +33,7 @@ public class WithincodePointcut extends Pointcut {
 	
 	public WithincodePointcut(SignaturePattern signature) {
 		this.signature = signature;
+		this.pointcutKind = WITHINCODE;
 	}
     
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
@@ -63,6 +64,7 @@ public class WithincodePointcut extends Pointcut {
 	 */
 	public FuzzyBoolean matchesStatically(String joinpointKind, Member member,
 			Class thisClass, Class targetClass, Member withinCode) {
+		if (withinCode == null) return FuzzyBoolean.NO;
 		return FuzzyBoolean.fromBoolean(signature.matches(Factory.makeEncSJP(withinCode)));
 	}
 	

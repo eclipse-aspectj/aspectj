@@ -34,6 +34,7 @@ public class OrPointcut extends Pointcut {
 		this.left = left;
 		this.right = right;
 		setLocation(left.getSourceContext(), left.getStart(), right.getEnd());
+		this.pointcutKind = OR;
 	}
 
 

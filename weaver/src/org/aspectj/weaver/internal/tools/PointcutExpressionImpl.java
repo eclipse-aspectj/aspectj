@@ -25,9 +25,11 @@ import org.aspectj.weaver.tools.PointcutExpression;
 public class PointcutExpressionImpl implements PointcutExpression {
 	
 	private Pointcut pointcut;
+	private String expression;
 	
-	public PointcutExpressionImpl(Pointcut pointcut) {
+	public PointcutExpressionImpl(Pointcut pointcut, String expression) {
 		this.pointcut = pointcut;
+		this.expression = expression;
 	}
 
 	/* (non-Javadoc)
@@ -100,9 +102,9 @@ public class PointcutExpressionImpl implements PointcutExpression {
 			Member withinCode) {
 		return fuzzyMatch(pointcut.matchesStatically(
 				JoinPoint.EXCEPTION_HANDLER,
-				null,
+				new Handler(inClass,exceptionType),
 				inClass,
-				exceptionType,
+				inClass,
 				withinCode));
 	}
 
@@ -181,7 +183,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	 * @see org.aspectj.weaver.tools.PointcutExpression#getPointcutExpression()
 	 */
 	public String getPointcutExpression() {
-		return pointcut.toString();
+		return expression;
 	}
 
 	private FuzzyBoolean fuzzyMatch(org.aspectj.util.FuzzyBoolean fb) {
@@ -189,5 +191,32 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		if (fb == org.aspectj.util.FuzzyBoolean.NO) return FuzzyBoolean.NO;
 		if (fb == org.aspectj.util.FuzzyBoolean.MAYBE) return FuzzyBoolean.MAYBE;
 		throw new IllegalArgumentException("Cant match FuzzyBoolean " + fb);
+	}
+	
+	public static class Handler implements Member {
+
+		private Class decClass;
+		private Class exType;
+		
+		public Handler(Class decClass, Class exType) {
+			this.decClass = decClass;
+			this.exType = exType;
+		}
+		
+		public int getModifiers() {
+			return 0;
+		}
+
+		public Class getDeclaringClass() {
+			return decClass;
+		}
+
+		public String getName() {
+			return null;
+		}
+
+		public Class getHandledExceptionType() {
+			return exType;
+		}
 	}
 }

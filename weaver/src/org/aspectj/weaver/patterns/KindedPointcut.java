@@ -43,6 +43,7 @@ public class KindedPointcut extends Pointcut {
         SignaturePattern signature) {
         this.kind = kind;
         this.signature = signature;
+        this.pointcutKind = KINDED;
     }
     public KindedPointcut(
         Shadow.Kind kind,
@@ -104,7 +105,7 @@ public class KindedPointcut extends Pointcut {
 			java.lang.reflect.Member member, Class thisClass,
 			Class targetClass, java.lang.reflect.Member withinCode) {
 		if (joinpointKind.equals(kind.getName()))  {
-			return FuzzyBoolean.fromBoolean(signature.matches(thisClass,member));			
+			return FuzzyBoolean.fromBoolean(signature.matches(targetClass,member));			
 		}
 		return FuzzyBoolean.NO;
 	}

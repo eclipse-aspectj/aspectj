@@ -28,9 +28,10 @@ import org.aspectj.weaver.ast.Test;
 
 public class NotPointcut extends Pointcut {
 	private Pointcut body;
-	public NotPointcut(Pointcut left) {
+	public NotPointcut(Pointcut negated) {
 		super();
-		this.body = left;
+		this.body = negated;
+		this.pointcutKind = NOT;
 	}
 
 	public NotPointcut(Pointcut pointcut, int startPos) {

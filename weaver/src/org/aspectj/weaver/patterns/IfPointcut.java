@@ -51,6 +51,7 @@ public class IfPointcut extends Pointcut {
 	public IfPointcut(ResolvedMember testMethod, int extraParameterFlags) {
 		this.testMethod = testMethod;
 		this.extraParameterFlags = extraParameterFlags;
+		this.pointcutKind = IF;
 	}
 	
     public FuzzyBoolean fastMatch(FastMatchInfo type) {

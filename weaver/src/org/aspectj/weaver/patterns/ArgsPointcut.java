@@ -17,6 +17,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -37,6 +38,7 @@ import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
+import org.aspectj.weaver.internal.tools.PointcutExpressionImpl;
 
 /**
  * args(arguments)
@@ -49,6 +51,7 @@ public class ArgsPointcut extends NameBindingPointcut {
 	
 	public ArgsPointcut(TypePatternList arguments) {
 		this.arguments = arguments;
+		this.pointcutKind = ARGS;
 	}
 	
     public FuzzyBoolean fastMatch(FastMatchInfo type) {
@@ -116,10 +119,15 @@ public class ArgsPointcut extends NameBindingPointcut {
 			paramTypes = ((Method)member).getParameterTypes();
 		} else if (member instanceof Constructor) {
 			paramTypes = ((Constructor)member).getParameterTypes();
+		} else if (member instanceof PointcutExpressionImpl.Handler){
+			paramTypes = new Class[] {((PointcutExpressionImpl.Handler)member).getHandledExceptionType()};
+		} else if (member instanceof Field) {
+			if (joinpointKind.equals(Shadow.FieldGet.getName())) return FuzzyBoolean.NO; // no args here
+			paramTypes = new Class[] {((Field)member).getType()};
 		} else {
 			return FuzzyBoolean.NO;
 		}
-		return arguments.matches(paramTypes,TypePattern.DYNAMIC);
+		return arguments.matchesArgsPatternSubset(paramTypes);
 	}
 	private Class getPossiblyBoxed(TypeX tp) {
 		Class ret = (Class) ExactTypePattern.primitiveTypesMap.get(tp.getName());

@@ -48,12 +48,14 @@ public class ReferencePointcut extends Pointcut {
 		this.onTypeSymbolic = onTypeSymbolic;
 		this.name = name;
 		this.arguments = arguments;
+		this.pointcutKind = REFERENCE;
 	}
 	
 	public ReferencePointcut(TypeX onType, String name, TypePatternList arguments) {
 		this.onType = onType;
 		this.name = name;
 		this.arguments = arguments;
+		this.pointcutKind = REFERENCE;
 	}
 	
 

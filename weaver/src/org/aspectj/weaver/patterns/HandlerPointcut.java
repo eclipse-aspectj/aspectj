@@ -26,6 +26,7 @@ import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
+import org.aspectj.weaver.internal.tools.PointcutExpressionImpl;
 
 /**
  * This is a kind of KindedPointcut.  This belongs either in 
@@ -38,6 +39,7 @@ public class HandlerPointcut extends Pointcut {
 
 	public HandlerPointcut(TypePattern exceptionType) {
 		this.exceptionType = exceptionType;
+		this.pointcutKind = HANDLER;
 	}
 
     public FuzzyBoolean fastMatch(FastMatchInfo type) {
@@ -79,8 +81,12 @@ public class HandlerPointcut extends Pointcut {
 	 */
 	public FuzzyBoolean matchesStatically(String joinpointKind, Member member,
 			Class thisClass, Class targetClass, Member withinCode) {
-		// Note: use targetClass parameter to represent the handled exception type
-		return exceptionType.matches(targetClass,TypePattern.STATIC);
+		if (!(member instanceof PointcutExpressionImpl.Handler)) {
+			return FuzzyBoolean.NO;
+		} else {
+			Class exceptionClass = ((PointcutExpressionImpl.Handler)member).getHandledExceptionType();
+			return exceptionType.matches(exceptionClass,TypePattern.STATIC);
+		}
 	}
 	
 	public boolean equals(Object other) {

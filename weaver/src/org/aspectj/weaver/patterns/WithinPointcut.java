@@ -36,6 +36,7 @@ public class WithinPointcut extends Pointcut {
 	
 	public WithinPointcut(TypePattern type) {
 		this.typePattern = type;
+		this.pointcutKind = WITHIN;
 	}
 	
 	private FuzzyBoolean isWithinType(ResolvedTypeX type) {
@@ -83,7 +84,16 @@ public class WithinPointcut extends Pointcut {
 	public FuzzyBoolean matchesStatically(
 			String joinpointKind, Member member, Class thisClass,
 			Class targetClass, Member withinCode) {
-		return isWithinType(thisClass);
+		if ((member != null) &&
+			!(joinpointKind.equals(Shadow.ConstructorCall.getName()) ||
+			  joinpointKind.equals(Shadow.MethodCall.getName()) ||
+			  joinpointKind.equals(Shadow.FieldGet.getName()) ||
+			  joinpointKind.equals(Shadow.FieldSet.getName()))
+			) {
+			return isWithinType(member.getDeclaringClass());
+		} else {
+			return isWithinType(thisClass);
+		}
 	}
 		
 	private FuzzyBoolean isWithinType(Class type) {

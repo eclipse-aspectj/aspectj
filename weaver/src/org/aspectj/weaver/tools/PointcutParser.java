@@ -14,8 +14,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.internal.tools.PointcutExpressionImpl;
 import org.aspectj.weaver.patterns.AndPointcut;
+import org.aspectj.weaver.patterns.KindedPointcut;
 import org.aspectj.weaver.patterns.NotPointcut;
 import org.aspectj.weaver.patterns.OrPointcut;
 import org.aspectj.weaver.patterns.ParserException;
@@ -110,11 +112,17 @@ public class PointcutParser {
         try {
             Pointcut pc = new PatternParser(expression).parsePointcut();
             validateAgainstSupportedPrimitives(pc);
-            pcExpr = new PointcutExpressionImpl(pc);
+            pc.resolve();
+            pcExpr = new PointcutExpressionImpl(pc,expression);
         } catch (ParserException pEx) {
             throw new IllegalArgumentException(pEx.getMessage());
         }
         return pcExpr;
+    }
+    
+    /* for testing */
+    Set getSupportedPrimitives() {
+    	return supportedPrimitives;
     }
     
     private void validateAgainstSupportedPrimitives(Pointcut pc) {
@@ -138,6 +146,7 @@ public class PointcutParser {
         	case Pointcut.IF_TRUE:
         	    throw new UnsupportedOperationException("if is not supported by this parser");        	    
         	case Pointcut.KINDED:
+        		validateKindedPointcut(((KindedPointcut)pc));
         	    break;
         	case Pointcut.NOT:
         	    validateAgainstSupportedPrimitives(((NotPointcut)pc).getNegatedPointcut());
@@ -147,7 +156,7 @@ public class PointcutParser {
         		validateAgainstSupportedPrimitives(((OrPointcut)pc).getRight());
         	    break;
         	case Pointcut.REFERENCE:
-        	    throw new UnsupportedOperationException("reference pointcuts are not supported by this parser");
+        	    throw new UnsupportedOperationException("if pointcuts and reference pointcuts are not supported by this parser");
         	case Pointcut.THIS_OR_TARGET:
         	    boolean isThis = ((ThisOrTargetPointcut)pc).isThis();
         		if (isThis && !supportedPrimitives.contains(PointcutPrimitives.THIS)) {
@@ -168,5 +177,34 @@ public class PointcutParser {
         	default:
         	    throw new UnsupportedOperationException("Unknown pointcut kind: " + pc.getPointcutKind());
         }
+    }
+    
+    private void validateKindedPointcut(KindedPointcut pc) {
+    	Shadow.Kind kind = pc.getKind();
+    	if ((kind == Shadow.MethodCall) || (kind == Shadow.ConstructorCall)) {
+    		if (!supportedPrimitives.contains(PointcutPrimitives.CALL))
+    			throw new UnsupportedOperationException("call is not supported by this parser");
+    	} else if ((kind == Shadow.MethodExecution) || (kind == Shadow.ConstructorExecution)) {
+    		if (!supportedPrimitives.contains(PointcutPrimitives.EXECUTION))
+    			throw new UnsupportedOperationException("execution is not supported by this parser");    		
+    	} else if (kind == Shadow.AdviceExecution) {
+    		if (!supportedPrimitives.contains(PointcutPrimitives.ADVICE_EXECUTION))
+    			throw new UnsupportedOperationException("adviceexecution is not supported by this parser");
+    	} else if (kind == Shadow.FieldGet) {
+    		if (!supportedPrimitives.contains(PointcutPrimitives.GET))
+    			throw new UnsupportedOperationException("get is not supported by this parser");    		
+    	} else if (kind == Shadow.FieldSet) {
+    		if (!supportedPrimitives.contains(PointcutPrimitives.SET))
+    			throw new UnsupportedOperationException("set is not supported by this parser");    		    		
+    	} else if (kind == Shadow.Initialization) {
+    		if (!supportedPrimitives.contains(PointcutPrimitives.INITIALIZATION))
+    			throw new UnsupportedOperationException("initialization is not supported by this parser");    		    		    		
+    	} else if (kind == Shadow.PreInitialization) {
+    		if (!supportedPrimitives.contains(PointcutPrimitives.PRE_INITIALIZATION))
+    			throw new UnsupportedOperationException("preinitialization is not supported by this parser");    		    		    		    		
+    	} else if (kind == Shadow.StaticInitialization) {
+    		if (!supportedPrimitives.contains(PointcutPrimitives.STATIC_INITIALIZATION))
+    			throw new UnsupportedOperationException("staticinitialization is not supported by this parser");    		    		    		    		    		
+    	}
     }
 }

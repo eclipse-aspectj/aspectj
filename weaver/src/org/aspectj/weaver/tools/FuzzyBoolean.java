@@ -17,14 +17,20 @@ package org.aspectj.weaver.tools;
 public class FuzzyBoolean {
 	
 	// Note :- this implementation is not safe under serialization / deserialization
+	private String name;
 	
-    public static final FuzzyBoolean YES   = new FuzzyBoolean();
-    public static final FuzzyBoolean NO    = new FuzzyBoolean();
-    public static final FuzzyBoolean MAYBE = new FuzzyBoolean();
+    public static final FuzzyBoolean YES   = new FuzzyBoolean("YES");
+    public static final FuzzyBoolean NO    = new FuzzyBoolean("NO");
+    public static final FuzzyBoolean MAYBE = new FuzzyBoolean("MAYBE");
 
+    
 	public static final FuzzyBoolean fromBoolean(boolean b) {
 		return b ? YES : NO;
 	}
 
+	public String toString() { return name; }
+	
 	private FuzzyBoolean() {}
+	
+	private FuzzyBoolean(String n) { this.name = n; }
 }

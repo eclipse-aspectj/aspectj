@@ -119,6 +119,28 @@ public class ExactTypePattern extends TypePattern {
 		}
 	}
 	
+	/**
+	 * Return YES if any subtype of the static type would match,
+	 *        MAYBE if some subtypes could match
+	 *        NO if there could never be a match
+	 * @param staticType
+	 * @return
+	 */
+	public FuzzyBoolean willMatchDynamically(Class staticType) {
+		if (matchesExactly(staticType)) return FuzzyBoolean.YES;
+		if (matchesInstanceof(staticType) == FuzzyBoolean.YES) return FuzzyBoolean.YES;
+		
+		try {
+			String typeName = type.getName();
+			Class toMatchAgainst = getClassFor(typeName);
+			if (toMatchAgainst.isInterface()) return FuzzyBoolean.MAYBE;
+			if (staticType.isAssignableFrom(toMatchAgainst)) return FuzzyBoolean.MAYBE;
+			return FuzzyBoolean.NO;
+		} catch (ClassNotFoundException cnfEx) {
+			return FuzzyBoolean.NO;			
+		}
+	}
+	
 	private Class getClassFor(String typeName) throws ClassNotFoundException {
 		Class ret = null;
 		ret = (Class) primitiveTypesMap.get(typeName);
