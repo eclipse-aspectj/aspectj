@@ -23,6 +23,7 @@ import org.aspectj.asm.Relation;
 import org.aspectj.asm.RelationNode;
 import org.aspectj.asm.StructureModel;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.SourceLocation;
 
 public class AsmAdaptor {
 	public static void noteMunger(StructureModel model, Shadow shadow, ShadowMunger munger) {
@@ -149,8 +150,8 @@ public class AsmAdaptor {
 		ProgramElementNode peNode = new ProgramElementNode(
 			shadow.toString(),
 			ProgramElementNode.Kind.CODE,
-//			new SourceLocation(enclosingNode.getSourceLocation().getSourceFile(), sl.getLine()),
-			enclosingNode.getSourceLocation(),
+			new SourceLocation(enclosingNode.getSourceLocation().getSourceFile(), sl.getLine()),
+//			enclosingNode.getSourceLocation(),
 			0,
 			"",
 			new ArrayList());
