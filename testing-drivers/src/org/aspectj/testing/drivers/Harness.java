@@ -371,7 +371,8 @@ public class Harness {
     
     protected boolean isSuiteFile(String arg) {
         return ((null != arg) 
-                && (arg.endsWith(".txt") || arg.endsWith(".xml")));
+                && (arg.endsWith(".txt") || arg.endsWith(".xml"))
+                && new File(arg).canRead());
     }
     
     /** 
