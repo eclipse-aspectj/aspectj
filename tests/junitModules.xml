@@ -40,6 +40,8 @@
 			location="${modules.dir}/tests"/>
 		<property name="aspectj.modules.lib.dir"
 			location="${modules.dir}/lib"/>
+		<property name="harness.lib.dir"
+			location="${aspectj.modules.lib.dir}/test"/>
 		<property name="junitModules.output.dir"
 			location="${tests.module.dir}/bin/junitXmlOutput" />
 		<property name="aspectjrt.path"
@@ -218,6 +220,12 @@
   		</junit>        
     </target>
  
+    <target name="test-ajctest-junit" depends="init,select-path"
+     description="run JUnit tests">     
+      <antcall target="run-ajctests-junit-tests"/>
+      <antcall target="report-tests"/>
+    </target>
+
     <target name="test-all-but-ajc" depends="init,select-path"
      description="run all module tests (except IDE integrations)">
      
@@ -382,6 +390,38 @@
             </classpath>
         </taskdef>
 
+    </target>
+
+    <target name="run-ajctests-junit-tests" depends="init-taskdefs" 
+     description="run the JUnit harness wrapper tests">
+      <mkdir dir="${junitModules.output.dir}/ajctest"/>
+      <delete dir="${junitModules.output.dir}/ajctest"/>
+      <mkdir dir="${junitModules.output.dir}/ajctest"/>
+
+      <!-- fork to load classes, include AntRuntime to get taskdef classes junit.jar -->
+      <echo message="Starting ajctest JUnit tests..."/>
+      <junit fork="on" 
+      		includeAntRuntime="off" 
+      		dir="${modules.dir}/testing-drivers"
+           	printsummary="yes" 
+           	haltonfailure="${haltOnTestFailure}" >
+           <classpath>
+           	<path refid="${test.classpath}"/>
+           	<pathelement location="${aspectjrt.path}"/>
+           </classpath>
+
+		<jvmarg value="-Daspectjrt.path=${aspectjrt.path}" />
+		<jvmarg value="-Dharness.libdir=${harness.lib.dir}" />
+
+        <formatter type="xml"/>
+
+        <batchtest todir="${junitModules.output.dir}/ajctest">
+          <formatter type="xml"/>
+          <fileset dir="${modules.dir}/testing-drivers/testsrc">
+            <include name="org/aspectj/testing/drivers/*UsingJUnit.java" />
+          </fileset>
+        </batchtest>        
+      </junit>        
     </target>
 
     <target name="run-module-junit-tests" depends="init-taskdefs" 
