@@ -1,5 +1,5 @@
 Implementations of GoF Design Patterns in Java and AspectJ
-Code base documentation (March 2, 2004)
+Code base documentation (April 2, 2004)
 
 
 Overview
@@ -13,8 +13,8 @@ While all files are extensively documented using ajdoc (the AspectJ version of j
 Within the ajdoc documentation, we tried to separate type names used in our examples from role names (as presented in GoF). We show roles names in italics and actual type names in code font.
 
 Questions, feedback, suggestions, etc.
-The AODP web page is http://www.cs.ubc.ca/labs/spl/projects/aodps.html
-Please send all questions, feedback, and suggestions to Jan Hannemann (jan@cs.ubc.ca). We are very much interested in improving our code. Please do not hesitate to drop us a line.
+The AODP web page is http://www.cs.ubc.ca/labs/spl/aodp.html
+Please send all questions, feedback, and suggestions to Jan Hannemann (jan [AT] cs.ubc.ca). We are very much interested in improving our code. Please do not hesitate to drop us a line.
 
 
 ===============================
@@ -27,11 +27,8 @@ This appendix outlines how to compile and run the examples provided. DOS batch f
 A1: Using the Eclipse IDE
 Setting up your system and running the examples
 1. Install Eclipse (www.eclipse.org) and AJDT (www.eclipse.org/ajdt). Currently AJDT only works with release 2.1.X and not with version 3.0+ of Eclipse. Check the AJDT web page for more information and updates.
-2. Create a new AspectJ project
-3. Import the ZIP file with the AOP pattern examples into your project  
-4. Set the source directory to "Design Pattern Examples/src" (under: Project / Properties / Java Build Path / Source). Set/adjust the output directory is desired.
-5. Compile
-6. Run individual examples by selecting the appropriate source folder and selecting Run As / Java Application.
+2. Import the ZIP file with the AOP pattern examples into Eclipse
+3. Compile & run
 
 
 A2: Using other AspectJ-compatible IDEs
@@ -55,5 +52,4 @@ Run a compiled example (e.g. observer). Choose one:
 java ca.ubc.cs.spl.aspectPatterns.examples.observer.java.Main (for the AspectJ version)
 
 
-		March 2, 2004
-
+		April 2, 2004

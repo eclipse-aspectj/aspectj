@@ -14,7 +14,7 @@
 
 	<ajc-test dir="src" 
 		title="UBC design patterns library">
-		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary"/>
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary" />
 	</ajc-test>
 
 	<ajc-test dir="src" 
@@ -59,7 +59,9 @@
 
 	<ajc-test dir="src" 
 		title="UBC design patterns facade">
-		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/facade/aspectj"/>
+		<compile sourceroots="ca/ubc/cs/spl/aspectPatterns/patternLibrary,ca/ubc/cs/spl/aspectPatterns/examples/facade/aspectj">
+			<message kind="warning" line="72" />
+		</compile>
 	</ajc-test>
 
 	<ajc-test dir="src" 
