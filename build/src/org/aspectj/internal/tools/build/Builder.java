@@ -498,6 +498,10 @@ public abstract class Builder {
 			return "ajbrowser-all.jar";
 		} else if ("aspectjrt.jar".equals(jarName)) {
 			return "runtime.jar";
+        } else if ("aspectjweaver.jar".equals(jarName)) {
+            return "weaver-all.jar";
+        } else if ("aspectjlib.jar".equals(jarName)) {
+            return "org.aspectj.lib.jar";
 		} else {
 			return jarName;
 		}
