@@ -119,20 +119,6 @@
 		</compile>
 		<run class="org.aspectj.langlib.PointcutsCW"/>
 	</ajc-test>
-
-    <ajc-test dir="bugs/interfaceDefinition" 
-    	pr="43972"
-    	title="Use class implementing interface via aspect">
-        <compile 
-        	files="pack/DefineInterface.java,
-        		   pack/InterfaceDefinition.java,
-        		   pack/MyInterface.java"/>
-        <run class="pack.InterfaceDefinition"/>
-        <compile 
-        	includeClassesDir="true"
-        	files="Main.java"/>
-        <run class="Main"/>
-    </ajc-test>
     
     <ajc-test dir="new" 
      pr="42668"
@@ -151,27 +137,7 @@
         <run class="SubtypeConstructorCW"/>
     </ajc-test>
 
-    <ajc-test dir="bugs/interAbstract" 
-		pr="49784"
-		title="aspect declares interface method (no modifiers)">
-        <compile files="InterfaceMethodDeclarationNone.java" />
-        <run class="InterfaceMethodDeclarationNone"/>
-    </ajc-test>
 
-    <ajc-test dir="bugs/interAbstract" 
-		pr="49784"
-		title="aspect declares interface method (abstract)">
-        <compile files="InterfaceMethodDeclarationAbstract.java" />
-        <run class="InterfaceMethodDeclarationAbstract"/>
-    </ajc-test>
-
-    <ajc-test dir="bugs/interAbstract" 
-		pr="49784"
-		comment="working in 1.1.1 - keep with others?"
-		title="aspect declares interface method (public abstract)">
-        <compile files="InterfaceMethodDeclarationFull.java" />
-        <run class="InterfaceMethodDeclarationFull"/>
-    </ajc-test>
 
 
 </suite>

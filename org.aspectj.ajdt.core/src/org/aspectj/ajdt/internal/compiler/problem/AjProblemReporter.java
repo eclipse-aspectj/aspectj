@@ -20,6 +20,7 @@ import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.Proceed;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
@@ -49,7 +50,7 @@ import org.eclipse.jdt.core.compiler.CharOperation;
 public class AjProblemReporter extends ProblemReporter {
 	private static final boolean DUMP_STACK = false;
 	
-	public EclipseFactory world;
+	public EclipseFactory factory;
 
 	public AjProblemReporter(
 		IErrorHandlingPolicy policy,
@@ -64,17 +65,17 @@ public class AjProblemReporter extends ProblemReporter {
 		TypeBinding exceptionType,
 		ASTNode location)
 	{
-		if (!world.getWorld().getDeclareSoft().isEmpty()) {
-			Shadow callSite = world.makeShadow(location, referenceContext);
-			Shadow enclosingExec = world.makeShadow(referenceContext);
+		if (!factory.getWorld().getDeclareSoft().isEmpty()) {
+			Shadow callSite = factory.makeShadow(location, referenceContext);
+			Shadow enclosingExec = factory.makeShadow(referenceContext);
 //			System.err.println("about to show error for unhandled exception: "  + new String(exceptionType.sourceName()) + 
 //					" at " + location + " in " + referenceContext);		
 			
-			for (Iterator i = world.getWorld().getDeclareSoft().iterator(); i.hasNext(); ) {
+			for (Iterator i = factory.getWorld().getDeclareSoft().iterator(); i.hasNext(); ) {
 				DeclareSoft d = (DeclareSoft)i.next();
 				// We need the exceptionType to match the type in the declare soft statement
 				// This means it must either be the same type or a subtype
-				ResolvedTypeX throwException = world.fromEclipse((ReferenceBinding)exceptionType);
+				ResolvedTypeX throwException = factory.fromEclipse((ReferenceBinding)exceptionType);
 				FuzzyBoolean isExceptionTypeOrSubtype = 
 					d.getException().matchesInstanceof(throwException);
 				if (!isExceptionTypeOrSubtype.alwaysTrue() ) continue;
@@ -140,16 +141,22 @@ public class AjProblemReporter extends ProblemReporter {
 			return;
 		}
 		
-		
 		// if we implemented this method by an inter-type declaration, then there is no error
 		//??? be sure this is always right
-		ResolvedTypeX onTypeX = world.fromEclipse(type); //abstractMethod.declaringClass);
+		ResolvedTypeX onTypeX = factory.fromEclipse(type); //abstractMethod.declaringClass);
 		for (Iterator i = onTypeX.getInterTypeMungers().iterator(); i.hasNext(); ) {
 			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
 			if (m.matches(onTypeX)) {
 				ResolvedMember sig = m.getSignature();
-				if (Modifier.isPublic(sig.getModifiers()) && !Modifier.isAbstract(sig.getModifiers())) {
-					if (ResolvedTypeX.matches(sig, world.makeResolvedMember(abstractMethod))) {
+                if (!Modifier.isAbstract(sig.getModifiers())) {
+					if (ResolvedTypeX
+						.matches(
+							AjcMemberMaker.interMethod(
+								sig,
+								m.getAspectType(),
+								sig.getDeclaringType().isInterface(
+									factory.getWorld())),
+							EclipseFactory.makeResolvedMember(abstractMethod))) {
 						return;
 					}
 				}

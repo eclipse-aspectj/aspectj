@@ -6971,4 +6971,118 @@
         </compile>
   		<run class="AfterThrowingCtor"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs/abstractMethods" pr="49784"
+   	 title="Introduced abstract method on abstract class not implemented by subtype">
+        <compile files="abstractClass/C.java"
+        		 aspectpath="abstractClass/jars/AandB.jar">
+            <message kind="error" line="1"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs/abstractMethods" pr="49784"
+   	 title="Introduced abstract method on interface not implemented by subtype (weave altogether)">
+        <compile files="interface/C.java,interface/A.java,interface/B.java" />
+        <run class="C"/>
+    </ajc-test>
+ 
+    
+    <ajc-test dir="bugs/abstractMethods" pr="49784"
+   	 title="Introduced abstract method on interface not implemented by subtype (injars)">
+       <compile files="interface/C.java,interface/jars/AandB.jar"> 
+            <message kind="error" line="1"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs/abstractMethods" pr="49784"
+   	 title="Introduced abstract method on interface not implemented by subtype (aspectpath)">
+        <compile files="interface/C.java"
+        		 aspectpath="interface/jars/AandB.jar" />
+        <run class="C"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs/abstractMethods" pr="49784"
+   	 title="Introduced abstract method on abstract class not implemented by subtype (single source file)">
+        <compile files="singlesource/C.java">
+        	<message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs/abstractMethods" pr="49784"
+   	 title="Introduced abstract method on abstract class with introduced concrete method (single source file)">
+        <compile files="singlesource/C1.java"/>
+        <run class="C1"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs/abstractMethods" pr="49784"
+   	 title="Introduced abstract method on abstract class with existing concrete method (single source file)">
+        <compile files="singlesource/C2.java"/>
+        <run class="C2"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs/interAbstract" 
+		pr="49784"
+		title="aspect declares interface method (no modifiers)">
+        <compile files="InterfaceMethodDeclarationNone.java" >
+        	<message kind="error" line="32" text="requires a body" />
+        </compile>
+    </ajc-test>
+	
+	<ajc-test dir="bugs/interAbstract" 
+		pr="49784"
+		title="aspect declares interface method (abstract)">
+        <compile files="InterfaceMethodDeclarationAbstract.java">
+        	<message kind="error" line="40" text="must implement" />
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs/interAbstract" 
+		pr="49784"
+		comment="working in 1.1.1 - keep with others?"
+		title="aspect declares interface method (public abstract)">
+        <compile files="InterfaceMethodDeclarationFull.java" />
+        <run class="InterfaceMethodDeclarationFull"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs/interfaceDefinition" 
+    	pr="43972"
+    	title="Use class implementing interface via aspect (not woven together)">
+        <compile 
+        	files="pack/DefineInterface.java,
+        		   pack/InterfaceDefinition.java,
+        		   pack/MyInterface.java"/>
+        <run class="pack.InterfaceDefinition"/>
+        <compile 
+        	includeClassesDir="true"
+        	files="Main.java">
+        	<message kind="error" line="3"/>
+       </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs/interfaceDefinition" 
+    	pr="43972"
+    	title="Use class implementing interface via aspect (weave all together)">
+        <compile 
+        	files="pack/DefineInterface.java,
+        		   pack/InterfaceDefinition.java,
+        		   pack/MyInterface.java,
+        		   Main.java"/>
+        <run class="pack.InterfaceDefinition"/>
+        <run class="Main"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs/interfaceDefinition" 
+    	pr="43972"
+    	title="Use class implementing interface via aspect (only one implementer)">
+        <compile 
+        	files="pack/DefineInterface.java,
+        		   pack/InterfaceDefinition.java,
+        		   pack/MyInterface.java"/>
+        <run class="pack.InterfaceDefinition"/>
+        <compile 
+        	includeClassesDir="true"
+        	files="Main1.java"/>
+        <run class="Main1"/>
+    </ajc-test>
+
 </suite>

@@ -7,7 +7,6 @@ public aspect DefineInterface {
     declare parents: InterfaceDefinition.C implements MyInterface;
     static {
         Tester.expectEvent("m()");
-        Tester.expectEvent("p()");
     }
     public void MyInterface.m() {
         Tester.event("m()");

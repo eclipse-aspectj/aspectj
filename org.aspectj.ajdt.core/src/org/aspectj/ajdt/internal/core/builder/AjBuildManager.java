@@ -366,7 +366,7 @@ public class AjBuildManager {
 //		ew.setLint(bcelWorld.getLint());
 //		ew.setXnoInline(buildConfig.isXnoInline());
 		le.factory = factory;
-		pr.world = factory;
+		pr.factory = factory;
 		le.factory.buildManager = this;
 		
 		compiler.lookupEnvironment = le;
