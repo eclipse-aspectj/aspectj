@@ -23,6 +23,8 @@ import junit.framework.TestSuite;
 
 import org.apache.commons.digester.Digester;
 import org.aspectj.tools.ajc.AjcTestCase;
+import org.aspectj.tools.ajc.CompilationResult;
+import org.aspectj.util.FileUtil;
 
 /**
  * Root class for all Test suites that are based on an AspectJ XML test suite
@@ -159,5 +161,65 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 			suiteLoaded = true;
 		}
 	}
+	
+
+	  protected long nextIncrement(boolean doWait) {
+	  	long time = System.currentTimeMillis();
+	  	if (doWait) {
+	  		try {
+	  	  		Thread.sleep(1000);
+	  		} catch (InterruptedException intEx) {}
+	  	}
+	  	return time;
+	  }
+
+	  protected void copyFile(String from, String to) throws Exception {
+	  	String dir = getCurrentTest().getDir();
+	  	FileUtil.copyFile(new File(dir + File.separator + from),
+	  			          new File(ajc.getSandboxDirectory(),to));
+	  }
+	  
+	  protected void copyFileAndDoIncrementalBuild(String from, String to) throws Exception {
+	  	copyFile(from,to);
+	  	CompilationResult result = ajc.doIncrementalCompile();
+	  	assertNoMessages(result,"Expected clean compile from test '" + getCurrentTest().getTitle() + "'");
+	  }
+	  
+	  protected void copyFileAndDoIncrementalBuild(String from, String to, MessageSpec expectedResults) throws Exception {
+	  	String dir = getCurrentTest().getDir();
+	  	FileUtil.copyFile(new File(dir + File.separator + from),
+	  			          new File(ajc.getSandboxDirectory(),to));
+	  	CompilationResult result = ajc.doIncrementalCompile();
+	  	assertMessages(result,"Test '" + getCurrentTest().getTitle() + "' did not produce expected messages",expectedResults);
+	  }
+	  
+	  protected void deleteFile(String file) {
+	  	new File(ajc.getSandboxDirectory(),file).delete();
+	  }
+	  
+	  protected void deleteFileAndDoIncrementalBuild(String file, MessageSpec expectedResult) throws Exception {
+	  	deleteFile(file);
+	  	CompilationResult result = ajc.doIncrementalCompile();
+	  	assertMessages(result,"Test '" + getCurrentTest().getTitle() + "' did not produce expected messages",expectedResult);
+	  }
+	  
+	  protected void deleteFileAndDoIncrementalBuild(String file) throws Exception {
+	  	deleteFileAndDoIncrementalBuild(file,MessageSpec.EMPTY_MESSAGE_SET);
+	  }
+
+	  protected void assertAdded(String file) {
+	  	assertTrue("File " + file + " should have been added",
+	  			new File(ajc.getSandboxDirectory(),file).exists());
+	  }
+
+	  protected void assertDeleted(String file) {
+	  	assertFalse("File " + file + " should have been deleted",
+	  			new File(ajc.getSandboxDirectory(),file).exists());
+	  }
+
+	  protected void assertUpdated(String file, long sinceTime) {
+	  	File f = new File(ajc.getSandboxDirectory(),file);
+	  	assertTrue("File " + file + " should have been updated",f.lastModified() > sinceTime);
+	  }
 }
 
