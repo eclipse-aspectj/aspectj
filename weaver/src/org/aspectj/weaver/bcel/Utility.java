@@ -421,19 +421,42 @@ public class Utility {
    	}
 
 	/** returns -1 if no source line attribute */
+	// this naive version overruns the JVM stack size, if only Java understood tail recursion...
+//	public static int getSourceLine(InstructionHandle ih) {
+//		if (ih == null) return -1;
+//		
+//		InstructionTargeter[] ts = ih.getTargeters();
+//		if (ts != null) { 
+//			for (int j = ts.length - 1; j >= 0; j--) {
+//				InstructionTargeter t = ts[j];
+//				if (t instanceof LineNumberTag) {
+//					return ((LineNumberTag)t).getLineNumber();
+//				}
+//			}
+//		}
+//		return getSourceLine(ih.getNext());
+//	}
+	
+
 	public static int getSourceLine(InstructionHandle ih) {
-		if (ih == null) return -1;
-		
-        InstructionTargeter[] ts = ih.getTargeters();
-        if (ts != null) { 
-            for (int j = ts.length - 1; j >= 0; j--) {
-                InstructionTargeter t = ts[j];
-                if (t instanceof LineNumberTag) {
-                	return ((LineNumberTag)t).getLineNumber();
-                }
-            }
-        }
-        return getSourceLine(ih.getNext());
+		int lookahead=0;
+		// arbitrary rule that we will never lookahead more than 100 instructions for a line #
+		while (lookahead++ < 100) {
+			if (ih == null) return -1;
+			
+	        InstructionTargeter[] ts = ih.getTargeters();
+	        if (ts != null) { 
+	            for (int j = ts.length - 1; j >= 0; j--) {
+	                InstructionTargeter t = ts[j];
+	                if (t instanceof LineNumberTag) {
+	                	return ((LineNumberTag)t).getLineNumber();
+	                }
+	            }
+	        }
+	        ih = ih.getNext();
+		}
+		//System.err.println("no line information available for: " + ih);
+        return -1;
 	}
 	
 	// assumes that there is no already extant source line tag.  Otherwise we'll have to be better.
