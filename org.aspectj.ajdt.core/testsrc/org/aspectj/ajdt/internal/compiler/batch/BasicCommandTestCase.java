@@ -170,4 +170,27 @@ public class BasicCommandTestCase extends CommandTestCase {
 		
 
 	}
+	
+	public void testSizeChanges() {
+		File f1 = new File("out/SizeIssues.class");
+		
+		List args = new ArrayList();
+
+		args.add("-d");
+		args.add("out");
+		
+		args.add("-classpath");
+		args.add("../runtime/bin;../lib/junit/junit.jar;../testing-client/bin");
+		
+		args.add("testdata/src1/SizeIssuesAspect.java");		
+		args.add("testdata/src1/SizeIssues.java");
+
+		runCompiler(args, NO_ERRORS);
+		long size = f1.length();
+		for (int i=0; i < 1; i++) {
+			f1.delete();
+			runCompiler(args, NO_ERRORS);
+			assertEquals(size, f1.length());
+		}
+	}
 }
