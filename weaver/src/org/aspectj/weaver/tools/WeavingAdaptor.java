@@ -14,20 +14,25 @@
 package org.aspectj.weaver.tools;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.MessageUtil;
+import org.aspectj.bridge.MessageWriter;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.IClassFileProvider;
@@ -57,12 +62,13 @@ public class WeavingAdaptor {
 	 * System property used to turn on verbose weaving messages 
 	 */
 	public static final String WEAVING_ADAPTOR_VERBOSE = "aj.weaving.verbose"; 
+	public static final String SHOW_WEAVE_INFO_PROPERTY = "org.aspectj.weaver.showWeaveInfo"; 
 
 	private boolean enabled = true;
 	private boolean verbose = getVerbose();
 	private BcelWorld bcelWorld = null;
 	private BcelWeaver weaver = null;
-	private IMessageHandler messageHandler = null;
+	private WeavingAdaptorMessageHandler messageHandler = null;
 	private GeneratedClassHandler generatedClassHandler;
 	private Map generatedClasses = new HashMap(); /* String -> UnwovenClassFile */ 
 
@@ -103,7 +109,7 @@ public class WeavingAdaptor {
 				list.addAll(0,FileUtil.makeClasspath(urls));
 			}
 			else {
-				if (verbose) System.err.println("WeavingAdaptor: Warning - could not determine classpath for " + loader); 
+				warn("cannot determine classpath"); 
 			}
 		}
 
@@ -129,10 +135,14 @@ public class WeavingAdaptor {
 	}
 	
 	private void init(List classPath, List aspectPath) {
-		if (verbose) System.out.println("WeavingAdaptor: classPath='" + classPath + "'");
+		messageHandler = new WeavingAdaptorMessageHandler(new PrintWriter(System.err));
+		if (verbose) messageHandler.dontIgnore(IMessage.INFO);
+		else messageHandler.ignore(IMessage.INFO);
+		if (Boolean.getBoolean(SHOW_WEAVE_INFO_PROPERTY)) messageHandler.dontIgnore(IMessage.WEAVEINFO);
 		
-		// make sure the weaver can find all types...
-		messageHandler = new MessageHandler();
+		info("using classpath: " + classPath); 
+		info("using aspectpath: " + aspectPath); 
+		
 		bcelWorld = new BcelWorld(classPath,messageHandler,null);
 		bcelWorld.setXnoInline(false);
 		bcelWorld.getLint().loadDefaultProperties();
@@ -146,10 +156,12 @@ public class WeavingAdaptor {
 	 * @param url to be appended to search path
 	 */
 	public void addURL(URL url) {
+		File libFile = new File(url.getPath());
 		try {
-			weaver.addLibraryJarFile(new File(url.getPath()));
+			weaver.addLibraryJarFile(libFile);
 		}
 		catch (IOException ex) {
+			warn("bad library: '" + libFile + "'");
 		}
 	}
 
@@ -162,6 +174,7 @@ public class WeavingAdaptor {
 	 */
 	public byte[] weaveClass (String name, byte[] bytes) throws IOException {
 		if (shouldWeave(name)) {
+			info("weaving '" + name + "'");
 			bytes = getWovenBytes(name, bytes);
 		}
 		return bytes;
@@ -170,7 +183,6 @@ public class WeavingAdaptor {
 	private boolean shouldWeave (String name) {
 		name = name.replace('/','.');
 		boolean b = (enabled && !generatedClasses.containsKey(name) && shouldWeaveName(name) && shouldWeaveAspect(name));
-		if (verbose) System.out.println("WeavingAdaptor: shouldWeave('" + name + "') " + b);
 		return b;
 	}
 	
@@ -209,21 +221,8 @@ public class WeavingAdaptor {
 	private void registerAspectLibraries(List aspectPath) {
 //		System.err.println("? WeavingAdaptor.registerAspectLibraries(" + aspectPath + ")");
 		for (Iterator i = aspectPath.iterator(); i.hasNext();) {
-			String lib = (String)i.next();
-			File libFile = new File(lib);
-			if (libFile.isFile() && lib.endsWith(".jar")) {
-				try {
-					if (verbose) System.out.println("WeavingAdaptor: adding aspect '" + lib + "' to weaver");
-					addAspectLibrary(new File(lib));
-				} catch (IOException ioEx) {
-					if (verbose) System.err.println(
-						"WeavingAdaptor: Warning - could not load aspect path entry " 
-						+ lib + " : " + ioEx);
-				}
-			} else {
-				if (verbose) System.err.println(
-					"WeavingAdaptor: Warning - ignoring aspect path entry: " + lib);
-			}
+			String libName = (String)i.next();
+			addAspectLibrary(libName);
 		}
 		
 		weaver.prepareForWeave();
@@ -238,9 +237,18 @@ public class WeavingAdaptor {
 	 * @param aspectLibraryJarFile a jar file representing an aspect library
 	 * @throws IOException
 	 */
-	private void addAspectLibrary(File aspectLibraryJarFile) throws IOException {
-		weaver.addLibraryJarFile(aspectLibraryJarFile);
-//		weaver.prepareForWeave();
+	private void addAspectLibrary(String aspectLibraryName) {
+		File aspectLibrary = new File(aspectLibraryName);
+		if (aspectLibrary.isFile() && aspectLibraryName.endsWith(".jar")) {
+			try {
+				info("adding aspect library: '" + aspectLibrary + "'");
+				weaver.addLibraryJarFile(aspectLibrary);
+			} catch (IOException ex) {
+				error("exception adding aspect library: '" + ex + "'");
+			}
+		} else {
+			error("bad aspect library: '" + aspectLibrary + "'");
+		}
 	}
 	
 	private static List makeClasspath(String cp) {
@@ -253,24 +261,64 @@ public class WeavingAdaptor {
 		}
 		return ret;
 	}
+	
+	private boolean info (String message) {
+		return MessageUtil.info(messageHandler,message);
+	}
+	
+	private boolean warn (String message) {
+		return MessageUtil.warn(messageHandler,message);
+	}
+	
+	private boolean error (String message) {
+		return MessageUtil.error(messageHandler,message);
+	}
 
 	/**
 	 * Processes messages arising from weaver operations. 
-	 * Tell weaver to abort on any non-informational error.
+	 * Tell weaver to abort on any message more severe than warning.
 	 */
-	private class MessageHandler implements IMessageHandler {
+	private class WeavingAdaptorMessageHandler extends MessageWriter {
 
-		public boolean handleMessage(IMessage message) throws AbortException {
-			if (!isIgnoring(message.getKind())) {
-				System.err.println(message.getSourceLocation()+": "+message.getKind()+" "+message.getMessage());
-				if (message.getKind() == IMessage.ERROR) throw new AbortException(message);
-			}
-			return true;
+		private Set ignoring = new HashSet();
+		private IMessage.Kind failKind;
+
+		public WeavingAdaptorMessageHandler (PrintWriter writer) {
+			super(writer,true);
+			
+			ignore(IMessage.WEAVEINFO);
+			this.failKind = IMessage.ERROR;
+
 		}
 
-		public boolean isIgnoring(Kind kind) {
-			if (verbose) return false;
-			else         return ((kind == IMessage.INFO) || (kind == IMessage.DEBUG));
+		public boolean handleMessage(IMessage message) throws AbortException {
+			boolean result = super.handleMessage(message);
+			if (0 <= message.getKind().compareTo(failKind)) {
+				throw new AbortException(message);
+			}
+			return true;	
+		}
+
+		public boolean isIgnoring (Kind kind) {
+			return ((null != kind) && (ignoring.contains(kind)));
+		}
+
+		/**
+		 * Set a message kind to be ignored from now on
+		 */
+		public void ignore (IMessage.Kind kind) { 
+			if ((null != kind) && (!ignoring.contains(kind))) {
+				ignoring.add(kind);
+			}
+		}
+
+		/**
+		 * Remove a message kind from the list of those ignored from now on.
+		 */
+		public void dontIgnore (IMessage.Kind kind) {
+			if (null != kind) {
+				ignoring.remove(kind);
+			}
 		}
 	}
 

@@ -16,6 +16,8 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Enumeration;
+import java.util.Properties;
 
 import junit.framework.TestCase;
 
@@ -41,15 +43,17 @@ public class WeavingURLClassLoaderTest extends TestCase {
 	private final static String ITD_ASPECTS = BcweaverTests.TESTDATA_PATH + "/ltw-itdaspects.jar";
 	private final static String PER_ASPECTS = BcweaverTests.TESTDATA_PATH + "/ltw-peraspects.jar";
 
+	private final static String NULL = "null";
+
+	private Properties savedProperties;
 
 	public WeavingURLClassLoaderTest(String name) {
 		super(name);
-		System.setProperty(WeavingAdaptor.WEAVING_ADAPTOR_VERBOSE,"true");
 	}
 
 	public void testLoadClass () {
-		System.setProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,"");
-		System.setProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,CLASSES_JAR);
+		setSystemProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,"");
+		setSystemProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,CLASSES_JAR);
 		WeavingURLClassLoader loader = new WeavingURLClassLoader(getClass().getClassLoader());
 
 		try {
@@ -62,8 +66,8 @@ public class WeavingURLClassLoaderTest extends TestCase {
 	}
 
 	public void testLoadWovenClass () {
-		System.setProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,"");
-		System.setProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,WOVEN_JAR);
+		setSystemProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,"");
+		setSystemProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,WOVEN_JAR);
 		WeavingURLClassLoader loader = new WeavingURLClassLoader(getClass().getClassLoader());
 
 		try {
@@ -76,8 +80,8 @@ public class WeavingURLClassLoaderTest extends TestCase {
 	}
 
 	public void testWeaveWovenClass () {
-		System.setProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,ADVICE_ASPECTS);
-		System.setProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,ADVICE_ASPECTS + File.pathSeparator + WOVEN_JAR);
+		setSystemProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,ADVICE_ASPECTS);
+		setSystemProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,ADVICE_ASPECTS + File.pathSeparator + WOVEN_JAR);
 		WeavingURLClassLoader loader = new WeavingURLClassLoader(getClass().getClassLoader());
 
 		try {
@@ -106,8 +110,38 @@ public class WeavingURLClassLoaderTest extends TestCase {
 	}
 
 	public void testWeaveAdvice () {
-		System.setProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,ADVICE_ASPECTS);
-		System.setProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,ADVICE_ASPECTS + File.pathSeparator + CLASSES_JAR);
+		setSystemProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,ADVICE_ASPECTS);
+		setSystemProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,ADVICE_ASPECTS + File.pathSeparator + CLASSES_JAR);
+		WeavingURLClassLoader loader = new WeavingURLClassLoader(getClass().getClassLoader());
+
+		try {
+			Class clazz = loader.loadClass("LTWHelloWorld");
+			invokeMain(clazz,new String[] { "LTWAspect" }); 
+		}
+		catch (Exception ex) {
+			fail(ex.toString());
+		}
+	}
+
+	public void testWeaveAdviceWithVerbose () {
+		setSystemProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,ADVICE_ASPECTS);
+		setSystemProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,ADVICE_ASPECTS + File.pathSeparator + CLASSES_JAR);
+		setSystemProperty(WeavingAdaptor.WEAVING_ADAPTOR_VERBOSE,"true");
+		WeavingURLClassLoader loader = new WeavingURLClassLoader(getClass().getClassLoader());
+
+		try {
+			Class clazz = loader.loadClass("LTWHelloWorld");
+			invokeMain(clazz,new String[] { "LTWAspect" }); 
+		}
+		catch (Exception ex) {
+			fail(ex.toString());
+		}
+	}
+
+	public void testWeaveAdviceWithWeaveInfo () {
+		setSystemProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,ADVICE_ASPECTS);
+		setSystemProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,ADVICE_ASPECTS + File.pathSeparator + CLASSES_JAR);
+		setSystemProperty(WeavingAdaptor.SHOW_WEAVE_INFO_PROPERTY,"true");
 		WeavingURLClassLoader loader = new WeavingURLClassLoader(getClass().getClassLoader());
 
 		try {
@@ -120,8 +154,8 @@ public class WeavingURLClassLoaderTest extends TestCase {
 	}
 
 	public void testWeaveDeclareWarningAdvice () {
-		System.setProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,DW_ADVICE_ASPECTS);
-		System.setProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,DW_ADVICE_ASPECTS + File.pathSeparator + CLASSES_JAR);
+		setSystemProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,DW_ADVICE_ASPECTS);
+		setSystemProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,DW_ADVICE_ASPECTS + File.pathSeparator + CLASSES_JAR);
 		WeavingURLClassLoader loader = new WeavingURLClassLoader(getClass().getClassLoader());
 
 		try {
@@ -134,8 +168,8 @@ public class WeavingURLClassLoaderTest extends TestCase {
 	}
 
 	public void testWeaveDeclareErrorAdvice () {
-		System.setProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,DE_ADVICE_ASPECTS);
-		System.setProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,DE_ADVICE_ASPECTS + File.pathSeparator + CLASSES_JAR);
+		setSystemProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,DE_ADVICE_ASPECTS);
+		setSystemProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,DE_ADVICE_ASPECTS + File.pathSeparator + CLASSES_JAR);
 		WeavingURLClassLoader loader = new WeavingURLClassLoader(getClass().getClassLoader());
 
 		try {
@@ -149,8 +183,8 @@ public class WeavingURLClassLoaderTest extends TestCase {
 	}
 
 	public void testWeaveAroundClosure () {
-		System.setProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,AROUNDCLOSURE_ASPECTS);
-		System.setProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,AROUNDCLOSURE_ASPECTS + File.pathSeparator + CLASSES_JAR);
+		setSystemProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,AROUNDCLOSURE_ASPECTS);
+		setSystemProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,AROUNDCLOSURE_ASPECTS + File.pathSeparator + CLASSES_JAR);
 		WeavingURLClassLoader loader = new WeavingURLClassLoader(getClass().getClassLoader());
 
 		try {
@@ -231,6 +265,23 @@ public class WeavingURLClassLoaderTest extends TestCase {
 		}
 	}
 
+	public void testJunkAspectJar () {		
+		File junkJar = new File(JUNK_JAR);
+		assertFalse(junkJar + " should not exist",junkJar.exists());
+		
+		URL aspects = FileUtil.getFileURL(junkJar);
+		URL[] classURLs = new URL[] { aspects };
+		URL[] aspectURLs = new URL[] { aspects };
+		
+		try {
+			WeavingURLClassLoader loader = new WeavingURLClassLoader(classURLs,aspectURLs,getClass().getClassLoader());
+			fail("Expecting org.aspectj.bridge.AbortException");
+		}
+		catch (Exception ex) {
+			assertTrue("Expecting org.aspectj.bridge.AbortException caught " + ex,(ex instanceof org.aspectj.bridge.AbortException));
+		}
+	}
+
 	public void testAddURL () {
 		URL classes = FileUtil.getFileURL(new File(CLASSES_JAR));
 		URL aspects = FileUtil.getFileURL(new File(ADVICE_ASPECTS));
@@ -274,8 +325,8 @@ public class WeavingURLClassLoaderTest extends TestCase {
 	 * Aspects on ASPECTPATH but missing from CLASSPATH
 	 */
 	public void testIncompletePath () {
-		System.setProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,ADVICE_ASPECTS);
-		System.setProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,CLASSES_JAR);
+		setSystemProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,ADVICE_ASPECTS);
+		setSystemProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,CLASSES_JAR);
 		WeavingURLClassLoader loader = new WeavingURLClassLoader(getClass().getClassLoader());
 
 		try {
@@ -291,8 +342,8 @@ public class WeavingURLClassLoaderTest extends TestCase {
 	 * Ensure package object is correct
 	 */
 	public void testPackage () {
-		System.setProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,"");
-		System.setProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,CLASSES_JAR);
+		setSystemProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,"");
+		setSystemProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,CLASSES_JAR);
 		WeavingURLClassLoader loader = new WeavingURLClassLoader(getClass().getClassLoader());
 
 		try {
@@ -322,6 +373,35 @@ public class WeavingURLClassLoaderTest extends TestCase {
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(ex.toString());
+		}
+	}
+
+	private void setSystemProperty (String key, String value) {
+		Properties systemProperties = System.getProperties();
+		copyProperty(key,systemProperties,savedProperties);
+		systemProperties.setProperty(key,value);
+	}
+	
+	private static void copyProperty (String key, Properties from, Properties to) {
+		String value = from.getProperty(key,NULL);
+		to.setProperty(key,value);
+	}
+
+	protected void setUp() throws Exception {
+		super.setUp();
+		savedProperties = new Properties();
+	}
+
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		
+		/* Restore system properties */
+		Properties systemProperties = System.getProperties();
+		for (Enumeration enum = savedProperties.keys(); enum.hasMoreElements(); ) {
+			String key = (String)enum.nextElement();
+			String value = savedProperties.getProperty(key);
+			if (value == NULL) systemProperties.remove(key);
+			else systemProperties.setProperty(key,value);
 		}
 	}
 
