@@ -930,17 +930,17 @@ public abstract class ResolvedTypeX extends TypeX {
 		return interTypeMungers;
 	}
     
-    private List getInterTypeMungersIncludingSupers() {
+	/**
+	 * ??? This method is O(N*M) where N = number of methods and M is number of
+	 * inter-type declarations in my super
+	 */
+     public List getInterTypeMungersIncludingSupers() {
         ArrayList ret = new ArrayList();
         collectInterTypeMungers(ret);
         return ret;
     }
         
         
-    /**
-     * ??? This method is O(N*M) where N = number of methods and M is number of
-     * inter-type declarations in my super
-     */
     private void collectInterTypeMungers(List collector) {
         for (Iterator iter = getDirectSupertypes(); iter.hasNext();) {
 			ResolvedTypeX superType = (ResolvedTypeX) iter.next();

@@ -7105,5 +7105,11 @@
         </compile>
         <run class="ErroneousExceptionConversion1"/>
     </ajc-test>
+
+	<ajc-test dir="bugs" pr="38824"
+	      title="Anomalous handling of inter-type declarations to abstract base classes in aspectj 1.1">
+	        <compile files="AbstractBaseAndInterTypeInterface.java">
+	        </compile>
+	</ajc-test>
     
 </suite>

@@ -144,21 +144,19 @@ public class AjProblemReporter extends ProblemReporter {
 		// if we implemented this method by an inter-type declaration, then there is no error
 		//??? be sure this is always right
 		ResolvedTypeX onTypeX = factory.fromEclipse(type); //abstractMethod.declaringClass);
-		for (Iterator i = onTypeX.getInterTypeMungers().iterator(); i.hasNext(); ) {
+		for (Iterator i = onTypeX.getInterTypeMungersIncludingSupers().iterator(); i.hasNext(); ) {
 			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
-			if (m.matches(onTypeX)) {
-				ResolvedMember sig = m.getSignature();
-                if (!Modifier.isAbstract(sig.getModifiers())) {
-					if (ResolvedTypeX
-						.matches(
-							AjcMemberMaker.interMethod(
-								sig,
-								m.getAspectType(),
-								sig.getDeclaringType().isInterface(
-									factory.getWorld())),
-							EclipseFactory.makeResolvedMember(abstractMethod))) {
-						return;
-					}
+			ResolvedMember sig = m.getSignature();
+            if (!Modifier.isAbstract(sig.getModifiers())) {
+				if (ResolvedTypeX
+					.matches(
+						AjcMemberMaker.interMethod(
+							sig,
+							m.getAspectType(),
+							sig.getDeclaringType().isInterface(
+								factory.getWorld())),
+						EclipseFactory.makeResolvedMember(abstractMethod))) {
+					return;
 				}
 			}
 		}
