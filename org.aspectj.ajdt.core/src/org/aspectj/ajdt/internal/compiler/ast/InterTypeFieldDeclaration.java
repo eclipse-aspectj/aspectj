@@ -60,13 +60,30 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(upperScope);
 		ResolvedMember sig = munger.getSignature();
 		TypeX aspectType = EclipseWorld.fromBinding(upperScope.referenceContext.binding);
+//
+//		System.err.println("sig: " + sig);
+//		System.err.println("field: " + world.makeFieldBinding(
+//				AjcMemberMaker.interFieldClassField(sig, aspectType)));
+		
+
+		if (initialization != null && initialization instanceof ArrayInitializer) {
+			//System.err.println("got initializer: " + initialization);
+			ArrayAllocationExpression aae = new ArrayAllocationExpression();
+			aae.initializer = (ArrayInitializer)initialization;
+			ArrayBinding arrayType = (ArrayBinding)world.makeTypeBinding(sig.getReturnType());
+			aae.type = AstUtil.makeTypeReference(arrayType.leafComponentType());
+			aae.sourceStart = initialization.sourceStart;
+			aae.sourceEnd = initialization.sourceEnd;
+			aae.dimensions = new Expression[arrayType.dimensions];
+			initialization = aae;
+		}
+
 		
 		if (initialization == null) {
 			this.statements = new Statement[] {
 				new ReturnStatement(null, 0, 0),
 			};
 		} else if (!onTypeBinding.isInterface()) {
-			
 			FieldBinding interField = world.makeFieldBinding(
 				AjcMemberMaker.interFieldClassField(sig, aspectType));
 			Reference ref = new KnownFieldReference(interField, 0);
@@ -116,6 +133,8 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 				AstUtil.makeFinalArgument("ajc$this_".toCharArray(), onTypeBinding),
 			};
 		}
+		
+		//System.err.println("type: " + binding.returnType + ", " + returnType);
 		
 		ResolvedMember sig =
 			new ResolvedMember(Member.FIELD, EclipseWorld.fromBinding(onTypeBinding),

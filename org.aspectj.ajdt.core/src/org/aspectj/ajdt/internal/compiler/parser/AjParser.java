@@ -766,12 +766,8 @@ public class AjParser extends Parser {
 		//	field.sourceEnd = end;
 
 		TypeReference onType = getTypeReference(0);
-		TypeReference returnType = getTypeReference(0);
-		//	field.type = returnType;
-
+		TypeReference returnType = getTypeReference(intStack[intPtr--]);
 		this.display();
-
-		int dontKnowWhatThisIs = intStack[intPtr--];
 
 		int decSourceStart = intStack[intPtr--];
 		int modifiers = intStack[intPtr--];

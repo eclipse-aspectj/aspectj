@@ -186,7 +186,7 @@ public class EclipseWorld extends World {
 				dim++;
 				typeX = typeX.getComponentType();
 			}
-			return new ArrayBinding(makeTypeBinding(typeX), dim);
+			return lookupEnvironment.createArrayType(makeTypeBinding(typeX), dim);
 		} else {
 			ResolvedTypeX rt = typeX.resolve(this);
 			//System.out.println("typex: " + typeX + ", " + rt);
