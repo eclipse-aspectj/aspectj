@@ -429,13 +429,37 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			makeLocation(constructorDeclaration),
 			constructorDeclaration.modifiers,
 			"",
-			new ArrayList());	
+			new ArrayList());  
+		
+		peNode.setModifiers(constructorDeclaration.modifiers);
+		peNode.setSourceSignature(genSourceSignature(constructorDeclaration));
+		
 		((IProgramElement)stack.peek()).addChild(peNode);
 		stack.push(peNode);
 		return true;	
 	}
 	public void endVisit(ConstructorDeclaration constructorDeclaration, ClassScope scope) {
 		stack.pop();
+	}
+	private String genSourceSignature(ConstructorDeclaration constructorDeclaration) {
+		StringBuffer output = new StringBuffer();
+		constructorDeclaration.printModifiers(constructorDeclaration.modifiers, output);
+		output.append(constructorDeclaration.selector).append('(');  
+		if (constructorDeclaration.arguments != null) {
+			for (int i = 0; i < constructorDeclaration.arguments.length; i++) {
+				if (i > 0) output.append(", "); //$NON-NLS-1$
+				constructorDeclaration.arguments[i].print(0, output);
+			}
+		}
+		output.append(')');
+		if (constructorDeclaration.thrownExceptions != null) {
+			output.append(" throws "); //$NON-NLS-1$
+			for (int i = 0; i < constructorDeclaration.thrownExceptions.length; i++) {
+				if (i > 0) output.append(", "); //$NON-NLS-1$
+				constructorDeclaration.thrownExceptions[i].print(0, output);
+			}
+		}
+		return output.toString();
 	}
 
 //	public boolean visit(Clinit clinit, ClassScope scope) {
