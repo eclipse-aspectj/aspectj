@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 20001102//EN' 'http://www.w3.org/TR/2000/CR-SVG-20001102/DTD/svg-20001102.dtd'>
+<svg xmlns="http://www.w3.org/2000/svg" width="1007" height="675">
+<rect x="148" y="14" width="148" height="108" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="148" y="14" width="147" height="107" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<line x1="149" y1="122" x2="296" y2="122" style="fill:#1a1a1a; stroke:#1a1a1a; stroke-width:1"/>
+<line x1="296" y1="15" x2="296" y2="121" style="fill:#1a1a1a; stroke:#1a1a1a; stroke-width:1"/>
+<rect x="148" y="14" width="148" height="19" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="148" y="14" width="147" height="18" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<text x="189" y="29" style="font-family:Dialog; font-size:10;">
+&lt;&lt;Interface&gt;&gt;</text>
+<rect x="148" y="32" width="148" height="21" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="148" y="32" width="147" height="20" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<text x="187" y="47" style="font-family:Dialog; font-size:10;">
+FigureElement</text>
+<rect x="149" y="32" width="146" height="2" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="149" y="32" width="145" height="1" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="148" y="52" width="148" height="70" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="148" y="52" width="147" height="69" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<text x="150" y="68" style="font-family:Dialog; font-size:10; font-style:italic;">
+move(dx: int,dy: int) : void</text>
+<text x="150" y="85" style="font-family:Dialog; font-size:10; font-style:italic;">
+getBounds() : Rectangle</text>
+<text x="150" y="102" style="font-family:Dialog; font-size:10; font-style:italic;">
+contains(p: Point2D) : boolean</text>
+<text x="150" y="119" style="font-family:Dialog; font-size:10; font-style:italic;">
+paint(g2: Graphics2D) : void</text>
+<rect x="14" y="202" width="148" height="159" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="14" y="202" width="147" height="158" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<line x1="15" y1="361" x2="162" y2="361" style="fill:#1a1a1a; stroke:#1a1a1a; stroke-width:1"/>
+<line x1="162" y1="203" x2="162" y2="360" style="fill:#1a1a1a; stroke:#1a1a1a; stroke-width:1"/>
+<rect x="14" y="202" width="148" height="21" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="14" y="202" width="147" height="20" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<text x="38" y="217" style="font-family:Dialog; font-size:10; font-style:italic;">
+ShapeFigureElement</text>
+<rect x="14" y="222" width="148" height="18" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="14" y="222" width="147" height="17" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<rect x="14" y="239" width="148" height="122" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="14" y="239" width="147" height="121" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<text x="16" y="255" style="font-family:Dialog; font-size:10; font-style:italic;">
+move(dx: int,dy: int) : void</text>
+<text x="16" y="272" style="font-family:Dialog; font-size:10; font-style:italic;">
+getShape() : Shape</text>
+<text x="16" y="289" style="font-family:Dialog; font-size:10;">
+getBounds() : Rectangle</text>
+<text x="16" y="306" style="font-family:Dialog; font-size:10;">
+contains(p: Point2D) : boolean</text>
+<text x="16" y="323" style="font-family:Dialog; font-size:10;">
+getLineColor() : Color</text>
+<text x="16" y="340" style="font-family:Dialog; font-size:10;">
+getFillColor() : Color</text>
+<text x="16" y="357" style="font-family:Dialog; font-size:10;">
+paint(g2: Graphics2D) : void</text>
+<rect x="242" y="202" width="188" height="192" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="242" y="202" width="187" height="191" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<line x1="243" y1="394" x2="430" y2="394" style="fill:#1a1a1a; stroke:#1a1a1a; stroke-width:1"/>
+<line x1="430" y1="203" x2="430" y2="393" style="fill:#1a1a1a; stroke:#1a1a1a; stroke-width:1"/>
+<rect x="242" y="202" width="188" height="21" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="242" y="202" width="187" height="20" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<text x="321" y="217" style="font-family:Dialog; font-size:10;">
+Group</text>
+<rect x="242" y="222" width="188" height="172" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="242" y="222" width="187" height="171" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<text x="244" y="238" style="font-family:Dialog; font-size:10;">
+&lt;&lt;create&gt;&gt; Group(first: FigureElement)</text>
+<text x="244" y="255" style="font-family:Dialog; font-size:10;">
+add(fe: FigureElement) : void</text>
+<text x="244" y="272" style="font-family:Dialog; font-size:10;">
+members() : Iterator</text>
+<text x="244" y="289" style="font-family:Dialog; font-size:10;">
+move(dx: int,dy: int) : void</text>
+<text x="244" y="306" style="font-family:Dialog; font-size:10;">
+setIdentifier(identifier: String) : void</text>
+<text x="244" y="323" style="font-family:Dialog; font-size:10;">
+toString() : String</text>
+<text x="244" y="340" style="font-family:Dialog; font-size:10;">
+getBounds() : Rectangle</text>
+<text x="244" y="357" style="font-family:Dialog; font-size:10;">
+contains(p: Point2D) : boolean</text>
+<text x="244" y="374" style="font-family:Dialog; font-size:10;">
+paint(g2: Graphics2D) : void</text>
+<text x="244" y="391" style="font-family:Dialog; font-size:10;">
+size() : int</text>
+<rect x="14" y="490" width="141" height="158" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="14" y="490" width="140" height="157" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<line x1="15" y1="648" x2="155" y2="648" style="fill:#1a1a1a; stroke:#1a1a1a; stroke-width:1"/>
+<line x1="155" y1="491" x2="155" y2="647" style="fill:#1a1a1a; stroke:#1a1a1a; stroke-width:1"/>
+<rect x="14" y="490" width="141" height="21" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="14" y="490" width="140" height="20" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<text x="72" y="505" style="font-family:Dialog; font-size:10;">
+Point</text>
+<rect x="14" y="510" width="141" height="138" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="14" y="510" width="140" height="137" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<text x="16" y="526" style="font-family:Dialog; font-size:10;">
+&lt;&lt;create&gt;&gt; Point(x: int,y: int)</text>
+<text x="16" y="543" style="font-family:Dialog; font-size:10;">
+getX() : int</text>
+<text x="16" y="560" style="font-family:Dialog; font-size:10;">
+getY() : int</text>
+<text x="16" y="577" style="font-family:Dialog; font-size:10;">
+setX(x: int) : void</text>
+<text x="16" y="594" style="font-family:Dialog; font-size:10;">
+setY(y: int) : void</text>
+<text x="16" y="611" style="font-family:Dialog; font-size:10;">
+move(dx: int,dy: int) : void</text>
+<text x="16" y="628" style="font-family:Dialog; font-size:10;">
+toString() : String</text>
+<text x="16" y="645" style="font-family:Dialog; font-size:10;">
+getShape() : Shape</text>
+<rect x="259" y="474" width="177" height="158" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="259" y="474" width="176" height="157" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<line x1="260" y1="632" x2="436" y2="632" style="fill:#1a1a1a; stroke:#1a1a1a; stroke-width:1"/>
+<line x1="436" y1="475" x2="436" y2="631" style="fill:#1a1a1a; stroke:#1a1a1a; stroke-width:1"/>
+<rect x="259" y="474" width="177" height="21" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="259" y="474" width="176" height="20" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<text x="337" y="489" style="font-family:Dialog; font-size:10;">
+Line</text>
+<rect x="259" y="494" width="177" height="138" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="259" y="494" width="176" height="137" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<text x="261" y="510" style="font-family:Dialog; font-size:10;">
+&lt;&lt;create&gt;&gt; Line(p1: Point,p2: Point)</text>
+<text x="261" y="527" style="font-family:Dialog; font-size:10;">
+getP1() : Point</text>
+<text x="261" y="544" style="font-family:Dialog; font-size:10;">
+getP2() : Point</text>
+<text x="261" y="561" style="font-family:Dialog; font-size:10;">
+move(dx: int,dy: int) : void</text>
+<text x="261" y="578" style="font-family:Dialog; font-size:10;">
+toString() : String</text>
+<text x="261" y="595" style="font-family:Dialog; font-size:10;">
+contains(p: Point2D) : boolean</text>
+<text x="261" y="612" style="font-family:Dialog; font-size:10;">
+getLine2D() : Line2D</text>
+<text x="261" y="629" style="font-family:Dialog; font-size:10;">
+getShape() : Shape</text>
+<rect x="492" y="474" width="243" height="175" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="492" y="474" width="242" height="174" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<line x1="493" y1="649" x2="735" y2="649" style="fill:#1a1a1a; stroke:#1a1a1a; stroke-width:1"/>
+<line x1="735" y1="475" x2="735" y2="648" style="fill:#1a1a1a; stroke:#1a1a1a; stroke-width:1"/>
+<rect x="492" y="474" width="243" height="21" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="492" y="474" width="242" height="20" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<text x="604" y="489" style="font-family:Dialog; font-size:10;">
+Box</text>
+<rect x="492" y="494" width="243" height="155" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="492" y="494" width="242" height="154" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<text x="494" y="510" style="font-family:Dialog; font-size:10;">
+&lt;&lt;create&gt;&gt; Box(x0: int,y0: int,width: int,height: int)</text>
+<text x="494" y="527" style="font-family:Dialog; font-size:10;">
+getP0() : Point</text>
+<text x="494" y="544" style="font-family:Dialog; font-size:10;">
+getP1() : Point</text>
+<text x="494" y="561" style="font-family:Dialog; font-size:10;">
+getP2() : Point</text>
+<text x="494" y="578" style="font-family:Dialog; font-size:10;">
+getP3() : Point</text>
+<text x="494" y="595" style="font-family:Dialog; font-size:10;">
+move(dx: int,dy: int) : void</text>
+<text x="494" y="612" style="font-family:Dialog; font-size:10;">
+checkBoxness() : void</text>
+<text x="494" y="629" style="font-family:Dialog; font-size:10;">
+toString() : String</text>
+<text x="494" y="646" style="font-family:Dialog; font-size:10;">
+getShape() : Shape</text>
+<rect x="815" y="474" width="178" height="158" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="815" y="474" width="177" height="157" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<line x1="816" y1="632" x2="993" y2="632" style="fill:#1a1a1a; stroke:#1a1a1a; stroke-width:1"/>
+<line x1="993" y1="475" x2="993" y2="631" style="fill:#1a1a1a; stroke:#1a1a1a; stroke-width:1"/>
+<rect x="815" y="474" width="178" height="21" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="815" y="474" width="177" height="20" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<text x="873" y="489" style="font-family:Dialog; font-size:10;">
+SlothfulPoint</text>
+<rect x="815" y="494" width="178" height="138" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="815" y="494" width="177" height="137" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<text x="817" y="510" style="font-family:Dialog; font-size:10;">
+&lt;&lt;create&gt;&gt; SlothfulPoint(x: int,y: int)</text>
+<text x="817" y="527" style="font-family:Dialog; font-size:10;">
+getX() : int</text>
+<text x="817" y="544" style="font-family:Dialog; font-size:10;">
+getY() : int</text>
+<text x="817" y="561" style="font-family:Dialog; font-size:10;">
+setX(x: int) : void</text>
+<text x="817" y="578" style="font-family:Dialog; font-size:10;">
+setY(y: int) : void</text>
+<text x="817" y="595" style="font-family:Dialog; font-size:10;">
+move(dx: int,dy: int) : void</text>
+<text x="817" y="612" style="font-family:Dialog; font-size:10;">
+toString() : String</text>
+<text x="817" y="629" style="font-family:Dialog; font-size:10;">
+getShape() : Shape</text>
+<rect x="630" y="86" width="139" height="108" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="630" y="86" width="138" height="107" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<line x1="631" y1="194" x2="769" y2="194" style="fill:#1a1a1a; stroke:#1a1a1a; stroke-width:1"/>
+<line x1="769" y1="87" x2="769" y2="193" style="fill:#1a1a1a; stroke:#1a1a1a; stroke-width:1"/>
+<rect x="630" y="86" width="139" height="21" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="630" y="86" width="138" height="20" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<text x="690" y="101" style="font-family:Dialog; font-size:10;">
+Log</text>
+<rect x="630" y="106" width="139" height="18" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="630" y="106" width="138" height="17" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<line x1="632" y1="123" x2="678" y2="123" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<text x="632" y="122" style="font-family:Dialog; font-size:10;">
+data : List</text>
+<rect x="630" y="123" width="139" height="71" style="fill:#ffffff; stroke:#ffffff; stroke-width:1"/>
+<rect x="630" y="123" width="138" height="70" style="fill:#ffffff; stroke:#000000; stroke-width:1"/>
+<line x1="632" y1="140" x2="767" y2="140" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<text x="632" y="139" style="font-family:Dialog; font-size:10;">
+traceObject(o: Object) : void</text>
+<line x1="632" y1="157" x2="720" y2="157" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<text x="632" y="156" style="font-family:Dialog; font-size:10;">
+log(s: String) : void</text>
+<line x1="632" y1="174" x2="700" y2="174" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<text x="632" y="173" style="font-family:Dialog; font-size:10;">
+getData() : List</text>
+<line x1="632" y1="191" x2="691" y2="191" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<text x="632" y="190" style="font-family:Dialog; font-size:10;">
+clear() : void</text>
+<line x1="98" y1="202" x2="98" y2="197" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="98" y1="192" x2="98" y2="187" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="98" y1="182" x2="98" y2="177" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="98" y1="172" x2="98" y2="167" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="98" y1="162" x2="98" y2="157" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="98" y1="154" x2="103" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="108" y1="154" x2="113" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="118" y1="154" x2="123" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="128" y1="154" x2="133" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="138" y1="154" x2="143" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="148" y1="154" x2="153" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="158" y1="154" x2="163" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="168" y1="154" x2="173" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="178" y1="154" x2="183" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="188" y1="154" x2="193" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="198" y1="154" x2="203" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="208" y1="154" x2="213" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="218" y1="154" x2="223" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="228" y1="154" x2="232" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="232" y1="154" x2="232" y2="149" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="232" y1="144" x2="232" y2="139" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="232" y1="134" x2="232" y2="129" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="232" y1="124" x2="232" y2="122" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<polygon style="fill:#ffffff; stroke:#ffffff; stroke-width:1" points="232,123 239,135 225,135"/>
+<polygon style="fill:#ffffff; stroke:#000000; stroke-width:1" points="232,123 239,135 225,135"/>
+<line x1="346" y1="202" x2="346" y2="197" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="346" y1="192" x2="346" y2="187" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="346" y1="182" x2="346" y2="177" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="346" y1="172" x2="346" y2="167" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="346" y1="162" x2="346" y2="157" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="346" y1="154" x2="341" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="336" y1="154" x2="331" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="326" y1="154" x2="321" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="316" y1="154" x2="311" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="306" y1="154" x2="301" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="296" y1="154" x2="291" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="286" y1="154" x2="281" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="276" y1="154" x2="271" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="266" y1="154" x2="261" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="256" y1="154" x2="251" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="246" y1="154" x2="241" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="236" y1="154" x2="232" y2="154" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="232" y1="154" x2="232" y2="149" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="232" y1="144" x2="232" y2="139" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="232" y1="134" x2="232" y2="129" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="232" y1="124" x2="232" y2="122" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<polygon style="fill:#ffffff; stroke:#ffffff; stroke-width:1" points="232,123 239,135 225,135"/>
+<polygon style="fill:#ffffff; stroke:#000000; stroke-width:1" points="232,123 239,135 225,135"/>
+<polyline style="fill:none; stroke:#000000; stroke-width:1" points="84,490 84,442 88,442 88,361"/>
+<polygon style="fill:#ffffff; stroke:#ffffff; stroke-width:1" points="88,362 95,374 81,374"/>
+<polygon style="fill:#ffffff; stroke:#000000; stroke-width:1" points="88,362 95,374 81,374"/>
+<polyline style="fill:none; stroke:#000000; stroke-width:1" points="323,474 323,442 88,442 88,361"/>
+<polygon style="fill:#ffffff; stroke:#ffffff; stroke-width:1" points="88,362 95,374 81,374"/>
+<polygon style="fill:#ffffff; stroke:#000000; stroke-width:1" points="88,362 95,374 81,374"/>
+<polyline style="fill:none; stroke:#000000; stroke-width:1" points="613,474 613,442 88,442 88,361"/>
+<polygon style="fill:#ffffff; stroke:#ffffff; stroke-width:1" points="88,362 95,374 81,374"/>
+<polygon style="fill:#ffffff; stroke:#000000; stroke-width:1" points="88,362 95,374 81,374"/>
+<polyline style="fill:none; stroke:#000000; stroke-width:1" points="904,474 904,442 88,442 88,361"/>
+<polygon style="fill:#ffffff; stroke:#ffffff; stroke-width:1" points="88,362 95,374 81,374"/>
+<polygon style="fill:#ffffff; stroke:#000000; stroke-width:1" points="88,362 95,374 81,374"/>
+<polyline style="fill:none; stroke:#000000; stroke-width:1" points="296,202 296,122"/>
+<polygon style="fill:#ffffff; stroke:#ffffff; stroke-width:1" points="296,202 291,192 296,182 301,192"/>
+<polygon style="fill:#ffffff; stroke:#000000; stroke-width:1" points="296,202 291,192 296,182 301,192"/>
+<line x1="303" y1="135" x2="296" y2="123" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="289" y1="135" x2="296" y2="123" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<text x="279" y="193" style="font-family:Dialog; font-size:10;">
+*</text>
+<polyline style="fill:none; stroke:#000000; stroke-width:1" points="155,566 259,566"/>
+<line x1="167" y1="559" x2="155" y2="566" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="167" y1="573" x2="155" y2="566" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<polygon style="fill:#ffffff; stroke:#ffffff; stroke-width:1" points="258,566 248,571 238,566 248,561"/>
+<polygon style="fill:#ffffff; stroke:#000000; stroke-width:1" points="258,566 248,571 238,566 248,561"/>
+<text x="241" y="557" style="font-family:Dialog; font-size:10;">
+2</text>
+<polyline style="fill:none; stroke:#000000; stroke-width:1" points="155,646 492,646"/>
+<line x1="167" y1="639" x2="155" y2="646" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<line x1="167" y1="653" x2="155" y2="646" style="fill:#000000; stroke:#000000; stroke-width:1"/>
+<polygon style="fill:#ffffff; stroke:#ffffff; stroke-width:1" points="491,646 481,651 471,646 481,641"/>
+<polygon style="fill:#ffffff; stroke:#000000; stroke-width:1" points="491,646 481,651 471,646 481,641"/>
+<text x="474" y="637" style="font-family:Dialog; font-size:10;">
+4</text>
+</svg>
