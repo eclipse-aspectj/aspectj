@@ -342,6 +342,12 @@
       </varlistentry>
 
       <varlistentry>
+        <term>-showWeaveInfo</term>
+        <listitem><para>Emit messages about weaving 
+        </para></listitem>
+      </varlistentry>
+	  
+      <varlistentry>
         <term>-log <replaceable>file</replaceable></term>
         <listitem><para>Specify a log file for compiler messages.
         </para></listitem>

@@ -480,6 +480,14 @@
 				and having a public no-argument constructor.	
 				</para></entry>
 			</row>
+			<row>
+				<entry><para>showWeaveInfo
+				</para></entry>
+				<entry><para>			
+				If true, emit weaver messages.
+				Defaults to <literal>false</literal>.
+				</para></entry>
+			</row>
 			</tbody>
 		</tgroup>
 		</table> 
