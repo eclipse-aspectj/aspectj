@@ -222,32 +222,41 @@ public class BuildArgParser extends Main {
 	}
 
     
+    /**
+     * If the classpath is not set, we use the environment's java.class.path, but remove
+     * the aspectjtools.jar entry from that list in order to prevent wierd bootstrap issues
+     * (refer to bug#39959).
+     */
     public List getClasspath(AjcConfigParser parser) {
     	List ret = new ArrayList();
     	
     	if (parser.bootclasspath == null) {
     		addClasspath(System.getProperty("sun.boot.class.path", ""), ret);
-    	} else {
+    	} else {  
     		addClasspath(parser.bootclasspath, ret);
     	}
 
 		String extdirs = parser.extdirs;
 		if (extdirs == null) {
             extdirs = System.getProperty("java.ext.dirs", "");
-        }
+        }  
         addExtDirs(extdirs, ret);
-
-		if (parser.classpath == null) {
-			//??? this puts the compiler's classes on the classpath
-			//??? this is ajc-1.0 compatible
+		
+		if (parser.classpath == null) {			
 			addClasspath(System.getProperty("java.class.path", ""), ret);
+			List fixedList = new ArrayList();
+			for (Iterator it = ret.iterator(); it.hasNext(); ) {
+				String entry = (String)it.next();
+				if (!entry.endsWith("aspectjtools.jar")) {
+					fixedList.add(entry);
+				}
+			}  
+			ret = fixedList;
 		} else {
 	    	addClasspath(parser.classpath, ret);
 		}	
-		
 		//??? eclipse seems to put outdir on the classpath
 		//??? we're brave and believe we don't need it	    
-	    
 	    return ret;
     }
 
