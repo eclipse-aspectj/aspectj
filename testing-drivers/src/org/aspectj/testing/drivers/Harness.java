@@ -17,8 +17,8 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
-import org.aspectj.testing.harness.bridge.AjcTest;
 import org.aspectj.testing.harness.bridge.AbstractRunSpec;
+import org.aspectj.testing.harness.bridge.AjcTest;
 import org.aspectj.testing.harness.bridge.CompilerRun;
 import org.aspectj.testing.harness.bridge.FlatSuiteReader;
 import org.aspectj.testing.harness.bridge.IncCompilerRun;
@@ -43,13 +43,12 @@ import org.aspectj.testing.xml.XMLWriter;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -110,7 +109,12 @@ public class Harness {
     /** @param args String[] like runMain(String[]) args */
     public static void main(String[] args) throws Exception {
         if (LangUtil.isEmpty(args)) {
-            args = new String[] { "-help" };
+            File argFile = new File("HarnessArgs.txt");
+            if (argFile.canRead()) {
+                args = readArgs(argFile);
+            } else {
+                args = new String[] { "-help" };
+            }
         }
         makeHarness().runMain(args, null);
     }
@@ -129,6 +133,30 @@ public class Harness {
         return optionAliases;
     }
 
+    /**
+     * Read argFile contents into String[],
+     * delimiting at any whitespace
+     */ 
+    private static String[] readArgs(File argFile) {
+        ArrayList args = new ArrayList();
+        int lineNum = 0;
+
+        try {
+            BufferedReader stream =
+                new BufferedReader(new FileReader(argFile));
+            String line;
+            while (null != (line = stream.readLine())) {
+                StringTokenizer st = new StringTokenizer(line);
+                while (st.hasMoreTokens()) {
+                    args.add(st.nextToken());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace(System.err);
+        }    
+        return (String[]) args.toArray(new String[0]);
+    }
+    
     /** aliases key="option" value="option{,option}" */
     private static Properties optionAliases;
     
@@ -846,7 +874,6 @@ class SubstringRunner implements StringRunner {
     SubstringRunner(String substrings, boolean caseSensitive) {
         this.caseSensitive = caseSensitive;
         this.substrings = extractSubstrings(substrings, caseSensitive); 
-        System.err.println("XXX " + Arrays.asList(this.substrings));       
     }
     
     public boolean accept(String input) {
