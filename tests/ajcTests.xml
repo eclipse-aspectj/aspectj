@@ -7568,4 +7568,94 @@
         </compile>
     </ajc-test>
 	
+	<ajc-test dir="bugs/tooManyErrors"
+    	pr="58679"
+		title="Regression from 1.1: NPE in CompilationResult">
+        <compile files="Joinpoints101.jar,DecErrors.aj">
+         
+          <message kind="error" line="10"/><message kind="error" line="11"/>
+          <message kind="error" line="12"/><message kind="error" line="13"/>
+          <message kind="error" line="14"/>
+
+          <message kind="error" line="16"/><message kind="error" line="17"/>
+          <message kind="error" line="18"/><message kind="error" line="19"/>
+          <message kind="error" line="20"/>
+ 
+          <message kind="error" line="22"/><message kind="error" line="23"/>
+          <message kind="error" line="24"/><message kind="error" line="25"/>
+          <message kind="error" line="26"/>
+ 
+          <message kind="error" line="28"/><message kind="error" line="29"/>
+          <message kind="error" line="30"/><message kind="error" line="31"/>
+          <message kind="error" line="32"/>
+  
+          <message kind="error" line="34"/><message kind="error" line="35"/>
+          <message kind="error" line="36"/><message kind="error" line="37"/>
+          <message kind="error" line="38"/>
+ 
+          <message kind="error" line="40"/><message kind="error" line="41"/>
+          <message kind="error" line="42"/><message kind="error" line="43"/>
+          <message kind="error" line="44"/>
+          
+          <message kind="error" line="46"/><message kind="error" line="47"/>
+          <message kind="error" line="48"/><message kind="error" line="49"/>
+          <message kind="error" line="50"/>
+ 
+          <message kind="error" line="52"/><message kind="error" line="53"/>
+          <message kind="error" line="54"/><message kind="error" line="55"/>
+          <message kind="error" line="56"/>
+  
+          <message kind="error" line="58"/><message kind="error" line="59"/>
+          <message kind="error" line="60"/><message kind="error" line="61"/>
+          <message kind="error" line="62"/>
+ 
+          <message kind="error" line="64"/><message kind="error" line="65"/>
+          <message kind="error" line="66"/><message kind="error" line="67"/>
+          <message kind="error" line="68"/>
+          
+          <message kind="error" line="70"/><message kind="error" line="71"/>
+          <message kind="error" line="72"/><message kind="error" line="73"/>
+          <message kind="error" line="74"/>
+ 
+          <message kind="error" line="76"/><message kind="error" line="77"/>
+          <message kind="error" line="78"/><message kind="error" line="79"/>
+          <message kind="error" line="80"/>
+  
+          <message kind="error" line="82"/><message kind="error" line="83"/>
+          <message kind="error" line="84"/><message kind="error" line="85"/>
+          <message kind="error" line="86"/>
+ 
+          <message kind="error" line="88"/><message kind="error" line="89"/>
+          <message kind="error" line="90"/><message kind="error" line="91"/>
+          <message kind="error" line="92"/>
+          
+          <message kind="error" line="94"/><message kind="error" line="95"/>
+          <message kind="error" line="96"/><message kind="error" line="97"/>
+          <message kind="error" line="98"/>
+ 
+          <message kind="error" line="100"/><message kind="error" line="101"/>
+          <message kind="error" line="102"/><message kind="error" line="103"/>
+          <message kind="error" line="104"/>
+  
+          <message kind="error" line="106"/><message kind="error" line="107"/>
+          <message kind="error" line="108"/><message kind="error" line="109"/>
+          <message kind="error" line="110"/>
+ 
+          <message kind="error" line="112"/><message kind="error" line="113"/>
+          <message kind="error" line="114"/><message kind="error" line="115"/>
+          <message kind="error" line="116"/>
+          
+          <message kind="error" line="118"/><message kind="error" line="119"/>
+          <message kind="error" line="120"/><message kind="error" line="121"/>
+          <message kind="error" line="122"/>
+  
+          <message kind="error" line="124"/><message kind="error" line="125"/>
+          <message kind="error" line="126"/><message kind="error" line="127"/>
+          <message kind="error" line="128"/>
+ 
+          <message kind="error" line="130"/>
+          
+        </compile>
+    </ajc-test>
+	
 </suite>
