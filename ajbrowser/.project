@@ -6,6 +6,7 @@
 		<project>ajde</project>
 		<project>asm</project>
 		<project>bridge</project>
+		<project>taskdefs</project>
 		<project>util</project>
 	</projects>
 	<buildSpec>

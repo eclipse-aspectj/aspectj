@@ -8,5 +8,6 @@
     <classpathentry kind="lib" path="/lib/junit/junit.jar" sourcepath="/lib/junit/junit-src.jar"/>
     <classpathentry kind="src" path="/bridge"/>
     <classpathentry kind="src" path="/asm"/>
+    <classpathentry kind="src" path="/taskdefs"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
