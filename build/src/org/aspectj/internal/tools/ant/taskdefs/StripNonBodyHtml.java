@@ -234,7 +234,9 @@ public class StripNonBodyHtml extends MatchingTask {
         return end;
     }
 
-    private static class ParseException extends Exception {}
+    private static class ParseException extends Exception {
+        private static final long serialVersionUID = -1l;        
+    }
 
     private static ParseException barf() {
         return new ParseException();

@@ -254,6 +254,7 @@ public class SampleGatherer {
 //        }
 //    }
     static class Abort extends IOException {
+        private static final long serialVersionUID = -1l;
         Abort(String s) {
             super(s);
         }
