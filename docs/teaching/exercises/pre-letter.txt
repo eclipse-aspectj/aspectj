@@ -1,0 +1,130 @@
+Dear OOPSLA 2002 attendee;
+
+We have you listed as being registered for tutorial T40,
+Aspect-oriented programming with AspectJ.  We are excited about giving
+this tutorial, and hope you will enjoy the presentation, exercises and
+discussion we have prepared.
+
+As with our past tutorials of this form, in the afternoon we would
+like to break the attendees into groups of two or three and work
+through a number of AspectJ exercises together.
+
+We will be bringing media and making ourselves available during breaks
+for help with setup, but in order to jump straight in and give you the
+most we can from this tutorial, it would really help us if many of you
+had an AspectJ environment installed early.
+
+This message contains basic instructions on where to get some needed
+tools.  These instructions will not take much time. 
+
+If you are planning to bring a laptop to the tutorial, would you
+please take the time to do the steps outlined in this message?  
+
+If you're not planning to, you might want to install an AspectJ
+environment on your desktop anyway and try the instructions below, so
+you will be comfortable when we meet on Wednesday.
+
+[If you already have a working AspectJ environment and are familliar
+with it, we still recommend that you upgrade to 1.0.6 and follow the
+steps below]
+
+Thank you, and please don't hesitate to contact us (at
+support@aspectj.org) if you have any questions.  See you on
+Wednesday...
+
+-Erik Hilsdale, 
+ Jim Hugunin, 
+ and the whole AspectJ Team
+
+
+Getting Ready for T40, Aspect-oriented programming with AspectJ
+--------------------------------------
+
+Overview:
+
+  0. Install AspectJ
+  1. Download JUnit and put it on your classpath
+  2. Test your setup
+  
+------------------------------
+0. AspectJ
+
+Download the AspectJ 1.0.6 from
+
+  http://aspectj.org/dl
+
+You should definitly download and intstall the tools package and the
+docs package.  If you plan to use JBuilder, Forte/NetBeans, Emacs, or
+Eclipse for your development, you should download the appropriate
+plugin.
+
+
+------------------------------
+1. JUnit
+
+We use the JUnit framework for testing our exercises.  Download JUnit
+from 
+
+   http://www.junit.org
+
+and place junit.jar on your CLASSPATH.  
+
+
+------------------------------
+2. Test your setup
+
+a. Create a file "Hello.java" with this class:
+
+    class Hello {
+        public static void main(String[] args) {
+            System.err.println(getHelloString());
+        }
+        public static String getHelloString() { 
+            return "Hello, WORLD"; 
+        }
+    }
+
+b. Compile the class with ajc and run it...
+
+    > ajc Hello.java
+    > java Hello
+    Hello, WORLD
+
+c. Create a file "TestHello.java" with this class:
+    
+    public class TestHello extends junit.framework.TestCase {
+        public TestHello(String name) {
+            super(name);
+        }
+        public static void main(String[] args) {
+            junit.textui.TestRunner.run(TestHello.class);
+        }
+        public void testHello() {
+             assertEquals("Hello, OOPSLA", Hello.getHelloString());
+        }
+    }
+
+d. Compile the class with ajc and run it...
+
+    > ajc TestHello.java
+    > java TestHello
+    .F
+    Time: 0.01
+    There was 1 failure:
+    1) testHello(TestHello)junit.framework.ComparisonFailure: 
+    expected:<...OOPSLA> but was:<...WORLD>
+            at TestHello.testHello(TestHello.java:9)
+            at TestHello.main(TestHello.java:6)
+
+    FAILURES!!!
+    Tests run: 1,  Failures: 1,  Errors: 0
+
+e. Oops... the test case seems to want a different string than the
+   tested class.  Fix that, compile whichever file you changed with
+   ajc, run the tester again, and you're done.  Thanks!
+
+    > java TestHello
+    .
+    Time: 0
+
+    OK (1 test)

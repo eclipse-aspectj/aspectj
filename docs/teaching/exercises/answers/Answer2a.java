@@ -1,0 +1,26 @@
+/* *******************************************************************
+ * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     PARC     initial implementation 
+ * ******************************************************************/
+
+package answers;
+
+import figures.Point;
+import figures.FigureElement;
+
+public aspect Answer2a {
+    before(int newValue): set(int Point.*) && args(newValue) {
+        if (newValue < FigureElement.MIN_VALUE) {
+            throw new IllegalArgumentException("too small");
+        } else if (newValue > FigureElement.MAX_VALUE) {
+            throw new IllegalArgumentException("too large");
+        }
+    }
+}

@@ -1,0 +1,5 @@
+-argfile
+base.lst
+figures/gui/FigurePanel.java
+figures/gui/Main.java
+figures/gui/LogAdapter.java
