@@ -24,15 +24,6 @@ import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.WeaveMessage;
-import org.aspectj.weaver.AsmRelationshipProvider;
-import org.aspectj.weaver.ConcreteTypeMunger;
-import org.aspectj.weaver.ResolvedTypeMunger;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
-import org.aspectj.weaver.WeaverStateInfo;
-import org.aspectj.weaver.World;
-import org.aspectj.weaver.bcel.LazyClassGen;
-import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
@@ -48,6 +39,15 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
+import org.aspectj.weaver.AsmRelationshipProvider;
+import org.aspectj.weaver.ConcreteTypeMunger;
+import org.aspectj.weaver.ResolvedTypeMunger;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.LazyClassGen;
+import org.aspectj.weaver.patterns.DeclareParents;
 
 /**
  * Overrides the default eclipse LookupEnvironment for two purposes.
@@ -120,11 +120,46 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		Collection declareParents = factory.getDeclareParents();
 
 		doPendingWeaves();
+		
+		// We now have some list of types to process, and we are about to apply the type mungers.
+		// There can be situations where the order of types passed to the compiler causes the
+		// output from the compiler to vary - THIS IS BAD.  For example, if we have class A
+		// and class B extends A.  Also, an aspect that 'declare parents: A+ implements Serializable'
+		// then depending on whether we see A first, we may or may not make B serializable.
+		
+		// The fix is to process them in the right order, ensuring that for a type we process its 
+		// supertypes and superinterfaces first.  This algorithm may have problems with:
+		// - partial hierarchies (e.g. suppose types A,B,C are in a hierarchy and A and C are to be woven but not B)
+		// - weaving that brings new types in for processing (see pendingTypesToWeave.add() calls) after we thought
+		//   we had the full list.
+		// 
+		// but these aren't common cases (he bravely said...)
+		boolean typeProcessingOrderIsImportant = declareParents.size()>0;
+		
+		if (typeProcessingOrderIsImportant) {
+			List typesToProcess = new ArrayList();
+			for (int i=lastCompletedUnitIndex+1; i<=lastUnitIndex; i++) {
+				CompilationUnitScope cus = units[i].scope;
+				SourceTypeBinding[] stbs = cus.topLevelTypes;
+				for (int j=0; j<stbs.length; j++) {
+					SourceTypeBinding stb = stbs[j];
+					typesToProcess.add(stb);
+				}
+			}
 
-		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
-			weaveInterTypeDeclarations(units[i].scope, typeMungers, declareParents);
+			while (typesToProcess.size()>0) {
+				// A side effect of weaveIntertypes() is that the processed type is removed from the collection
+				weaveIntertypes(typesToProcess,(SourceTypeBinding)typesToProcess.get(0),typeMungers,declareParents);
+			}
+		
+		} else {
+			// Order isn't important
+			for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
+				//System.err.println("Working on "+new String(units[i].getFileName()));
+				weaveInterTypeDeclarations(units[i].scope, typeMungers, declareParents);
+			}
 		}
-        
+		
         for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
             SourceTypeBinding[] b = units[i].scope.topLevelTypes;
             for (int j = 0; j < b.length; j++) {
@@ -145,6 +180,35 @@ public class AjLookupEnvironment extends LookupEnvironment {
                 
 		stepCompleted = BUILD_FIELDS_AND_METHODS;
 		lastCompletedUnitIndex = lastUnitIndex;
+	}
+	
+	/**
+	 * Weave the parents and intertype decls into a given type.  This method looks at the
+	 * supertype and superinterfaces for the specified type and recurses to weave those first
+	 * if they are in the full list of types we are going to process during this compile... it stops recursing
+	 * the first time it hits a type we aren't going to process during this compile.  This could cause problems 
+	 * if you supply 'pieces' of a hierarchy, i.e. the bottom and the top, but not the middle - but what the hell
+	 * are you doing if you do that?
+	 */
+	private void weaveIntertypes(List typesToProcess,SourceTypeBinding typeToWeave,Collection typeMungers,Collection declareParents) {
+		// Look at the supertype first
+	    ReferenceBinding superType = typeToWeave.superclass();
+	    //System.err.println("Been asked to weave "+new String(typeToWeave.getFileName()));
+	    if (typesToProcess.contains(superType) && superType instanceof SourceTypeBinding) {
+	    	//System.err.println("Recursing to supertype "+new String(superType.getFileName()));
+	    	weaveIntertypes(typesToProcess,(SourceTypeBinding)superType,typeMungers,declareParents);
+	    }
+	    // Then look at the superinterface list
+		ReferenceBinding[] interfaceTypes = typeToWeave.superInterfaces();
+	    for (int i = 0; i < interfaceTypes.length; i++) {
+	    	ReferenceBinding binding = interfaceTypes[i];
+	    	if (typesToProcess.contains(binding) && binding instanceof SourceTypeBinding) {
+		    	//System.err.println("Recursing to superinterface "+new String(binding.getFileName()));
+	    		weaveIntertypes(typesToProcess,(SourceTypeBinding)binding,typeMungers,declareParents);
+	    	}
+		}
+	    weaveInterTypeDeclarations(typeToWeave,typeMungers,declareParents,false);
+	    typesToProcess.remove(typeToWeave);
 	}
 
 	private void doPendingWeaves() {
@@ -350,7 +414,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
 			}
 		}
 	}
-
+	
 	private void doDeclareParents(DeclareParents declareParents, SourceTypeBinding sourceType) {
 		List newParents = declareParents.findMatchingNewParents(factory.fromEclipse(sourceType));
 		if (!newParents.isEmpty()) {
