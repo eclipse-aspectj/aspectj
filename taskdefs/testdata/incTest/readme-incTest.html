@@ -2,17 +2,31 @@
 <title>Incremental test of AjcTask Ant task</title>
 <body>
 <h2>Incremental test of AjcTask Ant task</h2>
-This directory contains files for manually testing the
-incremental behavior of the AjcTask Ant task.
-It has an Ant script which builds two input jars
+This directory contains files for manually testing 
+two AjcTask Ant task facilities:
+<ul>
+<li>incremental builds, using tag file or input stream
+    (supported directly by the compiler)
+   </li>
+<li>resource copying using input jars or source roots
+    and output jar or directory
+    (only supported in the Ant task).
+   </li>
+</ul>
+
+<a href="incTest.xml">incTest.xml</a>
+is an Ant script which builds two input jars
 and runs an incremental test using a tag file.
 <p>
 The results must be verified by hand manually at present;
-This test should be updated to run automatically.
+This test should be updated to run using JUnit like
+<a href="../../testsrc/org/aspectj/tools/ant/taskdefs/AjcTaskTest.java">
+         AjcTaskTest.java</a>.
+
 
 <h3>Sample procedure</h3>
 This shows how to set up the test and check whether
-the incremental tag file and injar-copying features work.
+the incremental tag file and resource-copying features work.
 Throughout, <code>{ant}</code> is assumed to be
 <code>../../../lib/ant/bin/ant</code> and the directory
 is assumed to be this directory, with the Ant build script
@@ -49,11 +63,14 @@ The task will do an initial compilation and silently wait.
 	the execution of any static main(String[]) method.
     <p>
     </li>
-<li>Also test that the injar files were copied to the output jar.
-    The non-.class files in <a href="injarSrc">injarSrc/</a>
-    should be included in the output jar:
+<li>Check that the output jar got the injar and src files:
+
 <pre>  jar tf output/outjar.jar</pre>
     <p>
+    The output should list the 
+    non-.class files in <a href="injarSrc">injarSrc/</a>
+    and the non CVS/.java files in the <a href="src">src/</a> dir.
+	<p>
     </li>
 <li>To test incremental compiles,
     edit the aspect <a href="src/TraceMains.java">src/TraceMains.java</a>
@@ -65,18 +82,33 @@ The task will do an initial compilation and silently wait.
     </li>
 <li>Test the generated output jar again
     to see if the changes are reflected in the runtime behavior
-    and if the non-.class files are being copied correctly.
+    and if files are being copied correctly.
     <p>
     </li>
 <li>Repeat this process until satisfied.  Delete the tagfile to quit:
 <pre>  rm output/tagfile.txt</pre>
     <p>
     </li>
+<li>Also run the targets <code>test-all</code>
+and <code>test-both</code>.
+    <p>
+    </li>
 </ol>
 
-To test the <code>-incremental</code> option or to test without
-copying input jar files or using an output jar, edit the 
-<a href="incTest.xml">incTest.xml</a> script and redo the test.
+Many combination of the option variants are possible.
+Test the relevant ones by editing the 
+<a href="incTest.xml">incTest.xml</a> script 
+and redoing the test.
+<p>
+<table cellpadding="1" border="1">
+<tr><th>Option</th><th>Variants</th></tr>
+<tr><td>incremental</td><td>none, -incremental, -tagFile</td></tr>
+<tr><td>output</td><td>none (default "."), destDir, output jar</td></tr>
+<tr><td>injars</td><td>none, one, two</td></tr>
+<tr><td>injar copying</td><td>off (default), on</td></tr>
+<tr><td>source resource copying</td><td>off (default), various patterns</td></tr>
+</table>
+
 <p>
 
 <h3>Clean-up</h3>
@@ -84,14 +116,19 @@ Take care to preserve CVS state after running this test.
 It calls on you to edit checked-in files and generates files
 to local repository directories.  The best thing is to delete
 the <code>output</code> and <code>injars</code> directories
+(using the <code>clean</code> task)
 and revert to repository forms for sources (unless fixing them).
 
 <h3>Upgrade</h3>
-This needs to be upgraded to run manually.
+This needs to be upgraded to run automatically.
 There is a file/tree-comparison utility to revive from the
 aspectj-attic which can be used to compare expected and actual
 results of the jar files.  Setting up the tasks to run incrementally
 might be done using the parallel task, but...
+<p>
+In any case, the nested options tested here should move
+to non-incremental JUnit tests.
+<p>
 <hr>
 </body>
 </html>

@@ -1,6 +1,14 @@
 
 <!-- to test incremental task, run setup then test -->
 <project default="test" basedir=".">
+
+  <path id="aspectjrt.path">
+    <pathelement location="${basedir}/../../../lib/test/aspectjrt.jar"/>
+  </path>
+  <path id="aspects.path">
+    <pathelement location="${basedir}/output/aspects.jar"/>
+  </path>
+
 	<target name="init">
 		<property name="td"
 			location="${basedir}/../.."/>
@@ -21,16 +29,74 @@
           </classpath>
       </taskdef>
 	</target>
+	
+	<target name="clean" depends="init">
+		<delete quiet="on">
+			<fileset dir="${test.dir}/classes"/>
+			<fileset dir="${test.dir}/injars"/>
+		</delete>
+	</target>
 
+	<target name="test-both" depends="init">
+		<mkdir dir="${test.dir}/injars"/>
+		<iajc outjar="${test.dir}/injars/both.jar"
+			failonerror="true">
+			<sourceroots>
+				<pathelement path="${test.dir}/injarSrc/one"/>
+				<pathelement path="${test.dir}/injarSrc/two"/>
+			</sourceroots>
+			<classpath>
+				<pathelement path="${td}/../lib/test/aspectjrt.jar"/>
+			</classpath>
+		</iajc>
+	</target>
+	
+	<target name="test-all" depends="init">
+		<mkdir dir="${test.dir}/injars"/>
+		<mkdir dir="${test.dir}/output"/>
+		<iajc outjar="${test.dir}/injars/all-one.jar"
+			classpath="${td}/../lib/test/aspectjrt.jar"
+			sourceroots="${test.dir}/injarSrc/one"
+			failonerror="true"/>
+		<iajc outjar="${test.dir}/output/aspect.jar"
+			failonerror="true"
+			classpathref="aspectjrt.path"
+			srcdir="${test.dir}/src">
+			<include name="TraceMains.java"/>
+		</iajc>
+		<iajc outjar="${test.dir}/output/all.jar"
+			sourcerootcopyfilter="**/*.java"
+			copyinjars="true"
+			failonerror="true">
+			<classpath>
+				<pathelement path="${td}/../lib/test/aspectjrt.jar"/>
+			</classpath>
+			<aspectpath refid="aspects.path"/>
+			<sourceroots>
+				<pathelement path="${test.dir}/injarSrc/two"/>
+				<pathelement path="${test.dir}/src"/>
+			</sourceroots>
+			<injars>
+				<pathelement path="${test.dir}/injars/all-one.jar"/>
+			</injars>
+		</iajc>
+	</target>
+	
 	<target name="setup" depends="init"
 		description="create input jars">
 		<mkdir dir="${test.dir}/injars"/>
+		<iajc outjar="${test.dir}/injars/both.jar"
+			classpath="${td}/../lib/test/aspectjrt.jar"
+			sourceroots="${test.dir}/injarSrc/one,${test.dir}/injarSrc/two"
+			failonerror="true"/>
 		<iajc outjar="${test.dir}/injars/oneClasses.jar"
 			classpath="${td}/../lib/test/aspectjrt.jar"
-			sourceroots="${test.dir}/injarSrc/one"/>
+			sourceroots="${test.dir}/injarSrc/one"
+			failonerror="true"/>
 		<iajc outjar="${test.dir}/injars/twoClasses.jar"
 			classpath="${td}/../lib/test/aspectjrt.jar"
-			sourceroots="${test.dir}/injarSrc/two"/>		
+			sourceroots="${test.dir}/injarSrc/two"
+			failonerror="true"/>		
 		<zip zipfile="${test.dir}/injars/one.jar">
 			<zipfileset src="${test.dir}/injars/oneClasses.jar"/>
 			<fileset dir="${test.dir}/injarSrc/one"
@@ -50,20 +116,22 @@
 	</target>
 
 	<target name="test" depends="init">
-		<mkdir dir="${test.dir}/output"/>
+		<mkdir dir="${test.dir}/output/classes"/>
 		<property name="tag.file"
 			location="${test.dir}/output/tagFile.txt"/>
 	    <echo message="edit to recompile, delete to quit" 
 	    	file="${tag.file}"/>
 	    <echo message="update to recompile, delete to quit: ${tag.file}"/>
-		<iajc outjar="${test.dir}/output/outjar.jar"
+		<iajc classpath="${td}/../lib/test/aspectjrt.jar"			 
+			outjar="${test.dir}/output/outjar.jar"
 			injars="${test.dir}/injars/one.jar;${test.dir}/injars/two.jar"
-			classpath="${td}/../lib/test/aspectjrt.jar"
 			sourceroots="${test.dir}/src"
-			xCopyInjars="true"
+			copyInjars="true"
+			sourceRootCopyFilter="**/*.java,**/CVS/*"
 			tagFile="${tag.file}"
             verbose="on"/>      
             <!--
+			destDir="${test.dir}/output/classes"
 			incremental="true"
 			-->
 	</target>
