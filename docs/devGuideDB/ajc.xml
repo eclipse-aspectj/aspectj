@@ -222,27 +222,26 @@
       </varlistentry>
 
       <varlistentry>
-        <term>-target <replaceable>[1.1|1.2]</replaceable></term>
-        <listitem><para>Specify classfile target setting (1.1 or 1.2, default is 1.1)
+        <term>-target <replaceable>[1.1 to 1.4]</replaceable></term>
+        <listitem><para>Specify classfile target setting (1.1 to 1.4, default is 1.2)
         </para></listitem>
       </varlistentry>
 
       <varlistentry>
         <term>-1.3</term>
-        <listitem><para>Set compliance level to 1.3 (default)
+        <listitem><para>Set compliance level to 1.3 
         </para></listitem>
       </varlistentry>
 
       <varlistentry>
         <term>-1.4</term>
-        <listitem><para>Set compliance level to 1.4
+        <listitem><para>Set compliance level to 1.4 (default)
         </para></listitem>
       </varlistentry>
 
       <varlistentry>
         <term>-source <replaceable>[1.3|1.4]</replaceable></term>
-        <listitem><para>Toggle assertions (1.3 or 1.4, default is 1.3 
-			in -1.3 mode and 1.4 in -1.4 mode).
+        <listitem><para>Toggle assertions (1.3 or 1.4, default is 1.3).
             When using -source 1.3, an assert() statement valid under
             Java 1.4 will result in a compiler error.
           When using -source 1.4, 
