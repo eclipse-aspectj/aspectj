@@ -384,13 +384,16 @@ public class AjLookupEnvironment extends LookupEnvironment {
 	
 	
 	private List pendingTypesToFinish = new ArrayList();
-	boolean inBinaryTypeCreation = false;
+	boolean inBinaryTypeCreationAndWeaving = false;
+	boolean processingTheQueue = false;
+	
 	public BinaryTypeBinding createBinaryTypeFrom(
 		IBinaryType binaryType,
 		PackageBinding packageBinding,
 		boolean needFieldsAndMethods)
 	{
-		if (inBinaryTypeCreation) {
+
+		if (inBinaryTypeCreationAndWeaving) {
 			BinaryTypeBinding ret = super.createBinaryTypeFrom(
 				binaryType,
 				packageBinding,
@@ -399,23 +402,27 @@ public class AjLookupEnvironment extends LookupEnvironment {
 			return ret;
 		}
 		
-		
-		inBinaryTypeCreation = true;
+		inBinaryTypeCreationAndWeaving = true;
 		try {
 			BinaryTypeBinding ret = super.createBinaryTypeFrom(
 				binaryType,
 				packageBinding,
 				needFieldsAndMethods);
-			weaveInterTypeDeclarations(ret);
-			
+			weaveInterTypeDeclarations(ret);			
 			return ret;
 		} finally {
-			inBinaryTypeCreation = false;
-			if (!pendingTypesToFinish.isEmpty()) {
-				for (Iterator i = pendingTypesToFinish.iterator(); i.hasNext(); ) {
-					weaveInterTypeDeclarations((BinaryTypeBinding)i.next());
+			inBinaryTypeCreationAndWeaving = false;
+			
+			// Start processing the list...
+			if (pendingTypesToFinish.size()>0) {
+				processingTheQueue = true;
+				while (!pendingTypesToFinish.isEmpty()) {
+					BinaryTypeBinding nextVictim = (BinaryTypeBinding)pendingTypesToFinish.remove(0);
+					// During this call we may recurse into this method and add 
+					// more entries to the pendingTypesToFinish list.
+					weaveInterTypeDeclarations(nextVictim);
 				}
-				pendingTypesToFinish.clear();
+				processingTheQueue = false;
 			}
 		}		
 	}
