@@ -37,8 +37,9 @@ import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.eclipse.jdt.internal.compiler.batch.Main;
 
-public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main {
+public class BuildArgParser extends Main {
 
 	private static final String BUNDLE_NAME = "org.aspectj.ajdt.ajc.messages";
     
@@ -49,6 +50,11 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
           super(sw);
           this.stringWriter = sw;
         }
+    }
+
+    /** @return multi-line String usage for the compiler */    
+    public static String getUsage() {
+        return Main.bind("misc.usage", Main.bind("compiler.version"));
     }
     
     /** 
@@ -78,6 +84,14 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
 		this(new StringPrintWriter(new StringWriter()));
 	}
     
+    /**
+     * Generate build configuration for the input args,
+     * passing to handler any error messages.
+     * @param args the String[] arguments for the build configuration
+     * @param handler the IMessageHandler handler for any errors
+     * @return AjBuildConfig per args, 
+     *         which will be invalid unless there are no handler errors.
+     */
 	public AjBuildConfig genBuildConfig(String[] args, IMessageHandler handler) {
 		AjBuildConfig buildConfig = new AjBuildConfig();
 		try {
@@ -129,7 +143,6 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
 			buildConfig.setJavaOptions(options);
 		} catch (InvalidInputException iie) {
             MessageUtil.error(handler, iie.getMessage());
-			printUsage();  // XXX extract usage as String, add to message
 		}
 		return buildConfig;
 	}
@@ -252,9 +265,12 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
          * incremental mode.
          * Signals warnings or errors through handler set in constructor.
          */
-        public void parseOption(String arg, LinkedList args) {
-			int nextArgIndex = args.indexOf(arg)+1;
-            if (arg.equals("-injars")) {;
+        public void parseOption(String arg, LinkedList args) { // XXX use ListIterator.remove()
+			int nextArgIndex = args.indexOf(arg)+1; // XXX assumes unique
+            // trim arg?
+            if (LangUtil.isEmpty(arg)) {
+                showWarning("empty arg found");
+            } else if (arg.equals("-injars")) {;
 				if (args.size() > nextArgIndex) {
 					buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_InJARs, CompilerOptions.PRESERVE);
 					
@@ -267,7 +283,7 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
 		            	if (jarFile.exists() && FileUtil.hasZipSuffix(filename)) {
 			            	buildConfig.getInJars().add(jarFile);    
 		            	} else {
-                            showWarning("ignoring bad injar: " + filename);
+                            showError("bad injar: " + filename);
 		            	}
 		            }
 					
@@ -284,7 +300,7 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
                         if (jarFile.exists() && FileUtil.hasZipSuffix(filename)) {
 			            	buildConfig.getAspectpath().add(jarFile);    
 		            	} else {
-                            showWarning("ignoring bad aspectpath: " + filename);
+                            showError("bad aspectpath: " + filename);
 		            	}
 		            }
 					
@@ -301,7 +317,7 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
 		            	if (f.isDirectory() && f.canRead()) {
 			                sourceRoots.add(f);
 		            	} else {
-                            showWarning("ignoring bad sourceroot: " + f);
+                            showError("bad sourceroot: " + f);
 		            	}		            		
 		            }
 				    if (0 < sourceRoots.size()) {
@@ -309,7 +325,7 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
 					}
 					args.remove(args.get(nextArgIndex));
 				} else {
-					showWarning("-sourceroots requires list of directories");
+					showError("-sourceroots requires list of directories");
 				}
 			} else if (arg.equals("-outjar")) { 
 				if (args.size() > nextArgIndex) {
@@ -322,15 +338,14 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
                             }
                             buildConfig.setOutputJar(jarFile);  
 						} catch (IOException ioe) { 
-                            showWarning("unable to created outjar file: " + jarFile);
+                            showError("unable to create outjar file: " + jarFile);
 						}
 					} else {
-						showWarning("ignoring invalid -outjar file: " + jarFile);
-						buildConfig.setLintSpecFile(null);
+						showError("invalid -outjar file: " + jarFile);
 					}
 					args.remove(args.get(nextArgIndex));
 				} else {
-					showWarning("-outjar requires jar path argument");
+					showError("-outjar requires jar path argument");
 				}
             } else if (arg.equals("-incremental")) {
                 buildConfig.setIncrementalMode(true);
@@ -339,12 +354,12 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
                     File file = makeFile(((ConfigParser.Arg)args.get(nextArgIndex)).getValue());
                     buildConfig.setIncrementalFile(file);
                     if (!file.canRead()) {
-                        showWarning("unreadable -XincrementalFile : " + file);
+                        showError("bad -XincrementalFile : " + file);
                         // if not created before recompile test, stop after first compile
                     }
                     args.remove(args.get(nextArgIndex));
                 } else {
-                    showWarning("-XincrementalFile requires file argument");
+                    showError("-XincrementalFile requires file argument");
                 }
 			} else if (arg.equals("-emacssym")) {
 				buildConfig.setEmacsSymMode(true);
@@ -362,14 +377,14 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
 					if (lintSpecFile.canRead() && lintSpecFile.getName().endsWith(".properties")) {
 						buildConfig.setLintSpecFile(lintSpecFile);	
 					} else {
-						showWarning("ignoring as unreadable -Xlintfile file: " + lintSpecFile);
+						showError("bad -Xlintfile file: " + lintSpecFile);
 						buildConfig.setLintSpecFile(null);
 					}
 					args.remove(args.get(nextArgIndex));
 				} else {
-					showWarning("-Xlintfile requires .properties file argument");
+					showError("-Xlintfile requires .properties file argument");
 				}
-            } else if (arg.equals("-Xlint")) { // XXX two Xlint handlers?
+            } else if (arg.equals("-Xlint")) {
                 buildConfig.getAjOptions().put(
                     AjCompilerOptions.OPTION_Xlint,
                     CompilerOptions.GENERATE);
@@ -378,32 +393,35 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
                 if (7 < arg.length()) {
                     buildConfig.setLintMode(arg.substring(7));
                 } else {
-                    showWarning("ignoring invalid option " + arg);
+                    showError("invalid lint option " + arg);
                 }
-			} else if (arg.equals("-bootclasspath")) { // XXX unsupportedIn1.1
+			} else if (arg.equals("-bootclasspath")) {
 				if (args.size() > nextArgIndex) {
 					bootclasspath = ((ConfigParser.Arg)args.get(nextArgIndex)).getValue();
 					args.remove(args.get(nextArgIndex));	
                 } else {
-                    showWarning("-bootclasspath requires classpath entries");
+                    showError("-bootclasspath requires classpath entries");
                 }
-			} else if (arg.equals("-extdirs")) {     // XXX unsupportedIn1.1
+			} else if (arg.equals("-extdirs")) {
 				if (args.size() > nextArgIndex) {
 					extdirs = ((ConfigParser.Arg)args.get(nextArgIndex)).getValue();
 					args.remove(args.get(nextArgIndex));
                 } else {
-                    showWarning("-extdirs requires list of external directories");
+                    showError("-extdirs requires list of external directories");
                 }
+            // error on directory unless -d, -{boot}classpath, or -extdirs
             } else if (arg.equals("-d")) {
-                if (args.size() > nextArgIndex) {
-                    unparsedArgs.add(arg); // XXX hmm
-//                      ConfigParser.Arg path = (ConfigParser.Arg)args.get(nextArgIndex);
-//                      path.setValue(makeFile(path.getValue()).getPath());
-                } else {
-                    showWarning("-d requires output directory");
-                }
+                dirLookahead(arg, args, nextArgIndex);
+            } else if (arg.equals("-classpath")) {
+                dirLookahead(arg, args, nextArgIndex);
+            } else if (arg.equals("-bootclasspath")) {
+                dirLookahead(arg, args, nextArgIndex);
+            } else if (arg.equals("-extdirs")) {
+                dirLookahead(arg, args, nextArgIndex);
+            } else if (new File(arg).isDirectory()) {
+                showError("dir arg not permitted: " + arg);
 			} else {
-                // XXX unparsed aspectJ options: argfile, @file
+                // argfile, @file parsed by superclass
                 // no eclipse options parsed:
                 // -d args, -help (handled), 
                 // -classpath, -target, -1.3, -1.4, -source [1.3|1.4]
@@ -413,6 +431,18 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
                 // -noExit, -repeat
 		    	unparsedArgs.add(arg);
 			}
+        }
+        protected void dirLookahead(String arg, LinkedList argList, int nextArgIndex) {
+            unparsedArgs.add(arg);
+            ConfigParser.Arg next = (ConfigParser.Arg) argList.get(nextArgIndex);
+            String value = next.getValue();
+            if (!LangUtil.isEmpty(value)) {
+                if (new File(value).isDirectory()) {
+                    unparsedArgs.add(value);
+                    argList.remove(next);
+                    return;
+                }
+            }
         }
 
         public void showError(String message) {
