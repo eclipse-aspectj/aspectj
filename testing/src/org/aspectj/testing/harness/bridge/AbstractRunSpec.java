@@ -613,6 +613,9 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
             && !LangUtil.isEmpty(comment)) {
             out.printAttribute(xmlNames.commentName, comment);
         }
+        if (isStaging && !LangUtil.isEmpty(xmlNames.stagingName)) {
+            out.printAttribute(xmlNames.commentName, comment);
+        }
     }
 
     /**
@@ -733,16 +736,20 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
     public static class XMLNames {
         public static final XMLNames DEFAULT =
             new XMLNames(null, "description", "sourceLocation", 
-                    "keywords", "options", "paths", "comment", false, false, false);
+                    "keywords", "options", "paths", "comment", 
+                    "staging", false, false, false);
         final String descriptionName;
         final String sourceLocationName;
         final String keywordsName;
         final String optionsName;
         final String pathsName;
         final String commentName;
+        final String stagingName;
         final boolean skipDirChanges;
         final boolean skipMessages;
         final boolean skipChildren;
+        // not runtime, skipAll, skipIfAnyChildSkipped, skipSet
+        //     sourceLocations
         /** reset all names/behavior or pass defaultNames 
          * as the defaults for any null elements 
          */
@@ -753,6 +760,7 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
                 String optionsName,
                 String pathsName,
                 String commentName,
+                String stagingName,
                 boolean skipDirChanges,
                 boolean skipMessages,
                 boolean skipChildren) {
@@ -766,6 +774,7 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
                 this.optionsName = (null != optionsName ? optionsName : defaultNames.optionsName);
                 this.pathsName = (null != pathsName ? pathsName : defaultNames.pathsName);
                 this.commentName = (null != commentName ? commentName : defaultNames.commentName);
+                this.stagingName = (null != stagingName ? stagingName : defaultNames.stagingName);
             } else {
                 this.descriptionName = descriptionName;
                 this.sourceLocationName = sourceLocationName;
@@ -773,6 +782,7 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
                 this.optionsName = optionsName;
                 this.pathsName = pathsName;
                 this.commentName = commentName;
+                this.stagingName = stagingName;
             }
         }
     }

@@ -85,11 +85,12 @@ public class AjcTest extends RunSpecIterator {
         /**
          * do description as title, do sourceLocation, 
          * do keywords, do options, skip paths, do comment,
+         * skip staging,
          * skip dirChanges, do messages and do children
          * (though we do children directly). 
          */
         private static final XMLNames NAMES = new XMLNames(XMLNames.DEFAULT,
-                "title", null, null, null, "", null, true, false, false);
+                "title", null, null, null, "", null, "", true, false, false);
         
         private static final String OPTION_PREFIX = "-ajctest";
         private static final String[] VALID_OPTIONS = new String[] { OPTION_PREFIX };
@@ -313,12 +314,13 @@ public class AjcTest extends RunSpecIterator {
             public static final String XMLNAME = "suite";
             /**
              * do description, do sourceLocation, 
-             * do keywords, do options, skip paths, do comment
+             * do keywords, do options, skip paths, do comment,
+             * skip staging,
              * skip dirChanges, skip messages and do children
              * (though we do children directly). 
              */
             private static final XMLNames NAMES = new XMLNames(XMLNames.DEFAULT,
-                    null, null, null, null, "", null, true, true, false);
+                    null, null, null, null, "", null, "", true, true, false);
             File suiteDir;
             public Spec() {
                 super(XMLNAME, false); // do not skip this even if children skip
