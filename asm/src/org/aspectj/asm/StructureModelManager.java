@@ -16,7 +16,8 @@ package org.aspectj.asm;
 
 import java.util.*;
 import java.io.*;
-import org.aspectj.asm.*;
+
+import org.aspectj.bridge.ISourceLocation;
 
 /**
  * @author Mik Kersten
@@ -72,12 +73,15 @@ public class StructureModelManager {
                 ProgramElementNode peNode = (ProgramElementNode)it.next();
                 List entries = new ArrayList();
                 entries.add(peNode);
-                Integer hash = new Integer(peNode.getSourceLocation().getLine());
-                List existingEntry = (List)annotations.get(hash);
-                if (existingEntry != null) {
-                    entries.addAll(existingEntry);
+                ISourceLocation sourceLoc = peNode.getSourceLocation();
+                if (null != sourceLoc) {
+                    Integer hash = new Integer(sourceLoc.getLine());
+                    List existingEntry = (List)annotations.get(hash);
+                    if (existingEntry != null) {
+                        entries.addAll(existingEntry);
+                    }
+                    annotations.put(hash, entries);
                 }
-                annotations.put(hash, entries);
             }
             return annotations;
         }

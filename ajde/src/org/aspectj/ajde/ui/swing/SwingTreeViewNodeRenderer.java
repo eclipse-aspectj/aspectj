@@ -27,6 +27,7 @@ import org.aspectj.asm.ProgramElementNode;
 import org.aspectj.asm.RelationNode;
 import org.aspectj.asm.StructureNode;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
 
 /**
  * @author Mik Kersten
@@ -45,10 +46,12 @@ class SwingTreeViewNodeRenderer extends DefaultTreeCellRenderer {
         StructureNode node = viewNode.getStructureNode();
 
         if (node instanceof LinkNode) {
-            if (((LinkNode)node).getProgramElementNode().getSourceLocation().getSourceFile().getAbsolutePath() == null) {
-                setTextNonSelectionColor(AjdeWidgetStyles.LINK_NODE_NO_SOURCE_COLOR);
-            } else {
+            ISourceLocation sourceLoc = ((LinkNode)node).getProgramElementNode().getSourceLocation();
+            if ((null != sourceLoc) 
+                && (null != sourceLoc.getSourceFile().getAbsolutePath())) {
                 setTextNonSelectionColor(AjdeWidgetStyles.LINK_NODE_COLOR);
+            } else {
+                setTextNonSelectionColor(AjdeWidgetStyles.LINK_NODE_NO_SOURCE_COLOR);
             }
         } else {
         	setTextNonSelectionColor(new Color(0, 0, 0));	

@@ -27,6 +27,7 @@ import org.aspectj.asm.InheritanceAssociation;
 import org.aspectj.asm.LinkNode;
 import org.aspectj.asm.ProgramElementNode;
 import org.aspectj.asm.StructureNode;
+import org.aspectj.bridge.ISourceLocation;
 
 /**
  * Responsible for displaying and controlling the configuration and output of a
@@ -74,8 +75,12 @@ public class BrowserViewManager {
             } else {
                 currNode = (ProgramElementNode)structureNode;
             }
-            Ajde.getDefault().getEditorManager().addViewForSourceLine(currNode.getSourceLocation().getSourceFile().getAbsolutePath(),
-                currNode.getSourceLocation().getLine());
+            ISourceLocation sourceLoc = currNode.getSourceLocation();
+            if (null != sourceLoc) {
+                Ajde.getDefault().getEditorManager().addViewForSourceLine(
+                    sourceLoc.getSourceFile().getAbsolutePath(),
+                    sourceLoc.getLine());
+            }
         }
     }
 
