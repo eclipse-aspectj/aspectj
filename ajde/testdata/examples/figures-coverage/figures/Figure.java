@@ -79,8 +79,10 @@ aspect Figure {
 }
 
 aspect Checks {
-    pointcut illegalNewFigElt():  call(FigureElement+.new(..)) &&
+    pointcut illegalNewFigElt():  call(FigureElement+.new(..))  &&
 	                          !withincode(* Main.main(..));
+
+//	pointcut illegalNewFigElt(): execution(FigureElement+.new(..));
 
     declare error: illegalNewFigElt():
 	    "Illegal figure element constructor call.";
