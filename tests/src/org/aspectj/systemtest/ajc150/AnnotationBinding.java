@@ -11,9 +11,14 @@
 package org.aspectj.systemtest.ajc150;
 
 import java.io.File;
+import java.util.List;
 
 import junit.framework.Test;
 
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.internal.Relationship;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class AnnotationBinding extends XMLBasedAjcTestCase {
@@ -299,4 +304,94 @@ public class AnnotationBinding extends XMLBasedAjcTestCase {
   	runTest("simple binding annotation values where itd ctor is annotated via declare");
   }  
   
+  public void testAnnotationBindingAndITDs4_asmtest() {
+	  //AsmManager.setReporting("c:/debug.txt",true,true,true,true);
+	  runTest("simple binding annotation values where itd method is annotated via declare");  
+		
+	  	if (getCurrentTest().canRunOnThisVM()) {
+		  	IHierarchy top = AsmManager.getDefault().getHierarchy();
+		  	
+		  	IProgramElement ipe = top.findElementForLabel(top.getRoot(),
+		  		IProgramElement.Kind.DECLARE_ANNOTATION_AT_METHOD,
+		  		"declare @method: int A.m() : @Fruit(\"orange\")");
+		  	assertTrue("Couldn't find 'declare @method' element in the tree",ipe!=null);
+		  	
+		    List l = AsmManager.getDefault().getRelationshipMap().get(ipe);
+		  	assertTrue("Should have a relationship but does not ",l.size()>0);
+		  	
+		  	ipe = top.findElementForLabel(top.getRoot(),
+		  		IProgramElement.Kind.DECLARE_ANNOTATION_AT_METHOD,
+		  		"declare @method: int A.n() : @Fruit(\"banana\")");
+		  	assertTrue("Couldn't find 'declare @method element in the tree",ipe!=null);
+		  	
+		    l = AsmManager.getDefault().getRelationshipMap().get(ipe);
+		  	assertTrue("Should have a relationship but does not ",l.size()>0);
+
+			Relationship rel = (Relationship)l.get(0);
+			assertTrue("Should have 1 target but has "+rel.getTargets().size(),rel.getTargets().size()==1);
+			String tgt = (String)rel.getTargets().get(0);
+			assertTrue("Should point to line 10 but doesnt: "+tgt,tgt.indexOf("|10|")!=-1);
+	  	}
+  }  
+ 
+  public void testAnnotationBindingAndITDs5_asmtest() {
+	 // AsmManager.setReporting("c:/debug.txt",true,true,true,true);
+	  runTest("simple binding annotation values where itd field is annotated via declare");  
+		
+	  	if (getCurrentTest().canRunOnThisVM()) {
+		  	IHierarchy top = AsmManager.getDefault().getHierarchy();
+		  	
+		  	IProgramElement ipe = top.findElementForLabel(top.getRoot(),
+		  		IProgramElement.Kind.DECLARE_ANNOTATION_AT_FIELD,
+		  		"declare @field: int A.i : @Fruit(\"orange\")");
+		  	assertTrue("Couldn't find 'declare @type' element in the tree",ipe!=null);
+		  	
+		    List l = AsmManager.getDefault().getRelationshipMap().get(ipe);
+		  	assertTrue("Should have a relationship but does not ",l.size()>0);
+		  	
+		  	ipe = top.findElementForLabel(top.getRoot(),
+		  		IProgramElement.Kind.DECLARE_ANNOTATION_AT_FIELD,
+		  		"declare @field: java.lang.String A.j : @Fruit(\"banana\")");
+		  	assertTrue("Couldn't find 'declare @field element in the tree",ipe!=null);
+		  	
+		    l = AsmManager.getDefault().getRelationshipMap().get(ipe);
+		  	assertTrue("Should have a relationship but does not ",l.size()>0);
+
+			Relationship rel = (Relationship)l.get(0);
+			assertTrue("Should have 1 target but has "+rel.getTargets().size(),rel.getTargets().size()==1);
+			String tgt = (String)rel.getTargets().get(0);
+			assertTrue("Should point to line 10 but doesnt: "+tgt,tgt.indexOf("|10|")!=-1);
+	  	}
+  }  
+  
+  public void testAnnotationBindingAndITDs7_asmtest() {
+	 // AsmManager.setReporting("c:/debug.txt",true,true,true,true);
+	  runTest("simple binding annotation values where itd ctor is annotated via declare");  
+		
+	  	if (getCurrentTest().canRunOnThisVM()) {
+		  	IHierarchy top = AsmManager.getDefault().getHierarchy();
+		  	
+		  	IProgramElement ipe = top.findElementForLabel(top.getRoot(),
+		  		IProgramElement.Kind.DECLARE_ANNOTATION_AT_CONSTRUCTOR,
+		  		"declare @constructor: A.new(java.lang.String) : @Fruit(\"pear\")");
+		  	assertTrue("Couldn't find 'declare @constructor' element in the tree",ipe!=null);
+
+		    List l = AsmManager.getDefault().getRelationshipMap().get(ipe);
+		  	assertTrue("Should have a relationship but does not ",l.size()>0);
+		  	
+		  	ipe = top.findElementForLabel(top.getRoot(),
+		  		IProgramElement.Kind.DECLARE_ANNOTATION_AT_CONSTRUCTOR,
+		  		"declare @constructor: A.new(int) : @Fruit(\"orange\")");
+		  	assertTrue("Couldn't find 'declare @constructor element in the tree",ipe!=null);
+		  	
+		    l = AsmManager.getDefault().getRelationshipMap().get(ipe);
+		  	assertTrue("Should have a relationship but does not ",l.size()>0);
+
+			Relationship rel = (Relationship)l.get(0);
+			assertTrue("Should have 1 target but has "+rel.getTargets().size(),rel.getTargets().size()==1);
+			String tgt = (String)rel.getTargets().get(0);
+			assertTrue("Should point to line 10 but doesnt: "+tgt,tgt.indexOf("|10|")!=-1);
+	  	}
+  }  
+ 
 }

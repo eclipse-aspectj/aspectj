@@ -127,7 +127,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs150" pr="83645" title="pertypewithin({interface}) illegal field modifier">
-        <compile files="PR83645.aj"/>
+        <compile files="PR83645.java"/>
         <run class="PR83645"/>
     </ajc-test>
         
@@ -2088,7 +2088,7 @@
    
    
    <ajc-test dir="java5/annotations/binding" title="simple binding annotation values where itd method is annotated via declare">
-      <compile files="BindingWithDeclaredAnnotationItds1.aj" options="-1.5"/>
+      <compile files="BindingWithDeclaredAnnotationItds1.aj" options="-1.5,-emacssym"/>
       <run class="BindingWithDeclaredAnnotationItds1">
         <stderr>
           <line text="Found orange at jp call(int A.m()) (BindingWithDeclaredAnnotationItds1.aj:16)"/>
@@ -2102,7 +2102,7 @@
    </ajc-test>
    
    <ajc-test dir="java5/annotations/binding" title="simple binding annotation values where itd field is annotated via declare">
-      <compile files="BindingWithDeclaredAnnotationItds2.aj" options="-1.5"/>
+      <compile files="BindingWithDeclaredAnnotationItds2.aj" options="-1.5,-emacssym"/>
       <run class="BindingWithDeclaredAnnotationItds2">
         <stderr>
           <line text="Found orange at jp set(int A.i) (BindingWithDeclaredAnnotationItds2.aj:16)"/>
@@ -2113,7 +2113,7 @@
    </ajc-test>
    
     <ajc-test dir="java5/annotations/binding" title="simple binding annotation values where itd field is annotated multiple times via declare">
-      <compile files="BindingWithDeclaredAnnotationItds3.aj" options="-1.5"/>
+      <compile files="BindingWithDeclaredAnnotationItds3.aj" options="-1.5,-emacssym"/>
       <run class="BindingWithDeclaredAnnotationItds3">
         <stderr>
 			<line text="Found fruit orange at jp set(int A.i) (BindingWithDeclaredAnnotationItds3.aj:13)"/>
@@ -2123,7 +2123,7 @@
    </ajc-test>
    
    <ajc-test dir="java5/annotations/binding" title="simple binding annotation values where itd ctor is annotated via declare">
-      <compile files="BindingWithDeclaredAnnotationItds4.aj" options="-1.5"/>
+      <compile files="BindingWithDeclaredAnnotationItds4.aj" options="-1.5,-emacssym"/>
       <run class="BindingWithDeclaredAnnotationItds4">
         <stderr>
           <line text="Found pear at jp execution(A(String)) (BindingWithDeclaredAnnotationItds4.aj:8)"/>

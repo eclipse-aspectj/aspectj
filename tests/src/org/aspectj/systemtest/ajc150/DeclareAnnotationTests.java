@@ -293,7 +293,7 @@ public class DeclareAnnotationTests extends XMLBasedAjcTestCase {
 	  	
 	  	IProgramElement ipe = top.findElementForLabel(top.getRoot(),
 	  		IProgramElement.Kind.DECLARE_ANNOTATION_AT_TYPE,
-	  		"declare at_type: p.q.DeathByAnnotations : @Colored(\"red\")");
+	  		"declare @type: p.q.DeathByAnnotations : @Colored(\"red\")");
 	  	assertTrue("Couldn't find 'declare @type' element in the tree",ipe!=null);
 	  	
 	    List l = AsmManager.getDefault().getRelationshipMap().get(ipe);
@@ -301,7 +301,7 @@ public class DeclareAnnotationTests extends XMLBasedAjcTestCase {
 	  	
 	  	ipe = top.findElementForLabel(top.getRoot(),
 	  		IProgramElement.Kind.DECLARE_ANNOTATION_AT_METHOD,
-	  		"declare at_method: * m*(..) : @Fruit(\"tomato\")");
+	  		"declare @method: * m*(..) : @Fruit(\"tomato\")");
 	  	assertTrue("Couldn't find 'declare @method element in the tree",ipe!=null);
 	  	
 	    l = AsmManager.getDefault().getRelationshipMap().get(ipe);
@@ -309,14 +309,14 @@ public class DeclareAnnotationTests extends XMLBasedAjcTestCase {
 	  	
 	  	ipe = top.findElementForLabel(top.getRoot(),
 	  		IProgramElement.Kind.DECLARE_ANNOTATION_AT_CONSTRUCTOR,
-	  		"declare at_constructor: p.q.DeathByAnnotations.new(..) : @Fruit(\"tomato\")");
+	  		"declare @constructor: p.q.DeathByAnnotations.new(..) : @Fruit(\"tomato\")");
 	  	assertTrue("Couldn't find 'declare @constructor element in the tree",ipe!=null);
 	    l = AsmManager.getDefault().getRelationshipMap().get(ipe);
 	  	assertTrue("Should have a relationship but does not ",l.size()>0);
 	  	
 	  	ipe = top.findElementForLabel(top.getRoot(),
 	  		IProgramElement.Kind.DECLARE_ANNOTATION_AT_FIELD,
-	  		"declare at_field: * p.q.DeathByAnnotations.* : @Material(\"wood\")");
+	  		"declare @field: * p.q.DeathByAnnotations.* : @Material(\"wood\")");
 	  	assertTrue("Couldn't find 'declare @field element in the tree",ipe!=null);
 	    l = AsmManager.getDefault().getRelationshipMap().get(ipe);
 	  	assertTrue("Should have a relationship but does not ",l.size()>0);
