@@ -728,7 +728,7 @@ public final class LazyMethodGen {
                 continue;
             }
             Instruction i = ih.getInstruction();
-            Instruction c = i.copy(); // Use clone for shallow copy
+            Instruction c = Utility.copyInstruction(i);
 
             if (c instanceof BranchInstruction)
                 map.put(ih, fresh.append((BranchInstruction) c));

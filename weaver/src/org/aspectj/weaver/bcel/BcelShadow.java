@@ -953,7 +953,7 @@ public class BcelShadow extends Shadow {
         for (InstructionHandle ih = range.getStart(); ih != range.getEnd(); ih = ih.getNext()) {
             if (ih.getInstruction() instanceof ReturnInstruction) {
                 returns.add(ih);
-                ret = ih.getInstruction().copy();
+                ret = Utility.copyInstruction(ih.getInstruction());
             }
         }
         InstructionList retList;

@@ -21,6 +21,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.BIPUSH;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.BranchInstruction;
@@ -34,9 +35,10 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.InstructionTargeter;
 import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.SIPUSH;
+import org.apache.bcel.generic.SWITCH;
+import org.apache.bcel.generic.Select;
 import org.apache.bcel.generic.TargetLostException;
 import org.apache.bcel.generic.Type;
 import org.aspectj.weaver.BCException;
@@ -419,6 +421,41 @@ public class Utility {
             throw new BCException("this really can't happen");
         }
    	}
+   	
+   	/**
+   	 * Fix for Bugzilla #39479, #40109 patch contributed by Andy Clement
+   	 * 
+   	 * Need to manually copy Select instructions - if we rely on the the 'fresh' object
+   	 * created by copy(), the InstructionHandle array 'targets' inside the Select
+   	 * object will not have been deep copied, so modifying targets in fresh will modify
+   	 * the original Select - not what we want !  (It is a bug in BCEL to do with cloning
+   	 * Select objects).
+   	 * 
+   	 * <pre>
+   	 * declare error:
+   	 *     call(* Instruction.copy()) && within(org.aspectj.weaver)
+   	 *       && !withincode(* Utility.copyInstruction(Instruction)):
+   	 *     "use Utility.copyInstruction to work-around bug in Select.copy()";
+   	 * </pre>
+   	 */
+	public static Instruction copyInstruction(Instruction i) {
+		if (i instanceof Select) {
+			Select freshSelect = (Select)i;
+				  
+			// Create a new targets array that looks just like the existing one
+			InstructionHandle[] targets = new InstructionHandle[freshSelect.getTargets().length];
+			for (int ii = 0; ii < targets.length; ii++) {
+			  targets[ii] = freshSelect.getTargets()[ii];
+			}
+				  
+			// Create a new select statement with the new targets array
+			SWITCH switchStatement = new SWITCH(freshSelect.getMatchs(),targets,freshSelect.getTarget());
+			return (Select)switchStatement.getInstruction();	
+		} else {
+			return i.copy(); // Use clone for shallow copy...
+		}
+	}
+   	
 
 	/** returns -1 if no source line attribute */
 	// this naive version overruns the JVM stack size, if only Java understood tail recursion...

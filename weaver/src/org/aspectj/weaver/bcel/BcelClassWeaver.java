@@ -443,7 +443,7 @@ class BcelClassWeaver implements IClassWeaver {
 			src != null;
 			src = src.getNext()) 
 		{
-			Instruction fresh = src.getInstruction().copy();
+			Instruction fresh = Utility.copyInstruction(src.getInstruction());
 			InstructionHandle dest;
 			if (fresh instanceof CPInstruction) {
 				// need to reset index to go to new constant pool.  This is totally

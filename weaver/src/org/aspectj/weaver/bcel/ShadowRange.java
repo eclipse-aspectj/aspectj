@@ -71,7 +71,7 @@ final class ShadowRange extends Range {
         for (InstructionHandle oldIh = start.getNext(); oldIh != end; oldIh = oldIh.getNext()) {
 		    // first we copy the instruction itself.  
             Instruction oldI = oldIh.getInstruction();
-            Instruction freshI = (oldI == RANGEINSTRUCTION) ? oldI : oldI.copy();
+            Instruction freshI = (oldI == RANGEINSTRUCTION) ? oldI : Utility.copyInstruction(oldI);
 
 			// Now we add it to the new instruction list.
             InstructionHandle freshIh;
