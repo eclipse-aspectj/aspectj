@@ -136,7 +136,7 @@
 		<compile files="Test.java, Util.java" />
         <run class="Test"/>
 		<compile files="injar.jar, DeclareImplements.aj" options="-Xlint:warning">
-            <message kind="warning" line="0"/>
+            <message kind="warning" line="3"/>
 		</compile>
         <run class="Util" options="-fail"/>
 	</ajc-test>
