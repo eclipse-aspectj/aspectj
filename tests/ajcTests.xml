@@ -2094,7 +2094,7 @@
     </ajc-test>
 
     <ajc-test dir="errors" pr="138"
-      title=", PR#139 the arounds return something but there is no returns statement"
+      title="the arounds return something but there is no returns statement"
       keywords="from-errors">
         <compile files="MissingReturns.java">
             <message kind="error" line="14"/>
