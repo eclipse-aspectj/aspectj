@@ -323,19 +323,15 @@ public class Main {
         public static final String THROWN_PREFIX =
             "Exception thrown from AspectJ "+ Version.text + LangUtil.EOL
         + ""+ LangUtil.EOL
-        + "Please email to us as follows:" + LangUtil.EOL
-        + "       to: jitterbug@aspectj.org" + LangUtil.EOL
-        + "  subject: top stack trace File:line, e.g., \"SomeFile.java:243\"" + LangUtil.EOL
-        + "  message: copy the entire stack trace." + LangUtil.EOL
-        + "" + LangUtil.EOL
-        + "Your message can also request follow-up or provide a workaround." + LangUtil.EOL
-        + "To make the bug a priority, please include a test program." + LangUtil.EOL
-        + "" + LangUtil.EOL
-        + "You may search for duplicate bugs (i.e., known workarounds):" + LangUtil.EOL
-        + "" + LangUtil.EOL
-        + "http://aspectj.org/bugs" + LangUtil.EOL
-        + "http://aspectj.org/bugs/incoming?expression=SomeFile.java:243" + LangUtil.EOL
-        + ""  + LangUtil.EOL;
+        + "This might be logged as a bug already -- see the bug database at" + LangUtil.EOL
+ 		+ "  http://dev.eclipse.org (product: AspectJ, component: compiler)"  + LangUtil.EOL
+        + ""  + LangUtil.EOL
+        + "Bugs for exceptions thrown have titles File:line from the top stack, "  + LangUtil.EOL
+        + "e.g., \"SomeFile.java:243\"" + LangUtil.EOL
+        + ""  + LangUtil.EOL
+        + "If you don't find the exception below in a bug, please add a new bug" + LangUtil.EOL
+        + "To make the bug a priority, please include a test program" + LangUtil.EOL
+        + "that can reproduce this exception."  + LangUtil.EOL;
    
         public static final IMessageHandler VERBOSE 
             = new MessagePrinter(true);
