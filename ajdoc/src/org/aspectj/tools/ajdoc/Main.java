@@ -439,8 +439,8 @@ public class Main implements Config {
 
     static void setSourcepath(String arg) {
            sourcepath.clear();
-           arg = arg + ";"; // makes things easier for ourselves
-           StringTokenizer tokenizer = new StringTokenizer(arg, ";");
+           arg = arg + File.pathSeparator; // makes things easier for ourselves
+           StringTokenizer tokenizer = new StringTokenizer(arg, File.pathSeparator);
            while (tokenizer.hasMoreElements()) {
                  sourcepath.addElement(tokenizer.nextElement());
            }
@@ -451,7 +451,7 @@ public class Main implements Config {
        for (int i = 0; i < sourcepath.size(); i++) {
            cPath += (String)sourcepath.elementAt(i) + Config.DIR_SEP_CHAR + Config.WORKING_DIR;
            if (i != sourcepath.size()-1) {
-              cPath += ";";
+              cPath += File.pathSeparator;
            }
        }
        return cPath;
