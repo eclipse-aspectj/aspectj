@@ -3346,8 +3346,13 @@ vmparam -Xmx384m
       <qandaentry>
         <question id="q:interfaceDeclarations"
             xreflabel="Q:I declared a member on a interface, but javac does not see it.">
+          <para>I declared a member on a interface, but javac does not see it.
+          </para>
+        </question>
+      
+        <answer>
           <para>
-          	This is true.  The workaround is to compile all the top-level implementating
+          	You have to compile all the top-level implementating
           	classes of the interface using <literal>ajc</literal>.
             From an email by Jim Hugunin on the requirements for AspectJ 1.1 to 
             implement members declared by an aspect on an interface:
@@ -3358,11 +3363,6 @@ vmparam -Xmx384m
             be woven by that same aspect.  
             (A class C is a top-most implementor of an interface I if C implements I 
             and the superclass of C does not implement I.)
-          </para>
-        </question>
-        <answer>
-          <para>
-      
           </para>
         </answer>
       </qandaentry>
