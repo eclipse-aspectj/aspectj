@@ -6498,6 +6498,21 @@
 		</compile>
 	</ajc-test>
 
-
+	<ajc-test dir="bugs"
+		pr="40805" 
+		title="interface call signatures when declaring method in aspect">
+		<compile files="DeclareWarningAndInterfaceMethodCW.java">
+			<message kind="warning" line="27" text="call getSomething"/>
+			<message kind="warning" line="27" text="call ICanGetSomething.getSomething"/>
+			<message kind="warning" line="31" text="call getSomething"/>
+			<message kind="warning" line="31" text="call ICanGetSomething.getSomething"/>
+			<message kind="warning" line="33" text="call getSomething"/>
+			<message kind="warning" line="33" text="call ICanGetSomething.getSomething"/>
+			<message kind="warning" line="35" text="call getSomething"/>
+			<message kind="warning" line="35" text="call ICanGetSomething.getSomething"/>
+			<message kind="warning" line="38" text="call getSomething"/>
+			<message kind="warning" line="38" text="call ICanGetSomething.getSomething"/>
+		</compile>
+	</ajc-test>
 
 </suite>

@@ -901,12 +901,22 @@ public abstract class ResolvedTypeX extends TypeX {
 
     /** return null if not found */
 	public ResolvedMember lookupMemberNoSupers(Member member) {
+		ResolvedMember ret;
 		if (member.getKind() == Member.FIELD) {
-			return lookupMember(member, getDeclaredFields());
+			ret = lookupMember(member, getDeclaredFields());
 		} else {
 			// assert member.getKind() == Member.METHOD || member.getKind() == Member.CONSTRUCTOR
-			return lookupMember(member, getDeclaredMethods());
+			ret = lookupMember(member, getDeclaredMethods());
 		}
+		if (ret == null && interTypeMungers != null) {
+			for (Iterator i = interTypeMungers.iterator(); i.hasNext();) {
+				ConcreteTypeMunger tm = (ConcreteTypeMunger) i.next();
+				if (matches(tm.getSignature(), member)) {
+					return tm.getSignature();
+				}
+			}
+		}
+		return ret;
 	}
 	
 	protected List interTypeMungers = new ArrayList(0);
