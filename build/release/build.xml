@@ -412,7 +412,7 @@
 		depends="init-variables">
 		<antcall target="run-harness-once">
 			<param name="suite.filename" value="ajcTests"/>
-			<param name="harness.args" value="-ajctaskCompiler -ajctestSkipKeywords=knownLimitations-ajctaskCompiler"/>
+			<param name="harness.args" value="-ajctaskCompiler -ajctestSkipKeywords=knownLimitation-ajctaskCompiler"/>
 			<param name="harness.suffix" value="-ajctaskCompiler"/>
 		</antcall>
 	</target>
@@ -430,7 +430,7 @@
 			value="-release -logFail -killTemp"/>
 
 		<property name="harness.output.file"
-			location="${aj.build.log.dir}/${suite.filename}${emacssym}.txt"/>
+			location="${aj.build.log.dir}/${suite.filename}${harness.suffix}.txt"/>
 		<echo>
   run-harness-once ${suite.filename}.xml 
       with options ${rho.default.options} ${harness.args}
