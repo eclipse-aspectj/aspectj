@@ -92,21 +92,10 @@ public class AjLookupEnvironment extends LookupEnvironment {
             SourceTypeBinding[] b = units[i].scope.topLevelTypes;
             for (int j = 0; j < b.length; j++) {
                 buildInterTypeAndPerClause(b[j].scope);
-            }
-        }
-        for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
-            SourceTypeBinding[] b = units[i].scope.topLevelTypes;
-            for (int j = 0; j < b.length; j++) {
-                resolvePointcutDeclarations(b[j].scope);
-            }
-        }
-        
-        for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
-            SourceTypeBinding[] b = units[i].scope.topLevelTypes;
-            for (int j = 0; j < b.length; j++) {
                 addCrosscuttingStructures(b[j].scope);
             }
-        }
+        }        
+
 		factory.finishTypeMungers();
 	
 		// now do weaving
@@ -118,8 +107,25 @@ public class AjLookupEnvironment extends LookupEnvironment {
 
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			weaveInterTypeDeclarations(units[i].scope, typeMungers, declareParents);
-            units[i] = null; // release unnecessary reference to the parsed unit
 		}
+        
+        for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
+            SourceTypeBinding[] b = units[i].scope.topLevelTypes;
+            for (int j = 0; j < b.length; j++) {
+                resolvePointcutDeclarations(b[j].scope);
+            }
+        }
+        
+        for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
+            SourceTypeBinding[] b = units[i].scope.topLevelTypes;
+            for (int j = 0; j < b.length; j++) {
+                addAdviceLikeDeclares(b[j].scope);
+            }
+        }
+        
+        for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
+            units[i] = null; // release unnecessary reference to the parsed unit
+        }
                 
 		stepCompleted = BUILD_FIELDS_AND_METHODS;
 		lastCompletedUnitIndex = lastUnitIndex;
@@ -132,6 +138,21 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		}
 		pendingTypesToWeave.clear();
 	}
+    
+    private void addAdviceLikeDeclares(ClassScope s) {
+        TypeDeclaration dec = s.referenceContext;
+        
+        if (dec instanceof AspectDeclaration) {
+            ResolvedTypeX typeX = factory.fromEclipse(dec.binding);
+            factory.getWorld().getCrosscuttingMembersSet().addAdviceLikeDeclares(typeX);
+        }
+        
+        SourceTypeBinding sourceType = s.referenceContext.binding;
+        ReferenceBinding[] memberTypes = sourceType.memberTypes;
+        for (int i = 0, length = memberTypes.length; i < length; i++) {
+            addCrosscuttingStructures(((SourceTypeBinding) memberTypes[i]).scope);
+        }
+    }
 
     private void addCrosscuttingStructures(ClassScope s) {
         TypeDeclaration dec = s.referenceContext;

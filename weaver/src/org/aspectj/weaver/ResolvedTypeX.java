@@ -329,14 +329,14 @@ public abstract class ResolvedTypeX extends TypeX {
 		crosscuttingMembers.setPerClause(getPerClause());
 		crosscuttingMembers.addShadowMungers(collectShadowMungers());
 		crosscuttingMembers.addTypeMungers(getTypeMungers());
-		crosscuttingMembers.addDeclares(collectDeclares());
+		crosscuttingMembers.addDeclares(collectDeclares(!this.doesNotExposeShadowMungers()));
 		crosscuttingMembers.addPrivilegedAccesses(getPrivilegedAccesses());
 		
 		//System.err.println("collected cc members: " + this + ", " + collectDeclares());
 		return crosscuttingMembers;
 	}
 	
-	private final Collection collectDeclares() {
+	public final Collection collectDeclares(boolean includeAdviceLike) {
 		if (! this.isAspect() ) return Collections.EMPTY_LIST;
 		
 		ArrayList ret = new ArrayList();
@@ -345,6 +345,9 @@ public abstract class ResolvedTypeX extends TypeX {
 			Declare dec = (Declare) i.next();
 			if (!dec.isAdviceLike()) ret.add(dec);
 		}
+        
+        if (!includeAdviceLike) return ret;
+        
 		if (!this.isAbstract()) {
 			//ret.addAll(getDeclares());
 			final Iterators.Filter dupFilter = Iterators.dupFilter();

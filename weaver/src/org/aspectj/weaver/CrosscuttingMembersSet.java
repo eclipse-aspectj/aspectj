@@ -59,6 +59,11 @@ public class CrosscuttingMembersSet {
 			}
 		}
 	}
+    
+    public void addAdviceLikeDeclares(ResolvedTypeX aspectType) {
+        CrosscuttingMembers xcut = (CrosscuttingMembers)members.get(aspectType);
+        xcut.addDeclares(aspectType.collectDeclares(true));
+    }
 	
 	public boolean deleteAspect(TypeX aspectType) {
 		boolean isAspect = members.remove(aspectType) != null;
@@ -69,7 +74,7 @@ public class CrosscuttingMembersSet {
 	public boolean containsAspect(TypeX aspectType) {
 		return members.containsKey(aspectType);
 	}
-	
+    
 	//XXX only for testing
 	public void addFixedCrosscuttingMembers(ResolvedTypeX aspectType) {
 		members.put(aspectType, aspectType.crosscuttingMembers);
@@ -139,8 +144,5 @@ public class CrosscuttingMembersSet {
 			declareDominates = ret;
 		}
 		return declareDominates;
-	}
-	
-	
-	
+	}	
 }

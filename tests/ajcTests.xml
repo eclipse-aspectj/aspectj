@@ -6751,4 +6751,10 @@
 		<compile files="aspects/Softener.aj,test/NoSoftener.java"/>
 		<run class="test.NoSoftener"/>
 	</ajc-test>
+	
+    <ajc-test dir="bugs" pr="42993"
+   	    title="Interaction between pointcut binding and declare parents">
+        <compile files="ParentsAndPointcuts.java"/>
+        <run class="ParentsAndPointcuts"/>
+    </ajc-test>
 </suite>
