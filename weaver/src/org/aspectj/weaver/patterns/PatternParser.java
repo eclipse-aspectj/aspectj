@@ -985,24 +985,26 @@ public class PatternParser {
 			name = NamePattern.ANY;
 		} else {
 			kind = Member.METHOD;
+			IToken nameToken = tokenSource.peek();
 			declaringType = parseTypePattern();
 			if (maybeEat(".")) {
+				nameToken = tokenSource.peek();
 			    name = parseNamePattern();
 		    } else {
 		    	name = tryToExtractName(declaringType);
-		    	if (name == null) {
-		    		throw new ParserException("name pattern", tokenSource.peek());
-		    	}
-		    	String simpleName = name.maybeGetSimpleName();
-		    	//XXX should add check for any Java keywords
-		    	if (simpleName != null && simpleName.equals("new")) {
-		    		throw new ParserException("constructor patterns have no return type", 
-		    							tokenSource.peek());
-		    	}
 		    	if (declaringType.toString().equals("")) {
 		    		declaringType = TypePattern.ANY;
 		    	}
-			}
+		    }
+	    	if (name == null) {
+	    		throw new ParserException("name pattern", tokenSource.peek());
+	    	}
+	    	String simpleName = name.maybeGetSimpleName();
+	    	//XXX should add check for any Java keywords
+	    	if (simpleName != null && simpleName.equals("new")) {
+	    		throw new ParserException("method name (not constructor)", 
+	    							nameToken);
+	    	}
 		}
 		
 		TypePatternList parameterTypes = parseArgumentsPattern();

@@ -125,7 +125,13 @@
     <ajc-test dir="bugs150" title="bad asm for enums" vm="1.5">
         <compile files="Rainbow.java" options="-emacssym,-1.5"/>
     </ajc-test>
-    
+
+    <ajc-test dir="java5/annotations" title="invalid cons syntax" vm="1.5">
+        <compile files="SyntaxError.aj" options="-1.5">
+            <message kind="error" line="3" text="Syntax error on token &quot;new&quot;, &quot;method name (not constructor)&quot; expected"/>
+        </compile>
+    </ajc-test>
+        
     <!-- Annotation binding tests -->
     
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="call annotation binding 1">

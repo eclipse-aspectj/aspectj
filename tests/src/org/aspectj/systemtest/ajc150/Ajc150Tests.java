@@ -137,6 +137,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("declare soft w. catch block");
   }
   
+  public void testSyntaxError() {
+	  runTest("invalid cons syntax");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
