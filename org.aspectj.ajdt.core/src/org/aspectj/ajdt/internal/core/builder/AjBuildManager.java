@@ -79,13 +79,10 @@ public class AjBuildManager {
 			setBuildConfig(buildConfig);
             currentHandler = counter;
 			String check = checkRtJar(buildConfig);
-            // XXX MessageUtil.abortUnlessNull(counter, check);
 			if (check != null) {
-                // XXX change to ABORT?
                 IMessage message = new Message(check, Message.WARNING, null, null);
                 // give delegate a chance to implement different message (abort)?
                 counter.handleMessage(message); 
-			    throw new AbortException(message);
             }
 
 			setupModel();
