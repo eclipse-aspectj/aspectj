@@ -15,7 +15,7 @@
 <!-- ========================================================================= -->
 
 <!DOCTYPE project [
-<!ENTITY build-properties SYSTEM "file:build-properties.xml">
+<!ENTITY build-properties SYSTEM "build-properties.xml">
 ]>
 <project name="build" default="all" basedir=".">
 
@@ -361,7 +361,8 @@ To use testing client jar in tests,
 
 	<target name="eclipse.plugins" depends="org.aspectj.ajde.source,
 	                                        org.aspectj.ajde.doc,
-	                                        org.aspectj.ajde"
+	                                        org.aspectj.ajde,
+	                                        org.aspectj.aspectjrt"
      	    description="create the Eclipse distribution plugins"/>	  
 
 	<target name="org.aspectj.ajde.source" depends="init"
@@ -424,6 +425,21 @@ To use testing client jar in tests,
 	  </jar> 	  
 	  <jar destfile="${aj.plugin.org.aspectj.ajde.dir}/../org.aspectj.ajde_${build.version.eclipse.plugins}.jar">
 	    <fileset dir="${aj.plugin.org.aspectj.ajde.dir}" includes="**"/>	    
+	  </jar>
+	</target>
+
+	<target name="org.aspectj.aspectjrt" depends="init,aspectj"
+	  description="build the AspectJ runtime library plugin for Eclipse">
+	  <copy todir="${aj.plugin.org.aspectj.aspectjrt.dir}">
+	    <fileset dir="${aspectj.modules.dir}/eclipse.plugin/org.aspectj.aspectjrt"/>
+	  </copy>	  
+	  <replace file="${aj.plugin.org.aspectj.aspectjrt.dir}/plugin.xml"
+	           token="build.version.eclipse.plugins"
+	           value="${build.version.eclipse.plugins}"/>
+	  <copy file="${aj.dist.dir}/tools/lib/aspectjrt.jar"
+	        todir="${aj.plugin.org.aspectj.aspectjrt.dir}"/> 
+	  <jar destfile="${aj.plugin.org.aspectj.aspectjrt.dir}/../org.aspectj.aspectjrt_${build.version.eclipse.plugins}.jar">
+	    <fileset dir="${aj.plugin.org.aspectj.aspectjrt.dir}" includes="**"/>	    
 	  </jar>
 	</target>
 

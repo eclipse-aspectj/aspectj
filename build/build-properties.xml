@@ -71,6 +71,8 @@
             location="${aj.build.dir}/webDeploy"/>
       <property name="aj.plugin.org.aspectj.ajde.dir" 
             location="${aj.dist.dir}/ide/eclipse/org.aspectj.ajde"/>
+      <property name="aj.plugin.org.aspectj.aspectjrt.dir" 
+            location="${aj.dist.dir}/ide/eclipse/org.aspectj.aspectjrt"/>
       <property name="aj.plugin.org.aspectj.ajde.source.dir" 
             location="${aj.dist.dir}/ide/eclipse/org.aspectj.ajde.source"/>
       <property name="aj.plugin.org.aspectj.ajde.doc.dir" 
