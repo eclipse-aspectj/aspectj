@@ -50,6 +50,8 @@ import junit.framework.TestCase;
  */
 public class AjcTestCase extends TestCase {
 
+	private RunResult lastRunResult;
+	
 	/**
 	 * The Ajc (compiler) instance used for thet test. Created afresh
 	 * during the test setup.
@@ -476,6 +478,10 @@ public class AjcTestCase extends TestCase {
 		ajc.setShouldEmptySandbox(empty);
 	}
 
+	public RunResult getLastRunResult() {
+		return lastRunResult;
+	}
+	
 	/**
 	 * Run the given class (main method), and return the result in a RunResult. The program runs with
 	 * a classpath containing the sandbox directory, runtime, testing-client, bridge, and
@@ -495,7 +501,7 @@ public class AjcTestCase extends TestCase {
 	 * the sandbox.
 	 */
 	public RunResult run(String className, String[] args, String classpath)  {
-		RunResult result = null;
+		lastRunResult = null;
 		StringBuffer cp = new StringBuffer();
 		if (classpath != null) {
 			cp.append(classpath);
@@ -541,7 +547,7 @@ public class AjcTestCase extends TestCase {
 			System.setOut(new PrintStream(baosOut));
 			System.setErr(new PrintStream(baosErr));
 			mainMethod.invoke(null,new Object[] {args});
-			result = new RunResult(command.toString(),new String(baosOut.toByteArray()),new String(baosErr.toByteArray()));
+			lastRunResult = new RunResult(command.toString(),new String(baosOut.toByteArray()),new String(baosErr.toByteArray()));
 		} catch(ClassNotFoundException cnf) {
 			fail("Can't find class: " + className);
 		} catch(NoSuchMethodException nsm) {
@@ -555,7 +561,7 @@ public class AjcTestCase extends TestCase {
 			System.setOut(systemOut);
 			System.setErr(systemErr);
 		}
-		return result;
+		return lastRunResult;
 	}
 	
 	private List copyAll(List in) {
