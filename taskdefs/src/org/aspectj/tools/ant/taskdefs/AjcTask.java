@@ -505,7 +505,7 @@ public class AjcTask extends MatchingTask {
     }
 
     public void setNoImportError(boolean noImportError) {  
-        cmd.addFlag("-noImportError", noImportError);
+        cmd.addFlag("-warn:-unusedImport", noImportError);
     }
 
     public void setEncoding(String encoding) {   

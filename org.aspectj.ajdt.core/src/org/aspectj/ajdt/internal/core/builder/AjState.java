@@ -29,6 +29,7 @@ import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFormatException;
 import org.eclipse.jdt.internal.core.builder.ReferenceCollection;
+import org.eclipse.jdt.internal.core.builder.StringSet;
 
 
 /**
@@ -239,16 +240,26 @@ public class AjState {
 		return cf;
 	}
 	
+	private static StringSet makeStringSet(List strings) {
+		StringSet ret = new StringSet(strings.size());
+		for (Iterator iter = strings.iterator(); iter.hasNext();) {
+			String element = (String) iter.next();
+			ret.add(element);
+		}
+		return ret;
+	}
+		
+	
 	
 	protected void addAffectedSourceFiles(List sourceFiles) {
 		if (qualifiedStrings.isEmpty() && simpleStrings.isEmpty()) return;
 
 		// the qualifiedStrings are of the form 'p1/p2' & the simpleStrings are just 'X'
-		char[][][] qualifiedNames = ReferenceCollection.internQualifiedNames(qualifiedStrings);
+		char[][][] qualifiedNames = ReferenceCollection.internQualifiedNames(makeStringSet(qualifiedStrings));
 		// if a well known qualified name was found then we can skip over these
 		if (qualifiedNames.length < qualifiedStrings.size())
 			qualifiedNames = null;
-		char[][] simpleNames = ReferenceCollection.internSimpleNames(simpleStrings);
+		char[][] simpleNames = ReferenceCollection.internSimpleNames(makeStringSet(simpleStrings));
 		// if a well known name was found then we can skip over these
 		if (simpleNames.length < simpleStrings.size())
 			simpleNames = null;

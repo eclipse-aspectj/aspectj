@@ -38,7 +38,7 @@ public class AsmElementFormatter {
 			node.setKind(IProgramElement.Kind.ADVICE);
 
 			if (ad.kind == AdviceKind.Around) {
-				node.setReturnType(ad.returnTypeToString(0));
+				node.setReturnType(ad.returnType.toString()); //returnTypeToString(0));
 			}
 	
 			String details = "";

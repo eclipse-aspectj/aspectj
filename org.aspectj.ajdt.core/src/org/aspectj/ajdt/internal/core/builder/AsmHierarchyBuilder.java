@@ -29,7 +29,7 @@ import org.eclipse.jdt.internal.compiler.ast.*;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.problem.ProblemHandler;
 
-public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
+public class AsmHierarchyBuilder extends ASTVisitor {
 	
     public static void build(    
         CompilationUnitDeclaration unit,
@@ -193,7 +193,7 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
 	}
 	
 	// ??? share impl with visit(TypeDeclaration, ..) ?
-	public boolean visit(MemberTypeDeclaration memberTypeDeclaration, ClassScope scope) {
+	public boolean visit(TypeDeclaration memberTypeDeclaration, ClassScope scope) {
 		String name = new String(memberTypeDeclaration.name);
 		//System.err.println("member type with name: " + name);
 		
@@ -213,11 +213,11 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
 		stack.push(peNode);
 		return true;
 	}
-	public void endVisit(MemberTypeDeclaration memberTypeDeclaration, ClassScope scope) {
+	public void endVisit(TypeDeclaration memberTypeDeclaration, ClassScope scope) {
 		stack.pop();
 	}
 	
-	public boolean visit(LocalTypeDeclaration memberTypeDeclaration, BlockScope scope) {
+	public boolean visit(TypeDeclaration memberTypeDeclaration, BlockScope scope) {
 		String name = new String(memberTypeDeclaration.name);
 		
 		String fullName = "<undefined>";
@@ -248,17 +248,10 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
 		stack.push(peNode);
 		return true;
 	}
-	public void endVisit(LocalTypeDeclaration memberTypeDeclaration, BlockScope scope) {
+	public void endVisit(TypeDeclaration memberTypeDeclaration, BlockScope scope) {
 		stack.pop();
 	}
 	
-	public boolean visit(AnonymousLocalTypeDeclaration memberTypeDeclaration, BlockScope scope) {
-		return visit((LocalTypeDeclaration)memberTypeDeclaration, scope);
-	}
-
-	public void endVisit(AnonymousLocalTypeDeclaration memberTypeDeclaration, BlockScope scope) {
-		stack.pop();
-	}
 	
 	private IProgramElement findEnclosingClass(Stack stack) {
 		for (int i = stack.size()-1; i >= 0; i--) {
@@ -442,7 +435,7 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
 	}
 
 	// ??? handle non-existant files
-	private ISourceLocation makeLocation(AstNode node) {		
+	private ISourceLocation makeLocation(ASTNode node) {		
 		String fileName = "";
 		if (currCompilationResult.getFileName() != null) {
 			fileName = new String(currCompilationResult.getFileName());
@@ -464,7 +457,7 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
 	// AMC - overloaded set of methods to get start and end lines for
 	// various ASTNode types. They have no common ancestor in the
 	// hierarchy!!
-	private int getStartLine( AstNode n){
+	private int getStartLine( ASTNode n){
 //		if (  n instanceof AbstractVariableDeclaration ) return getStartLine( (AbstractVariableDeclaration)n);
 //		if (  n instanceof AbstractMethodDeclaration ) return getStartLine( (AbstractMethodDeclaration)n);
 //		if (  n instanceof TypeDeclaration ) return getStartLine( (TypeDeclaration)n);
@@ -476,7 +469,7 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
 	// AMC - overloaded set of methods to get start and end lines for
 	// various ASTNode types. They have no common ancestor in the
 	// hierarchy!!
-	private int getEndLine( AstNode n){
+	private int getEndLine( ASTNode n){
 		if (  n instanceof AbstractVariableDeclaration ) return getEndLine( (AbstractVariableDeclaration)n);
 		if (  n instanceof AbstractMethodDeclaration ) return getEndLine( (AbstractMethodDeclaration)n);
 		if (  n instanceof TypeDeclaration ) return getEndLine( (TypeDeclaration)n);	

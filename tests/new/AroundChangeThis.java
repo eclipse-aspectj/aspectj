@@ -12,15 +12,23 @@ public class AroundChangeThis {
         c1.m(sc);
         Tester.checkAndClearEvents(new String[] { "c1.m(sc)", "sc.m(c1)" });
 
-        sc.m(c1);
-        Tester.checkAndClearEvents(new String[] { "sc.m(c1)", "c1.m(sc)" });
+//		this is the 1.3 behaviour
+//        sc.m(c1);
+//        Tester.checkAndClearEvents(new String[] { "sc.m(c1)", "c1.m(sc)" });
 
+		try {
+			// the 1.4 behaviour is....
+			// in byte code we have a call to SubC.m
+			sc.m(c1);
+			Tester.checkFailed("Expected ClassCastException");
+		} catch (ClassCastException e) {
+		}
+		
         try {
             sc.m1(c1);
+			Tester.checkFailed("Expected ClassCastException");
         } catch (ClassCastException e) {
-            Tester.event("ClassCastException");
         }
-        Tester.checkAndClearEvents(new String[] { "ClassCastException" });
 
         Tester.printEvents();
     }

@@ -19,7 +19,7 @@ import java.util.EmptyStackException;
 import junit.framework.*;
 
 import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.ast.LocalTypeDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.env.*;
 import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 
@@ -55,7 +55,7 @@ public class AsmBuilderTest extends TestCase {
 			}
 			
 		};
-		LocalTypeDeclaration local = new LocalTypeDeclaration(new CompilationResult(cu, 0, 0, 0));
+		TypeDeclaration local = new TypeDeclaration(new CompilationResult(cu, 0, 0, 0));
 		local.name = new char[2];
 		BlockScope scope = null;
 		

@@ -20,6 +20,7 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 
+import org.aspectj.ajdt.ajc.BuildArgParser;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
@@ -194,11 +195,7 @@ public class Main {
     public void run(String[] args, IMessageHolder holder) {
         if (LangUtil.isEmpty(args)) {
             args = new String[] { "-help" };
-        } else if (Arrays.asList(args).contains("-version")) {
-        	System.out.println("AspectJ Compiler " + Version.text);
-        	System.out.println();
-        	return;
-    	} else if (controller.running()) {
+        }  else if (controller.running()) {
             fail(holder, "already running with controller: " + controller, null);
             return;
         } 

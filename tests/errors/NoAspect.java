@@ -7,8 +7,7 @@ public class NoAspect {
     }
 }
 
-class A {
-    static pointcut p(): target(*) && call(* go(..));
-    before(): p() {
-    }
+
+class A 
+{    before(): target(*) && call(* go(..)) {}
 }

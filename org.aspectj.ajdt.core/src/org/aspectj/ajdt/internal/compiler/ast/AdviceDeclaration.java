@@ -38,7 +38,7 @@ import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
-import org.eclipse.jdt.internal.core.util.CharArrayOps;
+import org.eclipse.jdt.core.compiler.CharOperation;
 
 /**
  * Represents before, after and around advice in an aspect.
@@ -123,7 +123,7 @@ public class AdviceDeclaration extends MethodDeclaration {
 				resize(baseArgumentCount+1, binding.parameters),
 				exceptions, binding.declaringClass);
 			proceedMethodBinding.selector =
-				CharArrayOps.concat(selector, proceedMethodBinding.selector);
+				CharOperation.concat(selector, proceedMethodBinding.selector);
 		}
 		
 		super.resolveStatements(); //upperScope);
@@ -340,47 +340,62 @@ public class AdviceDeclaration extends MethodDeclaration {
 	}
 
 	
-	public String toString(int tab) {
-		String s = tabString(tab);
-		if (modifiers != AccDefault) {
-			s += modifiersString(modifiers);
-		}
+//	public String toString(int tab) {
+//		String s = tabString(tab);
+//		if (modifiers != AccDefault) {
+//			s += modifiersString(modifiers);
+//		}
+//
+//		if (kind == AdviceKind.Around) {
+//			s += returnTypeToString(0);
+//		}
+//
+//		s += new String(selector) + "("; //$NON-NLS-1$
+//		if (arguments != null) {
+//			for (int i = 0; i < arguments.length; i++) {
+//				s += arguments[i].toString(0);
+//				if (i != (arguments.length - 1))
+//					s = s + ", "; //$NON-NLS-1$
+//			};
+//		};
+//		s += ")"; //$NON-NLS-1$
+//		
+//		if (extraArgument != null) {
+//			s += "(" + extraArgument.toString(0) + ")";
+//		}
+//		
+//		
+//		
+//		if (thrownExceptions != null) {
+//			s += " throws "; //$NON-NLS-1$
+//			for (int i = 0; i < thrownExceptions.length; i++) {
+//				s += thrownExceptions[i].toString(0);
+//				if (i != (thrownExceptions.length - 1))
+//					s = s + ", "; //$NON-NLS-1$
+//			};
+//		};
+//		
+//		s += ": ";
+//		if (pointcutDesignator != null) {
+//			s += pointcutDesignator.toString(0);
+//		}
+//
+//		s += toStringStatements(tab + 1);
+//		return s;
+//	}
 
-		if (kind == AdviceKind.Around) {
-			s += returnTypeToString(0);
-		}
-
-		s += new String(selector) + "("; //$NON-NLS-1$
-		if (arguments != null) {
-			for (int i = 0; i < arguments.length; i++) {
-				s += arguments[i].toString(0);
-				if (i != (arguments.length - 1))
-					s = s + ", "; //$NON-NLS-1$
-			};
-		};
-		s += ")"; //$NON-NLS-1$
-		
-		if (extraArgument != null) {
-			s += "(" + extraArgument.toString(0) + ")";
-		}
-		
-		
-		
-		if (thrownExceptions != null) {
-			s += " throws "; //$NON-NLS-1$
-			for (int i = 0; i < thrownExceptions.length; i++) {
-				s += thrownExceptions[i].toString(0);
-				if (i != (thrownExceptions.length - 1))
-					s = s + ", "; //$NON-NLS-1$
-			};
-		};
-		
-		s += ": ";
+	public StringBuffer printBody(int indent, StringBuffer output) {
+		output.append(": ");
 		if (pointcutDesignator != null) {
-			s += pointcutDesignator.toString(0);
+			output.append(pointcutDesignator.toString());
 		}
+		return super.printBody(indent,output);
+	}
 
-		s += toStringStatements(tab + 1);
-		return s;
+	public StringBuffer printReturnType(int indent, StringBuffer output) {
+		if (this.kind == AdviceKind.Around) {
+			return super.printReturnType(indent,output);
+		}
+		return output;
 	}
 }

@@ -126,7 +126,7 @@ public class EclipseFactory {
 		return ret;
 	}
 
-	public static AstNode astForLocation(IHasPosition location) {
+	public static ASTNode astForLocation(IHasPosition location) {
 		return new EmptyStatement(location.getStart(), location.getEnd());
 	}
 	
@@ -307,12 +307,12 @@ public class EclipseFactory {
 	}
 
 
-	public Shadow makeShadow(AstNode location, ReferenceContext context) {
+	public Shadow makeShadow(ASTNode location, ReferenceContext context) {
 		return EclipseShadow.makeShadow(this, location, context);
 	}
 	
 	public Shadow makeShadow(ReferenceContext context) {
-		return EclipseShadow.makeShadow(this, (AstNode) context, context);
+		return EclipseShadow.makeShadow(this, (ASTNode) context, context);
 	}
 	
 	public void addSourceTypeBinding(SourceTypeBinding binding) {

@@ -30,6 +30,9 @@
   knownLimitation-ajdeCompiler
                       Accepted limitation of the AJDE CompileCommand wrapper
                       
+  poorErrorMessages   test case passes but errors produced by compiler could do with
+                      improvement                      
+                      
   Test titles:
   
   Titles should be unique and not change, and related tests should have the 
@@ -1088,7 +1091,7 @@
     </ajc-test>
 
     <ajc-test dir="new" title="Error expected for constructor in interfaces"
-      keywords="from-java">
+      keywords="from-java,purejava">
         <compile files="InterfaceConstructor.java">
             <message kind="error" line="2"/>
             <message kind="error" line="6"/>
@@ -1572,7 +1575,6 @@
       keywords="from-errors">
         <compile files="MismatchedParens.java">
             <message kind="error" line="16"/>
-            <message kind="error" line="17"/>
         </compile>
     </ajc-test>
 
@@ -1585,7 +1587,7 @@
 
     <ajc-test dir="errors" pr="218"
       title="import statement within class body crashes compiler"
-      keywords="from-errors">
+      keywords="from-errors,purejava">
         <compile files="ImportWithinClassBody.java">
             <message kind="error" line="8"/>
         </compile>
@@ -1594,8 +1596,7 @@
     <ajc-test dir="errors" pr="219" title="extra closing brace"
       keywords="from-errors">
         <compile files="ExtraClosingBrace.java">
-            <message kind="error" line="9"/>
-            <message kind="error" line="10"/>
+            <message kind="error" line="8"/>
         </compile>
     </ajc-test>
 
@@ -1642,7 +1643,7 @@
     <ajc-test dir="errors" pr="280" title="wildcard used for returns clause"
       keywords="from-errors">
         <compile files="WildcardForReturns.java">
-            <message kind="error" line="17"/>
+            <message kind="error" line="17"/>           
         </compile>
     </ajc-test>
 
@@ -1776,7 +1777,7 @@
       title="pre 0.7 introduction form outside aspect body causes an EmptyStackException"
       keywords="from-errors">
         <compile files="BadIntroduction.java">
-            <message kind="error" line="10"/>
+            <message kind="error" line="3"/>
         </compile>
     </ajc-test>
 
@@ -1791,7 +1792,7 @@
       title="a before() clause at the class-level causes an EmptyStackException"
       keywords="from-errors">
         <compile files="TopLevelBefore.java">
-            <message kind="error" line="9"/>
+            <message kind="error" line="3"/>
         </compile>
     </ajc-test>
 
@@ -1799,7 +1800,7 @@
       title="an after() clause at the class-level causes an EmptyStackException"
       keywords="from-errors">
         <compile files="TopLevelAfter.java">
-            <message kind="error" line="9"/>
+            <message kind="error" line="3"/>
         </compile>
     </ajc-test>
 
@@ -1807,7 +1808,7 @@
       title="an around() clause at the class-level causes an EmptyStackException"
       keywords="from-errors">
         <compile files="TopLevelAround.java">
-            <message kind="error" line="9"/>
+            <message kind="error" line="3"/>
         </compile>
     </ajc-test>
 
@@ -2288,11 +2289,14 @@
 
     <ajc-test dir="new" pr="457"
       title="Compiler should suggest using aspect when advice, pointcuts, or introduction is in a class"
-      keywords="from-errors">
+      keywords="from-errors,poorErrorMessages">
         <compile files="RecognizeAspectCE.java">
+            <message kind="error" line="3"  
+            	file="RecognizeAspectCE.java"
+            	text="Syntax error"/>
             <message kind="error" line="6"  
             	file="RecognizeAspectCE.java"
-            	text="Syntax error on token"/>
+            	text="Syntax error"/>
         </compile>
     </ajc-test>
 
@@ -3115,7 +3119,8 @@
         <run class="NewAnonymous"/>
     </ajc-test>
 
-    <ajc-test dir="new" title="Cannot bind a name." keywords="from-resolved_10x">
+    <ajc-test dir="new" 
+    	title="Cannot bind a name." keywords="from-resolved_10x,purejava">
         <compile files="CannotReferenceSuper.java"/>
         <run class="CannotReferenceSuper"/>
     </ajc-test>
@@ -3298,10 +3303,17 @@
     <ajc-test dir="new"
       title="around advice on calls within inner classes (including protected method calls)"
       keywords="from-resolved_10x">
-        <compile files="AroundInnerCalls.java"/>
-        <run class="AroundInnerCalls"/>
+        <compile files="AroundInnerCalls13.java" options="-1.3"/>
+        <run class="AroundInnerCalls13"/>
     </ajc-test>
 
+	<ajc-test dir="new"
+      title="around advice on calls within inner classes (including protected method calls)"
+      keywords="from-resolved_10x">
+        <compile files="AroundInnerCalls.java" options="-1.4"/>
+        <run class="AroundInnerCalls"/>
+    </ajc-test>
+    
     <ajc-test dir="new" title="Arguments to runNext should be final when needed"
       keywords="from-resolved_10x">
         <compile files="Finals.java"/>
@@ -3380,13 +3392,13 @@
         <run class="EmptyStack"/>
     </ajc-test>
 
-    <ajc-test dir="new"
-      title="check that MightHaveAspect interface is created correctly for an aspect in deep package"
-      keywords="from-resolved_10x">
-        <compile files="EachObjectTarget.java,EachObjectInDeepPackage.java"/>
-        <run class="EachObjectTarget"/>
-    </ajc-test>
-
+	<ajc-test dir="new/perThis"
+	    title="check that MightHaveAspect interface is created correctly for an aspect in deep package"
+	    keywords="from-resolved_10x">
+	      <compile files="p/EachObjectTarget.java,the/deep/pkg/EachObjectInDeepPackage.java"/>
+	      <run class="p.EachObjectTarget"/>
+	</ajc-test>
+  
     <ajc-test dir="new" title="Defines clfow$ajc0 more once. [eachcflow]"
       keywords="from-resolved_10x">
         <compile files="Binkley.java"/>
@@ -4433,7 +4445,7 @@
     <ajc-test dir="new"
       title="changing this in around's proceed reported by Rich Price"
       keywords="from-resolved_104">
-        <compile files="AroundChangeThis.java"/>
+        <compile files="AroundChangeThis.java" options="-1.4"/>
         <run class="AroundChangeThis"/>
     </ajc-test>
 
@@ -5213,17 +5225,17 @@
 
     <!-- .................................... option tests -->
     <!-- .................................... -warn tests -->
-    <ajc-test dir="options" 
+      <ajc-test dir="options/deprecated" 
       title="options -warn:deprecation">
-        <compile files="WarnDeprecated.java"
+        <compile files="WarnDeprecated.java,OldStuff.java"
         	options="!eclipse,-warn:deprecation">
             <message kind="warning" line="10"/>
         </compile>
     </ajc-test>
     
-    <ajc-test dir="options" 
+    <ajc-test dir="options/deprecated" 
       title="options -warn:deprecation not enabled">
-        <compile files="WarnDeprecated.java"
+        <compile files="WarnDeprecated.java,OldStuff.java"
         	options="!eclipse">
         </compile>
     </ajc-test>
@@ -5350,7 +5362,7 @@
     
     <ajc-test dir="new" title="expect CE for unterminated declare error">
         <compile files="UnterminatedDeclareErrorCE.java">
-            <message kind="error" line="5"/>
+            <message kind="error" line="4"/>
         </compile>
     </ajc-test>
     
@@ -6777,13 +6789,18 @@
     </ajc-test>
     
   	<ajc-test dir="bugs/concretizeNpe" pr="43033"
-		title="NPE in concretization error path">
+		title="NPE in concretization error path"
+		keywords="poorErrorMessages">
 		<compile files="base/ExceptionHandling.java,model/ModelExceptionHandling.java">
+		<!--
 		  <message line="5" kind="error" text="pointcut base.ExceptionHandling.scope() is abstract"/>
 		  <message line="4" kind="error" text="inherited abstract pointcut base.ExceptionHandling.scope() is not made concrete"/>
 		  <message line="8" kind="error" text="inherited abstract pointcut base.ExceptionHandling.scope() is not made concrete"/>
-		  <message line="12" kind="error" text="Unmatched bracket"/>
-		  <message line="13" kind="error" text="Syntax error on token"/>
+		  <message line="12" kind="error" />
+		  <message line="13" kind="error" />
+		-->
+		  <message line="12" kind="error" />		
+		  <message line="13" kind="error" />
 		</compile>
 	</ajc-test>
 
@@ -6862,7 +6879,8 @@
 		pr="41952"
 		>
 		<compile 
-			files="DeclaringTypeWarning.java" >
+			files="DeclaringTypeWarning.java"
+			options="-1.3" >
 			<message kind="warning" line="6" text="declaring type">
 				<source line="12" file="DeclaringTypeWarning.java" />
 			</message>
@@ -6872,16 +6890,27 @@
 		</compile>
 		</ajc-test>
 
-	<ajc-test dir="bugs"
-		title="XLint warning for call PCD's using subtype of defining type (-Xlint:ignore)"
+   <ajc-test dir="bugs"
+		title="XLint warning for call PCD's using subtype of defining type (-1.3 -Xlint:ignore)"
 		pr="41952"
 		>
 		<compile
-			options="-Xlint:ignore" 
+			options="-Xlint:ignore,-1.3" 
 			files="DeclaringTypeWarning.java" >
 		</compile>
 	</ajc-test>
-
+	
+	<ajc-test dir="bugs"
+		title="XLint warning for call PCD's using subtype of defining type (-1.4 -Xlint:ignore)"
+		pr="41952"
+		>
+		<compile
+			options="-Xlint:ignore,-1.4" 
+			files="DeclaringTypeWarning.java" >
+            <message kind="warning" line="12"/>
+		</compile>
+	</ajc-test>
+	
 	<ajc-test dir="bugs"
 		title="XLint warning for call PCD's using subtype of defining type (-1.4)"
 		pr="41952"
@@ -6920,4 +6949,19 @@
        <compile files="TestSoftening.java">
        </compile>
     </ajc-test>
+    
+     <ajc-test dir="bugs" pr="45663"
+      title="Bad parser error recovery in advice">
+        <compile files="ParserRecoveryTest.java">
+		  <message kind="error" line="7"/>
+        </compile>
+    </ajc-test>   
+    
+	<ajc-test dir="bugs" pr="45663"
+      title="Bad parser error recovery in java source">
+        <compile files="ParserRecoveryTestPureJava.java">
+		  <message kind="error" line="6"/>
+		  <message kind="error" line="8"/>
+        </compile>
+    </ajc-test>     
 </suite>

@@ -28,7 +28,7 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.World;
-import org.eclipse.jdt.internal.compiler.ast.AstNode;
+import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.IPrivilegedHandler;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
@@ -44,7 +44,7 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 		this.inAspect = inAspect;
 	}
 
-	public FieldBinding getPrivilegedAccessField(FieldBinding baseField, AstNode location) {		
+	public FieldBinding getPrivilegedAccessField(FieldBinding baseField, ASTNode location) {		
 		ResolvedMember key = inAspect.factory.makeResolvedMember(baseField);
 		if (accessors.containsKey(key)) return (FieldBinding)accessors.get(key);
 		FieldBinding ret = new PrivilegedFieldBinding(inAspect, baseField);
@@ -53,7 +53,7 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 		return ret;
 	}
 
-	public MethodBinding getPrivilegedAccessMethod(MethodBinding baseMethod, AstNode location) {
+	public MethodBinding getPrivilegedAccessMethod(MethodBinding baseMethod, ASTNode location) {
 		if (baseMethod.alwaysNeedsAccessMethod()) return baseMethod;
 		
 		ResolvedMember key = EclipseFactory.makeResolvedMember(baseMethod);
@@ -75,7 +75,7 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 		return ret;
 	}
 	
-	public void notePrivilegedTypeAccess(ReferenceBinding type, AstNode location) {
+	public void notePrivilegedTypeAccess(ReferenceBinding type, ASTNode location) {
 		ResolvedMember key =
 			new ResolvedMember(Member.STATIC_INITIALIZATION,
 				inAspect.factory.fromEclipse(type), 0, ResolvedTypeX.VOID, "", TypeX.NONE);
@@ -84,7 +84,7 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 		accessors.put(key, key);
 	}
 
-	private void checkWeaveAccess(TypeX typeX, AstNode location) {
+	private void checkWeaveAccess(TypeX typeX, ASTNode location) {
 		World world = inAspect.factory.getWorld();
 		Lint.Kind check = world.getLint().typeNotExposedToWeaver;
 		if (check.isEnabled()) {

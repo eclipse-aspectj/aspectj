@@ -54,7 +54,7 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 		doSynchronousBuild("bad-injar.lst");
 		messages = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
 		message = (NullIdeTaskListManager.SourceLineTask)messages.get(0);
-		assertTrue(message.getContainedMessage().getMessage().indexOf("invalid") != -1);
+		assertTrue(message.getContainedMessage().getMessage().indexOf("bad inpath") != -1);
 	}
 
 	public void testErrorMessages() throws IOException {
@@ -63,7 +63,7 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 		  
 		List messages = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
 		SourceLineTask message = (SourceLineTask)messages.get(0);	
-		assertEquals("invalid option: aaa.bbb", message.getContainedMessage().getMessage());		
+		assertTrue(message.getContainedMessage().getMessage(), message.getContainedMessage().getMessage().indexOf("aaa.bbb") != -1);		
 	
 	}
 

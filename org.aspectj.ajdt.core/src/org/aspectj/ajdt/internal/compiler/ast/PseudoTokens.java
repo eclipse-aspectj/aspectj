@@ -24,13 +24,14 @@ import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.PerSingleton;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.TypePattern;
-import org.eclipse.jdt.internal.compiler.ast.AstNode;
+import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
+import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
 
 
-public class PseudoTokens extends AstNode {
+public class PseudoTokens extends ASTNode {
 	BasicTokenSource tokenSource;
 	PseudoToken[] tokens;  //XXX this is redundant with the field above
 	String endToken;
@@ -61,6 +62,7 @@ public class PseudoTokens extends AstNode {
 		IToken last = tokenSource.next();
 		if (tokenSource.next() != IToken.EOF) {
 			parser.problemReporter().parseError(last.getStart(), last.getEnd(),
+											TerminalTokens.TokenNameIdentifier,
 		                                    last.getString().toCharArray(),
 		                                    last.getString(),
 		                                    new String[] {endToken});
@@ -84,6 +86,7 @@ public class PseudoTokens extends AstNode {
 		}
 		
 		parser.problemReporter().parseError(start, end,
+											TerminalTokens.TokenNameIdentifier,
 		                                    found.toCharArray(),
 		                                    found,
 		                                    new String[] {pe.getMessage()});
@@ -143,8 +146,12 @@ public class PseudoTokens extends AstNode {
 		}
 	}
 	
-	
-	public String toString(int tab) {
-		return tokenSource.toString();
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.internal.compiler.ast.ASTNode#print(int, java.lang.StringBuffer)
+	 */
+	public StringBuffer print(int indent, StringBuffer output) {
+		output.append(tokenSource.toString());
+		return output;
 	}
+
 }

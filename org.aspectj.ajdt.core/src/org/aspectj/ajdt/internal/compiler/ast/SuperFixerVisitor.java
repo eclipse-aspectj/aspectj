@@ -20,9 +20,9 @@ import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeMethodBinding;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;
-import org.eclipse.jdt.internal.compiler.AbstractSyntaxTreeVisitorAdapter;
+import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.AstNode;
+import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.ThisReference;
 import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
@@ -35,7 +35,7 @@ import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
  * thisJoinPointStaticPart, thisJoinPoint and thisEnclosingJoinPointStaticPart
  */
 
-public class SuperFixerVisitor extends AbstractSyntaxTreeVisitorAdapter {
+public class SuperFixerVisitor extends ASTVisitor {
 	Set superMethodsCalled = new HashSet();
 	AbstractMethodDeclaration method;
 	ReferenceBinding targetClass;
@@ -90,11 +90,11 @@ public class SuperFixerVisitor extends AbstractSyntaxTreeVisitorAdapter {
 		
 		//??? do we want these to be unique
 		MethodBinding superAccessBinding =
-			new MethodBinding(AstNode.AccPublic, accessName, 
+			new MethodBinding(ASTNode.AccPublic, accessName, 
 			superBinding.returnType, superBinding.parameters, superBinding.thrownExceptions,
 			targetClass);
-		
-		call.codegenBinding = superAccessBinding;
+			
+		AstUtil.replaceMethodBinding(call, superAccessBinding);
 		
 		ResolvedMember targetMember = EclipseFactory.makeResolvedMember(superBinding);
 		superMethodsCalled.add(targetMember);

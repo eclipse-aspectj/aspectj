@@ -87,6 +87,9 @@ public class AjdtCommand implements ICommand {
             }
             // regenerate configuration b/c world might have changed (?)
             AjBuildConfig config = genBuildConfig(savedArgs, counter);
+            if (!config.shouldProceed()) {
+            	return true;
+            }
             if (!config.hasSources()) {
                 MessageUtil.error(counter, "no sources specified");
             }
@@ -127,8 +130,8 @@ public class AjdtCommand implements ICommand {
      * a source location context for locating the error.
      */
     public static AjBuildConfig genBuildConfig(String[] args, CountingMessageHandler handler) {
-        BuildArgParser parser = new BuildArgParser();
-        AjBuildConfig config = parser.genBuildConfig(args, handler);
+        BuildArgParser parser = new BuildArgParser(handler);
+        AjBuildConfig config = parser.genBuildConfig(args);
 
 		ISourceLocation location = null;
 		if (config.getConfigFile() != null) {

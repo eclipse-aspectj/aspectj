@@ -41,7 +41,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 		InvocationSite site,
 		Scope scope)
 	{
-		FieldBinding retField = sourceTypeBinding.getFieldBase(fieldName);
+		FieldBinding retField = sourceTypeBinding.getFieldBase(fieldName, false);  // XXX may need to get the correct value for second parameter in the future
 		if (interTypeFields.isEmpty()) return retField;
 		int fieldLength = fieldName.length;
 		
@@ -63,8 +63,10 @@ public class InterTypeMemberFinder implements IMemberFinder {
 		Scope scope)
 	{
 		if (retField == null) return field;
-		if (!field.canBeSeenBy(sourceTypeBinding, site, scope)) return retField;
-		if (!retField.canBeSeenBy(sourceTypeBinding, site, scope)) return field;
+		if (site != null) {
+			if (!field.canBeSeenBy(sourceTypeBinding, site, scope)) return retField;
+			if (!retField.canBeSeenBy(sourceTypeBinding, site, scope)) return field;
+		}
 		//XXX need dominates check on aspects
 		return new ProblemFieldBinding(retField.declaringClass, retField.name, ProblemReporter.Ambiguous);
 	}

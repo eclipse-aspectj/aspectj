@@ -31,6 +31,8 @@ import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
  */
 public class AjBuildConfig { // XXX needs bootclasspath?
 	
+	private boolean shouldProceed = true;
+	
 	public static final String AJLINT_IGNORE = "ignore";
 	public static final String AJLINT_WARN = "warn";
 	public static final String AJLINT_ERROR = "error";
@@ -88,12 +90,12 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 		javaOptions.put(
 			CompilerOptions.OPTION_PreserveUnusedLocal,
 			CompilerOptions.OPTIMIZE_OUT);
-		javaOptions.put(
-			CompilerOptions.OPTION_ReportUnreachableCode,
-			CompilerOptions.IGNORE);
-		javaOptions.put(
-			CompilerOptions.OPTION_ReportInvalidImport, 
-			CompilerOptions.ERROR);
+//		javaOptions.put(
+//			CompilerOptions.OPTION_ReportUnreachableCode,
+//			CompilerOptions.IGNORE);
+//		javaOptions.put(
+//			CompilerOptions.OPTION_ReportInvalidImport, 
+//			CompilerOptions.ERROR);
 		javaOptions.put(
 			CompilerOptions.OPTION_ReportOverridingPackageDefaultMethod,
 			CompilerOptions.WARNING);
@@ -440,4 +442,14 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 		sourcePathResources = map;
 	}
 
+	/**
+	 * used to indicate whether to proceed after parsing config
+	 */
+	public boolean shouldProceed() {
+		return shouldProceed;
+	}
+
+	public void doNotProceed() {
+		shouldProceed = false;
+	}
 }

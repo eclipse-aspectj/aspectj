@@ -41,7 +41,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 	public void parseStatements(Parser parser, CompilationUnitDeclaration unit) {
 		if (ignoreFurtherInvestigation)
 			return;
-	    parser.parseAsConstructor(this, unit);
+	    parser.parse(this, unit); 
 	}
 
 	public void resolve(ClassScope upperScope) {
@@ -262,5 +262,5 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 	protected Shadow.Kind getShadowKindForBody() {
 		return Shadow.ConstructorExecution;
 	}
-
+	
 }

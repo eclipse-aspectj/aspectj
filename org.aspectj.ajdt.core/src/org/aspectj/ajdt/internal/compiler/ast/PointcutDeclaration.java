@@ -158,27 +158,18 @@ public class PointcutDeclaration extends MethodDeclaration {
 		return;
 	}
 	
-	public String toString(int tab) {
-		StringBuffer buf = new StringBuffer();
-		buf.append(tabString(tab));
-		if (modifiers != 0) {
-			buf.append(modifiersString(modifiers));
-		}
-
-		buf.append("pointcut ");
-		buf.append(new String(selector));
-		buf.append("(");
-		if (arguments != null) {
-			for (int i = 0; i < arguments.length; i++) {
-				if (i > 0) buf.append(", ");
-				buf.append(arguments[i].toString(0));
-			};
-		};
-		buf.append("): "); 
-
-		buf.append(getPointcut());
-
-		buf.append(";");
-		return buf.toString();
+	public StringBuffer printReturnType(int indent, StringBuffer output) {
+		return output.append("pointcut");
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration#printBody(int, java.lang.StringBuffer)
+	 */
+	public StringBuffer printBody(int indent, StringBuffer output) {
+		output.append(": ");
+		output.append(getPointcut());
+		output.append(";");
+		return output;
+	}
+
 }

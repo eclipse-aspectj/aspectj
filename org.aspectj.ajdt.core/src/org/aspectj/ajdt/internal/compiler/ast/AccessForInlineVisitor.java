@@ -23,7 +23,8 @@ import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedFieldBinding;
 import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedHandler;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.ResolvedMember;
-import org.eclipse.jdt.internal.compiler.AbstractSyntaxTreeVisitorAdapter;
+import org.eclipse.jdt.internal.compiler.ASTVisitor;
+//import org.eclipse.jdt.internal.compiler.AbstractSyntaxTreeVisitorAdapter;
 import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.AssertStatement;
 import org.eclipse.jdt.internal.compiler.ast.ClassLiteralAccess;
@@ -56,7 +57,7 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
  * @author Jim Hugunin
  */
 
-public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
+public class AccessForInlineVisitor extends ASTVisitor {
 	PrivilegedHandler handler;
 	AspectDeclaration inAspect;
 	EclipseFactory world; // alias for inAspect.world
@@ -104,8 +105,8 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 		
 		if (send.isSuperAccess() && !send.binding.isStatic()) {
 			send.receiver = new ThisReference(send.sourceStart, send.sourceEnd);
-			send.binding = send.codegenBinding = 
-				getSuperAccessMethod((MethodBinding)send.binding);
+			MethodBinding superAccessBinding = getSuperAccessMethod((MethodBinding)send.binding);
+			AstUtil.replaceMethodBinding(send, superAccessBinding);
 		} else if (!isPublic(send.binding)) {
 			send.syntheticAccessor = getAccessibleMethod((MethodBinding)send.binding);
 		}
@@ -175,13 +176,23 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 		return ret;
 	}
 	
+	static class SuperAccessMethodPair {
+		public ResolvedMember originalMethod;
+		public MethodBinding accessMethod;
+		public SuperAccessMethodPair(ResolvedMember originalMethod, MethodBinding accessMethod) {
+			this.originalMethod = originalMethod;
+			this.accessMethod = accessMethod;
+		}
+	}
+	
 	private MethodBinding getSuperAccessMethod(MethodBinding binding) {
 		ResolvedMember m = world.makeResolvedMember(binding);
-		if (inAspect.superAccessForInline.containsKey(m)) return (MethodBinding)inAspect.superAccessForInline.get(m);
-		MethodBinding ret = world.makeMethodBinding(
-			AjcMemberMaker.superAccessMethod(inAspect.typeX, m)
-			);
-		inAspect.superAccessForInline.put(m, ret);
+		ResolvedMember superAccessMember = AjcMemberMaker.superAccessMethod(inAspect.typeX, m);
+		if (inAspect.superAccessForInline.containsKey(superAccessMember)) {
+			return ((SuperAccessMethodPair)inAspect.superAccessForInline.get(superAccessMember)).accessMethod;
+		} 
+		MethodBinding ret = world.makeMethodBinding(superAccessMember);
+		inAspect.superAccessForInline.put(superAccessMember, new SuperAccessMethodPair(m, ret));
 		return ret;
 	}
 	

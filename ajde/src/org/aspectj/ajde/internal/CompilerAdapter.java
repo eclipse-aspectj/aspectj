@@ -149,9 +149,9 @@ public class CompilerAdapter {
         String[] args = new String[] { "@" + configFile.getAbsolutePath() };
         CountingMessageHandler handler 
             = CountingMessageHandler.makeCountingMessageHandler(messageHandler);
-		BuildArgParser parser = new BuildArgParser();
+		BuildArgParser parser = new BuildArgParser(handler);
 		
-        AjBuildConfig config = parser.genBuildConfig(args, handler, false, configFile);  
+        AjBuildConfig config = parser.genBuildConfig(args, false, configFile);  
 		configureProjectOptions(config, Ajde.getDefault().getProjectProperties());  // !!! not what the API intended
 
 		// -- get globals, treat as defaults used if no local values
@@ -312,10 +312,11 @@ public class CompilerAdapter {
 			if (lineNo)  javaOptions.put(CompilerOptions.OPTION_LineNumberAttribute,
 											CompilerOptions.GENERATE);
 		}
-		if ( options.getNoImportError() ) {
-			javaOptions.put( CompilerOptions.OPTION_ReportInvalidImport,
-				CompilerOptions.WARNING);	
-		}
+		//XXX we can't turn off import errors in 3.0 stream
+//		if ( options.getNoImportError() ) {
+//			javaOptions.put( CompilerOptions.OPTION_ReportInvalidImport,
+//				CompilerOptions.WARNING);	
+//		}
 				
 		if ( options.getPreserveAllLocals() ) {
 			javaOptions.put( CompilerOptions.OPTION_PreserveUnusedLocal,

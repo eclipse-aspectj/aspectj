@@ -374,8 +374,7 @@ public class AjBuildManager {
 		compiler.parser =
 			new AjParser(
 				pr, 
-				compiler.options.parseLiteralExpressionsAsConstants, 
-				compiler.options.sourceLevel >= CompilerOptions.JDK1_4);
+				compiler.options.parseLiteralExpressionsAsConstants);
 
 		CompilerOptions options = compiler.options;
 

@@ -20,6 +20,7 @@ import junit.framework.TestCase;
 import org.aspectj.ajdt.internal.core.builder.*;
 import org.aspectj.bridge.CountingMessageHandler;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageWriter;
 import org.aspectj.testing.util.TestUtil;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
@@ -30,12 +31,15 @@ import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
  */
 public class BuildArgParserTestCase extends TestCase {
 
-	private BuildArgParser parser = new BuildArgParser();	
 	private static final String TEST_DIR = AjdtAjcTests.TESTDATA_PATH + File.separator + "ajc" + File.separator;
 	private MessageWriter messageWriter = new MessageWriter(new PrintWriter(System.out), false);
 
 	public BuildArgParserTestCase(String name) {
 		super(name);
+	}
+	
+	private AjBuildConfig genBuildConfig(String[] args, IMessageHandler handler) {
+		return new BuildArgParser(handler).genBuildConfig(args);
 	}
 
 	public void testDefaultClasspathAndTargetCombo() throws InvalidInputException {
@@ -43,7 +47,8 @@ public class BuildArgParserTestCase extends TestCase {
 		final String classpath = System.getProperty("java.class.path");
 		try {
             System.setProperty("java.class.path", ENTRY); // see finally below
-    		AjBuildConfig config = parser.genBuildConfig(new String[] { }, messageWriter);
+            BuildArgParser parser = new BuildArgParser(messageWriter);
+    		AjBuildConfig config = parser.genBuildConfig(new String[] { });
             String err = parser.getOtherMessages(true);       
             //!!!assertTrue(err, null == err);
             assertTrue(
@@ -53,7 +58,7 @@ public class BuildArgParserTestCase extends TestCase {
     			config.getClasspath().toString(),
     			config.getClasspath().contains("2.jar"));
     
-    		config = parser.genBuildConfig(new String[] { "-1.3" }, messageWriter);
+    		config = genBuildConfig(new String[] { "-1.3" }, messageWriter);
     		// these errors are deffered to the compiler now
             //err = parser.getOtherMessages(true);       
             //!!!assertTrue(err, null == err);
@@ -64,7 +69,8 @@ public class BuildArgParserTestCase extends TestCase {
     			config.getClasspath().toString(),
     			config.getClasspath().contains("2.jar"));
     
-    		config = parser.genBuildConfig(new String[] { "-1.3" }, messageWriter);
+			parser = new BuildArgParser(messageWriter);
+    		config = parser.genBuildConfig(new String[] { "-1.3" });
             err = parser.getOtherMessages(true);       
             //!!!assertTrue(err, null == err);
     		assertTrue(
@@ -74,7 +80,7 @@ public class BuildArgParserTestCase extends TestCase {
     			config.getClasspath().toString(),
     			config.getClasspath().contains("2.jar"));
     			
-    		config = parser.genBuildConfig(new String[] { 
+    		config = genBuildConfig(new String[] { 
     			"-classpath", ENTRY, "-1.4" }, messageWriter);
 			//			these errors are deffered to the compiler now
             //err = parser.getOtherMessages(true);       
@@ -96,7 +102,7 @@ public class BuildArgParserTestCase extends TestCase {
 	}
 	
 	public void testAjOptions() throws InvalidInputException {
-		AjBuildConfig config = parser.genBuildConfig(new String[] {  "-Xlint" }, messageWriter);
+		AjBuildConfig config = genBuildConfig(new String[] {  "-Xlint" }, messageWriter);
  	
 		assertTrue(
 			"default options",
@@ -109,13 +115,13 @@ public class BuildArgParserTestCase extends TestCase {
 		final String SOURCE_JARS = AjdtAjcTests.TESTDATA_PATH + "/testclasses.jar" + File.pathSeparator 
 			+ "../weaver/testdata/tracing.jar" + File.pathSeparator 
 			+ "../weaver/testdata/dummyAspect.jar";
-		AjBuildConfig config = parser.genBuildConfig(new String[] { 
+		AjBuildConfig config = genBuildConfig(new String[] { 
 			"-aspectpath", SOURCE_JAR }, 
 			messageWriter);
 		
 		assertTrue(((File)config.getAspectpath().get(0)).getName(), ((File)config.getAspectpath().get(0)).getName().equals("testclasses.jar"));
 
-		config = parser.genBuildConfig(new String[] { 
+		config = genBuildConfig(new String[] { 
 			"-aspectpath", SOURCE_JARS }, 
 			messageWriter);
 		assertTrue("size", + config.getAspectpath().size() == 3);
@@ -126,7 +132,7 @@ public class BuildArgParserTestCase extends TestCase {
 		final String SOURCE_JARS = AjdtAjcTests.TESTDATA_PATH + "/testclasses.jar" + File.pathSeparator 
 			+ "../weaver/testdata/tracing.jar" + File.pathSeparator 
 			+ "../weaver/testdata/dummyAspect.jar";
-		AjBuildConfig config = parser.genBuildConfig(new String[] { 
+		AjBuildConfig config = genBuildConfig(new String[] { 
 			"-injars", SOURCE_JAR }, 
 			messageWriter);
 		//XXX don't let this remain in both places in beta1			
@@ -135,7 +141,7 @@ public class BuildArgParserTestCase extends TestCase {
 			config.getAjOptions().get(AjCompilerOptions.OPTION_InJARs).equals(CompilerOptions.PRESERVE));
 		assertTrue(((File)config.getInJars().get(0)).getName(), ((File)config.getInJars().get(0)).getName().equals("testclasses.jar"));
 
-		config = parser.genBuildConfig(new String[] { 
+		config = genBuildConfig(new String[] { 
 			"-injars", SOURCE_JARS }, 
 			messageWriter);
 		assertTrue("size", + config.getInJars().size() == 3);
@@ -143,7 +149,7 @@ public class BuildArgParserTestCase extends TestCase {
 
 	public void testBadInJars() throws InvalidInputException {
 		final String SOURCE_JARS = AjdtAjcTests.TESTDATA_PATH + "/testclasses.jar" + File.pathSeparator + "b.far" + File.pathSeparator + "c.jar";
-		AjBuildConfig config = parser.genBuildConfig(new String[] { 
+		AjBuildConfig config = genBuildConfig(new String[] { 
 			"-injars", SOURCE_JARS }, 
 			messageWriter);
 		assertTrue("size: " + config.getInJars().size(), config.getInJars().size() == 1);
@@ -151,14 +157,14 @@ public class BuildArgParserTestCase extends TestCase {
 
 	public void testBadPathToSourceFiles() {
 		CountingMessageHandler countingHandler = new CountingMessageHandler(messageWriter);
-		AjBuildConfig config = parser.genBuildConfig(new String[]{ "inventedDir/doesntexist/*.java"},countingHandler);
+		AjBuildConfig config = genBuildConfig(new String[]{ "inventedDir/doesntexist/*.java"},countingHandler);
 		assertTrue("Expected an error for the invalid path.",countingHandler.numMessages(IMessage.ERROR,false)==1);	
 	}
 
 	public void testMultipleSourceRoots() throws InvalidInputException, IOException {
 		final String SRCROOT_1 = AjdtAjcTests.TESTDATA_PATH + "/src1/p1";
 		final String SRCROOT_2 = AjdtAjcTests.TESTDATA_PATH + "/ajc";
-		AjBuildConfig config = parser.genBuildConfig(new String[] { 
+		AjBuildConfig config = genBuildConfig(new String[] { 
 			"-sourceroots", SRCROOT_1 + File.pathSeparator + SRCROOT_2 }, 
 			messageWriter);
 		
@@ -195,7 +201,7 @@ public class BuildArgParserTestCase extends TestCase {
 
 	public void testSourceRootDir() throws InvalidInputException, IOException {
 		final String SRCROOT = AjdtAjcTests.TESTDATA_PATH + "/ajc";
-		AjBuildConfig config = parser.genBuildConfig(new String[] { 
+		AjBuildConfig config = genBuildConfig(new String[] { 
 			"-sourceroots", SRCROOT }, 
 			messageWriter);
 
@@ -215,7 +221,7 @@ public class BuildArgParserTestCase extends TestCase {
 	}
 
 	public void testBadSourceRootDir() throws InvalidInputException {
-		AjBuildConfig config = parser.genBuildConfig(new String[] {   
+		AjBuildConfig config = genBuildConfig(new String[] {   
 			"-sourceroots", 
 			AjdtAjcTests.TESTDATA_PATH + "/mumbleDoesNotExist;"
             + AjdtAjcTests.TESTDATA_PATH + "/ajc" }, 
@@ -223,7 +229,7 @@ public class BuildArgParserTestCase extends TestCase {
 
 		assertTrue(config.getSourceRoots().toString(), config.getSourceRoots().size() == 1);
 
-		config = parser.genBuildConfig(new String[] { 
+		config = genBuildConfig(new String[] { 
 			"-sourceroots" }, 
 			messageWriter);
 
@@ -234,7 +240,7 @@ public class BuildArgParserTestCase extends TestCase {
 	//??? we've decided not to make this an error
 	public void testSourceRootDirWithFiles() throws InvalidInputException, IOException {
 		final String SRCROOT = AjdtAjcTests.TESTDATA_PATH + "/ajc/pkg";
-		AjBuildConfig config = parser.genBuildConfig(new String[] { 
+		AjBuildConfig config = genBuildConfig(new String[] { 
 			"-sourceroots", SRCROOT,  AjdtAjcTests.TESTDATA_PATH + "/src1/A.java"}, 
 			messageWriter);
 
@@ -251,7 +257,7 @@ public class BuildArgParserTestCase extends TestCase {
 
 	public void testExtDirs() throws InvalidInputException {
 		final String DIR = AjdtAjcTests.TESTDATA_PATH;
-		AjBuildConfig config = parser.genBuildConfig(new String[] { 
+		AjBuildConfig config = genBuildConfig(new String[] { 
 			"-extdirs", DIR }, 
 			messageWriter);
 		assertTrue(config.getClasspath().toString(), config.getClasspath().contains(
@@ -261,12 +267,12 @@ public class BuildArgParserTestCase extends TestCase {
 
 	public void testBootclasspath() throws InvalidInputException {
 		final String PATH = "mumble/rt.jar";
-		AjBuildConfig config = parser.genBuildConfig(new String[] { 
+		AjBuildConfig config = genBuildConfig(new String[] { 
 			"-bootclasspath", PATH }, 
 			messageWriter);		
 		assertTrue(config.getClasspath().toString(), config.getClasspath().get(0).equals(PATH)); 
 
-		config = parser.genBuildConfig(new String[] { 
+		config = genBuildConfig(new String[] { 
 			}, 
 			messageWriter);		
 		assertTrue(config.getClasspath().toString(), !config.getClasspath().get(0).equals(PATH)); 
@@ -275,7 +281,7 @@ public class BuildArgParserTestCase extends TestCase {
 	public void testOutputJar() throws InvalidInputException {
 		final String OUT_JAR = AjdtAjcTests.TESTDATA_PATH + "/testclasses.jar";
 		
-		AjBuildConfig config = parser.genBuildConfig(new String[] { 
+		AjBuildConfig config = genBuildConfig(new String[] { 
 			"-outjar", OUT_JAR }, 
 			messageWriter);
 
@@ -287,7 +293,7 @@ public class BuildArgParserTestCase extends TestCase {
 			getCanonicalPath(new File(OUT_JAR)),config.getOutputJar().getAbsolutePath()); 
 	
 		File nonExistingJar = new File(AjdtAjcTests.TESTDATA_PATH + "/mumbleDoesNotExist.jar");
-		config = parser.genBuildConfig(new String[] { 
+		config = genBuildConfig(new String[] { 
 			"-outjar", nonExistingJar.getAbsolutePath() }, 
 			messageWriter);
 		assertEquals(
@@ -299,7 +305,7 @@ public class BuildArgParserTestCase extends TestCase {
 	
 	//XXX shouldn't need -1.4 to get this to pass
 	public void testCombinedOptions() throws InvalidInputException {
-		AjBuildConfig config = parser.genBuildConfig(new String[] {  "-Xlint", "-target", "1.4", "-1.4" }, messageWriter);
+		AjBuildConfig config = genBuildConfig(new String[] {  "-Xlint", "-target", "1.4", "-1.4" }, messageWriter);
 		String TARGET = "1.4";
 		assertTrue(
 			"target set",  
@@ -312,7 +318,7 @@ public class BuildArgParserTestCase extends TestCase {
 	}
 	
 	public void testOutputDirectorySetting() throws InvalidInputException {
-		AjBuildConfig config = parser.genBuildConfig(new String[] {  "-d", TEST_DIR }, messageWriter);
+		AjBuildConfig config = genBuildConfig(new String[] {  "-d", TEST_DIR }, messageWriter);
 		
 		assertTrue(
 			new File(config.getOutputDir().getPath()).getAbsolutePath() + " ?= " + 
@@ -322,7 +328,7 @@ public class BuildArgParserTestCase extends TestCase {
 
 	public void testClasspathSetting() throws InvalidInputException {
 		String ENTRY = "1.jar;2.jar";
-		AjBuildConfig config = parser.genBuildConfig(new String[] {  "-classpath", ENTRY }, messageWriter);
+		AjBuildConfig config = genBuildConfig(new String[] {  "-classpath", ENTRY }, messageWriter);
 		
 		assertTrue(
 			config.getClasspath().toString(),
@@ -336,7 +342,7 @@ public class BuildArgParserTestCase extends TestCase {
 	public void testArgInConfigFile() throws InvalidInputException {
 		String FILE_PATH =   "@" + TEST_DIR + "configWithArgs.lst";
 		String OUT_PATH = "bin";
-		AjBuildConfig config = parser.genBuildConfig(new String[] { FILE_PATH }, messageWriter);
+		AjBuildConfig config = genBuildConfig(new String[] { FILE_PATH }, messageWriter);
 		
         assertNotNull(config);
         File outputDir = config.getOutputDir();
@@ -346,7 +352,7 @@ public class BuildArgParserTestCase extends TestCase {
 
 	public void testNonExistentConfigFile() throws IOException {
 		String FILE_PATH =   "@" + TEST_DIR + "../bug-40257/d1/test.lst";
-		AjBuildConfig config = parser.genBuildConfig(new String[] { FILE_PATH }, messageWriter);
+		AjBuildConfig config = genBuildConfig(new String[] { FILE_PATH }, messageWriter);
 
 		String a = new File(TEST_DIR + "../bug-40257/d1/A.java").getCanonicalPath();
 		String b = new File(TEST_DIR + "../bug-40257/d1/d2/B.java").getCanonicalPath();
@@ -363,20 +369,20 @@ public class BuildArgParserTestCase extends TestCase {
 
 	public void testXlint() throws InvalidInputException {
 		AjdtCommand command = new AjdtCommand();
-		AjBuildConfig config = parser.genBuildConfig(new String[] {"-Xlint"}, messageWriter);
+		AjBuildConfig config = genBuildConfig(new String[] {"-Xlint"}, messageWriter);
 		assertTrue("", config.getLintMode().equals(AjBuildConfig.AJLINT_DEFAULT));
-		config = parser.genBuildConfig(new String[] {"-Xlint:warn"}, messageWriter);
+		config = genBuildConfig(new String[] {"-Xlint:warn"}, messageWriter);
 		assertTrue("", config.getLintMode().equals(AjBuildConfig.AJLINT_WARN));
-		config = parser.genBuildConfig(new String[] {"-Xlint:error"}, messageWriter);
+		config = genBuildConfig(new String[] {"-Xlint:error"}, messageWriter);
 		assertTrue("", config.getLintMode().equals(AjBuildConfig.AJLINT_ERROR));
-		config = parser.genBuildConfig(new String[] {"-Xlint:ignore"}, messageWriter);
+		config = genBuildConfig(new String[] {"-Xlint:ignore"}, messageWriter);
 		assertTrue("", config.getLintMode().equals(AjBuildConfig.AJLINT_IGNORE));
 	}
 
 	public void testXlintfile() throws InvalidInputException {
 		String lintFile = AjdtAjcTests.TESTDATA_PATH + "/lintspec.properties"; 
 		String badLintFile = "lint.props";
-		AjBuildConfig config = parser.genBuildConfig(new String[] {"-Xlintfile", lintFile}, messageWriter);
+		AjBuildConfig config = genBuildConfig(new String[] {"-Xlintfile", lintFile}, messageWriter);
 		assertTrue(new File(lintFile).exists());
 		assertEquals(getCanonicalPath(new File(lintFile)),config.getLintSpecFile().getAbsolutePath());	
 	}
@@ -384,7 +390,7 @@ public class BuildArgParserTestCase extends TestCase {
 	public void testOptions() throws InvalidInputException {
 		AjdtCommand command = new AjdtCommand();
 		String TARGET = "1.4";
-		AjBuildConfig config = parser.genBuildConfig(new String[] {"-target", TARGET, "-source", TARGET}, messageWriter);
+		AjBuildConfig config = genBuildConfig(new String[] {"-target", TARGET, "-source", TARGET}, messageWriter);
 		assertTrue(
 			"target set",  
 			config.getJavaOptions().get(CompilerOptions.OPTION_TargetPlatform).equals(TARGET));
@@ -400,7 +406,7 @@ public class BuildArgParserTestCase extends TestCase {
 
         File f = new File(FILE_PATH);
 		
-		AjBuildConfig config = parser.genBuildConfig(new String[] { "@" + FILE_PATH }, messageWriter);
+		AjBuildConfig config = genBuildConfig(new String[] { "@" + FILE_PATH }, messageWriter);
 		List resultList = config.getFiles();
 		
 		assertTrue("correct number of files", resultList.size() == 2);	
@@ -415,7 +421,7 @@ public class BuildArgParserTestCase extends TestCase {
 //	public void testArgInConfigFileAndRelativizingPathParam() throws InvalidInputException {
 //		String FILE_PATH =   "@" + TEST_DIR + "configWithArgs.lst";
 //		String OUT_PATH = TEST_DIR + "bin";
-//		AjBuildConfig config = parser.genBuildConfig(new String[] { FILE_PATH });
+//		AjBuildConfig config = genBuildConfig(new String[] { FILE_PATH });
 //		
 //		assertTrue(
 //			config.getOutputDir().getPath() + " ?= " + OUT_PATH,
@@ -423,7 +429,7 @@ public class BuildArgParserTestCase extends TestCase {
 //	}
 	
 	public void testAjFileInclusion() throws InvalidInputException {
-		parser.genBuildConfig(new String[] { TEST_DIR + "X.aj", TEST_DIR + "Y.aj"}, messageWriter);
+		genBuildConfig(new String[] { TEST_DIR + "X.aj", TEST_DIR + "Y.aj"}, messageWriter);
 	}
 	
 	protected void setUp() throws Exception {

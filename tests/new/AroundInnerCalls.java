@@ -6,11 +6,11 @@ public class AroundInnerCalls {
 
 	Tester.check("Outer.foo() calls Outer.Inner.mi()");
 	Tester.check("Outer.foo() calls Outer.InnerRandom.nextHook(..)");
-	Tester.check("Outer.InnerRandom.nextHook(..) calls Random.next(..)");
+	Tester.check("Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)");
 	Tester.check("Outer.Inner.mi() calls PrintStream.println(..)");
 
         Tester.check("X.toString()");
-	Tester.check("Outer.foo() calls Random.nextInt(..)");
+	Tester.check("Outer.foo() calls Outer.1.nextInt(..)");
     }
 }
 
@@ -37,7 +37,7 @@ class Outer {
 
 aspect A {
     Object around(): call(* *(..)) && !within(A) {
-	//System.out.println
+//	System.out.println
         Tester.note
             (thisEnclosingJoinPointStaticPart.getSignature().toShortString() +
              " calls " + thisJoinPointStaticPart.getSignature().toShortString());

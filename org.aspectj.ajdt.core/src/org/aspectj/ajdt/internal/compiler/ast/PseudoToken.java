@@ -15,14 +15,14 @@ package org.aspectj.ajdt.internal.compiler.ast;
 
 import org.aspectj.weaver.patterns.IToken;
 import org.aspectj.weaver.patterns.Pointcut;
-import org.eclipse.jdt.internal.compiler.ast.AstNode;
+import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 
 /**
  */
-public class PseudoToken extends AstNode implements IToken {
+public class PseudoToken extends ASTNode implements IToken {
     public String value;
     public boolean isIdentifier;
     public String literalKind = null;
@@ -82,6 +82,14 @@ public class PseudoToken extends AstNode implements IToken {
 	
 	public void postParse(TypeDeclaration typeDec, MethodDeclaration enclosingDec) {
 		// nothing to do typically
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.internal.compiler.ast.ASTNode#print(int, java.lang.StringBuffer)
+	 */
+	public StringBuffer print(int indent, StringBuffer output) {
+		output.append("PseudoToken<" + getString() + ">");
+		return output;
 	}
 
 }

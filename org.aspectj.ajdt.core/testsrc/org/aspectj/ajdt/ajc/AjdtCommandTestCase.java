@@ -160,25 +160,54 @@ public class AjdtCommandTestCase extends TestCase {
 	}
 	
 	public void testHelpUsagePrinting() {
+		String[] args = new String[] { "-help" };
+		
+		PrintStream saveOut = System.out;
+		ByteArrayOutputStream byteArrayOut = new ByteArrayOutputStream();
+		PrintStream newOut = new PrintStream(byteArrayOut);
+		System.setOut(newOut);
+		
 		try {
-			command.genBuildConfig(
-                new String[] { "-help" }, 
-                counter);
-		} catch (AbortException  ae) { }
+			try {
+				
+				command.genBuildConfig(
+	                args, 
+	                counter);
+			} catch (AbortException  ae) { }
+		} finally {
+			System.setOut(saveOut);
+		}
+		
+		String text = byteArrayOut.toString();
 		assertTrue(
-			outputWriter.getContents() + " contains? " + "Usage",
-			outputWriter.getContents().indexOf("Usage") != -1);			
+			text + " contains? " + "Usage",
+			text.indexOf("Usage") != -1);			
 	}
 	
 	public void testVersionOutput() throws InvalidInputException {
+		String[] args = new String[] { "-version" };
+		
+		PrintStream saveOut = System.err;
+		ByteArrayOutputStream byteArrayOut = new ByteArrayOutputStream();
+		PrintStream newOut = new PrintStream(byteArrayOut);
+		System.setErr(newOut);
+		
 		try {
-			command.genBuildConfig(
-                new String[] { "-version" }, 
-                counter);
-		} catch (AbortException ae) { }
+			try {
+				
+				command.genBuildConfig(
+					args, 
+					counter);
+			} catch (AbortException  ae) { }
+		} finally {
+			System.setErr(saveOut);
+		}
+		
+		String text = byteArrayOut.toString();
+
 		assertTrue(
 			"version output",
-			outputWriter.getContents().indexOf("AspectJ Compiler") != -1);		
+			text.indexOf("AspectJ Compiler") != -1);		
 	}
 	
 	public void testNonExistingLstFile() {

@@ -17,7 +17,7 @@ import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseSourceLocation;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
-import org.eclipse.jdt.internal.compiler.AbstractSyntaxTreeVisitorAdapter;
+import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.FieldReference;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
@@ -33,7 +33,7 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
  * @author Jim Hugunin
  */
 
-public class InterSuperFixerVisitor extends AbstractSyntaxTreeVisitorAdapter {
+public class InterSuperFixerVisitor extends ASTVisitor {
 	InterTypeDeclaration dec;
 	ReferenceBinding onType;
 	TypeBinding superType;

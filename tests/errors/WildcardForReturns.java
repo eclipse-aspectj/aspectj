@@ -11,11 +11,10 @@ public class WildcardForReturns {
         new WildcardForReturns().m(); 
     }
     
-    public void m() { } 
-
-    static aspect A {
-       * around (WildcardForReturns t): this(t) && call(* m()) {  // CE 17
-    	    // bad test - return null; //return proceed(t);
-	   }
-    }
+    public void m() { }
+}
+aspect A {
+   * around (WildcardForReturns t): this(t) && call(* m()) {  // CE 17
+    	// bad test - return null; //return proceed(t);
+   }
 }

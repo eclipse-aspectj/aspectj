@@ -21,15 +21,19 @@ import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.*;
 import org.eclipse.jdt.internal.compiler.ClassFile;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Clinit;
-import org.eclipse.jdt.internal.compiler.ast.MemberTypeDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.codegen.CodeStream;
 import org.eclipse.jdt.internal.compiler.codegen.Label;
 import org.eclipse.jdt.internal.compiler.lookup.*;
+import org.eclipse.jdt.internal.compiler.parser.Parser;
 
 
-// making all aspects member types avoids a nasty hierarchy pain
-public class AspectDeclaration extends MemberTypeDeclaration {
+// (we used to...) making all aspects member types avoids a nasty hierarchy pain
+// switched from MemberTypeDeclaration to TypeDeclaration
+public class AspectDeclaration extends TypeDeclaration {
 	//public IAjDeclaration[] ajDeclarations;
 	
 	private AjAttribute.Aspect aspectAttribute;
@@ -188,7 +192,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 			}
 		}
 
-		if (EclipseFactory.DEBUG) System.out.println(toString(0));
+		if (EclipseFactory.DEBUG) System.out.println(toString());
 		
 		super.generateCode(enclosingClassFile);
 	}
@@ -222,9 +226,9 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 	}
 	
 	private void generateInlineAccessMembers(ClassFile classFile) {
-		for (Iterator i = superAccessForInline.entrySet().iterator(); i.hasNext(); ) {
-			Map.Entry e = (Map.Entry)i.next();
-			generateSuperAccessMethod(classFile, (MethodBinding)e.getValue(), (ResolvedMember)e.getKey());
+		for (Iterator i = superAccessForInline.values().iterator(); i.hasNext(); ) {
+			AccessForInlineVisitor.SuperAccessMethodPair pair = (AccessForInlineVisitor.SuperAccessMethodPair)i.next();
+			generateSuperAccessMethod(classFile, pair.accessMethod, pair.originalMethod);
 		}
 		for (Iterator i = accessForInline.entrySet().iterator(); i.hasNext(); ) {
 			Map.Entry e = (Map.Entry)i.next();
@@ -752,62 +756,59 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 	}
 
 
-	public String toString(int tab) {
-		return tabString(tab) + toStringHeader() + toStringBody(tab);
-	}
+//	public String toString(int tab) {
+//		return tabString(tab) + toStringHeader() + toStringBody(tab);
+//	}
+//
+//	public String toStringBody(int tab) {
+//
+//		String s = " {"; //$NON-NLS-1$
+//		
+//
+//		if (memberTypes != null) {
+//			for (int i = 0; i < memberTypes.length; i++) {
+//				if (memberTypes[i] != null) {
+//					s += "\n" + memberTypes[i].toString(tab + 1); //$NON-NLS-1$
+//				}
+//			}
+//		}
+//		if (fields != null) {
+//			for (int fieldI = 0; fieldI < fields.length; fieldI++) {
+//				if (fields[fieldI] != null) {
+//					s += "\n" + fields[fieldI].toString(tab + 1); //$NON-NLS-1$
+//					if (fields[fieldI].isField())
+//						s += ";"; //$NON-NLS-1$
+//				}
+//			}
+//		}
+//		if (methods != null) {
+//			for (int i = 0; i < methods.length; i++) {
+//				if (methods[i] != null) {
+//					s += "\n" + methods[i].toString(tab + 1); //$NON-NLS-1$
+//				}
+//			}
+//		}
+//		s += "\n" + tabString(tab) + "}"; //$NON-NLS-2$ //$NON-NLS-1$
+//		return s;
+//	}
 
-	public String toStringBody(int tab) {
-
-		String s = " {"; //$NON-NLS-1$
-		
-
-		if (memberTypes != null) {
-			for (int i = 0; i < memberTypes.length; i++) {
-				if (memberTypes[i] != null) {
-					s += "\n" + memberTypes[i].toString(tab + 1); //$NON-NLS-1$
-				}
-			}
+	public StringBuffer printHeader(int indent, StringBuffer output) {
+		printModifiers(this.modifiers, output);
+		output.append("aspect " ); 
+		output.append(name);
+		if (superclass != null) {
+			output.append(" extends ");  //$NON-NLS-1$
+			superclass.print(0, output);
 		}
-		if (fields != null) {
-			for (int fieldI = 0; fieldI < fields.length; fieldI++) {
-				if (fields[fieldI] != null) {
-					s += "\n" + fields[fieldI].toString(tab + 1); //$NON-NLS-1$
-					if (fields[fieldI].isField())
-						s += ";"; //$NON-NLS-1$
-				}
-			}
-		}
-		if (methods != null) {
-			for (int i = 0; i < methods.length; i++) {
-				if (methods[i] != null) {
-					s += "\n" + methods[i].toString(tab + 1); //$NON-NLS-1$
-				}
-			}
-		}
-		s += "\n" + tabString(tab) + "}"; //$NON-NLS-2$ //$NON-NLS-1$
-		return s;
-	}
-
-	public String toStringHeader() {
-
-		String s = ""; //$NON-NLS-1$
-		if (modifiers != AccDefault) {
-			s += modifiersString(modifiers);
-		}
-		s += "aspect " + new String(name);//$NON-NLS-1$ //$NON-NLS-2$
-		if (superclass != null)
-			s += " extends " + superclass.toString(0); //$NON-NLS-1$
 		if (superInterfaces != null && superInterfaces.length > 0) {
-			s += (isInterface() ? " extends " : " implements ");//$NON-NLS-2$ //$NON-NLS-1$
+			output.append(isInterface() ? " extends " : " implements ");//$NON-NLS-2$ //$NON-NLS-1$
 			for (int i = 0; i < superInterfaces.length; i++) {
-				s += superInterfaces[i].toString(0);
-				if (i != superInterfaces.length - 1)
-					s += ", "; //$NON-NLS-1$
-			};
-		};
-		return s;
+				if (i > 0) output.append( ", "); //$NON-NLS-1$
+				superInterfaces[i].print(0, output);
+			}
+		}
+		return output;		
+		//XXX we should append the per-clause
 	}
-
-
 }
 

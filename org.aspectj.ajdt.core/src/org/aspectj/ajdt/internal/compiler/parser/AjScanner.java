@@ -15,25 +15,24 @@
 package org.aspectj.ajdt.internal.compiler.parser;
 
 import org.aspectj.ajdt.compiler.IAjTerminalSymbols;
-import org.eclipse.jdt.core.compiler.IScanner;
-import org.eclipse.jdt.core.compiler.InvalidInputException;
-import org.eclipse.jdt.internal.compiler.parser.Scanner;
 import org.eclipse.jdt.core.compiler.CharOperation;
+import org.eclipse.jdt.internal.compiler.parser.Scanner;
+import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
 
 
-public class AjScanner extends Scanner implements IScanner {
+public class AjScanner extends Scanner implements TerminalTokens {
 	public AjScanner(
 		boolean tokenizeComments,
 		boolean tokenizeWhiteSpace,
 		boolean checkNonExternalizedStringLiterals,
-		boolean assertMode,
+		long sourceLevel,
 		char[][] taskTags,
 		char[][] taskPriorities) {
 		super(
 			tokenizeComments,
 			tokenizeWhiteSpace,
 			checkNonExternalizedStringLiterals,
-			assertMode,
+			sourceLevel,
 			taskTags,
 			taskPriorities);
 	}
@@ -55,7 +54,7 @@ public class AjScanner extends Scanner implements IScanner {
 	
 	
 	
-	public int scanIdentifierOrKeyword() throws InvalidInputException {
+	public int scanIdentifierOrKeyword() {
 		int kind = super.scanIdentifierOrKeyword();
 		if (kind != IAjTerminalSymbols.TokenNameIdentifier) return kind;
 		

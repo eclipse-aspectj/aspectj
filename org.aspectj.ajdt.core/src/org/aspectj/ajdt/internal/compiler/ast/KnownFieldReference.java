@@ -23,7 +23,7 @@ public class KnownFieldReference extends QualifiedNameReference {
 
 	//XXX handle source locations
 	public KnownFieldReference(FieldBinding binding, long pos) {
-		super(new char[][] {binding.name}, 0, 0);
+		super(new char[][] {binding.name},new long[1],  0, 0);
 		this.binding = this.codegenBinding = binding;
 		this.constant = Constant.NotAConstant;
 		this.receiverType = this.actualReceiverType = 

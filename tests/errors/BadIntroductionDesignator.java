@@ -2,10 +2,8 @@ package errors;
 
 // PR#129
 
-public class BadIntroductionDesignator {
-	introduction (M||) {
-		public boolean m_foo;
-	}
+public aspect BadIntroductionDesignator {
+	public boolean (M||).m_foo;
 }
 
 class M {}

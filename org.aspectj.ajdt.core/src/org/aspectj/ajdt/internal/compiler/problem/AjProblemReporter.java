@@ -28,7 +28,7 @@ import org.aspectj.weaver.patterns.DeclareSoft;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
 import org.eclipse.jdt.internal.compiler.IProblemFactory;
-import org.eclipse.jdt.internal.compiler.ast.AstNode;
+import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
@@ -62,7 +62,7 @@ public class AjProblemReporter extends ProblemReporter {
 
 	public void unhandledException(
 		TypeBinding exceptionType,
-		AstNode location)
+		ASTNode location)
 	{
 		if (!world.getWorld().getDeclareSoft().isEmpty()) {
 			Shadow callSite = world.makeShadow(location, referenceContext);

@@ -29,6 +29,13 @@ public class BuildArgParser extends Main {
 	private static final String BUNDLE_NAME = "org.aspectj.ajdt.ajc.messages";
     private static boolean LOADED_BUNDLE = false;
     
+    static {
+		bundle = ResourceBundle.getBundle(BUNDLE_NAME);
+		if (!LOADED_BUNDLE) {
+			LOADED_BUNDLE = true;
+		}
+	}
+    
     /** to initialize super's PrintWriter but refer to underlying StringWriter */
     private static class StringPrintWriter extends PrintWriter {
         public final StringWriter stringWriter;
@@ -39,11 +46,8 @@ public class BuildArgParser extends Main {
     }
 
     /** @return multi-line String usage for the compiler */    
-    public static String getUsage() {
-        if (!LOADED_BUNDLE) { // get eclipse usage unless bundle loaded...
-            new BuildArgParser();
-        }
-        return Main.bind("misc.usage", Main.bind("compiler.version"));
+    public static String getUsage() {   
+        return Main.bind("misc.usage");
     }
     
     /** 
@@ -55,50 +59,48 @@ public class BuildArgParser extends Main {
      */
     private final StringBuffer errorSink;
     
+    private IMessageHandler handler;
+    
 	/**
 	 * Overrides super's bundle.
 	 */
-	public BuildArgParser(PrintWriter writer) {
+	public BuildArgParser(PrintWriter writer, IMessageHandler handler) {
 		super(writer, writer, false);
-		bundle = ResourceBundle.getBundle(BUNDLE_NAME);
-        if (!LOADED_BUNDLE) {
-            LOADED_BUNDLE = true;
-        }
+
         if (writer instanceof StringPrintWriter) {
             errorSink = ((StringPrintWriter) writer).stringWriter.getBuffer();
         } else {
             errorSink = null;
         }
+        this.handler = handler;
 	}
 
     /** Set up to capture messages using getOtherMessages(boolean) */
-	public BuildArgParser() { 
-		this(new StringPrintWriter(new StringWriter()));
+	public BuildArgParser(IMessageHandler handler) { 
+		this(new StringPrintWriter(new StringWriter()),handler);
 	}
 
 	/**
 	 * Generate build configuration for the input args,
 	 * passing to handler any error messages.
 	 * @param args the String[] arguments for the build configuration
-	 * @param handler the IMessageHandler handler for any errors
 	 * @return AjBuildConfig per args, 
 	 *         which will be invalid unless there are no handler errors.
 	 */
-	public AjBuildConfig genBuildConfig(String[] args, IMessageHandler handler) {
-		return genBuildConfig(args, handler, true, null);
+	public AjBuildConfig genBuildConfig(String[] args) {
+		return genBuildConfig(args,  true, null);
 	}  
       
     /**
      * Generate build configuration for the input args,
      * passing to handler any error messages.
      * @param args the String[] arguments for the build configuration
-     * @param handler the IMessageHandler handler for any errors
      * @param setClasspath	determines if the classpath should be parsed and set on the build configuration
      * @param configFile	can be null
      * @return AjBuildConfig per args, 
      *         which will be invalid unless there are no handler errors.
      */
-	public AjBuildConfig genBuildConfig(String[] args, IMessageHandler handler, boolean setClasspath, File configFile) {
+	public AjBuildConfig genBuildConfig(String[] args, boolean setClasspath, File configFile) {
 		AjBuildConfig buildConfig = new AjBuildConfig();
 		buildConfig.setConfigFile(configFile);
 		try {
@@ -135,6 +137,11 @@ public class BuildArgParser extends Main {
 			javaArgList.addAll(parser.getUnparsedArgs());
 			super.configure((String[])javaArgList.toArray(new String[javaArgList.size()]));
 			
+			if (!proceed) {
+				buildConfig.doNotProceed();
+				return buildConfig;
+			} 
+			
 			if (buildConfig.getSourceRoots() != null) {
 				for (Iterator i = buildConfig.getSourceRoots().iterator(); i.hasNext(); ) {
 					fileList.addAll(collectSourceRootFiles((File)i.next()));
@@ -166,6 +173,18 @@ public class BuildArgParser extends Main {
 			handler.handleMessage(m);
 		}
 		return buildConfig;
+	}
+
+
+	// from super...
+	public void printVersion() {
+		System.err.println("AspectJ Compiler " + Version.text + " built on " + Version.time_text);  //$NON-NLS-1$
+		System.err.flush();		
+	}
+	
+	public void printUsage() {
+		System.out.println(bind("misc.usage"));  //$NON-NLS-1$
+		System.out.flush();
 	}
 
     /** 

@@ -21,8 +21,9 @@ import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.patterns.WildTypePattern;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
-import org.eclipse.jdt.internal.compiler.ast.AstNode;
+import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
+import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.NameReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
@@ -89,8 +90,11 @@ public class AstUtil {
 	
 	
 	public static NameReference makeNameReference(TypeBinding binding) {
+		
+			char[][] name = new char[][] {binding.sourceName()};
+			long[] dummyPositions = new long[name.length];
 			QualifiedNameReference ref = 
-			new QualifiedNameReference(new char[][] {binding.sourceName()}, 0, 0);
+			new QualifiedNameReference(name, dummyPositions, 0, 0);
 		ref.binding = binding;		ref.constant = Constant.NotAConstant;
 		return ref;
 	}
@@ -130,8 +134,8 @@ public class AstUtil {
 		SingleNameReference ret = new SingleNameReference(binding.name, 0);
 		ret.binding = binding;
 		ret.codegenBinding = binding;
-		ret.constant = AstNode.NotAConstant;
-		ret.bits &= ~AstNode.RestrictiveFlagMASK;  // clear bits
+		ret.constant = ASTNode.NotAConstant;
+		ret.bits &= ~ASTNode.RestrictiveFlagMASK;  // clear bits
 		ret.bits |= BindingIds.VARIABLE; 
 		return ret;
 	}
@@ -142,8 +146,8 @@ public class AstUtil {
 		SingleNameReference ret = new SingleNameReference(binding.name, 0);
 		ret.binding = binding;
 		ret.codegenBinding = binding;
-		ret.constant = AstNode.NotAConstant;
-		ret.bits &= ~AstNode.RestrictiveFlagMASK;  // clear bits
+		ret.constant = ASTNode.NotAConstant;
+		ret.bits &= ~ASTNode.RestrictiveFlagMASK;  // clear bits
 		ret.bits |= BindingIds.LOCAL; 
 		return ret;
 	}
@@ -284,5 +288,10 @@ public class AstUtil {
 		if (type == BaseTypes.DoubleBinding || type == BaseTypes.LongBinding) return 2;
 		else return 1;
 	}
-
+	
+	public static void replaceMethodBinding(MessageSend send, MethodBinding newBinding) {
+		send.binding = send.codegenBinding = newBinding;
+		send.setActualReceiverType(newBinding.declaringClass);
+		
+	}
 }

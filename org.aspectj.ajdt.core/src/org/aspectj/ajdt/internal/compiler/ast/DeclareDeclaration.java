@@ -89,12 +89,14 @@ public class DeclareDeclaration extends MethodDeclaration {
 	}
 
 
+	public StringBuffer print(int tab, StringBuffer output) {
+		printIndent(tab, output);
+		if (declareDecl == null) {
+			output.append("<declare>");
+		} else {
+			output.append(declareDecl.toString());
+		}
+		return output;
+	}
 
-
-
-
-    public String toString(int tab) {
-    	if (declareDecl == null) return tabString(tab) + "<declare>";
-    	else return tabString(tab) + declareDecl.toString();
-    }
 }

@@ -14,7 +14,7 @@
 package org.aspectj.ajdt.internal.compiler.ast;
 
 import org.aspectj.weaver.Advice;
-import org.eclipse.jdt.internal.compiler.AbstractSyntaxTreeVisitorAdapter;
+import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
@@ -33,7 +33,7 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
  * thisJoinPointStaticPart, thisJoinPoint and thisEnclosingJoinPointStaticPart
  */
 
-public class ProceedVisitor extends AbstractSyntaxTreeVisitorAdapter {
+public class ProceedVisitor extends ASTVisitor {
 	boolean needsDynamic = false;
 	boolean needsStatic = false;
 	boolean needsStaticEnclosing = false;

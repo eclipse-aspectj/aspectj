@@ -1,1 +1,2 @@
--injars foo.jar
+-inpath
+foo.jar

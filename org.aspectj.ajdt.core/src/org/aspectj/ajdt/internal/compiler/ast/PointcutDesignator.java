@@ -20,7 +20,7 @@ import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
-import org.eclipse.jdt.internal.compiler.ast.AstNode;
+import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
@@ -28,7 +28,7 @@ import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 
-public class PointcutDesignator extends AstNode {
+public class PointcutDesignator extends ASTNode {
 	private Pointcut pointcut;
     private PseudoTokens tokens; //XXX redundant
     private boolean isError = false;
@@ -50,12 +50,6 @@ public class PointcutDesignator extends AstNode {
 		tokens.postParse(typeDec, enclosingDec);
 	}
 
-
-	
-	public String toString(int tab) {
-		if (pointcut == null) return "<pcd>";
-		return pointcut.toString();
-	}
 
 	public boolean finishResolveTypes(final AbstractMethodDeclaration dec, MethodBinding method, final int baseArgumentCount, SourceTypeBinding sourceTypeBinding) {
 		//System.err.println("resolving: " + this);
@@ -89,6 +83,14 @@ public class PointcutDesignator extends AstNode {
     
 	public boolean isError() {
 		return isError;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.internal.compiler.ast.ASTNode#print(int, java.lang.StringBuffer)
+	 */
+	public StringBuffer print(int indent, StringBuffer output) {
+		if (pointcut == null) return output.append("<pcd>");
+		return output.append(pointcut.toString());
 	}
 
 }

@@ -5,6 +5,4 @@ package errors;
 public aspect ExtraClosingBrace {
     public void doIt() {
         
-    }}
-}
-}
+    }}}}

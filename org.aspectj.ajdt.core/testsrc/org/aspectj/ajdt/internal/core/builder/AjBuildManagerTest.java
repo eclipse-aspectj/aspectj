@@ -62,7 +62,7 @@ public class AjBuildManagerTest extends TestCase {
 	public void testSimpleStructure() throws IOException, CoreException {
 		
 		AjBuildManager manager = new AjBuildManager(messageWriter);
-		BuildArgParser parser = new BuildArgParser();
+		BuildArgParser parser = new BuildArgParser(messageWriter);
 		String javaClassPath = System.getProperty("java.class.path");
         AjBuildConfig buildConfig = 
 			parser.genBuildConfig(new String[] { 
@@ -72,7 +72,7 @@ public class AjBuildManagerTest extends TestCase {
 				AjdtAjcTests.TESTDATA_PATH 
                 + "/src1/A.java",
 //				EajcModuleTests.TESTDATA_PATH + "/src1/Hello.java",
-				 }, messageWriter);
+				 });
         String err = parser.getOtherMessages(true);		
         assertTrue(err, null == err);
         manager.setStructureModel(AsmManager.getDefault().getHierarchy());
