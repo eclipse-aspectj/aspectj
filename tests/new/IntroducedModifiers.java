@@ -19,9 +19,9 @@ public class IntroducedModifiers {
 
         //XXX this name depends on implementation details for field intro on interfaces
         try {
-            f = C.class.getField("iField__I");
+            f = C.class.getField("ajc$interField$A$I$iField");
         } catch (NoSuchFieldException e) {
-            f = C.class.getField("aspectj$iField__I");
+            f = C.class.getField("iField");
         }
         Tester.check(Modifier.isVolatile(f.getModifiers()), "volatile");
         Tester.check(Modifier.isTransient(f.getModifiers()), "transient");
