@@ -61,8 +61,8 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 		
-		TestUtil.runMain("out;out/lib.jar", "client.Client");
-		TestUtil.runMain("out;out/lib.jar", "client.Client1");
+		TestUtil.runMain("out" + File.pathSeparator + "out/lib.jar", "client.Client");
+		TestUtil.runMain("out" + File.pathSeparator + "out/lib.jar", "client.Client1");
 		
 		args = new ArrayList();
 		args.add("-aspectpath");
@@ -80,7 +80,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 		
-		TestUtil.runMain("out;out/lib.jar", "client.Client1");
+		TestUtil.runMain("out" + File.pathSeparator + "out/lib.jar", "client.Client1");
 
 		args = new ArrayList();
 		args.add("-aspectpath");
@@ -100,7 +100,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 
 		args = new ArrayList();
 		args.add("-classpath");
-		args.add("../runtime/bin;out/lib.jar"
+		args.add("../runtime/bin" + File.pathSeparator + "out/lib.jar"
 			+ File.pathSeparator + System.getProperty("aspectjrt.path"));
 		
 		args.add("-d");
@@ -112,7 +112,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		
 		args = new ArrayList();
 		args.add("-classpath");
-		args.add("../runtime/bin;out/lib.jar" + 
+		args.add("../runtime/bin" + File.pathSeparator + "out/lib.jar" + 
 			File.pathSeparator + System.getProperty("aspectjrt.path"));
 		args.add("-Xlint:error");
 		

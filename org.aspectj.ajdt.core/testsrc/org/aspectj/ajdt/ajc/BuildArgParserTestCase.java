@@ -43,7 +43,7 @@ public class BuildArgParserTestCase extends TestCase {
 	}
 
 	public void testDefaultClasspathAndTargetCombo() throws InvalidInputException {
-		String ENTRY = "1.jar;2.jar";
+		String ENTRY = "1.jar" + File.pathSeparator + "2.jar";
 		final String classpath = System.getProperty("java.class.path");
 		try {
             System.setProperty("java.class.path", ENTRY); // see finally below
@@ -223,7 +223,7 @@ public class BuildArgParserTestCase extends TestCase {
 	public void testBadSourceRootDir() throws InvalidInputException {
 		AjBuildConfig config = genBuildConfig(new String[] {   
 			"-sourceroots", 
-			AjdtAjcTests.TESTDATA_PATH + "/mumbleDoesNotExist;"
+			AjdtAjcTests.TESTDATA_PATH + "/mumbleDoesNotExist" + File.pathSeparator 
             + AjdtAjcTests.TESTDATA_PATH + "/ajc" }, 
 			messageWriter);
 
@@ -327,7 +327,7 @@ public class BuildArgParserTestCase extends TestCase {
 	}
 
 	public void testClasspathSetting() throws InvalidInputException {
-		String ENTRY = "1.jar;2.jar";
+		String ENTRY = "1.jar" + File.pathSeparator + "2.jar";
 		AjBuildConfig config = genBuildConfig(new String[] {  "-classpath", ENTRY }, messageWriter);
 		
 		assertTrue(
