@@ -146,6 +146,10 @@ available from individual SourceForge projects. </p>
 
     <li><a href="#NO_SOURCE_COLUMN">SourceLocation.getColumn() is
         deprecated and will always return 0</a></li>
+
+    <li>The interaction between aspect instantiation and advice has been
+        <a href="#ASPECT_INSTANTIATION_AND_ADVICE">clarified</a>. </li>
+
   </ul>
 
   <p><a name="NEW_LIMITATIONS">There</a> are a couple of language
@@ -355,6 +359,77 @@ available from individual SourceForge projects. </p>
 <hr>
 <hr>
 <h2><a name="details">Details</a></h2>
+
+  <h3><a name="ASPECT_INSTANTIATION_AND_ADVICE">Aspect Instantiation
+  and Advice</a></h3>
+
+    <p> In AspectJ 1.0.6, we made an effort to hide some complications
+    with Aspect instantiation from the user.  In particular, the
+    following code compiled and ran:
+    </p>
+
+      <PRE>
+      public class Client
+      {
+          public static void main(String[] args) {
+              Client c = new Client();
+          }
+      }
+
+      aspect Watchcall {
+          pointcut myConstructor(): execution(new(..));
+
+          before(): myConstructor() {
+              System.err.println("Entering Constructor");
+          }
+      }
+      </PRE>
+
+    <p> But there's a conceptual problem with this code: The before
+    advice should run before the execution of all constructors in the
+    system.  It must run in the context of an instance of the
+    Watchcall aspect.  The only way to get such an instance is to have
+    Watchcall's default constructor execute.  But before that
+    executes, we need to run the before advice...</p>
+
+    <p> AspectJ 1.0.6 hid this circularity through the ad-hoc
+    mechanism of preventing an aspect's advice from matching join
+    points that were within the aspect's definition, and occurred
+    before the aspect was initialized.  But even in AspectJ 1.0.6,
+    this circularity could be exposed:
+    </p>
+
+      <PRE>
+      public class Client
+      {
+          public static int foo() { return 3; }
+          public static void main(String[] args) {
+              Client c = new Client();
+          }
+      }
+
+      aspect Watchcall {
+          int i = Client.foo();
+          pointcut myConstructor():
+              execution(new(..)) || execution(int foo());
+
+          before(): myConstructor() {
+              System.err.println("Entering Constructor");
+          }
+      }
+      </PRE>
+
+    <p>This program would throw a NullPointerException when run, since
+    Client.foo() was called before the Watchcall instance could be
+    instantiated.  </p>
+
+    <p> In AspectJ 1.1, we have decided that half-hiding the problem
+    just leads to trouble, and so we are no longer silently hiding
+    some join points before aspect initialization.  However, we have
+    provided a better exception than a NullPointerException for this
+    case.  In AspectJ 1.1, both of the above programs will throw
+    org.aspectj.lang.NoAspectBoundException. 
+    </p>
 
   <h3><a name="THROWS_PATTERN">Matching based on throws</a></h3>
 
