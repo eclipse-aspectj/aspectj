@@ -24,6 +24,7 @@ import java.util.List;
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageUtil;
+import org.aspectj.testing.ajde.CompileCommand;
 import org.aspectj.testing.run.IRunIterator;
 import org.aspectj.testing.run.IRunStatus;
 import org.aspectj.testing.run.WrappedRunIterator;
@@ -87,11 +88,16 @@ public class IncCompilerRun implements IAjcRun {
         
     /** 
      * Handle copying and deleting of files per tag.
-     * This returns false unless some file was copied or deleted successfully
+     * This returns false unless 
+     * (1) tag is "same", or
+     * (2) some file was copied or deleted successfully
      * and there were no failures copying or deleting files.
      * @return true if staging completed successfully 
      */
     boolean doStaging(final Validator validator) {
+        if ("same".equals(spec.tag)) {
+            return true;
+        }
         boolean result = false;
         try {
             //ArrayList changed = new ArrayList();
@@ -207,6 +213,13 @@ public class IncCompilerRun implements IAjcRun {
         boolean report = false;
         try {
             handler.init();
+            if (spec.fresh) {
+                if (compiler instanceof CompileCommand) { // urk
+                    ((CompileCommand) compiler).buildNextFresh();
+                } else {
+                    MessageUtil.info(handler, "fresh not supported by compiler: " + compiler);
+                }
+            }
             final long startTime = System.currentTimeMillis();
             commandResult = compiler.repeatCommand(handler);
             // XXX disabled LangUtil.throwIaxIfNotAllAssignable(actualRecompiled, File.class, "recompiled");
@@ -272,6 +285,7 @@ public class IncCompilerRun implements IAjcRun {
 	public static class Spec extends AbstractRunSpec {
         public static final String XMLNAME = "inc-compile";
 
+        protected boolean fresh;
         protected ArrayList classesAdded;
         protected ArrayList classesRemoved;
         protected ArrayList classesUpdated;
@@ -279,10 +293,11 @@ public class IncCompilerRun implements IAjcRun {
         /**
          * skip description, skip sourceLocation, 
          * do keywords, skip options, do paths as classes, do comment,
+         * skip staging (always true), 
          * do dirChanges, do messages but skip children. 
          */
         private static final XMLNames NAMES = new XMLNames(XMLNames.DEFAULT,
-                "", "", null, "", "classes", null, false, false, true);
+                "", "", null, "", "classes", null, "", false, false, true);
                 
 		/** identifies files this run owns, so {name}.{tag}.java maps to {name}.java */
 		String tag;
@@ -294,6 +309,10 @@ public class IncCompilerRun implements IAjcRun {
             classesRemoved = new ArrayList();
             classesUpdated = new ArrayList();
 		}
+        
+        public void setFresh(boolean fresh) {
+            this.fresh = fresh;
+        }
         
 		public void setTag(String input) {
 			tag = input;
@@ -331,6 +350,9 @@ public class IncCompilerRun implements IAjcRun {
         public void writeXml(XMLWriter out) {
             String attr = XMLWriter.makeAttribute("tag", tag);
             out.startElement(xmlElementName, attr, false);
+            if (fresh) {
+                out.printAttribute("fresh", "true");
+            }
             super.writeAttributes(out);
             out.endAttributes();
             if (!LangUtil.isEmpty(dirChanges)) {
