@@ -5,16 +5,16 @@ import org.aspectj.testing.Tester;
 public class AfterReturningParamMatching {
 	public static void main(String[] args) {
 		goBoolean(false);
-		Tester.checkAndClearEvents(new String[] { "Object" });
+		Tester.checkAndClearEvents(new String[] { "boolean", "Object" });
 
 		goByte(1);
 		Tester.checkAndClearEvents(new String[] { "byte", "int", "long", "Object"});
 		
 		goInt(2);
-		Tester.checkAndClearEvents(new String[] { "byte", "int", "long", "Object" });
+		Tester.checkAndClearEvents(new String[] { "int", "long", "Object" });
 
 		goLong(3);
-		Tester.checkAndClearEvents(new String[] { "byte", "int", "long", "Object" });
+		Tester.checkAndClearEvents(new String[] { "long", "Object" });
 		
 		goObject(new Object());
 		Tester.checkAndClearEvents(new String[] { "Object" });
@@ -62,6 +62,7 @@ aspect A {
 		call(* goNumber(*)) || 
 		call(* goInteger(*)); 
 	
+	after() returning(boolean b): methodsInQuestion() { Tester.event("boolean"); }
 	after() returning(byte b): methodsInQuestion() { Tester.event("byte"); }
 	after() returning(int b): methodsInQuestion() { Tester.event("int"); }
 	after() returning(long b): methodsInQuestion() { Tester.event("long"); }

@@ -119,13 +119,6 @@
 		</compile>
 		<run class="org.aspectj.langlib.PointcutsCW"/>
 	</ajc-test>
-    
-    <ajc-test dir="new" 
-     pr="42668"
-   	 title="after returning with parameter: matching rules">
-        <compile files="AfterReturningParamMatching.java" />
-        <run class="AfterReturningParamMatching"/>
-    </ajc-test>
 
     <ajc-test dir="bugs/interAbstract" 
 		pr="49784"

@@ -372,27 +372,6 @@ public class TypeX {
         return world.isAssignableFrom(this, other);
     }
 
-	/**
-	 * Determines if the variables of this type could be assigned values
-	 * of another type without conversion.  In other words, if the compiler can't tell whether
-	 * such an assignment would be impossible.  This still allows for assignment conversion
-	 * for primitive types and casting conversion for reference types.  For reference
-	 * types, this is equivalent to isCastableFrom(THIS, OTHER).  For primitive types,
-	 * this is equivalent to isAssignableFrom(THIS, OTHER).
-	 * 
-	 * @param other the other type
-	 * @param world the {@link World} in which the possible assignment should be checked.
-	 * @return true iff variables of this type could be assigned values of other without casting
-	 * @exception NullPointerException if other is null
-	 */
-	public final boolean couldBeAssignableFrom(TypeX other, World world) {
-		// primitives override this method, so we know we're not primitive.
-		// So if the other is primitive, don't bother asking the world anything.
-		if (other.isPrimitive()) return false;
-		return world.isCoerceableFrom(this, other);
-	}
-
-
     /**
      * Determines if values of another type could possibly be cast to
      * this type.  The rules followed are from JLS 2ed 5.5, "Casting Conversion".
