@@ -14,8 +14,9 @@ package tests;
 
 import figures.*;
 import support.Log;
-
 import junit.framework.*;
+import java.util.List;
+import java.util.Arrays;
 
 public class Test3c extends Test {
 
@@ -23,24 +24,29 @@ public class Test3c extends Test {
         junit.textui.TestRunner.run(Test3c.class);
     }
 
-    public void setUp() {
+    public void testCreateWithPointLog() {
         Log.clear();
-        super.setUp();
+        Point p1 = new Point(10, 100);
+        Group g  = new Group(p1);
+        List foundLog = Log.getData();
+
+        List desiredLog =
+            Arrays.asList(new String[] {
+                "adding Point"
+            });
+        assertEquals(desiredLog, foundLog);
     }
 
-    public void testCreateLog() {
-        assertEquals("", Log.getString());
-    }
+    public void testCreateWithoutPointLog() {
+        Log.clear();
+        Point p1 = new Point(10, 100);
+        Point p2 = new Point(20, 200);
+        Line  l  = new Line(p1, p2);
+        Group g  = new Group(l);
+        List foundLog = Log.getData();
 
-    public void testMoveLonePoint() {
-        p1 = new Point(0, 0);
-        p1.move(37, 88);
-        assertEquals("moving as a part of null;", Log.getString());
-    }
-
-    public void testMoveGroupedPoint() {
-        g = new Group(p1);
-        p1.move(0, 0);
-        assertEquals("moving as a part of " + g + ";", Log.getString());
+        List desiredLog = Arrays.asList(new String[] {});
+        assertEquals(desiredLog, foundLog);
     }
 }
+

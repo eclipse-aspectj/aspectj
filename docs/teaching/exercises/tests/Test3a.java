@@ -14,8 +14,9 @@ package tests;
 
 import figures.*;
 import support.Log;
-
 import junit.framework.*;
+import java.util.List;
+import java.util.Arrays;
 
 public class Test3a extends Test {
 
@@ -23,26 +24,36 @@ public class Test3a extends Test {
         junit.textui.TestRunner.run(Test3a.class);
     }
 
-    public void setUp() {
-        Log.clear();
-        super.setUp();
-    }
-
-    public void testCreateLog() {
-        assertEquals("", Log.getString());
-    }
-
     public void testMovePointLog() {
+        Point p1 = new Point(10, 100);
+
+        Log.clear();
         p1.move(20, 30);
-        assertEquals("moving;", Log.getString());
+        List foundLog = Log.getData();
+
+        List desiredLog =
+            Arrays.asList(new String[] {
+                "execution(void figures.Point.move(int, int))"
+            });
+
+        assertEquals(desiredLog, foundLog);
     }
 
-    public void testSetYPointLog() {
-        assertEquals("", Log.getString());
-    }
+    public void testMoveLineLog() {
+        Point p1 = new Point(10, 100);
+        Point p2 = new Point(20, 200);
+        Line  l  = new Line(p1, p2);
 
-    public void testGetYPointLog() {
-        p1.getY();
-        assertEquals("", Log.getString());
+        Log.clear();
+        l.move(20, 30);
+        List foundLog = Log.getData();
+
+        List desiredLog =
+            Arrays.asList(new String[] {
+                "execution(void figures.Line.move(int, int))",
+                "execution(void figures.Point.move(int, int))",
+                "execution(void figures.Point.move(int, int))"
+            });
+        assertEquals(desiredLog, foundLog);
     }
 }

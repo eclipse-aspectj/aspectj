@@ -16,10 +16,9 @@ import figures.*;
 
 import junit.framework.*;
 
-public class Test2e extends TestCase {
+public class Test2e extends Test {
 
     public static void main(String[] args) {
-        junit.textui.TestRunner.run(Test.class);
         junit.textui.TestRunner.run(Test2e.class);
     }
 
