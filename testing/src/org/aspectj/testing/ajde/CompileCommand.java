@@ -383,4 +383,9 @@ class ProjectProperties implements ProjectPropertiesAdapter {
         log(s);
         return null;
     }
+
+	public Map getSourcePathResources() {
+		return null;
+	}
+
 }

@@ -41,6 +41,7 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 	private List/*File*/ sourceRoots = new ArrayList();
 	private List/*File*/ files = new ArrayList();
 	private List/*File*/ inJars = new ArrayList();
+	private Map/*String->File*/ sourcePathResources = new HashMap();
 	private List/*File*/ aspectpath = new ArrayList();
 	private List/*String*/ classpath = new ArrayList();
 	private Map javaOptions = new HashMap();
@@ -191,6 +192,10 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 
 	public List/*File*/ getInJars() {
 		return inJars;
+	}
+
+	public Map getSourcePathResources() {
+		return sourcePathResources;
 	}
 
 	public void setOutputJar(File outputJar) {
@@ -419,5 +424,9 @@ public class AjBuildConfig { // XXX needs bootclasspath?
             }
         }
     }
+
+	public void setSourcePathResources(Map map) {
+		sourcePathResources = map;
+	}
 
 }

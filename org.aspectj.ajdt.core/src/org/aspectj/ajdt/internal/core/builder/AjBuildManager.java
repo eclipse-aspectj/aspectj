@@ -221,6 +221,14 @@ public class AjBuildManager {
 			bcelWeaver.addJarFile(inJar, buildConfig.getOutputDir());
 		}
 		
+		if (buildConfig.getSourcePathResources() != null) {
+			for (Iterator i = buildConfig.getSourcePathResources().keySet().iterator(); i.hasNext(); ) {
+	//			File resource = (File)i.next();
+				String resource = (String)i.next();
+				bcelWeaver.addResource(resource, (File)buildConfig.getSourcePathResources().get(resource), buildConfig.getOutputDir());
+	//			bcelWeaver.addResource(resource, buildConfig.getOutputDir());
+			}
+		}
 		//check for org.aspectj.runtime.JoinPoint
 		bcelWorld.resolve("org.aspectj.lang.JoinPoint");
 	}

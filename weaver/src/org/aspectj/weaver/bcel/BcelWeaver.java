@@ -47,6 +47,7 @@ public class BcelWeaver implements IWeaver {
     private Map  sourceJavaClasses = new HashMap();   /* String -> UnwovenClassFile */
     private List addedClasses      = new ArrayList(); /* List<UnovenClassFile> */
     private List deletedTypenames  = new ArrayList(); /* List<String> */
+    private List resources         = new ArrayList();   /* String -> byte[] */ 
     private boolean needToReweaveWorld = false;
 
     private List shadowMungerList = null; // setup by prepareForWeave
@@ -112,38 +113,46 @@ public class BcelWeaver implements IWeaver {
 	 */
 	public void addJarFile(File inFile, File outDir) throws IOException {
 		needToReweaveWorld = true;
-		//System.err.println("adding jar: " + inFile);
 		ZipInputStream inStream = new ZipInputStream(new FileInputStream(inFile)); //??? buffered
 		
 		while (true) {
 			ZipEntry entry = inStream.getNextEntry();
 			if (entry == null) break;
 			
-			if (entry.isDirectory() || !entry.getName().endsWith(".class")) {
-				continue; //??? need to pass other things along untouched
-//				outStream.putNextEntry(entry);
-//				outStream.write(Utility.getByteArray(inStream));
-//				outStream.closeEntry();
-//				return;
-			}
-			//System.err.println("adding class: " + entry.getName());
-		
 			byte[] bytes = FileUtil.readAsByteArray(inStream);
 			String filename = entry.getName();
-			UnwovenClassFile classFile = new UnwovenClassFile(new File(outDir, filename).getAbsolutePath(), bytes);
+
+			if (filename.endsWith(".class")) {
+				UnwovenClassFile classFile = new UnwovenClassFile(new File(outDir, filename).getAbsolutePath(), bytes);
+				this.addClassFile(classFile);
+			}
+			else if (!entry.isDirectory()) {
+				UnwovenClassFile resourceFile = new UnwovenClassFile(filename, bytes);
+				addResource(resourceFile);
+			}
+
 			inStream.closeEntry();
-			this.addClassFile(classFile);
 		}
 		
 		inStream.close();
 	}
-    
+
+	public void addResource(String name, File inPath, File outDir) throws IOException {
+		BufferedInputStream inStream = new BufferedInputStream(new FileInputStream(inPath));
+		byte[] bytes = new byte[(int)inPath.length()];
+		inStream.read(bytes);
+		UnwovenClassFile resourceFile = new UnwovenClassFile(new File(outDir, name).getAbsolutePath(), bytes);
+		addResource(resourceFile);
+		inStream.close();
+	}
     
     /** Should be addOrReplace
      */
     public void addClassFile(UnwovenClassFile classFile) {
     	addedClasses.add(classFile);
-    	sourceJavaClasses.put(classFile.getClassName(), classFile);
+    	if (null != sourceJavaClasses.put(classFile.getClassName(), classFile)) {
+//    		throw new RuntimeException(classFile.getClassName());
+    	}
     	world.addSourceObjectType(classFile.getJavaClass());
     }
 
@@ -153,6 +162,10 @@ public class BcelWeaver implements IWeaver {
     	sourceJavaClasses.remove(typename);
     	world.deleteSourceObjectType(TypeX.forName(typename));
     }
+
+	public void addResource (UnwovenClassFile resourceFile) {
+		resources.add(resourceFile);
+	}
 
 	// ---- weave preparation
 
@@ -194,6 +207,8 @@ public class BcelWeaver implements IWeaver {
     	BufferedOutputStream os = FileUtil.makeOutputStream(file);
     	this.zipOutputStream = new ZipOutputStream(os);
     	dumpUnwoven();
+		/* BUG 40943*/
+		dumpResourcesOutJar();
     	zipOutputStream.close();  //this flushes and closes the acutal file
     }
     
@@ -204,8 +219,25 @@ public class BcelWeaver implements IWeaver {
             UnwovenClassFile classFile = (UnwovenClassFile)i.next();
             dumpUnchanged(classFile);
        	}
+       	dumpResourcesToOutPath();
     }
     
+	private void dumpResourcesToOutPath() throws IOException {
+		Iterator i = resources.iterator();
+		while (i.hasNext()) {
+			UnwovenClassFile res = (UnwovenClassFile)i.next();
+			dumpUnchanged(res);
+		}		
+	}
+
+	/* BUG #40943 */
+    public void dumpResourcesOutJar() throws IOException {
+		Iterator i = resources.iterator();
+		while (i.hasNext()) {
+			UnwovenClassFile res = (UnwovenClassFile)i.next();
+			writeZipEntry(res.getFilename(),res.getBytes());
+		}
+    }
     
     // ---- weaving
 
@@ -213,6 +245,8 @@ public class BcelWeaver implements IWeaver {
     	OutputStream os = FileUtil.makeOutputStream(file);
     	this.zipOutputStream = new ZipOutputStream(os);
     	Collection c = weave();
+    	/* BUG 40943*/
+    	dumpResourcesOutJar();
     	zipOutputStream.close();  //this flushes and closes the acutal file
     	return c;
     }
@@ -286,6 +320,8 @@ public class BcelWeaver implements IWeaver {
         addedClasses = new ArrayList();
     	deletedTypenames = new ArrayList();
         
+		dumpResourcesToOutPath();
+		
         return wovenClassNames;
     }
 
