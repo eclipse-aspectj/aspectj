@@ -7178,4 +7178,10 @@
 		<compile files="main/Driver.java,main/p2/AbstractTest.aj,main/p1/ConcreteTest.aj"/>
 		<run class="main.Driver"/>
 	</ajc-test>
+	
+	<ajc-test dir="bugs" pr="51919"
+   	 title="Polymorphic ITD fails in CVS HEAD (From ajdt 1.1.6)">
+        <compile files="OverloadedITDNPE.java" />
+    </ajc-test>
+	
 </suite>
