@@ -26,11 +26,11 @@ public class AsmAdapter {
 	public static final String DECLARES_ON = "declares on";
 	public static final String DECLAREDY_BY = "declared by";
 
-	public static void checkerMunger(StructureModel model, Shadow shadow) {
+	public static void checkerMunger(AspectJModel model, Shadow shadow) {
 //		System.err.println("> " + shadow.getThisVar() + " to " + shadow.getTargetVar());
 	}
 	
-	public static void nodeMunger(StructureModel model, Shadow shadow, ShadowMunger munger) {
+	public static void nodeMunger(AspectJModel model, Shadow shadow, ShadowMunger munger) {
 		if (munger instanceof Advice) {
 			Advice a = (Advice)munger;
 			if (a.getKind().isPerEntry() || a.getKind().isCflow()) {
@@ -43,7 +43,7 @@ public class AsmAdapter {
 			IProgramElement adviceNode = getNode(model, a);  
 			
 			if (adviceNode != null && targetNode != null) {
-				IRelationship foreward = mapper.get(adviceNode);
+				IRelationship foreward = mapper.get(adviceNode, IRelationship.Kind.ADVICE, ADVISES);
 				if (foreward == null) {
 					foreward = new Relationship(
 						ADVISES,
@@ -55,7 +55,7 @@ public class AsmAdapter {
 				}
 				foreward.getTargets().add(targetNode);
 
-				IRelationship back = mapper.get(targetNode);
+				IRelationship back = mapper.get(targetNode, IRelationship.Kind.ADVICE, ADVISED_BY);
 				if (back == null) {
 					back = new Relationship(
 						ADVISED_BY,
@@ -70,14 +70,14 @@ public class AsmAdapter {
 		}
 	}
 
-	private static IProgramElement getNode(StructureModel model, Advice a) {
+	private static IProgramElement getNode(AspectJModel model, Advice a) {
 		//ResolvedTypeX inAspect = a.getConcreteAspect();
 		Member member = a.getSignature();
 		if (a.getSignature() == null) return null;
 		return lookupMember(model, member);
 	}
 	
-	private static IProgramElement getNode(StructureModel model, Shadow shadow) {
+	private static IProgramElement getNode(AspectJModel model, Shadow shadow) {
 		Member enclosingMember = shadow.getEnclosingCodeSignature();
 		
 		IProgramElement enclosingNode = lookupMember(model, enclosingMember);
@@ -130,7 +130,7 @@ public class AsmAdapter {
 		return peNode;
 	}
 	
-	public static IProgramElement lookupMember(StructureModel model, Member member) {
+	public static IProgramElement lookupMember(AspectJModel model, Member member) {
 		TypeX declaringType = member.getDeclaringType();
 		IProgramElement classNode =
 			model.findNodeForType(declaringType.getPackageName(), declaringType.getClassName());

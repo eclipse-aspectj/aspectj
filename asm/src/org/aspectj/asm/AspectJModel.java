@@ -23,7 +23,7 @@ import org.aspectj.bridge.*;
 /**
  * @author Mik Kersten
  */
-public class StructureModel implements Serializable {
+public class AspectJModel implements Serializable {
 	
     protected  IProgramElement root = null;
     protected String configFile = null;
@@ -156,7 +156,7 @@ public class StructureModel implements Serializable {
 	public IProgramElement findRootNodeForSourceFile(String sourceFile) {
        	try {
 	       	if (!isValid() || sourceFile == null) {   
-	            return StructureModel.NO_STRUCTURE;
+	            return AspectJModel.NO_STRUCTURE;
 	        } else {
 	            String correctedPath = new File(sourceFile).getCanonicalPath();//.replace('\\', '/');
 	            //StructureNode node = (StructureNode)getFileMap().get(correctedPath);//findFileNode(filePath, model);
@@ -168,7 +168,7 @@ public class StructureModel implements Serializable {
 	            }
 	        }
 		} catch (Exception e) {
-			return StructureModel.NO_STRUCTURE;
+			return AspectJModel.NO_STRUCTURE;
 		}
     }
 

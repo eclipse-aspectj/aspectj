@@ -16,7 +16,6 @@ import java.util.List;
 import org.aspectj.asm.*;
 import org.aspectj.asm.internal.ProgramElement;
 
-
 // TODO: check for return types
 public class AsmRelationshipsTest extends AjdeTestCase {
   
@@ -28,32 +27,32 @@ public class AsmRelationshipsTest extends AjdeTestCase {
 	}
   
 //	public void testInterTypeDeclarations() {		
-//		checkMapping("InterTypeDecCoverage", "Point", "Point.xxx:", "xxx");	
+//		checkMapping("InterTypeDecCoverage", "Point", "Point.xxx:", "xxx", "declared on", "aspect declarations");	
 //	}
 
 	public void testAdvice() {	
-		checkMapping("AdvisesRelationshipCoverage", "Point", "before(): methodExecutionP..", "setX(int)");
-		checkUniDirectionalMapping("AdvisesRelationshipCoverage", "Point", "before(): getP..", "field-get(int Point.x)");
-		checkUniDirectionalMapping("AdvisesRelationshipCoverage", "Point", "before(): setP..", "field-set(int Point.xxx)");	
+		checkMapping("AdvisesRelationshipCoverage", "Point", "before(): methodExecutionP..", "setX(int)", "advises", "advised by");
+		checkUniDirectionalMapping("AdvisesRelationshipCoverage", "Point", "before(): getP..", "field-get(int Point.x)", "advises");
+		checkUniDirectionalMapping("AdvisesRelationshipCoverage", "Point", "before(): setP..", "field-set(int Point.xxx)", "advises");	
 	}
 
-	private void checkUniDirectionalMapping(String fromType, String toType, String from, String to) {
+	private void checkUniDirectionalMapping(String fromType, String toType, String from, String to, String relName) {
 		IProgramElement aspect = AsmManager.getDefault().getModel().findNodeForType(null, fromType);
 		assertNotNull(aspect);		
 		String beforeExec = from;
 		IProgramElement beforeExecNode = manager.getModel().findNode(aspect, IProgramElement.Kind.ADVICE, beforeExec);
 		assertNotNull(beforeExecNode);
-		IRelationship rel = manager.getMapper().get(beforeExecNode);
+		IRelationship rel = manager.getMapper().get(beforeExecNode, IRelationship.Kind.ADVICE, relName);
 		assertEquals(((IProgramElement)rel.getTargets().get(0)).getName(), to);
 	}
 
-	private void checkMapping(String fromType, String toType, String from, String to) {
+	private void checkMapping(String fromType, String toType, String from, String to, String forwardRelName, String backRelName) {
 		IProgramElement aspect = AsmManager.getDefault().getModel().findNodeForType(null, fromType);
 		assertNotNull(aspect);		
 		String beforeExec = from;
 		IProgramElement beforeExecNode = manager.getModel().findNode(aspect, IProgramElement.Kind.ADVICE, beforeExec);
 		assertNotNull(beforeExecNode);
-		IRelationship rel = manager.getMapper().get(beforeExecNode);
+		IRelationship rel = manager.getMapper().get(beforeExecNode, IRelationship.Kind.ADVICE, forwardRelName);
 		assertEquals(((IProgramElement)rel.getTargets().get(0)).getName(), to);
 
 		IProgramElement clazz = AsmManager.getDefault().getModel().findNodeForType(null, toType);
@@ -61,7 +60,7 @@ public class AsmRelationshipsTest extends AjdeTestCase {
 		String set = to;
 		IProgramElement setNode = manager.getModel().findNode(clazz, IProgramElement.Kind.METHOD, set);
 		assertNotNull(setNode);
-		IRelationship rel2 = manager.getMapper().get(setNode);
+		IRelationship rel2 = manager.getMapper().get(setNode, IRelationship.Kind.ADVICE, backRelName);
 		assertEquals(((IProgramElement)rel2.getTargets().get(0)).getName(), from);
 	}
 

@@ -42,7 +42,7 @@ public class AjBuildManager {
 	private int compiledCount;
 	private int sourceFileCount;
 	
-	private StructureModel structureModel;
+	private AspectJModel structureModel;
 	public AjBuildConfig buildConfig;
 	
 	AjState state = new AjState(this);
@@ -167,7 +167,7 @@ public class AjBuildManager {
      
     private void setupModel() {
         String rootLabel = "<root>";
-        StructureModel model = AsmManager.getDefault().getModel();
+        AspectJModel model = AsmManager.getDefault().getModel();
         IProgramElement.Kind kind = IProgramElement.Kind.FILE_JAVA;
         if (buildConfig.getConfigFile() != null) {
             rootLabel = buildConfig.getConfigFile().getName();
@@ -523,14 +523,14 @@ public class AjBuildManager {
 	}
 
 
-	public void setStructureModel(StructureModel structureModel) {
+	public void setStructureModel(AspectJModel structureModel) {
 		this.structureModel = structureModel;
 	}
 
 	/**
 	 * Returns null if there is no structure model
 	 */
-	public StructureModel getStructureModel() {
+	public AspectJModel getStructureModel() {
 		return structureModel;
 	}
     

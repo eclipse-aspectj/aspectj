@@ -66,7 +66,7 @@ public class StructureViewManagerTest extends AjdeTestCase {
 		assertTrue(
 			"no structure", 
 			currentView.getRootNode().getStructureNode().getChildren().get(0) 
-			== StructureModel.NO_STRUCTURE
+			== AspectJModel.NO_STRUCTURE
 		);			
 	}
 
@@ -87,7 +87,7 @@ public class StructureViewManagerTest extends AjdeTestCase {
 		assertTrue(
 			"no structure", 
 			//currentView.getRootNode().getIProgramElement().getChildren().get(0) 
-			n == StructureModel.NO_STRUCTURE
+			n == AspectJModel.NO_STRUCTURE
 		);	
 	}
 
@@ -125,7 +125,7 @@ public class StructureViewManagerTest extends AjdeTestCase {
 		assertTrue(
 			"no structure", 
 			currentView.getRootNode().getStructureNode() 
-			== StructureModel.NO_STRUCTURE
+			== AspectJModel.NO_STRUCTURE
 		);
 	}
   

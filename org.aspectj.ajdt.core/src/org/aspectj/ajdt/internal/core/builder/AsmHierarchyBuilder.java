@@ -32,7 +32,7 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
 	
     public static void build(    
         CompilationUnitDeclaration unit,
-        StructureModel structureModel) {
+        AspectJModel structureModel) {
         LangUtil.throwIaxIfNull(unit, "unit");
         new AsmHierarchyBuilder(unit.compilationResult()).internalBuild(unit, structureModel);
     }
@@ -53,7 +53,7 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
      */
     private void internalBuild(
         CompilationUnitDeclaration unit, 
-        StructureModel structureModel) {
+        AspectJModel structureModel) {
         LangUtil.throwIaxIfNull(structureModel, "structureModel");        
         if (!currCompilationResult.equals(unit.compilationResult())) {
             throw new IllegalArgumentException("invalid unit: " + unit);
@@ -116,7 +116,7 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
 	 */
 	private IProgramElement genAddToNode(
 		CompilationUnitDeclaration unit,
-		StructureModel structureModel) {
+		AspectJModel structureModel) {
 		final IProgramElement addToNode;
 		{
 		    ImportReference currentPackage = unit.currentPackage;

@@ -34,8 +34,8 @@ public class StructureSearchManager {
 		IProgramElement.Kind kind) {
 		
 		List matches = new ArrayList();
-		StructureModel model = Ajde.getDefault().getStructureModelManager().getModel();
-		if (model.equals(StructureModel.NO_STRUCTURE)) {
+		AspectJModel model = Ajde.getDefault().getStructureModelManager().getModel();
+		if (model.equals(AspectJModel.NO_STRUCTURE)) {
 			return null;
 		} else {
 			return findMatchesHelper((IProgramElement)model.getRoot(), pattern, kind, matches);

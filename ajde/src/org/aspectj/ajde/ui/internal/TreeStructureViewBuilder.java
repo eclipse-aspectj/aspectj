@@ -34,14 +34,14 @@ public class TreeStructureViewBuilder {
 	/**
 	 * @todo	get rid of instanceof tests
 	 */
-	public void buildView(StructureView view, StructureModel model) {
+	public void buildView(StructureView view, AspectJModel model) {
 		StructureViewProperties properties = view.getViewProperties();
 		IProgramElement modelRoot = null;
 		boolean noStructure = false;
 		if (isFileView(view)) {
 			FileStructureView fileView = (FileStructureView)view;
 			if (fileView.getSourceFile() == null) {	
-				modelRoot = StructureModel.NO_STRUCTURE;
+				modelRoot = AspectJModel.NO_STRUCTURE;
 				noStructure = true;
 			} else {
 				modelRoot = model.findRootNodeForSourceFile(fileView.getSourceFile());
@@ -197,7 +197,7 @@ public class TreeStructureViewBuilder {
 		}
 	}
 
-    private IStructureViewNode buildCustomTree(GlobalStructureView view, StructureModel model) {
+    private IStructureViewNode buildCustomTree(GlobalStructureView view, AspectJModel model) {
         IProgramElement rootNode = model.getRoot();
         IStructureViewNode treeNode = nodeFactory.createNode(rootNode);
 

@@ -33,7 +33,7 @@ import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.ui.StructureView;
 import org.aspectj.ajde.ui.StructureViewProperties;
 import org.aspectj.asm.IProgramElement;
-import org.aspectj.asm.StructureModel;
+import org.aspectj.asm.AspectJModel;
 import org.aspectj.asm.IStructureModelListener;
 
 public class SimpleStructureViewToolPanel extends JPanel {
@@ -61,7 +61,7 @@ public class SimpleStructureViewToolPanel extends JPanel {
     BorderLayout borderLayout4 = new BorderLayout();
 
     public final IStructureModelListener MODEL_LISTENER = new IStructureModelListener() {
-        public void containmentHierarchyUpdated(StructureModel model) {
+        public void containmentHierarchyUpdated(AspectJModel model) {
 			String path = Ajde.getDefault().getConfigurationManager().getActiveConfigFile();
 			String fileName = "<no active config>";
 			if (path != null) fileName = new File(path).getName();

@@ -29,7 +29,7 @@ public class AsmManager {
 	 */  
 	private static AsmManager INSTANCE = new AsmManager();
 	private boolean shouldSaveModel = true;
-    protected StructureModel model = new StructureModel();
+    protected AspectJModel model = new AspectJModel();
     private List structureListeners = new ArrayList();
 	private IRelationshipMapper mapper;
 
@@ -39,7 +39,7 @@ public class AsmManager {
 		mapper = new RelationshipMapper();
     }
 
-    public StructureModel getModel() {
+    public AspectJModel getModel() {
         return model;	
 	}
 
@@ -140,16 +140,16 @@ public class AsmManager {
     public void readStructureModel(String configFilePath) {
         try {
             if (configFilePath == null) {
-            	model.setRoot(StructureModel.NO_STRUCTURE);
+            	model.setRoot(AspectJModel.NO_STRUCTURE);
             } else {
 	            String filePath = genExternFilePath(configFilePath);
 	            FileInputStream in = new FileInputStream(filePath);
 	            ObjectInputStream s = new ObjectInputStream(in);
-	            model = (StructureModel)s.readObject();
+	            model = (AspectJModel)s.readObject();
             }
         } catch (Exception e) {
         	//System.err.println("AJDE Message: could not read structure model: " + e);
-            model.setRoot(StructureModel.NO_STRUCTURE);
+            model.setRoot(AspectJModel.NO_STRUCTURE);
         } finally {
         	notifyListeners();	
         }

@@ -37,22 +37,25 @@ public abstract class StructureViewNodeFactory {
 		AbstractIcon icon = iconRegistry.getStructureIcon(node.getKind(), node.getAccessibility());
 
 		IStructureViewNode svNode = createDeclaration(node, icon, children);		
-		IRelationship rel = AsmManager.getDefault().getMapper().get(node);
-		if (rel != null && rel.getTargets().size() > 0) {
-			IStructureViewNode relNode = createRelationship(
-				rel, 
-				iconRegistry.getIcon(rel.getKind())
-			);
-			svNode.add(relNode, 0);
-			
-			for (Iterator it = rel.getTargets().iterator(); it.hasNext(); ) {
-				IProgramElement link = (IProgramElement)it.next();
-				IStructureViewNode linkNode = createLink(
-					link,   
-					iconRegistry.getStructureIcon(link.getKind(), link.getAccessibility())  
-				);	
-				relNode.add(linkNode);
-					
+		List relationships = AsmManager.getDefault().getMapper().get(node);
+		for (Iterator it = relationships.iterator(); it.hasNext(); ) {
+			IRelationship rel = (IRelationship)it.next();
+			if (rel != null && rel.getTargets().size() > 0) {
+				IStructureViewNode relNode = createRelationship(
+					rel, 
+					iconRegistry.getIcon(rel.getKind())
+				);
+				svNode.add(relNode, 0);
+				
+				for (Iterator it2 = rel.getTargets().iterator(); it2.hasNext(); ) {
+					IProgramElement link = (IProgramElement)it2.next();
+					IStructureViewNode linkNode = createLink(
+						link,   
+						iconRegistry.getStructureIcon(link.getKind(), link.getAccessibility())  
+					);	
+					relNode.add(linkNode);
+						
+				}
 			}
 		}
 		return svNode;

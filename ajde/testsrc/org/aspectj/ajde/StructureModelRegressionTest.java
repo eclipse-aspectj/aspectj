@@ -45,11 +45,11 @@ public class StructureModelRegressionTest extends AjdeTestCase {
 
 	public boolean verifyAgainstSavedModel(String lstFile) {
 		File modelFile = new File(genStructureModelExternFilePath(lstFile));
-		StructureModel model = getModelForFile(lstFile);
+		AspectJModel model = getModelForFile(lstFile);
 		
 		if (modelFile.exists()) {
 			Ajde.getDefault().getStructureModelManager().readStructureModel(lstFile);
-			StructureModel savedModel = Ajde.getDefault().getStructureModelManager().getModel();
+			AspectJModel savedModel = Ajde.getDefault().getStructureModelManager().getModel();
 			// AMC This test will not pass as written until IProgramElement defines
 			// equals. The equals loic is commented out in the IProgramElement
 			// class - adding it back in could have unforeseen system-wide
@@ -89,7 +89,7 @@ public class StructureModelRegressionTest extends AjdeTestCase {
 	  return equal;		
 	}
 
-	private StructureModel getModelForFile(String lstFile) {
+	private AspectJModel getModelForFile(String lstFile) {
 		Ajde.getDefault().getConfigurationManager().setActiveConfigFile(lstFile);
 		Ajde.getDefault().getBuildManager().build(); // was buildStructure...
 		while(!testerBuildListener.getBuildFinished()) {

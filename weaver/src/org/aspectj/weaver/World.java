@@ -19,7 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.aspectj.asm.StructureModel;
+import org.aspectj.asm.AspectJModel;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
@@ -36,7 +36,7 @@ public abstract class World {
     
     protected CrosscuttingMembersSet crosscuttingMembersSet = new CrosscuttingMembersSet(this);
     
-    protected StructureModel model = null;
+    protected AspectJModel model = null;
     
     protected Lint lint = new Lint(this);
     
@@ -340,11 +340,11 @@ public abstract class World {
 		return crosscuttingMembersSet;
 	}
 
-	public StructureModel getModel() {
+	public AspectJModel getModel() {
 		return model;
 	}
 
-	public void setModel(StructureModel model) {
+	public void setModel(AspectJModel model) {
 		this.model = model;
 	}
 

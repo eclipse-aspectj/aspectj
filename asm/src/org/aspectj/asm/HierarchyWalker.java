@@ -17,15 +17,15 @@ package org.aspectj.asm;
 /**
  * @author Mik Kersten
  */
-public class HierarchyWalker {
+public abstract class HierarchyWalker {
 
-	private StructureModel model;
+	private AspectJModel model;
 
 	public HierarchyWalker() {
 		super();
 	}
 	
-	public HierarchyWalker(StructureModel model) {
+	public HierarchyWalker(AspectJModel model) {
 		this.model = model;
     }
 

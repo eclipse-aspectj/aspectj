@@ -115,7 +115,7 @@ public class StructureModelTest extends AjdeTestCase {
   	 * @todo	add negative test to make sure things that aren't runnable aren't annotated
   	 */ 
 	public void testMainClassNodeInfo() throws IOException {
-        StructureModel model = Ajde.getDefault().getStructureModelManager().getModel();
+        AspectJModel model = Ajde.getDefault().getStructureModelManager().getModel();
         assertTrue("model exists", model != null);
 		assertTrue("root exists", model.getRoot() != null);
 		File testFile = openFile("figures-coverage/figures/Main.java");

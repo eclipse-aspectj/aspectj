@@ -35,7 +35,7 @@ class StructureTreeManager {
     private TreeSelectionListener treeListener = null;
 
     private final StructureTreeModel NO_STRUCTURE_MODEL
-        = new StructureTreeModel(new SwingTreeViewNode(StructureModel.NO_STRUCTURE, new AbstractIcon(null), new ArrayList()));
+        = new StructureTreeModel(new SwingTreeViewNode(AspectJModel.NO_STRUCTURE, new AbstractIcon(null), new ArrayList()));
         
     /**
      * @todo	should probably avoid that MouseListener cast

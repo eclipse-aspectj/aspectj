@@ -20,7 +20,7 @@ import org.aspectj.asm.IProgramElement.Kind;
 // TODO: add tests for java kinds
 public class AsmDeclarationsTest extends AjdeTestCase {
 
-	private StructureModel model = null;
+	private AspectJModel model = null;
 	private static final String CONFIG_FILE_PATH = "../examples/coverage/coverage.lst";
 	private static final int DEC_MESSAGE_LENGTH = AsmNodeFormatter.MAX_MESSAGE_LENGTH;
 

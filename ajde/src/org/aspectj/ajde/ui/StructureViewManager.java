@@ -36,7 +36,7 @@ public class StructureViewManager {
     private static final List AVAILABLE_RELATIONS;
 	
     public final IStructureModelListener VIEW_LISTENER = new IStructureModelListener() {
-        public void containmentHierarchyUpdated(StructureModel model) {        	
+        public void containmentHierarchyUpdated(AspectJModel model) {        	
         	Ajde.getDefault().logEvent("updating structure views: " + structureViews);
 //        	
 //        	if (defaultFileView != null) {
@@ -44,7 +44,7 @@ public class StructureViewManager {
 //        	}
         	
         	for (Iterator it = structureViews.iterator(); it.hasNext(); ) {
-        		treeViewBuilder.buildView((StructureView)it.next(), (StructureModel)model);
+        		treeViewBuilder.buildView((StructureView)it.next(), (AspectJModel)model);
         	}
         }
     }; 
@@ -116,7 +116,7 @@ public class StructureViewManager {
 	 */ 
 	private void navigationAction(IProgramElement node, boolean recordHistory) { 
 		if (node == null 
-			|| node == StructureModel.NO_STRUCTURE) {
+			|| node == AspectJModel.NO_STRUCTURE) {
 			Ajde.getDefault().getIdeUIAdapter().displayStatusInformation("Source not available for node: " + node.getName());
 			return;    	
 		}

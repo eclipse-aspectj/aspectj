@@ -29,7 +29,7 @@ public interface IRelationship extends Serializable {
 	public IProgramElement getSource();
 	
 	public Kind getKind();
-	
+		
 	/**
 	 * Uses "typesafe enum" pattern.
 	 */
