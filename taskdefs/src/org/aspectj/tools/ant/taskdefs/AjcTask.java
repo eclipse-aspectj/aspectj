@@ -18,10 +18,14 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Copy;
+import org.apache.tools.ant.taskdefs.Execute;
 import org.apache.tools.ant.taskdefs.Expand;
+import org.apache.tools.ant.taskdefs.Javac;
+import org.apache.tools.ant.taskdefs.LogStreamHandler;
 import org.apache.tools.ant.taskdefs.MatchingTask;
 import org.apache.tools.ant.taskdefs.Zip;
 import org.apache.tools.ant.types.Commandline;
+import org.apache.tools.ant.types.CommandlineJava;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.PatternSet;
@@ -37,13 +41,15 @@ import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 
 /**
@@ -58,10 +64,117 @@ import java.util.Vector;
  * compiler a path to a different temporary output jar file,
  * the contents of which will be copied along with any
  * resources to the actual output jar.
+ * When not forking, things will be copied as needed 
+ * for each iterative compile,
+ * but when forking things are only copied at the 
+ * completion of a successful compile.
+ * <p>
+ * See the development environment guide for 
+ * usage documentation.
+ * 
  * @since AspectJ 1.1, Ant 1.5
  */
 public class AjcTask extends MatchingTask {
-            
+
+    /**
+     * Extract javac arguments to ajc.
+     * Use this by setting the build.compiler property to the name
+     * of this class.
+     * <p>
+     * Pass ajc-specific options using compilerarg sub-element:
+     * <pre>
+     * &lt;javac srcdir="src">
+     *     &lt;compilerarg compiler="..." line="-argfile src/args.lst"/>
+     * &lt;javac>
+     * </pre>
+     * Some javac arguments are not supported in this component (yet):
+     * <pre>
+     * String memoryInitialSize;
+     * boolean includeAntRuntime = true;
+     * boolean includeJavaRuntime = false;
+     * </pre>
+     * Other javac arguments are not supported in ajc 1.1:
+     * <pre>
+     * boolean optimize = false;
+     * String forkedExecutable = null;
+     * FacadeTaskHelper facade = null;
+     * boolean depend = false;
+     * String debugLevel;
+     * Path compileSourcepath;
+     * </pre>
+     * @param javac the Javac command to implement (not null)
+     * @param ajc the AjcTask to adapt (not null)
+     * @param destDir the File class destination directory (may be null)
+     * @return null if no error, or String error otherwise
+     */
+    public static String setupAjc(AjcTask ajc, Javac javac, File destDir) {        
+        if (null == ajc) {
+            return "null ajc";
+        } else if (null == javac) {
+            return "null javac";
+        } else if (null == destDir) {
+            destDir = javac.getDestdir();
+            if (null == destDir) {
+                destDir = new File(".");
+            }
+        }
+        // note AjcTask handles null input gracefully
+        ajc.setProject(javac.getProject());
+        ajc.setLocation(javac.getLocation());
+
+        ajc.setDebug(javac.getDebug());
+        ajc.setDeprecation(javac.getDeprecation());
+        ajc.setFailonerror(javac.getFailonerror());
+        final boolean fork = javac.isForkedJavac();
+        ajc.setFork(fork);        
+        if (fork) {
+            ajc.setMaxmem(javac.getMemoryMaximumSize());
+        }
+        ajc.setNowarn(javac.getNowarn()); 
+        ajc.setListFileArgs(javac.getListfiles());
+        ajc.setVerbose(javac.getVerbose());               
+        ajc.setTarget(javac.getTarget());        
+        ajc.setSource(javac.getSource());        
+        ajc.setEncoding(javac.getEncoding());        
+        ajc.setDestdir(destDir);        
+        ajc.setXbootclasspath(javac.getBootclasspath());
+        ajc.setXextdirs(javac.getExtdirs());
+        ajc.setClasspath(javac.getClasspath());        
+        // ignore srcDir -- all files picked up in recalculated file list
+//      ajc.setSrcDir(javac.getSrcdir());        
+        ajc.addFiles(javac.getFileList());
+        ajc.readArguments(javac.getCurrentCompilerArgs());
+        
+        // mimic javac's behavior in copying resources
+        ajc.setSourceRootCopyFilter("**/CVS/*,**/*.java,**/*.aj");
+        return null;
+    }
+    
+   /**
+     * Find aspectjtools.jar in the system classpath.
+     * @return readable File for aspectjtools.jar, or null if not found.
+     */            
+    public static File findAspectjtoolsJar() {
+        Path classpath = Path.systemClasspath;
+        String[] paths = classpath.list();
+        for (int i = 0; i < paths.length; i++) {
+            String path = paths[i];
+            if (-1 != paths[i].indexOf("aspectjtools.jar")) {
+                File result = new File(path);
+                if (result.canRead() && result.isFile()) {
+                    return result;
+                }
+            }
+        }
+        return null;
+    }
+
+    /** 
+     * Maximum length (in chars) of command line 
+     * before converting to an argfile when forking 
+     */
+    private static final int MAX_COMMANDLINE = 4096;
+    
     private static final File DEFAULT_DESTDIR = new File(".");
     
     /** valid -X[...] options other than -Xlint variants */
@@ -102,10 +215,14 @@ public class AjcTask extends MatchingTask {
     }
 	// ---------------------------- state and Ant interface thereto
     private boolean verbose;
+    private boolean listFileArgs;
     private boolean failonerror;
+    private boolean fork;
+    private String maxMem;
 	
 	// ------- single entries dumped into cmd
-    protected Commandline cmd;
+    protected GuardedCommand cmd;
+    private int cmdLength;
 	
 	// ------- lists resolved in addListArgs() at execute() time
     private Path srcdir;
@@ -115,6 +232,9 @@ public class AjcTask extends MatchingTask {
     private Path argfiles;
     private List ignored;
     private Path sourceRoots;
+    // ----- added by adapter - integrate better?
+    private List /* File */ adapterFiles;
+    private String[] adapterArguments;
 
     private IMessageHolder messageHolder;
 
@@ -152,7 +272,7 @@ public class AjcTask extends MatchingTask {
         // need declare for "all fields initialized in ..."
         verbose = false;
         failonerror = false;
-    	cmd = new Commandline();
+    	cmd = new GuardedCommand();
     	srcdir = null;
     	injars = null;
     	classpath = null;
@@ -166,6 +286,7 @@ public class AjcTask extends MatchingTask {
         outjar = null;
         tmpOutjar = null;
         executing = false;
+        adapterFiles = new ArrayList();
     }
 
     protected void ignore(String ignored) {
@@ -173,16 +294,6 @@ public class AjcTask extends MatchingTask {
     }
     
     //---------------------- option values
-
-    protected void addFlag(String flag, boolean doAdd) {
-        if (doAdd) {
-        	cmd.addArguments(new String[] {flag});
-        }
-    }
-    
-    protected void addFlagged(String flag, String argument) {
-        cmd.addArguments(new String[] {flag, argument});
-    }
 
     // used by entries with internal commas
     protected String validCommaList(String list, List valid, String label) {
@@ -219,45 +330,45 @@ public class AjcTask extends MatchingTask {
     }
     
     public void setIncremental(boolean incremental) {  
-        addFlag("-incremental", incremental);
+        cmd.addFlag("-incremental", incremental);
     }
 
     public void setHelp(boolean help) {  
-        addFlag("-help", help);
+        cmd.addFlag("-help", help);
     }
 
     public void setVersion(boolean version) {  
-    	addFlag("-version", version);
+    	cmd.addFlag("-version", version);
     }
 
     public void setXNoweave(boolean noweave) {  
-        addFlag("-Xnoweave", noweave);
+        cmd.addFlag("-Xnoweave", noweave);
     }
 
     public void setNowarn(boolean nowarn) {  
-        addFlag("-nowarn", nowarn);
+        cmd.addFlag("-nowarn", nowarn);
     }
 
     public void setDeprecation(boolean deprecation) {  
-        addFlag("-deprecation", deprecation);
+        cmd.addFlag("-deprecation", deprecation);
     }
 
     public void setWarn(String warnings) {
     	warnings = validCommaList(warnings, VALID_WARNINGS, "warn");
-        addFlag("-warn:" + warnings, (null != warnings));
+        cmd.addFlag("-warn:" + warnings, (null != warnings));
     }
 
     public void setDebug(boolean debug) {
-        addFlag("-g", debug);
+        cmd.addFlag("-g", debug);
     }
     
     public void setDebugLevel(String level) {
     	level = validCommaList(level, VALID_DEBUG, "g");
-        addFlag("-g:" + level, (null != level));
+        cmd.addFlag("-g:" + level, (null != level));
     }
 
     public void setEmacssym(boolean emacssym) {
-        addFlag("-emacssym", emacssym);
+        cmd.addFlag("-emacssym", emacssym);
     }
 
 	/** 
@@ -265,7 +376,7 @@ public class AjcTask extends MatchingTask {
 	 * (same as </code>-Xlint:warning</code>)
 	 */
 	public void setXlintwarnings(boolean xlintwarnings) {
-        addFlag("-Xlint", xlintwarnings);
+        cmd.addFlag("-Xlint", xlintwarnings);
 	}
 	
 	/** -Xlint:{error|warning|info} - set default level for -Xlint messages
@@ -273,7 +384,7 @@ public class AjcTask extends MatchingTask {
 	 */
     public void setXlint(String xlint) {
     	xlint = validCommaList(xlint, VALID_XLINT, "Xlint", 1);
-        addFlag("-Xlint:" + xlint, (null != xlint));
+        cmd.addFlag("-Xlint:" + xlint, (null != xlint));
     }
 
 	/** 
@@ -284,57 +395,69 @@ public class AjcTask extends MatchingTask {
 	 * @param xlintFile the File with lint properties
 	 */
     public void setXlintfile(File xlintFile) { 
-        addFlagged("-Xlintfile", xlintFile.getAbsolutePath());
+        cmd.addFlagged("-Xlintfile", xlintFile.getAbsolutePath());
     }
 
     public void setPreserveAllLocals(boolean preserveAllLocals) {  
-        addFlag("-preserveAllLocals", preserveAllLocals);
+        cmd.addFlag("-preserveAllLocals", preserveAllLocals);
     }
 
     public void setNoImportError(boolean noImportError) {  
-        addFlag("-noImportError", noImportError);
+        cmd.addFlag("-noImportError", noImportError);
     }
 
     public void setEncoding(String encoding) {   
-        addFlagged("-encoding", encoding);
+        cmd.addFlagged("-encoding", encoding);
     }
 
     public void setLog(File file) {
-        addFlagged("-log", file.getAbsolutePath());        
+        cmd.addFlagged("-log", file.getAbsolutePath());        
     }
     
     public void setProceedOnError(boolean proceedOnError) {  
-        addFlag("-proceedOnError", proceedOnError);
+        cmd.addFlag("-proceedOnError", proceedOnError);
     }
 
     public void setVerbose(boolean verbose) {  
-        addFlag("-verbose", verbose);
+        cmd.addFlag("-verbose", verbose);
         this.verbose = verbose;
+    }
+    
+    public void setListFileArgs(boolean listFileArgs) { 
+        this.listFileArgs = listFileArgs;
     }
 
     public void setReferenceInfo(boolean referenceInfo) {  
-        addFlag("-referenceInfo", referenceInfo);
+        cmd.addFlag("-referenceInfo", referenceInfo);
     }
 
     public void setProgress(boolean progress) {  
-        addFlag("-progress", progress);
+        cmd.addFlag("-progress", progress);
     }
 
     public void setTime(boolean time) {  
-        addFlag("-time", time);
+        cmd.addFlag("-time", time);
     }
 
     public void setNoExit(boolean noExit) {  
-        addFlag("-noExit", noExit);
+        cmd.addFlag("-noExit", noExit);
     }
 
     public void setFailonerror(boolean failonerror) {  
         this.failonerror = failonerror;
     }
 
+    public void setFork(boolean fork) {  
+        this.fork = fork;
+    }
+    
+    public void setMaxmem(String maxMem) {
+        this.maxMem = maxMem;
+    }
+
 	// ----------------
     public void setTagFile(File file) {
-        addFlagged(Main.CommandController.TAG_FILE_OPTION,
+        cmd.addFlagged(Main.CommandController.TAG_FILE_OPTION,
 	        file.getAbsolutePath());        
     }
     
@@ -359,16 +482,16 @@ public class AjcTask extends MatchingTask {
                 + ")";
             throw new BuildException(e);
         }
-        addFlagged("-d", dir.getAbsolutePath());
+        cmd.addFlagged("-d", dir.getAbsolutePath());
         destDir = dir;        
     }
     
     public void setTarget(String either11or12) {
     	if ("1.1".equals(either11or12)) {
-    		addFlagged("-target", "1.1");
+    		cmd.addFlagged("-target", "1.1");
     	} else if ("1.2".equals(either11or12)) {
-    		addFlagged("-target", "1.2");
-    	} else {
+    		cmd.addFlagged("-target", "1.2");
+    	} else if (null != either11or12){
     		ignore("-target " + either11or12);
     	}   		
     }
@@ -380,10 +503,10 @@ public class AjcTask extends MatchingTask {
      */
     public void setCompliance(String either13or14) {
     	if ("1.3".equals(either13or14)) {
-    		addFlag("-1.3", true);
+    		cmd.addFlag("-1.3", true);
     	} else if ("1.4".equals(either13or14)) {
-    		addFlag("-1.4", true);
-    	} else {
+    		cmd.addFlag("-1.4", true);
+        } else if (null != either13or14) {
     		ignore(either13or14 + "[compliance]");
     	}   		
     }
@@ -395,10 +518,10 @@ public class AjcTask extends MatchingTask {
      */
     public void setSource(String either13or14) {
     	if ("1.3".equals(either13or14)) {
-    		addFlagged("-source", "1.3");
+    		cmd.addFlagged("-source", "1.3");
     	} else if ("1.4".equals(either13or14)) {
-    		addFlagged("-source", "1.4");
-    	} else {
+    		cmd.addFlagged("-source", "1.4");
+    	} else if (null != either13or14) {
     		ignore("-source " + either13or14);
     	}   		
     }
@@ -433,7 +556,7 @@ public class AjcTask extends MatchingTask {
             String token = tokens.nextToken().trim();
             if (1 < token.length()) {
                 if (VALID_XOPTIONS.contains(token)) {
-                    addFlag("-X" + token, true); 
+                    cmd.addFlag("-X" + token, true); 
                 } else {
                     ignore("-X" + token);
                 }
@@ -470,7 +593,7 @@ public class AjcTask extends MatchingTask {
     /**
      * Add path to source path and return result.
      * @param source the Path to add to - may be null
-     * @param toAdd the Path to add - may not be null
+     * @param toAdd the Path to add - may be null
      * @return the Path that results
      */
     protected Path incPath(Path source, Path toAdd) {
@@ -520,6 +643,44 @@ public class AjcTask extends MatchingTask {
         createClasspath().setRefid(classpathref);
     }
         
+    /**
+     * Mimic bootclasspath by adding to classpath
+     * (Does not override bootclasspath)
+     * @param path
+     */
+    public void setXbootclasspath(Path path) {
+        setClasspath(path);
+    }
+    
+    /**
+     * Mimic extdirs by adding jar/zip files in them to classpath.
+     * (Does not override extdirs)
+     * @param path
+     */
+    public void setXextdirs(Path path) {
+        if (null == path) {
+            return;
+        }
+        String[] paths = path.list();
+        Path jars = new Path(project);
+        for (int i = 0; i < paths.length; i++) {
+            File dir = new File(paths[i]);
+            if (dir.isDirectory() && dir.canRead()) {
+                File[] files = dir.listFiles();
+                for (int j = 0; j < files.length; j++) {
+                    File jar = files[i];
+                    if (jar.canRead() && jar.isFile()
+                        && FileUtil.hasZipSuffix(jar)) {
+                        jars.createPathElement().setLocation(jar);
+                    }
+                }
+            }
+        }
+        if (0 < jars.size()) {
+            setClasspath(jars);
+        }
+    }
+    
     public void setClasspath(Path path) {
         classpath = incPath(classpath, path);
     }
@@ -575,14 +736,11 @@ public class AjcTask extends MatchingTask {
         }
         return argfiles.createPath();
     }
-            
+                
     // ------------------------------ run
+  
     /**
      * Compile using ajc per settings.
-     * This prints the messages in verbose or terse form
-     * unless an IMessageHolder was set using setMessageHolder.
-     * This also renders Compiler exceptions with our header to System.err
-     * an rethrows a BuildException to be ignored.
      * @exception BuildException if the compilation has problems
      *             or if there were compiler errors and failonerror is true.
      */
@@ -592,34 +750,14 @@ public class AjcTask extends MatchingTask {
         } else {
             executing = true;
         }
-    	IMessageHolder holder = messageHolder;
-    	int numPreviousErrors;
-    	if (null == holder) {
-    		MessageHandler mhandler = new MessageHandler(true);
-	    	final IMessageHandler delegate 
-	    		= verbose ? MessagePrinter.VERBOSE: MessagePrinter.TERSE;
-  			mhandler.setInterceptor(delegate);
-  			if (!verbose) {
-  				mhandler.ignore(IMessage.INFO);
-  			}
-  			holder = mhandler;
-    		numPreviousErrors = 0;
-    	} else {
-    		numPreviousErrors = holder.numMessages(IMessage.ERROR, true);
-    	}
         try {
         	if (0 < ignored.size()) {
 				for (Iterator iter = ignored.iterator(); iter.hasNext();) {
 					log("ignored: " + iter.next(), Project.MSG_INFO);					
 				}
         	}
-            Main main = new Main();
-            main.setHolder(holder);
-            main.setCompletionRunner(new Runnable() {
-                public void run() {
-                    doCompletionTasks();
-                }
-            });
+            // when copying resources, use temp jar for class output
+            // then copy temp jar contents and resources to output jar
             if (null != outjar) {
                 if (copyInjars || (null != sourceRootCopyFilter)) {
                     String path = outjar.getAbsolutePath();
@@ -632,56 +770,21 @@ public class AjcTask extends MatchingTask {
                     }
                 }
                 if (null == tmpOutjar) {                
-                    addFlagged("-outjar", outjar.getAbsolutePath());        
+                    cmd.addFlagged("-outjar", outjar.getAbsolutePath());        
                 } else {
-                    addFlagged("-outjar", tmpOutjar.getAbsolutePath());        
+                    cmd.addFlagged("-outjar", tmpOutjar.getAbsolutePath());        
                 }
             }
             
             addListArgs();
-            String[] args = cmd.getArguments();
-	        if (verbose) {
+	        if (verbose || listFileArgs) { // XXX if listFileArgs, only do that
+                String[] args = cmd.extractArguments();
 	        	log("ajc " + Arrays.asList(args), Project.MSG_VERBOSE);
 	        }
-            main.runMain(args, false);
-
-			if (failonerror) {
-				int errs = holder.numMessages(IMessage.ERROR, false);
-				errs -= numPreviousErrors;
-				if (0 < errs) {
-					// errors should already be printed by interceptor
-					throw new BuildException(errs + " errors"); 
-				}
-			} 
-            // Throw BuildException if there are any fail or abort
-            // messages.
-            // The BuildException message text has a list of class names
-            // for the exceptions found in the messages, or the
-            // number of fail/abort messages found if there were
-            // no exceptions for any of the fail/abort messages.
-            // The interceptor message handler should have already
-            // printed the messages, including any stack traces.
-            {
-                IMessage[] fails = holder.getMessages(IMessage.FAIL, true);
-                if (!LangUtil.isEmpty(fails)) {
-                    StringBuffer sb = new StringBuffer();
-                    String prefix = "fail due to ";
-                    for (int i = 0; i < fails.length; i++) {
-                        Throwable t = fails[i].getThrown();
-                        if (null != t) {
-                            sb.append(prefix);
-                            sb.append(LangUtil.unqualifiedClassName(t.getClass()));
-                            prefix = ", ";
-                        }
-                    }
-                    if (0 < sb.length()) {
-                        sb.append(" rendered in messages above.");
-                    } else {
-                        sb.append(fails.length 
-                                  + " fails/aborts (no exceptions)");
-                    }
-                    throw new BuildException(sb.toString());
-			    }
+            if (!fork) {
+                executeInSameVM();
+            } else { // when forking, Adapter handles failonerror
+                executeInOtherVM();
             }
         } catch (BuildException e) {
             throw e;
@@ -696,31 +799,186 @@ public class AjcTask extends MatchingTask {
                 tmpOutjar.delete();
             }
         }        
+    }   
+
+    /**
+     * Run the compile in the same VM by
+     * loading the compiler (Main), 
+     * setting up any message holders,
+     * doing the compile,
+     * and converting abort/failure and error messages
+     * to BuildException, as appropriate.
+     * @throws BuildException if abort or failure messages
+     *         or if errors and failonerror.
+     * 
+     */
+    protected void executeInSameVM() {
+        if (null != maxMem) {
+            log("maxMem ignored unless forked: " + maxMem, Project.MSG_WARN);
+        }
+        IMessageHolder holder = messageHolder;
+        int numPreviousErrors;
+        if (null == holder) {
+            MessageHandler mhandler = new MessageHandler(true);
+            final IMessageHandler delegate 
+                = verbose ? MessagePrinter.VERBOSE: MessagePrinter.TERSE;
+            mhandler.setInterceptor(delegate);
+            if (!verbose) {
+                mhandler.ignore(IMessage.INFO);
+            }
+            holder = mhandler;
+            numPreviousErrors = 0;
+        } else {
+            numPreviousErrors = holder.numMessages(IMessage.ERROR, true);
+        }
+        Main main = new Main();
+        main.setHolder(holder);
+        main.setCompletionRunner(new Runnable() {
+            public void run() {
+                doCompletionTasks();
+            }
+        });
+        main.runMain(cmd.extractArguments(), false);
+        if (failonerror) {
+            int errs = holder.numMessages(IMessage.ERROR, false);
+            errs -= numPreviousErrors;
+            if (0 < errs) {
+                // errors should already be printed by interceptor
+                throw new BuildException(errs + " errors"); 
+            }
+        } 
+        // Throw BuildException if there are any fail or abort
+        // messages.
+        // The BuildException message text has a list of class names
+        // for the exceptions found in the messages, or the
+        // number of fail/abort messages found if there were
+        // no exceptions for any of the fail/abort messages.
+        // The interceptor message handler should have already
+        // printed the messages, including any stack traces.
+        {
+            IMessage[] fails = holder.getMessages(IMessage.FAIL, true);
+            if (!LangUtil.isEmpty(fails)) {
+                StringBuffer sb = new StringBuffer();
+                String prefix = "fail due to ";
+                for (int i = 0; i < fails.length; i++) {
+                    Throwable t = fails[i].getThrown();
+                    if (null != t) {
+                        sb.append(prefix);
+                        sb.append(LangUtil.unqualifiedClassName(t.getClass()));
+                        prefix = ", ";
+                    }
+                }
+                if (0 < sb.length()) {
+                    sb.append(" rendered in messages above.");
+                } else {
+                    sb.append(fails.length 
+                              + " fails/aborts (no exceptions)");
+                }
+                throw new BuildException(sb.toString());
+            }
+        }
     }
     
+    /**
+     * Execute in a separate VM.
+     * Differences from normal same-VM execution:
+     * <ul>
+     * <li>ignores any message holder {class} set</li>
+     * <li>No resource-copying between interative runs</li>
+     * <li>failonerror fails when process interface fails 
+     *     to return negative values</li>
+     * </ul>
+     * @param args String[] of the complete compiler command to execute
+     * 
+     * @see DefaultCompilerAdapter#executeExternalCompile(String[], int)
+     * @throws BuildException if ajc aborts (negative value)
+     *         or if failonerror and there were compile errors.
+     */
+    protected void executeInOtherVM() {
+        if (null != messageHolder) {
+            log("message holder ignored when forking: "
+                + messageHolder.getClass().getName(), Project.MSG_WARN);
+        }
+        CommandlineJava javaCmd = new CommandlineJava();
+        javaCmd.setClassname(org.aspectj.tools.ajc.Main.class.getName());
+        Path vmClasspath = javaCmd.createClasspath(getProject());
+        File aspectjtools = findAspectjtoolsJar();
+        if (null != aspectjtools) {
+            vmClasspath.createPathElement().setLocation(aspectjtools);
+        }
+        if (null != maxMem) {
+            javaCmd.setMaxmemory(maxMem);
+        }
+        File tempFile = cmd.limitTo(MAX_COMMANDLINE, getLocation());
+        try {
+            String[] javaArgs = javaCmd.getCommandline();
+            String[] args = cmd.extractArguments();
+            String[] both = new String[javaArgs.length + args.length];
+            System.arraycopy(javaArgs,0,both,0,javaArgs.length);
+            System.arraycopy(args,0,both,javaArgs.length,args.length);
+            int result = execInOtherVM(both);
+            if (0 > result) {
+                throw new BuildException("failure[" + result + "] running ajc");
+            } else if (failonerror && (0 < result)) {
+                throw new BuildException("compile errors: " + result);                
+            }
+            // when forking, do completion only at end and when successful
+            doCompletionTasks();
+        } finally {
+            if (null != tempFile) {
+                tempFile.delete();
+            }
+        }
+    }
+    
+    /**
+     * Execute in another process using the same JDK
+     * and the base directory of the project. XXX correct?
+     * @param args
+     * @return
+     */
+    protected int execInOtherVM(String[] args) {
+        try {
+            Project project = getProject();
+            LogStreamHandler handler = new LogStreamHandler(this,
+                                 Project.MSG_INFO, Project.MSG_WARN);
+            Execute exe = new Execute(handler);
+            exe.setAntRun(project);
+            exe.setWorkingDirectory(project.getBaseDir());
+            exe.setCommandline(args);
+            exe.execute();
+            return exe.getExitValue();
+        } catch (IOException e) {
+            String m = "Error executing command " + Arrays.asList(args);
+            throw new BuildException(m, e, location);
+        }
+    }
+
     // ------------------------------ setup and reporting
     /** 
+     * Add to cmd any plural arguments, which might be set
+     * repeatedly.
      */
 	protected void addListArgs() throws BuildException {
 		
         if (classpath != null) {
-            addFlagged("-classpath", classpath.toString());
+            cmd.addFlagged("-classpath", classpath.toString());
         }
         if (aspectpath != null) {
-            addFlagged("-aspectpath", aspectpath.toString());
+            cmd.addFlagged("-aspectpath", aspectpath.toString());
         }
         if (injars != null) {
-            addFlagged("-injars", injars.toString());
+            cmd.addFlagged("-injars", injars.toString());
         }
         if (sourceRoots != null) {
-            addFlagged("-sourceroots", sourceRoots.toString());
+            cmd.addFlagged("-sourceroots", sourceRoots.toString());
         }
         if (argfiles != null) {
             String[] files = argfiles.list();
             for (int i = 0; i < files.length; i++) {
                 File argfile = project.resolveFile(files[i]);
                 if (check(argfile, files[i], false, location)) {
-		            addFlagged("-argfile", argfile.getAbsolutePath());
+		            cmd.addFlagged("-argfile", argfile.getAbsolutePath());
                 }
             }
         }
@@ -730,17 +988,37 @@ public class AjcTask extends MatchingTask {
             for (int i = 0; i < dirs.length; i++) {
                 File dir = project.resolveFile(dirs[i]);
                 check(dir, dirs[i], true, location);
+                // relies on compiler to prune non-source files
                 String[] files = getDirectoryScanner(dir).getIncludedFiles();
                 for (int j = 0; j < files.length; j++) {
                     File file = new File(dir, files[j]);
                     if (FileUtil.hasSourceSuffix(file)) {
-                        cmd.createArgument().setFile(file);
+                        cmd.addFile(file);
                     }
+                }
+            }
+        }
+        if (0 < adapterFiles.size()) {
+            for (Iterator iter = adapterFiles.iterator(); iter.hasNext();) {
+                File file = (File) iter.next();
+                if (file.canRead() && FileUtil.hasSourceSuffix(file)) {
+                    cmd.addFile(file);
+                } else {
+                    log("skipping file: " + file, Project.MSG_WARN);
                 }
             }
         }
 	}    
 
+    /** 
+     * Throw BuildException unless file is valid.
+     * @param file the File to check
+     * @param name the symbolic name to print on error
+     * @param isDir if true, verify file is a directory
+     * @param loc the Location used to create sensible BuildException
+     * @return
+     * @throws BuildException unless file valid
+     */
     protected final boolean check(File file, String name,
                                   boolean isDir, Location loc) {
         loc = loc != null ? loc : location;
@@ -811,7 +1089,7 @@ public class AjcTask extends MatchingTask {
                 }
             }
         }
-        if (null != sourceRootCopyFilter) {
+        if ((null != sourceRootCopyFilter) && (null != sourceRoots)) {
             String[] paths = sourceRoots.list();
             if (!LangUtil.isEmpty(paths)) {
                 Copy copy = new Copy();
@@ -864,7 +1142,7 @@ public class AjcTask extends MatchingTask {
                 }
             }
         }
-        if (null != sourceRootCopyFilter) {
+        if ((null != sourceRootCopyFilter) && (null != sourceRoots)) {
             String[] paths = sourceRoots.list();
             if (!LangUtil.isEmpty(paths)) {
                 for (int i = 0; i < paths.length; i++) {
@@ -880,4 +1158,267 @@ public class AjcTask extends MatchingTask {
         }        
         zip.execute();
     }
+    
+    // -------------------------- compiler adapter interface extras
+
+    /**
+     * Add specified source files.
+     */
+    void addFiles(File[] paths) {
+        for (int i = 0; i < paths.length; i++) {
+            addFile(paths[i]);
+        }
+    }
+    /**
+     * Add specified source file.
+     */
+    void addFile(File path) {
+        if (null != path) {
+            adapterFiles.add(path);
+        }
+    }
+
+    /**
+     * Read arguments in as if from a command line, 
+     * mainly to support compiler adapter compilerarg subelement. 
+     * 
+     * @param args the String[] of arguments to read
+     */
+    void readArguments(String[] args) { // XXX slow, stupid, unmaintainable
+        if ((null == args) || (0 == args.length)) {
+            return;
+        }
+        /** String[] wrapper with increment, error reporting */
+        class Args {
+            final String[] args;
+            int index = 0;
+            Args(String[] args) {
+                this.args = args; // not null or empty
+            }
+            boolean hasNext() {
+                return index < args.length;
+            }
+            String next() {
+                String err = null;
+                if (!hasNext()) {
+                    err = "need arg for flag " + args[args.length-1];
+                } else {
+                    String s = args[index++];
+                    if (null == s) {
+                        err = "null value";                                            
+                    } else {
+                        s = s.trim();
+                        if (0 == s.trim().length()) {
+                            err = "no value";                                            
+                        } else {
+                            return s;
+                        }
+                    }
+                }
+                err += " at [" + index + "] of " + Arrays.asList(args);
+                throw new BuildException(err);
+            }
+        } // class Args
+
+        Args in = new Args(args);
+        String flag;
+        while (in.hasNext()) {
+            flag = in.next();
+            if ("-1.3".equals(flag)) {
+                setCompliance(flag);
+            } else if ("-1.4".equals(flag)) {
+                setCompliance(flag);
+            } else if ("-argfile".equals(flag)) {
+                setArgfiles(new Path(project, in.next()));
+            } else if ("-aspectpath".equals(flag)) {
+                setAspectpath(new Path(project, in.next()));
+            } else if ("-classpath".equals(flag)) {
+                setClasspath(new Path(project, in.next()));
+            } else if ("-Xcopyinjars".equals(flag)) {
+                setCopyInjars(true);
+            } else if ("-g".equals(flag)) {
+                setDebug(true);
+            } else if (flag.startsWith("-g:")) {
+                setDebugLevel(flag.substring(2));
+            } else if ("-deprecation".equals(flag)) {
+                setDeprecation(true);
+            } else if ("-d".equals(flag)) {
+                setDestdir(new File(in.next()));
+            } else if ("-emacssym".equals(flag)) {
+                setEmacssym(true);
+            } else if ("-encoding".equals(flag)) {
+                setEncoding(in.next());
+            } else if ("-Xfailonerror".equals(flag)) {
+                setFailonerror(true);
+            } else if ("-fork".equals(flag)) {
+                setFork(true);
+            } else if ("-help".equals(flag)) {
+                setHelp(true);
+            } else if ("-incremental".equals(flag)) {
+                setIncremental(true);
+            } else if ("-injars".equals(flag)) {
+                setInjars(new Path(project, in.next()));
+            } else if ("-Xlistfileargs".equals(flag)) {
+                setListFileArgs(true);
+            } else if ("-Xmaxmem".equals(flag)) {
+                setMaxmem(in.next());
+            } else if ("-Xmessageholderclass".equals(flag)) {
+                setMessageHolderClass(in.next());
+            } else if ("-noexit".equals(flag)) {
+                setNoExit(true);
+            } else if ("-noimport".equals(flag)) {
+                setNoExit(true);
+            } else if ("-noExit".equals(flag)) {
+                setNoExit(true);
+            } else if ("-noImportError".equals(flag)) {
+                setNoImportError(true);
+            } else if ("-noWarn".equals(flag)) {
+                setNowarn(true);
+            } else if ("-noexit".equals(flag)) {
+                setNoExit(true);
+            } else if ("-outjar".equals(flag)) {
+                setOutjar(new File(in.next()));
+            } else if ("-preserveAllLocals".equals(flag)) {
+                setPreserveAllLocals(true);
+            } else if ("-proceedOnError".equals(flag)) {
+                setProceedOnError(true);
+            } else if ("-progress".equals(flag)) {
+                setProgress(true);
+            } else if ("-referenceInfo".equals(flag)) {
+                setReferenceInfo(true);
+            } else if ("-source".equals(flag)) {
+                setSource(in.next());
+            } else if ("-Xsourcerootcopyfilter".equals(flag)) {
+                setSourceRootCopyFilter(in.next());
+            } else if ("-sourceroots".equals(flag)) {
+                setSourceRoots(new Path(project, in.next()));
+            } else if ("-Xsrcdir".equals(flag)) {
+                setSrcDir(new Path(project, in.next()));
+            } else if ("-Xtagfile".equals(flag)) {
+                setTagFile(new File(in.next()));
+            } else if ("-target".equals(flag)) {
+                setTarget(in.next());
+            } else if ("-time".equals(flag)) {
+                setTime(true);
+            } else if ("-time".equals(flag)) {
+                setTime(true);
+            } else if ("-verbose".equals(flag)) {
+                setVerbose(true);
+            } else if ("-version".equals(flag)) {
+                setVersion(true);
+            } else if ("-warn".equals(flag)) {
+                setWarn(in.next());
+            } else if ("-Xlint".equals(flag)) {
+                setXlintwarnings(true);
+            } else if (flag.startsWith("-Xlint:")) {
+                setXlint(flag.substring(7));
+            } else if ("-Xlintfile".equals(flag)) {
+                setXlintfile(new File(in.next()));
+            } else if ("-Xnoweave".equals(flag)) {
+                setXNoweave(true);
+            } else if (flag.startsWith("@")) {
+                File file = new File(flag.substring(1));
+                if (file.canRead()) {
+                    setArgfiles(new Path(project, file.getPath()));
+                } else {
+                    ignore(flag);            
+                }
+            } else {
+                File file = new File(flag);
+                if (file.canRead() && FileUtil.hasSourceSuffix(file)) {
+                    addFile(file);
+                } else {
+                    ignore(flag);            
+                }
+            }
+        }
+    }
 }
+
+/**
+ * Commandline wrapper that 
+ * only permits addition of non-empty values,
+ * counts size as it goes,
+ * and converts to argfile form if necessary.
+ */
+class GuardedCommand {
+    Commandline command;
+    int size;
+
+    static boolean isEmpty(String s) {
+        return ((null == s) || (0 == s.trim().length()));
+    }
+
+    GuardedCommand() {
+        command = new Commandline();
+    }
+    
+    void addFlag(String flag, boolean doAdd) {
+        if (doAdd && !isEmpty(flag)) {
+            command.createArgument().setValue(flag);
+            size += 1 + flag.length();
+        }
+    }
+    
+    void addFlagged(String flag, String argument) {
+        if (!isEmpty(flag) && !isEmpty(argument)) {
+            command.addArguments(new String[] {flag, argument});
+            size += 1 + flag.length() + argument.length();
+        }
+    }
+    
+    void addFile(File file) {
+        if (null != file) {
+            String path = file.getAbsolutePath();
+            addFlag(path, true);
+        }
+    }
+    
+    String[] extractArguments() {
+        return command.getArguments();
+    }
+
+     /**
+     * Adjust command for size if necessary by creating
+     * an argument file, which should be deleted by the client
+     * after the compiler run has completed.
+     * @param max the int maximum length of the command line (in char)
+     * @return the temp File for the arguments (if generated), 
+     *         for deletion when done.
+     * @throws IllegalArgumentException if max is negative
+     */
+    protected File limitTo(int max, Location location) { // XXX sync         
+        if (max < 0) {
+            throw new IllegalArgumentException("negative max: " + max);
+        }
+        if (size < max) {
+            return null;
+        }
+        // limit interference, but not thread-safe
+        String[] args = extractArguments();
+        File tmpFile = null;
+        PrintWriter out = null;
+        // adapted from DefaultCompilerAdapter.executeExternalCompile
+        try {
+            String userDirName = System.getProperty("user.dir");
+            File userDir = new File(userDirName);
+            tmpFile = File.createTempFile("argfile", "", userDir);
+            out = new PrintWriter(new FileWriter(tmpFile));
+            for (int i = 0; i < args.length; i++) {
+                out.println(args[i]);
+            }
+            out.flush();
+            this.command = new Commandline();
+            addFlagged("-argfile", tmpFile.getAbsolutePath());
+            return tmpFile;
+        } catch (IOException e) {
+            throw new BuildException("Error creating temporary file", 
+                                     e, location);
+        } finally {
+            if (out != null) {
+                try {out.close();} catch (Throwable t) {}
+            }
+        }
+    }     
+}
+
