@@ -194,7 +194,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 			String sourceFileName = (String) binIter.next();
 			List unwovenClassFiles = (List) binarySourceEntries.get(sourceFileName);
 			
-			CompilationResult result = new CompilationResult(sourceFileName.toCharArray(),0,0,20);
+			CompilationResult result = new CompilationResult(sourceFileName.toCharArray(),0,0,compiler.options.maxProblemsPerUnit);
 			result.noSourceAvailable();
 			InterimCompilationResult binarySource = 
 				new InterimCompilationResult(result,unwovenClassFiles);
