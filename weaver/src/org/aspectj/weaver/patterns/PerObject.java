@@ -16,6 +16,9 @@ package org.aspectj.weaver.patterns;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
@@ -33,10 +36,23 @@ import org.aspectj.weaver.ast.Var;
 public class PerObject extends PerClause {
 	private boolean isThis;
 	private Pointcut entry;
+	private static final Set thisKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
+	private static final Set targetKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
+	static {
+		for (Iterator iter = Shadow.ALL_SHADOW_KINDS.iterator(); iter.hasNext();) {
+			Shadow.Kind kind = (Shadow.Kind) iter.next();
+			if (kind.neverHasThis()) thisKindSet.remove(kind);
+			if (kind.neverHasTarget()) targetKindSet.remove(kind);
+		}
+	}
 	
 	public PerObject(Pointcut entry, boolean isThis) {
 		this.entry = entry;
 		this.isThis = isThis;
+	}
+
+	public Set couldMatchKinds() {
+		return isThis ? thisKindSet : targetKindSet;
 	}
 	
 	// -----
@@ -45,7 +61,7 @@ public class PerObject extends PerClause {
 	}
 	
 	
-    public FuzzyBoolean match(Shadow shadow) {
+    protected FuzzyBoolean matchInternal(Shadow shadow) {
     	//System.err.println("matches " + this + " ? " + shadow + ", " + shadow.hasTarget());
     	//??? could probably optimize this better by testing could match
     	if (isThis) return FuzzyBoolean.fromBoolean(shadow.hasThis());
@@ -61,7 +77,7 @@ public class PerObject extends PerClause {
     	return isThis ? shadow.getThisVar() : shadow.getTargetVar();
     }
 
-    public Test findResidue(Shadow shadow, ExposedState state) {
+    protected Test findResidueInternal(Shadow shadow, ExposedState state) {
     	Expr myInstance =
     		Expr.makeCallExpr(AjcMemberMaker.perObjectAspectOfMethod(inAspect),
     							new Expr[] {getVar(shadow)}, inAspect);

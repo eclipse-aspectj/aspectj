@@ -53,6 +53,10 @@ public class AnnotationPatternList extends PatternNode {
 		this((AnnotationTypePattern[]) l.toArray(new AnnotationTypePattern[l.size()]));
 	}
 
+	protected AnnotationTypePattern[] getAnnotationPatterns() {
+		return typePatterns;
+	}
+	
 	public void resolve(World inWorld) {
 		for (int i = 0; i < typePatterns.length; i++) {
 			typePatterns[i].resolve(inWorld);

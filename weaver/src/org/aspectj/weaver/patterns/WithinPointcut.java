@@ -17,6 +17,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Member;
+import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
@@ -48,12 +49,16 @@ public class WithinPointcut extends Pointcut {
 		}
 		return FuzzyBoolean.NO;
 	}
+
+	public Set couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS;
+	}
 	
 	public FuzzyBoolean fastMatch(FastMatchInfo info) {
 		return isWithinType(info.getType());
 	}
     
-	public FuzzyBoolean match(Shadow shadow) {
+	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		ResolvedTypeX enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType(),true);
 		if (enclosingType == ResolvedTypeX.MISSING) {
 			IMessage msg = new Message(
@@ -146,12 +151,14 @@ public class WithinPointcut extends Pointcut {
 		return "within(" + typePattern + ")";
 	}
 
-	public Test findResidue(Shadow shadow, ExposedState state) {
+	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		return match(shadow).alwaysTrue() ? Literal.TRUE : Literal.FALSE;
 	}
 	
 	
 	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
-		return new WithinPointcut(typePattern);
+		Pointcut ret = new WithinPointcut(typePattern);
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 }

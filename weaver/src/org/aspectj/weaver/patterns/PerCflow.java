@@ -20,6 +20,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
@@ -47,11 +48,15 @@ public class PerCflow extends PerClause {
 	
 	// -----
 	
+	public Set couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS;
+	}
+	
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
 	
-    public FuzzyBoolean match(Shadow shadow) {
+    protected FuzzyBoolean matchInternal(Shadow shadow) {
         return FuzzyBoolean.YES;
     }
 
@@ -60,7 +65,7 @@ public class PerCflow extends PerClause {
     	entry.resolve(scope);  
     }
     
-    public Test findResidue(Shadow shadow, ExposedState state) {
+    protected Test findResidueInternal(Shadow shadow, ExposedState state) {
     	Expr myInstance =
     		Expr.makeCallExpr(AjcMemberMaker.perCflowAspectOfMethod(inAspect),
     							Expr.NONE, inAspect);

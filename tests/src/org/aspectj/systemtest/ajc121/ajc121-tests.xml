@@ -4,12 +4,10 @@
    	<ajc-test dir="bugs"
 		pr="62073" title="false ambiguous binding error (introduced in 1.2rc2)">
         <compile files="DisjunctVarBinding_2.java,DisjunctVarBinding_3.java">
-        	<message kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type B"/>
-        	<message kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type A"/>
+        	<message kind="error" line="4" file="DisjunctVarBinding_3.java" text="ambiguous binding of parameter(s) a, b across '||' in pointcut"/>
         </compile>
         <compile files="DisjunctVarBinding_3.java,DisjunctVarBinding_2.java">
-        	<message kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type B"/>
-        	<message kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type A"/>
+        	<message kind="error" line="4" file="DisjunctVarBinding_3.java" text="ambiguous binding of parameter(s) a, b across '||' in pointcut"/>
         </compile>
     </ajc-test>
     
@@ -213,14 +211,11 @@
     <ajc-test dir="bugs/oxford" pr="65319"
 	  	title="ajc crashes when compiling the following program (binding this() and target())">
 		<compile files="PR65319.java">
-			<message kind="error" line="7" text="Cannot use target() to match at this"/>
-			<message kind="error" line="7" text="Cannot use this() to match at this"/>
-			<message kind="error" line="11" text="Cannot use target() to match at this"/>
-			<message kind="error" line="11" text="Cannot use this() to match at this"/>
-			<message kind="error" line="11" text="Ambiguous binding of type Test"/>
-			<message kind="error" line="15" text="Cannot use target() to match at this"/>
-			<message kind="error" line="15" text="Cannot use this() to match at this"/>
-			<message kind="error" line="15" text="Ambiguous binding of type Test"/>
+		    <!-- target comes before this comes before args, and we only report one error -->
+			<message kind="error" line="23" text="ambiguous binding of parameter(s) x across '||' in pointcut"/>
+			<message kind="error" line="25" text="ambiguous binding of parameter(s) x across '||' in pointcut"/>
+			<message kind="error" line="27" text="ambiguous binding of parameter(s) x across '||' in pointcut"/>
+			<message kind="error" line="29" text="ambiguous binding of parameter(s) x across '||' in pointcut"/>
 		</compile>
 	</ajc-test>
 	

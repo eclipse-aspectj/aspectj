@@ -40,6 +40,8 @@ public class BindingTypePattern extends ExactTypePattern implements BindingPatte
     public boolean equals(Object other) {
     	if (!(other instanceof BindingTypePattern)) return false;
     	BindingTypePattern o = (BindingTypePattern)other;
+    	if (includeSubtypes != o.includeSubtypes) return false;
+    	if (isVarArgs != o.isVarArgs) return false;
     	return o.type.equals(this.type) && o.formalIndex == this.formalIndex;
     }
     public int hashCode() {

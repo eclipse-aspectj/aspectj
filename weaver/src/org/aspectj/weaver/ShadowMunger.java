@@ -106,6 +106,11 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 	public Pointcut getPointcut() {
 		return pointcut;
 	}
+	
+	// pointcut may be updated during rewriting...
+	public void setPointcut(Pointcut pointcut) {
+		this.pointcut = pointcut;
+	}
 
 
 	/**

@@ -12,6 +12,12 @@ package org.aspectj.weaver.patterns;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
@@ -41,6 +47,15 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	private boolean alreadyWarnedAboutDEoW = false;
 	private ExactAnnotationTypePattern annotationTypePattern;
 	private ShadowMunger munger;
+	private static final Set thisKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
+	private static final Set targetKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
+	static {
+		for (Iterator iter = Shadow.ALL_SHADOW_KINDS.iterator(); iter.hasNext();) {
+			Shadow.Kind kind = (Shadow.Kind) iter.next();
+			if (kind.neverHasThis()) thisKindSet.remove(kind);
+			if (kind.neverHasTarget()) targetKindSet.remove(kind);
+		}
+	}
 	
 	/**
 	 * 
@@ -56,6 +71,10 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	    this.munger = munger;
 	}
 	
+	public Set couldMatchKinds() {
+		return isThis ? thisKindSet : targetKindSet;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#fastMatch(org.aspectj.weaver.patterns.FastMatchInfo)
 	 */
@@ -66,7 +85,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#match(org.aspectj.weaver.Shadow)
 	 */
-	public FuzzyBoolean match(Shadow shadow) {
+	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		if (!couldMatch(shadow)) return FuzzyBoolean.NO;
 	    ResolvedTypeX toMatchAgainst = 
 	        (isThis ? shadow.getThisType() : shadow.getTargetType() ).resolve(shadow.getIWorld());
@@ -136,7 +155,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#findResidue(org.aspectj.weaver.Shadow, org.aspectj.weaver.patterns.ExposedState)
 	 */
-	public Test findResidue(Shadow shadow, ExposedState state) {
+	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 	    if (!couldMatch(shadow)) return Literal.FALSE;
 	    boolean alwaysMatches = match(shadow).alwaysTrue();
 	    Var var = isThis ? shadow.getThisVar() : shadow.getTargetVar();
@@ -149,15 +168,15 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 			                   shadow.getTargetAnnotationVar(annotationType);
 			if (annVar == null) return Literal.TRUE;  // should be exception when we implement properly
 			// Check if we have already bound something to this formal
-			if (state.get(btp.getFormalIndex())!=null) {
-				ISourceLocation pcdSloc = getSourceLocation(); 
-				ISourceLocation shadowSloc = shadow.getSourceLocation();
-				Message errorMessage = new Message(
-					"Cannot use @pointcut to match at this location and bind a formal to type '"+annVar.getType()+
-					"' - the formal is already bound to type '"+state.get(btp.getFormalIndex()).getType()+"'"+
-					".  The secondary source location points to the problematic binding.",
-					shadowSloc,true,new ISourceLocation[]{pcdSloc}); 
-				shadow.getIWorld().getMessageHandler().handleMessage(errorMessage);
+			if ((state.get(btp.getFormalIndex())!=null) &&(lastMatchedShadowId == shadow.shadowId)) {
+//				ISourceLocation pcdSloc = getSourceLocation(); 
+//				ISourceLocation shadowSloc = shadow.getSourceLocation();
+//				Message errorMessage = new Message(
+//					"Cannot use @pointcut to match at this location and bind a formal to type '"+annVar.getType()+
+//					"' - the formal is already bound to type '"+state.get(btp.getFormalIndex()).getType()+"'"+
+//					".  The secondary source location points to the problematic binding.",
+//					shadowSloc,true,new ISourceLocation[]{pcdSloc}); 
+//				shadow.getIWorld().getMessageHandler().handleMessage(errorMessage);
 				state.setErroneousVar(btp.getFormalIndex());
 			}
 			state.set(btp.getFormalIndex(),annVar);
@@ -181,6 +200,25 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 		return isThis ? shadow.hasThis() : shadow.hasTarget();
 	}
 	
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingAnnotationTypePatterns()
+	 */
+	public List getBindingAnnotationTypePatterns() {
+		if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
+			List l = new ArrayList();
+			l.add(annotationTypePattern);
+			return l;
+		} else return Collections.EMPTY_LIST;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingTypePatterns()
+	 */
+	public List getBindingTypePatterns() {
+		return Collections.EMPTY_LIST;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(java.io.DataOutputStream)
 	 */

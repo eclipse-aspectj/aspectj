@@ -17,6 +17,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Member;
+import java.util.Set;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
@@ -39,13 +40,17 @@ public class NotPointcut extends Pointcut {
 		setLocation(pointcut.getSourceContext(), startPos, pointcut.getEnd());		
 	}
 
+	public Set couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS;
+	}
+	
 	public Pointcut getNegatedPointcut() { return body; }
 
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return body.fastMatch(type).not();
 	}
 
-	public FuzzyBoolean match(Shadow shadow) {
+	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		return body.match(shadow).not();
 	}
 
@@ -118,12 +123,14 @@ public class NotPointcut extends Pointcut {
 		return ret;
 	}
 
-	public Test findResidue(Shadow shadow, ExposedState state) {
+	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		return Test.makeNot(body.findResidue(shadow, state));
 	}
 	
 	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
-		return new NotPointcut(body.concretize(inAspect, bindings));
+		Pointcut ret = new NotPointcut(body.concretize(inAspect, bindings));
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 
 }

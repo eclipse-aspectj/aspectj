@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.util.FileUtil;
@@ -66,12 +67,16 @@ public class CflowPointcut extends Pointcut {
 		this.freeVars = freeVars;
 		this.pointcutKind = CFLOW;
 	}
-    
+
+	public Set couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS;
+	}
+	
     public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
     
-	public FuzzyBoolean match(Shadow shadow) {
+	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		//??? this is not maximally efficient
 		return FuzzyBoolean.MAYBE;
 	}
@@ -147,7 +152,7 @@ public class CflowPointcut extends Pointcut {
 		return "cflow" + (isBelow ? "below" : "") + "(" + entry + ")";
 	}
 
-	public Test findResidue(Shadow shadow, ExposedState state) {
+	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		throw new RuntimeException("unimplemented");
 	}
 	
@@ -227,7 +232,9 @@ public class CflowPointcut extends Pointcut {
 		    
 		    putCflowfield(concreteEntry,localCflowField); // Remember it
 	      }
-		  return new ConcreteCflowPointcut(localCflowField, null,true);
+		  Pointcut ret = new ConcreteCflowPointcut(localCflowField, null,true);
+		  ret.copyLocationFrom(this);
+		  return ret;
 		} else {
 
 			List slots = new ArrayList();
@@ -268,7 +275,9 @@ public class CflowPointcut extends Pointcut {
 				world.makeCflowStackFieldAdder(localCflowField));
 			  putCflowfield(concreteEntry,localCflowField);
 		    }
-			return new ConcreteCflowPointcut(localCflowField, slots,false);
+			Pointcut ret = new ConcreteCflowPointcut(localCflowField, slots,false);
+			ret.copyLocationFrom(this);
+			return ret;
 		}
 		
 	}

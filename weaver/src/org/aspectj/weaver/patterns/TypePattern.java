@@ -319,6 +319,20 @@ class EllipsisTypePattern extends TypePattern {
 	}
 	
 	public String toString() { return ".."; }
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object obj) {
+		return (obj instanceof EllipsisTypePattern);
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		return 17 * 37;
+	}
 }
 
 class AnyTypePattern extends TypePattern {
@@ -385,6 +399,14 @@ class AnyTypePattern extends TypePattern {
 	}
 	
 	public String toString() { return "*"; }
+	
+	public boolean equals(Object obj) {
+		return (obj instanceof AnyTypePattern);
+	}
+	
+	public int hashCode() {
+		return 37;
+	}
 }
 
 class NoTypePattern extends TypePattern {
@@ -447,5 +469,19 @@ class NoTypePattern extends TypePattern {
 	}
 	
 	public String toString() { return "<nothing>"; }
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object obj) {
+		return (obj instanceof NoTypePattern);
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		return 17 * 37 * 37;
+	}
 }
 

@@ -113,4 +113,23 @@ public class OrTypePattern extends TypePattern {
 		}
 		return buff.toString();
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object obj) {
+		if (! (obj instanceof OrTypePattern)) return false;
+		OrTypePattern other = (OrTypePattern) obj;
+		return left.equals(other.left) && right.equals(other.right);
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		int ret = 17;
+		ret = ret + 37 * left.hashCode();
+		ret = ret + 37 * right.hashCode();
+		return ret;
+	}
 }

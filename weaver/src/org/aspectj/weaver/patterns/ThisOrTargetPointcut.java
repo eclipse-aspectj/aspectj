@@ -17,6 +17,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Member;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
@@ -50,7 +56,17 @@ import org.aspectj.weaver.ast.Var;
 public class ThisOrTargetPointcut extends NameBindingPointcut {
 	private boolean isThis;
 	private TypePattern type;
-	
+
+	private static final Set thisKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
+	private static final Set targetKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
+	static {
+		for (Iterator iter = Shadow.ALL_SHADOW_KINDS.iterator(); iter.hasNext();) {
+			Shadow.Kind kind = (Shadow.Kind) iter.next();
+			if (kind.neverHasThis()) thisKindSet.remove(kind);
+			if (kind.neverHasTarget()) targetKindSet.remove(kind);
+		}
+	}
+
 	public ThisOrTargetPointcut(boolean isThis, TypePattern type) {
 		this.isThis = isThis;
 		this.type = type;
@@ -58,7 +74,11 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 	}
 	
 	public boolean isThis() { return isThis; }
-	
+
+	public Set couldMatchKinds() {
+		return isThis ? thisKindSet : targetKindSet;
+	}
+
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
@@ -67,7 +87,7 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		return isThis ? shadow.hasThis() : shadow.hasTarget();
 	}
     
-	public FuzzyBoolean match(Shadow shadow) {
+	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		if (!couldMatch(shadow)) return FuzzyBoolean.NO;
 		TypeX typeToMatch = isThis ? shadow.getThisType() : shadow.getTargetType(); 
 		//if (typeToMatch == ResolvedTypeX.MISSING) return FuzzyBoolean.NO;
@@ -131,6 +151,25 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		type.postRead(enclosingType);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingAnnotationTypePatterns()
+	 */
+	public List getBindingAnnotationTypePatterns() {
+		return Collections.EMPTY_LIST;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingTypePatterns()
+	 */
+	public List getBindingTypePatterns() {
+		if (type instanceof BindingTypePattern) {
+			List l = new ArrayList();
+			l.add(type);
+			return l;
+		} else return Collections.EMPTY_LIST;
+	}
+
+	
 	public boolean equals(Object other) {
 		if (!(other instanceof ThisOrTargetPointcut)) return false;
 		ThisOrTargetPointcut o = (ThisOrTargetPointcut)other;
@@ -146,7 +185,7 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		return (isThis ? "this(" : "target(") + type + ")";
 	}
 
-	public Test findResidue(Shadow shadow, ExposedState state) {
+	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		if (!couldMatch(shadow)) return Literal.FALSE;
 		
 		if (type == TypePattern.ANY) return Literal.TRUE;
@@ -156,15 +195,15 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		if (type instanceof BindingTypePattern) {
 		  BindingTypePattern btp = (BindingTypePattern)type;
 		  // Check if we have already bound something to this formal
-		  if (state.get(btp.getFormalIndex())!=null) {
-		  	ISourceLocation pcdSloc = getSourceLocation(); 
-		  	ISourceLocation shadowSloc = shadow.getSourceLocation();
-			Message errorMessage = new Message(
-				"Cannot use "+(isThis?"this()":"target()")+" to match at this location and bind a formal to type '"+var.getType()+
-				"' - the formal is already bound to type '"+state.get(btp.getFormalIndex()).getType()+"'"+
-				".  The secondary source location points to the problematic "+(isThis?"this()":"target()")+".",
-				shadowSloc,true,new ISourceLocation[]{pcdSloc}); 
-			shadow.getIWorld().getMessageHandler().handleMessage(errorMessage);
+		  if ((state.get(btp.getFormalIndex())!=null) && (lastMatchedShadowId != shadow.shadowId)){
+//		  	ISourceLocation pcdSloc = getSourceLocation(); 
+//		  	ISourceLocation shadowSloc = shadow.getSourceLocation();
+//			Message errorMessage = new Message(
+//				"Cannot use "+(isThis?"this()":"target()")+" to match at this location and bind a formal to type '"+var.getType()+
+//				"' - the formal is already bound to type '"+state.get(btp.getFormalIndex()).getType()+"'"+
+//				".  The secondary source location points to the problematic "+(isThis?"this()":"target()")+".",
+//				shadowSloc,true,new ISourceLocation[]{pcdSloc}); 
+//			shadow.getIWorld().getMessageHandler().handleMessage(errorMessage);
 			state.setErroneousVar(btp.getFormalIndex());
 			//return null;
 		  }
@@ -186,7 +225,9 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 			inAspect.crosscuttingMembers.exposeType(newType.getExactType());
 		}
 		
-		return new ThisOrTargetPointcut(isThis, newType);
+		Pointcut ret = new ThisOrTargetPointcut(isThis, newType);
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 
 }

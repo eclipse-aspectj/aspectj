@@ -488,6 +488,7 @@ public class SignaturePattern extends PatternNode {
     		&& o.declaringType.equals(this.declaringType)
     		&& o.name.equals(this.name)
     		&& o.parameterTypes.equals(this.parameterTypes)
+			&& o.throwsPattern.equals(this.throwsPattern)
 			&& o.annotationPattern.equals(this.annotationPattern);
     }
     public int hashCode() {
@@ -498,6 +499,7 @@ public class SignaturePattern extends PatternNode {
         result = 37*result + declaringType.hashCode();
         result = 37*result + name.hashCode();
         result = 37*result + parameterTypes.hashCode();
+        result = 37*result + throwsPattern.hashCode();
         result = 37*result + annotationPattern.hashCode();
         return result;
     }

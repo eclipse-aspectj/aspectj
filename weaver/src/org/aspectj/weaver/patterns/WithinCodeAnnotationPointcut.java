@@ -12,6 +12,11 @@ package org.aspectj.weaver.patterns;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
@@ -40,6 +45,14 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 
 	private ExactAnnotationTypePattern annotationTypePattern;
     private ShadowMunger munger = null; // only set after concretization
+    private static final Set matchedShadowKinds = new HashSet();
+    static {
+    	matchedShadowKinds.addAll(Shadow.ALL_SHADOW_KINDS);
+    	for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
+			if (Shadow.SHADOW_KINDS[i].isEnclosingKind()) 
+				matchedShadowKinds.remove(Shadow.SHADOW_KINDS[i]);
+		}
+    }
 	
 	public WithinCodeAnnotationPointcut(ExactAnnotationTypePattern type) {
 		super();
@@ -52,6 +65,10 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 		this.munger = munger;
 	}
 
+	public Set couldMatchKinds() {
+		return matchedShadowKinds;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#fastMatch(org.aspectj.weaver.patterns.FastMatchInfo)
 	 */
@@ -62,7 +79,7 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#match(org.aspectj.weaver.Shadow)
 	 */
-	public FuzzyBoolean match(Shadow shadow) {
+	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		AnnotatedElement toMatchAgainst = null;
 		Member member = shadow.getEnclosingCodeSignature();		
 		ResolvedMember rMember = member.resolve(shadow.getIWorld());
@@ -109,7 +126,7 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#findResidue(org.aspectj.weaver.Shadow, org.aspectj.weaver.patterns.ExposedState)
 	 */
-	public Test findResidue(Shadow shadow, ExposedState state) {
+	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		
 		if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
 			BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern)annotationTypePattern;
@@ -117,20 +134,39 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 			Var var = shadow.getWithinCodeAnnotationVar(annotationType);
 			if (var == null) return Literal.FALSE;
 			// Check if we have already bound something to this formal
-			if (state.get(btp.getFormalIndex())!=null) {
-				ISourceLocation pcdSloc = getSourceLocation(); 
-				ISourceLocation shadowSloc = shadow.getSourceLocation();
-				Message errorMessage = new Message(
-					"Cannot use @pointcut to match at this location and bind a formal to type '"+var.getType()+
-					"' - the formal is already bound to type '"+state.get(btp.getFormalIndex()).getType()+"'"+
-					".  The secondary source location points to the problematic binding.",
-					shadowSloc,true,new ISourceLocation[]{pcdSloc}); 
-				shadow.getIWorld().getMessageHandler().handleMessage(errorMessage);
+			if ((state.get(btp.getFormalIndex())!=null)  &&(lastMatchedShadowId == shadow.shadowId)) {
+//				ISourceLocation pcdSloc = getSourceLocation(); 
+//				ISourceLocation shadowSloc = shadow.getSourceLocation();
+//				Message errorMessage = new Message(
+//					"Cannot use @pointcut to match at this location and bind a formal to type '"+var.getType()+
+//					"' - the formal is already bound to type '"+state.get(btp.getFormalIndex()).getType()+"'"+
+//					".  The secondary source location points to the problematic binding.",
+//					shadowSloc,true,new ISourceLocation[]{pcdSloc}); 
+//				shadow.getIWorld().getMessageHandler().handleMessage(errorMessage);
 				state.setErroneousVar(btp.getFormalIndex());
 			}
 			state.set(btp.getFormalIndex(),var);
 		} 
 		return Literal.TRUE;
+	}
+
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingAnnotationTypePatterns()
+	 */
+	public List getBindingAnnotationTypePatterns() {
+		if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
+			List l = new ArrayList();
+			l.add(annotationTypePattern);
+			return l;
+		} else return Collections.EMPTY_LIST;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingTypePatterns()
+	 */
+	public List getBindingTypePatterns() {
+		return Collections.EMPTY_LIST;
 	}
 
 	/* (non-Javadoc)

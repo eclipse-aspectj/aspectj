@@ -18,7 +18,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Member;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.lang.JoinPoint;
@@ -54,15 +56,27 @@ public class IfPointcut extends Pointcut {
 		this.pointcutKind = IF;
 	}
 	
-    public FuzzyBoolean fastMatch(FastMatchInfo type) {
+	public Set couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS;
+	}
+
+	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
     
-	public FuzzyBoolean match(Shadow shadow) {
+	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		//??? this is not maximally efficient
 		return FuzzyBoolean.MAYBE;
 	}
 
+	public boolean alwaysFalse() {
+		return false;
+	}
+	
+	public boolean alwaysTrue() {
+		return false;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
 	 */
@@ -116,7 +130,7 @@ public class IfPointcut extends Pointcut {
 	//??? The implementation of name binding and type checking in if PCDs is very convoluted
 	//    There has to be a better way...
 	private boolean findingResidue = false;
-	public Test findResidue(Shadow shadow, ExposedState state) {
+	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		if (findingResidue) return Literal.TRUE;
 		findingResidue = true;
 		try {
@@ -161,9 +175,16 @@ public class IfPointcut extends Pointcut {
 		}
 	}
 	
+
+	// amc - the only reason this override seems to be here is to stop the copy, but 
+	// that can be prevented by overriding shouldCopyLocationForConcretization,
+	// allowing me to make the method final in Pointcut.
+//	public Pointcut concretize(ResolvedTypeX inAspect, IntMap bindings) {
+//		return this.concretize1(inAspect, bindings);
+//	}
 	
-	public Pointcut concretize(ResolvedTypeX inAspect, IntMap bindings) {
-		return this.concretize1(inAspect, bindings);
+	protected boolean shouldCopyLocationForConcretize() {
+		return false;
 	}
 	
 	private IfPointcut partiallyConcretized = null;
@@ -183,6 +204,7 @@ public class IfPointcut extends Pointcut {
 			return partiallyConcretized;
 		}
 		IfPointcut ret = new IfPointcut(testMethod, extraParameterFlags);
+		ret.copyLocationFrom(this);
 		partiallyConcretized = ret;
 		
 		// It is possible to directly code your pointcut expression in a per clause
@@ -239,7 +261,15 @@ public class IfPointcut extends Pointcut {
 			super(null,0);
 		}
 		
-		public Test findResidue(Shadow shadow, ExposedState state) {
+		public Set couldMatchKinds() {
+			return Collections.EMPTY_SET;
+		}
+		
+		public boolean alwaysFalse() {
+			return true;
+		}
+		
+		protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 			return Literal.FALSE; // can only get here if an earlier error occurred
 		}
 
@@ -247,7 +277,7 @@ public class IfPointcut extends Pointcut {
 			return FuzzyBoolean.NO;
 		}
 		
-		public FuzzyBoolean match(Shadow shadow) {
+		protected FuzzyBoolean matchInternal(Shadow shadow) {
 			return FuzzyBoolean.NO;
 		}
 		
@@ -304,8 +334,12 @@ public class IfPointcut extends Pointcut {
 		public IfTruePointcut() {
 			super(null,0);
 		}
+
+		public boolean alwaysTrue() {
+			return true;
+		}
 		
-		public Test findResidue(Shadow shadow, ExposedState state) {
+		protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 			return Literal.TRUE; // can only get here if an earlier error occurred
 		}
 
@@ -313,7 +347,7 @@ public class IfPointcut extends Pointcut {
 			return FuzzyBoolean.YES;
 		}
 		
-		public FuzzyBoolean match(Shadow shadow) {
+		protected FuzzyBoolean matchInternal(Shadow shadow) {
 			return FuzzyBoolean.YES;
 		}
 		

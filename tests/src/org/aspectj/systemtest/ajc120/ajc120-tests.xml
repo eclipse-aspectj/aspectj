@@ -454,8 +454,7 @@
     <ajc-test dir="bugs"
 		pr="61568" title="wrong variable binding in || pointcuts">
         <compile files="DisjunctVarBinding.java">
-          <message kind="error" line="34" text="Ambiguous binding of type B"/>
-          <message kind="error" line="34" text="Ambiguous binding of type A"/>
+          <message kind="error" line="17" text="ambiguous binding of parameter(s) a, b across '||' in pointcut"/>
         </compile>
     </ajc-test>
  

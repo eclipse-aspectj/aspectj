@@ -12,6 +12,10 @@ package org.aspectj.weaver.patterns;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
@@ -35,7 +39,7 @@ import org.aspectj.weaver.ast.Test;
 public class ArgsAnnotationPointcut extends NameBindingPointcut {
 
 	private AnnotationPatternList arguments;
-	
+
 	/**
 	 * 
 	 */
@@ -43,7 +47,11 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 		super();
 		this.arguments = arguments;
 	}
-		
+	
+	public Set couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS;  // empty args() matches jps with no args
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#fastMatch(org.aspectj.weaver.patterns.FastMatchInfo)
 	 */
@@ -54,7 +62,7 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#match(org.aspectj.weaver.Shadow)
 	 */
-	public FuzzyBoolean match(Shadow shadow) {
+	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		arguments.resolve(shadow.getIWorld());
 		FuzzyBoolean ret =
 			arguments.matches(shadow.getIWorld().resolve(shadow.getArgTypes()));
@@ -91,13 +99,15 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 			  return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 		}
 		AnnotationPatternList list = arguments.resolveReferences(bindings);
-		return new ArgsAnnotationPointcut(list);
+		Pointcut ret = new ArgsAnnotationPointcut(list);
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#findResidue(org.aspectj.weaver.Shadow, org.aspectj.weaver.patterns.ExposedState)
 	 */
-	public Test findResidue(Shadow shadow, ExposedState state) {
+	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		int len = shadow.getArgCount();
 	
 		// do some quick length tests first
@@ -139,6 +149,28 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 			}
 		}   	
     	return ret;
+	}
+
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingAnnotationTypePatterns()
+	 */
+	public List getBindingAnnotationTypePatterns() {
+		List l = new ArrayList();
+		AnnotationTypePattern[] pats = arguments.getAnnotationPatterns();
+		for (int i = 0; i < pats.length; i++) {
+			if (pats[i] instanceof BindingAnnotationTypePattern) {
+				l.add(pats[i]);
+			}
+		}
+		return l;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingTypePatterns()
+	 */
+	public List getBindingTypePatterns() {
+		return Collections.EMPTY_LIST; 
 	}
 
 	/* (non-Javadoc)

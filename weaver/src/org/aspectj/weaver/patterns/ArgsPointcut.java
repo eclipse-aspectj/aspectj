@@ -20,8 +20,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
@@ -53,12 +57,16 @@ public class ArgsPointcut extends NameBindingPointcut {
 		this.arguments = arguments;
 		this.pointcutKind = ARGS;
 	}
-	
+
+	public Set couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS;  // empty args() matches jps with no args
+	}
+
     public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
 
-	public FuzzyBoolean match(Shadow shadow) {
+	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		FuzzyBoolean ret =
 			arguments.matches(shadow.getIWorld().resolve(shadow.getArgTypes()), TypePattern.DYNAMIC);
 		return ret;
@@ -135,6 +143,27 @@ public class ArgsPointcut extends NameBindingPointcut {
 		return ret;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingAnnotationTypePatterns()
+	 */
+	public List getBindingAnnotationTypePatterns() {
+		return Collections.EMPTY_LIST; 
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingTypePatterns()
+	 */
+	public List getBindingTypePatterns() {
+		List l = new ArrayList();
+		TypePattern[] pats = arguments.getTypePatterns();
+		for (int i = 0; i < pats.length; i++) {
+			if (pats[i] instanceof BindingTypePattern) {
+				l.add(pats[i]);
+			}
+		}
+		return l;
+	}
+	
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.ARGS);
 		arguments.write(s);
@@ -190,7 +219,9 @@ public class ArgsPointcut extends NameBindingPointcut {
 		if (inAspect.crosscuttingMembers != null) {
 			inAspect.crosscuttingMembers.exposeTypes(args.getExactTypes());
 		}
-		return new ArgsPointcut(args);
+		Pointcut ret = new ArgsPointcut(args);
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 
 	private Test findResidueNoEllipsis(Shadow shadow, ExposedState state, TypePattern[] patterns) {
@@ -218,14 +249,14 @@ public class ArgsPointcut extends NameBindingPointcut {
 			} else {
 			  BindingTypePattern btp = (BindingTypePattern)type;
 			  // Check if we have already bound something to this formal
-			  if (state.get(btp.getFormalIndex())!=null) {
-			  	ISourceLocation isl = getSourceLocation();
-				Message errorMessage = new Message(
-                    "Ambiguous binding of type "+type.getExactType().toString()+
-                    " using args(..) at this line - formal is already bound"+
-                    ".  See secondary source location for location of args(..)",
-					shadow.getSourceLocation(),true,new ISourceLocation[]{getSourceLocation()});
-				shadow.getIWorld().getMessageHandler().handleMessage(errorMessage);
+			  if ((state.get(btp.getFormalIndex())!=null) &&(lastMatchedShadowId != shadow.shadowId)) {
+//			  	ISourceLocation isl = getSourceLocation();
+//				Message errorMessage = new Message(
+//                    "Ambiguous binding of type "+type.getExactType().toString()+
+//                    " using args(..) at this line - formal is already bound"+
+//                    ".  See secondary source location for location of args(..)",
+//					shadow.getSourceLocation(),true,new ISourceLocation[]{getSourceLocation()});
+//				shadow.getIWorld().getMessageHandler().handleMessage(errorMessage);
 				state.setErroneousVar(btp.getFormalIndex());
 			  }
 			}
@@ -236,7 +267,7 @@ public class ArgsPointcut extends NameBindingPointcut {
 		return ret;		
 	}
 
-	public Test findResidue(Shadow shadow, ExposedState state) {
+	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		if (arguments.matches(shadow.getIWorld().resolve(shadow.getArgTypes()), TypePattern.DYNAMIC).alwaysFalse()) {
 			return Literal.FALSE;
 		}

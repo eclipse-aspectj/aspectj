@@ -13,6 +13,8 @@
 
 package org.aspectj.weaver.patterns;
 
+import java.util.List;
+
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Test;
@@ -40,7 +42,8 @@ public abstract class NameBindingPointcut extends Pointcut {
 		return Test.makeInstanceof(var, myType.resolve(world));
 	}
 	
-	
+	public abstract List/*<BindingTypePattern>*/ getBindingTypePatterns();
+	public abstract List/*<BindingAnnotationTypePattern>*/ getBindingAnnotationTypePatterns();
 
 
 }

@@ -12,6 +12,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Set;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
@@ -30,11 +31,15 @@ public class PointcutTestCase extends TestCase {
 	public void testMatchJP() {
 		Pointcut p = new Pointcut() {
 
+			public Set couldMatchKinds() {
+				return null;
+			}
+			
 			public FuzzyBoolean fastMatch(FastMatchInfo info) {
 				return null;
 			}
 
-			public FuzzyBoolean match(Shadow shadow) {
+			protected FuzzyBoolean matchInternal(Shadow shadow) {
 				return null;
 			}
 
@@ -47,7 +52,7 @@ public class PointcutTestCase extends TestCase {
 				return null;
 			}
 
-			public Test findResidue(Shadow shadow, ExposedState state) {
+			protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 				return null;
 			}
 

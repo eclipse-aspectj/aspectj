@@ -185,6 +185,17 @@ public abstract class Advice extends ShadowMunger {
 		return getSignature().getParameterTypes().length - getExtraParameterCount();
 	}
 
+	public String[] getBaseParameterNames(World world) {
+		String[] allNames = getSignature().getParameterNames(world);
+		int extras = getExtraParameterCount();
+		if (extras == 0) return allNames;
+		String[] result = new String[getBaseParameterCount()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = allNames[i];
+		}
+		return result;
+	}
+	
 	public TypeX getExtraParameterType() {
 		if (!hasExtraParameter()) return ResolvedTypeX.MISSING;
 		return signature.getParameterTypes()[getBaseParameterCount()];
@@ -215,7 +226,9 @@ public abstract class Advice extends ShadowMunger {
     	// assert !fromType.isAbstract();
         Pointcut p = pointcut.concretize(fromType, signature.getArity(), this);
         if (clause != null) {
+        	Pointcut oldP = p;
         	p = new AndPointcut(clause, p);
+        	p.copyLocationFrom(oldP);
         	p.state = Pointcut.CONCRETE;
         }
         

@@ -102,6 +102,11 @@ public class WeaverMessages {
 	public static final String XLINT_KEY_ERROR = "invalidXLintKey";
 	public static final String XLINT_VALUE_ERROR = "invalidXLintMessageKind";
 	
+	public static final String UNBOUND_FORMAL = "unboundFormalInPC";
+	public static final String AMBIGUOUS_BINDING = "ambiguousBindingInPC";
+	public static final String AMBIGUOUS_BINDING_IN_OR = "ambiguousBindingInOrPC";
+	public static final String NEGATION_DOESNT_ALLOW_BINDING = "negationDoesntAllowBinding";
+	
     // Java5 messages
 	public static final String ITDC_ON_ENUM_NOT_ALLOWED = "itdcOnEnumNotAllowed";
 	public static final String ITDM_ON_ENUM_NOT_ALLOWED = "itdmOnEnumNotAllowed";

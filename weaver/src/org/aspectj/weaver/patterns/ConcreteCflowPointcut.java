@@ -17,6 +17,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.IntMap;
@@ -43,11 +44,15 @@ public class ConcreteCflowPointcut extends Pointcut {
 		this.pointcutKind = CFLOW;
 	}
     
+	public Set couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS;
+	}
+	
     public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
     
-	public FuzzyBoolean match(Shadow shadow) {
+	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		//??? this is not maximally efficient
 		return FuzzyBoolean.MAYBE;
 	}
@@ -70,6 +75,16 @@ public class ConcreteCflowPointcut extends Pointcut {
 		throw new UnsupportedOperationException("cflow pointcut matching not supported by this operation");
 	}
 
+	// used by weaver when validating bindings
+	public int[] getUsedFormalSlots() {
+		if (slots == null) return new int[0];
+		int[] indices = new int[slots.size()];
+		for (int i = 0; i < indices.length; i++) {
+			indices[i] = ((Slot)slots.get(i)).formalIndex;
+		}
+		return indices;
+	}
+	
 	public void write(DataOutputStream s) throws IOException {
 		throw new RuntimeException("unimplemented");
 	}
@@ -97,7 +112,7 @@ public class ConcreteCflowPointcut extends Pointcut {
 		return "concretecflow(" + cflowField + ")";
 	}
 
-	public Test findResidue(Shadow shadow, ExposedState state) {
+	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		//System.out.println("find residue: " + this);
 		if (usesCounter) {
 			return Test.makeFieldGetCall(cflowField, cflowCounterIsValidMethod, Expr.NONE);

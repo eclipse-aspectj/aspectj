@@ -16,8 +16,10 @@ package org.aspectj.weaver;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.aspectj.asm.IRelationship;
 import org.aspectj.bridge.*;
@@ -35,11 +37,16 @@ import org.aspectj.weaver.bcel.BcelAdvice;
  */
 
 public abstract class Shadow {
+
+	// every Shadow has a unique id, doesn't matter if it wraps...
+	private static int nextShadowID = 100;  // easier to spot than zero.
+	
 	private final Kind kind; 
     private final Member signature;
 	protected final Shadow enclosingShadow;
     protected List mungers = new ArrayList(1);
 
+    public int shadowId = nextShadowID++;  // every time we build a shadow, it gets a new id
 
 	// ----
     protected Shadow(Kind kind, Member signature, Shadow enclosingShadow) {
@@ -202,6 +209,12 @@ public abstract class Shadow {
     	AdviceExecution, Initialization, ExceptionHandler,
     };
 
+    public static final Set ALL_SHADOW_KINDS = new HashSet();   
+    static {
+    	for (int i = 0; i < SHADOW_KINDS.length; i++) {
+			ALL_SHADOW_KINDS.add(SHADOW_KINDS[i]);
+		}
+    }
 
     /** A type-safe enum representing the kind of shadows
      */

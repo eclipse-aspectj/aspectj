@@ -17,6 +17,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Member;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
@@ -37,17 +39,26 @@ import org.aspectj.weaver.internal.tools.PointcutExpressionImpl;
 public class HandlerPointcut extends Pointcut {
 	TypePattern exceptionType;
 
+	private static final Set MATCH_KINDS = new HashSet();
+	static {
+		MATCH_KINDS.add(Shadow.ExceptionHandler);
+	}
+	
 	public HandlerPointcut(TypePattern exceptionType) {
 		this.exceptionType = exceptionType;
 		this.pointcutKind = HANDLER;
 	}
 
+	public Set couldMatchKinds() {
+		return MATCH_KINDS;
+	}
+	
     public FuzzyBoolean fastMatch(FastMatchInfo type) {
     	//??? should be able to do better by finding all referenced types in type
 		return FuzzyBoolean.MAYBE;
 	}
 	
-	public FuzzyBoolean match(Shadow shadow) {
+	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		if (shadow.getKind() != Shadow.ExceptionHandler) return FuzzyBoolean.NO;
 		
 		// we know we have exactly one parameter since we're checking an exception handler
@@ -134,11 +145,13 @@ public class HandlerPointcut extends Pointcut {
 		exceptionType = exceptionType.resolveBindingsFromRTTI(false,false);
 	}
 	
-	public Test findResidue(Shadow shadow, ExposedState state) {
+	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		return match(shadow).alwaysTrue() ? Literal.TRUE : Literal.FALSE;
 	}
 	
 	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
-		return new HandlerPointcut(exceptionType);
+		Pointcut ret = new HandlerPointcut(exceptionType);
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 }

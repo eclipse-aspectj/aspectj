@@ -532,6 +532,9 @@ public class WildTypePattern extends TypePattern {
     	WildTypePattern o = (WildTypePattern)other;
     	int len = o.namePatterns.length;
     	if (len != this.namePatterns.length) return false;
+    	if (this.includeSubtypes != o.includeSubtypes) return false;
+    	if (this.dim != o.dim) return false;
+    	if (this.isVarArgs != o.isVarArgs) return false;
     	for (int i=0; i < len; i++) {
     		if (!o.namePatterns[i].equals(this.namePatterns[i])) return false;
     	}

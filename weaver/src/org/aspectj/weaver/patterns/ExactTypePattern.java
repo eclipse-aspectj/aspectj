@@ -151,6 +151,8 @@ public class ExactTypePattern extends TypePattern {
     public boolean equals(Object other) {
     	if (!(other instanceof ExactTypePattern)) return false;
     	ExactTypePattern o = (ExactTypePattern)other;
+    	if (includeSubtypes != o.includeSubtypes) return false;
+    	if (isVarArgs != o.isVarArgs) return false;   	
     	return (o.type.equals(this.type) && o.annotationPattern.equals(this.annotationPattern));
     }
     

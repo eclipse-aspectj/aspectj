@@ -16,6 +16,7 @@ package org.aspectj.weaver.patterns;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Set;
 
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
@@ -31,12 +32,16 @@ public class PerFromSuper extends PerClause {
 	public PerFromSuper(PerClause.Kind kind) {
 		this.kind = kind;
 	}
-	
+
+	public Set couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS;
+	}
+
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		throw new RuntimeException("unimplemented");
 	}
 	
-    public FuzzyBoolean match(Shadow shadow) {
+    protected FuzzyBoolean matchInternal(Shadow shadow) {
         throw new RuntimeException("unimplemented");
     }
 
@@ -44,7 +49,7 @@ public class PerFromSuper extends PerClause {
     	// this method intentionally left blank
     }
 
-    public Test findResidue(Shadow shadow, ExposedState state) {
+    protected Test findResidueInternal(Shadow shadow, ExposedState state) {
     	throw new RuntimeException("unimplemented");
     }
 

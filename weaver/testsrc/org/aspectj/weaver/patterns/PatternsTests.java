@@ -39,6 +39,7 @@ public class PatternsTests extends TestCase {
         suite.addTestSuite(WithinCodeTestCase.class);
         suite.addTestSuite(AnnotationPatternTestCase.class);
         suite.addTestSuite(AnnotationPatternMatchingTestCase.class);
+        suite.addTestSuite(PointcutRewriterTest.class);
         //$JUnit-END$
         return suite;
     }

@@ -17,6 +17,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Member;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.runtime.reflect.Factory;
@@ -30,17 +32,32 @@ import org.aspectj.weaver.ast.Test;
 
 public class WithincodePointcut extends Pointcut {
 	SignaturePattern signature;
+    private static final Set matchedShadowKinds = new HashSet();
+    static {
+    	matchedShadowKinds.addAll(Shadow.ALL_SHADOW_KINDS);
+    	for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
+			if (Shadow.SHADOW_KINDS[i].isEnclosingKind()) 
+				matchedShadowKinds.remove(Shadow.SHADOW_KINDS[i]);
+		}
+    	// these next two are needed for inlining of field initializers
+    	matchedShadowKinds.add(Shadow.ConstructorExecution);
+    	matchedShadowKinds.add(Shadow.Initialization);
+    }
 	
 	public WithincodePointcut(SignaturePattern signature) {
 		this.signature = signature;
 		this.pointcutKind = WITHINCODE;
 	}
-    
+  
+	public Set couldMatchKinds() {
+		return matchedShadowKinds;
+	}
+	
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
     
-	public FuzzyBoolean match(Shadow shadow) {
+	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		//This will not match code in local or anonymous classes as if
 		//they were withincode of the outer signature
 		return FuzzyBoolean.fromBoolean(
@@ -107,12 +124,14 @@ public class WithincodePointcut extends Pointcut {
 		return "withincode(" + signature + ")";
 	}
 
-	public Test findResidue(Shadow shadow, ExposedState state) {
+	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		return match(shadow).alwaysTrue() ? Literal.TRUE : Literal.FALSE;
 	}
 	
 	
 	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
-		return new WithincodePointcut(signature);
+		Pointcut ret = new WithincodePointcut(signature);
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 }

@@ -49,8 +49,9 @@ public class ThrowsPattern extends PatternNode {
 	public boolean equals(Object other) {
 		if (!(other instanceof ThrowsPattern)) return false;
 		ThrowsPattern o = (ThrowsPattern)other;
-		return o.required.equals(this.required) &&
+		boolean ret = o.required.equals(this.required) &&
 				o.forbidden.equals(this.forbidden);
+		return ret;
 	}
     public int hashCode() {
         int result = 17;

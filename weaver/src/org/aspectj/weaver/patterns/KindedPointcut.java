@@ -16,6 +16,8 @@ package org.aspectj.weaver.patterns;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.lang.JoinPoint;
@@ -36,6 +38,7 @@ import org.aspectj.weaver.ast.Test;
 public class KindedPointcut extends Pointcut {
 	Shadow.Kind kind;
 	SignaturePattern signature;
+	private Set matchKinds;
     
     private ShadowMunger munger = null; // only set after concretization
 
@@ -45,6 +48,8 @@ public class KindedPointcut extends Pointcut {
         this.kind = kind;
         this.signature = signature;
         this.pointcutKind = KINDED;
+        this.matchKinds = new HashSet();
+        matchKinds.add(kind);
     }
     public KindedPointcut(
         Shadow.Kind kind,
@@ -54,6 +59,13 @@ public class KindedPointcut extends Pointcut {
         this(kind, signature);
         this.munger = munger;
     }
+    
+    /* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.Pointcut#couldMatchKinds()
+	 */
+	public Set couldMatchKinds() {
+		return matchKinds;
+	}
 	
     public FuzzyBoolean fastMatch(FastMatchInfo info) {
     	if (info.getKind() != null) {
@@ -63,7 +75,7 @@ public class KindedPointcut extends Pointcut {
 		return FuzzyBoolean.MAYBE;
 	}	
 	
-	public FuzzyBoolean match(Shadow shadow) {
+	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		if (shadow.getKind() != kind) return FuzzyBoolean.NO;
 
 		if (!signature.matches(shadow.getSignature(), shadow.getIWorld())){
@@ -265,7 +277,7 @@ public class KindedPointcut extends Pointcut {
 		signature = signature.resolveBindingsFromRTTI();
 	}
 	
-	public Test findResidue(Shadow shadow, ExposedState state) {
+	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		return match(shadow).alwaysTrue() ? Literal.TRUE : Literal.FALSE;
 	}
 	

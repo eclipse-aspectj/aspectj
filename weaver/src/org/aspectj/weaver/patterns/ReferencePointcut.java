@@ -17,6 +17,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
+import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageUtil;
@@ -58,6 +59,10 @@ public class ReferencePointcut extends Pointcut {
 		this.pointcutKind = REFERENCE;
 	}
 	
+	public Set couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS;
+	}
+
 
 	//??? do either of these match methods make any sense???
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
@@ -67,7 +72,7 @@ public class ReferencePointcut extends Pointcut {
 	/**
 	 * Do I really match this shadow?
 	 */
-	public FuzzyBoolean match(Shadow shadow) {
+	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		return FuzzyBoolean.NO;
 	}
 	
@@ -210,7 +215,7 @@ public class ReferencePointcut extends Pointcut {
 		arguments.postRead(enclosingType);
 	}
 
-	public Test findResidue(Shadow shadow, ExposedState state) {
+	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		throw new RuntimeException("shouldn't happen");
 	}
 

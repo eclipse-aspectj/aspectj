@@ -17,6 +17,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Member;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
@@ -29,19 +31,28 @@ import org.aspectj.weaver.ast.Test;
 public class AndPointcut extends Pointcut {
 	Pointcut left, right;  // exposed for testing
 
+	private Set couldMatchKinds;
+	
 	public AndPointcut(Pointcut left, Pointcut right) {
 		super();
 		this.left = left;
 		this.right = right;
 		this.pointcutKind = AND;
 		setLocation(left.getSourceContext(), left.getStart(), right.getEnd());
+		couldMatchKinds = new HashSet();
+		couldMatchKinds.addAll(left.couldMatchKinds());
+		couldMatchKinds.retainAll(right.couldMatchKinds());
+	}
+	
+	public Set couldMatchKinds() {
+		return couldMatchKinds;
 	}
 
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return left.fastMatch(type).and(right.fastMatch(type));
 	}
 
-	public FuzzyBoolean match(Shadow shadow) {
+	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		return left.match(shadow).and(right.match(shadow));
 	}
 	
@@ -114,13 +125,15 @@ public class AndPointcut extends Pointcut {
 	}
 
 
-	public Test findResidue(Shadow shadow, ExposedState state) {
+	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		return Test.makeAnd(left.findResidue(shadow, state), right.findResidue(shadow, state));
 	}
 
 	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
-		return new AndPointcut(left.concretize(inAspect, bindings),
-								right.concretize(inAspect, bindings));
+		AndPointcut ret =  new AndPointcut(left.concretize(inAspect, bindings),
+										   right.concretize(inAspect, bindings));
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 
 	public Pointcut getLeft() {

@@ -105,4 +105,19 @@ public class NotTypePattern extends TypePattern {
 		}
 		return buff.toString();
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object obj) {
+		if (! (obj instanceof NotTypePattern)) return false;
+		return (pattern.equals(((NotTypePattern)obj).pattern));
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		return 17 + 37 * pattern.hashCode();
+	}
 }

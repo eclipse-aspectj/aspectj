@@ -17,6 +17,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Member;
+import java.util.Collections;
+import java.util.Set;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
@@ -40,6 +42,43 @@ import org.aspectj.weaver.ast.Test;
  * 
  * @author Erik Hilsdale
  * @author Jim Hugunin
+ * 
+ * A day in the life of a pointcut.... - AMC.
+ * ==========================================
+ * 
+ * Pointcuts are created by the PatternParser, which is called by ajdt to
+ * parse a pointcut from the PseudoTokens AST node (which in turn are part
+ * of a PointcutDesignator AST node). 
+ * 
+ * Pointcuts are resolved by ajdt when an AdviceDeclaration or a 
+ * PointcutDeclaration has its statements resolved. This happens as
+ * part of completeTypeBindings in the AjLookupEnvironment which is
+ * called after the diet parse phase of the compiler. Named pointcuts,
+ * and references to named pointcuts are instances of ReferencePointcut. 
+ * 
+ * At the end of the compilation process, the pointcuts are serialized
+ * (write method) into attributes in the class file.
+ * 
+ * When the weaver loads the class files, it unpacks the attributes
+ * and deserializes the pointcuts (read). All aspects are added to the
+ * world, by calling addOrReplaceAspect on
+ * the crosscutting members set of the world. When aspects are added or
+ * replaced, the crosscutting members in the aspect are extracted as
+ * ShadowMungers (each holding a pointcut). The ShadowMungers are
+ * concretized, which concretizes the pointcuts. At this stage
+ * ReferencePointcuts are replaced by their declared content.
+ * 
+ * During weaving, the weaver processes type by type. It first culls
+ * potentially matching ShadowMungers by calling the fastMatch method
+ * on their pointcuts. Only those that might match make it through to
+ * the next phase. At the next phase, all of the shadows within the
+ * type are created and passed to the pointcut for matching (match). 
+ * 
+ * When the actual munging happens, matched pointcuts are asked for
+ * their residue (findResidue) - the runtime test if any. Because of
+ * negation, findResidue may be called on pointcuts that could never
+ * match the shadow.
+ * 
  */
 public abstract class Pointcut extends PatternNode implements PointcutExpressionMatching {
 	public static final class State extends TypeSafeEnum {
@@ -53,9 +92,13 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	public static final State CONCRETE = new State("concrete", 2);
 
 	protected byte pointcutKind;
-
+	
 	public State state;
 
+	protected int lastMatchedShadowId;
+	private FuzzyBoolean lastMatchedShadowResult;
+	private Test lastMatchedShadowResidue;
+	
 	/**
 	 * Constructor for Pattern.
 	 */
@@ -69,12 +112,31 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	 * Could I match any shadows in the code defined within this type?
 	 */
 	public abstract FuzzyBoolean fastMatch(FastMatchInfo info);
+
+	/**
+	 * The set of ShadowKinds that this Pointcut could possibly match  
+	 */
+	public abstract /*Enum*/Set/*<Shadow.Kind>*/ couldMatchKinds();
 	
 	/**
 	 * Do I really match this shadow?
 	 * XXX implementors need to handle state
 	 */
-	public abstract FuzzyBoolean match(Shadow shadow);
+	public final FuzzyBoolean match(Shadow shadow) {
+		if (shadow.shadowId == lastMatchedShadowId) return lastMatchedShadowResult;
+		FuzzyBoolean ret;
+		// this next test will prevent a lot of un-needed matching going on....
+		if (couldMatchKinds().contains(shadow.getKind())) {
+			ret = matchInternal(shadow);
+		} else {
+			ret = FuzzyBoolean.NO;
+		}
+		lastMatchedShadowId = shadow.shadowId;
+		lastMatchedShadowResult = ret;
+		return ret;
+	}
+	
+	protected abstract FuzzyBoolean matchInternal(Shadow shadow);
 	
 	/*
 	 * for runtime / dynamic pointcuts.
@@ -143,7 +205,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
     /**
      * Returns this pointcut mutated
      */
-    public Pointcut resolve(IScope scope) {
+    public final Pointcut resolve(IScope scope) {
     	assertState(SYMBOLIC);
     	Bindings bindingTable = new Bindings(scope.getFormalCount());
         this.resolveBindings(scope, bindingTable);
@@ -164,14 +226,15 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	
 	/**
 	 * Returns a new pointcut
+	 * Only used by test cases
 	 */
-    public Pointcut concretize(ResolvedTypeX inAspect, int arity) {
+    public final Pointcut concretize(ResolvedTypeX inAspect, int arity) {
         return concretize(inAspect, IntMap.idMap(arity));
     }
 	
 	
 	//XXX this is the signature we're moving to
-	public Pointcut concretize(ResolvedTypeX inAspect, int arity, ShadowMunger advice) {
+	public final Pointcut concretize(ResolvedTypeX inAspect, int arity, ShadowMunger advice) {
 		//if (state == CONCRETE) return this; //???
 		IntMap map = IntMap.idMap(arity);
 		map.setEnclosingAdvice(advice);
@@ -187,7 +250,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	}
 	
 	
-	public Pointcut concretize(ResolvedTypeX inAspect, IntMap bindings) {
+	public final Pointcut concretize(ResolvedTypeX inAspect, IntMap bindings) {
 		//!!! add this test -- assertState(RESOLVED);
 		Pointcut ret = this.concretize1(inAspect, bindings);
         if (shouldCopyLocationForConcretize()) ret.copyLocationFrom(this);
@@ -221,7 +284,15 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	 * This can be called from NotPointcut even for Pointcuts that
 	 * don't match the shadow
 	 */
-	public abstract Test findResidue(Shadow shadow, ExposedState state);
+	public final Test findResidue(Shadow shadow, ExposedState state) {
+//		if (shadow.shadowId == lastMatchedShadowId) return lastMatchedShadowResidue;
+		Test ret = findResidueInternal(shadow,state);
+//		lastMatchedShadowResidue = ret;
+		lastMatchedShadowId = shadow.shadowId;
+		return ret;
+	}
+	
+	protected abstract Test findResidueInternal(Shadow shadow,ExposedState state);
 
 	//XXX we're not sure whether or not this is needed
 	//XXX currently it's unused  we're keeping it around as a stub
@@ -272,15 +343,19 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
     }
     
     private static class MatchesNothingPointcut extends Pointcut {
-    	public Test findResidue(Shadow shadow, ExposedState state) {
+    	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 			return Literal.FALSE; // can only get here if an earlier error occurred
 		}
 
+		public Set couldMatchKinds() {
+			return Collections.EMPTY_SET;
+		}
+		
 		public FuzzyBoolean fastMatch(FastMatchInfo type) {
 			return FuzzyBoolean.NO;
 		}
 		
-		public FuzzyBoolean match(Shadow shadow) {
+		protected FuzzyBoolean matchInternal(Shadow shadow) {
 			return FuzzyBoolean.NO;
 		}
 		

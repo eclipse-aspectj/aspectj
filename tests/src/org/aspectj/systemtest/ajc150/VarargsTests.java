@@ -59,10 +59,12 @@ public class VarargsTests extends TestUtils {
   // In this test, it can be tricky to understand the results!!  The reason being that the shadow 
   // isn't included in the error message (it really should be, but thats a bit hard to do cleanly)
   public void test003_cantMatchVarargsWithObjectArray_withincodePCD() {
-  	CompilationResult cR = binaryWeave("testcode.jar","VarargsAspect04.aj",0,7,true);
+  	CompilationResult cR = binaryWeave("testcode.jar","VarargsAspect04.aj",0,6,true);
   	
   	// There are 7.  Each piece of the pointcut is matched against all the shadows, so both
   	// the 'withincode' PCD and the 'call' PCD are matched against every join point.
+  	// AMC - there are now SIX. We detect early that a call(* *(..)) pcd cannot match 
+  	//       constructor call shadows and never do the match.
   	assertTrue("Did not get expected message about a varargs mismatch, instead got: "+cR.getWarningMessages(),
   			((IMessage)cR.getWarningMessages().get(0)).toString().indexOf("varargs declared method")!=-1);
   	  	

@@ -33,7 +33,7 @@ public class AndTypePattern extends TypePattern {
 	private TypePattern left, right;
 	
 	public AndTypePattern(TypePattern left, TypePattern right) {
-		super(false,false);  //??? we override all methods that care about includeSubtypes
+		super(false,false);  //?? we override all methods that care about includeSubtypes
 		this.left = left;
 		this.right = right;
 		setLocation(left.getSourceContext(), left.getStart(), right.getEnd());
@@ -114,4 +114,20 @@ public class AndTypePattern extends TypePattern {
 		return buff.toString();
 	}
 
+	public boolean equals(Object obj) {
+		if (! (obj instanceof AndTypePattern)) return false;
+		AndTypePattern atp = (AndTypePattern) obj;
+		return left.equals(atp.left) && right.equals(atp.right);
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		int ret = 17;
+		ret = ret + 37 * left.hashCode();
+		ret = ret + 37 * right.hashCode();
+		return ret;
+	}
+	
 }

@@ -27,9 +27,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
@@ -48,6 +50,7 @@ import org.aspectj.bridge.Message;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.CrosscuttingMembersSet;
 import org.aspectj.weaver.IClassFileProvider;
@@ -61,9 +64,19 @@ import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.patterns.AndPointcut;
+import org.aspectj.weaver.patterns.BindingAnnotationTypePattern;
+import org.aspectj.weaver.patterns.BindingTypePattern;
 import org.aspectj.weaver.patterns.CflowPointcut;
+import org.aspectj.weaver.patterns.ConcreteCflowPointcut;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.FastMatchInfo;
+import org.aspectj.weaver.patterns.IfPointcut;
+import org.aspectj.weaver.patterns.NameBindingPointcut;
+import org.aspectj.weaver.patterns.NotPointcut;
+import org.aspectj.weaver.patterns.OrPointcut;
+import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.PointcutRewriter;
 
 
 public class BcelWeaver implements IWeaver {
@@ -340,6 +353,7 @@ public class BcelWeaver implements IWeaver {
     	}
 
 		shadowMungerList = xcutSet.getShadowMungers();
+		rewritePointcuts(shadowMungerList);
 		typeMungerList = xcutSet.getTypeMungers();
 		declareParentsList = xcutSet.getDeclareParents();
     	
@@ -353,6 +367,246 @@ public class BcelWeaver implements IWeaver {
 			});
     }
     
+    /*
+     * Rewrite all of the pointcuts in the world into their most efficient
+     * form for subsequent matching. Also ensure that if pc1.equals(pc2)
+     * then pc1 == pc2 (for non-binding pcds) by making references all 
+     * point to the same instance.
+     * Since pointcuts remember their match decision on the last shadow, 
+     * this makes matching faster when many pointcuts share common elements,
+     * or even when one single pointcut has one common element (which can
+     * be a side-effect of DNF rewriting).
+     */
+    private void rewritePointcuts(List/*ShadowMunger*/ shadowMungers) {
+    	PointcutRewriter rewriter = new PointcutRewriter();
+    	for (Iterator iter = shadowMungers.iterator(); iter.hasNext();) {
+			ShadowMunger munger = (ShadowMunger) iter.next();
+			Pointcut p = munger.getPointcut();
+			Pointcut newP = rewriter.rewrite(p);
+			// validateBindings now whilst we still have around the pointcut
+			// that resembles what the user actually wrote in their program
+		    // text.
+			if (munger instanceof Advice) {
+				Advice advice = (Advice) munger;
+				if (advice.getSignature() != null) {
+					int numFormals = advice.getBaseParameterCount();
+					if (numFormals > 0) {
+						String[] names = advice.getBaseParameterNames(world);
+						validateBindings(newP,p,numFormals,names);
+					}
+				}
+			}
+			munger.setPointcut(newP);
+		}
+    	// now that we have optimized individual pointcuts, optimize
+    	// across the set of pointcuts....
+    	// Use a map from key based on pc equality, to value based on
+    	// pc identity.
+    	Map/*<Pointcut,Pointcut>*/ pcMap = new HashMap();
+    	for (Iterator iter = shadowMungers.iterator(); iter.hasNext();) {
+			ShadowMunger munger = (ShadowMunger) iter.next();
+			Pointcut p = munger.getPointcut();
+			munger.setPointcut(shareEntriesFromMap(p,pcMap));
+		}    	
+    }
+    
+    private Pointcut shareEntriesFromMap(Pointcut p,Map pcMap) {
+    	// some things cant be shared...
+    	if (p instanceof NameBindingPointcut) return p;
+    	if (p instanceof IfPointcut) return p;
+    	if (p instanceof ConcreteCflowPointcut) return p;
+    	if (p instanceof AndPointcut) {
+    		AndPointcut apc = (AndPointcut) p;
+    		Pointcut left = shareEntriesFromMap(apc.getLeft(),pcMap);
+    		Pointcut right = shareEntriesFromMap(apc.getRight(),pcMap);
+    		return new AndPointcut(left,right);
+    	} else if (p instanceof OrPointcut) {
+    		OrPointcut opc = (OrPointcut) p;
+    		Pointcut left = shareEntriesFromMap(opc.getLeft(),pcMap);
+    		Pointcut right = shareEntriesFromMap(opc.getRight(),pcMap);
+    		return new OrPointcut(left,right);
+    	} else if (p instanceof NotPointcut) {
+    		NotPointcut npc = (NotPointcut) p;
+    		Pointcut not = shareEntriesFromMap(npc.getNegatedPointcut(),pcMap);
+    		return new NotPointcut(not);
+    	} else {
+    		// primitive pcd
+    		if (pcMap.containsKey(p)) { // based on equality
+    			return (Pointcut) pcMap.get(p);  // same instance (identity)
+    		} else {
+    			pcMap.put(p,p);
+    			return p;
+    		}
+    	}
+    }
+    
+    // userPointcut is the pointcut that the user wrote in the program text.
+    // dnfPointcut is the same pointcut rewritten in DNF 
+    // numFormals is the number of formal parameters in the pointcut
+    // if numFormals > 0 then every branch of a disjunction must bind each formal once and only once.
+    // in addition, the left and right branches of a disjunction must hold on join point kinds in 
+    // common.
+    private void validateBindings(Pointcut dnfPointcut, Pointcut userPointcut, int numFormals, String[] names) {
+    	if (numFormals == 0) return; // nothing to check
+    	if (dnfPointcut.couldMatchKinds().isEmpty()) return; // cant have problems if you dont match!
+    	if (dnfPointcut instanceof OrPointcut) {
+    		OrPointcut orBasedDNFPointcut = (OrPointcut) dnfPointcut;
+    		Pointcut[] leftBindings = new Pointcut[numFormals];
+    		Pointcut[] rightBindings = new Pointcut[numFormals];
+    		validateOrBranch(orBasedDNFPointcut,userPointcut,numFormals,names,leftBindings,rightBindings);
+    	} else {
+    		Pointcut[] bindings = new Pointcut[numFormals];
+    		validateSingleBranch(dnfPointcut, userPointcut, numFormals, names,bindings);
+    	}
+    }
+    
+    private void validateOrBranch(OrPointcut pc, Pointcut userPointcut, int numFormals, 
+    		String[] names, Pointcut[] leftBindings, Pointcut[] rightBindings) {
+    	Pointcut left = pc.getLeft();
+    	Pointcut right = pc.getRight();
+    	if (left instanceof OrPointcut) {
+    		Pointcut[] newRightBindings = new Pointcut[numFormals];
+    		validateOrBranch((OrPointcut)left,userPointcut,numFormals,names,leftBindings,newRightBindings);    		
+    	} else {
+    		if (left.couldMatchKinds().size() > 0)
+    			validateSingleBranch(left, userPointcut, numFormals, names, leftBindings);
+    	}
+    	if (right instanceof OrPointcut) {
+    		Pointcut[] newLeftBindings = new Pointcut[numFormals];
+    		validateOrBranch((OrPointcut)right,userPointcut,numFormals,names,newLeftBindings,rightBindings);
+    	} else {
+    		if (right.couldMatchKinds().size() > 0)
+    			validateSingleBranch(right, userPointcut, numFormals, names, rightBindings);    		
+    	}
+		Set kindsInCommon = left.couldMatchKinds();
+		kindsInCommon.retainAll(right.couldMatchKinds());
+		if (!kindsInCommon.isEmpty()) {
+			// we know that every branch binds every formal, so there is no ambiguity
+			// if each branch binds it in exactly the same way...
+			List ambiguousNames = new ArrayList();
+			for (int i = 0; i < numFormals; i++) {
+				if (!leftBindings[i].equals(rightBindings[i])) {
+					ambiguousNames.add(names[i]);
+				}
+			}
+			if (!ambiguousNames.isEmpty())
+				raiseAmbiguityInDisjunctionError(userPointcut,ambiguousNames);
+		}    	
+    }
+    
+	// pc is a pointcut that does not contain any disjunctions
+    // check that every formal is bound (negation doesn't count).
+    // we know that numFormals > 0 or else we would not be called
+    private void validateSingleBranch(Pointcut pc, Pointcut userPointcut, int numFormals, String[] names, Pointcut[] bindings) {
+    	boolean[] foundFormals = new boolean[numFormals];
+    	for (int i = 0; i < foundFormals.length; i++) {
+			foundFormals[i] = false;
+		}
+    	validateSingleBranchRecursion(pc, userPointcut, foundFormals, names, bindings);
+    	for (int i = 0; i < foundFormals.length; i++) {
+			if (!foundFormals[i]) {
+				raiseUnboundFormalError(names[i],userPointcut);
+			}
+		}
+    }
+    
+	// each formal must appear exactly once
+    private void validateSingleBranchRecursion(Pointcut pc, Pointcut userPointcut, boolean[] foundFormals, String[] names, Pointcut[] bindings) {
+    	if (pc instanceof NotPointcut) {
+    		// nots can only appear at leaves in DNF
+    		NotPointcut not = (NotPointcut) pc;
+    		if (not.getNegatedPointcut() instanceof NameBindingPointcut) {
+    			NameBindingPointcut nnbp = (NameBindingPointcut) not.getNegatedPointcut();
+    			if (!nnbp.getBindingAnnotationTypePatterns().isEmpty() && !nnbp.getBindingTypePatterns().isEmpty())
+    				raiseNegationBindingError(userPointcut);
+    		}
+    	} else if (pc instanceof AndPointcut) {
+    		AndPointcut and = (AndPointcut) pc;
+    		validateSingleBranchRecursion(and.getLeft(), userPointcut,foundFormals,names,bindings);
+    		validateSingleBranchRecursion(and.getRight(),userPointcut,foundFormals,names,bindings);
+    	} else if (pc instanceof NameBindingPointcut) {
+    		List/*BindingTypePattern*/ btps = ((NameBindingPointcut)pc).getBindingTypePatterns();
+    		for (Iterator iter = btps.iterator(); iter.hasNext();) {
+				BindingTypePattern btp = (BindingTypePattern) iter.next();
+				int index = btp.getFormalIndex();
+				bindings[index] = pc; 
+				if (foundFormals[index]) {
+					raiseAmbiguousBindingError(names[index],userPointcut);
+				} else {
+					foundFormals[index] = true;
+				}
+			}
+    		List/*BindingAnnotationTypePattern*/ baps = ((NameBindingPointcut)pc).getBindingAnnotationTypePatterns();
+    		for (Iterator iter = baps.iterator(); iter.hasNext();) {
+				BindingAnnotationTypePattern bap = (BindingAnnotationTypePattern) iter.next();
+				int index = bap.getFormalIndex();
+				bindings[index] = pc;
+				if (foundFormals[index]) {
+					raiseAmbiguousBindingError(names[index],userPointcut);
+				} else {
+					foundFormals[index] = true;
+				}
+			}
+    	} else if (pc instanceof ConcreteCflowPointcut) {
+    		ConcreteCflowPointcut cfp = (ConcreteCflowPointcut) pc;
+    		int[] slots = cfp.getUsedFormalSlots();
+    		for (int i = 0; i < slots.length; i++) {
+    			bindings[slots[i]] = cfp;
+				if (foundFormals[slots[i]]) {
+					raiseAmbiguousBindingError(names[slots[i]],userPointcut);
+				} else {
+					foundFormals[slots[i]] = true;
+				}				
+			}
+    	}
+    }
+    
+    /**
+	 * @param userPointcut
+	 */
+	private void raiseNegationBindingError(Pointcut userPointcut) {
+		world.showMessage(IMessage.ERROR,
+				WeaverMessages.format(WeaverMessages.NEGATION_DOESNT_ALLOW_BINDING),
+				userPointcut.getSourceContext().makeSourceLocation(userPointcut),null);
+	}
+
+	/**
+	 * @param string
+	 * @param userPointcut
+	 */
+	private void raiseAmbiguousBindingError(String name, Pointcut userPointcut) {
+		world.showMessage(IMessage.ERROR,
+				WeaverMessages.format(WeaverMessages.AMBIGUOUS_BINDING,
+										name),
+				userPointcut.getSourceContext().makeSourceLocation(userPointcut),null);
+	}
+
+	/**
+	 * @param userPointcut
+	 */
+	private void raiseAmbiguityInDisjunctionError(Pointcut userPointcut, List names) {
+		StringBuffer formalNames = new StringBuffer(names.get(0).toString());
+		for (int i = 1; i < names.size(); i++) {
+			formalNames.append(", ");
+			formalNames.append(names.get(i));
+		}
+		world.showMessage(IMessage.ERROR,
+				WeaverMessages.format(WeaverMessages.AMBIGUOUS_BINDING_IN_OR,formalNames),
+				userPointcut.getSourceContext().makeSourceLocation(userPointcut),null);
+	}
+
+    /**
+	 * @param string
+	 * @param userPointcut
+	 */
+	private void raiseUnboundFormalError(String name, Pointcut userPointcut) {
+		world.showMessage(IMessage.ERROR,
+				WeaverMessages.format(WeaverMessages.UNBOUND_FORMAL,
+										name),
+				userPointcut.getSourceContext().makeSourceLocation(userPointcut),null);
+	}
+
+
 //    public void dumpUnwoven(File file) throws IOException {
 //    	BufferedOutputStream os = FileUtil.makeOutputStream(file);
 //    	this.zipOutputStream = new ZipOutputStream(os);

@@ -16,6 +16,7 @@ package org.aspectj.weaver.patterns;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Set;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -29,12 +30,16 @@ import org.aspectj.weaver.ast.Test;
 public class PerSingleton extends PerClause {
 	public PerSingleton() {
 	}
-	
+
+	public Set couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS;
+	}
+
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.YES;
 	}
 	
-    public FuzzyBoolean match(Shadow shadow) {
+    protected FuzzyBoolean matchInternal(Shadow shadow) {
         return FuzzyBoolean.YES;
     }
 
@@ -42,7 +47,7 @@ public class PerSingleton extends PerClause {
     	// this method intentionally left blank
     }
 
-    public Test findResidue(Shadow shadow, ExposedState state) {
+    protected Test findResidueInternal(Shadow shadow, ExposedState state) {
     	Expr myInstance =
     		Expr.makeCallExpr(AjcMemberMaker.perSingletonAspectOfMethod(inAspect),
     							Expr.NONE, inAspect);
