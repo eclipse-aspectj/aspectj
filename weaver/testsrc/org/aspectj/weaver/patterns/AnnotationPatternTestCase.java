@@ -19,7 +19,20 @@ import org.aspectj.weaver.bcel.BcelWorld;
 import junit.framework.TestCase;
 
 public class AnnotationPatternTestCase extends TestCase {
-
+	
+	private static boolean is13VMOrGreater = true;
+	private static boolean is14VMOrGreater = true;
+	private static boolean is15VMOrGreater = false;
+	
+	static {
+		String vm = System.getProperty("java.vm.version");
+		if (vm.startsWith("1.3")) {
+			is14VMOrGreater = false;
+		} else if (vm.startsWith("1.5")) {
+			is15VMOrGreater = true;
+		}
+	}
+	
 	public void testParseSimpleAnnotationPattern() {
 		PatternParser p = new PatternParser("@Foo");
 		AnnotationTypePattern foo = p.maybeParseAnnotationPattern();
@@ -241,6 +254,7 @@ public class AnnotationPatternTestCase extends TestCase {
 	}
 	
 	public void testExactAnnotationPatternMatching() {
+		if (is15VMOrGreater) {
 		PatternParser p = new PatternParser("@Foo");
 		AnnotationTypePattern ap = p.maybeParseAnnotationPattern();
 		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
@@ -248,9 +262,11 @@ public class AnnotationPatternTestCase extends TestCase {
 		assertTrue("matches element with Foo",ap.matches(ae).alwaysTrue());
 		AnnotatedElementImpl ae2 = new AnnotatedElementImpl(new String[]{"Boo"});
 		assertTrue("does not match element with Boo",ap.matches(ae2).alwaysFalse());
+		}
 	}
 	
 	public void testBindingAnnotationPatternMatching() {
+		if (is15VMOrGreater) {
 		PatternParser p = new PatternParser("foo");
 		AnnotationTypePattern ap = p.parseAnnotationNameOrVarTypePattern();
 		try {
@@ -263,9 +279,11 @@ public class AnnotationPatternTestCase extends TestCase {
 //		assertTrue("matches element with Foo",ap.matches(ae).alwaysTrue());
 //		AnnotatedElementImpl ae2 = new AnnotatedElementImpl(new String[]{"Boo"});
 //		assertTrue("does not match element with Boo",ap.matches(ae2).alwaysFalse());
+		}
 	}
 	
 	public void testAndAnnotationPatternMatching() {
+		if (is15VMOrGreater) {
 		PatternParser p = new PatternParser("@Foo @Boo");
 		AnnotationTypePattern ap = p.maybeParseAnnotationPattern();
 		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
@@ -276,7 +294,8 @@ public class AnnotationPatternTestCase extends TestCase {
 		ae = new AnnotatedElementImpl(new String[] {"Boo"});
 		assertTrue("does not match boo",ap.matches(ae).alwaysFalse());
 		ae = new AnnotatedElementImpl(new String[] {"Goo"});
-		assertTrue("does not match goo",ap.matches(ae).alwaysFalse());		
+		assertTrue("does not match goo",ap.matches(ae).alwaysFalse());
+		}
 	}
 //	
 //	public void testOrAnnotationPatternMatching() {
@@ -294,13 +313,15 @@ public class AnnotationPatternTestCase extends TestCase {
 //	}
 //	
 	public void testNotAnnotationPatternMatching() {
+		if (is15VMOrGreater) {
 		PatternParser p = new PatternParser("!@Foo");
 		AnnotationTypePattern ap = p.maybeParseAnnotationPattern();
 		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
 		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[] {"Foo","Boo"});
 		assertTrue("does not match foo and boo",ap.matches(ae).alwaysFalse());		
 		ae = new AnnotatedElementImpl(new String[] {"Boo"});
-		assertTrue("matches boo",ap.matches(ae).alwaysTrue());		
+		assertTrue("matches boo",ap.matches(ae).alwaysTrue());
+		}
 	}
 	
 	public void testAnyAnnotationPatternMatching() {

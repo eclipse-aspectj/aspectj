@@ -61,6 +61,19 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	private BcelWorld world;
 	private AnnotationTypePattern fooTP,simpleAnnotationTP;
 	
+	private static boolean is13VMOrGreater = true;
+	private static boolean is14VMOrGreater = true;
+	private static boolean is15VMOrGreater = false;
+	
+	static {
+		String vm = System.getProperty("java.vm.version");
+		if (vm.startsWith("1.3")) {
+			is14VMOrGreater = false;
+		} else if (vm.startsWith("1.5")) {
+			is15VMOrGreater = true;
+		}
+	}
+	
 	private ResolvedTypeX loadType(String name) {
 		if (world == null) {
 		  world = new BcelWorld(BcweaverTests.TESTDATA_PATH + "/testcode.jar");
@@ -80,7 +93,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	
 	
 	public void testAnnotationPatternMatchingOnTypes() {
-		
+		if (is15VMOrGreater) {
 		ResolvedTypeX rtx = loadType("AnnotatedClass");
         initAnnotationTypePatterns();		
 		
@@ -89,6 +102,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 				   fooTP.matches(rtx).alwaysFalse());
 		assertTrue("@SimpleAnnotation should match on the AnnotatedClass",
 				   simpleAnnotationTP.matches(rtx).alwaysTrue());
+		}
 
 	}
 	
@@ -155,7 +169,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	}
 	
 	public void testAnnotationPatternMatchingOnMethods() {
-		
+		if (is15VMOrGreater) {
 		ResolvedTypeX rtx = loadType("AnnotatedClass");
 		ResolvedMember aMethod = rtx.getDeclaredMethods()[1];
         
@@ -169,11 +183,11 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 				   fooTP.matches(aMethod).alwaysFalse());
 		assertTrue("@SimpleAnnotation should match on the AnnotatedClass.m1() method",
 				   simpleAnnotationTP.matches(aMethod).alwaysTrue());
-
+		}
 	}
 	
 	public void testAnnotationPatternMatchingOnFields() {
-		
+		if (is15VMOrGreater) {
 		ResolvedTypeX rtx = loadType("AnnotatedClass");
 		ResolvedMember aField = rtx.getDeclaredFields()[0];
 
@@ -187,6 +201,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 				   fooTP.matches(aField).alwaysFalse());
 		assertTrue("@SimpleAnnotation should match on the AnnotatedClass.i field",
 				   simpleAnnotationTP.matches(aField).alwaysTrue());
+		}
 
 	}
 	
