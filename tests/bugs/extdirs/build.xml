@@ -1,0 +1,55 @@
+<project name="extdirs-setup" basedir="." default="all">
+
+	<target name="all">
+		<property 
+			name="classes.dir" 
+			location="${basedir}/classes"/>
+
+		<mkdir dir="${classes.dir}"/>
+		<delete	dir="${classes.dir}"/>
+		<mkdir dir="${classes.dir}"/>
+		<javac destdir="${classes.dir}"
+			target="1.1"
+			includes="**/*.java"
+			srcdir="${basedir}/extdirs-src/dir-1"/>		
+		<zip destfile="${basedir}/dir-1/util-1.JAR">
+			<fileset dir="${classes.dir}"/>	
+		</zip>
+		
+		<mkdir dir="${classes.dir}"/>
+		<delete	dir="${classes.dir}"/>
+		<mkdir dir="${classes.dir}"/>
+		<javac destdir="${classes.dir}"
+			target="1.1"
+			includes="**/*.java"
+			srcdir="${basedir}/extdirs-src/dir-2"/>		
+		<zip destfile="${basedir}/dir-2/util-2.ZIP">
+			<fileset dir="${classes.dir}"/>	
+		</zip>
+		
+
+		<mkdir dir="${classes.dir}"/>
+		<delete	dir="${classes.dir}"/>
+		<mkdir dir="${classes.dir}"/>
+		<javac 
+			destdir="${classes.dir}"
+			srcdir="${basedir}/extdirs-src/main"
+			includes="Main.java">
+			<classpath>
+				<pathelement path="${basedir}/dir-2/util-2.ZIP"/>
+				<pathelement path="${basedir}/dir-1/util-1.JAR"/>
+			</classpath>		
+		</javac>
+		<java classname="Main">
+			<classpath>
+				<pathelement path="${classes.dir}"/>
+				<pathelement path="${basedir}/dir-2/util-2.ZIP"/>
+				<pathelement path="${basedir}/dir-1/util-1.JAR"/>
+			</classpath>		
+		</java>
+		<mkdir dir="${classes.dir}"/>
+		<delete dir="${classes.dir}"/>
+
+	</target>
+
+</project>

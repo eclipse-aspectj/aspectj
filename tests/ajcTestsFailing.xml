@@ -4,7 +4,25 @@
 <!-- contains valid tests that the compiler has never passed -->
 
 <suite>
-	
+
+	<ajc-test dir="bugs/extdirs"
+		pr="42574"
+		title="ZIP and JAR suffixes for classpath entries">
+		<compile 
+			argfiles="extdirs-src/main/main.lst"
+			classpath="dir-1/util-1.JAR,dir-2/util-2.ZIP"/>
+		<run class="Main"/>
+		</ajc-test>
+
+	<ajc-test dir="bugs/extdirs" 
+		pr="42574"
+		title="ZIP and JAR suffixes for extdirs entries">
+		<compile 
+			argfiles="extdirs-src/main/main.lst"
+			extdirs="dir-1,dir-2"/>
+		<run class="Main"/>
+		</ajc-test>
+
 	<ajc-test dir="bugs/privilege"
 		title="omnibus privileged access"
 		comment="from mail ~Problem with interfaces...~; add pr when bug submitted"
