@@ -22,8 +22,8 @@ import org.aspectj.util.FileUtil;
  * @author websterm
  */
 public class ResourceCopyTestCase extends AjdeTestCase {
-
-	public static final String PROJECT_DIR = "bug-36071"; 
+ 
+	public static final String PROJECT_DIR = "bug-36071a";   
 	public static final String srcDir = PROJECT_DIR + "/src"; 
 	public static final String binDir = "bin"; 
 
