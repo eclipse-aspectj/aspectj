@@ -141,5 +141,15 @@
         <run class="AfterReturningParamMatching"/>
     </ajc-test>
 
+    <ajc-test dir="bugs" 
+		pr="49295"
+		title="declare warning on subtype constructor">
+        <compile files="SubtypeConstructorCW.java" >
+			<message kind="warning" line="5" text="String as first"/>
+			<message kind="warning" line="10" text="String as first"/>
+        </compile>
+        <run class="SubtypeConstructorCW"/>
+    </ajc-test>
+
 
 </suite>
