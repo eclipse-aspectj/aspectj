@@ -37,14 +37,14 @@ public class CompilerMessagesCellRenderer extends JLabel implements ListCellRend
             String label = "<no message>";
             String detail = null;
             IMessage.Kind kind = IMessage.INFO;
-            if (value instanceof CompilerMessage) {
-                CompilerMessage cm = (CompilerMessage) value;
-                label = cm.message.getMessage();
+            if (value instanceof IMessage) {
+				IMessage cm = (IMessage) value;
+                label = cm.getMessage();
                 if (LangUtil.isEmpty(label)) {
-                    label = cm.message.toString();
+                    label = cm.getMessage().toString();
                 }
-                kind = cm.message.getKind();
-                Throwable thrown = cm.message.getThrown();
+                kind = cm.getKind();
+                Throwable thrown = cm.getThrown();
                 if (null != thrown) {
                     detail = LangUtil.renderException(thrown);
                 }
