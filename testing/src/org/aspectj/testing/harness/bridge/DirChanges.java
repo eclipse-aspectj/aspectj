@@ -54,7 +54,22 @@ import org.aspectj.util.LangUtil;
  */
 public class DirChanges {
     
-    private static final boolean EXISTS = true;
+    public static final String DELAY_NAME = "dir-changes.delay";
+    private static final long DELAY;
+    static {
+        long delay = 10l;
+        try {
+            delay = Long.getLong(DELAY_NAME).longValue();
+            if ((delay > 40000) || (delay < 0)) {
+                delay = 10l;
+            }
+        } catch (Throwable t) {
+            // ignore
+        }
+        DELAY = delay;
+    }
+
+	private static final boolean EXISTS = true;
 
     final Spec spec;
     
@@ -110,6 +125,7 @@ public class DirChanges {
      * Inspect the base dir, issue any messages for
      * files not added, files not updated, and files not removed,
      * and compare expected/actual files added or updated.
+     * This sleeps before checking until at least DELAY milliseconds after start.
      * @throws IllegalStateException if called before start(..)
      */
     public boolean end(IMessageHandler handler, File srcBaseDir) {
@@ -117,6 +133,18 @@ public class DirChanges {
         if (0l == startTime) {
             throw new IllegalStateException("called before start");
         }
+        final long targetTime = startTime + DELAY;
+        do {
+            long curTime = System.currentTimeMillis();
+            if (curTime >= targetTime) {
+                break;
+            }
+            try {
+				Thread.sleep(targetTime-curTime);
+			} catch (InterruptedException e) {
+                break;
+            }
+        } while (true);
         final IMessageHandler oldHandler = this.handler;
         this.handler = handler;
         try {
