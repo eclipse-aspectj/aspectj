@@ -74,7 +74,10 @@ public class Lint {
 	public final Kind cantMatchArrayTypeOnVarargs =
 		new Kind("cantMatchArrayTypeOnVarargs","an array type as the last parameter in a signature does not match on the varargs declared method: {0}");
 	
-	public Lint(World world) {
+    public final Kind adviceDidNotMatch =
+        new Kind("adviceDidNotMatch","advice defined in {0} has not been applied");
+
+    public Lint(World world) {
 		this.world = world;
 	}
 	
