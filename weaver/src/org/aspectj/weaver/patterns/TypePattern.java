@@ -26,6 +26,7 @@ import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.World;
 /**
  *  On creation, type pattern only contains WildTypePattern nodes, not BindingType or ExactType. 
  * 
@@ -91,13 +92,15 @@ public abstract class TypePattern extends PatternNode {
 		if (type == ResolvedTypeX.MISSING) return FuzzyBoolean.NO;
 		
 		if (kind == STATIC) {
-			typeMatch = FuzzyBoolean.fromBoolean(matchesStatically(type));
-			return typeMatch.and(annotationPattern.matches(type));
+//			typeMatch = FuzzyBoolean.fromBoolean(matchesStatically(type));
+//			return typeMatch.and(annotationPattern.matches(type));
+		    return FuzzyBoolean.fromBoolean(matchesStatically(type));
 		} else if (kind == DYNAMIC) {
 			//System.err.println("matching: " + this + " with " + type);
-			typeMatch = matchesInstanceof(type);
+//			typeMatch = matchesInstanceof(type);
 			//System.err.println("    got: " + ret);
-			return typeMatch.and(annotationPattern.matches(type));
+//			return typeMatch.and(annotationPattern.matches(type));
+		    return matchesInstanceof(type);
 		} else {
 			throw new IllegalArgumentException("kind must be DYNAMIC or STATIC");
 		}
@@ -216,6 +219,10 @@ public abstract class TypePattern extends PatternNode {
     
     public TypePattern resolveBindingsFromRTTI(boolean allowBindng, boolean requireExactType) {
     	return this;
+    }
+    
+    public void resolve(World world) {
+        annotationPattern.resolve(world);
     }
     
 	public void postRead(ResolvedTypeX enclosingType) {

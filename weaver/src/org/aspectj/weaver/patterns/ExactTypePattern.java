@@ -89,17 +89,20 @@ public class ExactTypePattern extends TypePattern {
 	}
 	
 	protected boolean matchesExactly(ResolvedTypeX matchType) {
-		return this.type.equals(matchType);
+		boolean typeMatch = this.type.equals(matchType);
+		boolean annMatch = this.annotationPattern.matches(matchType).alwaysTrue();
+		return (typeMatch && annMatch);
 	}
 	
 	public TypeX getType() { return type; }
 
 	public FuzzyBoolean matchesInstanceof(ResolvedTypeX matchType) {
 		// in our world, Object is assignable from anything
-		if (type.equals(ResolvedTypeX.OBJECT)) return FuzzyBoolean.YES;
+		if (type.equals(ResolvedTypeX.OBJECT)) 
+		    return FuzzyBoolean.YES.and(annotationPattern.matches(matchType));
 		
 		if (type.isAssignableFrom(matchType, matchType.getWorld())) {
-			return FuzzyBoolean.YES;
+			return FuzzyBoolean.YES.and(annotationPattern.matches(matchType));
 		}
 		
 		// fix for PR 64262 - shouldn't try to coerce primitives

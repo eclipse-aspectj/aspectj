@@ -81,7 +81,8 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 
 	
 	public void resolve(World world) {
-		annotationType = annotationType.resolve(world);
+		if (!resolved) annotationType = annotationType.resolve(world);
+		resolved = true;
 	}
 
 	/* (non-Javadoc)

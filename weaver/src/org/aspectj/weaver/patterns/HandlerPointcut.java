@@ -61,6 +61,8 @@ public class HandlerPointcut extends Pointcut {
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		if (shadow.getKind() != Shadow.ExceptionHandler) return FuzzyBoolean.NO;
 		
+		exceptionType.resolve(shadow.getIWorld());
+		
 		// we know we have exactly one parameter since we're checking an exception handler
 		return exceptionType.matches(
 				shadow.getSignature().getParameterTypes()[0].resolve(shadow.getIWorld()), 

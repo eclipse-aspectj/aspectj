@@ -46,10 +46,30 @@ public class AnnotationPointcutsTests extends TestUtils {
       assertMessages(cR, new MessageSpec(expectedWarnings, new ArrayList()));
   }
   
+  public void test003_Within_Code() {
+  	baseDir = new File("../tests/java5/annotations/within_code");
+      CompilationResult cR = binaryWeave("TestingAnnotations.jar","WithinAndWithinCodeTests.java",0,5);
+      List warnings = new ArrayList();
+      warnings.add(new Message(32,"@within match on non-inherited annotation"));
+      warnings.add(new Message(39,"@within match on non-inherited annotation"));
+      warnings.add(new Message(39,"@within match on inheritable annotation"));
+      warnings.add(new Message(43,"@within match on inheritable annotation"));
+      warnings.add(new Message(32,"@withincode match"));
+      MessageSpec mSpec = new MessageSpec(warnings,new ArrayList());
+      assertMessages(cR,mSpec); 	
+  }
+  
+  public void test004_Within() {
+    	baseDir = new File("../tests/java5/annotations/within");
+        CompilationResult cR = binaryWeave("PlainWithin.jar","PlainWithinTests.java",0,2);
+        List warnings = new ArrayList();
+        warnings.add(new Message(21,"positive within match on annotation"));
+        warnings.add(new Message(25,"negative within match on annotation"));
+        MessageSpec mSpec = new MessageSpec(warnings,new ArrayList());
+        assertMessages(cR,mSpec); 	
+    }
   
   // TODO extra tests
-  // 1) @within  (matches, does not match, matches inherited annotation)
-  // 2) @withincode (matches, does not match)
   // 3) @annotation on the different join point kinds, matches with inherited annotation
   
 }

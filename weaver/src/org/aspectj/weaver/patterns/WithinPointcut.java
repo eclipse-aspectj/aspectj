@@ -42,7 +42,7 @@ public class WithinPointcut extends Pointcut {
 	
 	private FuzzyBoolean isWithinType(ResolvedTypeX type) {
 		while (type != null) {
-			if (typePattern.matchesStatically(type)) {
+			if (typePattern.matchesStatically(type)) {			    
 				return FuzzyBoolean.YES;
 			}
 			type = type.getDeclaringType();
@@ -55,7 +55,10 @@ public class WithinPointcut extends Pointcut {
 	}
 	
 	public FuzzyBoolean fastMatch(FastMatchInfo info) {
-		return isWithinType(info.getType());
+	    if (typePattern.annotationPattern instanceof AnyAnnotationTypePattern) {
+	        return isWithinType(info.getType());
+	    }
+	    return FuzzyBoolean.MAYBE;
 	}
     
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
@@ -67,6 +70,7 @@ public class WithinPointcut extends Pointcut {
 				shadow.getSourceLocation(),true,new ISourceLocation[]{getSourceLocation()});
 			shadow.getIWorld().getMessageHandler().handleMessage(msg);
 		}
+		typePattern.resolve(shadow.getIWorld());
 		return isWithinType(enclosingType);
 	}
 

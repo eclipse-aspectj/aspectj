@@ -75,16 +75,4 @@ public class AnnotationRuntimeTests extends TestUtils {
         assertMessages(cR, messageSpec);
     }
 
-    public void test007_Within_Code() {
-    	baseDir = new File("../tests/java5/annotations/within_code");
-        CompilationResult cR = binaryWeave("TestingAnnotations.jar","WithinAndWithinCodeTests.java",0,5);
-        List warnings = new ArrayList();
-        warnings.add(new Message(32,"@within match on non-inherited annotation"));
-        warnings.add(new Message(39,"@within match on non-inherited annotation"));
-        warnings.add(new Message(39,"@within match on inheritable annotation"));
-        warnings.add(new Message(43,"@within match on inheritable annotation"));
-        warnings.add(new Message(32,"@withincode match"));
-        MessageSpec mSpec = new MessageSpec(warnings,new ArrayList());
-        assertMessages(cR,mSpec); 	
-    }
 }

@@ -83,6 +83,10 @@ public abstract class AnnotationTypePattern extends PatternNode {
 
 class AnyAnnotationTypePattern extends AnnotationTypePattern {
 
+    public FuzzyBoolean fastMatches(AnnotatedElement annotated) {
+        return FuzzyBoolean.YES;
+    }
+    
 	public FuzzyBoolean matches(AnnotatedElement annotated) {
 		return FuzzyBoolean.YES;
 	}

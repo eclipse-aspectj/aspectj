@@ -114,7 +114,8 @@ public class WildTypePattern extends TypePattern {
 		
 		//System.err.println("match: " + targetTypeName + ", " + knownMatches); //Arrays.asList(importedPrefixes));
 		
-		return matchesExactlyByName(targetTypeName);
+		return matchesExactlyByName(targetTypeName) &&
+		       annotationPattern.matches(type).alwaysTrue();
 	}
 
 	/**
