@@ -56,7 +56,8 @@ import java.util.ListIterator;
  *     compiler's ability to find files relative to a source base</li>
  * <li>This does not enforce the lifecycle.</li>
  * <li>This must be used as the initial compile 
- *     before doing an incremental compile </li>
+ *     before doing an incremental compile.
+ *     In that case, staging must be enabled.</li>
  * </ul>
  */
 public class CompilerRun implements IAjcRun {
@@ -109,7 +110,8 @@ public class CompilerRun implements IAjcRun {
      * <li>get the list of aspectpath entries to use as the aspectpath as
      * {Sandbox. testBaseSrcDir} / {Spec.aspectpath..}</li>
      * </ul>
-     * All sources must be readable at this time.
+     * All sources must be readable at this time, 
+     * unless spec.badInput is true (for invalid-input tests).
      * If staging, the source files and source roots are copied
      * to a separate staging directory so they can be modified
      * for incremental tests.   Note that (as of this writing) the
@@ -158,21 +160,23 @@ public class CompilerRun implements IAjcRun {
             injarPaths = LangUtil.endsWith(paths, CompilerRun.JAR_SUFFIXES, true);
         } 
         // validate readable for sources
-        if (!validator.canRead(testBaseSrcDir, srcPaths, "sources")
-            || !validator.canRead(testBaseSrcDir, injarPaths, "injars")
-            || !validator.canRead(testBaseSrcDir, spec.argfiles, "argfiles")
-            || !validator.canRead(testBaseSrcDir, spec.classpath, "classpath")
-            || !validator.canRead(testBaseSrcDir, spec.aspectpath, "aspectpath")
-            || !validator.canRead(testBaseSrcDir, spec.sourceroots, "sourceroots")
-            ) {
-            return false;
+        if (!spec.badInput) {
+            if (!validator.canRead(testBaseSrcDir, srcPaths, "sources")
+                || !validator.canRead(testBaseSrcDir, injarPaths, "injars")
+                || !validator.canRead(testBaseSrcDir, spec.argfiles, "argfiles")
+                || !validator.canRead(testBaseSrcDir, spec.classpath, "classpath")
+                || !validator.canRead(testBaseSrcDir, spec.aspectpath, "aspectpath")
+                || !validator.canRead(testBaseSrcDir, spec.sourceroots, "sourceroots")
+                ) {
+                return false;
+            }
         }
         
         int numSources = srcPaths.length + injarPaths.length 
             + spec.argfiles.length + spec.sourceroots.length;
-        if (numSources < 1) {
+        if (!spec.badInput && (numSources < 1)) {
             validator.fail("no input jars, arg files, or source files or roots");
-            return false;
+        	return false;
         } 
         
         final File[] argFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, spec.argfiles);
@@ -180,11 +184,13 @@ public class CompilerRun implements IAjcRun {
         final File[] aspectFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, spec.aspectpath);
         final File[] classFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, spec.classpath);
         // hmm - duplicates validation above, verifying getBaseDirFiles?
-        if (!validator.canRead(argFiles, "argFiles")
-            || !validator.canRead(injarFiles, "injarfiles")
-            || !validator.canRead(aspectFiles, "aspectfiles")
-            || !validator.canRead(classFiles, "classfiles")) {
-            return false;
+        if (!spec.badInput) {
+            if (!validator.canRead(argFiles, "argFiles")
+                || !validator.canRead(injarFiles, "injarfiles")
+                || !validator.canRead(aspectFiles, "aspectfiles")
+                || !validator.canRead(classFiles, "classfiles")) {
+                return false;
+            }
         }
 
         final File[] srcFiles;
@@ -196,6 +202,9 @@ public class CompilerRun implements IAjcRun {
                 sourcerootFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, spec.sourceroots, null);
             }
         } else { // staging - copy files
+            if (spec.badInput) {
+                validator.info("badInput ignored - files checked when staging");
+            }
             try {
                 // copy all files, then remove tagged ones
                 // XXX make copyFiles support a filter?
@@ -234,7 +243,7 @@ public class CompilerRun implements IAjcRun {
                 return false;
             }
         }
-        if (!validator.canRead(srcFiles, "copied paths")) {
+        if (!spec.badInput && !validator.canRead(srcFiles, "copied paths")) {
             return false;
         }
         arguments.clear();
@@ -255,13 +264,13 @@ public class CompilerRun implements IAjcRun {
             for (int j = 0; j < ra.length; j++) {
                 arguments.add("@" + ra[j]);
             }
-            if (spec.isStaging) {
-                validator.info("warning: files listed in argfiles not staged");
+            if (!spec.badInput && spec.isStaging) {
+                validator.fail("warning: files listed in argfiles not staged");
             }               
         }
 
         // save classpath and aspectpath in sandbox for this and other clients
-        final boolean checkReadable = true; // hmm - third validation?
+        final boolean checkReadable = !spec.badInput; 
         int size = spec.includeClassesDir ? 3 : 2;
         File[] cp = new File[size + classFiles.length];
         System.arraycopy(classFiles, 0, cp, 0, classFiles.length);
@@ -300,8 +309,6 @@ public class CompilerRun implements IAjcRun {
      * <li>After running, report AjcMessageHandler results to the status parameter.
      *     If the AjcMessageHandler reports a failure, then send info messages
      *     for the Spec, TestSetup, and command line.<li>
-     * XXX better to upgrade AjcMessageHandler to adopt status
-     *     so the caller can control fast-fail, etc.
 	 * @see org.aspectj.testing.run.IRun#run(IRunStatus)
 	 */
 	public boolean run(IRunStatus status) {
@@ -312,7 +319,10 @@ public class CompilerRun implements IAjcRun {
             MessageUtil.abort(status, spec.testSetup.failureReason);
             return false;
         }
-        AjcMessageHandler handler = new AjcMessageHandler(spec.getMessages());
+        boolean ignoreWarnings = (spec.testSetup.ignoreWarningsSet
+                && spec.testSetup.ignoreWarnings);
+        AjcMessageHandler handler 
+            = new AjcMessageHandler(spec.getMessages());
         handler.init();
         boolean handlerResult = false;
         boolean result = false;
@@ -320,7 +330,6 @@ public class CompilerRun implements IAjcRun {
         ArrayList argList = new ArrayList();
         final Spec.TestSetup setupResult = spec.testSetup;
         try {
-            argList.addAll(setupResult.commandOptions);
             argList.add("-d");
             String outputDirPath = sandbox.classesDir.getAbsolutePath();
             try { // worth it to try for canonical?
@@ -351,6 +360,9 @@ public class CompilerRun implements IAjcRun {
                 argList.add("-injars");
                 argList.add(FileUtil.flatten((String[]) injars.toArray(new String[0]), null));
             }
+            
+            // put specified arguments last, for better badInput tests
+            argList.addAll(setupResult.commandOptions);
 
             // add both java/aspectj and argfiles
             argList.addAll(arguments);
@@ -399,11 +411,7 @@ public class CompilerRun implements IAjcRun {
                     commandResult = compiler.runCommand(args, handler);
                 }
             }
-            if (!setupResult.ignoreWarningsSet) {
-                handlerResult = handler.passed();
-            } else {
-                handlerResult = handler.passed(setupResult.ignoreWarnings);
-            }
+            handlerResult = handler.passed();
             if (!handlerResult) {
                 return false;
             } else {
@@ -434,14 +442,6 @@ public class CompilerRun implements IAjcRun {
     public String toString() {
         return "CompilerRun(" + spec + ")";
     }
-//        String[] sourcePaths = (null == this.sourcePaths ? new String[0] : this.sourcePaths);
-//        List sources = (null == this.sources ? Collections.EMPTY_LIST : this.sources);
-//        return "CompilerRun-" + compilerName 
-//            + "(" + Arrays.asList(sourcePaths)
-//            + ", " + sources
-//            + ", " + Arrays.asList(globalOptions) 
-//            + ", " + Arrays.asList(localOptions) 
-//            + ")";
     
     /** 
      * Initializer/factory for CompilerRun
@@ -452,23 +452,23 @@ public class CompilerRun implements IAjcRun {
         static final String SEEK_PREFIX = "-seek:";
         static final String SEEK_MESSAGE_PREFIX = "found: ";
         
-        /** no support in the harness for these otherwise-valid options */
+        /** can't specify these as options */
         private static final String[] INVALID_OPTIONS = new String[]
-            { "-workingdir", "-argfile", "-sourceroot", "-outjar"}; 
+            { "-workingdir", "-argfile", "-sourceroots", "-outjar"}; 
             // when updating these, update tests/harness/selectionTest.xml
 
         /** no support in the eclipse-based compiler for these otherwise-valid options */
         private static final String[] INVALID_ECLIPSE_OPTIONS = new String[]
             { "-lenient", "-strict", "-usejavac", "-preprocess",
               "-XOcodeSize", "-XSerializable", "-XaddSafePrefix",
-              "-XserializableAspects", "-XtargetNearSource" };
+              "-XtargetNearSource" };
 
         /** options supported by the harness */
         private static final String[] VALID_OPTIONS = new String[]
             {
                 SEEK_PREFIX,
                 // eajc does not support -usejavac, -preprocess
-                // testFlag() handles -ajc, -eclipse, -ignoreWarnings
+                // testFlag() handles -ajc, -eclipse, -ajdeCompiler, -ignoreWarnings 
                 "-usejavac", "-preprocess",          
                 "-Xlint",  "-lenient", "-strict", 
                 "-source14", "-verbose", "-emacssym", 
@@ -487,13 +487,14 @@ public class CompilerRun implements IAjcRun {
             };
         public static final String DEFAULT_COMPILER 
             = ReflectionFactory.ECLIPSE;
-//            = ReflectionFactory.OLD_AJC;
+
         /**
-         * Retitle description to title, paths to files, do comment
+         * Retitle description to title, paths to files, do comment,
+         * staging, badInput,
          * do dirChanges, and print no chidren. 
          */
         private static final XMLNames NAMES = new XMLNames(XMLNames.DEFAULT,
-            "title", null, null, null, "files", null, null, false, false, true);
+            "title", null, null, null, "files", null, null, null, false, false, true);
         
         protected String compiler;
         
@@ -542,9 +543,6 @@ public class CompilerRun implements IAjcRun {
             spec.setDirToken(Sandbox.CLASSES_DIR);
             spec.setDefaultSuffix(".class");
             super.addDirChanges(spec);
-        }
-        protected String getPrintName() {
-            return "CompilerRun.Spec " + getShortCompilerName();
         }
         
         public String toLongString() {
@@ -661,6 +659,10 @@ public class CompilerRun implements IAjcRun {
             return null;
 		}
         
+        protected String getPrintName() {
+            return "CompilerRun.Spec " + getShortCompilerName();
+        }
+
         /** 
          * Each non-incremental run, fold the global flags in with
          * the run flags, which may involve adding or removing from
@@ -1016,10 +1018,7 @@ public class CompilerRun implements IAjcRun {
             if (!LangUtil.isEmpty(dirChanges)) {
                 DirChanges.Spec.writeXml(out, dirChanges);
             }
-            List messages = getMessages();
-            if (!LangUtil.isEmpty(messages)) {
-                SoftMessage.writeXml(out, messages);
-            }
+            SoftMessage.writeXml(out, getMessages());
             out.endElement(xmlElementName);
         }
         
@@ -1064,51 +1063,4 @@ public class CompilerRun implements IAjcRun {
         }
     } // CompilerRun.Spec
 } // CompilerRun
-        
-//        /** 
-//         * Write this out as a compile element as defined in
-//         * AjcSpecXmlReader.DOCTYPE.
-//         * @see AjcSpecXmlReader#DOCTYPE 
-//         * @see IXmlWritable#writeXml(XMLWriter) 
-//         */
-//        public void writeXml(XMLWriter out) {
-//            StringBuffer sb = new StringBuffer();
-//            Spec spec = this;
-//            final String elementName = "compile";
-//            List list = spec.getOptionsList();
-//            String args = XMLWriter.flattenList(spec.getOptionsList()).trim();
-//            String argsAttr = out.makeAttribute("options", args).trim();
-//            String files = XMLWriter.flattenFiles(spec.getPathsArray()).trim();
-//            String filesAttr = out.makeAttribute("files", files).trim();
-//            List messages = spec.getMessages();
-//            int nMessages = messages.size();
-//            int both = argsAttr.length() + filesAttr.length();
-//            final int MAX = 55;
-//    
-//            // tortured logic to make more readable XML...        
-//            if ((both < MAX) || (0 == args.length())) {
-//                // if short enough, print entire or just start
-//                if (0 != args.length()) {
-//                    filesAttr = argsAttr + " " + filesAttr;
-//                }
-//                if (0 == nMessages) {
-//                    out.printElement(elementName, filesAttr);
-//                    return;
-//                } else {
-//                    out.startElement(elementName, filesAttr, true);
-//                }
-//            } else if (argsAttr.length() < filesAttr.length()) {
-//                out.startElement(elementName, argsAttr, false);
-//                out.printAttribute("files", files);   
-//                out.endAttributes();
-//            } else { 
-//                out.startElement(elementName, filesAttr, false);
-//                out.printAttribute("options", args);   
-//                out.endAttributes();
-//            }
-//            if (0 < nMessages) {
-//                SoftMessage.writeXml(out, messages);
-//            }
-//            out.endElement(elementName);
-//        }
-
+ 
