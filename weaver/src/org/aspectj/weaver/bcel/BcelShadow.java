@@ -40,6 +40,7 @@ import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReturnInstruction;
 import org.apache.bcel.generic.SWAP;
+import org.apache.bcel.generic.StoreInstruction;
 import org.apache.bcel.generic.TargetLostException;
 import org.apache.bcel.generic.Type;
 import org.aspectj.bridge.ISourceLocation;
@@ -408,11 +409,16 @@ public class BcelShadow extends Shadow {
 		InstructionList body = enclosingMethod.getBody();
 		TypeX catchType = exceptionRange.getCatchType();
 		TypeX inType = enclosingMethod.getEnclosingClass().getType();
+		
+		ResolvedMember sig = Member.makeExceptionHandlerSignature(inType, catchType);
+		
+			
+		sig.parameterNames = new String[] {findHandlerParamName(startOfHandler)};
         BcelShadow s =
             new BcelShadow(
                 world,
                 ExceptionHandler,
-                Member.makeExceptionHandlerSignature(inType, catchType),
+                sig,
                 enclosingMethod,
                 enclosingShadow);
         ShadowRange r = new ShadowRange(body);
@@ -423,6 +429,27 @@ public class BcelShadow extends Shadow {
         r.associateWithTargets(start, end);
         exceptionRange.updateTarget(startOfHandler, start, body);
         return s;
+	}
+	
+	private static String findHandlerParamName(InstructionHandle startOfHandler) {		
+		if (startOfHandler.getInstruction() instanceof StoreInstruction &&
+			startOfHandler.getNext() != null)
+		{
+			int slot = ((StoreInstruction)startOfHandler.getInstruction()).getIndex();
+			//System.out.println("got store: " + startOfHandler.getInstruction() + ", " + index);
+			InstructionTargeter[] targeters = startOfHandler.getNext().getTargeters();
+			for (int i=targeters.length-1; i >= 0; i--) {
+				if (targeters[i] instanceof LocalVariableTag) {
+					LocalVariableTag t = (LocalVariableTag)targeters[i];
+					if (t.getSlot() == slot) {
+						return t.getName();
+					}
+					//System.out.println("tag: " + targeters[i]);
+				}
+ 			}
+		}
+		
+		return "<missing>";
 	}
     
     /** create an init join point associated w/ an interface in the body of a constructor */

@@ -26,7 +26,7 @@ import org.aspectj.bridge.ISourceLocation;
  */
 public class ResolvedMember extends Member implements IHasPosition {
     
-    protected String[] parameterNames = null;
+    public String[] parameterNames = null;
     protected TypeX[] checkedExceptions = TypeX.NONE;
     
     

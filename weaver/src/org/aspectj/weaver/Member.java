@@ -190,8 +190,8 @@ public class Member implements Comparable {
             paramTys);
     }
     
-	public static Member makeExceptionHandlerSignature(TypeX inType, TypeX catchType) {
-		return new Member(
+	public static ResolvedMember makeExceptionHandlerSignature(TypeX inType, TypeX catchType) {
+		return new ResolvedMember(
 			HANDLER,
 			inType,
 			Modifier.STATIC,
@@ -596,11 +596,9 @@ public class Member implements Comparable {
         buf.append('-');
         buf.append(makeString(getParameterTypes()[0]));
         buf.append('-');
-        //XXX we don't actually try to find the handler parameter name
-        //XXX it probably wouldn't be too hard
         String pName = "<missing>";
-        //String[] pNames = getParameterNames(world);
-        //if (pNames != null) pName = pNames[0];
+        String[] names = getParameterNames(world);
+        if (names != null) pName = names[0];
         buf.append(pName);
         buf.append('-');
         return buf.toString();

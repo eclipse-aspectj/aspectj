@@ -7136,4 +7136,9 @@
         <run class="SubtypeConstructorCW"/>
     </ajc-test>
         
+    <ajc-test dir="bugs" pr="50570"
+      title="CatchClauseSignature has broken operation">
+        <compile files="HandlerSig.java"/>
+        <run class="HandlerSig"/>
+    </ajc-test>
 </suite>
