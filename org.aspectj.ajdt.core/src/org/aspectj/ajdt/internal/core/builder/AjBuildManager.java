@@ -17,6 +17,7 @@ import java.io.*;
 import java.util.*;
 import java.util.jar.*;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.aspectj.ajdt.internal.compiler.AjCompilerAdapter;
@@ -214,6 +215,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 	private void closeOutputStream() {
 		try {
 			if (zos != null) zos.close();
+			zos = null;
 		} catch (IOException ex) {
 			IMessage message = 
 				new Message("Unable to write outjar " 
@@ -228,13 +230,116 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 
 	
 	private void copyResourcesToDestination() throws IOException {
-    	if (buildConfig.getOutputJar() != null) {
-    		bcelWeaver.dumpResourcesToOutJar(zos);
-    	} else {
-    		bcelWeaver.dumpResourcesToOutPath();
-    	}
+		// resources that we need to copy are contained in the injars and inpath only
+		for (Iterator i = buildConfig.getInJars().iterator(); i.hasNext(); ) {
+			File inJar = (File)i.next();
+			copyResourcesFromJarFile(inJar);
+		}
+		
+		for (Iterator i = buildConfig.getInpath().iterator(); i.hasNext(); ) {
+			File inPathElement = (File)i.next();
+			if (inPathElement.isDirectory()) {
+				copyResourcesFromDirectory(inPathElement);
+			} else {
+				copyResourcesFromJarFile(inPathElement);
+			}
+		}	
+		
+		if (buildConfig.getSourcePathResources() != null) {
+			for (Iterator i = buildConfig.getSourcePathResources().keySet().iterator(); i.hasNext(); ) {
+				String resource = (String)i.next();
+				copyResourcesFromFile((File)buildConfig.getSourcePathResources().get(resource),
+										resource);
+			}
+		}
     }
-     
+	
+	private void copyResourcesFromJarFile(File jarFile) throws IOException {
+		ZipInputStream inStream = null;
+		try {
+			inStream = new ZipInputStream(new FileInputStream(jarFile));
+			while (true) {
+				ZipEntry entry = inStream.getNextEntry();
+				if (entry == null) break;
+			
+				String filename = entry.getName();
+	
+				if (!entry.isDirectory() && acceptResource(filename)) {
+					byte[] bytes = FileUtil.readAsByteArray(inStream);
+					writeResource(filename,bytes);
+				}
+	
+				inStream.closeEntry();
+			}
+		} finally {
+			if (inStream != null) inStream.close();
+		}
+	}
+	
+	private void copyResourcesFromDirectory(File dir) throws IOException {
+		// Get a list of all files (i.e. everything that isnt a directory)
+		File[] files = FileUtil.listFiles(dir,new FileFilter() {
+			public boolean accept(File f) {
+				boolean accept = !(f.isDirectory() || f.getName().endsWith(".class")) ;
+				return accept;
+			}
+		});
+		
+		// For each file, add it either as a real .class file or as a resource
+		for (int i = 0; i < files.length; i++) {
+			// ASSERT: files[i].getAbsolutePath().startsWith(inFile.getAbsolutePath()
+			// or we are in trouble...
+			String filename = files[i].getAbsolutePath().substring(
+			                    dir.getAbsolutePath().length()+1);
+			copyResourcesFromFile(files[i],filename);
+		}		
+	}
+	
+	private void copyResourcesFromFile(File f,String filename) throws IOException {
+		if (!acceptResource(filename)) return;
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream(f);
+			byte[] bytes = FileUtil.readAsByteArray(fis);
+			// String relativePath = files[i].getPath();
+			
+			writeResource(filename,bytes);
+		} finally {
+			if (fis != null) fis.close();
+		}	
+	}
+    
+	private void writeResource(String filename, byte[] content) throws IOException {
+		if (state.resources.contains(filename)) return;
+		if (zos != null) {
+			ZipEntry newEntry = new ZipEntry(filename);  //??? get compression scheme right
+			
+			zos.putNextEntry(newEntry);
+			zos.write(content);
+			zos.closeEntry();
+		} else {
+			OutputStream fos = 
+				FileUtil.makeOutputStream(new File(buildConfig.getOutputDir(),filename));
+			fos.write(content);
+			fos.close();
+		}
+		state.resources.add(filename);
+	}
+
+	private boolean acceptResource(String resourceName) {
+		if (  
+				(resourceName.startsWith("CVS/")) ||
+				(resourceName.indexOf("/CVS/") != -1) ||
+				(resourceName.endsWith("/CVS")) ||
+				(resourceName.endsWith(".class")) 
+		    )
+		{
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
     /**
      * Responsible for managing the ASM model between builds.  Contains the policy for
      * maintaining the persistance of elements in the model.
@@ -298,14 +403,15 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 			state.binarySourceFiles.put(inPathElement.getPath(),unwovenClasses); // good enough for ajc to lump these together
 		}
 		
-		if (buildConfig.getSourcePathResources() != null) {
-			for (Iterator i = buildConfig.getSourcePathResources().keySet().iterator(); i.hasNext(); ) {
-	//			File resource = (File)i.next();
-				String resource = (String)i.next();
-				bcelWeaver.addResource(resource, (File)buildConfig.getSourcePathResources().get(resource), buildConfig.getOutputDir());
-	//			bcelWeaver.addResource(resource, buildConfig.getOutputDir());
-			}
-		}
+//		if (buildConfig.getSourcePathResources() != null) {
+//			// XXX buildConfig.getSourcePathResources always returns null (CompileCommand.java)
+//			for (Iterator i = buildConfig.getSourcePathResources().keySet().iterator(); i.hasNext(); ) {
+//	//			File resource = (File)i.next();
+//				String resource = (String)i.next();
+//				bcelWeaver.addResource(resource, (File)buildConfig.getSourcePathResources().get(resource), buildConfig.getOutputDir());
+//	//			bcelWeaver.addResource(resource, buildConfig.getOutputDir());
+//			}
+//		}
 		
 		bcelWeaver.setReweavableMode(buildConfig.isXreweavable(),buildConfig.getXreweavableCompressClasses());
 

@@ -14,6 +14,7 @@
 package org.aspectj.ajdt.internal.core.builder;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.ajdt.internal.compiler.InterimCompilationResult;
+import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
@@ -50,6 +52,7 @@ public class AjState {
 	Map/*File, List<UnwovenClassFile>*/ binarySourceFiles = new HashMap();
 	Map/*<String, UnwovenClassFile>*/ classesFromName = new HashMap();
 	List/*File*/ compiledSourceFiles = new ArrayList();
+	List/*String*/ resources = new ArrayList();
 	
 	ArrayList/*<String>*/ qualifiedStrings;
 	ArrayList/*<String>*/ simpleStrings;
@@ -135,6 +138,7 @@ public class AjState {
 			thisTime.addAll(addedFiles);	
 			
 			deleteClassFiles();
+			deleteResources();
 			
 			addAffectedSourceFiles(thisTime,thisTime);
 		} else {
@@ -158,6 +162,66 @@ public class AjState {
 				deleteClassFile(intRes.unwovenClassFiles()[j]);
 			}
 		}
+	}
+	
+	private void deleteResources() {
+		List oldResources = new ArrayList();
+		oldResources.addAll(resources);
+		
+		// note - this deliberately ignores resources in jars as we don't yet handle jar changes
+		// with incremental compilation
+		for (Iterator i = buildConfig.getInpath().iterator(); i.hasNext(); ) {
+			File inPathElement = (File)i.next();
+			if (inPathElement.isDirectory()) {
+				deleteResourcesFromDirectory(inPathElement,oldResources);
+			}			
+		}	
+		
+		if (buildConfig.getSourcePathResources() != null) {
+			for (Iterator i = buildConfig.getSourcePathResources().keySet().iterator(); i.hasNext(); ) {
+				String resource = (String)i.next();
+				maybeDeleteResource(resource, oldResources);
+			}
+		}
+		
+		// oldResources need to be deleted...
+		for (Iterator iter = oldResources.iterator(); iter.hasNext();) {
+			String victim = (String) iter.next();
+			File f = new File(buildConfig.getOutputDir(),victim);
+			if (f.exists()) {
+				f.delete();
+			}			
+			resources.remove(victim);
+		}
+	}
+	
+	private void maybeDeleteResource(String resName, List oldResources) {
+		if (resources.contains(resName)) {
+			oldResources.remove(resName);
+			File source = new File(buildConfig.getOutputDir(),resName);
+			if ((source != null) && (source.exists()) &&
+			    (source.lastModified() >= lastSuccessfulBuildTime)) {
+				resources.remove(resName); // will ensure it is re-copied
+			}
+		}		
+	}
+	
+	private void deleteResourcesFromDirectory(File dir, List oldResources) {
+		File[] files = FileUtil.listFiles(dir,new FileFilter() {
+			public boolean accept(File f) {
+				boolean accept = !(f.isDirectory() || f.getName().endsWith(".class")) ;
+				return accept;
+			}
+		});
+		
+		// For each file, add it either as a real .class file or as a resource
+		for (int i = 0; i < files.length; i++) {
+			// ASSERT: files[i].getAbsolutePath().startsWith(inFile.getAbsolutePath()
+			// or we are in trouble...
+			String filename = files[i].getAbsolutePath().substring(
+			                    dir.getAbsolutePath().length()+1);
+			maybeDeleteResource(filename, oldResources);
+		}				
 	}
 
 	private void deleteClassFile(UnwovenClassFile classFile) {

@@ -80,7 +80,7 @@ public class BcelWeaver implements IWeaver {
 //    private Map  sourceJavaClasses = new HashMap();   /* String -> UnwovenClassFile */
     private List addedClasses      = new ArrayList(); /* List<UnovenClassFile> */
     private List deletedTypenames  = new ArrayList(); /* List<String> */
-    private Map  resources         = new HashMap(); /* String -> UnwovenClassFile */ 
+//    private Map  resources         = new HashMap(); /* String -> UnwovenClassFile */ 
     private boolean needToReweaveWorld = false;
 
     private List shadowMungerList = null; // setup by prepareForWeave
@@ -178,11 +178,11 @@ public class BcelWeaver implements IWeaver {
 				// System.err.println("BCELWeaver: processing class from input directory "+classFile);
 				this.addClassFile(classFile);
 				addedClassFiles.add(classFile);
-			} else {
-			  if (CopyResourcesFromInpathDirectoriesToOutput) {
-				// System.err.println("BCELWeaver: processing resource from input directory "+filename);
-				addResource(filename,classFile);
-			  }
+//			} else {
+//			  if (CopyResourcesFromInpathDirectoriesToOutput) {
+//				// System.err.println("BCELWeaver: processing resource from input directory "+filename);
+//				addResource(filename,classFile);
+//			  }
 			}
 			fis.close();
 		}
@@ -219,11 +219,11 @@ public class BcelWeaver implements IWeaver {
 						this.addClassFile(classFile);
 						addedClassFiles.add(classFile);
 					}
-					else if (!entry.isDirectory()) {
-
-						/* bug-44190 Copy meta-data */
-						addResource(filename,classFile);
-					}
+//					else if (!entry.isDirectory()) {
+//
+//						/* bug-44190 Copy meta-data */
+//						addResource(filename,classFile);
+//					}
 
 					inStream.closeEntry();
 				}
@@ -257,20 +257,20 @@ public class BcelWeaver implements IWeaver {
 		return addedClassFiles;
 	}
 
-	public void addResource(String name, File inPath, File outDir) throws IOException {
-
-		/* Eliminate CVS files. Relative paths use "/" */
-		if (!name.startsWith("CVS/") && (-1 == name.indexOf("/CVS/")) && !name.endsWith("/CVS")) {
-//			System.err.println("? addResource('" + name + "')");
-//			BufferedInputStream inStream = new BufferedInputStream(new FileInputStream(inPath));
-//			byte[] bytes = new byte[(int)inPath.length()];
-//			inStream.read(bytes);
-//			inStream.close();
-			byte[] bytes = FileUtil.readAsByteArray(inPath);
-			UnwovenClassFile resourceFile = new UnwovenClassFile(new File(outDir, name).getAbsolutePath(), bytes);
-			addResource(name,resourceFile);
-		}
-	}
+//	public void addResource(String name, File inPath, File outDir) throws IOException {
+//
+//		/* Eliminate CVS files. Relative paths use "/" */
+//		if (!name.startsWith("CVS/") && (-1 == name.indexOf("/CVS/")) && !name.endsWith("/CVS")) {
+////			System.err.println("? addResource('" + name + "')");
+////			BufferedInputStream inStream = new BufferedInputStream(new FileInputStream(inPath));
+////			byte[] bytes = new byte[(int)inPath.length()];
+////			inStream.read(bytes);
+////			inStream.close();
+//			byte[] bytes = FileUtil.readAsByteArray(inPath);
+//			UnwovenClassFile resourceFile = new UnwovenClassFile(new File(outDir, name).getAbsolutePath(), bytes);
+//			addResource(name,resourceFile);
+//		}
+//	}
 
 	public boolean needToReweaveWorld() {
 		return needToReweaveWorld;
@@ -293,16 +293,16 @@ public class BcelWeaver implements IWeaver {
     	world.deleteSourceObjectType(TypeX.forName(typename));
     }
 
-	public void addResource (String name, UnwovenClassFile resourceFile) {
-		/* bug-44190 Change error to warning and copy first resource */
-		if (!resources.containsKey(name)) {
-			resources.put(name, resourceFile);
-		}
-		else {
-			world.showMessage(IMessage.WARNING, "duplicate resource: '" + name + "'",
-				null, null);
-		}
-	}
+//	public void addResource (String name, UnwovenClassFile resourceFile) {
+//		/* bug-44190 Change error to warning and copy first resource */
+//		if (!resources.containsKey(name)) {
+//			resources.put(name, resourceFile);
+//		}
+//		else {
+//			world.showMessage(IMessage.WARNING, "duplicate resource: '" + name + "'",
+//				null, null);
+//		}
+//	}
 
 	// ---- weave preparation
 
@@ -358,38 +358,38 @@ public class BcelWeaver implements IWeaver {
 //       	}
 //    }
     
-	public void dumpResourcesToOutPath() throws IOException {
-//		System.err.println("? dumpResourcesToOutPath() resources=" + resources.keySet());
-		Iterator i = resources.keySet().iterator();
-		while (i.hasNext()) {
-			UnwovenClassFile res = (UnwovenClassFile)resources.get(i.next());
-			dumpUnchanged(res);
-		}
-		//resources = new HashMap();
-	}
-
+//	public void dumpResourcesToOutPath() throws IOException {
+////		System.err.println("? dumpResourcesToOutPath() resources=" + resources.keySet());
+//		Iterator i = resources.keySet().iterator();
+//		while (i.hasNext()) {
+//			UnwovenClassFile res = (UnwovenClassFile)resources.get(i.next());
+//			dumpUnchanged(res);
+//		}
+//		//resources = new HashMap();
+//	}
+//
 	/* BUG #40943 */
-    public void dumpResourcesToOutJar() throws IOException {
-//		System.err.println("? dumpResourcesToOutJar() resources=" + resources.keySet());
-		Iterator i = resources.keySet().iterator();
-		while (i.hasNext()) {
-			String name = (String)i.next();
-			UnwovenClassFile res = (UnwovenClassFile)resources.get(name);
-			writeZipEntry(name,res.getBytes());
-		}
-		//resources = new HashMap();
-    }
-    
-    // halfway house for when the jar is managed outside of the weaver, but the resources
-    // to be copied are known in the weaver.
-    public void dumpResourcesToOutJar(ZipOutputStream zos) throws IOException {
-    	this.zipOutputStream = zos;
-    	dumpResourcesToOutJar();
-    }
+//    public void dumpResourcesToOutJar() throws IOException {
+////		System.err.println("? dumpResourcesToOutJar() resources=" + resources.keySet());
+//		Iterator i = resources.keySet().iterator();
+//		while (i.hasNext()) {
+//			String name = (String)i.next();
+//			UnwovenClassFile res = (UnwovenClassFile)resources.get(name);
+//			writeZipEntry(name,res.getBytes());
+//		}
+//		resources = new HashMap();
+//    }
+//    
+//    // halfway house for when the jar is managed outside of the weaver, but the resources
+//    // to be copied are known in the weaver.
+//    public void dumpResourcesToOutJar(ZipOutputStream zos) throws IOException {
+//    	this.zipOutputStream = zos;
+//    	dumpResourcesToOutJar();
+//    }
     
     // ---- weaving
 
-    // Used by some test cases...
+    // Used by some test cases only...
     public Collection weave(File file) throws IOException {
     	OutputStream os = FileUtil.makeOutputStream(file);
     	this.zipOutputStream = new ZipOutputStream(os);
@@ -402,7 +402,11 @@ public class BcelWeaver implements IWeaver {
 
 			public IWeaveRequestor getRequestor() {
 				return new IWeaveRequestor() {
-					public void acceptResult(UnwovenClassFile result) {}
+					public void acceptResult(UnwovenClassFile result) {
+						try {
+							writeZipEntry(result.filename, result.bytes);
+						} catch(IOException ex) {}
+					}
 					public void processingReweavableState() {}
 					public void addingTypeMungers() {}
 					public void weavingAspects() {}
@@ -411,8 +415,8 @@ public class BcelWeaver implements IWeaver {
 				};
 			}
 		});
-    	/* BUG 40943*/
-    	dumpResourcesToOutJar();
+//    	/* BUG 40943*/
+//    	dumpResourcesToOutJar();
     	zipOutputStream.close();  //this flushes and closes the acutal file
     	return c;
     }
