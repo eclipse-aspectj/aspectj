@@ -7819,4 +7819,17 @@
         <compile files="PrimitiveCoercionInExactTypePatternMatching.java"/>
     </ajc-test>
     
+    <ajc-test dir="bugs"
+		pr="61536" title="Front-end bug, shouldn't allow patterns of the form foo.., should be foo..*">
+        <compile files="EllipsesStar.java">
+          <message kind="error" line="3" text="Syntax error on token"/>
+          <message kind="error" line="4" text="Syntax error on token"/>
+          <message kind="error" line="5" text="Syntax error on token"/>
+          <message kind="error" line="6" text="Syntax error on token"/>
+          <message kind="error" line="8" text="Syntax error on token"/>
+          <message kind="error" line="10" text="Syntax error on token"/>
+          <message kind="error" line="12" text="Syntax error on token"/>
+        </compile>
+    </ajc-test>
+    
 </suite>

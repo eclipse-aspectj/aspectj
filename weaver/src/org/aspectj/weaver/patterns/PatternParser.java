@@ -448,12 +448,17 @@ public class PatternParser {
 		List names = new ArrayList();
 		StringBuffer buf = new StringBuffer();
 		IToken previous = null;
+		boolean justProcessedEllipsis = false; // Remember if we just dealt with an ellipsis (PR61536)
+		boolean justProcessedDot = false; 
+		boolean onADot = false;
 		while (true) {
-			IToken tok;
+			IToken tok = null;
 			int startPos = tokenSource.peek().getStart();
 			String afterDot = null;
 			while (true) {
+				if (previous !=null && previous.getString().equals(".")) justProcessedDot = true;
 				tok = tokenSource.peek();
+				onADot = (tok.getString().equals("."));
 				if (previous != null) {
 					if (!isAdjacent(previous, tok)) break;
 				}
@@ -481,13 +486,22 @@ public class PatternParser {
 				throw new ParserException("expected name pattern", tok);
 			} 
 			
+			if (buf.length() == 0 && justProcessedEllipsis) {
+				throw new ParserException("name pattern cannot finish with ..", tok);
+			}
+			if (buf.length() == 0 && justProcessedDot && !onADot) {
+					throw new ParserException("name pattern cannot finish with .", tok);
+			}
+			
 			if (buf.length() == 0) {
 				names.add(NamePattern.ELLIPSIS);
+				justProcessedEllipsis = true;
 			} else {
 				checkLegalName(buf.toString(), previous);
 				NamePattern ret = new NamePattern(buf.toString());
 				ret.setLocation(sourceContext, startPos, endPos);
 				names.add(ret);
+				justProcessedEllipsis = false;
 			}
 			
 			if (afterDot == null) {
