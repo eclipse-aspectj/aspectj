@@ -527,24 +527,42 @@ public class AspectDeclaration extends TypeDeclaration {
 		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, aspectOfMethod, new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
-				// body starts here
-				codeStream.getstatic(world.makeFieldBinding(AjcMemberMaker.perSingletonField(
-						typeX)));
-				Label isNull = new Label(codeStream);
-				codeStream.dup();
-				codeStream.ifnull(isNull);
-				codeStream.areturn();
-				isNull.place();
-				
-				codeStream.incrStackSize(+1);  // the dup trick above confuses the stack counter
-				codeStream.new_(world.makeTypeBinding(AjcMemberMaker.NO_ASPECT_BOUND_EXCEPTION));
-				codeStream.dup();
-				codeStream.ldc(typeX.getNameAsIdentifier());
-				codeStream.getstatic(initFailureField);
+				// Old style aspectOf() method which confused decompilers
+//				// body starts here
+//				codeStream.getstatic(world.makeFieldBinding(AjcMemberMaker.perSingletonField(
+//						typeX)));
+//				Label isNull = new Label(codeStream);
+//				codeStream.dup();
+//				codeStream.ifnull(isNull);
+//				codeStream.areturn();
+//				isNull.place();
+//				
+//				codeStream.incrStackSize(+1);  // the dup trick above confuses the stack counter
+//				codeStream.new_(world.makeTypeBinding(AjcMemberMaker.NO_ASPECT_BOUND_EXCEPTION));
+//				codeStream.dup();
+//				codeStream.ldc(typeX.getNameAsIdentifier());
+//				codeStream.getstatic(initFailureField);
+//				codeStream.invokespecial(world.makeMethodBindingForCall(
+//					AjcMemberMaker.noAspectBoundExceptionInitWithCause()
+//				));
+//				codeStream.athrow();
+//				// body ends here
+
+                // body starts here (see end of each line for what it is doing!)
+				FieldBinding fb = world.makeFieldBinding(AjcMemberMaker.perSingletonField(typeX));
+				codeStream.getstatic(fb);                                                              // GETSTATIC
+				Label isNonNull = new Label(codeStream);
+				codeStream.ifnonnull(isNonNull);                                                       // IFNONNULL
+				codeStream.new_(world.makeTypeBinding(AjcMemberMaker.NO_ASPECT_BOUND_EXCEPTION));      // NEW
+				codeStream.dup();                                                                      // DUP
+				codeStream.ldc(typeX.getNameAsIdentifier());                                           // LDC
+				codeStream.getstatic(initFailureField);                                                // GETSTATIC
 				codeStream.invokespecial(world.makeMethodBindingForCall(
-					AjcMemberMaker.noAspectBoundExceptionInitWithCause()
-				));
-				codeStream.athrow();
+									AjcMemberMaker.noAspectBoundExceptionInitWithCause()));            // INVOKESPECIAL
+				codeStream.athrow();                                                                   // ATHROW
+				isNonNull.place();
+				codeStream.getstatic(fb);                                                              // GETSTATIC
+				codeStream.areturn();                                                                  // ARETURN
 				// body ends here
 			}});
 	}
