@@ -17,8 +17,10 @@ import java.util.*;
 
 import org.aspectj.ajdt.internal.compiler.ast.*;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
+import org.aspectj.bridge.*;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.*;
+import org.eclipse.jdt.internal.compiler.ast.*;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 
@@ -152,10 +154,20 @@ public class EclipseObjectType extends ResolvedTypeX.Name {
 		//now check all inherited pointcuts to be sure that they're handled reasonably
 		if (!isAspect()) return;
 		
-//		for (Iterator i = getSuperclass().getFields(); )
-//		XXX
+
 		
-		
+		// find all pointcuts that override ones from super and check override is legal
+		//    i.e. same signatures and greater or equal visibility
+		// find all inherited abstract pointcuts and make sure they're concretized if I'm concrete
+		// find all inherited pointcuts and make sure they don't conflict
+		getExposedPointcuts();
+
 	}
 
+	public ISourceLocation getSourceLocation() {
+		if (!(binding instanceof SourceTypeBinding)) return null;
+		SourceTypeBinding sourceType = (SourceTypeBinding)binding;
+		TypeDeclaration dec = sourceType.scope.referenceContext;
+		return new EclipseSourceLocation(dec.compilationResult, dec.sourceStart, dec.sourceEnd);
+	}
 }

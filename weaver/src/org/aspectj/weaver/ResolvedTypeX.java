@@ -248,6 +248,8 @@ public abstract class ResolvedTypeX extends TypeX {
     	
     	if (m1.getKind() == Member.FIELD) {
     		return m1.getDeclaringType().equals(m2.getDeclaringType());
+    	} else if (m1.getKind() == Member.POINTCUT) {
+    		return true;
     	}
     	
     	TypeX[] p1 = m1.getParameterTypes();
@@ -841,11 +843,11 @@ public abstract class ResolvedTypeX extends TypeX {
 					//System.err.println("       compare: " + c);
 					if (c < 0) {
 						// the existing munger dominates the new munger
-						checkLegalOverride(existingMunger.getSignature(), munger.getSignature());
+						checkLegalOverride(munger.getSignature(), existingMunger.getSignature());
 						return;
 					} else if (c > 0) {
 						// the new munger dominates the existing one
-						checkLegalOverride(munger.getSignature(), existingMunger.getSignature());
+						checkLegalOverride(existingMunger.getSignature(), munger.getSignature());
 						i.remove();
 						break;
 					} else {
@@ -875,10 +877,12 @@ public abstract class ResolvedTypeX extends TypeX {
 					int c = compareMemberPrecedence(sig, existingMember);
 					//System.err.println("   c: " + c);
 					if (c < 0) {
-						checkLegalOverride(existingMember, munger.getSignature());
+						// existingMember dominates munger
+						checkLegalOverride(munger.getSignature(), existingMember);
 						return false;
 					} else if (c > 0) {
-						checkLegalOverride(munger.getSignature(), existingMember);
+						// munger dominates existingMember
+						checkLegalOverride(existingMember, munger.getSignature());
 						//interTypeMungers.add(munger);  
 						//??? might need list of these overridden abstracts
 						continue;
@@ -900,14 +904,27 @@ public abstract class ResolvedTypeX extends TypeX {
 	}
 	
 	public boolean checkLegalOverride(ResolvedMember parent, ResolvedMember child) {
+		//System.err.println("check: " + child.getDeclaringType() + " overrides " + parent.getDeclaringType());
 		if (!parent.getReturnType().equals(child.getReturnType())) {
 			world.showMessage(IMessage.ERROR,
 				"can't override " + parent +
 				" with " + child + " return types don't match",
 				child.getSourceLocation(), parent.getSourceLocation());
 			return false;
-		}
-		if (isMoreVisible(child.getModifiers(), parent.getModifiers())) {
+		}		
+		if (parent.getKind() == Member.POINTCUT) {
+			TypeX[] pTypes = parent.getParameterTypes();
+			TypeX[] cTypes = child.getParameterTypes();
+			if (!Arrays.equals(pTypes, cTypes)) {
+				world.showMessage(IMessage.ERROR,
+					"can't override " + parent +
+					" with " + child + " parameter types don't match",
+					child.getSourceLocation(), parent.getSourceLocation());
+				return false;
+			}
+		}		
+		//System.err.println("check: " + child.getModifiers() + " more visible " + parent.getModifiers());
+		if (isMoreVisible(parent.getModifiers(), child.getModifiers())) {
 			world.showMessage(IMessage.ERROR,
 				"can't override " + parent +
 				" with " + child + " visibility is reduced",
@@ -939,13 +956,16 @@ public abstract class ResolvedTypeX extends TypeX {
 	
 
 	public static boolean isMoreVisible(int m1, int m2) {
-		if (Modifier.isPublic(m1)) return !Modifier.isPublic(m2);
-		else if (Modifier.isPrivate(m1)) return false;
-		else if (Modifier.isProtected(m1)) return !(Modifier.isPublic(m2) || Modifier.isProtected(m2));
-		else return Modifier.isPrivate(m1);
+		if (Modifier.isPrivate(m1)) return false;
+		if (isPackage(m1)) return Modifier.isPrivate(m2);
+		if (Modifier.isProtected(m1)) return /* private package */ (Modifier.isPrivate(m2) || isPackage(m2));
+		if (Modifier.isPublic(m1)) return /* private package protected */ ! Modifier.isPublic(m2);
+		throw new RuntimeException("bad modifier: " + m1);
 	}
 
-		
+	private static boolean isPackage(int i) {
+		return (0 == (i & (Modifier.PUBLIC | Modifier.PRIVATE | Modifier.PROTECTED)));
+	}
 
 	private void interTypeConflictError(
 		ConcreteTypeMunger m1,
@@ -995,4 +1015,65 @@ public abstract class ResolvedTypeX extends TypeX {
 		}
 		return true;
 	}
+	
+	public List getExposedPointcuts() {
+		List ret = new ArrayList();
+		if (getSuperclass() != null) ret.addAll(getSuperclass().getExposedPointcuts());
+
+		
+		
+		for (Iterator i = Arrays.asList(getDeclaredInterfaces()).iterator(); i.hasNext(); ) {
+			ResolvedTypeX t = (ResolvedTypeX)i.next();
+			addPointcutsResolvingConflicts(ret, Arrays.asList(t.getDeclaredPointcuts()), false);
+		}
+		addPointcutsResolvingConflicts(ret, Arrays.asList(getDeclaredPointcuts()), true);
+		for (Iterator i = ret.iterator(); i.hasNext(); ) {
+			ResolvedPointcutDefinition inherited = (ResolvedPointcutDefinition)i.next();
+			if (inherited.isAbstract()) {
+				if (!this.isAbstract()) {
+					getWorld().showMessage(IMessage.ERROR,
+						"inherited abstract pointcut " + inherited + 
+						" is not made concrete in " + this.getName(),
+						inherited.getSourceLocation(), this.getSourceLocation());
+				}
+			}
+		}		
+		
+		
+		return ret;
+	}
+	
+	private void addPointcutsResolvingConflicts(List acc, List added, boolean isOverriding) {
+		for (Iterator i = added.iterator(); i.hasNext();) {
+			ResolvedPointcutDefinition toAdd =
+				(ResolvedPointcutDefinition) i.next();
+			for (Iterator j = acc.iterator(); j.hasNext();) {
+				ResolvedPointcutDefinition existing =
+					(ResolvedPointcutDefinition) j.next();
+				if (existing == toAdd) continue;
+				if (!isVisible(existing.getModifiers(),
+					existing.getDeclaringType().resolve(getWorld()),
+					this)) {
+					continue;
+				}
+				if (conflictingSignature(existing, toAdd)) {
+					if (isOverriding) {
+						checkLegalOverride(existing, toAdd);
+						j.remove();
+					} else {
+						getWorld().showMessage(
+							IMessage.ERROR,
+							"conflicting inherited pointcuts in "
+								+ this.getName() + toAdd.getSignature(),
+							existing.getSourceLocation(),
+							toAdd.getSourceLocation());
+						j.remove();
+					}
+				}
+			}
+			acc.add(toAdd);
+		}
+	}
+	
+	public ISourceLocation getSourceLocation() { return null; }
 }

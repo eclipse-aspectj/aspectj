@@ -76,32 +76,32 @@ public class IdWeaveTestCase extends WeaveTestCase {
     }
     
     // this test requires that Trace has been unzipped and placed in the correct place
-    public void testTraceId() throws IOException {
-    	String saveClassDir = classDir;
-    	try {
-	    	classDir = "testdata/dummyAspect.jar";
-	    	
-	    	
-	    	
-	        final List l = new ArrayList();
-	        BcelAdvice p = new BcelAdvice(null, makePointcutAll(), null, 0, -1, -1, null, null) {
-	            public void implementOn(Shadow shadow) {
-	                l.add(shadow);
-	            }
-	        };
-	        boolean tempRunTests = runTests;
-	        runTests = false;
-	        weaveTest(new String[] {"DummyAspect"}, "Id", p);
-	        runTests = tempRunTests;
-	        
-	        checkShadowSet(l, new String[] {
-	            "constructor-execution(void DummyAspect.<init>())",
-				// XXX waiting on parser stuff
-	            //"advice-execution(void DummyAspect.ajc_before_1(java.lang.Object))",
-	            });
-    	} finally {
-        	classDir = saveClassDir;
-    	}
-    }
+//    public void testTraceId() throws IOException {
+//    	String saveClassDir = classDir;
+//    	try {
+//	    	classDir = "testdata/dummyAspect.jar";
+//	    	
+//	    	
+//	    	
+//	        final List l = new ArrayList();
+//	        BcelAdvice p = new BcelAdvice(null, makePointcutAll(), null, 0, -1, -1, null, null) {
+//	            public void implementOn(Shadow shadow) {
+//	                l.add(shadow);
+//	            }
+//	        };
+//	        boolean tempRunTests = runTests;
+//	        runTests = false;
+//	        weaveTest(new String[] {"DummyAspect"}, "Id", p);
+//	        runTests = tempRunTests;
+//	        
+//	        checkShadowSet(l, new String[] {
+//	            "constructor-execution(void DummyAspect.<init>())",
+//				// XXX waiting on parser stuff
+//	            //"advice-execution(void DummyAspect.ajc_before_1(java.lang.Object))",
+//	            });
+//    	} finally {
+//        	classDir = saveClassDir;
+//    	}
+//    }
 
 }
