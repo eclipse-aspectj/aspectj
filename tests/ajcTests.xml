@@ -6964,4 +6964,11 @@
 		  <message kind="error" line="8"/>
         </compile>
     </ajc-test>     
+
+    <ajc-test dir="bugs" pr="44586"
+      title="After throwing advice on ctors doesn't execute for inter-type decl field inits">
+        <compile files="AfterThrowingCtor.java">
+        </compile>
+  		<run class="AfterThrowingCtor"/>
+    </ajc-test>
 </suite>
