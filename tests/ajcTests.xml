@@ -5315,4 +5315,80 @@
         -->
     </ajc-test>
     
+    
+    <ajc-test dir="new" pr="774"
+      title="interface self-reference in anonymous instance">
+        <compile files="AnonymousSelfReference.java"/>
+        <run class="AnonymousSelfReference"/>
+    </ajc-test>
+    
+    <ajc-test dir="new" pr="776"
+      title="self-reference from (aspect-declared) method-local class">
+        <compile files="MethodSelfReference.java"/>
+        <run class="MethodSelfReference"/>
+    </ajc-test>
+    
+    <ajc-test dir="new" title="expect CE for unterminated declare error">
+        <compile files="UnterminatedDeclareErrorCE.java">
+            <message kind="error" line="5"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="new"
+      title="expect CE for declaration collision between subaspects instead of domination order">
+        <compile files="DeclarationCollisionCE.java">
+            <message kind="error" line="10"/>
+            <message kind="error" line="20"/>
+            <message kind="error" line="27"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="new"
+      title="subtype pattern in dominates should pick out aspect subtypes">
+        <compile files="DominatesTypePattern.java"/>
+        <run class="DominatesTypePattern"/>
+    </ajc-test>
+    
+    <ajc-test dir="new"
+      title="subtype pattern in dominates will conflict with type pattern">
+        <compile files="DominatesTypePatternCE.java">
+        	<message kind="error" line="15"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="new" pr="827"
+      title="after returning advice on interface and implementation constructor"
+      keywords="tofix">
+        <compile files="AfterReturningConstructor.java"/>
+        <run class="AfterReturningConstructor"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="832"
+      title="after throwing advice with non-throwable formal">
+        <compile files="AfterThrowingNonThrowable.java">
+            <message kind="error" line="41"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="new" pr="829" title="declare array field using postfix"
+      keywords="tofix">
+        <compile files="ArrayFieldDeclaration.java">
+            <message kind="error" line="17"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="new" pr="851"
+      title="prohibit declaring new aspect constructor with arguments">
+        <compile files="DeclareAspectConstructorCE.java">
+          <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="851"
+      title="prohibit declaring only aspect constructor with arguments">
+        <compile files="DeclareOnlyAspectConstructorCE.java">
+          <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
+    
 </suite>

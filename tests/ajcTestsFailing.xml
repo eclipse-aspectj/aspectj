@@ -2,45 +2,7 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 
 <suite>
-    <ajc-test dir="new" pr="774"
-      title="interface self-reference in anonymous instance (correct test in knownbugs)"
-      keywords="tofix"
-      comment="correct behavior for 1.0 is good error message, see real test in knownbugs">
-        <compile files="AnonymousSelfReference.java">
-            <message kind="error" line="17"/>
-        </compile>
-    </ajc-test>
 
-    <ajc-test dir="new" pr="776"
-      title="self-reference from (aspect-declared) method-local class (correct test in knownbugs)"
-      keywords="tofix"
-      comment="correct behavior for 1.0 is good error message, see real test in knownbugs">
-        <compile files="MethodSelfReference.java">
-            <message kind="error" line="16"/>
-        </compile>
-    </ajc-test>
-
-    <ajc-test dir="new" title="expect CE for unterminated declare error"
-      keywords="tofix">
-        <compile files="UnterminatedDeclareErrorCE.java">
-            <message kind="error" line="7"/>
-        </compile>
-    </ajc-test>
-
-    <ajc-test dir="new"
-      title="expect CE for declaration collision between subaspects instead of domination order"
-      keywords="tofix">
-        <compile files="DeclarationCollisionCE.java">
-            <message kind="error" line="28"/>
-        </compile>
-    </ajc-test>
-
-    <ajc-test dir="new"
-      title="subtype pattern in dominates should pick out aspect subtypes"
-      keywords="tofix">
-        <compile files="DominatesTypePattern.java"/>
-        <run class="DominatesTypePattern"/>
-    </ajc-test>
     <ajc-test dir="new"
       title="unmatched type name in a declare parents should result in a warning in -Xlint mode"
       keywords="tofix">
@@ -57,25 +19,6 @@
         <run class="AspectStaticInit"/>
     </ajc-test>
 
-    <ajc-test dir="new" pr="827"
-      title="after returning advice on interface and implementation constructor"
-      keywords="tofix">
-        <compile files="AfterReturningConstructor.java"/>
-        <run class="AfterReturningConstructor"/>
-    </ajc-test>
-
-    <ajc-test dir="new" pr="832"
-      title="after throwing advice with non-throwable formal"
-      keywords="tofix">
-        <compile files="AfterThrowingNonThrowable.java"/>
-        <run class="AfterThrowingNonThrowable"/>
-    </ajc-test>
-
-    <ajc-test dir="new" pr="829" title="declare array field using postfix"
-      keywords="tofix">
-        <compile files="ArrayFieldDeclaration.java"/>
-        <run class="ArrayFieldDeclaration"/>
-    </ajc-test>
 
     <ajc-test dir="new" pr="838"
       title="checking around join point for advice return type - numeric"
@@ -87,21 +30,8 @@
 
     <ajc-test dir="new" pr="836" title="void around advice without proceed"
       keywords="tofix">
-        <compile files="VoidAround.java"/>
-        <run class="VoidAround"/>
-    </ajc-test>
-
-    <ajc-test dir="new" pr="851"
-      title="prohibit declaring new aspect constructor with arguments">
-        <compile files="DeclareAspectConstructorCE.java">
-          <message kind="error" line="10"/>
-        </compile>
-    </ajc-test>
-
-    <ajc-test dir="new" pr="851"
-      title="prohibit declaring only aspect constructor with arguments">
-        <compile files="DeclareOnlyAspectConstructorCE.java">
-          <message kind="error" line="10"/>
+        <compile files="VoidAround.java">
+            <message kind="error" line="29"/>
         </compile>
     </ajc-test>
 
