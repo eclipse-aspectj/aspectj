@@ -36,7 +36,7 @@ declare error : staticinitialization(SoughtException+)
     && ! staticinitialization(SoughtException)    
     && ! staticinitialization(Throwable+) :
     "all SoughtException must be subclasses of Throwable";
-//  END-SAMPLE declares-typeConstraints Using declare to enforce type constraints
+//  END-SAMPLE declares-typeConstraints 
 }
 
 // START-SAMPLE declares-exceptionSpelunking Using declare warning to find Exception-related code
