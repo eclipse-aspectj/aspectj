@@ -21,6 +21,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
 import org.aspectj.ajde.Ajde;
+import org.aspectj.ajde.ui.IStructureViewNode;
 
 /**
  * @author  Mik Kersten
@@ -54,7 +55,8 @@ class StructureViewTreeListener implements TreeSelectionListener, MouseListener 
 		
 		//if (e.getClickCount() == 2) {
 		Ajde.getDefault().getStructureViewManager().fireNavigationAction(
-			treeNode.getStructureNode()
+			treeNode.getStructureNode(),
+			treeNode.getKind() == IStructureViewNode.Kind.LINK
 		);
 		//}
     }   

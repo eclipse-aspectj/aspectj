@@ -39,10 +39,6 @@ public class StructureViewManager {
     public final IHierarchyListener VIEW_LISTENER = new IHierarchyListener() {
         public void elementsUpdated(IHierarchy model) {        	
         	Ajde.getDefault().logEvent("updating structure views: " + structureViews);
-//        	
-//        	if (defaultFileView != null) {
-//        		defaultFileView.setSourceFile(Ajde.getDefault().getEditorManager().getCurrFile());
-//        	}
         	
         	for (Iterator it = structureViews.iterator(); it.hasNext(); ) {
         		treeViewBuilder.buildView((StructureView)it.next(), (AspectJElementHierarchy)model);
@@ -97,17 +93,8 @@ public class StructureViewManager {
 	/**
 	 * History is recorded for {@link LinkNode} navigations.
 	 */
-	public void fireNavigationAction(IProgramElement IProgramElement) {
-		IProgramElement node = null;
-		boolean recordHistory = false;
-//		if (IProgramElement instanceof LinkNode) {
-//			node = ((LinkNode)IProgramElement).getProgramElementNode();
-//			recordHistory = true;
-//		} else 
-		if (IProgramElement instanceof IProgramElement) {
-			node = (IProgramElement)IProgramElement;
-		}
-		if (node != null) navigationAction(node, recordHistory);
+	public void fireNavigationAction(IProgramElement pe, boolean isLink) {
+		navigationAction(pe, isLink);
 	}
 
 	/**
@@ -116,11 +103,7 @@ public class StructureViewManager {
 	 * along with the corresponding sourceline.
 	 */ 
 	private void navigationAction(IProgramElement node, boolean recordHistory) { 
-		if (node == null 
-			|| node == IHierarchy.NO_STRUCTURE) {
-			Ajde.getDefault().getIdeUIAdapter().displayStatusInformation("Source not available for node: " + node.getName());
-			return;    	
-		}
+		if (node == null) return;    	
 		Ajde.getDefault().logEvent("navigating to node: " + node + ", recordHistory: " + recordHistory);
 		if (recordHistory) historyModel.navigateToNode(node); 
     	if (defaultFileView != null && node.getSourceLocation() != null) {
@@ -148,16 +131,6 @@ public class StructureViewManager {
 	    		}	
     		}
     	}
-	}
-	
-	private IProgramElement getProgramElementNode(IStructureViewNode node) {
-		if (node.getStructureNode() instanceof IProgramElement) {
-			return (IProgramElement)node.getStructureNode();	
-//		} else if (node.getStructureNode() instanceof LinkNode) {
-//			return ((LinkNode)node.getStructureNode()).getProgramElementNode();	
-		} else {
-			return null;
-		}	
 	}
 	
 	public void refreshView(StructureView view) {
@@ -220,8 +193,6 @@ public class StructureViewManager {
 		AVAILABLE_RELATIONS = new ArrayList();
         AVAILABLE_RELATIONS.add(IRelationship.Kind.ADVICE);
 		AVAILABLE_RELATIONS.add(IRelationship.Kind.DECLARE);
-//        AVAILABLE_RELATIONS.add(IRelationship.Kind.INHERITANCE);
-//        AVAILABLE_RELATIONS.add(IRelationship.Kind.REFERENCE);
         
         DEFAULT_VIEW_PROPERTIES = new StructureViewProperties();
         DEFAULT_VIEW_PROPERTIES.setRelations(AVAILABLE_RELATIONS);

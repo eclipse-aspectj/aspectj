@@ -73,12 +73,13 @@ public abstract class StructureView {
 		return findCorrespondingViewNodeHelper(rootNode, node);
 	}
 
-	private IStructureViewNode findCorrespondingViewNodeHelper(IStructureViewNode node, IProgramElement pNode) {
-		
+	private IStructureViewNode findCorrespondingViewNodeHelper(IStructureViewNode node, IProgramElement pNode) {		
 		if (node != null
 			&& node.getStructureNode() != null 
-			&& node.getStructureNode().equals(pNode)) {
-			return node;	
+			&& node.getStructureNode().equals(pNode)
+			&& node.getKind() == IStructureViewNode.Kind.DECLARATION) {	
+				
+			return node;	  
 		} 
 		
 		if (node != null && node.getChildren() != null) {

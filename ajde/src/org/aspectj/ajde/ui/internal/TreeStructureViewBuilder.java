@@ -337,9 +337,9 @@ public class TreeStructureViewBuilder {
                     IProgramElement child = (IProgramElement)itt.next();
                     if (child instanceof IProgramElement) {
                         IProgramElement progNode = (IProgramElement)child;
-                        if (progNode.getKind() != IProgramElement.Kind.CODE) {
+//                        if (progNode.getKind() != IProgramElement.Kind.CODE) {
                             childList.add(buildTree(child, associations));
-                        }
+//                        }
                     } else {
                         childList.add(buildTree(child, associations));
                     }
