@@ -530,6 +530,21 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
     }
     
     /**
+     * Note: Only overridden by Name subtype
+     */
+	public void addAnnotation(AnnotationX annotationX) {
+		throw new RuntimeException("ResolvedTypeX.addAnnotation() should never be called");
+	}
+	
+	/**
+	 * Note: Only overridden by Name subtype
+	 */
+	public AnnotationX[] getAnnotations() {
+		throw new RuntimeException("ResolvedTypeX.getAnnotations() should never be called");
+	}
+
+    
+    /**
      * Note: Only overridden by Name subtype.
      */
     public boolean isAnnotationWithRuntimeRetention() {
@@ -626,6 +641,13 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 	    	return delegate.isClass();
 	    }
 
+	    public AnnotationX[] getAnnotations() {
+	    	return delegate.getAnnotations();
+	    }
+	    
+	    public void addAnnotation(AnnotationX annotationX) {
+	    	delegate.addAnnotation(annotationX);
+	    }
 	    public boolean hasAnnotation(TypeX ofType) {
 	    	return delegate.hasAnnotation(ofType);
 	    }
@@ -789,7 +811,8 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
             this.exposedToWeaver = exposedToWeaver;
         }
 	        
-	    public final boolean isClass() {
+
+		public final boolean isClass() {
 	    	return !isAspect() && !isInterface();
 	    }
 	    
@@ -799,6 +822,8 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 	    public abstract boolean isAnnotation();
 	    public abstract boolean isAnnotationWithRuntimeRetention();
 	    
+	    public abstract AnnotationX[] getAnnotations();
+		public abstract void addAnnotation(AnnotationX annotationX);
 	    public abstract boolean hasAnnotation(TypeX ofType);
 	    public abstract ResolvedTypeX[] getAnnotationTypes();
 
