@@ -22,17 +22,15 @@
        2002 Palo Alto Research Center, Incorporated. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated on the web November 26, 2002.
+  <para>Last updated December 31, 2002.
   </para>
   <para>
    
    For a list of recently-updated FAQ entries, see <xref linkend="q:faqchanges"/>
    AspectJ 1.1 is currently in development, and 
    some answers may change after it is released;  
-   for more information, see the 
-     <ulink url="http://aspectj.org/doc/readme11/index.html">AspectJ 1.1 README</ulink>.
-   This is a web-only distribution of the FAQ; the 1.0 documentation bundle
-   contains an earlier version.
+   for more information, see the README
+   included with the AspectJ 1.1 distribution.
   </para>
   <qandaset defaultlabel="number">
     <qandadiv id="overview" xreflabel="Overview">
@@ -1940,6 +1938,38 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
           </para>
         </question>
         <answer>
+          <para>
+	    Briefly, there are two interesting times when a constructor or method is
+	    run.  Those times are when it is called, and when it actually
+	    executes.
+          </para>
+          <para>
+	    The main difference is that a call join point happens outside of
+	    the object (for non-static methods) or class (for static methods
+	    and constructors), and that an execution join point happens inside
+	    the object or class.  This means that the <literal>within</literal>
+	    and <literal>withincode</literal> pointcuts pick them out
+	    differently: A call join point is picked out within the caller,
+	    while an execution join point is picked
+	    out where it is actually defined.
+          </para>
+          <para>
+	    A call join point is the ``outermost'' join point for a particular
+	    call.  Once a call join point proceeds, then a number of different
+	    things happen.  For non-static methods, for example, method
+	    dispatch happens, which will cause one method execution join point
+	    -- perhaps more, if there are super calls.  For constructors, the
+	    super constructor is called, and fields are initialized, and then
+	    various constructor execution join points will occur.
+          </para>
+          <para>
+	    A call join point matches only the ``external'' calls of a method
+	    or constructor, based on a signature, and it does not pick out
+	    calls made with <literal>super</literal>, or
+	    <literal>this</literal> constructor calls.
+          </para>
+          <para>Here's more detail:
+          </para>
           <para>Consider method execution in Java as (1) the initial call from
                 this object to some method on the target object with a
                 particular signature; and (2) the execution of the actual code
@@ -2003,46 +2033,6 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
             They differ only in that the <literal>cflowbelow()</literal>
 	    pointcut designator does not pick out the join points
 	    specified, while <literal>cflow()</literal> does.
-          </para>
-        </answer>
-      </qandaentry>
-      <qandaentry>
-        <question id="q:compareccallandexecution"
-            xreflabel="Q:What is the difference between call and execution?">
-          <para>
-            What is the difference between call and execution?
-          </para>
-        </question>
-        <answer>
-          <para>
-	    There are two interesting times when a constructor or method is
-	    run.  Those times are when it is called, and when it actually
-	    executes.
-          </para>
-          <para>
-	    The main difference is that a call join point happens outside of
-	    the object (for non-static methods) or class (for static methods
-	    and constructors), and that an execution join point happens inside
-	    the object or class.  This means that the <literal>within</literal>
-	    and <literal>withincode</literal> pointcuts pick them out
-	    differently: A call join point is picked out within the caller,
-	    while an execution join point is picked
-	    out where it is actually defined.
-          </para>
-          <para>
-	    A call join point is the ``outermost'' join point for a particular
-	    call.  Once a call join point proceeds, then a number of different
-	    things happen.  For non-static methods, for example, method
-	    dispatch happens, which will cause one method execution join point
-	    -- perhaps more, if there are super calls.  For constructors, the
-	    super constructor is called, and fields are initialized, and then
-	    various constructor execution join points will occur.
-          </para>
-          <para>
-	    A call join point matches only the ``external'' calls of a method
-	    or constructor, based on a signature, and it does not pick out
-	    calls made with <literal>super</literal>, or
-	    <literal>this</literal> constructor calls.
           </para>
         </answer>
       </qandaentry>
@@ -2139,6 +2129,57 @@ class Test extends Super implements I {
         the call (because it has not been constructed yet), so you
         might prefer to use the <literal>initialization</literal> 
         pointcut designator.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:adviseconstructors"
+            xreflabel="Q:How do I work with an object right when it is created?">
+          <para>How do I work with an object right when it is created?
+          </para>
+        </question>
+        <answer>
+          <para>
+          You can advise some form of constructor join point.
+          Constructors are tricky in Java, and that's exposed in AspectJ.  
+          Here are some rules of thumb:
+          <itemizedlist>
+            <listitem>
+              <para>If you want the join point on the "outside" of object creation, 
+              use after returning from call to the constructor:
+              </para>
+              <programlisting>
+    after() returning (Foo newlyCreatedObject): call(Foo.new(..)) { ... }
+              </programlisting>
+              <para>
+  You might be tempted to use "this" or "target" to expose the new object, but remember
+  that if you're on the "outside" of object creation, the object itself might not be
+  created yet... it only exists "on the way out", when you return the object.
+              </para>
+            </listitem>
+            <listitem> 
+              <para>If you want the join point inside a particular constructor, use:
+              </para>
+              <programlisting>
+    after(Foo newlyCreatedObject) returning: this(newlyCreatedObject) &amp;&amp; execution(Foo.new(..)) { ... }
+              </programlisting>
+              <para>
+    Remember, though, that if you use "before" advice here, the body of the constructor
+    will not have run, and so the object may be somewhat uninitialized.
+              </para>
+            </listitem>
+            <listitem> 
+              <para>
+    In the rare case that there are all sorts of constructors for the object that call 
+    each other with <literal>this(...)</literal> and you want exactly one join point 
+    for each initialization of <literal>Foo</literal>, regardless of the path of 
+    constructors it takes, then use:
+              </para>
+              <programlisting>
+    after(Foo f) returning: this(f) &amp;&amp; initialization(Foo.new(..)) { ... }
+              </programlisting>
+            </listitem> 
+          </itemizedlist>
           </para>
         </answer>
       </qandaentry>
@@ -3120,23 +3161,9 @@ If it seems to be a bug in the compiler,
         </question>
         <answer>
           <para>
-   Entries changed since the earlier September 13 version:
+   Entries changed since the earlier November 26 version:
             <itemizedlist>
-        <listitem><para><xref linkend="q:ajdocneeds13"/></para></listitem>
-        <listitem><para><xref linkend="q:idebugs"/></para></listitem>
-        <listitem><para><xref linkend="q:ajcbugs"/></para></listitem>
-        <listitem><para><xref linkend="q:searchingsite"/></para></listitem>
-        <listitem><para><xref linkend="q:bytecodeweaving"/></para></listitem>
-        <listitem><para><xref linkend="q:differences"/></para></listitem>
-        <listitem><para><xref linkend="q:schedule"/></para></listitem>
-        <listitem><para><xref linkend="q:aopinjava"/></para></listitem>
-        <listitem><para><xref linkend="q:aspectjandj2ee"/></para></listitem>
-        <listitem><para><xref linkend="q:applets"/></para></listitem>
-        <listitem><para><xref linkend="q:packagedeclares"/></para></listitem>
-        <listitem><para><xref linkend="q:writingbugsandemails"/></para></listitem>
-        <listitem><para><xref linkend="q:andingpointcuts"/></para></listitem>
-        <listitem><para><xref linkend="q:idesupportplans"/></para></listitem>
-        <listitem><para><xref linkend="q:opensource"/></para></listitem>
+        <listitem><para><xref linkend="q:adviseconstructors"/></para></listitem>
             </itemizedlist>
           </para>
         </answer>
