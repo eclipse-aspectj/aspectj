@@ -67,6 +67,14 @@ public class Main {
     + "at http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ" + LangUtil.EOL
     + "To make the bug a priority, please include a test program" + LangUtil.EOL
     + "that can reproduce this exception."  + LangUtil.EOL;
+
+	private static final String OUT_OF_MEMORY_MSG
+		= "AspectJ " + Version.text + " ran out of memory during compilation:" + LangUtil.EOL + LangUtil.EOL
+		  + "Please increase the memory available to ajc by editing the ajc script " + LangUtil.EOL
+		  + "found in your AspectJ installation directory. The -Xmx parameter value" + LangUtil.EOL
+		  + "should be increased from 64M (default) to 128M or even 256M." + LangUtil.EOL + LangUtil.EOL
+		  + "See the AspectJ FAQ available from the documentation link" + LangUtil.EOL
+		  + "on the AspectJ home page at http://www.eclipse.org/aspectj";
     
     /** @param args the String[] of command-line arguments */
     public static void main(String[] args) throws IOException {
@@ -153,7 +161,16 @@ public class Main {
                 ourHandler.setInterceptor(MessagePrinter.TERSE);
             }
         }
-        run(args, holder);
+        
+        // make sure we handle out of memory gracefully...
+        try {
+        	// byte[] b = new byte[100000000]; for testing OoME only!
+        	run(args, holder);
+        } catch (OutOfMemoryError outOfMemory) {
+        	IMessage outOfMemoryMessage = new Message(OUT_OF_MEMORY_MSG,null,true);
+        	holder.handleMessage(outOfMemoryMessage);
+        	systemExit(holder);  // we can't reasonably continue from this point.
+        }
 
         boolean skipExit = false;
         if (useSystemExit && !LangUtil.isEmpty(args)) {  // sigh - pluck -noExit
