@@ -13,18 +13,19 @@
 
 package org.aspectj.asm.internal;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 import org.aspectj.asm.*;
 import org.aspectj.bridge.*;
-import org.aspectj.bridge.IMessage.Kind;
 
 
 /**
  * @author Mik Kersten
  */
 public class ProgramElement implements IProgramElement {
+		
+	static final String ID_DELIM = "|";
 		
 	protected IProgramElement parent = null;
 	protected String name = "";
@@ -389,6 +390,22 @@ public class ProgramElement implements IProgramElement {
 			label += ": " + details;
 		} 
 		return label;
+	}
+
+	// TODO: determine if using canonical path incurrs performance overhead
+	public static String createHandleIdentifier(File sourceFile, int line,int column) {
+		try {
+			StringBuffer sb = new StringBuffer();
+			sb.append(sourceFile.getCanonicalPath());
+			sb.append(ID_DELIM);
+			sb.append(line);
+			sb.append(ID_DELIM);
+			sb.append(column);
+			return sb.toString();		
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+			return null;
+		}
 	}
 
 	public String getHandleIdentifier() {

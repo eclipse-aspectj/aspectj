@@ -24,8 +24,6 @@ import org.aspectj.bridge.*;
  */
 public interface IProgramElement extends Serializable {
 	
-	public static final String ID_DELIM = "|";
-	
 	public List/*IProgramElement*/ getChildren();
 
 	public void setChildren(List children);	

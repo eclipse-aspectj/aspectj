@@ -13,11 +13,10 @@
 
 package org.aspectj.weaver;
 
-import java.io.IOException;
 import java.util.*;
 
 import org.aspectj.asm.*;
-import org.aspectj.asm.internal.*;
+import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.*;
 
 public class AsmAdviceRelationshipProvider {
@@ -40,28 +39,23 @@ public class AsmAdviceRelationshipProvider {
 			}
 			IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
 			IProgramElement targetNode = getNode(AsmManager.getDefault().getHierarchy(), shadow);
-			try {
-				if (advice.getSourceLocation() != null && targetNode != null) {
-					String adviceHandle =
-						advice.getSourceLocation().getSourceFile().getCanonicalPath()
-						+ IProgramElement.ID_DELIM + advice.getSourceLocation().getLine()
-						+ IProgramElement.ID_DELIM + advice.getSourceLocation().getColumn();
+			if (advice.getSourceLocation() != null && targetNode != null) {
+				String adviceHandle = ProgramElement.createHandleIdentifier(
+					advice.getSourceLocation().getSourceFile(),
+					advice.getSourceLocation().getLine(),
+					advice.getSourceLocation().getColumn());
+		
+				if (targetNode != null) {
+					String targetHandle = targetNode.getHandleIdentifier();	
+				
+					IRelationship foreward = mapper.get(adviceHandle, IRelationship.Kind.ADVICE, ADVISES);
+					if (foreward != null) foreward.getTargets().add(targetHandle);
 					
-									
-			
-					if (targetNode != null) {
-						String targetHandle = targetNode.getHandleIdentifier();	
-					
-						IRelationship foreward = mapper.get(adviceHandle, IRelationship.Kind.ADVICE, ADVISES);
-						if (foreward != null) foreward.getTargets().add(targetHandle);
-						
-						IRelationship back = mapper.get(targetHandle, IRelationship.Kind.ADVICE, ADVISED_BY);
-						if (back != null) back.getTargets().add(adviceHandle);
-					}
+					IRelationship back = mapper.get(targetHandle, IRelationship.Kind.ADVICE, ADVISED_BY);
+					if (back != null) back.getTargets().add(adviceHandle);
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+
 		}
 	}
 

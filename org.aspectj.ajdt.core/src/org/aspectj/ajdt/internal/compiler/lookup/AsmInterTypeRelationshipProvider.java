@@ -12,10 +12,10 @@
  
 package org.aspectj.ajdt.internal.compiler.lookup;
 
-import java.util.*;
+import java.io.IOException;
 
 import org.aspectj.asm.*;
-import org.aspectj.asm.internal.Relationship;
+import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.weaver.*;
 
 /**
@@ -23,7 +23,7 @@ import org.aspectj.weaver.*;
  */
 public class AsmInterTypeRelationshipProvider {
 
-	public static final String INTER_TYPE_DECLARES = "declares on";
+	public static final String INTER_TYPE_DECLARES = "declared on";
 	public static final String INTER_TYPE_DECLARED_BY = "aspect declarations";
 
 	public static void addRelationship(
@@ -43,25 +43,25 @@ public class AsmInterTypeRelationshipProvider {
 	
 		if (munger.getSourceLocation() != null
 			&& munger.getSourceLocation() != null) {
-			String sourceHandle = 
-				munger.getSourceLocation().getSourceFile().getAbsolutePath() + IProgramElement.ID_DELIM
-				+ munger.getSourceLocation().getLine() + IProgramElement.ID_DELIM
-				+ munger.getSourceLocation().getColumn();
+			String sourceHandle = ProgramElement.createHandleIdentifier(
+				munger.getSourceLocation().getSourceFile(),
+				munger.getSourceLocation().getLine(),
+				munger.getSourceLocation().getColumn());
 				
-			String targetHandle = 
-				onType.getSourceLocation().getSourceFile().getAbsolutePath() + IProgramElement.ID_DELIM
-				+ onType.getSourceLocation().getLine() + IProgramElement.ID_DELIM
-				+ onType.getSourceLocation().getColumn();
-	
+			String targetHandle = ProgramElement.createHandleIdentifier(
+				onType.getSourceLocation().getSourceFile(),
+				onType.getSourceLocation().getLine(),
+				onType.getSourceLocation().getColumn());
+				
+//				System.err.println(">> putting: " + sourceHandle + ", to " + targetHandle);
 			IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
 			if (sourceHandle != null && targetHandle != null) {
-				IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.ADVICE, INTER_TYPE_DECLARES);
+				IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARES);
 				foreward.getTargets().add(targetHandle);
 				
-				IRelationship back = mapper.get(targetHandle, IRelationship.Kind.ADVICE, INTER_TYPE_DECLARED_BY);
-				back.getTargets().add(sourceHandle);
+				IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARED_BY);
+				back.getTargets().add(sourceHandle);  
 			}
 		}
 	}
-
 }

@@ -111,4 +111,8 @@ public class RelationshipMap extends HashMap implements IRelationshipMap {
 		put(source.getHandleIdentifier(), relationship);
 	}
 
+	public void clear() {
+		super.clear();
+	}
+
 }

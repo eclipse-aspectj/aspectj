@@ -55,7 +55,7 @@ aspect AdvisesRelationshipCoverage {
 	pointcut getP(): get(int *.*);
 	before(): getP() { }
 
-	pointcut setP(): set(int *.*);
+	pointcut setP(): set(int *.*) && !set(int *.xxx);
 	before(): setP() { }
 
 	pointcut initializationP(): initialization(Point.new(..));

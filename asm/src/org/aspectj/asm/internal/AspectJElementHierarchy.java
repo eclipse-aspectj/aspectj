@@ -270,7 +270,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 	
 	// TODO: optimize this lookup
 	public IProgramElement findElementForHandle(String handle) {
-		StringTokenizer st = new StringTokenizer(handle, IProgramElement.ID_DELIM);
+		StringTokenizer st = new StringTokenizer(handle, ProgramElement.ID_DELIM);
 		String file = st.nextToken();
 		int line = new Integer(st.nextToken()).intValue();
 		int col = new Integer(st.nextToken()).intValue();

@@ -64,5 +64,10 @@ public interface IRelationshipMap extends Serializable {
 	public void remove(String handle, IRelationship relationship);
 	
 	public void removeAll(String source);
+	
+	/**
+	 * Clear all of the relationships in the map.
+	 */
+	public void clear();
  
 }
