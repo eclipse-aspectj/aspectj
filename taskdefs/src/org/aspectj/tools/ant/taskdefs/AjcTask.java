@@ -1727,7 +1727,9 @@ public class AjcTask extends MatchingTask {
             } else if ("-time".equals(flag)) {
                 setTime(true);
             } else if ("-verbose".equals(flag)) {
-                setVerbose(true);
+                setVerbose(true); 
+            } else if ("-showWeaveInfo".equals(flag)) {
+                setShowWeaveInfo(true);
             } else if ("-version".equals(flag)) {
                 setVersion(true);
             } else if ("-warn".equals(flag)) {
