@@ -6477,5 +6477,27 @@
 		<compile files="PointcutLibraryTest.java"/>
 		<run class="PointcutLibraryTest"/>
 	</ajc-test>
+	
+	<ajc-test dir="bugs"
+		pr="40858"
+		comment="super is not permitted in pointcuts in 1.1"
+		title="weaver trace on mis-qualified pointcut reference">
+		<compile files="SuperPointcutCE.java">
+			<message kind="error" line="23"/>
+			<message kind="error" line="26"/>
+		</compile>
+	</ajc-test>
+
+	<ajc-test dir="bugs"
+		pr="40814"
+		title="compile error expected for interface pointcuts">
+		<compile files="AbstractPointcutCE.java">
+			<message kind="error" line="7"/>
+			<message kind="error" line="11"/>		
+			<message kind="error" line="15"/>
+		</compile>
+	</ajc-test>
+
+
 
 </suite>

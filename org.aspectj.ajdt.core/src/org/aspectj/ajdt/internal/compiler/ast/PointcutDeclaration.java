@@ -19,6 +19,8 @@ import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.eclipse.jdt.internal.compiler.ClassFile;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -72,8 +74,20 @@ public class PointcutDeclaration extends MethodDeclaration {
 		this.declaredName = new String(selector);
 		selector = CharOperation.concat(mangledPrefix, '$', selector, '$',
 				Integer.toHexString(sourceStart).toCharArray());
-		if (pointcutDesignator == null) return; //XXX
-		pointcutDesignator.postParse(typeDec, this);
+				
+		if (Modifier.isAbstract(this.declaredModifiers) && 
+			!(typeDec instanceof AspectDeclaration))
+		{
+			typeDec.scope.problemReporter().signalError(sourceStart, sourceEnd, 
+				"The abstract pointcut " + new String(declaredName) +
+				" can only be defined in an aspect");
+			ignoreFurtherInvestigation = true;
+			return;
+		}
+		
+		if (pointcutDesignator != null) {
+			pointcutDesignator.postParse(typeDec, this);
+		}
 	}
 
 	public void resolveStatements() {
@@ -86,7 +100,9 @@ public class PointcutDeclaration extends MethodDeclaration {
 
 		if (Modifier.isAbstract(this.declaredModifiers)&& (pointcutDesignator != null)) {
 			scope.problemReporter().signalError(sourceStart, sourceEnd, "abstract pointcut can't have body");
-		} 
+			ignoreFurtherInvestigation = true;
+			return;
+		}
 		
 		if (pointcutDesignator != null) {
 			pointcutDesignator.finishResolveTypes(this, this.binding, arguments.length, 

@@ -1,6 +1,6 @@
 
 
-public class MissingTypeSigatureCE {
+public class SuperPointcutCE {
     public static void main(String[] a) {
         new C().run();
     }
@@ -20,7 +20,7 @@ abstract aspect AA {
 /** @testcase PR#40858 weaver trace on mis-qualified pointcut reference */
 aspect B extends AA {
     
-    pointcut pc() : super.pc() 
+    pointcut pc() : super.pc()        // CE super not allowed in 1.1
         && !call(void println(..));
         
     pointcut blah() : UnknownType.pc();  // CE
