@@ -12,20 +12,21 @@
  * ******************************************************************/
 
 
-// default package
+package org.aspectj.testing;
 
 import junit.framework.*;
-import junit.framework.Test;
-import org.aspectj.testing.TestingTests;
 
-public class TestingClientModuleTests extends TestCase {
+public class TestingTests extends TestCase {
 
     public static Test suite() { 
-        TestSuite suite = new TestSuite(TestingClientModuleTests.class.getName());
-        suite.addTest(TestingTests.suite()); 
+        TestSuite suite = new TestSuite(TestingTests.class.getName());
+        // for now, do not include SuiteTest because it would take 15 minutes
+        //$JUnit-BEGIN$
+        suite.addTestSuite(TesterTest.class); 
+        //$JUnit-END$
         return suite;
     }
 
-    public TestingClientModuleTests(String name) { super(name); }
+    public TestingTests(String name) { super(name); }
 
 }  
