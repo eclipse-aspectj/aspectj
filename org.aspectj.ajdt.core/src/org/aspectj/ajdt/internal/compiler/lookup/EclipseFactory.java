@@ -305,7 +305,7 @@ public class EclipseFactory {
 
 	public void finishedCompilationUnit(CompilationUnitDeclaration unit) {
 		if (buildManager.doGenerateModel()) {
-			AsmHierarchyBuilder.build(unit, buildManager.getStructureModel());
+			AsmHierarchyBuilder.build(unit, buildManager.getStructureModel(), buildManager.buildConfig);
 		}
 	}
 

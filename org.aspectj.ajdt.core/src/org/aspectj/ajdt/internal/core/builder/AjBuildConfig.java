@@ -54,6 +54,7 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 	private Map ajOptions = new HashMap();
 	private File configFile;
 	private boolean generateModelMode = false;
+	private boolean generateJavadocsInModelMode = false;
 	private boolean emacsSymMode = false;
 	private boolean noWeave = false;
 	private boolean XserializableAspects = false;
@@ -533,4 +534,12 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 		return XreweavableCompressClasses;
 	}
 
+	public boolean isGenerateJavadocsInModelMode() {
+		return generateJavadocsInModelMode;
+	}
+	
+	public void setGenerateJavadocsInModelMode(
+			boolean generateJavadocsInModelMode) {
+		this.generateJavadocsInModelMode = generateJavadocsInModelMode;
+	}
 }

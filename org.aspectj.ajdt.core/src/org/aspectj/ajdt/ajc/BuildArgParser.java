@@ -439,6 +439,9 @@ public class BuildArgParser extends Main {
 			} else if (arg.equals("-emacssym")) {
 				buildConfig.setEmacsSymMode(true);
 				buildConfig.setGenerateModelMode(true);
+			} else if (arg.equals("-XjavadocsInModel")) {
+				buildConfig.setGenerateModelMode(true);
+				buildConfig.setGenerateJavadocsInModelMode(true);
 			} else if (arg.equals("-noweave") || arg.equals( "-XnoWeave")) {
 				buildConfig.setNoWeave(true);
 			} else if (arg.equals("-XserializableAspects")) {

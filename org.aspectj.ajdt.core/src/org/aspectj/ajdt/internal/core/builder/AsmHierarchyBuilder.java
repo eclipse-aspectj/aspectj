@@ -19,7 +19,6 @@ import java.util.*;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.asm.*;
-//import org.aspectj.asm.internal.*;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.*;
 import org.aspectj.util.LangUtil;
@@ -36,19 +35,21 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	
     public static void build(    
         CompilationUnitDeclaration unit,
-		IHierarchy structureModel) {
+		IHierarchy structureModel, AjBuildConfig buildConfig) {
         LangUtil.throwIaxIfNull(unit, "unit");
-        new AsmHierarchyBuilder(unit.compilationResult()).internalBuild(unit, structureModel);
+        new AsmHierarchyBuilder(unit.compilationResult(), buildConfig).internalBuild(unit, structureModel);
     }
 
 	private final Stack stack;
 	private final CompilationResult currCompilationResult;
 	private AsmElementFormatter formatter = new AsmElementFormatter();
+	private AjBuildConfig buildConfig;
 	
-    protected AsmHierarchyBuilder(CompilationResult result) {
+    protected AsmHierarchyBuilder(CompilationResult result, AjBuildConfig buildConfig) {
         LangUtil.throwIaxIfNull(result, "result");
         currCompilationResult = result;
         stack = new Stack();
+        this.buildConfig = buildConfig;
     }
 	   
     /** 
@@ -187,6 +188,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			"",
 			new ArrayList());
 		peNode.setSourceSignature(genSourceSignature(typeDeclaration));
+		peNode.setFormalComment(generateJavadocComment(typeDeclaration));
 		
 		((IProgramElement)stack.peek()).addChild(peNode);
 		stack.push(peNode);
@@ -213,6 +215,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			"",
 			new ArrayList());
 		peNode.setSourceSignature(genSourceSignature(memberTypeDeclaration));
+		peNode.setFormalComment(generateJavadocComment(memberTypeDeclaration));
 		
 		((IProgramElement)stack.peek()).addChild(peNode);
 		stack.push(peNode);
@@ -245,6 +248,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			"",
 			new ArrayList());
 		peNode.setSourceSignature(genSourceSignature(memberTypeDeclaration));
+		peNode.setFormalComment(generateJavadocComment(memberTypeDeclaration));
 		
 		//??? we add this to the compilation unit
 		findEnclosingClass(stack).addChild(peNode);
@@ -277,7 +281,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			"",
 			IProgramElement.Kind.ERROR,
 			makeLocation(methodDeclaration),
-			methodDeclaration.modifiers,
+			methodDeclaration.modifiers, 
 			"",
 			new ArrayList());  
 
@@ -286,6 +290,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		peNode.setModifiers(methodDeclaration.modifiers);
 		peNode.setCorrespondingType(methodDeclaration.returnType.toString());
 		peNode.setSourceSignature(genSourceSignature(methodDeclaration));
+		peNode.setFormalComment(generateJavadocComment(methodDeclaration));
 		
 		// TODO: add return type test
 		if (peNode.getKind().equals(IProgramElement.Kind.METHOD)) {
@@ -386,18 +391,72 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			new ArrayList());
 		peNode.setCorrespondingType(fieldDeclaration.type.toString());
 		peNode.setSourceSignature(genSourceSignature(fieldDeclaration));
+		peNode.setFormalComment(generateJavadocComment(fieldDeclaration));
 		
 		((IProgramElement)stack.peek()).addChild(peNode);
 		stack.push(peNode);
 		return true;		
 	}
+
 	public void endVisit(FieldDeclaration fieldDeclaration, MethodScope scope) {
 		stack.pop();
 	}
+
+	/**
+	 * Checks if comments should be added to the model before generating.
+	 */
+	private String generateJavadocComment(ASTNode astNode) {
+		if (buildConfig != null && !buildConfig.isGenerateJavadocsInModelMode()) return null;
+		
+		StringBuffer sb = new StringBuffer(); // !!! specify length?
+		boolean completed = false;
+		int startIndex = -1;
+		if (astNode instanceof MethodDeclaration) {
+			startIndex = ((MethodDeclaration)astNode).declarationSourceStart;
+		} else if (astNode instanceof FieldDeclaration) {
+			startIndex = ((FieldDeclaration)astNode).declarationSourceStart;
+		} else if (astNode instanceof TypeDeclaration) {
+			startIndex = ((TypeDeclaration)astNode).declarationSourceStart;
+		} 
+		
+		if (startIndex == -1) {
+			return null;
+		} else if (currCompilationResult.compilationUnit.getContents()[startIndex] == '/'  // look for /**
+			&& currCompilationResult.compilationUnit.getContents()[startIndex+1] == '*'
+			&& currCompilationResult.compilationUnit.getContents()[startIndex+2] == '*') {
+			
+			for (int i = startIndex; i < astNode.sourceStart && !completed; i++) {
+				char curr = currCompilationResult.compilationUnit.getContents()[i];
+				if (curr == '/' && sb.length() > 2 && sb.charAt(sb.length()-1) == '*') completed = true; // found */
+				sb.append(currCompilationResult.compilationUnit.getContents()[i]);
+			} 
+//			System.err.println(">> " + sb.toString());
+			return sb.toString();
+		} else {
+			return null;
+		}
+		
+	}
 	
+	/**
+	 * Doesn't print qualified allocation expressions.
+	 */
 	private String genSourceSignature(FieldDeclaration fieldDeclaration) {
 		StringBuffer output = new StringBuffer();
-		fieldDeclaration.print(0, output);
+		fieldDeclaration.printModifiers(fieldDeclaration.modifiers, output);
+		fieldDeclaration.type.print(0, output).append(' ').append(fieldDeclaration.name); 
+		
+		if (fieldDeclaration.initialization != null
+			&& !(fieldDeclaration.initialization instanceof QualifiedAllocationExpression)) {
+			output.append(" = "); //$NON-NLS-1$
+			if (fieldDeclaration.initialization instanceof ExtendedStringLiteral) {
+				output.append("\"<extended string literal>\"");
+			} else {
+				fieldDeclaration.initialization.printExpression(0, output);
+			}
+		}
+		
+		output.append(';');
 		return output.toString();
 	}
 
