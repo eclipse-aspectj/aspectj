@@ -115,7 +115,8 @@ public class RelationshipMap extends HashMap implements IRelationshipMap {
 		return super.put(o,p);
 	}
 	public void put(String source, IRelationship relationship) {
-		System.err.println(">> for: " + source + ", put::" + relationship);
+	
+		//System.err.println(">> for: " + source + ", put::" + relationship);
 		
 		List list = (List)super.get(source);
 		if (list == null) {
