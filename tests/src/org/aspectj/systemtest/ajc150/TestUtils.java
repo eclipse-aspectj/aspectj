@@ -24,9 +24,17 @@ public abstract class TestUtils extends AjcTestCase {
 	private static final boolean verbose = false;
 	protected File baseDir;
 	
+	protected CompilationResult binaryWeave(String inpath,String insource,int expErrors,int expWarnings) {
+		return binaryWeave(inpath,insource,expErrors,expWarnings,false);
+	}
 	
-	protected CompilationResult binaryWeave(String inpath, String insource,int expErrors,int expWarnings) {
-		String[] args = new String[] {"-inpath",inpath,insource,"-showWeaveInfo","-proceedOnError"};
+	protected CompilationResult binaryWeave(String inpath, String insource,int expErrors,int expWarnings,boolean xlinterror) {
+		String[] args = null;
+		if (xlinterror) {
+			args = new String[] {"-inpath",inpath,insource,"-showWeaveInfo","-proceedOnError","-Xlint:warning"};
+		} else {
+			args = new String[] {"-inpath",inpath,insource,"-showWeaveInfo","-proceedOnError"};			
+		}
 		CompilationResult result = ajc(baseDir,args);
 		if (verbose || result.hasErrorMessages()) System.out.println(result);
 		assertTrue("Expected "+expErrors+" errors but got "+result.getErrorMessages().size()+":\n"+

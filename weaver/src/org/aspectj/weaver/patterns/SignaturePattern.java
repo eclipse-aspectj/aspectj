@@ -30,6 +30,7 @@ import org.aspectj.lang.reflect.AdviceSignature;
 import org.aspectj.lang.reflect.ConstructorSignature;
 import org.aspectj.lang.reflect.FieldSignature;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.aspectj.weaver.Constants;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
@@ -164,6 +165,13 @@ public class SignaturePattern extends PatternNode {
 				return false;
 			}
 			
+			// If we have matched on parameters, let's just check it isn't because the last parameter in the pattern
+			// is an array type and the method is declared with varargs
+			if (isNotMatchBecauseOfVarargsIssue(parameterTypes,sig.getModifiers())) { 
+				world.getLint().cantMatchArrayTypeOnVarargs.signal(sig.toString(),getSourceLocation());
+				return false;
+			}
+			
 			// Check the throws pattern
 			if (!throwsPattern.matches(sig.getExceptions(), world)) return false;
 
@@ -172,6 +180,14 @@ public class SignaturePattern extends PatternNode {
 			if (!parameterTypes.matches(world.resolve(sig.getParameterTypes()), TypePattern.STATIC).alwaysTrue()) {
 				return false;
 			}
+			
+			// If we have matched on parameters, let's just check it isn't because the last parameter in the pattern
+			// is an array type and the method is declared with varargs
+			if (isNotMatchBecauseOfVarargsIssue(parameterTypes,sig.getModifiers())) { 
+				world.getLint().cantMatchArrayTypeOnVarargs.signal(sig.toString(),getSourceLocation());
+				return false;
+			}
+			
 			if (!throwsPattern.matches(sig.getExceptions(), world)) return false;
 			return declaringType.matchesStatically(member.getDeclaringType().resolve(world));
 			//return declaringTypeMatch(member.getDeclaringType(), member, world);			
@@ -250,6 +266,8 @@ public class SignaturePattern extends PatternNode {
 			if (!parameterTypes.matches(params, TypePattern.STATIC).alwaysTrue()) {
 				return false;
 			}
+			if (isNotMatchBecauseOfVarargsIssue(parameterTypes,msig.getModifiers())) { return false; }
+			
 			if (!throwsPattern.matches(exceptionTypes)) return false;
 			return declaringTypeMatch(sig); // XXXAJ5 - Need to make this a covariant aware version for dynamic JP matching to work
 		} else if (kind == Member.CONSTRUCTOR) {
@@ -259,6 +277,8 @@ public class SignaturePattern extends PatternNode {
 			if (!parameterTypes.matches(params, TypePattern.STATIC).alwaysTrue()) {
 				return false;
 			}
+			if (isNotMatchBecauseOfVarargsIssue(parameterTypes,csig.getModifiers())) { return false; }
+			
 			if (!throwsPattern.matches(exceptionTypes)) return false;
 			return declaringType.matchesStatically(sig.getDeclaringType());
 			//return declaringTypeMatch(member.getDeclaringType(), member, world);			
@@ -266,6 +286,7 @@ public class SignaturePattern extends PatternNode {
 			    
 		return false;
 	}
+	
 	
 	public boolean matches(Class declaringClass, java.lang.reflect.Member member) {
 	    if (kind == Member.ADVICE) return true;
@@ -293,6 +314,7 @@ public class SignaturePattern extends PatternNode {
 			if (!parameterTypes.matches(params, TypePattern.STATIC).alwaysTrue()) {
 				return false;
 			}
+			if (isNotMatchBecauseOfVarargsIssue(parameterTypes,member.getModifiers())) { return false; }
 			if (!throwsPattern.matches(exceptionTypes)) return false;
 			return declaringTypeMatch(member.getDeclaringClass()); // XXXAJ5 - Need to make this a covariant aware version for dynamic JP matching to work
 		}
@@ -304,6 +326,7 @@ public class SignaturePattern extends PatternNode {
 			if (!parameterTypes.matches(params, TypePattern.STATIC).alwaysTrue()) {
 				return false;
 			}
+			if (isNotMatchBecauseOfVarargsIssue(parameterTypes,member.getModifiers())) { return false; }
 			if (!throwsPattern.matches(exceptionTypes)) return false;
 			return declaringType.matchesStatically(declaringClass);
 		}
@@ -495,5 +518,18 @@ public class SignaturePattern extends PatternNode {
 	public ThrowsPattern getThrowsPattern() {
 		return throwsPattern;
 	}
+	
+	/**
+	 * return true if last argument in params is an Object[] but the modifiers say this method
+	 * was declared with varargs (Object...).  We shouldn't be matching if this is the case.
+	 */
+	private boolean isNotMatchBecauseOfVarargsIssue(TypePatternList params,int modifiers) {
+		if (params.size()>0 && (modifiers & Constants.ACC_VARARGS)!=0 &&  // XXX Promote this to an isVarargs() on MethodSignature?
+			params.get(params.size()-1).getExactType().isArray()) {
+			return true;
+		}
+		return false;
+	}
+	
 
 }

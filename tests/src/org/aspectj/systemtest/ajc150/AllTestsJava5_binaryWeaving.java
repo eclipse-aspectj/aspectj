@@ -29,6 +29,7 @@ public class AllTestsJava5_binaryWeaving {
 		suite.addTestSuite(CovarianceTests.class);
 		suite.addTestSuite(Enums.class);
 		suite.addTestSuite(Annotations.class);
+		suite.addTestSuite(Varargs.class);
 		//$JUnit-END$
 		return suite;
 	}
