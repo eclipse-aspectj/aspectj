@@ -994,11 +994,13 @@
 
     <ajc-test dir="java5/annotations/aspectMembers" title="annotated advice">
         <compile files="a/Annotations.java,a/AnnotatedAspect05.aj" options="-1.5">
+            <message kind="warning" line="16"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="java5/annotations/aspectMembers" title="annotated advice with bad target">
         <compile files="a/Annotations.java,a/AnnotatedAspect06.aj" options="-1.5">
+            <message kind="error" line="6" text="The annotation @ConstructorAnnotation is disallowed for this location"/>
         </compile>
     </ajc-test>
 
@@ -1021,5 +1023,133 @@
         </compile>
     </ajc-test>
 
+   <!-- ======================================================================================= -->
+   <!--               ajdk examples                                                             -->
+   <!-- ======================================================================================= -->
+   <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: annotating aspects chapter">
+        <compile files="AnnotatingAspects.aj" options="-1.5">
+        </compile>
+    </ajc-test>
+   
+    <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: annotating aspects chapter, ex 2">
+        <compile files="SuppressAj.aj" options="-1.5">
+        </compile>
+    </ajc-test>
+   
+    <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: annotation pattern matching">
+        <compile files="AnnotationPatternMatching.aj,org/xyz/OrgXYZAnnotation.java" options="-1.5">
+            <message kind="warning" line="25" text="@Immutable"/>
+            <message kind="warning" line="25" text="!@Persistent"/>
+            <message kind="warning" line="29" text="!@Persistent"/>
+            <message kind="warning" line="31" text="!@Persistent"/>
+            <message kind="warning" line="33" text="!@Persistent"/>
+            <message kind="warning" line="29" text="@Foo @Goo"/>
+            <message kind="warning" line="29" text="@(Foo || Goo)"/>
+            <message kind="warning" line="31" text="@(Foo || Goo)"/>
+            <message kind="warning" line="33" text="@(org.xyz..*)"/>            
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: annotation type pattern matching">
+        <compile files="AnnotationsInTypePatterns.aj,org/xyz/OrgXYZAnnotation.java,org/xyz/Types.java,org/abc/Types.java,Immutable.java,NonPersistent.java" options="-1.5">
+            <message kind="warning" line="23" text="(@Immutable *)"/>
+            <message kind="warning" line="32" text="(@Immutable *)"/>
+            <message kind="warning" line="3" text="(@Immutable *)"/>
+            <message kind="warning" line="5" text="(@Immutable *)"/>
+            <message kind="warning" line="8" text="(@Immutable *)"/>
+            <message kind="warning" line="25" text="(!@Immutable *)"/>
+            <message kind="warning" line="27" text="(!@Immutable *)"/>
+            <message kind="warning" line="29" text="(!@Immutable *)"/>
+            <message kind="warning" line="5" text="(!@Immutable *)"/>
+            <message kind="warning" line="6" text="(!@Immutable *)"/>
+            <message kind="warning" line="2" text="(!@Immutable *)"/>
+            <message kind="warning" line="1" text="(!@Immutable *)"/>
+            <message kind="warning" line="4" text="(!@Immutable *)"/>
+            <message kind="warning" line="3" text="@Immutable (org.xyz.* || org.abc.*)"/>
+            <message kind="warning" line="5" text="@Immutable (org.xyz.* || org.abc.*)"/>
+            <message kind="warning" line="8" text="@Immutable (org.xyz.* || org.abc.*)"/>
+            <message kind="warning" line="32" text="((@Immutable Foo+) || Goo)"/>
+            <message kind="warning" line="27" text="((@Immutable Foo+) || Goo)"/>
+            <message kind="warning" line="3" text="@(Immutable || NonPersistent) org.xyz..*"/>
+            <message kind="warning" line="6" text="@(Immutable || NonPersistent) org.xyz..*"/>
+            <message kind="warning" line="8" text="@(Immutable || NonPersistent) org.xyz..*"/>
+            <message kind="warning" line="8" text="@Immutable @NonPersistent org.xyz..*"/>
+            <message kind="warning" line="6" text="@(@Inherited *) org.xyz..*"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: annotations in sig patterns">
+        <compile files="AnnotationsInSignaturePatterns.aj,Cachable.java,SensitiveData.java,Persisted.java,Classified.java,Immutable.java,Secure.java,Catastrophic.java,Oneway.java,Transaction.java,org/xyz/SignatureTypes.java" options="-1.5">
+            <message kind="warning" line="32" text="@SensitiveData * *"/>
+            <message kind="warning" line="6" text="@SensitiveData * *"/>
+            <message kind="warning" line="12" text="@SensitiveData * *"/>
+            <message kind="warning" line="6" text="@SensitiveData List org.xyz..*.*"/>
+            <message kind="warning" line="10" text="(@SensitiveData *) org.xyz..*.*"/>
+            <message kind="warning" line="12" text="(@SensitiveData *) org.xyz..*.*"/>
+            <message kind="warning" line="50" text="@Foo (@Goo *) (@Hoo *).*"/>
+            <message kind="warning" line="38" text="@Persisted @Classified * *"/>
+            
+            <message kind="warning" line="44" text="@Oneway * *(..)"/>
+            <message kind="warning" line="17" text="@Transaction * (@Persisted org.xyz..*).*(..)"/>
+            <message kind="warning" line="52" text="* *.*(@Immutable *,..)"/>
+            <message kind="warning" line="53" text="* *.*(@Immutable *,..)"/>
+            <message kind="warning" line="54" text="* *.*(@Immutable *,..)"/>
+            
+            <message kind="warning" line="62" text="within(@Secure *)"/>
+            <message kind="warning" line="63" text="within(@Secure *)"/>
+            <message kind="warning" line="66" text="staticinitialization(@Persisted *)"/>
+            <message kind="warning" line="16" text="staticinitialization(@Persisted *)"/>
+            <message kind="warning" line="56" text="call(@Oneway * *(..))"/>
+            <message kind="warning" line="27" text="execution(public (@Immutable *) org.xyz..*.*(..))"/>
+            <message kind="warning" line="25" text="set(@Cachable * *)"/>
+            <message kind="warning" line="80" text="handler(!@Catastrophic *)"/>
+            
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: runtime annotations">
+        <compile files="RuntimeTypeMatching.aj" options="-1.5">
+            <message kind="warning" line="122" text="@within(Foo)"/>
+            <message kind="warning" line="123" text="@within(Foo)"/>
+        </compile>
+        <run class="RuntimeTypeMatching">
+            <stdout>
+              <line text="This information is TOP-SECRET"/>
+              <line text="@target(Classified) at call(void A.a())"/>
+              <line text="@this(Foo) at execution(void B.b())"/>
+              <line text="This information is TOP-SECRET"/>
+              <line text="@target(Classified) at call(Class java.lang.Object.getClass())"/>
+              <line text="1 @Foo()"/>
+              <line text="1 @Foo()"/>
+              <line text="1 @Classified(classification=TOP-SECRET)"/>
+              <line text="This information is TOP-SECRET"/>
+              <line text="Entering critical join point with priority 3"/>
+              <line text="Entering critical join point with reflectively obtained priority 3"/>
+              <line text="@target(Classified) at call(void A.a())"/>
+              <line text="@this(Foo) at execution(void B.callA(A))"/>
+              <line text="(Class) Transaction required at execution(void ByeByeEJB.method1())"/>
+              <line text="(Method) Transaction required at execution(void ByeByeEJB.method1())"/>
+              <line text="(Class) Transaction required at execution(void ByeByeEJB.method2())"/>
+              <line text="(Method) Transaction required at execution(void ByeByeEJB.method2())"/>
+              <line text="(Class) Transaction required at execution(void ByeByeEJB.method3())"/>
+            </stdout>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: @retention checking">
+        <compile files="RetentionTime.aj" options="-1.5">
+            <message kind="error" line="8" text="Annotation type Goo does not have runtime retention"/>
+            <message kind="error" line="13" text="Annotation type Goo does not have runtime retention"/>
+            <message kind="error" line="18" text="Annotation type Goo does not have runtime retention"/>
+        </compile>
+    </ajc-test>
+    
+     <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: @inherited">
+        <compile files="AnnotationInheritance.aj" options="-1.5">
+            <message kind="warning" line="16" text="annotatedMethodCall()"/>
+            <message kind="warning" line="16" text="c1MethodCall()"/>
+            <message kind="warning" line="17" text="c1MethodCall()"/>
+        </compile>
+    </ajc-test>
 </suite>
 

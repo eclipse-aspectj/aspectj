@@ -26,4 +26,5 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @interface TypeAnnotation {}
 
+@Retention(RetentionPolicy.RUNTIME)
 @interface AnyAnnotation {}
