@@ -31,7 +31,6 @@ public class SoftException extends RuntimeException {
     }
     
     public Throwable getWrappedThrowable() { return inner; }
+    public Throwable getCause() { return inner; }
     
-    //XXX should add a getCause() method to parallel j2se 1.4's new
-    //XXX chained exception mechanism
 }
