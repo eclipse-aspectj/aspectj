@@ -57,6 +57,7 @@ public class AjcSpecTest extends TestCase {
         assertEquals(lhsTest.getBugId(), rhsTest.getBugId());
         assertEquals(lhsTest.getTestDirOffset(), rhsTest.getTestDirOffset());
         // XXX suiteDir varies by run..
+        // description, options, paths, comments, keywords
         sameAbstractRunSpec(lhsTest, rhsTest, a);
 	}
 
@@ -70,6 +71,8 @@ public class AjcSpecTest extends TestCase {
         // XXX sameList(lhs.globalOptions, rhs.globalOptions, a);
         sameList(lhs.getOptionsList(), rhs.getOptionsList(), a);
         sameList(lhs.getPathsList(), rhs.getPathsList(), a);
+        sameList(lhs.keywords, rhs.keywords, a); // XXX getters
+        assertEquals(lhs.comment, rhs.comment); // XXX getters
         // xml adds sourceloc?
         //sameSourceLocation(lhs.getSourceLocation(), rhs.getSourceLocation(), a);
         // XXX also sourceLocations?
@@ -201,6 +204,8 @@ public class AjcSpecTest extends TestCase {
             rhsSpec = r;
             assertEquals(l.testSrcDirOffset, r.testSrcDirOffset);
             assertEquals(l.compiler, r.compiler);
+            assertEquals(l.includeClassesDir, r.includeClassesDir);
+            assertEquals(l.reuseCompiler, r.reuseCompiler);
         } else if (c == JavaRun.class) {
             JavaRun.Spec l = ((JavaRun) lhs).spec;
             JavaRun.Spec r = ((JavaRun) rhs).spec;
@@ -208,11 +213,15 @@ public class AjcSpecTest extends TestCase {
             rhsSpec = r;
             assertTrue(l.skipTester ==  r.skipTester);
             assertEquals(l.className, r.className);
+            assertEquals(l.javaVersion, r.javaVersion);
+            assertEquals(l.skipTester, r.skipTester);
         } else if (c == IncCompilerRun.class) {
             IncCompilerRun.Spec l = ((IncCompilerRun) lhs).spec;
             IncCompilerRun.Spec r = ((IncCompilerRun) rhs).spec;
             lhsSpec = l;
             rhsSpec = r;
+            assertEquals(l.tag, r.tag);
+            assertEquals(l.fresh, r.fresh);
         } else {
             assertTrue(lhs.equals(rhs));
             return;
