@@ -9,6 +9,7 @@
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
+import org.aspectj.bridge.AbortException;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.BcweaverTests;
@@ -257,11 +258,16 @@ public class AnnotationPatternTestCase extends TestCase {
 	public void testBindingAnnotationPatternMatching() {
 		PatternParser p = new PatternParser("foo");
 		AnnotationTypePattern ap = p.parseAnnotationNameOrVarTypePattern();
-		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
-		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[]{"Foo"});
-		assertTrue("matches element with Foo",ap.matches(ae).alwaysTrue());
-		AnnotatedElementImpl ae2 = new AnnotatedElementImpl(new String[]{"Boo"});
-		assertTrue("does not match element with Boo",ap.matches(ae2).alwaysFalse());
+		try {
+		    ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
+		} catch(AbortException abEx) {
+		    assertEquals("Binding not supported in @pcds (1.5.0 M1 limitation): null",abEx.getMessage());
+		}
+		// uncomment these next lines once binding is supported
+//		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[]{"Foo"});
+//		assertTrue("matches element with Foo",ap.matches(ae).alwaysTrue());
+//		AnnotatedElementImpl ae2 = new AnnotatedElementImpl(new String[]{"Boo"});
+//		assertTrue("does not match element with Boo",ap.matches(ae2).alwaysFalse());
 	}
 	
 	public void testAndAnnotationPatternMatching() {

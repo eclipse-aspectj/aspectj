@@ -126,10 +126,14 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 		AnnotationTypePattern atp = p.parseAnnotationNameOrVarTypePattern();
 		atp = atp.resolveBindings(makeSimpleScope(),new Bindings(3),true);
 		
-		assertTrue("Expected 1 error message but got "+mh.messages.size(),mh.messages.size()==1);
+		assertTrue("Expected 2 error messages but got "+mh.messages.size(),mh.messages.size()==2);
 		
 		String expected = "Type referred to is not an annotation type";
 		String msg = ((IMessage)mh.messages.get(0)).toString();
+		assertTrue("Expected: "+expected+" but got "+msg,msg.indexOf(expected)!=-1);
+		
+		expected = "Binding not supported in @pcds (1.5.0 M1 limitation): null";
+		msg = ((IMessage)mh.messages.get(1)).toString();
 		assertTrue("Expected: "+expected+" but got "+msg,msg.indexOf(expected)!=-1);
 	}
 	
