@@ -171,7 +171,7 @@ public class AsmRelationshipProvider {
 		}
 	}
 
-	private IProgramElement getNode(IHierarchy model, Shadow shadow) {
+	protected IProgramElement getNode(IHierarchy model, Shadow shadow) {
 		Member enclosingMember = shadow.getEnclosingCodeSignature();
 		
 		IProgramElement enclosingNode = lookupMember(model, enclosingMember);
