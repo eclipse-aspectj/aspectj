@@ -1,7 +1,7 @@
 package trace;
 
 public aspect ExecTrace extends MegaTrace {
-	pointcut where(): execution(public * *(..));
+	pointcut where(): execution(* *(..));
 	
-	declare parents: * implements Marker;
+	declare parents: !Object implements Marker;
 }
