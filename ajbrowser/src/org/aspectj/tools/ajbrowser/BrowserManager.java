@@ -135,10 +135,6 @@ public class BrowserManager {
         topFrame.setTitle(BrowserManager.TITLE + " - " + text);
     }
 
-    public void run() {        
-        Ajde.runInSameVM(Ajde.getDefault().getProjectProperties());
-    }
-
     public void saveAll() {
         Ajde.getDefault().getEditorManager().saveContents();
     }
