@@ -149,6 +149,10 @@ public class Lint {
 			return kind != null;
 		}
 		
+		public String getName() {
+			return name;
+		}
+		
 		public IMessage.Kind getKind() {
 			return kind;
 		}
