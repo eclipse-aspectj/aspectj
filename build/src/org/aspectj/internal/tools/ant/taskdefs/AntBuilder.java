@@ -112,8 +112,7 @@ public class AntBuilder extends Builder {
         }
     }
 
-    protected final Project project;
-    protected boolean filterSetup;
+    private final Project project; // XXX s.b. used only in setupTask
 
     protected AntBuilder(Project project, File tempDir, boolean useEclipseCompiles,
         Messager handler) {
@@ -122,6 +121,27 @@ public class AntBuilder extends Builder {
         Util.iaxIfNull(project, "project");
     }
     
+    /**
+     * Initialize task with project and "ajbuild-" + name as name. (Using bm-
+     * prefix distinguishes these tasks from tasks found in the build script.)
+     * @param task the Task to initialize - not null
+     * @param name the String name suffix for the task
+     * @return true unless some error
+     */
+    protected boolean setupTask(Task task, String name) {
+        task.setProject(project);
+        task.setTaskName("ajbuild-" + name);
+        return true;
+    }
+    
+    /** 
+     * Copy file, optionally filtering.
+     * (Filters set in project.)
+     * @param fromFile the readable File source to copy
+     * @param toFile the writable File destination file
+     * @param boolean filter if true, enable filtering
+     * @see org.aspectj.internal.tools.build.Builder#copyFile(File, File, boolean)
+     */
     protected boolean copyFile(File fromFile, File toFile, boolean filter) {
         Copy copy = makeCopyTask(filter);
         copy.setFile(fromFile);
@@ -131,6 +151,7 @@ public class AntBuilder extends Builder {
     }
     
     /**
+     * (Filters set in project.)
       * @see org.aspectj.internal.tools.ant.taskdefs.Builder#copyFiles(File, File, String, String, boolean)
       */
     protected boolean copyFiles(
@@ -162,10 +183,12 @@ public class AntBuilder extends Builder {
         executeTask(copy);
     }
     
-    /** filter if FILTER_ON, use filters */
+    /** 
+     * @param filter if FILTER_ON, use filters 
+     */
     protected Copy makeCopyTask(boolean filter) {
         Copy copy = new Copy();
-        copy.setProject(project);
+        setupTask(copy, "copy");
         if (FILTER_ON == filter) {
             copy.setFiltering(true);
         }
@@ -176,8 +199,7 @@ public class AntBuilder extends Builder {
         // XXX  test whether build.compiler property takes effect automatically
         // I suspect it requires the proper adapter setup.
         Javac javac = new Javac(); 
-        javac.setProject(project);
-        javac.setTaskName("javac");     
+        setupTask(javac, "javac");
         // -- source paths
         Path path = new Path(project);
         for (Iterator iter = module.getSrcDirs().iterator(); iter.hasNext();) {
@@ -245,7 +267,7 @@ public class AntBuilder extends Builder {
         }
         // ---- zip result up
         Zip zip = new Zip();
-        zip.setProject(project);
+        setupTask(zip, "zip");
         zip.setDestFile(module.getModuleJar());
         ZipFileSet zipfileset = null;
         
@@ -354,7 +376,7 @@ public class AntBuilder extends Builder {
         
         // ---- zip result up
         Zip zip = new Zip();
-        zip.setProject(project);
+        setupTask(zip, "zip");
         zip.setDestFile(module.getAssembledJar());
         ZipFileSet zipfileset = null;
         
@@ -628,7 +650,7 @@ class ProductBuilder extends AntBuilder {
             handler.log("creating installer for " + buildSpec);
         }
         AJInstaller installer = new AJInstaller();
-        installer.setProject(project);
+        setupTask(installer, "installer");
         installer.setBasedir(targDirPath);
         //installer.setCompress();
         File installSrcDir = new File(buildSpec.productDir, "install");   // XXXFileLiteral
