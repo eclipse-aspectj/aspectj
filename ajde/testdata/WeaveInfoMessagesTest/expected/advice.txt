@@ -6,7 +6,7 @@ Type 'Simple' (Simple.java:10) advised by before advice from 'AspectAdvice' (Asp
 Type 'Simple' (Simple.java:10) advised by after advice from 'AspectAdvice' (AspectAdvice.aj:12)
 Type 'Simple' (Simple.java:10) advised by afterReturning advice from 'AspectAdvice' (AspectAdvice.aj:16)
 Type 'Simple' (Simple.java:10) advised by afterThrowing advice from 'AspectAdvice' (AspectAdvice.aj:20)
-Type 'Simple' (Simple.java:15) advised by around advice from 'AspectAdvice' (AspectAdvice.aj:24)
+Type 'Simple' (Simple.java:15) advised by around advice from 'AspectAdvice' (AspectAdvice.aj:24) [with runtime test]
 Type 'Simple' (Simple.java:19) advised by before advice from 'AspectAdvice' (AspectAdvice.aj:8)
 Type 'Simple' (Simple.java:19) advised by after advice from 'AspectAdvice' (AspectAdvice.aj:12)
 Type 'Simple' (Simple.java:19) advised by afterReturning advice from 'AspectAdvice' (AspectAdvice.aj:16)
