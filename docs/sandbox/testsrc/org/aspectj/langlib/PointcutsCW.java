@@ -13,9 +13,6 @@ import javax.swing.Action;
 
 
 
-
-
-
 /**
  * todo yet untested:
  * - dynamic calls
@@ -43,8 +40,8 @@ public aspect PointcutsCW {
     declare warning: Pointcuts.anyRunnableImplementation() : "anyRunnableImplementation";
     declare warning: Pointcuts.anyGetSystemErrOut() : "anyGetSystemErrOut";
     declare warning: Pointcuts.anySetSystemErrOut() : "anySetSystemErrOut";
-    declare warning: Pointcuts.withinAnyJavaCode() : "withinAnyJavaCode"; // XXX
-    declare warning: Pointcuts.notWithinJavaCode() : "notWithinJavaCode"; // XXX
+    //declare warning: Pointcuts.withinAnyJavaCode() : "withinAnyJavaCode"; // XXX
+    //declare warning: Pointcuts.notWithinJavaCode() : "notWithinJavaCode"; // XXX
     declare warning: Pointcuts.toStringExecution() : "toStringExecution";    
     declare warning: Pointcuts.anyThreadConstruction() : "anyThreadConstruction";
     declare warning: Pointcuts.anyJavaIOCalls() : "anyJavaIOCalls";
@@ -56,24 +53,25 @@ public aspect PointcutsCW {
     declare warning: Pointcuts.anySystemProcessSpawningCalls() : "anySystemProcessSpawningCalls";
     declare warning: Pointcuts.mostThrowableReadCalls() : "mostThrowableReadCalls";
     declare warning: Pointcuts.exceptionWrappingCalls() : "exceptionWrappingCalls";
-        
+
+    //  CW anyMethodExecution, anyPublicMethodExecution, anyNonPrivateMethodExecution
+    public static void main(String[] list) {
+        new MemberTests(0).toString(); // RT cflowMainExecution
+    }
+}
+class MemberTests {        
     public static int publicStaticInt;
     public int publicInt;
     private static int privateStaticInt;
     private int privateInt;
     static int defaultStaticInt;
     int defaultInt;
+        
+    private MemberTests() {} // CW anyConstructorExecution
     
-    //  CW anyMethodExecution, anyPublicMethodExecution, anyNonPrivateMethodExecution
-    public static void main(String[] list) {
-        new PointcutsCW().toString(); // RT cflowMainExecution
-    }
-    
-    private PointcutsCW() {} // CW anyConstructorExecution
-    
-    public PointcutsCW(int i) {} // CW anyConstructorExecution, anyPublicConstructorExecution, anyNonPrivateConstructorExecution
+    public MemberTests(int i) {} // CW anyConstructorExecution, anyPublicConstructorExecution, anyNonPrivateConstructorExecution
 
-    PointcutsCW(String s) { // CW anyConstructorExecution, anyNonPrivateConstructorExecution
+    MemberTests(String s) { // CW anyConstructorExecution, anyNonPrivateConstructorExecution
 
         defaultInt = 0;  // CW anyNonPrivateFieldSet
 
@@ -84,11 +82,11 @@ public aspect PointcutsCW {
         return "";
     }   
 
-    private int perrorCode() { } // CW anyMethodExecution
+    private int pperrorCode() { return 0; } // CW anyMethodExecution
     
-    private void setInt() { // CW anyMethodExecution, 
+    private void setInt(int i) { // CW anyMethodExecution, 
     
-        defaultInt = 0;  // CW anyNonPrivateFieldSet, withinSetter
+        defaultInt = i;  // CW anyNonPrivateFieldSet, withinSetter
     
     }
     
@@ -108,7 +106,7 @@ public aspect PointcutsCW {
         
         //  CW anyMethodExecution, anyPublicMethodExecution, anyNonPrivateMethodExecution
         public void run() {
-        
+            int i = 1;   // hmm -- getting 110 here instead of 109?
         }
 
         //  CW anyMethodExecution, anyPublicMethodExecution, anyNonPrivateMethodExecution
@@ -119,15 +117,17 @@ public aspect PointcutsCW {
     }
 
     //  CW anyMethodExecution, anyPublicMethodExecution, anyNonPrivateMethodExecution
-    public static void pserrorCode() throws IOException { 
+    public void perrorCode() throws Exception { 
         
-        i = publicStaticInt; // CW anyPublicFieldGet, anyNonPrivateFieldGet
+        int i = publicStaticInt; // CW anyPublicFieldGet, anyNonPrivateFieldGet
         
         i = publicInt; // CW anyPublicFieldGet, anyNonPrivateFieldGet
         
         i = privateStaticInt;
         
         i = privateInt;
+        
+        
         
         i = defaultStaticInt; // CW anyNonPrivateFieldGet
         
@@ -146,31 +146,31 @@ public aspect PointcutsCW {
         
         defaultInt = 1; // CW anyNonPrivateFieldSet
         
-        System.out.println(""); // CW anyGetSystemErrOut, anyNonPrivateFieldGet, anyPublicFieldGet
+        System.out.println(""); // CW anyGetSystemErrOut, anyNonPrivateFieldGet, anyPublicFieldGet, anyJavaIOCalls
 
-        System.err.println(""); // CW anyGetSystemErrOut, anyNonPrivateFieldGet anyPublicFieldGet
-
-        new Thread((Runnable)null); // CW anyThreadConstruction
+        System.err.println(""); // CW anyGetSystemErrOut, anyNonPrivateFieldGet anyPublicFieldGet, anyJavaIOCalls
+        
+        new Thread((Runnable)null); // CW anyThreadConstruction, anyConstructorExecution, anyNonPrivateConstructorExecution
 
         FileReader fr = new FileReader("none"); // CW anyJavaIOCalls
-        
-        int i = fr.read();  // CW anyJavaIOCalls
-        
+                
+        i = fr.read();  // CW anyJavaIOCalls
+
         DefaultListModel model = new DefaultListModel(); // CW anyJavaAWTOrSwingCalls
         
         model.addElement(null); // CW anyJavaAWTOrSwingCalls
-        
+
         Button button = new Button();  // CW anyJavaAWTOrSwingCalls
         
         button.addActionListener(null); // CW anyJavaAWTOrSwingCalls
 
-        String myName = PointcutsCW.class.getName();
+        String myName = PointcutsCW.class.getName();    // CW anySystemClassLoadingCalls, mostThrowableReadCalls b/c of in-bytecode conversion from ClassNotFoundException to NoClassDefFoundError
         
         Class me = Class.forName(myName);  // CW anySystemClassLoadingCalls
         
         Method m = me.getDeclaredMethod("notFound", new Class[]{}); // CW anySystemReflectiveCalls
         
-        Process p = Runtime.exec("ls"); // CW anySystemProcessSpawningCalls
+        Process p = Runtime.getRuntime().exec("ls"); // CW anySystemProcessSpawningCalls
         
         Error e = new Error("hello");
 
@@ -178,32 +178,36 @@ public aspect PointcutsCW {
         
         e.printStackTrace(); // CW mostThrowableReadCalls
 
-        e.getClass(); // CW mostThrowableReadCalls
-
+        e.getClass(); // not mostThrowableReadCalls b/c getClass() is Object
+        
     }
     
 }
 
 aspect DynamicTests {
+    DynamicTests() {
+        int i = 1;    // CW anyConstructorExecution, anyNonPrivateConstructorExecution XXX shows as 190, not 189?
+    }
     static {
         Tester.expectEvent("mainExecution");
         Tester.expectEvent("cflowMainExecution");
         Tester.expectEvent("adviceCflow");
         Tester.expectEvent("notInAdviceCflow");
     }
-    after(PointcutsCE pointcutsCE) returning : target(pointcutsCE) 
-            && Pointcuts.cflowMainExecution() && call(String toString()) {
-        String targ = pointcutsCE.toString();
+    after(MemberTests memberTests) returning : target(memberTests) 
+            && Pointcuts.cflowMainExecution() && call(String toString()) 
+            && !within(DynamicTests) {
+        String targ = memberTests.toString();
         Tester.event("cflowMainExecution");
         Tester.event("adviceCflow");
     }
 
-    after(PointcutsCE pointcutsCE) returning : target(pointcutsCE) 
-            && notInAdviceCflow() && call(String toString()) {
+    after() returning : target(MemberTests) 
+            && Pointcuts.notInAdviceCflow() && call(String toString()) {
         Tester.event("notInAdviceCflow"); // should only get one of these
     }
 
-    after() returning : within(PointcutsCE) && Pointcuts.mainExecution() {
+    after() returning : within(PointcutsCW) && Pointcuts.mainExecution() {
         Tester.event("mainExecution"); // also cflowMainExecution
         Tester.checkAllEvents();
     }
