@@ -442,6 +442,8 @@ public class BuildArgParser extends Main {
 				buildConfig.setNoWeave(true);
 			} else if (arg.equals("-XserializableAspects")) {
 				buildConfig.setXserializableAspects(true);
+			} else if (arg.equals("-XlazyTjp")) {
+				buildConfig.setXlazyTjp(true);
 			} else if (arg.equals("-XnoInline")) {
 				buildConfig.setXnoInline(true);
 			} else if (arg.equals("-Xlintfile")) { 

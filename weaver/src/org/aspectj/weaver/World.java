@@ -41,6 +41,7 @@ public abstract class World {
     protected Lint lint = new Lint(this);
     
     protected boolean XnoInline;
+    protected boolean XlazyTjp;
 	
     protected World() {
         super();
@@ -367,6 +368,14 @@ public abstract class World {
 	public void setXnoInline(boolean xnoInline) {
 		XnoInline = xnoInline;
 	}
+	
+	public boolean isXlazyTjp() {
+		return XlazyTjp;
+	}
+
+	public void setXlazyTjp(boolean b) {
+		XlazyTjp = b;
+	}
 
 	public ResolvedTypeX.Name lookupOrCreateName(TypeX ty) {
 		String signature = ty.getSignature();
@@ -378,4 +387,5 @@ public abstract class World {
         
 		return ret;
 	}
+
 }

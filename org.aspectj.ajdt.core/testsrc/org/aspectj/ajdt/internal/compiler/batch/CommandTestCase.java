@@ -45,6 +45,10 @@ public abstract class CommandTestCase extends TestCase {
 
 
 	public static void checkCompile(String source, int[] expectedErrors) {
+		checkCompile(source, new String[0], expectedErrors);
+	}
+	
+	public static void checkCompile(String source, String[] extraArgs, int[] expectedErrors) {
 		List args = new ArrayList();
 		args.add("-verbose");
 		
@@ -57,6 +61,10 @@ public abstract class CommandTestCase extends TestCase {
 			"../lib/junit/junit.jar");
 		
 		args.add("-g");  //XXX need this to get sourcefile and line numbers, shouldn't
+		
+		for (int i = 0; i < extraArgs.length; i++) {
+			args.add(extraArgs[i]);
+		}
 		
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/" + source);
 		

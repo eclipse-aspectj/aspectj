@@ -40,11 +40,31 @@ public final class Factory {
         return new JoinPointImpl.StaticPartImpl(kind, sig, makeSourceLoc(l, -1));
     }
     
-    public static JoinPoint makeJP(JoinPoint.StaticPart staticPart, 
-                        Object _this, Object target, Object[] args)
-    {
-        return new JoinPointImpl(staticPart, _this, target, args);
-    }
+    private static Object[] NO_ARGS = new Object[0];
+	public static JoinPoint makeJP(JoinPoint.StaticPart staticPart, 
+						Object _this, Object target)
+	{
+		return new JoinPointImpl(staticPart, _this, target, NO_ARGS);
+	}
+    
+	public static JoinPoint makeJP(JoinPoint.StaticPart staticPart, 
+						Object _this, Object target, Object arg0)
+	{
+		return new JoinPointImpl(staticPart, _this, target, new Object[] {arg0});
+	}
+    
+	public static JoinPoint makeJP(JoinPoint.StaticPart staticPart, 
+						Object _this, Object target, Object arg0, Object arg1)
+	{
+		return new JoinPointImpl(staticPart, _this, target, new Object[] {arg0, arg1});
+	}
+    
+    
+	public static JoinPoint makeJP(JoinPoint.StaticPart staticPart, 
+						Object _this, Object target, Object[] args)
+	{
+		return new JoinPointImpl(staticPart, _this, target, args);
+	}
     
     public MethodSignature makeMethodSig(String stringRep) {
         MethodSignatureImpl ret = new MethodSignatureImpl(stringRep);

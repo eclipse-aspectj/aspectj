@@ -25,7 +25,8 @@ public class AjdtBatchTests extends TestCase {
         //$JUnit-BEGIN$
         suite.addTestSuite(BasicCommandTestCase.class); 
         suite.addTestSuite(BinaryFormsTestCase.class); 
-        suite.addTestSuite(CompileAndRunTestCase.class); 
+		suite.addTestSuite(CompileAndRunTestCase.class); 
+		suite.addTestSuite(PerformanceTestCase.class); 
         suite.addTestSuite(ImageTestCase.class); 
         suite.addTestSuite(MultipleCompileTestCase.class); 
         // XXX suite.addTestSuite(VerifyWeaveTestCase.class); 

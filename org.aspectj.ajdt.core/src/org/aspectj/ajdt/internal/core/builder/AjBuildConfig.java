@@ -54,6 +54,7 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 	private boolean emacsSymMode = false;
 	private boolean noWeave = false;
 	private boolean XserializableAspects = false;
+	private boolean XlazyTjp = false;
 	private boolean XnoInline = false;
 	private String lintMode = AJLINT_DEFAULT;
 	private File lintSpecFile = null;
@@ -452,4 +453,13 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 	public void doNotProceed() {
 		shouldProceed = false;
 	}
+
+	public boolean isXlazyTjp() {
+		return XlazyTjp;
+	}
+
+	public void setXlazyTjp(boolean b) {
+		XlazyTjp = b;
+	}
+
 }

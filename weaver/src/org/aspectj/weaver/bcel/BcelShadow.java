@@ -43,6 +43,7 @@ import org.apache.bcel.generic.SWAP;
 import org.apache.bcel.generic.TargetLostException;
 import org.apache.bcel.generic.Type;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.BCException;
@@ -248,11 +249,15 @@ public class BcelShadow extends Shadow {
 		}
 
 		// now we ask each munger to request our state
+		isThisJoinPointLazy = world.isXlazyTjp();
+		
 		for (Iterator iter = mungers.iterator(); iter.hasNext();) {
 			ShadowMunger munger = (ShadowMunger) iter.next();
 			munger.specializeOn(this);
 		}
 		
+		initializeThisJoinPoint();
+
 	    // If we are an expression kind, we require our target/arguments on the stack
 	    // before we do our actual thing.  However, they may have been removed
 	    // from the stack as the shadowMungers have requested state.  
@@ -765,12 +770,11 @@ public class BcelShadow extends Shadow {
 
     // reflective thisJoinPoint support
     private BcelVar thisJoinPointVar = null;
+    private boolean isThisJoinPointLazy;
+    private int lazyTjpConsumers = 0;
     private BcelVar thisJoinPointStaticPartVar = null;  
     // private BcelVar thisEnclosingJoinPointStaticPartVar = null;  
     
-	public final Var getThisJoinPointVar() {
-		return getThisJoinPointBcelVar();
-	}
 	public final Var getThisJoinPointStaticPartVar() {
 		return getThisJoinPointStaticPartBcelVar();
 	}
@@ -778,35 +782,143 @@ public class BcelShadow extends Shadow {
 		return getThisEnclosingJoinPointStaticPartBcelVar();
 	}
     
-    public BcelVar getThisJoinPointBcelVar() {
-    	if (thisJoinPointVar == null) {
-    		thisJoinPointVar = genTempVar(TypeX.forName("org.aspectj.lang.JoinPoint"));
-    		InstructionFactory fact = getFactory();
-    		InstructionList il = new InstructionList();
-    		BcelVar staticPart = getThisJoinPointStaticPartBcelVar();
-    		staticPart.appendLoad(il, fact);
-    		if (hasThis()) {
-    			((BcelVar)getThisVar()).appendLoad(il, fact);
-    		} else {
-    			il.append(new ACONST_NULL());
-    		}
-    		if (hasTarget()) {
-    			((BcelVar)getTargetVar()).appendLoad(il, fact);
-    		} else {
-    			il.append(new ACONST_NULL());
-    		}
-			il.append(makeArgsObjectArray());
-    		
-    		il.append(fact.createInvoke("org.aspectj.runtime.reflect.Factory", 
-    							"makeJP", LazyClassGen.tjpType,
-    							new Type[] { LazyClassGen.staticTjpType,
-    									Type.OBJECT, Type.OBJECT, new ArrayType(Type.OBJECT, 1)},
-    							Constants.INVOKESTATIC));
-    		il.append(thisJoinPointVar.createStore(fact));
-    		range.insert(il, Range.OutsideBefore);
+    public void requireThisJoinPoint(boolean hasGuardTest) {
+    	if (!hasGuardTest) {
+    		isThisJoinPointLazy = false;
+    	} else {
+    		lazyTjpConsumers++;
     	}
+    	if (thisJoinPointVar == null) {
+			thisJoinPointVar = genTempVar(TypeX.forName("org.aspectj.lang.JoinPoint"));
+    	}
+    }
+    
+    
+    public Var getThisJoinPointVar() {
+    	requireThisJoinPoint(false);
     	return thisJoinPointVar;
     }
+    
+    void initializeThisJoinPoint() {
+    	if (thisJoinPointVar == null) return;
+    	
+    	if (isThisJoinPointLazy) {
+    		isThisJoinPointLazy = checkLazyTjp();
+    	}
+    		
+		if (isThisJoinPointLazy) {
+			createThisJoinPoint(); // make sure any state needed is initialized, but throw the instructions out
+			
+			if (lazyTjpConsumers == 1) return; // special case only one lazyTjpUser
+			
+			InstructionFactory fact = getFactory();
+			InstructionList il = new InstructionList();
+			il.append(InstructionConstants.ACONST_NULL);
+			il.append(thisJoinPointVar.createStore(fact));
+			range.insert(il, Range.OutsideBefore);
+		} else {
+			InstructionFactory fact = getFactory();
+			InstructionList il = createThisJoinPoint();
+			il.append(thisJoinPointVar.createStore(fact));
+			range.insert(il, Range.OutsideBefore);
+		}
+    }
+    
+    private boolean checkLazyTjp() {    	
+    	// check for around advice
+    	for (Iterator i = mungers.iterator(); i.hasNext();) {
+			ShadowMunger munger = (ShadowMunger) i.next();
+			if (munger instanceof Advice) {
+				if ( ((Advice)munger).getKind() == AdviceKind.Around) {
+					world.getLint().canNotImplementLazyTjp.signal(
+					    new String[] {toString()},
+					    getSourceLocation(),
+					    new ISourceLocation[] { munger.getSourceLocation() }
+					);
+					return false;
+				}
+			}
+		}
+    	
+    	return true;
+    }
+    
+    InstructionList loadThisJoinPoint() {
+		InstructionFactory fact = getFactory();
+		InstructionList il = new InstructionList();
+
+    	if (isThisJoinPointLazy) {
+    		il.append(createThisJoinPoint());
+    		
+    		if (lazyTjpConsumers > 1) {
+				il.append(thisJoinPointVar.createStore(fact));
+				
+				InstructionHandle end = il.append(thisJoinPointVar.createLoad(fact));
+				
+				il.insert(InstructionFactory.createBranchInstruction(Constants.IFNONNULL, end));
+				il.insert(thisJoinPointVar.createLoad(fact));
+    		}
+    	} else {			
+			thisJoinPointVar.appendLoad(il, fact);
+    	}
+    	
+		return il;
+    }
+
+	InstructionList createThisJoinPoint() {
+		InstructionFactory fact = getFactory();
+		InstructionList il = new InstructionList();
+		
+		BcelVar staticPart = getThisJoinPointStaticPartBcelVar();
+		staticPart.appendLoad(il, fact);
+		if (hasThis()) {
+			((BcelVar)getThisVar()).appendLoad(il, fact);
+		} else {
+			il.append(new ACONST_NULL());
+		}
+		if (hasTarget()) {
+			((BcelVar)getTargetVar()).appendLoad(il, fact);
+		} else {
+			il.append(new ACONST_NULL());
+		}
+		
+		switch(getArgCount()) {
+			case 0:
+				il.append(fact.createInvoke("org.aspectj.runtime.reflect.Factory", 
+									"makeJP", LazyClassGen.tjpType,
+									new Type[] { LazyClassGen.staticTjpType,
+											Type.OBJECT, Type.OBJECT},
+									Constants.INVOKESTATIC));
+				break;
+			case 1:
+				((BcelVar)getArgVar(0)).appendLoadAndConvert(il, fact, world.resolve(ResolvedTypeX.OBJECT));
+				il.append(fact.createInvoke("org.aspectj.runtime.reflect.Factory", 
+									"makeJP", LazyClassGen.tjpType,
+									new Type[] { LazyClassGen.staticTjpType,
+											Type.OBJECT, Type.OBJECT, Type.OBJECT},
+									Constants.INVOKESTATIC));
+				break;
+			case 2:
+				((BcelVar)getArgVar(0)).appendLoadAndConvert(il, fact, world.resolve(ResolvedTypeX.OBJECT));
+				((BcelVar)getArgVar(1)).appendLoadAndConvert(il, fact, world.resolve(ResolvedTypeX.OBJECT));
+				il.append(fact.createInvoke("org.aspectj.runtime.reflect.Factory", 
+									"makeJP", LazyClassGen.tjpType,
+									new Type[] { LazyClassGen.staticTjpType,
+											Type.OBJECT, Type.OBJECT, Type.OBJECT, Type.OBJECT},
+									Constants.INVOKESTATIC));
+				break;
+			default:
+				il.append(makeArgsObjectArray());
+				il.append(fact.createInvoke("org.aspectj.runtime.reflect.Factory", 
+									"makeJP", LazyClassGen.tjpType,
+									new Type[] { LazyClassGen.staticTjpType,
+											Type.OBJECT, Type.OBJECT, new ArrayType(Type.OBJECT, 1)},
+									Constants.INVOKESTATIC));
+				break;
+		}
+		
+		return il;
+	}
     
     public BcelVar getThisJoinPointStaticPartBcelVar() {
     	if (thisJoinPointStaticPartVar == null) {

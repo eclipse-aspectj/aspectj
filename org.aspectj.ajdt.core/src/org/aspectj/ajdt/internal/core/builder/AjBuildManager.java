@@ -187,6 +187,7 @@ public class AjBuildManager {
 	private void initBcelWorld(IMessageHandler handler) throws IOException {
 		bcelWorld = new BcelWorld(buildConfig.getClasspath(), handler, null);
 		bcelWorld.setXnoInline(buildConfig.isXnoInline());
+		bcelWorld.setXlazyTjp(buildConfig.isXlazyTjp());
 		bcelWeaver = new BcelWeaver(bcelWorld);
 		
 		for (Iterator i = buildConfig.getAspectpath().iterator(); i.hasNext();) {

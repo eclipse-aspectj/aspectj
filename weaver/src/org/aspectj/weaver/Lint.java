@@ -50,6 +50,9 @@ public class Lint {
     public final Kind unmatchedSuperTypeInCall = 
         new Kind("unmatchedSuperTypeInCall", "does not match because declaring type is {0}, if match desired use target({1})");
             
+	public final Kind canNotImplementLazyTjp = 
+		new Kind("canNotImplementLazyTjp", "can not implement lazyTjp on this joinpoint {0} because around advice is used");
+
 	public Lint(World world) {
 		this.world = world;
 	}

@@ -92,7 +92,7 @@ public class BcelAdvice extends Advice {
         }
 
         if ((getExtraParameterFlags() & ThisJoinPoint) != 0) {
-        	((BcelShadow)shadow).getThisJoinPointVar();
+        	((BcelShadow)shadow).requireThisJoinPoint(pointcutTest != Literal.TRUE && getKind() != AdviceKind.Around);
         }
         
         if ((getExtraParameterFlags() & ThisEnclosingJoinPointStaticPart) != 0) {
@@ -298,7 +298,7 @@ public class BcelAdvice extends Advice {
         }
         
         if ((getExtraParameterFlags() & ThisJoinPoint) != 0) {
-        	shadow.getThisJoinPointBcelVar().appendLoad(il, fact);
+        	il.append(shadow.loadThisJoinPoint());
         }
         
 
