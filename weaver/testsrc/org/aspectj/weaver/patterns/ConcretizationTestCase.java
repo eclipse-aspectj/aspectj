@@ -14,7 +14,6 @@
 package org.aspectj.weaver.patterns;
 
 import java.io.*;
-import java.lang.reflect.Modifier;
 import java.util.*;
 
 import org.aspectj.testing.util.TestUtil;

@@ -13,10 +13,7 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.util.*;
 import java.io.*;
-
-import junit.framework.TestResult;
 
 public class AfterWeaveTestCase extends WeaveTestCase {
 	{

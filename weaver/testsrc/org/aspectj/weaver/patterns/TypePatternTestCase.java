@@ -14,7 +14,6 @@
 package org.aspectj.weaver.patterns;
 
 import java.io.*;
-import java.util.*;
 
 import org.aspectj.weaver.bcel.*;
 import org.aspectj.bridge.AbortException;

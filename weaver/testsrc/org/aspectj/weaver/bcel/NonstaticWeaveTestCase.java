@@ -14,8 +14,6 @@
 package org.aspectj.weaver.bcel;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.List;
 
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.ShadowMunger;

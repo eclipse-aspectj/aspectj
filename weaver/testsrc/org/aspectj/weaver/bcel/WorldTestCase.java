@@ -15,7 +15,6 @@ package org.aspectj.weaver.bcel;
 
 import java.lang.reflect.Modifier;
 
-import org.apache.bcel.util.ClassPath;
 import org.aspectj.weaver.*;
 
 /**

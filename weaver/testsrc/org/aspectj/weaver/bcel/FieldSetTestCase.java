@@ -14,7 +14,6 @@
 package org.aspectj.weaver.bcel;
 
 import java.io.IOException;
-import java.util.Collections;
 
 public class FieldSetTestCase extends WeaveTestCase {
     {

@@ -14,8 +14,6 @@
 package org.aspectj.weaver.bcel;
 import java.io.*;
 import java.util.*;
-import java.util.zip.*;
-import java.util.zip.ZipFile;
 
 import junit.framework.*;
 

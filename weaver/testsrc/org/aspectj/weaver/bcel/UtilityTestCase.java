@@ -16,8 +16,6 @@ import java.io.*;
 
 import junit.framework.TestCase;
 
-import org.apache.bcel.util.ClassPath;
-
 public class UtilityTestCase extends TestCase {
 
     public UtilityTestCase(String name) {

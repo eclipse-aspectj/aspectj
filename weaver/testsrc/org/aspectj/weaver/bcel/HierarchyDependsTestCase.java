@@ -16,7 +16,6 @@ package org.aspectj.weaver.bcel;
 import junit.framework.TestCase;
 
 import org.apache.bcel.classfile.JavaClass;
-import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.patterns.*;
 
 

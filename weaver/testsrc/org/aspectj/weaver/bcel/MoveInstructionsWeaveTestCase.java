@@ -13,13 +13,8 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.util.*;
 import java.io.*;
 
-import junit.framework.TestResult;
-
-import org.apache.bcel.generic.*;
-import org.apache.bcel.generic.InstructionList;
 import org.aspectj.weaver.*;
 
 public class MoveInstructionsWeaveTestCase extends WeaveTestCase {

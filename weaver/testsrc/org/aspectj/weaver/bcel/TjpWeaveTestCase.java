@@ -16,8 +16,6 @@ package org.aspectj.weaver.bcel;
 import java.util.*;
 import java.io.*;
 
-import org.apache.bcel.Constants;
-import org.apache.bcel.generic.*;
 import org.aspectj.weaver.bcel.*;
 import org.aspectj.weaver.*;
 

@@ -18,7 +18,6 @@ import java.io.*;
 import junit.framework.TestCase;
 
 import org.aspectj.weaver.*;
-import org.aspectj.weaver.bcel.*;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.util.FuzzyBoolean;
 

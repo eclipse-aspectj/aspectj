@@ -13,8 +13,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.util.*;
-
 import org.aspectj.weaver.bcel.*;
 import org.aspectj.weaver.bcel.*;
 import org.aspectj.weaver.bcel.BcelShadow;
@@ -57,7 +55,7 @@ public class ParserTestCase extends TestCase {
 		
 		try {
 			new PatternParser("initialization(void foo())").parsePointcut();
-			this.fail("should have been a parse error");
+			fail("should have been a parse error");
 		} catch (ParserException pe) {
 			// good
 		}

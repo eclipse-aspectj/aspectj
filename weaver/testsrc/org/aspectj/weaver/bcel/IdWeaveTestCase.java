@@ -16,7 +16,6 @@ package org.aspectj.weaver.bcel;
 import java.io.IOException;
 import java.util.*;
 
-import org.apache.bcel.util.ClassPath;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.Pointcut;
 
