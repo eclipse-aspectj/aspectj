@@ -63,7 +63,7 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 
 
 	public boolean isAspect() {
-		return binding.scope.referenceContext instanceof AspectDeclaration;
+		return declaration instanceof AspectDeclaration;
 	}
 
 	public boolean isWovenBy(ResolvedTypeX aspectType) {
