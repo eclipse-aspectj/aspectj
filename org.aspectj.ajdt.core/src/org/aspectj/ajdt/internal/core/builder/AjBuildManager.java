@@ -118,7 +118,7 @@ public class AjBuildManager {
             if (batch) {
                 // System.err.println("XXXX batch: " + buildConfig.getFiles());
                 if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {  
-                    bcelWorld.setModel(StructureModelManager.getDefault().getStructureModel());
+                    bcelWorld.setModel(StructureModelManager.getDefault().getModel());
                     // in incremental build, only get updated model?
                 }
                 performCompilation(buildConfig.getFiles());
@@ -167,7 +167,7 @@ public class AjBuildManager {
      
     private void setupModel() {
         String rootLabel = "<root>";
-        StructureModel model = StructureModelManager.getDefault().getStructureModel();
+        StructureModel model = StructureModelManager.getDefault().getModel();
         IProgramElement.Kind kind = IProgramElement.Kind.FILE_JAVA;
         if (buildConfig.getConfigFile() != null) {
             rootLabel = buildConfig.getConfigFile().getName();
@@ -247,12 +247,14 @@ public class AjBuildManager {
 				bcelWeaver.dumpUnwoven(buildConfig.getOutputJar());
 			} else {
 				bcelWeaver.dumpUnwoven();
+				bcelWeaver.dumpResourcesToOutPath();
 			}
 		} else {
 			if (buildConfig.getOutputJar() != null) {
 				bcelWeaver.weave(buildConfig.getOutputJar());
 			} else {
 				bcelWeaver.weave();
+				bcelWeaver.dumpResourcesToOutPath();
 			}
 		}
 		if (progressListener != null) progressListener.setProgress(1.0);

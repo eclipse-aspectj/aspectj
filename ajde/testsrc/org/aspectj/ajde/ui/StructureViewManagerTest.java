@@ -50,7 +50,7 @@ public class StructureViewManagerTest extends AjdeTestCase {
 	}
 
 	public void testModelExists() {
-		assertTrue(Ajde.getDefault().getStructureModelManager().getStructureModel() != null);
+		assertTrue(Ajde.getDefault().getStructureModelManager().getModel() != null);
 	}
 
 	public void testNotificationAfterConfigFileChange() {
@@ -85,7 +85,7 @@ public class StructureViewManagerTest extends AjdeTestCase {
 		//System.err.println(">>>>>> " + currentView.getRootNode().getIProgramElement());
 		// AMC should this be currentView, or should we recreate the root... do the latter	
 		//IProgramElement n = currentView.getRootNode().getIProgramElement();
-		IProgramElement n = Ajde.getDefault().getStructureModelManager().getStructureModel().getRoot();
+		IProgramElement n = Ajde.getDefault().getStructureModelManager().getModel().getRoot();
 		assertTrue(
 			"no structure", 
 			//currentView.getRootNode().getIProgramElement().getChildren().get(0) 
@@ -95,7 +95,7 @@ public class StructureViewManagerTest extends AjdeTestCase {
 
 	public void testModelIntegrity() {
 		doSynchronousBuild(CONFIG_FILE_PATH);
-		IProgramElement modelRoot = Ajde.getDefault().getStructureModelManager().getStructureModel().getRoot();
+		IProgramElement modelRoot = Ajde.getDefault().getStructureModelManager().getModel().getRoot();
 		assertTrue("root exists", modelRoot != null);	
 		
 		try {

@@ -78,7 +78,7 @@ public class StructureModelTest extends AjdeTestCase {
 
 	public void testRootForSourceFile() throws IOException {
 		File testFile = openFile("figures-coverage/figures/Figure.java");	
-		IProgramElement node = Ajde.getDefault().getStructureModelManager().getStructureModel().findRootNodeForSourceFile(
+		IProgramElement node = Ajde.getDefault().getStructureModelManager().getModel().findRootNodeForSourceFile(
 			testFile.getCanonicalPath());
 		assertTrue("find result", node != null) ;	
 		IProgramElement pNode = (IProgramElement)node;
@@ -89,7 +89,7 @@ public class StructureModelTest extends AjdeTestCase {
 	public void testPointcutName() throws IOException {
 		File testFile = openFile("figures-coverage/figures/Main.java");	
 		//System.err.println("PointcutName, testFile: " + testFile.getCanonicalPath() + " exists: " + testFile.exists());
-		IProgramElement node = Ajde.getDefault().getStructureModelManager().getStructureModel().findRootNodeForSourceFile(
+		IProgramElement node = Ajde.getDefault().getStructureModelManager().getModel().findRootNodeForSourceFile(
 			testFile.getCanonicalPath());
 		//System.err.println("   node: " + node);
 		assertTrue("find result", node != null) ;	
@@ -107,7 +107,7 @@ public class StructureModelTest extends AjdeTestCase {
 	public void testFileNodeFind() throws IOException {
 		File testFile = openFile("figures-coverage/figures/Main.java");
 		//System.err.println("NodeFind, testFile: " + testFile.getCanonicalPath() + " exists: " + testFile.exists());
-		IProgramElement node = Ajde.getDefault().getStructureModelManager().getStructureModel().findNodeForSourceLine(
+		IProgramElement node = Ajde.getDefault().getStructureModelManager().getModel().findNodeForSourceLine(
 			testFile.getCanonicalPath(), 1);
 		//System.err.println("   node: " + node);
 		assertTrue("find result", node != null) ;	
@@ -120,7 +120,7 @@ public class StructureModelTest extends AjdeTestCase {
   	 * @todo	add negative test to make sure things that aren't runnable aren't annotated
   	 */ 
 	public void testMainClassNodeInfo() throws IOException {
-        StructureModel model = Ajde.getDefault().getStructureModelManager().getStructureModel();
+        StructureModel model = Ajde.getDefault().getStructureModelManager().getModel();
         assertTrue("model exists", model != null);
 		assertTrue("root exists", model.getRoot() != null);
 		File testFile = openFile("figures-coverage/figures/Main.java");
@@ -137,7 +137,7 @@ public class StructureModelTest extends AjdeTestCase {
 	 * Integrity could be checked somewhere in the API.
 	 */ 
 	public void testModelIntegrity() {
-		IProgramElement modelRoot = Ajde.getDefault().getStructureModelManager().getStructureModel().getRoot();
+		IProgramElement modelRoot = Ajde.getDefault().getStructureModelManager().getModel().getRoot();
 		assertTrue("root exists", modelRoot != null);	
 		
 		try {
@@ -167,7 +167,7 @@ public class StructureModelTest extends AjdeTestCase {
   		    	}
   		    }
   		};
-  		Ajde.getDefault().getStructureModelManager().getStructureModel().getRoot().walk(walker);
+  		Ajde.getDefault().getStructureModelManager().getModel().getRoot().walk(walker);
   	}  
   
 	protected void setUp() throws Exception {

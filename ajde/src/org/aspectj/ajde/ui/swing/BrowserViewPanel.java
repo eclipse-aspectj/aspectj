@@ -30,7 +30,7 @@ import javax.swing.event.ChangeListener;
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.ui.GlobalStructureView;
 import org.aspectj.ajde.ui.StructureView;
-import org.aspectj.ajde.ui.StructureViewNode;
+import org.aspectj.ajde.ui.IStructureViewNode;
 import org.aspectj.ajde.ui.StructureViewProperties;
 import org.aspectj.ajde.ui.StructureViewRenderer;
 
@@ -82,11 +82,11 @@ public class BrowserViewPanel extends JPanel implements StructureViewRenderer {
         }
     }
 
-	public void setActiveNode(StructureViewNode node) {
+	public void setActiveNode(IStructureViewNode node) {
 		throw new RuntimeException("not implemented");
 	}
 
-	public void setActiveNode(StructureViewNode activeNode, int lineOffset) {
+	public void setActiveNode(IStructureViewNode activeNode, int lineOffset) {
 		throw new RuntimeException("not implemented");
 	}
 

@@ -73,7 +73,7 @@ public class AjBuildManagerTest extends TestCase {
 				 }, messageWriter);
         String err = parser.getOtherMessages(true);		
         assertTrue(err, null == err);
-        manager.setStructureModel(StructureModelManager.getDefault().getStructureModel());
+        manager.setStructureModel(StructureModelManager.getDefault().getModel());
 		MessageHandler handler = new MessageHandler();
         manager.batchBuild(buildConfig, handler);
         assertCompileMessagesValid(handler);	

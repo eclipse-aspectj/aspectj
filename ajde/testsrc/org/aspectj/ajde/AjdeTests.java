@@ -29,7 +29,7 @@ public class AjdeTests extends TestCase {
 		suite.addTestSuite(CompilerMessagesTest.class);
 		suite.addTestSuite(AsmDeclarationsTest.class);
 		suite.addTestSuite(AsmRelationshipsTest.class);
-//		suite.addTestSuite(ResourceCopyTestCase.class);
+		suite.addTestSuite(ResourceCopyTestCase.class);
 		
         //$JUnit-END$
         return suite;

@@ -84,7 +84,7 @@ public class StructureViewManager {
      * @param newFilePath the canonicalized path to the new file
 	 */
 	public void fireNavigationAction(String newFilePath, int lineNumber) {				
-		IProgramElement currNode = Ajde.getDefault().getStructureModelManager().getStructureModel().findNodeForSourceLine(
+		IProgramElement currNode = Ajde.getDefault().getStructureModelManager().getModel().findNodeForSourceLine(
 			newFilePath,
 			lineNumber);
 		
@@ -127,7 +127,7 @@ public class StructureViewManager {
 			if (defaultFileView.getSourceFile() != null
 				&& !defaultFileView.getSourceFile().equals(newFilePath)) {
 				defaultFileView.setSourceFile(newFilePath);
-				treeViewBuilder.buildView(defaultFileView, StructureModelManager.getDefault().getStructureModel());
+				treeViewBuilder.buildView(defaultFileView, StructureModelManager.getDefault().getModel());
 			}
 		}
 		   
@@ -137,19 +137,19 @@ public class StructureViewManager {
 	    		if (node.getKind().equals(IProgramElement.Kind.CODE)) {
 	    			IProgramElement parentNode = (IProgramElement)node.getParent();
 	    			if (parentNode != null) {
-		    			StructureViewNode currNode = view.findCorrespondingViewNode(parentNode);
+		    			IStructureViewNode currNode = view.findCorrespondingViewNode(parentNode);
 		    			int lineOffset = node.getSourceLocation().getLine() - parentNode.getSourceLocation().getLine();
 		    			if (currNode != null) view.setActiveNode(currNode, lineOffset);
 	    			}
 	    		} else {
-	    			StructureViewNode currNode = view.findCorrespondingViewNode(node);
+	    			IStructureViewNode currNode = view.findCorrespondingViewNode(node);
 	    			if (currNode != null) view.setActiveNode(currNode);	
 	    		}	
     		}
     	}
 	}
 	
-	private IProgramElement getProgramElementNode(StructureViewNode node) {
+	private IProgramElement getProgramElementNode(IStructureViewNode node) {
 		if (node.getStructureNode() instanceof IProgramElement) {
 			return (IProgramElement)node.getStructureNode();	
 //		} else if (node.getStructureNode() instanceof LinkNode) {
@@ -160,8 +160,8 @@ public class StructureViewManager {
 	}
 	
 	public void refreshView(StructureView view) {
-		StructureViewNode activeNode = view.getActiveNode();
-		treeViewBuilder.buildView(view, Ajde.getDefault().getStructureModelManager().getStructureModel());
+		IStructureViewNode activeNode = view.getActiveNode();
+		treeViewBuilder.buildView(view, Ajde.getDefault().getStructureModelManager().getModel());
 		view.setActiveNode(activeNode);
 	}		
 
@@ -195,7 +195,7 @@ public class StructureViewManager {
 		if (properties == null) properties = DEFAULT_VIEW_PROPERTIES;
 		FileStructureView view = new FileStructureView(properties);
 		view.setSourceFile(sourceFilePath);
-		treeViewBuilder.buildView(view, StructureModelManager.getDefault().getStructureModel()); 
+		treeViewBuilder.buildView(view, StructureModelManager.getDefault().getModel()); 
 		structureViews.add(view);
 		return view; 
 	}

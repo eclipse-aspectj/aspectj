@@ -50,7 +50,7 @@ public class TreeStructureViewBuilder {
 			modelRoot = model.getRoot();
 		}
 		
-		StructureViewNode viewRoot = null;
+		IStructureViewNode viewRoot = null;
 		if (!isFileView(view)) {
 			StructureViewProperties.Hierarchy hierarchy 
 				= ((GlobalStructureView)view).getGlobalViewProperties().getHierarchy();
@@ -75,7 +75,7 @@ public class TreeStructureViewBuilder {
 		view.setRootNode(viewRoot);
 	}
 
-	private void addPackageNode(StructureView view, StructureViewNode viewRoot) {
+	private void addPackageNode(StructureView view, IStructureViewNode viewRoot) {
 		if (isFileView(view)) {
 //			IProgramElement fileNode = viewRoot.getStructureNode();
 //			IProgramElement parentNode = fileNode.getParent();
@@ -93,7 +93,7 @@ public class TreeStructureViewBuilder {
 		}
 	}
 	
-	private StructureViewNode createViewNode(IProgramElement node, StructureViewProperties properties) {
+	private IStructureViewNode createViewNode(IProgramElement node, StructureViewProperties properties) {
 		if (node == null) return null;
 		List children = new ArrayList();
 //		IProgramElement pNode = node;
@@ -122,7 +122,7 @@ public class TreeStructureViewBuilder {
 			}	
 		}
 
-		StructureViewNode viewNode = nodeFactory.createNode(node, children);//new TreeViewNode(root, null, children);
+		IStructureViewNode viewNode = nodeFactory.createNode(node, children);//new TreeViewNode(root, null, children);
 		return viewNode;	
 	}
 	
@@ -188,18 +188,18 @@ public class TreeStructureViewBuilder {
 		return true;
 	}
 
-	private void sortView(StructureViewNode node, Comparator comparator) {
+	private void sortView(IStructureViewNode node, Comparator comparator) {
 		if (node == null || node.getChildren() == null) return;
 		Collections.sort(node.getChildren(), comparator);
 		for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
-			StructureViewNode nextNode = (StructureViewNode)it.next();
+			IStructureViewNode nextNode = (IStructureViewNode)it.next();
 			if (nextNode != null) sortView(nextNode, comparator);	
 		}
 	}
 
-    private StructureViewNode buildCustomTree(GlobalStructureView view, StructureModel model) {
+    private IStructureViewNode buildCustomTree(GlobalStructureView view, StructureModel model) {
         IProgramElement rootNode = model.getRoot();
-        StructureViewNode treeNode = nodeFactory.createNode(rootNode);
+        IStructureViewNode treeNode = nodeFactory.createNode(rootNode);
 
         List rootNodes = new ArrayList();
         getRoots(rootNode, rootNodes, view.getGlobalViewProperties().getHierarchy());
@@ -256,8 +256,8 @@ public class TreeStructureViewBuilder {
         }
     }
 
-    private StructureViewNode getInheritanceChildren(IProgramElement node, List associations) {
-    	StructureViewNode treeNode = nodeFactory.createNode(node);
+    private IStructureViewNode getInheritanceChildren(IProgramElement node, List associations) {
+    	IStructureViewNode treeNode = nodeFactory.createNode(node);
         //StructureViewNode treeNode = new StructureViewNodeAdapter(node);
         List relations = ((IProgramElement)node).getRelations();
         throw new RuntimeException("unimplemented");
@@ -280,9 +280,9 @@ public class TreeStructureViewBuilder {
 //        return treeNode;
     }
 
-    private StructureViewNode getCrosscuttingChildren(IProgramElement node) {
+    private IStructureViewNode getCrosscuttingChildren(IProgramElement node) {
         //StructureViewNodeAdapter treeNode = new StructureViewNodeAdapter(node);
-        StructureViewNode treeNode = nodeFactory.createNode(node);
+        IStructureViewNode treeNode = nodeFactory.createNode(node);
         List relations = ((IProgramElement)node).getRelations();
         throw new RuntimeException("unimplemented");
 //        if (relations != null) {
@@ -313,9 +313,9 @@ public class TreeStructureViewBuilder {
 //        return treeNode;
     }
 
-    private StructureViewNode buildTree(IProgramElement node, List associations) {
+    private IStructureViewNode buildTree(IProgramElement node, List associations) {
         //StructureViewNode treeNode = new StructureViewNodeAdapter(node);
-        StructureViewNode treeNode = nodeFactory.createNode(node);
+        IStructureViewNode treeNode = nodeFactory.createNode(node);
 //        if (node instanceof IProgramElement) {
 //            List relations = ((IProgramElement)node).getRelations();
 //            if (relations != null) {
@@ -345,7 +345,7 @@ public class TreeStructureViewBuilder {
                 }
                 //sortNodes(childList);
                 for (Iterator it = childList.iterator(); it.hasNext(); ) {
-                    treeNode.add((StructureViewNode)it.next());
+                    treeNode.add((IStructureViewNode)it.next());
                 }
             }
 
@@ -353,24 +353,25 @@ public class TreeStructureViewBuilder {
         return treeNode;
     }
 
-    private StructureViewNode getRelations(IRelationship node) {
+    private IStructureViewNode getRelations(IRelationship node) {
+    	return null;
         //StructureViewNode treeNode = new StructureViewNode(node);
-        StructureViewNode treeNode = nodeFactory.createNode(node);
+//        IStructureViewNode treeNode = nodeFactory.c(node);
 //        for (Iterator it = node.getTargets().iterator(); it.hasNext(); ) {
 //            treeNode.add(
 //            	nodeFactory.createNode((IProgramElement)it.next())
 //            );
-//        }
-        return treeNode;
+//        } 
+//        return treeNode;
     }
 
 	/**
 	 * For debugging only.
 	 */
-	private void dumpView(StructureViewNode root, int level) {
+	private void dumpView(IStructureViewNode root, int level) {
 		System.out.println(root.getStructureNode());
 		for (Iterator it = root.getChildren().iterator(); it.hasNext(); ) {
-			dumpView((StructureViewNode)it.next(), level++);	
+			dumpView((IStructureViewNode)it.next(), level++);	
 		}
 		for (int i = 0; i < level; i++) {
 			System.out.print(' ');
@@ -379,8 +380,8 @@ public class TreeStructureViewBuilder {
 
     private static final Comparator ALPHABETICAL_COMPARATOR = new Comparator() {
         public int compare(Object o1, Object o2) {  
-        	IProgramElement sv1 = ((StructureViewNode)o1).getStructureNode();
-        	IProgramElement sv2 = ((StructureViewNode)o2).getStructureNode();        
+        	IProgramElement sv1 = ((IStructureViewNode)o1).getStructureNode();
+        	IProgramElement sv2 = ((IStructureViewNode)o2).getStructureNode();        
             if (sv1 instanceof IProgramElement && sv2 instanceof IProgramElement) {
             	IProgramElement p1 = (IProgramElement)sv1;
             	IProgramElement p2 = (IProgramElement)sv2;
@@ -393,8 +394,8 @@ public class TreeStructureViewBuilder {
     
     private static final Comparator DECLARATIONAL_COMPARATOR = new Comparator() {
         public int compare(Object o1, Object o2) {            
-        	IProgramElement sv1 = ((StructureViewNode)o1).getStructureNode();
-        	IProgramElement sv2 = ((StructureViewNode)o2).getStructureNode();        
+        	IProgramElement sv1 = ((IStructureViewNode)o1).getStructureNode();
+        	IProgramElement sv2 = ((IStructureViewNode)o2).getStructureNode();        
             if (sv1 instanceof IProgramElement && sv2 instanceof IProgramElement) {
             	IProgramElement p1 = (IProgramElement)sv1;
             	IProgramElement p2 = (IProgramElement)sv2;

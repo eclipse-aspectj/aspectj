@@ -19,20 +19,27 @@ import java.util.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.aspectj.ajde.ui.*;
+import org.aspectj.ajde.ui.IStructureViewNode.Kind;
 import org.aspectj.asm.*;
 
 /**
  * @author Mik Kersten
  */
-public class SwingTreeViewNode extends DefaultMutableTreeNode implements StructureViewNode {
+public class SwingTreeViewNode extends DefaultMutableTreeNode implements IStructureViewNode {
 
+	private String relationshipName;
 	private IProgramElement programElement;
 	private AbstractIcon icon;
-	
+	private IStructureViewNode.Kind kind;
+
+	/**
+	 * Create a declaration node.
+	 */	
 	public SwingTreeViewNode(IProgramElement programElement, AbstractIcon icon, List children) {
 		super(programElement, true);
 		this.programElement = programElement;
 		this.icon = icon;
+		this.kind = Kind.DECLARATION;
 		
 		if (children != null) {
 			for (Iterator it = children.iterator(); it.hasNext(); ) { 
@@ -41,17 +48,24 @@ public class SwingTreeViewNode extends DefaultMutableTreeNode implements Structu
 		}
 	}
 
+	/**
+	 * Create a relationship node.
+	 */	
 	public SwingTreeViewNode(IRelationship relationship, AbstractIcon icon) {
-//		super(IProgramElement, true);
-		throw new RuntimeException("unimplemented");
-//		this.IProgramElement = IProgramElement;
-//		this.icon = icon;
-//		
-//		if (children != null) {
-//			for (Iterator it = children.iterator(); it.hasNext(); ) { 
-//				super.add((SwingTreeViewNode)it.next());	
-//			}
-//		}
+		super(null, true);
+		this.icon = icon;
+		this.kind = Kind.RELATIONSHIP;
+		this.relationshipName = relationship.getName();
+	}
+	
+	/**
+	 * Create a link.
+	 */	
+	public SwingTreeViewNode(IProgramElement programElement, AbstractIcon icon) {
+		super(programElement, false);
+		this.programElement = programElement;
+		this.kind = Kind.LINK;
+		this.icon = icon;
 	}
 	
 	public IProgramElement getStructureNode() {
@@ -62,11 +76,15 @@ public class SwingTreeViewNode extends DefaultMutableTreeNode implements Structu
 		return icon;
 	}	
 
-	public void add(StructureViewNode child) { 
+	public void add(IStructureViewNode child) { 
 		super.add((DefaultMutableTreeNode)child);
 	}
+
+	public void add(IStructureViewNode child, int position) { 
+		super.insert((DefaultMutableTreeNode)child, position);
+	}
 	
-	public void remove(StructureViewNode child) { 
+	public void remove(IStructureViewNode child) { 
 		super.remove((DefaultMutableTreeNode)child);
 	}
 	
@@ -77,5 +95,22 @@ public class SwingTreeViewNode extends DefaultMutableTreeNode implements Structu
 			return children;
 		}	
 	}
+	
+	public Kind getKind() {
+		return kind;
+	}
+
+	public String getRelationshipName() {
+		return relationshipName;
+	}
+	
+	public String toString() {
+		if (kind == IStructureViewNode.Kind.RELATIONSHIP) {
+			return relationshipName;
+		} else {
+			return programElement.getName();
+		}
+	}
+
 }
 

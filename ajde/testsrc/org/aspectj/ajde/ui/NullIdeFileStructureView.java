@@ -32,7 +32,7 @@ public class NullIdeFileStructureView extends FileStructureView {
 		this.sourceFilePath = sourceFile;
 	}
 
-	public void setRootNode(StructureViewNode rootNode) {
+	public void setRootNode(IStructureViewNode rootNode) {
 		super.setRootNode(rootNode);
 		notifyViewUpdated();
 	}

@@ -58,7 +58,7 @@ public abstract class AbstractIconRegistry {
     protected final AbstractIcon RELATION_REFERENCE_FORWARD = createIcon(STRUCTURE_PATH + "referenceForward.gif");
     protected final AbstractIcon RELATION_REFERENCE_BACK = createIcon(STRUCTURE_PATH + "referenceBack.gif");
 
-	public AbstractIcon getRelationIcon(IRelationship.Kind relationship) {
+	public AbstractIcon getIcon(IRelationship.Kind relationship) {
 		if (relationship == IRelationship.Kind.ADVICE) {
 			return RELATION_ADVICE_FORWARD;
 		} else if (relationship == IRelationship.Kind.DECLARE) {
@@ -82,7 +82,7 @@ public abstract class AbstractIconRegistry {
 	 * 
 	 * @return	null if the kind could not be resolved
 	 */
-	public AbstractIcon getStructureIcon(IProgramElement.Kind kind) { 
+	public AbstractIcon getIcon(IProgramElement.Kind kind) { 
 		if (kind == IProgramElement.Kind.PROJECT) {
 			return PROJECT;
 		} else if (kind == IProgramElement.Kind.PACKAGE) {

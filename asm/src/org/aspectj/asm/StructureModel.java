@@ -94,7 +94,7 @@ public class StructureModel implements Serializable {
 	 * @param packageName	if null default package is searched
 	 * @param className 	can't be null
 	 */ 
-	public IProgramElement findNodeForClass(String packageName, String className) {
+	public IProgramElement findNodeForType(String packageName, String typeName) {
 		IProgramElement packageNode = null;
 		if (packageName == null) {
 			packageNode = root;
@@ -111,7 +111,7 @@ public class StructureModel implements Serializable {
 		// this searches each file for a class
 		for (Iterator it = packageNode.getChildren().iterator(); it.hasNext(); ) {
 			IProgramElement fileNode = (IProgramElement)it.next();
-			IProgramElement ret = findClassInNodes(fileNode.getChildren(), className);
+			IProgramElement ret = findClassInNodes(fileNode.getChildren(), typeName);
 			if (ret != null) return ret;
 		}
 		
@@ -130,11 +130,8 @@ public class StructureModel implements Serializable {
 			innerName = name.substring(dollar+1);
 		}
 		
-		
 		for (Iterator j = nodes.iterator(); j.hasNext(); ) {
 			IProgramElement classNode = (IProgramElement)j.next();
-//			System.err.println("checking: " + classNode + " for " + baseName);	
-//			System.err.println("children: " + classNode.getChildren());
 			if (baseName.equals(classNode.getName())) {
 				if (innerName == null) return classNode;
 				else return findClassInNodes(classNode.getChildren(), innerName);

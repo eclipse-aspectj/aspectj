@@ -16,44 +16,15 @@ import org.aspectj.asm.*;
  */
 public class RelationshipMapper extends HashMap implements IRelationshipMapper {
 	
-	private Map/*IRelationship*/ relationships = new HashMap();
-	
-	public RelationshipMapper(List availableRelationships) {
-		for (Iterator it = availableRelationships.iterator(); it.hasNext(); ) {
-			IRelationship r = (IRelationship)it.next();
-			relationships.put(r, new HashMap());
-		}
-	}
-	
-	public List getRelationshipsForElement(IProgramElement source, IRelationship relationship) {
-		Map map = (Map)relationships.get(relationship);
-		return (List)map.get(source);
+	public IRelationship get(IProgramElement source) {
+		return (IRelationship)super.get(source);
 	}
 
 	/**
 	 * Creates the relationship if not present.
 	 */
-	public void putRelationshipForElement(IProgramElement source, IRelationship relationship, List targets) {
-		Map map = (Map)relationships.get(relationship);
-		if (map == null) {
-			map = new HashMap();
-			relationships.put(relationship, map);
-		}
-		map.put(source, targets);
-	}
-
-	public void putRelationshipForElement(IProgramElement source, IRelationship relationship, IProgramElement target) {
-		Map map = (Map)relationships.get(relationship);
-		if (map == null) {
-			map = new HashMap();
-			relationships.put(relationship, map);
-		}
-		List targetList = (List)map.get(source);	
-		if (targetList == null) {
-			targetList = new ArrayList();
-			map.put(source, targetList);
-		}
-		targetList.add(target);
+	public void put(IProgramElement source, IRelationship relationship) {
+		super.put(source, relationship);
 	}
 
 	private static class RelationshipTable {
@@ -73,28 +44,4 @@ public class RelationshipMapper extends HashMap implements IRelationshipMapper {
 			return relationship;
 		}
 	}
-//	public List getRelationshipsForElement(
-//		IProgramElement source,
-//		IRelationship relationship) {
-//			
-//		String signatureKey = (List)getRelationshipsForElement(source.getSignatureKey(), relationship);
-//		
-//	}
-//
-//	public void putRelationshipForElement(
-//		IProgramElement source,
-//		IRelationship kind,
-//		IProgramElement target) {
-//
-//	}
-//
-//	public void putRelationshipForElement(
-//		IProgramElement source,
-//		IRelationship relationship,
-//		List targets) {
-//
-//	}
-	
-	
-
 }

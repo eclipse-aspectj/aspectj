@@ -28,12 +28,21 @@ public class SwingTreeViewNodeFactory extends StructureViewNodeFactory {
 	public SwingTreeViewNodeFactory(IconRegistry iconRegistry) {
 		super(iconRegistry);	
 	}
-	
-	protected StructureViewNode createConcreteNode(IProgramElement node, AbstractIcon icon, List children) {
+
+	protected IStructureViewNode createDeclaration(
+		IProgramElement node,
+		AbstractIcon icon,
+		List children) {
 		return new SwingTreeViewNode(node, icon, children);
 	}
 
-	protected StructureViewNode createConcreteNode(
+	protected IStructureViewNode createLink(
+		IProgramElement node,
+		AbstractIcon icon) {
+		return new SwingTreeViewNode(node, icon);
+	}
+
+	protected IStructureViewNode createRelationship(
 		IRelationship relationship,
 		AbstractIcon icon) {
 		return new SwingTreeViewNode(relationship, icon);

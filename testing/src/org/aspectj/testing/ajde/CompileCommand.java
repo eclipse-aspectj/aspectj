@@ -146,17 +146,22 @@ public class CompileCommand implements ICommand {
         };
         StructureViewNodeFactory structureViewNodeFactory =
             new StructureViewNodeFactory(iconRegistry) {
-	            protected StructureViewNode createConcreteNode(
+	            protected IStructureViewNode createDeclaration(
 	                IProgramElement node,
 	                AbstractIcon icon,
 	                List children) {
 	                return new SwingTreeViewNode(node, icon, children);
 	            }
-				protected StructureViewNode createConcreteNode(
+				protected IStructureViewNode createRelationship(
 					IRelationship node,
 					AbstractIcon icon) {
 					return new SwingTreeViewNode(node, icon);
 				}	            
+				protected IStructureViewNode createLink(
+					IProgramElement node,
+					AbstractIcon icon) {
+					return new SwingTreeViewNode(node, icon);
+				}	 
         };
 
         Ajde.init(

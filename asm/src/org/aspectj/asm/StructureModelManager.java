@@ -33,15 +33,15 @@ public class StructureModelManager {
     private List structureListeners = new ArrayList();
 
 	private IRelationshipMapper mapper;
-	private static final IRelationship ADVICE = new Relationship("advises", "advised by", IRelationship.Kind.ADVICE);
+//	public static final IRelationship ADVICE = new Relationship("advises", "advised by", IRelationship.Kind.ADVICE);
 
     protected StructureModelManager() {
     	List relationships = new ArrayList();
-    	relationships.add(ADVICE);
-		mapper = new RelationshipMapper(relationships);
+//    	relationships.add(ADVICE);
+		mapper = new RelationshipMapper();
     }
 
-    public StructureModel getStructureModel() {
+    public StructureModel getModel() {
         return model;	
 	}
 
@@ -168,5 +168,9 @@ public class StructureModelManager {
 	public static StructureModelManager getDefault() {
 		return INSTANCE;
 	}
+	public IRelationshipMapper getMapper() {
+		return mapper;
+	}
+
 }
 

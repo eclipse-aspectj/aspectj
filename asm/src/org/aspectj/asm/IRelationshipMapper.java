@@ -23,9 +23,10 @@ public interface IRelationshipMapper extends Serializable {
 //
 //	public void putRelationshipForElement(String source, IRelationship kind, String target);
  
-	public List getRelationshipsForElement(IProgramElement source, IRelationship relationship);
-	
-	public void putRelationshipForElement(IProgramElement source, IRelationship relationship, List targets);
+	public IRelationship get(IProgramElement source);
 
-	public void putRelationshipForElement(IProgramElement source, IRelationship kind, IProgramElement target);
+//	public void putRelationshipForElement(IProgramElement source, IRelationship relationship, List targets);
+
+	public void put(IProgramElement source, IRelationship relationship);
+ 
 }

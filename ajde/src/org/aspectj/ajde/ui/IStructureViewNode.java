@@ -11,33 +11,56 @@
  *     Xerox/PARC     initial implementation 
  * ******************************************************************/
 
-
-package org.aspectj.asm;
+ 
+package org.aspectj.ajde.ui;
 
 import java.io.*;
 import java.util.List;
 
+import org.aspectj.asm.IProgramElement;
+
 /**
  * @author Mik Kersten
- */
-public interface IRelationship extends Serializable {
+ */ 
+public interface IStructureViewNode {
+	
+	public IProgramElement getStructureNode();
+	
+	public AbstractIcon getIcon();
+	
+	/**
+	 * Add a child node.
+	 */
+	public void add(IStructureViewNode child);
 
-	public String getName();
+	/**
+	 * Add a child node.
+	 */
+	public void add(IStructureViewNode child, int position);
 	
-	public List getTargets();
+	/**
+	 * Remove a child node.
+	 */
+	public void remove(IStructureViewNode child);
 	
-	public IProgramElement getSource();
+	/**
+	 * @return	an empty list if there are no children
+	 */
+	public List getChildren();
 	
 	public Kind getKind();
+	
+	public String getRelationshipName();
 	
 	/**
 	 * Uses "typesafe enum" pattern.
 	 */
 	public static class Kind implements Serializable {
 		
-		public static final Kind ADVICE = new Kind("advice");
-		public static final Kind DECLARE = new Kind("declare");
-		public static final Kind[] ALL = { ADVICE, DECLARE };
+		public static final Kind DECLARATION = new Kind("declaration");
+		public static final Kind RELATIONSHIP = new Kind("relationship");
+		public static final Kind LINK = new Kind("link");
+		public static final Kind[] ALL = { DECLARATION, RELATIONSHIP, LINK };
 		private final String name;
 		
 		private Kind(String name) {

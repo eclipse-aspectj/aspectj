@@ -14,7 +14,7 @@
  
 package org.aspectj.ajde.ui;
 
-import java.util.List;
+import java.util.*;
 
 import org.aspectj.asm.*;
 
@@ -29,40 +29,47 @@ public abstract class StructureViewNodeFactory {
 		this.iconRegistry = iconRegistry;			
 	}
 
-	public StructureViewNode createNode(IProgramElement node) {
+	public IStructureViewNode createNode(IProgramElement node) {
 		return createNode(node, null);		
 	}
 
-	public StructureViewNode createNode(IProgramElement node, List children) {
-		AbstractIcon icon;
-//		if (node instanceof IProgramElement) {
-//		IProgramElement pNode = (IProgramElement)node;
-		icon = iconRegistry.getStructureIcon(node.getKind(), node.getAccessibility());
-//		} else if (node instanceof IRelationship) {
-//			IRelationship relationNode = (IRelationship)node;
-//			icon = iconRegistry.getRelationIcon(relationNode.getKind());
-////		} else if (node instanceof LinkNode) {
-////			LinkNode linkNode = (LinkNode)node;
-////			icon = iconRegistry.getStructureIcon(
-////				linkNode.getProgramElementNode().getProgramElementKind(), 
-////				linkNode.getProgramElementNode().getAccessibility());
-//		} else {
-//			icon = new AbstractIcon(null);	
-//		}
-//		node.setChildren(children);
-		return createConcreteNode(node, icon, children);
+	public IStructureViewNode createNode(IProgramElement node, List children) {
+		AbstractIcon icon = iconRegistry.getStructureIcon(node.getKind(), node.getAccessibility());
+
+		IStructureViewNode svNode = createDeclaration(node, icon, children);		
+		IRelationship rel = StructureModelManager.getDefault().getMapper().get(node);
+		if (rel != null && rel.getTargets().size() > 0) {
+			IStructureViewNode relNode = createRelationship(
+				rel, 
+				iconRegistry.getIcon(rel.getKind())
+			);
+			svNode.add(relNode, 0);
+			
+			for (Iterator it = rel.getTargets().iterator(); it.hasNext(); ) {
+				IProgramElement link = (IProgramElement)it.next();
+				IStructureViewNode linkNode = createLink(
+					link, 
+					iconRegistry.getIcon(link.getKind())
+				);	
+				relNode.add(linkNode);
+					
+			}
+		}
+		return svNode;
 	}
 
-	public StructureViewNode createNode(IRelationship relationship) {
-		AbstractIcon icon;
-		icon = iconRegistry.getRelationIcon(relationship.getKind());
-		return createConcreteNode(relationship, icon);
-	}
+	/**
+	 * Implementors must override this method in order to create link new nodes.
+	 */ 
+	protected abstract IStructureViewNode createLink(IProgramElement node, AbstractIcon icon);
 	
-	protected abstract StructureViewNode createConcreteNode(IRelationship relationship, AbstractIcon icon);
+	/**
+	 * Implementors must override this method in order to create new relationship nodes.
+	 */ 	
+	protected abstract IStructureViewNode createRelationship(IRelationship relationship, AbstractIcon icon);
 
 	/**
 	 * Implementors must override this method in order to create new nodes.
 	 */ 
-	protected abstract StructureViewNode createConcreteNode(IProgramElement node, AbstractIcon icon, List children);
+	protected abstract IStructureViewNode createDeclaration(IProgramElement node, AbstractIcon icon, List children);
 }

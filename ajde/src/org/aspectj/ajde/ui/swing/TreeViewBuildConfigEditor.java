@@ -254,7 +254,7 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
             } else if (kind.equals(BuildConfigNode.Kind.DIRECTORY)) {
             	setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.PACKAGE));	
             } else {
-            	setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getStructureIcon(IProgramElement.Kind.ERROR).getIconResource());	
+            	setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getIcon(IProgramElement.Kind.ERROR).getIconResource());	
             	p.remove(cbox);
             }
            

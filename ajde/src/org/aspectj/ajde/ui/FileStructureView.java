@@ -36,7 +36,7 @@ public class FileStructureView extends StructureView {
 		this.sourceFilePath = sourceFile;
 	}
 
-	public void setRootNode(StructureViewNode rootNode) {
+	public void setRootNode(IStructureViewNode rootNode) {
 		super.setRootNode(rootNode);
 		notifyViewUpdated();
 	}

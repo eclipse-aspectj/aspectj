@@ -36,7 +36,7 @@ public interface StructureViewRenderer extends EventListener {
      * the corresponding node's sourceline to be highlighted in the
      * active editor.
      */
-    public void setActiveNode(StructureViewNode node);
+    public void setActiveNode(IStructureViewNode node);
     
     /**
      * Same behavior as <CODE>setActiveNode(StructureViewNode)</CODE> but
@@ -45,5 +45,5 @@ public interface StructureViewRenderer extends EventListener {
      * @param	lineOffset	number of lines after the begin and before the
      * 						end line of the corresponding <CODE>StructureNode</CODE>.
      */ 
-	public void setActiveNode(StructureViewNode activeNode, int lineOffset);
+	public void setActiveNode(IStructureViewNode activeNode, int lineOffset);
 }

@@ -23,8 +23,8 @@ import org.aspectj.asm.IProgramElement;
  */
 public abstract class StructureView {
 
-	private StructureViewNode rootNode = null; 
-	private StructureViewNode activeNode = null; 
+	private IStructureViewNode rootNode = null; 
+	private IStructureViewNode activeNode = null; 
 	protected StructureViewProperties viewProperties = null;
 	protected StructureViewRenderer renderer = null;
 	
@@ -32,11 +32,11 @@ public abstract class StructureView {
 		return viewProperties;	
 	}  
 	
-	public StructureViewNode getRootNode() {
+	public IStructureViewNode getRootNode() {
 		return rootNode; 
 	}
 
-	public void setRootNode(StructureViewNode rootNode) {
+	public void setRootNode(IStructureViewNode rootNode) {
 		this.rootNode = rootNode;
 	}
 
@@ -55,7 +55,7 @@ public abstract class StructureView {
 	/**
 	 * @return		the view node corresponding to the active ProgramElementNode or null
 	 */
-	public StructureViewNode getActiveNode() {
+	public IStructureViewNode getActiveNode() {
 		if (activeNode != null 
 			&& activeNode.getStructureNode() instanceof IProgramElement) {
 			return activeNode;
@@ -69,11 +69,11 @@ public abstract class StructureView {
 	 * 
 	 * @return		the first match
 	 */
-	public StructureViewNode findCorrespondingViewNode(IProgramElement node) {
+	public IStructureViewNode findCorrespondingViewNode(IProgramElement node) {
 		return findCorrespondingViewNodeHelper(rootNode, node);
 	}
 
-	private StructureViewNode findCorrespondingViewNodeHelper(StructureViewNode node, IProgramElement pNode) {
+	private IStructureViewNode findCorrespondingViewNodeHelper(IStructureViewNode node, IProgramElement pNode) {
 		
 		if (node != null
 			&& node.getStructureNode() != null 
@@ -83,7 +83,7 @@ public abstract class StructureView {
 		
 		if (node != null && node.getChildren() != null) {
 			for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
-				StructureViewNode foundNode = findCorrespondingViewNodeHelper((StructureViewNode)it.next(), pNode); 		
+				IStructureViewNode foundNode = findCorrespondingViewNodeHelper((IStructureViewNode)it.next(), pNode); 		
 				if (foundNode != null) return foundNode;
 			}
 		}
@@ -91,12 +91,12 @@ public abstract class StructureView {
 		return null;
 	}	
 
-	public void setActiveNode(StructureViewNode activeNode) {
+	public void setActiveNode(IStructureViewNode activeNode) {
 		this.activeNode = activeNode;
 		if (renderer != null) renderer.setActiveNode(activeNode);
 	}
 	
-	public void setActiveNode(StructureViewNode activeNode, int sourceLine) {
+	public void setActiveNode(IStructureViewNode activeNode, int sourceLine) {
 		this.activeNode = activeNode;
 		if (renderer != null) renderer.setActiveNode(activeNode, sourceLine);
 	}

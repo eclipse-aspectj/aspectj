@@ -25,11 +25,11 @@ public class NullIdeStructureViewRenderer implements StructureViewRenderer {
     	hasBeenNotified = true;	
     }
     
-    public void setActiveNode(StructureViewNode node) {
+    public void setActiveNode(IStructureViewNode node) {
     	// ignored	
     }
     
-	public void setActiveNode(StructureViewNode node, int lineOffset) {
+	public void setActiveNode(IStructureViewNode node, int lineOffset) {
 		// ignored
 	}
     

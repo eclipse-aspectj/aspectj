@@ -36,19 +36,35 @@ class SubPoint extends Point { }
 class Line { }
 
 aspect AdvisesRelationshipCoverage {
-	pointcut executionP(): execution(void Point.setX(int));
-	before(): executionP() { }
-	
-    before(): execution(*..*.new(..)) { }
-    before(): get(int *.*) { }
-    before(): set(int *.*) { }
-    before(): initialization(Point.new(..)) { }
-    before(): staticinitialization(Point) { }
-    before(): handler(IOException) { }
-    before(): call(* Point.setX(int)) { }
-    before(): call(Point.new()) { }
-    before(): within(*) && execution(* Point.setX(..)) { }
-    before(): within(*) && execution(Point.new()) { }
+	pointcut methodExecutionP(): execution(void Point.setX(int));
+	before(): methodExecutionP() { }
+  
+	pointcut constructorExecutionP(): execution(Point.new());
+	before(): constructorExecutionP() { }
+
+	pointcut callMethodP(): call(* Point.setX(int));
+	before(): callMethodP() { }
+
+	pointcut callConstructorP(): call(Point.new());
+	before(): callConstructorP() { }
+
+	pointcut getP(): get(int *.*);
+	before(): getP() { }
+
+	pointcut setP(): set(int *.*);
+	before(): setP() { }
+
+	pointcut initializationP(): initialization(Point.new(..));
+	before(): initializationP() { }
+
+	pointcut staticinitializationP(): staticinitialization(Point);
+	before(): staticinitializationP() { }
+
+	pointcut handlerP(): handler(IOException);
+	before(): handlerP() { }
+
+//    before(): within(*) && execution(* Point.setX(..)) { }
+//    before(): within(*) && execution(Point.new()) { }
 }
 
 aspect AdviceNamingCoverage {

@@ -50,7 +50,7 @@ public class StructureModelRegressionTest extends AjdeTestCase {
 		
 		if (modelFile.exists()) {
 			Ajde.getDefault().getStructureModelManager().readStructureModel(lstFile);
-			StructureModel savedModel = Ajde.getDefault().getStructureModelManager().getStructureModel();
+			StructureModel savedModel = Ajde.getDefault().getStructureModelManager().getModel();
 			//System.err.println( savedModel.getRoot().getClass() + ", " +  savedModel.getRoot());
 			
 			// AMC This test will not pass as written until IProgramElement defines
@@ -100,7 +100,7 @@ public class StructureModelRegressionTest extends AjdeTestCase {
 				Thread.sleep(300);
 			} catch (InterruptedException ie) { } 
 		}
-		return Ajde.getDefault().getStructureModelManager().getStructureModel();	
+		return Ajde.getDefault().getStructureModelManager().getModel();	
 	}
 
 	protected void setUp() throws Exception {
@@ -109,7 +109,7 @@ public class StructureModelRegressionTest extends AjdeTestCase {
 	}
 	
 	public void testModelExists() {
-		assertTrue(Ajde.getDefault().getStructureModelManager().getStructureModel() != null);
+		assertTrue(Ajde.getDefault().getStructureModelManager().getModel() != null);
 	}
 
 	protected void tearDown() throws Exception {

@@ -115,7 +115,7 @@ public class StructureModelUtil {
 	public static List getPackagesInModel() {
 		List packages = new ArrayList();
 		StructureModel model =
-			Ajde.getDefault().getStructureModelManager().getStructureModel();
+			Ajde.getDefault().getStructureModelManager().getModel();
 		if (model.equals(StructureModel.NO_STRUCTURE)) {
 			return null;
 		} else {

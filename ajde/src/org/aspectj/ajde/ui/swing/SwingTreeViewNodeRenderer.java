@@ -19,6 +19,7 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
+import org.aspectj.ajde.ui.IStructureViewNode;
 import org.aspectj.asm.*;
 import org.aspectj.bridge.*;
 
@@ -34,41 +35,39 @@ class SwingTreeViewNodeRenderer extends DefaultTreeCellRenderer {
                                                     boolean leaf,
                                                     int row,
                                                     boolean hasFocus) {
-        if (treeNode == null) return null;        
+		if (treeNode == null) return null; 
+		this.setFont(StructureTree.DEFAULT_FONT);       
         SwingTreeViewNode viewNode = (SwingTreeViewNode)treeNode;
         IProgramElement node = viewNode.getStructureNode();
 
-//        if (node instanceof LinkNode) {
-//            ISourceLocation sourceLoc = ((LinkNode)node).getProgramElementNode().getSourceLocation();
-//            if ((null != sourceLoc) 
-//                && (null != sourceLoc.getSourceFile().getAbsolutePath())) {
-//                setTextNonSelectionColor(AjdeWidgetStyles.LINK_NODE_COLOR);
-//            } else {
-//                setTextNonSelectionColor(AjdeWidgetStyles.LINK_NODE_NO_SOURCE_COLOR);
-//            }
-//        } else {
-        	setTextNonSelectionColor(new Color(0, 0, 0));	
-//        }
-        
-        super.getTreeCellRendererComponent(tree, treeNode, sel, expanded, leaf, row, hasFocus);
-        this.setFont(StructureTree.DEFAULT_FONT);
-        
+        if (viewNode.getKind() == IStructureViewNode.Kind.LINK) {
+            ISourceLocation sourceLoc = node.getSourceLocation();
+            if ((null != sourceLoc) 
+                && (null != sourceLoc.getSourceFile().getAbsolutePath())) {
+                setTextNonSelectionColor(AjdeWidgetStyles.LINK_NODE_COLOR);
+            } else {
+                setTextNonSelectionColor(AjdeWidgetStyles.LINK_NODE_NO_SOURCE_COLOR);
+            }
+            
+        } else if (viewNode.getKind() == IStructureViewNode.Kind.RELATIONSHIP) {
+			this.setFont(new Font(this.getFont().getName(), Font.ITALIC, this.getFont().getSize()));
+			setTextNonSelectionColor(new Color(0, 0, 0));
+			
+        } else if (viewNode.getKind() == IStructureViewNode.Kind.DECLARATION) {
+			setTextNonSelectionColor(new Color(0, 0, 0));
+        }
+ 
+		super.getTreeCellRendererComponent(tree, treeNode, sel, expanded, leaf, row, hasFocus);       
 		if (viewNode.getIcon() != null && viewNode.getIcon().getIconResource() != null) {
 			setIcon((Icon)viewNode.getIcon().getIconResource());
 		} else {
 			setIcon(null);
 		}
          
-        if (node instanceof IProgramElement) {
-//        	if (pNode.isRunnable()) {
-//        		//setIcon(AjdeUIManager.getDefault().getIconRegistry().getExecuteIcon());
-//        	}	 
-//        	if (pNode.isImplementor()) {
-//        		//this.setText("<implementor>");
-//        	}
-//        	if (pNode.isOverrider()) {
-//        		//this.setText("<overrider>");
-//        	}
+        if (node != null) {
+        	if (node.isRunnable()) {
+        		setIcon(AjdeUIManager.getDefault().getIconRegistry().getExecuteIcon());
+        	}	 
 			if (node.getMessage() != null) {
 				if (node.getMessage().getKind().equals(IMessage.WARNING)) {
 					setIcon(AjdeUIManager.getDefault().getIconRegistry().getWarningIcon());
@@ -79,10 +78,7 @@ class SwingTreeViewNodeRenderer extends DefaultTreeCellRenderer {
 				}
 			}
 
-        } 
-//        else if (node instanceof IRelationship) {
-//        	this.setFont(new Font(this.getFont().getName(), Font.ITALIC, this.getFont().getSize()));
-//        }		
+        } 	
         return this;
     }
 }

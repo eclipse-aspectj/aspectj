@@ -34,7 +34,7 @@ public class StructureSearchManager {
 		IProgramElement.Kind kind) {
 		
 		List matches = new ArrayList();
-		StructureModel model = Ajde.getDefault().getStructureModelManager().getStructureModel();
+		StructureModel model = Ajde.getDefault().getStructureModelManager().getModel();
 		if (model.equals(StructureModel.NO_STRUCTURE)) {
 			return null;
 		} else {

@@ -111,7 +111,7 @@ public class BrowserStructureViewToolPanel extends JPanel {
 		for (int i = 0; i < kinds.length; i++) {
 			if (kinds[i].isMemberKind()) {
 				CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(kinds[i]);
-				menuItem.setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getStructureIcon(kinds[i]).getIconResource());
+				menuItem.setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getIcon(kinds[i]).getIconResource());
 				filterMenu.add(menuItem);
 			}
 		}
@@ -132,7 +132,7 @@ public class BrowserStructureViewToolPanel extends JPanel {
 		for (Iterator it = relations.iterator(); it.hasNext(); ) {
 			IRelationship.Kind relation = (IRelationship.Kind)it.next();
 			CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(relation);
-			menuItem.setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getRelationIcon(relation).getIconResource());
+			menuItem.setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getIcon(relation).getIconResource());
 			relationsMenu.add(menuItem);
 		}
 

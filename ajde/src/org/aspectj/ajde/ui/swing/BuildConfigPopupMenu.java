@@ -47,7 +47,7 @@ public class BuildConfigPopupMenu extends JPopupMenu {
 				        action.actionPerformed(e);
 					}
 	    		});
-	    	buildItem.setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getStructureIcon(IProgramElement.Kind.FILE_LST).getIconResource());
+	    	buildItem.setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getIcon(IProgramElement.Kind.FILE_LST).getIconResource());
 	    	this.add(buildItem);
 		}
 	}

@@ -109,11 +109,11 @@ public class IconRegistry extends AbstractIconRegistry {
 	public Icon getStructureViewIcon() { return STRUCTURE_VIEW; }
 
     public Icon getAssociationSwingIcon(IRelationship.Kind relation) {
-		return convertToSwingIcon(getRelationIcon(relation));	
+		return convertToSwingIcon(getIcon(relation));	
     }
     
 	protected AbstractIcon getStructureIcon(IProgramElement.Kind kind, IProgramElement.Accessibility accessibility) {
-		return getStructureIcon(kind);	
+		return getIcon(kind);	
 	}
     
     public Icon getStructureSwingIcon(IProgramElement.Kind kind, IProgramElement.Accessibility accessibility) { 
@@ -121,7 +121,7 @@ public class IconRegistry extends AbstractIconRegistry {
     }
 	
 	public Icon getStructureSwingIcon(IProgramElement.Kind kind) {
-		return convertToSwingIcon(getStructureIcon(kind));
+		return convertToSwingIcon(getIcon(kind));
 	}
 
 	public Icon getAccessibilitySwingIcon(IProgramElement.Accessibility accessibility) {
