@@ -65,6 +65,12 @@ public class EmacsStructureModelManager {
 //    }
 
     private void dumpStructureToFile(ProgramElementNode node) throws IOException {
+        String s = node.getKind();
+        if (!  (s.equals(ProgramElementNode.Kind.FILE_ASPECTJ.toString())
+                || s.equals(ProgramElementNode.Kind.FILE_JAVA.toString()))) {
+            throw new IllegalArgumentException("externalize file, not " + node);
+        }
+        // source files have source locations
         String sourceName = node.getSourceLocation().getSourceFile().getAbsolutePath();
         String fileName = sourceName.substring(0, sourceName.lastIndexOf(".")) + EXTERN_FILE_SUFFIX;
         BufferedWriter writer = null;
