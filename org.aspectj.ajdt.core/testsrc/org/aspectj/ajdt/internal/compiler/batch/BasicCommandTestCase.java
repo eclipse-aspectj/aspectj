@@ -15,6 +15,10 @@ package org.aspectj.ajdt.internal.compiler.batch;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aspectj.ajdt.ajc.AjdtCommand;
+import org.aspectj.bridge.ICommand;
+import org.aspectj.bridge.MessageHandler;
+
 /**
  * @author hugunin
  *
@@ -95,5 +99,22 @@ public class BasicCommandTestCase extends CommandTestCase {
 		args.add("testdata/src1/Xlint.java");
 		
 		runCompiler(args, new int[] {2});
+	}
+	public void testMissingRuntimeError() {
+		List args = new ArrayList();
+
+		args.add("-d");
+		args.add("out");
+		
+		args.add("-classpath");
+		args.add("../lib/junit/junit.jar;../testing-client/bin");
+		args.add("testdata/src1/Xlint.java");
+		
+		ICommand command = new AjdtCommand();
+		MessageHandler myHandler = new MessageHandler();
+		myHandler.setInterceptor(org.aspectj.tools.ajc.Main.MessagePrinter.TERSE);
+		boolean result = command.runCommand((String[])args.toArray(new String[args.size()]), myHandler);
+
+		assertEquals("error for org.aspectj.lang.JoinPoint not found", 1, myHandler.getErrors().length);
 	}
 }

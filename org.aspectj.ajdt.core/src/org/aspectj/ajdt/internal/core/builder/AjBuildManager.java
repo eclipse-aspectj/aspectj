@@ -45,6 +45,7 @@ import org.aspectj.bridge.IProgressListener;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.Version;
+import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
@@ -285,6 +286,14 @@ public class AjBuildManager {
 			File inJar = (File)i.next();
 			bcelWeaver.addJarFile(inJar, buildConfig.getOutputDir());
 		}
+		
+		//check for org.aspectj.runtime.JoinPoint
+		bcelWorld.resolve("org.aspectj.lang.JoinPoint");
+		
+//		if () {
+//			bcelWorld.showMessage(IMessage.ERROR,
+//					"can't find type org.aspectj.lang.JoinPoint on classpath", null, null);
+//		}
 	}
 	
 	public World getWorld() {
