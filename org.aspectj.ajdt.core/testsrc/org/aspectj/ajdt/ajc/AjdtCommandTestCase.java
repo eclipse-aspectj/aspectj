@@ -73,10 +73,10 @@ public class AjdtCommandTestCase extends TestCase {
                 new String[] { "-mubleBadOption" }, 
                 counter);		
 		} catch (AbortException ae) { }
-		
+		// usage printed by caller to genBuildConfig now...
 		assertTrue(
 			outputWriter.getContents() + " contains? " + "Usage",
-			outputWriter.getContents().indexOf("Usage") != -1);		
+			outputWriter.getContents().indexOf("-mubleBadOption") != -1);		
 		
 	}
 	
