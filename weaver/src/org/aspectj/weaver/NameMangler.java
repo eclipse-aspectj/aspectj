@@ -40,8 +40,8 @@ public class NameMangler {
 
 	public static final String AJC_POST_CLINIT_NAME = PREFIX + "postClinit";
 
-
-
+	public static final String INITFAILURECAUSE_FIELD_NAME = PREFIX + "initFailureCause";
+	
 	public static String perObjectInterfaceGet(TypeX aspectType) {
 		return makeName(aspectType.getNameAsIdentifier(), "perObjectGet");
 	}

@@ -151,7 +151,7 @@ public class AspectDeclaration extends TypeDeclaration {
 		}
 	}
 	
-	
+	private FieldBinding initFailureField= null;
 	
 	public void generateCode(ClassFile enclosingClassFile) {
 		if (ignoreFurtherInvestigation) {
@@ -170,18 +170,22 @@ public class AspectDeclaration extends TypeDeclaration {
 		
 		
 		if (!isAbstract()) {
+			initFailureField = factory.makeFieldBinding(AjcMemberMaker.initFailureCauseField(typeX));
+			binding.addField(initFailureField);
+			
 			if (perClause == null) {
 				// we've already produced an error for this
 			} else if (perClause.getKind() == PerClause.SINGLETON) {
 				binding.addField(factory.makeFieldBinding(AjcMemberMaker.perSingletonField(
 						typeX)));
-				methods[0] = new AspectClinit((Clinit)methods[0], compilationResult, false, true);
+				
+				methods[0] = new AspectClinit((Clinit)methods[0], compilationResult, false, true, initFailureField);
 			} else if (perClause.getKind() == PerClause.PERCFLOW) {
 				binding.addField(
 					factory.makeFieldBinding(
 						AjcMemberMaker.perCflowField(
 							typeX)));
-				methods[0] = new AspectClinit((Clinit)methods[0], compilationResult, true, false);
+				methods[0] = new AspectClinit((Clinit)methods[0], compilationResult, true, false, null);
 			} else if (perClause.getKind() == PerClause.PEROBJECT) {
 //				binding.addField(
 //					world.makeFieldBinding(
@@ -522,10 +526,13 @@ public class AspectDeclaration extends TypeDeclaration {
 				codeStream.ifnull(isNull);
 				codeStream.areturn();
 				isNull.place();
+				
 				codeStream.new_(world.makeTypeBinding(AjcMemberMaker.NO_ASPECT_BOUND_EXCEPTION));
 				codeStream.dup();
+				codeStream.ldc(typeX.getNameAsIdentifier());
+				codeStream.getstatic(initFailureField);
 				codeStream.invokespecial(world.makeMethodBindingForCall(
-					AjcMemberMaker.noAspectBoundExceptionInit()
+					AjcMemberMaker.noAspectBoundExceptionInitWithCause()
 				));
 				codeStream.athrow();
 				// body ends here

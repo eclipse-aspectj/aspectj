@@ -7092,4 +7092,18 @@
         <run class="Main1"/>
     </ajc-test>
 
+    <ajc-test dir="bugs" pr="44587"
+      title="Erroneous exception conversion">
+        <compile files="ErroneousExceptionConversion.java">
+        </compile>
+        <run class="ErroneousExceptionConversion"/>
+    </ajc-test>
+    
+  <ajc-test dir="bugs" pr="34206"
+      title="before():execution(new(..)) does not throw NoAspectBoundException">
+        <compile files="ErroneousExceptionConversion1.java">
+        </compile>
+        <run class="ErroneousExceptionConversion1"/>
+    </ajc-test>
+    
 </suite>

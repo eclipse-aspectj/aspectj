@@ -14,6 +14,8 @@
 
 // default package
 
+import org.aspectj.lang.NoAspectBoundException;
+
 import junit.framework.*;
 
 public class RuntimeModuleTests extends TestCase {
@@ -27,4 +29,10 @@ public class RuntimeModuleTests extends TestCase {
     public RuntimeModuleTests(String name) { super(name); }
 
     public void testNothing() {}
+    
+    public void testNoAspectBoundException() {
+    	RuntimeException fun = new RuntimeException("fun");
+    	NoAspectBoundException nab = new NoAspectBoundException("Foo", fun);
+    	assertEquals(fun,nab.getCause());
+    }
 }  

@@ -15,6 +15,8 @@ package org.aspectj.weaver;
 
 import java.lang.reflect.Modifier;
 
+import org.aspectj.weaver.ResolvedTypeX.Name;
+
 
 public class AjcMemberMaker {
 	private static final int PUBLIC_STATIC_FINAL =
@@ -60,14 +62,23 @@ public class AjcMemberMaker {
 
 	public static Member noAspectBoundExceptionInit() {
 		return new ResolvedMember(
-			Member.METHOD,
-			NO_ASPECT_BOUND_EXCEPTION,
-			Modifier.PUBLIC,
-			"<init>",
-			"()V");
+				Member.METHOD,
+				NO_ASPECT_BOUND_EXCEPTION,
+				Modifier.PUBLIC,
+				"<init>",
+		"()V");
 	}
 
+	public static Member noAspectBoundExceptionInitWithCause() {
+		return new ResolvedMember(
+				Member.METHOD,
+				NO_ASPECT_BOUND_EXCEPTION,
+				Modifier.PUBLIC,
+				"<init>",
+		"(Ljava/lang/String;Ljava/lang/Throwable;)V");
+	}
 
+	
 	public static ResolvedMember perCflowPush(TypeX declaringType) {
 		return new ResolvedMember(
 			Member.METHOD, 
@@ -95,6 +106,15 @@ public class AjcMemberMaker {
 			declaringType.getSignature());
 	}
 	
+
+	public static ResolvedMember initFailureCauseField(TypeX declaringType) {
+		return new ResolvedMember(
+				Member.FIELD, 
+				declaringType,
+				PRIVATE_STATIC,
+				NameMangler.INITFAILURECAUSE_FIELD_NAME,
+				TypeX.THROWABLE.getSignature());
+	}
 	
 	public static ResolvedMember perObjectField(TypeX declaringType, ResolvedTypeX aspectType) {
 		int modifiers = Modifier.PRIVATE;

@@ -18,4 +18,16 @@ package org.aspectj.lang;
  *  when there is no aspect of that type currently bound.
  */
 public class NoAspectBoundException extends RuntimeException {
+	Throwable cause;
+	public NoAspectBoundException(String aspectName, Throwable inner) {
+		super(inner == null ? aspectName :
+			"Exception while initializing " +aspectName + ": " +inner);
+		this.cause = inner;
+	}
+	
+	public NoAspectBoundException() {
+	}
+	
+	public Throwable getCause() { return cause; }
+	
 }

@@ -904,6 +904,8 @@ class BcelClassWeaver implements IClassWeaver {
 					// assert t.getHandler() == ih
 					ExceptionRange er = (ExceptionRange) t;
 					if (er.getCatchType() == null) continue;
+					if (isInitFailureHandler(ih)) return;
+					
 					match(
 						BcelShadow.makeExceptionHandler(
 							world, 
@@ -915,6 +917,14 @@ class BcelClassWeaver implements IClassWeaver {
 		}
 	}
 
+	private boolean isInitFailureHandler(InstructionHandle ih) {
+		if (ih.getInstruction() instanceof PUTSTATIC) {
+			String name = ((PUTSTATIC)ih.getInstruction()).getFieldName(cpg);
+			if (name.equals(NameMangler.INITFAILURECAUSE_FIELD_NAME)) return true;
+		}
+		return false;
+	}
+
 
 	private void matchSetInstruction(
 		LazyMethodGen mg,
@@ -923,6 +933,10 @@ class BcelClassWeaver implements IClassWeaver {
 		List shadowAccumulator) {
 		FieldInstruction fi = (FieldInstruction) ih.getInstruction();
 		Member field = BcelWorld.makeFieldSignature(clazz, fi);
+		
+		// synthetic fields are never join points
+		if (field.getName().startsWith(NameMangler.PREFIX)) return;
+		
 		ResolvedMember resolvedField = field.resolve(world);
 		if (resolvedField == null) {
 			// we can't find the field, so it's not a join point.
@@ -946,6 +960,10 @@ class BcelClassWeaver implements IClassWeaver {
 	private void matchGetInstruction(LazyMethodGen mg, InstructionHandle ih, BcelShadow enclosingShadow, List shadowAccumulator) {
 		FieldInstruction fi = (FieldInstruction) ih.getInstruction();
 		Member field = BcelWorld.makeFieldSignature(clazz, fi);
+		
+		// synthetic fields are never join points
+		if (field.getName().startsWith(NameMangler.PREFIX)) return;
+		
 		ResolvedMember resolvedField = field.resolve(world);
 		if (resolvedField == null) {
 			// we can't find the field, so it's not a join point.

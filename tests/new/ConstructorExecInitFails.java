@@ -1,4 +1,5 @@
 import org.aspectj.testing.*;
+import org.aspectj.lang.*;
 
 /**
  * -usejavac mode: no error
@@ -8,7 +9,10 @@ public class ConstructorExecInitFails {
     public static void main(String[] args) {
     	try {
         	new ConstructorExecInitFails();
-    	} catch (ExceptionInInitializerError e) {
+    	} catch (NoAspectBoundException e) {
+    		
+    		Tester.check(e.getCause() instanceof NoAspectBoundException,
+    				"Expected NoAspectBoundException, found " + e.getCause());
     		return;
     	}
         Tester.checkFailed("shouldn't be able to run");
