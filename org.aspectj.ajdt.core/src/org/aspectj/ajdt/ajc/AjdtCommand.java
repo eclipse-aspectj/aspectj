@@ -88,7 +88,7 @@ public class AjdtCommand implements ICommand {
             CountingMessageHandler counter = new CountingMessageHandler(handler);
             // regenerate configuration b/c world might have changed (?)
 			AjBuildConfig config = genBuildConfig(savedArgs, counter);  
-			System.err.println("errs: " + counter.hasErrors());          
+			//System.err.println("errs: " + counter.hasErrors());          
             return (!counter.hasErrors()
                     && buildManager.incrementalBuild(config, handler)
                     && !counter.hasErrors());
