@@ -27,7 +27,7 @@ public class Version {
     public static final long NOTIME = 0L;
     
     /** set by build script */
-    public static final String text = "1.1b2";
+    public static final String text = DEVELOPMENT;
     
     /** 
       * Time text set by build script using SIMPLE_DATE_FORMAT.
