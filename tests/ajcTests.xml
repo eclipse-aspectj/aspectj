@@ -5578,5 +5578,12 @@
         <compile files="AdviceExec.java"/>
         <run class="AdviceExec"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs" pr="30026" 
+    		title="problems with finalize call">
+        <compile files="Finalizer.java">
+            <message kind="error" line="22"/>
+        </compile>
+    </ajc-test>
 
 </suite>
