@@ -124,6 +124,7 @@ public class BasicTokenSource implements ITokenSource {
 				    while (i < chars.length && !(chars[i]=='\"')) i++;
 				    i += 1;
 				    tokens.add(BasicToken.makeLiteral(new String(chars, start0+1, i-start0-2), "string", start0, i-1));
+				    continue;
 				default:
 				    int start = i-1;
 				    while (i < chars.length && Character.isJavaIdentifierPart(chars[i])) { i++; }
