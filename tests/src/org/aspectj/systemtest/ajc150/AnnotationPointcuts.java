@@ -11,6 +11,8 @@
 package org.aspectj.systemtest.ajc150;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.tools.ajc.CompilationResult;
@@ -50,5 +52,12 @@ public class AnnotationPointcuts extends TestUtils {
 //  	assertTrue("Expected message about ITDFs on annotations not allowed, but got: \n"+msg3_field,
 //  			msg3_field.toString().indexOf("can't make inter-type field declarations")!=-1);
 //  	verifyWeavingMessagesOutput(cR,new String[]{});
+  }
+  
+  public void test002_AtAnnotationMatching() {
+      CompilationResult cR = binaryWeave("testcode.jar","AnnotationAspect03.aj",0,1);
+      List expectedWarnings = new ArrayList();
+      expectedWarnings.add(new Message("@annotation matched here"));  // L 8
+      assertMessages(cR, new MessageSpec(expectedWarnings, new ArrayList()));
   }
 }
