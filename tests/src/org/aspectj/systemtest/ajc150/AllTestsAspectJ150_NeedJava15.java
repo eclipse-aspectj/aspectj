@@ -24,6 +24,7 @@ public class AllTestsAspectJ150_NeedJava15 {
 		suite.addTestSuite(Ajc150TestsRequireJava15.class);
 		suite.addTestSuite(Autoboxing.class);		
 		suite.addTestSuite(Annotations.class);
+		suite.addTestSuite(AnnotationBinding.class);
 		
 		//$JUnit-END$
 		return suite;
