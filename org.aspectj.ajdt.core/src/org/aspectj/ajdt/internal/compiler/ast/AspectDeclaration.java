@@ -548,6 +548,13 @@ public class AspectDeclaration extends TypeDeclaration {
 //				codeStream.athrow();
 //				// body ends here
 
+				// The stuff below generates code that looks like this:
+				/*
+				 * if (ajc$perSingletonInstance == null)
+				 *   throw new NoAspectBoundException("A", ajc$initFailureCause);
+				 * else
+				 *   return ajc$perSingletonInstance;
+				 */
                 // body starts here (see end of each line for what it is doing!)
 				FieldBinding fb = world.makeFieldBinding(AjcMemberMaker.perSingletonField(typeX));
 				codeStream.getstatic(fb);                                                              // GETSTATIC
