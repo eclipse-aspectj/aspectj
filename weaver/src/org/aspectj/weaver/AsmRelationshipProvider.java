@@ -13,24 +13,47 @@
 
 package org.aspectj.weaver;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.aspectj.asm.*;
 import org.aspectj.asm.internal.ProgramElement;
-import org.aspectj.bridge.*;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.SourceLocation;
 
-public class AsmAdviceRelationshipProvider {
+public class AsmRelationshipProvider {
 	
 	public static final String ADVISES = "advises";
 	public static final String ADVISED_BY = "advised by";
 	public static final String DECLARES_ON = "declares on";
 	public static final String DECLAREDY_BY = "declared by";
+	public static final String MATCHED_BY = "matched by";
+	public static final String MATCHES_DECLARE = "matches declare";
 
-	public static void checkerMunger(IHierarchy model, Shadow shadow) {
-//		System.err.println("> " + shadow.getThisVar() + " to " + shadow.getTargetVar());
+	public static void checkerMunger(IHierarchy model, Shadow shadow, Checker checker) {
+		if (shadow.getSourceLocation() == null || checker == null) return;
+		
+		String sourceHandle = ProgramElement.createHandleIdentifier(
+			checker.getSourceLocation().getSourceFile(),
+			checker.getSourceLocation().getLine(),
+			checker.getSourceLocation().getColumn());
+			
+		String targetHandle = ProgramElement.createHandleIdentifier(
+			shadow.getSourceLocation().getSourceFile(),
+			shadow.getSourceLocation().getLine(),
+			shadow.getSourceLocation().getColumn());
+
+		IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
+		if (sourceHandle != null && targetHandle != null) {
+			IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE, MATCHED_BY);
+			foreward.getTargets().add(targetHandle);
+				
+			IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE, MATCHES_DECLARE);
+			back.getTargets().add(sourceHandle);  
+		}
 	}
 	
-	public static void nodeMunger(IHierarchy model, Shadow shadow, ShadowMunger munger) {
+	public static void adviceMunger(IHierarchy model, Shadow shadow, ShadowMunger munger) {
 		if (munger instanceof Advice) {
 			Advice advice = (Advice)munger;
 			if (advice.getKind().isPerEntry() || advice.getKind().isCflow()) {

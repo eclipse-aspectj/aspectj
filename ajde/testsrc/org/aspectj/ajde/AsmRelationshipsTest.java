@@ -24,6 +24,11 @@ public class AsmRelationshipsTest extends AjdeTestCase {
 	public AsmRelationshipsTest(String name) {
 		super(name);
 	}
+
+	public void testDeclareWarningAndError() {		
+		checkDeclareMapping("DeclareCoverage", "Point", "declare warning: \"Illegal call.\"", 
+			"method-call(void Point.setX(int))", "matched by", "matches declare", IProgramElement.Kind.DECLARE_WARNING);		
+	}
   
 	public void testInterTypeDeclarations() {		
 		checkInterTypeMapping("InterTypeDecCoverage", "Point", "Point.xxx", "Point", 
@@ -41,6 +46,28 @@ public class AsmRelationshipsTest extends AjdeTestCase {
 			"field-set(int Point.x)", "advises");	
 	}
 
+	private void checkDeclareMapping(String fromType, String toType, String from, String to, 
+		String forwardRelName, String backRelName, IProgramElement.Kind kind) {
+		
+		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, fromType);
+		assertNotNull(aspect);		
+		String beforeExec = from;
+		IProgramElement beforeExecNode = manager.getHierarchy().findElementForLabel(aspect, kind, beforeExec);
+		assertNotNull(beforeExecNode);
+		IRelationship rel = manager.getRelationshipMap().get(beforeExecNode, IRelationship.Kind.DECLARE, forwardRelName);
+		String handle = (String)rel.getTargets().get(0);
+		assertEquals(manager.getHierarchy().findElementForHandle(handle).toString(), to);  
+
+		IProgramElement clazz = AsmManager.getDefault().getHierarchy().findElementForType(null, toType);
+		assertNotNull(clazz);
+		String set = to;
+		IProgramElement setNode = manager.getHierarchy().findElementForLabel(clazz, IProgramElement.Kind.CODE, set);
+		assertNotNull(setNode);
+		IRelationship rel2 = manager.getRelationshipMap().get(setNode, IRelationship.Kind.DECLARE, backRelName);
+		String handle2 = (String)rel2.getTargets().get(0);
+		assertEquals(manager.getHierarchy().findElementForHandle(handle2).toString(), from);
+	}
+	
 	private void checkUniDirectionalMapping(String fromType, String toType, String from, 
 		String to, String relName) {
 		

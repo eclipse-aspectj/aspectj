@@ -107,7 +107,7 @@ aspect DeclareCoverage {
     pointcut illegalNewFigElt(): call(Point.new(..)) && !withincode(* *.doIt(..));
 
     declare error: illegalNewFigElt(): "Illegal constructor call.";
-    declare warning: illegalNewFigElt(): "Illegal constructor call.";
+    declare warning: call(* Point.setX(..)): "Illegal call.";
 
     declare parents: Point extends java.io.Serializable;
     declare parents: Point+ implements java.util.Observable;

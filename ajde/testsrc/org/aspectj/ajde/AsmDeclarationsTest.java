@@ -55,7 +55,7 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 		assertNotNull(decErrNode);
 		assertEquals(decErrNode.toLabelString(), label);
 		
-		String decWarnMessage = "declare warning: \"Illegal construct..\"";
+		String decWarnMessage = "declare warning: \"Illegal call.\"";
 		IProgramElement decWarnNode = model.findElementForSignature(aspect, IProgramElement.Kind.DECLARE_WARNING, "declare warning");
 		assertNotNull(decWarnNode);
 		assertEquals(decWarnNode.toLabelString(), decWarnMessage);	

@@ -53,7 +53,6 @@ public class AsmInterTypeRelationshipProvider {
 				onType.getSourceLocation().getLine(),
 				onType.getSourceLocation().getColumn());
 				
-//				System.err.println(">> putting: " + sourceHandle + ", to " + targetHandle);
 			IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
 			if (sourceHandle != null && targetHandle != null) {
 				IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARES);
