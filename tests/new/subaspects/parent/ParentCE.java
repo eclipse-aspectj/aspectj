@@ -11,5 +11,5 @@ public abstract aspect ParentCE {
     }
 }
 aspect Child extends ParentCE {
-    pointcut define() : call(public void Target.run());
+    pointcut define() : call(public void Runnable.run());
 }
