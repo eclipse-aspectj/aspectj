@@ -474,7 +474,7 @@ public class BuildArgParser extends Main {
         }
 
         public void showError(String message) {
-            MessageUtil.error(handler, message);
+            MessageUtil.error(handler, CONFIG_MSG + message);
         }
         
 		protected void showWarning(String message) {

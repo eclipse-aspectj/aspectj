@@ -22,7 +22,8 @@ public class ConfigParser {
     Location location;
     protected List files = new LinkedList();
     private boolean fileParsed = false;
-
+    protected static String CONFIG_MSG = "build config error: ";  
+    
     public List getFiles() { return files; }
 
     public void parseCommandLine(String[] argsArray) throws ParseException {
@@ -36,7 +37,7 @@ public class ConfigParser {
 
     public void parseConfigFile(File configFile) throws ParseException {
         if (fileParsed == true) {
-            throw new ParseException("The file has already been parsed.", null);
+            throw new ParseException(CONFIG_MSG + "The file has already been parsed.", null);
         } else {
             parseConfigFileHelper(configFile);
         }
@@ -145,11 +146,11 @@ public class ConfigParser {
         if (location != null) {
             message += " at " + location.toString();
         }
-        System.err.println(message);
+        System.err.println(CONFIG_MSG + message);
     }
 
     protected void showError(String message) {
-        throw new ParseException(message, location);
+        throw new ParseException(CONFIG_MSG + message, location);
     }
 
     void parseArgs(LinkedList args) {
