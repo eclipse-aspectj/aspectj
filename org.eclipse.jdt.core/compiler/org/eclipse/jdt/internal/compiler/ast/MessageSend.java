@@ -28,7 +28,7 @@ public class MessageSend extends Expression implements InvocationSite {
 
 	public long nameSourcePosition ; //(start<<32)+end
 
-	MethodBinding syntheticAccessor;
+	public MethodBinding syntheticAccessor;
 
 	public TypeBinding receiverType, qualifyingType;
 	
