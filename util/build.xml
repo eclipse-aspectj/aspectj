@@ -4,10 +4,10 @@
     <import file="../build-common.xml"/>
 
     <path id="util.test.src.path">
+        <path refid="util.src.path"/>
         <fileset dir="${basedir}/../lib">
             <include name="junit/*.jar"/>
         </fileset>
-        <path refid="util.src.path"/>
     </path>
 
     <path id="util.src.path">

@@ -45,12 +45,15 @@
                                     testing-util.compile,
                                     util.compile">
         <srccompile project="testing" path="testing.src.path"/>
-        <!-- TODO : what for ?? compile newsrc... (Alex don't know what for ... ) -->
-        <!-- TODO: + leads to circular deps since reli on ajdt testsrc (*test*src !!) -->
-<!--        <javac debug="on" destdir="../testing/bin" source="1.2" target="1.1">-->
-<!--            <src path="../testing/newsrc"/>-->
-<!--            <classpath refid="testing.src.path"/>-->
-<!--        </javac>-->
+        <!-- newsrc depends on ajdt.test:compile and we cannot use a depends for it due to the way
+             Ant manage overrides thru <import   -->
+        <testcompile project="weaver" path="weaver.test.src.path"/>
+        <testcompile project="org.aspectj.ajdt.core" path="org.aspectj.ajdt.core.test.src.path"/>
+        <javac debug="on" destdir="../testing/bin" source="1.2" target="1.1">
+            <src path="../testing/newsrc"/>
+            <classpath refid="testing.src.path"/>
+            <classpath path="../org.aspectj.ajdt.core/bintest"/>
+        </javac>
     </target>
 
     <target name="test:compile" depends="compile">

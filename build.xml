@@ -5,7 +5,7 @@
         <attribute name="name"/>
         <sequential>
             <subant target="@{name}">
-                <!-- TODO ant 1.7 stuff here is better.. -->
+                <!-- TODO ant 1.7 stuff here would be better.. -->
                 <filelist dir="."
                           files="runtime/build.xml,
                                  util/build.xml,
@@ -20,7 +20,10 @@
                                  testing-client/build.xml,
                                  taskdefs/build.xml,
                                  testing/build.xml,
-                                 testing-drivers/build.xml"/>
+                                 testing-drivers/build.xml,
+                                 ajdoc/build.xml,
+                                 ajbrowser/build.xml,
+                                 tests/build.xml"/>
             </subant>
         </sequential>
     </macrodef>
