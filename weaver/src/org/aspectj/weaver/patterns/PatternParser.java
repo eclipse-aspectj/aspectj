@@ -373,7 +373,7 @@ public class PatternParser {
 		if (maybeEat(")")) {
 			throw new ParserException("expecting @AnnotationName or parameter, but found ')'", tokenSource.peek());
 		}
-		AnnotationTypePattern type = parseAnnotationNameOrVarTypePattern(); 
+		ExactAnnotationTypePattern type = parseAnnotationNameOrVarTypePattern(); 
 		eat(")");
 		return new WithinCodeAnnotationPointcut(type);		
 	}

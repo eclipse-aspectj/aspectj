@@ -104,5 +104,6 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 		buf.append(isThis ? "@this(" : "@target(");
 		buf.append(type.toString());
 		buf.append(")");
-		return buf.toString();    }
+		return buf.toString();   
+	}
 }
