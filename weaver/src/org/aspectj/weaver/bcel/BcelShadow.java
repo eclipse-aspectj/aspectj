@@ -1868,7 +1868,23 @@ public class BcelShadow extends Shadow {
     }
     
 	public SourceLocation getSourceLocation() {
-		return new SourceLocation(new File(getEnclosingClass().getFileName()), getSourceLine());
+		// AMC - a temporary "fudge" to give as much information as possible about the identity of the
+		// source file this source location points to.
+		String internalClassName = getEnclosingClass().getInternalClassName();
+		String fileName = getEnclosingClass().getFileName();
+		String extension = fileName.substring( fileName.lastIndexOf("."), fileName.length());
+		String filePrefix = fileName.substring( 0, fileName.lastIndexOf("."));
+		// internal class name is e.g. figures/Point, we don't know whether the file was
+		// .aj or .java so we put it together with the file extension of the enclosing class
+		// BUT... sometimes internalClassName is a different class (an aspect), so we only use it if it 
+		// matches the file name.
+		String mostAccurateFileNameGuess;
+		if ( internalClassName.endsWith(filePrefix)) {
+			mostAccurateFileNameGuess = internalClassName + extension;
+		} else {
+			mostAccurateFileNameGuess = fileName;
+		}
+		return new SourceLocation(new File(mostAccurateFileNameGuess), getSourceLine());
 	}
 
 	public Shadow getEnclosingShadow() {
