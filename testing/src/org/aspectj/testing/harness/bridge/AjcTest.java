@@ -343,6 +343,7 @@ public class AjcTest extends RunSpecIterator {
          * <li>the spec does not have a required title (description)n</li>
          * </ul>
          * When skipping, this issues a messages as to why skipped.
+         * Skip combinations are not guaranteed to work correctly. XXX
          * @return false if this wants to be skipped, true otherwise
          * @throws Error if selected option is not of the form
          *          <pre>-ajctest[Require|Skip]Keywords=keyword{,keyword}..</pre>.
@@ -425,7 +426,7 @@ public class AjcTest extends RunSpecIterator {
                         String spec = (String) iter.next();
                         if (null != havePr) {
                             if (havePr.equals(spec)) { // String.equals()
-                                return true;
+                                havePr = null;
                             }
                         } else if (keywordMustExist != keywords.contains(spec)) {
                             String reason = "keyword " + spec  
