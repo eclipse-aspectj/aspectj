@@ -329,3 +329,11 @@
 			<message kind="error" line="7" text="The method returnNothing(Object) from the type ITD is not visible"/>
 		</compile>
 	</ajc-test>
+	
+	<ajc-test dir="bugs" pr="62642"
+	  	title="proper handling of ExceptionInIntializer inside clinit in presence of after throwing advice">
+		<compile files="pr62642.java"/>
+		<run class="pr62642">
+			<message kind="error"/>
+		</run>
+	</ajc-test>

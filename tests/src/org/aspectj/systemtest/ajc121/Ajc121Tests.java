@@ -225,6 +225,14 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void test042_ITDaccessingPrivateMethod_pr67578_2() {
   	runTest("Privileged Aspect Access Problem Across Packages (2)");
   }
-
+  
+  public void test043_pr62642_ExceptionInInitializerError() {
+    runTest("proper handling of ExceptionInIntializer inside clinit in presence of after throwing advice");
+    String s = getLastRunResult().getStdErr();
+    assertTrue("Output should contain java.lang.ExceptionInInitializerError but is '"+s+"'",
+            s.indexOf("java.lang.ExceptionInInitializerError")!=-1);
+    assertTrue("Output should contain 'CAUSE=org.aspectj.lang.NoAspectBoundException' but is '"+s+"'",
+            s.indexOf("CAUSE=org.aspectj.lang.NoAspectBoundException")!=-1);
+  }
 }
 

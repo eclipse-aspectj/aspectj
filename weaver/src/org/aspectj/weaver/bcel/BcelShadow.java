@@ -1201,6 +1201,24 @@ public class BcelShadow extends Shadow {
         BcelVar exceptionVar = genTempVar(catchType);
         exceptionVar.appendStore(handler, fact);
 
+        // pr62642
+        // I will now jump through some firey BCEL hoops to generate a trivial bit of code:
+        // if (exc instanceof ExceptionInInitializerError) 
+        //    throw (ExceptionInInitializerError)exc;
+        if (this.getEnclosingMethod().getName().equals("<clinit>")) {
+            ResolvedTypeX eiieType = world.resolve("java.lang.ExceptionInInitializerError");
+            ObjectType eiieBcelType = (ObjectType)BcelWorld.makeBcelType(eiieType);
+        	InstructionList ih = new InstructionList(InstructionConstants.NOP);
+        	handler.append(exceptionVar.createLoad(fact));
+        	handler.append(fact.createInstanceOf(eiieBcelType));
+        	BranchInstruction bi = 
+                InstructionFactory.createBranchInstruction(Constants.IFEQ,ih.getStart());
+        	handler.append(bi);
+        	handler.append(exceptionVar.createLoad(fact));
+        	handler.append(fact.createCheckCast(eiieBcelType));
+        	handler.append(InstructionConstants.ATHROW);
+        	handler.append(ih);
+        }
         
         InstructionList endHandler = new InstructionList(
             exceptionVar.createLoad(fact));
