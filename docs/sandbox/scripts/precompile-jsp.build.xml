@@ -1,0 +1,137 @@
+<!-- @author Wes Isberg -->
+<!-- START-SAMPLE j2ee-tomcat4-precompileJsp Precompile JSP's for Tomcat 4.x using AspectJ -->
+<project name="Precompile Tomcat JSPs" default="all" basedir="."> 
+
+    <target name="all" depends="jspc,compile"/>
+
+	<target name="info">
+		<echo>
+This Ant script precompiles deployed .jsp files in Tomcat 
+using AspectJ 1.1.
+
+Usage:
+
+  {ant} -f {this-script} \
+    -Dtomcat.home=/home/tomcat \
+    -Dwebapp.name=launchWeb \
+    -DASPECTJ_HOME=/dev/tools/aspectj-1.1.0
+		
+
+This defines the web application deployment $${webapp.dir} as
+
+   $${tomcat.home}/webapps/$${webapp.name}
+
+, generates the Java source files to 
+
+   $${webapp.dir}/WEB-INF/src
+
+, uses iajc (AspectJ) to compile them to
+
+   $${webapp.dir}/WEB-INF/classes,
+
+, and creates the mappings
+
+   $${webapp.dir}/WEB-INF/generated_web.xml,
+
+which must be manually inserted into 
+
+   $${webapp.dir}/WEB-INF/generated_web.xml,
+
+at which point the web application can be reloaded.
+
+This assumes that aspectjrt.jar is already deployed in 
+any of places on the Tomcat application classpath 
+(the application, shared, or common classpath).
+If ASPECTJ_HOME is not defined, it assumes that
+aspectjtools.jar is in 
+
+   ${CATALINA_HOME}/common/lib
+
+</echo>
+	</target>
+	
+  <target name="init"> 
+	<!-- declare these two on command-line -->
+	<property name="webapp.name"
+		value="launchWeb"/>
+		
+	<property name="tomcat.home"
+		location="i:/home/tomcat"/>
+	
+	<property name="webapp.path"
+		location="${tomcat.home}/webapps/${webapp.name}"/>
+	<property name="webapp.src.dir"
+		location="${webapp.path}/WEB-INF/src"/>
+
+	<property name="ASPECTJ_HOME"
+		location="${tomcat.home}/common"/>
+	
+  </target>
+	
+  <target name="jspc" depends="init"> 
+
+    <taskdef classname="org.apache.jasper.JspC" name="jasper2" > 
+      <classpath id="jspc.classpath"> 
+        <pathelement location="${java.home}/../lib/tools.jar"/> 
+        <fileset dir="${tomcat.home}/server/lib"> 
+          <include name="*.jar"/> 
+        </fileset> 
+        <fileset dir="${tomcat.home}/common/lib"> 
+          <include name="*.jar"/> 
+        </fileset> 
+      </classpath> 
+    </taskdef> 
+
+	<mkdir dir="${webapp.src.dir}"/>
+    <jasper2 
+		 validateXml="true" 
+		 uriroot="${webapp.path}" 
+		 webXmlFragment="${webapp.path}/WEB-INF/generated_web.xml" 
+		 outputDir="${webapp.src.dir}" /> 
+
+  </target> 
+
+  <target name="compile" depends="init">
+
+    <mkdir dir="${webapp.path}/WEB-INF/classes"/>
+    <mkdir dir="${webapp.path}/WEB-INF/lib"/>
+    
+      <path id="iajc.classpath"> 
+        <fileset dir="${ASPECTJ_HOME}/lib"> 
+          <include name="aspectjtools.jar"/> 
+        </fileset> 
+      </path> 
+	<taskdef 
+      resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+      <classpath refid="iajc.classpath"/> 
+    </taskdef> 
+
+	<!-- forking compile so it runs in Eclipse -->
+    <iajc destdir="${webapp.path}/WEB-INF/classes"
+           sourceroots="${webapp.src.dir}"
+           debug="on" 
+           verbose="true"
+           fork="true" 
+           forkclasspathRef="iajc.classpath"
+           failonerror="true"
+           >
+      <classpath>
+        <pathelement location="${webapp.path}/WEB-INF/classes"/>
+        <fileset dir="${webapp.path}/WEB-INF/lib">
+          <include name="*.jar"/>
+        </fileset>
+        <pathelement location="${tomcat.home}/common/classes"/>
+        <fileset dir="${tomcat.home}/common/lib">
+          <include name="*.jar"/>
+        </fileset>
+        <pathelement location="${tomcat.home}/shared/classes"/>
+        <fileset dir="${tomcat.home}/shared/lib">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
+    </iajc>
+
+  </target>
+
+</project>
+<!-- END-SAMPLE j2ee-tomcat4-precompileJsp -->

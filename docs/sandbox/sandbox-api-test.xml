@@ -1,0 +1,26 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+<!-- ../ path when running, ../../ when editing? -->
+
+
+<!-- 
+	This is just like sandbox-test.xml except that it is
+	reserved for code that uses the AspectJ API's because
+	it assumes the build has created the target library,
+	
+	   ../aj-build/dist/tools/lib/aspectjtools.jar
+	
+	and that we run from a peer directory of this one.
+-->
+<suite>
+		
+	<ajc-test dir="api-clients" title="api-ajde-modelWalker"
+		comment="function unvalidated, only that it compiles and runs">
+		<compile files="org/aspectj/samples/JoinPointCollector.java"
+			classpath="../../../aj-build/dist/tools/lib/aspectjtools.jar"/>
+		<run class="org/aspectj/samples/JoinPointCollector"
+			options="-help"/>
+		</ajc-test>
+
+</suite>
+
+	

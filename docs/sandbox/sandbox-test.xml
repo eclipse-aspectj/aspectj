@@ -13,7 +13,6 @@
 	- verify that RunTime and RuntimeWrites throw Errors	
 	- harness bug: errStreamIsError not false when not forked; fork?
 	- check output/error stream against expected
-	- verify api-clients, using access to aspectjtools.jar...
 	   
 -->
 <suite>
@@ -133,14 +132,4 @@
 
 </suite>
 
-<!--
-	TODO XXX verify api-clients using aspectjtools.jar?
-
-	<ajc-test dir="api-clients" title="api-ajde-modelWalker">
-		<compile files="org/aspectj/samples/JoinPointCollector.java"
-			classpath="../aj-build/dist/tools/lib/aspectjtools.jar;"/>
-		<run ... />
-		</ajc-test>
-
--->
 	

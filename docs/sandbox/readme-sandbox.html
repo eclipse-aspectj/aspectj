@@ -2,7 +2,7 @@
 <title>README - AspectJ sandbox for sample code and instructions</title>
 <body>
 <h2>README - AspectJ sandbox for sample code and instructions</h2>
-This directory is a place to put some scraps that might end up in the
+This directory is a place to put scraps that might end up in the
 AspectJ documentation or on the web site:
 <ul>
 <li>sample code for AspectJ programs,
@@ -31,7 +31,10 @@ without too much overhead.
 Code in the sandbox is kept in a running state;
 it's tested by running the harness on the sandbox
 test suite file
-  <a href="sandbox-test.xml">sandbox-test.xml</a>.
+  <a href="sandbox-test.xml">sandbox-test.xml</a>
+or 
+  <a href="sandbox-api-test.xml">sandbox-api-test.xml</a>.
+
 To extract the code for documentation, we use a tool 
 that recognizes
 a sample within a source file if it has comments
@@ -41,6 +44,7 @@ and with the test suite specification only takes
 a bit of care with formatting and comments.
 The rest of this document tells how.
 
+<h3>Documenting samples</h3>
 <p><code>org.aspectj.internal.tools.build.SampleGatherer</code>
 (in the build module) extracts samples
 of the following form from any "source" file
@@ -82,11 +86,11 @@ to avoid introducing mistakes.
      	</li>
 	<li>Keep lines short  - 60 characters or less.
      	</li>
-	<li>Code snippets taken out of context of the defining type
+	<li>In Java, code taken out of context of the defining type
         can be indented only once in the source code,
         even though they might normally be indented more.
      	</li>
-	<li>Indent advice pointcuts once beyond the block code:
+	<li>In AspectJ, indent advice pointcuts beyond the block code:
 <pre>
     before() : call(!public * com.company.library..*.*(String,..))
            && within(Runnable+) { // indent once more than code
@@ -114,9 +118,25 @@ as do sets pertaining to particular publications or tutorials.
 An example of this are the sources for the "Test Inoculated" 
 article in the <a href="inoculated">inoculated/</a> directory.
 
-<p>
-When adding code, add a corresponding test case in 
-<a href="sandbox-test.xml">sandbox-test.xml</a>.
+<h3>Testing samples</h3>
+We try to make sure that the samples we present to people
+actually work by testing each kind differently:
+<ul>
+<li>Most Java and AspectJ programs are tested using
+  <a href="sandbox-test.xml">sandbox-test.xml</a>.
+</li>
+<li>API clients are tested using
+  <a href="sandbox-api-test.xml">sandbox-api-test.xml</a>,
+which requires building <code>aspectjtools.jar</code>.
+</li>
+<li>Shell and Ant scripts should be run per instructions.
+</li>
+<li>HTML and text files must be manually reviewed.
+</li>
+</ul>
+
+When adding Java or AspectJ code, add a corresponding test case 
+in <a href="sandbox-test.xml">sandbox-test.xml</a>.
 This file has the same format as other harness test suites;
 for more information,
 see <a href="../../tests/readme-writing-compiler-tests.html"> 
@@ -125,7 +145,7 @@ see <a href="../../tests/readme-writing-compiler-tests.html">
 The test suite should run and pass after new code is added 
 and before samples are extracted.
 
-<p>To keep sample code in sync with the tests:
+<p>To keep Java/AspectJ code in sync with the tests:
 <ul>
 <li>The test title should be prefixed with the anchor name and
     have any suffixes necessary for clarity and to make sure
@@ -183,6 +203,7 @@ and before samples are extracted.
 	</ul>
 	</li>
 </ul>
+
 <p>
 Happy coding!
 <hr>

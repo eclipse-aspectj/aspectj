@@ -1,0 +1,87 @@
+<html>
+<body>
+
+<!-- @author Wes Isberg -->
+<!-- START-SAMPLE j2ee-myeclipseide-generally Using MyEclipseIDE to develop AspectJ programs for J2EE -->
+MyEclipseIde
+(<a href="http://www.myeclipseide.com/">http://www.myeclipseide.com</a>)
+aims to make it easy to develop J2EE applications using Eclipse.
+AJDT 
+(<a href="http://eclipse.org/ajdt">http://eclipse.org/ajdt</a>)
+is an Eclipse plug-in that supports AspectJ. 
+<ul>
+<li>To install AJDT with MyEclipseIDE, direct the Eclipse update manager to
+<a href="http://download.eclipse.org/technology/ajdt/dev/update">
+      http://download.eclipse.org/technology/ajdt/dev/update</a>,
+install the plug-in, and follow any post-install instructions.
+</li>
+
+<li>To enable a project to use aspects, first
+select <code>Convert to AspectJ project</code>
+from the project's context menu (select project, right click).
+(XXX Bug: AJDT reverts perspective to Java; go back to MyEclipseIDE)
+Note that you must convert each project;
+converting the master J2EE project will not affect
+the child components (XXX RFE: option to convert child if parent).
+</li>
+
+<li>To build, select the menu item <code>Project &gt; Rebuild Project</code>.
+AJDT creates <code>default.lst</code> which lists all source files and
+compiles them.  
+You can also recompile by clicking the AJDT build button.
+(XXX Bug:  only available in the Java perspective)
+</li>
+
+<li>To deploy, first add <code>aspectjrt.jar</code> to the project's
+library directory.  
+For servlets and JSP's, that is in <code>{Web Root}/WEB-INF/lib</code>.
+For EJB's, it's XXX todo.
+Then deploy as usual for your application server.
+</li>
+<li>If you are using AspectJ in more than one project,
+you might instead deploy <code>aspectjrt.jar</code>
+whereever shared libraries belong for your server.
+</li>
+</ul>
+
+<!-- END-SAMPLE j2ee-myeclipseide-generally -->
+
+<!-- TODO-SAMPLE j2ee-myeclipseide-tomcat4Servlets Running AspectJ servlets in Tomcat 4.x using MyEclipseIDE -->
+
+<h3>Bugs in MyEclipseIDE</h3>
+<ol>
+<li>After refactoring to rename a servlet, have to manually update web.xml</li>
+<li>Silent failure when unable to delete a duplicate resource during deployment.</li>
+<li>Annoyingly modal UI for deployment.  Use a view.</li>
+<li>Need validation on saving Web.xml.  E.g., servlet mapping names validated with declared servlet names.</li>
+<li>Deployment dirty flag not working; not updated after editing web.xml or rebuilding project.</li>
+<li>Apparantly false JSP error?  using Sun page and template page,
+    got:
+    "Fatal error - The markup in the document preceding the root element 
+     must be well-formed."
+	Error persisted even after replacing the entire contents of the file
+    with the template which worked by default.
+</li>
+<li>When using the exact template page, get no MyEclipseIDE error,
+    but do get compile errors in Tomcat.  Using Javac, get compile-failed
+    stack trace with initial line number.  Using ajc, just get stack trace.
+	But precompiling using Ant seems to work.
+    </li>
+<li>Precompiling JSP's:  
+  <ul> 
+    <li>MyEclipseIDE has a command to compile all JSP's, but
+    I don't see (where or how) the updated servlet mappings
+    get into the deployed web.xml.
+    It would be great to get this working with AJDT.
+	</li>
+	<li>I adapted the Tomcat precompile script to use AspectJ's iajc.
+    This works fine, but like all Jasper2 solutions required the
+    generated servlet mappings be copied manually into the web.xml file.
+	See <a href="#j2ee-tomcat4-precompileJsp">the Ant build script</a>
+	</li>
+  </ul> 
+    </li>
+</ol>
+
+</body>
+</html>
