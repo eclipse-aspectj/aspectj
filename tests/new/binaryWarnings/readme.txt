@@ -23,6 +23,10 @@ Bugs: 37020, 37021, 37023
 - all test specifications should have exactly the same warnings
   as each other as as specified in MainWarnings.java
 
+- the ExecStartLine variants show that for binary join points,
+  we detect the first line of code in the associated block,
+  not the first line of the block.  This is a known limitation.
+
 To build the injar sources from the src directory:
 
 Using javac:

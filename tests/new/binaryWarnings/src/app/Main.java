@@ -23,14 +23,14 @@ public class Main {
     Main() {                // 23
     }
 
-    void go(String s) {     // 26
+    void go(String s) {  String t = "..".substring(0);   // 26
         try {
 
             String temp = this.s;  // 29
 
             this.s = temp + ", " + s;  // 31
 
-        } catch (RuntimeException e) {   // 33
+        } catch (RuntimeException e) {   String u = "..".substring(0);  // 33
             
             stop();                      // 35 
 
