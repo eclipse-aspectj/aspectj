@@ -39,6 +39,22 @@
     </ajc-test>
 
     <ajc-test dir="harness"
+      title="fail 2 error, with 1 bad filename">
+        <compile files="ErrorTest.java">
+            <message kind="error" line="5" file="ErrorTest.java"/>
+            <message kind="error" line="6" file="ErrorTest2.java"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="harness"
+      title="fail 2 error, with 2 bad filename">
+        <compile files="ErrorTest.java">
+            <message kind="error" line="5" file="ErrorTest.java"/>
+            <message kind="error" line="6" file="ErrorTest2.java"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness"
       title="fail 2 error, three expected"
      keywords="expect-fail">
         <compile files="ErrorTest.java">
@@ -213,7 +229,7 @@
 		<run class="packageOne.Main" 
 		   options="new-event"/> 
     </ajc-test>
-
+<!-- disabled pending resolution of same in ajcTestsFailing.xml
     <ajc-test dir="incremental/stringliteral"
     	keywords="incremental-test,fixme"
 		title="pass incrementally change only string literal size">
@@ -229,6 +245,7 @@
 			options="in longer packageOne.Main.main(..),
 					 before main packageOne.Main"/>
     </ajc-test>
+-->
 
    <ajc-test dir="incremental/defaultPackage/src"
    	title="pass test using prior classes">
