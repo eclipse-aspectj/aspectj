@@ -18,6 +18,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
@@ -123,7 +125,24 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		
 		if (type == TypePattern.ANY) return Literal.TRUE;
 		
-		Var var = isThis ? shadow.getThisVar() : shadow.getTargetVar();
+		Var var = isThis ? shadow.getThisVar() : shadow.getTargetVar();	
+
+		if (type instanceof BindingTypePattern) {
+		  BindingTypePattern btp = (BindingTypePattern)type;
+		  // Check if we have already bound something to this formal
+		  if (state.get(btp.getFormalIndex())!=null) {
+		  	ISourceLocation pcdSloc = getSourceLocation(); 
+		  	ISourceLocation shadowSloc = shadow.getSourceLocation();
+			Message errorMessage = new Message(
+				"Cannot use "+(isThis?"this()":"target()")+" to match at this location and bind a formal to type '"+var.getType()+
+				"' - the formal is already bound to type '"+state.get(btp.getFormalIndex()).getType()+"'"+
+				".  The secondary source location points to the problematic "+(isThis?"this()":"target()")+".",
+				shadowSloc,true,new ISourceLocation[]{pcdSloc}); 
+			shadow.getIWorld().getMessageHandler().handleMessage(errorMessage);
+			state.setErroneousVar(btp.getFormalIndex());
+			//return null;
+		  }
+		}
 		return exposeStateForVar(var, type, state, shadow.getIWorld());
 	}
 

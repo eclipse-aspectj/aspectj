@@ -173,9 +173,11 @@ public class ArgsPointcut extends NameBindingPointcut {
 			  	ISourceLocation isl = getSourceLocation();
 				Message errorMessage = new Message(
                     "Ambiguous binding of type "+type.getExactType().toString()+
-                    " using args(..) at this line.  Use one args(..) per matched join point,"+"" +                    " see secondary source location for location of extraneous args(..)",
+                    " using args(..) at this line - formal is already bound"+
+                    ".  See secondary source location for location of args(..)",
 					shadow.getSourceLocation(),true,new ISourceLocation[]{getSourceLocation()});
 				shadow.getIWorld().getMessageHandler().handleMessage(errorMessage);
+				state.setErroneousVar(btp.getFormalIndex());
 			  }
 			}
 			ret = Test.makeAnd(ret,

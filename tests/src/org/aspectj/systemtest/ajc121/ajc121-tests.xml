@@ -202,3 +202,17 @@
     	<compile files="Proceeding3.aj"/>
     	<run class="Proceeding3"/>
    	</ajc-test>
+
+    <ajc-test dir="bugs/oxford" pr="65319"
+	  	title="ajc crashes when compiling the following program (binding this() and target())">
+		<compile files="PR65319.java">
+			<message kind="error" line="7" text="Cannot use target() to match at this"/>
+			<message kind="error" line="7" text="Cannot use this() to match at this"/>
+			<message kind="error" line="11" text="Cannot use target() to match at this"/>
+			<message kind="error" line="11" text="Cannot use this() to match at this"/>
+			<message kind="error" line="11" text="Ambiguous binding of type Test"/>
+			<message kind="error" line="15" text="Cannot use target() to match at this"/>
+			<message kind="error" line="15" text="Cannot use this() to match at this"/>
+			<message kind="error" line="15" text="Ambiguous binding of type Test"/>
+		</compile>
+	</ajc-test>

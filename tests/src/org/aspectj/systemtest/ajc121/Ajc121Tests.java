@@ -10,7 +10,9 @@
 package org.aspectj.systemtest.ajc121;
 
 import java.io.File;
+
 import junit.framework.Test;
+
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
@@ -139,5 +141,10 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void test025_proceedInAround3() {
       runTest("proceed used as method name in around advice (3)");
   }
+  
+  public void test026_bindingThisAndTargetToTheSameFormal() {
+  	runTest("ajc crashes when compiling the following program (binding this() and target())");
+  }
+
 }
 

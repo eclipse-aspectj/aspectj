@@ -291,6 +291,7 @@ public class BcelAdvice extends Advice {
 				BcelRenderer.renderExpr(fact, world, exposedState.getAspectInstance()));
 		}
         for (int i = 0, len = exposedState.size(); i < len; i++) {
+        	if (exposedState.isErroneousVar(i)) continue; // Erroneous vars have already had error msgs reported!
             BcelVar v = (BcelVar) exposedState.get(i);
             if (v == null) continue;
             TypeX desiredTy = getSignature().getParameterTypes()[i];

@@ -21,11 +21,13 @@ import org.aspectj.weaver.ast.Var;
 
 public class ExposedState {
 	public Var[] vars;
+	private boolean[] erroneousVars;
 	private Expr aspectInstance;
 
 	public ExposedState(int size) {
 		super();
 		vars = new Var[size];
+		erroneousVars = new boolean[size];
 	}
 
 	public ExposedState(Member signature) {
@@ -35,7 +37,11 @@ public class ExposedState {
 
 	public void set(int i, Var var) {
 		//XXX add sanity checks
-		// Check (1) added to call of set(), verifies we aren't binding twice to the same formal
+		// Some checks added in ArgsPointcut and ThisOrTargetPointcut
+//		if (vars[i]!=null) {
+//			if (!var.getType().equals(vars[i].getType())) 
+//			  throw new RuntimeException("Shouldn't allow a slot to change type! Currently="+var.getType()+"   New="+vars[i].getType());
+//		}
 		vars[i] = var;
 	}
     public Var get(int i) {
@@ -55,5 +61,15 @@ public class ExposedState {
 
 	public String toString() {
 		return "ExposedState(" + Arrays.asList(vars) + ", " + aspectInstance + ")";
+	}
+
+	// Set to true if we have reported an error message against it,
+	// prevents us blowing up in later code gen.
+	public void setErroneousVar(int formalIndex) {
+		erroneousVars[formalIndex]=true;
+	}
+	
+	public boolean isErroneousVar(int formalIndex) {
+		return erroneousVars[formalIndex];
 	}
 }
