@@ -18,15 +18,19 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.MatchingTask;
+import org.apache.tools.ant.taskdefs.Zip;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
+import org.apache.tools.ant.types.ZipFileSet;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.tools.ajc.Main;
 import org.aspectj.tools.ajc.Main.MessagePrinter;
+import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 
 import java.io.File;
@@ -40,19 +44,18 @@ import java.util.Vector;
 
 
 /**
- * This runs the AspectJ 1.1 compiler.
+ * This runs the AspectJ 1.1 compiler, 
+ * supporting all the command-line options.
+ * It can also copy non-.class files from all input jars
+ * to the output jar, in which case it will pass the AspectJ
+ * compiler a path to a temporary output jar file to use.
+ * After each compile or recompile, this creates the output jar
+ * using the .class files from the temporary output jar file 
+ * and the non-.class files from all the input jars.
  * @since AspectJ 1.1, Ant 1.5
  */
 public class AjcTask extends MatchingTask {
-
-
-	/** @return true if readable and ends with [.java|.aj] */
-    protected static boolean isSrcFile(File file) {
-        return ((null != file) && file.canRead()
-        	&& (file.getName().endsWith(".java")
-        		|| file.getName().endsWith(".aj")));
-    }
-    
+            
     /** valid -X[...] options other than -Xlint variants */
     private static final List VALID_XOPTIONS;
 
@@ -67,12 +70,7 @@ public class AjcTask extends MatchingTask {
 	 * @see org.aspectj.weaver.Lint 
 	 */
     private static final List VALID_XLINT;
-    
-//	/** -Xlint variants 
-//	 * @see org.aspectj.weaver.Lint 
-//	 */
-//    private static final List VALID_XLINT_TAGS;
-    
+        
     static {
         String[] xs = new String[] 
             {   "serializableAspects", "incrementalFile"
@@ -112,6 +110,22 @@ public class AjcTask extends MatchingTask {
     private List argfiles;
     private List ignored;
     private Path sourceRoots;
+
+    // -------- resource-copying
+    /** true if copying injar non-.class files to the output jar */
+    private boolean copyInjars;
+    
+    /** ultimate sink for classes, if any */
+    private File outjar;
+
+    /** 
+     * If copying injars, pass ajc a fake output jar to copy from,
+     * so we don't change the modification time of the output jar
+     * when copying injars into the actual outjar.
+     */
+    private File tmpOutjar;
+
+    private boolean executing;
     
     // also note MatchingTask grabs source files...
 
@@ -305,7 +319,7 @@ public class AjcTask extends MatchingTask {
     }
     
     public void setOutjar(File file) {
-        addFlagged("-outjar", file.getAbsolutePath());        
+        outjar = file;
     }
 
     public void setDestdir(File dir) {
@@ -492,6 +506,15 @@ public class AjcTask extends MatchingTask {
             }
         }
     }
+    /**
+     * Experimental flag to copy all non-.class contents of injars
+     * to outjar after compile completes.
+     * Requires both injars and outjar.
+     * @param doCopy
+     */
+    public void setXCopyInjars(boolean doCopy){
+        this.copyInjars = doCopy;
+    }
     // ---------------------------- test state and interface thereto
     
     private IMessageHolder messageHolder;
@@ -529,6 +552,11 @@ public class AjcTask extends MatchingTask {
      *             or if there were compiler errors and failonerror is true.
      */
     public void execute() throws BuildException {
+        if (executing) {
+            throw new IllegalStateException("already executing");
+        } else {
+            executing = true;
+        }
     	IMessageHolder holder = messageHolder;
     	int numPreviousErrors;
     	if (null == holder) {
@@ -544,7 +572,6 @@ public class AjcTask extends MatchingTask {
     	} else {
     		numPreviousErrors = holder.numMessages(IMessage.ERROR, true);
     	}
-        
         try {
         	if (0 < ignored.size()) {
 				for (Iterator iter = ignored.iterator(); iter.hasNext();) {
@@ -553,6 +580,29 @@ public class AjcTask extends MatchingTask {
         	}
             Main main = new Main();
             main.setHolder(holder);
+            main.setCompletionRunner(new Runnable() {
+                public void run() {
+                    doCompletionTasks();
+                }
+            });
+            if (null != outjar) {
+                if (copyInjars) {
+                    String path = outjar.getAbsolutePath();
+                    int len = FileUtil.zipSuffixLength(path);
+                    if (len < 1) {
+                        log("not copying injars - weird outjar: " + path);
+                    } else {
+                        path = path.substring(0, path.length()-len) + ".tmp.jar";
+                        tmpOutjar = new File(path);
+                    }
+                }
+                if (null == tmpOutjar) {                
+                    addFlagged("-outjar", outjar.getAbsolutePath());        
+                } else {
+                    addFlagged("-outjar", tmpOutjar.getAbsolutePath());        
+                }
+            }
+            
             addListArgs();
             String[] args = cmd.getArguments();
 	        if (verbose) {
@@ -575,7 +625,12 @@ public class AjcTask extends MatchingTask {
             throw new BuildException("IGNORE -- See " 
             	+ LangUtil.unqualifiedClassName(x) 
             	+ " rendered to System.err");
-        }
+        } finally {
+            executing = false;
+            if (null != tmpOutjar) {
+                tmpOutjar.delete();
+            }
+        }        
     }
     
     // ------------------------------ setup and reporting
@@ -621,7 +676,7 @@ public class AjcTask extends MatchingTask {
                 String[] files = getDirectoryScanner(dir).getIncludedFiles();
                 for (int j = 0; j < files.length; j++) {
                     File file = new File(dir, files[j]);
-                    if (isSrcFile(file)) {
+                    if (FileUtil.hasSourceSuffix(file)) {
                         cmd.createArgument().setFile(file);
                         numSources++;
                     }
@@ -629,7 +684,7 @@ public class AjcTask extends MatchingTask {
             }
         }
 	}    
-	    
+
     protected final boolean check(File file, String name,
                                   boolean isDir, Location loc) {
         loc = loc != null ? loc : location;
@@ -645,5 +700,54 @@ public class AjcTask extends MatchingTask {
             throw new BuildException(e, loc);
         }
         return true;
+    }
+    
+    /** 
+     * Called when compile or incremental compile is completing 
+     */
+    protected void doCompletionTasks() {
+        copyInjars();
+    }
+    
+    /** 
+     * Copy non-.class contents of injars to outjar 
+     * if enabled 
+     * and there are injar entries 
+     * and outjar is readable and can be renamed.
+     */
+    private void copyInjars() {
+        if (!copyInjars) {
+            return;
+        }
+        if (!executing) {
+            throw new IllegalStateException("should be executing");
+        }
+        String[] paths = injars.list();
+        if (LangUtil.isEmpty(paths) 
+            || (null == outjar) 
+            || !tmpOutjar.canRead()){
+            return; // nothing to do...
+        }
+        
+        Zip zip = new Zip();
+        Project project = getProject();
+        zip.setProject(project);        
+        zip.setTaskName("iajc - zip"); // XXX iajc literal
+        zip.setDestFile(outjar);
+        ZipFileSet zipfileset = new ZipFileSet();
+        zipfileset.setProject(project);        
+        zipfileset.setSrc(tmpOutjar);
+        zipfileset.setIncludes("**/*.class");
+        zip.addZipfileset(zipfileset);
+        for (int i = 0; i < paths.length; i++) {
+            File jarFile = new File(paths[i]);
+            zipfileset = new ZipFileSet();
+            zipfileset.setProject(project);
+            zipfileset.setSrc(jarFile);
+            zipfileset.setIncludes("**/*");
+            zipfileset.setExcludes("**/*.class");  
+            zip.addZipfileset(zipfileset);
+        }
+        zip.execute();
     }
 }
