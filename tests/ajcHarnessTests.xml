@@ -9,6 +9,7 @@
      Also pick out "incremental" keyword for incremental tests.
 -->
 <suite>
+
     <ajc-test dir="noSuchDir"
       title="no such directory - report as error (AjcTest specification)"
      keywords="expect-fail">
@@ -133,7 +134,6 @@
         <run class="AspectMain"/>
     </ajc-test>
 
-	<!-- testing incremental support -->
     <ajc-test dir="harness"  keywords="incremental"
     		title="minimal purejava sourceroots test">
         <compile sourceroots="sourceroot"/>
@@ -147,13 +147,60 @@
     </ajc-test>
 
     <ajc-test dir="harness"  keywords="incremental"
-    		title="minimal incremental purejava sourceroots test">
+    		title="minimal incremental purejava sourceroots test"
+    	comment="inc-22 generates new event, expected after">
         <compile options="-incremental" 
         	sourceroots="sourceroot-inc"/>
 		<run class="packageOne.Main"/>
-        <inc-compile tag="22"/> <!-- generates new-event -->
+        <inc-compile tag="22"/> 
+		<run class="packageOne.Main" 
+		   options="new-event"/>
+    </ajc-test>
+
+    <ajc-test dir="harness"  keywords="incremental"
+    		title="rebuild minimal incremental purejava sourceroots test"
+    	comment="inc-22 generates new event, expected after">
+        <compile options="-incremental" 
+        	sourceroots="sourceroot-inc"/>
+		<run class="packageOne.Main"/>
+        <inc-compile tag="22"/>
+		<run class="packageOne.Main" 
+		   options="new-event"/> 
+
+        <compile options="-incremental" 
+            reuseCompiler="true"
+        	sourceroots="sourceroot-inc"/>
+		<run class="packageOne.Main"/>
+        <inc-compile tag="22"/>
+		<run class="packageOne.Main" 
+		   options="new-event"/>
+    </ajc-test>
+    
+    <ajc-test dir="harness"  keywords="incremental"
+    		title="rebuild fresh-same minimal incremental purejava sourceroots test"
+    	comment="inc-22 generates new event, expected after">
+        <compile options="-incremental" 
+        	sourceroots="sourceroot-inc"/>
+		<run class="packageOne.Main"/>
+        <inc-compile tag="22"/> 
+		<run class="packageOne.Main" 
+		   options="new-event"/> 
+
+        <inc-compile tag="same" fresh="true" />
 		<run class="packageOne.Main" 
 		   options="new-event"/> <!-- now expect new-event -->
+    </ajc-test>
+    
+    <ajc-test dir="harness"  keywords="incremental"
+    		title="rebuild fresh-updated minimal incremental purejava sourceroots test"
+    	comment="inc-22 generates new event, expected after">
+        <compile options="-incremental" 
+        	sourceroots="sourceroot-inc"/>
+		<run class="packageOne.Main"/>
+
+        <inc-compile tag="22" fresh="true" /> 
+		<run class="packageOne.Main" 
+		   options="new-event"/> 
     </ajc-test>
 
     <ajc-test dir="incremental/stringliteral"  
