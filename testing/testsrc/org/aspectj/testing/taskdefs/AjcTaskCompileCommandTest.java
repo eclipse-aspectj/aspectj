@@ -239,7 +239,7 @@ class MessageAdder implements Runnable {
             while (!stop && (curTime < timeout)
                 && (curTime < targetTime)) {
                 try {
-                    thread.sleep(targetTime - curTime);
+                    Thread.sleep(targetTime - curTime);
                 } catch (InterruptedException e) {
                     // ignore
                 }

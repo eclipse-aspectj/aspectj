@@ -1073,8 +1073,8 @@ public class CompilerRun implements IAjcRun {
             if (!permitAnyCompiler
                 && (!(ReflectionFactory.ECLIPSE.equals(compilerName)
                     || ReflectionFactory.OLD_AJC.equals(compilerName)
-                    || CRSOPTIONS.AJDE_COMPILER.equals(compilerName)
-                    || CRSOPTIONS.AJCTASK_COMPILER.equals(compilerName)
+                    || CRSOptions.AJDE_COMPILER.equals(compilerName)
+                    || CRSOptions.AJCTASK_COMPILER.equals(compilerName)
                     || permitAnyCompiler 
                     ))) {
                     //|| BUILDER_COMPILER.equals(compilerName))

@@ -92,7 +92,7 @@ public class AjcTaskCompileCommand implements ICommand {
             long nextCheck = curTime + checkInterval;
             while (nextCheck > curTime) {
                 try {
-                    thread.sleep(nextCheck - curTime);
+                    Thread.sleep(nextCheck - curTime);
                 } catch (InterruptedException e) {
                     // ignore
                 }
