@@ -13,12 +13,14 @@
 
 package org.aspectj.internal.tools.ant.taskdefs;
 
-import org.apache.tools.ant.*;
-import org.apache.tools.ant.types.*;
-import org.apache.tools.ant.taskdefs.*;
-import java.io.*;
-import java.util.*;
+import org.apache.tools.ant.taskdefs.Mkdir;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Properties;
 
 public class AJPush extends ConditionalTask {
     private File src;

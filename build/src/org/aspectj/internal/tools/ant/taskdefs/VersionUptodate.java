@@ -13,7 +13,6 @@
 package org.aspectj.internal.tools.ant.taskdefs;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 
 import java.io.BufferedReader;

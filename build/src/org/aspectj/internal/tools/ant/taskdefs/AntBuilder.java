@@ -713,11 +713,11 @@ class ProjectMessager extends Messager {
         return true;
     }
     public boolean error(String s) {
-        project.log(s, project.MSG_ERR);
+        project.log(s, Project.MSG_ERR);
         return true;
     }
     public boolean logException(String context, Throwable thrown) {
-        project.log(context + Util.renderException(thrown), project.MSG_ERR);
+        project.log(context + Util.renderException(thrown), Project.MSG_ERR);
         return true;
     }
 

@@ -65,7 +65,7 @@ public class AJInstaller extends MatchingTask {
     protected Copy getCopyTask() {
         Copy cd = (Copy)project.createTask("copy");
         if (null == cd) {
-            log("project.createTask(\"copy\") failed - direct", project.MSG_VERBOSE);
+            log("project.createTask(\"copy\") failed - direct", Project.MSG_VERBOSE);
             cd = new Copy();
             cd.setProject(getProject());
         }

@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Properties;
 
 /**
  * Template class to build (eclipse) modules (and, weakly, products),
