@@ -214,7 +214,7 @@ aspect A {
     
     /** unused - enable to throw exception from run() */
     public boolean TargetClass.throwException;
-    public void TargetClass.run() throws Exception {
+    public void TargetClass.run() {
         if (throwException) throwsException();
     }
 

@@ -2458,33 +2458,6 @@
         </compile>
     </ajc-test>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     <ajc-test dir="design/intro"
       title="initial tests for new introduction style" keywords="from-design">
         <compile files="Simple.java"/>
@@ -2531,6 +2504,20 @@
             <message kind="error" line="45"/>
             <message kind="error" line="46"/>
         </compile>
+    </ajc-test>
+
+    <ajc-test dir="design/intro"
+      title="declared exceptions are checked correctly on intros (errors)">
+        <compile files="ExceptionsCF.java">
+            <message kind="error" line="8"/>
+            <message kind="error" line="23"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="design/intro"
+      title="declared exceptions are checked correctly on intros">
+        <compile files="ExceptionsCP.java"/>
+        <run class="ExceptionsCP"/>
     </ajc-test>
 
     <ajc-test dir="design/reflect"
