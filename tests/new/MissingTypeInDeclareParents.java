@@ -7,8 +7,8 @@ import java.io.*;
 public class MissingTypeInDeclareParents {
 
     public static void main(String[] args) throws Exception {
-        FileReader fr = new FileReader("foo");
-        //fr.run();
+        FileWriter fr = new FileWriter("foo");
+        fr.close();
         Tester.check(true, "Kilroy was here");
     }
 }
@@ -16,6 +16,6 @@ public class MissingTypeInDeclareParents {
 class C {
 }
 aspect A {
-    /** Xlint warning expected where FileReader is outside code controlled by implementation */
-    declare parents : FileReader extends Runnable; // CW 20 Xlint warning 
+    /** Xlint warning expected where FileWriter is outside code controlled by implementation */
+    declare parents : FileWriter extends Runnable; // CW 20 Xlint warning 
 }
