@@ -4963,7 +4963,7 @@
 
     <ajc-test dir="pureJava" title="assert flow"
       keywords="from-14tests,purejava">
-        <compile options="-source14" files="AssertsCF.java">
+        <compile options="-source,1.4" files="AssertsCF.java">
             <message kind="error" line="8"/>
             <message kind="error" line="11"/>
         </compile>
@@ -4971,62 +4971,62 @@
 
     <ajc-test dir="pureJava" title="assert flow - 2"
       keywords="from-14tests,purejava">
-        <compile options="-source14" files="AssertsCF2.java">
+        <compile options="-source,1.4" files="AssertsCF2.java">
             <message kind="error" line="6"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="pureJava" title="assert typing"
       keywords="from-14tests,purejava,fail-publicType">
-        <compile options="-source14" files="AssertsCF1.java">
+        <compile options="-source,1.4" files="AssertsCF1.java">
             <message kind="error" line="5"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="pureJava" title="asserts" keywords="from-14tests">
-        <compile options="-source14" files="Asserts.java"/>
+        <compile options="-source,1.4" files="Asserts.java"/>
         <run class="Asserts" vm="1.4"/>
     </ajc-test>
 
 
     <ajc-test dir="pureJava" title="assert coverage tests [requires 1.4]"
       keywords="from-14tests,purejava">
-        <compile options="-source14" files="AssertsCv.java"/>
+        <compile options="-source,1.4" files="AssertsCv.java"/>
         <run class="AssertsCv" vm="1.4"/>
     </ajc-test>
 
     <ajc-test dir="pureJava"
       title="assert coverage tests in one package [requires 1.4]"
       keywords="from-14tests,purejava,fail-unimplemented">
-        <compile options="-source14" files="AssertInOnePackage.java"/>
+        <compile options="-source,1.4" files="AssertInOnePackage.java"/>
         <run class="AssertInOnePackage" vm="1.4"/>
     </ajc-test>
 
     <ajc-test dir="new" title="assert tests in introduction [requires 1.4]"
       keywords="from-14tests,fail-unimplemented">
-        <compile options="-source14" files="AssertInIntro.java"/>
+        <compile options="-source,1.4" files="AssertInIntro.java"/>
         <run class="AssertInIntro" vm="1.4"/>
     </ajc-test>
 
     <ajc-test dir="pureJava" title="compiling asserts in methods"
       keywords="from-14tests,purejava">
-        <compile options="-source14,-usejavac" files="AssertInMethod.java"/>
+        <compile options="-source,1.4,-usejavac" files="AssertInMethod.java"/>
         <run class="AssertInMethod" vm="1.4"/>
     </ajc-test>
 
     <ajc-test dir="pureJava" pr="725"
       title="asserts in aspect and declared methods [requires 1.4]"
       keywords="from-14tests,purejava">
-        <compile options="-source14,-usejavac"
+        <compile options="-source,1.4,-usejavac"
           files="IntroducedAssertion.java"/>
         <run class="IntroducedAssertion" vm="1.4"/>
     </ajc-test>
 
     <ajc-test dir="design/around"
       title="around and return types + inlining optimizations"
-      comment="XXX not a 1.4 test, but source uses 1.4 APIs"
-      keywords="from-14tests">
-        <compile options="-XOcodeSize,-source14"
+      comment="-XOcodeSize not in 1.1, source uses 1.4 APIs"
+      keywords="from-14tests,knownLimitation">
+        <compile options="-XOcodeSize,-source,1.4"
           files="ReturnCastProceed.java,StackChecker.java">
             <message kind="warning" line="68"/>
         </compile>
@@ -5115,14 +5115,14 @@
     <ajc-test dir="new" pr="657"
       title="assert statement in advice coverage [requires 1.4]"
       keywords="from-14tests,fail-in-eclipse">
-        <compile options="-source14" files="AssertInAdvice.java"/>
+        <compile options="-source,1.4" files="AssertInAdvice.java"/>
         <run class="AssertInAdvice" vm="1.4"/>
     </ajc-test>
 
     <ajc-test dir="new" pr="657"
       title="assert statement in advice  [requires 1.4]" 
    keywords="from-14tests,fail-in-eclipse">
-        <compile options="-source14" files="AssertInAdviceBug.java"/>
+        <compile options="-source,1.4" files="AssertInAdviceBug.java"/>
         <run class="AssertInAdviceBug" vm="1.4"/>
     </ajc-test>
 
@@ -5447,7 +5447,7 @@
     </ajc-test>
     
     <ajc-test dir="bugs" pr="28703" title="assert and pertarget crashes compiler">
-        <compile files="EnsureOverriding.java" options="-source14"/>
+        <compile files="EnsureOverriding.java" options="-source,1.4"/>
         <run class="EnsureOverriding" vm="1.4"/>
     </ajc-test>
     
@@ -5841,7 +5841,7 @@
     
     <ajc-test dir="bugs/interSpecials" title="testing that assert works like .class"
       pr="36110">
-        <compile files="p1/C.java,p2/A2.java" options="-source14"/>
+        <compile files="p1/C.java,p2/A2.java" options="-source,1.4"/>
         <run class="p2.A2" vm="1.4"/>
     </ajc-test>
 
@@ -6204,6 +6204,7 @@
     </ajc-test>
 
     <ajc-test dir="harness" keywords="command-line-error"
+    	comment="XXX test skipped - harness ignores -sourceroot option"
       title="CLE: no dir specified for sourceroots">
         <compile badInput="true" files="ErrorTest.java" 
         	options="-sourceroots">
@@ -6461,8 +6462,8 @@
     
     <ajc-test dir="bugs" pr="39711"
    	 title="Class Literals as non final fields (also assert, and this$0)">
-        <compile files="ClassLiteralField.java" options="-source14"/>
-        <run class="ClassLiteralField"/>
+        <compile files="ClassLiteralField.java" options="-source,1.4"/>
+        <run vm="1.4" class="ClassLiteralField"/>
     </ajc-test>
 
 	<ajc-test dir="errors"
