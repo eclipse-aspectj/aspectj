@@ -21,8 +21,6 @@ import org.aspectj.asm.*;
 import org.aspectj.asm.internal.*;
 import org.aspectj.asm.internal.ProgramElement;
 
-import sun.security.krb5.internal.crypto.p;
-
 /**
  * @author Mik Kersten
  */
