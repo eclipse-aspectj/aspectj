@@ -115,7 +115,7 @@ public class AjdtCommand implements ICommand {
     }
 
     /** @throws AbortException on error after handling message */
-    AjBuildConfig genBuildConfig(String[] args, CountingMessageHandler handler) {
+    public static AjBuildConfig genBuildConfig(String[] args, CountingMessageHandler handler) {
         BuildArgParser parser = new BuildArgParser();
         AjBuildConfig config = parser.genBuildConfig(args, handler);
         String message = parser.getOtherMessages(true);
@@ -125,11 +125,12 @@ public class AjdtCommand implements ICommand {
             IMessage m = new Message(message, kind, null, null);            
             handler.handleMessage(m);
         }
+        
         return config;
     }
     
     /** @return IMessage.WARNING unless message contains error or info */
-    protected IMessage.Kind inferKind(String message) { // XXX dubious
+    protected static IMessage.Kind inferKind(String message) { // XXX dubious
         if (-1 == message.indexOf("error")) {
             return IMessage.ERROR;
         } else if (-1 == message.indexOf("info")) {
