@@ -46,6 +46,7 @@ public class ResourceCopyTestCase extends AjdeTestCase {
 	
 	public void testSrcToBin () {
 		doSynchronousBuild("config.lst");
+		assertTrue(!Ajde.getDefault().getTaskListManager().hasWarning());
 		assertTrue(new java.io.File("testdata/bug-36071").getAbsolutePath(), compareDirs("src", "bin"));
 	}
 	
