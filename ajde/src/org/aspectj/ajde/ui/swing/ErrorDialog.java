@@ -29,7 +29,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.Border;
 
-class ErrorDialog extends JDialog {
+public class ErrorDialog extends JDialog {
     JPanel top_panel = new JPanel();
     BorderLayout borderLayout2 = new BorderLayout();
     JPanel button_panel = new JPanel();
@@ -49,8 +49,8 @@ class ErrorDialog extends JDialog {
             jbInit();
             String exceptionName = "<unknown exception>";
             if (throwable != null) exceptionName = throwable.getClass().getName();
-            this.error_label1.setText("A " + exceptionName + " exception has occured.");
-            this.error_label2.setText("Please copy the following report and submit it at http://aspectj.org/bugs");
+            this.error_label1.setText("Exception: " + exceptionName);
+            this.error_label2.setText("If you can't fix it, please submit a bug to http://dev.eclipse.org/bugs");
             this.stackTrace_textArea.setText("Message: " + message + '\n' + "Stack trace: " + details);
             this.setSize(420, 330);
             this.setLocationRelativeTo(owner);
