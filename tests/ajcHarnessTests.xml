@@ -461,6 +461,28 @@
         	fork="true" 
         	vmargs="-DPASS=true,-Dname=value"/>
     </ajc-test>
+    <ajc-test dir="harness/aspectpath"
+		title="pass aspectpath LTW aspect works in one compile">
+        <compile files="A.java,Main.java"/>
+        <run class="Main"/> 
+    </ajc-test>
+
+    <ajc-test dir="harness/aspectpath"
+		keywords="expect-fail"
+		title="fail aspectpath LTW failure case">
+        <compile files="Main.java"/>
+        <run class="Main"/> 
+    </ajc-test>
+
+	<!-- uncomment after weaveinfo messages 
+         (which cause false negatives) are suppressed
+    <ajc-test dir="harness/aspectpath"
+		title="pass aspectpath LTW">
+        <compile files="A.java" outjar="out.jar"/>
+        <compile files="Main.java"/>
+        <run class="Main" aspectpath="out.jar"/> 
+    </ajc-test>
+    -->
 
 </suite>
 
