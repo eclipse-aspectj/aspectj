@@ -495,7 +495,6 @@ public class CompilerAdapter {
      * <ul>
      * <li>New list entries are added if not duplicates in,
      *     for classpath, aspectpath, injars, inpath and sourceroots</li>
-     * <li>New bootclasspath entries are ignored XXX</li>
      * <li>Set only one new entry for output dir or output jar
      *     only if there is no output dir/jar entry in the config</li>
      * </ul>
@@ -505,7 +504,8 @@ public class CompilerAdapter {
 	 */
 	private void configureProjectOptions( AjBuildConfig config, ProjectPropertiesAdapter properties ) {
         // XXX no error handling in copying project properties
-        String propcp = properties.getClasspath(); // XXX omitting bootclasspath...
+		// Handle regular classpath
+        String propcp = properties.getClasspath();
         if (!LangUtil.isEmpty(propcp)) {
             StringTokenizer st = new StringTokenizer(propcp, File.pathSeparator);
             List configClasspath = config.getClasspath();
@@ -524,7 +524,30 @@ public class CompilerAdapter {
                 Ajde.getDefault().logEvent("building with classpath: " + both);
             }
         }
-
+       
+        // Handle boot classpath
+        propcp = properties.getBootClasspath();
+        if (!LangUtil.isEmpty(propcp)) {
+            StringTokenizer st = new StringTokenizer(propcp, File.pathSeparator);
+            List configClasspath = config.getBootclasspath();
+            ArrayList toAdd = new ArrayList();
+            while (st.hasMoreTokens()) {
+                String entry = st.nextToken();
+                if (!configClasspath.contains(entry)) {
+                    toAdd.add(entry);
+                }
+            }
+            if (0 < toAdd.size()) {
+                ArrayList both = new ArrayList(configClasspath.size() + toAdd.size());
+                both.addAll(configClasspath);
+                both.addAll(toAdd);
+                config.setBootclasspath(both);
+                Ajde.getDefault().logEvent("building with boot classpath: " + both);
+            }
+        }
+       
+        
+        
         // set outputdir and outputjar only if both not set
         if ((null == config.getOutputDir() && (null == config.getOutputJar()))) {
             String outPath = properties.getOutputPath();

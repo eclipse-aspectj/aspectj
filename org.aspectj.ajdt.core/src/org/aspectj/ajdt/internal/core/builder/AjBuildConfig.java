@@ -31,7 +31,7 @@ import org.aspectj.util.FileUtil;
  * All configuration information needed to run the AspectJ compiler.
  * Compiler options (as opposed to path information) are held in an AjCompilerOptions instance
  */
-public class AjBuildConfig { // XXX needs bootclasspath?
+public class AjBuildConfig {
 	
 	private boolean shouldProceed = true;
 	
@@ -50,6 +50,7 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 	private Map/*String->File*/ sourcePathResources = new HashMap();
 	private List/*File*/ aspectpath = new ArrayList();
 	private List/*String*/ classpath = new ArrayList();
+	private List/*String*/ bootclasspath = new ArrayList();
 	
 	private File configFile;
 	private String lintMode = AJLINT_DEFAULT;
@@ -137,7 +138,7 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 	}
 
 	/**
-	 * This includes all entries from -bootclasspath, -extdirs, -classpath, 
+	 * This does not include -bootclasspath but includes -extdirs and -classpath
 	 */
 	public List getClasspath() { // XXX setters don't respect javadoc contract...
 		return classpath;
@@ -145,6 +146,14 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 
 	public void setClasspath(List classpath) {
 		this.classpath = classpath;
+	}
+	
+	public List getBootclasspath() {
+		return bootclasspath;
+	}
+	
+	public void setBootclasspath(List bootclasspath) {
+		this.bootclasspath = bootclasspath;
 	}
 
 	public File getOutputJar() {
@@ -225,12 +234,12 @@ public class AjBuildConfig { // XXX needs bootclasspath?
     }
 
     /**
-     * @return List (String) classpath of injars, inpath, aspectpath 
-     *   entries, specified classpath (bootclasspath, extdirs, and 
-     *   classpath), and output dir or jar
+     * @return List (String) classpath of bootclasspath, injars, inpath, aspectpath 
+     *   entries, specified classpath (extdirs, and classpath), and output dir or jar
      */
     public List getFullClasspath() {
         List full = new ArrayList();
+        full.addAll(getBootclasspath()); // XXX Is it OK that boot classpath overrides inpath/injars/aspectpath?
         for (Iterator i = inJars.iterator(); i.hasNext(); ) {
             full.add(((File)i.next()).getAbsolutePath());
         }
@@ -238,7 +247,7 @@ public class AjBuildConfig { // XXX needs bootclasspath?
         	full.add(((File)i.next()).getAbsolutePath());
         }
         for (Iterator i = aspectpath.iterator(); i.hasNext(); ) {
-            full.add(((File)i.next()).getAbsolutePath());
+            full.add(((File)i.next()).getAbsolutePath());        
         }
         full.addAll(getClasspath());
 //        if (null != outputDir) {

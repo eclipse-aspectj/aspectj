@@ -112,7 +112,7 @@ public class BuildArgParserTestCase extends TestCase {
 	public void testPathResolutionFromConfigArgs() {
 		String FILE_PATH =   "@" + TEST_DIR + "configWithClasspathExtdirsBootCPArgs.lst";
 		AjBuildConfig config = genBuildConfig(new String[] { FILE_PATH }, messageWriter);
-		List classpath = config.getClasspath();
+		List classpath = config.getFullClasspath();
 		// should have three entries, resolved relative to location of .lst file
 		assertEquals("Three entries in classpath",3,classpath.size());
 		Iterator cpIter = classpath.iterator();
@@ -300,13 +300,13 @@ public class BuildArgParserTestCase extends TestCase {
 		AjBuildConfig config = genBuildConfig(new String[] { 
 			"-bootclasspath", PATH }, 
 			messageWriter);		
-		assertTrue("Should find '" + PATH + "' contained in the first entry of '" + config.getClasspath().toString(),
-				((String)config.getClasspath().get(0)).indexOf(PATH) != -1); 
+		assertTrue("Should find '" + PATH + "' contained in the first entry of '" + config.getBootclasspath().toString(),
+				((String)config.getBootclasspath().get(0)).indexOf(PATH) != -1); 
 
 		config = genBuildConfig(new String[] { 
 			}, 
 			messageWriter);		
-		assertTrue(config.getClasspath().toString(), !config.getClasspath().get(0).equals(PATH)); 
+		assertTrue(config.getBootclasspath().toString(), !config.getBootclasspath().get(0).equals(PATH)); 
 	}
 
 	public void testOutputJar() throws InvalidInputException {

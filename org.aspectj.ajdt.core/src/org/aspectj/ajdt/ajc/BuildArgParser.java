@@ -177,6 +177,7 @@ public class BuildArgParser extends Main {
 			
 			if (setClasspath) {
 				buildConfig.setClasspath(getClasspath(parser));
+				buildConfig.setBootclasspath(getBootclasspath(parser));
 			}
 			
 			if (incrementalMode 
@@ -284,6 +285,16 @@ public class BuildArgParser extends Main {
 	}
 
     
+	public List getBootclasspath(AjcConfigParser parser) {
+		List ret = new ArrayList();
+    	
+    	if (parser.bootclasspath == null) {
+    		addClasspath(System.getProperty("sun.boot.class.path", ""), ret);
+    	} else {  
+    		addClasspath(parser.bootclasspath, ret);
+    	}
+    	return ret;
+	}
     /**
      * If the classpath is not set, we use the environment's java.class.path, but remove
      * the aspectjtools.jar entry from that list in order to prevent wierd bootstrap issues
@@ -292,11 +303,11 @@ public class BuildArgParser extends Main {
     public List getClasspath(AjcConfigParser parser) {
     	List ret = new ArrayList();
     	
-    	if (parser.bootclasspath == null) {
-    		addClasspath(System.getProperty("sun.boot.class.path", ""), ret);
-    	} else {  
-    		addClasspath(parser.bootclasspath, ret);
-    	}
+//    	if (parser.bootclasspath == null) {
+//    		addClasspath(System.getProperty("sun.boot.class.path", ""), ret);
+//    	} else {  
+//    		addClasspath(parser.bootclasspath, ret);
+//    	}
 
 		String extdirs = parser.extdirs;
 		if (extdirs == null) {

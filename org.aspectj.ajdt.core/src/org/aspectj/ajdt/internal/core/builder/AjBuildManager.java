@@ -485,7 +485,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
     
     /** init only on initial batch compile? no file-specific options */
 	private void initBcelWorld(IMessageHandler handler) throws IOException {
-		bcelWorld = new BcelWorld(buildConfig.getClasspath(), handler, null);
+		List cp = buildConfig.getBootclasspath();
+		cp.addAll(buildConfig.getClasspath());
+		bcelWorld = new BcelWorld(cp, handler, null);
 		bcelWorld.setXnoInline(buildConfig.isXnoInline());
 		bcelWorld.setXlazyTjp(buildConfig.isXlazyTjp());
 		bcelWeaver = new BcelWeaver(bcelWorld);
@@ -825,10 +827,10 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	}
 	
 	String makeClasspathString() {
-		if (buildConfig == null || buildConfig.getClasspath() == null) return "";
+		if (buildConfig == null || buildConfig.getFullClasspath() == null) return "";
 		StringBuffer buf = new StringBuffer();
 		boolean first = true;
-		for (Iterator it = buildConfig.getClasspath().iterator(); it.hasNext(); ) {
+		for (Iterator it = buildConfig.getFullClasspath().iterator(); it.hasNext(); ) {
 			if (first) { first = false; }
 			else { buf.append(File.pathSeparator); }
 			buf.append(it.next().toString());
@@ -849,8 +851,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			return null;
 		}
 		
-		if (buildConfig == null || buildConfig.getClasspath() == null) return "no classpath specified";
-		for (Iterator it = buildConfig.getClasspath().iterator(); it.hasNext(); ) {
+		if (buildConfig == null || buildConfig.getFullClasspath() == null) return "no classpath specified";
+		for (Iterator it = buildConfig.getFullClasspath().iterator(); it.hasNext(); ) {
 			File p = new File( (String)it.next() );
 			if (p.isFile() && p.getName().equals("aspectjrt.jar")) {
 
