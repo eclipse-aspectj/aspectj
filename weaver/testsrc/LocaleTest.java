@@ -18,7 +18,7 @@ public class LocaleTest extends TestCase {
 
 	public void testTurkishLocale() {
 		Locale def = Locale.getDefault();
-		Locale.setDefault(new Locale("tr"));
+		Locale.setDefault(new Locale("tr", ""));
 		try {
 			doBipush();
 		} finally {
@@ -34,7 +34,7 @@ public class LocaleTest extends TestCase {
 							(byte) 3  // data for bipush
 							}));
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(e.getMessage());
 		}
 	}
 }
