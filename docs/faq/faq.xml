@@ -871,6 +871,48 @@ aspect.
         </answer>
       </qandaentry>
       <qandaentry>
+        <question id="q:dynamicaop"
+            xreflabel="Q:How does AspectJ compare with more dynamic AOP?">
+          <para>How does AspectJ compare with more dynamic AOP?
+          </para>
+        </question>
+        <answer>
+          <para>
+          Some AOP techniques are presented as "dynamic" because the weaving 
+          occurs when classes are loaded, because aspects can be configured 
+          in a separate XML file before launch, or because some advice
+          depends on runtime reflection.  They are said to be more flexible
+          than AspectJ.
+          </para>
+          <para>
+          This is a misconception.  First, the AspectJ 1.1 weaver has always 
+          supported weaving at compile-time or class-load-time.  Weaving at
+          compile-time reduces application launch and running time, and it helps
+          IDE's offer support for tracking down weaving errors and understanding
+          the impact of aspects on a system.
+          On the other hand, weaving at load-time simplifies build and deployment.
+          Before AspectJ 1.2, the user had to write a class loader that used the 
+          weaver API to weave at load time; since 1.2, AspectJ come with a 
+          command-line launcher to support weaving at class-load-time without 
+          any other changes to a build configuration.
+          </para>
+          <para>
+          Second, AspectJ programs, like Java programs generally, can be
+          written to support any level of XML configuration or to depend on
+          runtime reflection.  There are some benefits to using AspectJ;
+          e.g., the proceed() form within around advice simplifies a lot of 
+          the work that otherwise would go into writing a generalized 
+          interceptor, without introducing many of the runtime errors that can 
+          result from interceptors.  
+          For AspectJ examples of configurable or reflection-dependent programs,
+          see the sample code linked off the AspectJ documentation page
+          or the examples discussed on the mailing list, e.g.,
+          <ulink url="http://dev.eclipse.org/mhonarc/lists/aspectj-users/msg02151.html">
+			Incremental and runtime weaving support?</ulink>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
         <question id="q:aopandxp"
             xreflabel="Q:What is the relationship between AOP and 
         XP (extreme programming AKA agile methods)?">
@@ -4469,22 +4511,9 @@ vmparam -Xmx384m
         </question>
         <answer>
           <para>
-          Entries changed since the earlier September, 2003 version:
+          Entries changed recently:
             <itemizedlist>
-        <listitem><para><xref linkend="q:noaspectbound"/></para></listitem>
-        <listitem><para><xref linkend="q:duplicateclass"/></para></listitem>
-        <listitem><para><xref linkend="q:advicenotrunning"/></para></listitem>
-        <listitem><para><xref linkend="q:exampleprograms"/></para></listitem>
-        <listitem><para><xref linkend="q:aspectlibraries"/></para></listitem>
-        <listitem><para><xref linkend="q:newjoinpoints"/></para></listitem>
-        <listitem><para><xref linkend="q:whitepapers"/></para></listitem>
-        <listitem><para><xref linkend="q:implementation"/></para></listitem>
-        <listitem><para><xref linkend="q:contributions"/></para></listitem>
-        <listitem><para><xref linkend="q:interfaceDeclarations"/></para></listitem>
-        <listitem><para><xref linkend="q:aspectjandj2me"/></para></listitem>
-        <listitem><para><xref linkend="q:adviceOnOveriddenMethods"/></para></listitem>
-        <listitem><para><xref linkend="q:tejpsp"/></para></listitem>
-        <listitem><para><xref linkend="q:searchingsite"/></para></listitem>
+        <listitem><para><xref linkend="q:dynamicaop"/></para></listitem>
             </itemizedlist>
           </para>
         </answer>
