@@ -333,6 +333,7 @@ public class WildTypePattern extends TypePattern {
 		}
 		
 		String cleanName = maybeGetCleanName();
+		String originalName = cleanName;
 		if (cleanName != null) {
 			TypeX type;
 			
@@ -347,14 +348,14 @@ public class WildTypePattern extends TypePattern {
 				if (requireExactType) {
 					if (!allowBinding) {
 						scope.getWorld().getMessageHandler().handleMessage(
-							MessageUtil.error("can't bind type name '" + cleanName + "'",
+							MessageUtil.error("can't bind type name '" + originalName + "'",
 											getSourceLocation()));
 					} else if (scope.getWorld().getLint().invalidAbsoluteTypeName.isEnabled()) {
-						scope.getWorld().getLint().invalidAbsoluteTypeName.signal(cleanName, getSourceLocation());
+						scope.getWorld().getLint().invalidAbsoluteTypeName.signal(originalName, getSourceLocation());
 					}
 					return NO;
 				} else if (scope.getWorld().getLint().invalidAbsoluteTypeName.isEnabled()) {
-					scope.getWorld().getLint().invalidAbsoluteTypeName.signal(cleanName, getSourceLocation());
+					scope.getWorld().getLint().invalidAbsoluteTypeName.signal(originalName, getSourceLocation());
 				}
 			} else {
 				if (dim != 0) type = TypeX.makeArray(type, dim);

@@ -7770,4 +7770,10 @@
         </compile>
     </ajc-test>
  
+    <ajc-test dir="bugs"
+		pr="53999" title="'can't bind type' message has $ for . in type name for declare soft">
+        <compile files="Cosmetic.java">
+        <message kind="error" line="9" text="can't bind type name 'unknown.Error'"/>
+        </compile>
+    </ajc-test> 
 </suite>
