@@ -380,9 +380,9 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 	// various ASTNode types. They have no common ancestor in the
 	// hierarchy!!
 	private int getStartLine( AstNode n){
-		if (  n instanceof AbstractVariableDeclaration ) return getStartLine( (AbstractVariableDeclaration)n);
-		if (  n instanceof AbstractMethodDeclaration ) return getStartLine( (AbstractMethodDeclaration)n);
-		if (  n instanceof TypeDeclaration ) return getStartLine( (TypeDeclaration)n);
+//		if (  n instanceof AbstractVariableDeclaration ) return getStartLine( (AbstractVariableDeclaration)n);
+//		if (  n instanceof AbstractMethodDeclaration ) return getStartLine( (AbstractMethodDeclaration)n);
+//		if (  n instanceof TypeDeclaration ) return getStartLine( (TypeDeclaration)n);
 		return ProblemHandler.searchLineNumber(
 			currCompilationResult.lineSeparatorPositions,
 			n.sourceStart);		
