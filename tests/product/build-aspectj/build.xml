@@ -27,20 +27,22 @@
 
   Setup:
 
-  Variables ASPECTJ_HOME and ASPECTJ_SRC refer to the 
+  Variables ASPECTJ_HOME and ASPECTJ_MODULES refer to the 
   base of an AspectJ install and the modules directory 
   of the AspectJ source tree.  By default they are
   
-    ASPECTJ_SRC:  $${basedir}/../..
+    ASPECTJ_MODULES:  $${basedir}/../..
     ASPECTJ_HOME: $${basedir}/../../aj-build/dist/tools
   
   which assumes the tools dist is built and this
-  runs from modules/tests/product/build-aspectj
+  runs from modules/tests/product/build-aspectj.
+  
+  To disable verbose mode, set iajc.verbose to false.
        
   You can also define the properties to run on any
   distribution from anywhere:
        
-    ant -DASPECTJ_HOME=dev/tools/aj -DASPECTJ_SRC=ec
+    ant -DASPECTJ_HOME=dev/tools/aj -DASPECTJ_MODULES=ec
 
       </echo>
     </target>
@@ -60,14 +62,14 @@
     <target name="init.variables" 
      description="init variables">
      
-      <property name="verbose" value="false"/>
+	  <property name="iajc.verbose" value="true"/>
 
       <!-- build.compiler value to pick up our CompilerAdapter for javac -->
       <property name="ajc.adapter"
 	           value="org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter"/>
 
       <!-- required directories - run from examples or predefine -->
-      <property name="ASPECTJ_SRC"
+      <property name="ASPECTJ_MODULES"
             location="${basedir}/../../.."/> 
 
       <property name="ASPECTJ_HOME"
@@ -93,7 +95,7 @@
              property="aspectjrt.jar.available"/>
 
 	  <property name="aspectj.src"
-  	  	    location="${ASPECTJ_SRC}"/>
+  	  	    location="${ASPECTJ_MODULES}"/>
 
 	  <property name="output.aspectjtools"
 	  	location="${output.dir}/aspectjtools.jar"/>
@@ -175,6 +177,7 @@
     <target name="build-runtime" depends="init">
        <iajc outjar="${output.aspectjrt}"
           classpath="${aspectjrt.jar}"
+          verbose="${iajc.verbose}"
           sourcerootsref="runtime.roots"/>
     </target>
     
@@ -184,7 +187,7 @@
     
     <target name="build-tools" depends="init">
        <iajc outjar="${output.aspectjtools}"
-       		verbose="${verbose}"
+       		verbose="${iajc.verbose}"
 			sourcerootsref="tools.roots"
 			sourcerootcopyfilter="**/CVS/*,**/*.java,**/*.aj">
 			<classpath>
