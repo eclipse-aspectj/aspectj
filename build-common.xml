@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<project name="common" basedir=".">
+
+    <condition property="jdk15" value="yes">
+        <contains string="${java.version}" substring="1.5"/>
+    </condition>
+
+    <target name="init">
+        <property name="src.dir" value="src"/>
+        <property name="test.src.dir" value="testsrc"/>
+        <property name="build.dir" value="bin"/>
+        <property name="test.build.dir" value="bintest"/>
+    </target>
+
+    <target name="clean" depends="init">
+        <delete dir="${build.dir}"/>
+        <delete dir="${test.build.dir}"/>
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${test.build.dir}"/>
+    </target>
+
+    <target name="cleanall" depends="init">
+        <delete dir="${build.dir}"/>
+        <delete dir="${test.build.dir}"/>
+    </target>
+
+    <macrodef name="srccompile">
+        <attribute name="project"/>
+        <attribute name="path"/>
+        <sequential>
+            <echo message="compile ... @{project}"/>
+            <mkdir dir="../@{project}/${build.dir}"/>
+            <javac debug="on" destdir="../@{project}/${build.dir}" source="1.2" target="1.1">
+                <src path="../@{project}/${src.dir}"/>
+                <classpath refid="@{path}"/>
+            </javac>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="testcompile">
+        <attribute name="project"/>
+        <attribute name="path"/>
+        <sequential>
+            <echo message="test:compile ... @{project}"/>
+            <mkdir dir="../@{project}/${test.build.dir}"/>
+            <javac debug="on" destdir="../@{project}/${test.build.dir}" source="1.2" target="1.1">
+                <src path="../@{project}/${test.src.dir}"/>
+                <classpath refid="@{path}"/>
+                <classpath path="../@{project}/${build.dir}"/>
+            </javac>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="testrun">
+        <attribute name="project"/>
+        <attribute name="path"/>
+        <attribute name="suite"/>
+        <sequential>
+            <!--   showoutput="true" -->
+            <junit fork="on" haltonfailure="on" haltonerror="on" printsummary="on">
+                <classpath>
+                    <pathelement path="../@{project}/${build.dir}"/>
+                    <pathelement path="../@{project}/${test.build.dir}"/>
+                    <path refid="@{path}"/>
+                </classpath>
+                <test name="@{suite}"/>
+            </junit>
+        </sequential>
+    </macrodef>
+
+    <target name="all" depends="init, compile, test:compile"/>
+
+
+</project>

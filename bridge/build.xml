@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<project name="bridge" default="all" basedir=".">
+
+    <import file="../build-common.xml"/>
+    <import file="../util/build.xml"/>
+
+    <path id="bridge.test.src.path">
+        <fileset dir="${basedir}/../lib">
+            <include name="junit/*.jar"/>
+        </fileset>
+        <path refid="bridge.src.path"/>
+    </path>
+
+    <path id="bridge.src.path">
+        <pathelement path="../util/bin"/>
+    </path>
+
+    <target name="compile" depends="init">
+        <antcall target="util.compile"/>
+        <srccompile project="bridge" path="bridge.src.path"/>
+    </target>
+
+    <target name="test:compile" depends="compile">
+        <testcompile project="bridge" path="bridge.test.src.path"/>
+    </target>
+
+    <target name="test" depends="test:compile">
+        <testrun project="bridge" path="bridge.test.src.path" suite="BridgeModuleTests"/>
+    </target>
+
+</project>
+

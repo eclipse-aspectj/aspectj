@@ -27,7 +27,7 @@ public class AllTestsAspectJ150_NeedJava15 {
 		suite.addTestSuite(Annotations.class);
 		suite.addTestSuite(AnnotationBinding.class);
 		
-        //@AJ tests
+        //ATAJ tests
         suite.addTest(AtAjc150Tests.suite());
 
 		//$JUnit-END$

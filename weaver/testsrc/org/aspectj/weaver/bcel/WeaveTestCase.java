@@ -26,6 +26,17 @@ import org.aspectj.util.FileUtil;
 
 public abstract class WeaveTestCase extends TestCase {
 
+    //ALEX: don't know why / who but failures stacktrace are hidden if not overrided there
+    protected void runTest() throws Throwable {
+        try {
+            super.runTest();
+        } catch (Throwable t) {
+            System.err.println("FAIL " + getName());
+            t.printStackTrace();
+            throw  t;
+        }
+    }
+
 	public boolean regenerate = false;
 	public boolean runTests = true;
 
@@ -33,6 +44,9 @@ public abstract class WeaveTestCase extends TestCase {
     String outDirPath;
     	
 	public BcelWorld world = new BcelWorld();
+    {
+        world.addPath(classDir);
+    }
 
     public WeaveTestCase(String name) {
         super(name);
@@ -118,6 +132,8 @@ public abstract class WeaveTestCase extends TestCase {
 			+ File.pathSeparator
 			+ getTraceJar() 
 			+ File.pathSeparator
+            + classDir
+            + File.pathSeparator
 			+ System.getProperty("java.class.path");
    	}
    	
@@ -172,13 +188,13 @@ public abstract class WeaveTestCase extends TestCase {
     }
 
     protected ShadowMunger makeConcreteAdvice(String mungerString, int extraArgFlag, PerClause perClause) {
-        Advice myMunger = 
+        Advice myMunger =
             world.shadowMunger(mungerString, extraArgFlag);
-            
+
 //        PerSingleton s = new PerSingleton();
 //        s.concretize(world.resolve("Aspect"));
         //System.err.println(((KindedPointcut)myMunger.getPointcut().getPointcut()).getKind());
-        Advice cm = (Advice) myMunger.concretize(myMunger.getDeclaringAspect().resolve(world), 
+        Advice cm = (Advice) myMunger.concretize(myMunger.getDeclaringAspect().resolve(world),
         						world, perClause);
         return cm;
     }

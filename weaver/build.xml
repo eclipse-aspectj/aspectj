@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<project name="weaver" default="all" basedir=".">
+
+    <import file="../build-common.xml"/>
+    <import file="../asm/build.xml"/>
+    <import file="../bridge/build.xml"/>
+    <import file="../runtime/build.xml"/>
+    <import file="../testing-util/build.xml"/>
+    <import file="../util/build.xml"/>
+
+    <path id="weaver.test.src.path">
+        <pathelement path="../testing-util/bin"/>
+        <fileset dir="${basedir}/../lib">
+            <include name="junit/*.jar"/>
+            <include name="jdiff/*.jar"/>
+        </fileset>
+        <path refid="weaver.src.path"/>
+    </path>
+
+    <path id="weaver.src.path">
+        <pathelement path="../asm/bin"/>
+        <pathelement path="../bridge/bin"/>
+        <pathelement path="../runtime/bin"/>
+        <pathelement path="../util/bin"/>
+        <fileset dir="${basedir}/../lib">
+            <include name="bcel/*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="compile" depends="init">
+        <antcall target="asm.compile"/>
+        <antcall target="bridge.compile"/>
+        <antcall target="runtime.compile"/>
+        <antcall target="util.compile"/>
+        <srccompile project="weaver" path="weaver.src.path"/>
+        <!-- copy properties file for bundles -->
+        <copy todir="${basedir}/bin">
+            <fileset dir="${basedir}/src" includes="**/*.properties"/>
+        </copy>
+    </target>
+
+    <target name="test:compile" depends="compile">
+        <antcall target="testing-util.compile"/>
+        <testcompile project="weaver" path="weaver.test.src.path"/>
+    </target>
+
+    <target name="test" depends="test:compile">
+        <testrun project="weaver" path="weaver.test.src.path" suite="org.aspectj.weaver.BcweaverModuleTests"/>
+    </target>
+
+</project>
+

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<project name="util" default="all" basedir=".">
+
+    <import file="../build-common.xml"/>
+
+    <path id="util.test.src.path">
+        <fileset dir="${basedir}/../lib">
+            <include name="junit/*.jar"/>
+        </fileset>
+        <path refid="util.src.path"/>
+    </path>
+
+    <path id="util.src.path">
+    </path>
+
+    <target name="compile" depends="init">
+        <srccompile project="util" path="util.src.path"/>
+    </target>
+
+    <target name="test:compile" depends="compile">
+        <testcompile project="util" path="util.test.src.path"/>
+    </target>
+
+    <target name="test" depends="test:compile">
+        <testrun project="util" path="util.test.src.path" suite="UtilModuleTests"/>
+    </target>
+
+
+</project>
+

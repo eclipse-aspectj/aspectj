@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<project name="aspectj" basedir=".">
+
+    <macrodef name="targets">
+        <attribute name="name"/>
+        <sequential>
+            <subant target="@{name}">
+                <!-- TODO ant 1.7 stuff here is better.. -->
+                <filelist dir="."
+                          files="runtime/build.xml,
+                                 util/build.xml,
+                                 bridge/build.xml,
+                                 aspectj5rt/build.xml,
+                                 bcel-builder/build.xml,
+                                 testing-util/build.xml,
+                                 asm/build.xml,
+                                 weaver/build.xml"/>
+            </subant>
+        </sequential>
+    </macrodef>
+
+    <target name="all">
+        <targets name="all"/>
+    </target>
+
+    <target name="clean">
+        <targets name="clean"/>
+    </target>
+
+    <target name="cleanall">
+        <targets name="cleanall"/>
+    </target>
+
+    <target name="test">
+        <targets name="test"/>
+    </target>
+
+</project>

@@ -71,8 +71,8 @@ public class ArgsWeaveTestCase extends WeaveTestCase {
         l.add(p3);
 
 
-        weaveTest("HelloWorld", "ArgsBeforeAfterHelloWorld", addLexicalOrder(l));        
-    }    
+        weaveTest("HelloWorld", "ArgsBeforeAfterHelloWorld", addLexicalOrder(l));
+    }
 
 	/* private */ InstructionList getArgsAdviceTag(BcelShadow shadow, String where) {
 		String methodName =

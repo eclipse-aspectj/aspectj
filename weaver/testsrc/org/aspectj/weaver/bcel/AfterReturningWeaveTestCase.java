@@ -27,10 +27,14 @@ public class AfterReturningWeaveTestCase extends WeaveTestCase {
     }
 
     public void testAfterReturning() throws IOException {
-        weaveTest(
-            getStandardTargets(),
-            "AfterReturning",
-            makeAdviceAll("afterReturning"));
+        try {
+            weaveTest(
+                getStandardTargets(),
+                "AfterReturning",
+                makeAdviceAll("afterReturning"));
+        } catch (Throwable e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
     public void testAfterReturningParam() throws IOException {

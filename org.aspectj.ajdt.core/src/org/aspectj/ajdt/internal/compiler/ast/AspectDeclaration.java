@@ -217,7 +217,7 @@ public class AspectDeclaration extends TypeDeclaration {
 		if (!isAbstract()) generatePerSupportMembers(classFile);
 		
 		generateInlineAccessMembers(classFile);
-		
+
 		classFile.extraAttributes.add(
 			new EclipseAttributeAdapter(new AjAttribute.Aspect(perClause)));
 			

@@ -36,6 +36,5 @@ public class AroundArgsWeaveTestCase extends WeaveTestCase {
 					+ "static boolean Aspect.ajc_around0" 
 					+ "(java.util.ArrayList, org.aspectj.runtime.internal.AroundClosure)");
         weaveTest(new String[] {"DynamicHelloWorld"}, label, p);
-        
     }
 }

@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<project name="asm" default="all" basedir=".">
+
+    <import file="../build-common.xml"/>
+    <import file="../bridge/build.xml"/>
+
+    <path id="asm.test.src.path">
+        <fileset dir="${basedir}/../lib">
+            <include name="junit/*.jar"/>
+        </fileset>
+        <path refid="asm.src.path"/>
+    </path>
+
+    <path id="asm.src.path">
+        <pathelement path="../bridge/bin"/>
+    </path>
+
+    <target name="compile" depends="init">
+        <antcall target="bridge.compile"/>
+        <srccompile project="asm" path="asm.src.path"/>
+    </target>
+
+    <target name="test:compile" depends="compile">
+        <testcompile project="asm" path="asm.test.src.path"/>
+    </target>
+
+    <target name="test" depends="test:compile">
+        <testrun project="asm" path="asm.test.src.path" suite="AsmModuleTests"/>
+    </target>
+
+</project>
+
