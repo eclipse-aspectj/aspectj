@@ -138,6 +138,7 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 	                    "",IMessage.ERROR,shadow.getSourceLocation(),null,new ISourceLocation[]{getSourceLocation()});
 	            }
 				if (ap.matches(rArgType).alwaysTrue()) { // !!! ASC Can we ever take this branch?
+					                                     // !!! AMC - Yes, if annotation is @Inherited
 					argsIndex++;
 					continue;
 				} else {

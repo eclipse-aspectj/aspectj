@@ -78,6 +78,18 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		} 
 		return FuzzyBoolean.NO;
 	}
+	
+	// this version should be called for @this, @target, @args
+	public FuzzyBoolean matchesRuntimeType(AnnotatedElement annotated) {
+		if (annotationType.hasAnnotation(TypeX.AT_INHERITED)) {
+			// a static match is good enough
+			if (matches(annotated).alwaysTrue()) {
+				return FuzzyBoolean.YES;
+			} 
+		}
+		// a subtype could match at runtime
+		return FuzzyBoolean.MAYBE;
+	}
 
 	
 	public void resolve(World world) {

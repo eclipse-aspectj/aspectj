@@ -88,7 +88,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	    ResolvedTypeX toMatchAgainst = 
 	        (isThis ? shadow.getThisType() : shadow.getTargetType() ).resolve(shadow.getIWorld());
 	    annotationTypePattern.resolve(shadow.getIWorld());
-	    if (annotationTypePattern.matches(toMatchAgainst).alwaysTrue()) {
+	    if (annotationTypePattern.matchesRuntimeType(toMatchAgainst).alwaysTrue()) {
 	    	return FuzzyBoolean.YES;
 	    } else {
 	    	// a subtype may match at runtime
