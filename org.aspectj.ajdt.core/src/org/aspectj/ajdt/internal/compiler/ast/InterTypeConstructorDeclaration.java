@@ -204,7 +204,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		ResolvedMember signature =
 			new ResolvedMember(Member.CONSTRUCTOR, declaringTypeX, declaredModifiers, 
 					ResolvedTypeX.VOID, "<init>", bindingAsMember.getParameterTypes());
-					
+		signature.setCheckedExceptions(world.fromEclipse(binding.thrownExceptions));			
 		ResolvedMember syntheticInterMember =
 			AjcMemberMaker.interConstructor(declaringTypeX,  signature, aspectType);
 		

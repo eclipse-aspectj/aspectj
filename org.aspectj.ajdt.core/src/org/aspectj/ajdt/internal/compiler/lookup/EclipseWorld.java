@@ -140,14 +140,15 @@ public class EclipseWorld extends World {
 	}
 	
 	public static ResolvedMember makeResolvedMember(MethodBinding binding) {
-		return new ResolvedMember(
+		ResolvedMember ret =  new ResolvedMember(
 			binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD,
 			fromBinding(binding.declaringClass),
 			binding.modifiers,
 			fromBinding(binding.returnType),
 			new String(binding.selector),
 			fromBindings(binding.parameters));
-		//XXX need to add checked exceptions
+		ret.setCheckedExceptions(fromBindings(binding.thrownExceptions));
+		return ret;
 	}
 
 	public static ResolvedMember makeResolvedMember(FieldBinding binding) {
@@ -202,6 +203,17 @@ public class EclipseWorld extends World {
 		}
 		return ret;
 	}
+	
+	
+	private ReferenceBinding[] makeReferenceBindings(TypeX[] types) {
+		int len = types.length;
+		ReferenceBinding[] ret = new ReferenceBinding[len];
+		
+		for (int i = 0; i < len; i++) {
+			ret[i] = (ReferenceBinding)makeTypeBinding(types[i]);
+		}
+		return ret;
+	}
 
 	
 	public FieldBinding makeFieldBinding(ResolvedMember member) {
@@ -214,16 +226,15 @@ public class EclipseWorld extends World {
 
 
 	public MethodBinding makeMethodBinding(ResolvedMember member) {
-		if (member.getExceptions() != null && member.getExceptions().length > 0) {
-			throw new RuntimeException("unimplemented");
-		}
 		return new MethodBinding(member.getModifiers(),
 				member.getName().toCharArray(),
 				makeTypeBinding(member.getReturnType()),
 				makeTypeBindings(member.getParameterTypes()),
-				new ReferenceBinding[0],
+				makeReferenceBindings(member.getExceptions()),
 				(ReferenceBinding)makeTypeBinding(member.getDeclaringType()));
 	}
+
+
 	
 	public MethodBinding makeMethodBindingForCall(Member member) {
 		return new MethodBinding(member.getCallsiteModifiers(),

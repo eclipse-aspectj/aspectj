@@ -361,12 +361,22 @@ public class AjcMemberMaker {
 			);
 	}
 	
+	
+//	private static int makeFieldModifiers(int declaredModifiers) {
+//		int ret = Modifier.PUBLIC;
+//		if (Modifier.isTransient(declaredModifiers)) ret |= Modifier.TRANSIENT;
+//		if (Modifier.isVolatile(declaredModifiers)) ret |= Modifier.VOLATILE;
+//		return ret;
+//	}
+	
+	
 	/**
 	 * This field goes on the class the field
 	 * is declared onto
 	 */
 	public static ResolvedMember interFieldClassField(ResolvedMember field, TypeX aspectType) {
-		return new ResolvedMember(Member.FIELD, field.getDeclaringType(), makePublic(field.getModifiers()),
+		return new ResolvedMember(Member.FIELD, field.getDeclaringType(), 
+			makePublic(field.getModifiers()),
 			field.getReturnType(), 
 			NameMangler.interFieldClassField(field.getModifiers(), aspectType, field.getDeclaringType(), field.getName()),
 			TypeX.NONE
@@ -379,7 +389,7 @@ public class AjcMemberMaker {
 	 * is declared onto
 	 */
 	public static ResolvedMember interFieldInterfaceField(ResolvedMember field, TypeX onClass, TypeX aspectType) {
-		return new ResolvedMember(Member.FIELD, onClass, Modifier.PUBLIC,
+		return new ResolvedMember(Member.FIELD, onClass, makePublic(field.getModifiers()),
 			field.getReturnType(), 
 			NameMangler.interFieldInterfaceField(aspectType, field.getDeclaringType(), field.getName()),
 			TypeX.NONE
@@ -461,7 +471,13 @@ public class AjcMemberMaker {
 			paramTypes = TypeX.insert(meth.getDeclaringType(), paramTypes);
 		}
 		
-		return new ResolvedMember(Member.METHOD, aspectType, PUBLIC_STATIC,
+		int modifiers = PUBLIC_STATIC;
+		if (Modifier.isStrict(meth.getModifiers())) {
+			modifiers |= Modifier.STRICT;
+		}
+		
+		
+		return new ResolvedMember(Member.METHOD, aspectType, modifiers,
 			meth.getReturnType(), 
 			NameMangler.interMethodBody(aspectType, meth.getDeclaringType(), meth.getName()),
 			paramTypes);

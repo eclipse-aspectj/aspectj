@@ -931,6 +931,28 @@ public abstract class ResolvedTypeX extends TypeX {
 				child.getSourceLocation(), parent.getSourceLocation());
 			return false;
 		}
+		
+		// check declared exceptions
+		ResolvedTypeX[] childExceptions = world.resolve(child.getExceptions());
+		ResolvedTypeX[] parentExceptions = world.resolve(parent.getExceptions());
+		ResolvedTypeX runtimeException = world.resolve("java.lang.RuntimeException");
+		ResolvedTypeX error = world.resolve("java.lang.Error");
+		
+		outer: for (int i=0, leni = childExceptions.length; i < leni; i++) {
+			//System.err.println("checking: " + childExceptions[i]);
+			if (runtimeException.isAssignableFrom(childExceptions[i])) continue;
+			if (error.isAssignableFrom(childExceptions[i])) continue;
+			
+			for (int j = 0, lenj = parentExceptions.length; j < lenj; j++) {
+				if (parentExceptions[j].isAssignableFrom(childExceptions[i])) continue outer;
+			}
+			
+			world.showMessage(IMessage.ERROR, "overriden method doesn't throw " 
+					+ childExceptions[i].getName(), child.getSourceLocation(), null);
+						
+			return false;
+		}
+		
 		return true;
 		
 	}

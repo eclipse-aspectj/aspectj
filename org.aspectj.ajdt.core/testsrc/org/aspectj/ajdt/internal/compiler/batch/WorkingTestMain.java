@@ -21,8 +21,8 @@ import org.aspectj.testing.util.TestUtil;
 public class WorkingTestMain {
 
 	public static void main(String[] args1) throws IOException {
-		//testExamples();
-		testOne();
+		testExamples();
+		//testOne();
 	}
 	
 	public static void testOne() throws IOException {
@@ -67,7 +67,7 @@ public class WorkingTestMain {
 		//TestUtil.runMain("out;../lib/test/testing-client.jar", "AroundInnerCalls");
 	}
 	
-	private static String examplesDir = "c:/aspectj/examples/";
+	private static String examplesDir = "../docs/dist/doc/examples/";
 	private static void example(String[] argfiles, String[] classes) {
 		List args = new ArrayList();
 		args.add("-verbose");
@@ -90,11 +90,11 @@ public class WorkingTestMain {
 	
 	
 	public static void testExamples() throws IOException {
-//		example(new String[] {"observer/files.lst"}, 
-//				new String[] {"observer.Demo"});
+		example(new String[] {"observer/files.lst"}, 
+				new String[] {}); // don't run the gui
 				
-//		example(new String[] {"tjp/files.lst"}, 
-//				new String[] {"tjp.Demo"});
+		example(new String[] {"tjp/files.lst"}, 
+				new String[] {"tjp.Demo"});
 				
 		example(new String[] {"telecom/timing.lst"}, 
 				new String[] {"telecom.TimingSimulation"});
@@ -122,12 +122,12 @@ public class WorkingTestMain {
 				new String[] {"bean.Demo"});
 				
 		example(new String[] {"spacewar/demo.lst"}, 
-				new String[] {});
+				new String[] {});  // don't run the gui
 				
 		example(new String[] {"spacewar/debug.lst"}, 
-				new String[] {});
+				new String[] {});  // don't run the gui
 				
-				
+		System.out.println("done!!!!!!!!!!!!!!!!!!!!");
 	}
 		
 }

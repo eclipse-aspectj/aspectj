@@ -79,6 +79,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		ResolvedMember sig = new ResolvedMember(Member.METHOD, EclipseWorld.fromBinding(onTypeBinding),
 			declaredModifiers, EclipseWorld.fromBinding(binding.returnType), new String(declaredSelector),
 			EclipseWorld.fromBindings(binding.parameters));
+		sig.setCheckedExceptions(world.fromEclipse(binding.thrownExceptions));
 		
 		NewMethodTypeMunger myMunger = new NewMethodTypeMunger(sig, null);
 		setMunger(myMunger);

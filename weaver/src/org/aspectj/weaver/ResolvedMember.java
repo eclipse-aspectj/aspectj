@@ -170,5 +170,9 @@ public class ResolvedMember extends Member implements IHasPosition {
 		return ResolvedTypeX.isVisible(getModifiers(), getDeclaringType().resolve(world),
 					fromType);
 	}
+	public void setCheckedExceptions(TypeX[] checkedExceptions) {
+		this.checkedExceptions = checkedExceptions;
+	}
+
 }
    

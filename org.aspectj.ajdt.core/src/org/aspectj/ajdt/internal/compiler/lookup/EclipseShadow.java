@@ -13,6 +13,7 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
+import org.aspectj.ajdt.internal.compiler.ast.*;
 import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.weaver.*;
@@ -114,6 +115,14 @@ public class EclipseShadow extends Shadow {
 			Shadow.Kind kind;
 			if (e instanceof AdviceDeclaration) {
 				kind = Shadow.AdviceExecution;
+			} else if (e instanceof InterTypeMethodDeclaration) {
+				return new EclipseShadow(world, Shadow.MethodExecution,
+					((InterTypeDeclaration)e).getSignature(), astNode, context);
+			} else if (e instanceof InterTypeConstructorDeclaration) {
+				return new EclipseShadow(world, Shadow.ConstructorExecution,
+					((InterTypeDeclaration)e).getSignature(), astNode, context);
+			} else if (e instanceof InterTypeFieldDeclaration) {
+				return null;
 			} else if (e instanceof MethodDeclaration) {
 				kind = Shadow.MethodExecution;
 			} else if (e instanceof ConstructorDeclaration) {
