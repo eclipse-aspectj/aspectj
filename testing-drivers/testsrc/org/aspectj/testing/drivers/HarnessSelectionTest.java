@@ -164,7 +164,7 @@ public class HarnessSelectionTest extends TestCase {
                 "-ajctestRequireKeywords=eclipseOptionSkip"
             };
         Exp exp = new Exp(17, 0, 17, 0, 0, 0, 6);
-        checkSelection(SELECT, options, "no support in eclipse-based compiler", exp);
+        checkSelection(SELECT, options, "old ajc 1.0 option", exp);
     }
     
     public void testAjcEclipseConflict() {
@@ -185,7 +185,7 @@ public class HarnessSelectionTest extends TestCase {
               "-ajctestSkipKeywords=skipUnenforcedAjcLimit"
             };            
         Exp exp = new Exp(17, 3, 14, 3, 0, 0, 6);
-        checkSelection(SELECT, options, "conflict between arg=!eclipse and global=^eclipse", exp);
+        checkSelection(SELECT, options, "force conflict between eclipse", exp);
     }
     
     public void testSinglePR() {
