@@ -22,6 +22,13 @@ import org.eclipse.jdt.internal.compiler.ast.*;
 import org.eclipse.jdt.internal.compiler.ast.AstNode;
 import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 
+/**
+ * This is only used for declare soft right now.
+ * 
+ * It might be used for other compile-time matching, but in all such cases
+ * this and target pcds can't be used.  We might not behave correctly in
+ * such cases.
+ */
 public class EclipseShadow extends Shadow {
 	EclipseWorld world;
 	AstNode astNode;
@@ -31,7 +38,7 @@ public class EclipseShadow extends Shadow {
 	public EclipseShadow(EclipseWorld world, Kind kind, Member signature, AstNode astNode, 
 							ReferenceContext context)
 	{
-		super(kind, signature);
+		super(kind, signature, null);
 		this.world = world;
 		this.astNode = astNode;
 		//XXX can this fail in practice?
@@ -42,16 +49,9 @@ public class EclipseShadow extends Shadow {
 		return world;
 	}
 
-	public boolean hasThis() {
-		return !enclosingMethod.isStatic();  //XXX what about pre-initialization
-	}
-
-	public TypeX getThisType() {
-		return world.fromBinding(enclosingMethod.binding.declaringClass);
-	}
 
 	public TypeX getEnclosingType() {
-		return getThisType();  //??? why is this different from the above
+		return world.fromBinding(enclosingMethod.binding.declaringClass);
 	}
 	
 	public SourceLocation getSourceLocation() {
