@@ -82,7 +82,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 	
 	public void testUnimplementedSyntax() {
 		checkCompile("src1/UnimplementedSyntax.java", 
-			new int[] {5, 15, 16, 23});
+			new int[] {5, 15, 16, 22, 25});
 	}
 	public void testXlintWarn() {
 		checkCompile("src1/Xlint.java", NO_ERRORS);

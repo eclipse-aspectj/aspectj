@@ -111,7 +111,7 @@ aspect A1 {
 }
 
 aspect A2 {
-	declare dominates: A2, A1;
+	declare precedence: A2, A1;
 	
     int around() : set(int C1.f) && within(A1) {
 	return C1.f = 3;

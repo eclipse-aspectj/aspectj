@@ -18,6 +18,8 @@ aspect C {
 	pointcut p(): handler(Foo);
 	
 	pointcut p2(): initialization(Object.new(..));
+	
+	declare dominates: A, B;
 }
 
 aspect D a b c {}

@@ -10,7 +10,7 @@ public class DeclarationCollisionCE {
 class C {}
 
 // bug: dominates clause prevents collision error
-abstract aspect AA { declare dominates: AA, B; 
+abstract aspect AA { declare precedence: AA, B; 
     // same result if this line is uncommented
     //public String C.title() { return "[AA] C.title()"; }
 }

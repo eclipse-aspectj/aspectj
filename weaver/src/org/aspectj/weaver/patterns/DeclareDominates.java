@@ -34,7 +34,7 @@ public class DeclareDominates extends Declare {
 	
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
-		buf.append("declare dominates: ");
+		buf.append("declare precedence: ");
 		buf.append(patterns);
 		buf.append(";");
 		return buf.toString();

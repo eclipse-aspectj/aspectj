@@ -84,21 +84,21 @@ aspect FlowCheck {
 
 // This cluster of aspects checks that the partial order rules work
 //aspect A1 dominates A2, B1 {
-aspect A1 { declare dominates: A1, A2 || B1;
+aspect A1 { declare precedence: A1, A2 || B1;
     pointcut cut() : target(C) && call(void a());
 
     before(): A1.cut() { T.add("A1"); }
 }
 
-aspect A2 { declare dominates: A2, B1;
+aspect A2 { declare precedence: A2, B1;
     before(): A1.cut() { T.add("A2"); }
 }
 
-aspect A3 { declare dominates: A3,  A4, A1;
+aspect A3 { declare precedence: A3,  A4, A1;
     before(): A1.cut() { T.add("A3"); }
 }
 
-aspect A4 { declare dominates: A4, A1;
+aspect A4 { declare precedence: A4, A1;
     before(): A1.cut() { T.add("A4"); }
 }
 
@@ -109,17 +109,17 @@ aspect B1 {
 
 
 //aspect C1 dominates C2, C3 {
-aspect C1 { declare dominates: C1, C2 || C3;
+aspect C1 { declare precedence: C1, C2 || C3;
     before(): A1.cut() { T.add("C1"); }
 }
-aspect C2 { declare dominates: C2, C3;
+aspect C2 { declare precedence: C2, C3;
     before(): A1.cut() { T.add("C2"); }
 }
-aspect C3 { declare dominates: C3, C4;
+aspect C3 { declare precedence: C3, C4;
     before(): A1.cut() { T.add("C3"); }
 }
 //aspect C4 dominates A1, A2, A3, A4, B1 {
-aspect C4 { declare dominates: C4, (A1 || A2 || A3 || A4 || B1);
+aspect C4 { declare precedence: C4, (A1 || A2 || A3 || A4 || B1);
     before(): A1.cut() { T.add("C4"); }
 }
 

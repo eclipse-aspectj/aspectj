@@ -76,7 +76,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 		if (dominatesPattern != null) {
 			scope.problemReporter().signalError(
 					dominatesPattern.getStart(), dominatesPattern.getEnd(), 
-					"dominates has changed for 1.1, use 'declare dominates: " +
+					"dominates has changed for 1.1, use 'declare precedence: " +
 					new String(this.name) + ", " + dominatesPattern.toString() + ";' " +
 					"in the body of the aspect instead");
 		}

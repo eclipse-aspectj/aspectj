@@ -12,7 +12,7 @@ public class DominatesTypePatternCE {
 class C {}
 
 // works if A is specified explicitly
-abstract aspect AA { declare dominates: AA, AA+; // CE, AA is matched by both pieces
+abstract aspect AA { declare precedence: AA, AA+; // CE, AA is matched by both pieces
     public String C.method() { return "pass"; }
 }
 

@@ -83,7 +83,7 @@ public class WeaveOrderTestCase extends WeaveTestCase {
 
 	public void testDominates() {
 		Declare dom =
-			new PatternParser("declare dominates: java.lang.String, java.lang.Throwable").parseDeclare();
+			new PatternParser("declare precedence: java.lang.String, java.lang.Throwable").parseDeclare();
 		//??? concretize dom
 		ResolvedTypeX aType =  world.resolve("Aspect");
 		CrosscuttingMembers xcut = new CrosscuttingMembers(aType);
@@ -111,7 +111,7 @@ public class WeaveOrderTestCase extends WeaveTestCase {
 	
 	public void testDominatesHarder() {
 		Declare dom =
-			new PatternParser("declare dominates: *, java.lang.String, java.lang.Throwable").parseDeclare();
+			new PatternParser("declare precedence: *, java.lang.String, java.lang.Throwable").parseDeclare();
 		//??? concretize dom
 		ResolvedTypeX aType =  world.resolve("Aspect");
 		CrosscuttingMembers xcut = new CrosscuttingMembers(aType);

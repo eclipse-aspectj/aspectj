@@ -12,7 +12,7 @@ public class DominatesTypePattern {
 class C {}
 
 // works if A is specified explicitly
-abstract aspect AA { declare dominates: AA, (AA+ && !AA); // error: should dominate A
+abstract aspect AA { declare precedence: AA, (AA+ && !AA); // error: should dominate A
     public String C.method() { return "pass"; }
 }
 

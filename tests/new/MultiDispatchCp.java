@@ -68,7 +68,7 @@ aspect MultiCall extends Multi {
 
 // dominates should have no effect as call join points
 // always come before executions
-aspect MultiExec extends Multi { declare dominates: MultiExec, MultiCall;
+aspect MultiExec extends Multi { declare precedence: MultiExec, MultiCall;
     public static boolean enabled = false;
 
     String getPrefix() { return "exec"; }

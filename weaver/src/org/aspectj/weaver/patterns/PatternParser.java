@@ -92,8 +92,10 @@ public class PatternParser {
 			ret = parseErrorOrWarning(true);
 		} else if (kind.equals("warning")) {
 			ret = parseErrorOrWarning(false);
-		} else if (kind.equals("dominates")) {
+		} else if (kind.equals("precedence")) {
 			ret = parseDominates();
+		} else if (kind.equals("dominates")) {
+			throw new ParserException("name changed to declare precedence", tokenSource.peek(-2));
 		} else if (kind.equals("parents")) {
 			ret = parseParents();
 		} else if (kind.equals("soft")) {

@@ -142,7 +142,7 @@ aspect MoveTracking {
    }
  }
 
-aspect Mobility { declare dominates: Mobility, MoveTracking;
+aspect Mobility { declare precedence: Mobility, MoveTracking;
 	
     private static boolean enableMoves = true;
     
