@@ -15,6 +15,7 @@ package org.aspectj.ajdt.ajc;
 
 import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
 import org.aspectj.bridge.AbortException;
+import org.aspectj.bridge.CountingMessageHandler;
 import org.aspectj.bridge.MessageWriter;
 import org.aspectj.util.StreamPrintWriter;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
@@ -31,14 +32,17 @@ public class AjdtCommandTestCase extends TestCase {
 	private StreamPrintWriter outputWriter = new StreamPrintWriter(new PrintWriter(System.out));
 	private AjdtCommand command = new AjdtCommand();	
 	private MessageWriter messageWriter = new MessageWriter(outputWriter, false);
-	
+	private CountingMessageHandler counter 
+        = new CountingMessageHandler(messageWriter);
 	public AjdtCommandTestCase(String name) {
 		super(name);
 //		command.buildArgParser.out = outputWriter;
 	}
 	
 	public void testIncrementalOption() throws InvalidInputException {
-		AjBuildConfig config = command.genBuildConfig(new String[] {  "-incremental" }, messageWriter);
+		AjBuildConfig config = command.genBuildConfig(
+            new String[] {  "-incremental" }, 
+            counter);
 		
 		assertTrue(
 			"didn't specify source root",
@@ -47,7 +51,7 @@ public class AjdtCommandTestCase extends TestCase {
 		outputWriter.flushBuffer();		
 		config = command.genBuildConfig(
 			new String[] { "-incremental", "-sourceroots", "testdata/src1" }, 
-			messageWriter);
+			counter);
 	
 		assertTrue(
 			outputWriter.getContents(),
@@ -56,7 +60,7 @@ public class AjdtCommandTestCase extends TestCase {
 		outputWriter.flushBuffer();		
 		config = command.genBuildConfig(
 			new String[] { "-incremental", "testdata/src1/Hello.java" }, 
-			messageWriter);
+			counter);
 	  	
 		assertTrue(
 			"specified a file",
@@ -65,7 +69,9 @@ public class AjdtCommandTestCase extends TestCase {
 	
 	public void testBadOptionAndUsagePrinting() throws InvalidInputException {
 		try {
-			command.genBuildConfig(new String[] { "-mubleBadOption" }, messageWriter);		
+			command.genBuildConfig(
+                new String[] { "-mubleBadOption" }, 
+                counter);		
 		} catch (AbortException ae) { }
 		
 		assertTrue(
@@ -76,7 +82,9 @@ public class AjdtCommandTestCase extends TestCase {
 	
 	public void testHelpUsagePrinting() {
 		try {
-			command.genBuildConfig(new String[] { "-help" }, messageWriter);
+			command.genBuildConfig(
+                new String[] { "-help" }, 
+                counter);
 		} catch (AbortException  ae) { }
 		assertTrue(
 			outputWriter.getContents() + " contains? " + "Usage",
@@ -85,7 +93,9 @@ public class AjdtCommandTestCase extends TestCase {
 	
 	public void testVersionOutput() throws InvalidInputException {
 		try {
-			command.genBuildConfig(new String[] { "-version" }, messageWriter);
+			command.genBuildConfig(
+                new String[] { "-version" }, 
+                counter);
 		} catch (AbortException ae) { }
 		assertTrue(
 			"version output",
@@ -93,7 +103,9 @@ public class AjdtCommandTestCase extends TestCase {
 	}
 	
 	public void testNonExistingLstFile() {
-		command.genBuildConfig(new String[] { "@mumbleDoesNotExist" }, messageWriter);
+		command.genBuildConfig(
+            new String[] { "@mumbleDoesNotExist" }, 
+            counter);
 		
 		assertTrue(
 			outputWriter.getContents(),
