@@ -266,7 +266,6 @@ public class Harness {
                 if ((verboseHarness || skip || (0 < skipList.size()))) {
                     final List curArgs = Arrays.asList(globalOptionVariants[i]);
 					logln("runMain(" + suiteFile + ", " + curArgs + ")");
-					doStartSuite(suiteFile);			
                     if (verboseHarness) {
                         String format = "yyyy.MM.dd G 'at' hh:mm:ss a zzz";
                         SimpleDateFormat formatter = new SimpleDateFormat (format);
@@ -282,14 +281,19 @@ public class Harness {
                     }
                 }
                 if (!skip) {
-                    final long startTime = System.currentTimeMillis();
-                    RunResult result = run(spec);
-                    if (null != resultList) {
-                        resultList.add(result);
+                    doStartSuite(suiteFile);            
+                    long elapsed = 0;
+                    try {
+                        final long startTime = System.currentTimeMillis();
+                        RunResult result = run(spec);
+                        if (null != resultList) {
+                            resultList.add(result);
+                        }
+                        elapsed = System.currentTimeMillis() - startTime; 
+                        report(result.status, skipList.size(), result.numIncomplete, elapsed);                   
+                    } finally {
+                        doEndSuite(suiteFile,elapsed);
                     }
-                    final long elapsed = System.currentTimeMillis() - startTime; 
-                    doEndSuite(suiteFile,elapsed);
-                    report(result.status, skipList.size(), result.numIncomplete, elapsed);                   
                 }
             }
 		}
