@@ -232,6 +232,9 @@ public abstract class AjAttribute {
 			return new MethodDeclarationLineNumberAttribute(s.readInt());
 		}
 
+		public String toString() {
+			return AttributeName + ": " + lineNumber;
+		}
 	}
 	
 	public static class PointcutDeclarationAttribute extends AjAttribute {
