@@ -13,13 +13,18 @@ import java.util.*;
 
 
 /**
- * Run ajc and write "affected.lst" file listing those files 
- * affected by advice or inter-type declarations.  
+ * Run ajc and list files affected by advice or inter-type declarations.  
  * 
  * WARNING: Does not emit info messages for uses-pointcut dependencies.
  * @author Wes Isberg
  */
 public class AffectedFilesReporter implements Runnable {
+
+    /*
+     * Walk down asm hierarchy, looking for source files,
+     * and check if any of their children has a relation of
+     * kind ADVICE or INTER_TYPE_DECLARATION
+     */
 
     /**
      * Wrapper for ajc that emits list of affected files.
@@ -60,8 +65,8 @@ public class AffectedFilesReporter implements Runnable {
             sink.println("# no structure model - use -emacssym option");
             return;
         }
-        List /*IProgramElement*/ nodes = new ArrayList();
-        List /*IProgramElement*/ newNodes = new ArrayList();
+        List /*IProgramElement*/ nodes = new LinkedList();
+        List /*IProgramElement*/ newNodes = new LinkedList();
         // root could be config file or blank root - either way, use kids
         nodes.addAll(hierarchy.getRoot().getChildren());
         while (0 < nodes.size()) {
@@ -93,8 +98,8 @@ public class AffectedFilesReporter implements Runnable {
     private boolean isAffected(final IProgramElement fileNode) {
         final IRelationshipMap map  = 
             AsmManager.getDefault().getRelationshipMap();     
-        List /*IProgramElement*/ nodes = new ArrayList();
-        List /*IProgramElement*/ newNodes = new ArrayList();
+        List /*IProgramElement*/ nodes = new LinkedList();
+        List /*IProgramElement*/ newNodes = new LinkedList();
         nodes.add(fileNode);
         while (0 < nodes.size()) {
             for (ListIterator iter = nodes.listIterator(); 
@@ -121,4 +126,4 @@ public class AffectedFilesReporter implements Runnable {
         return false;
     }
 }
-// END-SAMPLE api-asm-listAffectedFiles Walk model to list affected files
+// END-SAMPLE api-asm-listAffectedFiles
