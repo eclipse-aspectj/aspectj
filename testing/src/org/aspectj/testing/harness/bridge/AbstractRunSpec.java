@@ -14,7 +14,6 @@
 
 package org.aspectj.testing.harness.bridge;
 
-import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,24 +21,24 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.StringTokenizer;
 
-import org.aspectj.bridge.*;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.testing.run.IRunIterator;
 import org.aspectj.testing.util.BridgeUtil;
-import org.aspectj.testing.util.options.*;
+import org.aspectj.testing.util.options.Option;
+import org.aspectj.testing.util.options.Options;
+import org.aspectj.testing.util.options.Values;
 import org.aspectj.testing.util.options.Option.InvalidInputException;
 import org.aspectj.testing.xml.IXmlWritable;
 import org.aspectj.testing.xml.SoftMessage;
 import org.aspectj.testing.xml.XMLWriter;
 import org.aspectj.util.LangUtil;
-
-import sun.misc.MessageUtils;
 
 /**
  * Base class for initialization of components expecting messages,
