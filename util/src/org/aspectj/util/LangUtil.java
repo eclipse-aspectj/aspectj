@@ -62,6 +62,7 @@ public class LangUtil {
         map.put("1.2", "java.lang.ref.Reference");
         map.put("1.3", "java.lang.reflect.Proxy");
         map.put("1.4", "java.nio.Buffer");
+        map.put("1.5", "java.lang.annotation.Annotation");
         
         VM_CLASSES = Collections.unmodifiableMap(map);
     }
@@ -218,7 +219,26 @@ public class LangUtil {
         }
         return (String[]) result.toArray(new String[0]);
     }
-    
+
+    /** 
+     * Get System property as boolean, 
+     * but use default value where the system property is not set.
+     * @return true if value is set to true, false otherwise 
+     */
+    public static boolean getBoolean(String propertyName, boolean defaultValue) {
+        if (null != propertyName) {
+            try {
+                String value = System.getProperty(propertyName);
+                if (null != value) {
+                    return Boolean.valueOf(value).booleanValue();
+                }
+            } catch (Throwable t) {
+                // default below
+            }
+        }
+        return defaultValue;
+    }
+
     /**
      * Splits <code>input</code>, removing delimiter and 
      * trimming any white space.

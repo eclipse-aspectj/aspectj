@@ -64,6 +64,11 @@ public class FileUtil {
                             && file.getName().toLowerCase().endsWith(".class"))));
             }
         };
+    private static final boolean PERMIT_CVS;
+    static {
+        String name = FileUtil.class.getName() + ".PERMIT_CVS";
+        PERMIT_CVS = LangUtil.getBoolean(name, false);
+    }
 
     /** @return true if file path has a zip/jar suffix */
     public static boolean hasZipSuffix(File file) {
@@ -1216,24 +1221,19 @@ public class FileUtil {
         return LangUtil.sleepUntil(++delayUntil);
     }
 
-//    /** map name to result, removing any fromSuffix and adding any toSuffix */
-//    private static String map(String name, String fromSuffix, String toSuffix) {
-//        if (null != name) {
-//            if (null != fromSuffix) {
-//                name = name.substring(0, name.length()-fromSuffix.length());
-//            }
-//            if (null != toSuffix) {
-//                name = name + toSuffix;
-//            }
-//        }
-//        return name;
-//    }
-
     private static void listFiles(final File baseDir, ArrayList result, FileFilter filter)  {
         File[] files = baseDir.listFiles();
+        // hack https://bugs.eclipse.org/bugs/show_bug.cgi?id=48650
+        final boolean skipCVS = (! PERMIT_CVS && (filter == aspectjSourceFileFilter));
         for (int i = 0; i < files.length; i++) {
             File f = files[i];
             if (f.isDirectory()) {
+                if (skipCVS) {
+                    String name = f.getName().toLowerCase();
+                    if ("cvs".equals(name) || "sccs".equals(name)) {
+                        continue;
+                    }
+                }
                 listFiles(f, result, filter);
             } else {
                 if (filter.accept(f)) result.add(f);
