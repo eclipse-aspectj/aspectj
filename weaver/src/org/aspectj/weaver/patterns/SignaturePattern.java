@@ -93,9 +93,16 @@ public class SignaturePattern extends PatternNode {
 			world.getLint().unresolvableMember.signal(member.toString(), getSourceLocation());
 			return false;
 		}
+
+		// AMC test for Kind match surely???
+		if (!(sig.getKind() == kind)) return false;
+
+
 		if (kind == Member.ADVICE) return true;
 		
 		if (!modifiers.matches(sig.getModifiers())) return false;
+
+
 		
 		if (kind == Member.STATIC_INITIALIZATION) {
 			//System.err.println("match static init: " + sig.getDeclaringType() + " with " + this);
