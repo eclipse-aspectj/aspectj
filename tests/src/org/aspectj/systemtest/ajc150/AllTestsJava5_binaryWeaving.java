@@ -22,11 +22,13 @@ import junit.framework.TestSuite;
 public class AllTestsJava5_binaryWeaving {
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite("AspectJ System Test Suite - Java5 binary weaving");
+		TestSuite suite = new TestSuite("Java5 - binary weaving");
 		//$JUnit-BEGIN$
 		suite.addTest(Ajc150Tests.suite());
 		suite.addTest(AccBridgeMethods.suite());
 		suite.addTestSuite(CovarianceTests.class);
+		suite.addTestSuite(Enums.class);
+		suite.addTestSuite(Annotations.class);
 		//$JUnit-END$
 		return suite;
 	}
