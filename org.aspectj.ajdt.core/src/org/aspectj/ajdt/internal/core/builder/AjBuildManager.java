@@ -151,8 +151,9 @@ public class AjBuildManager {
 	}
 
 	public boolean incrementalBuild(AjBuildConfig buildConfig, IMessageHandler messageHandler) throws CoreException, IOException {
+        final CountingMessageHandler counter = new CountingMessageHandler(messageHandler);                    
         try {
-            currentHandler = messageHandler;
+            currentHandler = counter;
     		IncrementalBuilder builder = getIncrementalBuilder(messageHandler);
     //		SimpleLookupTable deltas = 
     		//XXX for Mik, replace this with a call to builder.build(SimpleLookupTable deltas)
@@ -166,7 +167,13 @@ public class AjBuildManager {
     		getJavaBuilder().binaryResources = new SimpleLookupTable();
     		SimpleLookupTable deltas = getDeltas(buildConfig);
     	 
+    	 	//MessageUtil.info(messageHandler, "about to do incremental build: " + deltas);
+    	 
     		boolean succeeded = builder.build(deltas);
+    		
+       		if (counter.hasErrors()) {
+                return false;
+            }
     		
        		if (succeeded) {
     			return weaveAndGenerateClassFiles(builder.getNewState());
@@ -181,6 +188,7 @@ public class AjBuildManager {
     
 	SimpleLookupTable getDeltas(AjBuildConfig newBuildConfig) {	  
 		updateBuildConfig(newBuildConfig);
+		//System.err.println("sourceRoots: " + newBuildConfig.getSourceRoots());
 		// !!! support multiple source roots
 		SimpleLookupTable deltas = new SimpleLookupTable();
 		for (Iterator i = newBuildConfig.getSourceRoots().iterator(); i.hasNext(); ) {
