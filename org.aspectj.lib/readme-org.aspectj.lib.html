@@ -1,0 +1,36 @@
+<html>
+	<head><title>org.aspectj.lib library module</title></head>
+	<body>
+	<h1>org.aspectj.lib library module</h1>
+<p>
+This module is compiled using AspectJ, both in Eclipse and with Ant.
+The Eclipse support is defined as usual in 
+<a href=".classpath">.classpath</a> and <a href=".project">.project</a>.
+The Ant build support in <a href="../build/build.xml">../build/build.xml</a>
+is limited:
+</p>
+<ul>
+	<li>This module is built and published as 
+		<code>{aspectj}/lib/aspectjlib.jar</code>.
+		This happens automatically, with no explicit Ant script.
+		The <a href="../build/src/org/aspectj/internal/tools/build/Builder.java">
+			Builder.java</a> 
+		task uses <code>moduleAliasFor(String)</code> to map from the name of 
+		the empty file 
+		<a href="../build/products/tools/dist/lib/aspectjlib.jar">
+			../build/products/tools/dist/lib/aspectjlib.jar</a> 
+	    back to the module output 
+		<a href="../aj-build/jars/org.aspectj.lib.jar">
+			../aj-build/jars/org.aspectj.lib.jar</a>.</li>
+	<li>The AspectJ support compiles only source files in <a href="src/">src/</a></li>
+	<li>It does not use inpath, aspectpath, or any other aspectj-specific 
+		option</li>
+	<li>All non-Java (resource) files in the source directory will be included 
+		in the library.</li>
+	<li>There should be no dependencies.  Any libraries or modules on
+		the Java classpath would be included in the shipped library.</li>
+	<li>This is built using the release of AspectJ in 
+		<a href="../lib/aspectj">../lib/aspectj</a>.</li>	
+</ul>	
+	</body>
+</html>
