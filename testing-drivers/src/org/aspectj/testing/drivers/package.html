@@ -1,26 +1,69 @@
 <html>
 <body>
-This harness drives ajc compiler tests.  
-You can run it from the command-line or programmatically.
-It works through a chain of responsibility roughly mapped to
-the schematic of a test definition:
-<pre>
-   general harness
-      subclass feature harness
-        ajc-test run component
-          compile {sub-} run component
-          inc-compile {sub-} run component
-          run {sub-} run component
-          ...
-</pre>
-This tells you how to run the harness and which options are supported
-by each component.  
+This document you how to run the harness,
+specifying options on the command-line for the
+various components that form the harness.
 <p>
-
-Use <code>Harness.main(String[])</code> from the command-line,
-or <code>Harness.getHarness()</code> programmatically.
+The harness drives compiler tests, using  
+a chain of responsibility to map elements
+in the schema of a test definition to implementing classes:
+<p>
+<table border="1" cellpadding="1">
+<tr><th align="left">Test feature</th>
+    <th align="left">Description</th>
+    <th align="left">Implementing class</th>
+</tr>
+<tr><td>(loading suites...)</td>
+    <td>general harness</td>
+    <td>Harness</td>
+</tr>
+<tr><td>(logging...)</td>
+    <td>subclass feature harness</td>
+    <td>FeatureHarness</td>
+</tr>
+<tr><td><code>&lt;suite&gt;<code></td>
+    <td>Test suite</td>
+    <td>AjcTest.Suite</td>
+</tr>
+<tr><td>&nbsp;&nbsp;<code>&lt;ajc-test&gt;<code></td>
+    <td>Test case</td>
+    <td>AjcTest</td>
+</tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;compile&gt;<code></td>
+    <td>Initial (batch) compile run</td>
+    <td>CompilerRun</td>
+</tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;inc-compile&gt;<code></td>
+    <td>Incremental re-compile</td>
+    <td>IncCompilerRun</td>
+</tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;run&gt;<code></td>
+    <td>Run class</td>
+    <td>JavaRun</td>
+</tr>
+</table>
+<!--
+   general harness                                 (Harness)
+      subclass feature harness                     (FeatureHarness)
+        &lt;ajc-test&gt; run component             (AjcTest)
+          &lt;compile&gt; {sub-} run component     (CompilerRun)
+          &lt;inc-compile&gt; {sub-} run component (IncCompilerRun)
+          &lt;run&gt; {sub-} run component         (JavaRun)
+          ...
+-->
+<p>
+The compiler used is the AspectJ compiler <code>ajc</code>
+(optionally as wrapped by the Ant task or AJDE API's), but
+in principle any compiler accepting similar options can be
+used.
+<p>
+To run from the command-line, use 
+<code>Harness.main(String[])</code>.
+To run programmatically, use <code>Harness.getHarness()</code>.
 <code>Harness.runMain(String[])</code> takes arguments that
-each component in the chain may accept and interpret:
+each component in the chain may accept and interpret, so
+you can modify how the tests run by specifying the following 
+arguments on the harness command line:
 <p>
 <table cellpadding="1" border="1">
 <tr><th>Component</th><th>Options</th></tr>
@@ -31,7 +74,8 @@ each component in the chain may accept and interpret:
   <tr><td><u>suite files</u>: ajcTest-compliant .txt or .xml files are accepted.
      <!-- XXX link to ajcTestSuite.dtd and .txt definitions -->
      </td></tr>
-  <tr><td><u><code>-verboseHarness</code>, <code>-quietHarness</code></u>: 
+  <tr><td><u><code>-verboseHarness</code></u>, 
+  	  <u><code>-quietHarness</code></u>: 
       Log accepted options and skipped tests,
       or do not print even info messages.
      </td></tr>
@@ -39,7 +83,8 @@ each component in the chain may accept and interpret:
      the end of the run, and deletes them.  If you abort the run or specify
      <code>-keepTemp</code>, then temporary (sandbox) directories will remain for analysis.
      In either case, the file system accumulates all temporary directories
-     and files used for a give harness run.
+     and files used for a give harness run; for the <code>ajcTests.xml</code>
+     suite, this runs into thousands of files.
      </td></tr>
   <tr><td><u><code>-killTemp</code></u>: The opposite of <code>-keepTemp</code>,
      this causes the harness to delete temporary (sandbox) directories at 
@@ -70,11 +115,8 @@ each component in the chain may accept and interpret:
      <code>-hideStreams</code> and 
      <code>!eclipse</code>, used to emit tests results in a form
      comparable by <code>org.aspectj.testing.util.TestDiffs</code>. 
-     Note that output in the form emitted by <code>-traceTestsMin</code>
-     is input for the options to select tests by title
-     (e.g., <code>-ajctestTitleList</code>)
-     and for the tool which compare results from different test runs
-     (<code>org.aspectj.testing.util.TestDiffs</code>).    
+     or usable to select tests by title for options like 
+     <code>-ajctestTitleList</code>.
      </td></tr>
      
   <tr><td><u>output</u>: <code>-hide{Compiler|Run}Streams</code> will prevent output and
@@ -87,60 +129,86 @@ each component in the chain may accept and interpret:
      The infix {Min} means to log with minimal information, typically only any
      fail messages.
      The infix {Xml} means to log the XML form of the test definition, so that
-     you can inspect the input or re-run arbitrary tests.  (For the latter, consider
-     also using keywords, under <code>-ajctestsRequireKeywords=...</code> below.)
+     you can inspect the input or re-run arbitrary tests.  
+     (You can also re-run a set of tests using keywords
+     (e.g., "<code>-ajctestsRequireKeywords=...</code>" or using titles
+     (e.g., "<code>-ajctestsTitleFailList=ajcTestResults.txt</code>".)
      Finally, the experimental option <code>-XlogPublicType</code> will 
       log the XML test definition for 
   	  any test run that emits any ERROR messages containing the text "public type".
      </td></tr>
   <tr><td><u>interaction of output streams and logging</u>: 
-     Streams will be emitted before the test is logged, unless streams are hidden.
+     Streams will be emitted in real-time,
+     <em>before</em> the test is logged, unless streams are hidden.
      When logging in normal (non-Min or -XML) form, the log will emit the streams
      with the test report, so e.g., you can use -hideStreams -logFail to 
-     hide streams for passing tests but emit them for failing tests.
+     hide streams for passing tests but emit them for failing tests
+     in the context of the log.
      </td></tr>
     
-<tr><td rowspan="4" valign="top">AjcTest
+<tr><td rowspan="5" valign="top">AjcTest
     <p>selection options for keywords, bugID (PR), or title (description)
     </td></tr>
   <tr><td><u>keywords</u>: <code>-ajctest[Require|Skip]Keywords=one{,two}</code>
-     will either require or skip tests that have the specified keywords.
+     will either require or skip a test that has one of the 
+     specified keywords.
      </td></tr>
   <tr><td><u>Bugs</u>: <code>-ajctestPR=101{,102}</code>
-     will run only tests that are associated with one of the bug id's listed.
+     will require that a test have one of the listed bug id's.
      </td></tr>
   <tr><td><u>title</u>: 
      <code>"-ajctestTitleContains=one,two"</code>
-     will require that the title (description) of the test contain 
-     either "one" or "two".
+     will require that the title (description) of a test contain 
+     one of the specified substrings, here either "one" or "two".
      Use this to select a few tests you know generally.
      <br>
-     <code>"-ajctestTitleList=../tests/ajcTestResults.txt"</code>
-     will require that the title (description) of the test be
-     equal to one listed in <code>../tests/ajcTestResults.txt</code>
-     as a line of the form "[PASS|FAIL] {title}(.."
-     (emitted by the <code>-traceTestsMin</code> option).
-     Use this to re-run a set of tests.
-     <br>
      <code>"-ajctestTitleList=first title\, in theory, second title"</code>
-     will require that the title (description) of the test be
+     will require that the title (description) of a test be
      exactly "first title, in theory" or "second title".  
      The entire option must be one argument on the command line.
-     This option only differs from the prior in not specifying
-     a valid file to read.
      Use this when working with just a few specific tests.
      <br>
+     <code>"-ajctestTitleList=../tests/ajcTestResults.txt"</code>
+     will require that the title (description) of a test be
+     equal to one listed in <code>../tests/ajcTestResults.txt</code>
+     as a line of the form "[PASS|FAIL] {title}(.."
+     (This form is emitted by the <code>-traceTestsMin</code> option).
+     This option only differs from the prior in that the parameter
+     is a valid file to read.
+     Use this to re-run a large set of tests.
+     <br>
      <code>"-ajctestTitleFailList=../tests/ajcTestResults.txt"</code>
-     is the same as the <code>-ajctestTitleList=..</code> variant,
+     is the same as the <code>-ajctestTitleList={file}</code> variant,
      except that only results prefixed "FAIL" are included.
      Use this to re-run only the tests that failed from a large set.
+     </td></tr>
+     
+  <tr><td><u>Combinations</u>: all selectors are applied to each test,
+     so all tests selected will comply with all constraints.
+     Specifying lists within a particular constraints will match
+     a union of tests for that constraint 
+     (e.g., all tests with bug id's 101 or 102),     
+     but there is no way to get a union of constraints 
+     (e.g., all tests with bug id's 101 or 102 <em>or</em> 
+     with keywords pure-java or knownLimitation).
+     However, <code>-ajctestSkipKeywords=...</code> can return all
+     tests without the specified keywords, so it can form unions like
+     "all tests without the knownLimitation keyword, but with 
+     bug id's 101 or 102".
+     Title lists can work similarly.  E.g., to run the failed
+     incremental tests from ajcTestResults.txt, specify
+     <code>-ajctestTitleFailList=../tests/ajcTestResults.txt</code>
+     <code>-ajctestRequireKeywords=incremental-test</code>.
      </td></tr>
     
 <tr><td rowspan="6" valign="top">CompilerRun
 <p>compiler options and side-effects
     </td></tr>
   <tr><td><u>supported options</u>: Options given on the command-line have
-     the same meaning as the options in the test specification.
+     the same meaning they would have to the compiler
+     (i.e., the same meaning as they would have as a value in the
+     <code>options</code> attribute in the &lt;compile&gt; entity
+     in the &lt;ajc-test&gt; test specification).
      Only one-word options are supported; for this reason, <code>-source 1.4</code> is
      specified as <code>-source14</code> and converted by CompilerRun back 
      to <code>-source 1.4</code>. Unsupported options include
@@ -149,6 +217,13 @@ each component in the chain may accept and interpret:
      <code>-classpath</code>,
      <code>-outjar</code>, and
      <code>-sourceroot</code>.
+     (But <code>argfile</code>, 
+      <code>classpath</code> and       
+     <code>sourceroot</code> 
+     are attributes accepted in the &lt;compile&gt; entity,
+     and in any case the test calculates and uses
+     <code>-d</code> and 
+     <code>-classpath</code>.)
      </td></tr>
   <tr><td><u>compiler selectors</u>: 
   	 Use <code>-ajc</code> or <code>-eclipse</code> to select the old
@@ -160,10 +235,13 @@ each component in the chain may accept and interpret:
       and <code>-ajctaskCompiler</code> to run a wrapper around the
       AjcTask (Ant task) interface.
      </td></tr>
-  <tr><td><u>option dominance <code>-!^</code></u>: 
+  <tr><td><u>option dominance <code>[-|!|^]</code></u>: 
      Some tests require or prohibit certain options; 
-     likewise, sometime the person running the tests wants to require that all tests
-     run with or without an option specified on the command-line.  CompilerRun supports encodings and
+     likewise, sometime you want to force all tests
+     run with or without an option specified on the command-line,
+     regardless of its setting in the &lt;compile options=".." ...&gt; 
+     attribute. 
+     CompilerRun supports encodings and
      conflict resolution for these, so an option may be specified as
       <code>-option</code>,
       <code>!option</code>, or 
