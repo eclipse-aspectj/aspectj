@@ -1,6 +1,7 @@
 /* *******************************************************************
  * Copyright (c) 1999-2001 Xerox Corporation, 
- *               2002 Palo Alto Research Center, Incorporated (PARC).
+ *               2002 Palo Alto Research Center, Incorporated (PARC),
+ *               2003 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -9,6 +10,7 @@
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
+ *     Wes Isberg     some 2003 tests
  * ******************************************************************/
 
 
@@ -20,7 +22,8 @@ public class TaskdefsTests extends TestCase {
 
     public static Test suite() { 
         TestSuite suite = new TestSuite(TaskdefsTests.class.getName());
-        //$JUnit-BEGIN$
+        //$JUnit-BEGIN$        
+        suite.addTestSuite(Ajc11CompilerAdapterTest.class); 
         suite.addTestSuite(AjdocTest.class); 
         suite.addTestSuite(AjcTaskTest.class); 
         //$JUnit-END$
