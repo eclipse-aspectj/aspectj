@@ -9,6 +9,7 @@
 <!ENTITY autoboxing         SYSTEM "autoboxing.xml">
 <!ENTITY covariance         SYSTEM "covariance.xml">
 <!ENTITY varargs            SYSTEM "varargs.xml">
+<!ENTITY pointcutexp        SYSTEM "pointcutexp.xml">
 <!ENTITY pertypewithin      SYSTEM "pertypewithin.xml">
 <!ENTITY getthistargetobj   SYSTEM "getthistargetobj.xml">
 <!ENTITY declaresoft        SYSTEM "declaresoft.xml">
@@ -39,6 +40,16 @@
         If you are new to AspectJ, we recommend you start 
         by reading the programming guide.
       </para>
+      
+      <para>
+         This is a draft document and is <emphasis>subject to change</emphasis> before
+         the design and implementation is complete. There is also no guarantee that all
+         of the features in this document will be implemented in a 1.5.0 release - some
+         may be deferred until 1.5.1 or even later. In general, features in which we
+         have more confidence in the design will be implemented earlier, providing a 
+         framework for user feedback and direction setting on features for which the
+         use cases are less obvious at time of writing.
+      </para>
 
     </abstract>
   </bookinfo>
@@ -49,6 +60,7 @@
   &autoboxing;
   &covariance;
   &varargs;
+  &pointcutexp;
   &pertypewithin;
   &getthistargetobj;
   &declaresoft;

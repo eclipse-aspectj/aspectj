@@ -641,6 +641,18 @@
 
   <sect2>
       <title>Package and Parameter Annotations</title>
+
+      <para>
+          <emphasis>Note: A previous design allowed package annotation patterns to be specified
+          directly in type patterns, and parameter annotation patterns to be
+          specified directly in method and constructor signature patterns. Because
+          this made some pointcut expressions hard to read and understand, we moved
+          in favour of the design presented below, which also has its drawbacks. 
+          Matching on package and parameter annotations is one feature likely to be
+          deferred until after the 1.5.0 release so that we can gain more understanding
+          of the kinds of uses AspectJ users are making of annotations in pointcut
+          expressions before commiting to any one approach.</emphasis>
+      </para>
       
       <para>
           Java 5 allows both packages and parameters to be annotated. To allow matching on package and parameter annotations,
@@ -855,10 +867,76 @@
   	    @args(*,*,untrustedDataSource);
 	]]></programlisting>
 
-    <para>TODO: We need to extend org.aspectj.lang.JoinPoint too. It would be
-    nice to use the <literal>AnnotatedElement</literal> interface, but this would
-    create a hard 1.5 dependency in our runtime library and I don't think we want
-    to do that (or certainly not do it lightly).</para>
+    <para>
+        <emphasis>Note: an alternative design would be to allow both annotation
+        patterns and type patterns to be specified in the existing args pcd.
+        This works well for matching, but is more awkward when it comes to
+        exposing context.</emphasis>
+    </para>
+
+    <para>Access to <literal>AnnotatedElement</literal> information is available
+    reflectively with the body of advice through the <literal>thisJoinPoint</literal>,
+    <literal>thisJoinPointStaticPart</literal>, and 
+    <literal>thisEnclosingJoinPointStaticPart</literal> variables. To access 
+    annotations on the arguments, or object bound to this or target at a join
+    point you can use the following code fragments:</para>
+
+  	<programlisting><![CDATA[
+  	Annotation[] thisAnnotations = thisJoinPoint.getThis().getClass().getAnnotations();
+  	Annotation[] targetAnnotations = thisJoinPoint.getTarget().getClass().getAnnotations();
+  	Annotation[] firstParamAnnotations = thisJoinPoint.getArgs()[0].getClass().getAnnotations();
+	]]></programlisting>
+
+    <para>
+        <emphasis>Note: it would be nicer to provide direct helper methods in
+        the JoinPoint interface or a sub-interface that provide the annotations
+        directly, something like "AnnotatedElement getThisAnnotationInfo()".
+        The problem here is that the "AnnotatedElement" type is only in the
+        Java 5 runtime libraries, and we don't want to tie the AspectJ runtime
+        library to Java 5. A sub-interface and downcast solution could be used
+        if these helpers were felt to be sufficiently important.</emphasis>
+    </para>
+    
+    <para>
+      Access to annotation information on members at a matched join point is available
+      through the <literal>getSignature</literal> method of the <literal>JoinPoint</literal>
+      and <literal>JoinPoint.StaticPart</literal> interfaces. The <literal>MemberSignature</literal>
+      interface is extended with the additional operation 
+      <literal>java.lang.reflect.Member getMember()</literal>. The following fragment
+      illustrates an example use of this interface to access annotation information.
+    </para>
+
+  	<programlisting><![CDATA[
+  	Signature sig = thisJoinPointStaticPart.getSignature();
+  	AnnotatedElement declaringTypeAnnotationInfo = sig.getDeclaringType();
+  	if (sig instanceof MemberSignature) {
+  	  // this must be an initialization, pre-initialization, call, execution, get, or
+  	  // set join point.
+  	  Member member = ((MemberSignature)sig).getMember();
+  	  // unfortunately, Member does not extend AnnotatedElement, so a further cast is
+  	  // needed:
+  	  if (member instanceof Field) { // a set or get join point...
+  	      AnnotatedElement fieldAnnotationInfo = ((Field)member);
+  	  }
+  	}
+	]]></programlisting>
+    
+    <para>
+        <emphasis>Note again that it would be nicer to add the method getAnnotationInfo
+        directly to MemberSignature, but this would once more couple the runtime library
+        to Java 5.</emphasis>
+    </para>
+    
+    <para>
+        <emphasis>Note: the use case of matching call/execution/get/set join points based
+        on member annotations is expected to be a common one. If it is also common 
+        practice to want to access the annotation value in the advice body, then the
+        route via thisJoinPointStaticPart and the Signature interface will be too
+        cumbersome. In this case we need to find a form of context-exposing pcd
+        that will allow the annotation value to be directly exposed as an advice
+        parameter. What form should this take, and what join points should it match?
+        </emphasis>
+    </para>
   </sect2>
 
   <sect2>
