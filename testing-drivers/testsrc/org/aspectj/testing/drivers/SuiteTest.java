@@ -40,7 +40,8 @@ import junit.framework.TestSuite;
  */
 public class SuiteTest extends TestCase {
     private static final String[] SUITES = new String[]
-        { "testdata/incremental/harness/selectionTest.xml",
+        { "../tests/ajcHarnessTests.xml",
+         "testdata/incremental/harness/selectionTest.xml",
           "../tests/ajcTests.xml"
         };
         
