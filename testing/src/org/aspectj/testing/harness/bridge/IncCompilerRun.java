@@ -299,6 +299,26 @@ public class IncCompilerRun implements IAjcRun {
             classesUpdated = new ArrayList();
 		}
         
+        protected void initClone(Spec spec) 
+                throws CloneNotSupportedException {
+            super.initClone(spec);
+            spec.fresh = fresh;
+            spec.tag = tag;
+            spec.classesAdded.clear();
+            spec.classesAdded.addAll(classesAdded);
+            spec.classesRemoved.clear();
+            spec.classesRemoved.addAll(classesRemoved);
+            spec.classesUpdated.clear();
+            spec.classesUpdated.addAll(classesUpdated);
+        }
+        
+        public Object clone() throws CloneNotSupportedException {
+            Spec result = new Spec();
+            initClone(result);
+            return result;    
+        }
+
+
         public void setFresh(boolean fresh) {
             this.fresh = fresh;
         }

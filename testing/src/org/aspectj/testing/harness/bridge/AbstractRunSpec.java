@@ -92,7 +92,7 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
     private BitSet skipSet;
     private boolean skipAll;
     
-    protected final String xmlElementName;
+    protected String xmlElementName; // nonfinal only for clone()
     protected final ArrayList /*String*/ keywords; 
     protected final IMessageHolder /*IMessage*/ messages;
     protected final ArrayList /*String*/ options;
@@ -107,7 +107,7 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
     public final RT runtime;
 
     /** if true, then any child skip causes this to skip */
-	protected final boolean skipIfAnyChildSkipped;
+	protected boolean skipIfAnyChildSkipped; // nonfinal only for cloning
 
     public AbstractRunSpec(String xmlElementName) {
         this(xmlElementName, true);
@@ -735,6 +735,50 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
         return result.toString();
     }
 
+    protected void initClone(AbstractRunSpec spec) 
+            throws CloneNotSupportedException {
+        /*
+         * clone associated objects only if not (used as?) read-only.
+         */
+        spec.badInput = badInput;
+        spec.children.clear();
+        for (Iterator iter = children.iterator(); iter.hasNext();) {
+            // clone these...
+            IRunSpec child = (IRunSpec) iter.next();
+            // require all child classes to support clone?
+            if (child instanceof AbstractRunSpec) {
+                spec.addChild((AbstractRunSpec) ((AbstractRunSpec) child).clone());
+            } else {
+                throw new Error("unable to clone " + child);
+            }
+        }
+        spec.comment = comment;
+        spec.description = description;
+        spec.dirChanges.clear();
+        spec.dirChanges.addAll(dirChanges);
+        spec.isStaging = spec.isStaging;
+        spec.keywords.clear();
+        spec.keywords.addAll(keywords);
+        spec.messages.clearMessages();
+        MessageUtil.handleAll(spec.messages, messages, false);
+        spec.options.clear();
+        spec.options.addAll(options);
+        spec.paths.clear();
+        spec.paths.addAll(paths);
+        spec.runtime.copy(runtime);
+        spec.skipAll = skipAll;
+        spec.skipIfAnyChildSkipped = skipIfAnyChildSkipped;
+        if (null != skipSet) {
+            spec.skipSet = new BitSet();
+            spec.skipSet.or(skipSet);
+        }
+        spec.sourceLocation = sourceLocation;
+        spec.sourceLocations.clear();
+        spec.sourceLocations.addAll(sourceLocations);
+        spec.xmlElementName = xmlElementName;
+        spec.xmlNames = ((AbstractRunSpec.XMLNames) xmlNames.clone());
+    }
+
     private static void addListCount(String name, List list, StringBuffer sink) {
         int size = list.size();
         if ((null != list) && (0 < size)) {
@@ -780,6 +824,22 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
         final boolean skipDirChanges;
         final boolean skipMessages;
         final boolean skipChildren;
+        protected Object clone() {
+            return new XMLNames(
+                null,
+                descriptionName,
+                sourceLocationName,
+                keywordsName,
+                optionsName,
+                pathsName,
+                commentName,
+                stagingName,
+                badInputName,
+                skipDirChanges,
+                skipMessages,
+                skipChildren);
+        }
+        
         // not runtime, skipAll, skipIfAnyChildSkipped, skipSet
         //     sourceLocations
         /** reset all names/behavior or pass defaultNames 

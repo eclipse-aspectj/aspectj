@@ -247,6 +247,20 @@ public class AjcTest extends RunSpecIterator {
             setXMLNames(NAMES);
         }
         
+        protected void initClone(Spec spec) 
+                throws CloneNotSupportedException {
+            super.initClone(spec);
+            spec.bugId = bugId;
+            spec.suiteDir = suiteDir;
+            spec.testDirOffset = testDirOffset;
+        }
+        
+        public Object clone() throws CloneNotSupportedException {
+            Spec result = new Spec();
+            initClone(result);
+            return result;    
+        }
+        
         public void setSuiteDir(File suiteDir) {
             this.suiteDir = suiteDir;
         }
@@ -516,6 +530,13 @@ public class AjcTest extends RunSpecIterator {
             File suiteDir;
             public Spec() {
                 super(XMLNAME, false); // do not skip this even if children skip
+            }
+            
+            public Object clone() throws CloneNotSupportedException {
+                Spec spec = new Spec();
+                super.initClone(spec);
+                spec.suiteDir = suiteDir;                
+                return spec;
             }
             
             /** @param suiteDirPath the String path to the base suite dir */

@@ -444,6 +444,22 @@ public class JavaRun implements IAjcRun {
             setXMLNames(NAMES);
         }
         
+        protected void initClone(Spec spec) 
+                throws CloneNotSupportedException {
+            super.initClone(spec);
+            spec.className = className;            
+            spec.errStreamIsError = errStreamIsError;
+            spec.javaVersion = javaVersion;
+            spec.outStreamIsError = outStreamIsError;
+            spec.skipTester = skipTester;
+        }
+        
+        public Object clone() throws CloneNotSupportedException {
+            Spec result = new Spec();
+            initClone(result);
+            return result;    
+        }
+
         /**
          * @param version "1.1", "1.2", "1.3", "1.4"
          * @throws IllegalArgumentException if version is not recognized

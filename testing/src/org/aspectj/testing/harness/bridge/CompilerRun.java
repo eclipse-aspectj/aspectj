@@ -312,7 +312,7 @@ public class CompilerRun implements IAjcRun {
      *     {@link setupArgs(ArrayList, IMessageHandler}.</li>
      * <li>construct a command line, using as classpath 
      *     {@link Sandbox.classpathToString()}<li>
-     * <li>construct a compiler using {@link Spec#compilerName}
+     * <li>construct a compiler using {@link Spec#compiler}
      *     or any overriding value set in TestSetup.<li>
      * <li>Just before running, set the compiler in the sandbox using 
      *     {@link Sandbox.setCompiler(ICommand)}.<li>
@@ -528,6 +528,38 @@ public class CompilerRun implements IAjcRun {
             compiler = DEFAULT_COMPILER;
         }
         
+        private static String[] copy(String[] input) {
+            if (null == input) {
+                return null;
+            }
+            String[] result = new String[input.length];
+            System.arraycopy(input, 0, result, 0, input.length);
+            return result;
+        }
+
+        protected void initClone(Spec spec) 
+                throws CloneNotSupportedException {
+            super.initClone(spec);
+            spec.argfiles = copy(argfiles);
+            spec.aspectpath = copy(aspectpath);
+            spec.classpath = copy(classpath);
+            spec.compiler = compiler;
+            spec.includeClassesDir = includeClassesDir;
+            spec.reuseCompiler = reuseCompiler;
+            spec.sourceroots = copy(sourceroots);
+            spec.testSetup = null;
+            if (null != testSetup) {
+                spec.testSetup = (TestSetup) testSetup.clone();
+            }
+            spec.testSrcDirOffset = testSrcDirOffset;
+        }
+        
+        public Object clone() throws CloneNotSupportedException {
+            Spec result = new Spec();
+            initClone(result);
+            return result;    
+        }
+
         public void setIncludeClassesDir(boolean include) {
             this.includeClassesDir = include;
         }
@@ -1065,6 +1097,20 @@ public class CompilerRun implements IAjcRun {
             /** if setup completed, this has the combined global/local options */
             ArrayList commandOptions;
             
+            public Object clone() {
+                TestSetup testSetup = new TestSetup();
+                testSetup.compilerName = compilerName;
+                testSetup.ignoreWarnings = ignoreWarnings;
+                testSetup.ignoreWarningsSet = ignoreWarningsSet;
+                testSetup.result = result;
+                testSetup.failureReason = failureReason;
+                testSetup.seek = seek;
+                if (null != commandOptions) {
+                    testSetup.commandOptions = new ArrayList();
+                    testSetup.commandOptions.addAll(commandOptions);
+                }
+                return testSetup;
+            }
             public String toString() {
                 return "TestSetup("
                     + (null == compilerName ? "" : compilerName + " ")
