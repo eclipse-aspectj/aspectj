@@ -16,6 +16,6 @@ import support.Log;
 
 aspect Answer3a {
     before(): execution(public * *(..)) && within(figures.*) {
-        Log.log(thisJoinPoint.toString());
+        Log.write(thisJoinPoint);
     }
 }

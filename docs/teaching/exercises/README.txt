@@ -1,9 +1,34 @@
 AspectJ Figures Exercises
 ------------------------------
 
+This file is really out-of-date.  We're in the middle of recovery
+from OOPSLA 2004, and we need to move stuff around in this
+package.  In particular, we need to build in a new structure.
+
+One idea is that we should have _four_ projects within the
+workspace, one for each problem set.  There's still a bit of work
+necessary to avoid duplicating code here (in CVS) even though we
+want to duplicate code in the generated workspaces.
+
+------------------------------
+Generated Structure
+
+We want a particular _generated_ structure for users.  We're
+eventually going to dump to a zip file or a CD.
+
+Folder: aj-<event>:
+  /eclipse     (arch)
+  /workspace   (noarch)
+  /packages    (noarch)
+    j2sdk for win, linux
+    aspectj for everybody
+
+------------------------------
+------------------------------
+
 THIS FILE IS OUT-OF-DATE !!! (2003-3-17)
 
-These exercises are designed to be used with AspectJ 1.0.6.  
+These exercises are designed to be used with AspectJ 1.0.6.
 
 THEY MUST NOT BE DISTRIBUTED ELECTRONICALLY WITHOUT THINKING FIRST!!!
 There may be licence issues with just sticking the junit jar in there
@@ -17,7 +42,7 @@ To build distribution zips, use ant -f build.xml.  This will create
    EV-allcontent.zip    -- the exercises bundled with the answers
 
 
-If you don't want to be bothered with specifying where AspectJ is, 
+If you don't want to be bothered with specifying where AspectJ is,
 feel free to just do ant -f build.xml answers.zip.  By default it will
 build both exercises and answers.
 
@@ -52,12 +77,12 @@ files, but they might want to be refreshed every now and again.
 Printing
 
 It would be really nice to have an automated solution to generate the
-documents, but no such luck. 
+documents, but no such luck.
 
 * index.html should print out with useful page breaks.  It should be
-  separated into four chunks if possible. 
+  separated into four chunks if possible.
 
-* answers in four chunks. 
+* answers in four chunks.
 
 * quick reference sheets.
 
@@ -88,5 +113,5 @@ scripts under CVS.
 ---- Instructors
 
 Since the only difference is the answers, just overwrite the
-extraction directory with answers.zip.  
+extraction directory with answers.zip.
 

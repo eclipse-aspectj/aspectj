@@ -18,13 +18,16 @@ import figures.*;
 
 aspect Answer3e {
 
-    Group Point.containingGroup = null;
+    private Group Point.containingGroup = null;
 
-    before(Group g, Point p): execution(void Group.add(FigureElement)) && this(g) && args(p) {
-	if (p.containingGroup != null) {
-	    throw new IllegalStateException(p.containingGroup.toString());
-	} else {
-	    p.containingGroup = g;
-	}
+    before(Group g, Point p): 
+            execution(void Group.add(FigureElement)) 
+            && this(g) 
+            && args(p) {
+        if (p.containingGroup != null) {
+            throw new IllegalStateException(p.containingGroup.toString());
+        } else {
+            p.containingGroup = g;
+        }
     }
 }

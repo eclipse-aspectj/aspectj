@@ -19,23 +19,9 @@ import java.util.ArrayList;
 public class Log {
     static List data = new ArrayList();
 
-    public static void traceObject(Object o) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static void log(String s) {
+    public static void write(String s) {
         data.add(s);
     }
-
-//     public static void logClassName(Class _class) {
-//         String name = _class.getName();
-//         int dot = name.lastIndexOf('.');
-//         if (dot == -1) {
-//             log(name);
-//         } else {
-//             log(name.substring(dot+1, name.length()));
-//         }
-//     }
 
     public static List getData() {
         return data;

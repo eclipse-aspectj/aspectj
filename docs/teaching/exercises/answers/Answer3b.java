@@ -21,9 +21,11 @@ import figures.FigureElement;
 aspect Answer3b {
     before(Object o):
             execution(public * *(..))
-            && within(figures.*) && target(o)
-            && !withincode(public String toString(..)) // don't overflow!
+            && !execution(public String toString(..)) 
+            // or perhaps !cflow(adviceexecution())
+            && within(figures.*) 
+            && target(o) 
     {
-        Log.log(thisJoinPoint.toString() + " at " + o);
+        Log.write(thisJoinPoint + " at " + o);
     }
 }

@@ -18,13 +18,15 @@ import figures.*;
 
 aspect Answer3d {
 
-    boolean Point.inGroup = false;
+    private boolean Point.inGroup = false;
 
-    before(Point p): execution(void Group.add(FigureElement)) && args(p) {
-	if (p.inGroup) {
-	    throw new IllegalStateException();
-	} else {
-	    p.inGroup = true;
-	}
+    before(Point p): 
+            execution(void Group.add(FigureElement)) 
+            && args(p) {
+        if (p.inGroup) {
+            throw new IllegalStateException();
+        } else {
+            p.inGroup = true;
+        }
     }
 }

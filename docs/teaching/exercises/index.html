@@ -3,21 +3,28 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
-<!-- This file represents the Exercises for the hands-on AspectJ 
-     tutorial.  It is commonly checked into CVS with identifying 
-     information for the latest conference (such as presenters 
-     and publication information). -->
+<!-- This file represents the Exercises for the hands-on AspectJ
+     tutorial.  It is commonly checked into CVS with identifying
+     information for the latest conference (such as presenters
+     and publication information).
 
-<!-- When you use it for your own purposes, don't forget to
+     When you use it for your own purposes, don't forget to
      modify at the very least anything that says
-     id="copyright" or class="presenter" -->
+     id="copyright" or class="presenter".  If you're in an A4
+     country, don't forget to modify the paper size.
 
-<!-- Also, the gif included at the end is somewhat fragile,
-     so be careful with different paper sizes. -->
+     The gif included at the end is somewhat fragile,
+     so be careful with different paper sizes.
 
+     TODO: There is currently something weird about PDF generation
+     from this:  If generated from a windows machine, it will
+     generate mac-unfriendly PDF because of the requested windows
+     font.  If the PDF is only used for immediate printing,
+     that's fine, but if it's used for distribution, bad.
+-->
 
 <head>
-  <title>Hands-on Programming with AspectJ &mdash; Exercises</title>
+  <title>Hands-on Programming with AspectJ&reg; &mdash; Exercises</title>
   <style type="text/css">
 div.instruction { padding: 0.5em; border-width: 1px; border-style: solid }
 body { background-color: #FFF; margin: 2em }
@@ -51,7 +58,7 @@ h3 { margin-top: 4ex; border-bottom-style: solid; border-width: 1px }
 
 <body>
 
-<h1>Hands-on Programming with AspectJ</h1>
+<h1>Hands-on Programming with AspectJ<sup>&reg;</sup></h1>
 
 <div class="presenter">Erik Hilsdale</div>
 <div class="presenter">Mik Kersten</div>
@@ -90,11 +97,17 @@ diagram and quick reference.  But you'll be cheating yourself if
 you try to do the exercises early; you'll learn a lot more by
 working through it in groups during the tutorial proper.  </div>
 
+<!--
+This space is used for a copyright that appears on the
+bottom of the _printed_ page.  It's suppressed when viewed on
+a computer screen by the stylesheet.
+
 <div id="copyright">
 Copyright is held by the author/owner(s). <br />
 OOPSLA’04, October 24-28, 2004, Vancouver, British Columbia, Canada <br />
 2004 ACM 04/0010
 </div>
+-->
 
 <h3 class="newpage">Command-line usage</h3>
 
@@ -138,9 +151,9 @@ test class.  On the command-line, this this would be </p>
 
 <pre>
 $ java tests.Test2a
-</pre> 
+</pre>
 
-<p> The default test, <code>tests.Test</code>, performs some
+<p> The default test, <code>tests.CoreTest</code>, performs some
 rudimentary tests on figure elements, and so is a useful test to run
 periodically.  You should also look at the JUnit tests for each
 exercise as you do it. </p>
@@ -161,7 +174,7 @@ are using the AspectJ browser, Emacs, or Eclipse.  </div>
 <h2 class="newpage">1. Static Invariants</h2>
 
 <p> The easiest way to get started with AspectJ is to use it to
-enforce static invariants. 
+enforce static invariants.
 </p>
 
 <h3>1.a. Find old tracing</h3>
@@ -173,7 +186,7 @@ you get the desired compile-time error, remove the offending
 line, and make sure you pass the JUnit test.  </div>
 
 <p> <strong>Task:</strong> Signal an error for calls to
-<code>System.out.println</code>. 
+<code>System.out.println</code>.
 </p>
 
 <p> The way that we are all taught to print "hello world" from Java is
@@ -199,7 +212,7 @@ aspect Answer1a {
 </pre>
 
 <p> When you use this on the given system, you'll find one incorrect
-trace in <code>SlothfulPoint</code>.  
+trace in <code>SlothfulPoint</code>.
 </p>
 
 <pre>
@@ -218,11 +231,11 @@ users who bind System.out to a static field to save typing.  </p>
 program to remove the illegal tracing call.  </p>
 
 <p> Make sure your program still passes the JUnit test
-<code>tests.Test</code> (which it should also pass at the beginning of
+<code>tests.CoreTest</code> (which it should also pass at the beginning of
 all exercises) before continuing.  </p>
 
 <pre>
-$ java tests.Test
+$ java tests.CoreTest
 ....
 Time: 0.03
 
@@ -254,10 +267,10 @@ aspect A {
 
 <p> where the pointcut picks out join points of private field sets
 outside of setter methods.  "Outside", here, means that the code for
-the assignment is outside the <em>text</em> of the setter. 
+the assignment is outside the <em>text</em> of the setter.
 
 <p> Make sure your program still passes the JUnit test
-<code>tests.Test</code> before continuing.  Make sure you get eleven
+<code>tests.CoreTest</code> before continuing.  Make sure you get eleven
 warnings from this.  Wait to fix them until the next exercise.  </p>
 
 <h3>1.c. Refine setters mandate</h3>
@@ -275,7 +288,7 @@ an actual error at compile time (rather than just a warning) when such
 an illegal assignment expression exists.  </p>
 
 <p>You'll want to add another <code>withincode</code> primitive
-pointcut to deal with the constructors. 
+pointcut to deal with the constructors.
 </p>
 
 <p>After you specify your pointcut correctly, you'll still find that
@@ -291,7 +304,7 @@ the following two errors:</p>
 
 <p>Rewrite these two occurrences so as not to violate
 the convention.  Make sure your program still passes the JUnit test
-<code>tests.Test</code> before continuing.  </p>
+<code>tests.CoreTest</code> before continuing.  </p>
 
 <div class="instruction"> Congratulations, you've taken your
 first steps.  At this point, check the people to your left and
@@ -332,7 +345,7 @@ whenever an attempt is made to set one of <code>Point</code>'s
 
 <p> This should make the test case of <code>tests.Test2a</code> pass,
 which wouldn't without your aspect.  So before compiling in the
-aspect, 
+aspect,
 </p>
 
 <pre>
@@ -360,7 +373,7 @@ Time: 0.04
 OK (7 tests)
 </pre>
 
-<p> <strong>Answer:</strong>  
+<p> <strong>Answer:</strong>
 </p>
 
 <pre>
@@ -372,7 +385,7 @@ aspect Answer2a {
     before(int newValue): set(int Point.*) &amp;&amp; args(newValue) {
         if (newValue &lt; 0) {
             throw new IllegalArgumentException("too small");
-        } 
+        }
     }
 }
 </pre>
@@ -409,7 +422,7 @@ an attempt is made to call <code>Group.add()</code> on a
 
 <p> You will want to use a <code>target</code> pointcut to expose the
 <code>Group</code> object that is the target of the <code>add</code>
-call. 
+call.
 </p>
 
 <h3>2.d. Assure input</h3>
@@ -421,7 +434,7 @@ call.
 </p>
 
 <p> Instead of throwing an exception when one of <code>Point</code>'s
-<code>int</code> fields are set to a negative value, write an aspect
+<code>int</code> fields is set to a negative value, write an aspect
 to trim the value to zero.  You'll want to use <code>around</code>
 advice that exposes the new value of the field assignment with an
 <code>args</code> pointcut, and <code>proceed</code> with the trimmed
@@ -483,19 +496,22 @@ throw an <code>IllegalStateException</code> if it is violated.  </p>
 the first where AspectJ is used on deployed code.
 </p>
 
-<h3>3.a. Simple logging</h3>
+<h3>3.a. Simple tracing</h3>
 
 <p> <strong>Task:</strong> Pass <code>tests.Test3a</code>.</p>
 
-<p> <strong>Tools:</strong> <code>Log.log(String)</code>, 
-		<code>thisJoinPoint.toString()</code>, <code>execution</code>,
-		<code>within</code>
+<p> <strong>Tools:</strong>
+    <code>Log.write(String)</code>,
+    <code>thisJoinPoint.toString()</code>,
+    <code>execution</code>,
+    <code>within</code>
 </p>
 
 <p> Write an aspect to log the execution of all public methods
 in the figures package.  To do this, use the utility class
-<code>Log</code> (with an import from <code>support.Log</code>) 
-and call <code>Log.log(String)</code></p>
+<code>Log</code> (this is in the <code>support</code> package, so
+remember to import it into your answer aspect).  Write a message
+into the log with the static <code>write(String)</code> method.</p>
 
 <h3>3.b. Exposing a value</h3>
 
@@ -525,7 +541,8 @@ but also the target object, with the form
 group. The <code>args</code> pointcut allows you to select join points
 based on the type of a parameter to a method call. </p>
 
-<p> Look at the test case for details about the required log message.
+<p> Look at the test case to see the trace message we expect you
+to write in the log.
 </p>
 
 <h3 class="newpage">3.d. Logging extended to checking an invariant</h3>
@@ -535,9 +552,10 @@ based on the type of a parameter to a method call. </p>
 <p> <strong>Tools:</strong> <code>inter-type field declaration</code>
 </p>
 
-<p> Make sure that a Point is never added to more than one Group.  
-To do so, associate a boolean flag with each Point using an inter-type
-declaration, such as </p>
+<p> Make sure that a <code>Point</code> is never added to more
+than one <code>Group</code>.  To do so, associate a boolean flag
+with each <code>Point</code> using an inter-type declaration,
+such as </p>
 
 <pre>
 boolean Point.hasBeenAdded = false;
@@ -575,8 +593,8 @@ contained in Lines and Boxes only if time permits.  </div>
 
 <p> <strong>Task:</strong> Pass <code>tests.Test4a</code>.</p>
 
-<p> <strong>Tools:</strong> <code>around</code>, 
-		<code>FigureElement.MAX_BOUNDS</code>
+<p> <strong>Tools:</strong> <code>around</code>,
+                <code>FigureElement.MAX_BOUNDS</code>
 </p>
 
 <p> <code>Group</code>'s <code>getBounds()</code> method could be
@@ -589,7 +607,7 @@ by the static method <code>FigureElement.MAX_BOUNDS</code>.
 
 <p> Write an aspect to implement this change.  You can override
 <code>Group</code>'s <code>getBounds()</code> method entirely with
-around advice intercepting the method.  
+around advice intercepting the method.
 </p>
 
 <h3>4.b. Make a constant cache</h3>
@@ -622,7 +640,7 @@ state for every <code>Group</code> object.</em> </p>
 <p> While caching in this way does save computation, it will lead to
 incorrect bounding boxes if a <code>Group</code> is ever moved.
 Change your aspect so that it invalidates the cache whenever the
-<code>move()</code> method of <code>Group</code> is called. 
+<code>move()</code> method of <code>Group</code> is called.
 </p>
 
 <h3 class="newpage">4.d. Invalidate, part 2</h3>
@@ -663,7 +681,7 @@ an active user community for AspectJ at</p>
   <blockquote>
   http://www.eclipse.org/aspectj
   </blockquote>
-  
+
 </div>
 
 <img style="newpage" src="figures_classes.gif" height="900" alt="" />
