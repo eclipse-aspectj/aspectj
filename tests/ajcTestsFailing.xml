@@ -4,5 +4,11 @@
 <!-- contains valid tests that the compiler has never passed -->
 <suite>
 
+    <ajc-test dir="new" pr="36778"
+      title="advise join points in subclass of empty interface">
+        <compile files="EmptyInterface.java"/>
+        <run class="EmptyInterface"/>
+    </ajc-test>
+
 
 </suite>
