@@ -237,6 +237,13 @@ public class CompilerRun implements IAjcRun {
                     for (int i = 0; i < sourcerootFiles.length; i++) {
                         FileUtil.deleteContents(sourcerootFiles[i], pickIncFiles, false);
                     }
+                    if (0 < sourcerootFiles.length) {
+                        FileUtil.sleepPastFinalModifiedTime(sourcerootFiles);
+                    }
+                }
+                File[] files = FileUtil.getBaseDirFiles(sandbox.stagingDir, srcPaths); 
+                if (0 < files.length) {
+                    FileUtil.sleepPastFinalModifiedTime(files);
                 }
             } catch (IllegalArgumentException e) {
                 validator.fail("staging - bad input", e);

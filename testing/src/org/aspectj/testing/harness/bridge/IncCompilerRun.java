@@ -16,6 +16,7 @@ package org.aspectj.testing.harness.bridge;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -109,6 +110,8 @@ public class IncCompilerRun implements IAjcRun {
                 int numDeletes;
                 int numFails;
             }
+            // sigh - delay until after last last-mod-time
+            final ArrayList copied = new ArrayList();
             final intHolder holder = new intHolder();
             FileFilter deleteOrCount = new FileFilter() {
                 final String clip = ".delete" + toSuffix;
@@ -119,6 +122,7 @@ public class IncCompilerRun implements IAjcRun {
                     if (!path.endsWith(clip)) {
                         holder.numCopies++;
                         validator.info("copying file: " + path);
+                        copied.add(file);
                     } else {
                         doCopy = false;
                         path = path.substring(0, path.length()-clip.length()) + toSuffix;
@@ -142,6 +146,10 @@ public class IncCompilerRun implements IAjcRun {
                 validator.fail("no files changed??");
             } else {
                 result = (0 == holder.numFails);
+            }
+            if (0 < copied.size()) {
+                File[] files = (File[]) copied.toArray(new File[0]);
+                FileUtil.sleepPastFinalModifiedTime(files);
             }
         } catch (NullPointerException npe) {
             validator.fail("staging - input", npe);
