@@ -150,7 +150,7 @@ public class PatternParser {
 	}
 	
 	public DeclareAnnotation parseDeclareAtType() {
-		return new DeclareAnnotation("type",parseTypePattern());
+		return new DeclareAnnotation(DeclareAnnotation.AT_TYPE,parseTypePattern());
 	}
 
 	public DeclareAnnotation parseDeclareAtMethod(boolean isMethod) {
@@ -162,11 +162,12 @@ public class PatternParser {
 		if (!isMethod && !isConstructorPattern) {
 			throw new ParserException("constructor signature pattern",tokenSource.peek(-1));
 		}
-		return new DeclareAnnotation("method",sp); // sp itself differentiates...
+		if (isConstructorPattern) return new DeclareAnnotation(DeclareAnnotation.AT_CONSTRUCTOR,sp);
+		else                      return new DeclareAnnotation(DeclareAnnotation.AT_METHOD,sp);
 	}
 
 	public DeclareAnnotation parseDeclareAtField() {
-		return new DeclareAnnotation("field",parseFieldSignaturePattern());		
+		return new DeclareAnnotation(DeclareAnnotation.AT_FIELD,parseFieldSignaturePattern());		
 	}
 
 	public DeclarePrecedence parseDominates() {
