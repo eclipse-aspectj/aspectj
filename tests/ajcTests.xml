@@ -7511,4 +7511,16 @@
 		</compile>
 	</ajc-test>
 	
+    <ajc-test dir="bugs/declarePrecedenceWithClasses" pr="53012"
+   	 title="declare precedence on a class should be a compile-time error">
+        <compile files="DeclarePrecedenceTestClass.java" >
+          <message kind="error" line="10" text="Non-aspect types can only be specified"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs/declarePrecedenceWithClasses" pr="53012"
+   	 title="declare precedence on a class should be a compile-time error">
+        <compile files="Priority.aj" />
+    </ajc-test>
+	
 </suite>

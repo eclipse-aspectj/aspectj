@@ -82,6 +82,14 @@ public class DeclarePrecedence extends Declare {
     		}
     		ResolvedTypeX exactType = pi.getExactType().resolve(scope.getWorld());
     		if (exactType == ResolvedTypeX.MISSING) continue;
+    		
+    		// Cannot do a dec prec specifying a non-aspect types unless suffixed with a '+'
+    		if (!exactType.isAspect() && !pi.isIncludeSubtypes()) {
+    			scope.getWorld().showMessage(IMessage.ERROR,
+    				"Non-aspect types can only be specified in a declare precedence statement when subtypes are included.  Non-aspect type is : "+exactType.getName(),
+    				pi.getSourceLocation(),null);
+    		}
+    		
     		for (int j=0; j < patterns.size(); j++) {
     			if (j == i) continue;
     			TypePattern pj = patterns.get(j);
