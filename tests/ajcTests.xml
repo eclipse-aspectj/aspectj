@@ -5546,4 +5546,11 @@
             <message kind="error" line="14"/> 
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs" pr="29662"
+    		title="VerifyError on accessing objects not accessible to the weaver">
+        <compile files="AroundAccess.java">
+        </compile>
+        <run class="AroundAccess"/>
+    </ajc-test>
 </suite>
