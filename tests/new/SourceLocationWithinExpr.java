@@ -6,14 +6,14 @@ import org.aspectj.lang.reflect.*;
 /** @testcase PR#885 call source locations within expression */
 public class SourceLocationWithinExpr {
     public static void main (String[] args) {
-        new                  // 7*
-            C()              // 8
-            .                // 9*
-            getD()           // 10
-            .                // 11*
-            getE()           // 12
-            .                // 13*
-            getF()           // 14
+        new                  // 9*
+            C()              // 10
+            .                // 11
+            getD()           // 12*
+            .                // 13
+            getE()           // 14*
+            .                // 15
+            getF()           // 16*
             ;
         Tester.expectEvent("setup");
         Tester.checkAllEvents();
@@ -28,10 +28,10 @@ aspect A {
     private static final String SEP = " - ";
     static {
         // using qualifying expr?
-        Tester.expectEvent("C()" + SEP + "7");
-        Tester.expectEvent("getD()" + SEP + "9");
-        Tester.expectEvent("getE()" + SEP + "11");
-        Tester.expectEvent("getF()" + SEP + "13");
+        Tester.expectEvent("C()" + SEP + "9");
+        Tester.expectEvent("getD()" + SEP + "12");
+        Tester.expectEvent("getE()" + SEP + "14");
+        Tester.expectEvent("getF()" + SEP + "16");
         Tester.event("setup");
     }
     pointcut filter() : withincode(static void SourceLocationWithinExpr.main(String[]));
