@@ -88,6 +88,7 @@ public class WeaverMessages {
 	public static final String ZIPFILE_ENTRY_MISSING = "zipfileEntryMissing";
 	public static final String ZIPFILE_ENTRY_INVALID = "zipfileEntryInvalid";
 	public static final String DIRECTORY_ENTRY_MISSING = "directoryEntryMissing";
+	public static final String OUTJAR_IN_INPUT_PATH = "outjarInInputPath";
 	
 	public static final String XLINT_LOAD_ERROR = "problemLoadingXLint";
 	public static final String XLINTDEFAULT_LOAD_ERROR = "unableToLoadXLintDefault";
