@@ -356,7 +356,14 @@ compile and run, etc.
    for any clients (e.g., Emacs, AJDT).
    </li> 
 </ul>
-
+<p>Some failures with past releases to consider checking:
+<ul>
+  <li>debug info not included in .class files</li>
+  <li>Ant variables not filtered into doc files (e.g., ant-tasks.html)</li>
+  <li>Inconsistent version information between runtime and tools classes</li>
+  <li>Manual dates not changed in documentation.</li>
+</ul>
+   
 <h4>Release completion</h4>
 When the release build is accepted,
 tag the tree with the release version
