@@ -125,7 +125,7 @@ public class AjcTest extends RunSpecIterator {
         
         /** @param bugId 100..9999 */
         public void setBugId(int bugId) {
-            LangUtil.throwIaxIfFalse((bugId > 10) && (bugId < 10000), "bad bug id: " + bugId);
+            LangUtil.throwIaxIfFalse((bugId > 10) && (bugId < 1000000), "bad bug id: " + bugId);
             this.bugId = bugId;
         }
         
