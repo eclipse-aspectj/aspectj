@@ -133,6 +133,59 @@ public class AjcTaskTest extends TestCase {
         MESSAGES.setLength(0);
     }
     
+    public void testNullDestDir() {
+        AjcTask task = getTask(NOFILE, null);
+        String[] cmd = task.makeCommand();
+        
+        for (int i = 0; i < cmd.length; i++) {
+            assertTrue(!"-d".equals(cmd[i]));
+        }
+    }
+    
+    public void testOutputRequirement() {
+        AjcTask task = getTask("default.lst");
+        checkRun(task, null);
+
+        task = getTask("default.lst", null);
+        task.setCopyInjars(true);
+        checkRun(task, "copyInjars");
+
+        task = getTask("default.lst", null);
+        task.setSourceRootCopyFilter("*.java");
+        checkRun(task, "sourceRoot");
+    }
+    
+    private void checkRun(AjcTask task, String exceptionString) {
+        try {
+            task.execute();
+            assertTrue(null == exceptionString);
+        } catch (BuildException e) {
+            if(-1 == e.getMessage().indexOf(exceptionString)) {
+                assertEquals(exceptionString, e.getMessage());
+            }
+        }
+        
+    }
+
+    public void testCommandEditor() {
+        String className = VerboseCommandEditor.class.getName();
+        System.setProperty(AjcTask.COMMAND_EDITOR_NAME, className);
+        assertEquals(className, 
+            System.getProperty(AjcTask.COMMAND_EDITOR_NAME));
+        AjcTask task = getTask(NOFILE);
+        task.setCommandEditor(new VerboseCommandEditor());
+        String[] cmd = task.makeCommand();
+        assertEquals(VerboseCommandEditor.VERBOSE, cmd[0]);
+
+        task = getTask(NOFILE);
+        task.setCommandEditorClass(VerboseCommandEditor.class.getName());
+        cmd = task.makeCommand();
+        assertEquals(VerboseCommandEditor.VERBOSE, cmd[0]);
+    }
+//    public void testStaticCommandEditor() {
+//        // XXX need to test COMMAND_EDITOR, but can't require property when run
+//    }
+
     public void testLimitTo() {
         int numArgs = 100;
         String arg = "123456789";
@@ -191,10 +244,16 @@ public class AjcTaskTest extends TestCase {
     }
     
     protected AjcTask getTask(String input) {
+        return getTask(input, getTempDir());
+    }
+    
+    protected AjcTask getTask(String input, File destDir) {
         AjcTask task = new AjcTask();
         Project p = new Project();
         task.setProject(p);
-        task.setDestdir(getTempDir());
+        if (null != destDir) {
+            task.setDestdir(destDir);
+        }
         if (NOFILE.equals(input)) {
         	// add nothing
         } else if (input.endsWith(".lst")) {
@@ -218,7 +277,7 @@ public class AjcTaskTest extends TestCase {
         	}        
         }
         task.setClasspath(new Path(p, "../lib/test/aspectjrt.jar"));
-        task.setVerbose(true); // XXX    
+        //task.setVerbose(true);   
         return task;
     }
     
@@ -496,5 +555,46 @@ public class AjcTaskTest extends TestCase {
             	}
             }
         }
+    }
+}
+
+class VerboseCommandEditor implements ICommandEditor {
+    public static final String VERBOSE = "-verbose";
+    public String[] editCommand(String[] command) {
+        for (int i = 0; i < command.length; i++) {
+            if (VERBOSE.equals(command[i])) {
+                return command;
+            }
+        }
+        
+        String[] result = new String[1+command.length];
+        result[0] = VERBOSE;
+        System.arraycopy(result, 1, command, 0, command.length);
+        return result;
+    }
+}
+
+class AppendingCommandEditor implements ICommandEditor {
+    private static String[] NONE = new String[0];
+    public static ICommandEditor VERBOSE = 
+        new AppendingCommandEditor(new String[] {"-verbose"}, NONE);
+    public static ICommandEditor INVALID = 
+        new AppendingCommandEditor(NONE, new String[] {"-invalidOption"});
+
+    final String[] prefix;
+    final String[] suffix;
+
+    public AppendingCommandEditor(String[] prefix, String[] suffix) {
+        this.prefix = prefix;
+        this.suffix = suffix;
+    }
+
+    public String[] editCommand(String[] command) {
+        int len = command.length + prefix.length + suffix.length;
+        String[] result = new String[len];
+        System.arraycopy(result, 0, prefix, 0, prefix.length);
+        System.arraycopy(result, prefix.length, command, 0, command.length);
+        System.arraycopy(result, prefix.length + command.length, suffix, 0, suffix.length);
+        return result;
     }
 }

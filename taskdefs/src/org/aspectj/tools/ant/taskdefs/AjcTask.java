@@ -116,9 +116,6 @@ public class AjcTask extends MatchingTask {
             return "null javac";
         } else if (null == destDir) {
             destDir = javac.getDestdir();
-            if (null == destDir) {
-                destDir = new File(".");
-            }
         }
         // no null checks b/c AjcTask handles null input gracefully
         ajc.setProject(javac.getProject());
@@ -139,7 +136,9 @@ public class AjcTask extends MatchingTask {
         ajc.setTarget(javac.getTarget());        
         ajc.setSource(javac.getSource());        
         ajc.setEncoding(javac.getEncoding());        
-        ajc.setDestdir(destDir);        
+        if (DEFAULT_DESTDIR != destDir) {
+            ajc.setDestdir(destDir);
+        }        
         ajc.setBootclasspath(javac.getBootclasspath());
         ajc.setExtdirs(javac.getExtdirs());
         ajc.setClasspath(javac.getClasspath());        
@@ -224,7 +223,11 @@ public class AjcTask extends MatchingTask {
      */
     private static final int MAX_COMMANDLINE = 4096;
     
-    private static final File DEFAULT_DESTDIR = new File(".");
+    private static final File DEFAULT_DESTDIR = new File(".") {
+        public String toString() {
+            return "AjcTask.DEFAULT_DESTDIR";
+        }
+    };
     
     /** do not throw BuildException on fail/abort message with usage */
     private static final String USAGE_SUBSTRING = "AspectJ-specific options";
@@ -243,7 +246,12 @@ public class AjcTask extends MatchingTask {
 	 * @see org.aspectj.weaver.Lint 
 	 */
     private static final List VALID_XLINT;
-        
+
+    public static final String COMMAND_EDITOR_NAME
+        = AjcTask.class.getName() + ".COMMAND_EDITOR";
+
+    private static final ICommandEditor COMMAND_EDITOR;
+            
     static {
         String[] xs = new String[] 
             {   "serializableAspects", "incrementalFile"
@@ -263,7 +271,20 @@ public class AjcTask extends MatchingTask {
         
         xs = new String[] { "error", "warning", "ignore"};
         VALID_XLINT = Collections.unmodifiableList(Arrays.asList(xs));
-        
+    
+        ICommandEditor editor = null;
+        try {
+            String editorClassName = System.getProperty(COMMAND_EDITOR_NAME);
+            if (null != editorClassName) {
+                ClassLoader cl = AjcTask.class.getClassLoader();
+                Class editorClass = cl.loadClass(editorClassName);
+                editor = (ICommandEditor) editorClass.newInstance();
+            }
+        } catch (Throwable t) {
+            System.err.println("Warning: unable to load command editor");
+            t.printStackTrace(System.err);
+        }
+        COMMAND_EDITOR = editor;
     }
 	// ---------------------------- state and Ant interface thereto
     private boolean verbose;
@@ -291,6 +312,7 @@ public class AjcTask extends MatchingTask {
     private String[] adapterArguments;
 
     private IMessageHolder messageHolder;
+    private ICommandEditor commandEditor;
 
     // -------- resource-copying
     /** true if copying injar non-.class files to the output jar */
@@ -674,7 +696,32 @@ public class AjcTask extends MatchingTask {
             throw new BuildException(m, t);
         }
     }
-
+    
+    /** direct API for testing */
+    public void setCommandEditor(ICommandEditor editor) {
+        this.commandEditor = editor;
+    }
+    
+    /**
+     * Setup command-line filter.
+     * To do this staticly, define the environment variable
+     * <code>org.aspectj.tools.ant.taskdefs.AjcTask.COMMAND_EDITOR</code>
+     * with the <code>className</code> parameter.
+     * @param className the String fully-qualified-name of a class
+     *          reachable from this object's class loader,
+     *          implementing ICommandEditor, and 
+     *          having a public no-argument constructor.
+     * @throws BuildException if unable to create instance of className
+     */
+    public void setCommandEditorClass(String className) { // skip Ant interface?
+        try {
+            Class mclass = Class.forName(className);
+            setCommandEditor((ICommandEditor) mclass.newInstance());
+        } catch (Throwable t) {
+            String m = "unable to instantiate command editor: " + className;
+            throw new BuildException(m, t);
+        }
+    }
     //---------------------- Path lists
 
     /**
@@ -928,18 +975,38 @@ public class AjcTask extends MatchingTask {
 
         result.addAll(cmd.extractArguments());        
         addListArgs(result);
-        return (String[]) result.toArray(new String[0]);
+
+        String[] command = (String[]) result.toArray(new String[0]);
+        if (null != commandEditor) {
+            command = commandEditor.editCommand(command);
+        } else if (null != COMMAND_EDITOR) {
+            command = COMMAND_EDITOR.editCommand(command);
+        }
+        return command;
     }   
 
     /**
      * @throw BuildException if options conflict
      */
     protected void verifyOptions() {
+        StringBuffer sb = new StringBuffer();
         if (fork && isInIncrementalMode() && !isInIncrementalFileMode()) {
-            String m = "can fork incremental only using tag file";
-            throw new BuildException(m);
+            sb.append("can fork incremental only using tag file.\n");
         }
-
+        
+        if ((null == outjar) && (DEFAULT_DESTDIR == destDir)) { 
+            final String REQ = " requires dest dir or output jar.\n";            if (copyInjars) {
+                sb.append("copyInjars");
+                sb.append(REQ);
+            }
+            if (null != sourceRootCopyFilter) {
+                sb.append("sourceRootCopyFilter");
+                sb.append(REQ);
+            }
+        }
+        if (0 < sb.length()) {
+            throw new BuildException(sb.toString());
+        }
     }
 
     /**
@@ -1279,7 +1346,8 @@ public class AjcTask extends MatchingTask {
     private void completeDestdir() {
         if (!copyInjars && (null == sourceRootCopyFilter)) {
             return;
-        } else if (!destDir.canWrite()) {
+        } else if ((destDir == DEFAULT_DESTDIR)
+                    || !destDir.canWrite()) {
             String s = "unable to copy resources to destDir: " + destDir;
             throw new BuildException(s);
         }
