@@ -70,7 +70,7 @@ aspect A {
             : "adviceExecution() && within(A)";
 
     before() : initialization(DeclareWarning.new(..)) {
-        // CW 73
+        // CW 74
         long l = System.currentTimeMillis();
         if (0l == l) {
             throw new Error("never thrown");

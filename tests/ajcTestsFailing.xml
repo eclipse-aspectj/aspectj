@@ -48,7 +48,7 @@
             <message kind="warning" line="33"/>
             <message kind="warning" line="36"/>
             <message kind="warning" line="39"/>
-            <message kind="warning" line="73"/>
+            <message kind="warning" line="74"/>
         </compile>
     </ajc-test>
 
