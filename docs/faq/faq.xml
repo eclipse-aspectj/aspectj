@@ -23,7 +23,7 @@
        2003 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated November 13, 2003.
+  <para>Last updated November 25, 2003.
   </para>
   <para>
    This FAQ covers AspectJ versions 1.0 and 1.1.
@@ -2666,18 +2666,47 @@ aspect MyMarker extends MarkerExample {
       </qandaentry>
       <qandaentry>
         <question id="q:exampleprograms"
-            xreflabel="Q:Where do I find example programs?">
-          <para>Where do I find example programs?</para>
+            xreflabel="Q:Where do I find example programs and how-to's?">
+          <para>Where do I find example programs and how-to's?</para>
         </question>
         <answer>
-          <para>Some examples are distributed in the documentation release, 
-           and you can find other code in the discussions on the users list.
-           In the AspectJ CVS tree, there are prospective code samples in the 
-           <literal>docs</literal> module <literal>sandbox</literal>
-           and <literal>teaching</literal> directories.  
-           (Until they are published, these samples should be used only by 
-           programmers who can determine for themselves whether they
-           are correct.)
+          <para>There are a number of places to find sample code
+           and instructions for using AspectJ with other programming tools.
+		  <orderedlist>
+			<listitem><para>
+			The AspectJ release includes examples in its 
+          	<literal>doc</literal> directory.
+			</para></listitem>
+			
+			<listitem><para>
+           There is a community repository of sample code and tutorials
+           in the AspectJ CVS tree  
+           <literal>docs</literal> module <literal>sandbox</literal> directory.
+           These are extracted and published (online only) 
+           <ulink url="http://dev.eclipse.org/viewcvs/indextech.cgi/~checkout~/aspectj-home/sample-code.html">
+		   here
+           </ulink>.
+			</para></listitem>
+			
+			<listitem><para>
+			The <literal>teaching</literal> directory of the 
+			<literal>docs</literal> module contains public materials 
+			the AspectJ committers use for presentations, some of 
+			which include example code.  To access CVS, see
+			<xref linkend="q:buildingsource"/>.			
+			</para></listitem>
+			
+			<listitem><para>
+			The archives for the user and developer mailing lists 
+			contain many good examples.  To search the archives, see
+			<xref linkend="q:searchingsite"/>.
+			</para></listitem>
+		  </orderedlist>
+           This code can vary in quality.
+           Code that we publish or include with AspectJ is generally
+           correct.  However, code found in our CVS tree might not have 
+           been tested thoroughly, and code from the mailing lists might
+           be untested or use older versions of the language.
           </para>
         </answer>
       </qandaentry>
@@ -2691,6 +2720,8 @@ aspect MyMarker extends MarkerExample {
             examples folder in the distribution.
             These are "libraries" in the sense that they are reusable,
             but they are delivered in source form. 
+            Similarly, some of the sample code is reusable; for that,
+            see <xref linkend="q:exampleprograms"/>.
             If you develop such a library and want to make it available to 
             other users, feel to send it to the users mailing list
             <literal>aspectj-users@eclipse.org</literal>.
@@ -4444,6 +4475,7 @@ vmparam -Xmx384m
         <listitem><para><xref linkend="q:duplicateclass"/></para></listitem>
         <listitem><para><xref linkend="q:advicenotrunning"/></para></listitem>
         <listitem><para><xref linkend="q:exampleprograms"/></para></listitem>
+        <listitem><para><xref linkend="q:aspectlibraries"/></para></listitem>
         <listitem><para><xref linkend="q:newjoinpoints"/></para></listitem>
         <listitem><para><xref linkend="q:whitepapers"/></para></listitem>
         <listitem><para><xref linkend="q:implementation"/></para></listitem>
