@@ -15,13 +15,25 @@
 // default package
 
 import org.aspectj.internal.tools.ant.taskdefs.Checklics;
+import org.aspectj.internal.tools.build.Builder;
 import org.aspectj.internal.build.BuildModuleTest;
 import org.aspectj.internal.build.ModulesTest;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import junit.framework.*;
 
+/**
+ * Master suite for build module
+ * and test of all source directories for correct licenses and known file types.
+ */
 public class BuildModuleTests extends TestCase {
 
     /** if true, then replace old headers with new first */
@@ -46,13 +58,40 @@ public class BuildModuleTests extends TestCase {
         return null; // use permissive default
     }
 
+    final static List SOURCE_NAMES = Collections.unmodifiableList(
+            Arrays.asList(new String[]{"src", "testsrc", "java5-src", "aspectj-src"}));
+
+    /**
+     * @param moduleDir
+     * @return
+     */
+    private static File[] findSourceRoots(File moduleDir) {
+        ArrayList result = new ArrayList();
+        for (Iterator iter = SOURCE_NAMES.iterator(); iter.hasNext();) {
+            String name = (String) iter.next();
+            File srcDir = new File(moduleDir, name);
+            if (srcDir.canRead() && srcDir.isDirectory()) {
+                result.add(srcDir);
+            }
+        }
+        return (File[]) result.toArray(new File[0]);
+    }
+
     public BuildModuleTests(String name) { super(name); }
 
+    public void testSuffixList() {
+        if (!UnknownFileCheck.STATIC_ERRORS.isEmpty()) {
+            fail("" + UnknownFileCheck.STATIC_ERRORS);
+        }
+    }
     public void testLicense_ajbrowser() {
         checkLicense("ajbrowser");    
     }
     public void testLicense_ajde() {
         checkLicense("ajde");    
+    }
+    public void testLicense_aspectj5rt() {
+        checkLicense("aspectj5rt");    
     }
     public void testLicense_asm() {
         checkLicense("asm");    
@@ -74,7 +113,7 @@ public class BuildModuleTests extends TestCase {
         final String mod = "org.eclipse.jdt.core";
         final String pre = BASE_DIR + mod + "/";
         for (int i = 0; i < JDT_SOURCE_DIRS.length; i++) {
-            checkSourceDirectory(pre + JDT_SOURCE_DIRS[i], mod);    
+            checkSourceDirectory(new File(pre + JDT_SOURCE_DIRS[i]), mod);    
 		}
     }
     
@@ -101,19 +140,21 @@ public class BuildModuleTests extends TestCase {
     }
     public void testLicense_weaver() {
         String module = "weaver";
-        checkSourceDirectory("../" + module + "/src", module);
-        checkSourceDirectory("../" + module + "/testsrc/org", module);
+        checkSourceDirectory(new File("../" + module + "/src"), module);
+        checkSourceDirectory(new File("../" + module + "/testsrc/org"), module);
     }
     
     void checkLicense(String module) {
-        checkSourceDirectory("../" + module + "/src", module);
-        checkSourceDirectory("../" + module + "/testsrc", module);
+        File moduleDir = new File(".." + File.separator + module);
+        File[] srcDirs = findSourceRoots(moduleDir);
+        for (int i = 0; i < srcDirs.length; i++) {
+            checkSourceDirectory(srcDirs[i], module);
+        }
     }
     
-    void checkSourceDirectory(String path, String module) {
-        File moduleDir = new File(path);
-        final String label = "source dir " + moduleDir + " (module " + module + ")";
-        assertTrue(label,  (moduleDir.exists() && moduleDir.isDirectory()));
+    void checkSourceDirectory(File srcDir, String module) {
+        final String label = "source dir " + srcDir + " (module " + module + ")";
+        assertTrue(label,  (srcDir.exists() && srcDir.isDirectory()));
         String license = getLicense(module);
 //        if (replacing) {
 //            if (replacing && true) {
@@ -126,13 +167,120 @@ public class BuildModuleTests extends TestCase {
 //            assertTrue(!replaceFailed);
 //            license = Checklics.CPL_IBM_PARC_XEROX_TAG;
 //        }
-        int fails = Checklics.runDirect(moduleDir.getPath(), license, true);
+        int fails = Checklics.runDirect(srcDir.getPath(), license, true);
         if (0 != fails) {
             if (replacing) {
                 BuildModuleTests.replaceFailed = true;
             }
             assertTrue(label + " fails", !BuildModuleTests.replaceFailed);
         }
+        
+        // separate check to verify all file types (suffixes) are known
+        if (!"testsrc".equals(srcDir.getName())) {
+            ArrayList unknownFiles = new ArrayList();
+            UnknownFileCheck.SINGLETON.unknownFiles(srcDir, unknownFiles);
+            if (!unknownFiles.isEmpty()) {
+                String s = "unknown files (see readme-build-module.html to "
+                    + "update Builder.properties resource patterns): ";
+                fail(s + unknownFiles);
+            }
+        }
     }
+    /**
+     * Check tree for files not managed by the build system
+     * (either source files or managed as resources).  
+     * This should pick up situations where new kinds of resources are added
+     * to the tree without updating the build script patterns to pick them
+     * up.
+     * @see Builder#BINARY_SOURCE_PATTERN  
+     * @see Builder#RESOURCE_PATTERN
+     * @see org.aspectj.util.FileUtil#SOURCE_SUFFIXES
+     */
+    static class UnknownFileCheck implements FileFilter {
+        private static final UnknownFileCheck SINGLETON = new UnknownFileCheck();
+        private static final ArrayList STATIC_ERRORS = new ArrayList();
+        // Builder.BINARY_SOURCE_PATTERN and Builder.RESOURCE_PATTERN
+        public static final List KNOWN_SUFFIXES;
 
+        static {
+            List suffixes = new ArrayList();
+            // sources from org.aspectj.util.FileUtil.SOURCE_SUFFIXES
+            suffixes.add(".aj");
+            suffixes.add(".java");
+            
+            // just because we know...
+            suffixes.add(".html");
+
+            // others from Builder
+            final String input = Builder.BINARY_SOURCE_PATTERN 
+                + "," + Builder.RESOURCE_PATTERN;
+            StringTokenizer st = new StringTokenizer(input, ",");
+            while (st.hasMoreTokens()) {
+                String token = st.nextToken().trim();
+                if (0 == token.length()) {
+                    continue;
+                }
+                if (token.startsWith("**/*.")) {
+                    token = token.substring(4);
+                } else if (token.startsWith("*.")) {
+                    token = token.substring(1);
+                } else {
+                    String s = input + " at \"" + token + "\"";
+                    STATIC_ERRORS.add("unable to read pattern: " + s);
+                }
+                suffixes.add(token);
+            }            
+            KNOWN_SUFFIXES = Collections.unmodifiableList(suffixes);
+        }
+        
+        private UnknownFileCheck() {
+            
+        }
+        /**
+         * Return true if input File file is a valid path to a directory 
+         * or to a file
+         * which is not hidden (starts with .)
+         * and does not have a known suffix.
+         * Caller is responsible for pruning CVS directories
+         * @return true iff unknown or a directory
+         */
+        public boolean accept(File file) {
+            if (null == file) {
+                return false;
+            }            
+            if (file.isDirectory()) {
+                return file.canRead();
+            }
+
+            String name = file.getName();
+            if ("CVS".equals(name) || name.startsWith(".")) {
+                return false;
+            }
+            // to do not accepting uppercase suffixes...
+            for (Iterator iter = KNOWN_SUFFIXES.iterator(); iter.hasNext();) {
+                String suffix = (String) iter.next();
+                if (name.endsWith(suffix)) {
+                    return false;
+                }
+            }
+            return true;
+            
+        }
+        void unknownFiles(File dir, ArrayList results) {
+            File[] files = dir.listFiles(this);
+            for (int j = 0; j < files.length; j++) {
+                File file = files[j];
+                if (file.isDirectory()) {
+                    String name = file.getName();
+                    if (!("CVS".equals(name))) {
+                        unknownFiles(file, results);
+                    }
+                } else {
+                    results.add(file);
+                }
+            }
+        }
+        
+    }
 }  
+
