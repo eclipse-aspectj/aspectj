@@ -44,7 +44,7 @@ public class ClassPathManager {
     private static final int MAXOPEN_DEFAULT = 1000;
 	
 	static {
-		String openzipsString = getSystemPropertyWithoutSecurityException("org.aspectj.weaver.openzips",Integer.toString(MAXOPEN_DEFAULT));
+		String openzipsString = getSystemPropertyWithoutSecurityException("org.aspectj.weaver.openarchives",Integer.toString(MAXOPEN_DEFAULT));
 		maxOpenArchives=Integer.parseInt(openzipsString);
 		if (maxOpenArchives<20) maxOpenArchives=1000;
 	}
