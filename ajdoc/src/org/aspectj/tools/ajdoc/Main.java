@@ -395,6 +395,7 @@ public class Main implements Config {
 	        	while(st.hasMoreElements()) {
 	        		argList.add((String)st.nextElement());
 	        	}
+	        	//System.err.println(argList);
 	        	args = new String[argList.size()];
 	        	int counter = 0;
 	        	for (Iterator it = argList.iterator(); it.hasNext(); ) {
@@ -512,6 +513,12 @@ public class Main implements Config {
             }
             else if (arg.equals("-XajdocDebug")) {
             	deleteTempFilesOnExit = false;
+            } 
+            else if (arg.equals("-use")) {
+            	System.out.println("> Ignoring unsupported option: -use");
+            } 
+            else if (arg.equals("-splitindex")) {
+            	// passed to javadoc
             } 
             else if (arg.startsWith("-") || addNextAsOption) {
                 if ( arg.equals( "-private" ) ) {
