@@ -27,8 +27,15 @@ public class NullIdeTaskListManager implements TaskListManager {
 	
 	List sourceLineTasks = new ArrayList();
 
-    public void addSourcelineTask(String message, ISourceLocation sourceLocation, IMessage.Kind kind) {
-    	sourceLineTasks.add(new SourceLineTask(message,sourceLocation,kind));
+    public void addSourcelineTask(
+        String message,
+        ISourceLocation sourceLocation,
+        IMessage.Kind kind) {
+        addSourcelineTask(new Message(message, kind, null, sourceLocation));
+    }
+    
+    public void addSourcelineTask(IMessage message) {
+    	sourceLineTasks.add(new SourceLineTask(message));
 //    	System.out.println("> added sourceline task: " + message + ", file: " + sourceLocation.getSourceFile().getAbsolutePath()
 //    		+ ": " +  sourceLocation.getLine());
     }
@@ -57,11 +64,21 @@ public class NullIdeTaskListManager implements TaskListManager {
 		public ISourceLocation location;
 		public IMessage.Kind kind;
 		
-		public SourceLineTask(String m,ISourceLocation l,IMessage.Kind k) {
-			message = m;
-			location = l;
-			kind = k;
+		public SourceLineTask(IMessage m) {
+			message = m.getMessage();
+			location = m.getISourceLocation();
+			kind = m.getKind();
 		}
+        public String toString() {
+            String loc = "<no location";
+            if (null != location) {
+                loc = location.getSourceFile() + ":" + location.getLine();
+            }
+            return "SourceLineTask [" + message 
+                + ", " + loc
+                + ", " + kind
+                + "]";
+        }
 	}
 }
   
