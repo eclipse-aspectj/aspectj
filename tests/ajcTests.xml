@@ -7794,6 +7794,18 @@
              text="void Subclass.nonstaticMethod() cannot override void Superclass.nonstaticMethod(); overriding method is static"/>
         </compile>
     </ajc-test>
+   
+      <ajc-test dir="new"
+      title="if(false) optimisation" pr="48990">
+        <compile files="IfFalse.aj"/>
+        <run class="IfFalse"/>
+    </ajc-test>
+   
+    <ajc-test dir="new"
+      title="if(true) optimisation" pr="48990">
+        <compile files="IfTrue.aj"/>
+        <run class="IfTrue"/>
+    </ajc-test> 
     
     <ajc-test dir="bugs/abstractITDs"
 		pr="64331" title="java.lang.NullPointerException in WeaverMessageHandler class">

@@ -23,9 +23,11 @@ import org.aspectj.weaver.patterns.Pointcut;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
+import org.eclipse.jdt.internal.compiler.ast.FalseLiteral;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
 import org.eclipse.jdt.internal.compiler.ast.Statement;
+import org.eclipse.jdt.internal.compiler.ast.TrueLiteral;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
@@ -64,8 +66,15 @@ public class IfPseudoToken extends PseudoToken {
 	}
 	
 	public Pointcut maybeGetParsedPointcut() {
-		pointcut = new IfPointcut(new ResolvedMember(Member.METHOD, TypeX.OBJECT, 0, "if_", "()V"), 0);
+		if (expr instanceof FalseLiteral) {
+			return IfPointcut.makeIfFalsePointcut(Pointcut.SYMBOLIC);
+		} else if (expr instanceof TrueLiteral) {
+			return IfPointcut.makeIfTruePointcut(Pointcut.SYMBOLIC);
+		} else {
+		  pointcut = new IfPointcut(new ResolvedMember(Member.METHOD, TypeX.OBJECT, 0, "if_", "()V"), 0);
+		}
 		return pointcut;
+		
 	}
 
 

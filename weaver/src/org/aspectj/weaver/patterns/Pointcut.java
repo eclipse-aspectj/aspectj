@@ -103,6 +103,8 @@ public abstract class Pointcut extends PatternNode {
 	public static final byte CFLOW = 10;
 	public static final byte WITHINCODE = 12;
 	public static final byte HANDLER = 13;
+	public static final byte IF_TRUE = 14;
+	public static final byte IF_FALSE = 15;
 	
 	public static final byte NONE = 20;
 
@@ -217,6 +219,8 @@ public abstract class Pointcut extends PatternNode {
 			case CFLOW: ret = CflowPointcut.read(s, context); break;
 			case WITHINCODE: ret = WithincodePointcut.read(s, context); break;
 			case HANDLER: ret = HandlerPointcut.read(s, context); break;
+			case IF_TRUE: ret = IfPointcut.makeIfTruePointcut(RESOLVED); break;
+			case IF_FALSE: ret = IfPointcut.makeIfFalsePointcut(RESOLVED); break;
 			
 			case NONE: ret = makeMatchesNothing(RESOLVED); break;
 			default:
@@ -283,7 +287,8 @@ public abstract class Pointcut extends PatternNode {
     	ret.state = state;
     	return ret;
     }
-    
+ 
+
 	public void assertState(State state) {
 		if (this.state != state) {
 			throw new BCException("expected state: " + state + " got: " + this.state);

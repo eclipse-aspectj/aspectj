@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.aspectj.bridge.IMessage;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.ISourceContext;
@@ -204,4 +205,139 @@ public class IfPointcut extends Pointcut {
 		return ret;
 	}
 
+//	public static Pointcut MatchesNothing = new MatchesNothingPointcut();
+//	??? there could possibly be some good optimizations to be done at this point
+	public static IfPointcut makeIfFalsePointcut(State state) {
+		IfPointcut ret = new IfFalsePointcut();
+		ret.state = state;
+		return ret;
+	}
+
+	private static class IfFalsePointcut extends IfPointcut {
+		
+		public IfFalsePointcut() {
+			super(null,0);
+		}
+		
+		public Test findResidue(Shadow shadow, ExposedState state) {
+			return Literal.FALSE; // can only get here if an earlier error occurred
+		}
+
+		public FuzzyBoolean fastMatch(FastMatchInfo type) {
+			return FuzzyBoolean.NO;
+		}
+		
+		public FuzzyBoolean match(Shadow shadow) {
+			return FuzzyBoolean.NO;
+		}
+		
+		public FuzzyBoolean match(JoinPoint.StaticPart jpsp) {
+			return FuzzyBoolean.NO;
+		}
+
+		public void resolveBindings(IScope scope, Bindings bindings) {
+		}
+		
+		public void resolveBindingsFromRTTI() {
+		}
+
+		public void postRead(ResolvedTypeX enclosingType) {
+		}
+
+		public Pointcut concretize1(
+			ResolvedTypeX inAspect,
+			IntMap bindings) {
+			if (isDeclare(bindings.getEnclosingAdvice())) {
+				// Enforce rule about which designators are supported in declare
+				inAspect.getWorld().showMessage(IMessage.ERROR,
+				  "if() pointcut designator cannot be used in declare statement",
+				  bindings.getEnclosingAdvice().getSourceLocation(),
+				  null);
+				return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
+			}
+			return makeIfFalsePointcut(state);
+		}
+
+
+		public void write(DataOutputStream s) throws IOException {
+			s.writeByte(Pointcut.IF_FALSE);
+		}
+		
+	    public int hashCode() {
+	        int result = 17;
+	        return result;
+	    }
+		
+	    public String toString() {
+			return "if(false)";
+		}	
+	}
+
+	public static IfPointcut makeIfTruePointcut(State state) {
+		IfPointcut ret = new IfTruePointcut();
+		ret.state = state;
+		return ret;
+	}
+
+	private static class IfTruePointcut extends IfPointcut {		
+			
+		public IfTruePointcut() {
+			super(null,0);
+		}
+		
+		public Test findResidue(Shadow shadow, ExposedState state) {
+			return Literal.TRUE; // can only get here if an earlier error occurred
+		}
+
+		public FuzzyBoolean fastMatch(FastMatchInfo type) {
+			return FuzzyBoolean.YES;
+		}
+		
+		public FuzzyBoolean match(Shadow shadow) {
+			return FuzzyBoolean.YES;
+		}
+		
+		public FuzzyBoolean match(JoinPoint.StaticPart jpsp) {
+			return FuzzyBoolean.YES;
+		}
+
+		public void resolveBindings(IScope scope, Bindings bindings) {
+		}
+		
+		public void resolveBindingsFromRTTI() {
+		}
+
+		public void postRead(ResolvedTypeX enclosingType) {
+		}
+
+		public Pointcut concretize1(
+			ResolvedTypeX inAspect,
+			IntMap bindings) {
+			if (isDeclare(bindings.getEnclosingAdvice())) {
+				// Enforce rule about which designators are supported in declare
+				inAspect.getWorld().showMessage(IMessage.ERROR,
+				  "if() pointcut designator cannot be used in declare statement",
+				  bindings.getEnclosingAdvice().getSourceLocation(),
+				  null);
+				return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
+			}
+			return makeIfTruePointcut(state);
+		}
+
+
+		public void write(DataOutputStream s) throws IOException {
+			s.writeByte(IF_TRUE);
+		}
+		
+	    public int hashCode() {
+	        int result = 37;
+	        return result;
+	    }
+		
+	    public String toString() {
+			return "if(true)";
+		}	
+	}
+
 }
+
