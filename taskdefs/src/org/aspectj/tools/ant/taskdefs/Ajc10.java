@@ -17,10 +17,12 @@ import org.apache.tools.ant.types.*;
 import org.apache.tools.ant.types.Path;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.tools.ajc.Main;
+import org.aspectj.tools.ajc.Main.MessagePrinter;
 import org.apache.tools.ant.taskdefs.*;
 import org.apache.tools.ant.taskdefs.compilers.*;
 import java.io.*;
@@ -65,6 +67,7 @@ public class Ajc10 extends MatchingTask {
     private List argfiles;
     private boolean fork;
     private boolean failonerror;
+    private boolean verbose;
 	private String encoding;
 	private String source;
 
@@ -87,6 +90,7 @@ public class Ajc10 extends MatchingTask {
 
     public void setVerbose(boolean verbose) {  // javac-also eajc-also docDone
         setif(verbose, "-verbose");
+        this.verbose = verbose;
     }
 
     public void setVersion(boolean version) {  // javac-also eajc-also docDone
@@ -574,7 +578,17 @@ public class Ajc10 extends MatchingTask {
     protected int spoon() throws BuildException {
         //if (version) version(null);
         int result = -1;
-    	IMessageHolder holder = new MessageHandler();
+        final IMessageHolder holder;
+        {
+	    	MessageHandler handler = new MessageHandler();
+	    	if (!verbose) {
+	  			handler.ignore(IMessage.INFO);
+	  		}
+	    	final IMessageHandler delegate 
+	    		= verbose ? MessagePrinter.VERBOSE: MessagePrinter.TERSE;
+			handler.setInterceptor(delegate);
+			holder = handler;
+        }
         try {
             String[] args = cmd.getCommandline();
             // XXX avoid rendering if not verbosely logging?
@@ -609,15 +623,22 @@ public class Ajc10 extends MatchingTask {
                 }
             }
             if (null != t) {
-                t.printStackTrace();
-                throw new BuildException("Couldn't create compiler!",
-                                         t, location);
+                // t.printStackTrace(); // let recipient print
+                throw new BuildException("Compiler failure", t, location);
             }
         } finally {
-        	if (0 < holder.numMessages(null, true)) {
-        		MessageUtil.print(System.err, holder, "");
-        	}
-        	// XXX handle ABORT messages by throwing?
+        	// now printing messages as we go, above
+//			IMessage.Kind level = (verbose ? IMessage.INFO : IMessage.WARNING);
+//        	if (0 < holder.numMessages(level, true)) {
+//        		final String prefix = "";
+//        		final boolean printSummary = false;
+//        		MessageUtil.print(System.err, 
+//        			holder, 
+//        			prefix, 
+//        			MessageUtil.MESSAGE_ALL,
+//        			(verbose ? MessageUtil.PICK_INFO_PLUS : MessageUtil.PICK_WARNING_PLUS),
+//        			printSummary);
+//        	}
         }
         return result;
     }
