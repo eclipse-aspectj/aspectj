@@ -49,6 +49,7 @@ import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.Select;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
@@ -1036,6 +1037,15 @@ public final class LazyMethodGen {
     public boolean isPrivate() {
         return Modifier.isPrivate(getAccessFlags());
     }
+    public boolean isProtected() {
+        return Modifier.isProtected(getAccessFlags());
+    }
+    public boolean isDefault() {
+        return !(isProtected() || isPrivate() || isPublic());
+    }
+    public boolean isPublic() {
+        return Modifier.isPublic(getAccessFlags());
+    }
 
 
 	// ----
@@ -1241,6 +1251,11 @@ public final class LazyMethodGen {
     	return memberView.isAjSynthetic();
     }
     
+    public ISourceLocation getSourceLocation() {
+      if (memberView!=null) return memberView.getSourceLocation();
+      return null;
+    }
+    
     public AjAttribute.EffectiveSignatureAttribute getEffectiveSignature() {
     	//if (memberView == null) return null;
     	return memberView.getEffectiveSignature();
@@ -1251,6 +1266,11 @@ public final class LazyMethodGen {
 		return Member.typesToSignature(BcelWorld.fromBcel(getReturnType()), 
 										BcelWorld.fromBcel(getArgumentTypes()));
 	}
+    
+    public String getParameterSignature() {
+        if (memberView!=null) return memberView.getParameterSignature();
+        return Member.typesToSignature(BcelWorld.fromBcel(getArgumentTypes()));
+    }
 
 	public BcelMethod getMemberView() {
 		return memberView;
