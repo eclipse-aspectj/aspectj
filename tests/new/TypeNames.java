@@ -31,9 +31,9 @@ class MySuffix {
 
 aspect A {
     // BUG: This is all that's required to provoke the bug in -Xlint mode
-    public String (*..*Suffix).toString() {  // lint: no type matched
-        return "ok";
-    }
+    declare parents: *..*Suffix implements Runnable;  // lint: no type matched
+ 
+ 
 
     // coverage cases
     before() : staticinitialization(*..*Suffix) { // lint: no type matched
