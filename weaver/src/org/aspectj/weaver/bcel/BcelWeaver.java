@@ -839,12 +839,28 @@ public class BcelWeaver implements IWeaver {
 		}
 								
 		requestor.addingTypeMungers();
-		//XXX this isn't quite the right place for this...
-		for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
-		    UnwovenClassFile classFile = (UnwovenClassFile)i.next();
-		    String className = classFile.getClassName();
-		    addTypeMungers(className);
-		}
+        
+        // We process type mungers in two groups, first mungers that change the type
+        // hierarchy, then 'normal' ITD type mungers.
+        
+        
+        // Process the types in a predictable order (rather than the order encountered).
+        // For class A, the order is superclasses of A then superinterfaces of A
+        // (and this mechanism is applied recursively)
+        List typesToProcess = new ArrayList();
+        for (Iterator iter = input.getClassFileIterator(); iter.hasNext();) {
+			UnwovenClassFile clf = (UnwovenClassFile) iter.next();
+            typesToProcess.add(clf.getClassName());
+        }
+        while (typesToProcess.size()>0) {
+            weaveParentsFor(typesToProcess,(String)typesToProcess.get(0));
+        }  
+        
+        for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
+            UnwovenClassFile classFile = (UnwovenClassFile)i.next();
+            String className = classFile.getClassName();
+            addNormalTypeMungers(className);
+        }
 
 		requestor.weavingAspects();
 		// first weave into aspects
@@ -875,6 +891,37 @@ public class BcelWeaver implements IWeaver {
 		requestor.weaveCompleted();
 		
     	return wovenClassNames;
+    }
+    
+    /**
+     * 'typeToWeave' is one from the 'typesForWeaving' list.  This routine ensures we process
+     * supertypes (classes/interfaces) of 'typeToWeave' that are in the 
+     * 'typesForWeaving' list before 'typeToWeave' itself.  'typesToWeave' is then removed from
+     * the 'typesForWeaving' list.
+     * 
+     * Note: Future gotcha in here ... when supplying partial hierarchies, this algorithm may
+     * break down.  If you have a hierarchy A>B>C and only give A and C to the weaver, it 
+     * may choose to weave them in either order - but you'll probably have other problems if
+     * you are supplying partial hierarchies like that !
+     */
+    private void weaveParentsFor(List typesForWeaving,String typeToWeave) {
+        // Look at the supertype first
+    	ResolvedTypeX rtx = world.resolve(typeToWeave);
+        ResolvedTypeX superType = rtx.getSuperclass();
+        if (superType!=null && typesForWeaving.contains(superType.getClassName())) {
+            weaveParentsFor(typesForWeaving,superType.getClassName());
+        }
+        
+        // Then look at the superinterface list
+        ResolvedTypeX[] interfaceTypes = rtx.getDeclaredInterfaces();
+        for (int i = 0; i < interfaceTypes.length; i++) {
+            ResolvedTypeX rtxI = interfaceTypes[i];
+            if (typesForWeaving.contains(rtxI.getClassName())) {
+                weaveParentsFor(typesForWeaving,rtxI.getClassName());
+            }
+        }
+        weaveParentTypeMungers(rtx); // Now do this type
+        typesForWeaving.remove(typeToWeave); // and remove it from the list of those to process
     }
     
     public void prepareToProcessReweavableState() {
@@ -941,8 +988,12 @@ public class BcelWeaver implements IWeaver {
     }
  
     
-    public void addTypeMungers(String typeName) {
-    	weave(world.resolve(typeName));
+    public void addParentTypeMungers(String typeName) {
+    	weaveParentTypeMungers(world.resolve(typeName));
+    }
+    
+    public void addNormalTypeMungers(String typeName) {
+        weaveNormalTypeMungers(world.resolve(typeName));
     }
 
     public UnwovenClassFile[] getClassFilesFor(LazyClassGen clazz) {
@@ -958,7 +1009,7 @@ public class BcelWeaver implements IWeaver {
     	return ret;
     }
     
-	public void weave(ResolvedTypeX onType) {
+	public void weaveParentTypeMungers(ResolvedTypeX onType) {
 		onType.clearInterTypeMungers();
 		
 		// need to do any declare parents before the matching below
@@ -970,20 +1021,20 @@ public class BcelWeaver implements IWeaver {
 				//System.err.println("need to do declare parents for: " + onType);
 				for (Iterator j = newParents.iterator(); j.hasNext(); ) {
 					ResolvedTypeX newParent = (ResolvedTypeX)j.next();
-					if (newParent.isClass()) {
-						world.showMessage(IMessage.ERROR,
-								WeaverMessages.format(WeaverMessages.DECP_BINARY_LIMITATION,onType.getName()),
-								p.getSourceLocation(), null);
-						continue;
-					}
-					
+					                                        
+					// We set it here so that the following matching for ITDs can succeed - we 
+                    // still haven't done the necessary changes to the class file itself 
+                    // (like transform super calls) - that is done in BcelTypeMunger.mungeNewParent()
 					classType.addParent(newParent);
 					ResolvedTypeMunger newParentMunger = new NewParentTypeMunger(newParent);
+                    newParentMunger.setSourceLocation(p.getSourceLocation());
 					onType.addInterTypeMunger(new BcelTypeMunger(newParentMunger, xcutSet.findAspectDeclaringParents(p)));
 				}
 			}
 		}
-		
+    }
+    
+    public void weaveNormalTypeMungers(ResolvedTypeX onType) {
 		for (Iterator i = typeMungerList.iterator(); i.hasNext(); ) {
 			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
 			if (m.matches(onType)) {
