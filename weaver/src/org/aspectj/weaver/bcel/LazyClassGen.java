@@ -104,7 +104,7 @@ public final class LazyClassGen {
 	private Unknown getSourceDebugExtensionAttribute() {
 		int nameIndex = constantPoolGen.addUtf8("SourceDebugExtension");
 		String data = getSourceDebugExtensionString();
-		System.err.println(data);
+		//System.err.println(data);
 		byte[] bytes = Utility.stringToUTF(data);
 		int length = bytes.length;
 
