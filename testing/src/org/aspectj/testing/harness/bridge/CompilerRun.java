@@ -26,6 +26,7 @@ import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
- * Run the compiler once in non-incremental mode.
+ * Run the compiler once.
  * The lifecycle is as follows:
  * <ul>
  * <li>Spec (specification) is created.</li>
@@ -53,6 +54,8 @@ import java.util.ListIterator;
  * <li>Paths are resolved absolutely, which fails to test the
  *     compiler's ability to find files relative to a source base</li>
  * <li>This does not enforce the lifecycle.</li>
+ * <li>This must be used as the initial compile 
+ *     before doing an incremental compile </li>
  * </ul>
  */
 public class CompilerRun implements IAjcRun {
@@ -104,6 +107,10 @@ public class CompilerRun implements IAjcRun {
      * {Sandbox. testBaseSrcDir} / {Spec.aspectpath..}</li>
      * </ul>
      * All sources must be readable at this time.
+     * If staging, the source files and source roots are copied
+     * to a separate staging directory so they can be modified
+     * for incremental tests.   Note that (as of this writing) the
+     * compiler only handles source roots for incremental tests.
      * @param classesDir the File
 	 * @see org.aspectj.testing.harness.bridge.AjcTest.IAjcRun#setup(File, File)
      * @throws AbortException containing IOException or IllegalArgumentException
@@ -152,14 +159,18 @@ public class CompilerRun implements IAjcRun {
             || !validator.canRead(testBaseSrcDir, injarPaths, "injars")
             || !validator.canRead(testBaseSrcDir, spec.argfiles, "argfiles")
             || !validator.canRead(testBaseSrcDir, spec.classpath, "classpath")
-            || !validator.canRead(testBaseSrcDir, spec.aspectpath, "aspectpath")) {
+            || !validator.canRead(testBaseSrcDir, spec.aspectpath, "aspectpath")
+            || !validator.canRead(testBaseSrcDir, spec.sourceroots, "sourceroots")
+            ) {
             return false;
         }
-        int numSources = srcPaths.length + injarPaths.length + spec.argfiles.length;
+        
+        int numSources = srcPaths.length + injarPaths.length 
+            + spec.argfiles.length + spec.sourceroots.length;
         if (numSources < 1) {
-            validator.fail("no source files, input jars, or arg files");
+            validator.fail("no input jars, arg files, or source files or roots");
             return false;
-        }
+        } 
         
         final File[] argFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, spec.argfiles);
         final File[] injarFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, injarPaths);
@@ -174,13 +185,38 @@ public class CompilerRun implements IAjcRun {
         }
 
         final File[] srcFiles;
-
+        File[] sourcerootFiles = new File[0];
         // source text files are copied when staging incremental tests
         if (!spec.isStaging()) { // XXX why this? was always? || (testBaseSrcDir != sandbox.stagingDir))) {
             srcFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, srcPaths, CompilerRun.SOURCE_SUFFIXES);
+            if (!LangUtil.isEmpty(spec.sourceroots)) {
+                sourcerootFiles = FileUtil.getBaseDirFiles(testBaseSrcDir, spec.sourceroots, null);
+            }
         } else { // staging - copy files
             try {
                 srcFiles = FileUtil.copyFiles(testBaseSrcDir, srcPaths, sandbox.stagingDir);
+                if (!LangUtil.isEmpty(spec.sourceroots)) {
+                    sourcerootFiles = FileUtil.copyFiles(testBaseSrcDir, spec.sourceroots, sandbox.stagingDir);
+                    // delete incremental files in sourceroot after copying // XXX inefficient
+                    FileFilter pickIncFiles = new FileFilter() {
+                        // XXX weak rule to find incremental files
+                        public boolean accept(File file) {
+                            if (file.isDirectory()) { // continue recursion
+                                return true;
+                            }
+                            String path = file.getPath();
+                            if (!FileUtil.hasSourceSuffix(path)) {
+                                return false;
+                            }
+                            int first = path.indexOf(".");
+                            int last = path.lastIndexOf(".");
+                            return (first != last);
+                        }
+                    };
+                    for (int i = 0; i < sourcerootFiles.length; i++) {
+                        FileUtil.deleteContents(sourcerootFiles[i], pickIncFiles, false);
+                    }
+                }
             } catch (IllegalArgumentException e) {
                 validator.fail("staging - bad input", e);
                 return false;
@@ -193,6 +229,11 @@ public class CompilerRun implements IAjcRun {
             return false;
         }
         arguments.clear();
+        if (!LangUtil.isEmpty(sourcerootFiles)) {
+            arguments.add("-sourceroots");
+            String sr = FileUtil.flatten(sourcerootFiles, null);
+            arguments.add(sr);
+        }
         if (!LangUtil.isEmpty(srcFiles)) {
             arguments.addAll(Arrays.asList(FileUtil.getPaths(srcFiles)));
         }
@@ -223,6 +264,7 @@ public class CompilerRun implements IAjcRun {
         if (0 < aspectFiles.length) {
             sandbox.setAspectpath(aspectFiles, checkReadable, this);
         }
+                
         return true;
     }
     
@@ -434,6 +476,7 @@ public class CompilerRun implements IAjcRun {
         protected String[] argfiles = new String[0];
         protected String[] aspectpath = new String[0];
         protected String[] classpath = new String[0];
+        protected String[] sourceroots = new String[0];
         
         /** src path = {suiteParentDir}/{testBaseDirOffset}/{testSrcDirOffset}/{path} */
         protected String testSrcDirOffset;
@@ -491,7 +534,18 @@ public class CompilerRun implements IAjcRun {
                 classpath = XMLWriter.unflattenList(files);
             }
         }
-        
+
+        /** 
+         * Set source roots, deleting any old ones
+         * @param files comma-delimited list of directories
+         *  - ignored if null or empty
+         */        
+        public void setSourceroots(String dirs) {
+            if (!LangUtil.isEmpty(dirs)) {
+                sourceroots = XMLWriter.unflattenList(dirs);
+            }
+        }
+
         /** 
          * Set aspectpath, deleting any old ones
          * @param files comma-delimited list of aspect jars - ignored if null or
@@ -744,7 +798,18 @@ public class CompilerRun implements IAjcRun {
                     }
                 }
             }
-            
+            // send info messages about
+            // forced staging when -incremental
+            // or staging but no -incremental flag
+            int incLoc = argList.indexOf("-incremental");
+            if (spec.isStaging()) {
+                if (-1 == incLoc) { // staging and no flag
+                    MessageUtil.info(handler, "staging but no -incremental flag");
+                }
+            } else if (-1 != incLoc) { // flagged but not staging - stage
+                spec.setStaging(true);
+                MessageUtil.info(handler, "-incremental forcing staging");
+            }
             // remove funky prefixes from remainder, fixup two-part flags
             // and interpret special flags
             boolean source14 = false;
@@ -900,6 +965,9 @@ public class CompilerRun implements IAjcRun {
             }
             if (!LangUtil.isEmpty(argfiles)) {
                 out.printAttribute("argfiles", XMLWriter.flattenFiles(argfiles));
+            }
+            if (!LangUtil.isEmpty(sourceroots)) {
+                out.printAttribute("sourceroots", XMLWriter.flattenFiles(argfiles));
             }
             super.writeAttributes(out);
             out.endAttributes();

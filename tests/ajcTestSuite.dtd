@@ -19,6 +19,7 @@
    <!ATTLIST compile aspectpath CDATA #IMPLIED >
    <!ATTLIST compile classpath CDATA #IMPLIED >
    <!ATTLIST compile options CDATA #IMPLIED >
+   <!ATTLIST compile sourceroots CDATA #IMPLIED >
 
    <!ELEMENT inc-compile (dir-changes*,message*)>
    <!ATTLIST inc-compile tag CDATA #REQUIRED >
