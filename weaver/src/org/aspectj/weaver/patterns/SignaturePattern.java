@@ -582,4 +582,9 @@ public class SignaturePattern extends PatternNode {
 		return annotationPattern;
 	}
 
+
+	public boolean isStarAnnotation() {
+		return annotationPattern == AnnotationTypePattern.ANY;
+	}
+
 }
