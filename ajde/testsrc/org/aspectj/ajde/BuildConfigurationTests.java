@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.TestSuite;
 
 /**
@@ -432,7 +433,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 	public void testAspectPath() {
 		Set aspects = new HashSet();
 		projectProperties.setAspectPath( aspects );
-		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+		buildConfig = compilerAdapter.genBuildConfig( configFile );
 		List aPath = buildConfig.getAspectpath();	
 		assertTrue( "no aspect path", aPath.isEmpty() );
 		
@@ -440,7 +441,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		aspects.add( f );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
 		List aPath2 = buildConfig.getAspectpath();	
-		assertTrue( "one jar in path", aPath2.size() == 1 );
+		assertEquals("aspectpath", 1, aPath2.size());
 		assertTrue( "1 aspectpath", aPath2.contains(f) );
 
 		
@@ -457,43 +458,44 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		String outJar = "mybuild.jar";
 		projectProperties.setOutJar( outJar );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
-		assertEquals( "out jar", outJar, buildConfig.getOutputJar().toString() );				
+		assertNotNull("output jar", buildConfig.getOutputJar());
+        assertEquals( "out jar", outJar, buildConfig.getOutputJar().toString() );				
 	}
 
 	protected void setUp() throws Exception {
-		preferencesAdapter = new UserPreferencesStore();
+		preferencesAdapter = new UserPreferencesStore(false);
 		buildOptions = new AjcBuildOptions(preferencesAdapter);
 		compilerAdapter = new CompilerAdapter();
 		projectProperties = new NullIdeProperties( "" );
-		init();
+        
+        try {
+            String s = null;
+            Ajde.init(
+                null,
+                null,
+                null,
+                projectProperties,  
+                buildOptions,
+                null,
+                null,
+                null);  
+                
+            //Ajde.getDefault().enableLogging( System.out );
+        } catch (Throwable t) {
+            AssertionFailedError e = new AssertionFailedError();
+            e.initCause(t);
+            throw e;
+        }
 	}
 	
-		protected void tearDown() throws Exception {
+	protected void tearDown() throws Exception {
 		super.tearDown();
-		buildOptions.setCharacterEncoding("");
+        preferencesAdapter = null;
+        buildOptions = null;
+        compilerAdapter = null;
+        projectProperties = null;
 	}
 
-	public void init() {
-		try {
-			Ajde.init(
-				null,
-				null,
-				null,
-				projectProperties,  
-				buildOptions,
-				null,
-				null,
-				null);	
-				
-			//Ajde.getDefault().enableLogging( System.out );
-		} catch (Throwable t) {
-			t.printStackTrace();
-			Ajde.getDefault().getErrorHandler().handleError(
-				"Ajde failed to initialize.",
-				t);
-		}
-	}
-	
 	private void assertOptionEquals( String reason, Map options, String optionName, String value) {
 		String mapValue = (String) options.get(optionName);
 		assertEquals( reason, value, mapValue );
