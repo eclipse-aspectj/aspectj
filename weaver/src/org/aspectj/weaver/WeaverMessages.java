@@ -75,7 +75,8 @@ public class WeaverMessages {
 	public static final String CANT_FIND_TYPE_WITHINPCD = "cantFindTypeWithinpcd";
     public static final String CANT_FIND_TYPE_DURING_AROUND_WEAVE = "cftDuringAroundWeave";
     public static final String CANT_FIND_TYPE_DURING_AROUND_WEAVE_PREINIT = "cftDuringAroundWeavePreinit";
-
+    public static final String CANT_FIND_TYPE_EXCEPTION_TYPE = "cftExceptionType";
+    public static final String CANT_FIND_TYPE_ARG_TYPE = "cftArgType";
 	
 	public static final String DECP_BINARY_LIMITATION = "decpBinaryLimitation";
 	public static final String OVERWRITE_JSR45 = "overwriteJSR45";

@@ -163,7 +163,13 @@ public class ArgsPointcut extends NameBindingPointcut {
 			TypeX argType = shadow.getArgType(i);
 			TypePattern type = patterns[i];
 			if (!(type instanceof BindingTypePattern)) {
-				if (type.matchesInstanceof(shadow.getIWorld().resolve(argType)).alwaysTrue()) {
+                ResolvedTypeX argRTX = shadow.getIWorld().resolve(argType,true);
+                if (argRTX == ResolvedTypeX.MISSING) {
+                  IMessage msg = new Message(
+                    WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_ARG_TYPE,argType.getName()),
+                    "",IMessage.ERROR,shadow.getSourceLocation(),null,new ISourceLocation[]{getSourceLocation()});
+                }
+				if (type.matchesInstanceof(argRTX).alwaysTrue()) {
 					continue;
 				}
 			} else {

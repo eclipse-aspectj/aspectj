@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.aspectj.asm.IHierarchy;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
@@ -62,6 +63,25 @@ public abstract class World {
         ResolvedTypeX[] ret = new ResolvedTypeX[len];
         for (int i=0; i<len; i++) {
             ret[i] = resolve(types[i]);
+        }
+        return ret;
+    }
+    
+    /**
+     * Attempt to resolve a type - the source location gives you some context in which
+     * resolution is taking place.  In the case of an error where we can't find the
+     * type - we can then at least report why (source location) we were trying to resolve it.
+     */
+    public ResolvedTypeX resolve(TypeX ty,ISourceLocation isl) {
+        ResolvedTypeX ret = resolve(ty,true);
+        if (ty == ResolvedTypeX.MISSING) {
+            IMessage msg = null;
+            if (isl!=null) {
+              msg = MessageUtil.error(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,ty.getName()),isl);
+            } else {
+              msg = MessageUtil.error(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,ty.getName())); 
+            }
+            messageHandler.handleMessage(msg);
         }
         return ret;
     }

@@ -20,6 +20,8 @@ import java.util.Collections;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
@@ -30,6 +32,7 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
@@ -173,7 +176,13 @@ public class BcelAdvice extends Advice {
 		ResolvedTypeX error = world.getCoreType(TypeX.ERROR);
 		
 		for (int i=0, len=excs.length; i < len; i++) {
-			ResolvedTypeX t = world.resolve(excs[i]);
+			ResolvedTypeX t = world.resolve(excs[i],true);
+            if (t == ResolvedTypeX.MISSING) {
+                IMessage msg = new Message(
+                  WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_EXCEPTION_TYPE,excs[i].getName()),
+                  "",IMessage.ERROR,getSourceLocation(),null,null);
+                world.getMessageHandler().handleMessage(msg);
+            }
 			if (!(runtimeException.isAssignableFrom(t) || error.isAssignableFrom(t))) {
 				ret.add(t);
 			}

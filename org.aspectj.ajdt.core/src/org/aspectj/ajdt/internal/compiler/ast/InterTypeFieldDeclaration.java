@@ -233,9 +233,11 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		codeStream.initializeMaxLocals(binding);
 		if (isGetter) {
 			if (onTypeBinding.isInterface()) {
+                TypeX declaringTX = sig.getDeclaringType();
+                ResolvedTypeX declaringRTX = world.getWorld().resolve(declaringTX,munger.getSourceLocation());
 				MethodBinding readMethod = world.makeMethodBinding(
 					AjcMemberMaker.interFieldInterfaceGetter(
-						sig, world.getWorld().resolve(sig.getDeclaringType()), aspectType));
+						sig, declaringRTX, aspectType));
 				generateInterfaceReadBody(binding, readMethod, codeStream);
 			} else {
 				generateClassReadBody(binding, classField, codeStream);
@@ -244,7 +246,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 			if (onTypeBinding.isInterface()) {
 				MethodBinding writeMethod = world.makeMethodBinding(
 					AjcMemberMaker.interFieldInterfaceSetter(
-						sig, world.getWorld().resolve(sig.getDeclaringType()), aspectType));
+						sig, world.getWorld().resolve(sig.getDeclaringType(),munger.getSourceLocation()), aspectType));
 				generateInterfaceWriteBody(binding, writeMethod, codeStream);
 			} else {
 				generateClassWriteBody(binding, classField, codeStream);

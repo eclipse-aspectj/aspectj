@@ -154,7 +154,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		LazyClassGen gen = weaver.getLazyClassGen();
 		ResolvedMember member = munger.getMember();
 		
-		ResolvedTypeX onType = weaver.getWorld().resolve(member.getDeclaringType());
+		ResolvedTypeX onType = weaver.getWorld().resolve(member.getDeclaringType(),munger.getSourceLocation());
 		//System.out.println("munging: " + gen + " with " + member);
 		if (onType.equals(gen.getType())) {
 			if (member.getKind() == Member.FIELD) {
@@ -376,7 +376,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		
 		LazyClassGen gen = weaver.getLazyClassGen();
 		
-		ResolvedTypeX onType = weaver.getWorld().resolve(signature.getDeclaringType());
+		ResolvedTypeX onType = weaver.getWorld().resolve(signature.getDeclaringType(),munger.getSourceLocation());
 		boolean onInterface = onType.isInterface();
 		
 		if (onType.equals(gen.getType())) {
@@ -652,7 +652,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		ResolvedMember field = munger.getSignature();
 		
 		
-		ResolvedTypeX onType = weaver.getWorld().resolve(field.getDeclaringType());
+		ResolvedTypeX onType = weaver.getWorld().resolve(field.getDeclaringType(),munger.getSourceLocation());
 		boolean onInterface = onType.isInterface();
 		
 		if (onType.equals(gen.getType())) {
