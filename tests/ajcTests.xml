@@ -7268,4 +7268,11 @@
         <compile files="IntertypeDifferentThrows.java" />
     </ajc-test>
     
+	<ajc-test dir="new" 
+		comment="in ajc 1.1.1, VerifyError Illegal use of nonvirtual function call"
+		title="super call in anonymous class created in around advice">
+        <compile files="SuperClosure.java" />
+        <run class="SuperClosure" />
+    </ajc-test>
+
 </suite>
