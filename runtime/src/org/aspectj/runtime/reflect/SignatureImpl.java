@@ -16,14 +16,19 @@ package org.aspectj.runtime.reflect;
 
 import org.aspectj.lang.Signature;
 
+import java.lang.ref.SoftReference;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
 abstract class SignatureImpl implements Signature {
+
+	private static boolean useCache = true;
+	
     int modifiers = -1;
     String name;
     String declaringTypeName;
     Class declaringType;
+    SoftReference toStringCacheRef;
     
     SignatureImpl(int modifiers, String name, Class declaringType) {
         this.modifiers = modifiers;
@@ -31,7 +36,24 @@ abstract class SignatureImpl implements Signature {
         this.declaringType = declaringType;
     }
     
-    abstract String toString(StringMaker sm);
+    protected abstract String createToString (StringMaker sm);
+    
+    /* Use a soft cache for the short, middle and long String representations */
+	String toString (StringMaker sm) {
+		String[] toStringCache = null;
+		if (toStringCacheRef == null || toStringCacheRef.get() == null) {
+			toStringCache = new String[3];
+			if (useCache) toStringCacheRef = new SoftReference(toStringCache);
+		}
+		else {
+			toStringCache = (String[])toStringCacheRef.get();
+		}
+		
+		if (toStringCache[sm.cacheOffset] == null) {
+			toStringCache[sm.cacheOffset] = createToString(sm);
+		}
+		return toStringCache[sm.cacheOffset];
+	}
     
     public final String toString() { return toString(StringMaker.middleStringMaker); }
     public final String toShortString() { return toString(StringMaker.shortStringMaker); }
@@ -92,7 +114,7 @@ abstract class SignatureImpl implements Signature {
     }
     
     // lazy version
-    String stringRep;
+    private String stringRep;
     ClassLoader lookupClassLoader = null;
     
     public void setLookupClassLoader(ClassLoader loader) {
@@ -193,4 +215,16 @@ abstract class SignatureImpl implements Signature {
         for (int i = 0; i < N; i++) ret[i]= makeClass(st.nextToken());
         return ret;
     }
+
+	/*
+	 * Used for testing
+	 */
+	static void setUseCache (boolean b) {
+		useCache = b;
+	}
+
+	static boolean getUseCache () {
+		return useCache;
+	}
+
 }

@@ -41,7 +41,7 @@ class CatchClauseSignatureImpl extends SignatureImpl implements CatchClauseSigna
         return parameterName;
     }
     
-    String toString(StringMaker sm) {
+    protected String createToString(StringMaker sm) {
         return "catch(" + sm.makeTypeName(getParameterType()) + ")";
     }    
 }

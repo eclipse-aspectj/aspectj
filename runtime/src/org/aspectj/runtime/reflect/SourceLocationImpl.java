@@ -20,23 +20,20 @@ class SourceLocationImpl implements SourceLocation {
     Class withinType;
     String fileName;
     int line;
-    int column;
     
-    SourceLocationImpl(Class withinType, String fileName, int line, int column) {
+    SourceLocationImpl(Class withinType, String fileName, int line) {
         this.withinType = withinType;
         this.fileName = fileName;
         this.line = line;
-        this.column = column;
     }
     
     public Class getWithinType() { return withinType; }
     public String getFileName() { return fileName; }
     public int getLine() { return line; }
-    public int getColumn() { return column; }
+    public int getColumn() { return -1; }
     
     public String toString() {
-    	return getFileName() + ":" + getLine() +
-    		((getColumn() == -1) ? ""  : ":" + getColumn());
+    	return getFileName() + ":" + getLine();
     }
 }
 

@@ -148,6 +148,6 @@ public final class Factory {
 
     public SourceLocation makeSourceLoc(int line, int col)
     {
-        return new SourceLocationImpl(lexicalClass, this.filename, line, col);
+        return new SourceLocationImpl(lexicalClass, this.filename, line);
     }
 }

@@ -26,6 +26,7 @@ class StringMaker {
     boolean includeJoinPointTypeName = true;
     boolean includeEnclosingPoint = true;
     boolean shortKindName = true;
+    int cacheOffset;
     
     static StringMaker shortStringMaker;
     static {
@@ -39,6 +40,7 @@ class StringMaker {
         shortStringMaker.includeJoinPointTypeName = false;
         shortStringMaker.includeEnclosingPoint = false;
         
+		shortStringMaker.cacheOffset = 0;
     }
     
     static StringMaker middleStringMaker;
@@ -49,6 +51,8 @@ class StringMaker {
         middleStringMaker.includeThrows = false;
         middleStringMaker.includeModifiers = false;
         middleStringMaker.shortPrimaryTypeNames = false;
+
+		shortStringMaker.cacheOffset = 1;
     }
     
     static StringMaker longStringMaker;
@@ -60,6 +64,8 @@ class StringMaker {
         longStringMaker.includeModifiers = true;
         longStringMaker.shortPrimaryTypeNames = false;
         longStringMaker.shortKindName = false;
+
+		longStringMaker.cacheOffset = 2;
     }
     
     String makeKindName(String name) {

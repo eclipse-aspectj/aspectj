@@ -32,7 +32,7 @@ class InitializerSignatureImpl extends CodeSignatureImpl implements InitializerS
     	return Modifier.isStatic(getModifiers()) ? "<clinit>": "<init>";
     }
 
-    String toString(StringMaker sm) {
+    protected String createToString(StringMaker sm) {
         StringBuffer buf = new StringBuffer();
         buf.append(sm.makeModifiersString(getModifiers()));    
         buf.append(sm.makePrimaryTypeName(getDeclaringType(),getDeclaringTypeName()));

@@ -20,4 +20,15 @@ public class SignatureTest extends TestCase {
 		assertEquals(SignatureTest.class.getName(),fsi.getDeclaringTypeName());
 		assertSame(fsi.getDeclaringTypeName(),fsi.getDeclaringTypeName()); // should be cached.
 	}
+	
+	public void testToShortMiddleLongString () {
+		MethodSignatureImpl msi = new MethodSignatureImpl(0,"test",SignatureTest.class,new Class[] { String.class, Integer.TYPE }, new String[] { "s", "i" }, new Class[] {}, Runnable.class);
+		String shortString = msi.toShortString();
+		assertSame(shortString,msi.toShortString()); // should be cached.
+		String middleString = msi.toString();
+		assertSame(middleString,msi.toString()); // should be cached.
+		String longString = msi.toLongString();
+		assertSame(longString,msi.toLongString()); // should be cached.
+		assertTrue("String representations should be different",!(shortString.equals(middleString) || middleString.equals(longString) || longString.equals(shortString)));
+	}
 }

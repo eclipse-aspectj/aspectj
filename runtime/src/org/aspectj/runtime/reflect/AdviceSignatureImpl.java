@@ -39,7 +39,7 @@ class AdviceSignatureImpl extends CodeSignatureImpl implements AdviceSignature {
         return returnType;
     }
 
-    String toString(StringMaker sm) {
+    protected String createToString(StringMaker sm) {
         //XXX this signature needs a lot of work        
         StringBuffer buf = new StringBuffer("ADVICE: ");
         buf.append(sm.makeModifiersString(getModifiers()));
