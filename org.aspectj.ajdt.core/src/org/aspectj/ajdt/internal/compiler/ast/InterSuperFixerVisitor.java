@@ -77,7 +77,7 @@ public class InterSuperFixerVisitor extends ASTVisitor {
 				world.showMessage(IMessage.ERROR, "multiple supertypes for this interface", location, null);
 				dec.ignoreFurtherInvestigation = true;
 			}
-			//FIXME note error
+			//FIXME ??? note error
 			expression = new InterSuperReference(superRef, superType);	
 		}
 		return expression;
