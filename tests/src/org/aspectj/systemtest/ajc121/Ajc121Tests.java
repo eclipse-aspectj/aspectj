@@ -10,7 +10,9 @@
 package org.aspectj.systemtest.ajc121;
 
 import java.io.File;
+
 import junit.framework.Test;
+
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
@@ -148,15 +150,15 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
       runTest("ITDs on inner classes should be static context");
   }
   
-//  public void test028_itdsAndInitializers() {
-//    runTest("resolution of IT field inits");
-//  }
+  public void test028_itdsAndInitializers() {
+    runTest("resolution of IT field inits");
+  }
 
   public void test029_falseInvalidAbsoluteTypeName() {
     runTest("Valid but inaccessible type names should not be flagged by XLint:invalidAbsoluteTypeName");
   }
   
-    public void test030_privateITDinitialisersBeingMatched() {
+  public void test030_privateITDinitialisersBeingMatched() {
     runTest("intertype initialisers should match field set pointcuts");
   }
 
@@ -175,5 +177,10 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void test033_stringConcatForDEOWErrorCase() {
     runTest("Compile time declarations (warning and error) do not accept string concatenation (with +) (2)");
   }
+
+  public void test034_scopeForITDS_pr61768() {
+      runTest("scope for inter-type methods");
+    }
+
 }
 

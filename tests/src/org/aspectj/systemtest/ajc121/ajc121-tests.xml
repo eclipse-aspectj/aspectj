@@ -224,14 +224,13 @@
 		</compile>
 	</ajc-test>
 	
-<!--
-	 <ajc-test dir="bugs/oxford" pr="62475"
+<!-- should NOT raise error, despite Oxford expectations to the contrary -->
+	<ajc-test dir="bugs/oxford" pr="62475"
 	  	title="resolution of IT field inits">
 		<compile files="PR62475.java">
-			<message kind="error" line="14" />
 		</compile>
 	</ajc-test>
--->	
+	
 
 	<ajc-test 
     	dir="bugs/invalidAbsoluteTypeName" 
@@ -242,8 +241,8 @@
         </compile>
         <run class="False_InvalidAbsoluteTypeName"/>
     </ajc-test>
-
-   	<ajc-test dir="bugs/PR68991" pr="68991"
+ 
+  	<ajc-test dir="bugs/PR68991" pr="68991"
     	title="intertype initialisers should match field set pointcuts">
     	<compile files="Simple.java"/>
     	<run class="Simple"/>
@@ -274,4 +273,10 @@
 			<message kind="error" line="22"/>
         </compile>
     </ajc-test>
-	
+	    
+	<ajc-test dir="bugs/oxford" pr="61768"
+	  	title="scope for inter-type methods">
+		<compile files="PR61768.java">
+			<message kind="error" line="37" text="No enclosing instance of type Aspect is accessible"/>
+		</compile>
+	</ajc-test>
