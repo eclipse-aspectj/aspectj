@@ -60,7 +60,6 @@ class SwingTreeViewNodeRenderer extends DefaultTreeCellRenderer {
 		}
         
         if (node instanceof IProgramElement) {
-        	IProgramElement pNode = (IProgramElement)node;
 //        	if (pNode.isRunnable()) {
 //        		//setIcon(AjdeUIManager.getDefault().getIconRegistry().getExecuteIcon());
 //        	}	 
