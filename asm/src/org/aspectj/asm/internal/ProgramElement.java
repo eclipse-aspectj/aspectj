@@ -88,6 +88,7 @@ public class ProgramElement implements IProgramElement {
 		this.formalComment = formalComment;
 		this.modifiers = genModifiers(modifiers);
 		this.accessibility = genAccessibility(modifiers);
+		cacheByHandle();
 	}
 	
 	/**
@@ -115,6 +116,7 @@ public class ProgramElement implements IProgramElement {
 		this.packageName = packageName;
 		this.formalComment = formalComment;
 		this.relations = relations;
+		cacheByHandle();
 	}
 
 	public List getModifiers() {
@@ -395,7 +397,7 @@ public class ProgramElement implements IProgramElement {
 			} else {
 				label = parent.getName() + '.';	
 			}
-		} else if (kind == Kind.CLASS || kind == kind.ASPECT) {
+		} else if (kind == Kind.CLASS || kind == Kind.ASPECT) {
 			label = "";
 		} else {
 			label = parent.getName() + '.';
@@ -468,6 +470,16 @@ public class ProgramElement implements IProgramElement {
 
 	public void setDetails(String string) {
 		details = string;
+	}
+	
+	/** AMC added to speed up findByHandle lookups in AspectJElementHierarchy */
+	private void cacheByHandle() {
+		String handle = getHandleIdentifier();
+		if (handle != null) {
+			AspectJElementHierarchy hierarchy = (AspectJElementHierarchy) 
+				AsmManager.getDefault().getHierarchy();
+			hierarchy.cache(handle,this);
+		}
 	}
 }
 

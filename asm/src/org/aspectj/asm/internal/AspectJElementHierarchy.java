@@ -17,7 +17,6 @@ import java.io.*;
 import java.util.*;
 
 import org.aspectj.asm.*;
-import org.aspectj.asm.IProgramElement.Kind;
 import org.aspectj.bridge.*;
 
 /**
@@ -29,6 +28,7 @@ public class AspectJElementHierarchy implements IHierarchy {
     protected String configFile = null;
 
     private Map fileMap = null;
+    private Map handleMap = null;
     
 	public IProgramElement getElement(String handle) {
 		throw new RuntimeException("unimplemented");
@@ -40,6 +40,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 
     public void setRoot(IProgramElement root) {
         this.root = root;
+        handleMap = new HashMap();
     }
 
 	public void addToFileMap( Object key, Object value ){
@@ -270,12 +271,20 @@ public class AspectJElementHierarchy implements IHierarchy {
 	
 	// TODO: optimize this lookup
 	public IProgramElement findElementForHandle(String handle) {
+		// try the cache first...
+		IProgramElement ret = (IProgramElement) handleMap.get(handle);
+		if (ret != null) return ret;
+		
 		StringTokenizer st = new StringTokenizer(handle, ProgramElement.ID_DELIM);
 		String file = st.nextToken();
 		int line = new Integer(st.nextToken()).intValue();
 		int col = new Integer(st.nextToken()).intValue();
 		// TODO: use column number when available
-		return findElementForSourceLine(file, line);
+		ret = findElementForSourceLine(file, line);
+		if (ret != null) { 
+			cache(handle,(ProgramElement)ret);
+		}
+		return ret;
 		
 //		IProgramElement parent = findElementForType(packageName, typeName);
 //		if (parent == null) return null;
@@ -305,5 +314,9 @@ public class AspectJElementHierarchy implements IHierarchy {
 //		}
 //		return null;
 //	}
+
+	protected void cache(String handle, ProgramElement pe) {
+		handleMap.put(handle,pe);
+	}
 }
 
