@@ -182,7 +182,7 @@ public class CompilerAdapter {
         // always force model generation in AJDE
         config.setGenerateModelMode(true);       
 		if (Ajde.getDefault().getBuildManager().getBuildOptions().getJavaOptionsMap() != null) {
-			config.getJavaOptions().putAll(Ajde.getDefault().getBuildManager().getBuildOptions().getJavaOptionsMap());
+			config.getOptions().set(Ajde.getDefault().getBuildManager().getBuildOptions().getJavaOptionsMap());
 		}
 		return config;
 //        return fixupBuildConfig(config);
@@ -238,17 +238,17 @@ public class CompilerAdapter {
 	private static boolean configureBuildOptions( AjBuildConfig config, BuildOptionsAdapter options, IMessageHandler handler) {
         LangUtil.throwIaxIfNull(options, "options");
         LangUtil.throwIaxIfNull(config, "config");
-		Map javaOptions = config.getJavaOptions();
-        LangUtil.throwIaxIfNull(javaOptions, "javaOptions");
+		Map optionsToSet = new HashMap();
+        LangUtil.throwIaxIfNull(optionsToSet, "javaOptions");
 
 		if (options.getSourceOnePointFourMode()) {
-			javaOptions.put(CompilerOptions.OPTION_Compliance, CompilerOptions.VERSION_1_4);	 
-			javaOptions.put(CompilerOptions.OPTION_Source, CompilerOptions.VERSION_1_4);
+			optionsToSet.put(CompilerOptions.OPTION_Compliance, CompilerOptions.VERSION_1_4);	 
+			optionsToSet.put(CompilerOptions.OPTION_Source, CompilerOptions.VERSION_1_4);
 		} 
 		
 		String enc = options.getCharacterEncoding();
 		if (!LangUtil.isEmpty(enc)) {
-			javaOptions.put(CompilerOptions.OPTION_Encoding, enc );
+			optionsToSet.put(CompilerOptions.OPTION_Encoding, enc );
 		}
 
 		String compliance = options.getComplianceLevel();
@@ -257,8 +257,8 @@ public class CompilerAdapter {
 			if ( compliance.equals( BuildOptionsAdapter.VERSION_13 ) ) {
 				version = CompilerOptions.VERSION_1_3;
 			}
-			javaOptions.put(CompilerOptions.OPTION_Compliance, version );	
-			javaOptions.put(CompilerOptions.OPTION_Source, version );
+			optionsToSet.put(CompilerOptions.OPTION_Compliance, version );	
+			optionsToSet.put(CompilerOptions.OPTION_Source, version );
 		}
 				
 		String sourceLevel = options.getSourceCompatibilityLevel();
@@ -268,19 +268,19 @@ public class CompilerAdapter {
 				slVersion = CompilerOptions.VERSION_1_3;
 			}
 			// never set a lower source level than compliance level
-			String setCompliance = (String) javaOptions.get( CompilerOptions.OPTION_Compliance);
+			String setCompliance = (String) optionsToSet.get( CompilerOptions.OPTION_Compliance);
 			if ( ! (setCompliance.equals( CompilerOptions.VERSION_1_4 )
 			         && slVersion.equals(CompilerOptions.VERSION_1_3)) ) {
-				javaOptions.put(CompilerOptions.OPTION_Source, slVersion);							
+				optionsToSet.put(CompilerOptions.OPTION_Source, slVersion);							
 			}
 		}
 	
 		Set warnings = options.getWarnings();
 		if (!LangUtil.isEmpty(warnings)) {
 			// turn off all warnings	
-			disableWarnings( javaOptions );
+			disableWarnings( optionsToSet );
 			// then selectively enable those in the set
-			enableWarnings( javaOptions, warnings );
+			enableWarnings( optionsToSet, warnings );
 		}
 
 		Set debugOptions = options.getDebugLevel();
@@ -305,11 +305,11 @@ public class CompilerAdapter {
 					varAttr = true;
 				}
 			}
-			if (sourceLine) javaOptions.put(CompilerOptions.OPTION_SourceFileAttribute,
+			if (sourceLine) optionsToSet.put(CompilerOptions.OPTION_SourceFileAttribute,
 											CompilerOptions.GENERATE);
-			if (varAttr) javaOptions.put(CompilerOptions.OPTION_LocalVariableAttribute,
+			if (varAttr) optionsToSet.put(CompilerOptions.OPTION_LocalVariableAttribute,
 											CompilerOptions.GENERATE);		
-			if (lineNo)  javaOptions.put(CompilerOptions.OPTION_LineNumberAttribute,
+			if (lineNo)  optionsToSet.put(CompilerOptions.OPTION_LineNumberAttribute,
 											CompilerOptions.GENERATE);
 		}
 		//XXX we can't turn off import errors in 3.0 stream
@@ -319,7 +319,7 @@ public class CompilerAdapter {
 //		}
 				
 		if ( options.getPreserveAllLocals() ) {
-			javaOptions.put( CompilerOptions.OPTION_PreserveUnusedLocal,
+			optionsToSet.put( CompilerOptions.OPTION_PreserveUnusedLocal,
 				CompilerOptions.PRESERVE);		
 		}
         if ( !config.isIncrementalMode()
@@ -327,7 +327,7 @@ public class CompilerAdapter {
                 config.setIncrementalMode(true);
         }
         				
-		config.setJavaOptions( javaOptions );
+		config.getOptions().set(optionsToSet);
 		String toAdd = options.getNonStandardOptions();
         return LangUtil.isEmpty(toAdd) 
             ? true

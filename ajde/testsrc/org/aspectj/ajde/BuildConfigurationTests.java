@@ -65,7 +65,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		buildOptions.setCharacterEncoding( "12345" );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );
         assertTrue(configFile + " failed", null != buildConfig);			
-		Map options = buildConfig.getJavaOptions();
+		Map options = buildConfig.getOptions().getMap();
 		String encoding = (String) options.get( CompilerOptions.OPTION_Encoding );
 		assertEquals( "character encoding", "12345", encoding );
 	}
@@ -74,7 +74,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		buildOptions.setComplianceLevel( BuildOptionsAdapter.VERSION_14 );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
         assertTrue(configFile + " failed", null != buildConfig);            
-		Map options = buildConfig.getJavaOptions();
+		Map options = buildConfig.getOptions().getMap();
 		String compliance = (String) options.get(CompilerOptions.OPTION_Compliance);
 		String sourceLevel = (String) options.get(CompilerOptions.OPTION_Source);		
 		assertEquals( "compliance level", CompilerOptions.VERSION_1_4, compliance);
@@ -86,7 +86,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		buildOptions.setSourceCompatibilityLevel( BuildOptionsAdapter.VERSION_14);
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
         assertTrue(configFile + " failed", null != buildConfig);            
-		Map options = buildConfig.getJavaOptions();
+		Map options = buildConfig.getOptions().getMap();
 		String compliance = (String) options.get(CompilerOptions.OPTION_Compliance);
 		String sourceLevel = (String) options.get(CompilerOptions.OPTION_Source);		
 		assertEquals( "compliance level", CompilerOptions.VERSION_1_3, compliance);
@@ -99,7 +99,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		buildOptions.setSourceCompatibilityLevel( BuildOptionsAdapter.VERSION_13);
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
         assertTrue(configFile + " failed", null != buildConfig);            
-		Map options = buildConfig.getJavaOptions();
+		Map options = buildConfig.getOptions().getMap();
 		String compliance = (String) options.get(CompilerOptions.OPTION_Compliance);
 		String sourceLevel = (String) options.get(CompilerOptions.OPTION_Source);		
 		assertEquals( "compliance level", CompilerOptions.VERSION_1_4, compliance);
@@ -111,7 +111,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		buildOptions.setWarnings( null );	
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
         assertTrue(configFile + " failed", null != buildConfig);            
-		Map options = buildConfig.getJavaOptions();
+		Map options = buildConfig.getOptions().getMap();
 		
 		// this should leave us with the default warnings
 		assertOptionEquals( "report overriding package default",
@@ -213,7 +213,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		buildOptions.setWarnings( warnings );	
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
         assertTrue(configFile + " failed", null != buildConfig);            
-		Map options = buildConfig.getJavaOptions();
+		Map options = buildConfig.getOptions().getMap();
 		
 		// this should leave us with all the user specifiable warnings
 		// turned on
@@ -259,7 +259,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		buildOptions.setDebugLevel( null );	
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
         assertTrue(configFile + " failed", null != buildConfig);            
-		Map options = buildConfig.getJavaOptions();
+		Map options = buildConfig.getOptions().getMap();
 		
 		// this should leave us with the default debug settings
 		assertOptionEquals( "debug source",
@@ -280,7 +280,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		buildOptions.setDebugLevel( new HashSet() );	
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
         assertTrue(configFile + " failed", null != buildConfig);            
-		Map options = buildConfig.getJavaOptions();
+		Map options = buildConfig.getOptions().getMap();
 		
 		// this should leave us with the debug on
 		assertOptionEquals( "debug source",
@@ -303,7 +303,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		buildOptions.setDebugLevel( debugOpts );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
         assertTrue(configFile + " failed", null != buildConfig);            
-		Map options = buildConfig.getJavaOptions();
+		Map options = buildConfig.getOptions().getMap();
 		
 		// this should leave us with all debug on
 		assertOptionEquals( "debug source",
@@ -328,7 +328,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		buildOptions.setDebugLevel( debugOpts );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
         assertTrue(configFile + " failed", null != buildConfig);            
-		Map options = buildConfig.getJavaOptions();
+		Map options = buildConfig.getOptions().getMap();
 		
 		// this should leave us with all debug on
 		assertOptionEquals( "debug source",
@@ -359,7 +359,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		buildOptions.setPreserveAllLocals( true );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
         assertTrue(configFile + " failed", null != buildConfig);            
-		Map options = buildConfig.getJavaOptions();
+		Map options = buildConfig.getOptions().getMap();
 		String preserve = (String) options.get( CompilerOptions.OPTION_PreserveUnusedLocal );
 		assertEquals( "preserve unused", CompilerOptions.PRESERVE, preserve );
 	}	
