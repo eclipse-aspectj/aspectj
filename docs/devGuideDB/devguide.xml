@@ -41,14 +41,12 @@
   </bookinfo>
 
   <reference>
-    <title>The Command Line Tools</title>
+    <title>Command Line Tools</title>
       &ajc;
-      &ajdb;
-      &ajdoc;
   </reference>
 
   <reference>
-    <title>The GUI Tools</title>
+    <title>Development Environment Support</title>
       &ajbrowser;
       &ajdejbuilder;
       &ajdeforte;
