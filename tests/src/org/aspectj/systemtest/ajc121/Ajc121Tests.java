@@ -153,5 +153,9 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //  public void test028_itdsAndInitializers() {
 //    runTest("resolution of IT field inits");
 //  }
+
+  public void test029_falseInvalidAbsoluteTypeName() {
+    runTest("Valid but inaccessible type names should not be flagged by XLint:invalidAbsoluteTypeName");
+  }
 }
 

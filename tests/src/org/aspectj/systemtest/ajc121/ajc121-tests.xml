@@ -210,7 +210,7 @@
     	</compile>
    	</ajc-test>
 
-  <ajc-test dir="bugs/oxford" pr="65319"
+    <ajc-test dir="bugs/oxford" pr="65319"
 	  	title="ajc crashes when compiling the following program (binding this() and target())">
 		<compile files="PR65319.java">
 			<message kind="error" line="7" text="Cannot use target() to match at this"/>
@@ -223,6 +223,7 @@
 			<message kind="error" line="15" text="Ambiguous binding of type Test"/>
 		</compile>
 	</ajc-test>
+	
 <!--
 	 <ajc-test dir="bugs/oxford" pr="62475"
 	  	title="resolution of IT field inits">
@@ -231,3 +232,13 @@
 		</compile>
 	</ajc-test>
 -->	
+
+	<ajc-test 
+    	dir="bugs/invalidAbsoluteTypeName" 
+    	pr="65925"
+		title="Valid but inaccessible type names should not be flagged by XLint:invalidAbsoluteTypeName">
+        <compile files="False_InvalidAbsoluteTypeName.java">
+        	<message kind="warning" line="17"/>
+        </compile>
+        <run class="False_InvalidAbsoluteTypeName"/>
+    </ajc-test>
