@@ -82,7 +82,8 @@ public interface IProgramElement extends Serializable {
 	 * @return the javadoc comment for this program element, null if not available
 	 */
 	public String getFormalComment();
-	
+	public void setFormalComment(String comment);
+	  
 	/**
 	 * Includes information about the origin of the node.
 	 */

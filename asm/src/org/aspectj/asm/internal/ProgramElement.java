@@ -474,6 +474,10 @@ public class ProgramElement implements IProgramElement {
 		details = string;
 	}
 	
+	public void setFormalComment(String formalComment) {
+		this.formalComment = formalComment;
+	}
+	
 	/** AMC added to speed up findByHandle lookups in AspectJElementHierarchy */
 	private void cacheByHandle() {
 		String handle = getHandleIdentifier();
