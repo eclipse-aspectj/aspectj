@@ -151,11 +151,17 @@ statment. When moving code from 1.1 to 1.2, additional errors may be raised due 
 rule. The solution is to recode the declare statement avoiding pointcut expressions that may require a run-time test.
 </p>
 
-<p><b>Declaring a constructor on an interface</b> is now (correctly) prohibited.
+<p><b>Interface constructors no longer supported</b>.
+Declaring a constructor on an interface is now (correctly) prohibited,
+and there will no longer be a constructor-execution join point for the interface.
 To initialize a field declared on an interface, use initialization, e.g.,
 </p>
 <pre>int I.i;
 after(I i) returning: initialization(I) && this(i) { i.i = 2; }</pre>
+<p>To pick out the constructor-execution for any implementation of I, try
+</p>
+<pre>execution(I+.new(..))</pre>
+
 <p>For more information, see bug
 	<a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=49295">49295</a>.
 </p>
