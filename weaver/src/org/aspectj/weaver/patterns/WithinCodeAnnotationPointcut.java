@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AnnotatedElement;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
@@ -130,7 +131,14 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 			BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern)annotationTypePattern;
 			TypeX annotationType = btp.annotationType;
 			Var var = shadow.getWithinCodeAnnotationVar(annotationType);
-			if (var == null) return Literal.FALSE;
+	
+			// This should not happen, we shouldn't have gotten this far 
+			// if we weren't going to find the annotation
+			if (var == null) 
+				throw new BCException("Impossible! annotation=["+annotationType+
+                        "]  shadow=["+shadow+" at "+shadow.getSourceLocation()+
+						   "]    pointcut is at ["+getSourceLocation()+"]");
+				
 			// Check if we have already bound something to this formal
 			if ((state.get(btp.getFormalIndex())!=null)  &&(lastMatchedShadowId == shadow.shadowId)) {
 //				ISourceLocation pcdSloc = getSourceLocation(); 

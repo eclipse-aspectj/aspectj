@@ -1316,7 +1316,7 @@ public class BcelShadow extends Shadow {
     	// Then create one BcelVar entry in the map for each annotation, keyed by
     	// annotation type (TypeX).
     	
-    	// !!! PREAJ5FINAL Refactor these once all shadow kinds added - there is lots of commonality
+    	// FIXME Refactor these once all shadow kinds added - there is lots of commonality
     	ResolvedTypeX[] annotations = null;
     	TypeX relevantType = null;
     	
@@ -1412,12 +1412,28 @@ public class BcelShadow extends Shadow {
     public void initializeWithinAnnotationVars() {
     	if (withinAnnotationVars != null) return;
     	withinAnnotationVars = new HashMap();
-    	// populate
+    	
+    	ResolvedTypeX[] annotations = getEnclosingType().getAnnotationTypes();
+		for (int i = 0; i < annotations.length; i++) {
+			ResolvedTypeX ann = annotations[i];
+			Kind k = Shadow.StaticInitialization;
+			withinAnnotationVars.put(ann,new KindedAnnotationAccessVar(k,ann,getEnclosingType(),null));
+		}
     }
+    
     public void initializeWithinCodeAnnotationVars() {
     	if (withincodeAnnotationVars != null) return;
     	withincodeAnnotationVars = new HashMap();
-    	// populate
+    
+    	// For some shadow we are interested in annotations on the method containing that shadow.
+		ResolvedTypeX[] annotations = getEnclosingMethod().getMemberView().getAnnotationTypes();
+		for (int i = 0; i < annotations.length; i++) {
+			ResolvedTypeX ann = annotations[i];
+			Kind k = (getEnclosingMethod().getMemberView().getKind()==Member.CONSTRUCTOR?
+					  Shadow.ConstructorExecution:Shadow.MethodExecution);
+			withincodeAnnotationVars.put(ann,
+					new KindedAnnotationAccessVar(k,ann,getEnclosingType(),getEnclosingCodeSignature()));
+		}
     }
     
             
