@@ -1,0 +1,158 @@
+<!-- wrapped at 70 characters, long elements wrapped -->
+<!-- =========================================================================== 
+
+ Copyright (c) 2005 Contributors.
+ All rights reserved. 
+ This program and the accompanying materials are made available 
+ under the terms of the Eclipse Public License v1.0 
+ which accompanies this distribution and is available at 
+ http://eclipse.org/legal/epl-v10.html 
+
+ Contributors: 
+     Wes Isberg       initial implementation 
+	
+============================================================================ -->
+
+<project name="aspectj-library" default="aspectjlib" basedir=".">
+
+    <target name="aspectjlib" depends="compile" />
+    <target name="info">
+        <echo>
+  This script builds the AspectJ library.  
+
+  Relevant targets:
+     aspectjlib      build library
+
+  Setup:
+     - Run from the doc/aspectjlib directory in your AspectJ distribution.
+       The tasks in ../../lib/aspectjtools.jar are used automatically.
+
+  Variants:
+     - To define a variable, use the Ant -D option - e.g., on Windows:
+  
+         ant -f build.xml -DJAVA_HOME=c:\jdk1.3.1 -Dnorun=skip
+
+      </echo>
+    </target>
+
+
+    <!-- ============================================================= -->
+    <!-- setup and cleanup targets                                     -->
+    <!-- ============================================================= -->
+
+    <target name="clean"
+            depends="init"
+            description="clean and create classes/jar dir, .ajesym files"
+    >
+        <delete quiet="on" dir="${jar.dir}" />
+        <delete quiet="on">
+            <fileset dir="${org.aspectj.lib.dir}"
+                     includes="**/*.ajesym"
+            />
+        </delete>
+        <mkdir dir="${jar.dir}" />
+    </target>
+
+    <target name="init" depends="init.variables,init.taskdefs" />
+
+    <target name="init.variables" description="init variables">
+
+        <property name="org.aspectj.lib.dir" location="${basedir}" />
+        <property name="src.dir"
+                  location="${org.aspectj.lib.dir}/src"
+        />
+
+        <!-- find AspectJ lib dir in distribution or AspectJ CVS tree -->
+        <property name="aspectj.dist.lib"
+                  location="${basedir}/../../lib"
+        />
+
+        <property name="aspectj.tree.lib"
+                  location="${basedir}/../lib/aspectj/lib"
+        />
+
+        <condition property="aspectj.lib.dir"
+                   value="${aspectj.dist.lib}"
+        >
+            <available file="${aspectj.dist.lib}/aspectjtools.jar" />
+        </condition>
+
+        <condition property="aspectj.lib.dir"
+                   value="${aspectj.tree.lib}"
+        >
+            <available file="${aspectj.tree.lib}/aspectjtools.jar" />
+        </condition>
+
+        <property name="aspectjrt.jar"
+                  location="${aspectj.lib.dir}/aspectjrt.jar"
+        />
+        <property name="aspectjtools.jar"
+                  location="${aspectj.lib.dir}/aspectjtools.jar"
+        />
+        <property name="aspectjweaver.jar"
+                  location="${aspectj.lib.dir}/aspectjweaver.jar"
+        />
+
+        <property name="jar.dir"
+                  location="${org.aspectj.lib.dir}/jars"
+        />
+        <property name="aspectjlib.out.jar"
+                  location="${jar.dir}/aspectjlib.out.jar"
+        />
+
+        <available file="${aspectjtools.jar}"
+                   property="aspectjtools.jar.available"
+        />
+        <available file="${aspectjrt.jar}"
+                   property="aspectjrt.jar.available"
+        />
+
+        <property name="library.packages" value="org.aspectj.lib" />
+    </target>
+
+    <target name="init.taskdefs"
+            depends="init.variables, 
+         aspectjtools.jar.available,
+         aspectjrt.jar.available"
+            unless="taskdefs.init"
+    >
+        <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties"
+        >
+            <classpath>
+                <pathelement path="${aspectjtools.jar}" />
+            </classpath>
+        </taskdef>
+        <property name="taskdefs.init" value="true" />
+    </target>
+
+    <target name="aspectjrt.jar.available"
+            depends="init.variables"
+            unless="aspectjrt.jar.available"
+    >
+        <fail message="expecting aspectjrt.jar at ${aspectjrt.jar}" />
+    </target>
+
+    <target name="aspectjtools.jar.available"
+            depends="init.variables"
+            unless="aspectjtools.jar.available"
+    >
+        <fail message="expecting aspectjtools.jar at ${aspectjtools.jar}"
+        />
+    </target>
+
+    <target name="compile"
+            depends="init"
+            description="compile library"
+    >
+        <antcall target="clean" />
+        <!-- can use ajc or iajc here -->
+        <iajc sourceroots="${src.dir}"
+              fork="true"
+              forkclasspath="${aspectjtools.jar}"
+              classpath="${aspectjrt.jar}"
+              outjar="${aspectjlib.out.jar}"
+        />
+
+    </target>
+
+</project>

@@ -1,7 +1,13 @@
 <html>
 	<head><title>org.aspectj.lib library module</title></head>
 	<body>
-	<h1>org.aspectj.lib library module</h1>
+<h2>org.aspectj.lib library module</h2>
+<p>
+This module has source for both <code>{AspectJ}/lib/aspectjlib.jar</code>
+and <code>{AspectJ}/docs/aspectjlib/*</code>.
+</p>
+
+<h3>Building {AspectJ}/lib/aspectjlib.jar</h3>
 <p>
 This module is compiled using AspectJ, both in Eclipse and with Ant.
 The Eclipse support is defined as usual in 
@@ -32,5 +38,21 @@ is limited:
 	<li>This is built using the release of AspectJ in 
 		<a href="../lib/aspectj">../lib/aspectj</a>.</li>	
 </ul>	
-	</body>
+<h3>Building {AspectJ}/examples/aspectjlib/*</h3>
+<p>
+The docs build script <a href="../docs/build.xml">../docs/build.xml</a>
+is responsible for assembling sources from this directory into the docs 
+directory.  It relies on the name of the source directory and build script.  
+Also, <code>Builder.java</code> is designed to try to use any 
+<code>build.xml</code> to build the module, but Ant builds are now disabled.
+So if you change the build script name or the source directory names, update
+the docs build script and the builder as needed.
+</p>
+<p>
+The <a href="build-aspectjlib.xml">build-aspectjlib.xml</a> script looks for
+an AspectJ lib directory from either the distribution (aspectj/docs/aspectjlib) 
+or from the CVS tree (modules/org.aspectj.lib), so the script can be tested
+in situ.
+</p>
+</body>
 </html>
