@@ -36,15 +36,15 @@
       <property name="build.version.eclipse.plugins" value="9.9.9"/>
 
       <!-- formats comply with SimpleDateFormat -->
-      <property name="build.time.format"   value="MM/dd/yy 'at' hh:mm:ss z"/> 
+      <property name="build.time.format"   value="EEEE MMM d, yyyy 'at' HH:mm:ss z"/> 
       <property name="build.date.format"   value="EEEE MMM d, yyyy"/> 
 	  <tstamp>
 		<format property="build.date" 
 		         pattern="${build.date.format}"
-		         timezone="PST"/>
+		         timezone="GMT"/>
 		<format property="build.time" 
 		         pattern="${build.time.format}"
-		         timezone="PST"/>
+		         timezone="GMT"/>
 	  </tstamp>
 	  
 	  <property name="company.name"         value="aspectj.org"/>

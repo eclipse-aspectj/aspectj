@@ -65,8 +65,7 @@
          <property name="version-uptodate.done" value="done"/>
     </target>
 
-    <target name="init-version" depends="init,init-filters,version-uptodate" 
-         unless="version.uptodate">
+    <target name="init-version" depends="init,init-filters,version-uptodate" >
       <antcall target="init-filters"/>
       <copy file="${aspectj.modules.dir}/build/lib/BridgeVersion.java.txt"
           tofile="${aspectj.modules.dir}/bridge/src/org/aspectj/bridge/Version.java"

@@ -51,15 +51,13 @@ public class Version {
     // if not DEVELOPMENT version, read time text using format used to set time 
     static {
         long foundTime = NOTIME;
-        if (!DEVELOPMENT.equals(text)) {
-	        try {
-	            SimpleDateFormat format = new SimpleDateFormat(SIMPLE_DATE_FORMAT);
-	            ParsePosition pos = new ParsePosition(0);
-	            Date date = format.parse(time_text, pos);
-	            foundTime = date.getTime();
-	        } catch (Throwable t) {            
-	        }
-        }
+	    try {
+	        SimpleDateFormat format = new SimpleDateFormat(SIMPLE_DATE_FORMAT);
+	        ParsePosition pos = new ParsePosition(0);
+	        Date date = format.parse(time_text, pos);
+	        foundTime = date.getTime();
+	    } catch (Throwable t) {            
+	    }
         time = foundTime;
     }
 
