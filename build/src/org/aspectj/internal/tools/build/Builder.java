@@ -1,6 +1,6 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
- *               2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC),
+ *               2003 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     PARC           initial implementation 
  * ******************************************************************/
 
 package org.aspectj.internal.tools.build;
@@ -281,22 +281,23 @@ public abstract class Builder {
 		if (!buildingEnabled) {
 			return false;
 		}
-			File classesDir =
-				useEclipseCompiles
-					? new File(module.moduleDir, "bin") // FileLiteral
-	: new File(tempDir, "classes-" + System.currentTimeMillis());
+		final File classesDir;
+        if (useEclipseCompiles) {
+            classesDir = new File(module.moduleDir, "bin"); // FileLiteral
+        } else {
+            String name = "classes-" + System.currentTimeMillis();
+            classesDir = new File(tempDir, name);
+        }
 		if (verbose) {
 			handler.log("buildOnly " + module);
 		}
 		try {
 			return (
-				useEclipseCompiles || compile(module, classesDir, errors))
+				compile(module, classesDir, useEclipseCompiles, errors))
 				&& assemble(module, classesDir, errors);
 		} finally {
-			if (!useEclipseCompiles
-				&& (!Util.deleteContents(classesDir)
-					|| !classesDir.delete())) {
-				errors.add("unable to delete " + classesDir);
+			if (!useEclipseCompiles && !Util.delete(classesDir)) {
+				errors.add("buildOnly unable to delete " + classesDir);
 			}
 		}
 	}
@@ -361,7 +362,7 @@ public abstract class Builder {
 
 		if (!targDir.canWrite() && !targDir.mkdirs()) {
 			if (buildSpec.verbose) {
-				handler.log("unable to create " + targDir);
+				handler.log("buildProduct unable to create " + targDir);
 			}
 			return false;
 		}
@@ -511,10 +512,16 @@ public abstract class Builder {
 
 	/**
 	 * Compile module classes to classesDir, saving String errors.
+     * @param module the Module to compile
+     * @param classesDir the File directory to compile to
+     * @param useExistingClasses if true, don't recompile
+     *        and ensure classes are available
+     * @param errors the List to add error messages to
 	 */
 	abstract protected boolean compile(
 		Module module,
 		File classesDir,
+        boolean useExistingClasses,
 		List errors);
 
 	/**
