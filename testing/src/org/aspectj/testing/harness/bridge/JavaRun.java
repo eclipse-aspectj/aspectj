@@ -24,17 +24,11 @@ import org.aspectj.testing.xml.XMLWriter;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.*;
+import java.lang.reflect.*;
+import java.net.*;
+import java.security.Permission;
+import java.util.*;
 
 /**
  * Run a class in this VM using reflection.
@@ -59,6 +53,12 @@ public class JavaRun implements IAjcRun {
         JAVA = getProperty(JAVA_KEY);
         JAVA_HOME = getProperty(JAVA_HOME_KEY);
         BOOTCLASSPATH = getProperty(BOOTCLASSPATH_KEY);
+        try {
+            System.setSecurityManager(RunSecurityManager.ME);
+        } catch (Throwable t) {
+            System.err.println("JavaRun: Security manager set - no System.exit() protection");
+        }
+        
     }
     private static String getProperty(String key) {
         try {
@@ -151,13 +151,38 @@ public class JavaRun implements IAjcRun {
             targetClass = loader.loadClass(spec.className);
             Method main = targetClass.getMethod("main", Globals.MAIN_PARM_TYPES);
             setupTester(sandbox.getTestBaseSrcDir(this), loader, status);
+            RunSecurityManager.ME.setJavaRunThread(this);
             main.invoke(null, new Object[] { spec.getOptionsArray() });
             completedNormally = true;
+        } catch (InvocationTargetException e) {
+            // this and following clauses catch ExitCalledException
+            Throwable thrown = LangUtil.unwrapException(e);
+            if (null == thrown) {
+                throw e;
+            }
+            if (thrown instanceof RunSecurityManager.ExitCalledException) {
+                int i = ((RunSecurityManager.ExitCalledException) thrown).exitCode;
+                status.finish(new Integer(i));
+            } else if (thrown instanceof RunSecurityManager.AwtUsedException) {
+                MessageUtil.fail(status, "test code should not use the AWT event queue");
+                throw (RunSecurityManager.AwtUsedException) thrown;
+                // same as: status.thrown(thrown);
+            } else if (thrown instanceof RuntimeException) {
+                throw (RuntimeException) thrown;
+            } else if (thrown instanceof Error) {
+                throw (Error) thrown;
+            } else {
+                throw e; 
+            }
+        } catch (RunSecurityManager.ExitCalledException e) {
+            // XXX need to update run validator (a) to accept null result or (b) to require zero result, and set 0 if completed normally
+            status.finish(new Integer(e.exitCode));
         } catch (ClassNotFoundException e) {
             String[] classes = FileUtil.listFiles(sandbox.classesDir);
             MessageUtil.info(status, "sandbox.classes: " + Arrays.asList(classes));
             MessageUtil.fail(status, null, e);
         } finally {
+            RunSecurityManager.ME.releaseJavaRunThread(this);
             if (!completedNormally) {
                 MessageUtil.info(status, "targetClass: " + targetClass);
                 MessageUtil.info(status, "loader: " + loader);
@@ -480,4 +505,106 @@ public class JavaRun implements IAjcRun {
             return true;
         }  
      }
+    /**
+     * This permits everything but System.exit() in the context of a 
+     * thread set by JavaRun.
+     * XXX need to update for thread spawned by that thread
+     * XXX need to update for awt thread use after AJDE wrapper doesn't
+     */
+    public static class RunSecurityManager extends SecurityManager {
+        public static RunSecurityManager ME = new RunSecurityManager();
+        private Thread runThread;
+        private RunSecurityManager(){}
+        private synchronized void setJavaRunThread(JavaRun run) {
+            LangUtil.throwIaxIfNull(run, "run");
+            runThread = Thread.currentThread();
+        }
+        private synchronized void releaseJavaRunThread(JavaRun run) {
+            LangUtil.throwIaxIfNull(run, "run");
+            runThread = null;
+        }
+        /** @throws ExitCalledException if called from the JavaRun-set thread */
+        public void checkExit(int exitCode) throws ExitCalledException {
+            if ((null != runThread) && runThread.equals(Thread.currentThread())) {
+                throw new ExitCalledException(exitCode);
+            }
+        }
+        public void checkAwtEventQueueAccess() {
+            if ((null != runThread) && runThread.equals(Thread.currentThread())) {
+                throw new AwtUsedException();
+            }
+        }
+        public void checkSystemClipboardAccess() {
+            // permit
+        }
+        // used by constrained calls
+        public static class ExitCalledException extends SecurityException {
+            public final int exitCode;
+            public ExitCalledException(int exitCode) {
+                this.exitCode = exitCode;
+            }
+        }
+        public static class AwtUsedException extends SecurityException {
+            public AwtUsedException() { }
+        }
+        // permit everything else
+        public void checkAccept(String arg0, int arg1) {
+        }
+        public void checkAccess(Thread arg0) {
+        }
+        public void checkAccess(ThreadGroup arg0) {
+        }
+        public void checkConnect(String arg0, int arg1) {
+        }
+        public void checkConnect(String arg0, int arg1, Object arg2) {
+        }
+        public void checkCreateClassLoader() {
+        }
+        public void checkDelete(String arg0) {
+        }
+        public void checkExec(String arg0) {
+        }
+        public void checkLink(String arg0) {
+        }
+        public void checkListen(int arg0) {
+        }
+        public void checkMemberAccess(Class arg0, int arg1) {
+        }
+        public void checkMulticast(InetAddress arg0) {
+        }
+        public void checkMulticast(InetAddress arg0, byte arg1) {
+        }
+        public void checkPackageAccess(String arg0) {
+        }
+        public void checkPackageDefinition(String arg0) {
+        }
+        public void checkPermission(Permission arg0) {
+        }
+        public void checkPermission(Permission arg0, Object arg1) {
+        }
+        public void checkPrintJobAccess() {
+        }
+        public void checkPropertiesAccess() {
+        }
+        public void checkPropertyAccess(String arg0) {
+        }
+        public void checkRead(FileDescriptor arg0) {
+        }
+        public void checkRead(String arg0) {
+        }
+        public void checkRead(String arg0, Object arg1) {
+        }
+        public void checkSecurityAccess(String arg0) {
+        }
+        public void checkSetFactory() {
+        }
+        public boolean checkTopLevelWindow(Object arg0) {
+            return true;
+        }
+        public void checkWrite(FileDescriptor arg0) {
+        }
+        public void checkWrite(String arg0) {
+        }
+        
+    }
 }
