@@ -193,8 +193,8 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 		for (Iterator binIter = binarySourceEntries.keySet().iterator(); binIter.hasNext();) {
 			String sourceFileName = (String) binIter.next();
 			List unwovenClassFiles = (List) binarySourceEntries.get(sourceFileName);
-			
-			CompilationResult result = new CompilationResult(sourceFileName.toCharArray(),0,0,compiler.options.maxProblemsPerUnit);
+			// XXX - see bugs 57432,58679 - final parameter on next call should be "compiler.options.maxProblemsPerUnit"
+			CompilationResult result = new CompilationResult(sourceFileName.toCharArray(),0,0,Integer.MAX_VALUE);
 			result.noSourceAvailable();
 			InterimCompilationResult binarySource = 
 				new InterimCompilationResult(result,unwovenClassFiles);
