@@ -41,6 +41,7 @@
    <!ATTLIST run outStreamIsError CDATA #IMPLIED >
    <!ATTLIST run fork CDATA #IMPLIED >
    <!ATTLIST run vmargs CDATA #IMPLIED >
+   <!ATTLIST run aspectpath CDATA #IMPLIED >
 
    <!ELEMENT message (source*)>
    <!ATTLIST message kind (abort | fail | error | warning | info | Xlint) #REQUIRED >
