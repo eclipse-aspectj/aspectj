@@ -16,6 +16,9 @@ package org.aspectj.weaver.patterns;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -66,26 +69,58 @@ public class ArgsPointcut extends NameBindingPointcut {
 			// are the sigs compatible too...
 			CodeSignature sig = (CodeSignature)jp.getSignature();
 			Class[] pTypes = sig.getParameterTypes();
-			Collection tps = arguments.getExactTypes();
-			int sigIndex = 0;
-			for (Iterator iter = tps.iterator(); iter.hasNext();) {
-				TypeX tp = (TypeX) iter.next();
-				Class lookForClass = getPossiblyBoxed(tp);
-				if (lookForClass != null) {
-					boolean foundMatchInSig = false;
-					while (sigIndex < pTypes.length && !foundMatchInSig) {
-						if (pTypes[sigIndex++] == lookForClass) foundMatchInSig = true;
-					}
-					if (!foundMatchInSig) {
-						ret = FuzzyBoolean.NO;
-						break;
-					}
-				}
-			}
+			ret = checkSignatureMatch(pTypes);
 		}
 		return ret;
 	}
 	
+	/**
+	 * @param ret
+	 * @param pTypes
+	 * @return
+	 */
+	private FuzzyBoolean checkSignatureMatch(Class[] pTypes) {
+		Collection tps = arguments.getExactTypes();
+		int sigIndex = 0;
+		for (Iterator iter = tps.iterator(); iter.hasNext();) {
+			TypeX tp = (TypeX) iter.next();
+			Class lookForClass = getPossiblyBoxed(tp);
+			if (lookForClass != null) {
+				boolean foundMatchInSig = false;
+				while (sigIndex < pTypes.length && !foundMatchInSig) {
+					if (pTypes[sigIndex++] == lookForClass) foundMatchInSig = true;
+				}
+				if (!foundMatchInSig) {
+					return FuzzyBoolean.NO;
+				}
+			}
+		}
+		return FuzzyBoolean.YES;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.Pointcut#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
+	 */
+	public boolean matchesDynamically(Object thisObject, Object targetObject,
+			Object[] args) {
+		return (arguments.matches(args,TypePattern.DYNAMIC) == FuzzyBoolean.YES);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.Pointcut#matchesStatically(java.lang.String, java.lang.reflect.Member, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
+	 */
+	public FuzzyBoolean matchesStatically(String joinpointKind, Member member,
+			Class thisClass, Class targetClass, Member withinCode) {
+		Class[] paramTypes = new Class[0];
+		if (member instanceof Method) {
+			paramTypes = ((Method)member).getParameterTypes();
+		} else if (member instanceof Constructor) {
+			paramTypes = ((Constructor)member).getParameterTypes();
+		} else {
+			return FuzzyBoolean.NO;
+		}
+		return arguments.matches(paramTypes,TypePattern.DYNAMIC);
+	}
 	private Class getPossiblyBoxed(TypeX tp) {
 		Class ret = (Class) ExactTypePattern.primitiveTypesMap.get(tp.getName());
 		if (ret == null) ret = (Class) ExactTypePattern.boxedPrimitivesMap.get(tp.getName());

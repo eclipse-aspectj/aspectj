@@ -16,6 +16,7 @@ package org.aspectj.weaver.patterns;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +62,23 @@ public class IfPointcut extends Pointcut {
 		return FuzzyBoolean.MAYBE;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.Pointcut#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
+	 */
+	public boolean matchesDynamically(Object thisObject, Object targetObject,
+			Object[] args) {
+		throw new UnsupportedOperationException("If pointcut matching not supported by this operation");
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.Pointcut#matchesStatically(java.lang.String, java.lang.reflect.Member, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
+	 */
+	public FuzzyBoolean matchesStatically(
+			String joinpointKind, Member member, Class thisClass,
+			Class targetClass, Member withinCode) {
+		throw new UnsupportedOperationException("If pointcut matching not supported by this operation");
+	}
+	
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.IF);
 		testMethod.write(s);

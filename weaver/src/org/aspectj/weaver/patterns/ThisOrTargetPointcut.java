@@ -16,6 +16,7 @@ package org.aspectj.weaver.patterns;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Member;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
@@ -75,6 +76,25 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		Object toMatch = isThis ? jp.getThis() : jp.getTarget(); 
 		if (toMatch == null) return FuzzyBoolean.NO;
 		return type.matches(toMatch.getClass(), TypePattern.DYNAMIC);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.Pointcut#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
+	 */
+	public boolean matchesDynamically(Object thisObject, Object targetObject,
+			Object[] args) {
+		Object toMatch = isThis ? thisObject : targetObject; 
+		if (toMatch == null) return false;
+		return (type.matches(toMatch.getClass(), TypePattern.DYNAMIC)).alwaysTrue();
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.Pointcut#matchesStatically(java.lang.String, java.lang.reflect.Member, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
+	 */
+	public FuzzyBoolean matchesStatically(String joinpointKind, Member member,
+			Class thisClass, Class targetClass, Member withinCode) {
+		Class typeToMatch = isThis ? thisClass : targetClass; 
+		return type.matches(typeToMatch, TypePattern.DYNAMIC);
 	}
 	
 	public void write(DataOutputStream s) throws IOException {

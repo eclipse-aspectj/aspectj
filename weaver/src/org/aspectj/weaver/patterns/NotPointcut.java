@@ -16,6 +16,7 @@ package org.aspectj.weaver.patterns;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Member;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
@@ -54,6 +55,22 @@ public class NotPointcut extends Pointcut {
 		return body.match(jpsp).not();
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.Pointcut#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
+	 */
+	public boolean matchesDynamically(Object thisObject, Object targetObject,
+			Object[] args) {
+		return !body.matchesDynamically(thisObject,targetObject,args);
+	}
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.Pointcut#matchesStatically(java.lang.String, java.lang.reflect.Member, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
+	 */
+	public FuzzyBoolean matchesStatically(
+			String joinpointKind, Member member, Class thisClass,
+			Class targetClass, Member withinCode) {
+		return body.matchesStatically(joinpointKind,member,thisClass,targetClass,withinCode).not();
+	}
+
 	public String toString() {
 		return "!" + body.toString();
 

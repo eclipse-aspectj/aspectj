@@ -24,7 +24,6 @@ import org.aspectj.weaver.Checker;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
-import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
@@ -86,6 +85,26 @@ public class KindedPointcut extends Pointcut {
 			if (signature.matches(jpsp)) {
 				return FuzzyBoolean.YES;
 			}
+		}
+		return FuzzyBoolean.NO;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.Pointcut#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
+	 */
+	public boolean matchesDynamically(Object thisObject, Object targetObject,
+			Object[] args) {
+		return true;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.Pointcut#matchesStatically(java.lang.String, java.lang.reflect.Member, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
+	 */
+	public FuzzyBoolean matchesStatically(String joinpointKind,
+			java.lang.reflect.Member member, Class thisClass,
+			Class targetClass, java.lang.reflect.Member withinCode) {
+		if (joinpointKind.equals(kind.getName()))  {
+			return FuzzyBoolean.fromBoolean(signature.matches(thisClass,member));			
 		}
 		return FuzzyBoolean.NO;
 	}

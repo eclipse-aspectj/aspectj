@@ -16,6 +16,7 @@ package org.aspectj.weaver.patterns;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -266,6 +267,49 @@ public class SignaturePattern extends PatternNode {
 		return false;
 	}
 	
+	public boolean matches(Class declaringClass, java.lang.reflect.Member member) {
+	    if (kind == Member.ADVICE) return true;
+	    if (kind == Member.POINTCUT) return false;
+		if ((member != null) && !(modifiers.matches(member.getModifiers()))) return false;
+		if (kind == Member.STATIC_INITIALIZATION) {
+			return declaringType.matchesStatically(declaringClass);
+		}
+		if (kind == Member.FIELD) {
+			if (!(member instanceof Field)) return false;
+			
+			Class fieldTypeClass = ((Field)member).getType();
+			if (!returnType.matchesStatically(fieldTypeClass)) return false;
+			if (!name.matches(member.getName())) return false;
+			return declaringTypeMatch(member.getDeclaringClass());
+		}
+		if (kind == Member.METHOD) {
+			if (! (member instanceof Method)) return false;
+			
+			Class returnTypeClass = ((Method)member).getReturnType();
+			Class[] params = ((Method)member).getParameterTypes();
+			Class[] exceptionTypes = ((Method)member).getExceptionTypes();
+			if (!returnType.matchesStatically(returnTypeClass)) return false;
+			if (!name.matches(member.getName())) return false;
+			if (!parameterTypes.matches(params, TypePattern.STATIC).alwaysTrue()) {
+				return false;
+			}
+			if (!throwsPattern.matches(exceptionTypes)) return false;
+			return declaringTypeMatch(member.getDeclaringClass()); // XXXAJ5 - Need to make this a covariant aware version for dynamic JP matching to work
+		}
+		if (kind == Member.CONSTRUCTOR) {
+			if (! (member instanceof Constructor)) return false;
+			
+			Class[] params = ((Constructor)member).getParameterTypes();
+			Class[] exceptionTypes = ((Constructor)member).getExceptionTypes();
+			if (!parameterTypes.matches(params, TypePattern.STATIC).alwaysTrue()) {
+				return false;
+			}
+			if (!throwsPattern.matches(exceptionTypes)) return false;
+			return declaringType.matchesStatically(declaringClass);
+		}
+		return false;
+	}
+	
 // For methods, the above covariant aware version (declaringTypeMatchAllowingForCovariance) is used - this version is still here for fields
 	private boolean declaringTypeMatch(TypeX onTypeUnresolved, Member member, World world) {
 		ResolvedTypeX onType = onTypeUnresolved.resolve(world);
@@ -294,6 +338,16 @@ public class SignaturePattern extends PatternNode {
 		}
 		
 		return false;
+	}
+	
+	private boolean declaringTypeMatch(Class clazz) {
+		if (clazz == null) return false;
+		if (declaringType.matchesStatically(clazz)) return true;
+		Class[] ifs = clazz.getInterfaces();
+		for (int i = 0; i<ifs.length; i++) {
+			if (declaringType.matchesStatically(ifs[i])) return true;
+		}
+		return declaringTypeMatch(clazz.getSuperclass());
 	}
 	
 	private Collection getDeclaringTypes(Signature sig) {

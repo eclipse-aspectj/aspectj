@@ -16,8 +16,10 @@ package org.aspectj.weaver.patterns;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Member;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.runtime.reflect.Factory;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
@@ -46,6 +48,22 @@ public class WithincodePointcut extends Pointcut {
 
 	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart encJP) {
 		return FuzzyBoolean.fromBoolean(signature.matches(encJP));
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.Pointcut#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
+	 */
+	public boolean matchesDynamically(Object thisObject, Object targetObject,
+			Object[] args) {
+		return true;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.patterns.Pointcut#matchesStatically(java.lang.String, java.lang.reflect.Member, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
+	 */
+	public FuzzyBoolean matchesStatically(String joinpointKind, Member member,
+			Class thisClass, Class targetClass, Member withinCode) {
+		return FuzzyBoolean.fromBoolean(signature.matches(Factory.makeEncSJP(withinCode)));
 	}
 	
 	public void write(DataOutputStream s) throws IOException {
