@@ -386,7 +386,7 @@ public class AsmManager {
 	}
 	
 
-	private void dumptree(Writer w,IProgramElement node,int indent) throws IOException {
+	public static void dumptree(Writer w,IProgramElement node,int indent) throws IOException {
 		for (int i =0 ;i<indent;i++) w.write(" ");
 		w.write(node+"  ["+(node==null?"null":node.getKind().toString())+"]\n");
 		if (node!=null) 
