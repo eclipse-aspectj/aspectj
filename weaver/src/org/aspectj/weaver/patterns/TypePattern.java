@@ -266,6 +266,7 @@ public abstract class TypePattern extends PatternNode {
 	public static final byte OR = 7;
 	public static final byte AND = 8;
 	public static final byte NO_KEY = 9;
+	public static final byte ANY_WITH_ANNO = 10;
 
 	public static TypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		byte key = s.readByte();
@@ -279,6 +280,7 @@ public abstract class TypePattern extends PatternNode {
 			case NOT: return NotTypePattern.read(s, context);
 			case OR: return OrTypePattern.read(s, context);
 			case AND: return AndTypePattern.read(s, context);
+			case ANY_WITH_ANNO: return AnyWithAnnotationTypePattern.read(s,context);
 		}
 		throw new BCException("unknown TypePattern kind: " + key);
 	}
@@ -433,6 +435,76 @@ class AnyTypePattern extends TypePattern {
 	
 	public int hashCode() {
 		return 37;
+	}
+}
+
+/**
+ * This type represents a type pattern of '*' but with an annotation specified,
+ * e.g. '@Color *'
+ */
+class AnyWithAnnotationTypePattern extends TypePattern {
+	
+	public AnyWithAnnotationTypePattern(AnnotationTypePattern atp) {
+		super(false,false);
+		annotationPattern = atp;
+	}
+
+	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
+		return true;
+	}
+
+	protected boolean matchesExactly(ResolvedTypeX type) {
+		annotationPattern.resolve(type.getWorld());
+		return annotationPattern.matches(type).alwaysTrue();
+	}
+
+	public FuzzyBoolean matchesInstanceof(ResolvedTypeX type) {
+		return FuzzyBoolean.YES;
+	}
+
+	protected boolean matchesExactly(Class type) {
+		return true;
+	}
+
+	public FuzzyBoolean matchesInstanceof(Class type) {
+		return FuzzyBoolean.YES;
+	}
+
+	public void write(DataOutputStream s) throws IOException {
+		s.writeByte(TypePattern.ANY_WITH_ANNO);
+		annotationPattern.write(s);
+		writeLocation(s);
+	}
+	
+	public static TypePattern read(VersionedDataInputStream s,ISourceContext c) throws IOException {
+		 AnnotationTypePattern annPatt = AnnotationTypePattern.read(s,c);
+		 AnyWithAnnotationTypePattern ret = new AnyWithAnnotationTypePattern(annPatt);
+		 ret.readLocation(c, s);
+		 return ret;
+	}
+
+//	public FuzzyBoolean matches(IType type, MatchKind kind) {
+//		return FuzzyBoolean.YES;
+//	}
+
+	protected boolean matchesSubtypes(ResolvedTypeX type) {
+		return true;
+	}
+	
+	public boolean isStar() {
+		return true;
+	}
+	
+	public String toString() { return annotationPattern+" *"; }
+	
+	public boolean equals(Object obj) {
+		if  (!(obj instanceof AnyWithAnnotationTypePattern)) return false;
+		AnyWithAnnotationTypePattern awatp = (AnyWithAnnotationTypePattern) obj;
+		return (annotationPattern.equals(awatp));
+	}
+	
+	public int hashCode() {
+		return annotationPattern.hashCode();
 	}
 }
 

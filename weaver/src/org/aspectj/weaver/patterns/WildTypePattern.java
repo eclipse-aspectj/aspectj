@@ -367,10 +367,20 @@ public class WildTypePattern extends TypePattern {
 	public TypePattern resolveBindings(IScope scope, Bindings bindings, 
     								boolean allowBinding, boolean requireExactType)
     { 		
-    	if (isStar() && (annotationPattern == AnnotationTypePattern.ANY)) {
-    		if (dim == 0) { // pr72531
+    	if (isStar()) {
+    	    // If there is an annotation specified we have to
+    	    // use a special variant of Any TypePattern called
+    	    // AnyWithAnnotation
+    		if (annotationPattern == AnnotationTypePattern.ANY) {
+    		  if (dim == 0) { // pr72531
     			return TypePattern.ANY;  //??? loses source location
-    		} 
+    		  } 
+    		} else {
+    	    	annotationPattern = annotationPattern.resolveBindings(scope,bindings,allowBinding);
+    			AnyWithAnnotationTypePattern ret = new AnyWithAnnotationTypePattern(annotationPattern); 			
+    			ret.setLocation(sourceContext,start,end);
+    			return ret;
+    		}
 		}
 
     	annotationPattern = annotationPattern.resolveBindings(scope,bindings,allowBinding);
