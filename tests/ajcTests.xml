@@ -6362,4 +6362,9 @@
         <compile files="WarningTest.java" options="-warn:none"/>
     </ajc-test>
 
+    <ajc-test dir="bugs" pr="38168" keywords="knownLimitation"
+   	 title="insertion of lots of advice code can make branch offset for if too large">
+        <compile files="WideJumps.java"/>
+        <run class="WideJumps"/>
+    </ajc-test>
 </suite>
