@@ -334,6 +334,7 @@ public class AjcTask extends MatchingTask {
 
     /** true if -XincrementalFile (i.e, setTagFile)*/
     private boolean inIncrementalFileMode; 
+    
     // also note MatchingTask grabs source files...
     
     public AjcTask() {
@@ -596,6 +597,8 @@ public class AjcTask extends MatchingTask {
     		cmd.addFlag("-1.3", true);
     	} else if ("1.4".equals(either13or14)) {
     		cmd.addFlag("-1.4", true);
+//        } else if ("1.5".equals(either13or14)) {
+//            cmd.addFlag("-1.5", true);
         } else if (null != either13or14) {
     		ignore(either13or14 + "[compliance]");
     	}   		
@@ -1414,9 +1417,11 @@ public class AjcTask extends MatchingTask {
         while (in.hasNext()) {
             flag = in.next();
             if ("-1.3".equals(flag)) {
-                setCompliance(flag);
+                setCompliance("1.3");
             } else if ("-1.4".equals(flag)) {
-                setCompliance(flag);
+                setCompliance("1.4");
+//            } else if ("-1.5".equals(flag)) {
+//                setCompliance("1.5");
             } else if ("-argfile".equals(flag)) {
                 setArgfiles(new Path(project, in.next()));
             } else if ("-aspectpath".equals(flag)) {
@@ -1499,6 +1504,8 @@ public class AjcTask extends MatchingTask {
                 setVersion(true);
             } else if ("-warn".equals(flag)) {
                 setWarn(in.next());
+            } else if (flag.startsWith("-warn:")) {
+                setWarn(flag.substring(6));
             } else if ("-Xlint".equals(flag)) {
                 setXlintwarnings(true);
             } else if (flag.startsWith("-Xlint:")) {
