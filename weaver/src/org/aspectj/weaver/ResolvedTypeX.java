@@ -1307,6 +1307,25 @@ public abstract class ResolvedTypeX extends TypeX {
 		return true;
 	}
 	
+	public ResolvedTypeX getTopmostImplementor(ResolvedTypeX interfaceType) {
+		if (isInterface()) return null;
+		if (!interfaceType.isAssignableFrom(this)) return null;
+		// Check if my super class is an implementor?
+		ResolvedTypeX higherType  = this.getSuperclass().getTopmostImplementor(interfaceType);
+		if (higherType!=null) return higherType;
+		return this;
+	}
+	
+	private ResolvedTypeX findHigher(ResolvedTypeX other) {
+	 if (this == other) return this;
+     for(Iterator i = other.getDirectSupertypes(); i.hasNext(); ) {
+     	ResolvedTypeX rtx = (ResolvedTypeX)i.next();
+     	boolean b = this.isAssignableFrom(rtx);
+     	if (b) return rtx;
+     }       
+     return null;
+	}
+	
 	public List getExposedPointcuts() {
 		List ret = new ArrayList();
 		if (getSuperclass() != null) ret.addAll(getSuperclass().getExposedPointcuts());

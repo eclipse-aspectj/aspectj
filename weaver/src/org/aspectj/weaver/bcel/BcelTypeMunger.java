@@ -24,6 +24,8 @@ import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.AsmRelationshipProvider;
@@ -40,6 +42,7 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.patterns.Pointcut;
 
@@ -414,39 +417,58 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			addNeededSuperCallMethods(weaver, onType, munger.getSuperMethodsCalled());
 			
     		return true;
-		} else if (onInterface && gen.getType().isTopmostImplementor(onType) && 
-						!Modifier.isAbstract(signature.getModifiers()))
-		{
-			ResolvedMember introMethod = 
+    		
+		} else if (onInterface && !Modifier.isAbstract(signature.getModifiers())) {
+			
+			// This means the 'gen' should be the top most implementor
+			// - if it is *not* then something went wrong after we worked
+			// out that it was the top most implementor (see pr49657)
+    		if (!gen.getType().isTopmostImplementor(onType)) {
+    			ResolvedTypeX rtx = gen.getType().getTopmostImplementor(onType);
+    			if (!rtx.isExposedToWeaver()) {
+    				ISourceLocation sLoc = munger.getSourceLocation();
+    			    weaver.getWorld().getMessageHandler().handleMessage(MessageUtil.error(
+    			    		WeaverMessages.format(WeaverMessages.ITD_NON_EXPOSED_IMPLEMENTOR,rtx,getAspectType().getName()),
+							(sLoc==null?getAspectType().getSourceLocation():sLoc)));
+    			} else {
+    				// XXX what does this state mean?
+    				// We have incorrectly identified what is the top most implementor and its not because
+    				// a type wasn't exposed to the weaver
+    			}
+				return false;
+    		} else {
+		
+			  ResolvedMember introMethod = 
 					AjcMemberMaker.interMethod(signature, aspectType, false);
 			
-			LazyMethodGen mg = makeMethodGen(gen, introMethod);
+			  LazyMethodGen mg = makeMethodGen(gen, introMethod);
 						
-			Type[] paramTypes = BcelWorld.makeBcelTypes(introMethod.getParameterTypes());
-			Type returnType = BcelWorld.makeBcelType(introMethod.getReturnType());
+			  Type[] paramTypes = BcelWorld.makeBcelTypes(introMethod.getParameterTypes());
+			  Type returnType = BcelWorld.makeBcelType(introMethod.getReturnType());
 			
-			InstructionList body = mg.getBody();
-			InstructionFactory fact = gen.getFactory();
-			int pos = 0;
+			  InstructionList body = mg.getBody();
+			  InstructionFactory fact = gen.getFactory();
+			  int pos = 0;
 
-			if (!introMethod.isStatic()) {
+			  if (!introMethod.isStatic()) {
 				body.append(InstructionFactory.createThis());
 				pos++;
-			}
-			for (int i = 0, len = paramTypes.length; i < len; i++) {
+			  }
+			  for (int i = 0, len = paramTypes.length; i < len; i++) {
 				Type paramType = paramTypes[i];
 				body.append(InstructionFactory.createLoad(paramType, pos));
 				pos+=paramType.getSize();
-			}
-			body.append(Utility.createInvoke(fact, weaver.getWorld(), dispatchMethod));
-			body.append(InstructionFactory.createReturn(returnType));
-			mg.definingType = onType;
+			  }
+			  body.append(Utility.createInvoke(fact, weaver.getWorld(), dispatchMethod));
+			  body.append(InstructionFactory.createReturn(returnType));
+			  mg.definingType = onType;
 			
-			weaver.addOrReplaceLazyMethodGen(mg);
+			  weaver.addOrReplaceLazyMethodGen(mg);
 			
-			addNeededSuperCallMethods(weaver, onType, munger.getSuperMethodsCalled());
+			  addNeededSuperCallMethods(weaver, onType, munger.getSuperMethodsCalled());
 			
-			return true;
+			  return true;
+    		}
 		} else {
 			return false;
 		}

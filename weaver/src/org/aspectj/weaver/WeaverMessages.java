@@ -52,6 +52,7 @@ public class WeaverMessages {
 	public static final String ITD_OVERIDDING_STATIC = "overridingStatic";
 	public static final String ITD_CONFLICT = "itdConflict";
 	public static final String ITD_MEMBER_CONFLICT = "itdMemberConflict";
+	public static final String ITD_NON_EXPOSED_IMPLEMENTOR = "itdNonExposedImplementor";
 	
 	
 	public static final String NON_VOID_RETURN = "nonVoidReturn";
