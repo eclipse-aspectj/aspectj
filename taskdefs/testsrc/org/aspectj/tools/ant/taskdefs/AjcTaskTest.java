@@ -48,6 +48,8 @@ public class AjcTaskTest extends TestCase {
     private static final String aspectjtoolsJar;
     private static final String testdataDir;
     private static final StringBuffer MESSAGES = new StringBuffer();
+    /** accept writable .class files */
+    private static FileFilter PICK_CLASS_FILES;
     
     static {
         tempDir = new File("IncrementalAjcTaskTest-temp");            
@@ -68,6 +70,15 @@ public class AjcTaskTest extends TestCase {
         } else {
             testdataDir = null;
         }
+        PICK_CLASS_FILES = new FileFilter() {
+            public boolean accept(File file) {
+                return ((null != file)
+                    && file.isFile()
+                    && file.canWrite()
+                    && file.getPath().endsWith(".class"));
+            }
+
+        };
     }
     
     /** 
@@ -118,6 +129,13 @@ public class AjcTaskTest extends TestCase {
         if ((null != tempDir) && tempDir.exists()) {
             FileUtil.deleteContents(tempDir);
             tempDir.delete();
+            // when tempDir not used...
+            if (null != testdataDir) {
+                File dataDir = new File(testdataDir);
+                if (dataDir.canRead()) {
+                    FileUtil.deleteContents(dataDir, PICK_CLASS_FILES, false);
+                }
+            }
         }
     }    
     private static final File getTempDir() {
