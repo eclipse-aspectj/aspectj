@@ -13,15 +13,8 @@
 
 package org.aspectj.ajdt.ajc;
 
-import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
-import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
-import org.aspectj.bridge.AbortException;
-import org.aspectj.bridge.CountingMessageHandler;
-import org.aspectj.bridge.ICommand;
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.Message;
-import org.aspectj.bridge.MessageUtil;
+import org.aspectj.ajdt.internal.core.builder.*;
+import org.aspectj.bridge.*;
 import org.eclipse.jdt.internal.core.builder.MissingSourceFileException;
 
 /**
@@ -136,20 +129,24 @@ public class AjdtCommand implements ICommand {
     public static AjBuildConfig genBuildConfig(String[] args, CountingMessageHandler handler) {
         BuildArgParser parser = new BuildArgParser();
         AjBuildConfig config = parser.genBuildConfig(args, handler);
-        String message = parser.getOtherMessages(true);
 
+		ISourceLocation location = null;
+		if (config.getConfigFile() != null) {
+			location = new SourceLocation(config.getConfigFile(), 0); 
+		}
+
+		String message = parser.getOtherMessages(true);
         if (null != message) {  
             IMessage.Kind kind = inferKind(message);
-            IMessage m = new Message(message, kind, null, null);            
+            IMessage m = new Message(message, kind, null, location);            
             handler.handleMessage(m);
-        }
-        message = config.configErrors();
-        if (null != message) {
-            IMessage.Kind kind = inferKind(message);
-            IMessage m = new Message(message, kind, null, null);            
-            handler.handleMessage(m);
-        }
-        
+        }  
+//        message = config.configErrors();
+//        if (null != message) {
+//            IMessage.Kind kind = inferKind(message);
+//            IMessage m = new Message(message, kind, null, location);            
+//            handler.handleMessage(m);
+//        }
         return config;
     }
     

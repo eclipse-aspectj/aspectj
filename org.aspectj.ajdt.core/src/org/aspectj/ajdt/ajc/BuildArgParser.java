@@ -14,30 +14,15 @@
 
 package org.aspectj.ajdt.ajc;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
-import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
-import org.aspectj.ajdt.internal.core.builder.AjCompilerOptions;
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.MessageUtil;
-import org.aspectj.util.ConfigParser;
-import org.aspectj.util.FileUtil;
-import org.aspectj.util.LangUtil;
+import org.aspectj.ajdt.internal.core.builder.*;
+import org.aspectj.bridge.*;
+import org.aspectj.util.*;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
-import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.batch.Main;
+import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 public class BuildArgParser extends Main {
 
@@ -100,7 +85,7 @@ public class BuildArgParser extends Main {
 	 *         which will be invalid unless there are no handler errors.
 	 */
 	public AjBuildConfig genBuildConfig(String[] args, IMessageHandler handler) {
-		return genBuildConfig(args, handler, true);
+		return genBuildConfig(args, handler, true, null);
 	}  
       
     /**
@@ -109,23 +94,24 @@ public class BuildArgParser extends Main {
      * @param args the String[] arguments for the build configuration
      * @param handler the IMessageHandler handler for any errors
      * @param setClasspath	determines if the classpath should be parsed and set on the build configuration
+     * @param configFile	can be null
      * @return AjBuildConfig per args, 
      *         which will be invalid unless there are no handler errors.
      */
-	public AjBuildConfig genBuildConfig(String[] args, IMessageHandler handler, boolean setClasspath) {
+	public AjBuildConfig genBuildConfig(String[] args, IMessageHandler handler, boolean setClasspath, File configFile) {
 		AjBuildConfig buildConfig = new AjBuildConfig();
+		buildConfig.setConfigFile(configFile);
 		try {
 			// sets filenames to be non-null in order to make sure that file paramters are ignored
 			super.filenames = new String[] { "" }; 
-			
-			List fileList = new ArrayList();
 			
 			AjcConfigParser parser = new AjcConfigParser(buildConfig, handler);
 			parser.parseCommandLine(args);
             
             boolean incrementalMode = buildConfig.isIncrementalMode()
-                        || buildConfig.isIncrementalFileMode();
+            	|| buildConfig.isIncrementalFileMode();
 			
+			List fileList = new ArrayList();
             List files = parser.getFiles();
             if (!LangUtil.isEmpty(files)) {
                 if (incrementalMode) {
@@ -136,11 +122,9 @@ public class BuildArgParser extends Main {
             }
 				
 			List javaArgList = new ArrayList();
-			
 			//	disable all special eclipse warnings by default
 			//??? might want to instead override getDefaultOptions()
 			javaArgList.add("-warn:none");
-			
 			// these next four lines are some nonsense to fool the eclipse batch compiler
 			// without these it will go searching for reasonable values from properties
 			//TODO fix org.eclipse.jdt.internal.compiler.batch.Main so this hack isn't needed
@@ -148,12 +132,8 @@ public class BuildArgParser extends Main {
 			javaArgList.add(System.getProperty("user.dir"));
 			javaArgList.add("-bootclasspath");
 			javaArgList.add(System.getProperty("user.dir"));
-			
 			javaArgList.addAll(parser.getUnparsedArgs());
-
-//			if (javaArgList.size() != 0) {
-				super.configure((String[])javaArgList.toArray(new String[javaArgList.size()]));
-//			}
+			super.configure((String[])javaArgList.toArray(new String[javaArgList.size()]));
 			
 			if (buildConfig.getSourceRoots() != null) {
 				for (Iterator i = buildConfig.getSourceRoots().iterator(); i.hasNext(); ) {
@@ -178,7 +158,12 @@ public class BuildArgParser extends Main {
 			setDebugOptions();
 			buildConfig.setJavaOptions(options);
 		} catch (InvalidInputException iie) {
-            MessageUtil.error(handler, iie.getMessage());
+			ISourceLocation location = null;
+			if (buildConfig.getConfigFile() != null) {
+				location = new SourceLocation(buildConfig.getConfigFile(), 0); 
+			}
+			IMessage m = new Message(iie.getMessage(), IMessage.ERROR, null, location);            
+			handler.handleMessage(m);
 		}
 		return buildConfig;
 	}
@@ -286,7 +271,6 @@ public class BuildArgParser extends Main {
 		}		
 	}
     
-    // !!! extract error handling to be common so that the IDEs can use it
     private class AjcConfigParser extends ConfigParser {
 		private String bootclasspath = null;
 		private String classpath = null;
@@ -328,7 +312,7 @@ public class BuildArgParser extends Main {
 		            	if (jarFile.exists() && FileUtil.hasZipSuffix(filename)) {
 			            	buildConfig.getInJars().add(jarFile);    
 		            	} else {
-                            showError("bad injar: " + filename);
+                            showError("bad injar: " + filename);  
 		            	}
 		            }
 					
@@ -498,11 +482,23 @@ public class BuildArgParser extends Main {
         }
 
         public void showError(String message) {
-            MessageUtil.error(handler, CONFIG_MSG + message);
+			ISourceLocation location = null;
+			if (buildConfig.getConfigFile() != null) {
+				location = new SourceLocation(buildConfig.getConfigFile(), 0); 
+			} 
+			IMessage errorMessage = new Message(CONFIG_MSG + message, IMessage.ERROR, null, location);
+			handler.handleMessage(errorMessage);
+//            MessageUtil.error(handler, CONFIG_MSG + message);
         }
         
 		protected void showWarning(String message) {
-            MessageUtil.warn(handler, message);
+			ISourceLocation location = null;
+			if (buildConfig.getConfigFile() != null) {
+				location = new SourceLocation(buildConfig.getConfigFile(), 0); 
+			} 
+			IMessage errorMessage = new Message(CONFIG_MSG + message, IMessage.WARNING, null, location);
+			handler.handleMessage(errorMessage);
+//            MessageUtil.warn(handler, message);
         }
 
     }
