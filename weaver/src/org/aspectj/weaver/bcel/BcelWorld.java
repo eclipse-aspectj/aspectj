@@ -237,8 +237,18 @@ public class BcelWorld extends World {
 	        int mods = mg.getAccessFlags();
 	        if (mg.getEnclosingClass().isInterface()) {
 	            mods |= Modifier.INTERFACE;
-	        }       
-	        return new ResolvedMember(mg.getName().equals("<init>") ? Member.CONSTRUCTOR : Member.METHOD,
+	        }
+	        
+	        org.aspectj.weaver.Member.Kind kind;
+	        if (mg.getName().equals("<init>")) {
+	        	kind = Member.CONSTRUCTOR;
+	        } else if (mg.getName().equals("<clinit>")) {
+	        	kind = Member.STATIC_INITIALIZATION;
+	        } else {
+	        	kind = Member.METHOD;
+	        }
+	        
+	        return new ResolvedMember(kind,
 	                TypeX.forName(mg.getClassName()), 
 	                mods,
 	                fromBcel(mg.getReturnType()),

@@ -516,6 +516,8 @@ public class Member implements Comparable {
 
 	// ---- reflective thisJoinPoint stuff
     public String getSignatureMakerName() {
+    	if (getName().equals("<clinit>")) return "makeInitializerSig";
+    	
     	Kind kind = getKind();
     	if (kind == METHOD) {
     		return "makeMethodSig";
@@ -539,6 +541,8 @@ public class Member implements Comparable {
 
 	public String getSignatureType() {
     	Kind kind = getKind();
+    	if (getName().equals("<clinit>")) return "org.aspectj.lang.reflect.InitializerSignature";
+    	
     	if (kind == METHOD) {
     		return "org.aspectj.lang.reflect.MethodSignature";
     	} else if (kind == CONSTRUCTOR) {
@@ -557,6 +561,8 @@ public class Member implements Comparable {
     }
 
 	public String getSignatureString(World world) {
+		if (getName().equals("<clinit>")) return getStaticInitializationSignatureString(world);
+		
     	Kind kind = getKind();
     	if (kind == METHOD) {
     		return getMethodSignatureString(world);
