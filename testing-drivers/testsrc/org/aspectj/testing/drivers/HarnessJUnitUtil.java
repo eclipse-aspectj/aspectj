@@ -18,7 +18,7 @@ import java.util.*;
 import junit.framework.*;
 
 import org.aspectj.bridge.*;
-import org.aspectj.bridge.MessageHandler;
+//import org.aspectj.bridge.MessageHandler;
 import org.aspectj.testing.harness.bridge.*;
 import org.aspectj.testing.run.IRunStatus;
 import org.aspectj.testing.util.RunUtils;

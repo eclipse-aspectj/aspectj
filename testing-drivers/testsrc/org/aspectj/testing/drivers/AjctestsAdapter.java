@@ -20,8 +20,8 @@ import junit.framework.*;
 import org.aspectj.bridge.*;
 import org.aspectj.testing.harness.bridge.*;
 import org.aspectj.testing.run.*;
-import org.aspectj.testing.util.RunUtils;
-import org.aspectj.testing.xml.AjcSpecXmlReader;
+//import org.aspectj.testing.util.RunUtils;
+//import org.aspectj.testing.xml.AjcSpecXmlReader;
 
 /*
  * Adapt Harness tests to JUnit driver.

@@ -430,7 +430,7 @@ public final class TestUtil {
             }
             // capture file as FileLine[]
             InputStream in = null;
-            String path = FileUtil.normalizedPath(file, basedir);
+            /*String path = */FileUtil.normalizedPath(file, basedir);
             LineStream capture = new LineStream();
             try { 
                 lineate(capture, handler, basedir, file);

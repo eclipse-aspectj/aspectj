@@ -411,7 +411,7 @@ public class FileUtil {
                         file.delete();
                     }
                 } else {
-                    boolean ret = file.delete();
+                    /*boolean ret = */file.delete();
                     result++;
                 }
             }
@@ -704,7 +704,7 @@ public class FileUtil {
             }
             copyValidFiles(fromFile, toFile); // file-file                
         } else { // target file is a non-existent path -- could be file or dir
-            File toFileParent = ensureParentWritable(toFile);
+            /*File toFileParent = */ensureParentWritable(toFile);
             if (fromFile.isFile()) {
                 copyValidFiles(fromFile, toFile);
             } else if (fromFile.isDirectory()) {
@@ -1212,18 +1212,18 @@ public class FileUtil {
         return LangUtil.sleepUntil(++delayUntil);
     }
 
-    /** map name to result, removing any fromSuffix and adding any toSuffix */
-    private static String map(String name, String fromSuffix, String toSuffix) {
-        if (null != name) {
-            if (null != fromSuffix) {
-                name = name.substring(0, name.length()-fromSuffix.length());
-            }
-            if (null != toSuffix) {
-                name = name + toSuffix;
-            }
-        }
-        return name;
-    }
+//    /** map name to result, removing any fromSuffix and adding any toSuffix */
+//    private static String map(String name, String fromSuffix, String toSuffix) {
+//        if (null != name) {
+//            if (null != fromSuffix) {
+//                name = name.substring(0, name.length()-fromSuffix.length());
+//            }
+//            if (null != toSuffix) {
+//                name = name + toSuffix;
+//            }
+//        }
+//        return name;
+//    }
 
     private static void listFiles(final File baseDir, ArrayList result, FileFilter filter)  {
         File[] files = baseDir.listFiles();

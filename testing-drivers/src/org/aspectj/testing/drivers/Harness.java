@@ -144,7 +144,7 @@ public class Harness {
      */ 
     private static String[] readArgs(File argFile) {
         ArrayList args = new ArrayList();
-        int lineNum = 0;
+//        int lineNum = 0;
 
         try {
             BufferedReader stream =
@@ -447,7 +447,7 @@ public class Harness {
      * Subclasses override this to implement new options.
      */
     protected boolean acceptOption(String option) {
-        boolean result = false;
+//        boolean result = false;
         if (LangUtil.isEmpty(option)) {
             return true; // skip bad input
         } else if ("-verboseHarness".equals(option)) {
@@ -712,11 +712,11 @@ class FeatureHarness extends Harness {
             = RunUtils.VERBOSE_PRINTER;
         final RunUtils.IRunStatusPrinter terse 
             = RunUtils.TERSE_PRINTER;
-        final boolean LOGPASS = true;
-        final boolean LOGFAIL = true;
-        final boolean SKIPPASS = false;
-        final boolean SKIPFAIL = false;
-        final boolean LOGSTREAMS = true;
+//        final boolean LOGPASS = true;
+//        final boolean LOGFAIL = true;
+//        final boolean SKIPPASS = false;
+//        final boolean SKIPFAIL = false;
+//        final boolean LOGSTREAMS = true;
         final boolean SKIPSTREAMS = false;
         
 		Feature feature = null;

@@ -14,7 +14,7 @@
 package org.aspectj.util;
 
 
-import java.awt.event.InvocationEvent;
+//import java.awt.event.InvocationEvent;
 import java.io.*;
 import java.io.File;
 import java.io.IOException;
@@ -1052,11 +1052,11 @@ public class LangUtil {
         } else if (time < 0) {
             throw new IllegalArgumentException("negative: " + time);
         }
-        final Thread thread = Thread.currentThread();
+//        final Thread thread = Thread.currentThread();
         long curTime = System.currentTimeMillis();
         for (int i = 0; (i < 100) && (curTime < time); i++) {
             try {
-                thread.sleep(time-curTime);            
+                Thread.sleep(time-curTime);            
             } catch (InterruptedException e) {
                 // ignore
             }
