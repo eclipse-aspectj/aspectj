@@ -13,12 +13,11 @@
 
 package org.aspectj.weaver.patterns;
 
-import org.aspectj.weaver.bcel.*;
-import org.aspectj.weaver.bcel.*;
-import org.aspectj.weaver.bcel.BcelShadow;
-
 import junit.framework.TestCase;
-import org.aspectj.weaver.*;
+
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.BcelShadow;
+import org.aspectj.weaver.bcel.BcelWorld;
 
 /**
  * @author hugunin

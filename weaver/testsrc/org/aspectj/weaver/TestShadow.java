@@ -13,9 +13,8 @@
 
 package org.aspectj.weaver;
 
-import org.aspectj.weaver.ast.Var;
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.SourceLocation;
+import org.aspectj.weaver.ast.Var;
 
 public class TestShadow extends Shadow {
 

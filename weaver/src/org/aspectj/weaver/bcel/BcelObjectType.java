@@ -25,7 +25,6 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.weaver.*;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ResolvedMember;
@@ -33,7 +32,6 @@ import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverStateInfo;
-import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.PerClause;
 
 // ??? exposed for testing

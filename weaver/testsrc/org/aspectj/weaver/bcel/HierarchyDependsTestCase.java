@@ -15,10 +15,6 @@ package org.aspectj.weaver.bcel;
 
 import junit.framework.TestCase;
 
-import org.apache.bcel.classfile.JavaClass;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.patterns.*;
-
 
 public class HierarchyDependsTestCase extends TestCase {
 

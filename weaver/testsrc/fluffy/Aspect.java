@@ -1,6 +1,4 @@
 package fluffy;
-import java.util.*;
-
 import org.aspectj.runtime.internal.AroundClosure;
 
 public class Aspect {

@@ -13,13 +13,20 @@
 
 package org.aspectj.weaver;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.aspectj.asm.IHierarchy;
-import org.aspectj.asm.internal.AspectJElementHierarchy;
-import org.aspectj.bridge.*;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.IMessage.Kind;
-import org.aspectj.weaver.patterns.*;
+import org.aspectj.weaver.patterns.DeclarePrecedence;
+import org.aspectj.weaver.patterns.Pointcut;
 
 public abstract class World {
 	protected IMessageHandler messageHandler = IMessageHandler.SYSTEM_ERR;

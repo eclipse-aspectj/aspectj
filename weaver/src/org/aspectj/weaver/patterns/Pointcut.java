@@ -17,7 +17,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.apache.bcel.classfile.JavaClass;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.util.TypeSafeEnum;
 import org.aspectj.weaver.BCException;

@@ -13,10 +13,8 @@
 
 package org.aspectj.weaver;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Set;
 
 public class NewParentTypeMunger extends ResolvedTypeMunger {
 	ResolvedTypeX newParent;

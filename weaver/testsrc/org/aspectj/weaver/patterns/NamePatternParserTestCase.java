@@ -13,8 +13,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import org.aspectj.weaver.patterns.*;
-
 import junit.framework.TestCase;
 
 /**

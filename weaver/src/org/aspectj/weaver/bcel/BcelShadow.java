@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.io.File;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -43,7 +42,6 @@ import org.apache.bcel.generic.SWAP;
 import org.apache.bcel.generic.TargetLostException;
 import org.apache.bcel.generic.Type;
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.SourceLocation;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.BCException;

@@ -13,11 +13,13 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.util.*;
-import java.io.*;
+import java.io.IOException;
+import java.util.Arrays;
 
-import org.aspectj.weaver.bcel.*;
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.AdviceKind;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.TypeX;
 
 public class TjpWeaveTestCase extends WeaveTestCase {
 	{

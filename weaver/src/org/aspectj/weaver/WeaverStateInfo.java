@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.bridge.IMessage;
-import org.aspectj.util.TypeSafeEnum;
 import org.aspectj.weaver.bcel.BcelTypeMunger;
 
 public class WeaverStateInfo {

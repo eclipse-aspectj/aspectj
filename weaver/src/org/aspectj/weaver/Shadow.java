@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.aspectj.bridge.*;
 import org.aspectj.bridge.MessageUtil;
-import org.aspectj.bridge.SourceLocation;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.util.TypeSafeEnum;

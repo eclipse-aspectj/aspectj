@@ -13,12 +13,7 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
-import java.util.*;
-
-import org.aspectj.testing.util.TestUtil;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.bcel.*;
+import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.bcel.WeaveTestCase;
 
 public class ConcretizationTestCase extends WeaveTestCase {

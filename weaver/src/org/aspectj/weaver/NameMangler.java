@@ -14,8 +14,6 @@
 package org.aspectj.weaver;
 
 import java.lang.reflect.Modifier;
-
-import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.bcel.LazyClassGen;
 
 public class NameMangler {

@@ -16,9 +16,6 @@ package org.aspectj.weaver;
 import java.util.*;
 
 import org.aspectj.bridge.*;
-import org.aspectj.lang.Signature;
-import org.aspectj.lang.JoinPoint.StaticPart;
-import org.aspectj.lang.reflect.SourceLocation;
 import org.aspectj.weaver.patterns.*;
 
 

@@ -61,7 +61,6 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
-import org.aspectj.weaver.WeaverStateInfo;
 
 class BcelClassWeaver implements IClassWeaver {
     

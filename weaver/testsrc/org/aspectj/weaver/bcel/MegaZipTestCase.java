@@ -13,12 +13,17 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.aspectj.util.FileUtil;
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.AdviceKind;
+import org.aspectj.weaver.BcweaverTests;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.TypeX;
 
 public class MegaZipTestCase extends WeaveTestCase {
 

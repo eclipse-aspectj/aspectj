@@ -13,9 +13,11 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
-
-import org.aspectj.weaver.patterns.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 import junit.framework.TestCase;
 
