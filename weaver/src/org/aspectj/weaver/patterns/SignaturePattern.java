@@ -143,6 +143,8 @@ public class SignaturePattern extends PatternNode {
 		//		String n2 = this.getName().maybeGetSimpleName();
 		//		if (n2!=null && !n1.equals(n2)) return false;
 
+		// FIXME ASC : 
+		if (member == null) return false;
 		ResolvedMember sig = member.resolve(world);
 		
 		if (sig == null) {

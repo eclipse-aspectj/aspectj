@@ -1582,32 +1582,44 @@ public class BcelShadow extends Shadow {
     	// if the shadow is GUARANTEED empty (i.e., there's NOTHING, not even
     	// a shadow, inside me).
     	if (getRange().getStart().getNext() == getRange().getEnd()) return;
-        InstructionFactory fact = getFactory();        
+				
+        InstructionFactory fact = getFactory();
         InstructionList handler = new InstructionList();        
+		InstructionList rtExHandler = new InstructionList();
         BcelVar exceptionVar = genTempVar(catchType);
-        exceptionVar.appendStore(handler, fact);
-        
-        // ENH 42743 suggests that we don't soften runtime exceptions.
-        // To implement that, would need to add instructions into the handler
-        // stream here to test if exceptionVar is an instanceof RuntimeException,
-        // and if it is, just re-throw it without softening.
-        // (Not yet implemented obviously).
-
+		        
 		handler.append(fact.createNew(NameMangler.SOFT_EXCEPTION_TYPE));
 		handler.append(InstructionFactory.createDup(1));   
         handler.append(exceptionVar.createLoad(fact));
         handler.append(fact.createInvoke(NameMangler.SOFT_EXCEPTION_TYPE, "<init>", 
         					Type.VOID, new Type[] { Type.THROWABLE }, Constants.INVOKESPECIAL));  //??? special
         handler.append(InstructionConstants.ATHROW);        
-        InstructionHandle handlerStart = handler.getStart();
-                                    
-        if (isFallsThrough()) {
-            InstructionHandle jumpTarget = range.getEnd();//handler.append(fact.NOP);
-            handler.insert(InstructionFactory.createBranchInstruction(Constants.GOTO, jumpTarget));
-        }
-		InstructionHandle protectedEnd = handler.getStart();
-        range.insert(handler, Range.InsideAfter);       
 
+		// ENH 42737
+        exceptionVar.appendStore(rtExHandler, fact);
+		// aload_1
+		rtExHandler.append(exceptionVar.createLoad(fact));
+		// instanceof class java/lang/RuntimeException
+		rtExHandler.append(fact.createInstanceOf(new ObjectType("java.lang.RuntimeException")));
+		// ifeq go to new SOFT_EXCEPTION_TYPE instruction
+		rtExHandler.append(InstructionFactory.createBranchInstruction(Constants.IFEQ,handler.getStart()));
+		// aload_1
+		rtExHandler.append(exceptionVar.createLoad(fact));
+		// athrow
+		rtExHandler.append(InstructionFactory.ATHROW);
+
+		InstructionHandle handlerStart = rtExHandler.getStart();
+
+		if (isFallsThrough()) {
+            InstructionHandle jumpTarget = range.getEnd();//handler.append(fact.NOP);
+            rtExHandler.insert(InstructionFactory.createBranchInstruction(Constants.GOTO, jumpTarget));
+        }
+
+		rtExHandler.append(handler);
+
+		InstructionHandle protectedEnd = rtExHandler.getStart();
+        range.insert(rtExHandler, Range.InsideAfter);    
+		
         enclosingMethod.addExceptionHandler(range.getStart().getNext(), protectedEnd.getPrev(),
                                  handlerStart, (ObjectType)BcelWorld.makeBcelType(catchType), 
                                  // high priority if our args are on the stack

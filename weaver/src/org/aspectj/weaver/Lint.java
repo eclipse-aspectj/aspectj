@@ -83,6 +83,9 @@ public class Lint {
     public final Kind elementAlreadyAnnotated =
     	new Kind("elementAlreadyAnnotated","{0} - already has an annotation of type {1}, cannot add a second instance");
     	
+	public final Kind runtimeExceptionNotSoftened = 
+		new Kind("runtimeExceptionNotSoftened","{0} will not be softened as it is already a RuntimeException");
+	
     public Lint(World world) {
 		this.world = world;
 	}
