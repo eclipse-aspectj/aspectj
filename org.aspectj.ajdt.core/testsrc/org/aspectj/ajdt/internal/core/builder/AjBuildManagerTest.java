@@ -41,6 +41,25 @@ public class AjBuildManagerTest extends TestCase {
 	public static File source2 = new File("testdata/src1/Hello.java");
 	public static File source3 = new File("testdata/src1/X.java");
 
+    
+    /**
+     * @throws AssertionFailedError unless handler has 0 messages
+     * worse than warning, or the one message is 
+     * a warning about aspectjrt.jar
+     */
+    public static void assertCompileMessagesValid(MessageHandler handler) {
+        assertTrue("null handler", null != handler);
+        final int numMessages = handler.numMessages(IMessage.WARNING, true);
+        if (1 == numMessages) { // permit aspectjrt.jar warning
+            IMessage m = handler.getMessages(IMessage.WARNING, true)[0];            
+            if (!(m.isWarning() && (-1 != m.getMessage().indexOf("aspectjrt.jar")))) {
+                assertTrue(handler.toString(), false);
+            }            
+        } else if (0 != numMessages) {
+            assertTrue(handler.toString(), false);
+        }
+    }
+
 	public AjBuildManagerTest(String name) {
 		super(name);
 	}
@@ -62,8 +81,8 @@ public class AjBuildManagerTest extends TestCase {
         assertTrue(err, null == err);
         manager.setStructureModel(StructureModelManager.INSTANCE.getStructureModel());
 		MessageHandler handler = new MessageHandler();
-        manager.batchBuild(buildConfig, handler);	
-        assertEquals(0, handler.numMessages(IMessage.WARNING, true));	
+        manager.batchBuild(buildConfig, handler);
+        assertCompileMessagesValid(handler);	
 //		System.out.println(
 //			">> model: \n" + 
 //			StructureModelManager.INSTANCE.getStructureModel().getRoot().toLongString()
