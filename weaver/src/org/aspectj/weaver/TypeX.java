@@ -588,6 +588,7 @@ public class TypeX implements AnnotatedElement {
     public static final TypeX   JAVA_LANG_CLASS = forSignature("Ljava/lang/Class;");
     public static final TypeX   JAVA_LANG_EXCEPTION = forSignature("Ljava/lang/Exception;");
     public static final TypeX   JAVA_LANG_REFLECT_METHOD = forSignature("Ljava/lang/reflect/Method;");
+    public static final TypeX   SUPPRESS_AJ_WARNINGS = forSignature("Lorg/aspectj/lang/annotation/SuppressAjWarnings;");
 
     
     // ---- helpers
