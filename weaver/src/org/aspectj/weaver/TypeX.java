@@ -66,6 +66,7 @@ public class TypeX implements AnnotatedElement {
     }
 
     /**
+     * NOTE: Use forSignature() if you can, it'll be cheaper !
      * Constructs a TypeX for a java language type name.  For example:
      *
      * <blockquote><pre>
