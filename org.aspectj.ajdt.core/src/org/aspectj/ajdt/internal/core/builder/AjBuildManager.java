@@ -151,6 +151,11 @@ public class AjBuildManager {
 	}
 
 	public boolean incrementalBuild(AjBuildConfig buildConfig, IMessageHandler messageHandler) throws CoreException, IOException {
+        if (javaBuilder == null || javaBuilder.currentProject == null) {
+        	return batchBuild(buildConfig, messageHandler);
+        }
+        
+        
         final CountingMessageHandler counter = new CountingMessageHandler(messageHandler);                    
         try {
             currentHandler = counter;
