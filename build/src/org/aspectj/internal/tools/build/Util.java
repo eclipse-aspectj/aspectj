@@ -14,6 +14,7 @@
  
 package org.aspectj.internal.tools.build;
 
+import java.io.*;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -131,6 +132,15 @@ public class Util {
     }
     
     /** 
+     * Delete file or directory.
+     * @param dir the File file or directory to delete.
+     * @return true if all contents of dir were deleted 
+     */
+    public static boolean delete(File dir) {
+        return deleteContents(dir) && dir.delete();
+    }
+    
+    /** 
      * Delete contents of directory.
      * The directory itself is not deleted.
      * @param dir the File directory whose contents should be deleted.
@@ -168,6 +178,30 @@ public class Util {
             }
         }
         return tempFile;        
+    }
+    /**
+     * Close stream with the usual checks.
+     * @param stream the InputStream to close - ignored if null 
+     * @return null if closed without IOException, message otherwise 
+     */
+    public static String close(Writer stream) {
+        String result = null;
+        if (null != stream) {
+            try {
+                stream.close();
+            } catch(IOException e) {
+                result = e.getMessage();
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @param list the Object[] to test
+     * @return true if list is null or empty
+     */
+    public static boolean isEmpty(Object[] list) {
+        return ((null == list) || (0 == list.length));
     }
 
 }
