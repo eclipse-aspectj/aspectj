@@ -332,9 +332,11 @@ public class AjcMemberMaker {
 	}
 	
 
-	
-	private static int makePublic(int modifiers) {
-		return (modifiers & ~VISIBILITY) | Modifier.PUBLIC;
+	/**
+	 * Makes public and non-final
+	 */
+	private static int makePublicNonFinal(int modifiers) {
+		return (modifiers & ~VISIBILITY & ~Modifier.FINAL) | Modifier.PUBLIC;
 	}
 	
 	
@@ -376,7 +378,7 @@ public class AjcMemberMaker {
 	 */
 	public static ResolvedMember interFieldClassField(ResolvedMember field, TypeX aspectType) {
 		return new ResolvedMember(Member.FIELD, field.getDeclaringType(), 
-			makePublic(field.getModifiers()),
+			makePublicNonFinal(field.getModifiers()),
 			field.getReturnType(), 
 			NameMangler.interFieldClassField(field.getModifiers(), aspectType, field.getDeclaringType(), field.getName()),
 			TypeX.NONE
@@ -389,7 +391,7 @@ public class AjcMemberMaker {
 	 * is declared onto
 	 */
 	public static ResolvedMember interFieldInterfaceField(ResolvedMember field, TypeX onClass, TypeX aspectType) {
-		return new ResolvedMember(Member.FIELD, onClass, makePublic(field.getModifiers()),
+		return new ResolvedMember(Member.FIELD, onClass, makePublicNonFinal(field.getModifiers()),
 			field.getReturnType(), 
 			NameMangler.interFieldInterfaceField(aspectType, field.getDeclaringType(), field.getName()),
 			TypeX.NONE
@@ -435,7 +437,7 @@ public class AjcMemberMaker {
 	{
 		if (Modifier.isPublic(meth.getModifiers()) && !onInterface) return meth;
 		
-		int modifiers = makePublic(meth.getModifiers());
+		int modifiers = makePublicNonFinal(meth.getModifiers());
 		if (onInterface) modifiers |= Modifier.ABSTRACT;
 		
 		return new ResolvedMember(Member.METHOD, meth.getDeclaringType(),
