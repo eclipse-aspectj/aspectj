@@ -780,7 +780,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	}
 	
 	protected boolean proceedOnError() {
-		return true;  //???
+		return buildConfig.getProceedOnError();
 	}
 
 //	public void noteClassFiles(AjCompiler.InterimResult result) {
@@ -970,7 +970,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 						this,  // IBinarySourceProvider
 						state.binarySourceFiles,
 						state.resultsFromFile.values(),
-						buildConfig.isNoWeave());
+						buildConfig.isNoWeave(),
+						buildConfig.getProceedOnError());
 	}
 
 	/* (non-Javadoc)

@@ -46,6 +46,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 	private boolean isBatchCompile;
 	private boolean reportedErrors;
 	private boolean isXNoWeave;
+	private boolean proceedOnError;
 	private IIntermediateResultsRequestor intermediateResultsRequestor;
 	private IProgressListener progressListener;
 	private IOutputClassFileNameProvider outputFileNameProvider;
@@ -83,7 +84,8 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 							 IBinarySourceProvider binarySourceProvider,
 							 Map fullBinarySourceEntries, /* fileName |-> List<UnwovenClassFile> */
 							 Collection /* InterimCompilationResult */ resultSetForFullWeave,
-							 boolean isXNoWeave) {
+							 boolean isXNoWeave,
+							 boolean proceedOnError) {
 		this.compiler = compiler;
 		this.isBatchCompile = isBatchCompile;
 		this.weaver = weaver;
@@ -92,6 +94,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 		this.outputFileNameProvider = outputFileNameProvider;
 		this.binarySourceProvider = binarySourceProvider;
 		this.isXNoWeave = isXNoWeave;
+		this.proceedOnError = proceedOnError;
 		this.binarySourceSetForFullWeave = fullBinarySourceEntries;
 		this.resultSetForFullWeave = resultSetForFullWeave;
 		this.eWorld = eFactory;
@@ -108,7 +111,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 
 	public void afterCompiling() {
 		try {
-			if (isXNoWeave || reportedErrors) {
+			if (isXNoWeave || (reportedErrors && !proceedOnError)) {
 				// no point weaving... just tell the requestor we're done
 				notifyRequestor();
 			} else {

@@ -1,0 +1,4 @@
+BROKEN
+class C {
+
+}

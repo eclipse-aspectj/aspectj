@@ -139,7 +139,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 		return new AjCompilerAdapter(forCompiler,isBatchBuild,myBcelWorld,
 				     myWeaver,eFactory,unwovenResultCollector,ajNotifier,fileNameProvider,bsProvider,
 					 fullBinarySourceEntries,resultSetForFullWeave,
-					 ajOptions.noWeave);
+					 ajOptions.noWeave,ajOptions.proceedOnError);
 	}		
 	
 	/* (non-Javadoc)

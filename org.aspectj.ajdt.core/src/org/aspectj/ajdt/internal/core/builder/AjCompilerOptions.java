@@ -70,6 +70,7 @@ public class AjCompilerOptions extends CompilerOptions {
 	public boolean generateModel = false;
 	public boolean generateJavaDocsInModel = false;
 	public boolean generateEmacsSymFiles = false;
+	public boolean proceedOnError = false;
 
 	
 	/** 

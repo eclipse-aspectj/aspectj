@@ -608,6 +608,8 @@ public class BuildArgParser extends Main {
 //                dirLookahead(arg, args, nextArgIndex);
 //            } else if (arg.equals("-extdirs")) {
 //                dirLookahead(arg, args, nextArgIndex);
+            } else if (arg.equals("-proceedOnError")) {
+            	buildConfig.setProceedOnError(true);
             } else if (new File(arg).isDirectory()) {
                 showError("dir arg not permitted: " + arg);
 			} else {
@@ -616,9 +618,10 @@ public class BuildArgParser extends Main {
                 // -d args, -help (handled), 
                 // -classpath, -target, -1.3, -1.4, -source [1.3|1.4]
                 // -nowarn, -warn:[...], -deprecation, -noImportError,
-                // -proceedOnError, -g:[...], -preserveAllLocals,
+                // -g:[...], -preserveAllLocals,
                 // -referenceInfo, -encoding, -verbose, -log, -time
                 // -noExit, -repeat
+				// (Actually, -noExit grabbed by Main)
 		    	unparsedArgs.add(arg);
 			}
         }

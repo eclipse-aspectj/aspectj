@@ -516,4 +516,12 @@ public class AjBuildConfig {
 	public boolean getShowWeavingInformation() { 
 		return options.showWeavingInformation;
 	}
+
+	public void setProceedOnError(boolean b) {
+		options.proceedOnError = b;
+	}
+	
+	public boolean getProceedOnError() {
+		return options.proceedOnError;
+	}
 }
