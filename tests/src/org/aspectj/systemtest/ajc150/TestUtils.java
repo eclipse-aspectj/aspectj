@@ -27,13 +27,27 @@ public abstract class TestUtils extends AjcTestCase {
 	protected CompilationResult binaryWeave(String inpath,String insource,int expErrors,int expWarnings) {
 		return binaryWeave(inpath,insource,expErrors,expWarnings,false);
 	}
-	
+
 	protected CompilationResult binaryWeave(String inpath, String insource,int expErrors,int expWarnings,boolean xlinterror) {
+		return binaryWeave(inpath,insource,expErrors,expWarnings,false,"");
+	}
+	
+	protected CompilationResult binaryWeave(String inpath, String insource,int expErrors,int expWarnings,String extraOption) {
+		return binaryWeave(inpath,insource,expErrors,expWarnings,false,extraOption);
+	}
+	
+	protected CompilationResult binaryWeave(String inpath, String insource,int expErrors,int expWarnings,boolean xlinterror,String extraOption) {
 		String[] args = null;
 		if (xlinterror) {
-			args = new String[] {"-inpath",inpath,insource,"-showWeaveInfo","-proceedOnError","-Xlint:warning"};
+			if (extraOption!=null && extraOption.length()>0) 
+				args = new String[] {"-inpath",inpath,insource,"-showWeaveInfo","-proceedOnError","-Xlint:warning",extraOption};
+			else 
+				args = new String[] {"-inpath",inpath,insource,"-showWeaveInfo","-proceedOnError","-Xlint:warning"};
 		} else {
-			args = new String[] {"-inpath",inpath,insource,"-showWeaveInfo","-proceedOnError"};			
+			if (extraOption!=null && extraOption.length()>0) 
+				args = new String[] {"-inpath",inpath,insource,"-showWeaveInfo","-proceedOnError",extraOption};
+			else
+				args = new String[] {"-inpath",inpath,insource,"-showWeaveInfo","-proceedOnError"};
 		}
 		CompilationResult result = ajc(baseDir,args);
 		if (verbose || result.hasErrorMessages()) System.out.println(result);
@@ -54,7 +68,7 @@ public abstract class TestUtils extends AjcTestCase {
 		return sb.toString();
 	}
 	
-	private List getWeavingMessages(List msgs) {
+	protected List getWeavingMessages(List msgs) {
 		List result = new ArrayList();
 		for (Iterator iter = msgs.iterator(); iter.hasNext();) {
 			IMessage element = (IMessage) iter.next();
