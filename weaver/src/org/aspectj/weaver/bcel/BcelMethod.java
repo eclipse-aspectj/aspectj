@@ -25,6 +25,7 @@ import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedMember;
@@ -38,6 +39,10 @@ final class BcelMethod extends ResolvedMember {
 	private Method method;
 	private boolean isAjSynthetic;
 	private ShadowMunger associatedShadowMunger;
+	
+    private ResolvedTypeX[] annotationTypes = null;
+    private AnnotationX[] annotations = null;
+	
 	private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
 	private AjAttribute.MethodDeclarationLineNumberAttribute declarationLineNumber;
 	private ResolvedTypeX[] resolvedAnnotations;
@@ -115,7 +120,7 @@ final class BcelMethod extends ResolvedMember {
 		return isAjSynthetic; // || getName().startsWith(NameMangler.PREFIX);
 	}
 	
-	//FIXME needs an isSynthetic method
+	//FIXME ??? needs an isSynthetic method
 	
 	public ShadowMunger getAssociatedShadowMunger() {
 		return associatedShadowMunger;
@@ -157,28 +162,55 @@ final class BcelMethod extends ResolvedMember {
 	}
 	
 	public boolean hasAnnotation(TypeX ofType) {
-		Annotation[] anns = method.getAnnotations();
-		for (int i = 0; i < anns.length; i++) {
-			Annotation annotation = anns[i];
-			if (annotation.getTypeName().equals(ofType.getName())) return true;
+		ensureAnnotationTypesRetrieved();
+		for (int i=0; i<annotationTypes.length; i++) {
+			ResolvedTypeX aType = annotationTypes[i];
+			if (aType.equals(ofType)) return true;
 		}
 		return false;
 	}
 	
-	public Annotation[] getAnnotations() {
-		return method.getAnnotations();
+	public AnnotationX[] getAnnotations() {
+		ensureAnnotationTypesRetrieved();
+		return annotations;
 	}
 	
 	 public ResolvedTypeX[] getAnnotationTypes() {
-	 	if (resolvedAnnotations == null) {
-	 		Annotation[] annotations = method.getAnnotations();
-			resolvedAnnotations = new ResolvedTypeX[annotations.length];
-			for (int i = 0; i < annotations.length; i++) {
-				Annotation annotation = annotations[i];
+	    ensureAnnotationTypesRetrieved();
+	    return annotationTypes;
+     }
+	 
+	 public void addAnnotation(AnnotationX annotation) {
+	    ensureAnnotationTypesRetrieved();	
+		// Add it to the set of annotations
+		int len = annotations.length;
+		AnnotationX[] ret = new AnnotationX[len+1];
+		System.arraycopy(annotations, 0, ret, 0, len);
+		ret[len] = annotation;
+		annotations = ret;
+		
+		// Add it to the set of annotation types
+		len = annotationTypes.length;
+		ResolvedTypeX[] ret2 = new ResolvedTypeX[len+1];
+		System.arraycopy(annotationTypes,0,ret2,0,len);
+		ret2[len] =world.resolve(TypeX.forName(annotation.getTypeName()));
+		annotationTypes = ret2;
+		// FIXME asc looks like we are managing two 'bunches' of annotations, one
+		// here and one in the real 'method' - should we reduce it to one layer?
+		method.addAnnotation(annotation.getBcelAnnotation());
+	 }
+	 
+	 private void ensureAnnotationTypesRetrieved() {
+		if (annotationTypes == null) {
+    		Annotation annos[] = method.getAnnotations();
+    		annotationTypes = new ResolvedTypeX[annos.length];
+    		annotations = new AnnotationX[annos.length];
+    		for (int i = 0; i < annos.length; i++) {
+				Annotation annotation = annos[i];
 				ResolvedTypeX rtx = world.resolve(TypeX.forName(annotation.getTypeName()));
-				resolvedAnnotations[i] = rtx;
+				annotationTypes[i] = rtx;
+				annotations[i] = new AnnotationX(annotation,world);
 			}
-	 	}
-	 	return resolvedAnnotations;
-    }
+    	}
+	}
 }

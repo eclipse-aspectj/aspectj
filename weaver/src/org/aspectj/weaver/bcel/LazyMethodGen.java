@@ -53,6 +53,7 @@ import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
@@ -176,6 +177,19 @@ public final class LazyMethodGen {
     	} else {
     		return -1;
     	}
+    }
+    
+    public void addAnnotation(AnnotationX ax) {
+    	initialize();
+//		if (!hasAnnotation(TypeX.forSignature(a.getTypeSignature()))) {
+    	AnnotationGen ag = new AnnotationGen(ax.getBcelAnnotation(),enclosingClass.getConstantPoolGen(),true);
+    	AnnotationGen[] newAnnotations = new AnnotationGen[annotations.length+1];
+    	System.arraycopy(annotations,0,newAnnotations,0,annotations.length);
+    	newAnnotations[annotations.length]=ag;
+    	annotations = newAnnotations;
+    	// FIXME asc does this mean we are managing two levels of annotations again?
+    	// one here and one in the memberView??!?
+    	memberView.addAnnotation(ax);
     }
     
     private void initialize() {

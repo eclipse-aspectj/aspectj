@@ -36,6 +36,7 @@ import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Unknown;
+import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.generic.ClassGen;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
 import org.aspectj.apache.bcel.generic.FieldGen;
@@ -47,6 +48,7 @@ import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.PUSH;
 import org.aspectj.apache.bcel.generic.RETURN;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
@@ -63,6 +65,13 @@ import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
 
+/**
+ * Lazy lazy lazy.
+ * We don't unpack the underlying class unless necessary.  Things
+ * like new methods and annotations accumulate in here until they
+ * must be written out, don't add them to the underlying MethodGen!
+ * Things are slightly different if this represents an Aspect.
+ */
 public final class LazyClassGen {
 	
 	// ---- JSR 45 info
@@ -197,11 +206,9 @@ public final class LazyClassGen {
 	private ClassGen myGen;
 	private ConstantPoolGen constantPoolGen;
 
-    private List /*LazyMethodGen*/
-        methodGens = new ArrayList();
-    private List /*LazyClassGen*/
-        classGens = new ArrayList();
-
+    private List /*LazyMethodGen*/ methodGens  = new ArrayList();
+    private List /*LazyClassGen*/  classGens   = new ArrayList();
+    private List /*AnnotationGen*/ annotations = new ArrayList();
     private int childCounter = 0;
 
     public int getNewGeneratedNameTag() {
@@ -374,26 +381,36 @@ public final class LazyClassGen {
 
     public List getMethodGens() {
         return methodGens; //???Collections.unmodifiableList(methodGens);
-
+    }
+    
+    // FIXME asc Should be collection returned here
+    public Field[] getFieldGens() {
+      return myGen.getFields();
+    }
+    
+    // FIXME asc How do the ones on the underlying class surface if this just returns new ones added?
+    // FIXME asc ...although no one calls this right now !
+    public List getAnnotations() {
+    	return annotations;
     }
 
     private void writeBack(BcelWorld world) {
         if (getConstantPoolGen().getSize() > Short.MAX_VALUE) {
-            // PR 59208
-            // we've generated a class that is just toooooooooo big (you've been generating programs
-            // again haven't you? come on, admit it, no-one writes classes this big by hand).
-            // create an empty myGen so that we can give back a return value that doesn't upset the
-            // rest of the process.
-            myGen = new ClassGen(myGen.getClassName(), myGen.getSuperclassName(), 
-                    myGen.getFileName(), myGen.getAccessFlags(), myGen.getInterfaceNames());
-            // raise an error against this compilation unit.
-       		getWorld().showMessage(
-        			IMessage.ERROR, 
-    				WeaverMessages.format(WeaverMessages.CLASS_TOO_BIG,
-    						              this.getClassName()),
-    			    new SourceLocation(new File(myGen.getFileName()),0), null
-    			    );
+            reportClassTooBigProblem();
         	return;
+        }
+        
+        if (annotations.size()>0) {
+        	for (Iterator iter = annotations.iterator(); iter.hasNext();) {
+				AnnotationGen element = (AnnotationGen) iter.next();
+				myGen.addAnnotation(element);
+			}
+//	    Attribute[] annAttributes  = org.aspectj.apache.bcel.classfile.Utility.getAnnotationAttributes(getConstantPoolGen(),annotations);
+//        for (int i = 0; i < annAttributes.length; i++) {
+//			Attribute attribute = annAttributes[i];
+//			System.err.println("Adding attribute for "+attribute);
+//			myGen.addAttribute(attribute);
+//		}
         }
         
         // Add a weaver version attribute to the file being produced
@@ -430,6 +447,26 @@ public final class LazyClassGen {
 			// myGen.addAttribute(getSourceDebugExtensionAttribute());
 		}
     }
+
+	/**
+	 * 
+	 */
+	private void reportClassTooBigProblem() {
+		// PR 59208
+		// we've generated a class that is just toooooooooo big (you've been generating programs
+		// again haven't you? come on, admit it, no-one writes classes this big by hand).
+		// create an empty myGen so that we can give back a return value that doesn't upset the
+		// rest of the process.
+		myGen = new ClassGen(myGen.getClassName(), myGen.getSuperclassName(), 
+		        myGen.getFileName(), myGen.getAccessFlags(), myGen.getInterfaceNames());
+		// raise an error against this compilation unit.
+		getWorld().showMessage(
+				IMessage.ERROR, 
+				WeaverMessages.format(WeaverMessages.CLASS_TOO_BIG,
+						              this.getClassName()),
+			    new SourceLocation(new File(myGen.getFileName()),0), null
+			    );
+	}
 
 	private static boolean hasSourceDebugExtensionAttribute(ClassGen gen) {
 		ConstantPoolGen pool = gen.getConstantPool();
@@ -846,6 +883,28 @@ public final class LazyClassGen {
 	
 	public void forcePublic() {
 		myGen.setAccessFlags(Utility.makePublic(myGen.getAccessFlags()));
+	}
+
+	
+	public boolean hasAnnotation(TypeX t) {
+		
+		// annotations on the real thing
+		AnnotationGen agens[] = myGen.getAnnotations();
+		if (agens==null) return false;
+		for (int i = 0; i < agens.length; i++) {
+			AnnotationGen gen = agens[i];
+			if (t.equals(TypeX.forSignature(gen.getTypeSignature()))) return true;
+		}
+		
+		// annotations added during this weave
+		
+		return false;
+	}
+	
+	public void addAnnotation(Annotation a) {
+		if (!hasAnnotation(TypeX.forSignature(a.getTypeSignature()))) {
+		  annotations.add(new AnnotationGen(a,getConstantPoolGen(),true));
+		}
 	}
 
 }

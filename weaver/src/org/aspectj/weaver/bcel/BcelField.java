@@ -21,6 +21,7 @@ import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.Synthetic;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
@@ -32,7 +33,8 @@ final class BcelField extends ResolvedMember {
 	private Field field;
 	private boolean isAjSynthetic;
 	private boolean isSynthetic = false;
-	private ResolvedTypeX[] resolvedAnnotations;
+	private ResolvedTypeX[] annotationTypes;
+	private AnnotationX[] annotations;
 	private World world;
 
 	BcelField(BcelObjectType declaringType, Field field) {
@@ -89,15 +91,43 @@ final class BcelField extends ResolvedMember {
 	}
 	
 	public ResolvedTypeX[] getAnnotationTypes() {
-	 	if (resolvedAnnotations == null) {
-	 		Annotation[] annotations = field.getAnnotations();
-			resolvedAnnotations = new ResolvedTypeX[annotations.length];
-			for (int i = 0; i < annotations.length; i++) {
-				Annotation annotation = annotations[i];
-				ResolvedTypeX rtx = world.resolve(TypeX.forName(annotation.getTypeName()));
-				resolvedAnnotations[i] = rtx;
-			}
-	 	}
-	 	return resolvedAnnotations;
+		ensureAnnotationTypesRetrieved();
+	 	return annotationTypes;
     }
+    
+	private void ensureAnnotationTypesRetrieved() {
+		if (annotationTypes == null) {
+    		Annotation annos[] = field.getAnnotations();
+    		annotationTypes = new ResolvedTypeX[annos.length];
+    		annotations = new AnnotationX[annos.length];
+    		for (int i = 0; i < annos.length; i++) {
+				Annotation annotation = annos[i];
+				ResolvedTypeX rtx = world.resolve(TypeX.forName(annotation.getTypeName()));
+				annotationTypes[i] = rtx;
+				annotations[i] = new AnnotationX(annotation,world);
+			}
+    	}
+	}
+    
+	 public void addAnnotation(AnnotationX annotation) {
+	    ensureAnnotationTypesRetrieved();	
+		// Add it to the set of annotations
+		int len = annotations.length;
+		AnnotationX[] ret = new AnnotationX[len+1];
+		System.arraycopy(annotations, 0, ret, 0, len);
+		ret[len] = annotation;
+		annotations = ret;
+		
+		// Add it to the set of annotation types
+		len = annotationTypes.length;
+		ResolvedTypeX[] ret2 = new ResolvedTypeX[len+1];
+		System.arraycopy(annotationTypes,0,ret2,0,len);
+		ret2[len] =world.resolve(TypeX.forName(annotation.getTypeName()));
+		annotationTypes = ret2;
+		// FIXME asc this call here suggests we are managing the annotations at
+		// too many levels, here in BcelField we keep a set and in the lower 'field'
+		// object we keep a set - we should think about reducing this to one
+		// level??
+		field.addAnnotation(annotation.getBcelAnnotation());
+	}
 }

@@ -29,6 +29,7 @@ import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
@@ -48,7 +49,8 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
     private ResolvedTypeX superClass = null;
     private ResolvedMember[] fields = null;
     private ResolvedMember[] methods = null;
-    private ResolvedTypeX[] resolvedAnnotations = null;
+    private ResolvedTypeX[] annotationTypes = null;
+    private AnnotationX[] annotations = null;
             
     // strangely non-lazy
     private ResolvedPointcutDefinition[] pointcuts = null;
@@ -225,6 +227,8 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
     	this.perClause = null;
     	this.weaverState = null;
     	this.lazyClassGen = null;
+    	this.annotations = null;
+    	this.annotationTypes = null;
     	
     	isObject = (javaClass.getSuperclassNameIndex() == 0);
         unpackAspectAttributes();
@@ -293,6 +297,23 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 		return javaClass.isAnnotation();
 	}
 	
+	public void addAnnotation(AnnotationX annotation) {
+		
+		// Add it to the set of annotations
+		int len = annotations.length;
+		AnnotationX[] ret = new AnnotationX[len+1];
+		System.arraycopy(annotations, 0, ret, 0, len);
+		ret[len] = annotation;
+		annotations = ret;
+		
+		// Add it to the set of annotation types
+		len = annotationTypes.length;
+		ResolvedTypeX[] ret2 = new ResolvedTypeX[len+1];
+		System.arraycopy(annotationTypes,0,ret2,0,len);
+		ret2[len] = getResolvedTypeX().getWorld().resolve(TypeX.forName(annotation.getTypeName()));
+		annotationTypes = ret2;
+	}
+	
 	public boolean isAnnotationWithRuntimeRetention() {
 	    if (!isAnnotation()) {
 	        return false;
@@ -320,7 +341,7 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 	}
 
 	public ISourceLocation getSourceLocation() {
-		return getResolvedTypeX().getSourceContext().makeSourceLocation(0); //FIXME, we can do better than this
+		return getResolvedTypeX().getSourceContext().makeSourceLocation(0); //FIXME ??? we can do better than this
 	}
 	
 	public AjAttribute.WeaverVersionInfo getWeaverVersionAttribute() {
@@ -346,26 +367,40 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 
 
 	public boolean hasAnnotation(TypeX ofType) {
-		Annotation[] annotationsOnThisType = javaClass.getAnnotations();
-		for (int i = 0; i < annotationsOnThisType.length; i++) {
-			Annotation a = annotationsOnThisType[i];
-			if (a.getTypeName().equals(ofType.getName())) return true;
+		ensureAnnotationTypesRetrieved();
+		for (int i = 0; i < annotationTypes.length; i++) {
+			ResolvedTypeX annX = annotationTypes[i];
+			if (annX.equals(ofType)) return true;
 		}
 		return false;
 	}
 	
-	public ResolvedTypeX[] getAnnotationTypes() {
-    	if (resolvedAnnotations == null) {
-    		Annotation annotations[] = javaClass.getAnnotations();
-    		resolvedAnnotations = new ResolvedTypeX[annotations.length];
-    		for (int i = 0; i < annotations.length; i++) {
-				Annotation annotation = annotations[i];
+	private void ensureAnnotationTypesRetrieved() {
+		if (annotationTypes == null) {
+    		Annotation annos[] = javaClass.getAnnotations();
+    		annotationTypes = new ResolvedTypeX[annos.length];
+    		annotations = new AnnotationX[annos.length];
+    		for (int i = 0; i < annos.length; i++) {
+				Annotation annotation = annos[i];
 				ResolvedTypeX rtx = getResolvedTypeX().getWorld().resolve(TypeX.forName(annotation.getTypeName()));
-				resolvedAnnotations[i] = rtx;
+				annotationTypes[i] = rtx;
+				annotations[i] = new AnnotationX(annotation,getResolvedTypeX().getWorld());
 			}
     	}
-    	return resolvedAnnotations;
+	}
+	
+	public ResolvedTypeX[] getAnnotationTypes() {
+    	ensureAnnotationTypesRetrieved();
+    	return annotationTypes;
     }
+	
+	/** 
+	 * Releases annotations wrapped in an annotationX
+	 */
+	public AnnotationX[] getAnnotations() {
+		ensureAnnotationTypesRetrieved();
+		return annotations;
+	}
 } 
     
     
