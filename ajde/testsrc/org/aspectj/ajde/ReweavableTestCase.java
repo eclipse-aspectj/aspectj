@@ -179,17 +179,20 @@ public class ReweavableTestCase extends AjdeTestCase {
 		File fLog = openFile("bin/Logger.class");
 		assertTrue("bin/CalculatePI.class should exist?!?",fCalc.exists());
 		assertTrue("bin/Logger.class should exist?!?",fLog.exists());
-		System.out.println("CalculatePI.class is of size: "+fCalc.length());
-		System.out.println("Logger.class is of size: "+fLog.length());
+		int calclen = (int)fCalc.length();
+		int loglen = (int)fLog.length();
+		System.out.println("CalculatePI.class is of size: "+calclen);
+		System.out.println("Logger.class is of size: "+loglen);
 		assertTrue("Reweavable version should be larger than non-reweavable version of CalculatePI",
-		  fCalc.length()>nonreweavesize_CalculatePI);
+		  calclen>nonreweavesize_CalculatePI);
 		assertTrue("Reweavable version should be larger than non-reweavable version of Logger",
-		  fLog.length()>nonreweavesize_Logger);
+		  loglen>nonreweavesize_Logger);
 		
-		assertTrue("Reweavable (with compression) version should be smaller than reweavable (without compression) version of CalculatePI",
-		  fCalc.length()<reweavablesize_CalculatePI);
-		assertTrue("Reweavable (with compression) version should be smaller than reweavable (without compression) version of Logger",
-		  fLog.length()<reweavablesize_Logger);  
+		assertTrue("Reweavable (with compression) version should be smaller than reweavable (without compression) version of CalculatePI:" +			"  Compressed version:"+calclen+"bytes   Non-compressed version:"+reweavablesize_CalculatePI+"bytes",
+		  calclen<reweavablesize_CalculatePI);
+		assertTrue("Reweavable (with compression) version should be smaller than reweavable (without compression) version of Logger"+
+		"  Compressed version:"+loglen+"bytes   Non-compressed version:"+reweavablesize_Logger+"bytes",
+		  loglen<reweavablesize_Logger);  
 		 
 		System.out.println("\n\n\n");
 	}
