@@ -50,26 +50,32 @@ public class SymbolManager {
 
 		file.walk(walker);
 		
-//    	System.err.println("> got: " + nodes);
-		
 		return (Declaration[])nodes.toArray(new Declaration[nodes.size()]);
-//        return lookupDeclarations(filename);
     }
     
+    /**
+     * Rejects anonymous kinds by checking if their name is an integer
+     */
 	private boolean accept(IProgramElement node) {
-		return 
-			!node.getKind().equals(IProgramElement.Kind.IMPORT_REFERENCE)
-			&& !(node.getKind().isType() &&
-				node.getParent().getKind().equals(IProgramElement.Kind.METHOD));
+		if (node.getKind().isType()) {
+			boolean isAnonymous = StructureUtil.isAnonymous(node);
+			return !node.getParent().getKind().equals(IProgramElement.Kind.METHOD)
+				&& !isAnonymous;
+		} else {
+			return !node.getKind().equals(IProgramElement.Kind.IMPORT_REFERENCE);
+		}
+//			&& !(node.getKind().isType() &&
+//				node.getParent().getKind().equals(IProgramElement.Kind.METHOD));
 	}
 
 	private Declaration buildDecl(IProgramElement node) {
 		
 		String signature = "";
 		String accessibility = node.getAccessibility().toString();
-		if (!accessibility.equals("package")) signature = accessibility + " ";
+		if (!accessibility.equals("package")) signature = accessibility.toString() + " ";
 		
 		String modifiers = "";
+		if (!node.getAccessibility().equals(IProgramElement.Accessibility.PACKAGE)) modifiers += node.getAccessibility() + " ";
 		for (Iterator modIt = node.getModifiers().iterator(); modIt.hasNext(); ) {
 			modifiers += modIt.next() + " ";
 		}

@@ -29,6 +29,7 @@ import org.aspectj.asm.IProgramElement;
 
 /**
  * @author Mik Kersten
+ * @deprecated org.aspectj.asm.IProgramElement should be used instead
  */
 public class Declaration implements Serializable {
     private int beginLine;

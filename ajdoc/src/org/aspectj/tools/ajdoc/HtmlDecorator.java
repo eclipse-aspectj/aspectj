@@ -40,7 +40,6 @@ class HtmlDecorator {
         declIDTable = table;
         symbolManager = sm;
         for (int i = 0; i < inputFiles.length; i++) {
-        	
             decorateHTMLFromDecls(symbolManager.getDeclarations(inputFiles[i].getCanonicalPath()),
                                   rootDir.getCanonicalPath() + Config.DIR_SEP_CHAR,
                                   docModifier,
@@ -49,7 +48,7 @@ class HtmlDecorator {
     }
 
     static void decorateHTMLFromDecls(Declaration[] decls, String base, String docModifier, boolean exceededNestingLevel) throws IOException {
-        if ( decls != null ) {
+    	if ( decls != null ) {
             for (int i = 0; i < decls.length; i++) {
                 Declaration decl = decls[i];
                 decorateHTMLFromDecl(decl, base, docModifier, exceededNestingLevel);
@@ -59,7 +58,7 @@ class HtmlDecorator {
 
     /**
      * Before attempting to decorate the HTML file we have to verify that it exists,
-     * which depends on the documentation visibility specified to javadoc.
+     * which depends on the documentation visibility specified to c.
      *
      * Depending on docModifier, can document
      *   - public: only public
@@ -74,11 +73,11 @@ class HtmlDecorator {
         boolean nestedClass = false;
         if ( decl.isType() ) {
             boolean decorateFile = true;
-            if ( (docModifier.equals( "private" )) || // everything
-                 (docModifier.equals( "package" ) && decl.getModifiers().indexOf( "private" ) == -1) || // package
-                 (docModifier.equals( "protected" ) && (decl.getModifiers().indexOf( "protected" ) != -1 ||
+            if ( (docModifier.equals("private")) || // everything
+                 (docModifier.equals("package") && decl.getModifiers().indexOf( "private" ) == -1) || // package
+                 (docModifier.equals("protected") && (decl.getModifiers().indexOf( "protected" ) != -1 ||
                                                         decl.getModifiers().indexOf( "public" ) != -1 )) ||
-                 (docModifier.equals( "public" ) && decl.getModifiers().indexOf( "public" ) != -1) ) {
+                 (docModifier.equals("public") && decl.getModifiers().indexOf( "public" ) != -1) ) {
                 visibleFileList.add(decl.getSignature());
                 String packageName = decl.getPackageName();
                 String filename    = "";
@@ -164,8 +163,6 @@ class HtmlDecorator {
 //                addAdviceDocumentation(decl, fileContents, index);
 //                addPointcutDocumentation(decl, fileContents, index);
                 addAspectDocumentation(decl, fileContents, index);
-           
-            
             }
             else {
                 decorateMemberDocumentation(decl, fileContents, index);
@@ -485,16 +482,16 @@ class HtmlDecorator {
 							+ currDecl.toLabelString()
 							+ ".html";
         		} else {
-        			
         			linkName = packagePath + currDecl.getParent().getName() + "." + currDecl.getName();
-					linkRef =
-						getRelativeComponent(packagePath)
-							+ packagePath
-							+ currDecl.getParent().getName()
-							+ ".html"
-							+ "#"
-							+ currDecl.toLabelString();
-//        		
+        			linkRef = currDecl.getParent().getName() + ".html" + "#" + currDecl.toLabelString();
+//					linkRef =
+//						getRelativeComponent(packagePath)
+//							+ packagePath
+//							+ currDecl.getParent().getName()
+//							+ ".html"
+//							+ "#"
+//							+ currDecl.toLabelString();
+//        		 
         			// XXX: only one level of nested classes
         			if (currDecl.getParent().getParent().getKind().isType()) {
         				linkRef = currDecl.getParent().getParent().getName() + "." + linkRef;
@@ -604,11 +601,13 @@ class HtmlDecorator {
      * TODO: implement formatting or linking for tags.
      */
     static String getFormattedComment(IProgramElement decl) {
-        String formattedComment = "";
 
-        // strip the comment markers
         String comment = decl.getFormalComment();
+        if (comment == null) return "";
 
+        String formattedComment = "";
+        // strip the comment markers
+        
         int startIndex = comment.indexOf("/**");
         int endIndex   = comment.indexOf("*/");
         if ( startIndex == -1 ) {

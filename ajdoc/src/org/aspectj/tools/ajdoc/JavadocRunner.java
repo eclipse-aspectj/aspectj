@@ -31,7 +31,8 @@ import java.util.*;
 /**
  * @author Mik Kersten
  */
-class JavadocExecutor {
+class JavadocRunner {
+	
 	static boolean has14ToolsAvailable() {
 		Class jdMainClass = com.sun.tools.javadoc.Main.class;
 		try {
@@ -42,7 +43,6 @@ class JavadocExecutor {
 		}
 		return true;
 	}
-	
 	
      static void callJavadoc( String[] javadocargs ){
         final SecurityManager defaultSecurityManager = System.getSecurityManager();
@@ -78,7 +78,8 @@ class JavadocExecutor {
 				Class[] paramTypes = new Class[] {String[].class};
 				executeMethod = jdMainClass.getMethod("execute", paramTypes);
 			} catch (NoSuchMethodException e) {
-				throw new UnsupportedOperationException("ajdoc requires a tools library from JDK 1.4 or later.");
+				 com.sun.tools.javadoc.Main.main(javadocargs); 
+//				throw new UnsupportedOperationException("ajdoc requires a tools library from JDK 1.4 or later.");
 			}
 			try {
 				executeMethod.invoke(null, new Object[] {javadocargs});

@@ -5,12 +5,21 @@ import java.io.IOException;
 
 /**
  * Test class.  This is a comment.
- */ 
+ */  
 public abstract class ClassA implements InterfaceI {
 	
+	/**
+	 * Mumble field.
+	 */
+	public String mumble = "xxx";
 	public int pubfield;
-	private int privfield;
-	
+	private String privfield = "mumble";
+	 
+	public IOException exception = new IOException() {
+		
+	    public String getMumble() { return "mumble"; }
+	};
+	 
 	/**
 	 * Mumbo. Jumbo. 
 	 * 

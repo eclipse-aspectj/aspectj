@@ -39,13 +39,13 @@ public class Main implements Config {
     static Vector ajcOptions = new Vector();
 
     /** All of the files to be processed by ajdoc. */
-    static Vector filenames = new Vector();
+    static Vector filenames;
 
     /** List of files to pass to javadoc. */
-    static Vector fileList= new Vector();
+    static Vector fileList;
 
     /** List of packages to pass to javadoc. */
-    static Vector packageList = new Vector();
+    static Vector packageList;
 
     /** Default to package visiblity. */
     static String docModifier = "package";
@@ -59,7 +59,9 @@ public class Main implements Config {
     static File    rootDir       = null;
     static Hashtable declIDTable   = new Hashtable();
     static String  docDir          = ".";
-
+    
+    private static boolean deleteTempFilesOnExit = true;
+    
 	private static boolean aborted = false;
 
     public static void clearState() {
@@ -80,14 +82,15 @@ public class Main implements Config {
 
     public static void main(String[] args) {
     	aborted = false;
-    	
-    	if (!JavadocExecutor.has14ToolsAvailable()) {
-    		System.err.println("ajdoc requires a JDK 1.4 or later tools jar - exiting");
-    		aborted = true;
-    		return;
-    	}
-    	  
-//    	System.err.println("> command invoked: " + Arrays.asList(args).toString());
+   
+        filenames = new Vector();
+        fileList= new Vector();
+        packageList = new Vector();
+//    	if (!JavadocRunner.has14ToolsAvailable()) {
+//    		System.err.println("ajdoc requires a JDK 1.4 or later tools jar - exiting");
+//    		aborted = true;
+//    		return;
+//    	}
     	  
         // STEP 1: parse the command line and do other global setup
         sourcepath.addElement("."); // add the current directory to the classapth
@@ -101,7 +104,7 @@ public class Main implements Config {
             if ( !(new File( Config.WORKING_DIR ).isDirectory()) ) {
                 File dir = new File( Config.WORKING_DIR );
                 dir.mkdir();
-                dir.deleteOnExit();
+                if (deleteTempFilesOnExit) dir.deleteOnExit();
             }
 
             for (int i = 0; i < filenames.size(); i++) {
@@ -111,7 +114,7 @@ public class Main implements Config {
 
             // PHASE 0: call ajc
             ajcOptions.addElement( "-noExit" );
-			ajcOptions.addElement( "-emacssym" );  	// TODO: wrong option to force model gen
+			ajcOptions.addElement( "-XjavadocsInModel" );  	// TODO: wrong option to force model gen
             String[] argsToCompiler = new String[ajcOptions.size() + inputFiles.length];
             int i = 0;
             for ( ; i < ajcOptions.size(); i++ ) {
@@ -123,7 +126,7 @@ public class Main implements Config {
                 i++;
             }
 
-            System.out.println( "> calling ajc..." );
+            System.out.println( "> Calling ajc..." );
             CompilerWrapper.main(argsToCompiler);
             if (CompilerWrapper.hasErrors()) {
             	System.out.println(FAIL_MESSAGE);
@@ -145,11 +148,11 @@ public class Main implements Config {
             }
 
             // PHASE 1: generate Signature files (Java with DeclIDs and no bodies).
-            System.out.println( "> building signature files..." );
+            System.out.println( "> Building signature files..." );
             StubFileGenerator.doFiles(declIDTable, symbolManager, inputFiles, signatureFiles);
 
             // PHASE 2: let Javadoc generate HTML (with DeclIDs)
-            System.out.println( "> calling javadoc..." );
+            System.out.println( "> Calling javadoc..." );
             String[] javadocargs = null;
             if ( packageMode ) {
                 int numExtraArgs = 2;
@@ -188,7 +191,7 @@ public class Main implements Config {
                 }
             }
          
-            JavadocExecutor.callJavadoc(javadocargs);
+            JavadocRunner.callJavadoc(javadocargs);
             //for ( int o = 0; o < inputFiles.length; o++ ) {
             //    System.out.println( "file: " + inputFiles[o] );
             //}
@@ -204,7 +207,8 @@ public class Main implements Config {
                                               rootDir,
                                               symbolManager,
                                               inputFiles,
-                                              docModifier);
+                                              docModifier); 
+            System.out.println( "> Removing generated tags (this may take a while)..." );
             removeDeclIDsFromFile("index-all.html");
             removeDeclIDsFromFile("serialized-form.html");
             for (int p = 0; p < packageList.size(); p++) {
@@ -212,6 +216,7 @@ public class Main implements Config {
                                        Config.DIR_SEP_CHAR +
                                        "package-summary.html" );
             }
+            System.out.println( "> Finished." );
         } catch (Throwable e) {
             handleInternalError(e);
             exit(-2);
@@ -310,7 +315,7 @@ public class Main implements Config {
             File packageDir = new File(pathName);
             if ( !packageDir.exists() ) {
                 packageDir.mkdirs();
-                packageDir.deleteOnExit();
+                if (deleteTempFilesOnExit) packageDir.deleteOnExit();
             }
             //verifyPackageDirExists(packageName, null);
             packageName = packageName.replace( '.','/' ); // !!!
@@ -321,7 +326,7 @@ public class Main implements Config {
             filename = Config.WORKING_DIR + Config.DIR_SEP_CHAR + inputFile.getName();
         }
         File signatureFile = new File( filename );
-        signatureFile.deleteOnExit();
+        if (deleteTempFilesOnExit) signatureFile.deleteOnExit();
         return signatureFile;
     }
 
@@ -344,7 +349,7 @@ public class Main implements Config {
             File packageDir = new File( filePath );
             if ( !packageDir.exists() ) {
                 packageDir.mkdir();
-                packageDir.deleteOnExit();
+                if (deleteTempFilesOnExit) packageDir.deleteOnExit();
             }
             if ( remainingPkg != "" ) {
                 verifyPackageDirExists( remainingPkg, currPkgDir );
@@ -361,16 +366,45 @@ public class Main implements Config {
             File packageDir = new File( filePath );
             if ( !packageDir.exists() ) {
                 packageDir.mkdir();
-                packageDir.deleteOnExit();
+                if (deleteTempFilesOnExit) packageDir.deleteOnExit();
             }
         }
     }
 
+    /**
+     * Can read Eclipse-generated single-line arg
+     */
     static void parseCommandLine(String[] args) {
         if (args.length == 0) {
             displayHelpAndExit( null );
         } else if (args.length == 1 && args[0].startsWith("@")) {
-        	System.err.println("!!!!!!!!");  
+        	String argFile = args[0].substring(1);
+        	System.out.println("> Using arg file: " + argFile);  
+        	BufferedReader br;
+			try {
+				br = new BufferedReader(new FileReader(argFile));
+				String line = "";
+	        	line = br.readLine();
+	        	StringTokenizer st = new StringTokenizer(line, " ");
+	        	List argList = new ArrayList();
+	        	while(st.hasMoreElements()) {
+	        		argList.add((String)st.nextElement());
+	        	}
+	        	args = new String[argList.size()];
+	        	int counter = 0;
+	        	for (Iterator it = argList.iterator(); it.hasNext(); ) {
+	        		args[counter] = (String)it.next();
+	        		counter++;
+	        	}
+			} catch (FileNotFoundException e) {
+				System.err.println("> could not read arg file: " + argFile);
+				e.printStackTrace();
+			} catch (IOException ioe) {
+				System.err.println("> could not read arg file: " + argFile);
+				ioe.printStackTrace();
+			}
+
+        	
         }
         List vargs = new LinkedList(Arrays.asList(args));
 
@@ -467,50 +501,44 @@ public class Main implements Config {
             else if (arg.startsWith("-") || addNextAsOption) {
                 if ( arg.equals( "-private" ) ) {
                     docModifier = "private";
-                }
-                else if ( arg.equals( "-package" ) ) {
+                }else if ( arg.equals( "-package" ) ) {
                     docModifier = "package";
-                }
-                else if ( arg.equals( "-protected" ) ) {
+                } else if ( arg.equals( "-protected" ) ) {
                     docModifier = "protected";
-                }
-                else if ( arg.equals( "-public" ) ) {
+                } else if ( arg.equals( "-public" ) ) {
                     docModifier = "public";
-                }
-                else if ( arg.equals( "-verbose" ) ) {
+                } else if ( arg.equals( "-verbose" ) ) {
                     verboseMode = true;
-                }
-                else if ( arg.equals( "-author" ) ) {
+                } else if ( arg.equals( "-author" ) ) {
                     authorStandardDocletSwitch = true;
-                }
-                else if ( arg.equals( "-version" ) ) {
+                } else if ( arg.equals( "-version" ) ) {
                     versionStandardDocletSwitch = true;
-                }
-                else if ( arg.equals( "-v" ) ) {
+                } else if ( arg.equals( "-v" ) ) {
                     System.out.println(getVersion());
                     exit(0);
-                }
-                else if ( arg.equals( "-help" ) ) {
+                } else if ( arg.equals( "-help" ) ) {
                     displayHelpAndExit( null );
-                }
-                else if ( arg.equals( "-doclet" ) || arg.equals( "-docletpath" ) ) {
+                } else if ( arg.equals( "-doclet" ) || arg.equals( "-docletpath" ) ) {
                     System.out.println( "The doclet and docletpath options are not currently supported    \n" +
                                         "since ajdoc makes assumptions about the behavior of the standard \n" +
                                         "doclet. If you would find this option useful please email us at: \n" +
                                         "                                                                 \n" +
-                                        "       asupport@aspectj.org                            \n" +
+                                        "       aspectj-dev@eclipse.org                            \n" +
                                         "                                                                 \n" );
                     exit(0);
-                }
-                else if ( addNextAsOption ) {
-                    // just pass through
-                }
-                else {
+                } else if (arg.equals("-nonavbar")
+                	|| arg.equals("-noindex")) {
+                	// pass through 
+                	//System.err.println("> ignoring unsupported option: " + arg);
+                } else if ( addNextAsOption ) {
+                    //  pass through
+                } else {
+                	System.err.println("> uncrecognized arg: " + arg);
                     displayHelpAndExit( null );
-                }
+                }  
                 options.addElement(arg);
                 addNextAsOption = false;
-            }
+            } 
             else {
                 // check if this is a file or a package
                 if ( arg.indexOf( ".java" ) == arg.length() - 5 ||
@@ -638,7 +666,7 @@ public class Main implements Config {
                                               "Please copy the following text into an email message and send it,\n" +
                                               "along with any additional information you can add to:            \n" +
                                               "                                                                 \n" +
-                                              "       support@aspectj.org                           \n" +
+                                              "       aspectj-dev@eclipse.org                           \n" +
                                               "                                                                 \n";
 
     static public void handleInternalError(Throwable uncaughtThrowable) {

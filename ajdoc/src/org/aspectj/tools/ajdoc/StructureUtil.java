@@ -90,4 +90,23 @@ public class StructureUtil {
 		
 		return sb.toString();
 	}
+
+	public static boolean isAnonymous(IProgramElement node) {
+		boolean isIntName = true;
+		try {
+			Integer.valueOf(node.getName());
+		} catch (NumberFormatException nfe) {
+			// !!! using exceptions for logic, fix
+			isIntName = false;
+		}
+//		System.err.println(">>>>>>>> " + node.getName());
+		return isIntName || node.getName().startsWith("new ");
+//		return isIntName;
+//		if (!isIntName) {
+//			 
+//			return node.getName().startsWith("new ");
+//		} else {
+//			return false; 
+//		}
+	}
 }

@@ -82,54 +82,54 @@ class StubFileGenerator {
     	String formalComment = addDeclID(classNode, classNode.getFormalComment());
     	writer.println(formalComment);
     	
-    	String signature = getnSourcesignature(classNode);// StructureUtil.genSignature(classNode);
+    	String signature = genSourceSignature(classNode);// StructureUtil.genSignature(classNode);
     	
-    	writer.println(signature + " {" );
-    	processMembers(classNode.getChildren(), writer, classNode.getKind().equals(IProgramElement.Kind.INTERFACE));
-    	writer.println();
-		writer.println("}");
-    }
-      
-    /**
-     * Translates "aspect" to "class"
-     */
-    private static String getnSourcesignature(IProgramElement classNode) {
-    	String signature = classNode.getSourceSignature();
-    	int index = signature.indexOf("aspect");
-    	if (index != -1) {
-    		signature = signature.substring(0, index) +
-			"class " +
-			signature.substring(index + 6, signature.length());
+//    	System.err.println("######" + signature + ", " + classNode.getName());
+    	if (!StructureUtil.isAnonymous(classNode) && !classNode.getName().equals("<undefined>")) {
+	    	writer.println(signature + " {" );
+	    	processMembers(classNode.getChildren(), writer, classNode.getKind().equals(IProgramElement.Kind.INTERFACE));
+	    	writer.println();
+			writer.println("}");
     	}
-    	return signature;
-	}
+    }
 
 	private static void processMembers(List/*IProgramElement*/ members, PrintWriter writer, boolean declaringTypeIsInterface) throws IOException {
     	for (Iterator it = members.iterator(); it.hasNext();) {
 			IProgramElement member = (IProgramElement) it.next();
 		
-	    	if (member.getKind().isType()
-	    		&& !member.getParent().getKind().equals(IProgramElement.Kind.METHOD)) {
-				processTypeDeclaration(member, writer);
+	    	if (member.getKind().isType()) { 
+	    		if (!member.getParent().getKind().equals(IProgramElement.Kind.METHOD)
+	    			 && !StructureUtil.isAnonymous(member)) {// don't print anonymous types
+//	    			System.err.println(">>>>>>>>>>>>>" + member.getName() + "<<<<" + member.getParent());
+	    			processTypeDeclaration(member, writer);
+	    		}
 			} else {
 		    	String formalComment = addDeclID(member, member.getFormalComment());;
 		    	writer.println(formalComment);
 		    	
 		    	String signature = ""; 
 		    	if (!member.getKind().equals(IProgramElement.Kind.POINTCUT)
-		    	    && !member.getKind().equals(IProgramElement.Kind.ADVICE) ) {
+		    	    && !member.getKind().equals(IProgramElement.Kind.ADVICE)) {
 		    		signature = member.getSourceSignature();//StructureUtil.genSignature(member);
 		    	} 
-		    	if (signature != null && 
-		    		!member.getKind().isInterTypeMember()) {  
+		    	if (signature != null &&
+		    		signature != "" && 
+		    		!member.getKind().isInterTypeMember() &&
+					!member.getKind().equals(IProgramElement.Kind.INITIALIZER) &&
+					!StructureUtil.isAnonymous(member)) {   
 		    		writer.print(signature);
 		    	} else {
 //		    		System.err.println(">> skipping: " + member.getKind());
 		    	}  
-		    	
+		      
 		    	if (member.getKind().equals(IProgramElement.Kind.METHOD) ||
 		    		member.getKind().equals(IProgramElement.Kind.CONSTRUCTOR)) {
-		    		writer.println(" { }");
+		    		if (member.getParent().getKind().equals(IProgramElement.Kind.INTERFACE) ||
+		    			signature.indexOf("abstract ") != -1) {
+		    			writer.println(";");
+		    		} else {
+		    			writer.println(" { }");
+		    		}
 		    		
 		    	} else if (member.getKind().equals(IProgramElement.Kind.FIELD)) {
 //		    		writer.println(";");
@@ -138,6 +138,20 @@ class StubFileGenerator {
 		}
     }
 
+    /**
+     * Translates "aspect" to "class", as long as its not ".aspect"
+     */
+    private static String genSourceSignature(IProgramElement classNode) {
+    	String signature = classNode.getSourceSignature();
+    	int index = signature.indexOf("aspect");
+    	if (index != -1 && signature.charAt(index-1) != '.') {
+    		signature = signature.substring(0, index) +
+			"class " +
+			signature.substring(index + 6, signature.length());
+    	}
+    	return signature;
+	}
+	
     static int nextDeclID = 0;
     static String addDeclID(IProgramElement decl, String formalComment) {
         String declID = "" + ++nextDeclID;
