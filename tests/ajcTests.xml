@@ -6250,7 +6250,9 @@
     
     <ajc-test dir="bugs/lines" pr="37758"
    	 title="Weaving rt.jar results in stack overflow">
-        <compile files="A.java,big.jar"/>
+        <compile files="A.java,big.jar">
+        	<message kind="warning" text="manifest not copied"/>
+        </compile>
         <run class="Big"/>
     </ajc-test>
 

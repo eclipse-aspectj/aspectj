@@ -54,7 +54,8 @@ public class Checker extends ShadowMunger {
 				isError ? IMessage.ERROR : IMessage.WARNING,
 				shadow.getSourceLocation());
 			world.getMessageHandler().handleMessage(message);
-				
+			
+			AsmAdapter.checkerMunger(world.getModel(), shadow);
 		}
 		return false;
 	}

@@ -19,93 +19,55 @@ import org.aspectj.asm.*;
 import org.aspectj.asm.internal.*;
 import org.aspectj.bridge.*;
 
-public class AsmAdaptor {
+public class AsmAdapter {
+	
+	public static final String ADVISES = "advises";
+	public static final String ADVISED_BY = "advised by";
+	public static final String DECLARES_ON = "declares on";
+	public static final String DECLAREDY_BY = "declared by";
+
+	public static void checkerMunger(StructureModel model, Shadow shadow) {
+//		System.err.println("> " + shadow.getThisVar() + " to " + shadow.getTargetVar());
+	}
 	
 	public static void nodeMunger(StructureModel model, Shadow shadow, ShadowMunger munger) {
 		if (munger instanceof Advice) {
 			Advice a = (Advice)munger;
-//			if (a.getKind().isPerEntry() || a.getKind().isCflow()) {
-				// ??? might want to show these in the future
-//				return;
-//			}
+			if (a.getKind().isPerEntry() || a.getKind().isCflow()) {
+				// TODO: might want to show these in the future
+				return;
+			}
+			IRelationshipMapper mapper = StructureModelManager.getDefault().getMapper();
 
-//			System.out.println("--------------------------");
 			IProgramElement targetNode = getNode(model, shadow);
 			IProgramElement adviceNode = getNode(model, a);  
 			
 			if (adviceNode != null && targetNode != null) {
-//				mapper.putRelationshipForElement(
-//					adviceNode, 
-//					ADVICE, 
-//					targetNode);
-			}
-				
-//			System.out.println("> target: " + targetNode + ", advice: " + adviceNode);
-//			throw new RuntimeException("unimplemented");
-//			IRelationship relation = new Relationship();
-//			if (shadow.getKind().equals(Shadow.FieldGet) || shadow.getKind().equals(Shadow.FieldSet)) {
-//				relation = AdviceAssociation.FIELD_ACCESS_RELATION;
-//			} else if (shadow.getKind().equals(Shadow.Initialization) || shadow.getKind().equals(Shadow.StaticInitialization)) {
-//				relation = AdviceAssociation.INITIALIZER_RELATION;
-//			} else if (shadow.getKind().equals(Shadow.ExceptionHandler)) {
-//				relation = AdviceAssociation.HANDLER_RELATION;
-//			} else if (shadow.getKind().equals(Shadow.MethodCall)) {
-//				relation = AdviceAssociation.METHOD_CALL_SITE_RELATION;
-//			} else if (shadow.getKind().equals(Shadow.ConstructorCall)) {
-//				relation = AdviceAssociation.CONSTRUCTOR_CALL_SITE_RELATION;
-//			} else if (shadow.getKind().equals(Shadow.MethodExecution) || shadow.getKind().equals(Shadow.AdviceExecution)) {
-//				relation = AdviceAssociation.METHOD_RELATION;
-//			} else if (shadow.getKind().equals(Shadow.ConstructorExecution)) {
-//				relation = AdviceAssociation.CONSTRUCTOR_RELATION;
-//			} else if (shadow.getKind().equals(Shadow.PreInitialization)) {
-//				// TODO: someone should check that this behaves reasonably in the IDEs
-//				relation = AdviceAssociation.INITIALIZER_RELATION;
-//			} else {
-//				System.err.println("> unmatched relation: " + shadow.getKind());
-//				relation = AdviceAssociation.METHOD_RELATION;
-//			}
-//			createAppropriateLinks(targetNode, adviceNode, relation);
-		}
-	}
+				IRelationship foreward = mapper.get(adviceNode);
+				if (foreward == null) {
+					foreward = new Relationship(
+						ADVISES,
+						IRelationship.Kind.ADVICE,
+						adviceNode, 
+						new ArrayList()
+					);
+					mapper.put(adviceNode, foreward);
+				}
+				foreward.getTargets().add(targetNode);
 
-	private static void createAppropriateLinks(
-		IProgramElement target,
-		IProgramElement advice,
-		IRelationship relation)
-	{
-		if (target == null || advice == null) return;
-		
-		
-//		addLink(target, new LinkNode(advice),  relation, true);
-//		addLink(advice, new LinkNode(target),  relation, false);
-	}
-
-	private static void addLink(
-		IProgramElement onNode,
-//		LinkNode linkNode,
-		IRelationship relation,
-		boolean isBack)
-	{
-		IRelationship node = null;
-		String relationName = relation.getName();
-//		isBack ? relation() : relation.getForwardNavigationName();
-		
-		//System.err.println("on: " + onNode + " relationName: " + relationName + " existin: " + onNode.getRelations());
-		
-		for (Iterator i = onNode.getRelations().iterator(); i.hasNext();) {
-			IRelationship relationNode = (IRelationship) i.next();
-			if (relationName.equals(relationNode.getName())) {
-				node = relationNode;
-				break;
+				IRelationship back = mapper.get(targetNode);
+				if (back == null) {
+					back = new Relationship(
+						ADVISED_BY,
+						IRelationship.Kind.ADVICE,
+						targetNode, 
+						new ArrayList()
+					);
+					mapper.put(targetNode, back);
+				}
+				back.getTargets().add(adviceNode);
 			}
-		}	
-		if (node == null) {
-			throw new RuntimeException("unimplemented");
-//			node = new Relationship(relation,  relationName, new ArrayList());
-//			onNode.getRelations().add(node);
 		}
-//		node.getTargets().add(linkNode);
-		
 	}
 
 	private static IProgramElement getNode(StructureModel model, Advice a) {
@@ -167,15 +129,11 @@ public class AsmAdaptor {
 		enclosingNode.addChild(peNode);
 		return peNode;
 	}
-
-
-	
-	
 	
 	public static IProgramElement lookupMember(StructureModel model, Member member) {
 		TypeX declaringType = member.getDeclaringType();
 		IProgramElement classNode =
-			model.findNodeForClass(declaringType.getPackageName(), declaringType.getClassName());
+			model.findNodeForType(declaringType.getPackageName(), declaringType.getClassName());
 		return findMemberInClass(classNode, member);
 	}
 
