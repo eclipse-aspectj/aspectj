@@ -55,7 +55,7 @@ public class StructureSearchManager {
 				matches.add(node);	
 			} 
 		}
-		if (node.getChildren() != null) {
+		if (node != null && node.getChildren() != null) {
 			for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
 				IProgramElement nextNode = (IProgramElement)it.next();
 				if (nextNode instanceof IProgramElement) {
