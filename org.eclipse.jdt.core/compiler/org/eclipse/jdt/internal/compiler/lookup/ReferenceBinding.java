@@ -69,8 +69,8 @@ public final boolean canBeSeenBy(ReferenceBinding receiverType, SourceTypeBindin
 
 	//System.err.println("trying to see: " + new String(sourceName));
 
-	if (invocationType.privilegedHandler != null) {
-		invocationType.privilegedHandler.notePrivilegedTypeAccess(this);
+	if (Scope.findPrivilegedHandler(invocationType) != null) {
+		Scope.findPrivilegedHandler(invocationType).notePrivilegedTypeAccess(this);
 		return true;
 	}
 	return false;
@@ -153,9 +153,9 @@ public final boolean canBeSeenBy(Scope scope) {
 //			" from " + new String(invocationType.sourceName));
 
 
-	if (invocationType.privilegedHandler != null) {
+	if (Scope.findPrivilegedHandler(invocationType) != null) {
 		//System.err.println("    is privileged!");
-		invocationType.privilegedHandler.notePrivilegedTypeAccess(this);
+		Scope.findPrivilegedHandler(invocationType).notePrivilegedTypeAccess(this);
 		return true;
 	}
 	return false;
