@@ -9,7 +9,7 @@ import library2.Library2;
 /** extend abstract, and implement needed */
 aspect AnotherAspect extends Library2 {
 
-    pointcut targetJoinPoints() : 
+    public pointcut targetJoinPoints() : 
         execution(public static void Main.main(..));
 
     protected String renderId(JoinPoint jp) {

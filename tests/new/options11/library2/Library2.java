@@ -5,7 +5,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.testing.Tester;
 
 public abstract aspect Library2 {
-    abstract pointcut targetJoinPoints();
+    public abstract pointcut targetJoinPoints();
     
     before() : targetJoinPoints() {
         Tester.event("before 2 " + renderId(thisJoinPoint));
