@@ -3,7 +3,7 @@
     <refname>AspectJ Browser</refname>
 
     <refpurpose>GUI tool for compiling programs with ajc and navigating the
-    crosscutting structure (early-access)</refpurpose>
+    crosscutting structure</refpurpose>
 
   </refnamediv>
 
@@ -12,33 +12,66 @@
 
 
         <para>
-            The AspectJ Browser is a development tool that will allow you to
-            compile using ajc, navigate your program's static structure, edit
-            source files, and graphically edit build configuration files.
+            The AspectJ Browser can edit program source files,
+            compile using the AspectJ compiler
+            <xref linkend="ajc">ajc</xref>, 
+            run a program,
+            and graphically navigate the program's 
+            crosscutting structure.
         </para>
-
-          <imageobject>
-            <imagedata fileref="ajbrowser-building.gif"/>
-          </imageobject>
-
         <para>
-            To use the browser launch it by typing "ajbrowser" (assuming that
-            you've followed the instructions for setting up <xref
-            linkend="ajc">ajc</xref>).  You can either pass in one or more
-            ".lst" build configuration files as command line parameters to the
-            browser in order to build them and navigate the corresponding
-            structure, or you can open one or more ".lst" files with "File ->
-            Open" or with the "Open Build Configuration" button
-        (<inlinemediaobject>
-           <imageobject>
-             <imagedata fileref="openConfig.gif"/>
-           </imageobject>
-        </inlinemediaobject>).
+            Launch the browser from the command line either
+            by typing "ajbrowser" to invoke the script in
+            <literal>{aspectj}/bin</literal>
+             (if AspectJ is installed correctly) 
+            or by using the
+            <literal>aspectjtools.jar</literal> directly:
+            <programlisting>
+  java -jar aspectj1.1/lib/aspectjtools.jar ...                    
+            </programlisting>
         </para>
+
     </refsect1>
 
+    <refsect1>
+        <title>Program Build Configurations</title>
+
+        <para>
+        	To work with a particular program, point the 
+        	AspectJ browser to the program source files
+        	listed in a ".lst" build configuration file.
+            (Build configuration files are described 
+			in the documentation for 
+			<xref linkend="ajc">ajc</xref>.)
+            Open a build configuration file from the GUI using
+            the File menu, "open" item, or by using the 
+            "Open Build Configuration" button
+	        (<inlinemediaobject>
+	           <imageobject>
+	             <imagedata fileref="openConfig.gif"/>
+	           </imageobject>
+	        </inlinemediaobject>).
+            From the command line
+            you can also pass any number of ".lst" paths. 
+            (If you pass in any non-".lst" arguments, it will run the
+            command-line compiler directly.)
+        </para>
+        <para>
+            You can work with multiple build configurations;
+            select, add, or remove them
+            using the corresponding toolbar buttons.  
+        </para>
+        <para>Global build options are stored in an 
+        <literal>.ajbrowser</literal> file in your HOME directory.
+        Edit these from the GUI by clicking the "Options" button 
+        or selecting the Tools menu item "Options...".  
+        This is how you can set classpath, aspectpath, etc.
+        (ajbrowser, unlike ajc, does not support setting these 
+        options from the ".lst" files.).
+        </para>
+    </refsect1>
   <refsect1>
-    <title>Compiling a Build Configuration</title>
+    <title>Compiling a Program Build Configuration</title>
 
     <para>
         To compile click the "Build" button
@@ -46,16 +79,23 @@
            <imageobject>
              <imagedata fileref="build.gif"/>
            </imageobject>
-        </inlinemediaobject>), or click &lt;ctrl&gt;F11.  You may also select a
-        different build configuration here, as in label 1.
+        </inlinemediaobject>), or click &lt;ctrl&gt;F11.  
+        You may select
+        from different build configurations in the GUI
+        (see label 1 in the graphic below).
+        (If you get classpath or other errors, set up the
+        global build options as described above.)
     </para>
+          <imageobject>
+            <imagedata fileref="ajbrowser-building.gif"/>
+          </imageobject>
   </refsect1>
 
   <refsect1>
     <title>Navigating the Program Structure</title>
 
     <para>
-        Select nodes in the program structure by clicking them (as in label 2).
+        Select nodes in the program structure by clicking them (see label 2).
         If one node is related to one or more other nodes by an association the
         name of the association will appear below that node and will be
         displayed in italics.  Links to other structure nodes appear in blue
@@ -64,19 +104,6 @@
     </para>
 
   </refsect1>
-
-    <refsect1>
-        <title>Manipulating Build Configuration</title>
-
-        <para>
-            Build configurations can be manipulated adding, removing, and
-            editing build configuration files using the corresponding toolbar
-            buttons.  The current configuration can be selected in the
-            configurations listbox.  Build configurations are represented by
-            ".lst" files (which are described in the <xref
-            linkend="ajc">ajc</xref> documentation).
-        </para>
-    </refsect1>
 
     <refsect1>
         <title>Example: Exploring the "Spacewar" sample code </title>
@@ -121,9 +148,11 @@
 
               </para>
 
+              <para>
           <imageobject>
             <imagedata fileref="ajbrowser-options.gif"/>
           </imageobject>
+              </para>
 
             </listitem>
 
@@ -208,6 +237,15 @@
                    <literal>affects constructions</literal>.  The
                    <literal>affects</literal> relations will list different
                    kinds of join points - constructor or method calls, etc.
+             </para>
+             <para>Note that the AspectJ browser can only display 
+             static structure (whether hierarchical or crosscutting).
+             That means that dynamicly-determined pointcuts (like
+             <literal>cflow(pointcut)</literal>) 
+             will not be shown as picking out static points in
+             source code.  Displayable pointcuts roughly correspond
+             to those that can be used in a 
+             <literal>declare error</literal> statement.
              </para>
           </listitem>
         </itemizedlist>
