@@ -245,11 +245,11 @@ public class AjcTask extends MatchingTask {
         = AjcTask.class.getName() + ".COMMAND_EDITOR";
 
     static final String[] TARGET_INPUTS = new String [] 
-    { "1.1", "1.2", "1.3", "1.4" };
+    { "1.1", "1.2", "1.3", "1.4", "1.5" };
     static final String[] SOURCE_INPUTS = new String [] 
-    { "1.3", "1.4" };
+    { "1.3", "1.4", "1.5" };
     static final String[] COMPLIANCE_INPUTS = new String [] 
-    { "-1.3", "-1.4" };
+    { "-1.3", "-1.4", "-1.5" };
 
     private static final ICommandEditor COMMAND_EDITOR;
             
@@ -1644,8 +1644,8 @@ public class AjcTask extends MatchingTask {
                 setCompliance(flag);
             } else if ("-1.4".equals(flag)) {
             	setCompliance(flag);
-//            } else if ("-1.5".equals(flag)) {
-//                setCompliance("1.5");
+            } else if ("-1.5".equals(flag)) {
+                setCompliance("1.5");
             } else if ("-argfile".equals(flag)) {
                 setArgfiles(new Path(project, in.next()));
             } else if ("-aspectpath".equals(flag)) {
