@@ -94,7 +94,6 @@ public class Module {
     private static void doFindKnownJarAntecedants(Module module, ArrayList known) {
         Util.iaxIfNull(module, "module");
         Util.iaxIfNull(known, "known");
-        
         for (Iterator iter = module.getLibJars().iterator(); iter.hasNext();) {
             File libJar = (File) iter.next();
             if (!skipLibraryJarAntecedant(module, libJar)
@@ -393,7 +392,8 @@ public class Module {
                     required.add(req);
                     return true;
                 } else {
-                    messager.error("unable to create required module: " + moduleName);
+                    messager.error("update unable to create required module: " 
+                        + moduleName);
                 }                
             } else {                    // src dir
                 String fullPath = getFullPath(path);
