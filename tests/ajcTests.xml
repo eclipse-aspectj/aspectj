@@ -5711,4 +5711,11 @@
         	<message kind="error" line="6"/>
         </compile>
 	</ajc-test>
+	
+    <ajc-test dir="errors"  keywords="error"
+    		title="class extending abstract aspect">
+        <compile files="ClassExtendingAbstractAspectCE.java">
+			<message kind="error" line="20"/>
+        </compile>
+    </ajc-test>
 </suite>

@@ -122,6 +122,15 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		}
 		
 		SourceTypeBinding sourceType = s.referenceContext.binding;
+		// test classes don't extend aspects
+		if (sourceType.superclass != null) {
+			ResolvedTypeX parent = factory.fromEclipse(sourceType.superclass);
+			if (parent.isAspect() && !(dec instanceof AspectDeclaration)) {
+				factory.showMessage(IMessage.ERROR, "class \'" + new String(sourceType.sourceName) + 
+						"\' can not extend aspect \'" + parent.getName() + "\'",
+						factory.fromEclipse(sourceType).getSourceLocation(), null);
+			}
+		}
 
 		ReferenceBinding[] memberTypes = sourceType.memberTypes;
 		for (int i = 0, length = memberTypes.length; i < length; i++) {

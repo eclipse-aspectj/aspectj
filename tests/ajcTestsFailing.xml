@@ -11,13 +11,6 @@
         </compile>
     </ajc-test>
 
-    <ajc-test dir="errors"  keywords="error"
-    		title="class extending abstract aspect">
-        <compile files="ClassExtendingAbstractAspectCE.java">
-			<message kind="error" line="20"/>
-        </compile>
-    </ajc-test>
-
     <ajc-test dir="incremental/stringliteral"  
     		title="incrementally change string size and wire in injar classes">
         <compile staging="true" options="-incremental" 
@@ -43,6 +36,7 @@
 					 before main packageOne.Main"/>
     </ajc-test>
 
+	<!--  The correct behavior of this case needs to be thought through -->
     <ajc-test dir="bugs" pr="34206" 
     		title="before():execution(new(..)) does not throw NoAspectBoundException">
         <compile files="AspectInitError.java"/>
