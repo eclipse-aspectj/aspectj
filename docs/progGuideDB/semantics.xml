@@ -1116,7 +1116,7 @@ aspect A {
         </para>
 
         <para>
-          At a method execution join point, the signature a method signature
+          At a method execution join point, the signature is a method signature
           whose qualifying type is the declaring type of the method.
         </para>
 
@@ -1188,16 +1188,16 @@ aspect A {
         patterns to determine the join points they describe. A signature
         pattern is an abstract description of one or more join-point
         signatures. Signature patterns are intended to match very closely the
-        same kind of things one would write when defining individual methods
+        same kind of things one would write when declaring individual members
         and constructors.
       </para>
 
       <para>
-        Method definitions in Java include method names, method parameters,
+        Method declarations in Java include method names, method parameters,
         return types, modifiers like static or private, and throws clauses,
-        while constructor definitions omit the return type and replace the
+        while constructor declarations omit the return type and replace the
         method name with the class name. The start of a particular method
-        definition, in class <literal>Test</literal>, for example, might be
+        declaration, in class <literal>Test</literal>, for example, might be
       </para>
 
 
@@ -1325,6 +1325,81 @@ aspect A {
 <programlisting>
   execution(private C.new() throws ArithmeticException)
 </programlisting>
+
+      <sect3>
+        <title>Matching based on the declaring type</title>
+
+        <para>
+        The signature-matching pointcuts all specify a declaring type,
+        but the meaning varies slightly for each join point signature,
+        in line with Java semantics.
+        </para>
+        <para>
+        When matching for pointcuts <literal>withincode</literal>, 
+        <literal>get</literal>, and <literal>set</literal>, the declaring
+        type is the class that contains the declaration.
+        </para>
+        <para>
+        When matching method-call join points, the 
+        declaring type is the static type used to access the method.
+        A common mistake is to specify a declaring type for the 
+        <literal>call</literal> pointcut that is a subtype of the 
+        originally-declaring type. For example, given the class
+        </para>
+<programlisting>
+  class Service implements Runnable {
+    public void run() { ... }
+  } 
+</programlisting>
+        <para>
+        the following pointcut
+        </para>
+<programlisting>
+  call(void Service.run())
+</programlisting>
+        <para>
+        would fail to pick out the join point for the code
+        </para>
+<programlisting>
+  ((Runnable) new Service()).run();
+</programlisting>
+        <para>
+        Specifying the originally-declaring type is correct, but would
+        pick out any such call (here, calls to the <literal>run()</literal>
+        method of any Runnable).  
+        In this situation, consider instead picking out the target type:
+        </para>
+<programlisting>
+  call(void run()) &amp;&amp; target(Service)
+</programlisting>
+        <para>
+        When matching method-execution join points, 
+        if the execution pointcut method signature specifies a declaring type, 
+        the pointcut will only match methods declared in that type, or methods 
+        that override methods declared in or inherited by that type.
+        So the pointcut
+      </para>
+<programlisting>
+  execution(public void Middle.*())
+</programlisting>
+      <para>
+      picks out all method executions for public methods returning void
+      and having no arguments that are either declared in, or inherited by, 
+      Middle, even if those methods are overridden in a subclass of Middle. 
+      So the pointcut would pick out the method-execution join point
+      for Sub.m() in this code:
+      </para>
+<programlisting>
+  class Super {
+    protected void m() { ... }
+  }
+  class Middle extends Super {
+  }
+  class Sub extends Middle {
+    public void m() { ... }
+  }
+</programlisting>
+      </sect3>
 
       <sect3>
         <title>Matching based on the throws clause</title>
@@ -1483,8 +1558,8 @@ aspect A {
 </programlisting>
 
         <para>
-          picks out all join points where the code is in any type
-          definition of a type whose name begins with "<literal>com.xerox.</literal>".
+          picks out all join points where the code is in any 
+          declaration of a type whose name begins with "<literal>com.xerox.</literal>".
         </para>
 
       </sect3>
@@ -2231,7 +2306,7 @@ ModifiersPattern =
       </para>
 
       <para>
-        The initializer, if any, of an inter-type field definition runs
+        The initializer, if any, of an inter-type field declaration runs
         before the class-local initializers defined in its target class.
       </para>
 
@@ -3045,3 +3120,5 @@ ModifiersPattern =
     </sect2>
   </sect1>
 </appendix>
+
+
