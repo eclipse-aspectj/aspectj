@@ -88,9 +88,9 @@ public class HarnessJUnitUtil {
     
     /**
      * Dump results for Test from status into TestResult.
-     * This defers to the status to determine if it failed,
-     * and treats ABORT as errors 
-     * and everything else as failures.
+     * FAIL is a failure,
+     * ERROR and ABORT are errors,
+     * and INFO, WARNING, and DEBUG are ignored.
      * @param result the TestResult sink
      * @param status the IRunStatus source
      * @param test the Test to associate with the results
@@ -103,13 +103,15 @@ public class HarnessJUnitUtil {
             Test test,
             int numIncomplete) {
       if (!status.runResult()) {
-          String m = render(status, null);
-          AssertionFailedError failure = new AssertionFailedError(m);
-          if (status.hasAnyMessage(IMessage.ABORT, true)) {
-              result.addError(test, failure);
-          } else {
+          if (status.hasAnyMessage(IMessage.FAIL, false)) {
+              String m = render(status, null);
+              AssertionFailedError failure = new AssertionFailedError(m);
               result.addFailure(test, failure);
-          }
+          } else if (status.hasAnyMessage(IMessage.ERROR, true)) {
+              String m = render(status, null);
+              AssertionFailedError failure = new AssertionFailedError(m);
+              result.addError(test, failure);
+          } // /XXX  skip INFO, DEBUG
       }
       return 0; // XXX not doing incomplete
     }
