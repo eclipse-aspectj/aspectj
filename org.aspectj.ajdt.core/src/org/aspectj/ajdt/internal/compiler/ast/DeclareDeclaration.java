@@ -37,8 +37,10 @@ public class DeclareDeclaration extends MethodDeclaration {
 		super(result);
 		this.declare = symbolicDeclare;
 		if (declare != null) {
-			sourceStart = declare.getStart();
-			sourceEnd = declare.getEnd();
+			// AMC added init of declarationSourceXXX fields which are used
+			// in AsmBuilder for processing of MethodDeclaration locations. 
+			declarationSourceStart = sourceStart = declare.getStart();
+			declarationSourceEnd = sourceEnd = declare.getEnd();
 		}
 		//??? we might need to set parameters to be empty
 		this.returnType = TypeReference.baseTypeReference(T_void, 0);
