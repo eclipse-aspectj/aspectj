@@ -154,8 +154,8 @@ public class CrosscuttingMembers {
 
 	public boolean replaceWith(CrosscuttingMembers other) {
 		boolean changed = false;
-		//XXX what if perClause is null
-		if (!perClause.equals(other.perClause)) {
+		
+		if (perClause == null || !perClause.equals(other.perClause)) {
 			changed = true;
 			perClause = other.perClause;
 		}
