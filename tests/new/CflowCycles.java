@@ -17,7 +17,7 @@ class Target {
 aspect A1 {
     pointcut TargetRunFlow () 
         // ok if no cflow: within(Target) && execution(* *(..)) && !within(A1+);
-        : !within(A1+) //cflow(within(Target) && execution(* *(..))) && !within(A1+)
+        : !within(A1+) && !preinitialization(new(..)) //cflow(within(Target) && execution(* *(..))) && !within(A1+)
         ;
     Object around () : TargetRunFlow() {
         Tester.event("target A1");
