@@ -439,6 +439,28 @@
             <dir-changes updated="Removed"/>
 		</inc-compile>
     </ajc-test>
+       
+    <ajc-test dir="harness"
+    	keywords="expect-fail"
+		title="fail not forking or setting property">
+        <compile files="SystemPropertiesTest.java"/>
+        <run class="SystemPropertiesTest" fork="false"/>
+    </ajc-test>
+
+    <ajc-test dir="harness"
+    	keywords="expect-fail"
+		title="fail fork without setting property">
+        <compile files="SystemPropertiesTest.java"/>
+        <run class="SystemPropertiesTest" fork="true"/>
+    </ajc-test>
+
+    <ajc-test dir="harness"
+		title="pass fork and set property">
+        <compile files="SystemPropertiesTest.java"/>
+        <run class="SystemPropertiesTest" 
+        	fork="true" 
+        	vmargs="-DPASS=true,-Dname=value"/>
+    </ajc-test>
 
 </suite>
 
