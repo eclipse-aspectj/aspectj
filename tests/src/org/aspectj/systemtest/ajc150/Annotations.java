@@ -152,6 +152,10 @@ public class Annotations extends XMLBasedAjcTestCase {
 	  runTest("ajdk: dec annotation");
   }
   
+  public void testAnnotationsAndITDs() {
+	  runTest("nasty annotation and itds test");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

@@ -440,6 +440,44 @@
         </compile>
         <run class="a.b.c.A"/>
     </ajc-test>   
+    
+    <ajc-test dir="java5/annotations/itds" vm="1.5" title="nasty annotation and itds test">
+        <compile files="AnnotationsAndITDs.aj" options="-1.5">
+            <message kind="warning" line="25" text="execution(@SomeAnnotation ...)"/>        
+            <message kind="warning" line="28" text="execution(@SomeAnnotation ...)"/>        
+            <message kind="warning" line="52" text="execution(@SomeAnnotation ...)"/>        
+            <message kind="warning" line="53" text="execution(@SomeAnnotation ...)"/>    
+            <message kind="warning" line="17" text="execution(@SomeAnnotation ...new(..)"/>    
+            <message kind="warning" line="20" text="execution(@SomeAnnotation ...new(..)"/>    
+            <message kind="warning" line="45" text="execution(@SomeAnnotation ...new(..)"/>    
+            <message kind="warning" line="46" text="execution(@SomeAnnotation ...new(..)"/>
+            <message kind="warning" line="70" text="set(@SomeAnnotation...)"/>    
+            <message kind="warning" line="71" text="set(@SomeAnnotation...)"/>    
+            <message kind="warning" line="76" text="set(@SomeAnnotation...)"/>    
+            <message kind="warning" line="77" text="set(@SomeAnnotation...)"/>  
+            <message kind="warning" line="175" text="si(@SomeAnnotation...)"/>  
+            <message kind="warning" line="180" text="si(@SomeAnnotation...)"/>  
+        </compile>
+        <run class="AnnotationsAndITDs">
+            <stdout>
+                <line text="@type System"/>
+                <line text="hello AnnotationsAndITDs"/>
+                <line text="goodbye String"/>
+                <line text="x Object"/>
+                <line text="y Integer"/>
+                <line text="method bar has 1 params, first param annotation is @ParamAnnotation"/>
+                <line text="d Double"/>
+                <line text="f Double"/>
+                <line text="@type System"/>
+                <line text="@cons String"/>
+                <line text="@cons String"/>
+                <line text="@method ITDMe2"/>
+                <line text="@method ITDMe2"/>
+                <line text="@field ITDMe2"/>
+                <line text="@field ITDMe2"/>
+            </stdout>
+        </run>
+    </ajc-test>
 
    <!-- ======================================================================================= -->
    <!--               Autoboxing tests                                                          -->
