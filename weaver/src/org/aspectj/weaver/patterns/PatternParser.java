@@ -644,7 +644,7 @@ public class PatternParser {
 		int endPos = tokenSource.peek(-1).getEnd();
 		
 		//??? what about the source location of any's????
-		if (names.size() == 1 && ((NamePattern)names.get(0)).isAny() && dim == 0) return TypePattern.ANY;
+		if (names.size() == 1 && ((NamePattern)names.get(0)).isAny() && dim == 0 && !isVarArgs) return TypePattern.ANY;
 		
 		// Notice we increase the dimensions if varargs is set.  this is to allow type matching to
 		// succeed later: The actual signature at runtime of a method declared varargs is an array type of

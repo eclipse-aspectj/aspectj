@@ -387,7 +387,7 @@ public class WildTypePattern extends TypePattern {
     	    // use a special variant of Any TypePattern called
     	    // AnyWithAnnotation
     		if (annotationPattern == AnnotationTypePattern.ANY) {
-    		  if (dim == 0) { // pr72531
+    		  if (dim == 0 && !isVarArgs) { // pr72531
     			return TypePattern.ANY;  //??? loses source location
     		  } 
     		} else {

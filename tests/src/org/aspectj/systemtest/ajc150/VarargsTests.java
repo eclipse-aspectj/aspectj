@@ -68,5 +68,9 @@ public class VarargsTests extends XMLBasedAjcTestCase {
   public void testAJDKExamples() {
 	  runTest("ajdk: varargs");
   }
+  
+  public void testStarVarargs() {
+	  runTest("star varargs pattern");
+  }
 
 }
