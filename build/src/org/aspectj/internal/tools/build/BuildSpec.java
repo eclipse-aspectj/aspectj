@@ -153,8 +153,14 @@ public class BuildSpec {
     public String toString() { // XXX better
         if (null != productDir) {
             return "product " + productDir.getName();
-        } else {
+        } else if (null != moduleDir) {
             return "module " + moduleDir.getName();
+        } else {
+            return "<bad BuildSpec - "
+            	+ " baseDir=" + baseDir
+            	+ " jarDir=" + jarDir
+            	+ " buildConfig=" + buildConfig
+            	+ ">";
         }
     }
 }
