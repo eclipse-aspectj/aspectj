@@ -59,10 +59,10 @@ public class Utility {
         short kind;
         if (signature.isInterface()) {
             kind = Constants.INVOKEINTERFACE;
-        } else if (signature.isPrivate() || signature.getName().equals("<init>")) {
-            kind = Constants.INVOKESPECIAL;
         } else if (signature.isStatic()) {
             kind = Constants.INVOKESTATIC;
+        } else if (signature.isPrivate() || signature.getName().equals("<init>")) {
+            kind = Constants.INVOKESPECIAL;
         } else {
             kind = Constants.INVOKEVIRTUAL;
         }
@@ -112,10 +112,10 @@ public class Utility {
         short kind;
         if (newMethod.isInterface()) {
             kind = Constants.INVOKEINTERFACE;
-        } else if (newMethod.isPrivate() || newMethod.getName().equals("<init>")) {
-            kind = Constants.INVOKESPECIAL;
         } else if (newMethod.isStatic()) {
             kind = Constants.INVOKESTATIC;
+        } else if (newMethod.isPrivate() || newMethod.getName().equals("<init>")) {
+            kind = Constants.INVOKESPECIAL;
         } else {
             kind = Constants.INVOKEVIRTUAL;
         }
@@ -139,10 +139,10 @@ public class Utility {
         short kind;
         if (m.getEnclosingClass().isInterface()) {
             kind = Constants.INVOKEINTERFACE;
-        } else if (m.isPrivate() || m.getName().equals("<init>")) {
-            kind = Constants.INVOKESPECIAL;
         } else if (m.isStatic()) {
             kind = Constants.INVOKESTATIC;
+        } else if (m.isPrivate() || m.getName().equals("<init>")) {
+            kind = Constants.INVOKESPECIAL;
         } else {
             kind = Constants.INVOKEVIRTUAL;
         }
