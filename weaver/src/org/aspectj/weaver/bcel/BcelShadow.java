@@ -889,7 +889,7 @@ public class BcelShadow extends Shadow {
         if (!hasThis()) {
             throw new IllegalStateException("no this");
         }
-        initializeThisAnnotationVars(); // FIXME ASC Why bother with this if we always return one?
+        initializeThisAnnotationVars(); // FIXME asc Why bother with this if we always return one?
         // Even if we can't find one, we have to return one as we might have this annotation at runtime
         Var v = (Var) thisAnnotationVars.get(forAnnotationType);
 	    if (v==null)
@@ -907,7 +907,7 @@ public class BcelShadow extends Shadow {
         if (!hasTarget()) {
             throw new IllegalStateException("no target");
         }
-	    initializeTargetAnnotationVars(); // FIXME ASC why bother with this if we always return one?
+	    initializeTargetAnnotationVars(); // FIXME asc why bother with this if we always return one?
 	    Var v  =(Var) targetAnnotationVars.get(forAnnotationType);
 	    // Even if we can't find one, we have to return one as we might have this annotation at runtime
 	    if (v==null)
@@ -1304,8 +1304,8 @@ public class BcelShadow extends Shadow {
     	argAnnotationVars = new Map[numArgs];
     	for (int i = 0; i < argAnnotationVars.length; i++) {
 			argAnnotationVars[i] = new HashMap();
-			//FIXME ASC Fill this in
-			// populate
+			//FIXME asc just delete this logic - we always build the Var on demand, as we don't know at weave time
+			// what the full set of annotations could be (due to static/dynamic type differences...)
 		}
     }
     public void initializeKindedAnnotationVars() {
@@ -1316,7 +1316,7 @@ public class BcelShadow extends Shadow {
     	// Then create one BcelVar entry in the map for each annotation, keyed by
     	// annotation type (TypeX).
     	
-    	// FIXME Refactor these once all shadow kinds added - there is lots of commonality
+    	// FIXME asc Refactor these once all shadow kinds added - there is lots of commonality
     	ResolvedTypeX[] annotations = null;
     	TypeX relevantType = null;
     	
