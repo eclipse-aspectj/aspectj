@@ -701,15 +701,24 @@ aspect A  {
     pointcut gooPC(): execution(void Test.goo());
     pointcut printPC(): call(void java.io.PrintStream.println(String));
 
-    before(): cflow(fooPC()) && cflow(gooPC()) && printPC() {
+    before(): cflow(fooPC()) && cflow(gooPC()) && printPC() && !within(A) {
         System.out.println("should occur");
     }
 
-    before(): cflow(fooPC() && gooPC()) && printPC() {
+    before(): cflow(fooPC() && gooPC()) && printPC() && !within(A) {
         System.out.println("should not occur");
     }
 }
 ]]></programlisting>
+
+      <para>
+          The <literal>!within(<replaceable>A</replaceable>)</literal>
+          pointcut above is required to avoid the <literal>printPC</literal> 
+          pointcut applying to the <literal>System.out.println</literal>
+          call in the advice body. If this was not present a recursive call
+          would result as the pointcut would apply to it's own advice.
+          (See <xref linkend="pitfalls-infiniteLoops"/> for more details.)
+      </para>
 
     </sect2>
 
