@@ -55,7 +55,7 @@ public class AjdtCommand implements ICommand {
                 && buildManager.batchBuild(config, counter)
                 && !counter.hasErrors());
 		} catch (AbortException ae) {
-        	if (AbortException.ABORT.equals(ae)) { 
+        	if (ae.isSilent()) {
         		throw ae;
         	} else {
         		MessageUtil.abort(handler, ABORT_MESSAGE, ae);
@@ -107,7 +107,7 @@ public class AjdtCommand implements ICommand {
         if (null != message) {
             IMessage.Kind kind = inferKind(message);
             handler.handleMessage(new Message(message, kind, null, null));
-            throw AbortException.ABORT; // XXX tangled - assumes handler prints?
+            throw new AbortException(); // XXX tangled - assumes handler prints?
         }
         return config;
     }

@@ -146,7 +146,7 @@ public class MessageTest extends TestCase {
 
         // -- throwable
         kind = IMessage.FAIL;
-        thrown = AbortException.ABORT;
+        thrown = new AbortException();
         input = null;
         roundTrip(input, kind, thrown, sl, descriptor, exClass);
 

@@ -183,7 +183,7 @@ public class Main {
                 }
             }
         } catch (AbortException ae) {
-        	if (AbortException.ABORT.equals(ae)) { 
+        	if (ae.isSilent()) { 
         		quit();
         	} else {
                 IMessage message = ae.getIMessage();

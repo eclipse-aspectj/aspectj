@@ -38,18 +38,13 @@ import java.util.ArrayList;
  */
 public class AbortException extends RuntimeException { // XXX move porters out, handle proxy better
 
+	private boolean isSilent = false;
+
     /** used when message text is null */
     public static final String NO_MESSAGE_TEXT 
         = "AbortException (no message)";
     
     private static final ArrayList porters = new ArrayList();
-
-    /** 
-     * A client may throw this rather than constructing their own
-     * if stack trace or message is not needed when caught.
-     */
-    public static final AbortException ABORT
-        = new AbortException("ABORT");
     
     /**
      * Get a porter exception from the pool.
@@ -64,6 +59,7 @@ public class AbortException extends RuntimeException { // XXX move porters out, 
                 result = (AbortException) porters.get(0);    
             } else {
                 result = new AbortException();
+                result.setIsSilent(false);
             }
         }
         result.setIMessage(message);
@@ -106,7 +102,8 @@ public class AbortException extends RuntimeException { // XXX move porters out, 
 
     /** abort with default String message */
     public AbortException() {
-        this((String) null);
+        this("ABORT");
+        isSilent = true;
     }
 
     /** abort with message */
@@ -221,5 +218,13 @@ public class AbortException extends RuntimeException { // XXX move porters out, 
             thrown.printStackTrace(s);
         }            
     }
+
+	public boolean isSilent() {
+		return isSilent;
+	}
+	
+	public void setIsSilent(boolean isSilent) {
+		this.isSilent = isSilent;
+	}
 
 }
