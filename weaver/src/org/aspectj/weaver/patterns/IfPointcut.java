@@ -29,6 +29,7 @@ import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.ast.*;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
@@ -84,6 +85,9 @@ public class IfPointcut extends Pointcut {
 		return "if(" + testMethod + ")";
 	}
 
+
+	//??? The implementation of name binding and type checking in if PCDs is very convoluted
+	//    There has to be a better way...
 	private boolean findingResidue = false;
 	public Test findResidue(Shadow shadow, ExposedState state) {
 		if (findingResidue) return Literal.TRUE;
@@ -91,15 +95,21 @@ public class IfPointcut extends Pointcut {
 		try {
 			ExposedState myState = new ExposedState(baseArgsCount);
 			//System.out.println(residueSource);
-			//??? some of these tests are preconditions for the if to run correctly
-			//    this implementation will duplicate those tests, we should be more careful
-			Test preTest = residueSource.findResidue(shadow, myState); // might need this
+			//??? we throw out the test that comes from this walk.  All we want here
+			//    is bindings for the arguments
+			residueSource.findResidue(shadow, myState);
 			
 			//System.out.println(myState);
 			
+			Test ret = Literal.TRUE;
+			
 			List args = new ArrayList();
 	        for (int i=0; i < baseArgsCount; i++) {
-	        	args.add(myState.get(i));
+	        	Var v = myState.get(i);
+	        	args.add(v);
+	        	ret = Test.makeAnd(ret, 
+	        		Test.makeInstanceof(v, 
+	        			testMethod.getParameterTypes()[i].resolve(shadow.getIWorld())));
 	        }
 	
 	        // handle thisJoinPoint parameters
@@ -114,8 +124,10 @@ public class IfPointcut extends Pointcut {
 	        if ((extraParameterFlags & Advice.ThisEnclosingJoinPointStaticPart) != 0) {
 	        	args.add(shadow.getThisEnclosingJoinPointStaticPartVar());
 	        }
-			Test myTest = Test.makeCall(testMethod, (Expr[])args.toArray(new Expr[args.size()]));
-			return Test.makeAnd(preTest, myTest);
+	        
+	        ret = Test.makeAnd(ret, Test.makeCall(testMethod, (Expr[])args.toArray(new Expr[args.size()])));
+
+			return ret; 
 			
 		} finally {
 			findingResidue = false;

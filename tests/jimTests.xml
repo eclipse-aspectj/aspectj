@@ -1,6 +1,13 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 <suite>
 
+    <ajc-test dir="bugs" pr="33635" 
+    		title="Negation of if pointcut does not work">
+        <compile files="NotIf.java"/>
+        <run class="NotIf"/>
+    </ajc-test>
+    
+    
     <!--
     
 
