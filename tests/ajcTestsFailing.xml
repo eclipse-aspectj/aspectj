@@ -4,7 +4,18 @@
 <!-- contains valid tests that the compiler has never passed -->
 
 <suite>
-
+	
+	<ajc-test dir="bugs/privilege"
+		title="omnibus privileged access"
+		comment="from mail ~Problem with interfaces...~; add pr when bug submitted"
+		>
+		<compile files="packageProtected/concern/ContextUser.java,
+			            packageProtected/concern/BaseTarget.java,
+			            packageProtected/core/Base.java"/>
+		<run class="packageProtected.core.Base"/>
+		<run class="packageProtected.concern.BaseTarget"/>
+		</ajc-test>
+		
 	<ajc-test dir="bugs"
 		title="after returning type incompatible with join point return type"
 		pr="42668"
