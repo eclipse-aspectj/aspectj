@@ -19,7 +19,6 @@ import java.util.jar.*;
 
 import org.aspectj.ajdt.internal.compiler.AjCompiler;
 import org.aspectj.ajdt.internal.compiler.lookup.*;
-import org.aspectj.ajdt.internal.compiler.parser.AjParser;
 import org.aspectj.ajdt.internal.compiler.problem.AjProblemReporter;
 import org.aspectj.asm.*;
 //import org.aspectj.asm.internal.*;
@@ -33,6 +32,7 @@ import org.eclipse.jdt.internal.compiler.batch.*;
 import org.eclipse.jdt.internal.compiler.batch.FileSystem;
 import org.eclipse.jdt.internal.compiler.env.*;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 //import org.eclipse.jdt.internal.compiler.util.HashtableOfObject;
 
@@ -373,7 +373,7 @@ public class AjBuildManager {
 		compiler.lookupEnvironment = le;
 		
 		compiler.parser =
-			new AjParser(
+			new Parser(
 				pr, 
 				compiler.options.parseLiteralExpressionsAsConstants);
 
