@@ -76,12 +76,13 @@ public class JavaRun implements IAjcRun {
         if (!LangUtil.isEmpty(spec.dirChanges)) {
             MessageUtil.info(status, "XXX dirChanges not implemented in JavaRun");
         }
+        TestClassLoader loader = null;
         try {
             final boolean readable = true;
             File[] libs = sandbox.getClasspathJars(readable, this);
             URL[] urls = FileUtil.getFileURLs(libs);
             File[] dirs = sandbox.getClasspathDirectories(readable, this);
-            ClassLoader loader = new TestClassLoader(urls, dirs);
+            loader = new TestClassLoader(urls, dirs);
             // make the following load test optional
             // Class testAspect = loader.loadClass("org.aspectj.lang.JoinPoint");
             targetClass = loader.loadClass(spec.className);
@@ -97,7 +98,8 @@ public class JavaRun implements IAjcRun {
             if (!completedNormally) {
                 MessageUtil.info(status, spec.toLongString());
                 MessageUtil.info(status, "targetClass: " + targetClass);
-                MessageUtil.info(status, "" + sandbox);
+                MessageUtil.info(status, "sandbox: " + sandbox);
+                MessageUtil.info(status, "loader: " + loader);
             }
         }
         return completedNormally;
