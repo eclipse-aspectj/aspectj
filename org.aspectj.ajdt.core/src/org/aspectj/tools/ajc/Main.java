@@ -203,8 +203,7 @@ public class Main {
             return;
         } 
         args = controller.init(args, holder);
-        if ((0 < holder.numMessages(IMessage.ERROR, true))
-            || (!validArgs(args, controller.incremental(), holder))) {
+        if (0 < holder.numMessages(IMessage.ERROR, true)) {
             return;
         }      
         ICommand command = ReflectionFactory.makeCommand(commandName, holder);
@@ -213,17 +212,24 @@ public class Main {
         }      
         try {
             boolean verbose = (-1 != ("" + Arrays.asList(args)).indexOf("-verbose"));
-            boolean passed = command.runCommand(args, holder);
-            if (report(passed, holder) && controller.incremental()) {
-                final boolean onCommandLine = controller.commandLineIncremental();
-                while (controller.doRepeatCommand()) {
-                    passed = command.repeatCommand(holder);
-                    if (!report(passed, holder)) {
-                        break;
-                    } else {
+            outer:
+            while (true) {
+                boolean passed = command.runCommand(args, holder);
+                if (report(passed, holder) && controller.incremental()) {
+                    final boolean onCommandLine = controller.commandLineIncremental();
+                    while (controller.doRepeatCommand()) {
                         holder.clearMessages();
+                        if (controller.buildFresh()) {
+                            continue outer;
+                        } else {
+                            passed = command.repeatCommand(holder);
+                        }
+                        if (!report(passed, holder)) {
+                            break;
+                        }
                     }
                 }
+                break;
             }
         } catch (AbortException ae) {
         	if (ae.isSilent()) { 
@@ -272,25 +278,7 @@ public class Main {
     public void setCompletionRunner(Runnable runner) {
         this.completionRunner = runner;
     }
-    
-    /**
-     * Nicer messages for some illegal argument combinations
-     */
-    protected boolean validArgs(
-        String[] args, 
-        boolean incremental, 
-        IMessageHandler handler) {
-        if (incremental) {
-            List list = LangUtil.arrayAsList(args);
-            if (!list.contains("-sourceroots")) { // XXX -sourceroot name
-                fail(handler, "incremental mode requires -sourceroots", null);
-                return false;
-            }
-            // XXX also check for -argfile, @... or ...[.java|.aj]
-        }
-        return true;
-    }
-    
+        
     /**
      * Call System.exit(int) with values derived from the number
      * of failures/aborts or errors in messages.
@@ -500,6 +488,9 @@ public class Main {
         /** delay between filesystem checks for tagFile modification time */
         private long delay;
         
+        /** true just after user types 'r' for rebuild */
+        private boolean buildFresh;
+        
         public CommandController() {
             delay = DEFAULT_DELAY;
         }
@@ -557,6 +548,10 @@ public class Main {
                 quit = true;
             }
         }
+        /** @return true just after user typed 'r'  */
+        boolean buildFresh() {
+            return buildFresh;
+        }
         
         /** @return false if we should quit, true to do another command */
         boolean doRepeatCommand() {
@@ -568,7 +563,10 @@ public class Main {
                 result = false;
             } else if (incremental) {
                 try {  
-                    System.out.println("    press enter to recompile (q to quit): ");
+                    if (buildFresh) { // reset before input request
+                        buildFresh = false;
+                    }
+                    System.out.println(" press enter to recompile, r to rebuild, q to quit: ");
                     System.out.flush();
                     boolean doMore = false;
                     // seek for one q or a series of [\n\r]...
@@ -576,6 +574,9 @@ public class Main {
                         int input = System.in.read();
                         if ('q' == input) {
                             break;  // result = false;
+                        } else if ('r' == input) {
+                            buildFresh = true;
+                            result = true;  
                         } else if (('\n' == input) || ('\r' == input)) {
                             result = true;
                         } // else eat anything else
