@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="java5-src"/>
+	<classpathentry sourcepath="/JRE15_SRC" kind="var" path="JRE15_LIB"/>
+	<classpathentry kind="src" path="/runtime"/>
+	<classpathentry kind="src" path="testsrc"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
