@@ -14,18 +14,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.sql.Savepoint;
+
+import junit.framework.TestCase;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageHandler;
-import org.aspectj.util.FileUtil;
-
-import sun.security.krb5.internal.crypto.d;
-
-import junit.framework.TestCase;
 
 /**
  * @author websterm

@@ -17,8 +17,6 @@ import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.tools.ajc.CompilationResult;
 import org.aspectj.weaver.Dump;
 
-import junit.framework.TestCase;
-
 public class CompilerDumpTestCase extends AjcTestCase {
 
 	public static final String PROJECT_DIR = "DumpTestCase";
