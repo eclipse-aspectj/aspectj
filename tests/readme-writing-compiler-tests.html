@@ -114,8 +114,9 @@ Here's an example that
 </ul>
 <pre>
     &lt;ajc-test dir="new/incremental1" title="incremental test">
-        &lt;compile staging="true"
-                   files="Main.java,DeleteMe.java"/>
+        &lt;compile staging="true" 
+             sourceroots="." 
+             options="-incremental" />
         &lt;run class="Main"/>
         &lt;inc-compile tag="20">
             &lt;message kind="error" line="15">
@@ -124,20 +125,33 @@ Here's an example that
         &lt;run class="Main"/>
     &lt;/ajc-test>
 </pre>
-Take particular note of two attributes, 
-<code>compile</code>'s "<code>staging</code>"
-and <code>inc-compile</code>'s "<code>tag</code>".
-First, the compile task enables staging, which copies the
+
+Attributes of note for setting up an incremental test:
+<ul>
+<li><code>compile</code> <code>staging="true"</code>: 
+Incremental tests require staging, which copies the
 test source files to a temporary directory so they can be
 updated during the test without changing the actual sources.
-Second, incremental compiles specify a tag which identifies
-files to be deleted or copied into the test source staging directory 
-before recompiling. The tag is a suffix identifying
+</li>
+<li><code>compile</code> <code>sourceroots="{..}"</code>:
+incremental mode only takes source files in the form of
+<code>-sourceroots</code> entries.
+</li>
+<li><code>compile</code> <code>options="-incremental{,..}"</code>:
+Specify the <code>-incremental</code> option to signal 
+incremental mode to the compiler.  If you do not include this,
+the harness will still run an incremental test, but the compiler
+will not do its additional checking it on input options.
+</li>
+<li><code>inc-compile</code> <code>tag="{##}"</code>:
+The tag is a suffix identifying
 files in the test source directory specifying how the sources should
 be changed before that incremental compilation step.  
 If there is a prefixing suffix "delete", then the file is deleted;
 otherwise, the file is copied (with the effect either of updating
 an existing file or adding a new file).
+</li>
+</ul>
 
 <p>
 Thus, to understand what's happening in an incremental test
@@ -405,6 +419,7 @@ which handle most of the other compiler arguments:
    </li><li><code>classpath</code>: directories and jar files for the classpath
    </li><li><code>aspectpath</code>: binary aspects in jar files
    </li><li><code>argfiles</code>: argument list files
+   </li><li><code>sourceroots</code>: root directories for source files
    </li>
 </ul>
 Paths for these are all relative to the test base directory, and 
@@ -426,10 +441,9 @@ Here is a cooked example that uses all <code>compiler</code> attributes:
 
 <h5>Unsupported compiler options</h5>
 The harness does not support the following AspectJ compiler
-options: -target {version}, -outjar {file}, -sourceroots {dir},
--log {file}.
-The following are used but specification is not supported:
--d {dir}, -sourceroots {dir}... 
+options: <code>-target {version}, -outjar {file}, -log {file}</code>.
+(<code>-d {dir}</code> is used but specification is not supported.)
+ 
 
 <a name="background"></a>
 <h4>Background information on the Harness</h4>
