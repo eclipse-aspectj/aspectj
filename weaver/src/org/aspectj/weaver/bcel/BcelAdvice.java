@@ -61,12 +61,12 @@ public class BcelAdvice extends Advice {
 		pointcutTest = getPointcut().findResidue(shadow, exposedState);
 		
         // make sure thisJoinPoint parameters are initialized
-        if ((extraParameterFlags & ThisJoinPoint) != 0) {
-        	((BcelShadow)shadow).getThisJoinPointVar();
-        }
-        
         if ((extraParameterFlags & ThisJoinPointStaticPart) != 0) {
         	((BcelShadow)shadow).getThisJoinPointStaticPartVar();
+        }
+
+        if ((extraParameterFlags & ThisJoinPoint) != 0) {
+        	((BcelShadow)shadow).getThisJoinPointVar();
         }
         
         if ((extraParameterFlags & ThisEnclosingJoinPointStaticPart) != 0) {
@@ -211,14 +211,17 @@ public class BcelAdvice extends Advice {
 		}
         
         // handle thisJoinPoint parameters
-        if ((extraParameterFlags & ThisJoinPoint) != 0) {
-        	shadow.getThisJoinPointBcelVar().appendLoad(il, fact);
-        }
-        
+        // these need to be in that same order as parameters in 
+        // org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration
         if ((extraParameterFlags & ThisJoinPointStaticPart) != 0) {
         	shadow.getThisJoinPointStaticPartBcelVar().appendLoad(il, fact);
         }
         
+        if ((extraParameterFlags & ThisJoinPoint) != 0) {
+        	shadow.getThisJoinPointBcelVar().appendLoad(il, fact);
+        }
+        
+
         if ((extraParameterFlags & ThisEnclosingJoinPointStaticPart) != 0) {
         	shadow.getThisEnclosingJoinPointStaticPartBcelVar().appendLoad(il, fact);
         }
