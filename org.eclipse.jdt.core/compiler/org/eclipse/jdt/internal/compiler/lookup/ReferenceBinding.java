@@ -65,16 +65,15 @@ public final boolean canBeSeenBy(PackageBinding invocationPackage) {
 
 public final boolean canBeSeenBy(ReferenceBinding receiverType, SourceTypeBinding invocationType) {
 	boolean ret = innerCanBeSeenBy(receiverType, invocationType);
-	return ret;
-//	if (ret) return true;
-//
-//	System.err.println("trying to see: " + new String(sourceName));
-//
-//	if (invocationType.privilegedHandler != null) {
-//		invocationType.privilegedHandler.notePrivilegedTypeAccess(this);
-//		return true;
-//	}
-//	return false;
+	if (ret) return true;
+
+	//System.err.println("trying to see: " + new String(sourceName));
+
+	if (invocationType.privilegedHandler != null) {
+		invocationType.privilegedHandler.notePrivilegedTypeAccess(this);
+		return true;
+	}
+	return false;
 }
 
 private final boolean innerCanBeSeenBy(ReferenceBinding receiverType, SourceTypeBinding invocationType) {

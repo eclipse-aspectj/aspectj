@@ -333,8 +333,8 @@ public class FieldReference extends Reference implements InvocationSite {
 
 		SourceTypeBinding typeBinding = (SourceTypeBinding) binding.declaringClass;
 		TypeDeclaration typeDecl = typeBinding.scope.referenceContext;
-		FieldDeclaration fieldDecl = typeDecl.declarationOf(binding);
-
+		FieldDeclaration fieldDecl = typeDecl.declarationOf(binding.getFieldBindingForLookup());
+		//System.err.println(typeDecl + " and " + fieldDecl + ", " + binding);
 		//what scope to use (depend on the staticness of the field binding)
 		MethodScope fieldScope =
 			binding.isStatic()

@@ -96,7 +96,7 @@ public final int bindingType() {
 public boolean canBeSeenBy(InvocationSite invocationSite, Scope scope) {
 	if (isPublic()) return true;
 
-	SourceTypeBinding invocationType = scope.enclosingSourceType();
+	SourceTypeBinding invocationType = scope.invocationType();
 	if (invocationType == declaringClass) return true;
 
 	if (isProtected()) {
@@ -135,8 +135,8 @@ public boolean canBeSeenBy(InvocationSite invocationSite, Scope scope) {
 */
 public boolean canBeSeenBy(TypeBinding receiverType, InvocationSite invocationSite, Scope scope) {
 	if (isPublic()) return true;
-
-	SourceTypeBinding invocationType = scope.invocationType(); //enclosingSourceType();
+    //XXX invocation vs. source
+	SourceTypeBinding invocationType = scope.invocationType();
 	if (invocationType == declaringClass && invocationType == receiverType) return true;
 
 	if (isProtected()) {
@@ -148,7 +148,8 @@ public boolean canBeSeenBy(TypeBinding receiverType, InvocationSite invocationSi
 		if (invocationType == declaringClass) return true;
 		if (invocationType.fPackage == declaringClass.fPackage) return true;
 		
-		ReferenceBinding currentType = invocationType;
+		// for protected we need to check based on the type of this
+		ReferenceBinding currentType = scope.enclosingSourceType();;
 		int depth = 0;
 		do {
 			if (declaringClass.isSuperclassOf(currentType)) {

@@ -922,13 +922,19 @@ public class BlockScope extends Scope {
 		ReferenceBinding receiverType,
 		TypeBinding[] argumentTypes,
 		InvocationSite invocationSite) {
+			
+		IPrivilegedHandler handler = findPrivilegedHandler(invocationType());
 
 		compilationUnitScope().recordTypeReference(receiverType);
 		compilationUnitScope().recordTypeReferences(argumentTypes);
 		MethodBinding methodBinding = receiverType.getExactConstructor(argumentTypes);
-		if (methodBinding != null)
-			if (methodBinding.canBeSeenBy(invocationSite, this))
+		if (methodBinding != null) {
+			if (methodBinding.canBeSeenBy(invocationSite, this)) {
 				return methodBinding;
+			} else if (handler != null) {
+				return handler.getPrivilegedAccessMethod(methodBinding);
+			}
+		}
 
 		MethodBinding[] methods =
 			receiverType.getMethods(ConstructorDeclaration.ConstantPoolName);

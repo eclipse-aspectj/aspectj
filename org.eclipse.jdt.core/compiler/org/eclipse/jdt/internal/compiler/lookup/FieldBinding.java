@@ -215,4 +215,6 @@ public boolean alwaysNeedsAccessMethod(boolean isReadAccess) { return false; }
 public SyntheticAccessMethodBinding getAccessMethod(boolean isReadAccess) {
 	throw new RuntimeException("unimplemented");
 }
+
+public FieldBinding getFieldBindingForLookup() { return this; }
 }
