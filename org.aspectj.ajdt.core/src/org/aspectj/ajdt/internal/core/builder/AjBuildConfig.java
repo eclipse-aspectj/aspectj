@@ -249,22 +249,28 @@ public class AjBuildConfig { // XXX needs bootclasspath?
         return (null != incrementalFile);
     }
 
-	/**
-	 * This includes injars and aspectpath
-	 */
-	public List getFullClasspath() {
-		if (inJars.isEmpty() && aspectpath.isEmpty()) return getClasspath();
-		List full = new ArrayList();
-		for (Iterator i = inJars.iterator(); i.hasNext(); ) {
-			full.add(((File)i.next()).getAbsolutePath());
-		}
-		for (Iterator i = aspectpath.iterator(); i.hasNext(); ) {
-			full.add(((File)i.next()).getAbsolutePath());
-		}
-		full.addAll(getClasspath());
-		return full;
-	}
-
+    /**
+     * @return List (String) classpath of injars, aspectpath entries,
+     *   specified classpath (bootclasspath, extdirs, and classpath),
+     *   and output dir or jar
+     */
+    public List getFullClasspath() {
+        List full = new ArrayList();
+        for (Iterator i = inJars.iterator(); i.hasNext(); ) {
+            full.add(((File)i.next()).getAbsolutePath());
+        }
+        for (Iterator i = aspectpath.iterator(); i.hasNext(); ) {
+            full.add(((File)i.next()).getAbsolutePath());
+        }
+        full.addAll(getClasspath());
+        if (null != outputDir) {
+            full.add(outputDir.getAbsolutePath());
+        } else if (null != outputJar) {
+            full.add(outputJar.getAbsolutePath());
+        }
+        return full;
+    }
+    
 	public String getLintMode() {
 		return lintMode;
 	}
