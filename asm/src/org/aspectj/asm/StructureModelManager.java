@@ -34,10 +34,11 @@ public class StructureModelManager {
 
 	private IRelationshipMapper mapper;
 	private static final IRelationship ADVICE = new Relationship("advises", "advised by", IRelationship.Kind.ADVICE);
-	private static final IRelationship[] ALL = { ADVICE };
 
     protected StructureModelManager() {
-		mapper = new RelationshipMapper(Arrays.asList(ALL));
+    	List relationships = new ArrayList();
+    	relationships.add(ADVICE);
+		mapper = new RelationshipMapper(relationships);
     }
 
     public StructureModel getStructureModel() {
