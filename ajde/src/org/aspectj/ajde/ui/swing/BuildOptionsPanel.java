@@ -64,7 +64,7 @@ public class BuildOptionsPanel extends OptionsPanel {
 	private Box options_box = Box.createVerticalBox();
 	private JPanel build_panel = new JPanel();
 	private JTextField nonStandard_field = new JTextField();
-	private JCheckBox pre1_checkBox = new JCheckBox();
+	private JCheckBox incremental_checkBox = new JCheckBox();
 	private JCheckBox assertions_checkBox = new JCheckBox();
 	private JCheckBox useJavac_checkBox = new JCheckBox();
 	private JCheckBox preprocess_checkBox = new JCheckBox();
@@ -106,8 +106,8 @@ public class BuildOptionsPanel extends OptionsPanel {
 		useJavac_checkBox.setSelected(
 			Ajde.getDefault().getBuildManager().getBuildOptions().getUseJavacMode()
 		);
-		pre1_checkBox.setSelected(
-			Ajde.getDefault().getBuildManager().getBuildOptions().getPortingMode()
+		incremental_checkBox.setSelected(
+			Ajde.getDefault().getBuildManager().getBuildOptions().getIncrementalMode()
 		);
 
 		nonStandard_field.setText(
@@ -136,8 +136,8 @@ public class BuildOptionsPanel extends OptionsPanel {
 		AjdeUIManager.getDefault().getBuildOptions().setUseJavacMode(
 			useJavac_checkBox.isSelected()
 		);
-		AjdeUIManager.getDefault().getBuildOptions().setPortingMode(
-			pre1_checkBox.isSelected()
+		AjdeUIManager.getDefault().getBuildOptions().setIncrementalMode(
+			incremental_checkBox.isSelected()
 		);
 
 		AjdeUIManager.getDefault().getBuildOptions().setNonStandardOptions(
@@ -204,18 +204,17 @@ public class BuildOptionsPanel extends OptionsPanel {
 		spacer_label.setText("   ");
 		workingDir_field.setFont(new java.awt.Font("SansSerif", 0, 11));
 		workingDir_field.setMinimumSize(new Dimension(200, 21));
-		workingDir_field.setPreferredSize(new Dimension(210, 21));
+		workingDir_field.setPreferredSize(new Dimension(350, 21));
 		jPanel2.setLayout(borderLayout3);
 		jPanel1.setLayout(borderLayout2);
 		build_panel.setLayout(borderLayout4);
 		build_panel.setBorder(border2);
 		nonStandard_field.setFont(new java.awt.Font("SansSerif", 0, 11));
-		nonStandard_field.setMinimumSize(new Dimension(100, 21));
-		nonStandard_field.setPreferredSize(new Dimension(210, 21));
-		pre1_checkBox.setText(
-			"Signal warnings for pre-1.0 language use to ease porting");
-		pre1_checkBox.setToolTipText("");
-		pre1_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
+		nonStandard_field.setMinimumSize(new Dimension(200, 21));
+		nonStandard_field.setPreferredSize(new Dimension(350, 21));
+		incremental_checkBox.setText("Incremental compile");
+		incremental_checkBox.setToolTipText("Only recompile necessary sources.");
+		incremental_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
 		assertions_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
 		assertions_checkBox.setText("Support assertions from 1.4 Java specification");
 		useJavac_checkBox.setText("Use javac to generate .class files");
@@ -224,14 +223,14 @@ public class BuildOptionsPanel extends OptionsPanel {
 		preprocess_checkBox.setToolTipText("");
 		preprocess_checkBox.setText("Only preprocess and generate .java source files");
 		compileOptions_panel.setLayout(borderLayout1);
-		nonStandard_label.setText("Non-standard compiler options:");
+		nonStandard_label.setText("Other compiler options:");
 		nonStandard_label.setFont(new java.awt.Font("Dialog", 0, 11));
-		nonStandard_label.setPreferredSize(new Dimension(100, 16));
+		nonStandard_label.setPreferredSize(new Dimension(80, 16));
 		nonStandard_label.setToolTipText("");
 		jPanel3.setLayout(borderLayout7);
 		workingDir_label.setFont(new java.awt.Font("Dialog", 0, 11));
-		workingDir_label.setPreferredSize(new Dimension(150, 16));
-		workingDir_label.setText("Working directory (for preprocess and use-javac): ");
+		workingDir_label.setPreferredSize(new Dimension(80, 16));
+		workingDir_label.setText("Working directory: ");
 		this.add(jPanel3, BorderLayout.NORTH);
 		jPanel2.add(workingDir_label, BorderLayout.CENTER);
 		jPanel2.add(workingDir_field, BorderLayout.EAST);
@@ -244,7 +243,7 @@ public class BuildOptionsPanel extends OptionsPanel {
 		options_box.add(assertions_checkBox, null);
 		options_box.add(preprocess_checkBox, null);
 		options_box.add(useJavac_checkBox, null);
-		//options_box.add(pre1_checkBox, null);
+		options_box.add(incremental_checkBox, null);
 		options_box.add(spacer_label, null);
 		jPanel3.add(build_panel, BorderLayout.CENTER);
 		build_panel.add(compileOptions_panel, BorderLayout.NORTH);
