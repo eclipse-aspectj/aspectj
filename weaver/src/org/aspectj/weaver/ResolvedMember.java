@@ -102,6 +102,10 @@ public class ResolvedMember extends Member implements IHasPosition {
     	return true;
     }
     
+    public boolean isBridgeMethod() {
+    	return (modifiers & Constants.ACC_BRIDGE)!=0;
+    }
+    
 	public boolean isSynthetic() {
 		return false;
 	}

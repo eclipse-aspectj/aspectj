@@ -24,6 +24,7 @@ import org.aspectj.weaver.Checker;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
@@ -63,10 +64,16 @@ public class KindedPointcut extends Pointcut {
 	
 	public FuzzyBoolean match(Shadow shadow) {
 		if (shadow.getKind() != kind) return FuzzyBoolean.NO;
-		
+
 		if (!signature.matches(shadow.getSignature(), shadow.getIWorld())){
+
             if(kind == Shadow.MethodCall) {
                 warnOnConfusingSig(shadow);
+             	int shadowModifiers = shadow.getSignature().getModifiers(shadow.getIWorld());
+			    if (ResolvedTypeX.hasBridgeModifier(shadowModifiers)) {
+				  shadow.getIWorld().getLint().noJoinpointsForBridgeMethods.signal(new String[]{},getSourceLocation(),
+						new ISourceLocation[]{shadow.getSourceLocation()});
+			    }
             }
             return FuzzyBoolean.NO; 
         }

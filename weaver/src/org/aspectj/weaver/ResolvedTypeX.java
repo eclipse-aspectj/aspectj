@@ -1086,6 +1086,10 @@ public abstract class ResolvedTypeX extends TypeX {
 			return samePackage(targetType, fromType);
 		}	
 	}
+	
+	public static boolean hasBridgeModifier(int modifiers) {
+		return (modifiers & Constants.ACC_BRIDGE)!=0;
+	}
 
 	private static boolean samePackage(
 		ResolvedTypeX targetType,

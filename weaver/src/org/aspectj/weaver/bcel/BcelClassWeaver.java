@@ -906,6 +906,7 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 
 	private boolean shouldWeaveBody(LazyMethodGen mg) {	
+		if (mg.isBridgeMethod()) return false;
 		if (mg.isAjSynthetic()) return mg.getName().equals("<clinit>");
 		AjAttribute.EffectiveSignatureAttribute a = mg.getEffectiveSignature();
 		if (a != null) return a.isWeaveBody();

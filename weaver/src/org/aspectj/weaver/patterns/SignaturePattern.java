@@ -110,8 +110,19 @@ public class SignaturePattern extends PatternNode {
 	
 	public boolean matches(Member member, World world) {
 		//XXX performance gains would come from matching on name before resolving
-		//    to fail fast		
+		//    to fail fast.  ASC 30th Nov 04 => Not necessarily, it didn't make it faster for me.
+		//    Here is the code I used:
+		//		String n1 = member.getName();
+		//		String n2 = this.getName().maybeGetSimpleName();
+		//		if (n2!=null && !n1.equals(n2)) return false;
+
 		ResolvedMember sig = member.resolve(world);
+		
+		// Java5 introduces bridge methods, we don't want to match on them at all...
+		if (sig.isBridgeMethod()) {
+			return false;
+		}
+		
 		if (sig == null) {
 			//XXX
 			if (member.getName().startsWith(NameMangler.PREFIX)) {

@@ -1,0 +1,7 @@
+<!-- AspectJ v1.5.0 Tests: Bridge attribute on methods generated to support generics -->
+    
+    <ajc-test dir="java5/bridgeMethods" pr="72766" title="Ignore bridge methods">
+        <compile files="AspectX.aj" inpath="testcode.jar" options="-showWeaveInfo">
+          <message kind="warning" line="7" text="pointcut did not match on the method call to a bridge method."/>
+        </compile>
+    </ajc-test>

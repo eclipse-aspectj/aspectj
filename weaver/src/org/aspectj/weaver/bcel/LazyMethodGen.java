@@ -684,6 +684,10 @@ public final class LazyMethodGen {
 	public boolean isAbstract() {
 		return Modifier.isAbstract(getAccessFlags());
 	}
+	
+	public boolean isBridgeMethod() {
+		return (getAccessFlags() & Constants.ACC_BRIDGE) != 0;
+	}
     
     public void addExceptionHandler(
             InstructionHandle start,

@@ -6,10 +6,14 @@
  */
 package org.aspectj.systemtest;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.aspectj.systemtest.ajc10x.Ajc10xTests;
 import org.aspectj.systemtest.ajc11.Ajc11Tests;
 import org.aspectj.systemtest.ajc120.Ajc120Tests;
 import org.aspectj.systemtest.ajc121.Ajc121Tests;
+import org.aspectj.systemtest.ajc150.AllTestsJava5_binaryWeaving;
 import org.aspectj.systemtest.aspectpath.AspectPathTests;
 import org.aspectj.systemtest.base.BaseTests;
 import org.aspectj.systemtest.design.DesignTests;
@@ -20,9 +24,6 @@ import org.aspectj.systemtest.options.OptionsTests;
 import org.aspectj.systemtest.pre10x.AjcPre10xTests;
 import org.aspectj.systemtest.serialVerUID.SUIDTests;
 import org.aspectj.systemtest.xlint.XLintTests;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 /**
  * @author colyer
@@ -35,6 +36,7 @@ public class AllTests {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ System Test Suite - JDK 1.3");
 		//$JUnit-BEGIN$
+		suite.addTest(AllTestsJava5_binaryWeaving.suite());
 		suite.addTest(Ajc121Tests.suite());
 		suite.addTest(Ajc120Tests.suite());
 		suite.addTest(Ajc11Tests.suite());
