@@ -100,7 +100,7 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 	}
 	public void endVisit(MessageSend send, BlockScope scope) {
 		if (send instanceof Proceed) return;
-		if (send.binding == null) return;
+		if (send.binding == null || !send.binding.isValidBinding()) return;
 		
 		if (send.isSuperAccess() && !send.binding.isStatic()) {
 			send.receiver = new ThisReference(send.sourceStart, send.sourceEnd);
@@ -111,7 +111,7 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 		}
 	}
 	public void endVisit(AllocationExpression send, BlockScope scope) {
-		if (send.binding == null) return;
+		if (send.binding == null || !send.binding.isValidBinding()) return;
 		//XXX TBD
 		if (isPublic(send.binding)) return;
 		makePublic(send.binding.declaringClass);
@@ -121,14 +121,14 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 		QualifiedTypeReference ref,
 		BlockScope scope)
 	{
-		makePublic(ref.getTypeBinding(scope));   //??? might be trouble
+		makePublic(ref.resolvedType); //getTypeBinding(scope));   //??? might be trouble
 	}
 	
 	public void endVisit(
 		SingleTypeReference ref,
 		BlockScope scope)
 	{
-		makePublic(ref.getTypeBinding(scope));  //??? might be trouble
+		makePublic(ref.resolvedType); //getTypeBinding(scope));  //??? might be trouble
 	}
 	
 	private FieldBinding getAccessibleField(FieldBinding binding) {
@@ -208,16 +208,11 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 			return;
 		}
 	}
-	/* (non-Javadoc)
-	 * @see org.eclipse.jdt.internal.compiler.IAbstractSyntaxTreeVisitor#endVisit(org.eclipse.jdt.internal.compiler.ast.AssertStatement, org.eclipse.jdt.internal.compiler.lookup.BlockScope)
-	 */
+
 	public void endVisit(AssertStatement assertStatement, BlockScope scope) {
 		isInlinable = false;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jdt.internal.compiler.IAbstractSyntaxTreeVisitor#endVisit(org.eclipse.jdt.internal.compiler.ast.ClassLiteralAccess, org.eclipse.jdt.internal.compiler.lookup.BlockScope)
-	 */
 	public void endVisit(ClassLiteralAccess classLiteral, BlockScope scope) {
 		isInlinable = false;
 	}

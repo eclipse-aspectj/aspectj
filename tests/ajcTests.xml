@@ -6388,4 +6388,24 @@
         <compile files="TrySwitch.java"/>
         <run class="TrySwitch"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs" pr="39458"
+   	 title="Compiler crash in ajc 1.1 - terrible error for inaccessible constructor">
+        <compile files="NewVoid.java">
+            <message kind="error" line="17"/>        
+            <message kind="error" line="20"/>        
+            <message kind="error" line="21"/>
+                  
+            <message kind="error" line="28"/>        
+            <message kind="warning" line="29"/>        
+            <message kind="warning" line="30"/>            
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs" pr="39460"
+   	 title="Missing import crashes compiler">
+        <compile files="MissingImport.java">
+            <message kind="error" line="13"/>       
+        </compile>
+    </ajc-test>
 </suite>

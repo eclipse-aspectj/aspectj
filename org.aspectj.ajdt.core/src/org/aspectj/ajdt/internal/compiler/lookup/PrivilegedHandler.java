@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.AstUtil;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.Lint;
@@ -55,19 +56,21 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 	public MethodBinding getPrivilegedAccessMethod(MethodBinding baseMethod, AstNode location) {
 		if (baseMethod.alwaysNeedsAccessMethod()) return baseMethod;
 		
-		ResolvedMember key = inAspect.factory.makeResolvedMember(baseMethod);
+		ResolvedMember key = EclipseFactory.makeResolvedMember(baseMethod);
 		if (accessors.containsKey(key)) return (MethodBinding)accessors.get(key);
 		
 		MethodBinding ret;
 		if (baseMethod.isConstructor()) {
-			ret = baseMethod;
+			ret = new MethodBinding(baseMethod, baseMethod.declaringClass);
+			ret.modifiers = AstUtil.makePublic(ret.modifiers); 
 		} else {
 			ret = inAspect.factory.makeMethodBinding(
 			AjcMemberMaker.privilegedAccessMethodForMethod(inAspect.typeX, key)
 			);
 		}
 		checkWeaveAccess(key.getDeclaringType(), location);
-		//new PrivilegedMethodBinding(inAspect, baseMethod);
+		//System.err.println(ret);
+		//Thread.dumpStack();
 		accessors.put(key, ret);
 		return ret;
 	}

@@ -156,7 +156,7 @@ public class AdviceDeclaration extends MethodDeclaration {
 				PrivilegedHandler handler = (PrivilegedHandler)upperScope.referenceContext.binding.privilegedHandler;
 				if (handler == null) {
 					handler = new PrivilegedHandler((AspectDeclaration)upperScope.referenceContext);
-					upperScope.referenceContext.binding.privilegedHandler = handler;
+					//upperScope.referenceContext.binding.privilegedHandler = handler;
 				}
 				
 				this.traverse(new MakeDeclsPublicVisitor(), (ClassScope)null);
