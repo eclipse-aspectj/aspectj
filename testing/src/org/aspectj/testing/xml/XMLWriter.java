@@ -37,8 +37,20 @@ public class XMLWriter {
     /** default value for maxWidth, when flowing buffer */
     public static final int DEFAULT_WIDTH = 80;
 
-    /** currently this just strips quotes and ampersands */
+    /** extremely inefficient! */
     public static String attributeValue(String input) {
+//        if (-1 != input.indexOf("&amp;")) {
+//            String saved = input;
+//            input = LangUtil.replace(input, "&amp;", "ampamp;");
+//            if (-1 == input.indexOf("&")) {
+//                input = saved;
+//            } else {
+//                input = LangUtil.replace(input, "&", "&amp;");
+//                input = LangUtil.replace(input, "ampamp;", "&amp;");
+//            }
+//        } else if (-1 != input.indexOf("&")) {
+//            input = LangUtil.replace(input, "&", "&amp;");
+//        }
         input = input.replace('"', '~');
         input = input.replace('&', '=');
         return input;

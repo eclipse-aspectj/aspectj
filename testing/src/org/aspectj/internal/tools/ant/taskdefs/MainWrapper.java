@@ -33,7 +33,6 @@ import java.io.*;
  * <code>-DMainWrapper.classname="fully.qualified.Classname"</code>.
  * This returns -1 if unable to load the main method,
  * 1 if the invoked method throws an exception, and 0 otherwise.
- * TODO: prelminary
  */
 public class MainWrapper {
     /** MUST set the fully-qualified name of class to invoke using

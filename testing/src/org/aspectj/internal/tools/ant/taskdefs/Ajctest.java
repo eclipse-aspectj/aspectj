@@ -67,10 +67,10 @@ public class Ajctest extends Task implements PropertyChangeListener {
     }
     
     private static boolean dumpresults = false;
-    private static Stats ajdocStats = new Stats();
-    private static Stats ajcStats   = new Stats();
-    private static Stats runStats   = new Stats();
-    private static Stats errorStats   = new Stats();
+    private Stats ajdocStats = new Stats();
+    private Stats ajcStats   = new Stats();
+    private Stats runStats   = new Stats();
+    private Stats errorStats   = new Stats();
     private static final String NO_TESTID = "NONE";    
     private File workingdir = new File("ajworkingdir"); //XXX
 
@@ -1093,7 +1093,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
                         oneLine = "\nRESULT=\"ERROR\" null ACJTEST";
                     } else {
                         StringBuffer sb = new StringBuffer("\n");
-                        int errs = current.allErrors.size();
+                        int errs = Ajctest.allErrors.size();
                         int allFails = errs 
                             + current.ajdocStats.fails
                             + current.ajcStats.fails
@@ -1144,9 +1144,9 @@ public class Ajctest extends Task implements PropertyChangeListener {
                             "------------------------------" + "\n";
                         str += "Task\tPassed\tFailed" + "\n";
                         Object[] os = new Object[] {
-                            "ajdoc", ajdocStats.goods+"",   ajdocStats.fails+"",
-                            "ajc",   ajcStats.goods  +"",   ajcStats.fails  +"",
-                            "run",   runStats.goods  +"",   runStats.fails  +"",
+                            "ajdoc", current.ajdocStats.goods+"",   current.ajdocStats.fails+"",
+                            "ajc",   current.ajcStats.goods  +"",   current.ajcStats.fails  +"",
+                            "run",   current.runStats.goods  +"",   current.runStats.fails  +"",
                         };
                         for (int i = 0; i < os.length; i += 3) {
                             str += os[i] + "\t" + os[i+1] + "\t" + os[i+2] + "\n";
@@ -1178,9 +1178,9 @@ public class Ajctest extends Task implements PropertyChangeListener {
                     err.println(multiLine);
                     err.println(oneLine);
                     if (dumpresults && (allErrors.size() +
-                                        ajdocStats.fails +
-                                        ajcStats.fails   +
-                                        runStats.fails) > 0) {
+                                        current.ajdocStats.fails +
+                                        current.ajcStats.fails   +
+                                        current.runStats.fails) > 0) {
                         String date = date(System.currentTimeMillis());
                         String filename = "ajc-errors";
                         for (StringTokenizer t = new StringTokenizer(date, ",: ");

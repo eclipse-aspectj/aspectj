@@ -75,38 +75,31 @@ public class SoftMessage implements IMessage { // XXX mutable dup of Message
         }
     }
 
-    /** print message as an element */
+    /** print message as an element 
+     * @throws IllegalArgumentException if message.getThrown() is not null
+     */
     public static void writeXml(XMLWriter out, IMessage message) { // XXX short form only, no files
        if ((null == out) || (null == message)) {
             return;
        }
+       Throwable thrown = message.getThrown();
+        if (null != thrown) {
+            String m = "unable to write " + message + " thrown not permitted";
+            throw new IllegalArgumentException(m);
+        }
        final String elementName = XMLNAME;
-       String kindStr = message.getKind().toString();
-       String kindAttr = out.makeAttribute("kind",kindStr);
-       String mStr = message.getMessage();
-       if ((null != mStr) && (0 == mStr.length())) {
-            mStr = null;
+       out.startElement(elementName, false);
+       out.printAttribute("kind", message.getKind().toString());
+       String value = message.getMessage();
+       if (null != value) {
+           out.printAttribute("message", value);
        }
-       String mAttr = (null == mStr ? " " : " " + out.makeAttribute("text", mStr));
-       int mAttrLen = (null == mStr ? 0 : mAttr.length());
        ISourceLocation sl = message.getISourceLocation();
-       String lineStr = (null == sl ? null : "" + sl.getLine());
-       String lineAttr = (null == lineStr ? " " : " " + out.makeAttribute("line", lineStr));
-       int lineAttrLen = (null == lineStr ? 0 : lineAttr.length());
-       int len = (kindAttr.length() + mAttrLen + lineAttrLen);
-       if (len < 65) {
-            String s = kindAttr + " "
-                        + ((null == lineStr ? "" : lineAttr)
-                           + (null == mStr ? "" : " " + mAttr)).trim();
-            out.printElement(elementName, s);
-       } else {
-            out.startElement(elementName, kindAttr + lineAttr, false);
-            if (0 < mStr.length()) {
-                out.printAttribute("text", mStr);
-            }
-            out.endAttributes();
-            out.endElement(elementName);
+       if (null != sl) {
+           out.endAttributes();
+           SoftSourceLocation.writeXml(out, sl);
        }
+       out.endElement(elementName);
     }
 
 

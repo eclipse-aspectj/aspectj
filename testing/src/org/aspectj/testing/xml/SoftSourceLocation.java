@@ -29,6 +29,29 @@ import java.io.File;
  */
 public class SoftSourceLocation implements ISourceLocation  { // XXX endLine?
     public static final File NONE = new File("SoftSourceLocation.NONE");
+    public static final String XMLNAME = "source-location";
+
+    /**
+     * Write an ISourceLocation as XML element to an XMLWriter sink.
+     * @param out the XMLWriter sink
+     * @param sl the ISourceLocation to write.
+     */
+    public static void writeXml(XMLWriter out, ISourceLocation sl) {
+       if ((null == out) || (null == sl)) {
+            return;
+       }
+       final String elementName = XMLNAME;
+       out.startElement(elementName, false);
+       out.printAttribute("line", "" + sl.getLine());
+       out.printAttribute("column", "" + sl.getColumn());
+       out.printAttribute("endLine", "" + sl.getEndLine());
+       File file = sl.getSourceFile();
+       if (null != file) {
+           out.printAttribute("sourceFile", file.getPath());
+       }
+       out.endElement(elementName);
+    }
+
     private File sourceFile;
     private int line;
     private int column;
@@ -84,6 +107,4 @@ public class SoftSourceLocation implements ISourceLocation  { // XXX endLine?
     public String toString() {
     	return getSourceFile().getPath() + ":" + getLine() + ":" + getColumn();
     }
-
-
 }

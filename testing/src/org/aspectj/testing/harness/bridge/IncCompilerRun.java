@@ -327,7 +327,7 @@ public class IncCompilerRun implements IAjcRun {
          * @see IXmlWritable#writeXml(XMLWriter) 
          */
         public void writeXml(XMLWriter out) {
-            String attr = out.makeAttribute("tag", tag);
+            String attr = XMLWriter.makeAttribute("tag", tag);
             out.startElement(xmlElementName, attr, false);
             super.writeAttributes(out);
             out.endAttributes();

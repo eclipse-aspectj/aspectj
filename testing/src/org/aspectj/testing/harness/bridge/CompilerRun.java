@@ -899,7 +899,7 @@ public class CompilerRun implements IAjcRun {
                 out.printAttribute("dir", testSrcDirOffset);
             }
             if (!LangUtil.isEmpty(argfiles)) {
-                out.printAttribute("argfiles", out.flattenFiles(argfiles));
+                out.printAttribute("argfiles", XMLWriter.flattenFiles(argfiles));
             }
             super.writeAttributes(out);
             out.endAttributes();

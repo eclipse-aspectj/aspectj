@@ -562,7 +562,7 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
         if (null == value) {
             return null;
         }
-        return out.makeAttribute(name, value);
+        return XMLWriter.makeAttribute(name, value);
     }
     
     /** @return null if list is null or empty or name="{flattenedList}" otherwise */
@@ -570,8 +570,8 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
         if (LangUtil.isEmpty(list)) {
             return null;
         }
-        String flat = out.flattenList(list);
-        return out.makeAttribute(name, flat);
+        String flat = XMLWriter.flattenList(list);
+        return XMLWriter.makeAttribute(name, flat);
     }
     
     /** @return true if writeAttributes(..) will produce any output */
@@ -598,15 +598,16 @@ abstract public class AbstractRunSpec implements IRunSpec { // XXX use MessageHa
         }
         if (!LangUtil.isEmpty(xmlNames.keywordsName)
             && !LangUtil.isEmpty(keywords)) {
-            out.printAttribute(xmlNames.keywordsName, out.flattenList(keywords));
+            out.printAttribute(xmlNames.keywordsName, 
+            XMLWriter.flattenList(keywords));
         }
         if (!LangUtil.isEmpty(xmlNames.optionsName)
             && !LangUtil.isEmpty(options)) {
-            out.printAttribute(xmlNames.optionsName, out.flattenList(options));
+            out.printAttribute(xmlNames.optionsName, XMLWriter.flattenList(options));
         }
         if (!LangUtil.isEmpty(xmlNames.pathsName)
             && !LangUtil.isEmpty(paths)) {
-            out.printAttribute(xmlNames.pathsName, out.flattenList(paths));
+            out.printAttribute(xmlNames.pathsName, XMLWriter.flattenList(paths));
         }
         if (!LangUtil.isEmpty(xmlNames.commentName)
             && !LangUtil.isEmpty(comment)) {

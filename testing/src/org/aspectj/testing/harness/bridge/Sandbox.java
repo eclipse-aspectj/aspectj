@@ -21,7 +21,6 @@ import org.aspectj.util.LangUtil;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * A sandbox holds state shared by AjcTest sub-runs,

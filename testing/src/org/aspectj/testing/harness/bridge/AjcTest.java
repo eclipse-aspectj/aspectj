@@ -191,9 +191,9 @@ public class AjcTest extends RunSpecIterator {
         public void writeXml(XMLWriter out) {
             out.println("");
             String value = (null == testDirOffset? "" : testDirOffset);
-            String attr  = out.makeAttribute("dir", value);
+            String attr  = XMLWriter.makeAttribute("dir", value);
             if (0 != bugId) {
-                attr += " " + out.makeAttribute("pr", ""+bugId);
+                attr += " " + XMLWriter.makeAttribute("pr", ""+bugId);
             }
             out.startElement(xmlElementName, attr, false);
             super.writeAttributes(out);

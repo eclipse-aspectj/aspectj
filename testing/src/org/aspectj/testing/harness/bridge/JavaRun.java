@@ -247,7 +247,7 @@ public class JavaRun implements IAjcRun {
          * @see IXmlWritable#writeXml(XMLWriter) 
          */
         public void writeXml(XMLWriter out) {
-            String attr = out.makeAttribute("class", className);
+            String attr = XMLWriter.makeAttribute("class", className);
             out.startElement(xmlElementName, attr, false);
             if (skipTester) {
                 out.printAttribute("skipTester", "true");
