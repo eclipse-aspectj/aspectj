@@ -7111,5 +7111,12 @@
 	        <compile files="AbstractBaseAndInterTypeInterface.java">
 	        </compile>
 	</ajc-test>
-    
+
+  <ajc-test dir="bugs/caseSensitivity" pr="42515"
+      title="NPE When compiling intertype declaration">
+        <compile files="uniqueId/Numbered.java,uniqueId/Bug.aj">
+		  <message kind="error" line="4"/>
+        </compile>
+  </ajc-test>   
+        
 </suite>
