@@ -1140,13 +1140,34 @@ public abstract class ResolvedTypeX extends TypeX {
 							munger.getSourceLocation())
 						);
 					}
-				} else {
-					//interTypeMungers.add(munger);
+				} else if (isDuplicateMemberWithinTargetType(existingMember,this,sig)) {
+				    	getWorld().getMessageHandler().handleMessage(
+							MessageUtil.error(WeaverMessages.format(WeaverMessages.ITD_MEMBER_CONFLICT,munger.getAspectType().getName(),
+									existingMember),
+							munger.getSourceLocation())
+						);;
 				}
 				//return;
 			}
 		}
 		return true;
+	}
+	
+	// we know that the member signature matches, but that the member in the target type is not visible to the aspect.
+	// this may still be disallowed if it would result in two members within the same declaring type with the same
+	// signature AND more than one of them is concrete AND they are both visible within the target type.
+	private boolean isDuplicateMemberWithinTargetType(ResolvedMember existingMember, ResolvedTypeX targetType,ResolvedMember itdMember) {
+	    if ( (existingMember.isAbstract() || itdMember.isAbstract())) return false;
+	    TypeX declaringType = existingMember.getDeclaringType();
+	    if (!targetType.equals(declaringType)) return false;
+	    // now have to test that itdMember is visible from targetType
+	    if (itdMember.isPrivate()) return false;
+	    if (itdMember.isPublic()) return true;
+	    // must be in same package to be visible then...
+	    if (!targetType.getPackageName().equals(itdMember.getDeclaringType().getPackageName())) return false;
+	    
+	    // trying to put two members with the same signature into the exact same type..., and both visible in that type.
+	    return true;
 	}
 	
 	public boolean checkLegalOverride(ResolvedMember parent, ResolvedMember child) {

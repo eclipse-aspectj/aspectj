@@ -234,5 +234,10 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
     assertTrue("Output should contain 'CAUSE=org.aspectj.lang.NoAspectBoundException' but is '"+s+"'",
             s.indexOf("CAUSE=org.aspectj.lang.NoAspectBoundException")!=-1);
   }
+  
+  public void test044_ITDnameClashes() {
+    	runTest("ITD name clashes with private members");
+  }
+  
 }
 

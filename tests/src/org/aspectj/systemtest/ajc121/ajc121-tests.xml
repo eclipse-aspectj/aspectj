@@ -335,3 +335,13 @@
 		<compile files="pr62642.java"/>
 		<run class="pr62642"/>
 	</ajc-test>
+
+	<ajc-test dir="bugs" pr="64069"
+	  	title="ITD name clashes with private members">
+		<compile files="PR64069.aj">
+			<message kind="error" line="5" text="conflicts with existing member"/>
+			<message kind="error" line="10" text="conflicts with existing member"/>
+			<message kind="error" line="14" text="conflicts with existing member"/>
+		</compile>
+	</ajc-test>
+
