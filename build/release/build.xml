@@ -54,7 +54,8 @@
     skip.build.release    no build of release
     skip.build.tests      no build of tests
     version               set if not DEVELOPMENT(?)
-        
+    aspectj.build.props   Ant props for ../build.xml
+
     -- locations to re-use existing tree or install  
     aspectj.workspace     location for new cvs tree
     aspectj.modules.dir   ... for existing cvs tree
@@ -102,6 +103,7 @@
 		<!-- re-enable when tested -->
 		<property name="skip.cvs" value="true"/>
 		
+		<property name="aspectj.build.props" value=""/>
 		<property name="version" value="DEVELOPMENT"/>
 		<property name="ant.verbose" value=""/>
 		<property name="failonerror" value="true"/>
@@ -216,7 +218,7 @@
 	<target name="init-junitTests-available" depends="init-variables"
 		unless="tests.available">
 		<available property="tests.available"
-			classname="AjbrowserModuleTests">
+			classname="TestingDriversModuleTests">
 			<classpath>
 				<path refid="jar.classpath"/>
 				<path location="${aspectj.lib.dir}/junit/junit.jar"/>
@@ -417,15 +419,17 @@
 
 		<antcall target="do-run-harness">
 			<param name="suite.filename" value="ajcTests"/>
-			<param name="harness.args" value="-ajctaskCompiler -ajctestSkipKeywords=knownLimitations-ajctaskCompiler"/>
+			<param name="harness.args" value="-ajctaskCompiler -ajctestSkipKeywords=knownLimitation-ajctaskCompiler"/>
 			<param name="harness.suffix" value="-ajctaskCompiler"/>
 		</antcall>
 
+		<!-- AJDE compiler hangs when done - unclose swing thread?
 		<antcall target="do-run-harness">
 			<param name="suite.filename" value="ajcTests"/>
 			<param name="harness.args" value="-ajdeCompiler -ajctestSkipKeywords=knownLimitations-ajdeCompiler"/>
 			<param name="harness.suffix" value="-ajdeCompiler"/>
 		</antcall>
+		-->
 	</target>
 	
 	<!-- =======  do-{...} tasks are called only by other tasks ======== -->
@@ -492,7 +496,7 @@
 			<param name="ant.target" value="${do.ant.target}"/>
 			<param name="ant.output" 
 				location="${aj.build.log.dir}/build-${do.ant.target}"/>
-			<param name="ant.properties" value="${do.ant.props}"/>
+			<param name="ant.properties" value="${do.ant.props} ${aspectj.build.props}"/>
 		</antcall>
 	</target>
 
