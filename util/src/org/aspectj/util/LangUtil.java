@@ -14,6 +14,7 @@
 package org.aspectj.util;
 
 
+import java.awt.event.InvocationEvent;
 import java.io.*;
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +22,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.security.PrivilegedActionException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -801,20 +804,38 @@ public class LangUtil {
     
     /** @return Throwable input or tail of any wrapped exception chain */
     public static Throwable unwrapException(Throwable t) {
-        if (t instanceof InvocationTargetException) {
-            Throwable thrown = ((InvocationTargetException) t).getTargetException();
-            if (null != thrown) {
-                return unwrapException(thrown);
+        Throwable current = t;
+        Throwable next = null;
+        while (current != null) {
+            // Java 1.2 exceptions that carry exceptions
+            if (current instanceof InvocationTargetException) {
+                next = ((InvocationTargetException) t).getTargetException();
+            } else if (t instanceof ClassNotFoundException) {
+                next = ((ClassNotFoundException) t).getException();
+            } else if (t instanceof ExceptionInInitializerError) {
+                next = ((ExceptionInInitializerError) t).getException();
+            } else if (t instanceof PrivilegedActionException) {
+                next = ((PrivilegedActionException) t).getException();
+            } else if (t instanceof SQLException) {
+                next = ((SQLException) t).getNextException();
             }
-        } else if (t instanceof ClassNotFoundException) {
-            Throwable thrown = ((ClassNotFoundException) t).getException();
-            if (null != thrown) {
-                return unwrapException(thrown);
+            // ...getException():
+            // javax.naming.event.NamingExceptionEvent
+            // javax.naming.ldap.UnsolicitedNotification
+            // javax.xml.parsers.FactoryConfigurationError
+            // javax.xml.transform.TransformerFactoryConfigurationError
+            // javax.xml.transform.TransformerException
+            // org.xml.sax.SAXException
+            // 1.4: Throwable.getCause
+            // java.util.logging.LogRecord.getThrown()
+            if (null == next) {
+                break;
+            } else {
+                current = next;
+                next = null;
             }
         }
-        // ChainedException
-        // ExceptionInInitializerError
-        return t;
+        return current;
     }
 
 	/**
