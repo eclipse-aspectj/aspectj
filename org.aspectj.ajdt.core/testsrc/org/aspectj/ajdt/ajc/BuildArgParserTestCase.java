@@ -153,8 +153,8 @@ public class BuildArgParserTestCase extends TestCase {
 		AjBuildConfig config = parser.genBuildConfig(new String[] { 
 			"-sourceroots", SRCROOT_1 + File.pathSeparator + SRCROOT_2 }, 
 			messageWriter);
-
-		assertEquals(new File(SRCROOT_1).getAbsolutePath(), ((File)config.getSourceRoots().get(0)).getAbsolutePath());
+		
+		assertEquals(getCanonicalPath(new File(SRCROOT_1)), ((File)config.getSourceRoots().get(0)).getAbsolutePath());
 		
 		Collection expectedFiles = Arrays.asList(new File[] {
 			new File(SRCROOT_1+File.separator+"A.java").getAbsoluteFile(),
@@ -171,13 +171,27 @@ public class BuildArgParserTestCase extends TestCase {
 		TestUtil.assertSetEquals(expectedFiles, config.getFiles());
 	}
 
+	/**
+	 * @param file
+	 * @return String
+	 */
+	private String getCanonicalPath(File file) {
+		String ret = "";
+		try {
+			ret = file.getCanonicalPath();
+		} catch (IOException ioEx) {
+			fail("Unable to canonicalize " + file + " : " + ioEx);
+		}
+		return ret;
+	}
+
 	public void testSourceRootDir() throws InvalidInputException {
 		final String SRCROOT = "testdata/ajc";
 		AjBuildConfig config = parser.genBuildConfig(new String[] { 
 			"-sourceroots", SRCROOT }, 
 			messageWriter);
 
-		assertEquals(new File(SRCROOT).getAbsolutePath(), ((File)config.getSourceRoots().get(0)).getAbsolutePath());
+		assertEquals(getCanonicalPath(new File(SRCROOT)), ((File)config.getSourceRoots().get(0)).getAbsolutePath());
 		
 		Collection expectedFiles = Arrays.asList(new File[] {
 			new File(SRCROOT+File.separator+"A.java").getAbsoluteFile(),
@@ -215,7 +229,7 @@ public class BuildArgParserTestCase extends TestCase {
 			"-sourceroots", SRCROOT,  "testdata/src1/A.java"}, 
 			messageWriter);
 
-		assertEquals(new File(SRCROOT).getAbsolutePath(), ((File)config.getSourceRoots().get(0)).getAbsolutePath());
+		assertEquals(getCanonicalPath(new File(SRCROOT)), ((File)config.getSourceRoots().get(0)).getAbsolutePath());
 		
 		Collection expectedFiles = Arrays.asList(new File[] {
 			new File(SRCROOT+File.separator+"Hello.java").getAbsoluteFile(),
@@ -260,17 +274,16 @@ public class BuildArgParserTestCase extends TestCase {
 		assertTrue(
 			"will generate: " + config.getAjOptions().get(AjCompilerOptions.OPTION_OutJAR),  
 			config.getAjOptions().get(AjCompilerOptions.OPTION_OutJAR).equals(CompilerOptions.GENERATE));
-		assertTrue(
-			"testclasses jar: " + config.getOutputJar().getName(), 
-			config.getOutputJar().getAbsolutePath().equals(new File(OUT_JAR).getAbsolutePath()));
+		assertEquals(
+			getCanonicalPath(new File(OUT_JAR)),config.getOutputJar().getAbsolutePath()); 
 	
 		File nonExistingJar = new File("testdata/mumbleDoesNotExist.jar");
 		config = parser.genBuildConfig(new String[] { 
 			"-outjar", nonExistingJar.getAbsolutePath() }, 
 			messageWriter);
-		assertTrue(
-			"testclasses jar: " + config.getOutputJar().getName(), 
-			config.getOutputJar().getAbsolutePath().equals(nonExistingJar.getAbsolutePath()));	
+		assertEquals(
+			getCanonicalPath(nonExistingJar), 
+			config.getOutputJar().getAbsolutePath());	
 
 		nonExistingJar.delete();
 	}
@@ -356,7 +369,7 @@ public class BuildArgParserTestCase extends TestCase {
 		String badLintFile = "lint.props";
 		AjBuildConfig config = parser.genBuildConfig(new String[] {"-Xlintfile", lintFile}, messageWriter);
 		assertTrue(new File(lintFile).exists());
-		assertTrue(config.getLintSpecFile().getAbsolutePath(), config.getLintSpecFile().getAbsolutePath().equals(new File(lintFile).getAbsolutePath()));	
+		assertEquals(getCanonicalPath(new File(lintFile)),config.getLintSpecFile().getAbsolutePath());	
 	}
 
 	public void testOptions() throws InvalidInputException {
