@@ -262,10 +262,11 @@ aspect Aspect {
             if (0 > i) {
                 Signal.failed(context + " line<0: " + i);
             }
-            i = sl.getColumn();
-            if (0 > i) {
-                Signal.failed(context + " column<0: " + i);
-            }
+            // 1.1 doesn't provide column info
+//            i = sl.getColumn();
+//            if (0 > i) {
+//                Signal.failed(context + " column<0: " + i);
+//            }
         }
     }
 } // Aspect
