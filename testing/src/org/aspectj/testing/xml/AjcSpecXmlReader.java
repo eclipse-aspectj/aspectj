@@ -299,7 +299,7 @@ public class AjcSpecXmlReader {
                     new String[] { "files", "options", 
                     "staging", "badInput", "reuseCompiler", "includeClassesDir",
                     "argfiles", "aspectpath", "classpath", "extdirs", 
-                    "sourceroots", "xlintfile"}),
+                    "sourceroots", "xlintfile", "outjar"}),
                 new BProps(IncCompilerRun.Spec.class, 
                     new String[] { "tag" }),
                 new BProps(JavaRun.Spec.class, 
@@ -346,6 +346,7 @@ public class AjcSpecXmlReader {
         crunSpec.setIncludeClassesDir(false);
         crunSpec.setReuseCompiler(false);
         crunSpec.setXlintfile((String) null);
+        crunSpec.setOutjar((String)null);
         
         IncCompilerRun.Spec icrunSpec = new IncCompilerRun.Spec();
         icrunSpec.addMessage((IMessage) null);

@@ -336,6 +336,10 @@ public class CompilerRun implements IAjcRun {
             String sr = FileUtil.flatten(xlintFiles, null);
             arguments.add(sr);
         }
+        if (spec.outjar != null) {
+        	arguments.add("-outjar");
+        	arguments.add(spec.outjar);
+        }
         if (!LangUtil.isEmpty(extdirFiles)) {
             arguments.add("-extdirs");
             String sr = FileUtil.flatten(extdirFiles, null);
@@ -728,6 +732,7 @@ public class CompilerRun implements IAjcRun {
         /** src path = {suiteParentDir}/{testBaseDirOffset}/{testSrcDirOffset}/{path} */
         protected String testSrcDirOffset;
         protected String xlintfile;
+        protected String outjar;
 
         public Spec() {
             super(XMLNAME);
@@ -747,6 +752,7 @@ public class CompilerRun implements IAjcRun {
             spec.permitAnyCompiler = permitAnyCompiler;
             spec.sourceroots = copy(sourceroots);
             spec.extdirs = copy(extdirs);
+            spec.outjar = outjar;
             spec.testSetup = null;
             if (null != testSetup) {
                 spec.testSetup = (TestSetup) testSetup.clone();
@@ -828,6 +834,10 @@ public class CompilerRun implements IAjcRun {
         }
         public void setXlintfile(String path) {
              xlintfile = path;
+        }
+        
+        public void setOutjar(String path) {
+        	outjar = path;
         }
 
         /** 
