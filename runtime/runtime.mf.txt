@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+
 Name: org/aspectj/lang/
 Specification-Title: AspectJ Runtime Classes 
 Specification-Version: @build.version.base@
