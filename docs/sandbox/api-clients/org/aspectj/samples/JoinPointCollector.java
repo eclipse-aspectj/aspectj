@@ -1,6 +1,7 @@
 /* @author Mik Kersten */
 
-// START-SAMPLE api-ajde-modelWalker Walk model to collect join point information for advised methods and constructors
+// WTI sample broke with API updates in 1.1.1
+// START-BROKEN-SAMPLE api-ajde-modelWalker Walk model to collect join point information for advised methods and constructors
 package org.aspectj.samples;
 
 import java.util.*;
@@ -65,5 +66,5 @@ public class JoinPointCollector extends Main {
         StructureModelManager.getDefault().getStructureModel().getRoot().walk(walker);
     }
 }
-//END-SAMPLE api-ajde-modelWalker 
+//END-BROKEN-SAMPLE api-ajde-modelWalker 
 
