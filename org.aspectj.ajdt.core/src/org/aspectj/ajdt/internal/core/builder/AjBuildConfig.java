@@ -88,7 +88,7 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 			CompilerOptions.OPTIMIZE_OUT);
 		javaOptions.put(
 			CompilerOptions.OPTION_ReportUnreachableCode,
-			CompilerOptions.ERROR);
+			CompilerOptions.IGNORE);
 		javaOptions.put(
 			CompilerOptions.OPTION_ReportInvalidImport, 
 			CompilerOptions.ERROR);
