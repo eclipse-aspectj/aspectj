@@ -45,6 +45,7 @@ import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 
 public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAdapterFactory {
 	private static final String CANT_WRITE_RESULT = "unable to write compilation result";
+	static final boolean COPY_INPATH_DIR_RESOURCES = false;
     static final boolean FAIL_IF_RUNTIME_NOT_FOUND = false;
 	private IProgressListener progressListener = null;
 	
@@ -238,7 +239,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 		
 		for (Iterator i = buildConfig.getInpath().iterator(); i.hasNext(); ) {
 			File inPathElement = (File)i.next();
-			if (inPathElement.isDirectory()) {
+			if (inPathElement.isDirectory()) {				
 				copyResourcesFromDirectory(inPathElement);
 			} else {
 				copyResourcesFromJarFile(inPathElement);
@@ -248,8 +249,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 		if (buildConfig.getSourcePathResources() != null) {
 			for (Iterator i = buildConfig.getSourcePathResources().keySet().iterator(); i.hasNext(); ) {
 				String resource = (String)i.next();
-				copyResourcesFromFile((File)buildConfig.getSourcePathResources().get(resource),
-										resource);
+				File from = (File)buildConfig.getSourcePathResources().get(resource);
+				copyResourcesFromFile(from,resource,from);
 			}
 		}
     }
@@ -266,7 +267,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 	
 				if (!entry.isDirectory() && acceptResource(filename)) {
 					byte[] bytes = FileUtil.readAsByteArray(inStream);
-					writeResource(filename,bytes);
+					writeResource(filename,bytes,jarFile);
 				}
 	
 				inStream.closeEntry();
@@ -277,6 +278,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 	}
 	
 	private void copyResourcesFromDirectory(File dir) throws IOException {
+		if (!COPY_INPATH_DIR_RESOURCES) return;
 		// Get a list of all files (i.e. everything that isnt a directory)
 		File[] files = FileUtil.listFiles(dir,new FileFilter() {
 			public boolean accept(File f) {
@@ -291,11 +293,11 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 			// or we are in trouble...
 			String filename = files[i].getAbsolutePath().substring(
 			                    dir.getAbsolutePath().length()+1);
-			copyResourcesFromFile(files[i],filename);
+			copyResourcesFromFile(files[i],filename,dir);
 		}		
 	}
 	
-	private void copyResourcesFromFile(File f,String filename) throws IOException {
+	private void copyResourcesFromFile(File f,String filename,File src) throws IOException {
 		if (!acceptResource(filename)) return;
 		FileInputStream fis = null;
 		try {
@@ -303,14 +305,21 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 			byte[] bytes = FileUtil.readAsByteArray(fis);
 			// String relativePath = files[i].getPath();
 			
-			writeResource(filename,bytes);
+			writeResource(filename,bytes,src);
 		} finally {
 			if (fis != null) fis.close();
 		}	
 	}
     
-	private void writeResource(String filename, byte[] content) throws IOException {
-		if (state.resources.contains(filename)) return;
+	private void writeResource(String filename, byte[] content, File srcLocation) throws IOException {
+		if (state.resources.contains(filename)) {
+			IMessage msg = new Message("duplicate resource: '" + filename + "'",
+									   IMessage.WARNING,
+									   null,
+									   new SourceLocation(srcLocation,0));
+			handler.handleMessage(msg);
+			return;
+		}
 		if (zos != null) {
 			ZipEntry newEntry = new ZipEntry(filename);  //??? get compression scheme right
 			

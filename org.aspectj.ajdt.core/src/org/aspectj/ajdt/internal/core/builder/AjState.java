@@ -172,7 +172,7 @@ public class AjState {
 		// with incremental compilation
 		for (Iterator i = buildConfig.getInpath().iterator(); i.hasNext(); ) {
 			File inPathElement = (File)i.next();
-			if (inPathElement.isDirectory()) {
+			if (inPathElement.isDirectory() && AjBuildManager.COPY_INPATH_DIR_RESOURCES) {
 				deleteResourcesFromDirectory(inPathElement,oldResources);
 			}			
 		}	
