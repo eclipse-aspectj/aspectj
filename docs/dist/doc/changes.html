@@ -144,9 +144,9 @@ All rights reserved.
 <h2>Changes in AspectJ</h2>
 
 <ul>
-  <li> <a href="#1.0.6">1.1.1</a> (not released) 
+  <li> <a href="#1.1.1">1.1.1</a> (released 2003-09) 
   </li>
-	<li> 1.1.0 (released 2003-06) <!-- TODO XXX date -->
+	<li> 1.1.0 (released 2003-06-06) 
 	See <a href="README-11.html">README-11.html</a>
   </li>
 
@@ -189,47 +189,55 @@ All rights reserved.
 
 <h2><a name="1.1.1">1.1.1</a></h2>
 
-<p> ...<h3><a name="1.1.1compiler">Compiler</a></h3>
+<p>All known P1 and P2 bugs have been fixed in this release. The <a href="https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&target_milestone=1.1.1">full list of bug fixes</a> 
+(44 in all) can be found on bugzilla.</p>
 
-<p>... 
+<p>Some of the more significant bug fixes and enhancements in this release include:
+  <ul>
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=40943">40943</a> 
+     The ajc compiler now copies resource files from jars specified using the 
+     -injars option. When compiling with source directories, resources are <i>not</i>
+     copied - mirroring the behaviour of javac so as to cause minimum disruption
+     when switching between ajc and javac. The iacj ant task also does not perform
+     resource copying from source directories for the same reason. Thanks to Matthew
+     Webster for contributing many of the patches for this enhancement.
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=39626">39626</a> 
+     ajc was erroneously putting aspectjtools.jar in the classpath of a compilation. 
+     This caused problems when attempting to compile projects using different versions
+     of any of the classes in aspectjtools.jar. Thanks to George Harley and Igor
+     Hjelmstrom Vinhas Ribeiro for their assistance in tracking this down.
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=40257">40257</a>
+     Relative paths are now supported in ".lst" files.
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=40771">40771</a> 
+     The Ajde apis are no longer coupled to swing. This is of most significance to AJDT
+     users on the Mac OS X platform, enabling AJDT to be used with Mac OS X.
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=41254">41254</a> 
+     Of interest to those writing tools that need to interact with the structure model for 
+     AspectJ programs: the interface to the AspectJ structure model was significantly revised
+     and enhanced in 1.1.1.
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=39462">39462</a>
+     A compiler exception was thrown when an asbstract aspect in a library was extended by 
+     a concrete aspect using cflow. Thanks to Takao Naguchi for an easy to reproduce bug report.
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=39479">39479</a> 
+     Compiler crashes when a constructor delegates to another constructor that uses a switch statement.
+     Thanks to Andy Clement for both the easy to reproduce bug report and the patch.
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=41175">41175</a>
+     Declared exceptions were being lost on inter-type declarations made from binary
+     aspects in an aspect library.
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=41359">41359</a>
+     Aspect per-clauses were not inherited by sub-aspects when using binary aspect libraries. 
+     Thanks to Chris Bozic for the easy to reproduce bug report.
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=42539">42539</a>
+     The "+" pattern was being ignored for type patterns used in throws clauses. Thanks to 
+     Keith Sader for the easy to reproduce bug report.
+     <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=40807">40807</a>
+     The default output directory for the ant task when none is specified has been changed to
+     the source directory, instead of the current working directory. This behaviour is now consistent
+     with the command-line javac and ajc tools. Of signifcance because the fix enables JSP compilation
+     in Tomcat using ajc. Thanks to Ron Bodkin for the investigative work on how to integrate
+     ajc with Tomcat.
+  </ul>
 </p>
-<p>Bugs fixed</p>
-<ul>
-	<li>39959: AJC Compiler generates invalid class files under certain 
-	circumstances</li>
-	<li>39626: Compiler error when compiling a buggy class</li>
-</ul>
-
-<h3><a name="1.1.1ajde">AJDE</a></h3>
-
-<h4>Framework</h4>
-
-<p>...</p>
-<p>Bugs fixed</p>
-<ul>
-	<li>38717: &quot;.lst&quot; file parsing errors should include sourceline information</li>
-	<li>40194: error handling during build config parsing</li>
-	<li>40256: need incremental compilation restrictions blurb</li>
-	<li>40824: asm treats &quot;declare parents&quot; as methods</li>
-	<li>40771: ajde apis are unnecessariy coupled to swing</li>
-	<li>37628: ajdt doesnt work on osx </li>
-</ul>
-
-<h4>JBuilder OpenTool</h4>
-
-<p>...</p>
-<p>Bugs fixed</p>
-<ul>
-	<li>39170: Problem with aspectJforBuilder when using with JBuilder9</li>
-	<li>39974: Some strange error when compiling the observer example with 
-	JBuilder7 integrated AJDE</li>
-</ul>
-
-<h4>NetBeans Module</h4>
-
-<p>...</p>
-
-<hr />
 
 <h2><a name="1.0.6">1.0.6</a></h2>
 
