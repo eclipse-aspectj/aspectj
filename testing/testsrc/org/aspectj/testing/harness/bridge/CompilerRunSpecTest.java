@@ -50,6 +50,22 @@ public class CompilerRunSpecTest extends TestCase {
                     + "=... in order to run all tests");
         }
     }
+
+    private static String[][] duplicate(String[][] input, String prefix) {
+        String[][] output = new String[input.length][];
+        final int prefixLength = (null == prefix ? 0 : prefix.length());
+        for (int i = 0; i < output.length; i++) {
+            int length = input[i].length;
+            output[i] = new String[length];
+            if ((length > 0) && (prefixLength > 0)) {
+                System.arraycopy(input[i], 0, output[i], 0, length);
+                output[i][0] =
+                    prefix + output[i][0].substring(prefixLength);
+            }
+        }
+        return output;
+    }
+
     private static boolean haveProperty(String key) {
         try {
             return (null != System.getProperty(key));
@@ -207,6 +223,12 @@ public class CompilerRunSpecTest extends TestCase {
         }
     }
 
+    /**
+     * Checck that setting arg as spec compiler and setting up args
+     * results in this compiler classname.
+     * @param arg
+     * @param className
+     */
     void checkCompilerOption(String arg, String className) {
         MessageHandler handler = new MessageHandler();
         try {
@@ -294,21 +316,6 @@ public class CompilerRunSpecTest extends TestCase {
         }
     }
 
-    String[][] duplicate(String[][] input, String prefix) {
-        String[][] output = new String[input.length][];
-        final int prefixLength = (null == prefix ? 0 : prefix.length());
-        for (int i = 0; i < output.length; i++) {
-            int length = input[i].length;
-            output[i] = new String[length];
-            if ((length > 0) && (prefixLength > 0)) {
-                System.arraycopy(input[i], 0, output[i], 0, length);
-                output[i][0] =
-                    prefix + output[i][0].substring(prefixLength);
-            }
-        }
-        return output;
-    }
-
     public void checkSourceTargetOverride(String name, int from, int to) {
         final String specOptions = "-" + name + ", 1." + from;
         String[] globalOptions = new String[] { "!" + name, "1." + to };
@@ -344,6 +351,17 @@ public class CompilerRunSpecTest extends TestCase {
                 resultContains,
                 messagesContain);
     }
+    
+    /**
+     * Drive option-setting for CompilerRun.Spec, including
+     * expected errors.
+     * @param specOptions
+     * @param globalOptions
+     * @param expectAdopted
+     * @param resultContains
+     * @param messagesContain
+     * @return
+     */
 
     MessageHandler runTest(
         String specOptions,

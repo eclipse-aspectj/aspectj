@@ -19,8 +19,10 @@ import junit.framework.Assert;
 import org.aspectj.testing.util.LangUtil;
 
 /**
- * Checks that throw AssertionFailedError on failure.
- * Subclasses reimplement <code>assertionFailed(String)</code>
+ * Drivers to test a given set of Options.
+ * They now throw AssertionFailedError on failure, 
+ * but subclasses can reimplement 
+ * <code>assertionFailed(String)</code>
  * to handle failures differently.
  */
 public class OptionChecker {
