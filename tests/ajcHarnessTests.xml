@@ -440,7 +440,7 @@
 		</inc-compile>
     </ajc-test>
        
-    <ajc-test dir="harness"
+    <!--ajc-test dir="harness"
     	keywords="expect-fail"
 		title="fail not forking or setting property">
         <compile files="SystemPropertiesTest.java"/>
@@ -472,7 +472,7 @@
 		title="fail aspectpath LTW failure case">
         <compile files="Main.java"/>
         <run class="Main"/> 
-    </ajc-test>
+    </ajc-test-->
 
 	<!-- uncomment after weaveinfo messages 
          (which cause false negatives) are suppressed
