@@ -6964,6 +6964,13 @@
 		  <message kind="error" line="8"/>
         </compile>
     </ajc-test>     
+    
+    <ajc-test dir="bugs" 
+		pr="46280"
+		title="compiler issues error on inner aspects when privilieged">
+        <compile files="PrivilegedParsing.java"/>
+        <run class="PrivilegedParsing"/>
+    </ajc-test>
 
     <ajc-test dir="bugs" pr="44586"
       title="After throwing advice on ctors doesn't execute for inter-type decl field inits">

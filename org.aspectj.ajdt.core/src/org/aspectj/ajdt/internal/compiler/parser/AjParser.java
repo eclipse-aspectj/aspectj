@@ -230,6 +230,10 @@ public class AjParser extends Parser {
 		}
 		aspectDecl.modifiersSourceStart = intStack[intPtr--];
 		aspectDecl.modifiers = intStack[intPtr--];
+		if (isPrivileged) {
+			aspectDecl.modifiersSourceStart = intStack[intPtr--];
+			aspectDecl.modifiers |= intStack[intPtr--];
+		}
 		if (aspectDecl.modifiersSourceStart >= 0) {
 			aspectDecl.declarationSourceStart = aspectDecl.modifiersSourceStart;
 		}
