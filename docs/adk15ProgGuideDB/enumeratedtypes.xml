@@ -2,7 +2,7 @@
 
   <title>Enumerated Types</title>
   
-  <sect1>
+  <sect1 id="enums-in-java5">
       <title>Enumerated Types in Java 5</title>
       
       <para>Java 5 (and hence AspectJ 5) provides explicit support for
@@ -24,7 +24,7 @@
       declare a subtype of this class.</para>
   </sect1>
   
-  <sect1>
+  <sect1 id="enums-in-aspectj5">
       <title>Enumerated Types in AspectJ 5</title>
       
       <para>

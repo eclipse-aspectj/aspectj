@@ -1343,7 +1343,7 @@
 
   </sect1>
   
-    <sect1>
+    <sect1 id="annotations-itds">
       <title>Inter-type Declarations</title>
       
       <para>An annotation type may not be the target of an inter-type declaration.</para>

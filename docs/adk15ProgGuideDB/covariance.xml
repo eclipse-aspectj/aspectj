@@ -23,7 +23,7 @@
         
       </sect1>
       
-      <sect1>
+      <sect1 id="covariance-and-join-point-matching">
           <title>Covariant methods and Join Point matching</title>
           
           <para>The join point matching rules for <literal>call</literal>

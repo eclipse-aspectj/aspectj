@@ -24,7 +24,7 @@
       </sect2>
   </sect1>
   
-  <sect1>
+  <sect1 id="declare-soft">
       <title>Declare Soft</title>
       <para>
           Describe change to only soften checked exceptions if we decide to 

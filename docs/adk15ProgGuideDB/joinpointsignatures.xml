@@ -10,7 +10,7 @@
         generics, covariance, varargs, and autoboxing.
     </para>
   
-    <sect1>
+    <sect1 id="join-point-matching">
         <title>Join Point Matching</title>
     
         <para>AspectJ supports 11 different kinds of join points. These are
@@ -60,7 +60,7 @@
         
     </sect1>
   
-      <sect1>
+      <sect1 id="join-point-signatures">
         <title>Join Point Signatures</title>
         
         <para>Call and execution join points may potentially have multiple
@@ -325,7 +325,7 @@
       
       </sect1>
       
-      <sect1>
+      <sect1 id="join-point-modifiers">
           <title>Join Point Modifiers</title>
           
           <para>Every join point has a single set of modifiers - these include
@@ -417,7 +417,7 @@
           
       </sect1>
       
-      <sect1>
+      <sect1 id="join-point-matching-summary">
           <title>Summary of Join Point Matching</title>
 
 		<para>

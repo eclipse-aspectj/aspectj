@@ -27,7 +27,7 @@
         
       </sect1>
       
-      <sect1>
+      <sect1 id="autoboxing-in-aspectj5">
           <title>Autoboxing and Join Point matching in AspectJ 5</title>
           
           <para>Most of the pointcut designators match based on signatures, and
@@ -74,7 +74,7 @@
 
       </sect1>
       
-      <sect1>
+      <sect1 id="autoboxing-and-method-dispatch">
           <title>Inter-type method declarations and method dispatch</title>
           
           <para>Autoboxing, unboxing, and also varargs all affect the method

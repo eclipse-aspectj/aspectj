@@ -59,7 +59,7 @@
         
     </sect1>
 
-    <sect1>
+    <sect1 id="varargs-in-pcds">
         <title>Using Variable-length arguments in advice and pointcut expressions</title>
         
         <para>AspectJ 5 allows variable-length arguments to be used for methods declared within
