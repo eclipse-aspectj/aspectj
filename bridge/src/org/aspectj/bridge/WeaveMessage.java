@@ -51,7 +51,7 @@ public class WeaveMessage extends Message {
 	  String[] inserts) {
 		StringBuffer str = new StringBuffer(kind.getMessage());
 		int pos = -1;
-		while ((pos=str.indexOf("%"))!=-1) {
+		while ((pos=new String(str).indexOf("%"))!=-1) {
 			int n = Character.getNumericValue(str.charAt(pos+1));
 			str.replace(pos,pos+2,inserts[n-1]);
 		}
