@@ -492,6 +492,10 @@ public class Member implements Comparable, AnnotatedElement {
 	public ResolvedTypeX[] getAnnotationTypes() {
 		throw new UnsupportedOperationException("You should resolve this member and call hasAnnotation() on the result...");
 	}
+	
+	public AnnotationX[] getAnnotations() {
+		throw new UnsupportedOperationException("You should resolve this member and call getAnnotations() on the result...");
+	}
 
 	// ---- fields 'n' stuff
 
