@@ -1,0 +1,25 @@
+<html>
+<body>
+<a href="#unmatched"></a>
+<!-- positive tests 
+-->
+<a href="badLinks.html"></a>
+<a href="#matched"></a>
+<a href="badLinks.html#matched"></a>
+<a name="matched"></a>
+<a href="http://java.sun.com"></a>
+
+<!-- flag but not fail 
+-->
+<a href="ftp://ftp.sun.com"></a>
+
+<!-- should fail 
+-->
+<a href=""></a>
+<a href="#unmatched"></a>
+<a href="noSuchFile.html"></a>
+<a href="http://no.such.place"></a>
+<a href="malformed://java.sun.com"></a>
+
+</body>
+</html>
