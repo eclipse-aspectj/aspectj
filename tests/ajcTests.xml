@@ -6598,5 +6598,35 @@
 			
 		<run class="Client"/>
 		</ajc-test>
+
+	<ajc-test 
+		dir="bugs/interfaceLibrary"
+		title="exception clause for aspect-declared interface methods - positive">
+		<compile files="Client.java,LibraryAspect.java,lib/LibraryInterface.java"/>
+		<run class="Client"/>
+		</ajc-test>
+
+	<ajc-test 
+		dir="bugs/interfaceLibrary"
+		title="exception clause for aspect-declared interface methods - negative">
+		<compile files="ClientCE.java,LibraryAspect.java,lib/LibraryInterface.java">
+			<message kind="error" file="ClientCE.java" line="5"/>
+			</compile>
+		</ajc-test>
+
+	<ajc-test 
+		dir="bugs/interfaceLibrary"
+		title="exception clause for aspect-declared class methods - positive">
+		<compile files="ClassClient.java,LibraryClassAspect.java,lib/LibraryClass.java"/>
+		<run class="ClassClient"/>
+		</ajc-test>
+
+	<ajc-test 
+		dir="bugs/interfaceLibrary"
+		title="exception clause for aspect-declared class methods - negative">
+		<compile files="ClassClientCE.java,LibraryClassAspect.java,lib/LibraryClass.java">
+			<message kind="error" file="ClassClientCE.java" line="5"/>
+			</compile>
+		</ajc-test>
 		
 </suite>
