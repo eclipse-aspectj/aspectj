@@ -1,21 +1,11 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 <suite>    
-    <ajc-test dir="bugs" pr="29665"
-      title="Inconsistant stack height with around">
-        <compile files="StackError.java"/>
-        <run class="StackError"/>
+    <ajc-test dir="bugs" pr="36056"
+      title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds and naming">
+        <compile files="AroundNames.java"/>
+        <run class="AroundNames"/>
     </ajc-test>
     
-
-	<ajc-test dir="bugs/messyAround" pr="36056"
-      title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds">
-        <compile files="aspects/Trace.aj,cap/OptionList.java,DebugTrace.aj">
-            <message kind="warning" line="102"/>
-        	<message kind="warning" line="124"/>
-        	<message kind="warning" line="138"/>
-        </compile>
-        <run class="cap.OptionList"/>
-    </ajc-test>  
 
     <!--
   
