@@ -292,8 +292,8 @@ public class InterTypeMemberFinder implements IMemberFinder {
 		TypeBinding[] argumentTypes)
 	{
 		MethodBinding ret = sourceTypeBinding.getExactMethodBase(selector, argumentTypes);
-		if (ret != null) return ret;
 		
+		// An intertype declaration may override an inherited member (Bug#50776)
 		for (int i=0, len=interTypeMethods.size(); i < len; i++) {
 			MethodBinding im =
 				(MethodBinding)interTypeMethods.get(i);
@@ -301,7 +301,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 				return im;
 			}
 		}
-		return null;
+		return ret;
 	}
 //				if (isVisible(im, sourceTypeBinding)) {
 //					if (ret == null) {

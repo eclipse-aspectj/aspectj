@@ -7262,5 +7262,10 @@
          	<message kind="warning" line="21" text="this affected type is not exposed"/>
 		</compile>
 	</ajc-test>
+	
+	<ajc-test dir="bugs" pr="50776"
+   	 title="fail in compiling aspect with overriding method introduction with different throws clause ">
+        <compile files="IntertypeDifferentThrows.java" />
+    </ajc-test>
     
 </suite>
