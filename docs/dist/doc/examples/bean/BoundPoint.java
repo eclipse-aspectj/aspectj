@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998-2002 Xerox Corporation.  All rights reserved.
+ * Copyright (c) 1998-2002 Xerox Corporation,
+ *               2004 Contributors.  All rights reserved.
  *
  * Use and copying of this software and preparation of derivative works based
  * upon this software are permitted.  Any distribution of this software or
@@ -16,28 +17,27 @@ package bean;
 import java.beans.*;
 import java.io.Serializable;
 
-/*
- * Add bound properties and serialization to point objects
+/**
+ * Add bound properties and serialization to Point objects
  */
-
 aspect BoundPoint {
   /*
-   * privately introduce a field into Point to hold the property
+   * privately declare a field on Point to hold the property
    * change support object.  `this' is a reference to a Point object.
    */
   private PropertyChangeSupport Point.support = new PropertyChangeSupport(this);
 
   /*
-   * Introduce the property change registration methods into Point.
-   * also introduce implementation of the Serializable interface.
+   * Declare property change registration methods on Point,
+   * and introduce implementation of the Serializable interface.
    */
+   
   public void Point.addPropertyChangeListener(PropertyChangeListener listener){
     support.addPropertyChangeListener(listener);
   }
 
   public void Point.addPropertyChangeListener(String propertyName,
                                               PropertyChangeListener listener){
-
     support.addPropertyChangeListener(propertyName, listener);
   }
 
@@ -57,36 +57,32 @@ aspect BoundPoint {
   declare parents: Point implements Serializable;
 
   /**
-   * Pointcut describing the set<property> methods on Point.
-   * (uses a wildcard in the method name)
+   * Send property change event after X setter completes normally.
+   * Use around advice to keep the old value on the stack.
    */
-  pointcut setter(Point p): call(void Point.set*(*)) && target(p);
-
-  /**
-   * Advice to get the property change event fired when the
-   * setters are called. It's around advice because you need
-   * the old value of the property.
-   */
-  void around(Point p): setter(p) {
-        String propertyName =
-      thisJoinPointStaticPart.getSignature().getName().substring("set".length());
-        int oldX = p.getX();
-        int oldY = p.getY();
-        proceed(p);
-        if (propertyName.equals("X")){
-      firePropertyChange(p, propertyName, oldX, p.getX());
-        } else {
-      firePropertyChange(p, propertyName, oldY, p.getY());
-        }
+  void around(Point p): execution(void Point.setX(int)) && target(p) {
+      int oldValue = p.getX();
+      proceed(p);
+      firePropertyChange(p, "x", oldValue, p.getX());
   }
 
+  /**
+   * Send property change event after Y setter completes normally.
+   * Use around advice to keep the old value on the stack.
+   */
+  void around(Point p): execution(void Point.setY(int)) && target(p) {
+      int oldValue = p.getY();
+      proceed(p);
+      firePropertyChange(p, "y", oldValue, p.getY());
+  }
+  
   /*
    * Utility to fire the property change event.
    */
   void firePropertyChange(Point p,
                           String property,
                           double oldval,
-                          double newval) {
+                          double newval) {        
         p.support.firePropertyChange(property,
                                  new Double(oldval),
                                  new Double(newval));
