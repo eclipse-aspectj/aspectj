@@ -33,6 +33,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BranchHandle;
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.CPInstruction;
+import org.apache.bcel.generic.ClassGenException;
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -45,6 +46,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Select;
 import org.apache.bcel.generic.Type;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
@@ -278,8 +280,17 @@ public final class LazyMethodGen {
     }
 
     public Method getMethod() {
-        MethodGen gen = pack();
-        return gen.getMethod();
+    	try {
+			MethodGen gen = pack();
+			return gen.getMethod();
+    	} catch (ClassGenException e) {
+    		enclosingClass.getBcelObjectType().getResolvedTypeX().getWorld().showMessage(
+    			IMessage.ERROR, "problem generating method " + 
+    			this.getClassName() + "." + this.getName() + ": " + e.getMessage(),
+    			this.getMemberView() == null ? null : this.getMemberView().getSourceLocation(), null);
+    		throw e;
+    	}
+        
     }
     
     // =============================
