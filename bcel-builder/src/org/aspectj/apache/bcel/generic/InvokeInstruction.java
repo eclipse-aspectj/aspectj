@@ -53,17 +53,16 @@ package org.aspectj.apache.bcel.generic;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+import java.util.StringTokenizer;
+
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Constant;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
-import org.aspectj.apache.bcel.classfile.tests.*;
-
-import java.util.StringTokenizer;
 
 /**
  * Super class for the INVOKExxx family of instructions.
  *
- * @version $Id: InvokeInstruction.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: InvokeInstruction.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class InvokeInstruction extends FieldOrMethod

@@ -54,6 +54,10 @@ package org.aspectj.apache.bcel.util;
  * <http://www.apache.org/>.
  */
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Code;
 import org.aspectj.apache.bcel.classfile.ConstantValue;
@@ -61,14 +65,11 @@ import org.aspectj.apache.bcel.classfile.ExceptionTable;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Utility;
-import org.aspectj.apache.bcel.classfile.tests.*;
-
-import java.io.*;
 
 /**
  * Convert methods and fields into HTML file.
  *
- * @version $Id: MethodHTML.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: MethodHTML.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  */

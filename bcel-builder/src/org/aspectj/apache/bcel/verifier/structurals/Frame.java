@@ -54,15 +54,12 @@ package org.aspectj.apache.bcel.verifier.structurals;
  * <http://www.apache.org/>.
  */
 
-import org.aspectj.apache.bcel.generic.*;
-import org.aspectj.apache.bcel.verifier.exc.*;
-import java.util.ArrayList;
 
 /**
  * This class represents a JVM execution frame; that means,
  * a local variable array and an operand stack.
  *
- * @version $Id: Frame.java,v 1.3 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: Frame.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
  

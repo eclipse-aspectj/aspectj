@@ -54,15 +54,13 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 
-import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.LineNumber;
-import org.aspectj.apache.bcel.classfile.tests.*;
 
 /** 
  * This class represents a line number within a method, i.e., give an instruction
  * a line number corresponding to the source code line.
  *
- * @version $Id: LineNumberGen.java,v 1.3 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: LineNumberGen.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     LineNumber
  * @see     MethodGen

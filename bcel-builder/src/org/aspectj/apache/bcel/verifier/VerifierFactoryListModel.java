@@ -53,13 +53,12 @@ package org.aspectj.apache.bcel.verifier;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-import org.aspectj.apache.bcel.verifier.*;
-import javax.swing.event.*;
+import javax.swing.event.ListDataEvent;
 /**
  * This class implements an adapter; it implements both a Swing ListModel and
  * a VerifierFactoryObserver.
  *
- * @version $Id: VerifierFactoryListModel.java,v 1.3 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: VerifierFactoryListModel.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
  * @author Enver Haase
  */
 public class VerifierFactoryListModel implements org.aspectj.apache.bcel.verifier.VerifierFactoryObserver, javax.swing.ListModel{

@@ -54,6 +54,10 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.AccessFlags;
 import org.aspectj.apache.bcel.classfile.Attribute;
@@ -65,19 +69,14 @@ import org.aspectj.apache.bcel.classfile.SourceFile;
 import org.aspectj.apache.bcel.classfile.Utility;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
-import org.aspectj.apache.bcel.classfile.tests.*;
 import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /** 
  * Template class for building up a java class. May be initialized with an
  * existing java class (file).
  *
  * @see JavaClass
- * @version $Id: ClassGen.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: ClassGen.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class ClassGen extends AccessFlags implements Cloneable {
@@ -302,7 +301,7 @@ public class ClassGen extends AccessFlags implements Cloneable {
     MethodGen mg = new MethodGen(access_flags, Type.VOID, Type.NO_ARGS, null,
 		       "<init>", class_name, il, cp);
     mg.setMaxStack(1);
-    //mg.setMaxLocals();
+    mg.setMaxLocals();
     addMethod(mg.getMethod());
   }
 

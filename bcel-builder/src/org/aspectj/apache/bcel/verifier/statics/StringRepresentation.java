@@ -87,8 +87,7 @@ import org.aspectj.apache.bcel.classfile.StackMap;
 import org.aspectj.apache.bcel.classfile.Synthetic;
 import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.classfile.Visitor;
-import org.aspectj.apache.bcel.classfile.tests.*;
-import org.aspectj.apache.bcel.verifier.exc.*;
+import org.aspectj.apache.bcel.verifier.exc.AssertionViolatedException;
 
 /**
  * BCEL's Node classes (those from the classfile API that <B>accept()</B> Visitor
@@ -102,7 +101,7 @@ import org.aspectj.apache.bcel.verifier.exc.*;
  * Note that this class also serves as a placeholder for more sophisticated message
  * handling in future versions of JustIce.
  * 
- * @version $Id: StringRepresentation.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: StringRepresentation.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class StringRepresentation extends org.aspectj.apache.bcel.classfile.EmptyVisitor implements Visitor{

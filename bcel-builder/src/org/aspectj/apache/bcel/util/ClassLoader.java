@@ -54,16 +54,16 @@ package org.aspectj.apache.bcel.util;
  * <http://www.apache.org/>.
  */
 
+import java.io.ByteArrayInputStream;
 import java.util.Hashtable;
-import java.io.*;
-import org.aspectj.apache.bcel.*;
+
+import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.ConstantClass;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Utility;
-import org.aspectj.apache.bcel.classfile.tests.*;
 
 /**
  * <p>Drop in replacement for the standard class loader of the JVM. You can use it
@@ -83,7 +83,7 @@ import org.aspectj.apache.bcel.classfile.tests.*;
  * where to use the system class loader in the constructor. The default value contains
  * "java.", "sun.", "javax."</p>
  *
- * @version $Id: ClassLoader.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: ClassLoader.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see JavaWrapper
  * @see ClassPath

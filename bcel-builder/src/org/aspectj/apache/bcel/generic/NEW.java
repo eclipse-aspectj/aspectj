@@ -53,14 +53,13 @@ package org.aspectj.apache.bcel.generic;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-import java.io.*;
 import org.aspectj.apache.bcel.ExceptionConstants;
 
 /** 
  * NEW - Create new object
  * <PRE>Stack: ... -&gt; ..., objectref</PRE>
  *
- * @version $Id: NEW.java,v 1.3 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: NEW.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class NEW extends CPInstruction

@@ -54,19 +54,30 @@ package org.aspectj.apache.bcel.verifier.structurals;
  * <http://www.apache.org/>.
  */
 
-import java.io.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Vector;
+
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.Repository;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.classfile.tests.*;
-import org.aspectj.apache.bcel.generic.*;
-import org.aspectj.apache.bcel.verifier.*;
-import org.aspectj.apache.bcel.verifier.statics.*;
-import org.aspectj.apache.bcel.verifier.exc.*;
+import org.aspectj.apache.bcel.generic.ConstantPoolGen;
+import org.aspectj.apache.bcel.generic.InstructionHandle;
+import org.aspectj.apache.bcel.generic.JsrInstruction;
+import org.aspectj.apache.bcel.generic.MethodGen;
+import org.aspectj.apache.bcel.generic.ObjectType;
+import org.aspectj.apache.bcel.generic.RET;
+import org.aspectj.apache.bcel.generic.ReturnInstruction;
+import org.aspectj.apache.bcel.generic.ReturnaddressType;
+import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.verifier.PassVerifier;
+import org.aspectj.apache.bcel.verifier.VerificationResult;
+import org.aspectj.apache.bcel.verifier.Verifier;
+import org.aspectj.apache.bcel.verifier.exc.AssertionViolatedException;
+import org.aspectj.apache.bcel.verifier.exc.VerifierConstraintViolatedException;
 
 /**
  * This PassVerifier verifies a method of class file according to pass 3,
@@ -75,7 +86,7 @@ import org.aspectj.apache.bcel.verifier.exc.*;
  * More detailed information is to be found at the do_verify() method's
  * documentation. 
  *
- * @version $Id: Pass3bVerifier.java,v 1.3 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: Pass3bVerifier.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #do_verify()
  */

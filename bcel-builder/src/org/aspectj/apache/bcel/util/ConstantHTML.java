@@ -55,6 +55,10 @@ package org.aspectj.apache.bcel.util;
  * <http://www.apache.org/>.
  */
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import org.aspectj.apache.bcel.classfile.Constant;
 import org.aspectj.apache.bcel.classfile.ConstantClass;
 import org.aspectj.apache.bcel.classfile.ConstantFieldref;
@@ -65,14 +69,11 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.ConstantString;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Utility;
-import org.aspectj.apache.bcel.classfile.tests.*;
-
-import java.io.*;
 
 /**
  * Convert constant pool into HTML file.
  *
- * @version $Id: ConstantHTML.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: ConstantHTML.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  */

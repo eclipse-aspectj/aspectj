@@ -54,18 +54,17 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 
+import java.util.ArrayList;
+
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ClassFormatException;
 import org.aspectj.apache.bcel.classfile.Utility;
-import org.aspectj.apache.bcel.classfile.tests.*;
-
-import java.util.ArrayList;
 
 /** 
  * Abstract super class for all possible java types, namely basic types
  * such as int, object types like String and array types, e.g. int[]
  *
- * @version $Id: Type.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: Type.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class Type implements java.io.Serializable {

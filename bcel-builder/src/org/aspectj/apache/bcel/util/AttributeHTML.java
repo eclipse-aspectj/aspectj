@@ -54,6 +54,10 @@ package org.aspectj.apache.bcel.util;
  * <http://www.apache.org/>.
  */
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Code;
 import org.aspectj.apache.bcel.classfile.CodeException;
@@ -69,14 +73,11 @@ import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.SourceFile;
 import org.aspectj.apache.bcel.classfile.Utility;
-import org.aspectj.apache.bcel.classfile.tests.*;
-
-import java.io.*;
 
 /**
  * Convert found attributes into HTML file.
  *
- * @version $Id: AttributeHTML.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: AttributeHTML.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  */

@@ -54,9 +54,7 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 
-import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.CodeException;
-import org.aspectj.apache.bcel.classfile.tests.*;
 
 /** 
  * This class represents an exception handler, i.e., specifies the  region where
@@ -67,7 +65,7 @@ import org.aspectj.apache.bcel.classfile.tests.*;
  * The end of the region is automatically mapped to be exclusive when calling
  * getCodeException(), i.e., there is no difference semantically.
  *
- * @version $Id: CodeExceptionGen.java,v 1.3 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: CodeExceptionGen.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     MethodGen
  * @see     CodeException

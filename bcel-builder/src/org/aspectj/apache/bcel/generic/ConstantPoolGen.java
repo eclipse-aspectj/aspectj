@@ -54,6 +54,8 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 
+import java.util.HashMap;
+
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Constant;
 import org.aspectj.apache.bcel.classfile.ConstantCP;
@@ -69,9 +71,6 @@ import org.aspectj.apache.bcel.classfile.ConstantNameAndType;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.ConstantString;
 import org.aspectj.apache.bcel.classfile.ConstantUtf8;
-import org.aspectj.apache.bcel.classfile.tests.*;
-
-import java.util.HashMap;
 
 /** 
  * This class is used to build up a constant pool. The user adds
@@ -83,7 +82,7 @@ import java.util.HashMap;
  * Constants.MAX_SHORT entries. Note that the first (0) is used by the
  * JVM and that Double and Long constants need two slots.
  *
- * @version $Id: ConstantPoolGen.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: ConstantPoolGen.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Constant
  */

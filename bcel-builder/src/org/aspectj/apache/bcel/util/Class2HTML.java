@@ -54,17 +54,18 @@ package org.aspectj.apache.bcel.util;
  * <http://www.apache.org/>.
  */
 
-import java.io.*;
-import java.util.BitSet;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 
+import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Utility;
-import org.aspectj.apache.bcel.classfile.tests.*;
-import org.aspectj.apache.bcel.Constants;
 
 /**
  * Read class file(s) and convert them into HTML files.
@@ -85,7 +86,7 @@ import org.aspectj.apache.bcel.Constants;
  * method in the Method's frame will jump to the appropiate method in
  * the Code frame.
  *
- * @version $Id: Class2HTML.java,v 1.3 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: Class2HTML.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A> 
 */
 public class Class2HTML implements Constants

@@ -54,14 +54,12 @@ package org.aspectj.apache.bcel.util;
  * <http://www.apache.org/>.
  */
 
-import java.io.*;
-
-import java.util.Map;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
-import org.aspectj.apache.bcel.classfile.tests.*;
 
 /**
  * This repository is used in situations where a Class is created
@@ -80,7 +78,7 @@ import org.aspectj.apache.bcel.classfile.tests.*;
  *
  * @see org.aspectj.apache.bcel.Repository
  *
- * @version $Id: SyntheticRepository.java,v 1.4 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: SyntheticRepository.java,v 1.5 2004/11/22 08:31:27 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
  */

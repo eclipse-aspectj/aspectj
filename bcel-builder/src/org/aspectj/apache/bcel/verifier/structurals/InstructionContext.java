@@ -54,16 +54,16 @@ package org.aspectj.apache.bcel.verifier.structurals;
  * <http://www.apache.org/>.
  */
 
-import org.aspectj.apache.bcel.generic.InstructionHandle;
 import java.util.ArrayList;
-import java.util.Iterator;
+
+import org.aspectj.apache.bcel.generic.InstructionHandle;
 
 /**
  * An InstructionContext offers convenient access
  * to information like control flow successors and
  * such.
  *
- * @version $Id: InstructionContext.java,v 1.3 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: InstructionContext.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public interface InstructionContext{

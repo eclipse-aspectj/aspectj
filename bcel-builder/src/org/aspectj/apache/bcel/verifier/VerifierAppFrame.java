@@ -54,20 +54,36 @@ package org.aspectj.apache.bcel.verifier;
  * <http://www.apache.org/>.
  */
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import org.aspectj.apache.bcel.*;
+import java.awt.AWTEvent;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+
+import org.aspectj.apache.bcel.Repository;
 import org.aspectj.apache.bcel.classfile.JavaClass;
-import org.aspectj.apache.bcel.classfile.tests.*;
-import org.aspectj.apache.bcel.verifier.*;
 
 /**
  * This class implements a machine-generated frame for use with
  * the GraphicalVerfifier.
  *
- * @version $Id: VerifierAppFrame.java,v 1.3 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: VerifierAppFrame.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
  * @author Enver Haase
  * @see GraphicalVerifier
  */

@@ -56,7 +56,6 @@ package org.aspectj.apache.bcel.generic;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
-import org.aspectj.apache.bcel.classfile.tests.*;
 
 /** 
  * This class represents a local variable within a method. It contains its
@@ -64,7 +63,7 @@ import org.aspectj.apache.bcel.classfile.tests.*;
  * with getLocalVariable which needs the instruction list and the constant
  * pool as parameters.
  *
- * @version $Id: LocalVariableGen.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: LocalVariableGen.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     LocalVariable
  * @see     MethodGen

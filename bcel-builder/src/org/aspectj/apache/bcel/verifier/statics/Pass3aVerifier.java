@@ -54,8 +54,8 @@ package org.aspectj.apache.bcel.verifier.statics;
  * <http://www.apache.org/>.
  */
 
-import org.aspectj.apache.bcel.*;
-import org.aspectj.apache.bcel.generic.*;
+import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.Repository;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Code;
 import org.aspectj.apache.bcel.classfile.CodeException;
@@ -78,9 +78,61 @@ import org.aspectj.apache.bcel.classfile.LineNumberTable;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.classfile.tests.*;
-import org.aspectj.apache.bcel.verifier.*;
-import org.aspectj.apache.bcel.verifier.exc.*;
+import org.aspectj.apache.bcel.generic.ALOAD;
+import org.aspectj.apache.bcel.generic.ANEWARRAY;
+import org.aspectj.apache.bcel.generic.ASTORE;
+import org.aspectj.apache.bcel.generic.ATHROW;
+import org.aspectj.apache.bcel.generic.ArrayType;
+import org.aspectj.apache.bcel.generic.BREAKPOINT;
+import org.aspectj.apache.bcel.generic.CHECKCAST;
+import org.aspectj.apache.bcel.generic.ConstantPoolGen;
+import org.aspectj.apache.bcel.generic.DLOAD;
+import org.aspectj.apache.bcel.generic.DSTORE;
+import org.aspectj.apache.bcel.generic.FLOAD;
+import org.aspectj.apache.bcel.generic.FSTORE;
+import org.aspectj.apache.bcel.generic.FieldInstruction;
+import org.aspectj.apache.bcel.generic.GETSTATIC;
+import org.aspectj.apache.bcel.generic.GotoInstruction;
+import org.aspectj.apache.bcel.generic.IINC;
+import org.aspectj.apache.bcel.generic.ILOAD;
+import org.aspectj.apache.bcel.generic.IMPDEP1;
+import org.aspectj.apache.bcel.generic.IMPDEP2;
+import org.aspectj.apache.bcel.generic.INSTANCEOF;
+import org.aspectj.apache.bcel.generic.INVOKEINTERFACE;
+import org.aspectj.apache.bcel.generic.INVOKESPECIAL;
+import org.aspectj.apache.bcel.generic.INVOKESTATIC;
+import org.aspectj.apache.bcel.generic.INVOKEVIRTUAL;
+import org.aspectj.apache.bcel.generic.ISTORE;
+import org.aspectj.apache.bcel.generic.Instruction;
+import org.aspectj.apache.bcel.generic.InstructionHandle;
+import org.aspectj.apache.bcel.generic.InstructionList;
+import org.aspectj.apache.bcel.generic.InvokeInstruction;
+import org.aspectj.apache.bcel.generic.JsrInstruction;
+import org.aspectj.apache.bcel.generic.LDC;
+import org.aspectj.apache.bcel.generic.LDC2_W;
+import org.aspectj.apache.bcel.generic.LLOAD;
+import org.aspectj.apache.bcel.generic.LOOKUPSWITCH;
+import org.aspectj.apache.bcel.generic.LSTORE;
+import org.aspectj.apache.bcel.generic.LoadClass;
+import org.aspectj.apache.bcel.generic.MULTIANEWARRAY;
+import org.aspectj.apache.bcel.generic.NEW;
+import org.aspectj.apache.bcel.generic.NEWARRAY;
+import org.aspectj.apache.bcel.generic.ObjectType;
+import org.aspectj.apache.bcel.generic.PUTSTATIC;
+import org.aspectj.apache.bcel.generic.RET;
+import org.aspectj.apache.bcel.generic.ReturnInstruction;
+import org.aspectj.apache.bcel.generic.TABLESWITCH;
+import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.verifier.PassVerifier;
+import org.aspectj.apache.bcel.verifier.VerificationResult;
+import org.aspectj.apache.bcel.verifier.Verifier;
+import org.aspectj.apache.bcel.verifier.VerifierFactory;
+import org.aspectj.apache.bcel.verifier.exc.AssertionViolatedException;
+import org.aspectj.apache.bcel.verifier.exc.ClassConstraintException;
+import org.aspectj.apache.bcel.verifier.exc.InvalidMethodException;
+import org.aspectj.apache.bcel.verifier.exc.StaticCodeConstraintException;
+import org.aspectj.apache.bcel.verifier.exc.StaticCodeInstructionConstraintException;
+import org.aspectj.apache.bcel.verifier.exc.StaticCodeInstructionOperandConstraintException;
 
 /**
  * This PassVerifier verifies a class file according to
@@ -89,7 +141,7 @@ import org.aspectj.apache.bcel.verifier.exc.*;
  * More detailed information is to be found at the do_verify()
  * method's documentation. 
  *
- * @version $Id: Pass3aVerifier.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: Pass3aVerifier.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #do_verify()
  */

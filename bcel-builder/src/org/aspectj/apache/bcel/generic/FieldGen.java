@@ -54,6 +54,10 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Constant;
@@ -64,19 +68,14 @@ import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.Utility;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
-import org.aspectj.apache.bcel.classfile.tests.*;
 import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /** 
  * Template class for building up a field.  The only extraordinary thing
  * one can do is to add a constant value attribute to a field (which must of
  * course be compatible with to the declared type).
  *
- * @version $Id: FieldGen.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: FieldGen.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Field
  */

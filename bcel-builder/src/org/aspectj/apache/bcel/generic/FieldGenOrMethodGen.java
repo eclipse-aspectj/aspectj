@@ -1,5 +1,4 @@
 package org.aspectj.apache.bcel.generic;
-import org.aspectj.apache.bcel.Constants;
 
 /* ====================================================================
  * The Apache Software License, Version 1.1
@@ -55,18 +54,18 @@ import org.aspectj.apache.bcel.Constants;
  * <http://www.apache.org/>.
  */
 
+import java.util.ArrayList;
+
+import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.AccessFlags;
 import org.aspectj.apache.bcel.classfile.Attribute;
-import org.aspectj.apache.bcel.classfile.tests.*;
 import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
-
-import java.util.ArrayList;
 
 /**
  * Super class for FieldGen and MethodGen objects, since they have
  * some methods in common!
  *
- * @version $Id: FieldGenOrMethodGen.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: FieldGenOrMethodGen.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldGenOrMethodGen extends AccessFlags

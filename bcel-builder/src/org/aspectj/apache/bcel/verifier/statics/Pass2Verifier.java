@@ -54,6 +54,9 @@ package org.aspectj.apache.bcel.verifier.statics;
  * <http://www.apache.org/>.
  */
 
+import java.util.HashMap;
+import java.util.HashSet;
+
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.Repository;
 import org.aspectj.apache.bcel.classfile.Attribute;
@@ -74,8 +77,8 @@ import org.aspectj.apache.bcel.classfile.ConstantString;
 import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 import org.aspectj.apache.bcel.classfile.ConstantValue;
 import org.aspectj.apache.bcel.classfile.Deprecated;
-import org.aspectj.apache.bcel.classfile.DescendingVisitor; // Use _this_ one!
-import org.aspectj.apache.bcel.classfile.EmptyVisitor; // Use _this_ one!
+import org.aspectj.apache.bcel.classfile.DescendingVisitor;
+import org.aspectj.apache.bcel.classfile.EmptyVisitor;
 import org.aspectj.apache.bcel.classfile.ExceptionTable;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.InnerClass;
@@ -90,13 +93,17 @@ import org.aspectj.apache.bcel.classfile.Node;
 import org.aspectj.apache.bcel.classfile.SourceFile;
 import org.aspectj.apache.bcel.classfile.Synthetic;
 import org.aspectj.apache.bcel.classfile.Unknown;
-import org.aspectj.apache.bcel.classfile.Visitor; // Use _this_ one!
-import org.aspectj.apache.bcel.classfile.tests.*;
-import org.aspectj.apache.bcel.generic.*;
-import org.aspectj.apache.bcel.verifier.*;
-import org.aspectj.apache.bcel.verifier.exc.*;
-import java.util.HashMap;
-import java.util.HashSet;
+import org.aspectj.apache.bcel.classfile.Visitor;
+import org.aspectj.apache.bcel.generic.ArrayType;
+import org.aspectj.apache.bcel.generic.ObjectType;
+import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.verifier.PassVerifier;
+import org.aspectj.apache.bcel.verifier.VerificationResult;
+import org.aspectj.apache.bcel.verifier.Verifier;
+import org.aspectj.apache.bcel.verifier.VerifierFactory;
+import org.aspectj.apache.bcel.verifier.exc.AssertionViolatedException;
+import org.aspectj.apache.bcel.verifier.exc.ClassConstraintException;
+import org.aspectj.apache.bcel.verifier.exc.LocalVariableInfoInconsistentException;
 
 /**
  * This PassVerifier verifies a class file according to
@@ -105,7 +112,7 @@ import java.util.HashSet;
  * More detailed information is to be found at the do_verify()
  * method's documentation.
  *
- * @version $Id: Pass2Verifier.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: Pass2Verifier.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #do_verify()
  */
