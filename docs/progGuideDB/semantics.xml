@@ -2365,7 +2365,7 @@
       }
   }
 
-  aspect aspect MyProfiling {
+  abstract aspect MyProfiling {
       abstract pointcut profiled();
 
       Object around(): profiled() {
