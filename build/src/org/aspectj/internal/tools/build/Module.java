@@ -97,7 +97,8 @@ public class Module {
         for (Iterator iter = module.getRequired().iterator(); iter.hasNext();) {
             Module required = (Module) iter.next();
             File requiredJar = required.getModuleJar();
-            if (!known.contains(requiredJar)) {
+            if (!skipModuleJarAntecedant(requiredJar)
+            	&& !known.contains(requiredJar)) {
                 known.add(requiredJar);
                 doFindKnownJarAntecedants(required, known);
             }
@@ -110,7 +111,16 @@ public class Module {
             return true;
         }
         String path = libJar.getPath().replace('\\', '/');
-        return (-1 == path.indexOf("/lib/ant/lib/"));
+        return (-1 != path.indexOf("/lib/ant/lib/"));
+    }
+
+    /** XXX gack explicitly skip runtime */
+    private static boolean skipModuleJarAntecedant(File requiredJar) {
+    	if (null == requiredJar) {
+    		return true;
+    	} else {
+	        return "runtime.jar".equals(requiredJar.getName());
+    	}
     }
 
 	/**@return true if this is a source file */
