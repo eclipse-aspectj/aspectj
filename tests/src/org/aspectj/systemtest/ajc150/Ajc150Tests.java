@@ -33,4 +33,12 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   		System.err.println(ajc.getLastCompilationResult().getStandardError());
 	}
   }
+  
+  public void test_ambiguousBindingsDetection() {
+  	runTest("Various kinds of ambiguous bindings");
+  }
+  
+  public void test_ambiguousArgsDetection() {
+  	runTest("ambiguous args");
+  }
 }

@@ -13,3 +13,19 @@
         <compile files="B.java,A.java,AspectX.java"/>
         <run class="B"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs" pr="61568" title="Various kinds of ambiguous bindings">
+        <compile files="AmbiguousBindings.aj">
+            <message line="17" text="ambiguous binding of parameter(s) foo across '||' in pointcut"></message>
+            <message line="19" text="ambiguous binding of parameter(s) foo across '||' in pointcut"></message>
+            <message line="21" text="ambiguous binding of parameter(s) foo across '||' in pointcut"></message>
+            <message line="23" text="ambiguous binding of parameter(s) x across '||' in pointcut"></message>
+            <message line="25" text="ambiguous binding of parameter(s) foo across '||' in pointcut"></message>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs" pr="61658" title="ambiguous args">
+        <compile files="PR61658.java">
+            <message line="17" text="ambiguous binding of parameter(s) a, b across '||' in pointcut"></message>
+        </compile>
+    </ajc-test>
