@@ -104,6 +104,9 @@ import org.aspectj.weaver.ast.Var;
  *      do have a target of sorts, just one that needs to be pushed on the stack,
  *      dupped, and not touched otherwise until the constructor runs.
  * 
+ * @author Jim Hugunin
+ * @author Erik Hilsdale
+ * 
  */
 
 public class BcelShadow extends Shadow {
@@ -1176,8 +1179,8 @@ public class BcelShadow extends Shadow {
 		 * 
 		 * It extracts the instructions of the original shadow into a method.
 		 * 
-		 * Then it inlines the instructions of the advice in its place, taking care
-		 * to treat the closure argument specially (it doesn't exist).
+		 * Then it extracts the instructions of the advice into a new method defined on
+		 * this enclosing class.  This new method can then be specialized as below.
 		 * 
 		 * Then it searches in the instructions of the advice for any call to the
 		 * proceed method.
@@ -1192,6 +1195,11 @@ public class BcelShadow extends Shadow {
 		 *
 		 * If only one call to proceed is made, we can re-inline the original shadow.
 		 * We are not doing that presently.
+		 * 
+		 * If the body of the advice can be determined to not alter the stack, or if
+		 * this shadow doesn't care about the stack, i.e. method-execution, then the
+		 * new method for the advice can also be re-lined.  We are not doing that
+		 * presently.
 		 */
 		 
 		// !!! THIS BLOCK OF CODE SHOULD BE IN A METHOD CALLED weaveAround(...);
@@ -1229,35 +1237,30 @@ public class BcelShadow extends Shadow {
 							getSignature(),
 							getEnclosingClass()) + "$advice";
         
-		List paramTypeList = new ArrayList();
 		List argVarList = new ArrayList();
 		List proceedVarList = new ArrayList();
 		int extraParamOffset = 0;
 		
-		//TODO paramTypeList not needed any more
-		
-		// start w/ stuff
+		// Create the extra parameters that are needed for passing to proceed
+		// This code is very similar to that found in makeCallToCallback and should
+		// be rationalized in the future
 		if (thisVar != null) {
-			paramTypeList.add(thisVar.getType());
 			argVarList.add(thisVar);
 			proceedVarList.add(new BcelVar(thisVar.getType(), extraParamOffset));
 			extraParamOffset += thisVar.getType().getSize();
 		}
 		
 		if (targetVar != null && targetVar != thisVar) {
-			paramTypeList.add(targetVar.getType());
 			argVarList.add(targetVar);
 			proceedVarList.add(new BcelVar(targetVar.getType(), extraParamOffset));
 			extraParamOffset += targetVar.getType().getSize();
 		}
 		for (int i = 0, len = getArgCount(); i < len; i++) {
-			paramTypeList.add(argVars[i].getType());
 			argVarList.add(argVars[i]);
 			proceedVarList.add(new BcelVar(argVars[i].getType(), extraParamOffset));
 			extraParamOffset += argVars[i].getType().getSize();
 		}
 		if (thisJoinPointVar != null) {
-			paramTypeList.add(thisJoinPointVar.getType());
 			argVarList.add(thisJoinPointVar);
 			proceedVarList.add(new BcelVar(thisJoinPointVar.getType(), extraParamOffset));
 			extraParamOffset += thisJoinPointVar.getType().getSize();
@@ -1270,10 +1273,6 @@ public class BcelShadow extends Shadow {
 		System.arraycopy(extractedMethodParameterTypes, 0, parameterTypes, parameterIndex, extractedMethodParameterTypes.length);
 		parameterIndex += extractedMethodParameterTypes.length;
 
-//        for (Iterator i = paramTypeList.iterator(); i.hasNext(); ) {
-//        	ResolvedTypeX t = (ResolvedTypeX)i.next();
-//        	parameterTypes[parameterIndex++] = BcelWorld.makeBcelType(t);
-//        }
         parameterTypes[parameterIndex++] =
         	BcelWorld.makeBcelType(adviceMethod.getEnclosingClass().getType());
 		System.arraycopy(adviceParameterTypes, 0, parameterTypes, parameterIndex, adviceParameterTypes.length);
@@ -1289,6 +1288,10 @@ public class BcelShadow extends Shadow {
     
 		getEnclosingClass().addMethodGen(localAdviceMethod);
 		
+		
+		// create a map that will move all slots in advice method forward by extraParamOffset
+		// in order to make room for the new proceed-required arguments that are added at
+		// the beginning of the parameter list
 		int nVars = adviceMethod.getMaxLocals() + extraParamOffset;
 		IntMap varMap = IntMap.idMap(nVars);
 		for (int i=extraParamOffset; i < nVars; i++) {
@@ -1350,11 +1353,7 @@ public class BcelShadow extends Shadow {
             range.append(callback);
             range.append(afterThingie);          
         }        
-        
-        // now the range contains everything we need.  We now inline the advice method.
 
-				
-        //BcelClassWeaver.inlineMethod(adviceMethod, enclosingMethod, adviceMethodInvocation);
 
         // now search through the advice, looking for a call to PROCEED.  
         // Then we replace the call to proceed with some argument setup, and a 
@@ -1391,31 +1390,7 @@ public class BcelShadow extends Shadow {
 		// we have on stack all the arguments for the ADVICE call.
 		// we have in frame somewhere all the arguments for the non-advice call.
 		
-//		List argVarList = new ArrayList();
-//		
-//		// start w/ stuff
-//		if (thisVar != null) {
-//			argVarList.add(thisVar);
-//		}
-//		
-//        if (targetVar != null && targetVar != thisVar) {
-//            argVarList.add(targetVar);
-//        }
-//		for (int i = 0, len = getArgCount(); i < len; i++) {
-//			argVarList.add(argVars[i]);
-//		}
-//		if (thisJoinPointVar != null) {
-//			argVarList.add(thisJoinPointVar);
-//		}
-		
 		BcelVar[] adviceVars = munger.getExposedStateAsBcelVars();		
-		//??? this is too easy
-//		for (int i=0; i < adviceVars.length; i++) {
-//			if (adviceVars[i] != null) 
-//				adviceVars[i].setPositionInAroundState(i);
-//		}
-
-
 		IntMap proceedMap =  makeProceedArgumentMap(adviceVars);
 
 //		System.out.println(proceedMap + " for " + this);

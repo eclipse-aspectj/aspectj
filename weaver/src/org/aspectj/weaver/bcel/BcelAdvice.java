@@ -77,6 +77,15 @@ public class BcelAdvice extends Advice {
     	}
 		pointcutTest = getPointcut().findResidue(shadow, exposedState);
 		
+		// these initializations won't be performed by findResidue, but need to be
+		// so that the joinpoint is primed for weaving
+		if (getKind() == AdviceKind.PerThisEntry) {
+			shadow.getThisVar();
+		} else if (getKind() == AdviceKind.PerTargetEntry) {
+			shadow.getTargetVar();
+		}
+		
+		
         // make sure thisJoinPoint parameters are initialized
         if ((getExtraParameterFlags() & ThisJoinPointStaticPart) != 0) {
         	((BcelShadow)shadow).getThisJoinPointStaticPartVar();

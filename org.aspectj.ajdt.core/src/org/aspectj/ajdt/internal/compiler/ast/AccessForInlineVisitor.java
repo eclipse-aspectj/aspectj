@@ -13,6 +13,8 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
+import java.util.Arrays;
+
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.InlineAccessFieldBinding;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeFieldBinding;
@@ -77,8 +79,17 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 	}
 
 	public void endVisit(QualifiedNameReference ref, BlockScope scope) {
+		//System.err.println("qref: " + ref + ", " + ref.binding.getClass().getName() + ", " + ref.codegenBinding.getClass().getName());
+		//System.err.println("   others: " + Arrays.asList(ref.otherBindings));
 		if (ref.binding instanceof FieldBinding) {
 			ref.binding = getAccessibleField((FieldBinding)ref.binding);
+		}
+		if (ref.otherBindings != null) {
+			for (int i=0, len=ref.otherBindings.length; i < len; i++) {
+				if (ref.otherBindings[i] instanceof FieldBinding) {
+					ref.otherBindings[i] = getAccessibleField((FieldBinding)ref.otherBindings[i]);
+				}
+			}
 		}
 	}
 
@@ -121,6 +132,7 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 	}
 	
 	private FieldBinding getAccessibleField(FieldBinding binding) {
+		//System.err.println("checking field: " + binding);
 		if (!binding.isValidBinding()) return binding;
 		
 		makePublic(binding.declaringClass);
@@ -135,6 +147,9 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 		ResolvedMember m = EclipseFactory.makeResolvedMember(binding);
 		if (inAspect.accessForInline.containsKey(m)) return (FieldBinding)inAspect.accessForInline.get(m);
 		FieldBinding ret = new InlineAccessFieldBinding(inAspect, binding);
+		
+		//System.err.println("   made accessor: " + ret);
+		
 		inAspect.accessForInline.put(m, ret);
 		return ret;
 	}

@@ -1,16 +1,4 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 <suite> 
-    <ajc-test dir="options" 
-      title="options -warn:deprecation">
-        <compile files="WarnDeprecated.java"
-        	options="!eclipse,-warn:deprecation">
-            <message kind="warning" line="10"/>
-        </compile>
-    </ajc-test>
-    <ajc-test dir="options" 
-      title="options -warn:deprecation turned off">
-        <compile files="WarnDeprecated.java"
-        	options="!eclipse">
-        </compile>
-    </ajc-test>
+
 </suite>

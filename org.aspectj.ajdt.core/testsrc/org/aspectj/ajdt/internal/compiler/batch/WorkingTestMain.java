@@ -49,8 +49,8 @@ public class WorkingTestMain {
 		//args.add("-aspectpath");
 		//args.add("../weaver/testdata/megatrace.jar");
 		
-		args.add("testdata/src1/AroundA1.java");
-		args.add("-XnoInline");
+		args.add("c:/aspectj/scratch/arno/*.java");
+		//args.add("-XnoInline");
 		//args.add("../tests/new/Counting1.java");
 		//args.add("-Xlint:error");
 		//args.add("testdata/src1/InterType.java");
@@ -60,11 +60,11 @@ public class WorkingTestMain {
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 		//CommandTestCase.runCompiler(args, new int[] {11, 14, 18, 32, 43});
 		
-		CommandTestCase.printGenerated("../out", "AroundA1");
+		//CommandTestCase.printGenerated("../out", "AroundA1");
 //		CommandTestCase.printGenerated("../out", "SuperC");
-//		CommandTestCase.printGenerated("../out", "SubC");
+		CommandTestCase.printGenerated("../out", "org.schmidmeier.unittests.cache.TimeCacheTestsWorking");
 
-		TestUtil.runMain("out;../lib/test/testing-client.jar", "AroundA1");
+		TestUtil.runMain("out;../lib/test/testing-client.jar", "org.schmidmeier.unittests.cache.AllTimeCacheTests");
 	}
 	
 	private static String examplesDir = "../docs/dist/doc/examples/";

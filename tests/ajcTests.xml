@@ -13,7 +13,6 @@
                       so there may only be one copy marked "messages-vary" here.
   new-messages-vary   like messages-vary, except need to make ajcTest10 variant
 
-  incremental-test    incremental test.  All tests using inc-compile.
   fail-{...}          test fails in some configuration
   fail-unimplmented   eajc throwing "unimplemented" exception
   fail-commandLine    fails in ajc on command line (move to ajcTestsBroken.xml)
@@ -5745,7 +5744,7 @@
     </ajc-test>
 
     <ajc-test dir="incremental/stringliteral"   
-    	keywords="knownLimitation,incremental-test"
+    	keywords="knownLimitation"
     	title="incrementally change string size and wire in injar classes">
         <compile staging="true" options="-incremental" 
         	files="oneInjar.jar,twoInjar.jar"
@@ -6152,6 +6151,14 @@
         </inc-compile>
         <inc-compile tag="50"/>
         <run class="Main"/>
+    </ajc-test>
+
+
+    <ajc-test dir="bugs/inlineAround" pr="37152"
+      title="perthis and inline arounds">
+        <compile files="aspect1/Base.java,aspect2/Concrete.java,p1/Main.java">
+        </compile>
+        <run class="p1.Main"/>
     </ajc-test>
 
 </suite>
