@@ -18,10 +18,6 @@
        -ajctestSkipKeywords=knownLimitation-run11 \
        -logFail 
 
-  Note that unless two 1.2 API's are removed from
-  telecom, that will fail when forked, too.
-  (Vector.[add|remove](..) to [add|remove]Element(..))
-
 -->
 <suite>
     <ajc-test dir="../docs/dist/doc/examples"
@@ -58,22 +54,27 @@
         <!-- GUI run class="spacewar.Game"/ -->
     </ajc-test>   
 
+	<!--
+  	TODO: change 1.2 API's in telecom to 1.1:
+  	(Vector.[add|remove](..) to [add|remove]Element(..))
+  	then remove the knownLimitation-run11 keywords
+	-->			
     <ajc-test dir="../docs/dist/doc/examples"
-    	keywords="doc-examples"
+    	keywords="doc-examples,knownLimitation-run11"
 		title="telecom basic example">
         <compile argfiles="telecom/basic.lst"/>
         <run class="telecom.BasicSimulation"/>
     </ajc-test>   
 
     <ajc-test dir="../docs/dist/doc/examples"
-    	keywords="doc-examples"
+    	keywords="doc-examples,knownLimitation-run11"
 		title="telecom billing example">
         <compile argfiles="telecom/billing.lst"/>
         <run class="telecom.BillingSimulation"/>
     </ajc-test>   
 
     <ajc-test dir="../docs/dist/doc/examples"
-    	keywords="doc-examples"
+    	keywords="doc-examples,knownLimitation-run11"
 		title="telecom timing example">
         <compile argfiles="telecom/timing.lst"/>
         <run class="telecom.TimingSimulation"/>
