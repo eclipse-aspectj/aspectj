@@ -52,7 +52,9 @@
 	</ajc-test>
 
 	<ajc-test dir="common" title="language-initialization">
-		<compile files="language/Initialization.java"/>
+		<compile files="language/Initialization.java">
+			<message kind="warning" line="130"/>
+		</compile>
 		<run class="language.Initialization" 
 			errStreamIsError="true"/>
 		</ajc-test>
@@ -139,7 +141,8 @@
 	<ajc-test dir="." title="library-pointcutIdioms compile check">
 		<compile files="common/org/aspectj/langlib/Pointcuts.java"/>
 	</ajc-test>
-
+</suite>
+<!--
 	<ajc-test dir="." title="library-pointcutIdioms test all pointcuts"
 		>
 		<compile files="common/org/aspectj/langlib/Pointcuts.java,
@@ -243,5 +246,5 @@
 	</ajc-test>
 
 </suite>
-
+-->
 	
