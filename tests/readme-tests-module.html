@@ -80,8 +80,8 @@ Tests differ in the kind of harness they use and their target.
    
 These are compiler test cases, the preferred form for
 any compiler tests.  The XML files are test definitions,
-and the subdirectories contain the test sources.  Many of the
-test source files are no longer used.  The test definitions are
+and the subdirectories contain the test sources (many of which
+are unused at present). The test definitions are
 segregated for convenience as follows:
 <ul>
    <li><a href="ajcTests.xml">ajcTests.xml</a>: main test suite.
@@ -109,11 +109,22 @@ segregated for convenience as follows:
        </li>
 </ul>
 To run the harness, use <code>org.aspectj.testing.drivers.Harness</code>,
-in the <code>testing-drivers</code> module.  
+in the <code>testing-drivers</code> module. Since that is the main class
+for the <code>testing-drivers</code> module, you can build and 
+run the harness as follows:
+<pre>
+  cd build/
+  ../lib/ant/bin/ant build-testing-drivers
+  cd ../tests
+  java -jar ../aj-build/jars/testing-drivers-all.jar ajcTests.xml
+</pre>
+ 
 For help on harness options, use <code>-help</code>.   
-For for help on component options, see the package docs.
-Note in particular how to select tests using keywords or supply compiler
-arguments on the command line.
+For more help on options for harness components, see 
+  <a href="../testing-drivers/src/org/aspectj/testing/drivers/package.html">
+  the package documentation for the harness</a>.
+Note in particular how to select tests using keywords 
+and how compiler arguments can be passed on the harness command line.
 <p>
 To write a new test, evolve an existing example.  See the dtd and/or
 the javadoc for the testing harness implementation in the 
@@ -146,10 +157,11 @@ Jacks is the Jikes compiler test suite available at the
 
 We have a bash script to run it using ajc and javac and compare
        the results.
-      </td>
-   </tr>
-
-</table>
+<h3><a name="#junit"></a>JUnit</h3>
+The JUnit tests should be self-documenting.
+For more information on running them, see
+<a href="../build/readme-build-and-test-aspectj.html">
+        ../build/readme-build-and-test-aspectj.html</a>.
 
 </body>
 </html>
