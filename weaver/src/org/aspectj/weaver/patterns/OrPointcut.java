@@ -91,4 +91,12 @@ public class OrPointcut extends Pointcut {
 		return new OrPointcut(left.concretize1(inAspect, bindings),
 								right.concretize1(inAspect, bindings));
 	}
+	
+	public Pointcut getLeft() {
+		return left;
+	}
+
+	public Pointcut getRight() {
+		return right;
+	}
 }

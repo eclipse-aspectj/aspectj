@@ -89,4 +89,12 @@ public class AndPointcut extends Pointcut {
 								right.concretize1(inAspect, bindings));
 	}
 
+	public Pointcut getLeft() {
+		return left;
+	}
+
+	public Pointcut getRight() {
+		return right;
+	}
+
 }
