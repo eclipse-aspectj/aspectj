@@ -6372,4 +6372,14 @@
         <compile files="WideJumps.java"/>
         <run class="WideJumps"/>
     </ajc-test>
+    
+    <!-- This doesn't actually reproduce the bug, but no test case has been submitted
+         that does so this is here as a place-holder and to verify that we're mostly
+         working.
+    -->
+    <ajc-test dir="bugs/accessMethods" pr="38212"
+   	 title="can not resolve this member warning">
+        <compile files="p1/Base.java,p2/Derived.java"/>
+        <run class="p2.Derived"/>
+    </ajc-test>
 </suite>
