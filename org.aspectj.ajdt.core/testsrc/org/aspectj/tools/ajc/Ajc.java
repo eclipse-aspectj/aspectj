@@ -47,7 +47,8 @@ public class Ajc {
 		".."+File.separator+"testing-client"+File.separator+"bin" + File.pathSeparator + 
 		".."+File.separator+"runtime"+File.separator+"bin" + File.pathSeparator +
 		".."+File.separator+"lib"+File.separator+"test"+File.separator+"aspectjrt.jar"+ File.pathSeparator+
-		".."+File.separator+"lib"+File.separator+"test"+File.separator+"testing-client.jar";
+		".."+File.separator+"lib"+File.separator+"test"+File.separator+"testing-client.jar" + File.pathSeparator +
+		".."+File.separator+"aspectj5rt"+File.separator+"bin" + File.pathSeparator;
 	private CompilationResult result;
 	private File sandbox;
 	private File baseDir;
