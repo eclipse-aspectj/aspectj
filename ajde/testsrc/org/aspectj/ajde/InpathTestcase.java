@@ -285,10 +285,12 @@ public class InpathTestcase extends AjdeTestCase {
 			while (null != (entry = outjar.getNextEntry())) {
 				String fileName = entry.getName();
 				fileName = fileName.replace('\\', '/');
-				boolean b = expectedOutputJarContents.remove(fileName);
-				assertTrue(
-					"Unexpectedly found : " + fileName + " in outjar",
-					b);
+				if (fileName.indexOf("CVS") == -1) {
+					boolean b = expectedOutputJarContents.remove(fileName);
+					assertTrue(
+							"Unexpectedly found : " + fileName + " in outjar",
+							b);
+				}
 				outjar.closeEntry();
 			}
 			outjar.close();
@@ -348,8 +350,10 @@ public class InpathTestcase extends AjdeTestCase {
 		String[] toResources = FileUtil.listFiles(binBase);
 		for (int i = 0; i < toResources.length; i++) {
 			String fileName = toResources[i];
-			boolean b = expectedOutdirContents.remove(fileName);
-			assertTrue("Extraneous resources: " + fileName, b);
+			if (fileName.indexOf("CVS") == -1) {
+				boolean b = expectedOutdirContents.remove(fileName);
+				assertTrue("Extraneous resources: " + fileName, b);
+			}
 		}
 
 		assertTrue(
