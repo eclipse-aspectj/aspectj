@@ -87,7 +87,7 @@ public class ProgramElement implements IProgramElement {
 	public ProgramElement(
 		String name, 
 		Kind kind, 
-		List modifiers, 
+		int modifiers, 
 		Accessibility accessibility,
 		String declaringType, 
 		String packageName, 
@@ -100,7 +100,7 @@ public class ProgramElement implements IProgramElement {
 		this(name, kind, children);
 		this.sourceLocation = sourceLocation;
 		this.kind = kind;
-		this.modifiers = modifiers;
+		this.modifiers = genModifiers(modifiers);
 		this.accessibility = accessibility;
 		this.declaringType = declaringType;
 		this.packageName = packageName;
@@ -210,7 +210,7 @@ public class ProgramElement implements IProgramElement {
 		return getName();
 	}
 
-	public static List genModifiers(int modifiers) {
+	private static List genModifiers(int modifiers) {
 		List modifiersList = new ArrayList();
 		if ((modifiers & AccStatic) != 0) modifiersList.add(IProgramElement.Modifiers.STATIC);
 		if ((modifiers & AccFinal) != 0) modifiersList.add(IProgramElement.Modifiers.STATIC);
@@ -219,7 +219,7 @@ public class ProgramElement implements IProgramElement {
 		if ((modifiers & AccTransient) != 0) modifiersList.add(IProgramElement.Modifiers.STATIC);
 		if ((modifiers & AccNative) != 0) modifiersList.add(IProgramElement.Modifiers.STATIC);
 		if ((modifiers & AccAbstract) != 0) modifiersList.add(IProgramElement.Modifiers.STATIC);
-		return modifiersList;		
+		return modifiersList;		  
 	}
 
 	public static IProgramElement.Accessibility genAccessibility(int modifiers) {
@@ -229,8 +229,6 @@ public class ProgramElement implements IProgramElement {
 		if ((modifiers & AccPrivileged) != 0) return IProgramElement.Accessibility.PRIVILEGED;
 		else return IProgramElement.Accessibility.PACKAGE;
 	}
-
-
 	
 	// XXX these names and values are from org.eclipse.jdt.internal.compiler.env.IConstants
 	private static int AccPublic = 0x0001;
@@ -360,5 +358,13 @@ public class ProgramElement implements IProgramElement {
 		walker.process(this);
 		return buffer.toString();
 	}
+	/**
+	 *
+	 */
+
+	public void setModifiers(int i) {
+		this.modifiers = genModifiers(i);
+	}
+
 }
 

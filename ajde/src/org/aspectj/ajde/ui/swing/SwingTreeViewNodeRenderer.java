@@ -69,7 +69,6 @@ class SwingTreeViewNodeRenderer extends DefaultTreeCellRenderer {
 //        	if (pNode.isOverrider()) {
 //        		//this.setText("<overrider>");
 //        	}
-        	
 			if (node.getMessage() != null) {
 				if (node.getMessage().getKind().equals(IMessage.WARNING)) {
 					setIcon(AjdeUIManager.getDefault().getIconRegistry().getWarningIcon());

@@ -61,6 +61,7 @@ public interface IProgramElement extends Serializable {
 	public IProgramElement walk(HierarchyWalker walker);
 	public void setName(String name);
 	public void setChildren(List children);
+	public void setModifiers(int i);
 	
 	/**
 	 * Uses "typesafe enum" pattern.

@@ -125,11 +125,7 @@ public class StructureModelTest extends AjdeTestCase {
 		assertTrue("root exists", model.getRoot() != null);
 		File testFile = openFile("figures-coverage/figures/Main.java");
 		IProgramElement node = model.findNodeForSourceLine(testFile.getCanonicalPath(), 11);	
-			
 		assertTrue("find result", node != null);	
-			
-		System.err.println("##### " + node);
-			
 		IProgramElement pNode = (IProgramElement)((IProgramElement)node).getParent();
         if (null == pNode) {
             assertTrue("null parent of " + node, false);

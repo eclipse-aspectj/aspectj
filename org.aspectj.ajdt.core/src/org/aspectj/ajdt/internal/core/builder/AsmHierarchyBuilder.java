@@ -272,18 +272,20 @@ public class AsmHierarchyBuilder extends AbstractSyntaxTreeVisitorAdapter {
 			makeLocation(methodDeclaration),
 			methodDeclaration.modifiers,
 			"",
-			new ArrayList());
+			new ArrayList());  
 
 		formatter.genLabelAndKind(methodDeclaration, peNode);
 		genBytecodeInfo(methodDeclaration, peNode);
+		peNode.setModifiers(methodDeclaration.modifiers);
 
-		// TODO: should improve determining what the main method is
+		// TODO: add return type test
 		if (peNode.getKind().equals(IProgramElement.Kind.METHOD)) {
-			if (peNode.getName().equals("main")) {
+			if (peNode.getName().equals("main(String[])")
+				&& peNode.getModifiers().contains(IProgramElement.Modifiers.STATIC)
+				&& peNode.getAccessibility().equals(IProgramElement.Accessibility.PUBLIC)) {
 				((IProgramElement)stack.peek()).setRunnable(true);
 			}	
 		}
-		
 		stack.push(peNode);
 		return true;
 	}
