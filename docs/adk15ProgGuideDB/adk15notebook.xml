@@ -11,6 +11,8 @@
 <!ENTITY covariance         SYSTEM "covariance.xml">
 <!ENTITY varargs            SYSTEM "varargs.xml">
 <!ENTITY pertypewithin      SYSTEM "pertypewithin.xml">
+<!ENTITY ltw                SYSTEM "ltw.xml">
+<!ENTITY ataspectj          SYSTEM "ataspectj.xml">
 <!ENTITY miscellaneous      SYSTEM "miscellaneous.xml">
 <!ENTITY reflection         SYSTEM "reflection.xml">
 <!ENTITY grammar            SYSTEM "grammar.xml">]>
@@ -35,8 +37,9 @@
     <abstract>
       <para>
         This guide describes the changes to the AspectJ language
-        and tools in AspectJ 5. These changes are primarily, but not exclusively,
-        to support Java 5 (Tiger) features.
+        and tools in AspectJ 5. These include support for Java 5 (Tiger) features,
+        enhancements to load-time weaving, an support for an annotation-based
+        development style for aspects.
         If you are new to AspectJ, we recommend you start 
         by reading the programming guide.
       </para>
@@ -62,8 +65,10 @@
   &varargs;
   &enumeratedtypes;
   &pertypewithin;
+  &ataspectj;
   &reflection;
   &miscellaneous;
+  &ltw;
   &grammar;
 
 </book>
