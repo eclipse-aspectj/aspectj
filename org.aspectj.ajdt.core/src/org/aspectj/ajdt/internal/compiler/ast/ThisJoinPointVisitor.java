@@ -106,8 +106,10 @@ public class ThisJoinPointVisitor extends AbstractSyntaxTreeVisitorAdapter {
 			|| id.equals("toLongString")
 			|| id.equals("getKind")
 			|| id.equals("getSignature")
-			|| id.equals("getSourceLocation")
-			|| id.equals("getStaticPart");
+			|| id.equals("getSourceLocation");
+			//TODO: This is a good optimization, but requires more work than the above
+			//      we have to replace a call with a direct reference, not just a different call
+			//|| id.equals("getStaticPart");
 	}
 
 	//        boolean canTreatAsStatic(VarExpr varExpr) {
