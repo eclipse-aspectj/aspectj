@@ -1525,7 +1525,7 @@ class BcelClassWeaver implements IClassWeaver {
 		rm.setAnnotationTypes(annotations);
 		} catch (Throwable t) {
 		  //FIXME asc remove this catch after more testing has confirmed the above stuff is OK
-		  throw new RuntimeException("Unexpectedly went bang when searching for annotations on "+rm,t);
+		  throw new BCException("Unexpectedly went bang when searching for annotations on "+rm,t);
 		}
 	}
 
