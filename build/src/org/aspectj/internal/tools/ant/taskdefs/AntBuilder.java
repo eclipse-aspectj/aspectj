@@ -12,6 +12,8 @@
 package org.aspectj.internal.tools.ant.taskdefs;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -207,11 +209,32 @@ public class AntBuilder extends Builder {
         // I suspect it requires the proper adapter setup.
         Javac javac = new Javac(); 
         setupTask(javac, "javac");
+        javac.setDestdir(classesDir);
+        if (!classesDir.mkdirs()) {
+            errors.add("unable to create classes directory");
+            return false;
+        }
         // -- source paths
         Path path = new Path(project);
+        boolean hasSourceDirectories = false;
         for (Iterator iter = module.getSrcDirs().iterator(); iter.hasNext();) {
             File file = (File) iter.next();
             path.createPathElement().setLocation(file);
+            if (!hasSourceDirectories) {
+                hasSourceDirectories = true;
+            }
+        }
+        if (!hasSourceDirectories) { // none - dump minimal file and exit
+            File minFile = new File(classesDir, module.name);
+            try {
+                FileWriter fw = new FileWriter(minFile);
+                fw.write(module.name);
+                fw.close();
+            } catch (IOException e) {
+                // ignore
+            }
+            // XXX signal?
+            return true; // nothing to compile - ok
         }
         javac.setSrcdir(path);
         path = null;
@@ -219,20 +242,27 @@ public class AntBuilder extends Builder {
         // -- classpath
         Path classpath = new Path(project);
         boolean hasLibraries = false;
-        // modules
+        // required libraries
+        for (Iterator iter = module.getLibJars().iterator(); iter.hasNext();) {
+            File file = (File) iter.next();            
+            classpath.createPathElement().setLocation(file);
+            if (!hasLibraries) {
+                hasLibraries = true;
+            }
+        }
+        // required modules and their exported libraries
         for (Iterator iter = module.getRequired().iterator(); iter.hasNext();) {
             Module required = (Module) iter.next();            
             classpath.createPathElement().setLocation(required.getModuleJar());
             if (!hasLibraries) {
                 hasLibraries = true;
             }
-        }
-        // libraries
-        for (Iterator iter = module.getLibJars().iterator(); iter.hasNext();) {
-            File file = (File) iter.next();            
-            classpath.createPathElement().setLocation(file);
-            if (!hasLibraries) {
-                hasLibraries = true;
+            // also put on classpath libraries exported from required module
+            // XXX exported modules not supported
+            for (Iterator iterator = required.getExportedLibJars().iterator();
+                iterator.hasNext();
+                ) {
+                classpath.createPathElement().setLocation((File) iterator.next());
             }
         }
         // need to add system classes??
@@ -244,11 +274,6 @@ public class AntBuilder extends Builder {
         // -- set output directory
         classpath.createPathElement().setLocation(classesDir);
         javac.setClasspath(classpath);
-        javac.setDestdir(classesDir);
-        if (!classesDir.mkdirs()) {
-            errors.add("unable to create classes directory");
-            return false;
-        }
         // misc
         javac.setDebug(true);
         // compile
