@@ -153,7 +153,7 @@ class Options {
 }
 
 class ToolsInstaller extends Installer {
-    public String getTitle() { return "AspectJ(TM) Compiler and Core Tools Installer"; }
+    public String getTitle() { return "Installer for AspectJ(TM)"; }
 
     public String getPrefix() { return "tools"; }
 
