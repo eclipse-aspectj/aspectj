@@ -74,7 +74,7 @@ public class DeclarePrecedence extends Declare {
     		if (pi.isStar()) {
     			if (seenStar) {
     				scope.getWorld().showMessage(IMessage.ERROR,
-    					"circularity in declare dominates, '*' occurs more than once",
+    					"circularity in declare precedence, '*' occurs more than once",
     					pi.getSourceLocation(), null);    				
     			}
     			seenStar = true;
@@ -88,7 +88,7 @@ public class DeclarePrecedence extends Declare {
     			if (pj.isStar()) continue;
     			if (pj.matchesStatically(exactType)) {
     				scope.getWorld().showMessage(IMessage.ERROR,
-    					"circularity in declare dominates, '" + exactType.getName() + 
+    					"circularity in declare precedence, '" + exactType.getName() + 
     						"' matches two patterns", pi.getSourceLocation(), pj.getSourceLocation());
     			}
     		}

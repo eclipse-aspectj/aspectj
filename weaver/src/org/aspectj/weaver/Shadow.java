@@ -332,7 +332,7 @@ public abstract class Shadow {
 			for (Iterator i = mungers.iterator(); i.hasNext(); ) {
 				ShadowMunger m = (ShadowMunger)i.next();
 				getIWorld().getMessageHandler().handleMessage(
-					MessageUtil.error("circular dependency at " + this, m.getSourceLocation()));
+					MessageUtil.error("circular advice dependency at " + this, m.getSourceLocation()));
 			}
 		}
 		mungers = sorted;
