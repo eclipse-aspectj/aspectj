@@ -13,13 +13,12 @@
 package org.aspectj.tools.ajc;
 
 import java.util.ArrayList;
-
-import junit.framework.TestCase;
+import java.util.ResourceBundle;
 
 /**
  * 
  */
-public class MainTest extends TestCase {
+public class MainTest extends AjcTestCase {
 	
     public void testMainbare() {
         ArrayList list = new ArrayList();
@@ -31,5 +30,13 @@ public class MainTest extends TestCase {
         assertTrue(o instanceof String);
 //        assertTrue(-1 != ((String)o).indexOf("-aspectpath"));
 //        assertTrue(-1 != ((String)o).indexOf("-incremental"));
+    }
+    
+    public void testDashX() {
+    	String xoptionText = ResourceBundle.getBundle("org.aspectj.ajdt.ajc.messages").getString("xoption.usage");
+        xoptionText = xoptionText.substring("{compiler.name}".length());
+		CompilationResult result = ajc(null,new String[] {"-X"});
+		assertMessages(result,"Expecting xoptions usage message",
+				new MessageSpec(null,null,null,newMessageList(new Message(xoptionText))));
     }
 }

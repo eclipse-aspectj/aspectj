@@ -192,6 +192,11 @@ public class Main {
     	return ourHandler;
     }
     
+    // for unit testing...
+    void setController(CommandController controller) {
+    	this.controller = controller;
+    }
+    
     /**
      * Run without throwing exceptions but optionally using System.exit(..).
      * This sets up a message handler which emits messages immediately,
@@ -284,7 +289,7 @@ public class Main {
                 boolean passed = command.runCommand(args, holder);
                 if (report(passed, holder) && controller.incremental()) {
 //                    final boolean onCommandLine = controller.commandLineIncremental();
-                    while (controller.doRepeatCommand()) {
+                    while (controller.doRepeatCommand(command)) {
                         holder.clearMessages();
                         if (controller.buildFresh()) {
                             continue outer;
@@ -646,7 +651,7 @@ public class Main {
         }
         
         /** @return false if we should quit, true to do another command */
-        boolean doRepeatCommand() {
+        boolean doRepeatCommand(ICommand command) {
             if (!running) {
                 return false;
             }
