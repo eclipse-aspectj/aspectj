@@ -22,7 +22,9 @@ public class AjdeTests extends TestCase {
     public static Test suite() { 
         TestSuite suite = new TestSuite(AjdeTests.class.getName());
         //$JUnit-BEGIN$
-        suite.addTestSuite(BuildOptionsTest.class); 
+		suite.addTestSuite(ShowWeaveMessagesTestCase.class);
+		suite.addTestSuite(DuplicateManifestTest.class);
+		suite.addTestSuite(BuildOptionsTest.class); 
         suite.addTestSuite(BuildConfigurationTests.class);
         suite.addTestSuite(StructureModelRegressionTest.class); 
         suite.addTestSuite(StructureModelTest.class); 
@@ -37,8 +39,6 @@ public class AjdeTests extends TestCase {
 		suite.addTestSuite(SavedModelConsistencyTest. class);
 		suite.addTestSuite(BuildCancellingTest.class);
 		suite.addTestSuite(JarManifestTest.class);
-		suite.addTestSuite(DuplicateManifestTest.class);
-		suite.addTestSuite(ShowWeaveMessagesTestCase.class);
 		suite.addTestSuite(ExtensionTests.class);
 		
         //$JUnit-END$
