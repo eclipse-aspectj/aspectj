@@ -19,5 +19,32 @@
 			options="in longer packageOne.Main.main(..),
 					 before main packageOne.Main"/>
     </ajc-test>
-    
+
+    <ajc-test dir="new/binaryWarnings/src" pr="37020"
+   	 title="declare warnings on main - constructor execution">
+        <compile files="aspects/ConstructorExecutionWarning.java,app/Main.java">
+        	<message kind="warning" file="app/Main.java"
+        	  line="23" text="execution(Main.new())"/>
+        </compile>
+        <run class="app.Main"/>
+    </ajc-test>
+
+    <ajc-test dir="new/binaryWarnings/src" pr="37020"
+   	 title="declare warnings on binary javac 1.4 main - constructor execution">
+        <compile files="aspects/ConstructorExecutionWarning.java,../injars/app-javac-1.4.jar">
+        	<message kind="warning" file="app/Main.java"
+        	  line="23" text="execution(Main.new())"/>
+        </compile>
+        <run class="app.Main"/>
+    </ajc-test>
+
+    <ajc-test dir="new/binaryWarnings/src" pr="37020"
+   	 title="declare warnings on binary ajc 1.1 main - constructor execution">
+        <compile files="aspects/ConstructorExecutionWarning.java,../injars/app-ajc-1.1.jar">
+        	<message kind="warning" file="app/Main.java"
+        	  line="23" text="execution(Main.new())"/>
+        </compile>
+        <run class="app.Main"/>
+    </ajc-test>
+
 </suite>
