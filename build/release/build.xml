@@ -62,11 +62,10 @@
     aspectj.modules.dir   ... for existing cvs tree
     aj.build.install.dir  ... for installed dist
 
-    -- when running behind a proxy server (currently
-       only necessary for test-doc-links target)
+    -- when building behind a proxy server 
+       (currently only used for test-doc-links target)
     proxy.host            name of proxy server
-    proxy.port            proxy port number
-
+	proxy.port            proxy server's port number
 
  Example command lines for using this script:
   
@@ -428,15 +427,15 @@
 			<fileset dir="${tjm.copy.todir}" includes="**/*"/>
 		</delete>
 		<property name="xmlSrcDir"
-			location="${aspectj.tests.dir}/bin/junitXmlOutput"/> type="file"/>
-
+			location="${aspectj.tests.dir}/bin/junitXmlOutput"/>
+		<move todir="${tjm.copy.todir}" >
+		 	<fileset dir="${xmlSrcDir}"	includes="**/*"/>
+		</move>
 	</target>
-	
-	<target name="init-sources-available" depends="init-variables"
-		unless="sources.available">
-		<available property="sources.available"
-			file="${aspectj.modules.dir}/build/build.xml"/>
-		<fail ueck against distribution">
+
+	<target name="test-doc-links" 
+		depends="init-aspectj-available,init-harness-available"
+		description="run link check against distribution">
 		<antcall target="do-java13-setup"/>
 		<property file="${java.home.file}"/>
 		<fail unless="build.java.home" 
@@ -465,8 +464,8 @@
 			<arg value="-printInfo"/>
 			<arg value="-log"/>
 			<arg value="${doclink.output.file}-messages.txt"/>
-                <sysproperty key="http.proxyHost" value="${proxy.host}" />
-                <sysproperty key="http.proxyPort" value="${proxy.port}" />
+			<sysproperty key="http.proxyHost" value="${proxy.host}" />
+			<sysproperty key="http.proxyPort" value="${proxy.port}" />
 		</java>
 	</target>
 	
