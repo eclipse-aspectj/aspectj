@@ -24,6 +24,9 @@
 
   incremental-test    uses inc-compile step
   command-error       command-line error test
+
+  knownLimitation-ajctaskCompiler
+                      Accepted limitation of the AjcTaskCompilerCommand wrapper
   -->
 
 <suite>
@@ -6188,7 +6191,8 @@
         </compile>
     </ajc-test>
 
-    <ajc-test dir="harness" keywords="command-line-error"
+    <ajc-test dir="harness" 
+    	keywords="command-line-error,knownLimitation-ajctaskCompiler"
       title="CLE: bad filename">
         <compile  badInput="true" files="NoSuchFile.java">
             <message kind="error" text="NoSuchFile.java"/>
