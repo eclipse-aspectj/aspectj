@@ -1,0 +1,140 @@
+/*******************************************************************************
+ * Copyright (c) 2004 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.aspectj.ajdt.internal.core.builder;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+
+import junit.framework.TestCase;
+
+/**
+ * @author colyer
+ *
+ * TODO To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
+ */
+public class AjCompilerOptionsTest extends TestCase {
+
+	private AjCompilerOptions options;
+	
+	/*
+	 * @see TestCase#setUp()
+	 */
+	protected void setUp() throws Exception {
+		super.setUp();
+		options = new AjCompilerOptions();
+	}
+	
+	public void testDefaultValues() {
+		assertFalse(options.noWeave);
+		assertFalse(options.xSerializableAspects);
+		assertFalse(options.xLazyThisJoinPoint);
+		assertFalse(options.xNoInline);
+		assertFalse(options.xReweavable);
+		assertFalse(options.xReweavableCompress);
+		assertFalse(options.generateModel);
+		assertFalse(options.generateJavaDocsInModel);
+		assertFalse(options.generateEmacsSymFiles);
+		
+		Map map = options.getMap();
+		assertEquals(CompilerOptions.WARNING,map.get(AjCompilerOptions.OPTION_ReportInvalidAbsoluteTypeName));
+		assertEquals(CompilerOptions.IGNORE,map.get(AjCompilerOptions.OPTION_ReportInvalidWildcardTypeName));
+		assertEquals(CompilerOptions.WARNING,map.get(AjCompilerOptions.OPTION_ReportUnresolvableMember));
+		assertEquals(CompilerOptions.WARNING,map.get(AjCompilerOptions.OPTION_ReportTypeNotExposedToWeaver));
+		assertEquals(CompilerOptions.IGNORE,map.get(AjCompilerOptions.OPTION_ReportShadowNotInStructure));
+		assertEquals(CompilerOptions.WARNING,map.get(AjCompilerOptions.OPTION_ReportUnmatchedSuperTypeInCall));
+		assertEquals(CompilerOptions.WARNING,map.get(AjCompilerOptions.OPTION_ReportCannotImplementLazyTJP));
+		assertEquals(CompilerOptions.IGNORE,map.get(AjCompilerOptions.OPTION_ReportNeedSerialVersionUIDField));
+		assertEquals(CompilerOptions.IGNORE,map.get(AjCompilerOptions.OPTION_ReportIncompatibleSerialVersion));
+	}
+	
+	public void testDirectSet() {
+		options.noWeave = true;
+		options.xSerializableAspects = true;
+		options.xLazyThisJoinPoint = true;
+		options.xNoInline = true;
+		options.xReweavable = true;
+		options.xReweavableCompress = true;
+		options.generateModel = true;
+		options.generateJavaDocsInModel = true;
+		options.generateEmacsSymFiles = true;
+
+		Map map = options.getMap();
+		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_NoWeave));
+		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_XSerializableAspects));
+		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_XLazyThisJoinPoint));
+		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_XNoInline));
+		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_XReweavable));
+		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_XReweavableCompress));
+		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_GenerateModel));
+		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_GenerateJavaDocsInModel));
+		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_Emacssym));
+	}
+
+	
+	public void testMapSet() {
+		Map map = new HashMap();
+		map.put(AjCompilerOptions.OPTION_ReportInvalidAbsoluteTypeName,CompilerOptions.ERROR);
+		map.put(AjCompilerOptions.OPTION_ReportInvalidWildcardTypeName,CompilerOptions.ERROR);
+		map.put(AjCompilerOptions.OPTION_ReportUnresolvableMember,CompilerOptions.IGNORE);
+		map.put(AjCompilerOptions.OPTION_ReportTypeNotExposedToWeaver,CompilerOptions.ERROR);
+		map.put(AjCompilerOptions.OPTION_ReportShadowNotInStructure,CompilerOptions.WARNING);
+		map.put(AjCompilerOptions.OPTION_ReportUnmatchedSuperTypeInCall,CompilerOptions.ERROR);
+		map.put(AjCompilerOptions.OPTION_ReportCannotImplementLazyTJP,CompilerOptions.ERROR);
+		map.put(AjCompilerOptions.OPTION_ReportNeedSerialVersionUIDField,CompilerOptions.WARNING);
+		map.put(AjCompilerOptions.OPTION_ReportIncompatibleSerialVersion,CompilerOptions.ERROR);
+		
+		map.put(AjCompilerOptions.OPTION_NoWeave,CompilerOptions.ENABLED);
+		map.put(AjCompilerOptions.OPTION_XSerializableAspects,CompilerOptions.ENABLED);
+		map.put(AjCompilerOptions.OPTION_XLazyThisJoinPoint,CompilerOptions.ENABLED);
+		map.put(AjCompilerOptions.OPTION_XNoInline,CompilerOptions.ENABLED);
+		map.put(AjCompilerOptions.OPTION_XReweavable,CompilerOptions.ENABLED);
+		map.put(AjCompilerOptions.OPTION_XReweavableCompress,CompilerOptions.ENABLED);
+		map.put(AjCompilerOptions.OPTION_GenerateModel,CompilerOptions.ENABLED);
+		map.put(AjCompilerOptions.OPTION_GenerateJavaDocsInModel,CompilerOptions.ENABLED);
+		map.put(AjCompilerOptions.OPTION_Emacssym,CompilerOptions.ENABLED);
+		
+		options.set(map);
+		
+		assertTrue(options.noWeave);
+		assertTrue(options.xSerializableAspects);
+		assertTrue(options.xLazyThisJoinPoint);
+		assertTrue(options.xNoInline);
+		assertTrue(options.xReweavable);
+		assertTrue(options.xReweavableCompress);
+		assertTrue(options.generateModel);
+		assertTrue(options.generateJavaDocsInModel);
+		assertTrue(options.generateEmacsSymFiles);
+		
+		Map newMap = options.getMap();
+		
+		assertEquals(CompilerOptions.ERROR,newMap.get(AjCompilerOptions.OPTION_ReportInvalidAbsoluteTypeName));
+		assertEquals(CompilerOptions.ERROR,newMap.get(AjCompilerOptions.OPTION_ReportInvalidWildcardTypeName));
+		assertEquals(CompilerOptions.IGNORE,newMap.get(AjCompilerOptions.OPTION_ReportUnresolvableMember));
+		assertEquals(CompilerOptions.ERROR,newMap.get(AjCompilerOptions.OPTION_ReportTypeNotExposedToWeaver));
+		assertEquals(CompilerOptions.WARNING,newMap.get(AjCompilerOptions.OPTION_ReportShadowNotInStructure));
+		assertEquals(CompilerOptions.ERROR,newMap.get(AjCompilerOptions.OPTION_ReportUnmatchedSuperTypeInCall));
+		assertEquals(CompilerOptions.ERROR,newMap.get(AjCompilerOptions.OPTION_ReportCannotImplementLazyTJP));
+		assertEquals(CompilerOptions.WARNING,newMap.get(AjCompilerOptions.OPTION_ReportNeedSerialVersionUIDField));
+		assertEquals(CompilerOptions.ERROR,newMap.get(AjCompilerOptions.OPTION_ReportIncompatibleSerialVersion));
+	}
+	
+	/*
+	 * Class to test for String toString()
+	 */
+	public void testToString() {
+		String s = options.toString();
+		assertTrue("Should have info on AspectJ options",s.indexOf("AspectJ Specific Options:") > 0);
+	}
+
+}

@@ -106,8 +106,7 @@ public class BuildArgParserTestCase extends TestCase {
  	
 		assertTrue(
 			"default options",
-			config.getAjOptions().get(AjCompilerOptions.OPTION_Xlint).equals(
-				CompilerOptions.GENERATE));			
+			config.getLintMode().equals(AjBuildConfig.AJLINT_DEFAULT));			
 	}
 
 	public void testAspectpath() throws InvalidInputException {
@@ -136,9 +135,9 @@ public class BuildArgParserTestCase extends TestCase {
 			"-injars", SOURCE_JAR }, 
 			messageWriter);
 		//XXX don't let this remain in both places in beta1			
-		assertTrue(
-			"" + config.getAjOptions().get(AjCompilerOptions.OPTION_InJARs),  
-			config.getAjOptions().get(AjCompilerOptions.OPTION_InJARs).equals(CompilerOptions.PRESERVE));
+//		assertTrue(
+//			"" + config.getAjOptions().get(AjCompilerOptions.OPTION_InJARs),  
+//			config.getAjOptions().get(AjCompilerOptions.OPTION_InJARs).equals(CompilerOptions.PRESERVE));
 		assertTrue(((File)config.getInJars().get(0)).getName(), ((File)config.getInJars().get(0)).getName().equals("testclasses.jar"));
 
 		config = genBuildConfig(new String[] { 
@@ -286,9 +285,9 @@ public class BuildArgParserTestCase extends TestCase {
 			messageWriter);
 
 		//XXX don't let this remain in both places in beta1
-		assertTrue(
-			"will generate: " + config.getAjOptions().get(AjCompilerOptions.OPTION_OutJAR),  
-			config.getAjOptions().get(AjCompilerOptions.OPTION_OutJAR).equals(CompilerOptions.GENERATE));
+//		assertTrue(
+//			"will generate: " + config.getAjOptions().get(AjCompilerOptions.OPTION_OutJAR),  
+//			config.getAjOptions().get(AjCompilerOptions.OPTION_OutJAR).equals(CompilerOptions.GENERATE));
 		assertEquals(
 			getCanonicalPath(new File(OUT_JAR)),config.getOutputJar().getAbsolutePath()); 
 	
@@ -305,16 +304,14 @@ public class BuildArgParserTestCase extends TestCase {
 	
 	//XXX shouldn't need -1.4 to get this to pass
 	public void testCombinedOptions() throws InvalidInputException {
-		AjBuildConfig config = genBuildConfig(new String[] {  "-Xlint", "-target", "1.4", "-1.4" }, messageWriter);
-		String TARGET = "1.4";
+		AjBuildConfig config = genBuildConfig(new String[] {  "-Xlint:error", "-target", "1.4"}, messageWriter);
 		assertTrue(
-			"target set",  
-			config.getJavaOptions().get(CompilerOptions.OPTION_TargetPlatform).equals(TARGET));
+				"target set",  
+				config.getOptions().targetJDK == CompilerOptions.JDK1_4); 
 
 		assertTrue(
 			"Xlint option set",
-			config.getAjOptions().get(AjCompilerOptions.OPTION_Xlint).equals(
-				CompilerOptions.GENERATE));			
+			config.getLintMode().equals(AjBuildConfig.AJLINT_ERROR));			
 	}
 	
 	public void testOutputDirectorySetting() throws InvalidInputException {
@@ -393,10 +390,10 @@ public class BuildArgParserTestCase extends TestCase {
 		AjBuildConfig config = genBuildConfig(new String[] {"-target", TARGET, "-source", TARGET}, messageWriter);
 		assertTrue(
 			"target set",  
-			config.getJavaOptions().get(CompilerOptions.OPTION_TargetPlatform).equals(TARGET));
+			config.getOptions().targetJDK == CompilerOptions.JDK1_4);
 		assertTrue(
 			"source set",  
-			config.getJavaOptions().get(CompilerOptions.OPTION_Compliance).equals(CompilerOptions.VERSION_1_4));
+			config.getOptions().sourceLevel == CompilerOptions.JDK1_4);
 	}
 	
 	public void testLstFileExpansion() throws IOException, FileNotFoundException, InvalidInputException {
