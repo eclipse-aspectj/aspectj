@@ -24,6 +24,7 @@ import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.testing.util.BridgeUtil;
@@ -368,7 +369,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
 				abortOnError,
 				System.err);
 		} catch (IOException e) {
-			IMessage m = Message.fail("reading " + suiteFile, e);
+			IMessage m = MessageUtil.fail("reading " + suiteFile, e);
 			throw new AbortException(m);
 		}
         

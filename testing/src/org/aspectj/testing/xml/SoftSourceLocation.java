@@ -1,6 +1,7 @@
 /* *******************************************************************
  * Copyright (c) 1999-2001 Xerox Corporation, 
- *               2002 Palo Alto Research Center, Incorporated (PARC).
+ *               2002 Palo Alto Research Center, Incorporated (PARC),
+ *               2004 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -9,6 +10,7 @@
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
+ *     Wes Isberg     2004 updates
  * ******************************************************************/
 
 package org.aspectj.testing.xml;
@@ -20,17 +22,13 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.LangUtil;
 
 /**
- * Immutable source location.
- * This guarantees that the source file is not null
- * and that the numeric values are positive and line <= endLine.
- * @see org.aspectj.lang.reflect.SourceLocation
- * @see org.aspectj.compiler.base.parser.SourceInfo
- * @see org.aspectj.tools.ide.SourceLine
- * @see org.aspectj.testing.harness.ErrorLine
+ * A mutable ISourceLocation for XML initialization of tests.
+ * This does not support reading/writing of the attributes
+ * column, context, or endline.
  */
-public class SoftSourceLocation implements ISourceLocation  { // XXX endLine?
-    public static final File NONE = new File("SoftSourceLocation.NONE");
-    public static final String XMLNAME = "source-location";
+public class SoftSourceLocation implements ISourceLocation  {
+    public static final File NONE = ISourceLocation.NO_FILE;
+    public static final String XMLNAME = "source";
 
     /**
      * Write an ISourceLocation as XML element to an XMLWriter sink.
@@ -44,17 +42,16 @@ public class SoftSourceLocation implements ISourceLocation  { // XXX endLine?
        final String elementName = XMLNAME;
        out.startElement(elementName, false);
        out.printAttribute("line", "" + sl.getLine());
-       out.printAttribute("column", "" + sl.getColumn());
-       out.printAttribute("endLine", "" + sl.getEndLine());
+       // other attributes not supported
        File file = sl.getSourceFile();
        if (null != file) {
-           out.printAttribute("sourceFile", file.getPath());
+           out.printAttribute("file", file.getPath());
        }
        out.endElement(elementName);
     }
 
     private File sourceFile;
-    private int line;
+    private int line = -1; // required for no-line comparisons to work
     private int column;
     private int endLine;
     private String context;
@@ -83,12 +80,19 @@ public class SoftSourceLocation implements ISourceLocation  { // XXX endLine?
     public void setFile(String sourceFile) {
         this.sourceFile = new File(sourceFile);
     }
+    
+    public void setLine(String line) {
+        setLineAsString(line);
+    }
 
-    public void setLine(String  line) {
+    public void setLineAsString(String  line) {
         this.line = convert(line);
         if (0 == endLine) {
             endLine = this.line;
         }
+    }
+    public String getLineAsString() {
+        return ""+line;
     }
     
     public void setColumn(String column) {
@@ -115,7 +119,6 @@ public class SoftSourceLocation implements ISourceLocation  { // XXX endLine?
     public String toString() {
         return (null == context ? "" : context + LangUtil.EOL)
             + getSourceFile().getPath() 
-            + ":" + getLine() 
-            + ":" + getColumn();
+            + ":" + getLine() ;
     }
 }

@@ -52,6 +52,13 @@ public class AjcSpecXmlReader {
      * - update any client writers referring to the DOCTYPE, as necessary.
      *   - the parent IXmlWriter should delegate to the child component
      *     as IXmlWriter (or write the subelement itself)
+     * 
+     * Debugging
+     * - use logLevel = 2 for tracing
+     * - common mistakes
+     *   - dtd has to match input
+     *   - no rule defined (or misdefined) so element ignored
+     *   - property read-only (?)
      */
     
     private static final String EOL = "\n";
@@ -62,82 +69,6 @@ public class AjcSpecXmlReader {
     /** expected doc type of AjcSpec XML files */
     public static final String DOCTYPE = "<!DOCTYPE " 
         + AjcTest.Suite.Spec.XMLNAME + " SYSTEM \"" + DTD_PATH + "\">";
-
-    /** xml leader */
-    public static final String FILE_LEADER
-        = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
-
-    /** 
-     * @deprecated
-     * @return a String suitable as an inlined DOCTYPE statement 
-     */
-    public static String inlineDocType() {
-        return "<!DOCTYPE " 
-            + AjcTest.Suite.Spec.XMLNAME 
-            + " [" 
-            + AjcSpecXmlReader.getDocType() 
-            + EOL + "   ]>";
-    }
-
-    /** 
-     * @deprecated
-     * @return the elements of a document type as a String,
-     * using EOL as a line delimiter
-     */
-    public static String getDocType() {
-        if (true) {
-            throw new Error("XXX using ajcTestSuite.dtd");
-        }
-        StringBuffer r = new StringBuffer();
-        final String suiteX = AjcTest.Suite.Spec.XMLNAME;
-        final String ajctestX = AjcTest.Spec.XMLNAME;
-        final String compileX = CompilerRun.Spec.XMLNAME;
-        final String inccompileX = IncCompilerRun.Spec.XMLNAME;
-        final String runX = JavaRun.Spec.XMLNAME;
-        final String dirchangesX = DirChanges.Spec.XMLNAME;
-        final String messageX = SoftMessage.XMLNAME;
-
-        r.append(EOL + "   <!ELEMENT " + suiteX + " (" + ajctestX + "+)>");
-        r.append(EOL + "   <!ATTLIST " + suiteX + " suiteDir CDATA #IMPLIED >");
-        r.append(EOL + "");
-        r.append(EOL + "   <!ELEMENT " + ajctestX + " (" + compileX + ", (" + compileX + " | " + inccompileX + " | " + runX + ")*)>");
-        r.append(EOL + "   <!ATTLIST " + ajctestX + " title CDATA #REQUIRED >");
-        r.append(EOL + "   <!ATTLIST " + ajctestX + " dir CDATA #REQUIRED >");
-        r.append(EOL + "   <!ATTLIST " + ajctestX + " pr CDATA #IMPLIED >");
-        r.append(EOL + "   <!ATTLIST " + ajctestX + " keywords CDATA #IMPLIED >");
-        r.append(EOL + "");
-        r.append(EOL + "   <!ELEMENT " + compileX + " (" + dirchangesX + "*,file*," + messageX + "*)>"); // deprecate file?
-        r.append(EOL + "   <!ATTLIST " + compileX + " staging CDATA #IMPLIED >");      // if precursor to incremental
-        r.append(EOL + "   <!ATTLIST " + compileX + " files CDATA #IMPLIED >");
-        r.append(EOL + "   <!ATTLIST " + compileX + " options CDATA #IMPLIED >");
-        r.append(EOL + "");
-        r.append(EOL + "   <!ELEMENT " + inccompileX + " (" + dirchangesX + "*," + messageX + "*)>");  // add file* if not deprecated
-        r.append(EOL + "   <!ATTLIST " + inccompileX + " tag CDATA #REQUIRED >");
-        r.append(EOL + "");
-        r.append(EOL + "   <!ELEMENT " + runX + " (" + dirchangesX + "*," + messageX + "*)>");
-        r.append(EOL + "   <!ATTLIST " + runX + " class CDATA #REQUIRED >");
-        r.append(EOL + "   <!ATTLIST " + runX + " skipTester CDATA #IMPLIED >");
-        r.append(EOL + "   <!ATTLIST " + runX + " options CDATA #IMPLIED >");
-        r.append(EOL + "");
-        r.append(EOL + "   <!ELEMENT file (#PCDATA)>");                // deprecate?
-        r.append(EOL + "   <!ATTLIST file path CDATA #IMPLIED >");
-        r.append(EOL + "");
-        r.append(EOL + "   <!ELEMENT " + messageX + " (#PCDATA)>");
-        r.append(EOL + "   <!ATTLIST " + messageX + " kind (error | warning | info | Xlint) #REQUIRED >");
-        r.append(EOL + "   <!ATTLIST " + messageX + " line CDATA #REQUIRED >");
-        r.append(EOL + "   <!ATTLIST " + messageX + " text CDATA #IMPLIED >");  // but Message requires non-null...
-        r.append(EOL + "   <!ATTLIST " + messageX + " file CDATA #IMPLIED >");
-        r.append(EOL + "");
-        r.append(EOL + "   <!ELEMENT " + dirchangesX + " (#PCDATA)>");
-        r.append(EOL + "   <!ATTLIST " + dirchangesX + " dirToken (classes | run) #IMPLIED >");
-        r.append(EOL + "   <!ATTLIST " + dirchangesX + " defaultSuffix (.class) #IMPLIED >");
-        r.append(EOL + "   <!ATTLIST " + dirchangesX + " added CDATA #IMPLIED >");
-        r.append(EOL + "   <!ATTLIST " + dirchangesX + " removed CDATA #IMPLIED >");
-        r.append(EOL + "   <!ATTLIST " + dirchangesX + " updated CDATA #IMPLIED >");
-        r.append(EOL + "   <!ATTLIST " + dirchangesX + " unchanged CDATA #IMPLIED >");
-        r.append(EOL + "");
-        return r.toString();
-    }
 
     private static final AjcSpecXmlReader ME 
         = new AjcSpecXmlReader();
@@ -162,7 +93,7 @@ public class AjcSpecXmlReader {
         try {
             out.println("<!-- document type for ajc test suite - see " 
                         + AjcSpecXmlReader.class.getName() + " -->");
-            out.println(getDocType());
+            //out.println(getDocType());
         } finally {
             out.close();
         }        
@@ -170,7 +101,8 @@ public class AjcSpecXmlReader {
 
     private static final String[] LOG = new String[] {"info", "debug", "trace" };
     
-    private int logLevel;
+    // XXX logLevel n>0 causes JUnit tests to fail!
+    private int logLevel = 0; // use 2 for tracing 
     
     private AjcSpecXmlReader() {}
 
@@ -292,7 +224,7 @@ public class AjcSpecXmlReader {
         final String runX = ajctestX + "/" + JavaRun.Spec.XMLNAME;
         final String dirchangesX = "*/" + DirChanges.Spec.XMLNAME;
         final String messageX = "*/" + SoftMessage.XMLNAME;
-        final String messageSrcLocX = messageX + "/source-location";
+        final String messageSrcLocX = messageX + "/" +SoftSourceLocation.XMLNAME;
 
         // ---- each sub-element needs to be created
         // handle messages the same at any level
@@ -323,9 +255,10 @@ public class AjcSpecXmlReader {
             new String[] { "className", "javaVersion", "skipTester"});
         digester.addSetProperties(dirchangesX);
         digester.addSetProperties(messageX);
-        digester.addSetProperties(messageSrcLocX);
+        digester.addSetProperties(messageSrcLocX, "line", "lineAsString");
         digester.addSetProperties(messageX, "kind", "kindAsString");
         digester.addSetProperties(messageX, "line", "lineAsString");
+        //digester.addSetProperties(messageX, "details", "details");
         // only file subelement of compile uses text as path... XXX vestigial
         digester.addCallMethod(compileX + "/file", "setFile", 0);
 
@@ -340,7 +273,9 @@ public class AjcSpecXmlReader {
         digester.addSetNext(runX,                 "addChild", JavaRun.Spec.class.getName());
         digester.addSetNext(compileX + "/file",   "addWrapFile", AbstractRunSpec.WrapFile.class.getName());
         digester.addSetNext(messageX,             "addMessage", IMessage.class.getName());
-        digester.addSetNext(messageSrcLocX,       "setSourceLocation", ISourceLocation.class.getName());
+        // setSourceLocation is for the inline variant
+        // addSourceLocation is for the extra
+        digester.addSetNext(messageSrcLocX,       "addSourceLocation", ISourceLocation.class.getName());
         digester.addSetNext(dirchangesX,          "addDirChanges", DirChanges.Spec.class.getName());
         
         // can set parent, but prefer to have "knows-about" flow down only...
@@ -372,7 +307,7 @@ public class AjcSpecXmlReader {
                 new BProps(AbstractRunSpec.WrapFile.class, 
                     new String[] { "path"}),
                 new BProps(SoftMessage.class, 
-                    new String[] { "kindAsString", "lineAsString", "text", "file"})
+                    new String[] { "kindAsString", "lineAsString", "text", "details", "file"})
                     // mapped from { "kind", "line", ...}
             };
     }
@@ -430,6 +365,7 @@ public class AjcSpecXmlReader {
         m.setSourceLocation((ISourceLocation) null);
         m.setText((String) null);
         m.setKindAsString((String) null);
+        m.setDetails((String) null);
         
         SoftSourceLocation sl = new SoftSourceLocation();
         sl.setFile((String) null); 

@@ -193,7 +193,7 @@ public class FileUtil {
         unexp.addAll(Arrays.asList(dir.listFiles(touchedCollector)));
         
         // report any unexpected changes
-        return new Diffs(label, expected, unexp, String.CASE_INSENSITIVE_ORDER);
+        return Diffs.makeDiffs(label, expected, unexp, String.CASE_INSENSITIVE_ORDER);
     }
 
 

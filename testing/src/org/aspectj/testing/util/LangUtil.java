@@ -270,8 +270,7 @@ public class LangUtil {
         return ((null == s) || (0 == s.length()));
     }
 
-
-
+     
     /**
      * Throw IllegalArgumentException if any component in input array
      * is null or (if superType is not null) not assignable to superType.
