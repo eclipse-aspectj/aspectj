@@ -122,5 +122,17 @@
 		</compile>
 		<run class="org.aspectj.langlib.PointcutsCW"/>
 	</ajc-test>
-		
+
+    <ajc-test dir="bugs/interfaceDefinition" 
+    	title="Use class implementing interface via aspect">
+        <compile 
+        	files="pack/DefineInterface.java,
+        		   pack/InterfaceDefinition.java,
+        		   pack/MyInterface.java"/>
+        <run class="pack.InterfaceDefinition"/>
+        <compile 
+        	includeClassesDir="true"
+        	files="Main.java"/>
+        <run class="Main"/>
+    </ajc-test>
 </suite>

@@ -1,0 +1,71 @@
+
+<project name="interfaceDefinition" default="all" basedir=".">
+	<target name="info">
+	<echo>
+This reproduces a bug found on the mailing list by Eric Jain.
+When the implementation of a method is defined by an aspect,
+the implementing type does not appear to javac to have
+the method.
+</echo>
+	</target>	
+	<target name="init">
+	  <property name="example.dir"
+      	location="${basedir}"/> 
+	  <property name="aspectj.lib.dir"
+        location="${basedir}/../../../aj-build/dist/tools/lib"/> 
+
+	  <property name="classes.dir"
+      	location="${example.dir}/classes"/> 
+      <property name="aspectjrt.jar"
+            location="${aspectj.lib.dir}/aspectjrt.jar"/> 
+      <property name="aspectjtools.jar"
+            location="${aspectj.lib.dir}/aspectjtools.jar"/> 
+
+      <property name="classes.dir"
+            location="${example.dir}/classes"/> 
+	</target>
+
+    <target name="init.taskdefs" depends="init" 
+         unless="taskdefs.init">
+      <!-- sets name of new task to iajc, old task to ajc -->
+      <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+          <classpath> 
+            <pathelement path="${aspectjtools.jar}"/> 
+          </classpath>
+      </taskdef>
+	  <property name="taskdefs.init" value="true"/>
+    </target>
+
+	<target name="all" depends="init.taskdefs">
+		<mkdir dir="${classes.dir}"/>
+		<delete dir="${classes.dir}"/>
+		<mkdir dir="${classes.dir}"/>
+       <iajc destdir="${classes.dir}"
+       	fork="true"
+       	forkclasspath="${aspectjtools.jar}" 
+       	srcdir="${example.dir}"
+       	includes="pack/MyInterface.java,pack/InterfaceDefinition.java" 
+          classpath="${aspectjrt.jar}"/>
+       <java classname="pack.InterfaceDefinition">
+       		<classpath>
+          		<pathelement path="${aspectjrt.jar}"/>
+          		<pathelement path="${classes.dir}"/>
+	      	</classpath>
+      	</java>
+       <javac destdir="${classes.dir}" 
+       		srcdir="${example.dir}"
+       		includes="Main.java">
+       		<classpath>
+          		<pathelement path="${aspectjrt.jar}"/>
+          		<pathelement path="${classes.dir}"/>
+	      	</classpath>
+      	</javac>
+       <java class="Main">
+       		<classpath>
+          		<pathelement path="${aspectjrt.jar}"/>
+          		<pathelement path="${classes.dir}"/>
+	      	</classpath>
+      	</java>
+
+	</target>
+</project>
