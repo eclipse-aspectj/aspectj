@@ -8,5 +8,7 @@
 	<classpathentry kind="src" path="/org.aspectj.ajdt.core"/>
 	<classpathentry kind="src" path="/util"/>
 	<classpathentry kind="src" path="/bridge"/>
+	<classpathentry kind="src" path="/ajde"/>
+	<classpathentry kind="src" path="/asm"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
