@@ -21,9 +21,11 @@ import org.aspectj.apache.bcel.classfile.ExceptionTable;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.World;
@@ -134,5 +136,14 @@ final class BcelMethod extends ResolvedMember {
 		} else {
 			return super.getKind();
 		}
+	}
+	
+	public boolean hasAnnotation(ResolvedTypeX ofType) {
+		Annotation[] anns = method.getAnnotations();
+		for (int i = 0; i < anns.length; i++) {
+			Annotation annotation = anns[i];
+			if (annotation.getTypeName().equals(ofType.getName())) return true;
+		}
+		return false;
 	}
 }

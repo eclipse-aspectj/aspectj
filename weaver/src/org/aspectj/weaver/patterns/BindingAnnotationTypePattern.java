@@ -13,10 +13,14 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.World;
 
 public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern implements BindingPattern {
 
@@ -33,6 +37,21 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 	public BindingAnnotationTypePattern(FormalBinding binding) {
 		this(binding.getType(),binding.getIndex());
 	}
+	
+	public AnnotationTypePattern resolve(World world) {
+		if (resolved) return this;
+		resolved = true;
+		annotationType = annotationType.resolve(world);
+		if (!annotationType.isAnnotation(world)) {
+			IMessage m = MessageUtil.error(
+					WeaverMessages.format(WeaverMessages.REFERENCE_TO_NON_ANNOTATION_TYPE,annotationType.getName()),
+					getSourceLocation());
+			world.getMessageHandler().handleMessage(m);
+			resolved = false;
+		}
+		return this;
+	}
+	
 	
 	public int getFormalIndex() {
 		return formalIndex;

@@ -28,7 +28,7 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
 
-public abstract class ResolvedTypeX extends TypeX {
+public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 
     protected World world;
 	
@@ -559,6 +559,10 @@ public abstract class ResolvedTypeX extends TypeX {
 	    public final boolean isClass() {
 	    	return delegate.isClass();
 	    }
+
+	    public boolean hasAnnotation(ResolvedTypeX ofType) {
+	    	return delegate.hasAnnotation(ofType);
+	    }
 	    
 	    public boolean isAspect() {
 	    	return delegate.isAspect();
@@ -716,6 +720,8 @@ public abstract class ResolvedTypeX extends TypeX {
 	    public abstract boolean isInterface();
 	    public abstract boolean isEnum();
 	    public abstract boolean isAnnotation();
+	    
+	    public abstract boolean hasAnnotation(ResolvedTypeX ofType);
 
 		public abstract ResolvedMember[] getDeclaredFields();
 
@@ -790,6 +796,10 @@ public abstract class ResolvedTypeX extends TypeX {
             return ResolvedMember.NONE;
         }
         
+        public boolean hasAnnotation(ResolvedTypeX ofType) {
+        	return false;
+        }
+        
         public final ResolvedTypeX getSuperclass() {
             return world.getCoreType(OBJECT);
         }
@@ -848,6 +858,9 @@ public abstract class ResolvedTypeX extends TypeX {
         }
         public final boolean isPrimitive() {
             return true;
+        }
+        public boolean hasAnnotation(ResolvedTypeX ofType) {
+        	return false;
         }
         public final boolean isAssignableFrom(TypeX other) {
             if (! other.isPrimitive()) return false;
@@ -922,6 +935,9 @@ public abstract class ResolvedTypeX extends TypeX {
 //        }      
         public final String getName() {
         	return MISSING_NAME;
+        }
+        public boolean hasAnnotation(ResolvedTypeX ofType) {
+        	return false;
         }
         public final ResolvedMember[] getDeclaredFields() {
             return ResolvedMember.NONE;

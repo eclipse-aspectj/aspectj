@@ -552,9 +552,8 @@ public class TypeX implements AnnotatedElement {
 		return world.resolve(this);
 	}
 
-	public boolean hasAnnotation(TypeX ofType) {
-		//TODO implement TypeX.hasAnnotation
-		return false;
+	public boolean hasAnnotation(ResolvedTypeX ofType) {
+		throw new UnsupportedOperationException("You should resolve this member and call hasAnnotation() on the result...");
 	}
 	
     // ---- fields

@@ -464,14 +464,15 @@ public class Member implements Comparable, AnnotatedElement {
     	else return name;
     }
 
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.AnnotatedElement#hasAnnotation(org.aspectj.weaver.TypeX)
-	 */
-	public boolean hasAnnotation(TypeX ofType) {
-		// TODO complete this method
-		return false;
+    /**
+     * If you want a sensible answer, resolve the member and call
+     * hasAnnotation() on the ResolvedMember.
+     */
+	public boolean hasAnnotation(ResolvedTypeX ofType) {
+		throw new UnsupportedOperationException("You should resolve this member and call hasAnnotation() on the result...");
 	}
-    // ---- fields 'n' stuff
+
+	// ---- fields 'n' stuff
 
     public static final Member[] NONE = new Member[0];
 

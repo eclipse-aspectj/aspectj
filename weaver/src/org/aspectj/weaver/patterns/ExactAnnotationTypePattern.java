@@ -14,11 +14,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverMessages;
 
 /**
  * Matches an annotation of a given type
@@ -27,7 +30,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 
 	protected TypeX annotationType;
 	protected String formalName;
-	private boolean resolved = false;
+	protected boolean resolved = false;
 	private boolean bindingPattern = false;
 	
 	/**
@@ -45,8 +48,12 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		// will be turned into BindingAnnotationTypePattern during resolution
 	}
 	
+	
 	public FuzzyBoolean matches(AnnotatedElement annotated) {
-		return (annotated.hasAnnotation(annotationType) ?
+		if (!resolved) {
+			throw new IllegalStateException("Can't match on an unresolved annotation type pattern");
+		}
+		return (annotated.hasAnnotation((ResolvedTypeX)annotationType) ?
 				   FuzzyBoolean.YES : FuzzyBoolean.NO);
 	}
 
@@ -74,6 +81,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 				BindingAnnotationTypePattern binding = new BindingAnnotationTypePattern(formalBinding);
 				binding.copyLocationFrom(this);
 				bindings.register(binding, scope);
+				binding.resolve(scope.getWorld());
 				
 				return binding;
 			} else {
@@ -82,6 +90,13 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 			}
 		} else {
 			annotationType = annotationType.resolve(scope.getWorld());
+			if (!annotationType.isAnnotation(scope.getWorld())) {
+				IMessage m = MessageUtil.error(
+						WeaverMessages.format(WeaverMessages.REFERENCE_TO_NON_ANNOTATION_TYPE,annotationType.getName()),
+						getSourceLocation());
+				scope.getWorld().getMessageHandler().handleMessage(m);
+				resolved = false;
+			}
 			return this;
 		}
 	}

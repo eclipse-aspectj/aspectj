@@ -24,6 +24,7 @@ import java.util.List;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
@@ -32,6 +33,7 @@ import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.patterns.PerClause;
 
 // ??? exposed for testing
@@ -186,12 +188,12 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 				}
 			} else if (a instanceof AjAttribute.WeaverVersionInfo) {
 				wvInfo = (AjAttribute.WeaverVersionInfo)a;
-				if (wvInfo.getMajorVersion() > wvInfo.getCurrentWeaverMajorVersion()) {
+				if (wvInfo.getMajorVersion() > WeaverVersionInfo.getCurrentWeaverMajorVersion()) {
 					// The class file containing this attribute was created by a version of AspectJ that
 					// added some behavior that 'this' version of AspectJ doesn't understand.  And the
 					// class file contains changes that mean 'this' version of AspectJ cannot continue.
 					throw new BCException("Unable to continue, this version of AspectJ supports classes built with weaver version "+
-							wvInfo.toCurrentVersionString()+" but the class "+ javaClass.getClassName()+" is version "+wvInfo.toString());
+							WeaverVersionInfo.toCurrentVersionString()+" but the class "+ javaClass.getClassName()+" is version "+wvInfo.toString());
 				}
 			} else {
 				throw new BCException("bad attribute " + a);
@@ -316,6 +318,28 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 		}
 		//System.err.println("javaClass: " + Arrays.asList(javaClass.getInterfaceNames()) + " super " + javaClass.getSuperclassName());
 		//if (lazyClassGen != null) lazyClassGen.print();
+	}
+
+//	public Annotation[] getAnnotations() {
+//    	if (annotations == null) {
+//    		annotations = javaClass.getAnnotations();
+////  This would be how to resolve annotations ...
+////    		annotationsTypeXs = new ResolvedTypeX[annotations.length];
+////    		for (int i = 0; i < annotations.length; i++) {
+////				Annotation annotation = annotations[i];
+////				getResolvedTypeX().getWorld().resolve(TypeX.forName(annotation.getTypeName()));
+////			}
+//    	}
+//    	return annotations;
+//    }
+
+	public boolean hasAnnotation(ResolvedTypeX ofType) {
+		Annotation[] annotationsOnThisType = javaClass.getAnnotations();
+		for (int i = 0; i < annotationsOnThisType.length; i++) {
+			Annotation a = annotationsOnThisType[i];
+			if (a.getTypeName().equals(ofType.getName())) return true;
+		}
+		return false;
 	}
 } 
     

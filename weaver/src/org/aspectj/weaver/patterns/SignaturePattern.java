@@ -118,7 +118,19 @@ public class SignaturePattern extends PatternNode {
 	
 	public boolean matches(Member member, World world) {
 		return (matchesIgnoringAnnotations(member,world) &&
-		        annotationPattern.matches(member).alwaysTrue());
+				matchesAnnotations(member,world));
+	}
+	
+	public boolean matchesAnnotations(Member member,World world) {
+	  ResolvedMember rMember = member.resolve(world);
+	  if (rMember == null) {
+	        if (member.getName().startsWith(NameMangler.PREFIX)) {
+				return false;
+			}
+			world.getLint().unresolvableMember.signal(member.toString(), getSourceLocation());
+			return false;
+	  }
+	  return annotationPattern.matches(rMember).alwaysTrue();
 	}
 	
 	public boolean matchesIgnoringAnnotations(Member member, World world) {

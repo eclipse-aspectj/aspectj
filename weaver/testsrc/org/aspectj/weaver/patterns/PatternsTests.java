@@ -38,6 +38,7 @@ public class PatternsTests extends TestCase {
         suite.addTestSuite(KindedTestCase.class);
         suite.addTestSuite(WithinCodeTestCase.class);
         suite.addTestSuite(AnnotationPatternTestCase.class);
+        suite.addTestSuite(AnnotationPatternMatchingTestCase.class);
         //$JUnit-END$
         return suite;
     }

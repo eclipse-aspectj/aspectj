@@ -220,6 +220,10 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 	public boolean isAnnotation() {
 		return (binding.getAccessFlags() & ACC_ANNOTATION)!=0;
 	}
+	
+	public boolean hasAnnotation(ResolvedTypeX ofType) {
+		throw new RuntimeException("How to implement this?  Needs to ask eclipse!");
+	}
 
 	public PerClause getPerClause() {
 		//should probably be: ((AspectDeclaration)declaration).perClause;

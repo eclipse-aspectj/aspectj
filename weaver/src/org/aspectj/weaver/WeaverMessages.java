@@ -109,6 +109,7 @@ public class WeaverMessages {
 	public static final String ITDC_ON_ANNOTATION_NOT_ALLOWED = "itdcOnAnnotationNotAllowed";
 	public static final String ITDM_ON_ANNOTATION_NOT_ALLOWED = "itdmOnAnnotationNotAllowed";
 	public static final String ITDF_ON_ANNOTATION_NOT_ALLOWED = "itdfOnAnnotationNotAllowed";
+	public static final String REFERENCE_TO_NON_ANNOTATION_TYPE = "referenceToNonAnnotationType";
 	
 	public static String format(String key) {
 		return bundle.getString(key);

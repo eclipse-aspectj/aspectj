@@ -10,6 +10,8 @@
 package org.aspectj.weaver.patterns;
 
 import org.aspectj.weaver.AnnotatedElement;
+import org.aspectj.weaver.BcweaverTests;
+import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.bcel.BcelWorld;
 
@@ -247,6 +249,7 @@ public class AnnotationPatternTestCase extends TestCase {
 	public void testExactAnnotationPatternMatching() {
 		PatternParser p = new PatternParser("@Foo");
 		AnnotationTypePattern ap = p.parseAnnotationTypePattern();
+		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
 		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[]{"Foo"});
 		assertTrue("matches element with Foo",ap.matches(ae).alwaysTrue());
 		AnnotatedElementImpl ae2 = new AnnotatedElementImpl(new String[]{"Boo"});
@@ -266,6 +269,7 @@ public class AnnotationPatternTestCase extends TestCase {
 	public void testAndAnnotationPatternMatching() {
 		PatternParser p = new PatternParser("@Foo && @Boo");
 		AnnotationTypePattern ap = p.parseAnnotationTypePattern();
+		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
 		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[] {"Foo","Boo"});
 		assertTrue("matches foo and boo",ap.matches(ae).alwaysTrue());
 		ae = new AnnotatedElementImpl(new String[] {"Foo"});
@@ -279,6 +283,7 @@ public class AnnotationPatternTestCase extends TestCase {
 	public void testOrAnnotationPatternMatching() {
 		PatternParser p = new PatternParser("@Foo || @Boo");
 		AnnotationTypePattern ap = p.parseAnnotationTypePattern();
+		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
 		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[] {"Foo","Boo"});
 		assertTrue("matches foo and boo",ap.matches(ae).alwaysTrue());
 		ae = new AnnotatedElementImpl(new String[] {"Foo"});
@@ -292,6 +297,7 @@ public class AnnotationPatternTestCase extends TestCase {
 	public void testNotAnnotationPatternMatching() {
 		PatternParser p = new PatternParser("!@Foo");
 		AnnotationTypePattern ap = p.parseAnnotationTypePattern();
+		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
 		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[] {"Foo","Boo"});
 		assertTrue("does not match foo and boo",ap.matches(ae).alwaysFalse());		
 		ae = new AnnotatedElementImpl(new String[] {"Boo"});
@@ -307,7 +313,10 @@ public class AnnotationPatternTestCase extends TestCase {
 	
 	
 	public TestScope makeSimpleScope() {
-		return new TestScope(new String[] {"int", "java.lang.String","Foo"}, new String[] {"a", "b","foo"}, new BcelWorld());
+		BcelWorld bWorld = new BcelWorld(BcweaverTests.TESTDATA_PATH + "/testcode.jar"); // testcode contains Foo/Boo/Goo/etc
+		return new TestScope(new String[] {"int", "java.lang.String","Foo"}, 
+				             new String[] {"a", "b","foo"}, 
+							 bWorld);
 	}
 	
 	// put test cases for AnnotationPatternList matching in separate test class...
@@ -320,7 +329,7 @@ public class AnnotationPatternTestCase extends TestCase {
 			this.annotationTypes = annotationTypes;
 		}
 		
-		public boolean hasAnnotation(TypeX ofType) {
+		public boolean hasAnnotation(ResolvedTypeX ofType) {
 			for (int i = 0; i < annotationTypes.length; i++) {
 				if (annotationTypes[i].equals(ofType.getName())) return true;
 			}

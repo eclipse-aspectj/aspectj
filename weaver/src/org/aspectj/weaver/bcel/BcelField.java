@@ -19,9 +19,11 @@ import java.util.List;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.Synthetic;
+import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.World;
 
@@ -72,5 +74,14 @@ final class BcelField extends ResolvedMember {
 	
 	public boolean isSynthetic() {
 		return isSynthetic;
+	}
+	
+	public boolean hasAnnotation(ResolvedTypeX ofType) {
+		Annotation[] anns = field.getAnnotations();
+		for (int i = 0; i < anns.length; i++) {
+			Annotation annotation = anns[i];
+			if (annotation.getTypeName().equals(ofType.getName())) return true;
+		}
+		return false;
 	}
 }

@@ -19,6 +19,9 @@ import org.aspectj.bridge.Message;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
@@ -79,7 +82,16 @@ public class KindedAnnotationPointcut extends NameBindingPointcut {
 	 */
 	public FuzzyBoolean match(Shadow shadow) {
 		if (!couldMatch(shadow)) return FuzzyBoolean.NO;
-		return type.matches(shadow.getSignature());
+		Member member = shadow.getSignature();
+		ResolvedMember rMember = member.resolve(shadow.getIWorld());
+		if (rMember == null) {
+		    if (member.getName().startsWith(NameMangler.PREFIX)) {
+		    	return FuzzyBoolean.NO;
+			}
+			shadow.getIWorld().getLint().unresolvableMember.signal(member.toString(), getSourceLocation());
+			return FuzzyBoolean.NO;
+		}
+		return type.matches(rMember);
 	}
 	
 	private boolean couldMatch(Shadow shadow) {

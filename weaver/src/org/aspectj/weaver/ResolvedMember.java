@@ -24,7 +24,7 @@ import org.aspectj.bridge.ISourceLocation;
  * This is the declared member, i.e. it will always correspond to an
  * actual method/... declaration
  */
-public class ResolvedMember extends Member implements IHasPosition {
+public class ResolvedMember extends Member implements IHasPosition, AnnotatedElement {
     
     public String[] parameterNames = null;
     protected TypeX[] checkedExceptions = TypeX.NONE;
@@ -100,6 +100,14 @@ public class ResolvedMember extends Member implements IHasPosition {
     // ??? true or false?
     public boolean isAjSynthetic() {
     	return true;
+    }
+
+    public boolean hasAnnotation(ResolvedTypeX ofType) {
+        // The ctors don't allow annotations to be specified ... yet - but
+        // that doesn't mean it is an error to call this method.
+        // Normally the weaver will be working with subtypes of 
+        // this type - BcelField/BcelMethod
+    	return false;
     }
     
     public boolean isBridgeMethod() {
