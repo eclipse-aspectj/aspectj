@@ -119,6 +119,14 @@ public class AsmManager {
         structureListeners.remove(listener);
     }
 
+	// this shouldn't be needed - but none of the people that add listeners
+	// in the test suite ever remove them. AMC added this to be called in
+	// setup() so that the test cases would cease leaking listeners and go 
+	// back to executing at a reasonable speed.
+	public void removeAllListeners() {
+		structureListeners.clear();
+	}
+
     private void notifyListeners() {
         for (Iterator it = structureListeners.iterator(); it.hasNext(); ) {
             ((IHierarchyListener)it.next()).elementsUpdated(hierarchy);
