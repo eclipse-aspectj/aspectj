@@ -17,6 +17,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -871,7 +873,15 @@ public final class LazyMethodGen {
         
         Map duplicatedLocalMap = new HashMap();
         
-        for (Iterator iter = localVariableStarts.keySet().iterator(); iter.hasNext(); ) {
+	List keys = new ArrayList(); 
+	keys.addAll(localVariableStarts.keySet()); 
+	Collections.sort(keys,new Comparator() { 
+		public int compare(Object a,Object b) { 
+                         LocalVariableTag taga = (LocalVariableTag)a; 
+                         LocalVariableTag tagb = (LocalVariableTag)b; 
+                         return taga.getName().compareTo(tagb.getName()); 
+                 }}); 
+         for (Iterator iter = keys.iterator(); iter.hasNext(); ) { 
             LocalVariableTag tag = (LocalVariableTag) iter.next();
         	// have we already added one with the same slot number and start location?  
         	// if so, just continue.
