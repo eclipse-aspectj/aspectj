@@ -431,6 +431,10 @@ class HtmlDecorator {
             = "<TABLE WIDTH=\"100%\" BGCOLOR=#FFFFFF><TR>" +
               "<TD width=\"15%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>&nbsp;Advised&nbsp;by:</font></b></td><td>";
 
+			String relativePackagePath =
+				getRelativePathFromHere(
+					node.getPackageName().replace('.', '/') + Config.DIR_SEP_CHAR);
+
             List addedNames = new ArrayList();
             for (Iterator it = targets.iterator(); it.hasNext(); ) {
             	String currHandle = (String)it.next();
@@ -443,8 +447,11 @@ class HtmlDecorator {
             	
             	String hrefName = "";  
                 String hrefLink = "";
-                
-                hrefLink = rootDir.getAbsolutePath() + "/" + packagePath;
+
+				// Start the hRefLink with the relative path based on where
+				// *this* type (i.e. the advised) is in the package structure.  
+				hrefLink = relativePackagePath + packagePath;
+
                 if (currDecl.getPackageName() != null ) {
                    hrefName = currDecl.getPackageName().replace('.', '/');
 //                   hrefLink = "";//+ currDecl.getPackageName() + Config.DIR_SEP_CHAR;
@@ -482,6 +489,10 @@ class HtmlDecorator {
         = "<TABLE WIDTH=\"100%\" BGCOLOR=#FFFFFF><TR>" +
           "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>&nbsp;Advises:</b></font></td><td>";
     
+		String relativePackagePath =
+			getRelativePathFromHere(
+				decl.getPackageName().replace('.', '/') + Config.DIR_SEP_CHAR);    
+    
         List addedNames = new ArrayList(); // for ensuring that we don't add duplciates
         for (Iterator it = targets.iterator(); it.hasNext(); ) {
         	String currHandle = (String)it.next();
@@ -501,9 +512,10 @@ class HtmlDecorator {
         			packagePath
 					+ typeSignature;       		
         		
+        		// Start the hRefLink with the relative path based on where
+        		// *this* type (i.e. the advisor) is in the package structure.  
         		String hrefLink = 
-        			rootDir.getAbsolutePath() + "/" 
-//        			getRelativePathFromHere(packagePath)
+					relativePackagePath
 					+ packagePath 
 					+ typeSignature
         			+ ".html";
