@@ -228,4 +228,8 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 		return typeMungers;
 	}
 
+	public boolean doesNotExposeShadowMungers() {
+		return true;
+	}
+
 }

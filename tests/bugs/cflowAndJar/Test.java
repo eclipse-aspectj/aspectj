@@ -1,8 +1,15 @@
-public class Test{
+import org.aspectj.testing.Tester;
+
+public class Test {
   public static void main(String[] arguments){
 	Test test = new Test();
-	test.sayHello();
+	Tester.checkEqual(TestAspect.sawDirectCall, false, "no calls");
+	
 	test.doSayHello();
+	Tester.checkEqual(TestAspect.sawDirectCall, false, "non-cflow");
+	
+	test.sayHello();
+	Tester.checkEqual(TestAspect.sawDirectCall, true, "in-cflow");
   }
 
   public void sayHello(){

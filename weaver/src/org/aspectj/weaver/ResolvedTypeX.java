@@ -372,7 +372,7 @@ public abstract class ResolvedTypeX extends TypeX {
 	
 	
     private final Collection collectShadowMungers() {
-        if (! this.isAspect() || this.isAbstract()) return Collections.EMPTY_LIST;
+        if (! this.isAspect() || this.isAbstract() || this.doesNotExposeShadowMungers()) return Collections.EMPTY_LIST;
 
 		ArrayList acc = new ArrayList();
         final Iterators.Filter dupFilter = Iterators.dupFilter();
@@ -393,6 +393,10 @@ public abstract class ResolvedTypeX extends TypeX {
         return acc;
     }
     
+	protected boolean doesNotExposeShadowMungers() {
+		return false;
+	}
+
 	public PerClause getPerClause() { return null; }
 	protected Collection getDeclares() {
 		return Collections.EMPTY_LIST; 
@@ -633,6 +637,10 @@ public abstract class ResolvedTypeX extends TypeX {
 		public void setStartPos(int startPos) {
 			this.startPos = startPos;
 		}
+		
+		public boolean doesNotExposeShadowMungers() {
+			return delegate.doesNotExposeShadowMungers();
+		}
 
     }
     
@@ -681,6 +689,14 @@ public abstract class ResolvedTypeX extends TypeX {
 //		public ISourceContext getSourceContext() {
 //			return sourceContext;
 //		}
+
+		/**
+		 * Designed to be overriden by EclipseType to disable collection of shadow mungers
+		 * during pre-weave compilation phase
+		 */
+		public boolean doesNotExposeShadowMungers() {
+			return false;
+		}
 
 		public boolean isExposedToWeaver() {
 			return exposedToWeaver;
