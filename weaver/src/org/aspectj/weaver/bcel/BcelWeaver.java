@@ -44,14 +44,17 @@ import java.util.zip.ZipOutputStream;
 
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
-import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IProgressListener;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.AnnotationOnTypeMunger;
+import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.CrosscuttingMembersSet;
 import org.aspectj.weaver.IClassFileProvider;
@@ -70,6 +73,7 @@ import org.aspectj.weaver.patterns.BindingAnnotationTypePattern;
 import org.aspectj.weaver.patterns.BindingTypePattern;
 import org.aspectj.weaver.patterns.CflowPointcut;
 import org.aspectj.weaver.patterns.ConcreteCflowPointcut;
+import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.FastMatchInfo;
 import org.aspectj.weaver.patterns.IfPointcut;
@@ -900,14 +904,14 @@ public class BcelWeaver implements IWeaver {
         		if (element instanceof BcelAdvice) { // This will stop us incorrectly reporting deow Checkers
                   BcelAdvice ba = (BcelAdvice)element;
                   if (!ba.hasMatchedSomething()) {
-					BcelMethod meth = ((BcelMethod)ba.getSignature());
-					if (meth != null) {
-	                    Annotation[] anns = meth.getAnnotations();
-	                    // Check if they want to suppress the warning on this piece of advice
-	               	    if (!Utility.isSuppressing(anns,"adviceDidNotMatch")) {
-	                      world.getLint().adviceDidNotMatch.signal(ba.getDeclaringAspect().getNameAsIdentifier(),element.getSourceLocation());
-	                    }
-					}
+                    BcelMethod meth = (BcelMethod)ba.getSignature();
+                    if (meth!=null) {
+                      AnnotationX[] anns = (AnnotationX[])meth.getAnnotations();
+                      // Check if they want to suppress the warning on this piece of advice
+               	      if (!Utility.isSuppressing(anns,"adviceDidNotMatch")) {
+                        world.getLint().adviceDidNotMatch.signal(ba.getDeclaringAspect().getNameAsIdentifier(),element.getSourceLocation());
+                      }
+                    }
                   }
         		}
         	}
@@ -1033,30 +1037,155 @@ public class BcelWeaver implements IWeaver {
     	return ret;
     }
     
+    /**
+     * Weaves new parents and annotations onto a type ("declare parents" and "declare @type")
+     * 
+     * Algorithm:
+     *   1. First pass, do parents then do annotations.  During this pass record:
+     *      - any parent mungers that don't match but have a non-wild annotation type pattern
+     *      - any annotation mungers that don't match
+     *   2. Multiple subsequent passes which go over the munger lists constructed in the first
+     *      pass, repeatedly applying them until nothing changes.
+     * FIXME asc confirm that algorithm is optimal ??
+     */
 	public void weaveParentTypeMungers(ResolvedTypeX onType) {
 		onType.clearInterTypeMungers();
 		
-		// need to do any declare parents before the matching below
+		List decpToRepeat = new ArrayList();
+		List decaToRepeat = new ArrayList();
+		
+		boolean aParentChangeOccurred      = false;
+		boolean anAnnotationChangeOccurred = false;
+		// First pass - apply all decp mungers
 		for (Iterator i = declareParentsList.iterator(); i.hasNext(); ) {
-			DeclareParents p = (DeclareParents)i.next();
-			List newParents = p.findMatchingNewParents(onType,true);
-			if (!newParents.isEmpty()) {
-				BcelObjectType classType = BcelWorld.getBcelObjectType(onType);
-				//System.err.println("need to do declare parents for: " + onType);
-				for (Iterator j = newParents.iterator(); j.hasNext(); ) {
-					ResolvedTypeX newParent = (ResolvedTypeX)j.next();
-					                                        
-					// We set it here so that the following matching for ITDs can succeed - we 
-                    // still haven't done the necessary changes to the class file itself 
-                    // (like transform super calls) - that is done in BcelTypeMunger.mungeNewParent()
-					classType.addParent(newParent);
-					ResolvedTypeMunger newParentMunger = new NewParentTypeMunger(newParent);
-                    newParentMunger.setSourceLocation(p.getSourceLocation());
-					onType.addInterTypeMunger(new BcelTypeMunger(newParentMunger, xcutSet.findAspectDeclaringParents(p)));
-				}
+			DeclareParents decp = (DeclareParents)i.next();
+			boolean typeChanged = applyDeclareParents(decp,onType);
+			if (typeChanged) {
+				aParentChangeOccurred = true;
+			} else { // Perhaps it would have matched if a 'dec @type' had modified the type
+				if (!decp.getChild().isStarAnnotation()) decpToRepeat.add(decp);
 			}
 		}
+
+		// Still first pass - apply all dec @type mungers
+		for (Iterator i = xcutSet.getDeclareAnnotationOnTypes().iterator();i.hasNext();) {
+			DeclareAnnotation decA = (DeclareAnnotation)i.next();
+			boolean typeChanged = applyDeclareAtType(decA,onType,true);
+			if (typeChanged) {
+				anAnnotationChangeOccurred = true;
+			}
+		}
+		
+		while ((aParentChangeOccurred || anAnnotationChangeOccurred) && !decpToRepeat.isEmpty()) {
+			anAnnotationChangeOccurred = aParentChangeOccurred = false;
+			List decpToRepeatNextTime = new ArrayList();
+			for (Iterator iter = decpToRepeat.iterator(); iter.hasNext();) {
+				DeclareParents decp = (DeclareParents) iter.next();
+				boolean typeChanged = applyDeclareParents(decp,onType);
+				if (typeChanged) {
+					aParentChangeOccurred = true;
+				} else {
+					decpToRepeatNextTime.add(decp);
+				}
+			}
+			
+			for (Iterator iter = xcutSet.getDeclareAnnotationOnTypes().iterator(); iter.hasNext();) {
+				DeclareAnnotation decA = (DeclareAnnotation) iter.next();
+				boolean typeChanged = applyDeclareAtType(decA,onType,false);
+				if (typeChanged) {
+					anAnnotationChangeOccurred = true;
+				}
+			}
+			decpToRepeat = decpToRepeatNextTime;
+		}
+				
     }
+
+	/**
+	 * Apply a declare @type - return true if we change the type
+	 */
+	private boolean applyDeclareAtType(DeclareAnnotation decA, ResolvedTypeX onType,boolean reportProblems) {
+		boolean didSomething = false;
+		if (decA.matches(onType)) {
+		    if (onType.hasAnnotation(decA.getAnnotationX().getSignature())) {
+// FIXME asc Could put out a lint here for an already annotated type - the problem is that it may have
+// picked up the annotation during 'source weaving' in which case the message is misleading.  Leaving it
+// off for now...
+//		      if (reportProblems) {
+//		      	world.getLint().elementAlreadyAnnotated.signal(
+//      		      new String[]{onType.toString(),decA.getAnnotationTypeX().toString()},
+//      		      onType.getSourceLocation(),new ISourceLocation[]{decA.getSourceLocation()});
+//		      }
+		      return false;
+		    }
+			
+			AnnotationX annoX = decA.getAnnotationX();
+			
+			// check the annotation is suitable for the target
+			boolean problemReported = verifyTargetIsOK(decA, onType, annoX,reportProblems);
+			
+			if (!problemReported) {
+				didSomething = true;
+				ResolvedTypeMunger newAnnotationTM = new AnnotationOnTypeMunger(annoX);
+				newAnnotationTM.setSourceLocation(decA.getSourceLocation());
+				onType.addInterTypeMunger(new BcelTypeMunger(newAnnotationTM,decA.getAspect().resolve(world)));
+				decA.copyAnnotationTo(onType);
+			}
+		}
+		return didSomething;
+	}
+
+	/**
+	 * Checks for an @target() on the annotation and if found ensures it allows the annotation
+	 * to be attached to the target type that matched.
+	 */
+	private boolean verifyTargetIsOK(DeclareAnnotation decA, ResolvedTypeX onType, AnnotationX annoX,boolean outputProblems) {
+		boolean problemReported = false;
+		if (annoX.specifiesTarget()) {
+		  if (  (onType.isAnnotation() && !annoX.allowedOnAnnotationType()) ||
+		  		(!annoX.allowedOnRegularType())) {
+		  	if (outputProblems) {
+			if (decA.isExactPattern()) {
+				world.getMessageHandler().handleMessage(MessageUtil.error(
+						WeaverMessages.format(WeaverMessages.INCORRECT_TARGET_FOR_DECLARE_ANNOTATION,
+								onType.getName(),annoX.stringify(),annoX.getValidTargets()),decA.getSourceLocation()));
+			} else {
+				if (world.getLint().invalidTargetForAnnotation.isEnabled()) {
+					world.getLint().invalidTargetForAnnotation.signal(
+							new String[]{onType.getName(),annoX.stringify(),annoX.getValidTargets()},decA.getSourceLocation(),new ISourceLocation[]{onType.getSourceLocation()});
+				}
+			}
+		  	}
+			problemReported = true;				
+		  }
+		}
+		return problemReported;
+	}
+		
+	/**
+	 * Apply a single declare parents - return true if we change the type
+	 */
+	private boolean applyDeclareParents(DeclareParents p, ResolvedTypeX onType) {
+		boolean didSomething = false;
+		List newParents = p.findMatchingNewParents(onType,true);
+		if (!newParents.isEmpty()) {
+			didSomething=true;
+			BcelObjectType classType = BcelWorld.getBcelObjectType(onType);
+			//System.err.println("need to do declare parents for: " + onType);
+			for (Iterator j = newParents.iterator(); j.hasNext(); ) {
+				ResolvedTypeX newParent = (ResolvedTypeX)j.next();
+				                                        
+				// We set it here so that the imminent matching for ITDs can succeed - we 
+		        // still haven't done the necessary changes to the class file itself 
+		        // (like transform super calls) - that is done in BcelTypeMunger.mungeNewParent()
+				classType.addParent(newParent);
+				ResolvedTypeMunger newParentMunger = new NewParentTypeMunger(newParent);
+		        newParentMunger.setSourceLocation(p.getSourceLocation());
+				onType.addInterTypeMunger(new BcelTypeMunger(newParentMunger, xcutSet.findAspectDeclaringParents(p)));
+			}
+		}
+		return didSomething;
+	}
     
     public void weaveNormalTypeMungers(ResolvedTypeX onType) {
 		for (Iterator i = typeMungerList.iterator(); i.hasNext(); ) {
@@ -1100,8 +1229,8 @@ public class BcelWeaver implements IWeaver {
         classType.getResolvedTypeX().checkInterTypeMungers();
 
 		LazyClassGen clazz = null;
-		
-		if (shadowMungers.size() > 0 || typeMungers.size() > 0 || classType.isAspect()) {
+		if (shadowMungers.size() > 0 || typeMungers.size() > 0 || classType.isAspect() || 
+			world.getDeclareAnnotationOnMethods().size()>0 || world.getDeclareAnnotationOnFields().size()>0 ) {
 			clazz = classType.getLazyClassGen();
 			//System.err.println("got lazy gen: " + clazz + ", " + clazz.getWeaverState());
 			try {
