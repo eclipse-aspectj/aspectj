@@ -1,0 +1,1894 @@
+<!-- Pure Java Tests -->
+
+    <ajc-test dir="pureJava/test120" title="unicodes and literals"
+      keywords="from-base,purejava">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
+
+   <ajc-test dir="pureJava/test126" title="For Statement"
+      keywords="from-base,purejava">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
+    
+    <ajc-test dir="pureJava/test133"
+      title="correct super call lookup for method().name()"
+      keywords="from-base,purejava">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="99"
+      title="combined logic expression (handling coericions vs. parens)"
+      keywords="from-java,purejava">
+        <compile files="CombinedLogic.java"/>
+        <run class="CombinedLogic"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="99"
+      title="comment after class closes (with no new line at end)"
+      keywords="from-java,purejava">
+        <compile files="CommentAfterClass.java"/>
+        <run class="CommentAfterClass"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="108" title="multi-dimensional array initializers"
+      keywords="from-java,purejava">
+        <compile files="MultiArrays.java"/>
+        <run class="MultiArrays"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="125"
+      title="probelm with the generated names of exceptions"
+      keywords="from-java,purejava">
+        <compile files="ExceptionNames.java"/>
+        <run class="ExceptionNames"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="109"
+      title="checks if the class field can be used on all of the primitive types"
+      keywords="from-java,purejava">
+        <compile files="ClassFieldOnPrimitiveType.java"/>
+        <run class="ClassFieldOnPrimitiveType"/>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="Doesn't parse an array-returning method that throws an exception"
+      keywords="from-java,purejava">
+        <compile files="ArrayMethod.java"/>
+        <run class="ArrayMethod"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="check that nested constructions of local classes work"
+      keywords="from-java,purejava">
+        <compile files="NestedConstructionsOfLocalClasses.java"/>
+        <run class="NestedConstructionsOfLocalClasses"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Make sure anonymous classes can have non-nullary constructors"
+      keywords="from-java,purejava">
+        <compile files="NonNullaryAnonymous.java"/>
+        <run class="NonNullaryAnonymous"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="417"
+      title="Full names are dropped from inner interfaces"
+      keywords="from-java,purejava">
+        <compile files="PR417a.java"/>
+        <run class="PR417a"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="417"
+      title="Making sure full names stay on static inner classes"
+      keywords="from-java,purejava">
+        <compile files="PR417b.java"/>
+        <run class="PR417b"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="408"
+      title="Not binding constructor when using more than one compilation"
+      keywords="from-java,purejava">
+        <compile files="OuterAbstract_PR408.java"/>
+        <compile files="ExtendsOuterAbstract_PR408.java"/>
+        <compile files="ConstructorNotFound_PR408.java"/>
+        <run class="ConstructorNotFound_PR408"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="return;;; is not really legal"
+      keywords="from-java,purejava">
+        <compile files="ReachableEmpty.java">
+            <message kind="error" line="5"/>
+            <message kind="error" line="9"/>
+            <message kind="error" line="13"/>
+            <message kind="error" line="17"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="ajc treating Throwable as checked, issuing error if not found"
+      keywords="from-java,purejava">
+        <compile files="FalseThrowsCE.java"/>
+        <run class="FalseThrowsCE"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="328"
+      title="package protected classes becoming public"
+      keywords="from-java,purejava">
+        <compile files="PR328.java"/>
+        <run class="PR328"/>
+    </ajc-test>
+
+    <ajc-test dir="new" title="IOException on windows if nul used as identifier"
+      keywords="from-java,purejava">
+        <compile files="NulIOException.java">
+            <message kind="error" line="12"/>
+            <message kind="error" line="14"/>
+            <message kind="error" line="17"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="NullPointerException (not compiler error) when extending non-static inner class"
+      keywords="from-java,purejava">
+        <compile files="ExtendInnerCE.java">
+            <message kind="error" line="3"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="compiler flags final static variable as indefinite in member assignment."
+      keywords="from-java,purejava">
+        <compile files="DefiniteStatic.java"/>
+        <run class="DefiniteStatic"/>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="confirm no IOException on windows if nul used as identifier"
+      keywords="from-java,purejava">
+        <compile files="NulIOException2.java"/>
+        <run class="NulIOException2"/>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="final constructor parameter causes incorrect compiler error"
+      keywords="from-java,purejava">
+        <compile files="FinalConstructorParm.java"/>
+        <run class="FinalConstructorParm"/>
+    </ajc-test>
+
+    <ajc-test dir="new" title="Error expected for field of type void"
+      keywords="from-java,purejava">
+        <compile files="VoidField.java">
+            <message kind="error" line="2"/>
+            <message kind="error" line="4"/>
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" title="Error expected for constructor in interfaces"
+      keywords="from-java,purejava">
+        <compile files="InterfaceConstructor.java">
+            <message kind="error" line="2"/>
+            <message kind="error" line="6"/>
+            <message kind="error" line="8"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="558"
+      title="class name for identifier as String should provoke error"
+      keywords="from-java,purejava">
+        <compile files="PR558.java">
+            <message kind="error" line="4"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="567"
+      title="cyclic interface inheritance not detected if no classes implement the interfaces"
+      keywords="from-java,purejava,messages-vary">
+        <compile files="CyclicInterfaceInheritance.java" 
+               options="!eclipse">
+            <message kind="error" line="14"/>
+            <message kind="error" line="15"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="567" title="cyclic class inheritance"
+      keywords="from-java,purejava">
+        <compile files="CyclicClassInheritance.java">
+            <message kind="error" line="11"/>
+            <message kind="error" line="12"/>
+        </compile>
+    </ajc-test>
+
+    <!-- broken test - both javac and eclipse give error on line 35 -->
+    <!--
+    <ajc-test dir="pureJava" title="Type names are not expressions on their own"
+      keywords="from-java,purejava">
+        <compile files="TypeExprErrors.java">
+            <message kind="error" line="10"/>
+            <message kind="error" line="17"/>
+            <message kind="error" line="18"/>
+            <message kind="error" line="19"/>
+            <message kind="error" line="20"/>
+            <message kind="error" line="21"/>
+            <message kind="error" line="22"/>
+            <message kind="error" line="23"/>
+            <message kind="error" line="24"/>
+            <message kind="error" line="25"/>
+            <message kind="error" line="26"/>
+            <message kind="error" line="27"/>
+            <message kind="error" line="28"/>
+            <message kind="error" line="29"/>
+            <message kind="error" line="30"/>
+            <message kind="error" line="31"/>
+            <message kind="error" line="32"/>
+            <message kind="error" line="33"/>
+            <message kind="error" line="34"/>
+            <message kind="error" line="36"/>
+            <message kind="error" line="37"/>
+        </compile>
+    </ajc-test>
+    -->
+
+    <ajc-test dir="pureJava/nameConflicts"
+      title="type and package name conflicts are resolved happily (1a)"
+      keywords="from-java,purejava">
+        <compile files="p1/Main1.java,p1/Foo.java,p1/p2.java"/>
+        <run class="p1.Main1"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava/nameConflicts"
+      title="(fails in USEJAVAC) type and package name conflicts are resolved happily (1b)"
+      keywords="from-java,purejava">
+        <compile files="p1.java,p1/p2/Foo.java"/>
+        <compile files="p1/Main1.java,p1/Foo.java,p1/p2.java"/>
+        <run class="p1.Main1"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava/nameConflicts"
+      title="type and package name conflicts caught as errors (1)"
+      keywords="from-java,purejava">
+        <compile files="p1/p2.java,p1/Main1.java,p1/Foo.java,p1/p2/Foo.java">
+            <message kind="error" line="3"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="flow analysis where final variable set in another constructor"
+      keywords="from-java,purejava">
+        <compile files="ConstructorFlow.java"/>
+        <run class="ConstructorFlow"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="584"
+      title="Can construct inner classes using qualified expressions"
+      keywords="from-java,purejava">
+        <compile files="PR584.java"/>
+        <run class="PR584"/>
+    </ajc-test>
+
+    <ajc-test dir="new/protectedStatic" pr="585"
+      title="subclass unable to access protected static methods using type-qualified references"
+      keywords="from-java,purejava">
+        <compile files="SubClass.java,pack/SuperClass.java"/>
+        <run class="SubClass"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="588" title="Undefined inner class constructor"
+      keywords="from-java,purejava">
+        <compile files="UndefinedInner.java">
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new/packagePrefix" pr="574"
+      title="classes that are package prefixes are illegal"
+      keywords="from-java,purejava,messages-vary">
+        <compile files="p/prefix.java,p/prefix/SomeClass.java"
+               options="!eclipse">
+            <message kind="error" line="2"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new/introTypeMissing"
+      title="valid type expressions for introduced type testing"
+      keywords="from-java,purejava">
+        <compile files="TargetClass.java,Util.java"/>
+        <run class="TargetClass"/>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="PR591 compiler error expected when directly calling unimplemented abstract method using super"
+      keywords="from-java,purejava">
+        <compile files="AbstractMethodCall.java">
+            <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="suggested by Jacks 15.28-qualified-namestr tests"
+      keywords="from-java,purejava,messages-vary">
+        <compile files="NonConstants.java" 
+               options="!eclipse">
+            <message kind="error" line="13"/>
+            <message kind="error" line="14"/>
+            <message kind="error" line="15"/>
+            <message kind="error" line="16"/>
+            <message kind="error" line="17"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="suggested by jacks 3.7-15 all comments must be closed"
+      keywords="from-java,purejava">
+        <compile files="OpenComment.java">
+            <message kind="error" line="7"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new/classaccess"
+      title="package class access not enforced outside of package"
+      keywords="from-java,purejava">
+        <compile files="main/Main.java,pack1/Target.java">
+            <message kind="error" line="7"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="631" title="expecting CE for ambiguous reference"
+      keywords="from-java,purejava">
+        <compile files="AmbiguousClassReference.java">
+            <message kind="error" line="11"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="643" title="try without catch or finally"
+      keywords="from-java,purejava,message-vary">
+        <compile files="TryNoCatchCE.java"
+               options="!eclipse">
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="642" title="invalid floating-point constant"
+      keywords="from-java,purejava,messages-vary">
+        <compile files="ParsingFloatCE.java"
+               options="!eclipse">
+            <message kind="error" line="5"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new/subaspects" pr="647"
+      title="concrete aspect unable to access abstract package-private method in parent for overriding"
+      keywords="from-java,purejava,messages-vary"
+      comment="XXX fix source - package-private">
+        <compile files="parent/ParentMethodCE.java,child/ChildMethodCE.java"
+               options="!eclipse">
+            <message kind="warning" line="28"/>
+            <message kind="error" line="27"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="super reference used to disambiguate names of different but compatible types"
+      keywords="from-java,purejava">
+        <compile files="SuperDisambiguatingType.java"/>
+        <run class="SuperDisambiguatingType"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="anonymous explicit inner constructors"
+      keywords="from-java,purejava">
+        <compile files="QualifiedNewCP.java"/>
+        <run class="QualifiedNewCP"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Overruning the lineStarts buffer, DO NOT EDIT THIS FILE!!!!"
+      keywords="from-java,purejava">
+        <compile files="AJError.java"/>
+        <run class="AJError"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="701" title="no CE for unambiguous type reference"
+      keywords="from-java,purejava">
+        <compile files="UnambiguousClassReference3CP.java"/>
+        <run class="UnambiguousClassReference3CP"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="701"
+      title="CE for ambiguous type reference (imports)"
+      keywords="from-java,purejava">
+        <compile files="AmbiguousClassReference2CE.java">
+            <message kind="error" line="2"/>
+            <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="701"
+      title="CE for ambiguous type reference (two type declarations)"
+      keywords="from-java,purejava,messages-vary">
+        <compile files="AmbiguousClassReference3CE.java"
+               options="!eclipse">
+            <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="701"
+      title="CE for ambiguous type reference (two inner types)"
+      keywords="from-java,purejava,messages-vary">
+        <compile files="AmbiguousClassReference4CE.java"
+               options="!eclipse">
+            <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="709" title="final assignment in loop"
+      keywords="from-java,purejava">
+        <compile files="FinalInLoop.java"/>
+        <run class="FinalInLoop"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="private super access in inners"
+      keywords="from-java,purejava">
+        <compile files="PrivateSuperInnerAccess.java"/>
+        <run class="PrivateSuperInnerAccess"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="nested interface does not require new qualifier (8)"
+      keywords="from-java,purejava">
+        <compile files="InvalidNewQualifier8CE.java">
+            <message kind="error" line="8"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="nested interface does not require new qualifier (9)"
+      keywords="from-java,purejava">
+        <compile files="InvalidNewQualifier9CE.java">
+            <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="nested interface does not require new qualifier (10)"
+      keywords="from-java,purejava">
+        <compile files="InvalidNewQualifier10CE.java">
+            <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="nested interface does not require new qualifier (14)"
+      keywords="from-java,purejava">
+        <compile files="InvalidNewQualifier14CE.java">
+            <message kind="error" line="14"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="nested interface does not require new qualifier (15)"
+      keywords="from-java,purejava">
+        <compile files="InvalidNewQualifier15CE.java">
+            <message kind="error" line="15"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="nested interface does not require new qualifier (16)"
+      keywords="from-java,purejava">
+        <compile files="InvalidNewQualifier16CE.java">
+            <message kind="error" line="16"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors"
+      title="check that constructor name's match the enclosing type"
+      keywords="from-errors,purejava">
+        <compile files="BadConstructorName.java">
+            <message kind="error" line="4"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors"
+      title="errors for not applicable or accessible methods"
+      keywords="from-errors,purejava">
+        <compile files="MethodsNotFound.java">
+            <message kind="error" line="4"/>
+            <message kind="error" line="8"/>
+            <message kind="error" line="12"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" pr="218"
+      title="import statement within class body crashes compiler"
+      keywords="from-errors,purejava">
+        <compile files="ImportWithinClassBody.java">
+            <message kind="error" line="8"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors"
+      title="Accessing instance fields and instance methods statically."
+      keywords="from-errors,purejava">
+        <compile files="AccessingInstanceFieldsStatically.java">
+            <message kind="error" line="15"/>
+            <message kind="error" line="16"/>
+            <message kind="error" line="17"/>
+            <message kind="error" line="18"/>
+            <message kind="error" line="26"/>
+            <message kind="error" line="27"/>
+            <message kind="error" line="30"/>
+            <message kind="error" line="38"/>
+            <message kind="error" line="39"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="Crashes when a cast is within another cast"
+      keywords="from-errors,purejava">
+        <compile files="CastInCast.java">
+            <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="Crashes when a cast of the form )int) appears"
+      keywords="from-errors,purejava,messages-vary">
+        <compile files="BadCast.java"
+               options="!eclipse">
+            <message kind="error" line="9"/>
+            <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="Crashes when the closing brace is reversed"
+      keywords="from-errors,purejava,messages-vary">
+        <compile files="ClosingBrace.java"
+               options="!eclipse">
+            <message kind="error" line="11"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors"
+      title="Crashes when a method name is missing in a call -- e.g. 'System.out.();'"
+      keywords="from-errors,purejava">
+        <compile files="NoMethodName.java">
+            <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="Crashes when a bad r-value appears."
+      keywords="from-errors,purejava">
+        <compile files="BadValue.java">
+            <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="Two underscores as a variables causes a crash"
+      keywords="from-errors,purejava">
+        <compile files="BadVar.java">
+            <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors"
+      title="Crashes when assigning to a final static in an intializer and declaration"
+      keywords="from-errors,purejava">
+        <compile files="FinalStatic.java">
+            <message kind="error" line="13"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="Crashes when two dots appear instead of one"
+      keywords="from-errors,purejava">
+        <compile files="TwoDots.java">
+            <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="Crashes when there're stray dots"
+      keywords="from-errors,purejava">
+        <compile files="StrayDot.java">
+            <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="Stray characters cause a crash"
+      comment="XXX public class in wrong file"
+      keywords="from-errors,purejava">
+        <compile files="StraySlash.java">
+            <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="Colon instead of a semi-colon causes a crash"
+      comment="XXX public class in wrong file"
+      keywords="from-errors,purejava">
+        <compile files="Colon.java">
+            <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors"
+      title="type error in initializer caught by ajc, not javac"
+      keywords="from-errors,purejava">
+        <compile files="ArrayInitializerType.java">
+            <message kind="error" line="2"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors"
+      title="Circular inheritance with classes causes a stack overflow."
+      keywords="from-errors,purejava">
+        <compile files="CircularExtends.java">
+            <message kind="error" line="7"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="Missing ;" keywords="from-errors,purejava">
+        <compile files="PR405.java">
+            <message kind="error" line="15"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors"
+      title="cast expressions should not allow casts between ifaces and array types"
+      keywords="from-errors,purejava">
+        <compile files="InterfaceArrayCast.java">
+            <message kind="error" line="9"/>
+            <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors"
+      title="parsing errors for various bad forms of NewArrayExprs."
+      keywords="from-errors,purejava">
+        <compile files="BadNewArrayExprs.java">
+            <message kind="error" line="4"/>
+            <message kind="error" line="5"/>
+            <message kind="error" line="6"/>
+            <message kind="error" line="7"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors"
+      title="good error for bad field and inner class references"
+      keywords="from-errors,purejava">
+        <compile files="BadReferences.java">
+            <message kind="error" line="3"/>
+            <message kind="error" line="5"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors"
+      title="Implementing a non-interface used to crash the compiler."
+      keywords="from-errors,purejava">
+        <compile files="PR333.java">
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors"
+      title="error of no return statement detected not by ajc but by javac (line 4)"
+      keywords="from-errors,purejava">
+        <compile files="NoReturnStatementSimple.java">
+            <message kind="error" line="4"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="class and interface extension"
+      keywords="from-errors,purejava,messages-vary">
+        <compile files="BadExtension.java"
+               options="!eclipse">
+            <message kind="error" line="7"/>
+            <message kind="error" line="9"/>
+            <message kind="error" line="16"/>
+            <message kind="error" line="17"/>
+            <message kind="error" line="18"/>
+            <message kind="error" line="19"/>
+            <message kind="error" line="21"/>
+            <message kind="error" line="35"/>
+            <message kind="error" line="38"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="types in throws clauses"
+      keywords="from-errors,purejava">
+        <compile files="ThrowsClause.java">
+            <message kind="error" line="2"/>
+            <message kind="error" line="4"/>
+            <message kind="error" line="13"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="bad switch syntax"
+      keywords="from-errors,purejava">
+        <compile files="Switch.java">
+            <message kind="error" line="4"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Referencing various things from static contexts"
+      keywords="from-errors,purejava">
+        <compile files="StaticContexts.java">
+            <message kind="error" line="11"/>
+            <message kind="error" line="18"/>
+            <message kind="error" line="19"/>
+            <message kind="error" line="20"/>
+            <message kind="error" line="21"/>
+            <message kind="error" line="27"/>
+            <message kind="error" line="28"/>
+            <message kind="error" line="31"/>
+            <message kind="error" line="35"/>
+            <message kind="error" line="36"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors"
+      title="Some expressions are illegal expression statements"
+      keywords="from-errors,purejava">
+        <compile files="BadExpressionStatement.java">
+            <message kind="error" line="3"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="illegal forward reference"
+      keywords="from-errors,purejava">
+        <compile files="IllegalForwardReference.java">
+            <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="protected accessibility"
+      keywords="from-errors,purejava">
+        <compile files="protectedAccess/Main.java,protectedAccess/p1/C1.java">
+            <message kind="error" line="26"/>
+            <message kind="error" line="28"/>
+            <message kind="error" line="29"/>
+            <message kind="error" line="31"/>
+            <message kind="error" line="37"/>
+            <message kind="error" line="45"/>
+            <message kind="error" line="46"/>
+            <message kind="error" line="54"/>
+            <message kind="error" line="55"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="parse-time illegal modifiers"
+      keywords="from-errors,purejava">
+        <compile files="Modifiers1.java">
+            <message kind="error" line="2"/>
+            <message kind="error" line="3"/>
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="check-time illegal modifiers"
+      keywords="from-errors,purejava">
+        <compile files="Modifiers.java">
+            <message kind="error" line="2"/>
+            <message kind="error" line="3"/>
+            <message kind="error" line="4"/>
+            <message kind="error" line="6"/>
+            <message kind="error" line="7"/>
+            <message kind="error" line="8"/>
+            <message kind="error" line="9"/>
+            <message kind="error" line="11"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="illegal synchronized stmts"
+      keywords="from-errors,purejava,messages-vary">
+        <compile files="BadSynchronized.java"
+               options="!eclipse">
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="modifiers on interface members"
+      keywords="from-errors,purejava">
+        <compile files="InterfaceMembers.java">
+            <message kind="error" line="2"/>
+            <message kind="error" line="3"/>
+            <message kind="error" line="4"/>
+            <message kind="error" line="5"/>
+            <message kind="error" line="7"/>
+            <message kind="error" line="8"/>
+            <message kind="error" line="9"/>
+            <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors"
+      title="good errors (and not too many) for missing members"
+      comment="XXX import of class in default package"
+
+      keywords="from-errors,purejava">
+        <compile files="NotFound.java">
+            <message kind="error" line="1"/>
+            <message kind="error" line="2"/>
+            <message kind="error" line="6"/>
+            <message kind="error" line="9"/>
+            <message kind="error" line="10"/>
+            <message kind="error" line="14"/>
+            <message kind="error" line="16"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="536"
+      title="expecting compile failures with subclass narrowing scope of superclass methods or accessing private superclass variables"
+      keywords="from-errors,purejava">
+        <compile files="RestrictingVisibilityCF.java">
+            <message kind="error" line="27"/>
+            <message kind="error" line="29"/>
+            <message kind="error" line="31"/>
+            <message kind="error" line="39"/>
+            <message kind="error" line="41"/>
+            <message kind="error" line="46"/>
+            <message kind="error" line="48"/>
+            <message kind="error" line="53"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors"
+      title="inner classes may not have static non-constant members"
+      keywords="from-errors,purejava">
+        <compile files="InnerMembers.java">
+            <message kind="error" line="8"/>
+            <message kind="error" line="9"/>
+            <message kind="error" line="10"/>
+            <message kind="error" line="11"/>
+            <message kind="error" line="16"/>
+            <message kind="error" line="17"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="flow analysis with local types"
+      keywords="from-errors,purejava">
+        <compile files="InnerFlow.java">
+            <message kind="error" line="5"/>
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="new"
+      title="PR584 Can construct inner classes using qualified expressions"
+      keywords="from-resolved_10rc3,purejava">
+        <compile files="PR584.java"/>
+        <run class="PR584"/>
+    </ajc-test>
+
+   <ajc-test dir="new" pr="715" title="incrementing objects, arrays - 2"
+      keywords="from-resolved_104,purejava">
+        <compile files="ArrayInc2CE.java">
+            <message kind="error" line="12"/>
+            <message kind="error" line="13"/>
+            <message kind="error" line="14"/>
+            <message kind="error" line="15"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="715" title="incrementing objects, arrays CE"
+      keywords="from-resolved_104,purejava,messages-vary">
+        <compile files="ArrayIncCE.java"
+               options="!eclipse">
+            <message kind="error" line="15"/>
+            <message kind="error" line="16"/>
+            <message kind="error" line="17"/>
+            <message kind="error" line="18"/>
+            <message kind="error" line="19"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="715" title="incrementing objects, arrays - 3"
+      keywords="from-resolved_104,purejava">
+        <compile files="ArrayInc3CE.java">
+            <message kind="error" line="15"/>
+            <message kind="error" line="16"/>
+            <message kind="error" line="17"/>
+            <message kind="error" line="18"/>
+            <message kind="error" line="19"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="715" title="incrementing objects, arrays"
+      keywords="from-resolved_104,purejava">
+        <compile files="ArrayInc.java"/>
+        <run class="ArrayInc"/>
+    </ajc-test>
+
+   <ajc-test dir="pureJava" pr="737"
+      title="no circularity errors simply because of inners (1)"
+      keywords="from-resolved_105,purejava">
+        <compile files="circle/Test1CP.java"/>
+        <run class="circle.Test1CP"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="737"
+      title="no circularity errors simply because of inners (2)"
+      keywords="from-resolved_105,purejava">
+        <compile files="circle/Test2CP.java"/>
+        <run class="circle.Test2CP"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="737"
+      title="should have circular inheritance errors (1)"
+      keywords="from-resolved_105,purejava,messages-vary">
+        <compile files="circle/Test1CF.java"
+               options="!eclipse">
+            <message kind="error" line="7"/>
+            <message kind="error" line="15"/>
+            <message kind="error" line="17"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="737"
+      title="should have circular inheritance errors (2)"
+      keywords="from-resolved_105,purejava,messages-vary">
+        <compile files="circle/Test2CF.java"
+               options="!eclipse">
+            <message kind="error" line="6"/>
+            <message kind="error" line="10"/>
+            <message kind="error" line="15"/>
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="pureJava" pr="728"
+      title="interface using preceding subinterface in its definition"
+      keywords="from-resolved_105,purejava">
+        <compile files="ParentUsingChild.java"/>
+        <run class="ParentUsingChild"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="645"
+      title="Parent interface using public inner interface of child in same file"
+      keywords="from-resolved_105,purejava">
+        <compile files="ParentInterfaceUsingChildInnerInterface.java"/>
+        <run class="ParentInterfaceUsingChildInnerInterface"/>
+    </ajc-test>
+
+    <ajc-test dir="errors"
+      title="a type is not allowed to extend or implement its own innner type"
+      keywords="from-resolved_105,purejava">
+        <compile files="NestedInterfaceTest.java">
+            <message kind="error" line="1"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="try requires block JLS 14.19"
+      keywords="from-resolved_105,purejava,messages-vary">
+        <compile files="TryBlockRequiredCE.java"
+               options="!eclipse">
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="722" title="loop expressions not declarations"
+      keywords="from-resolved_105,purejava,messages-vary">
+        <compile files="DeclarationsInLoopsCE.java"
+                options="!eclipse">
+            <message kind="error" line="7"/>
+        </compile>
+    </ajc-test>
+
+
+
+
+
+
+
+
+    <ajc-test dir="new" pr="663"
+      title="no error when public class is in file of a different name"
+      keywords="from-resolved_105,purejava">
+        <compile options="-strict" files="PublicClassWrongFilename.java">
+            <message kind="error" line="3"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="739"
+      title="local variables must be final to be accessed from inner class"
+      keywords="from-resolved_105,purejava">
+        <compile files="LocalsFromInnerCE.java">
+            <message kind="error" line="6"/>
+            <message kind="error" line="13"/>
+            <message kind="error" line="19"/>
+            <message kind="error" line="25"/>
+            <message kind="error" line="32"/>
+            <message kind="error" line="40"/>
+            <message kind="error" line="51"/>
+            <message kind="error" line="61"/>
+            <message kind="error" line="67"/>
+            <message kind="error" line="75"/>
+            <message kind="error" line="81"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="739"
+      title="final local variables may be accessed from inner class"
+      keywords="from-resolved_105,purejava">
+        <compile files="LocalsFromInnerCP.java"/>
+        <run class="LocalsFromInnerCP"/>
+    </ajc-test>
+
+
+    <ajc-test dir="pureJava" pr="723" title="missing package identifier"
+      keywords="from-resolved_105,purejava">
+        <compile files="MissingPackageCE.java">
+            <message kind="error" line="2"/>
+        </compile>
+    </ajc-test>
+   <ajc-test dir="new" pr="701"
+      title="CE for ambiguous type reference (two files in package)"
+      keywords="from-resolved_105,purejava">
+        <compile
+          files="ambiguousClass/AmbiguousReferent.java,ambiguousClass/AmbiguousClassReference.java">
+            <message kind="error" line="5"/>
+        </compile>
+    </ajc-test>
+
+
+    <ajc-test dir="new"
+      title="initializer can throw so long as all constructors declare so"
+      keywords="from-resolved_105,purejava">
+        <compile files="InitializerWithThrow.java"/>
+        <run class="InitializerWithThrow"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="interfaces may not contain initializers (bug found by jacks)"
+      keywords="from-resolved_105,purejava">
+        <compile files="InterfaceMembersCf.java">
+            <message kind="error" line="2"/>
+            <message kind="error" line="3"/>
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="pureJava"
+      title="initializers must be able to complete normally (found by jacks)"
+      keywords="from-resolved_105,purejava,messages-vary">
+        <compile files="InitializerFlowCf.java"
+               options="!eclipse">
+            <message kind="error" line="2"/>
+            <message kind="error" line="4"/>
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="pureJava" title="more tests of super alone"
+      keywords="from-resolved_105,purejava">
+        <compile files="SuperIsWeird.java">
+            <message kind="error" line="9"/>
+            <message kind="error" line="13"/>
+            <message kind="error" line="20"/>
+            <message kind="error" line="21"/>
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="pureJava" pr="752"
+      title="subclass access to enclosing super class private members"
+      keywords="from-resolved_105,purejava,fail-unimplemented">
+        <compile files="SubclassAccessToEnclosingSuperClassPrivate.java"/>
+        <run class="SubclassAccessToEnclosingSuperClassPrivate"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="various tests of switch bounds"
+      keywords="from-resolved_106,purejava">
+        <compile files="SwitchBounds.java"/>
+        <run class="SwitchBounds"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="601"
+      title="VerifyError if nested sync returning result"
+      comment="XXX inconsistent behavior?"
+      keywords="from-resolved_10final,purejava">
+        <compile files="NestedSyncWithResult.java"/>
+        <run class="NestedSyncWithResult"/>
+    </ajc-test>
+
+ 
+    <ajc-test dir="new" pr="134"
+      title="import of a class in the default package"
+      keywords="from-broken14usejavac,purejava">
+        <compile files="ImportFromUnnamed.java,DeclaredExcs.java"/>
+        <run class="ImportFromUnnamed"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="386"
+      title="Referencing static interfaces with import statements"
+      keywords="from-broken14usejavac,purejava">
+        <compile files="ClassWithStaticInnerInterfaces.java"/>
+        <compile files="ImportingStaticInnerInterfaces_PR386.java"/>
+        <run class="ImportingStaticInnerInterfaces_PR386"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="386"
+      title="Referencing static interfaces with import statements stars"
+      keywords="purejava,from-broken14usejavac">
+        <compile files="ClassWithStaticInnerInterfaces.java"/>
+        <compile files="ImportingStaticInnerInterfacesStars_PR386.java"/>
+        <run class="ImportingStaticInnerInterfacesStars_PR386"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="386"
+      title="Referencing static interfaces with import statements stars 2"
+      keywords="purejava,from-broken14usejavac">
+        <compile files="ClassWithStaticInnerInterfaces.java"/>
+        <compile files="ImportingStaticInnerInterfacesStars2_PR386.java"/>
+        <run class="ImportingStaticInnerInterfacesStars2_PR386"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="386"
+      title="Referencing static interfaces with import statements stars 3"
+      keywords="purejava,from-broken14usejavac">
+        <compile files="ClassWithStaticInnerInterfaces.java"/>
+        <compile files="ImportingStaticInnerInterfacesStars3_PR386.java"/>
+        <run class="ImportingStaticInnerInterfacesStars3_PR386"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="386"
+      title="Referencing interfaces with import statements"
+      keywords="purejava,from-broken14usejavac">
+        <compile
+          files="ClassWithInnerInterfaces.java,ImportingInnerInterfaces_PR386.java"/>
+        <run class="ImportingInnerInterfaces_PR386"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="386"
+      title="Referencing interfaces with import statements stars"
+      keywords="purejava,from-broken14usejavac">
+        <compile
+          files="ClassWithInnerInterfaces.java,ImportingInnerInterfacesStars_PR386.java"/>
+        <run class="ImportingInnerInterfacesStars_PR386"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="386"
+      title="Referencing interfaces with import statements stars 2"
+      keywords="purejava,from-broken14usejavac">
+        <compile
+          files="ClassWithInnerInterfaces.java,ImportingInnerInterfacesStars2_PR386.java"/>
+        <run class="ImportingInnerInterfacesStars2_PR386"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="386"
+      title="Referencing interfaces with import statements stars 3"
+      keywords="purejava,from-broken14usejavac">
+        <compile
+          files="ClassWithInnerInterfaces.java,ImportingInnerInterfacesStars3_PR386.java"/>
+        <run class="ImportingInnerInterfacesStars3_PR386"/>
+    </ajc-test>
+
+   <ajc-test dir="new/PR862" pr="862"
+      title="import any inner from interface implementor"
+      keywords="purejava">
+        <compile files="pack/ImportInnerFromInterfaceImplementor.java">
+          <dir-changes added="pack.ImportInnerFromInterfaceImplementor"/>
+        </compile>
+        <run class="pack.ImportInnerFromInterfaceImplementor"/>
+    </ajc-test>
+    
+     <ajc-test dir="pureJava/equalsMethOnStr" pr="214"
+      title="equals method on quoted strings" keywords="from-java">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava/anonInnerClass" pr="294"
+      title="anonymous inner class" keywords="from-java">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
+ 
+    <ajc-test dir="pureJava"
+      title="parsing of parenthesized 'this' (in returns)" keywords="from-java">
+        <compile files="ReturnThis.java"/>
+        <run class="ReturnThis"/>
+    </ajc-test>
+ 
+    <ajc-test dir="pureJava" title="Strings are folded and interned correctly"
+      keywords="from-java">
+        <compile files="StringFold.java"/>
+        <run class="StringFold"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="Cast binds tighter than equality tests"
+      keywords="from-java">
+        <compile files="CastAndBinary.java"/>
+        <run class="CastAndBinary"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="Boundary base values can be parsed"
+      keywords="from-java">
+        <compile files="BoundaryNums.java"/>
+        <run class="BoundaryNums"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="State is passed correctly across nested annonymous inners"
+      keywords="from-java">
+        <compile files="NestedInners.java"/>
+        <run class="NestedInners"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="?: expressions should typecheck in interesting ways"
+      keywords="from-java">
+        <compile files="TriTestTypecheck.java"/>
+        <run class="TriTestTypecheck"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="cast expressions should allow casts to/from interfaces at compile-time."
+      keywords="from-java">
+        <compile files="InterfaceCast.java"/>
+        <run class="InterfaceCast"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="various anonymous inner classes plus super types tests"
+      keywords="from-java">
+        <compile files="InnerSuper.java"/>
+        <run class="InnerSuper"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="Various comment syntaxes should be handled."
+      keywords="from-java">
+        <compile files="CommentSyntax.java"/>
+        <run class="CommentSyntax"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava/abstractInner"
+      title="Abstract inner classes across package boundaries"
+      keywords="from-java">
+        <compile files="C.java,pkg/A.java"/>
+        <run class="C"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="inner classes accessing outers and some more inner class names"
+      keywords="from-java">
+        <compile files="InnerAccess.java"/>
+        <run class="InnerAccess"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="remember to cast folded values down to the proper types."
+      keywords="from-java">
+        <compile files="CastingFoldedValues.java"/>
+        <run class="CastingFoldedValues"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="inner classes can be built using protected constructors in super"
+      keywords="from-java">
+        <compile files="VariousConstructors.java"/>
+        <run class="VariousConstructors"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="401"
+      title="The current AspectJ compiler cannot parse qualified superclass constructor invocations"
+      keywords="from-java">
+        <compile files="QualifiedSuperClassConstructorInvocations_PR401.java"/>
+        <run class="QualifiedSuperClassConstructorInvocations_PR401"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="421"
+      title="More thourough test of static members using full names"
+      keywords="from-java">
+        <compile
+          files="Statics.java,StaticMembers_PR421.java,p1/C1.java,p1/P1Statics.java,p1/subp1/SubC1.java,p1/p2/P1P2Statics.java"/>
+        <run class="StaticMembers_PR421"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="421"
+      title="More thourough test of static members using imports"
+      keywords="from-java">
+        <compile
+          files="Statics.java,StaticMembersImports_PR421.java,p1/C1.java,p1/P1Statics.java,p1/subp1/SubC1.java,p1/p2/P1P2Statics.java"/>
+        <run class="StaticMembersImports_PR421"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava/conflictingPackageNames" pr="437"
+      title="Looking in class Java for java.lang.String WITH separate compilation"
+      keywords="from-java">
+        <compile files="Java.java"/>
+        <compile files="Main.java"/>
+        <run class="Main"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava/conflictingPackageNames" pr="437"
+      title="Looking in class Java for java.lang.String WITHOUT separate compilation"
+      keywords="from-java">
+        <compile files="Main.java,Java.java"/>
+        <run class="Main"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava/conflictingPackageNamesWithPackages" pr="437"
+      title="Looking in class Java for java.lang.String WITH separate compilation with packages"
+      keywords="from-java">
+        <compile files="Java.java"/>
+        <compile files="Main.java"/>
+        <run class="conflictingPackageNamesWithPackages.Main"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava/conflictingPackageNamesWithPackages" pr="437"
+      title="Looking in class Java for java.lang.String WITHOUT separate compilation with packages"
+      keywords="from-java">
+        <compile files="Main.java,Java.java"/>
+        <run class="conflictingPackageNamesWithPackages.Main"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="Testing ternary operations."
+      keywords="from-java">
+        <compile files="MultiTernaryOps.java"/>
+        <run class="MultiTernaryOps"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="Lifting locals in switch statements."
+      keywords="from-java">
+        <compile files="SwitchStmtLocals.java"/>
+        <run class="SwitchStmtLocals"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Getting confused when looking up method signatures"
+      keywords="from-java">
+        <compile files="MethodSigs.java"/>
+        <run class="MethodSigs"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Not recognizing the chars '\0', '\1', '\2', '\3', '\4', '\5', '\6', '\7'"
+      keywords="from-java">
+        <compile files="Chars.java"/>
+        <run class="Chars"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Test chars '\0', '\1', '\2', '\3', '\4', '\5', '\6', '\7' with a case statement"
+      keywords="from-java">
+        <compile files="CaseClauses.java"/>
+        <run class="CaseClauses"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Checking character values with all the unicode chars."
+      keywords="from-java">
+        <compile files="CharsUnicode.java"/>
+        <run class="CharsUnicode"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Trouble finding methods with the same name and different parameter types"
+      keywords="from-java">
+        <compile files="MethodsWithTheSameName.java"/>
+        <run class="MethodsWithTheSameName"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Binding non-public static inner classes of interfaces in other packages"
+      keywords="from-java">
+        <compile
+          files="StaticClassesInInterfaces.java,anotherPackage/AnotherPackageInterface.java"/>
+        <run class="StaticClassesInInterfaces"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Not recognizing the octal chars '\0', '\1', '\2', '\3', '\4', '\5', '\6', '\7'"
+      keywords="from-java">
+        <compile files="OctalChars.java"/>
+        <run class="OctalChars"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Members with the same name as their package cause confusion with fully-qualified names."
+      keywords="from-java">
+        <compile files="samenames/Main.java,samenames/Other.java"/>
+        <run class="samenames.Main"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Fully-qual'ed names with same start as variable names"
+      keywords="from-java">
+        <compile files="FullNames.java"/>
+        <run class="FullNames"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Fully qualifying inner classes within annonymous classes causes problems."
+      keywords="from-java">
+        <compile files="InnerClassesInAnnonymousClasses.java"/>
+        <run class="InnerClassesInAnnonymousClasses"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Calls to methods in outer annonymous classes are being qual's incorrectly with 'this'"
+      keywords="from-java">
+        <compile files="MisplacedThisInAnnonymousInnerClasses.java"/>
+        <run class="MisplacedThisInAnnonymousInnerClasses"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava/innersFromSourceAndBytecode"
+      title="Reading inner classes from source and bytecode (1) -- was failing"
+      keywords="from-java">
+        <compile files="C.java,D.java"/>
+        <compile files="Main.java,C.java"
+        	includeClassesDir="true"/>
+        <run class="Main"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava/innersFromSourceAndBytecode"
+      title="Reading inner classes from source and bytecode (2)"
+      keywords="from-java">
+        <compile files="Main.java,C.java,D.java"/>
+        <run class="Main"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava/innersFromSourceAndBytecode"
+      title="Reading inner classes from source and bytecode (3)"
+      keywords="from-java">
+        <compile files="C.java,D.java"/>
+        <compile files="Main.java,C.java,D.java"
+        	includeClassesDir="true"/>
+        <run class="Main"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Not lifting types correctly with bytes and shorts with ternary ops"
+      keywords="from-java">
+        <compile files="TernaryPrimitiveOps.java"/>
+        <run class="TernaryPrimitiveOps"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Not looking up methods inside of anonymous declarations correctly."
+      keywords="from-java">
+        <compile files="AnonymousMethodLookup.java"/>
+        <run class="AnonymousMethodLookup"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Resolving extended classes with array parameters"
+      keywords="from-java">
+        <compile files="ResolvingArrayParameters.java"/>
+        <run class="ResolvingArrayParameters"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Assignments as second arguments in ternary operators."
+      keywords="from-java">
+        <compile files="TernaryAssignments.java"/>
+        <run class="TernaryAssignments"/>
+    </ajc-test>
+
+
+    <ajc-test dir="pureJava" title="Conflicting inner classes with interfaces."
+      keywords="from-java">
+        <compile files="PR413.java"/>
+        <run class="PR413"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="confusions of casts and parens"
+      keywords="from-java">
+        <compile files="CastVsParen.java"/>
+        <run class="CastVsParen"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="default constructors seen by inner classes subtyping outers"
+      keywords="from-java">
+        <compile files="DefaultConsAndInner.java"/>
+        <run class="DefaultConsAndInner"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="folding fields set to anonymous instances containing self-references"
+      keywords="from-java">
+        <compile files="AnonFolding.java"/>
+        <run class="AnonFolding"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="finally at the end of a method that needs to return"
+      keywords="from-java">
+        <compile files="FinallyAndReturns.java"/>
+        <run class="FinallyAndReturns"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="overriding methods from object in interfaces and multiple-inheritance"
+      keywords="from-java">
+        <compile files="InterfaceAndObject.java"/>
+        <run class="InterfaceAndObject"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="private fields in an outer class accessed by an inner which also extends the outer"
+      keywords="from-java">
+        <compile files="PrivateFields.java"/>
+        <run class="PrivateFields"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="breaking out of a labeled block inside of an if"
+      keywords="from-java">
+        <compile files="Breaks.java"/>
+        <run class="Breaks"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="abstractifying a method and getting it back through super"
+      keywords="from-java">
+        <compile files="Abstracts.java"/>
+        <run class="Abstracts"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Packages and static classes with the same name produce compile errors."
+      keywords="from-java">
+        <compile files="PackagesAndStaticClassesWithTheSameName.java"/>
+        <run class="PackagesAndStaticClassesWithTheSameName"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava/innerTypeModifiers"
+      title="Inner types must generate classfiles with only Public/Default access flags."
+      keywords="from-java">
+        <compile files="pkg1/Main.java,pkg2/Foo.java"/>
+        <run class="pkg1.Main"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava/innerDefaultConstructors"
+      title="Default constructors have same access as their enclosing type"
+      keywords="from-java">
+        <compile files="pkg1/Main.java,pkg2/Foo.java">
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Returning primitive values matching method return type (minimal)"
+      keywords="from-java">
+        <compile files="ReturnTypes.java"/>
+        <run class="ReturnTypes"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="Flow analysis and if(true)"
+      keywords="from-java">
+        <compile files="Flow.java"/>
+        <run class="Flow"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="packages and generated inner types (for I.class)"
+      keywords="from-java">
+        <compile files="InterfaceAndClass.java"/>
+        <run class="p.InterfaceAndClass"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="A.this exprs match by exact type matching"
+      keywords="from-java">
+        <compile files="QualifiedThisMatchesExactly.java">
+            <message kind="error" line="14"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Implicit this for new inner instance must be avaliable"
+      keywords="from-java">
+        <compile files="ImplicitThisMissing.java">
+            <message kind="error" line="4"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Inners can reference protected fields of their outer's super."
+      keywords="from-java">
+        <compile
+          files="protectedFieldRefInInner/Main.java,protectedFieldRefInInner/p1/C.java"/>
+        <run class="protectedFieldRefInInner.Main"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Primitives that special case for a constant arm should work"
+      keywords="from-java">
+        <compile files="OneArmedPrimitiveTests.java"/>
+        <run class="OneArmedPrimitiveTests"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="Parenthesized true and false don't parse"
+      keywords="from-java">
+        <compile files="ParenKeywords.java"/>
+        <run class="ParenKeywords"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Field sets to public fields of private fields of enclosing types"
+      keywords="from-java">
+        <compile files="InnerFieldRef.java"/>
+        <run class="InnerFieldRef"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Constant values should be stored with the correct type of their fields"
+      keywords="from-java">
+        <compile files="ConstantValueConversion.java"/>
+        <run class="ConstantValueConversion"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Local variables in initializers should not be treated as blank final fields"
+      keywords="from-java">
+        <compile files="LocalInitializerVariableNotBlank.java"/>
+        <run class="LocalInitializerVariableNotBlank"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Binops aren't allowed as update stmts in for loops"
+      keywords="from-java">
+        <compile files="NonStmtInFor.java">
+            <message kind="error" line="3"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Can't avoid doing division in case of div by zero"
+      keywords="from-java">
+        <compile files="DivOpMustHappen.java"/>
+        <run class="DivOpMustHappen"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Testing frames w/greater than FF locals and 7F incs (i.e., WIDE instruction)"
+      keywords="from-java">
+        <compile files="BigFrameTest.java"/>
+        <run class="BigFrameTest"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="correct numeric literals"
+      keywords="from-java">
+        <compile files="LiteralsCp.java"/>
+        <run class="LiteralsCp"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="invalid numeric literals"
+      keywords="from-java">
+        <compile files="LiteralsCf.java">
+            <message kind="error" line="8"/>
+            <message kind="error" line="9"/>
+            <message kind="error" line="10"/>
+            <message kind="error" line="11"/>
+            <message kind="error" line="12"/>
+            <message kind="error" line="17"/>
+            <message kind="error" line="18"/>
+            <message kind="error" line="19"/>
+            <message kind="error" line="20"/>
+            <message kind="error" line="21"/>
+            <message kind="error" line="22"/>
+            <message kind="error" line="23"/>
+            <message kind="error" line="25"/>
+            <message kind="error" line="27"/>
+            <message kind="error" line="28"/>
+            <message kind="error" line="29"/>
+            <message kind="error" line="30"/>
+            <message kind="error" line="32"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="538"
+      title="inner types can't have the same simple name as an enclosing type"
+      keywords="from-java">
+        <compile files="InnerNameConflictsCf.java">
+            <message kind="error" line="9"/>
+            <message kind="error" line="14"/>
+            <message kind="error" line="20"/>
+            <message kind="error" line="21"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="test the unops and binops with various values" keywords="from-java">
+        <compile files="BigOps.java"/>
+        <run class="BigOps"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="test + and += for strings and variously typed values"
+      keywords="from-java">
+        <compile files="BigString.java"/>
+        <run class="BigString"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="test try/catch/finally statements"
+      keywords="from-java">
+        <compile files="TryCatchFinally.java"/>
+        <run class="TryCatchFinally"/>
+    </ajc-test>
+
+
+    <ajc-test dir="pureJava" pr="547"
+      title="local types can be bound in the signatures of other local types"
+      keywords="from-resolved_10rc3,from-java">
+        <compile files="LocalInners.java"/>
+        <run class="LocalInners"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava/nameConflicts"
+      title="type and package name conflicts are resolved happily (2)"
+      keywords="from-java">
+        <compile files="p1/Main2.java,p1/p2/Foo.java"/>
+        <run class="p1.Main2"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="try statements work sorta like scoped items for exception flow control"
+      keywords="from-java">
+        <compile files="TryWorksLikeEnvironment.java"/>
+        <run class="TryWorksLikeEnvironment"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="qualified this must work exactly, not based on subtypes"
+      keywords="from-java">
+        <compile files="QualifiedThisExactness.java">
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="nested finally blocks have interesting frame location problems"
+      keywords="from-java">
+        <compile files="NestedFinally.java"/>
+        <run class="NestedFinally"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="601"
+      title="nested synchronized blocks have interesting frame location problems"
+      keywords="from-java">
+        <compile files="NestedSynchronized.java"/>
+        <run class="NestedSynchronized"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="anonymous inner classes with inner types"
+      keywords="from-java">
+        <compile files="AnonymousWithInner.java"/>
+        <run class="AnonymousWithInner"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="651" title="qualified super call expr"
+      keywords="from-java">
+        <compile files="QualifiedSuperCall.java"/>
+        <run class="QualifiedSuperCall"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="680"
+      title="interfaces with non-explicitly static inner classes"
+      keywords="from-java">
+        <compile files="InterfaceAndInnerHelper.java"/>
+        <compile files="InterfaceAndInner.java"
+        	includeClassesDir="true"/>
+        <run class="InterfaceAndInner"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="Operands work correctly"
+      keywords="from-bigjava">
+        <compile files="Ops.java"/>
+        <run class="Ops"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="simple tests of throws and for stmt typing"
+      keywords="from-errors">
+        <compile files="SimpleSpec.java">
+            <message kind="error" line="4"/>
+            <message kind="error" line="7"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="test for not folding circular constants"
+      keywords="from-errors">
+        <compile files="CircularFolding.java">
+            <message kind="error" line="6"/>
+            <message kind="error" line="7"/>
+            <message kind="error" line="8"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" title="continue targets must be continuable"
+      keywords="from-errors">
+        <compile files="BadContinueTarget.java">
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="qualified this to non-inner should be caught"
+      keywords="from-errors">
+        <compile files="BadQualifiedNew.java">
+            <message kind="error" line="4"/>
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="new" 
+    	title="Cannot bind a name." keywords="from-resolved_10x,purejava">
+        <compile files="CannotReferenceSuper.java"/>
+        <run class="CannotReferenceSuper"/>
+    </ajc-test>
+
+    <ajc-test dir="pureJava" pr="721"
+      title="interface declaration not permitted in local method scope"
+      keywords="from-resolved_105">
+        <compile files="LocalInterfaceCE.java">
+            <message kind="error" line="5"/>
+            <message kind="error" line="8"/>
+            <message kind="error" line="11"/>
+            <message kind="error" line="15"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="pureJava"
+      title="Locals inside other locals, ordering of processing [eh]"
+      keywords="from-resolved_105">
+        <compile files="LocalInners2.java"/>
+        <run class="LocalInners2"/>
+    </ajc-test>
+
+   <ajc-test dir="pureJava" pr="866"
+      title="non-constant static final fields marked as final in .class">
+        <compile files="FinalStaticField.java"/>
+        <run class="FinalStaticField"/>
+    </ajc-test>
+
+   <ajc-test dir="new" title="handle multiple nested inner classes"
+      keywords="from-java">
+        <compile files="InnerHell.java"/>
+        <run class="InnerHell"/>
+    </ajc-test>
+
+   <ajc-test dir="new/volatileKeyword" pr="151"
+      title="advice on a static method" keywords="from-java">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
+
+   <ajc-test dir="new/innerConsSyntax" pr="192"
+      title="inner constructor syntax causes compile error" keywords="from-java">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
+
+    <ajc-test dir="new/paramWidening" pr="195"
+      title="widening of method parameters to match javac" keywords="from-java">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="313"
+      title="parenthesized string literals matching primitive type names"
+      keywords="from-java">
+        <compile files="ParenPrimitive.java"/>
+        <run class="ParenPrimitive"/>
+    </ajc-test>
+
+    <ajc-test dir="new" title="simple type coercions tests" keywords="from-java">
+        <compile files="TypeCoercions.java"/>
+        <run class="TypeCoercions"/>
+    </ajc-test>
+
+    <ajc-test dir="new" title="order of type declarations shouldn't matter"
+      keywords="from-java">
+        <compile files="OrderOfTypes.java"/>
+        <run class="OrderOfTypes"/>
+    </ajc-test>
+
+    <ajc-test dir="new" title="Scanner non recognizing strictfp."
+      keywords="from-java">
+        <compile files="StrictFp.java"/>
+        <run class="StrictFp"/>
+    </ajc-test>
+
+    <ajc-test dir="new"
+      title="Crashes when a lot of zeros are in front of a double variable [!!! purejava]"
+      keywords="from-java">
+        <compile files="Zeros.java"/>
+        <run class="Zeros"/>
+    </ajc-test>
+

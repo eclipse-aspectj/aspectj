@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[
+<!ENTITY tests SYSTEM "../tests/src/org/aspectj/systemtest/base/baseTests-tests.xml">
+]>
+<!-- Base Tests -->
+
+<suite>
+
+&tests;
+
+</suite>    

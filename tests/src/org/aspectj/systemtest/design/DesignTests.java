@@ -1,0 +1,80 @@
+/* *******************************************************************
+ * Copyright (c) 2004 IBM Corporation
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Common Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ * 
+ * ******************************************************************/
+package org.aspectj.systemtest.design;
+
+import java.io.File;
+import junit.framework.Test;
+import org.aspectj.testing.XMLBasedAjcTestCase;
+
+public class DesignTests extends org.aspectj.testing.XMLBasedAjcTestCase {
+
+  public static Test suite() {
+    return XMLBasedAjcTestCase.loadSuite(DesignTests.class);
+  }
+
+  protected File getSpecFile() {
+    return new File("../tests/src/org/aspectj/systemtest/design/design.xml");
+  }
+
+
+  public void test001(){
+    runTest("initial tests for new introduction style");
+  }
+
+  public void test002(){
+    runTest("overriding of introduced methods and accessibility");
+  }
+
+  public void test003(){
+    runTest("within and introductions behaves correctly");
+  }
+
+  public void test004(){
+    runTest("correct inheritance of multiple concrete methods");
+  }
+
+  public void test005(){
+    runTest("errors in inheritance of multiple concrete methods");
+  }
+
+  public void test006(){
+    runTest("declared exceptions are checked correctly on intros (errors)");
+  }
+
+  public void test007(){
+    runTest("declared exceptions are checked correctly on intros");
+  }
+
+  public void test008(){
+    runTest("Joinpoint is not created for foo(String) when before() advice is present.");
+  }
+
+  public void test009(){
+    runTest("more tests of eachobject with some difficult typing issues");
+  }
+
+  public void test010(){
+    runTest("eachobject: eachobject(receptions(...)) [eachobject]");
+  }
+
+  public void test011(){
+    runTest("Checking new joinpoints");
+  }
+
+  public void test012(){
+    runTest("eachobject: simple test [eachobject] (still)");
+  }
+
+  public void test013(){
+    runTest("scope issues with introduction (needs more work)");
+  }
+
+}
+

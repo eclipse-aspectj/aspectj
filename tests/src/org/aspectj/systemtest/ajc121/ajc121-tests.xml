@@ -1,0 +1,127 @@
+<!-- AspectJ v1.2.1 Tests -->
+
+
+   	<ajc-test dir="bugs"
+		pr="62073" title="false ambigous binding error (introduced in 1.2rc2)">
+        <compile files="DisjunctVarBinding_2.java,DisjunctVarBinding_3.java">
+        	<message kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type B"/>
+        	<message kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type A"/>
+        </compile>
+        <compile files="DisjunctVarBinding_3.java,DisjunctVarBinding_2.java">
+        	<message kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type B"/>
+        	<message kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type A"/>
+        </compile>
+    </ajc-test>
+    
+	<ajc-test dir="bugs/IfPerThis"
+		pr="62458" title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc">
+        <compile files="Testcase1.java">
+        	<message kind="error" line="15" text="if() pointcut designator cannot be used directly in a per clause"/>
+        	<message kind="error" line="23" text="if() pointcut designator cannot be used directly in a per clause"/>
+        	<message kind="error" line="25" text="if() pointcut designator cannot be used directly in a per clause"/>
+        	<message kind="error" line="27" text="if() pointcut designator cannot be used directly in a per clause"/>
+        </compile>
+    </ajc-test>
+    
+   	<ajc-test dir="bugs/IfPerThis"
+		pr="62458" title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc">
+        <compile files="Testcase2.java"/>
+        <run class="Testcase2"/>
+    </ajc-test>
+   	
+   	<ajc-test dir="bugs/IfPerThis"
+		pr="62458" title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc">
+        <compile files="Testcase3.java">
+        	<message kind="error" line="2" text="if() pointcut designator cannot be used directly in a per clause"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs/bug70619"
+		pr="70619" title="compiler aborts with 'conflicting dominates orders' with circular declare precedences">
+        <compile files="Precedence.java">
+          <message kind="error" line="0" text="conflicting declare precedence"/>
+        </compile>
+        <compile files="Conflict.java,Order2.aj,Order1.aj">        
+          <message kind="error" line="0" text="conflicting declare precedence"/>
+        </compile>
+        <compile files="Conflict.java,Order1.aj,Order2.aj">
+          <message kind="error" line="0" text="conflicting declare precedence"/>
+        </compile>
+    </ajc-test>
+ 
+    <ajc-test dir="bugs"
+		pr="53999" title="'can't bind type' message has $ for . in type name for declare soft">
+        <compile files="Cosmetic.java">
+        <message kind="error" line="9" text="can't bind type name 'unknown.Error'"/>
+        </compile>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs/intertypeOverrides"
+		pr="69459" title="Hiding of Instance Methods by static methods">
+        <compile files="IntertypeOverrides.java">
+          <message kind="error" line="8" text="void Sub.m() cannot override void Super.m(); overriding method is static"/>
+        </compile>
+        <compile files="IntertypeOverrides2.java">
+          <message kind="error" line="8" text="void Sub.m() cannot override void Super.m(); overridden method is static"/>
+        </compile>
+        <compile files="Superclass.java,Subclass.java,Aspect1.java">
+          <message file="Aspect1.java" kind="error" line="2" 
+             text="void Subclass.staticMethod() cannot override void Superclass.staticMethod(); overridden method is static"/>
+        </compile>
+        <compile files="Superclass.java,Subclass.java,Aspect2.java">
+          <message file="Aspect2.java" kind="error" line="2"
+             text="void Subclass.nonstaticMethod() cannot override void Superclass.nonstaticMethod(); overriding method is static"/>
+        </compile>
+    </ajc-test>
+   
+      <ajc-test dir="new"
+      title="if(false) optimisation" pr="48990">
+        <compile files="IfFalse.aj"/>
+        <run class="IfFalse"/>
+    </ajc-test>
+   
+    <ajc-test dir="new"
+      title="if(true) optimisation" pr="48990">
+        <compile files="IfTrue.aj"/>
+        <run class="IfTrue"/>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs/abstractITDs"
+		pr="64331" title="java.lang.NullPointerException in WeaverMessageHandler class">
+        <compile files="A.java,C.java" aspectpath="B.jar">
+          <message kind="error" line="1" text="must implement abstract inter-type declaration: void A.foo()"/>
+        </compile>
+    </ajc-test>
+  
+   <ajc-test dir="bugs/pr64262"
+      title="ClassCastException at BcelRenderer.java:169" pr="64262">
+        <compile files="PrimitiveCoercionInExactTypePatternMatching.java"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs"
+		pr="61536" title="Front-end bug, shouldn't allow patterns of the form foo.., should be foo..*">
+        <compile files="EllipsesStar.java">
+          <message kind="error" line="3" text="Syntax error on token"/>
+          <message kind="error" line="4" text="Syntax error on token"/>
+          <message kind="error" line="5" text="Syntax error on token"/>
+          <message kind="error" line="6" text="Syntax error on token"/>
+          <message kind="error" line="8" text="Syntax error on token"/>
+          <message kind="error" line="10" text="Syntax error on token"/>
+          <message kind="error" line="12" text="Syntax error on token"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs"
+		pr="67774" title="Nullpointer-Exception when defining a withincode() pointcut">
+        <compile files="WithincodeNPE01.java">
+          <!-- there are 3 join points that result in decw match, but 2 are on the same line! -->
+          <message kind="warning" line="2" text="In String ctor"/>
+          <message kind="warning" line="11" text="In String ctor"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs" pr="60015"
+      title="NPE, Incorrect XLint:unmatchedSuperTypeInCall warning">
+      <compile files="IncorrectXlintOnInterface.java">
+      </compile>
+    </ajc-test>

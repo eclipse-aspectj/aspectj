@@ -1,0 +1,297 @@
+<!-- Known Limitations -->
+
+	<!-- we're not implementing static inter-type fields on interfaces in 1.1 -->
+    <ajc-test dir="knownLimitations/test117" title="DEPRECATED: introduce of variables"
+      keywords="from-base,knownLimitation">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
+
+	<!-- we're not implementing this error check in 1.1 -->
+    <ajc-test dir="errors"
+      title="checking the contra-variant errors for typing of proceed"
+      keywords="from-errors,knownLimitation">
+        <compile files="BadAround.java">
+            <message kind="error" line="12"/>
+            <message kind="error" line="15"/>
+            <message kind="error" line="18"/>
+            <message kind="error" line="19"/>
+            <message kind="error" line="22"/>
+        </compile>
+    </ajc-test>
+
+	<!-- we're not implementing static inter-type fields on interfaces in 1.1 -->
+    <ajc-test dir="design/intro"
+      title="introduction of static methods and fields on classes and interfaces"
+      keywords="from-design,knownLimitation">
+        <compile files="Statics.java"/>
+        <run class="Statics"/>
+    </ajc-test>
+
+	<!-- only before advice implemented for handler join points in 1.1 -->
+    <ajc-test dir="new" title="advice on catch clauses"
+      keywords="from-resolved_10x,knownLimitation">
+        <compile files="CatchAdvice.java"/>
+        <run class="CatchAdvice"/>
+    </ajc-test>
+
+	<!-- we will handle this by signalling a weave-time error for any around
+	     advice that is applied to a join point which throws checked exceptions
+	     that it can't handle.  proceeds in closures change the exceptions that
+	     around advice can handle to include the greatest lower bound of the
+	     checked exceptions that are legally throwable by the proceed.
+	     Ideally their should be an -Xlint compile-time warning for ALL 
+	     cases that could produce weave-time errors.
+	-->
+    <ajc-test dir="new" title="holding onto proceed calls in a closure-like way"
+      keywords="from-resolved_10x,knownLimitation">
+        <compile files="HoldProceed.java"/>
+        <run class="HoldProceed"/>
+    </ajc-test>
+
+	<!-- around advice not implemented on initializer join points -->
+    <ajc-test dir="new" pr="490"
+      title="PR#458 Compiler was incorrectly flagging error in advice on initialization and static initialization"
+      keywords="from-resolved_10x,knownLimitation">
+        <compile files="StaticInitCE.java"/>
+        <run class="StaticInitCE"/>
+    </ajc-test>
+
+	<!-- This behavior is different from 1.0, but we might want to consider allowing it
+	     Using the eclipse compiler it would be much easier to permit than forbid. -->
+    <ajc-test dir="new/introTypeMissing"
+      title="Introduced type unavailable to instanceof expressions in introduced methods"
+      keywords="from-resolved_10x,knownLimitation">
+        <compile files="InstanceOf.java,TargetClass.java,Util.java">
+            <message kind="error" line="19"/>
+            <message kind="error" line="20"/>
+            <message kind="error" line="21"/>
+            <message kind="error" line="22"/>
+            <message kind="error" line="23"/>
+            <message kind="error" line="24"/>
+            <message kind="error" line="25"/>
+            <message kind="error" line="26"/>
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="new"
+      title="enclosing join point not exported properly in pre-initialization join point"
+      keywords="from-resolved_10x,knownLimitation">
+        <compile files="PreInitialization.java"/>
+        <run class="PreInitialization"/>
+    </ajc-test>
+
+	<!-- pointcuts aren't checked for circularities unless they're used -->
+    <ajc-test dir="new" pr="568" title="cyclic pointcut definitions"
+      keywords="from-resolved_10rc3,knownLimitation">
+        <compile files="CyclicPointcuts.java">
+            <message kind="error" line="11"/>
+            <message kind="error" line="14"/>
+            <message kind="error" line="18"/>
+            <message kind="error" line="32"/>
+            <message kind="error" line="43"/>
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="new"
+      title="package typepattern with no packages (in default package)"
+      keywords="from-resolved_105,knownLimitation">
+        <compile options="-Xlint" files="TypeNames.java">
+            <message kind="warning" line="34"/>
+            <message kind="warning" line="39"/>
+            <message kind="warning" line="43"/>
+            <message kind="warning" line="47"/>
+        </compile>
+        <run class="TypeNames"/>
+    </ajc-test>
+
+    <ajc-test dir="new" pr="764"
+      title="flag errors when binding args with indeterminate prefix and suffix"
+      keywords="from-resolved_105,knownLimitation">
+        <compile files="IndeterminateArgsCE.java">
+            <message kind="error" line="67"/>
+            <message kind="error" line="68"/>
+            <message kind="error" line="70"/>
+            <message kind="error" line="72"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="design/around"
+      title="around and return types + inlining optimizations"
+      comment="-XOcodeSize not in 1.1, source uses 1.4 APIs"
+      keywords="from-14tests,knownLimitation">
+        <compile options="-XOcodeSize,-source,1.4"
+          files="ReturnCastProceed.java,StackChecker.java">
+            <message kind="warning" line="68"/>
+        </compile>
+        <run class="ReturnCastProceed" vm="1.4"/>
+    </ajc-test>
+
+   <ajc-test dir="new" pr="885" keywords="knownLimitation"
+      comment="this behaves differently in 1.3 from 1.4 for unknown reasons, merge with above when resolved"
+      title="source locations within expressions (hard case of constructor start)">
+        <compile files="SourceLocationWithinExprHard.java"/>
+        <run class="SourceLocationWithinExprHard"/>
+    </ajc-test>
+
+   <!-- Can't handle packages named 'aspect' in parser
+    -->
+    <ajc-test dir="new/PR852" pr="852"
+      title="declaring method on superclass and subclass"
+      keywords="knownLimitation">
+        <compile files="aspect/Aspect.java,target/SubClass.java,target/SuperClass.java">
+          <dir-changes added="target.SubClass,target.SuperClass"/>
+        </compile>
+        <run class="aspect.Aspect"/>
+    </ajc-test>
+
+   <ajc-test dir="new" pr="660" title="illegal name binding in around cflow"
+      keywords="from-resolved_104,knownLimitation">
+        <compile files="ArgsInCflowCf.java">
+            <message kind="error" line="19"/>
+            <message kind="error" line="29"/>
+            <message kind="error" line="35"/>
+        </compile>
+    </ajc-test>
+
+     <ajc-test dir="incremental/stringliteral"   
+    	keywords="knownLimitation"
+    	title="incrementally change string size and wire in injar classes">
+        <compile staging="true" options="-incremental" 
+        	files="oneInjar.jar,twoInjar.jar"
+        	sourceroots="src"/>
+		<run class="packageOne.Main"
+			options="in packageOne.Main.main(..),
+					 before main packageOne.Main"/>
+        <inc-compile tag="20">
+        	<dir-changes updated="packageOne.Main"/>
+        </inc-compile>
+        <!-- now failing here.  This step passes in non-injar variant. -->
+		<run class="packageOne.Main"
+			options="in longer packageOne.Main.main(..),
+					 before main packageOne.Main"/>
+        <inc-compile tag="30">
+        	<dir-changes added="RunInjarMains"/>
+        </inc-compile>
+		<run class="packageOne.Main"
+			options="in longer packageOne.Main.main(..),
+					 before main InjarOneMain,
+					 before main InjarTwoMain,
+					 before main packageOne.Main"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs" pr="34206" 
+    	keywords="knownLimitation"
+    	title="before():execution(new(..)) does not throw NoAspectBoundException"
+    	comment="correct behavior of this case needs to be thought through">
+        <compile files="AspectInitError.java"/>
+        <run class="AspectInitError"/>
+    </ajc-test>
+    
+  <ajc-test dir="new/binaryWarnings/src" pr="37020"
+   	keywords="knownLimitation"
+   	comment="source loc of binary jp depends on first code, not block start"
+   	title="declare error on handler/method execution with no code on binary ajc 1.1 classes">
+        <compile files="aspects/MainExecStartLinesErrors.java,../injars/appStartLines-ajc-1.1.jar">
+        	<message kind="error" file="app/MainExecStartLines.java"
+        	  line="6" text="execution(void MainExecStartLines.main(String[]))"/>
+        	<message kind="error" file="app/MainExecStartLines.java"
+        	  line="17" text="handler(RuntimeException)"/>        	  
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="new/binaryWarnings/src" pr="37020"
+   	keywords="knownLimitation"
+   	comment="source loc of binary jp depends on first code, not block start; XXX need javac inlining example"
+   	title="declare error on handler/method execution with no code on binary javac 1.4 classes">
+        <compile files="aspects/MainExecStartLinesErrors.java,../injars/appStartLines-javac-1.4.jar">
+        	<message kind="error" file="app/MainExecStartLines.java"
+        	  line="6" text="execution(void MainExecStartLines.main(String[]))"/>
+        	<message kind="error" file="app/MainExecStartLines.java"
+        	  line="17" text="handler(RuntimeException)"/>        	  
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="harness" 
+    	keywords="command-line-error,knownLimitation"
+    	comment="can't test -help: has to abort, but returns 0, normal status"    
+		title="CLE: -help usage">
+        <compile  badInput="true" options="-help">
+            <message kind="abort" text="Usage"/>
+        </compile>
+    </ajc-test>
+
+     <!-- The next three tests are all about the same issue.  The source
+         line for a constructor execution is returned as the first executable
+         line within the constructor-execution join point rather than the declaration
+         line of the constructor.  Any other definition will require collusion between
+         the source->bytecode compiler and the weaver and will only work in
+         those case where such collusion is possible.
+    -->
+
+    <ajc-test dir="new/binaryWarnings/src" pr="37020" keywords="knownLimitation"
+   	 title="declare warnings on main - constructor execution">
+        <compile files="aspects/ConstructorExecutionWarning.java,app/Main.java">
+        	<message kind="warning" file="app/Main.java"
+        	  line="23" text="execution(Main.new())"/>
+        </compile>
+        <run class="app.Main"/>
+    </ajc-test>
+
+    <ajc-test dir="new/binaryWarnings/src" pr="37020" keywords="knownLimitation"
+   	 title="declare warnings on binary javac 1.4 main - constructor execution">
+        <compile files="aspects/ConstructorExecutionWarning.java,../injars/app-javac-1.4.jar">
+        	<message kind="warning" file="app/Main.java"
+        	  line="23" text="execution(Main.new())"/>
+        </compile>
+        <run class="app.Main"/>
+    </ajc-test>
+
+    <ajc-test dir="new/binaryWarnings/src" pr="37020" keywords="knownLimitation"
+   	 title="declare warnings on binary ajc 1.1 main - constructor execution">
+        <compile files="aspects/ConstructorExecutionWarning.java,../injars/app-ajc-1.1.jar">
+        	<message kind="warning" file="app/Main.java"
+        	  line="23" text="execution(Main.new())"/>
+        </compile>
+        <run class="app.Main"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs/handlers" pr="37898" keywords="knownLimitation"
+		title="advice on handler join points should not throw unpermitted checked exceptions">
+        <compile files="ExceptionCheckCE.java">
+			<message kind="warning" line="8" text="expected"/>
+			<message kind="error" line="25" text="throw checked exception" />
+			<message kind="error" line="8" text="throw checked exception" />
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness" pr="38134" keywords="knownLimitation"
+   		comment="behavior is correct for 1.1 - revisit for 1.2"
+        title="-nowarn suppresses XLint warnings">
+        <compile files="XLintWarningTest.java" options="-nowarn"/>
+    </ajc-test>
+
+   <ajc-test dir="harness" pr="38134" keywords="knownLimitation"
+   		comment="behavior is correct for 1.1 - revisit for 1.2"
+        title="warn:none suppresses XLint warnings">
+        <compile files="XLintWarningTest.java" options="-warn:none"/>
+    </ajc-test>
+
+    <ajc-test dir="harness" pr="38134" keywords="knownLimitation"
+   		comment="behavior is correct for 1.1 - revisit for 1.2"
+        title="-nowarn suppresses declare warnings">
+        <compile files="WarningTest.java" options="-nowarn"/>
+    </ajc-test>
+
+    <ajc-test dir="harness" pr="38134" keywords="knownLimitation"
+   		comment="behavior is correct for 1.1 - revisit for 1.2"
+        title="-warn:none suppresses declare warnings">
+        <compile files="WarningTest.java" options="-warn:none"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs" pr="38168" keywords="knownLimitation"
+   	 title="insertion of lots of advice code can make branch offset for if too large">
+        <compile files="WideJumps.java"/>
+        <run class="WideJumps"/>
+    </ajc-test>
+  

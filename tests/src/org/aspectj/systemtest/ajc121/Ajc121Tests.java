@@ -1,0 +1,84 @@
+/* *******************************************************************
+ * Copyright (c) 2004 IBM Corporation
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Common Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ * 
+ * ******************************************************************/
+package org.aspectj.systemtest.ajc121;
+
+import java.io.File;
+import junit.framework.Test;
+import org.aspectj.testing.XMLBasedAjcTestCase;
+
+public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
+
+  public static Test suite() {
+    return XMLBasedAjcTestCase.loadSuite(Ajc121Tests.class);
+  }
+
+  protected File getSpecFile() {
+    return new File("../tests/src/org/aspectj/systemtest/ajc121/ajc121.xml");
+  }
+
+
+  public void test001(){
+    runTest("false ambigous binding error (introduced in 1.2rc2)");
+  }
+
+  public void test002(){
+    runTest("An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc");
+  }
+
+  public void test003(){
+    runTest("An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc");
+  }
+
+  public void test004(){
+    runTest("An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc");
+  }
+
+  public void test005(){
+    runTest("compiler aborts with 'conflicting dominates orders' with circular declare precedences");
+  }
+
+  public void test006(){
+    runTest("'can't bind type' message has $ for . in type name for declare soft");
+  }
+
+  public void test007(){
+    runTest("Hiding of Instance Methods by static methods");
+  }
+
+  public void test008(){
+    runTest("if(false) optimisation");
+  }
+
+  public void test009(){
+    runTest("if(true) optimisation");
+  }
+
+  public void test010(){
+    runTest("java.lang.NullPointerException in WeaverMessageHandler class");
+  }
+
+  public void test011(){
+    runTest("ClassCastException at BcelRenderer.java:169");
+  }
+
+  public void test012(){
+    runTest("Front-end bug, shouldn't allow patterns of the form foo.., should be foo..*");
+  }
+
+  public void test013() {
+  	runTest("Nullpointer-Exception when defining a withincode() pointcut");
+  }
+
+  public void test014() {
+  	runTest("NPE, Incorrect XLint:unmatchedSuperTypeInCall warning");
+  }
+
+}
+
