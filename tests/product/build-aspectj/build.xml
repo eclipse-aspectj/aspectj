@@ -198,12 +198,14 @@
     </target>
 
     <target name="test-tools" depends="init">
-       <java classname="org.aspectj.tools.ajc.Main">
+       <java classname="org.aspectj.tools.ajc.Main"
+       	failonerror="true">
          <classpath>
           	<path refid="tools.libs"/>
             <pathelement path="${output.aspectjtools}"/> 
          </classpath>
          <arg value="-help"/>
+         <arg value="-noExit"/>
        </java>
     </target>
 
