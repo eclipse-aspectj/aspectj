@@ -338,7 +338,7 @@ public class CompilerRun implements IAjcRun {
         }
         if (spec.outjar != null) {
         	arguments.add("-outjar");
-        	arguments.add(spec.outjar);
+        	arguments.add(new File(sandbox.classesDir,spec.outjar).getPath());
         }
         if (!LangUtil.isEmpty(extdirFiles)) {
             arguments.add("-extdirs");
@@ -438,18 +438,19 @@ public class CompilerRun implements IAjcRun {
         ArrayList argList = new ArrayList();
         final Spec.TestSetup setupResult = spec.testSetup;
         try {
-            argList.add("-d");
-            String outputDirPath = sandbox.classesDir.getAbsolutePath();
-            try { // worth it to try for canonical?
-                outputDirPath = sandbox.classesDir.getCanonicalPath();
-            } catch (IOException e) {
-                MessageUtil.abort(
-                    status,
-                    "canonical " + sandbox.classesDir,
-                    e);
-            }
-            argList.add(outputDirPath);
-
+        	if (spec.outjar == null) {
+	            argList.add("-d");
+	            String outputDirPath = sandbox.classesDir.getAbsolutePath();
+	            try { // worth it to try for canonical?
+	                outputDirPath = sandbox.classesDir.getCanonicalPath();
+	            } catch (IOException e) {
+	                MessageUtil.abort(
+	                    status,
+	                    "canonical " + sandbox.classesDir,
+	                    e);
+	            }
+	            argList.add(outputDirPath);
+        	}
             String path = sandbox.classpathToString(this);
             if (!LangUtil.isEmpty(path)) {
                 argList.add("-classpath");
