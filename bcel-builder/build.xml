@@ -1,7 +1,7 @@
 <project default="extractAndJar" basedir=".">
 
   <!-- top-level -->
-  <target name="extractAndJar" depends="extract,jar" />
+  <target name="extractAndJar" depends="extract,jar,srcjar" />
 
   <target name="extract" depends="unzipSource,createPatchedSource" />
 
@@ -12,17 +12,27 @@
     <copy file="bcel/bin/bcel.jar" toDir="." />
   </target>
   
+  <target name="srcjar" depends="pack">
+    <zip basedir="bcel" destfile="bcel-src.zip" includes="*/**" excludes="bin/**,lib/**"/>
+  </target>
+  
   <target name="push">
     <copy file="bcel.jar" todir="../lib/bcel" />
+    <copy file="bcel-src.zip" todir="../lib/bcel" />
   </target>
   
   <target name="diff" depends="pack">
+  
+    <!-- Wipe out some of the rubbish that can arise due to doing a 'ant jar' before doing the diff -->
+    <delete dir="bcel/bin"/>
+    <delete dir="bcel/lib"/>
+
     <exec dir="." executable="diff.exe" output="patch.txt">
-      <arg line="-N"/>
-      <arg line="-a"/>
-      <arg line="-u"/>
-      <arg line="-r"/>
-      <arg line="-b"/>
+      <arg line="-N"/> <!-- Treat absent files as empty -->
+      <arg line="-a"/> <!-- Treat all files as text -->
+      <arg line="-u"/> <!-- Output (default 3) lines of unified context -->
+      <arg line="-r"/> <!-- Recursively compare any subdirectories found -->
+      <arg line="-b"/> <!-- Ignore changes in the amount of white space -->
       <arg line="bcel-5.1" />
       <arg line="bcel" />
     </exec>
@@ -32,6 +42,7 @@
     <delete dir="bcel-5.1" />
     <delete dir="bcel" />
     <delete file="bcel.jar" />
+    <delete file="bcel-src.zip" />
     <delete dir="src" />
     <mkdir dir="src" /> <!-- empty src dir -->
   </target>

@@ -34,28 +34,37 @@ to know some more ant targets.  But before anything, get that
 <p> There are five top-level ant targets apart from the usual "clean":</p>
 
 <ul>
-  <li>ant extractAndJar -- this is just the composition of the extract
-  and jar targets, and is the default.  It extracts the source from bcel-5.1-src.zip, 
-  patches it, compiles the patched version into a jar and drops the new jar,
-  bcel.jar, into the project root.  This is the default task, mainly used
+  <li>ant extractAndJar -- this is just the composition of the extract,
+  jar and srcjar targets, and is the default.  It extracts the source from bcel-5.1-src.zip, 
+  patches it, compiles the patched version into a jar and drops the new archives:
+  bcel.jar and bcel-src.zip, into the project root.  This is the default task, mainly used
   to sanity check the building and make sure we're generating something.
-  The bcel.jar this generates should be the same as that in ..\lib\bcel\bcel.jar. 
+  The bcel.jar and bcel-src.zip generated should be the same as that in ..\lib\bcel\. 
   </li>
   
   <li>ant extract -- this extracts the source from bcel-5.1-src.zip,
   patches it, and copies the patched source into the project src directory, 
   there to be visible by eclipse for people to do development on it.
+  For the patch file to be applied you need to have a patch.exe on your path,
+  this bcel building process was tested with the version from cygwin.
   </li>
   
   <li>ant jar -- this copies the edited source from the project source
   directory and jars it up into bcel.jar, there to be tested.
   </li>
   
-  <li>ant push -- this pushes the new bcel.jar into ..\lib\bcel\bcel.jar, 
-  ready to be used by the greater compiler.</li>
+  <li>ant srcjar -- this copies the edited source from the project source
+  directory and jars up the source code into bcel-src.zip.
+  </li>
+  
+  <li>ant push -- this pushes the new bcel.jar and bcel-src.zip into ..\lib\bcel\. 
+  - ready to be used by the greater compiler.</li>
   
   <li>ant diff -- this creates the patch.txt file, composed of the differences
-  between the project src directory and the original bcel-5.1 source. </li>
+  between the project src directory and the original bcel-5.1 source. 
+  For the patch file to be built successfully you need to have a diff.exe on your path,
+  this bcel building process was tested with the version from cygwin.
+  </li>
 </ul>
 
 <p> All of the tasks are destructive, so don't do "ant extract", for example,
