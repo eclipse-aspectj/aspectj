@@ -13,7 +13,7 @@ import org.aspectj.systemtest.ajc10x.Ajc10xTests;
 import org.aspectj.systemtest.ajc11.Ajc11Tests;
 import org.aspectj.systemtest.ajc120.Ajc120Tests;
 import org.aspectj.systemtest.ajc121.Ajc121Tests;
-import org.aspectj.systemtest.ajc150.AllTestsJava5_binaryWeaving;
+import org.aspectj.systemtest.ajc150.AllTestsAspectJ150;
 import org.aspectj.systemtest.aspectpath.AspectPathTests;
 import org.aspectj.systemtest.base.BaseTests;
 import org.aspectj.systemtest.design.DesignTests;
@@ -36,7 +36,7 @@ public class AllTests {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ System Test Suite - JDK 1.3");
 		//$JUnit-BEGIN$
-		suite.addTest(AllTestsJava5_binaryWeaving.suite());
+		suite.addTest(AllTestsAspectJ150.suite());
 		suite.addTest(Ajc121Tests.suite());
 		suite.addTest(Ajc120Tests.suite());
 		suite.addTest(Ajc11Tests.suite());

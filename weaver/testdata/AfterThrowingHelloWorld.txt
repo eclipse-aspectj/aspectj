@@ -47,4 +47,5 @@ public class HelloWorld extends java.lang.Object:
     |               ATHROW
     method-execution(void HelloWorld.main(java.lang.String[]))
   end public static void main(String[])
+
 end public class HelloWorld

@@ -19,13 +19,16 @@ import junit.framework.TestSuite;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class AllTestsJava5_binaryWeaving {
+public class AllTestsAspectJ150 {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Java5 - binary weaving");
 		//$JUnit-BEGIN$
 		suite.addTestSuite(MigrationTests.class);
 		suite.addTest(Ajc150Tests.suite());
+		suite.addTestSuite(Ajc150TestsNoHarness.class); 
+		
+		// These are binary weaving tests
 		suite.addTest(AccBridgeMethods.suite());
 		suite.addTestSuite(CovarianceTests.class);
 		suite.addTestSuite(Enums.class);
@@ -33,6 +36,8 @@ public class AllTestsJava5_binaryWeaving {
 		suite.addTestSuite(AnnotationPointcutsTests.class);
 		suite.addTestSuite(VarargsTests.class);
 		suite.addTestSuite(AnnotationRuntimeTests.class);
+		
+		
 		//$JUnit-END$
 		return suite;
 	}

@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -972,7 +973,7 @@ public final class LazyMethodGen {
 
     }
 
-	/** This proedure should not currently be used.
+	/** This procedure should not currently be used.
 	 */
 //	public void killNops() {
 //    	InstructionHandle curr = body.getStart();
@@ -1007,9 +1008,18 @@ public final class LazyMethodGen {
         }
     }
 
+    // Update to all these comments, ASC 11-01-2005
+    // The right thing to do may be to do more with priorities as
+    // we create new exception handlers, but that is a relatively
+    // complex task.  In the meantime, just taking account of the
+    // priority here enables a couple of bugs to be fixed to do
+    // with using return or break in code that contains a finally
+    // block (pr78021,pr79554).
+
     // exception ordering.
     // What we should be doing is dealing with priority inversions way earlier than we are
     // and counting on the tree structure.  In which case, the below code is in fact right.
+    
     
     // XXX THIS COMMENT BELOW IS CURRENTLY WRONG. 
     // An exception A preceeds an exception B in the exception table iff:
@@ -1022,15 +1032,20 @@ public final class LazyMethodGen {
     // but I don't trust the only implementation, TreeSet, to do the right thing.
     
     /* private */ static void insertHandler(ExceptionRange fresh, LinkedList l) {
-//        for (ListIterator iter = l.listIterator(); iter.hasNext();) {
-//            ExceptionRange r = (ExceptionRange) iter.next();
-//            if (fresh.getPriority() >= r.getPriority()) {
-//                iter.previous();
-//                iter.add(fresh);
-//                return;
-//            }            
-//        }
-        l.add(0, fresh);        
+    	// Old implementation, simply:   l.add(0,fresh);
+    	for (ListIterator iter = l.listIterator(); iter.hasNext();) {
+            ExceptionRange r = (ExceptionRange) iter.next();
+            int freal = fresh.getRealStart().getPosition();
+            int rreal = r.getRealStart().getPosition();
+            if (fresh.getPriority() >= r.getPriority()) {
+                iter.previous();
+                iter.add(fresh);
+                return;
+            }
+        }
+    	
+    	// we have reached the end
+        l.add(fresh);        
     }
 
 

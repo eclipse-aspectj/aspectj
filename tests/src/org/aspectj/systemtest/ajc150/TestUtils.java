@@ -21,7 +21,7 @@ import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.tools.ajc.CompilationResult;
 
 public abstract class TestUtils extends AjcTestCase {
-	private static final boolean verbose = false;
+	protected static final boolean verbose = false;
 	protected File baseDir;
 	
 	protected CompilationResult binaryWeave(String inpath,String insource,int expErrors,int expWarnings) {

@@ -17,19 +17,19 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     method-execution(void FancyHelloWorld.main(java.lang.String[]))
     | catch java.lang.Throwable -> E6
     | | field-get(java.io.PrintStream java.lang.System.out)
-    | | | catch java.lang.Throwable -> E5
+    | | | catch java.lang.Throwable -> E3
     | | | |         GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 9)
-    | | | catch java.lang.Throwable -> E5
+    | | | catch java.lang.Throwable -> E3
     | | |           GOTO L0
-    | | |       E5: ASTORE 5
+    | | |       E3: ASTORE 5
     | | |           INVOKESTATIC Aspect.ajc_afterThrowing_field_get ()V
     | | |           ALOAD 5
     | | |           ATHROW
     | | |       L0: NOP
     | | field-get(java.io.PrintStream java.lang.System.out)
     | |             ASTORE_1
-    | | finally -> E4
-    | | | catch java.lang.Exception -> E3
+    | | finally -> E5
+    | | | catch java.lang.Exception -> E4
     | | | |         ALOAD_1     // java.io.PrintStream out   (line 11)
     | | | |         LDC "bye"
     | | | | method-call(void java.io.PrintStream.println(java.lang.String))
@@ -44,8 +44,8 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     | | | | |   L1: NOP
     | | | | method-call(void java.io.PrintStream.println(java.lang.String))
     | | | |         GOTO L3
-    | | | catch java.lang.Exception -> E3
-    | | |       E3: ASTORE_2   (line 12)
+    | | | catch java.lang.Exception -> E4
+    | | |       E4: ASTORE_2   (line 12)
     | | |           ALOAD_1     // java.io.PrintStream out   (line 13)
     | | |           ALOAD_2     // java.lang.Exception e
     | | | method-call(void java.io.PrintStream.println(java.lang.Object))
@@ -59,9 +59,9 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     | | | |         ATHROW
     | | | |     L2: NOP
     | | | method-call(void java.io.PrintStream.println(java.lang.Object))
-    | | finally -> E4
+    | | finally -> E5
     | |             GOTO L3
-    | |         E4: ASTORE 4   (line 14)
+    | |         E5: ASTORE 4   (line 14)
     | |             JSR L4
     | |             ALOAD 4
     | |             ATHROW
