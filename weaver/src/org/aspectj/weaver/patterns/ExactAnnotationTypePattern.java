@@ -118,7 +118,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		} else {
 			// Non binding case
 
-			String cleanname = annotationType.getClassName();
+			String cleanname = annotationType.getName();
 			annotationType = scope.getWorld().resolve(annotationType,true);
 			
 			// We may not have found it if it is in a package, lets look it up...

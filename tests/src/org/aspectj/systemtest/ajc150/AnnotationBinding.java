@@ -107,6 +107,14 @@ public class AnnotationBinding extends TestUtils {
   	RunResult rR = run("AtTarget4");
   }
   
+  // @target() with an annotation in a package
+  public void testAtTargetAnnotationBinding5() {
+    CompilationResult cR = ajc(new File(baseDir,"usingPackageNames"),
+      new String[]{"MyAspect.aj","MyAnnotation.java","MyClass.java","-1.5"});
+    assertMessages(cR,new EmptyMessageSpec()); 
+    RunResult rR = run("test.MyClass");
+  }
+  
   
   ///////////////////////////////////// @THIS
   
