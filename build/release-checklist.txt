@@ -8,25 +8,25 @@ save it as part of the release notes on completion.
 Before you begin... you will need:
 ================================================================================
 
-* A JDK v1.4.x		java -fullversion : [                                   ]
-* A JDK v1.3.x      java -fullversion : [                                   ]
-* A 1.1.8 JRE       version :           [                                   ]
-* A Windoze box     OS version :        [                                   ]
-* A Linux box		distribution :      [                                   ]
-* An iMac (nice-to-have) JDK 1.4.x :    [                                   ]
-* Eclipse           version :    		[                                   ]
-
+* A JDK v1.4.x        java -fullversion : [                                   ]
+* A JDK v1.3.x        java -fullversion : [                                   ]
+* A 1.1.8 JRE         version :           [                                   ]
+* A Windoze box       OS version :        [                                   ]
+* A Linux box         distribution :      [                                   ]
+* An iMac (nice-to-have) JDK 1.4.x :      [                                   ]
+* Eclipse            version :            [                                   ]
+  
 * A pair of scissors (get an adult to help you with these)
 * Some sticky-backed plastic
 
-OK, so the last two aren't strictly necessary, but they always seem to come in
+OK, so the last three aren't strictly necessary, but they always seem to come in
 useful on the telly.
 
 Extraction:
 ================================================================================
 
 * Full CVS extract of org.aspectj/modules                               [   ]
-	date and time of extract :          [                                   ]
+    date and time of extract :          [                                   ]
 
 Preparation:
 ================================================================================
@@ -35,7 +35,7 @@ Preparation:
    (e.g. releases/aspectj-1.1rc1)
    
 * Save a copy of this file there as package-and-test-notes.txt          [   ]
-	
+    
 * Edit build/build-properties.xml and set the version properties for this
   release                                                               [   ]
   
@@ -45,7 +45,7 @@ Preparation:
       <property name="build.version.base"  value="1.1"/> 
       <property name="build.version.long"  value="1.1 release candidate 1"/> 
       <property name="build.version.short" value="1.1rc1"/> 
-   	
+       
 * Edit org.aspectj.ajdt.core/src/org.aspectj.ajdt.ajc/messages.properties and
   set the version properties for this release                           [   ]
   
@@ -58,15 +58,15 @@ Preparation:
   ### miscellaneous
   misc.usage = AspectJ Compiler 1.1 release candidate 1\n\
   ...
-	
+    
 Build:
 ================================================================================
 
 * Ensure JAVA_HOME is set to point to your 1.3 JDK                      [   ]
-	 echo $JAVA_HOME	   [                                                ]
-	 
-	 (even when you "Run Ant..." from eclipse, the value of JAVA_HOME is 
-	 used rather than the JRE specified in your Eclipse settings).
+     echo $JAVA_HOME       [                                                ]
+     
+     (even when you "Run Ant..." from eclipse, the value of JAVA_HOME is 
+     used rather than the JRE specified in your Eclipse settings).
 
 * When running ant, use the version in modules/lib/ant,
   i.e., modules/lib/ant/bin/ant                                         [   ]
@@ -74,17 +74,17 @@ Build:
 * Run ant on build/build.xml :
 
     $ cd build
-	$ ant clean		                                                    [   ]
-	$ ant fail-unless-boot-libraries-uptodate                           [   ]
-	$ ant			                                                    [	]
-	
+    $ ant clean                                                         [   ]
+    $ ant fail-unless-boot-libraries-uptodate                           [   ]
+    $ ant                                                               [   ]
+    
 * Save the build output (console log) as build-<version>.log.txt        [   ]
-	(e.g. build-1.1rc1.log.txt)
-	
+    (e.g. build-1.1rc1.log.txt)
+    
 * Save the built jar to the releases directory                          [   ]
   (releases/aspectj-<version>)
 
-* Verify name is aspectj-<version>.jar                                  [   ]                         
+* Verify name is aspectj-<version>.jar                                  [   ]
 
 
 Pre-installation tests:
@@ -117,20 +117,20 @@ Pre-installation tests:
 
     Do:
 
-  	$ {harness} -release -logFail ajcTests.xml                          [   ]
+      $ {harness} -release -logFail ajcTests.xml                        [   ]
   
     -- save results in ajcTests-result-<version>-JDK13.txt              [   ]
-    	(e.g. ajcTests-result-1.1rc1-JDK13.txt)
+        (e.g. ajcTests-result-1.1rc1-JDK13.txt)
   
-  	-- record any failures (should be none) inline here.
-  	
-  	$ {harness} -release -logFail -emacssym ajcTests.xml                [   ]
+      -- record any failures (should be none) inline here.
+      
+      $ {harness} -release -logFail -emacssym ajcTests.xml              [   ]
 
     -- save results in ajcTests-result-<version>-emacssym-JDK13.txt     [   ]
-    	(e.g. ajcTests-result-1.1rc1-emacssym-JDK13.txt)
+        (e.g. ajcTests-result-1.1rc1-emacssym-JDK13.txt)
   
-  	-- record any failures (should be none) inline here.
-  			    
+      -- record any failures (should be none) inline here.
+                  
 * run Harness tests on the 1.4 vm:
 
     Where {harness} is
@@ -140,20 +140,20 @@ Pre-installation tests:
 
     Do:
 
-  	$ {harness} -release -logFail ajcTests.xml                          [   ]
+      $ {harness} -release -logFail ajcTests.xml                        [   ]
   
     -- save results in ajcTests-result-<version>-JDK14.txt              [   ]
-    	(e.g. ajcTests-result-1.1rc1-JDK14.txt)
+        (e.g. ajcTests-result-1.1rc1-JDK14.txt)
   
-  	-- record any failures (should be none) inline here.
-  	
-  	$ {harness} -release -logFail -emacssym ajcTests.xml                [   ]
+      -- record any failures (should be none) inline here.
+      
+      $ {harness} -release -logFail -emacssym ajcTests.xml              [   ]
 
     -- save results in ajcTests-result-<version>-emacssym-JDK14.txt     [   ]
-    	(e.g. ajcTests-result-1.1rc1-emacssym-JDK14.txt)
+        (e.g. ajcTests-result-1.1rc1-emacssym-JDK14.txt)
   
-  	-- record any failures (should be none) inline here.
-  			        
+      -- record any failures (should be none) inline here.
+                      
 * run Harness on ajcTestsFailing.xml
 
     Where {harness} is
@@ -163,26 +163,26 @@ Pre-installation tests:
 
     Do:
 
-  	$ {harness} -release -logFail ajcTestsFailing.xml                   [   ]
+      $ {harness} -release -logFail ajcTestsFailing.xml                 [   ]
   
     -- save results in ajcTestsFailing-result-<version>-JDK13.txt       [   ]
-    	(e.g. ajcTestsFailing-result-1.1rc1-JDK13.txt)
+        (e.g. ajcTestsFailing-result-1.1rc1-JDK13.txt)
   
-  	-- record any failures inline here (should be none. ajcTestsFailing 
-  	   should be empty for a final release.  Known exceptions are
-  	   permissible for a non-final release.)
-  	   
-  	
+      -- record any failures inline here (should be none. ajcTestsFailing 
+         should be empty for a final release.  Known exceptions are
+         permissible for a non-final release.)
+         
+      
 Installation & Verification Tests
 ================================================================================
 
 * install from aspectj-<version>.jar as built above
 
-	- verify version number and build date on splash screen             [   ]
-	
-	- save screenshot of splash screen (not essential) as               [   ]
-		Installer-Splash-Screen.bmp (file format may vary)   
-		
+    - verify version number and build date on splash screen             [   ]
+    
+    - save screenshot of splash screen (not essential) as               [   ]
+        Installer-Splash-Screen.bmp (file format may vary)   
+        
 * verify directory structure created ok                                 [   ]
 
 * check version in README-AspectJ.html                                  [   ]
@@ -198,34 +198,34 @@ Installation & Verification Tests
 * from doc/examples, run "ant", verify spacewar builds and runs ok      [   ]
 
 * in doc/examples, build ant targets as follows:
-	- bean                                                              [   ]
-	- intro                                                             [   ]
-	- intro-clone                                                       [   ]
-	- intro-compare                                                     [   ]
-	- intro-hash                                                        [   ]
-	- observer                                                          [   ]
-	- spacewar                                                          [   ]
-	- spacewar-demo                                                     [   ]
-	- telecom                                                           [   ]
-	- telecom-billing                                                   [   ]
-	- telecom-timing                                                    [   ]
-	- tjp                                                               [   ]
-	- tracing-1                                                         [   ]
-	- tracing-2                                                         [   ]
-	- tracing-3                                                         [   ]
-	- tracing-bc                                                        [   ]
-	- tracing-none                                                      [   ]
+    - bean                                                              [   ]
+    - intro                                                             [   ]
+    - intro-clone                                                       [   ]
+    - intro-compare                                                     [   ]
+    - intro-hash                                                        [   ]
+    - observer                                                          [   ]
+    - spacewar                                                          [   ]
+    - spacewar-demo                                                     [   ]
+    - telecom                                                           [   ]
+    - telecom-billing                                                   [   ]
+    - telecom-timing                                                    [   ]
+    - tjp                                                               [   ]
+    - tracing-1                                                         [   ]
+    - tracing-2                                                         [   ]
+    - tracing-3                                                         [   ]
+    - tracing-bc                                                        [   ]
+    - tracing-none                                                      [   ]
 
 * With aspectjtools.jar in the ant/lib directory, also build
-	- tracing-adapter                                                   [   ]
-	- tracing-adapter-ajc                                               [   ]
+    - tracing-adapter                                                   [   ]
+    - tracing-adapter-ajc                                               [   ]
 
 
 * run pre-compiled version of spacewar on a 1.1.8 vm                    [   ]
 
 * verify debug info included in class files
-	- "javap -l org.aspectj.tools.ajc.Main" under jdk 1.4 or later      [   ]
-	
+    - "javap -l org.aspectj.tools.ajc.Main" under jdk 1.4 or later      [   ]
+    
 * verify manual dates correct in docs                                   [   ]
 
 * verify api docs present and correct                                   [   ]
@@ -236,7 +236,10 @@ Product Testing
 These tests are a bit more rigorous and time-consuming. 
 Run at your discretion
 
-* Build AspectJ using AspectJ                                           [   ]
+* Compile AspectJ sources using AspectJ                                 [   ]
+
+  cd tests/product/build-aspectj
+  ant
 
 * Perform steps specified in the Development Guide on AJBrowser         [   ]
 
@@ -260,12 +263,12 @@ Cross-Platform Testing
 Bug database
 ================================================================================
 
-* No P1 or P2 bugs, and no lower bugs that should be P1/P2               [   ]
+* No P1 or P2 bugs, and no lower bugs that should be P1/P2              [   ]
 
-* All fixed bugs verified (at least by fixing developer,                 [   ]
+* All fixed bugs verified (at least by fixing developer,                [   ]
   though preferably with a test case)
 
-* Please comment if there are compiler fixes without test cases          [   ]
+* Please comment if there are compiler fixes without test cases         [   ]
 
 
 Other Release Objectives
@@ -296,6 +299,6 @@ Once developer consensus is reached on the build:
 * post link on download page                                            [   ]
 
 * post announce message to aspectj-users, aspectj-announce,
-	aosd-discuss, aosd-announce                                         [   ]
+    aosd-discuss, aosd-announce                                         [   ]
 
 * buy beer                                                              [   ]

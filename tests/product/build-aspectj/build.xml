@@ -1,0 +1,219 @@
+
+<!-- ========================================================================= -->
+<!-- Copyright (c) 2003 Contributors.                                          -->
+<!-- All rights reserved.                                                      -->
+<!-- This program and the accompanying materials are made available            -->
+<!-- under the terms of the Common Public License v1.0                         -->
+<!-- which accompanies this distribution and is available at                   -->
+<!-- http://www.eclipse.org/legal/cpl-v10.html                                 -->
+<!--                                                                           -->
+<!-- Contributors:                                                             -->
+<!--     Isberg     initial implementation                                 -->
+<!-- ========================================================================= -->
+
+<project name="build-aspectj-using-aspectj" default="all" basedir=".">
+
+    <target name="info" >
+      <echo>
+  This script tests the AspectJ tools and runtime
+  by building the AspectJ sources.  When run, this should
+  finish by emitting the ajc help message.
+
+  Relevant targets:
+     all             build and test runtime and tools
+     tools           build output/aspectjtools.jar
+     runtime         build output/aspectjrt.jar
+     build-tools-javac build using javac to output
+
+  Setup:
+
+  Variables ASPECTJ_HOME and ASPECTJ_SRC refer to the 
+  base of an AspectJ install and the modules directory 
+  of the AspectJ source tree.  By default they are
+  
+    ASPECTJ_SRC:  $${basedir}/../..
+    ASPECTJ_HOME: $${basedir}/../../aj-build/dist/tools
+  
+  which assumes the tools dist is built and this
+  runs from modules/tests/product/build-aspectj
+       
+  You can also define the properties to run on any
+  distribution from anywhere:
+       
+    ant -DASPECTJ_HOME=dev/tools/aj -DASPECTJ_SRC=ec
+
+      </echo>
+    </target>
+
+    <!-- ============================================================= -->
+    <!-- setup and cleanup targets                                     -->
+    <!-- ============================================================= -->
+
+    <target name="clean" depends="init"
+     description="clean and create output dir">
+      <delete quiet="on" dir="${output.dir}"/>
+      <mkdir dir="${output.dir}"/>
+    </target>
+
+    <target name="init"  depends="init.variables,init.taskdefs"/>
+
+    <target name="init.variables" 
+     description="init variables">
+     
+      <property name="verbose" value="false"/>
+
+      <!-- build.compiler value to pick up our CompilerAdapter for javac -->
+      <property name="ajc.adapter"
+	           value="org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter"/>
+
+      <!-- required directories - run from examples or predefine -->
+      <property name="ASPECTJ_SRC"
+            location="${basedir}/../../.."/> 
+
+      <property name="ASPECTJ_HOME"
+            location="${basedir}/../../../aj-build/dist/tools"/> 
+
+      <property name="aspectj.lib.dir"
+            location="${ASPECTJ_HOME}/lib"/> 
+
+      <!-- required libraries - install or predefine -->
+      <property name="aspectjrt.jar"
+            location="${aspectj.lib.dir}/aspectjrt.jar"/> 
+      <property name="aspectjtools.jar"
+            location="${aspectj.lib.dir}/aspectjtools.jar"/> 
+
+      <!-- created directories -->
+      <property name="output.dir"
+            location="${basedir}/output"/> 
+
+      <!-- checking required libraries -->
+      <available file="${aspectjtools.jar}"
+             property="aspectjtools.jar.available"/>
+      <available file="${aspectjrt.jar}"
+             property="aspectjrt.jar.available"/>
+
+	  <property name="aspectj.src"
+  	  	    location="${ASPECTJ_SRC}"/>
+
+	  <property name="output.aspectjtools"
+	  	location="${output.dir}/aspectjtools.jar"/>
+	  	
+	  <property name="output.aspectjrt"
+	  	location="${output.dir}/aspectjrt.jar"/>
+
+      <available file="${aspectj.src}"
+               property="aspectj.src.available"/>
+	  	
+	 	<path id="runtime.roots">
+	 		<pathelement path="${aspectj.src}/runtime/src"/>
+	 	</path>
+	 	
+	 	<path id="tools.roots">
+	 		<pathelement path="${aspectj.src}/ajbrowser/src"/>
+	 		<pathelement path="${aspectj.src}/ajde/src"/>
+	 		<pathelement path="${aspectj.src}/asm/src"/>
+	 		<pathelement path="${aspectj.src}/bridge/src"/>
+	 		<pathelement path="${aspectj.src}/org.aspectj.ajdt.core/src"/>
+	 		<pathelement path="${aspectj.src}/taskdefs/src"/>
+	 		<pathelement path="${aspectj.src}/util/src"/>
+	 		<pathelement path="${aspectj.src}/weaver/src"/>
+	 	</path>
+	 	
+	 	<path id="tools.libs">
+	 		<pathelement path="${aspectj.src}/lib/ant/lib/ant.jar"/>
+	 		<pathelement path="${aspectj.src}/lib/bcel/bcel.jar"/>
+	 		<pathelement path="${aspectj.src}/org.eclipse.jdt.core/jdtcore-for-aspectj.jar"/>
+	 	</path>
+    </target>
+
+    <target name="init.taskdefs" depends="init.variables, 
+         aspectjtools.jar.available,
+         aspectjrt.jar.available,
+         aspectj.src.available"
+         unless="taskdefs.init">
+      <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+          <classpath> 
+            <pathelement path="${aspectjtools.jar}"/> 
+          </classpath>
+      </taskdef>
+	  <property name="taskdefs.init" value="true"/>
+    </target>
+
+    <!-- targets to fail unless required libraries available -->
+
+    <target name="aspectjrt.jar.available" depends="init.variables" 
+          unless="aspectjrt.jar.available" >
+      <fail message="expecting aspectjrt.jar at ${aspectjrt.jar}"/>
+    </target>
+
+    <target name="aspectjtools.jar.available" depends="init.variables" 
+          unless="aspectjtools.jar.available" >
+      <fail message="expecting aspectjtools.jar at ${aspectjtools.jar}"/>
+    </target>
+
+    <target name="aspectj.src.available" depends="init.variables" 
+          unless="aspectj.src.available" >
+      <fail message="expecting aspectj sources at ${aspectj.src}"/>
+    </target>
+	
+    <target name="all">
+		<antcall target="clean" />
+		<antcall target="runtime"/>
+		<antcall target="tools"/>
+    </target>
+    
+    <target name="runtime">
+		<antcall target="build-runtime"/>
+		<antcall target="test-runtime"/>
+    </target>
+    
+    <target name="tools">
+		<antcall target="build-tools"/>
+		<antcall target="test-tools"/>
+    </target>
+
+    <target name="build-runtime" depends="init">
+       <iajc outjar="${output.aspectjrt}"
+          classpath="${aspectjrt.jar}"
+          sourcerootsref="runtime.roots"/>
+    </target>
+    
+    <target name="test-runtime" depends="init">
+		<echo message="test-runtime not implemented"/>
+    </target>
+    
+    <target name="build-tools" depends="init">
+       <iajc outjar="${output.aspectjtools}"
+       		verbose="${verbose}"
+			sourcerootsref="tools.roots"
+			sourcerootcopyfilter="**/CVS/*,**/*.java,**/*.aj">
+			<classpath>
+				<pathelement path="${aspectjrt.jar}"/> <!-- bootstrap problem... -->
+				<path refid="tools.libs"/>
+			</classpath>       
+       </iajc>
+    </target>
+
+    <target name="test-tools" depends="init">
+       <java classname="org.aspectj.tools.ajc.Main">
+         <classpath>
+          	<path refid="tools.libs"/>
+            <pathelement path="${output.aspectjtools}"/> 
+         </classpath>
+         <arg value="-help"/>
+       </java>
+    </target>
+
+    <target name="build-tools-javac" depends="init">
+       <javac verbose="${verbose}" includes="**/*.java"
+       	destdir="${output.dir}">
+       	<src>
+       		<path refid="tools.roots"/>
+       	</src>
+		<classpath>
+			<pathelement path="${aspectjrt.jar}"/> 
+			<path refid="tools.libs"/>
+		</classpath>       
+       </javac>
+    </target>
+</project>
