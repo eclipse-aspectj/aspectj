@@ -46,6 +46,7 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 	private SourceTypeBinding binding;
 	private TypeDeclaration declaration;
 	private boolean annotationsResolved = false;
+	private ResolvedTypeX[] resolvedAnnotations = null;
 	
 	protected EclipseFactory eclipseWorld() {
 		return factory;
@@ -102,7 +103,8 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 				} else if (amd instanceof InterTypeDeclaration) {
 					// these are handled in a separate pass
 					continue;
-				} else if (amd instanceof DeclareDeclaration) {
+				} else if (amd instanceof DeclareDeclaration && 
+				           !(amd instanceof DeclareAnnotationDeclaration)) { // surfaces the annotated ajc$ method
 					// these are handled in a separate pass
 					continue;
 				} else if (amd instanceof AdviceDeclaration) {
@@ -224,6 +226,13 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 		return (binding.getAccessFlags() & ACC_ANNOTATION)!=0;
 	}
 	
+	public void addAnnotation(AnnotationX annotationX) {
+		// XXX Big hole here - annotationX holds a BCEL annotation but
+		// we need an Eclipse one here, we haven't written the conversion utils
+		// yet.  Not sure if this method will be called in practice...
+		throw new RuntimeException("EclipseSourceType.addAnnotation() not implemented");
+	}
+	
 	public boolean isAnnotationWithRuntimeRetention() {
 	    if (!isAnnotation()) {
 	        return false;
@@ -256,23 +265,30 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 		return false;
 	}
 	
-	public ResolvedTypeX[] getAnnotationTypes() {
+	public AnnotationX[] getAnnotations() {
 		throw new RuntimeException("Missing implementation");
-		// FIXME Finish this off
-//		// Make sure they are resolved
-//		if (!annotationsResolved) {
-//			TypeDeclaration.resolveAnnotations(declaration.staticInitializerScope, declaration.annotations, binding);
-//			annotationsResolved = true;
-//		}
-//		ResolvedTypeX[] rtxAs = new ResolvedTypeX[declaration.annotations.length];
-//		Annotation[] as = declaration.annotations;
-//		if (as == null) return rtxAs;
-//		for (int i = 0; i < as.length; i++) {
-//			Annotation annotation = as[i];
-//			// FIXME - need to implement this !
-//			rtxAs[i] = factory.makeAnnotation(as[i]);
-//		}
-//		return rtxAs;
+		
+	}
+	public ResolvedTypeX[] getAnnotationTypes() {
+		if (resolvedAnnotations!=null) return resolvedAnnotations;
+
+		// Make sure they are resolved
+		if (!annotationsResolved) {
+			TypeDeclaration.resolveAnnotations(declaration.staticInitializerScope, declaration.annotations, binding);
+			annotationsResolved = true;
+		}
+		
+		if (declaration.annotations == null) {
+			resolvedAnnotations = new ResolvedTypeX[0];
+		} else {
+			resolvedAnnotations = new ResolvedTypeX[declaration.annotations.length];
+			Annotation[] as = declaration.annotations;
+			for (int i = 0; i < as.length; i++) {
+				Annotation annotation = as[i];
+				resolvedAnnotations[i] =factory.fromTypeBindingToRTX(annotation.type.resolvedType);
+			}
+		}
+		return resolvedAnnotations;
 	}
 
 	public PerClause getPerClause() {
