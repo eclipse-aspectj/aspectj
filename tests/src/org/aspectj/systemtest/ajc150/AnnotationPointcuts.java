@@ -27,24 +27,28 @@ public class AnnotationPointcuts extends TestUtils {
   }
 	
   // before(): call(@SimpleAnnotation * *(..)) { }
-//  public void test001_usingAnnotationsInPointcuts() {
-//  	CompilationResult cR = binaryWeave("testcode.jar","AnnotationAspect02.aj",0,0);
-//  	System.err.println(cR.getStandardError());
-//  	System.err.println(cR.getErrorMessages());
-//  	System.err.println(cR.getInfoMessages());
+  public void test001_usingAnnotationsInPointcuts() {
+  	CompilationResult cR = binaryWeave("testcode.jar","AnnotationAspect02.aj",0,0);
+  	System.err.println(cR.getStandardError());
+  	System.err.println(cR.getErrorMessages());
+  	System.err.println(cR.getInfoMessages());
+  	verifyWeavingMessagesOutput(cR,new String[]{
+"weaveinfo Type 'AnnotatedType' (AnnotatedType.java:3) advised by before advice from 'AnnotationAspect02' (AnnotationAspect02.aj:4)",
+"weaveinfo Type 'AnnotatedType' (AnnotatedType.java:3) advised by before advice from 'AnnotationAspect02' (AnnotationAspect02.aj:2)",
+"weaveinfo Type 'AnnotatedType' (AnnotatedType.java:4) advised by before advice from 'AnnotationAspect02' (AnnotationAspect02.aj:4)"});
+  
+//  	assertTrue("Expected three message about ITDs not allowed on Annotations but got: #"+
+//  			cR.getErrorMessages().size()+": \n"+cR.getErrorMessages(),
+//  			cR.getErrorMessages().size()==3);
+//  	IMessage msg1_ctor   = (IMessage)cR.getErrorMessages().get(0);
+//  	IMessage msg2_method = (IMessage)cR.getErrorMessages().get(1);
+//  	IMessage msg3_field  = (IMessage)cR.getErrorMessages().get(2);
+//  	assertTrue("Expected message about ITDCs on annotations not allowed, but got: \n"+msg1_ctor,
+//  			msg1_ctor.toString().indexOf("can't make inter-type constructor declarations")!=-1);
+//  	assertTrue("Expected message about ITDMs on annotations not allowed, but got: \n"+msg2_method,
+//  			msg2_method.toString().indexOf("can't make inter-type method declarations")!=-1);
+//  	assertTrue("Expected message about ITDFs on annotations not allowed, but got: \n"+msg3_field,
+//  			msg3_field.toString().indexOf("can't make inter-type field declarations")!=-1);
 //  	verifyWeavingMessagesOutput(cR,new String[]{});
-////  	assertTrue("Expected three message about ITDs not allowed on Annotations but got: #"+
-////  			cR.getErrorMessages().size()+": \n"+cR.getErrorMessages(),
-////  			cR.getErrorMessages().size()==3);
-////  	IMessage msg1_ctor   = (IMessage)cR.getErrorMessages().get(0);
-////  	IMessage msg2_method = (IMessage)cR.getErrorMessages().get(1);
-////  	IMessage msg3_field  = (IMessage)cR.getErrorMessages().get(2);
-////  	assertTrue("Expected message about ITDCs on annotations not allowed, but got: \n"+msg1_ctor,
-////  			msg1_ctor.toString().indexOf("can't make inter-type constructor declarations")!=-1);
-////  	assertTrue("Expected message about ITDMs on annotations not allowed, but got: \n"+msg2_method,
-////  			msg2_method.toString().indexOf("can't make inter-type method declarations")!=-1);
-////  	assertTrue("Expected message about ITDFs on annotations not allowed, but got: \n"+msg3_field,
-////  			msg3_field.toString().indexOf("can't make inter-type field declarations")!=-1);
-////  	verifyWeavingMessagesOutput(cR,new String[]{});
-//  }
+  }
 }

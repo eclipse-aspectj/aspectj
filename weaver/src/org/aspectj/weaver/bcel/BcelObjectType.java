@@ -323,7 +323,7 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 
 
 
-	public boolean hasAnnotation(ResolvedTypeX ofType) {
+	public boolean hasAnnotation(TypeX ofType) {
 		Annotation[] annotationsOnThisType = javaClass.getAnnotations();
 		for (int i = 0; i < annotationsOnThisType.length; i++) {
 			Annotation a = annotationsOnThisType[i];

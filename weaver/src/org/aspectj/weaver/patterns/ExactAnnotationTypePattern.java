@@ -49,10 +49,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	}
 	
 	public FuzzyBoolean matches(AnnotatedElement annotated) {
-		if (!resolved) {
-			throw new IllegalStateException("Can't match on an unresolved annotation type pattern");
-		}
-		return (annotated.hasAnnotation((ResolvedTypeX)annotationType) ?
+		return (annotated.hasAnnotation(annotationType) ?
 				   FuzzyBoolean.YES : FuzzyBoolean.NO);
 	}
 

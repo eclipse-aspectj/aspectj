@@ -63,18 +63,20 @@ public class ParserTestCase extends TestCase {
 	}
 	
 	public void testParseWithAnnotation() {
-		PatternParser parser = new PatternParser("execution(@p.SimpleAnnotation void Hello.*(..))");
+		PatternParser parser = new PatternParser("execution(@SimpleAnnotation void Hello.*(..))");
 		KindedPointcut p = (KindedPointcut) parser.parsePointcut();
 		// XXX - needs finishing...
-		// p.resolveBindings(makeSimpleScope(),new Bindings(3));
-//		System.err.println(p);
+		p.resolveBindings(makeSimpleScope(),new Bindings(3));
+		System.err.println(p);
 //		assertEquals(p.kind, BcelShadow.MethodExecution);
 //		assertTrue(p.signature.getName().matches("foobar"));
 //		p.signature.resolveBindings(makeSimpleScope(),new Bindings(3));		
 	}
 	
 	public TestScope makeSimpleScope() {
-		return new TestScope(new String[] {"int", "java.lang.String"}, new String[] {"a", "b"}, world);
+		TestScope s = new TestScope(new String[] {"int", "java.lang.String"}, new String[] {"a", "b"}, world);
+		s.setImportedPrefixes(new String[]{"p."});
+		return s;
 	}
 
 }

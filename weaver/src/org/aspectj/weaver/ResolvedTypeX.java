@@ -560,7 +560,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 	    	return delegate.isClass();
 	    }
 
-	    public boolean hasAnnotation(ResolvedTypeX ofType) {
+	    public boolean hasAnnotation(TypeX ofType) {
 	    	return delegate.hasAnnotation(ofType);
 	    }
 	    
@@ -725,7 +725,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 	    public abstract boolean isEnum();
 	    public abstract boolean isAnnotation();
 	    
-	    public abstract boolean hasAnnotation(ResolvedTypeX ofType);
+	    public abstract boolean hasAnnotation(TypeX ofType);
 	    public abstract ResolvedTypeX[] getAnnotationTypes();
 
 		public abstract ResolvedMember[] getDeclaredFields();
@@ -801,7 +801,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
             return ResolvedMember.NONE;
         }
         
-        public boolean hasAnnotation(ResolvedTypeX ofType) {
+        public boolean hasAnnotation(TypeX ofType) {
         	return false;
         }
         
@@ -864,7 +864,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
         public final boolean isPrimitive() {
             return true;
         }
-        public boolean hasAnnotation(ResolvedTypeX ofType) {
+        public boolean hasAnnotation(TypeX ofType) {
         	return false;
         }
         public final boolean isAssignableFrom(TypeX other) {
@@ -941,7 +941,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
         public final String getName() {
         	return MISSING_NAME;
         }
-        public boolean hasAnnotation(ResolvedTypeX ofType) {
+        public boolean hasAnnotation(TypeX ofType) {
         	return false;
         }
         public final ResolvedMember[] getDeclaredFields() {

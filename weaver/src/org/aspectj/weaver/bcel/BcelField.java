@@ -79,7 +79,7 @@ final class BcelField extends ResolvedMember {
 		return isSynthetic;
 	}
 	
-	public boolean hasAnnotation(ResolvedTypeX ofType) {
+	public boolean hasAnnotation(TypeX ofType) {
 		Annotation[] anns = field.getAnnotations();
 		for (int i = 0; i < anns.length; i++) {
 			Annotation annotation = anns[i];

@@ -552,7 +552,7 @@ public class TypeX implements AnnotatedElement {
 		return world.resolve(this);
 	}
 
-	public boolean hasAnnotation(ResolvedTypeX ofType) {
+	public boolean hasAnnotation(TypeX ofType) {
 		throw new UnsupportedOperationException("You should resolve this member and call hasAnnotation() on the result...");
 	}
 

@@ -468,7 +468,7 @@ public class Member implements Comparable, AnnotatedElement {
      * If you want a sensible answer, resolve the member and call
      * hasAnnotation() on the ResolvedMember.
      */
-	public boolean hasAnnotation(ResolvedTypeX ofType) {
+	public boolean hasAnnotation(TypeX ofType) {
 		throw new UnsupportedOperationException("You should resolve this member and call hasAnnotation() on the result...");
 	}
 	

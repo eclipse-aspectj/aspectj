@@ -327,7 +327,7 @@ public class AnnotationPatternTestCase extends TestCase {
 			this.annotationTypes = annotationTypes;
 		}
 		
-		public boolean hasAnnotation(ResolvedTypeX ofType) {
+		public boolean hasAnnotation(TypeX ofType) {
 			for (int i = 0; i < annotationTypes.length; i++) {
 				if (annotationTypes[i].equals(ofType.getName())) return true;
 			}

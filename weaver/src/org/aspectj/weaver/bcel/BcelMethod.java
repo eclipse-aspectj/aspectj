@@ -141,7 +141,7 @@ final class BcelMethod extends ResolvedMember {
 		}
 	}
 	
-	public boolean hasAnnotation(ResolvedTypeX ofType) {
+	public boolean hasAnnotation(TypeX ofType) {
 		Annotation[] anns = method.getAnnotations();
 		for (int i = 0; i < anns.length; i++) {
 			Annotation annotation = anns[i];
