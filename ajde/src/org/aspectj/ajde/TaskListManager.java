@@ -35,6 +35,9 @@ public interface TaskListManager {
 
     public void addSourcelineTask(IMessage message);
 
+    /** @return true if any messages in list have kind warning or greater */
+    public boolean hasWarning();
+    
 	/**
 	 * Add a task associated with the current project.
 	 * 
@@ -46,6 +49,6 @@ public interface TaskListManager {
     /**
      * Delete all of the currently active tasks.
      */ 
-    public void clearTasks();
+    public void clearTasks();    
 }
 
