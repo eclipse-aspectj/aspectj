@@ -198,8 +198,10 @@ All rights reserved.
      The ajc compiler now copies resource files from jars specified using the 
      -injars option. When compiling with source directories, resources are <i>not</i>
      copied - mirroring the behaviour of javac so as to cause minimum disruption
-     when switching between ajc and javac. The iacj ant task also does not perform
-     resource copying from source directories for the same reason. Thanks to Matthew
+     when switching between ajc and javac. 
+     (To copy resources from source directories, use the iajc Ant task 
+      <tt>sourceRootCopyFilter</tt> option.)
+     Thanks to Matthew
      Webster for contributing many of the patches for this enhancement.
      <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=39626">39626</a> 
      ajc was erroneously putting aspectjtools.jar in the classpath of a compilation. 
@@ -216,7 +218,7 @@ All rights reserved.
      AspectJ programs: the interface to the AspectJ structure model was significantly revised
      and enhanced in 1.1.1.
      <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=39462">39462</a>
-     A compiler exception was thrown when an asbstract aspect in a library was extended by 
+     A compiler exception was thrown when an abstract aspect in a library was extended by 
      a concrete aspect using cflow. Thanks to Takao Naguchi for an easy to reproduce bug report.
      <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=39479">39479</a> 
      Compiler crashes when a constructor delegates to another constructor that uses a switch statement.
@@ -231,11 +233,10 @@ All rights reserved.
      The "+" pattern was being ignored for type patterns used in throws clauses. Thanks to 
      Keith Sader for the easy to reproduce bug report.
      <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=40807">40807</a>
-     The default output directory for the ant task when none is specified has been changed to
-     the source directory, instead of the current working directory. This behaviour is now consistent
-     with the command-line javac and ajc tools. Of signifcance because the fix enables JSP compilation
-     in Tomcat using ajc. Thanks to Ron Bodkin for the investigative work on how to integrate
-     ajc with Tomcat.
+     If you specify no output directory, the iajc Ant task now defaults to using 
+     the source directory, following ajc and javac.
+     As a result, now you can use ajc to compile JSP's in Tomcat. 
+     Thanks to Ron Bodkin for investigating how to integrate ajc with Tomcat.
   </ul>
 </p>
 
