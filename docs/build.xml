@@ -127,7 +127,8 @@ XXX no update to avoid builds in this script
             location="${docs.temp.dir}/xml-target-file.dummy"/>
       <!-- default value for xml-html copying (copy all graphics) -->
       <property name="xml-html-copy" value="*.gif,*.png" />
-
+      <property name="binary.pattern" 
+               value="**/*.gif,**/*.png,**/*,**/*.doc,**/*.pdf"/>
       <uptodate property="local.dist.uptodate"
               targetfile="${docs.dist.dir}/faq.html"> <!-- use faq as tag file -->
          <srcfiles dir="${docs.src.dir}"/>
@@ -221,7 +222,12 @@ XXX no update to avoid builds in this script
           unless="local.dist.uptodate"
       description="finish products by copying dist files">
         <copy todir="${docs.dist.dir}" filtering="on">
-            <fileset dir="${docs.src.dir}/dist" />
+            <fileset dir="${docs.src.dir}/dist" 
+                excludes="${binary.pattern}"/>
+        </copy>
+        <copy todir="${docs.dist.dir}" filtering="off">
+            <fileset dir="${docs.src.dir}/dist" 
+                includes="${binary.pattern}"/>
         </copy>
     </target>
 
