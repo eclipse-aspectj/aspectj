@@ -227,14 +227,14 @@ public class AsmRelationshipProvider {
 		return peNode;
 	}
 	
-	private IProgramElement lookupMember(IHierarchy model, Member member) {
+	protected IProgramElement lookupMember(IHierarchy model, Member member) {
 		TypeX declaringType = member.getDeclaringType();
 		IProgramElement classNode =
 			model.findElementForType(declaringType.getPackageName(), declaringType.getClassName());
 		return findMemberInClass(classNode, member);
 	}
  
-	private IProgramElement findMemberInClass(
+	protected IProgramElement findMemberInClass(
 		IProgramElement classNode,
 		Member member)
 	{
