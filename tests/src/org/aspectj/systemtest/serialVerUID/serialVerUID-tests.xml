@@ -114,7 +114,7 @@
 		<compile files="Test.java, Util.java" />
         <run class="Test"/>
 		<compile files="Test.java, Util.java, DeclareImplements.aj" options="-Xlint:warning">
-            <message kind="warning"/>
+            <message kind="warning" line="3"/>
 		</compile>
         <run class="Util" options="-fail"/>
 	</ajc-test>

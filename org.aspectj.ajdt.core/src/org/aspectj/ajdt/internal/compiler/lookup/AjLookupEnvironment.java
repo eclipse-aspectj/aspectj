@@ -483,7 +483,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
 				newI[n] = parentBinding;
 			}
 			sourceType.superInterfaces = newI;
-			warnOnAddedInterface(factory.fromEclipse(sourceType),parent);
+			// warnOnAddedInterface(factory.fromEclipse(sourceType),parent); // now reported at weave time...
 			
 
             // this used to be true, but I think I've fixed it now, decp is done at weave time!			
