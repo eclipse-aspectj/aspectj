@@ -179,6 +179,9 @@ public class AjcTask extends MatchingTask {
     
     private static final File DEFAULT_DESTDIR = new File(".");
     
+    /** do not throw BuildException on fail/abort message with usage */
+    private static final String USAGE_SUBSTRING = "AspectJ-specific options";
+
     /** valid -X[...] options other than -Xlint variants */
     private static final List VALID_XOPTIONS;
 
@@ -850,26 +853,37 @@ public class AjcTask extends MatchingTask {
         // no exceptions for any of the fail/abort messages.
         // The interceptor message handler should have already
         // printed the messages, including any stack traces.
+        // HACK: this ignores the Usage message
         {
             IMessage[] fails = holder.getMessages(IMessage.FAIL, true);
             if (!LangUtil.isEmpty(fails)) {
                 StringBuffer sb = new StringBuffer();
                 String prefix = "fail due to ";
+                int numThrown = 0;
                 for (int i = 0; i < fails.length; i++) {
+                    String message = fails[i].getMessage();
+                    if (LangUtil.isEmpty(message)) {
+                        message = "<no message>";
+                    } else if (-1 != message.indexOf(USAGE_SUBSTRING)) {
+                        continue;
+                    }
                     Throwable t = fails[i].getThrown();
                     if (null != t) {
+                        numThrown++;
                         sb.append(prefix);
                         sb.append(LangUtil.unqualifiedClassName(t.getClass()));
-                        prefix = ", ";
-                    }
+                        String thrownMessage = t.getMessage();
+                        if (!LangUtil.isEmpty(thrownMessage)) {
+                            sb.append(" \"" + thrownMessage + "\"");
+                        }
+                    } 
+                    sb.append("\"" + message + "\"");
+                    prefix = ", ";
                 }
                 if (0 < sb.length()) {
-                    sb.append(" rendered in messages above.");
-                } else {
-                    sb.append(fails.length 
-                              + " fails/aborts (no exceptions)");
+                    sb.append(" (" + numThrown + " exceptions)");
+                    throw new BuildException(sb.toString());
                 }
-                throw new BuildException(sb.toString());
             }
         }
     }
