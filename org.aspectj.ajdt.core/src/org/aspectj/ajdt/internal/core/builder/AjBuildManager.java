@@ -148,7 +148,7 @@ public class AjBuildManager {
 	}
 
 	public boolean incrementalBuild(AjBuildConfig buildConfig, IMessageHandler messageHandler) throws CoreException, IOException {
-        if (javaBuilder == null || javaBuilder.currentProject == null) {
+        if (javaBuilder == null || javaBuilder.currentProject == null || javaBuilder.lastState == null) {
         	return batchBuild(buildConfig, messageHandler);
         }
         
