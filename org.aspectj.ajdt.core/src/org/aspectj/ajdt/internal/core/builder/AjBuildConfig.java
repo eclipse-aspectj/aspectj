@@ -18,6 +18,7 @@ package org.aspectj.ajdt.internal.core.builder;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -28,13 +29,13 @@ import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 /**
  * All configuration information needed to run the AspectJ compiler.
  */
-public class AjBuildConfig {
+public class AjBuildConfig { // XXX needs bootclasspath?
 	
 	public static final String AJLINT_IGNORE = "ignore";
 	public static final String AJLINT_WARN = "warn";
 	public static final String AJLINT_ERROR = "error";
 	public static final String AJLINT_DEFAULT = "default";
-	
+
 	private File outputDir;
 	private File outputJar;
 	private List/*File*/ sourceRoots = new ArrayList();
@@ -52,6 +53,9 @@ public class AjBuildConfig {
 	private boolean XnoInline = false;
 	private String lintMode = AJLINT_DEFAULT;
 	private File lintSpecFile = null;
+    
+    /** if true, then global values override local when joining */
+    private boolean override = true;
 
     // incremental variants handled by the compiler client, but parsed here
     private boolean incrementalMode;
@@ -316,6 +320,98 @@ public class AjBuildConfig {
             || (0 < files.size())
             || (0 < inJars.size())
             );
+    }
+    
+    /** @return null if no errors, String errors otherwise */
+    public String configErrors() {
+        StringBuffer result = new StringBuffer();
+        // ok, permit both.  sigh.
+//        if ((null != outputDir) && (null != outputJar)) {
+//            result.append("specified both outputDir and outputJar");
+//        }
+        // incremental => only sourceroots
+        // 
+        return (0 == result.length() ? null : result.toString());
+    }
+
+    /**
+     * Install global values into local config
+     * unless values conflict:
+     * <ul>
+     * <li>Collections are unioned</li>
+     * <li>values takes local value unless default and global set</li>
+     * <li>this only sets one of outputDir and outputJar as needed</li>
+     * <ul>
+     * This also configures super if javaOptions change.
+     * @param global the AjBuildConfig to read globals from
+     */
+    public void installGlobals(AjBuildConfig global) { // XXX relies on default values
+        join(ajOptions, global.ajOptions);
+        join(aspectpath, global.aspectpath);
+        join(classpath, global.classpath);
+        if (null == configFile) {
+            configFile = global.configFile; // XXX correct?
+        }
+        if (!emacsSymMode && global.emacsSymMode) {
+            emacsSymMode = true;
+        }
+        join(files, global.files);
+        if (!generateModelMode && global.generateModelMode) {
+            generateModelMode = true;
+        }
+        if (null == incrementalFile) {
+            incrementalFile = global.incrementalFile;
+        }
+        if (!incrementalMode && global.incrementalMode) {
+            incrementalMode = true;
+        }
+        join(inJars, global.inJars);
+        join(javaOptions, global.javaOptions);
+        if ((null == lintMode) 
+            || (AJLINT_DEFAULT.equals(lintMode))) {
+            lintMode = global.lintMode;
+        }
+        if (null == lintSpecFile) {
+            lintSpecFile = global.lintSpecFile;
+        }
+        if (!noWeave && global.noWeave) {
+            noWeave = true;
+        }
+        if ((null == outputDir) && (null == outputJar)) {
+            if (null != global.outputDir) {
+                outputDir = global.outputDir;
+            }
+            if (null != global.outputJar) {
+                outputJar = global.outputJar;
+            }
+        }        
+        join(sourceRoots, global.sourceRoots);
+        if (!XnoInline && global.XnoInline) {
+            XnoInline = true;
+        }
+        if (!XserializableAspects && global.XserializableAspects) {
+            XserializableAspects = true;
+        }
+    }
+
+    void join(Collection local, Collection global) {
+        for (Iterator iter = global.iterator(); iter.hasNext();) {
+            Object next = iter.next();
+            if (!local.contains(next)) {
+                local.add(next);        
+            }
+        }
+    }
+    void join(Map local, Map global) {
+        for (Iterator iter = global.keySet().iterator(); iter.hasNext();) {
+            Object key = iter.next();
+            if (override || (null == local.get(key))) { // 
+                Object value = global.get(key);
+                if (null != value) {
+                    local.put(key, value);
+                }
+            }
+        }
     }
 
 }
