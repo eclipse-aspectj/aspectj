@@ -40,7 +40,12 @@ public final class Pointcuts {
     /** staticly-determinable to never match any join point */
     public pointcut never();
        // if(false) && execution(ThreadDeath *(ThreadDeath, ThreadDeath));
-        
+    
+    public pointcut afterAdviceSupported() : !handler(*);
+
+    public pointcut aroundAdviceSupported() : !handler(*)
+        && !initialization(new(..)) && !preinitialization(new(..));
+
     public pointcut anyMethodExecution() : 
         execution(* *(..));
 
