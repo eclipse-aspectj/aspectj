@@ -18,7 +18,7 @@ import junit.framework.*;
 
 public class AsmModuleTests extends TestCase {
 
-    public static Test suite() { 
+    public static TestSuite suite() { 
         TestSuite suite = new TestSuite(AsmModuleTests.class.getName());
         suite.addTestSuite(AsmModuleTests.class); 
         return suite;

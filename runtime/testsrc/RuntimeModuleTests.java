@@ -18,7 +18,7 @@ import junit.framework.*;
 
 public class RuntimeModuleTests extends TestCase {
 
-    public static Test suite() { 
+    public static TestSuite suite() { 
         TestSuite suite = new TestSuite(RuntimeModuleTests.class.getName());
         suite.addTestSuite(RuntimeModuleTests.class); // minimum 1 test (testNothing)
         return suite;
