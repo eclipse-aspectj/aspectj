@@ -16,9 +16,11 @@ import java.io.File;
 import junit.framework.TestCase;
 
 /**
+ * A long way to go until full coverage, but this is the place to add more.
+ * 
  * @author Mik Kersten
  */
-public class MainTestCase extends TestCase {
+public class CoverageTestCase extends TestCase {
 	
 	public void testSimpleExample() {
 		
@@ -26,18 +28,29 @@ public class MainTestCase extends TestCase {
 		File file1 = new File("testdata/simple/foo/ClassA.java");
 		File aspect1 = new File("testdata/simple/foo/AspectA.java");
 		File file2 = new File("testdata/simple/foo/InterfaceI.java");
+		File file3 = new File("testdata/simple/foo/PlainJava.java");
 		File outdir = new File("testdata/simple/doc");
 		
 		String[] args = { "-d", 
 				outdir.getAbsolutePath(),
 				aspect1.getAbsolutePath(),
 				file1.getAbsolutePath(), 
-				file2.getAbsolutePath() };
+				file2.getAbsolutePath(),
+				file3.getAbsolutePath()};
 		
 		org.aspectj.tools.ajdoc.Main.main(args);
-		
-		assertTrue(true);
 	}
+
+//	public void testPlainJava() {
+//		File file1 = new File("testdata/simple/foo/PlainJava.java");
+//		File outdir = new File("testdata/simple/doc");
+//		
+//		String[] args = { "-d", 
+//				outdir.getAbsolutePath(),
+//				file1.getAbsolutePath() };
+//		
+//		org.aspectj.tools.ajdoc.Main.main(args);
+//	}
 	
 	protected void setUp() throws Exception {
 		super.setUp();

@@ -22,8 +22,8 @@ public class AjdocModuleTests {
 		TestSuite suite = new TestSuite("Test for org.aspectj.tools.ajdoc");
 		//$JUnit-BEGIN$
 		suite.addTestSuite(SpacewarTestCase.class);
-		suite.addTestSuite(ExecutionTestCase.class);
-		suite.addTestSuite(MainTestCase.class); // !!! must be last because it exists
+		suite.addTestSuite(CoverageTestCase.class); 
+		suite.addTestSuite(ExecutionTestCase.class);// !!! must be last because it exists
 		//$JUnit-END$
 		return suite;
 	}
