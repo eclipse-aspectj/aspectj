@@ -32,6 +32,7 @@ goto RUN
 
 rem build update.tree, quicklook
 :RUN
+set JAVA_HOME=%JDKDIR%
 if not "x" == "x%DEBUG%" set verbose=-verbose
 chdir %buildDir% || goto ERR_CD
 rem fyi, normal ant.bat script loses any internal "=", so we rely on a patched script
