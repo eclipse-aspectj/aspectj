@@ -7523,4 +7523,15 @@
         <compile files="Priority.aj" />
     </ajc-test>
 	
+    <ajc-test dir="bugs/StringToString" pr="55341"
+	    title="error Type mismatch: cannot convert from java.lang.String to java.lang.String"
+     		comment="make helloworld.jar with 'ajc -outjar helloworld.jar HW.java' or run BcweaverJarMaker"
+     		keywords="">
+        <compile files="X.java" classpath="helloworld.jar">
+        	<message kind="warning" line="3"/>
+        	<message kind="warning" line="7"/>
+        </compile>
+    </ajc-test>
+	
+	
 </suite>

@@ -41,7 +41,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 		InvocationSite site,
 		Scope scope)
 	{
-		FieldBinding retField = sourceTypeBinding.getFieldBase(fieldName, false);  // XXX may need to get the correct value for second parameter in the future
+		FieldBinding retField = sourceTypeBinding.getFieldBase(fieldName, true);  // XXX may need to get the correct value for second parameter in the future (see #55341)
 		if (interTypeFields.isEmpty()) return retField;
 		int fieldLength = fieldName.length;
 		

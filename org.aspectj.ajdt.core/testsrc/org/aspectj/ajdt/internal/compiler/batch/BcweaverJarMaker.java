@@ -179,6 +179,16 @@ public class BcweaverJarMaker {
 		args.add("../tests/bugs/serialVersionUID/Util.java");
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+		
+		// For PR55341
+		args = new ArrayList();
+		args.add("-classpath"); 
+		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar"  +
+			File.pathSeparator + System.getProperty("aspectjrt.path"));
+		args.add("-outjar");
+		args.add("../tests/bugs/StringToString/helloworld.jar");		
+		args.add("../tests/bugs/StringToString/HW.java");		
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 	}	
 	
 	public static void makeURLWeavingClassLoaderJars() throws IOException {
@@ -245,8 +255,7 @@ public class BcweaverJarMaker {
 		args.add("../weaver/testdata/ltw-itdaspects.jar");
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/LTWInterfaceITD.aj");
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/LTWFieldITD.aj");
-		/* Uncomment when bug #55341 fixed */
-//		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/LTWMethodITD.aj");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/LTWMethodITD.aj");
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 
 		/*

@@ -140,9 +140,7 @@ public class WeavingURLClassLoaderTest extends TestCase {
 
 		try {
 			Class clazz = loader.loadClass("LTWHelloWorld");
-			/* Uncomment when bug #55341 fixed */
-//			invokeMain(clazz,new String[] { "LTWInterfaceITD", "LTWFieldITD", "LTWMethodITD" }); 
-			invokeMain(clazz,new String[] { "LTWInterfaceITD", "LTWFieldITD" }); 
+			invokeMain(clazz,new String[] { "LTWInterfaceITD", "LTWFieldITD", "LTWMethodITD" }); 
 		}
 		catch (Exception ex) {
 			fail(ex.toString());
@@ -177,9 +175,7 @@ public class WeavingURLClassLoaderTest extends TestCase {
 
 		try {
 			Class clazz = loader.loadClass("LTWHelloWorld");
-			/* Uncomment when bug #55341 fixed */
-//			invokeMain(clazz,new String[] { "LTWAspect", "LTWAroundClosure", "LTWPerthis", "LTWInterfaceITD", "LTWFieldITD", "LTWMethodITD", "LTWPerthis"}); 
-			invokeMain(clazz,new String[] { "LTWAspect", "LTWAroundClosure", "LTWPerthis", "LTWInterfaceITD", "LTWFieldITD", "LTWPerthis"}); 
+			invokeMain(clazz,new String[] { "LTWAspect", "LTWAroundClosure", "LTWPerthis", "LTWInterfaceITD", "LTWFieldITD", "LTWMethodITD", "LTWPerthis"}); 
 		}
 		catch (Exception ex) {
 			fail(ex.toString());
