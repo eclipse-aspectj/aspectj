@@ -25,7 +25,6 @@ import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
@@ -50,6 +49,7 @@ import org.aspectj.apache.bcel.generic.SWITCH;
 import org.aspectj.apache.bcel.generic.Select;
 import org.aspectj.apache.bcel.generic.TargetLostException;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedTypeX;
@@ -615,16 +615,17 @@ public class Utility {
      * by its key) should be ignored.
      *
      */
-    public static boolean isSuppressing(Annotation[] anns,String lintkey) {
+    public static boolean isSuppressing(AnnotationX[] anns,String lintkey) {
+    	if (anns == null) return false;
         boolean suppressed = false;
         // Go through the annotation types on the advice
         for (int i = 0;!suppressed && i<anns.length;i++) {
           // Check for the SuppressAjWarnings annotation
-          if (TypeX.SUPPRESS_AJ_WARNINGS.getSignature().equals(anns[i].getTypeSignature())) {
+          if (TypeX.SUPPRESS_AJ_WARNINGS.getSignature().equals(anns[i].getBcelAnnotation().getTypeSignature())) {
             // Two possibilities:
             // 1. there are no values specified (i.e. @SuppressAjWarnings)
             // 2. there are values specified (i.e. @SuppressAjWarnings("A") or @SuppressAjWarnings({"A","B"})
-            List vals = anns[i].getValues();
+            List vals = anns[i].getBcelAnnotation().getValues();
             if (vals == null || vals.size()==0) { // (1)
                 suppressed = true;
             } else { // (2)
