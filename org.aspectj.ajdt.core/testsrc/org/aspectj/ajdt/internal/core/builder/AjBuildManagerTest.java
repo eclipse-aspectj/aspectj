@@ -26,7 +26,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageWriter;
 import org.aspectj.util.StreamPrintWriter;
-import org.eclipse.core.runtime.CoreException;
+//import org.eclipse.core.runtime.CoreException;
 
 public class AjBuildManagerTest extends TestCase {
 
@@ -59,7 +59,7 @@ public class AjBuildManagerTest extends TestCase {
 		super(name);
 	}
 	
-	public void testSimpleStructure() throws IOException, CoreException {
+	public void testSimpleStructure() throws IOException /*, CoreException */ {
 		
 		AjBuildManager manager = new AjBuildManager(messageWriter);
 		BuildArgParser parser = new BuildArgParser(messageWriter);

@@ -24,7 +24,7 @@ import org.aspectj.ajdt.ajc.*;
 import org.aspectj.ajdt.internal.core.builder.*;
 import org.aspectj.bridge.*;
 import org.aspectj.util.LangUtil;
-import org.eclipse.core.runtime.OperationCanceledException;
+//import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 public class CompilerAdapter {
@@ -107,10 +107,10 @@ public class CompilerAdapter {
                 } 
                 return buildManager.batchBuild(buildConfig, messageHandler); 
             }
-        } catch (OperationCanceledException ce) {
-			Ajde.getDefault().getErrorHandler().handleWarning(
-				"build cancelled by user");
-            return false;
+//        } catch (OperationCanceledException ce) {
+//			Ajde.getDefault().getErrorHandler().handleWarning(
+//				"build cancelled by user");
+//            return false;
 		} catch (AbortException e) {
             final IMessage message = e.getIMessage();
             if (null == message) {
