@@ -14,7 +14,8 @@
 
 package org.aspectj.ajde;
 
-import org.aspectj.bridge.*;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
 
 /**
  * Used for displaying tasks, such as compiler messages, to the user.

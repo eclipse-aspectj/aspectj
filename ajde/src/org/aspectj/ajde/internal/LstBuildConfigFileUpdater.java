@@ -14,11 +14,20 @@
 
 package org.aspectj.ajde.internal;
 
-import java.util.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.*;
+import org.aspectj.ajde.ui.BuildConfigNode;
 import org.aspectj.util.ConfigParser;
 
 /**

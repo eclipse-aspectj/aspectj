@@ -16,11 +16,17 @@ package org.aspectj.ajde.ui;
 
 import java.awt.BorderLayout;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Vector;
 
-import javax.swing.*;
+import javax.swing.Box;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
-import org.aspectj.ajde.*;
+import org.aspectj.ajde.Ajde;
+import org.aspectj.ajde.EditorAdapter;
+import org.aspectj.ajde.EditorListener;
 import org.aspectj.ajde.ui.swing.BasicEditor;
 import org.aspectj.bridge.ISourceLocation;
 

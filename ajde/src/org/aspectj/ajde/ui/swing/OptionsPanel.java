@@ -14,8 +14,9 @@
 
 package org.aspectj.ajde.ui.swing;
 
-import javax.swing.*;
-import java.io.*;
+import java.io.IOException;
+
+import javax.swing.JPanel;
 
 /**
  * @author Mik Kersten

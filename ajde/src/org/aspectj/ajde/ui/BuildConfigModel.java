@@ -14,7 +14,10 @@
 
 package org.aspectj.ajde.ui;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import org.aspectj.asm.StructureModel;
 

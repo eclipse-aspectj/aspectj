@@ -14,14 +14,25 @@
 
 package org.aspectj.ajde.ui.swing;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.util.Iterator;
 
-import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.JToolBar;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.*;
+import org.aspectj.ajde.ui.GlobalStructureView;
+import org.aspectj.ajde.ui.StructureView;
+import org.aspectj.ajde.ui.StructureViewNode;
+import org.aspectj.ajde.ui.StructureViewProperties;
+import org.aspectj.ajde.ui.StructureViewRenderer;
 
 /**
  * Represents the configuration of a structure view of the system, rendered

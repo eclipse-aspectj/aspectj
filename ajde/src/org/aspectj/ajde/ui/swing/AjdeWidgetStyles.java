@@ -14,9 +14,12 @@
 
 package org.aspectj.ajde.ui.swing;
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.border.*;
+import java.awt.Color;
+import java.awt.Font;
+
+import javax.swing.BorderFactory;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 
 public interface AjdeWidgetStyles {
 

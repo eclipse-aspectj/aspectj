@@ -19,11 +19,21 @@ import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.*;
-import org.aspectj.asm.*;
+import org.aspectj.ajde.ui.AbstractIcon;
+import org.aspectj.ajde.ui.GlobalStructureView;
+import org.aspectj.ajde.ui.StructureView;
+import org.aspectj.ajde.ui.StructureViewProperties;
+import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.RelationNode;
+import org.aspectj.asm.StructureModel;
+import org.aspectj.asm.StructureNode;
 
 /**
  * @author  Mik Kersten

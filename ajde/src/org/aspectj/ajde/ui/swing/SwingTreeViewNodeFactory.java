@@ -14,9 +14,12 @@
 
 package org.aspectj.ajde.ui.swing;
 
-import java.util.*;
-import org.aspectj.asm.*;
-import org.aspectj.ajde.ui.*;
+import java.util.List;
+
+import org.aspectj.ajde.ui.AbstractIcon;
+import org.aspectj.ajde.ui.StructureViewNode;
+import org.aspectj.ajde.ui.StructureViewNodeFactory;
+import org.aspectj.asm.StructureNode;
 
 /**
  * @author Mik Kersten

@@ -14,13 +14,18 @@
 
 package org.aspectj.ajde.ui.swing;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
 
 import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import org.aspectj.asm.*;
+import org.aspectj.asm.LinkNode;
+import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.RelationNode;
+import org.aspectj.asm.StructureNode;
 import org.aspectj.bridge.IMessage;
 
 /**

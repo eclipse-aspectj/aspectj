@@ -14,7 +14,11 @@
 
 package org.aspectj.ajde.ui;
 
-import org.aspectj.asm.*;
+import org.aspectj.asm.AdviceAssociation;
+import org.aspectj.asm.InheritanceAssociation;
+import org.aspectj.asm.IntroductionAssociation;
+import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.Relation;
 
 /**
  * Uses the factory pattern.

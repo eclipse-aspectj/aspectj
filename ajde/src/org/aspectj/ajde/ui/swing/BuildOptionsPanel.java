@@ -14,11 +14,22 @@
 
 package org.aspectj.ajde.ui.swing;
 
-import javax.swing.*;
-import java.io.*;
-import java.awt.*;
-import javax.swing.border.*;
-import org.aspectj.ajde.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.io.IOException;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
+
+import org.aspectj.ajde.Ajde;
 
 /**
  * @author Mik Kersten

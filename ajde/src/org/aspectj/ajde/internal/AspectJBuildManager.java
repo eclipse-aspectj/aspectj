@@ -14,12 +14,26 @@
 
 package org.aspectj.ajde.internal;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Vector;
 
-import org.aspectj.ajde.*;
+import org.aspectj.ajde.Ajde;
+import org.aspectj.ajde.BuildListener;
+import org.aspectj.ajde.BuildManager;
+import org.aspectj.ajde.BuildOptionsAdapter;
+import org.aspectj.ajde.BuildProgressMonitor;
+import org.aspectj.ajde.ProjectPropertiesAdapter;
+import org.aspectj.ajde.TaskListManager;
 import org.aspectj.asm.StructureNode;
-import org.aspectj.bridge.*;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
+import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.ConfigParser;
 
 /**

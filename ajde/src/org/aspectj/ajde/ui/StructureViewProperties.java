@@ -14,9 +14,12 @@
 
 package org.aspectj.ajde.ui;
 
-import java.util.*;
-import java.io.*;
-import org.aspectj.asm.*;
+import java.io.ObjectStreamException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.Relation;
 
 /** 
  * Nested properties use the typesafe enum pattern.

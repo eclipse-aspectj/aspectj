@@ -16,7 +16,9 @@
 package org.aspectj.ajde.ui.swing;
 
 import javax.swing.SwingUtilities;
-import org.aspectj.ajde.*;
+
+import org.aspectj.ajde.Ajde;
+import org.aspectj.ajde.EditorAdapter;
 
 /**
  * Used to ensure that a source line has been seeked to.  Will repeatedly attempt

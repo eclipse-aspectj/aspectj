@@ -22,8 +22,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.aspectj.ajde.*;
-import org.aspectj.ajde.ui.*;
+import org.aspectj.ajde.BuildOptionsAdapter;
+import org.aspectj.ajde.ui.UserPreferencesAdapter;
 
 public class AjcBuildOptions implements BuildOptionsAdapter {
 	

@@ -16,13 +16,24 @@
 package org.aspectj.ajde.internal;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
-import org.aspectj.ajde.*;
+import org.aspectj.ajde.Ajde;
+import org.aspectj.ajde.BuildOptionsAdapter;
+import org.aspectj.ajde.BuildProgressMonitor;
+import org.aspectj.ajde.ProjectPropertiesAdapter;
+import org.aspectj.ajde.TaskListManager;
 import org.aspectj.ajdt.ajc.BuildArgParser;
 import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
 import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
-import org.aspectj.bridge.*;
+import org.aspectj.bridge.AbortException;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.util.ConfigParser;
 import org.aspectj.util.LangUtil;
 import org.eclipse.core.runtime.OperationCanceledException;

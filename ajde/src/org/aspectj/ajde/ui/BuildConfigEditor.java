@@ -14,7 +14,7 @@
 
 package org.aspectj.ajde.ui;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  * @author Mik Kersten

@@ -18,12 +18,17 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.util.Iterator;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.*;
+import org.aspectj.ajde.ui.FileStructureView;
+import org.aspectj.ajde.ui.StructureView;
+import org.aspectj.ajde.ui.StructureViewNode;
+import org.aspectj.ajde.ui.StructureViewRenderer;
 import org.aspectj.asm.ProgramElementNode;
 import org.aspectj.asm.StructureNode;
 

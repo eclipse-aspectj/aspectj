@@ -16,8 +16,8 @@
  
 package org.aspectj.ajde;
 
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author	Mik Kersten

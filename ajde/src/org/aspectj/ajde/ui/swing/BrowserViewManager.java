@@ -14,11 +14,19 @@
 
 package org.aspectj.ajde.ui.swing;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Stack;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.*;
-import org.aspectj.asm.*;
+import org.aspectj.ajde.ui.GlobalStructureView;
+import org.aspectj.ajde.ui.GlobalViewProperties;
+import org.aspectj.ajde.ui.StructureViewProperties;
+import org.aspectj.asm.AdviceAssociation;
+import org.aspectj.asm.InheritanceAssociation;
+import org.aspectj.asm.LinkNode;
+import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.StructureNode;
 
 /**
  * Responsible for displaying and controlling the configuration and output of a

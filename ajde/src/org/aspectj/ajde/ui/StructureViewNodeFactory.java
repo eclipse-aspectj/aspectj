@@ -14,8 +14,12 @@
  
 package org.aspectj.ajde.ui;
 
-import org.aspectj.asm.*;
 import java.util.List;
+
+import org.aspectj.asm.LinkNode;
+import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.RelationNode;
+import org.aspectj.asm.StructureNode;
 
 /**
  * @author Mik Kersten

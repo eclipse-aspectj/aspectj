@@ -19,7 +19,11 @@ import java.util.List;
 
 import org.aspectj.ajde.internal.AspectJBuildManager;
 import org.aspectj.ajde.internal.LstBuildConfigManager;
-import org.aspectj.ajde.ui.*;
+import org.aspectj.ajde.ui.EditorManager;
+import org.aspectj.ajde.ui.IdeUIAdapter;
+import org.aspectj.ajde.ui.StructureSearchManager;
+import org.aspectj.ajde.ui.StructureViewManager;
+import org.aspectj.ajde.ui.StructureViewNodeFactory;
 import org.aspectj.asm.StructureModelManager;
 import org.aspectj.bridge.Version;
 

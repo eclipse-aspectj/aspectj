@@ -15,9 +15,17 @@
  
 package org.aspectj.ajde.ui.internal;
 
-import java.util.*;
-import java.io.*;
-import org.aspectj.ajde.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.util.StringTokenizer;
+
+import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.ui.UserPreferencesAdapter;
 
 public class UserPreferencesStore implements UserPreferencesAdapter {

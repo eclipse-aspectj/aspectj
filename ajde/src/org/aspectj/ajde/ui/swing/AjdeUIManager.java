@@ -16,8 +16,16 @@ package org.aspectj.ajde.ui.swing;
 
 import java.awt.Frame;
 
-import org.aspectj.ajde.*;
-import org.aspectj.ajde.ui.*;
+import org.aspectj.ajde.Ajde;
+import org.aspectj.ajde.BuildListener;
+import org.aspectj.ajde.BuildProgressMonitor;
+import org.aspectj.ajde.EditorAdapter;
+import org.aspectj.ajde.ErrorHandler;
+import org.aspectj.ajde.ProjectPropertiesAdapter;
+import org.aspectj.ajde.TaskListManager;
+import org.aspectj.ajde.ui.FileStructureView;
+import org.aspectj.ajde.ui.IdeUIAdapter;
+import org.aspectj.ajde.ui.UserPreferencesAdapter;
 import org.aspectj.ajde.ui.internal.AjcBuildOptions;
 
 /**

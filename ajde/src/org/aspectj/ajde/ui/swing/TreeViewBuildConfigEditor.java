@@ -15,18 +15,37 @@
 
 package org.aspectj.ajde.ui.swing;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import javax.swing.*;
-import javax.swing.tree.*;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.*;
+import org.aspectj.ajde.ui.BuildConfigEditor;
+import org.aspectj.ajde.ui.BuildConfigModel;
+import org.aspectj.ajde.ui.BuildConfigNode;
+import org.aspectj.ajde.ui.InvalidResourceException;
 import org.aspectj.asm.ProgramElementNode;
 /**
  * UI for editing build configuration (".lst") files via a graphical tree-based

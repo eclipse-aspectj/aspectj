@@ -14,10 +14,23 @@
  
 package org.aspectj.ajde.ui;
 
-import java.util.*;
-import org.aspectj.ajde.*;
-import org.aspectj.ajde.ui.internal.*;
-import org.aspectj.asm.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.aspectj.ajde.Ajde;
+import org.aspectj.ajde.ui.internal.NavigationHistoryModel;
+import org.aspectj.ajde.ui.internal.TreeStructureViewBuilder;
+import org.aspectj.asm.AdviceAssociation;
+import org.aspectj.asm.InheritanceAssociation;
+import org.aspectj.asm.IntroductionAssociation;
+import org.aspectj.asm.LinkNode;
+import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.ReferenceAssociation;
+import org.aspectj.asm.StructureModel;
+import org.aspectj.asm.StructureModelListener;
+import org.aspectj.asm.StructureModelManager;
+import org.aspectj.asm.StructureNode;
 
 /**
  * @author	Mik Kersten

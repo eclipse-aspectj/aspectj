@@ -14,8 +14,9 @@
  
 package org.aspectj.ajde.ui;
 
-import org.aspectj.asm.*;
 import java.util.List;
+
+import org.aspectj.asm.StructureNode;
 
 /**
  * @author Mik Kersten

@@ -14,13 +14,23 @@
  
 package org.aspectj.ajde.internal;
 
-import java.util.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
-import org.aspectj.ajde.*;
-import org.aspectj.ajde.ui.*;
-import org.aspectj.asm.*;
-import org.aspectj.bridge.*;
+import org.aspectj.ajde.Ajde;
+import org.aspectj.ajde.BuildConfigListener;
+import org.aspectj.ajde.BuildConfigManager;
+import org.aspectj.ajde.ui.BuildConfigModel;
+import org.aspectj.ajde.ui.BuildConfigNode;
+import org.aspectj.asm.StructureNode;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.ConfigParser;
 
 /**

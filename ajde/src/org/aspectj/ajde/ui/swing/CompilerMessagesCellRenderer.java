@@ -16,7 +16,9 @@ package org.aspectj.ajde.ui.swing;
    
 import java.awt.Component;
 
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 
 import org.aspectj.bridge.IMessage;
 

@@ -15,7 +15,8 @@
 
 package org.aspectj.ajde;
 
-import java.util.*;
+import java.util.EventListener;
+import java.util.List;
 
 /**
  * @author Mik Kersten

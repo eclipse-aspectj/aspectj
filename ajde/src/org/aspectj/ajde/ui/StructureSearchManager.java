@@ -14,10 +14,14 @@
  
 package org.aspectj.ajde.ui;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.asm.*;
+import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.StructureModel;
+import org.aspectj.asm.StructureNode;
 
 /**
  * @author	Mik Kersten

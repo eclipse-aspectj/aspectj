@@ -14,8 +14,9 @@
 
 package org.aspectj.ajde.ui.internal;
 
-import java.util.*;
-import org.aspectj.asm.*;
+import java.util.Stack;
+
+import org.aspectj.asm.ProgramElementNode;
 
 /**
  * @author Mik Kersten

@@ -14,9 +14,25 @@
 
 package org.aspectj.ajde.ui;
 
-import java.util.*;
-import org.aspectj.asm.*;
-import org.aspectj.ajde.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+
+import org.aspectj.ajde.Ajde;
+import org.aspectj.asm.LinkNode;
+import org.aspectj.asm.ProgramElementNode;
+import org.aspectj.asm.RelationNode;
+import org.aspectj.asm.StructureModel;
+import org.aspectj.asm.StructureModelManager;
+import org.aspectj.asm.StructureNode;
 
 /**
  * Prototype functionality for package view clients.
