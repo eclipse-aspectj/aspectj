@@ -230,13 +230,13 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
         initAnnotationTypePatterns();		
         
         // Let's create something wild
-		PatternParser p = new PatternParser("@Foo || @Boo");
+		PatternParser p = new PatternParser("@(Foo || Boo)");
 		AnnotationTypePattern ap = p.maybeParseAnnotationPattern();
 		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
 		assertTrue("shouldnt match the type AnnotatedClass",ap.matches(rtx).alwaysFalse());
 		
 		
-		p = new PatternParser("@p.SimpleAnnotation || @Boo");
+		p = new PatternParser("@(p.SimpleAnnotation || Boo)");
 		ap = p.maybeParseAnnotationPattern();
 		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
 		assertTrue("should match the type AnnotatedClass",ap.matches(rtx).alwaysTrue());
