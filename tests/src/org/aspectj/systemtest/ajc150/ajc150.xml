@@ -253,6 +253,21 @@
         <compile files="HandlerBinding.aj" options="-1.5"/>
         <run class="HandlerBinding"/>    
     </ajc-test>
+    
+    <ajc-test dir="java5/annotations/binding" vm="1.5" title="@withincode() and call(* println(..))">
+       <compile files="WithinCodeBinding1.aj" options="-1.5"/>
+       <run class="WithinCodeBinding1"/>
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations/binding" vm="1.5" title="@within">
+       <compile files="WithinBinding1.aj" options="-1.5"/>
+       <run class="WithinBinding1"/>
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations/binding" vm="1.5" title="@within - multiple types">
+       <compile files="WithinBinding2.aj" options="-1.5"/>
+       <run class="WithinBinding2"/>
+    </ajc-test>
  
     <ajc-test dir="java5/annotations/binding/complexExample" vm="1.5" title="packages and no binding">
         <compile files="A.java,B.java,Color.java,X.java" options="-1.5"/>
@@ -897,5 +912,7 @@
            <message kind="weave" text="Type 'SimpleVarargs' (SimpleVarargs.java:27) advised by before advice from 'VarargsAspect06' (VarargsAspect06.aj:3)"/>
        </compile>
    </ajc-test>
+   
+
 </suite>
 
