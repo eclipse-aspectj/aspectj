@@ -31,6 +31,7 @@ import org.aspectj.bridge.*;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.*;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.core.compiler.*;
 import org.eclipse.jdt.internal.compiler.*;
 import org.eclipse.jdt.internal.compiler.batch.*;
@@ -38,6 +39,7 @@ import org.eclipse.jdt.internal.compiler.batch.FileSystem;
 import org.eclipse.jdt.internal.compiler.env.*;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
+import org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 //import org.eclipse.jdt.internal.compiler.util.HashtableOfObject;
 
@@ -158,7 +160,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
                 for (int i = 0; (i < 5) && !files.isEmpty(); i++) {
                     // System.err.println("XXXX inc: " + files);
                     performCompilation(files);
-                    if (handler.hasErrors()) {
+                    if (handler.hasErrors() || (progressListener!=null && progressListener.isCancelledRequested())) {
                         return false;
                     } 
                     files = state.getFilesToCompile(false);
@@ -572,8 +574,11 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 
 		options.produceReferenceInfo(true); //TODO turn off when not needed
 		
-		compiler.compile(getCompilationUnits(filenames, encodings));
-		
+		try {
+			compiler.compile(getCompilationUnits(filenames, encodings));
+		} catch (OperationCanceledException oce) {
+			handler.handleMessage(new Message("build cancelled:"+oce.getMessage(),IMessage.WARNING,null,null));
+		}
 		// cleanup
 		environment.cleanup();
 		environment = null;
@@ -592,6 +597,11 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 					progressListener.setText("compiled: " + result.fileName());
 				}
 				state.noteResult(result);
+				
+				if (progressListener!=null && progressListener.isCancelledRequested()) { 
+					throw new AbortCompilation(true,
+					  new OperationCanceledException("Compilation cancelled as requested"));
+				}
 			}
 		};
 	}
@@ -853,7 +863,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider,ICompilerAda
 		
 		return new AjCompilerAdapter(forCompiler,batchCompile,bcelWorld,bcelWeaver,
 						factory,
-						getInterimResultRequestor(),this,
+						getInterimResultRequestor(),
+						progressListener,
+						this,
 						state.binarySourceFiles,
 						state.resultsFromFile.values(),
 						buildConfig.isNoWeave());

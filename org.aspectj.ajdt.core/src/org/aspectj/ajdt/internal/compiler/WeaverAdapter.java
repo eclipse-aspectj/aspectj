@@ -14,9 +14,12 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 
+import org.aspectj.bridge.IProgressListener;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 
 /**
  * @author colyer
@@ -32,13 +35,24 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 	private InterimCompilationResult nowProcessing;
 	private InterimCompilationResult lastReturnedResult;
 	private WeaverMessageHandler weaverMessageHandler;
+	private IProgressListener progressListener;
 	private boolean finalPhase = false;
+	private int localIteratorCounter;
 	
+	// Fields related to progress monitoring
+	private int progressMaxTypes;
+	private String progressPhasePrefix;
+	private double fromPercent;
+	private double toPercent = 100.0;
+	private int progressCompletionCount;
+
 	
 	public WeaverAdapter(AjCompilerAdapter forCompiler,
-						 WeaverMessageHandler weaverMessageHandler) { 
-		this.compilerAdapter = forCompiler; 
+						 WeaverMessageHandler weaverMessageHandler,
+						 IProgressListener progressListener) { 
+		this.compilerAdapter = forCompiler;
 		this.weaverMessageHandler = weaverMessageHandler;
+		this.progressListener = progressListener;
 	}
 	
 	/* (non-Javadoc)
@@ -46,6 +60,7 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 	 */
 	public Iterator getClassFileIterator() {
 		classFileIndex = 0;
+		localIteratorCounter = 0;
 		nowProcessing = null;
 		lastReturnedResult = null;
 		resultIterator = compilerAdapter.resultsPendingWeave.iterator();
@@ -98,8 +113,10 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 				finishedWith(lastReturnedResult);
 			}
 		}
+		localIteratorCounter++;
 		lastReturnedResult = nowProcessing;
 		weaverMessageHandler.setCurrentResult(nowProcessing.result());
+		// weaverMessageHandler.handleMessage(new Message("weaving " + nowProcessing.fileName(),IMessage.INFO, null, null));
 		return nowProcessing.unwovenClassFiles()[classFileIndex++];
 	}
 	/* (non-Javadoc)
@@ -108,22 +125,50 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 	public void remove() {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	
 	// IWeaveRequestor
 	// =====================================================================================
-	
+
 	// weave phases as indicated by bcelWeaver...
-	public void processingReweavableState() {}
-	public void addingTypeMungers() {}
-	public void weavingAspects() {}
-	public void weavingClasses() {finalPhase = true;}
+	public void processingReweavableState() {
+		
+		// progress reporting logic
+		fromPercent = 50.0; // Assume weaving takes 50% of the progress bar...
+	    recordProgress("processing reweavable state");
+	}
+	
+	public void addingTypeMungers() {
+		
+		// progress reporting logic
+		// At this point we have completed one iteration through all the classes/aspects 
+		// we'll be dealing with, so let us remember this max value for localIteratorCounter
+		// (for accurate progress reporting)
+		recordProgress("adding type mungers");
+		progressMaxTypes = localIteratorCounter;
+	}
+	
+	public void weavingAspects() {
+		
+		// progress reporting logic
+		progressPhasePrefix="woven aspect ";
+		progressCompletionCount=0; // Start counting from *now*
+	}
+	
+	public void weavingClasses() {
+		finalPhase = true;
+		
+		// progress reporting logic
+		progressPhasePrefix="woven class ";
+	}
 	
 	public void weaveCompleted() {
 		if ((lastReturnedResult != null) && (!lastReturnedResult.result().hasBeenAccepted)) {
 			finishedWith(lastReturnedResult);
 		}
 	}
+	
+
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.IWeaveRequestor#acceptResult(org.aspectj.weaver.bcel.UnwovenClassFile)
@@ -135,6 +180,20 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 		AjClassFile ajcf = new AjClassFile(className.toCharArray(),
 										   result.getBytes());
 		lastReturnedResult.result().record(ajcf.fileName(),ajcf);
+		
+		if (progressListener != null) {
+			progressCompletionCount++;
+			
+			// Smoothly take progress from 'fromPercent' to 'toPercent'
+			recordProgress(
+			  fromPercent
+			  +((progressCompletionCount/(double)progressMaxTypes)*(toPercent-fromPercent)),
+			  progressPhasePrefix+result.getClassName()+" (from "+nowProcessing.fileName()+")");
+
+			if (progressListener.isCancelledRequested()) {
+		      throw new AbortCompilation(true,new OperationCanceledException("Weaving cancelled as requested"));
+			}
+		}
 	}
 
 	// helpers...
@@ -158,6 +217,19 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 		}
 		if (victim != null) {
 			table.remove(victim);
+		}
+	}
+	
+	private void recordProgress(String message) {
+		if (progressListener!=null) {
+			progressListener.setText(message);
+		}
+	}
+	
+	private void recordProgress(double percentage,String message) {
+		if (progressListener!=null) {
+			progressListener.setProgress(percentage/100);
+			progressListener.setText(message);
 		}
 	}
 }

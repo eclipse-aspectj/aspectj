@@ -21,6 +21,7 @@ import java.util.Map;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.IProgressListener;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -44,6 +45,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 	private boolean reportedErrors;
 	private boolean isXNoWeave;
 	private IIntermediateResultsRequestor intermediateResultsRequestor;
+	private IProgressListener progressListener;
 	private IOutputClassFileNameProvider outputFileNameProvider;
 	private WeaverMessageHandler weaverMessageHandler;
 	private List /* InterimCompilationResult */ binarySources = new ArrayList();
@@ -73,6 +75,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 							 BcelWeaver weaver,
 							 EclipseFactory eFactory,
 							 IIntermediateResultsRequestor intRequestor,
+							 IProgressListener progressListener,
 							 IOutputClassFileNameProvider outputFileNameProvider,
 							 Map binarySourceEntries, /* fileName |-> List<UnwovenClassFile> */
 							 Collection /* InterimCompilationResult */ resultSetForFullWeave,
@@ -81,6 +84,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 		this.isBatchCompile = isBatchCompile;
 		this.weaver = weaver;
 		this.intermediateResultsRequestor = intRequestor;
+		this.progressListener = progressListener;
 		this.outputFileNameProvider = outputFileNameProvider;
 		this.isXNoWeave = isXNoWeave;
 		this.resultSetForFullWeave = resultSetForFullWeave;
@@ -130,6 +134,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 		} else {
 			resultsPendingWeave.add(intRes);
 		}
+		
 	}
 	
 	public void beforeResolving(CompilationUnitDeclaration unit, ICompilationUnit sourceUnit, boolean verifyMethods, boolean analyzeCode, boolean generateCode) {
@@ -212,7 +217,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 			addAllKnownClassesToWeaveList();
 		}
 
-		weaver.weave(new WeaverAdapter(this,weaverMessageHandler));
+		weaver.weave(new WeaverAdapter(this,weaverMessageHandler,progressListener));
 	}
 	
 	private void addAllKnownClassesToWeaveList() {

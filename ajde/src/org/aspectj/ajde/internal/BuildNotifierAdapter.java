@@ -16,7 +16,6 @@ package org.aspectj.ajde.internal;
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.BuildProgressMonitor;
 import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
-import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IProgressListener;
 
 public class BuildNotifierAdapter implements IProgressListener {
@@ -48,6 +47,14 @@ public class BuildNotifierAdapter implements IProgressListener {
 
 	public void setText(String text) {
 		progressMonitor.setProgressText(text);
+	}
+
+	public void setCancelledRequested(boolean cancelRequested) {
+		this.cancelRequested = cancelRequested;
+	}
+
+	public boolean isCancelledRequested() {
+		return cancelRequested;
 	}
 
 }
