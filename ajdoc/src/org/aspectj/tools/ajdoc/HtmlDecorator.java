@@ -475,27 +475,32 @@ class HtmlDecorator {
         		String linkRef = "";
         		String linkName = rootDir.getAbsolutePath() + "/";
         		if (currDecl.getKind().isType()) {
+					// Handling type
 					linkName = packagePath;
-					if (currDecl.getParent().getKind().isType()) {
+					if (isNestedType(currDecl)) {
 						linkName =
-							linkName + currDecl.getParent().getName() + ".";
+							getAncestorComponents(
+								currDecl.getParent(),
+								linkName);
 					}
 					linkName = linkName + currDecl.getName();
 
 					linkRef = getRelativeComponent(packagePath) + packagePath;
-					// XXX: only one level of nested classes
-					if (currDecl.getParent().getKind().isType()) {
+					if (isNestedType(currDecl)) {
 						linkRef =
-							linkRef + currDecl.getParent().getName() + ".";
+							getAncestorComponents(
+								currDecl.getParent(),
+								linkRef);
 					}
 					linkRef = linkRef + currDecl.toLabelString() + ".html";
         		} else {
+					// Handling member 
 					linkName = packagePath;
-					if (currDecl.getParent().getParent().getKind().isType()) {
+					if (isMemberOfNestedType(currDecl)) {
 						linkName =
-							linkName
-								+ currDecl.getParent().getParent().getName()
-								+ ".";
+							getAncestorComponents(
+								currDecl.getParent().getParent(),
+								linkName);
 					}
 					linkName =
 						linkName
@@ -503,16 +508,12 @@ class HtmlDecorator {
 							+ "."
 							+ currDecl.getName();
 
-					// Constructing the linkRef string requires a check 
-					// to see if the parent type is actually nested inside 
-					// another type. 		
 					linkRef = getRelativeComponent(packagePath) + packagePath;
-					// XXX: only one level of nested classes
-					if (currDecl.getParent().getParent().getKind().isType()) {
+					if (isMemberOfNestedType(currDecl)) {
 						linkRef =
-							linkRef
-								+ currDecl.getParent().getParent().getName()
-								+ ".";
+							getAncestorComponents(
+								currDecl.getParent().getParent(),
+								linkRef);
 					}
 					linkRef =
 						linkRef
@@ -532,6 +533,33 @@ class HtmlDecorator {
         entry += "</B></FONT></TD></TR></TABLE>\n</TR></TD>\n";
         return entry;
     }
+
+	private static boolean isNestedType(IProgramElement currDecl) {
+		return currDecl.getParent().getKind().isType();
+	}
+
+	private static boolean isMemberOfNestedType(IProgramElement currDecl) {
+		return currDecl.getParent().getParent().getKind().isType();
+	}
+
+	/**
+	 * Convenience method for dealing with nested inner types.
+	 * Add the parent types to the link path for the supplied
+	 * <code>IProgramElement</code>.    
+	 * HEALTH WARNING : May contain traces of recursion.
+	 * @param decl
+	 * @param path
+	 * @return
+	 */
+	private static String getAncestorComponents(
+		IProgramElement decl,
+		String path) {
+		String result = path;
+		if (decl.getParent().getKind().isType()) {
+			result = getAncestorComponents(decl.getParent(), result);
+		}
+		return result + decl.getName() + ".";
+	}
 
     /**
      * Generates a relative directory path fragment that can be 
