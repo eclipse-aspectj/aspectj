@@ -52,30 +52,10 @@
         </compile>
     </ajc-test>
 
-    <ajc-test dir="binding"
-      title="no such constructor for proceed argument (error)">
-        <compile files="UnfoundConstructor.java">
-        	<message kind="error" line="25"/>
-        </compile>
-    </ajc-test>
-
-    <ajc-test dir="bugs" pr="33948" 
-    		title="default constructor inter-type declaration">
-        <compile files="ConstructorDeclaration.java"/>
-        <run class="ConstructorDeclaration"/>
-    </ajc-test>
-
     <ajc-test dir="errors"  keywords="error"
     		title="class extending abstract aspect">
         <compile files="ClassExtendingAbstractAspectCE.java">
 			<message kind="error" line="20"/>
-        </compile>
-    </ajc-test>
-
-    <ajc-test dir="errors"  keywords="error"
-    		title="inter-type declaration of void field">
-        <compile files="VoidFieldDeclarationCE.java">
-			<message kind="error" line="7"/>
         </compile>
     </ajc-test>
 
@@ -102,6 +82,12 @@
 					 before main InjarOneMain,
 					 before main InjarTwoMain,
 					 before main packageOne.Main"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs" pr="34206" 
+    		title="before():execution(new(..)) does not throw NoAspectBoundException">
+        <compile files="AspectInitError.java"/>
+        <run class="AspectInitError"/>
     </ajc-test>
 
 </suite>

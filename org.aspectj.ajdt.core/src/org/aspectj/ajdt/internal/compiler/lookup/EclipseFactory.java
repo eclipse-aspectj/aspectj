@@ -108,13 +108,14 @@ public class EclipseFactory {
 		if (binding instanceof HelperInterfaceBinding) {
 			return ((HelperInterfaceBinding) binding).getTypeX();
 		}
-		if (binding.qualifiedSourceName() == null) {
+		if (binding == null || binding.qualifiedSourceName() == null) {
 			return ResolvedTypeX.MISSING;
 		}
 		return TypeX.forName(getName(binding));
 	}
 
 	public static TypeX[] fromBindings(TypeBinding[] bindings) {
+		if (bindings == null) return TypeX.NONE;
 		int len = bindings.length;
 		TypeX[] ret = new TypeX[len];
 		for (int i=0; i<len; i++) {

@@ -5610,4 +5610,24 @@
         <compile files="TransactionTest.java,sub/ExecutionMonitor.java,sub/ObserverProtocol.aj"/>
         <run class="TransactionTest"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs" pr="34210" 
+    		title="thisJoinPoint.getArgs() causes IncompatibleClassChangeError">
+        <compile files="ThisJoinPointAndVerifier.java"/>
+        <run class="ThisJoinPointAndVerifier"/>
+    </ajc-test>
+    
+    <ajc-test dir="errors"  keywords="error"
+    		title="inter-type declaration of void field">
+        <compile files="VoidFieldDeclarationCE.java">
+			<message kind="error" line="7"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="binding"
+      title="no such constructor for proceed argument (error)">
+        <compile files="UnfoundConstructor.java">
+        	<message kind="error" line="25"/>
+        </compile>
+    </ajc-test>
 </suite>

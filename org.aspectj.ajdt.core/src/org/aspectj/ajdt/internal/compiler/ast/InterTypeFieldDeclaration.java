@@ -67,6 +67,14 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(upperScope);
 		ResolvedMember sig = munger.getSignature();
 		TypeX aspectType = EclipseFactory.fromBinding(upperScope.referenceContext.binding);
+		
+		if (sig.getReturnType() == ResolvedTypeX.VOID || 
+				(sig.getReturnType().isArray() && (sig.getReturnType().getComponentType() == ResolvedTypeX.VOID)))
+		{
+			upperScope.problemReporter().signalError(sourceStart, sourceEnd,
+				"field type can not be void");
+		}
+		
 //
 //		System.err.println("sig: " + sig);
 //		System.err.println("field: " + world.makeFieldBinding(
@@ -128,6 +136,8 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 	public EclipseTypeMunger build(ClassScope classScope) {
 		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 		resolveOnType(classScope);
+		
+		if (classScope.referenceContext.binding == null) return null;
 		
 		binding = classScope.referenceContext.binding.resolveTypesFor(binding);
 		if (ignoreFurtherInvestigation) return null;
