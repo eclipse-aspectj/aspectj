@@ -1969,11 +1969,12 @@
     </ajc-test>
 
     <ajc-test dir="errors" title="errors in aspect inheritance - 2"
-         keywords="from-errors"
-         comment="XXX error now is confusing methods with pointcuts">
+         keywords="from-errors">
         <compile files="AspectInheritance2.java">
-            <message kind="error" line="15"/>
+            <message kind="error" line="8"/>
+            <message kind="error" line="16"/>
             <message kind="error" line="20"/>
+            <message kind="error" line="23"/>
             <message kind="error" line="26"/>
             <message kind="error" line="30"/>
         </compile>
@@ -2632,8 +2633,18 @@
     <ajc-test dir="new" pr="106" title="advice and package visibility"
       keywords="from-resolved_10x">
         <compile
-          files="packagevisibility/PackagesAndAdvice.java,packagevisibility/testPackage/Class1.java,packagevisibility/testPackage/Class2.java"/>
+          files="packagevisibility/PackagesAndAdvice.java,packagevisibility/testPackage/Class1.java,packagevisibility/testPackage/Class2.java"
+          options="-Xlint:ignore"/>
         <run class="packagevisibility.PackagesAndAdvice"/>
+    </ajc-test>
+    
+    <ajc-test dir="new" pr="106" title="advice and package visibility"
+      keywords="from-resolved_10x">
+        <compile
+          files="packagevisibility/PackagesAndAdviceCf.java,packagevisibility/testPackage/Class1.java,packagevisibility/testPackage/Class2.java"
+          options="-Xlint:error">
+        <message kind="error" line="29"/>
+        </compile>
     </ajc-test>
 
     <ajc-test dir="new" title="advice on implied empty constructor"
@@ -4038,12 +4049,17 @@
         </compile>
     </ajc-test>
 
-    <ajc-test dir="new/subaspects" pr="647"
+   <ajc-test dir="new/subaspects" pr="647"
       title="concrete aspect unable to access abstract package-private pointcut in parent for overriding"
       keywords="from-resolved_10x"
        comment="XXX getting error - confirm line numbers">
         <compile files="parent/ParentCE.java,child/ChildCE.java">
-            <message kind="error" line="27"/>
+            <message kind="error" file="child/ChildCE.java" line="21"/>
+            <message kind="error" file="child/ChildCE.java" line="31"/>
+            <message kind="error" file="parent/ParentCE.java" line="8"/>
+            <message kind="error" file="parent/ParentCE.java" line="10"/>
+            <message kind="error" file="parent/ParentCE.java" line="12"/>
+            <message kind="error" file="parent/ParentCE.java" line="22"/>
         </compile>
     </ajc-test>
 
