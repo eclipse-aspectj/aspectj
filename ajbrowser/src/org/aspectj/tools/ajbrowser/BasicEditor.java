@@ -22,7 +22,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
+//import java.net.URL;
 
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
@@ -90,7 +90,6 @@ public class BasicEditor implements EditorAdapter {
     public void showSourceLine(String filePath, int lineNumber, boolean highlight) {
     	//AjdeUIManager.getDefault().getIdeUIAdapter().resetEditor();
         
-        String oldPath = this.filePath;
         this.filePath = filePath;
 //        if (oldPath != filePath && !Ajde.INSTANCE.BROWSER_MANAGER.isGlobalMode()) {
 //            Ajde.INSTANCE.BROWSER_MANAGER.updateView();
@@ -145,7 +144,7 @@ public class BasicEditor implements EditorAdapter {
 
     private String readFile(String filePath, int lineNumber) {
         try {
-            URL url = ClassLoader.getSystemResource(filePath);
+//            URL url = ClassLoader.getSystemResource(filePath);
             File file = new File(filePath);
             if (!file.exists()) {
                 return "ERROR: file \"" + filePath + "\" does not exist.";
@@ -153,7 +152,6 @@ public class BasicEditor implements EditorAdapter {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             StringBuffer contents = new StringBuffer();
             String line = reader.readLine();
-            int numChars = 0;
             int numLines = 0;
             while (line != null) {
                 numLines++;

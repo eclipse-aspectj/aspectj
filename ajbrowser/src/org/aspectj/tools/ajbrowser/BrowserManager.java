@@ -24,7 +24,7 @@ import org.aspectj.ajde.ui.*;
 import org.aspectj.ajde.ui.internal.UserPreferencesStore;
 import org.aspectj.ajde.ui.swing.*;
 import org.aspectj.asm.*;
-import org.aspectj.asm.internal.*;
+//import org.aspectj.asm.internal.*;
 
 /**
  * IDE manager for standalone AJDE application.
@@ -216,7 +216,6 @@ public class BrowserManager {
 		public void compileStarted(String buildConfigFile) { }
 		
         public void compileFinished(String buildConfigFile, int buildTime, boolean succeeded, boolean warnings) {
-            int timeInSeconds = buildTime/1000;
             if (succeeded && !warnings) {
                 hideMessages();
             } else {

@@ -51,8 +51,8 @@ public class TopFrame extends JFrame {
     private JMenuItem jMenuItem1 = new JMenuItem();
     private JMenuItem exit_menuItem = new JMenuItem();
     private JSplitPane top_splitPane = new JSplitPane();
-    private BorderLayout borderLayout2 = new BorderLayout();
-    private BorderLayout borderLayout1 = new BorderLayout();
+//    private BorderLayout borderLayout2 = new BorderLayout();
+//    private BorderLayout borderLayout1 = new BorderLayout();
     private BorderLayout borderLayout3 = new BorderLayout();
     private JMenuItem projectRun_menuItem = new JMenuItem();
     private JMenuItem projectRunOther_menuItem = new JMenuItem();
