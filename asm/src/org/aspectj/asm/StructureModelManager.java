@@ -27,7 +27,7 @@ public class StructureModelManager {
 	/**
 	 * Singleton instance.
 	 */
-	public static StructureModelManager INSTANCE = new StructureModelManager();
+	private static StructureModelManager INSTANCE = new StructureModelManager();
 	private boolean shouldSaveModel = true;
     protected StructureModel model = new StructureModel();
     private List structureListeners = new ArrayList();
@@ -164,6 +164,10 @@ public class StructureModelManager {
     
 	public void setShouldSaveModel(boolean shouldSaveModel) {
 		this.shouldSaveModel = shouldSaveModel;
+	}
+
+	public static StructureModelManager getDefault() {
+		return INSTANCE;
 	}
 }
 

@@ -127,7 +127,7 @@ public class AjBuildManager {
             if (batch) {
                 // System.err.println("XXXX batch: " + buildConfig.getFiles());
                 if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {  
-                    bcelWorld.setModel(StructureModelManager.INSTANCE.getStructureModel());
+                    bcelWorld.setModel(StructureModelManager.getDefault().getStructureModel());
                     // in incremental build, only get updated model?
                 }
                 performCompilation(buildConfig.getFiles());
@@ -166,7 +166,7 @@ public class AjBuildManager {
             // but always returns true
             // XXX weaved not in Mik's incremental
             if (buildConfig.isGenerateModelMode()) {
-                StructureModelManager.INSTANCE.fireModelUpdated();  
+                StructureModelManager.getDefault().fireModelUpdated();  
             }
             return !handler.hasErrors();
         } finally {
@@ -176,7 +176,7 @@ public class AjBuildManager {
      
     private void setupModel() {
         String rootLabel = "<root>";
-        StructureModel model = StructureModelManager.INSTANCE.getStructureModel();
+        StructureModel model = StructureModelManager.getDefault().getStructureModel();
         ProgramElementNode.Kind kind = ProgramElementNode.Kind.FILE_JAVA;
         if (buildConfig.getConfigFile() != null) {
             rootLabel = buildConfig.getConfigFile().getName();
