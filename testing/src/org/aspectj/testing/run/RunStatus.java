@@ -15,13 +15,16 @@
 package org.aspectj.testing.run;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
+import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.testing.util.BridgeUtil;
+import org.aspectj.util.LangUtil;
 
 /**
  * Default implementation of {@link IRunStatus}.
@@ -227,6 +230,41 @@ public class RunStatus implements IRunStatus {
 	public boolean runResult() {
 		return validator.runPassed(this);
 	}
+    
+    public boolean hasAnyMessage(IMessage.Kind kind, boolean orGreater, boolean includeChildren) {
+        if (messageHolder.hasAnyMessage(kind, orGreater)) {
+            return true;
+        }
+        if (includeChildren) {
+            IRunStatus[] kids = getChildren();
+            for (int i = 0; i < kids.length; i++) {
+                if (kids[i].hasAnyMessage(kind, orGreater, true)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public IMessage[] getMessages(IMessage.Kind kind, boolean orGreater, boolean includeChildren) {
+        IMessage[] result = getMessages(kind, orGreater);
+        if (!includeChildren) {
+            return result;
+        }
+        ArrayList sink = new ArrayList();
+        if (!LangUtil.isEmpty(result)) {
+            sink.addAll(Arrays.asList(result));
+        }
+
+        IRunStatus[] kids = getChildren();
+        for (int i = 0; i < kids.length; i++) {
+            result = kids[i].getMessages(kind, orGreater, includeChildren);
+            if (!LangUtil.isEmpty(result)) {
+                sink.addAll(Arrays.asList(result));
+            }
+        }
+        return (IMessage[]) sink.toArray(new IMessage[0]);
+    }
 
 	//------------------- process messages
 	/** 

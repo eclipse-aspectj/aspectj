@@ -105,6 +105,26 @@ public interface IRunStatus extends IMessageHolder {
      */
     void completeAbruptly();
     //------------------- process messages
+    /**
+     * Detect whether a message of a given kind has been handled.
+     * @param kind the IMessage.Kind of the message to detect
+     * @param orGreater if true, then also accept any message of a greater kind
+     * @param includeChildren if true, then also search in any child IRunStatus
+     * @return true if any such message is detected
+     */
+    boolean hasAnyMessage(IMessage.Kind kind, boolean orGreater, boolean includeChildren);
+
+    /**
+     * Get all messages or those of a specific kind, optionally in children as well
+     * Pass null to get all kinds.
+     * @param kind the IMessage.Kind expected, or null for all messages
+     * @param orGreater if true, also get any greater than the target kind
+     *         as determined by IMessage.Kind.COMPARATOR 
+     * @param includeChildren if true, then also search in any child IRunStatus
+     * @return IMessage[] of messages of the right kind, or IMessage.NONE
+     */
+    IMessage[] getMessages(IMessage.Kind kind, boolean orGreater, boolean includeChildren);
+    
     /** 
      * Call this any time to signal any messages.
      * (In particular, the IRun caller may use this to register messages
