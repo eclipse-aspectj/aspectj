@@ -93,6 +93,10 @@ public class AjBuildManager {
         boolean batch) throws IOException, AbortException {
         
         try {
+        	if (batch) {
+        		this.state = new AjState(this);
+        	}
+        	
             boolean canIncremental = state.prepareForNextBuild(buildConfig);
             if (!canIncremental && !batch) { // retry as batch?
                 return doBuild(buildConfig, handler, true);
