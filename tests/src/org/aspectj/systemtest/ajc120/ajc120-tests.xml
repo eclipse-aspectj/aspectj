@@ -396,16 +396,6 @@
         	<message kind="error" line="5"/>
         </compile>
     </ajc-test>
-    
-    <!-- this test unreliable - can't always delete sandbox afterwards, need to get
-         to the bottom of why...
-     <ajc-test dir="bugs"  pr="43714"
-    	title="weaving from an input jar into that same jar.."  >
-        <compile files="notAJar.jar" outjar="notAJar.jar"> 
-        	<message kind="error" line="0"/>
-        </compile>
-    </ajc-test>
-	-->
 	
     <ajc-test dir="bugs"
 		title="Private members introduced via an interface are visible to the class"
@@ -476,3 +466,16 @@
         </compile>
     </ajc-test>
 
+    <ajc-test dir="bugs"  pr="43714"
+    	title="weaving using an empty jar in -injars"  >
+        <compile files="notAJar.jar" outjar="outJar.jar"> 
+        	<message kind="error" line="0"/>
+        </compile>
+    </ajc-test>
+	
+	 <ajc-test dir="bugs"  pr="43714"
+    	title="weaving using an empty jar in -aspectpath"  >
+        <compile files="WeaveLocal.java" aspectpath="notAJar.jar" outjar="outJar.jar" >         	
+        </compile>
+    </ajc-test>
+    

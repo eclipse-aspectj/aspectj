@@ -108,9 +108,5 @@ public class AspectPathTests extends org.aspectj.testing.XMLBasedAjcTestCase {
     runTest("Introduced abstract method on interface not implemented by subtype (aspectpath)");
   }
 
-  public void test022(){
-    runTest("weaving from an aspectpath jar into that same jar..");
-  }
-
 }
 

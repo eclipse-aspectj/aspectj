@@ -237,8 +237,16 @@ public class Ajc120Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   }
 
   public void test054(){
-    runTest("error message for constructor-execution pcd");
+	runTest("error message for constructor-execution pcd");
   }
+
+	public void test055(){
+	  runTest("weaving using an empty jar in -injars");
+	}
+
+	public void test056(){
+	  runTest("weaving using an empty jar in -aspectpath");
+	}
 
 }
 
