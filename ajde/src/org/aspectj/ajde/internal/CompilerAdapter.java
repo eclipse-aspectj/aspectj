@@ -117,8 +117,10 @@ public class CompilerAdapter {
 	 * Added by AMC 01.20.2003, bugzilla #29769
 	 */
 	private void configureBuildOptions( AjBuildConfig config, BuildOptionsAdapter options ) {
-
+        LangUtil.throwIaxIfNull(options, "options");
+        LangUtil.throwIaxIfNull(config, "config");
 		Map javaOptions = config.getJavaOptions();
+        LangUtil.throwIaxIfNull(javaOptions, "javaOptions");
 
 		if (options.getSourceOnePointFourMode()) {
 			javaOptions.put(CompilerOptions.OPTION_Compliance, CompilerOptions.VERSION_1_4);	 
@@ -126,12 +128,12 @@ public class CompilerAdapter {
 		} 
 		
 		String enc = options.getCharacterEncoding();
-		if ( enc != null & (enc.length() > 0)) {
+		if (!LangUtil.isEmpty(enc)) {
 			javaOptions.put(CompilerOptions.OPTION_Encoding, enc );
 		}
 
 		String compliance = options.getComplianceLevel();
-		if ( compliance != null && (compliance.length() > 0) ) {
+		if (!LangUtil.isEmpty(compliance)) {
 			String version = CompilerOptions.VERSION_1_4;
 			if ( compliance.equals( BuildOptionsAdapter.VERSION_13 ) ) {
 				version = CompilerOptions.VERSION_1_3;
@@ -141,7 +143,7 @@ public class CompilerAdapter {
 		}
 				
 		String sourceLevel = options.getSourceCompatibilityLevel();
-		if ( null != sourceLevel && ( sourceLevel.length() > 0 )) {
+		if (!LangUtil.isEmpty(sourceLevel)) {
 			String slVersion = CompilerOptions.VERSION_1_4;
 			if ( sourceLevel.equals( BuildOptionsAdapter.VERSION_13 ) ) {
 				slVersion = CompilerOptions.VERSION_1_3;
@@ -155,7 +157,7 @@ public class CompilerAdapter {
 		}
 	
 		Set warnings = options.getWarnings();
-		if ( warnings != null ) {
+		if (!LangUtil.isEmpty(warnings)) {
 			// turn off all warnings	
 			disableWarnings( javaOptions );
 			// then selectively enable those in the set
@@ -163,7 +165,7 @@ public class CompilerAdapter {
 		}
 
 		Set debugOptions = options.getDebugLevel();
-		if ( debugOptions != null ) {
+		if (!LangUtil.isEmpty(debugOptions)) {
 			// default is all options off, so just need to selectively
 			// enable
 			Iterator it = debugOptions.iterator();
@@ -327,6 +329,7 @@ public class CompilerAdapter {
 		
 		List classpath = new ArrayList();
 		while (st.hasMoreTokens()) classpath.add(st.nextToken());
+
 		config.setClasspath(classpath);  
 		Ajde.getDefault().logEvent("building with classpath: " + classpath);
 
