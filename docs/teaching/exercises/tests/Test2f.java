@@ -16,7 +16,7 @@ import figures.*;
 
 import junit.framework.*;
 
-public class Test2f extends Test {
+public class Test2f extends CoreTest {
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(Test2f.class);

@@ -17,7 +17,7 @@ import java.awt.Rectangle;
 
 import junit.framework.*;
 
-public class Test4a extends Test {
+public class Test4a extends CoreTest {
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(Test4a.class);

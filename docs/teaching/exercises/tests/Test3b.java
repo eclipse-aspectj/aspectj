@@ -18,7 +18,7 @@ import junit.framework.*;
 import java.util.List;
 import java.util.Arrays;
 
-public class Test3b extends Test {
+public class Test3b extends CoreTest {
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(Test3b.class);
