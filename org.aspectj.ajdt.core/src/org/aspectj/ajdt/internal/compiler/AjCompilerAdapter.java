@@ -107,8 +107,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 				weave();  // notification happens as weave progresses...
 			}
 		} catch (IOException ex) {
-			AbortCompilation ac = new AbortCompilation();
-			ac.initCause(ex);
+			AbortCompilation ac = new AbortCompilation(null,ex);
 			throw ac;
 		} 
 	}
@@ -148,8 +147,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 			try {
 			  weave();
 			} catch (IOException ex) {
-				AbortCompilation ac = new AbortCompilation();
-				ac.initCause(ex);
+				AbortCompilation ac = new AbortCompilation(null,ex);
 				throw ac;
 			} 
 		}
