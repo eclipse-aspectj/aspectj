@@ -30,6 +30,8 @@
 
     <target name="init" depends="init-properties,init-directories">
        
+      <property name="docs.src.pattern"
+               value="**/*.xml,**/*.html,**/*.doc,**/*.gif,**/*.java,**/*.lst,**/*.pdf"/>
       <property name="docs.src.dir"       
             location="${aspectj.modules.docs.dir}"/>
 
@@ -62,14 +64,13 @@
       <property name="binary.pattern" 
                value="**/*.gif,**/*.png,**/*,**/*.doc,**/*.pdf"/>
       <uptodate property="local.dist.uptodate"
-              targetfile="${docs.dist.dir}/faq.html"> <!-- use faq as tag file -->
-         <srcfiles dir="${docs.src.dir}"/>
+              targetfile="${docs.dist.dir}/doc/faq.html"> <!-- use faq as tag file -->
+         <srcfiles dir="${docs.src.dir}" includes="${docs.src.pattern}"/>  
       </uptodate>
-
       <uptodate property="dist.uptodate"
              targetfile="${docs.product.zip}"> <!-- use zip as tag file -->
-         <srcfiles dir="${docs.src.dir}"/>
-         <srcfiles dir="${docs.dist.dir}"/>
+         <srcfiles dir="${docs.src.dir}"  includes="${docs.src.pattern}"/>
+         <srcfiles dir="${docs.dist.dir}" includes="${docs.src.pattern}"/>
       </uptodate>
 
     </target>
@@ -146,12 +147,13 @@
     <!-- build all doc products                                       -->
     <!-- ============================================================ -->
     <target name="local-dist" depends="init"
-          unless="local.dist.uptodate" >
+          unless="local.dist.uptodate" 
+     description="avoid local-dist antecedants if uptodate">
        <antcall target="do-local-dist"/>
     </target>
+
     <target name="do-local-dist" 
          depends="init,init-filters,api,faq,devguide,progguide"
-          unless="local.dist.uptodate"
       description="finish products by copying dist files">
         <copy todir="${docs.dist.dir}" filtering="on">
             <fileset dir="${docs.src.dir}/dist" 
