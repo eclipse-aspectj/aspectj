@@ -8,6 +8,7 @@
  *  
  * Contributors: 
  *     Wes Isberg       initial implementation 
+ *   Andy Clement       fleshed out to match SuppressWarnings
  * ******************************************************************/
 
 
@@ -25,6 +26,6 @@ import java.lang.annotation.RetentionPolicy;
  * 
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SuppressAJWarnings {
-
+public @interface SuppressAjWarnings {
+  String[] value();
 }
