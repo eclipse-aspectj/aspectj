@@ -59,7 +59,7 @@ import org.aspectj.apache.bcel.Constants;
  * Wrapper class for push operations, which are implemented either as BIPUSH,
  * LDC or xCONST_n instructions.
  *
- * @version $Id: PUSH.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: PUSH.java,v 1.5 2005/01/31 11:32:21 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class PUSH
@@ -82,6 +82,10 @@ public final class PUSH
       instruction = new SIPUSH((short)value);
     else // If everything fails create a Constant pool entry
       instruction = new LDC(cp.addInteger(value));
+  }
+  
+  public PUSH(ConstantPoolGen cp, ObjectType t) {
+  	instruction = new LDC_W(cp.addClass(t));
   }
 
   /**

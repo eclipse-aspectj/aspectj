@@ -61,7 +61,7 @@ import org.aspectj.apache.bcel.Constants;
  * byte code generating backend of a compiler. You can subclass it to
  * add your own create methods.
  *
- * @version $Id: InstructionFactory.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: InstructionFactory.java,v 1.3 2005/01/31 11:32:21 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Constants
  */
@@ -154,6 +154,8 @@ public class InstructionFactory
       push = new PUSH(cp, (Boolean)value);
     else if(value instanceof Character)
       push = new PUSH(cp, (Character)value);
+    else if (value instanceof ObjectType) 
+        push = new PUSH(cp, (ObjectType)value);
     else
       throw new ClassGenException("Illegal type: " + value.getClass());
 
