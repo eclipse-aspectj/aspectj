@@ -186,9 +186,9 @@ public class AjcMemberMaker {
 	public static ResolvedMember privilegedAccessMethodForFieldGet(TypeX aspectType, Member field) {
 		String sig;
 		if (field.isStatic()) {
-			sig = "()" + field.getSignature();
+			sig = "()" + field.getReturnType().getSignature();
 		} else {
-			sig = "(" + field.getDeclaringType().getSignature() + ")" + field.getSignature();
+			sig = "(" + field.getDeclaringType().getSignature() + ")" + field.getReturnType().getSignature();
 		}
 		
 		return new ResolvedMember(Member.METHOD,
@@ -202,9 +202,9 @@ public class AjcMemberMaker {
 	public static ResolvedMember privilegedAccessMethodForFieldSet(TypeX aspectType, Member field) {
 		String sig;
 		if (field.isStatic()) {
-			sig = "(" + field.getSignature() + ")V";
+			sig = "(" + field.getReturnType().getSignature() + ")V";
 		} else {
-			sig = "(" + field.getDeclaringType().getSignature() + field.getSignature() + ")V";
+			sig = "(" + field.getDeclaringType().getSignature() + field.getReturnType().getSignature() + ")V";
 		}
 		
 		return new ResolvedMember(Member.METHOD,

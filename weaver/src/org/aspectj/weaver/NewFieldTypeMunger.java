@@ -43,9 +43,15 @@ public class NewFieldTypeMunger extends ResolvedTypeMunger {
 	
 	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedTypeX aspectType) {
 		//??? might give a field where a method is expected	
+		ResolvedTypeX onType = aspectType.getWorld().resolve(getSignature().getDeclaringType());
+		
 		ResolvedMember ret = AjcMemberMaker.interFieldGetDispatcher(getSignature(), aspectType);
 		if (ResolvedTypeX.matches(ret, member)) return getSignature();
 		ret = AjcMemberMaker.interFieldSetDispatcher(getSignature(), aspectType);
+		if (ResolvedTypeX.matches(ret, member)) return getSignature();
+		ret = AjcMemberMaker.interFieldInterfaceGetter(getSignature(), onType, aspectType);
+		if (ResolvedTypeX.matches(ret, member)) return getSignature();
+		ret = AjcMemberMaker.interFieldInterfaceSetter(getSignature(), onType, aspectType);
 		if (ResolvedTypeX.matches(ret, member)) return getSignature();
 		return super.getMatchingSyntheticMember(member, aspectType);
 	}

@@ -288,8 +288,12 @@ public class BcelAdvice extends Advice {
 		}
 		
 		if (kind.isCflow()) {
-			if (this.innerCflowEntries.contains(o)) return -1;
-			else if (o.innerCflowEntries.contains(this)) return +1;
+//			System.err.println("sort: " + this + " innerCflowEntries " + innerCflowEntries);
+//			System.err.println("      " + o + " innerCflowEntries " + o.innerCflowEntries);
+			boolean isBelow = (kind == AdviceKind.CflowBelowEntry);
+
+			if (this.innerCflowEntries.contains(o)) return isBelow ? +1 : -1;
+			else if (o.innerCflowEntries.contains(this)) return isBelow ? -1 : +1;
 			else return 0;
 		}
 		

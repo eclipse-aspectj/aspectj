@@ -858,15 +858,29 @@ class BcelClassWeaver implements IClassWeaver {
 			Member method =
 				world.makeMethodSignature(clazz, invoke);
 			ResolvedMember declaredSig = method.resolve(world);
+			//System.err.println(method + ", declaredSig: "  +declaredSig);
 			if (declaredSig == null) return;
-			AjAttribute.EffectiveSignatureAttribute effectiveSig = declaredSig.getEffectiveSignature();
-			if (effectiveSig == null) return;
-			//System.err.println("call to inter-type member: " + effectiveSig);
-			if (effectiveSig.isWeaveBody()) return;
 			
-			match(BcelShadow.makeShadowForMethodCall(world, mg, ih, enclosingShadow,
+			if (declaredSig.getKind() == Member.FIELD) {
+				Shadow.Kind kind;
+				if (method.getReturnType().equals(ResolvedTypeX.VOID)) {
+					kind = Shadow.FieldSet;
+				} else {
+					kind = Shadow.FieldGet;
+				}
+				
+				match(BcelShadow.makeShadowForMethodCall(world, mg, ih, enclosingShadow,
+						kind, declaredSig),
+					shadowAccumulator);
+			} else {
+				AjAttribute.EffectiveSignatureAttribute effectiveSig = declaredSig.getEffectiveSignature();
+				if (effectiveSig == null) return;
+				//System.err.println("call to inter-type member: " + effectiveSig);
+				if (effectiveSig.isWeaveBody()) return;
+				match(BcelShadow.makeShadowForMethodCall(world, mg, ih, enclosingShadow,
 						effectiveSig.getShadowKind(), effectiveSig.getEffectiveSignature()),
 					shadowAccumulator);
+			}
 		} else {
 			match(
 				BcelShadow.makeMethodCall(world, mg, ih, enclosingShadow),
