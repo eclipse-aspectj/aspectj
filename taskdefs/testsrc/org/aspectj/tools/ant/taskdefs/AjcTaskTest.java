@@ -146,13 +146,42 @@ public class AjcTaskTest extends TestCase {
         AjcTask task = getTask("default.lst");
         checkRun(task, null);
 
+        // copyInJars now just emits warning b/c unused
         task = getTask("default.lst", null);
         task.setCopyInjars(true);
-        checkRun(task, "copyInjars");
+        checkRun(task, null);
 
+        // sourceRootCopyFilter requires destDir
         task = getTask("default.lst", null);
-        task.setSourceRootCopyFilter("*.java");
+        task.setSourceRootCopyFilter("**/*.java");
         checkRun(task, "sourceRoot");
+    }
+    
+    public void testSourceRootCopyFilter () {
+        // sourceRootCopyFilter works..
+        File destDir = getTempDir();
+        assertTrue("unable to create " + destDir,
+            destDir.canRead() || destDir.mkdirs());        
+        AjcTask task = getTask("sourceroot", destDir);
+        task.setSourceRootCopyFilter("doNotCopy,**/*.txt");
+        File file = new File(destDir, "Default.java").getAbsoluteFile();
+        assertTrue(file + ".canRead() prematurely", !file.canRead());
+        checkRun(task, null);
+        // got expected resources
+        assertTrue(file + ".canRead() failed", file.canRead());
+        File pack = new File(destDir, "pack");
+        file = new File(pack, "Pack.java").getAbsoluteFile();
+        assertTrue(file + ".canRead() failed", file.canRead());
+        file = new File(pack, "includeme").getAbsoluteFile();
+        assertTrue(file + ".canRead() failed", file.canRead());
+        
+        // didn't get unexpected resources
+        file = new File(pack, "something.txt");
+        assertTrue(file + ".canRead() passed", !file.canRead());
+        file = new File(destDir, "doNotCopy");
+        assertTrue(file + ".canRead() passed", !file.canRead());
+        file = new File(destDir, "skipTxtFiles.txt");
+        assertTrue(file + ".canRead() passed", !file.canRead());
     }
     
     private void checkRun(AjcTask task, String exceptionString) {
@@ -160,8 +189,15 @@ public class AjcTaskTest extends TestCase {
             task.execute();
             assertTrue(null == exceptionString);
         } catch (BuildException e) {
-            if(-1 == e.getMessage().indexOf(exceptionString)) {
-                assertEquals(exceptionString, e.getMessage());
+            if (null == exceptionString) {
+                assertTrue("unexpected " + e.getMessage(), false);
+            } else {
+                String m = e.getMessage();
+                if (null == m) {
+                    assertTrue("not " + exceptionString, false);
+                } else if (-1 == m.indexOf(exceptionString)) {
+                    assertEquals(exceptionString, e.getMessage());
+                }
             }
         }
         
@@ -266,18 +302,14 @@ public class AjcTaskTest extends TestCase {
         		task.setArgfiles(new Path(task.getProject(), path));
         	}
         } else if ((input.endsWith(".java") || input.endsWith(".aj"))) {
-        	// not working
         	FilenameSelector fns = new FilenameSelector();
         	fns.setName(input);
         	task.addFilename(fns);
         } else {
-        	File dir = new File(input);
-        	if (dir.canRead() && dir.isDirectory()) {
-        		task.setSourceRoots(new Path(task.getProject(), input));
-        	}        
+            String path = testdataDir + File.separator + input;
+            task.setSourceRoots(new Path(task.getProject(), path));
         }
         task.setClasspath(new Path(p, "../lib/test/aspectjrt.jar"));
-        //task.setVerbose(true);   
         return task;
     }
     
