@@ -106,7 +106,7 @@ public class JavaRun implements IAjcRun {
             File[] libs = sandbox.getClasspathJars(readable, this);
             boolean includeClassesDir = true;
             File[] dirs = sandbox.getClasspathDirectories(readable, this, includeClassesDir);
-            completedNormally = spec.forkSpec.fork
+            completedNormally = (spec.forkSpec.fork || !LangUtil.isEmpty(spec.aspectpath))
                 ? runInOtherVM(status, libs, dirs)
                 : runInSameVM(status, libs, dirs);
         } finally {
@@ -186,19 +186,41 @@ public class JavaRun implements IAjcRun {
      * @return
      */
     protected boolean runInOtherVM(IRunStatus status, File[] libs, File[] dirs) {
-        // assert spec.fork;
+        // assert spec.fork || !LangUtil.isEmpty(spec.aspectpath);
         ArrayList cmd = new ArrayList();
         cmd.add(FileUtil.getBestPath(spec.forkSpec.java));
         if (!LangUtil.isEmpty(spec.forkSpec.vmargs)) {
             cmd.addAll(Arrays.asList(spec.forkSpec.vmargs));
         }
-        cmd.add("-classpath");
+        final String classpath;
         {
-            StringBuffer classpath = new StringBuffer();
-            appendClasspath(classpath, spec.forkSpec.bootclasspath);
-            appendClasspath(classpath, dirs);        
-            appendClasspath(classpath, libs);
-            cmd.add(classpath.toString());
+            StringBuffer cp = new StringBuffer();
+            appendClasspath(cp, spec.forkSpec.bootclasspath);
+            appendClasspath(cp, dirs);        
+            appendClasspath(cp, libs);
+            classpath = cp.toString();
+        }
+        if (LangUtil.isEmpty(spec.aspectpath)) {
+            cmd.add("-classpath");
+            cmd.add(classpath);
+        } else {
+            // verify 1.4 or above, assuming same vm as running this
+            if (!LangUtil.supportsJava("1.4")) {
+                throw new Error("load-time weaving test requires Java 1.4+");
+            }
+            cmd.add("-Djava.system.class.loader=org.aspectj.weaver.WeavingURLClassLoader");
+            cmd.add("-classpath");
+            cmd.add(System.getProperty("java.class.path"));
+
+            File[] aspectJars = sandbox.findFiles(spec.aspectpath);
+            if (LangUtil.isEmpty(aspectJars)) {
+                throw new Error("unable to find " + Arrays.asList(spec.aspectpath));
+            }
+            StringBuffer cp = new StringBuffer();
+            appendClasspath(cp, aspectJars);
+            cmd.add("-Daj.aspect.path=" + cp.toString());
+            cp.append(classpath); // appendClasspath writes trailing delimiter
+            cmd.add("-Daj.class.path=" + cp.toString());
         }
         cmd.add(spec.className);
         cmd.addAll(spec.options);
@@ -484,6 +506,7 @@ public class JavaRun implements IAjcRun {
         protected boolean errStreamIsError = true;
         
         protected final ForkSpec forkSpec;
+        protected String[] aspectpath;
         
         public Spec() {
             super(XMLNAME);
@@ -522,6 +545,9 @@ public class JavaRun implements IAjcRun {
             this.className = className;
         }
         
+        public void setAspectpath(String path) {
+            this.aspectpath = XMLWriter.unflattenList(path);
+        }
         public void setErrStreamIsError(boolean errStreamIsError) {
             this.errStreamIsError = errStreamIsError;
         }
