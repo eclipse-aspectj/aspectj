@@ -935,19 +935,19 @@
     <para>
       Access to annotation information on members at a matched join point is also available
       through the <literal>getSignature</literal> method of the <literal>JoinPoint</literal>
-      and <literal>JoinPoint.StaticPart</literal> interfaces. The <literal>MemberSignature</literal>
-      interface is extended with the additional operation 
-      <literal>java.lang.reflect.AccessibleObject getAccessibleObject()</literal>. The following fragment
+      and <literal>JoinPoint.StaticPart</literal> interfaces. The <literal>Signature</literal>
+      interfaces are extended with additional operations that provide access to the  
+      <literal>java.lang.reflect</literal> <literal>Method, Field</literal> and 
+      <literal>Constructor</literal> objects on which annnotations can be queried. The following fragment
       illustrates an example use of this interface to access annotation information.
     </para>
 
   	<programlisting><![CDATA[
   	Signature sig = thisJoinPointStaticPart.getSignature();
   	AnnotatedElement declaringTypeAnnotationInfo = sig.getDeclaringType();
-  	if (sig instanceof MemberSignature) {
-  	  // this must be an initialization, pre-initialization, call, execution, get, or
-  	  // set join point.
-  	  AnnotatedElement memberAnnotationInfo = ((MemberSignature)sig).getAccessibleObject();
+  	if (sig instanceof MethodSignature) {
+  	  // this must be a call or execution join point
+  	  Method method = ((MethodSignature)sig).getMethod();
   	}
 	]]></programlisting>
     
