@@ -117,4 +117,11 @@ public interface IMessage {
 			return name;
 		}
 	}
+
+	/**
+	 * @return	Detailed information about the message. For example, for declare 
+	 * error/warning messages this returns information about the corresponding 
+	 * join point's static part. 
+	 */
+	public String getDetails();
 }

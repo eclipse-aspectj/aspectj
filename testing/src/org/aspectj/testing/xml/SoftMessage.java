@@ -37,7 +37,7 @@ public class SoftMessage implements IMessage { // XXX mutable dup of Message
     private IMessage.Kind kind;
     private Throwable thrown;
     private ISourceLocation sourceLocation;
-    
+    private String details;
 
 	//private ISourceLocation pseudoSourceLocation;  // set directly
     // collapse enclosed source location for shorter, property-based xml
@@ -279,4 +279,12 @@ public class SoftMessage implements IMessage { // XXX mutable dup of Message
         }
         return result.toString();
     }    
+    
+	public String getDetails() {
+		return details;
+	}
+
+	public void setDetails(String string) {
+		details = string;
+	}
 }

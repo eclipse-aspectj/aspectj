@@ -29,6 +29,7 @@ public class Message implements IMessage { // XXX toString or renderer?
     private final IMessage.Kind kind;
     private final Throwable thrown;
     private final ISourceLocation sourceLocation;
+    private final String details;
     
     /** convenience for constructing failure messages */
     public static Message fail(String message, Throwable thrown) {
@@ -45,6 +46,38 @@ public class Message implements IMessage { // XXX toString or renderer?
         this(message, (isError ? IMessage.ERROR : IMessage.WARNING), null,
             location);
     }
+
+	/**
+	 * Create a message, handling null values for message and kind
+	 * if thrown is not null.
+	 * @param message the String used as the underlying message
+	 * @param kind the IMessage.Kind of message - not null
+	 * @param thrown the Throwable, if any, associated with this message
+	 * @param sourceLocation the ISourceLocation, if any, associated with this message
+	 * @param details descriptive information about the message
+	 * @throws IllegalArgumentException if message is null and
+	 * thrown is null or has a null message, or if kind is null
+	 * and thrown is null.
+	 */
+	public Message(String message, String details, IMessage.Kind kind, 
+		ISourceLocation sourceLocation) {
+		this.details = details;
+		this.message = message;
+		this.kind = kind;
+		this.sourceLocation = sourceLocation;
+		this.thrown = null;
+		if (null == message) {
+			if (null != thrown) {
+				message = thrown.getMessage();
+			} 
+			if (null == message) {
+				throw new IllegalArgumentException("null message");
+			}
+		}
+		if (null == kind) {
+			 throw new IllegalArgumentException("null kind");
+		}
+	}
     
     /**
      * Create a message, handling null values for message and kind
@@ -63,6 +96,7 @@ public class Message implements IMessage { // XXX toString or renderer?
         this.kind = kind;
         this.thrown = thrown;
         this.sourceLocation = sourceLocation;
+        this.details = "";
         if (null == message) {
             if (null != thrown) {
                 message = thrown.getMessage();
@@ -163,4 +197,7 @@ public class Message implements IMessage { // XXX toString or renderer?
         return buf.getBuffer().toString();        
     }
 
+	public String getDetails() {
+		return details;
+	}
 }

@@ -13,13 +13,13 @@
 
 package org.aspectj.weaver;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.Message;
-import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
-import org.aspectj.weaver.patterns.PerClause;
+import org.aspectj.bridge.*;
+import org.aspectj.lang.Signature;
+import org.aspectj.lang.JoinPoint.StaticPart;
+import org.aspectj.lang.reflect.SourceLocation;
+import org.aspectj.weaver.patterns.*;
 
 
 public class Checker extends ShadowMunger {
@@ -48,11 +48,13 @@ public class Checker extends ShadowMunger {
 
 	public boolean match(Shadow shadow, World world) {
 		if (super.match(shadow, world)) {
-			world.getMessageHandler().handleMessage(
-				new Message(msg,
-							isError ? IMessage.ERROR : IMessage.WARNING,
-							null,
-							shadow.getSourceLocation()));
+			IMessage message = new Message(
+				msg,
+				shadow.toString(),
+				isError ? IMessage.ERROR : IMessage.WARNING,
+				shadow.getSourceLocation());
+			world.getMessageHandler().handleMessage(message);
+				
 		}
 		return false;
 	}
