@@ -25,8 +25,8 @@
                      (use -projecthelp to list {example} names)
 
   Setup:
-     - Run from the examples directory.
-     - Put aspectj-ant.jar in ../lib with aspectjtools.jar and aspectjrt.jar
+     - Just run from the doc/examples directory in your AspectJ distribution;
+       the tasks are in ../../lib/aspectjtools.jar 
 
   Variants:
      - To avoid running (i.e., compile only), define variable "norun"
@@ -59,7 +59,7 @@
       <property name="example.dir"
             location="${basedir}"/> 
       <property name="aspectj.lib.dir"
-            location="${basedir}/../lib"/> 
+            location="${basedir}/../../lib"/> 
 
       <!-- required libraries - install or predefine -->
       <property name="aspectj-ant.jar"
@@ -69,11 +69,9 @@
       <property name="aspectjtools.jar"
             location="${aspectj.lib.dir}/aspectjtools.jar"/> 
 
-      <!-- created directories (fyi workingdir unused) -->
+      <!-- created directories -->
       <property name="classes.dir"
             location="${example.dir}/classes"/> 
-      <property name="working.dir"
-            location="${example.dir}/ajworkingdir"/> 
 
       <!-- checking required libraries -->
       <available file="${aspectjtools.jar}"
@@ -94,13 +92,11 @@
 
     <target name="init.taskdefs" depends="init.variables, 
          aspectjtools.jar.available,
-         aspectjrt.jar.available,
-         aspectj-ant.jar.available">
+         aspectjrt.jar.available">
       
       <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
           <classpath> 
             <pathelement path="${aspectjtools.jar}"/> 
-            <pathelement path="${aspectj-ant.jar}"/> 
           </classpath>
       </taskdef>
     </target>
@@ -115,11 +111,6 @@
     <target name="aspectjtools.jar.available" depends="init.variables" 
           unless="aspectjtools.jar.available" >
       <fail message="expecting aspectjtools.jar at ${aspectjtools.jar}"/>
-    </target>
-
-    <target name="aspectj-ant.jar.available" depends="init.variables" 
-          unless="aspectj-ant.jar.available" >
-      <fail message="expecting aspectj-ant.jar at ${aspectj-ant.jar}"/>
     </target>
 
     <!-- ============================================================= -->
@@ -177,7 +168,7 @@
     <target name="intro">
       <antcall target="Ajx">
         <param name="list"    value="introduction/files.lst"/>
-        <param name="class" value="introduction.Point"/>
+        <param name="class"   value="introduction.Point"/>
       </antcall>
     </target>
 
