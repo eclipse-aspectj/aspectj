@@ -52,6 +52,14 @@ plan to support JSR-45 as soon as feasible.
 This will require upgrading the BCEL library we
 use to pass around the correct source attributes.
 
+<p>
+Sometimes debuggers correctly get the source line information,
+but fail when they attempt to parse AspectJ source files
+expected to contain Java code.  For these it might be possible
+to step into AspectJ code, but not to set breakpoints, or to
+work around the parse errors by using <code>.aj</code> rather 
+than <code>.java</code> as a file extension.
+
 <!-- END-SAMPLE trails-debugging-aspectj11 -->
 
 </body>
