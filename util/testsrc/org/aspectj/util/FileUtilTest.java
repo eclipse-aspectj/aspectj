@@ -13,7 +13,6 @@
 
 package org.aspectj.util;
 
-import java.io.EOFException;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -35,23 +34,168 @@ import junit.textui.TestRunner;
  */
 public class FileUtilTest extends TestCase {
     public static final String[] NONE = new String[0];
+    public static boolean log = true;
 
-    boolean log = false;
+    public static void main(String[] args) {
+        TestRunner.main(new String[] {"org.aspectj.util.FileUtilTest"});
+    }
+    
+    public static void assertSame(String prefix, String[] lhs, String[] rhs) { // XXX cheap diff
+        String srcPaths = LangUtil.arrayAsList(lhs).toString();
+        String destPaths = LangUtil.arrayAsList(rhs).toString();
+        if (!srcPaths.equals(destPaths)) {
+            log("expected: " + srcPaths);
+            log("  actual: " + destPaths);
+            assertTrue(prefix + " expected=" + srcPaths
+                + " != actual=" + destPaths, false);
+        }        
+    }
+
+    /** 
+     * Verify that dir contains files with names, 
+     * and return the names of other files in dir.
+     * @return the contents of dir after excluding files 
+     *           or NONE if none
+     * @throws AssertionFailedError if any names are not in dir
+     */
+    public static String[] dirContains(File dir, final String[] filenames) {
+        final ArrayList sought 
+            = new ArrayList(LangUtil.arrayAsList(filenames));
+        FilenameFilter filter = new FilenameFilter() {
+            public boolean accept(File d, String name) {
+                return !sought.remove(name);
+            }
+        };
+        // remove any found from sought and return remainder
+        String[] found = dir.list(filter);
+        if (0 < sought.size()) {
+            assertTrue("found "+ LangUtil.arrayAsList(dir.list()).toString()
+                + " expected " + sought, false);
+        }        
+        return (found.length == 0 ? NONE : found);
+    }
+ 
+    /** @return sorted String[] of all paths to all files/dirs under dir */
+    public static String[] dirPaths(File dir) {
+        return dirPaths(dir, new String[0]);
+    }
+
+ 	/** 
+     * Get a sorted String[] of all paths to all files/dirs under dir.
+     * Files with names starting with "." are ignored,
+     * as are directory paths containing "CVS".
+     * The directory prefix of the path is stripped.
+     * Thus, given directory:
+     * <pre>path/to
+     *   .cvsignore
+     *   CVS/
+     *     Root
+     *     Repository
+     *   Base.java
+     *   com/
+     *     parc/
+     *       messages.properties
+     *   org/
+     *     aspectj/
+     *       Version.java
+     * </pre>
+     * a call
+     * <pre>
+     *   dirPaths(new File("path/to"), new String[0]);
+     * </pre>
+     * returns
+     * <pre>
+     *   { "Base.java", "com/parc/messages.properties", 
+     *     "org/aspectj/Version.java" }
+     * </pre>
+     * while the call
+     * <pre>
+     *   dirPaths(new File("path/to"), new String[] { ".java"});
+     * </pre>
+     * returns
+     * <pre>
+     *   { "Base.java", "org/aspectj/Version.java" }
+     * </pre>
+     * @param dir the File path to the directory to inspect    
+     * @param suffixes if not empty, require files returned to have this suffix
+     * @return sorted String[] of all paths to all files under dir 
+     *           ending with one of the listed suffixes 
+     *           but not starting with "."
+     */
+    public static String[] dirPaths(File dir, String[] suffixes) {
+        ArrayList result = new ArrayList();
+        doDirPaths(dir, result);
+        // if suffixes required, remove those without suffixes
+        if (!LangUtil.isEmpty(suffixes)) {
+            for (ListIterator iter = result.listIterator(); iter.hasNext();) {
+                String path = iter.next().toString();
+                boolean hasSuffix = false;
+                for (int i = 0; !hasSuffix && (i < suffixes.length); i++) {
+					hasSuffix = path.endsWith(suffixes[i]);
+				}
+                if (!hasSuffix) {
+                    iter.remove();
+                }				
+			}
+        }
+        Collections.sort(result);
+        // trim prefix
+        final String prefix = dir.getPath();
+        final int len = prefix.length() + 1; // plus directory separator
+        String[] ra = (String[]) result.toArray(new String[0]);
+        for (int i = 0; i < ra.length; i++) {
+            // assertTrue(ra[i].startsWith(prefix));			
+            assertTrue(ra[i], ra[i].length() > len);            
+            ra[i] = ra[i].substring(len);
+		}
+        return ra;
+    }
+
+	/**
+     * @param dir the File to read - ignored if null, not a directory,
+     *             or has "CVS" in its path
+     * @param useSuffix if true, then use dir as suffix to path
+     */
+    private static void doDirPaths(File dir, ArrayList paths) {
+        if ((null == dir) || !dir.canRead() 
+            || (-1 != dir.getPath().indexOf("CVS"))) {
+            return;
+        }
+        File[] files = dir.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            String path = files[i].getPath();
+            if (!files[i].getName().startsWith(".")) {
+                if (files[i].isFile()) {
+                    paths.add(path);
+                } else if (files[i].isDirectory()) {
+                    doDirPaths(files[i], paths);
+                } else {
+                    log("not file or dir: "
+                        + dir + "/" + path);
+                }
+            }
+		}
+    }
+
+    /** Print s if logging is enabled */
+    private static void log(String s) {
+        if (log) {
+            System.err.println(s);
+        }
+    }
 
     /** List of File files or directories to delete when exiting */
     final ArrayList tempFiles;
+    
     public FileUtilTest(String s) {
         super(s);
         tempFiles = new ArrayList();
     }
        
-	public static void main(String[] args) {
-        TestRunner.main(new String[] {"org.aspectj.util.FileUtilUT"});
-	}
-    
     public void tearDown() {
         for (ListIterator iter = tempFiles.listIterator(); iter.hasNext();) {
 			File dir = (File) iter.next();
+            log("removing " + dir);
 			FileUtil.deleteContents(dir);
             dir.delete();
             iter.remove();
@@ -122,21 +266,30 @@ public class FileUtilTest extends TestCase {
             }
         }
     }
-    public void testDirCopySubdirs() throws IOException { // XXX dir diff
+    
+    public void testDirCopySubdirs() throws IOException {
         File srcDir = new File("src");
         File destDir = FileUtil.getTempDir("testDirCopySubdirs");
+        tempFiles.add(destDir);
         FileUtil.copyDir(srcDir, destDir);
-        FileUtil.deleteContents(destDir);
-        destDir.delete();
+        assertSame("testDirCopySubdirs", dirPaths(srcDir), dirPaths(destDir));
     }
 
-    public void testDirCopySubdirsSuffix() throws IOException { // XXX dir diff
+    public void testDirCopySubdirsSuffix() throws IOException {
         File srcDir = new File("src");
         File destDir = FileUtil.getTempDir("testDirCopySubdirsSuffix");
+        tempFiles.add(destDir);
         FileUtil.copyDir(srcDir, destDir, ".java", ".aj");
 
-        FileUtil.deleteContents(destDir);
-        destDir.delete();
+        String[] sources = dirPaths(srcDir, new String[] { ".java" });
+        for (int i = 0; i < sources.length; i++) {
+			sources[i] = sources[i].substring(0, sources[i].length()-4);
+		}
+        String[] sinks = dirPaths(destDir, new String[] { ".aj" });
+        for (int i = 0; i < sinks.length; i++) {
+            sinks[i] = sinks[i].substring(0, sinks[i].length()-2);
+        }
+        assertSame("testDirCopySubdirs", sources, sinks);
     }
         
     public void testGetURL() {
@@ -185,9 +338,9 @@ public class FileUtilTest extends TestCase {
         boolean delete  = true;
         checkGetTempDir("parent", null, pass, delete);
         checkGetTempDir(null, "child", pass, delete);
-        tempFiles.add(checkGetTempDir("parent", "child", pass, !delete));
-        tempFiles.add(checkGetTempDir("parent", "child", pass, !delete));
-        tempFiles.add(checkGetTempDir("parent", "child", pass, !delete));
+        tempFiles.add(checkGetTempDir("parent", "child", pass, !delete).getParentFile());
+        tempFiles.add(checkGetTempDir("parent", "child", pass, !delete).getParentFile());
+        tempFiles.add(checkGetTempDir("parent", "child", pass, !delete).getParentFile());
     }
 
     File checkGetTempDir(String parent, String child, boolean ok, boolean delete) {
@@ -198,6 +351,7 @@ public class FileUtilTest extends TestCase {
         assertTrue("dir: " + dir, ok == (dir.canWrite() && dir.isDirectory()));
         if (delete) {
             dir.delete();
+            parentDir.delete();
         }
         return dir;
     }
@@ -207,7 +361,7 @@ public class FileUtilTest extends TestCase {
         for (int i = 0; i < 1000; i++) {
             String s = FileUtil.randomFileString();
             if (results.contains(s)) {
-                System.err.println("warning: got duplicate at iteration " + i);
+                log("warning: got duplicate at iteration " + i);
             }
             results.add(s);
 //			System.err.print(" " + s);
@@ -220,9 +374,11 @@ public class FileUtilTest extends TestCase {
     public void testNormalizedPath() {
         File tempFile = null;
         try {
-            tempFile = File.createTempFile("FileUtilTest", "tmp");
+            tempFile = File.createTempFile("FileUtilTest_testNormalizedPath", "tmp");
+            tempFiles.add(tempFile);
         } catch (IOException e) {
-            System.err.println("aborting test - unable to create temp file");
+            log("aborting test - unable to create temp file");
+            return;
         }
         File parentDir = tempFile.getParentFile();
         String tempFilePath = FileUtil.normalizedPath(tempFile, parentDir);
@@ -231,7 +387,7 @@ public class FileUtilTest extends TestCase {
 
     public void testFileToClassName() {
 
-        File basedir = new File("/base/dir");
+        File basedir = new File("/base/dir"); // never created
         File classFile = new File(basedir, "foo/Bar.class");
         assertEquals("foo.Bar", FileUtil.fileToClassName(basedir, classFile));
 
@@ -248,7 +404,9 @@ public class FileUtilTest extends TestCase {
      }
 
     public void testDeleteContents() {
-        File f = new File("testdata/foo");
+        File tempDir = FileUtil.getTempDir("testDeleteContents");
+        tempFiles.add(tempDir);
+        File f = new File(tempDir, "foo");
         f.mkdirs();
         File g = new File(f, "bar");
         g.mkdirs();
@@ -262,9 +420,10 @@ public class FileUtilTest extends TestCase {
     }
     
     public void testLineSeek() {
-        String path = "testdata/testLineSeek";
-        File file = new File(path);
-        path = file.getPath();
+        File tempDir = FileUtil.getTempDir("testLineSeek");
+        tempFiles.add(tempDir);
+        File file = new File(tempDir, "testLineSeek");
+        String path = file.getPath();
         String contents = "0123456789" + LangUtil.EOL;
         contents += contents;
         FileUtil.writeAsString(file, contents);
@@ -291,7 +450,9 @@ public class FileUtilTest extends TestCase {
     }
      public void testLineSeekMore() {
         final int MAX = 3; // 1..10
-        final String prefix = new File("testdata/testLineSeek").getPath();
+        File tempDir = FileUtil.getTempDir("testLineSeekMore");
+        tempFiles.add(tempDir);
+        final String prefix = new File(tempDir, "testLineSeek").getPath();
         // setup files 0..MAX with 2*MAX lines
         String[] sources = new String[MAX];
         StringBuffer sb = new StringBuffer();
@@ -339,8 +500,8 @@ public class FileUtilTest extends TestCase {
         String[] destFiles = new String[] { "three.java", "four.java", "five.java" };
         String[] allFiles = new String[] 
             { "one.java", "two.java", "three.java", "four.java", "five.java" };
-        File srcDir = makeDir("FileUtilUT_srcDir", srcFiles);    
-        File destDir = makeDir("FileUtilUT_destDir", destFiles);
+        File srcDir = makeTempDir("FileUtilUT_srcDir", srcFiles);    
+        File destDir = makeTempDir("FileUtilUT_destDir", destFiles);
         assertTrue(null != srcDir);
         assertTrue(null != destDir);
         assertTrue(NONE == dirContains(srcDir, srcFiles));
@@ -350,11 +511,6 @@ public class FileUtilTest extends TestCase {
         String[] resultOne = dirContains(destDir, allFiles);
         FileUtil.copyDir(srcDir, destDir);
         String[] resultTwo = dirContains(destDir, allFiles);
-
-        FileUtil.deleteContents(srcDir);
-        FileUtil.deleteContents(destDir);
-        srcDir.delete();
-        destDir.delete();
 
         assertTrue(NONE == resultOne);
         assertTrue(NONE == resultTwo);
@@ -365,25 +521,18 @@ public class FileUtilTest extends TestCase {
         String[] destFiles = new String[] { "three.java", "four.java", "five.java" };
         String[] allFiles = new String[] 
             { "one.aj", "two.aj", "three.aj", "three.java", "four.java", "five.java" };
-        File srcDir = makeDir("FileUtilUT_srcDir", srcFiles);    
-        File destDir = makeDir("FileUtilUT_destDir", destFiles);
+        File srcDir = makeTempDir("FileUtilUT_srcDir", srcFiles);    
+        File destDir = makeTempDir("FileUtilUT_destDir", destFiles);
         assertTrue(null != srcDir);
         assertTrue(null != destDir);
         assertTrue(NONE == dirContains(srcDir, srcFiles));
         assertTrue(NONE == dirContains(destDir, destFiles));
         
         FileUtil.copyDir(srcDir, destDir, ".java", ".aj");
-        String[] resultOne = dirContains(destDir, allFiles);
         FileUtil.copyDir(srcDir, destDir, ".java", ".aj");
-        String[] resultTwo = dirContains(destDir, allFiles);
 
-        FileUtil.deleteContents(srcDir);
-        FileUtil.deleteContents(destDir);
-        srcDir.delete();
-        destDir.delete();
-
-        assertTrue(NONE == resultOne);
-        assertTrue(NONE == resultTwo);
+        assertTrue(NONE == dirContains(destDir, allFiles));
+        assertTrue(NONE == dirContains(destDir, allFiles));
     }
     
     public void testDirCopySubdirsSuffixRoundTrip() throws IOException { 
@@ -399,43 +548,22 @@ public class FileUtilTest extends TestCase {
         FileUtil.deleteContents(two);
         two.delete();
     }
-    
-    /** 
-     * Verify that dir contains files, 
-     * and return the names of other files in dir.
-     * @return the contents of dir after excluding files 
-     *           or NONE if none
-     * @throws AssertionFailedError if any files are not in dir
+   
+    /**
+     * Create temp dir at loc containing temp files files.
+     * Result is registered for deletion on cleanup.
      */
-    String[] dirContains(File dir, final String[] files) {
-        final ArrayList toFind = new ArrayList(Arrays.asList(files));
-        FilenameFilter filter = new FilenameFilter() {
-            public boolean accept(File d, String name) {
-                return !toFind.remove(name);
-            }
-        };
-        String[] result = dir.list(filter);
-        if (0 < toFind.size()) {
-            assertTrue(""+toFind, false);
-        }        
-        return (result.length == 0 ? NONE : result);
-    }
-    
-    File makeDir(String loc, String[] files) throws IOException {
+    File makeTempDir(String loc, String[] filenames) throws IOException {
         File d = new File(loc);
         d.mkdirs();
         assertTrue(d.exists());
+        tempFiles.add(d);
         assertTrue(d.canWrite());
-        for (int i = 0; i < files.length; i++) {
-			File f = new File(d, files[i]);
-            assertTrue(files[i], f.createNewFile());
+        for (int i = 0; i < filenames.length; i++) {
+			File f = new File(d, filenames[i]);
+            assertTrue(filenames[i], f.createNewFile());
 		}
         return d;
     }
 
-    private void log(String s) {
-        if (log) {
-            System.err.println(s);
-        }
-    }
 }
