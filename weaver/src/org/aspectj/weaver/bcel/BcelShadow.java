@@ -538,7 +538,7 @@ public class BcelShadow extends Shadow {
 			new BcelShadow(
 				world,
 				AdviceExecution,
-				world.makeMethodSignature(enclosingMethod),
+				world.makeMethodSignature(enclosingMethod, Member.ADVICE),
 				enclosingMethod,
 				null);
 		ShadowRange r = new ShadowRange(body);

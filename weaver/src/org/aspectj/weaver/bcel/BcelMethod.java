@@ -37,7 +37,8 @@ final class BcelMethod extends ResolvedMember {
 
 	BcelMethod(BcelObjectType declaringType, Method method) {
 		super(
-			method.getName().equals("<init>") ? CONSTRUCTOR : METHOD, 
+			method.getName().equals("<init>") ? CONSTRUCTOR : 
+				(method.getName().equals("<clinit>") ? STATIC_INITIALIZATION : METHOD), 
 			declaringType,
 			declaringType.isInterface() 
 				? method.getAccessFlags() | Modifier.INTERFACE
@@ -112,5 +113,13 @@ final class BcelMethod extends ResolvedMember {
 	
 	public AjAttribute.EffectiveSignatureAttribute getEffectiveSignature() {
 		return effectiveSignature;
+	}
+	
+	public Kind getKind() {
+		if (associatedShadowMunger != null) {
+			return ADVICE;
+		} else {
+			return super.getKind();
+		}
 	}
 }

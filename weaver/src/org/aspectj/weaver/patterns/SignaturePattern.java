@@ -93,16 +93,16 @@ public class SignaturePattern extends PatternNode {
 			world.getLint().unresolvableMember.signal(member.toString(), getSourceLocation());
 			return false;
 		}
-
-		// AMC test for Kind match surely???
-		if (!(sig.getKind() == kind)) return false;
-
-
+		
+		// This check should only matter when used from WithincodePointcut as KindedPointcut
+		// has already effectively checked this with the shadows kind.
+		if (kind != member.getKind()) {
+			return false;
+		}
+		
 		if (kind == Member.ADVICE) return true;
 		
 		if (!modifiers.matches(sig.getModifiers())) return false;
-
-
 		
 		if (kind == Member.STATIC_INITIALIZATION) {
 			//System.err.println("match static init: " + sig.getDeclaringType() + " with " + this);

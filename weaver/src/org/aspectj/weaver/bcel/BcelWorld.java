@@ -252,24 +252,28 @@ public class BcelWorld extends World {
                 fi.getName(cpg),
                 "(" + fi.getSignature(cpg) + ")" +fi.getSignature(cpg));
     }
-	
+
 	public Member makeMethodSignature(LazyMethodGen mg) {
+		return makeMethodSignature(mg, null);
+	}
+
+	
+	public Member makeMethodSignature(LazyMethodGen mg, Member.Kind kind) {
 		ResolvedMember ret = mg.getMemberView();
 		if (ret == null) {
 	        int mods = mg.getAccessFlags();
 	        if (mg.getEnclosingClass().isInterface()) {
 	            mods |= Modifier.INTERFACE;
 	        }
-	        
-	        org.aspectj.weaver.Member.Kind kind;
-	        if (mg.getName().equals("<init>")) {
-	        	kind = Member.CONSTRUCTOR;
-	        } else if (mg.getName().equals("<clinit>")) {
-	        	kind = Member.STATIC_INITIALIZATION;
-	        } else {
-	        	kind = Member.METHOD;
+	        if (kind == null) {
+		        if (mg.getName().equals("<init>")) {
+		        	kind = Member.CONSTRUCTOR;
+		        } else if (mg.getName().equals("<clinit>")) {
+		        	kind = Member.STATIC_INITIALIZATION;
+		        } else {
+		        	kind = Member.METHOD;
+		        }
 	        }
-	        
 	        return new ResolvedMember(kind,
 	                TypeX.forName(mg.getClassName()), 
 	                mods,
