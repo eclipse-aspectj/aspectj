@@ -118,6 +118,7 @@ public class SymbolManager {
 	 * TODO: only works for one class
 	 */
     public Declaration[] getDeclarations(String filename) {
+    	
     	IProgramElement file = (IProgramElement)AsmManager.getDefault().getHierarchy().findElementForSourceFile(filename);
 		IProgramElement node = (IProgramElement)file.getChildren().get(0);
 		 
@@ -126,43 +127,66 @@ public class SymbolManager {
 		HierarchyWalker walker = new HierarchyWalker() {
 			public void preProcess(IProgramElement node) {
 				IProgramElement p = (IProgramElement)node;
-				nodes.add(buildDecl(p));
+				if (accept(node)) nodes.add(buildDecl(p));
 			}
 		};
 
 		file.walk(walker);
 		
+    	System.err.println("> got: " + nodes);
+		
 		return (Declaration[])nodes.toArray(new Declaration[nodes.size()]);
 //        return lookupDeclarations(filename);
     }
+    
+	private boolean accept(IProgramElement node) {
+		return !node.getKind().equals(IProgramElement.Kind.IMPORT_REFERENCE);
+	}
 
 	private Declaration buildDecl(IProgramElement node) {
-		System.err.println("> getting decs: " + node); 
-			
+		
+		String signature = "";
+		String accessibility = node.getAccessibility().toString();
+		if (!accessibility.equals("package")) signature = accessibility + " ";
+		
 		String modifiers = "";
 		for (Iterator modIt = node.getModifiers().iterator(); modIt.hasNext(); ) {
 			modifiers += modIt.next() + " ";
 		}
-//		Declaration dec = new Declaration(
-//			node.getSourceLocation().getLine(),
-//			node.getSourceLocation().getEndLine(),
-//			node.getSourceLocation().getColumn(),
-//			-1,
-//			modifiers,
-//			node.getName(),
-//			node.getFullSignature(),
-//			"",
-//			node.getDeclaringType(),
-//			node.getKind(),
-//			node.getSourceLocation().getSourceFile().getAbsolutePath(),
-//			node.getFormalComment(),
-//			node.getPackageName()
-//		);
-//		return dec;
-		return null;
+	
+		if (node.getKind().equals(IProgramElement.Kind.METHOD) || 
+			node.getKind().equals(IProgramElement.Kind.FIELD)) {
+			signature += node.getCorrespondingType() + " ";
+		}
+
+		if (node.getKind().equals(IProgramElement.Kind.CLASS) || 
+				node.getKind().equals(IProgramElement.Kind.METHOD)) {
+				signature += "class ";
+		} else if (node.getKind().equals(IProgramElement.Kind.INTERFACE) || 
+				node.getKind().equals(IProgramElement.Kind.METHOD)) {
+			signature += "interface ";
+		} 
+		
+		signature += node.toSignatureString();
+//		System.err.println(">>>> " + signature); 
+		
+		Declaration dec = new Declaration(
+			node.getSourceLocation().getLine(),
+			node.getSourceLocation().getEndLine(),
+			node.getSourceLocation().getColumn(),
+			-1,
+			modifiers,
+			node.getName(),
+			signature,
+			"", // crosscut designator
+			node.getDeclaringType(),
+			node.getKind().toString(),
+			node.getSourceLocation().getSourceFile().getAbsolutePath(),
+			node.getFormalComment(),
+			node.getPackageName()
+		);
+		return dec;
 	}
-    
-    
     
 
 //    // In the unusual case that there are multiple declarations on a single line

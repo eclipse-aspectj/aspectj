@@ -14,18 +14,11 @@
 
 package org.aspectj.tools.ajdoc;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.BufferedWriter;
-import java.io.PrintWriter;
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.StringReader;
-import java.io.FilenameFilter;
-
+import java.io.*;
 import java.util.*;
+
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IProgramElement;
 
 /**
  * This is an old implementation of ajdoc that does not use an OO style.  However, it 
@@ -96,7 +89,7 @@ public class Main implements Config {
             if ( !(new File( Config.WORKING_DIR ).isDirectory()) ) {
                 File dir = new File( Config.WORKING_DIR );
                 dir.mkdir();
-                dir.deleteOnExit();
+//                dir.deleteOnExit();
             }
 
             for (int i = 0; i < filenames.size(); i++) {
@@ -191,8 +184,8 @@ public class Main implements Config {
                     javadocargs[options.size() + k] = signatureFiles[k].getCanonicalPath();
                 }
             }
+         
             Phase2.callJavadoc(javadocargs);
-
             //for ( int o = 0; o < inputFiles.length; o++ ) {
             //    System.out.println( "file: " + inputFiles[o] );
             //}
@@ -203,19 +196,19 @@ public class Main implements Config {
             * into multiple .html files to handle inner classes or local classes.  The html
             * file decorator picks that up.
             */
-            System.out.println( "> Decorating html files..." );
-            Phase3.decorateHTMLFromInputFiles(declIDTable,
-                                              rootDir,
-                                              symbolManager,
-                                              inputFiles,
-                                              docModifier);
-            removeDeclIDsFromFile("index-all.html");
-            removeDeclIDsFromFile("serialized-form.html");
-            for (int p = 0; p < packageList.size(); p++) {
-                removeDeclIDsFromFile(((String)packageList.elementAt(p)).replace('.','/') +
-                                       Config.DIR_SEP_CHAR +
-                                       "package-summary.html" );
-            }
+//            System.out.println( "> Decorating html files..." );
+//            Phase3.decorateHTMLFromInputFiles(declIDTable,
+//                                              rootDir,
+//                                              symbolManager,
+//                                              inputFiles,
+//                                              docModifier);
+//            removeDeclIDsFromFile("index-all.html");
+//            removeDeclIDsFromFile("serialized-form.html");
+//            for (int p = 0; p < packageList.size(); p++) {
+//                removeDeclIDsFromFile(((String)packageList.elementAt(p)).replace('.','/') +
+//                                       Config.DIR_SEP_CHAR +
+//                                       "package-summary.html" );
+//            }
         } catch (Throwable e) {
             handleInternalError(e);
             exit(-2);
@@ -339,18 +332,12 @@ public class Main implements Config {
     }
 
     static File createSignatureFile(File inputFile) throws IOException {
-        Declaration[] decls = symbolManager.getDeclarations(inputFile.getAbsolutePath());
-        Declaration decl = null;
-        String packageName = null;
-        if ( decls != null && decls[0] != null ) {
-            decl = decls[0];
-            packageName = decl.getPackageName();
-        }
+    	String packageName = StructureUtil.getPackageDeclarationFromFile(inputFile);
+    	
+//    	System.err.println(">>> package: " + packageName);
         String filename    = "";
         if ( packageName != null ) {
-            //System.err.println(">> creating: " + packageName);
             String pathName =  Config.WORKING_DIR + '/' + packageName.replace('.', '/');
-            //System.err.println(">> pathName: " + pathName);
             File packageDir = new File(pathName);
             if ( !packageDir.exists() ) {
                 packageDir.mkdirs();
@@ -388,7 +375,7 @@ public class Main implements Config {
             File packageDir = new File( filePath );
             if ( !packageDir.exists() ) {
                 packageDir.mkdir();
-                packageDir.deleteOnExit();
+//                packageDir.deleteOnExit();
             }
             if ( remainingPkg != "" ) {
                 verifyPackageDirExists( remainingPkg, currPkgDir );
@@ -405,7 +392,7 @@ public class Main implements Config {
             File packageDir = new File( filePath );
             if ( !packageDir.exists() ) {
                 packageDir.mkdir();
-                packageDir.deleteOnExit();
+//                packageDir.deleteOnExit();
             }
         }
     }
