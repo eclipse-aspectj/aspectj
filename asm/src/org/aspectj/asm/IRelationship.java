@@ -37,7 +37,7 @@ public interface IRelationship extends Serializable {
 		public static final Kind ADVICE = new Kind("advice");
 		public static final Kind DECLARE = new Kind("declare");
 		public static final Kind DECLARE_INTER_TYPE = new Kind("inter-type declaration");
-		public static final Kind[] ALL = { ADVICE, DECLARE };
+		public static final Kind[] ALL = { ADVICE, DECLARE, DECLARE_INTER_TYPE };
 		private final String name;
 		
 		private Kind(String name) {
