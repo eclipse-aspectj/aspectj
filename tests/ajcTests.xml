@@ -6731,8 +6731,7 @@
 		</compile>
 	</ajc-test>
 	
-   <!-- This test needs a corresponding bug report -->
-    <ajc-test dir="bugs" 
+    <ajc-test dir="bugs" pr="42652"
    	 title="perthis and signature bad interaction">
         <compile files="InterPerCall.java"/>
         <run class="InterPerCall"/>
