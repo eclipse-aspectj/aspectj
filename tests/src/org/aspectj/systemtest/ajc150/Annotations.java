@@ -20,8 +20,6 @@ import org.aspectj.tools.ajc.CompilationResult;
  * Annotations, the rules/tests:
  * 
  * 1. cannot make ITD (C,M or F) on an annotation
- * 
- * XXXAJ5: The rest of these can't be tested (and so can't be attempted by users!) until the binary decp thing is fixed:
  * 2. cannot use declare parents to change the super type of an annotation
  * 3. cannot use decp to make an annotation type implement an interface
  * 4. cannot use decp to dec java.lang.annotation.Annotation as the parent of any type
@@ -53,11 +51,37 @@ public class Annotations extends TestUtils {
   			msg3_field.toString().indexOf("can't make inter-type field declarations")!=-1);
   	verifyWeavingMessagesOutput(cR,new String[]{});
   }
-
+  
+  // Deals with the cases where an explicit type is specified and it is an annotation type
+  public void test002_decpOnAnnotationNotAllowed_errors() {
+  	CompilationResult cR = binaryWeave("testcode.jar","AnnotationAspect04.aj",3,0,true);
+  	IMessage msg = (IMessage)cR.getErrorMessages().get(0);
+  	assertTrue("Expected a message about can't use decp to alter supertype of an annotation: "+msg,
+  			msg.toString().indexOf("to alter supertype of annotation type")!=-1);
+  	msg = (IMessage)cR.getErrorMessages().get(1);
+  	assertTrue("Expected a message about can't use decp to make annotation implement interface: "+msg,
+  			msg.toString().indexOf("implement an interface")!=-1);
+  	msg = (IMessage)cR.getErrorMessages().get(2);
+  	assertTrue("Expected a message about can't use decp to make Annotation parent of another type: "+msg,
+  			msg.toString().indexOf("the parent of type")!=-1);
+  	verifyWeavingMessagesOutput(cR,new String[]{});
+  }
+  
+  //Deals with the cases where an wild type pattern is specified and it hits an annotation type
+  public void test004_decpOnAnnotationNotAllowed_xlints() {
+  	CompilationResult cR = binaryWeave("testcode.jar","AnnotationAspect05.aj",0,2,false);
+  	IMessage msg = (IMessage)cR.getWarningMessages().get(0);
+  	assertTrue("Expected a message about an annotation type matching a declare parents but being ignored: "+msg,
+  			msg.toString().indexOf("matches a declare parents type pattern")!=-1);
+  	msg = (IMessage)cR.getWarningMessages().get(1);
+  	assertTrue("Expected a message about an annotation type matching a declare parents but being ignored: "+msg,
+  			msg.toString().indexOf("matches a declare parents type pattern")!=-1);
+  	verifyWeavingMessagesOutput(cR,new String[]{});
+  }
+  
   // TODO extra tests:
   // declare parents with annotation pattern
   // declare soft with annotation pattern
   // declare warning with annotation pattern
   // declare precedence with annotation pattern
-  
 }
