@@ -218,9 +218,14 @@ public class AntBuilder extends Builder {
         // -- source paths
         Path path = new Path(project);
         boolean hasSourceDirectories = false;
+        boolean isJava5Compile = false;
         for (Iterator iter = module.getSrcDirs().iterator(); iter.hasNext();) {
             File file = (File) iter.next();
             path.createPathElement().setLocation(file);
+            if (!isJava5Compile 
+                    && Util.Constants.JAVA5_SRC.equals(file.getName())) {
+                isJava5Compile = true;
+            }
             if (!hasSourceDirectories) {
                 hasSourceDirectories = true;
             }
@@ -266,24 +271,46 @@ public class AntBuilder extends Builder {
         if (hasLibraries && inEclipse) {
             javac.setFork(true); // XXX otherwise never releases library jars
         }
+        // also fork if using 1.5?
+        // can we build under 1.4, but fork javac 1.5 compile?
         
         // -- set output directory
         classpath.createPathElement().setLocation(classesDir);
         javac.setClasspath(classpath);
         // misc
         javac.setDebug(true);
-        javac.setTarget("1.1"); // 1.1 class files - Javac in 1.4 uses 1.4
+        if (!isJava5Compile) {
+            javac.setTarget("1.1"); // 1.1 class files - Javac in 1.4 uses 1.4            
+            javac.setSource("1.3");
+        } else {
+            javac.setSource("1.5");
+            javac.setTarget("1.5"); 
+            // gack if non-java5 and non-testsrc in this build
+            for (Iterator iter = module.getSrcDirs().iterator(); iter.hasNext();) {
+                String name = ((File) iter.next()).getName();
+                if (!Util.Constants.JAVA5_SRC.equals(name)
+                    && !Util.Constants.TESTSRC.equals(name)) {
+                    String m = "modules mixing pre-15 and 15 source are built with -target 1.5";
+                    throw new BuildException(m + ": " + name);
+                }
+            }
+        }
         // compile
+        boolean passed = false;
+        BuildException failure = null;
         try {
-            return executeTask(AspectJSupport.wrapIfNeeded(module, javac));
+            passed = executeTask(AspectJSupport.wrapIfNeeded(module, javac));
         } catch (BuildException e) {
-            String args = "" + Arrays.asList(javac.getCurrentCompilerArgs());
-            errors.add("BuildException compiling " + module.toLongString() + args 
-                + ": " + Util.renderException(e));
-            return false;
+            failure = e;
         } finally {
             javac.init(); // be nice to let go of classpath libraries...
         }
+        if (!passed) {
+            String args = "" + Arrays.asList(javac.getCurrentCompilerArgs());
+            errors.add("BuildException compiling " + module.toLongString() + args 
+                + (null == failure? "" : ": " + Util.renderException(failure)));
+        }
+        return passed;
     }
     
     public boolean setupClasspath(Module module, Path classpath) { // XXX fix test access
