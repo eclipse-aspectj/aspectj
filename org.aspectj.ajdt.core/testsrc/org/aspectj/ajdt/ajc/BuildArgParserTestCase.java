@@ -109,8 +109,8 @@ public class BuildArgParserTestCase extends TestCase {
 	public void testAspectpath() throws InvalidInputException {
 		final String SOURCE_JAR = "testdata/testclasses.jar";
 		final String SOURCE_JARS = "testdata/testclasses.jar" + File.pathSeparator 
-			+ "../bcweaver/testdata/tracing.jar" + File.pathSeparator 
-			+ "../bcweaver/testdata/dummyAspect.jar";
+			+ "../weaver/testdata/tracing.jar" + File.pathSeparator 
+			+ "../weaver/testdata/dummyAspect.jar";
 		AjBuildConfig config = parser.genBuildConfig(new String[] { 
 			"-aspectpath", SOURCE_JAR }, 
 			messageWriter);
@@ -126,8 +126,8 @@ public class BuildArgParserTestCase extends TestCase {
 	public void testInJars() throws InvalidInputException {
 		final String SOURCE_JAR = "testdata/testclasses.jar";
 		final String SOURCE_JARS = "testdata/testclasses.jar" + File.pathSeparator 
-			+ "../bcweaver/testdata/tracing.jar" + File.pathSeparator 
-			+ "../bcweaver/testdata/dummyAspect.jar";
+			+ "../weaver/testdata/tracing.jar" + File.pathSeparator 
+			+ "../weaver/testdata/dummyAspect.jar";
 		AjBuildConfig config = parser.genBuildConfig(new String[] { 
 			"-injars", SOURCE_JAR }, 
 			messageWriter);

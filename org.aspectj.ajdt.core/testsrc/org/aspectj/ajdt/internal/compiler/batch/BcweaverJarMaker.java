@@ -32,7 +32,7 @@ public class BcweaverJarMaker {
 	public static void makeJar0() throws IOException {
 		List args = new ArrayList();
 		args.add("-outjar");
-		args.add("../bcweaver/testdata/tracing.jar");
+		args.add("../weaver/testdata/tracing.jar");
 
 		args.add("-classpath");
 		args.add("../runtime/bin");
@@ -46,7 +46,7 @@ public class BcweaverJarMaker {
 	public static void makeJar1() throws IOException {
 		List args = new ArrayList();
 		args.add("-outjar");
-		args.add("../bcweaver/testdata/megatrace.jar");
+		args.add("../weaver/testdata/megatrace.jar");
 
 		args.add("-classpath");
 		args.add("../runtime/bin");
@@ -61,7 +61,7 @@ public class BcweaverJarMaker {
 	public static void makeJar1a() throws IOException {
 		List args = new ArrayList();
 		args.add("-outjar");
-		args.add("../bcweaver/testdata/megatraceNoweave.jar");
+		args.add("../weaver/testdata/megatraceNoweave.jar");
 
 		args.add("-noweave");
 
@@ -78,7 +78,7 @@ public class BcweaverJarMaker {
 	public static void makeJar2() throws IOException {
 		List args = new ArrayList();
 		args.add("-outjar");
-		args.add("../bcweaver/testdata/dummyAspect.jar");
+		args.add("../weaver/testdata/dummyAspect.jar");
 
 		args.add("-classpath");
 		args.add("../runtime/bin");

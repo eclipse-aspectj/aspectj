@@ -3,7 +3,7 @@ eclipseWorkspace = "c:/eclipse/workspace"
 workingDir = "c:/apps/jikespg/jdt/tmp"
 
 jikespg = "c:/apps/jikespg/src/a.exe"
-makersc = "c:/jdk1.4/bin/java -classpath c:/eclipse/workspace/org.eclipse.jdt.core/bin;c:/apps/jikespg/jdt;c:/eclipse/workspace/bcweaver/bin UpdateParserFiles"
+makersc = "c:/jdk1.4/bin/java -classpath c:/eclipse/workspace/org.eclipse.jdt.core/bin;c:/apps/jikespg/jdt;c:/eclipse/workspace/weaver/bin UpdateParserFiles"
 
 # the rest of this should never change
 ajCompilerHomeRel = "org.aspectj.ajdt.core/src/"

@@ -233,9 +233,9 @@ public class LangUtilTest extends TestCase {
         
         stackBuffer = new StringBuffer("java.lang.RuntimeException: unimplemented"
            + "\n at org.aspectj.ajdt.internal.core.builder.EclipseUnwovenClassFile.writeWovenBytes(EclipseUnwovenClassFile.java:59)"
-           + "\n at org.aspectj.bcweaver.bcel.BcelWeaver.dump(BcelWeaver.java:271)"
-           + "\n at org.aspectj.bcweaver.bcel.BcelWeaver.weave(BcelWeaver.java:233)"
-           + "\n at org.aspectj.bcweaver.bcel.BcelWeaver.weave(BcelWeaver.java:198)"
+           + "\n at org.aspectj.weaver.bcel.BcelWeaver.dump(BcelWeaver.java:271)"
+           + "\n at org.aspectj.weaver.bcel.BcelWeaver.weave(BcelWeaver.java:233)"
+           + "\n at org.aspectj.weaver.bcel.BcelWeaver.weave(BcelWeaver.java:198)"
            + "\n at org.aspectj.ajdt.internal.core.builder.AjBuildManager.weaveAndGenerateClassFiles(AjBuildanager.java:230)"
            + "\n at org.aspectj.ajdt.internal.core.builder.AjBuildManager.batchBuild(AjBuildManager.java:50)"
            + "\n at org.aspectj.ajdt.ajc.AjdtCommand.runCommand(AjdtCommand.java:42)"

@@ -46,7 +46,7 @@ public class WorkingTestMain {
 //		args.add("testdata/testclasses.jar");
 		
 		//args.add("-aspectpath");
-		//args.add("../bcweaver/testdata/megatrace.jar");
+		//args.add("../weaver/testdata/megatrace.jar");
 		
 		//args.add("testdata/src1/AroundA1.java");
 		args.add("../tests/new/StrictFPAdvice.java");
