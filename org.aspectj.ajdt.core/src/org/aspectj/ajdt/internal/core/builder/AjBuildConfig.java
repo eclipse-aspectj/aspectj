@@ -328,17 +328,17 @@ public class AjBuildConfig { // XXX needs bootclasspath?
             );
     }
     
-    /** @return null if no errors, String errors otherwise */
-    public String configErrors() {
-        StringBuffer result = new StringBuffer();
-        // ok, permit both.  sigh.
-//        if ((null != outputDir) && (null != outputJar)) {
-//            result.append("specified both outputDir and outputJar");
-//        }
-        // incremental => only sourceroots
-        // 
-        return (0 == result.length() ? null : result.toString());
-    }
+//    /** @return null if no errors, String errors otherwise */
+//    public String configErrors() {
+//        StringBuffer result = new StringBuffer();
+//        // ok, permit both.  sigh.
+////        if ((null != outputDir) && (null != outputJar)) {
+////            result.append("specified both outputDir and outputJar");
+////        }
+//        // incremental => only sourceroots
+//        // 
+//        return (0 == result.length() ? null : result.toString());
+//    }
 
     /**
      * Install global values into local config
