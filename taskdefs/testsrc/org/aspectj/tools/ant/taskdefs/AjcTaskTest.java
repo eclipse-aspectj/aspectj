@@ -23,6 +23,8 @@ import org.aspectj.util.*;
 import java.io.*;
 import java.io.File;
 import java.util.Arrays;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import junit.framework.TestCase;
 
@@ -197,7 +199,94 @@ public class AjcTaskTest extends TestCase {
 		assertTrue(file + ".canRead() passed", !file.canRead());
 	}
 
-	private void checkRun(AjcTask task, String exceptionString) {
+    public void testInpathDirCopyFilter() {
+        // inpathDirCopyFilter works with output directory
+        File destDir = getTempDir();
+        assertTrue(
+            "unable to create " + destDir,
+            destDir.canRead() || destDir.mkdirs());
+        AjcTask task = getTask(NOFILE, destDir);        
+        Project p = task.getProject();
+        Path indirs = new Path(p);
+        File dir = new File(testdataDir, "inpathDirs").getAbsoluteFile();
+        indirs.addExisting(new Path(p, new File(dir, "inpathDirOne").getAbsolutePath()));
+        indirs.addExisting(new Path(p, new File(dir, "inpathDirTwo").getAbsolutePath()));
+        task.setInpath(indirs);
+        task.setInpathDirCopyFilter("doNotCopy,**/*.txt");
+        
+        File file = new File(destDir, "Default.java").getAbsoluteFile();
+        assertTrue(file + ".canRead() prematurely", !file.canRead());
+        checkRun(task, null);
+
+        // got expected resources
+        File pack = new File(destDir, "pack");
+        file = new File(pack, "includeme").getAbsoluteFile();
+        assertTrue(file + ".canRead() failed", file.canRead());
+        file = new File(pack, "Pack.class").getAbsoluteFile();
+        assertTrue(file + ".canRead() failed", file.canRead());
+        file = new File(destDir, "copyMe.htm").getAbsoluteFile();
+        assertTrue(file + ".canRead() failed", file.canRead());
+        file = new File(destDir, "Default.class").getAbsoluteFile();
+        assertTrue(file + ".canRead() failed", file.canRead());
+
+        // didn't get unexpected resources
+        file = new File(pack, "something.txt");
+        assertTrue(file + ".canRead() passed", !file.canRead());
+        file = new File(destDir, "doNotCopy");
+        assertTrue(file + ".canRead() passed", !file.canRead());
+        file = new File(destDir, "skipTxtFiles.txt");
+        assertTrue(file + ".canRead() passed", !file.canRead());
+    }
+    
+    public void testInpathDirCopyFilterWithJar() throws IOException {
+        // inpathDirCopyFilter works with output jar
+        File destDir = getTempDir();
+        assertTrue(
+            "unable to create " + destDir,
+            destDir.canRead() || destDir.mkdirs());
+        AjcTask task = getTask(NOFILE, null);        
+        File destJar = new File(destDir, "testInpathDirCopyFilterWithJar-out.jar");
+        task.setOutjar(destJar);
+        Project p = task.getProject();
+        Path indirs = new Path(p);
+        File dir = new File(testdataDir, "inpathDirs").getAbsoluteFile();
+        indirs.addExisting(new Path(p, new File(dir, "inpathDirOne").getAbsolutePath()));
+        indirs.addExisting(new Path(p, new File(dir, "inpathDirTwo").getAbsolutePath()));
+        task.setInpath(indirs);
+        task.setInpathDirCopyFilter("doNotCopy,**/*.txt,**/*.class");
+        
+        checkRun(task, null);
+
+        JarFile jarFile = new JarFile(destJar);
+        String[] expected = {"copyMe.htm", "pack/includeme", 
+                "pack/Pack.class", "Default.class"};
+        String[] unexpected = {"doNotCopy", "skipTxtFiles.txt", "pack/something.txt"};
+        for (int i = 0; i < expected.length; i++) {
+            JarEntry entry = jarFile.getJarEntry(expected[i]);
+            assertTrue(expected[i] + " not found", null != entry);
+        }
+        for (int i = 0; i < unexpected.length; i++) {
+            JarEntry entry = jarFile.getJarEntry(unexpected[i]);
+            assertTrue(unexpected[i] + " found", null == entry);
+        }
+    }
+
+    public void testInpathDirCopyFilterError() {
+        // inpathDirCopyFilter fails with no output directory or jar iff specified
+        AjcTask task = getTask(NOFILE, null);        
+        Project p = task.getProject();
+        Path indirs = new Path(p);
+        File dir = new File(testdataDir, "inpathDirs").getAbsoluteFile();
+        indirs.addExisting(new Path(p, new File(dir, "inpathDirOne").getAbsolutePath()));
+        indirs.addExisting(new Path(p, new File(dir, "inpathDirTwo").getAbsolutePath()));
+        task.setInpath(indirs);
+        task.setInpathDirCopyFilter("doNotCopy,**/*.txt,**/*.class");
+
+        // expecting error
+        checkRun(task, "inpathDirCopyFilter");
+    }
+
+    private void checkRun(AjcTask task, String exceptionString) {
 		try {
 			task.execute();
 			assertTrue(null == exceptionString);
