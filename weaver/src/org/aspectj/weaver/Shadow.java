@@ -356,7 +356,12 @@ public abstract class Shadow {
 		if (isl==null || isl.getSourceFile()==null || isl.getSourceFile().getName().indexOf("no debug info available")!=-1) {
 			nice.append("no debug info available");
 	    } else {
-	    	nice.append(isl.getSourceFile().getName());
+	    	// can't use File.getName() as this fails when a Linux box encounters a path created on Windows and vice-versa
+	    	int takeFrom = isl.getSourceFile().getPath().lastIndexOf('/');
+	    	if (takeFrom == -1) {
+	    		takeFrom = isl.getSourceFile().getPath().lastIndexOf('\\');
+	    	}    			
+	    	nice.append(isl.getSourceFile().getPath().substring(takeFrom +1));
 	    	if (isl.getLine()!=0) nice.append(":").append(isl.getLine());
 		}
 		return nice.toString();
