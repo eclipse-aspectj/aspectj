@@ -17,6 +17,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.ReflectionFactory;
+import org.aspectj.testing.ajde.CompileCommand;
 import org.aspectj.testing.run.IRunIterator;
 import org.aspectj.testing.run.IRunStatus;
 import org.aspectj.testing.run.WrappedRunIterator;
@@ -59,6 +60,8 @@ import java.util.ListIterator;
  * </ul>
  */
 public class CompilerRun implements IAjcRun {
+    static final String AJDE_COMPILER = CompileCommand.class.getName();
+
 	static final String[] RA_String = new String[0];
     
     static final String[] JAR_SUFFIXES = new String[] { ".jar", ".zip" };
@@ -349,13 +352,17 @@ public class CompilerRun implements IAjcRun {
 					}
                 }
             }
-            
-            ICommand compiler = ReflectionFactory.makeCommand(setupResult.compilerName, status);
+            ICommand compiler = spec.reuseCompiler 
+                ? sandbox.getCommand(this) // throws IllegalStateException if null
+                : ReflectionFactory.makeCommand(setupResult.compilerName, status);            
             DirChanges dirChanges = null;
             if (null == compiler) {
                 MessageUtil.fail(status, "unable to make compiler " + setupResult.compilerName);
                 return false;
             } else {
+                if (setupResult.compilerName != Spec.DEFAULT_COMPILER) {
+                    MessageUtil.info(status, "compiler: " + setupResult.compilerName);
+                }
                 if (status.aborted()) {
                     MessageUtil.debug(status, "aborted, but compiler valid?: " + compiler);
                 } else {
@@ -447,8 +454,9 @@ public class CompilerRun implements IAjcRun {
                 "-usejavac", "-preprocess",          
                 "-Xlint",  "-lenient", "-strict", 
                 "-source14", "-verbose", "-emacssym", 
-                "-ajc", "-eclipse", "-ignoreWarnings",
-                
+                "-ajc", "-eclipse", "-ajdeCompiler", 
+                "-ignoreWarnings",
+                // XXX consider adding [!^]ajdeCompiler
                 "!usejavac", "!preprocess",          
                 "!Xlint",  "!lenient", "!strict", 
                 "!source14", "!verbose", "!emacssym", 
@@ -467,15 +475,18 @@ public class CompilerRun implements IAjcRun {
          * do dirChanges, and print no chidren. 
          */
         private static final XMLNames NAMES = new XMLNames(XMLNames.DEFAULT,
-            "title", null, null, null, "files", null, false, false, true);
+            "title", null, null, null, "files", null, null, false, false, true);
         
         protected String compiler;
+        
+        // use same command - see also IncCompiler.Spec.fresh
+        protected boolean reuseCompiler;
         
         protected TestSetup testSetup;
         
         protected String[] argfiles = new String[0];
         protected String[] aspectpath = new String[0];
-        protected String[] classpath = new String[0];
+        protected String[] classpath = new String[0]; // XXX unused
         protected String[] sourceroots = new String[0];
         
         /** src path = {suiteParentDir}/{testBaseDirOffset}/{testSrcDirOffset}/{path} */
@@ -485,6 +496,10 @@ public class CompilerRun implements IAjcRun {
             super(XMLNAME);
             setXMLNames(NAMES);
             compiler = DEFAULT_COMPILER;
+        }
+        
+        public void setReuseCompiler(boolean reuse) {
+            this.reuseCompiler = reuse;
         }
         
         public void setCompiler(String compilerName) {
@@ -876,7 +891,8 @@ public class CompilerRun implements IAjcRun {
                 } else {
                     result.result = true;
                 }
-            } else if (!ReflectionFactory.ECLIPSE.equals(result.compilerName)) {
+            } else if (!ReflectionFactory.ECLIPSE.equals(result.compilerName)
+                && !AJDE_COMPILER.equals(result.compilerName)) {
                 result.failureReason = "unrecognized compiler: " + result.compilerName;
             } else {
                 badOptions = LangUtil.selectOptions(argList, Spec.INVALID_ECLIPSE_OPTIONS);
@@ -915,7 +931,10 @@ public class CompilerRun implements IAjcRun {
          *  @return true if this is a flag to remove from the arg list
          */
         protected boolean testFlag(String arg, TestSetup result) {
-            if ("-eclipse".equals(arg) || "!eclipse".equals(arg) || "^ajc".equals(arg)) {
+            if ("-ajdeCompiler".equals(arg)) {
+                result.compilerName = AJDE_COMPILER;
+                return true;
+            } else if ("-eclipse".equals(arg) || "!eclipse".equals(arg) || "^ajc".equals(arg)) {
                 result.compilerName = ReflectionFactory.ECLIPSE;
                 return true;
             } else if ("-ajc".equals(arg) || "!ajc".equals(arg) || "^eclipse".equals(arg)) {
@@ -948,28 +967,26 @@ public class CompilerRun implements IAjcRun {
          * @see IXmlWritable#writeXml(XMLWriter) 
          */
         public void writeXml(XMLWriter out) {
-            // If our state is empty, we just delegate to super.
-            if (DEFAULT_COMPILER.equals(compiler) 
-                && LangUtil.isEmpty(testSrcDirOffset)
-                && LangUtil.isEmpty(argfiles)) {
-                super.writeXml(out);
-                return;
-            } 
-            String attr = "";
             out.startElement(xmlElementName, false);
+            if (!LangUtil.isEmpty(testSrcDirOffset)) {
+                out.printAttribute("dir", testSrcDirOffset);
+            }
+            super.writeAttributes(out);
             if (!DEFAULT_COMPILER.equals(compiler)) {
                 out.printAttribute("compiler", compiler);
             }
-            if (!LangUtil.isEmpty(testSrcDirOffset)) {
-                out.printAttribute("dir", testSrcDirOffset);
+            if (!reuseCompiler) {
+                out.printAttribute("reuseCompiler", "true");
             }
             if (!LangUtil.isEmpty(argfiles)) {
                 out.printAttribute("argfiles", XMLWriter.flattenFiles(argfiles));
             }
+            if (!LangUtil.isEmpty(aspectpath)) {
+                out.printAttribute("aspectpath", XMLWriter.flattenFiles(argfiles));
+            }
             if (!LangUtil.isEmpty(sourceroots)) {
                 out.printAttribute("sourceroots", XMLWriter.flattenFiles(argfiles));
             }
-            super.writeAttributes(out);
             out.endAttributes();
             if (!LangUtil.isEmpty(dirChanges)) {
                 DirChanges.Spec.writeXml(out, dirChanges);
