@@ -6,7 +6,7 @@
         <title>Covariance in Java 5</title>
         
         <para>
-          Java 5 (and hence AspectJ 1.5) allows you to narrow the return type
+          Java 5 (and hence AspectJ 5) allows you to narrow the return type
           in an overriding method. For example:
         </para>
 
@@ -42,16 +42,30 @@
 		b.whoAreYou();
 		]]></programlisting>
 		
-		<para>Then the call and execution join points for <literal>whoAreYou</literal>
-		are matched as follows:</para>
+		<para>The signatures for the call join point <literal>a.whoAreYou()</literal> are
+		simply:</para>
+
+		<programlisting><![CDATA[
+		A A.whoAreYou()
+		]]></programlisting>
+		
+		<para>The signatures for the call join point <literal>b.whoAreYou()</literal> are:
+		</para>
+
+		<programlisting><![CDATA[
+		A A.whoAreYou()
+		B B.whoAreYou()
+		]]></programlisting>
+		
+		<para>Following the join point matching rules given in <xref linkend="jpsigs"/>,</para>
 		
 		<variablelist>
 
         <varlistentry>
           <term>call(* whoAreYou())</term>
           <listitem>
-            <para>Matches both calls, (since it places no constraint on the
-                return type of the join point signature).
+            <para>Matches both calls, (since each call join point has at least
+            one matching signature).
             </para>
           </listitem>
         </varlistentry>
@@ -59,8 +73,8 @@
         <varlistentry>
           <term>call(* A.whoAreYou())</term>
           <listitem>
-            <para>Matches both calls, (since the original declaring type
-            of <literal>whoAreYou</literal> is <literal>A</literal>).
+            <para>Matches both calls, (since each call join point has at least
+            one matching signature).
             </para>
           </listitem>
         </varlistentry>
@@ -68,9 +82,8 @@
         <varlistentry>
           <term>call(A whoAreYou())</term>
           <listitem>
-            <para>Matches both calls, (since the signature of 
-            <literal>whoAreYou</literal>) in the original declaring type
-            has a return type of <literal>A</literal>).
+            <para>Matches both calls, (since each call join point has at least
+            one matching signature).
             </para>
           </listitem>
         </varlistentry>
@@ -78,9 +91,8 @@
         <varlistentry>
           <term>call(A B.whoAreYou())</term>
           <listitem>
-            <para>Does not match anything - the signature of <literal>whoAreYou</literal>
-            as overriden in <literal>B</literal> has a return type of
-            <literal>B</literal>, not <literal>A</literal>.  A lint warning is
+            <para>Does not match anything - neither of the call join points
+            has a signature matched by this pattern.  A lint warning is
             given for the call <literal>a.whoAreYou()</literal> ("does not match
             because declaring type is A, if match required use target(B)").
             </para>
@@ -91,9 +103,8 @@
           <term>call(A+ B.whoAreYou())</term>
           <listitem>
             <para>Matches the call to <literal>b.whoAreYou()</literal> since
-            the return type <literal>B</literal> in the method signature
-            is matched by the type pattern <literal>A+</literal>. A lint warning is
-            given for the call <literal>a.whoAreYou()</literal> ("does not match
+            the signature pattern matches the signature <literal>B B.whoAreYou()</literal>. 
+            A lint warning is given for the call <literal>a.whoAreYou()</literal> ("does not match
             because declaring type is A, if match required use target(B)").
             </para>
           </listitem>
@@ -102,8 +113,8 @@
         <varlistentry>
           <term>call(B A.whoAreYou())</term>
           <listitem>
-            <para>Does not match anything - there is no method declared in 
-                <literal>A</literal> with a return type of <literal>B</literal>.
+            <para>Does not match anything since neither join point has a 
+            signature matched by this pattern.
             </para>
           </listitem>
         </varlistentry>
@@ -129,52 +140,9 @@
 		<para>The rule for signature matching at call and execution join points
 		is unchanged from AspectJ 1.2: a call or execution pointcut matches if
 		the signature pattern matches at least one of the signatures of the
-		join point, and if the most-specific matched signature is also matched
+		join point, and if the modifiers of the method or constructor are matched
 		by any modifier pattern or annotation pattern that may be present.</para>
 		
-		<para>For a call or execution join point, the signatures of a join point
-		for the call or execution of a method <literal>Rtype T.m(params)</literal>
-		are determined as follows:</para>
-		<itemizedlist>
-		    <listitem>
-		    If <literal>m(params)</literal> is defined in <literal>T</literal>, 
-		    then the signature of <literal>m(params)</literal> in <literal>T</literal> is 
-		    a signature of the join point: <literal>Rtype T.m(params)</literal>. 
-		    If <literal>T</literal> does not
-		    provide its own definition of <literal>m</literal>, then the signature 
-		    <literal>Rtype' T.m(params)</literal>
-		    is a signature of the join point, where <literal>Rtype'</literal> is the return type of
-		    the definition of <literal>m</literal> inherited by <literal>T</literal>.
-            </listitem>
-            <listitem>
-            For each super-type <literal>S</literal> of <literal>T</literal> that is a valid receiver
-            for a call to <literal>m</literal>, then the signature of <literal>m(params)</literal> in 
-            <literal>S</literal> is a signature
-            of the join point: <literal>Rtype S.m(params)</literal>. 
-            If <literal>S</literal> does not provide its
-            own definition of <literal>m</literal>, then the signature 
-            <literal>Rtype' S.m(params)</literal> is a 
-            signature of the join point, where <literal>Rtype'</literal> is the return type of the
-            definition of <literal>m</literal> inherited by <literal>S</literal>.
-            </listitem>
-		</itemizedlist>
-		
-        <para>A call to <literal>b.whoAreYou()</literal> has the join point signatures
-        </para>
-        
-        <itemizedlist>           
-            <listitem>B B.whoAreYou()</listitem>
-            <listitem>A A.whoAreYou()</listitem>
-        </itemizedlist>          
-        
-        <para>Following the rule given, it is easy to see why for example
-        <literal>call(B A.whoAreYou())</literal> does not match anything as 
-        this pattern matches neither of the signatures at the join point. In 
-        contrast, the pointcut expression <literal>call(A+ B.whoAreYou())</literal>
-        does match the call to <literal>b.whoAreYou()</literal> because it matches
-        the second of the signatures at the join point.</para>
-      </sect1>
-      
-  
+		</sect1>
 </chapter>
 

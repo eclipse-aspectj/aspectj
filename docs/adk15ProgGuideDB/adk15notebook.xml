@@ -10,16 +10,14 @@
 <!ENTITY autoboxing         SYSTEM "autoboxing.xml">
 <!ENTITY covariance         SYSTEM "covariance.xml">
 <!ENTITY varargs            SYSTEM "varargs.xml">
-<!ENTITY pointcutexp        SYSTEM "pointcutexp.xml">
 <!ENTITY pertypewithin      SYSTEM "pertypewithin.xml">
-<!ENTITY getthistargetobj   SYSTEM "getthistargetobj.xml">
-<!ENTITY declaresoft        SYSTEM "declaresoft.xml">
+<!ENTITY miscellaneous      SYSTEM "miscellaneous.xml">
 <!ENTITY reflection         SYSTEM "reflection.xml">
 <!ENTITY grammar            SYSTEM "grammar.xml">]>
 
 <book>
   <bookinfo>
-    <title>The AspectJ<superscript>TM</superscript> Development Kit v1.5 Developer's Notebook</title>
+    <title>The AspectJ<superscript>TM</superscript> 5 Development Kit Developer's Notebook</title>
 
     <authorgroup>
       <author>
@@ -37,8 +35,8 @@
     <abstract>
       <para>
         This guide describes the changes to the AspectJ language
-        in version 1.5. These changes are primarily, but not exclusively,
-        to support Java 5.0 (Tiger) features.
+        and tools in AspectJ 5. These changes are primarily, but not exclusively,
+        to support Java 5 (Tiger) features.
         If you are new to AspectJ, we recommend you start 
         by reading the programming guide.
       </para>
@@ -59,15 +57,13 @@
   &jpsigs;
   &annotations;
   &generics;
-  &enumeratedtypes;
   &autoboxing;
   &covariance;
   &varargs;
-  &pointcutexp;
+  &enumeratedtypes;
   &pertypewithin;
-  &getthistargetobj;
-  &declaresoft;
   &reflection;
+  &miscellaneous;
   &grammar;
 
 </book>

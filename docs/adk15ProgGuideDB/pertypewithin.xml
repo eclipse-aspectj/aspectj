@@ -1,20 +1,126 @@
 <chapter id="pertypewithin" xreflabel="pertypewithin">
 
   <title>The pertypewithin Aspect Instantiation Model</title>
-  
-  <para>This is a placeholder to stimulate discussion around a possible new
-  instantiation model : <literal>pertypewithin(OptionalParensTypePattern)</literal>.
-  The semantics of <literal>pertypewithin</literal> are that a new aspect
-  instance will be created at the <literal>staticinitialization</literal>
-  join point of each type matching the given type pattern.</para>
-  
-  <para>Discussion must include motivating use cases. Raise the issue that
-  pertypewithin takes a type pattern, not a pointcut.</para>
-  
-  <para>We will only do this if we believe we can generate an implementation
-  that is significantly more efficient than hand-coded alternatives.</para>
 
-  <para>Need to define aspectOf(Class), hasAspect(Class).</para>
+  <para>
+    AspectJ 5 defines a new per-clause type for aspect instantiation: 
+    <literal>pertypewithin</literal>. Unlike the other per-clauses,
+    <literal>pertypewithin</literal> takes a type pattern:  
+  </para>
   
+  	<programlisting><![CDATA[
+  	PerTypeWithin := 'pertypewithin' '(' OptionalParensTypePattern ')'
+	]]></programlisting>
+  
+  <para>
+      When an aspect is declared using the <literal>pertypewithin</literal>
+      instantiation model, one new aspect instance will be created for each
+      type matched by the associated type pattern.
+  </para>
+  
+  <para>
+      Pertypewithin aspects have <literal>aspectOf</literal> and 
+      <literal>hasAspect</literal> methods with the following signatures:
+  </para>
+  
+  	<programlisting><![CDATA[
+  	/**
+  	 * return true if this aspect has an instance associated with
+  	 * the given type.
+  	 */
+  	public static boolean hasAspect(Class clazz)
+  	
+  	/**
+  	 * return the instance associated with the given type.
+  	 * Throws NoAspectBoundException if there is no such
+  	 * aspect.
+  	 */
+  	 public static P aspectOf(Class clazz)
+	]]></programlisting>
+  
+   <para>
+       Where <literal>P</literal> is the type of the <literal>pertypewithin</literal>
+       aspect.
+   </para>
+   
+   <para>
+       In common with the other per-clause instantiation models, the execution
+       of any advice declared within a <literal>pertypewithin</literal> aspect
+       is conditional upon an implicit pointcut condition. In this case, that
+       any join point be <literal>within</literal> the type that the executing
+       aspect is an <literal>aspectOf</literal>. For example, given the aspect
+       definition
+   </para>
+
+  	<programlisting><![CDATA[
+  	 public aspect InstanceTracking pertypewithin(org.xyz..*) {
+  	 
+  	   private Set<WeakReference<Object>> instances = new HashSet<WeakReference<Object>>();
+  	   
+  	   after(Object o) returning : execution(new(..)) {
+  	     instances.add(new WeakReference<Object>(o);
+  	   }
+  	 
+  	   public Set<Object> getInstances() {
+  	      Set<Object> result = new HashSet<Object>();
+  	      for(WeakReference<Object> ref : instances) {
+  	          if (ref.get() != null) {
+  	           result.add(ref.get());
+  	          }
+  	      }
+  	      return result;
+  	   }
+  	 }
+	]]></programlisting>
+	
+	<para>
+	    Then one aspect instance will be created for each type within
+	    <literal>org.xyz..*</literal>. For each aspect instance, the
+	    after returning advice will match only the execution of constructors
+	    in the type that the aspect is an instance of. The net result is that
+	    the aspect tracks all known instances of each type within
+	    <literal>org.xyz..*</literal>. To get access to the instances, a
+	    programmer can simply write 
+	    <literal>InstanceTracking.instanceOf(org.xyz.SomeType).getInstances()</literal>.
+	</para>
+  
+    <para>
+        A <literal>pertypewithin</literal> aspect may optionally be declared
+        with a single generic type parameter. In this case, for each type 
+        <literal>T</literal> matched by the type pattern, the aspect instance
+        created will be of type <literal>PerTypeWithinAspect&lt;T&gt;</literal>. 
+        So the previous example could also be written as:
+    </para>
+
+  	<programlisting><![CDATA[
+  	 public aspect InstanceTracking<T> pertypewithin(org.xyz..*) {
+  	 
+  	   private Set<WeakReference<T>> instances = new HashSet<WeakReference<T>>();
+  	   
+  	   after(T t) returning : execution(new(..)) {
+  	     instances.add(new WeakReference<T>(t);
+  	   }
+  	 
+  	   public Set<T> getInstances() {
+  	      Set<T> result = new HashSet<T>();
+  	      for(WeakReference<T> ref : instances) {
+  	          if (ref.get() != null) {
+  	           result.add(ref.get());
+  	          }
+  	      }
+  	      return result;
+  	   }
+  	 }
+	]]></programlisting>
+  
+    <para>
+        The <literal>pertypewithin</literal> aspect instantiation model should
+        be used when the implementation of a crosscutting concern requires that
+        some state be maintained for each type in a set of types. To maintain
+        state for a single type, it is easier to use a static inter-type declared
+        field. Examples of usage include instance tracking, profiling, and the
+        implementation of a common tracing idiom that uses one Logger per 
+        traced class.
+    </para>  
 </chapter>
 

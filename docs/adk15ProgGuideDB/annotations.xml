@@ -7,7 +7,7 @@
 
 	<para>
 		This section provides the essential information about annotations in
-		Java 5 needed to understand how annotations are treated in AspectJ 1.5.
+		Java 5 needed to understand how annotations are treated in AspectJ 5.
 		For a full introduction to annotations in Java, please see the
 		documentation for the Java 5 SDK.
 	</para>
@@ -35,7 +35,8 @@
 	
 		<para>
 			Annotations may be <emphasis>marker annotations</emphasis>,
-			<emphasis>single-valued</emphasis>, or <emphasis>multi-valued</emphasis>.
+			<emphasis>single-valued annotations</emphasis>, or 
+			<emphasis>multi-valued annotations</emphasis>.
 			Annotation types with no members or that provide default values
 			for all members may be used simply as marker annotations, as in
 			the deprecation example above. Single-value annotation types have
@@ -123,7 +124,7 @@
     	
     	<para>
     		Java 5 supports a new interface, 
-    		<literal>java.lang.reflect.AnnotatedElement</literal> that is
+    		<literal>java.lang.reflect.AnnotatedElement</literal>, that is
     		implemented by the reflection classes in Java (<literal>Class</literal>, 
     		<literal>Constructor</literal>,
     		<literal>Field</literal>, <literal>Method</literal>, and 
@@ -180,8 +181,8 @@
     	</para>
     	
     	<para>
-    		<literal>@Inherited</literal> annotations are not inherited by
-    		members (the inheritance only applies to type annotations). A type
+    		<literal>@Inherited</literal> annotations are not inherited when used to
+    		annotate anything other than a type. A type
     		that implements one or more interfaces never inherits any annotations from
     		the interfaces it implements.
     	</para>
@@ -195,7 +196,7 @@
     <title>Annotating Aspects</title>
     
     <para>
-    	AspectJ 1.5 supports annotations on aspects, and on method, field,
+    	AspectJ 5 supports annotations on aspects, and on method, field,
     	constructor, advice, and inter-type declarations within aspects. 
     	Method and advice parameters may also be annotated.
     	Annotations are not permitted on pointcut declarations or on 
@@ -249,7 +250,7 @@
     </para>
 
     <para>
-        AspectJ 1.5 supports a new XLint warning, "the pointcut associated with this
+        AspectJ 5 supports a new XLint warning, "the pointcut associated with this
         advice does not match any join points". The warning is enabled by default and
         will be emitted by the compiler if the pointcut expression associated with an 
         advice statement can be statically determined to not match any join points. The
@@ -270,7 +271,7 @@
   
   <para>
   	This section discusses changes to type pattern and signature pattern matching in
-  	AspectJ 1.5 that support matching join points based on the presence or absence of
+  	AspectJ 5 that support matching join points based on the presence or absence of
   	annotations. We then discuss means of exposing annotation values within the body
   	of advice.
   </para>
@@ -476,7 +477,7 @@
         </varlistentry>
 
         <varlistentry>
-          <term>@Foo (@Goo *) (@Hoo *..*).*</term>
+          <term>@Foo (@Goo *) (@Hoo *).*</term>
           <listitem>
             <para>
             	Matches a field with an annotation <literal>@Foo</literal>, of a type with an 
@@ -578,7 +579,7 @@
             <para>
             	Matches any join point occuring in a type with an <literal>@Secure</literal>
             	annotation. The format of the <literal>within</literal> pointcut designator
-            	in AspectJ 1.5 is <literal>'within' '(' OptionalParensTypePattern ')'</literal>.
+            	in AspectJ 5 is <literal>'within' '(' OptionalParensTypePattern ')'</literal>.
             </para>
           </listitem>
         </varlistentry>
@@ -590,7 +591,7 @@
             	Matches the staticinitialization join point of any type with the
             	<literal>@Persistent</literal> annotation. The format of the 
             	<literal>staticinitialization</literal> pointcut designator
-            	in AspectJ 1.5 is <literal>'staticinitialization' '(' OptionalParensTypePattern ')'</literal>.
+            	in AspectJ 5 is <literal>'staticinitialization' '(' OptionalParensTypePattern ')'</literal>.
             </para>
           </listitem>
         </varlistentry>
@@ -630,7 +631,7 @@
             <para>
                 Matches the handler join point for the handling of any exception that is
                 not <literal>Catastrophic</literal>. The format of the <literal>handler</literal>
-                pointcut designator in AspectJ 1.5 is <literal>'handler' '(' OptionalParensTypePattern ')'</literal>.
+                pointcut designator in AspectJ 5 is <literal>'handler' '(' OptionalParensTypePattern ')'</literal>.
             </para>
           </listitem>
         </varlistentry>
@@ -642,7 +643,7 @@
    <sect2>
   	<title>Runtime type matching and context exposure</title>
 
-    <para>AspectJ 1.5 supports a set of "@" pointcut designators which
+    <para>AspectJ 5 supports a set of "@" pointcut designators which
     can be used both to match based on the presence of an annotation at
     runtime, and to expose the annotation value as context in a pointcut or
     advice definition. These designators are <literal>@args, @this, @target,
@@ -657,7 +658,7 @@
         The <literal>this()</literal>, <literal>target()</literal>, and
         <literal>args()</literal> pointcut designators allow matching based
         on the runtime type of an object, as opposed to the statically 
-        declared type. In AspectJ 1.5, these designators are supplemented
+        declared type. In AspectJ 5, these designators are supplemented
         with three new designators : <literal>@this()</literal> (read, "this
         annotation"), <literal>@target()</literal>, and <literal>@args()</literal>.    
     </para>
@@ -728,6 +729,10 @@
   	<programlisting><![CDATA[
   	pointcut callToClassifiedObject(Classified classificationInfo) :
   	    call(* *(..)) && @target(classificationInfo);
+
+  	pointcut txRequiredMethod(Tx transactionAnnotation) :
+  	    execution(* *(..)) && @this(transactionAnnotation) 
+  	    && if(transactionAnnotation.policy == Tx.Policy.REQUIRED);
 	]]></programlisting>
 
     <para>
@@ -842,9 +847,10 @@
   		
   		InitializationAnnotation := '@initialization' '(' AnnotationNameOrVar ')'
 
-        PreInitializationAnnotation := '@preinitialization' '(' AnnotationNameOrVar ')'
+  		PreInitializationAnnotation := '@preinitialization' '(' AnnotationNameOrVar ')'
         
-        StaticInitializationAnnotation := '@staticinitialization' '(' AnnotationNameOrVar ')'
+  		StaticInitializationAnnotation := '@staticinitialization' '(' AnnotationNameOrVar ')'
+        
     ]]></programlisting>  		
 
    <variablelist>
@@ -904,7 +910,7 @@
           <listitem>
             <para>
             	Matches any initialization join point where the initiating
-            	constructor an annotation of type <literal>@Foo</literal>.
+            	constructor has an annotation of type <literal>@Foo</literal>.
             </para>
           </listitem>
         </varlistentry>
@@ -914,7 +920,7 @@
           <listitem>
             <para>
             	Matches any preinitialization join point where the initiating
-            	constructor an annotation of type <literal>@Foo</literal>.
+            	constructor has an annotation of type <literal>@Foo</literal>.
             </para>
           </listitem>
         </varlistentry>
@@ -932,7 +938,7 @@
     </variablelist>
 
     <para>
-      Access to annotation information on members at a matched join point is available
+      Access to annotation information on members at a matched join point is also available
       through the <literal>getSignature</literal> method of the <literal>JoinPoint</literal>
       and <literal>JoinPoint.StaticPart</literal> interfaces. The <literal>MemberSignature</literal>
       interface is extended with the additional operation 
@@ -967,16 +973,16 @@
           specified directly in method and constructor signature patterns. Because
           this made some pointcut expressions hard to read and understand, we moved
           in favour of the design presented below, which also has its drawbacks. 
-          Matching on package and parameter annotations is one feature likely to be
+          Matching on package and parameter annotations will be
           deferred until after the 1.5.0 release so that we can gain more understanding
           of the kinds of uses AspectJ users are making of annotations in pointcut
           expressions before commiting to any one approach.</emphasis>
       </para>
-      
+
+<!--
       <para>
           Java 5 allows both packages and parameters to be annotated. To allow matching on package and parameter annotations,
-          AspectJ 1.5 introduces the <literal>@package</literal> and <literal>@parameters</literal> pointcut designators. 
-          <emphasis>Note: we could consider deferring implementation of these to a dot release after 1.5.0?</emphasis>
+          AspectJ 5 introduces the <literal>@package</literal> and <literal>@parameters</literal> pointcut designators.           
       </para>
       
   	<programlisting><![CDATA[  	
@@ -1079,10 +1085,10 @@
     This last example will result in a compilation error since <literal>int</literal> is not a 
     valid annotation pattern.
     </para>
-    
+
+ -->      
+     
   </sect2>
-
-
 
   <sect2>
   	<title>Annotation Inheritance and pointcut matching</title>
@@ -1139,13 +1145,17 @@
   
   <sect2>
     <title>Limitations</title>
-    <para>AspectJ 1.5 allows you to annotate advice, but there is no way to qualify advice execution join point matching based
-    on the presence of annotations.</para>
+    <para>AspectJ 5 allows you to annotate advice, but there is no way to qualify advice execution 
+    join point matching based on the presence of annotations.</para>
     
     <para>
-        It would be useful to be able to match join points based on annotation values, rather than merely the presence of
-        an annotation of a given type. This facility may be supported in a future version of AspectJ, by expanding the
-        definition of <literal>AnnotationPattern</literal>.
+        It would be useful to be able to match join points based on  
+        annotation values, rather than merely the presence of a
+        class-file retention annotation of a given type. This facility may be supported in a future version of AspectJ, by expanding the
+        definition of <literal>AnnotationPattern</literal>. Matching annotation values for
+        annotations with runtime retention can be done by exposing the annotation value
+        as a pointcut parameter and then using an <literal>if</literal> pointcut expression
+        to test the value. 
     </para>
   </sect2>
   
@@ -1160,7 +1170,7 @@
   	<title>Declare error and declare warning</title>
   	
   	<para>
-  	    Since pointcut expressions in AspectJ 1.5 support join point matching based
+  	    Since pointcut expressions in AspectJ 5 support join point matching based
   	    on annotations, this facility can be exploited when writing
   	    <literal>declare warning</literal> and <literal>declare error</literal>
   	    statements. For example:
@@ -1194,7 +1204,7 @@
 	]]></programlisting>
 	
 	<para>
-		Since AspectJ 1.5 supports annotations as part of a type pattern
+		Since AspectJ 5 supports annotations as part of a type pattern
 		specification, it is now possible to match types based on the presence
 		of annotations <emphasis>with either class-file or runtime retention</emphasis>.
 		For example:
@@ -1226,6 +1236,12 @@
 	        
 	    </variablelist>
 
+    <para>An annotation type may not be used as the target of a declare parents
+    statement. If an annotation type is named explicitly as the target of a
+    declare parents statement, a compilation error will result. If an annotation
+    type is matched by a non-explicit type pattern used in a declare parents
+    statement it will be ignored (and an XLint warning issued).</para>
+
   	</sect2>
 
 	<sect2>
@@ -1240,7 +1256,7 @@
 	]]></programlisting>
 
 	<para>
-		AspectJ 1.5 allows the type patterns in the list to include annotation information
+		AspectJ 5 allows the type patterns in the list to include annotation information
 		as part of the pattern specification. For example:
 	</para>	
 
@@ -1262,13 +1278,13 @@
   </sect2>	    
 
   </sect1>
-    
+        
   <!-- ============================== -->
   
   <sect1 id="annotations-declare">
     <title>Declare Annotation</title>
   
-      <para>AspectJ 1.5 supports a new kind of declare statement, <literal>declare annotation</literal>.
+      <para>AspectJ 5 supports a new kind of declare statement, <literal>declare annotation</literal>.
       The general form of a <literal>declare annotation</literal> statement is:
       </para>
 
@@ -1326,6 +1342,12 @@
 	    </variablelist>
 
   </sect1>
+  
+    <sect1>
+      <title>Inter-type Declarations</title>
+      
+      <para>An annotation type may not be the target of an inter-type declaration.</para>
+    </sect1>  
   
 </chapter>
 

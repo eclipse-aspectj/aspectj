@@ -6,7 +6,7 @@
         <title>Variable-length Argument Lists in Java 5</title>
         
         <para>
-          Java 5 (and hence AspectJ 1.5) allows you to specify methods that take a 
+          Java 5 (and hence AspectJ 5) allows you to specify methods that take a 
           variable number of arguments of a specified type. This is achieved using
           an ellipsis (...) in the method signature as shown:    
         </para>
@@ -62,17 +62,17 @@
     <sect1>
         <title>Using Variable-length arguments in advice and pointcut expressions</title>
         
-        <para>AspectJ 1.5 allows variable-length arguments to be used for methods declared within
+        <para>AspectJ 5 allows variable-length arguments to be used for methods declared within
         aspects, and for inter-type declared methods and constructors, in accordance with the rules
         outlined in the previous section.</para>
         
         <para>
-        AspectJ 1.5 also allows variable length arguments to be specified in pointcut expressions and
+        AspectJ 5 also allows variable length arguments to be matched by pointcut expressions and
         bound as formals in advice.
         </para>
         
         <sect2>
-            <title>Matching signatures based on variable length arguments</title>
+            <title>Matching signatures based on variable length argument types</title>
             
             <para>
             Building on the definition of signature patterns given in the chapter on

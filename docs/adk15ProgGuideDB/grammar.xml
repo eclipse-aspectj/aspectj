@@ -1,6 +1,9 @@
-<appendix id="grammar" xreflabel="AspectJ 1.5 Grammar">
+<appendix id="grammar" xreflabel="AspectJ 5 Grammar">
 
-  <title>A Grammar for the AspectJ 1.5 Language</title>
+  <title>A Grammar for the AspectJ 5 Language</title>
   
-</appendix>>
+  Collect together all the grammar fragments scattered throughout this documented
+  and present them as a coherent whole...
+  
+</appendix>
 
