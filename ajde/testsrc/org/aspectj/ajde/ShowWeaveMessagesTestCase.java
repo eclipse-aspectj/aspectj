@@ -59,6 +59,8 @@ import org.aspectj.util.FileUtil;
  * TODO - Other forms of declare?  Do they need messages? e.g. declare precedence * 
  */
 public class ShowWeaveMessagesTestCase extends AjdeTestCase {
+
+	private static boolean regenerate;
 	
 	static {
 		// Switch this to true for a single iteration if you want to reconstruct the
@@ -66,7 +68,6 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 		regenerate = false;
 	}
 	
-	private static boolean regenerate;
 	private CompilerAdapter compilerAdapter;
 	public static final String PROJECT_DIR = "WeaveInfoMessagesTest";
 
