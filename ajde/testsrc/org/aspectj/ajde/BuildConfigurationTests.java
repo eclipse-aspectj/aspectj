@@ -15,6 +15,7 @@ import org.aspectj.ajde.ui.UserPreferencesAdapter;
 import org.aspectj.ajde.ui.internal.AjcBuildOptions;
 import org.aspectj.ajde.ui.internal.UserPreferencesStore;
 import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
+import org.aspectj.util.LangUtil;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 import java.io.File;
@@ -482,9 +483,9 @@ public class BuildConfigurationTests extends AjdeTestCase {
                 
             //Ajde.getDefault().enableLogging( System.out );
         } catch (Throwable t) {
-            AssertionFailedError e = new AssertionFailedError();
-            e.initCause(t);
-            throw e;
+            String s = "Unable to initialize AJDE "
+                + LangUtil.renderException(t);
+            assertTrue(s, false);
         }
 	}
 	
