@@ -34,13 +34,14 @@ public class WithinPointcut extends Pointcut {
 	}
     
 	public FuzzyBoolean match(Shadow shadow) {
-		TypeX enclosingType = shadow.getEnclosingType();
+		ResolvedTypeX enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType());
+		//System.err.println("enclosingType: " + enclosingType);
 //		if (shadow.getKind() == Shadow.FieldSet) {
 //			System.err.println("within?" + type  + " matches " + enclosingType + " on " + shadow);
 //		}
 		
 		while (enclosingType != null) {
-			if (type.matchesStatically(shadow.getIWorld().resolve(enclosingType))) {
+			if (type.matchesStatically(enclosingType)) {
 				return FuzzyBoolean.YES;
 			}
 			enclosingType = enclosingType.getDeclaringType();

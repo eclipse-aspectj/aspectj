@@ -792,11 +792,29 @@ public abstract class ResolvedTypeX extends TypeX {
 		return interTypeMungers;
 	}
 	
-	private static ResolvedTypeX getOutermostType(ResolvedTypeX t) {
-		TypeX dec = t.getDeclaringType();
-		if (dec == null) return t;
-		return getOutermostType(dec.resolve(t.getWorld()));
-	}
+    /**
+     * Returns a ResolvedTypeX object representing the declaring type of this type, or
+     * null if this type does not represent a non-package-level-type.
+     * 
+     * <strong>Warning</strong>:  This is guaranteed to work for all member types.
+     * For anonymous/local types, the only guarantee is given in JLS 13.1, where
+     * it guarantees that if you call getDeclaringType() repeatedly, you will eventually
+     * get the top-level class, but it does not say anything about classes in between.
+     *
+     * @return the declaring TypeX object, or null.
+     */
+    public ResolvedTypeX getDeclaringType() {
+    	if (isArray()) return null;
+		String name = getName();
+		int lastDollar = name.lastIndexOf('$');
+		while (lastDollar != -1) {
+			ResolvedTypeX ret = world.resolve(TypeX.forName(name.substring(0, lastDollar)), true);
+			if (ret != ResolvedTypeX.MISSING) return ret;
+			lastDollar = name.lastIndexOf('$', lastDollar-1);
+		}
+		return null;
+    }
+	
 	
 	public static boolean isVisible(int modifiers, ResolvedTypeX targetType, ResolvedTypeX fromType) {
 		//System.err.println("mod: " + modifiers + ", " + targetType + " and " + fromType);
@@ -804,7 +822,7 @@ public abstract class ResolvedTypeX extends TypeX {
 		if (Modifier.isPublic(modifiers)) {
 			return true;
 		} else if (Modifier.isPrivate(modifiers)) {
-			return getOutermostType(targetType).equals(getOutermostType(fromType));
+			return targetType.getOutermostType().equals(fromType.getOutermostType());
 		} else if (Modifier.isProtected(modifiers)) {
 			return samePackage(targetType, fromType) || targetType.isAssignableFrom(fromType);
 		} else { // package-visible

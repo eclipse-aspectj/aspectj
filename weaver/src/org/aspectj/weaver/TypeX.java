@@ -249,26 +249,23 @@ public class TypeX {
     public final boolean isArray() {
         return signature.startsWith("[");
     }
-
+    
     /**
-     * Returns a TypeX object representing the declaring type of this type, or
-     * null if this type does not represent a non-package-level-type.
+     * Returns a TypeX object representing the effective outermost enclosing type
+     * for a name type.  For all other types, this will return the type itself.
      * 
-     * <strong>Warning</strong>:  This is guaranteed to work for all member types.
-     * For anonymous/local types, the only guarantee is given in JLS 13.1, where
-     * it guarantees that if you call getDeclaringType() repeatedly, you will eventually
-     * get the top-level class, but it does not say anything about classes in between.
-     *
-     * @return the declaring TypeX object, or null.
+     * The only guarantee is given in JLS 13.1 where code generated according to
+     * those rules will have type names that can be split apart in this way.
+     * @return the outermost enclosing TypeX object or this.
      */
-    public TypeX getDeclaringType() {
-    	if (isArray()) return null;
-		String name = getName();
-		int lastDollar = name.lastIndexOf('$');
-		if (lastDollar != -1) {
-        	return TypeX.forName(name.substring(0, lastDollar));
+    public TypeX getOutermostType() {
+    	if (isArray() || isPrimitive()) return this;
+		String sig = getSignature();
+		int dollar = sig.indexOf('$');
+		if (dollar != -1) {
+			return TypeX.forSignature(sig.substring(0, dollar) + ';');
 		} else {
-			return null;
+			return this;
 		}
     }
 

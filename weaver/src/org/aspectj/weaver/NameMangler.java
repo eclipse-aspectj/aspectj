@@ -268,16 +268,9 @@ public class NameMangler {
 
 	// ----
 
-	private static TypeX getOutermostType(TypeX type) {
-		TypeX outerType = type.getDeclaringType();
-		if (outerType == null) return type;
-		return getOutermostType(outerType);
-	}
-
-
 	private static String makeVisibilityName(int modifiers, TypeX aspectType) {
 		if (Modifier.isPrivate(modifiers)) {
-			return getOutermostType(aspectType).getNameAsIdentifier();
+			return aspectType.getOutermostType().getNameAsIdentifier();
 		} else if (Modifier.isProtected(modifiers)) {
 			throw new RuntimeException("protected inter-types not allowed");
 		} else if (Modifier.isPublic(modifiers)) {

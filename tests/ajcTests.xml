@@ -5585,5 +5585,19 @@
             <message kind="error" line="22"/>
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs" pr="33635" 
+    		title="Negation of if pointcut does not work">
+        <compile files="NotIf.java"/>
+        <run class="NotIf"/>
+    </ajc-test>
+    
+    
+    <ajc-test dir="bugs" pr="32463" 
+    		title="ajc reports error when encountering static declaration of nested classes">
+        <compile files="WeaveLocal.java"/>
+        <run class="WeaveLocal"/>
+    </ajc-test>
+    
 
 </suite>

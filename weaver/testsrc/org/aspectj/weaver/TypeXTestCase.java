@@ -58,8 +58,8 @@ public class TypeXTestCase extends TestCase {
     	TypeX t = TypeX.forName("java.util.Map$Entry");
     	assertEquals(t.getName(), "java.util.Map$Entry");
     	assertEquals(t.getSignature(), "Ljava/util/Map$Entry;");
-    	assertEquals(t.getDeclaringType(), TypeX.forName("java.util.Map"));
-    	assertNull(TypeX.forName("java.util.Map").getDeclaringType());
+    	assertEquals(t.getOutermostType(), TypeX.forName("java.util.Map"));
+    	assertEquals(TypeX.forName("java.util.Map").getOutermostType(), TypeX.forName("java.util.Map"));
     }
 
     private void isPrimitiveTest(TypeX[] types, boolean[] isPrimitives) {
