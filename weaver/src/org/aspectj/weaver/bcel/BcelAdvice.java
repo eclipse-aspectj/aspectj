@@ -49,6 +49,8 @@ import org.aspectj.weaver.patterns.Pointcut;
 public class BcelAdvice extends Advice {
 	private Test pointcutTest;
 	private ExposedState exposedState;
+    
+    private boolean hasMatchedAtLeastOnce = false;
 
 	public BcelAdvice(
 		AjAttribute.AdviceAttribute attribute,
@@ -131,6 +133,7 @@ public class BcelAdvice extends Advice {
     }
 
     public void implementOn(Shadow s) {
+        hasMatchedAtLeastOnce=true;
         BcelShadow shadow = (BcelShadow) s;       
         if (getKind() == AdviceKind.Before) {
             shadow.weaveBefore(this);
@@ -424,6 +427,10 @@ public class BcelAdvice extends Advice {
 			ret[i] = (BcelVar)exposedState.vars[i];
 		}
 		return ret; //(BcelVar[]) exposedState.vars;
+	}
+	
+	public boolean hasMatchedSomething() {
+		return hasMatchedAtLeastOnce;
 	}
 
 }
