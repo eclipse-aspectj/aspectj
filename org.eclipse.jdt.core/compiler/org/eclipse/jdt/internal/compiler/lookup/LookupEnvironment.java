@@ -256,7 +256,7 @@ private PackageBinding computePackageFrom(char[][] constantPoolName) {
 /* Used to guarantee array type identity.
 */
 
-ArrayBinding createArrayType(TypeBinding type, int dimensionCount) {
+public ArrayBinding createArrayType(TypeBinding type, int dimensionCount) {
 	// find the array binding cache for this dimension
 	int dimIndex = dimensionCount - 1;
 	int length = uniqueArrayBindings.length;
