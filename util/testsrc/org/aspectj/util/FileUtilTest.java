@@ -58,6 +58,70 @@ public class FileUtilTest extends TestCase {
 		}
     }
 
+    public void testNotIsFileIsDirectory() {
+        File noSuchFile = new File("foo");
+        assertTrue(!noSuchFile.isFile());
+        assertTrue(!noSuchFile.isDirectory());
+    }
+    
+    public void testCopyFiles() {
+        // bad input
+        Class iaxClass = IllegalArgumentException.class;
+        
+        checkCopyFiles(null, null, iaxClass, false);
+        
+        File noSuchFile = new File("foo");
+        checkCopyFiles(noSuchFile, null, iaxClass, false);
+        checkCopyFiles(noSuchFile, noSuchFile, iaxClass, false);
+        
+        File tempDir = FileUtil.getTempDir("testCopyFiles");
+        tempFiles.add(tempDir);
+        File fromFile = new File(tempDir, "fromFile");
+        String err = FileUtil.writeAsString(fromFile, "contents of from file");
+        assertTrue(err, null == err);
+        checkCopyFiles(fromFile, null, iaxClass, false);
+        checkCopyFiles(fromFile, fromFile, iaxClass, false);
+        
+        // file-file
+        File toFile = new File(tempDir, "toFile");
+        checkCopyFiles(fromFile, toFile, null, true);
+        
+        // file-dir
+        File toDir= new File(tempDir, "toDir");
+        assertTrue(toDir.mkdirs());
+        checkCopyFiles(fromFile, toDir, null, true);
+        
+        // dir-dir        
+        File fromDir= new File(tempDir, "fromDir");
+        assertTrue(fromDir.mkdirs());
+        checkCopyFiles(fromFile, fromDir, null, false);
+        File toFile2 = new File(fromDir, "toFile2");
+        checkCopyFiles(fromFile, toFile2, null, false);
+        checkCopyFiles(fromDir, toDir, null, true);
+    }
+    
+    void checkCopyFiles(File from, File to, Class exceptionClass, boolean clean) {
+        try {
+            FileUtil.copyFile(from, to);
+            assertTrue(null == exceptionClass);
+            if (to.isFile()) {
+                assertTrue(from.length() == to.length()); // XXX cheap test
+            } else {
+                File toFile = new File(to, from.getName());                
+                assertTrue(from.length() == toFile.length()); 
+            }
+        } catch (Throwable t) {
+            assertTrue(null != exceptionClass);
+            assertTrue(exceptionClass.isAssignableFrom(t.getClass()));
+        } finally {
+            if (clean && (null != to) && (to.exists())) {
+                if (to.isDirectory()) {
+                    FileUtil.deleteContents(to);
+                }
+                to.delete();
+            }
+        }
+    }
     public void testDirCopySubdirs() throws IOException { // XXX dir diff
         File srcDir = new File("src");
         File destDir = FileUtil.getTempDir("testDirCopySubdirs");

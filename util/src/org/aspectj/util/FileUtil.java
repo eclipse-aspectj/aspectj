@@ -24,6 +24,9 @@ import java.util.zip.ZipFile;
  * 
  */
 public class FileUtil {
+    /** default parent directory File when a file has a null parent */
+    public static final File DEFAULT_PARENT = new File("."); // XXX user.dir?
+
     /** unmodifiable List of String source file suffixes (including leading ".") */
     public static final List SOURCE_SUFFIXES
         = Collections.unmodifiableList(Arrays.asList(new String[] { ".java", ".aj"}));
@@ -237,9 +240,14 @@ public class FileUtil {
     }
 
     /**
-     * Flatten File[] to String.
-     * @param files the File[] of paths to flatten - null ignored
-     * @param infix the String infix to use - null treated as File.pathSeparator
+     * Render a set of files to String as a path by getting absolute
+     * paths of each and delimiting with infix.
+     * @param files the File[] to flatten - may be null or empty
+     * @param infix the String delimiter internally between entries 
+     *        (if null, then use File.pathSeparator).
+     * (alias to <code>flatten(getAbsolutePaths(files), infix)</code> 
+     * @return String with absolute paths to entries in order, 
+     *         delimited with infix
      */
     public static String flatten(File[] files, String infix) {
         if (LangUtil.isEmpty(files)) {
@@ -293,7 +301,7 @@ public class FileUtil {
         }
         return path;
     }
-    
+        
     /** @return array same length as input, with String absolute paths */
     public static String[] getAbsolutePaths(File[] files) {
         if ((null == files) || (0 == files.length)) {
@@ -391,19 +399,6 @@ public class FileUtil {
     public static int copyDir(File fromDir, File toDir,
                                final String fromSuffix, String toSuffix) throws IOException {
         return copyDir(fromDir, toDir, fromSuffix, toSuffix, (FileFilter) null);
-    }
-    
-    /** map name to result, removing any fromSuffix and adding any toSuffix */
-    private static String map(String name, String fromSuffix, String toSuffix) {
-        if (null != name) {
-            if (null != fromSuffix) {
-                name = name.substring(0, name.length()-fromSuffix.length());
-            }
-            if (null != toSuffix) {
-                name = name + toSuffix;
-            }
-        }
-        return name;
     }
     
     /** 
@@ -512,21 +507,6 @@ public class FileUtil {
         }     
         return (String[]) result.toArray(new String[0]);
     }
-
-    private static void listFiles(final File baseDir, String dir, ArrayList result)  {
-        final String dirPrefix = (null == dir ? "" : dir + "/");
-        final File dirFile = (null == dir ? baseDir : new File(baseDir.getPath() + "/" + dir));
-        final String[] files = dirFile.list();
-        for (int i = 0; i < files.length; i++) {
-            File f = new File(dirFile, files[i]);
-            String path = dirPrefix + files[i];
-            if (f.isDirectory()) {
-                listFiles(baseDir, path, result);
-            } else { 
-                result.add(path);
-            } 	  
-        } 
-    }
     
     public static final FileFilter aspectjSourceFileFilter = new FileFilter() {
 		public boolean accept(File pathname) {
@@ -548,18 +528,6 @@ public class FileUtil {
         return (File[]) result.toArray(new File[result.size()]);
     }
 
-    private static void listFiles(final File baseDir, ArrayList result, FileFilter filter)  {
-    	File[] files = baseDir.listFiles();
-        for (int i = 0; i < files.length; i++) {
-        	File f = files[i];
-            if (f.isDirectory()) {
-                listFiles(f, result, filter);
-            } else {
-            	if (filter.accept(f)) result.add(f);
-            } 	  
-        } 
-    }
-    
     /**
      * Convert String[] paths to File[] as offset of base directory 
      * @param basedir the non-null File base directory for File to create with paths
@@ -612,6 +580,7 @@ public class FileUtil {
      * Copy files from source dir into destination directory,
      * creating any needed directories.  This differs from copyDir in not
      * being recursive; each input with the source dir creates a full path.
+     * However, if the source is a directory, it is copied as such.
      * @param srcDir an existing, readable directory containing relativePaths files
      * @param relativePaths a set of paths relative to srcDir to readable File to copy
      * @param destDir an existing, writable directory to copy files to
@@ -628,21 +597,88 @@ public class FileUtil {
             String path = paths[i];
             LangUtil.throwIaxIfNull(path, "relativePaths-entry");
             File src = new File(srcDir, relativePaths[i]);
-            throwIaxUnlessCanReadFile(src, "src-entry");
             File dest = new File(destDir, path);
             File destParent = dest.getParentFile();
             if (!destParent.exists()) {
                 destParent.mkdirs();
-            }            
+            }
             LangUtil.throwIaxIfFalse(canWriteDir(destParent), "dest-entry-parent");
-            copyFile(src, dest);
+            copyFile(src, dest); // both file-dir and dir-dir copies
             result[i] = dest;
         }
         return result;
     }
 
-    /** copy fromFile to toFile */
+    /** 
+     * Copy fromFile to toFile, handling file-file, dir-dir, and file-dir
+     * copies.
+     * @param fromFile the File path of the file or directory to copy - must be
+     * readable
+     * @param toFile the File path of the target file or directory - must be
+     * writable (will be created if it does not exist)
+     */
     public static void copyFile(File fromFile, File toFile) throws IOException {
+        LangUtil.throwIaxIfNull(fromFile, "fromFile");
+        LangUtil.throwIaxIfNull(toFile, "toFile");
+        LangUtil.throwIaxIfFalse(!toFile.equals(fromFile), "same file");
+        if (toFile.isDirectory()) {   // existing directory 
+            throwIaxUnlessCanWriteDir(toFile, "toFile");
+            if (fromFile.isFile()) {  // file-dir
+                File targFile = new File(toFile, fromFile.getName());
+                copyValidFiles(fromFile, targFile);
+            } else if (fromFile.isDirectory()) { // dir-dir
+                copyDir(fromFile, toFile);
+            } else {
+                LangUtil.throwIaxIfFalse(false, "not dir or file: " + fromFile);
+            }
+        } else if (toFile.isFile()) {     // target file exists
+            if (fromFile.isDirectory()) {
+                LangUtil.throwIaxIfFalse(false, "can't copy to file dir: " + fromFile);
+            }
+            copyValidFiles(fromFile, toFile); // file-file                
+        } else { // target file is a non-existent path -- could be file or dir
+            File toFileParent = ensureParentWritable(toFile);
+            if (fromFile.isFile()) {
+                copyValidFiles(fromFile, toFile);
+            } else if (fromFile.isDirectory()) {
+                toFile.mkdirs();
+                throwIaxUnlessCanWriteDir(toFile, "toFile");
+                copyDir(fromFile, toFile);                
+            } else {
+                LangUtil.throwIaxIfFalse(false, "not dir or file: " + fromFile);
+            }
+        }
+    }
+    
+    /**
+     * Ensure that the parent directory to path can be written.
+     * If the path has a null parent, DEFAULT_PARENT is tested.
+     * If the path parent does not exist, this tries to create it.
+     * @param path the File path whose parent should be writable
+     * @return the File path of the writable parent directory
+     * @throws IllegalArgumentException if parent cannot be written
+     *         or path is null.
+     */
+    public static File ensureParentWritable(File path) {
+        LangUtil.throwIaxIfNull(path, "path");
+        File pathParent = path.getParentFile();
+        if (null == pathParent) {
+            pathParent = DEFAULT_PARENT;     
+        }
+        if (!pathParent.canWrite()) {
+            pathParent.mkdirs();
+        }
+        throwIaxUnlessCanWriteDir(pathParent, "pathParent");
+        return pathParent;
+    }
+    
+    /** 
+     * Copy file to file.
+     * @param fromFile the File to copy (readable, non-null file)
+     * @param toFile the File to copy to (non-null, parent dir exists)
+     * @throws IOException
+     */
+    public static void copyValidFiles(File fromFile, File toFile) throws IOException {
         FileInputStream in = null;
         FileOutputStream out = null;
         try {
@@ -688,11 +724,7 @@ public class FileUtil {
             out.write(buf, 0, bytesRead);
         }
     }
-    
-    private static boolean isValidFileName(String input) {
-        return ((null != input) && (-1 == input.indexOf(File.pathSeparator)));
-    }
-    
+        
     /** 
      * Make a new child directory of parent
      * @param parent a File for the parent (writable)
@@ -750,7 +782,7 @@ public class FileUtil {
         return result;
     }
         
-    public static URL[] getFileURLs(File[] files) { // XXX prints errors to System.err
+    public static URL[] getFileURLs(File[] files) { 
         if ((null == files) || (0 == files.length)) {
             return new URL[0];
         }
@@ -785,6 +817,9 @@ public class FileUtil {
     /**
      * Write contents to file, returning null on success or error message otherwise.
      * This tries to make any necessary parent directories first.
+     * @param file the File to write (not null)
+     * @param contents the String to write (use "" if null)
+     * @return String null on no error, error otherwise 
      */
     public static String writeAsString(File file, String contents) {
         LangUtil.throwIaxIfNull(file, "file");
@@ -949,9 +984,8 @@ public class FileUtil {
 		System.arraycopy(ba, 0, newBa, 0, readSoFar);
 		return newBa;
 	}
-    final static String FILECHARS = "abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    /** @return String usable in a File name which is random */
 
+    final static String FILECHARS = "abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     /** @return semi-random String of length 6 usable as filename suffix */
     static String randomFileString() {
         final double FILECHARS_length = FILECHARS.length();
@@ -1001,10 +1035,6 @@ public class FileUtil {
 		}
 		zs.close();
 	}
-
-    private FileUtil() { throw new Error("utility class"); }
-
-
 
 	/**
 	 * Do line-based search  for literal text in source files, 
@@ -1089,5 +1119,52 @@ public class FileUtil {
 		if (parent != null) parent.mkdirs();
 		return new BufferedOutputStream(new FileOutputStream(file));
 	}
+
+    /** map name to result, removing any fromSuffix and adding any toSuffix */
+    private static String map(String name, String fromSuffix, String toSuffix) {
+        if (null != name) {
+            if (null != fromSuffix) {
+                name = name.substring(0, name.length()-fromSuffix.length());
+            }
+            if (null != toSuffix) {
+                name = name + toSuffix;
+            }
+        }
+        return name;
+    }
+
+    private static void listFiles(final File baseDir, ArrayList result, FileFilter filter)  {
+        File[] files = baseDir.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            File f = files[i];
+            if (f.isDirectory()) {
+                listFiles(f, result, filter);
+            } else {
+                if (filter.accept(f)) result.add(f);
+            }
+        }
+    }
+
+    /** @return true if input is not null and contains no path separator */
+    private static boolean isValidFileName(String input) {
+        return ((null != input) && (-1 == input.indexOf(File.pathSeparator)));
+    }
+
+    private static void listFiles(final File baseDir, String dir, ArrayList result)  {
+        final String dirPrefix = (null == dir ? "" : dir + "/");
+        final File dirFile = (null == dir ? baseDir : new File(baseDir.getPath() + "/" + dir));
+        final String[] files = dirFile.list();
+        for (int i = 0; i < files.length; i++) {
+            File f = new File(dirFile, files[i]);
+            String path = dirPrefix + files[i];
+            if (f.isDirectory()) {
+                listFiles(baseDir, path, result);
+            } else {
+                result.add(path);
+            }
+        }
+    }
+
+    private FileUtil() { throw new Error("utility class"); }
 
 }
