@@ -9,12 +9,12 @@
 
       <library name="ajde.jar">
          <export name="*"/>
-         <packages prefixes="org.aspectj"/>
+         <!-- M4 bug <packages prefixes="org.aspectj"/> -->
       </library>
 
       <library name="aspectjrt.jar">
          <export name="*"/>
-         <packages prefixes="org.aspectj"/>
+         <!-- <packages prefixes="org.aspectj"/> -->
       </library>
       
       <library name="aspectjtools.jar">
