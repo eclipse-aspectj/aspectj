@@ -587,7 +587,13 @@ public class PatternParser {
 		//??? what about the source location of any's????
 		if (names.size() == 1 && ((NamePattern)names.get(0)).isAny() && dim == 0) return TypePattern.ANY;
 		
-		return new WildTypePattern(names, includeSubtypes, dim, endPos,isVarArgs);
+		// Notice we increase the dimensions if varargs is set.  this is to allow type matching to
+		// succeed later: The actual signature at runtime of a method declared varargs is an array type of
+		// the original declared type (so Integer... becomes Integer[] in the bytecode).  So, here for the
+		// pattern 'Integer...' we create a WildTypePattern 'Integer[]' with varargs set.  If this matches
+		// during shadow matching, we confirm that the varargs flags match up before calling it a successful
+		// match.
+		return new WildTypePattern(names, includeSubtypes, dim+(isVarArgs?1:0), endPos,isVarArgs);
 	}
 	
 

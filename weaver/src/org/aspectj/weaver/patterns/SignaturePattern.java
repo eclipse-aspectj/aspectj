@@ -190,10 +190,14 @@ public class SignaturePattern extends PatternNode {
 			
 			// If we have matched on parameters, let's just check it isn't because the last parameter in the pattern
 			// is an array type and the method is declared with varargs
+			// XXX - Ideally the shadow would be included in the msg but we don't know it...
 			if (isNotMatchBecauseOfVarargsIssue(parameterTypes,sig.getModifiers())) { 
 				world.getLint().cantMatchArrayTypeOnVarargs.signal(sig.toString(),getSourceLocation());
 				return false;
 			}
+
+			if (parameterTypes.size()>0 && (sig.isVarargsMethod()^parameterTypes.get(parameterTypes.size()-1).isVarArgs)) 
+				return false;
 			
 			// Check the throws pattern
 			if (!throwsPattern.matches(sig.getExceptions(), world)) return false;
@@ -206,6 +210,7 @@ public class SignaturePattern extends PatternNode {
 			
 			// If we have matched on parameters, let's just check it isn't because the last parameter in the pattern
 			// is an array type and the method is declared with varargs
+			// XXX - Ideally the shadow would be included in the msg but we don't know it...
 			if (isNotMatchBecauseOfVarargsIssue(parameterTypes,sig.getModifiers())) { 
 				world.getLint().cantMatchArrayTypeOnVarargs.signal(sig.toString(),getSourceLocation());
 				return false;
@@ -557,7 +562,7 @@ public class SignaturePattern extends PatternNode {
 	 */
 	private boolean isNotMatchBecauseOfVarargsIssue(TypePatternList params,int modifiers) {
 		if (params.size()>0 && (modifiers & Constants.ACC_VARARGS)!=0 &&  // XXX Promote this to an isVarargs() on MethodSignature?
-			params.get(params.size()-1).getExactType().isArray()) {
+			!params.get(params.size()-1).isVarArgs) {
 			return true;
 		}
 		return false;

@@ -190,6 +190,8 @@ public class ExactTypePattern extends TypePattern {
 		}
 		buff.append(type.toString());
     	if (includeSubtypes) buff.append('+');
+    	// Note, there will be a rogue [] in the pattern here in the case of varargs ...
+    	if (isVarArgs) buff.append("...");
 		if (annotationPattern != AnnotationTypePattern.ANY) {
 			buff.append(')');
 		}

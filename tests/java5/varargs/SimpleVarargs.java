@@ -21,5 +21,6 @@ public class SimpleVarargs {
     s.fooInt(2,new Integer(45),new Integer(45));
     s.fooInt(3,new Integer[]{new Integer(45),new Integer(45)});
 //  s.barInt(4,new Integer[]{new Integer(45),new Integer(45)});
+
   }
 }
