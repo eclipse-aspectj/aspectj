@@ -46,7 +46,7 @@ public class CompilerRunTest extends TestCase {
     }
     
     public void setUp() {
-        testBaseDir = new File(".");
+        testBaseDir = new File("../testing/temp-CompilerRunTest");
         File f = new File(testBaseDir, "one");
         f.mkdirs();
         assertTrue(f.canRead());
@@ -61,6 +61,8 @@ public class CompilerRunTest extends TestCase {
     }
     
     public void tearDown() {
+        FileUtil.deleteContents(testBaseDir);
+        testBaseDir.delete();
         testBaseDir = null;
     }
     
