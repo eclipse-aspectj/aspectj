@@ -34,7 +34,7 @@
 
     <abstract>
       <para>
-        This guide describes the tools in the AspectJ 1.1 development
+        This guide describes the tools in the AspectJ 1.2 development
         environment.  See also 
               <ulink url="../progguide/index.html">The
         				AspectJ Programming Guide</ulink>,       				
@@ -68,6 +68,7 @@
 
   <reference>
       &ajc;
+      &ajdoc;
   </reference>
   
   &ajbrowser;
