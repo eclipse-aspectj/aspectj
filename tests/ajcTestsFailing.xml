@@ -152,4 +152,14 @@
           files="Test_AroundVarBug.java,AroundVarBug.java"/>
         <run class="Test_AroundVarBug"/>
     </ajc-test>
+
+    <ajc-test dir="bugs/incremental-declare-error" pr="84033"
+   	 title="incremental declare error persists after fix">
+        <compile files="pack/Aspect.java,pack/Main.java">
+			<message kind="error" line="6" text="main"/>
+			</compile>
+        <inc-compile tag="20"/>
+        <run class="pack.Main"/>
+    </ajc-test>
+
 </suite>
