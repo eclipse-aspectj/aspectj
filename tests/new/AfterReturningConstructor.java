@@ -47,7 +47,7 @@ class U {
 
 aspect A {
     /** must pick out both interface and implementor constructor execution */
-    pointcut pc(): execution(new(..));
+    pointcut pc(): execution(new(..)) && !within(A);
 
     before(): pc() {
         U.e(U.before + thisJoinPoint);
