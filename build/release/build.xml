@@ -443,7 +443,10 @@
 		<echo>
   test-doc-links ${doclink.start.file}
               to ${doclink.output.file}-[out|messages].txt
-  WARNING: verify manually if result code is not 0...
+  WARNING: verify manually if result code is not 0.  Known failures:
+  - google link nets 403, but works in browser
+  - progguide/printable.html has harmless empty link to d0e26 (ajc-ref?)
+
 </echo>
 		<java 
 			classname="org.aspectj.testing.util.LinkCheck"
