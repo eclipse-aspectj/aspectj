@@ -13,12 +13,15 @@
 
 package org.aspectj.testing.harness.bridge;
 
+import java.io.*;
 import java.io.File;
+import java.util.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.aspectj.bridge.*;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.testing.run.IRunIterator;
@@ -29,6 +32,8 @@ import org.aspectj.util.LangUtil;
 
 /**
  * An AjcTest has child subruns (compile, [inc-compile|run]*).
+ * XXX title keys shared between all instances
+ * (add Thread to key to restrict access?)
  */
 public class AjcTest extends RunSpecIterator {
     
@@ -77,8 +82,9 @@ public class AjcTest extends RunSpecIterator {
     
     /** 
      * Specification for an ajc test.
-     * Keyword directives are global/parent options passed as
+     * Keyword directives are global/parent options passed, e.g., as
      * <pre>-ajctest[Require|Skip]Keywords=keyword{,keyword}..</pre>.
+     * See VALID_SUFFIXES for complete list.
      */
     public static class Spec extends AbstractRunSpec {
         public static final String XMLNAME = "ajc-test";
@@ -95,12 +101,137 @@ public class AjcTest extends RunSpecIterator {
         private static final String OPTION_PREFIX = "-ajctest";
         private static final String[] VALID_OPTIONS = new String[] { OPTION_PREFIX };
 
+        private static final String TITLE_LIST = "TitleList=";
+        private static final String TITLE_FAIL_LIST = "TitleFailList=";
+        private static final String TITLE_CONTAINS= "TitleContains=";
         private static final String REQUIRE_KEYWORDS = "RequireKeywords=";
         private static final String SKIP_KEYWORDS = "SkipKeywords=";
         private static final String PICK_PR = "PR=";
         private static final List VALID_SUFFIXES 
             = Collections.unmodifiableList(Arrays.asList(new String[] 
-            { REQUIRE_KEYWORDS, SKIP_KEYWORDS, PICK_PR }));
+            { TITLE_LIST, TITLE_FAIL_LIST, TITLE_CONTAINS, 
+                REQUIRE_KEYWORDS, SKIP_KEYWORDS, PICK_PR }));
+        
+        /** Map String titlesName to List (String) of titles to accept */
+        private static final Map TITLES = new HashMap();
+        
+        private static List getTitles(String titlesName) {
+            return getTitles(titlesName, false);
+        }
+        private static List getTitles(String titlesName, boolean fail) {
+            if (LangUtil.isEmpty(titlesName)) {
+                return Collections.EMPTY_LIST;
+            }
+            List result = (List) TITLES.get(titlesName);
+            if (null == result) {
+                result = makeTitlesList(titlesName, fail);
+                TITLES.put(titlesName, result);
+            }
+            return result;
+        }
+        
+        /**
+         * Make titles list per titlesKey, either a path to a file
+         * containing "[PASS|FAIL] {title}(..)" entries,
+         * or a comma-delimited list of titles.
+         * @param titlesKey a String, either a path to a file
+         * containing "[PASS|FAIL] {title}(..)" entries,
+         * or a comma-delimited list of titles.
+         * @param fail if true, only read titles prefixed "FAIL" from files
+         * @return the unmodifiable List of titles (maybe empty, never null)
+         */
+        private static List makeTitlesList(String titlesKey, boolean fail) {
+            File file = new File(titlesKey);
+            return file.canRead() 
+                ? readTitlesFile(file, fail)
+                : parseTitlesList(titlesKey);
+        }
+
+        /**
+         * Parse list of titles from comma-delmited list
+         * titlesList, trimming each entry and permitting
+         * comma to be escaped with '\'.
+         * @param titlesList a comma-delimited String of titles
+         * @return the unmodifiable List of titles (maybe empty, never null)
+         */
+        private static List parseTitlesList(String titlesList) {
+            ArrayList result = new ArrayList();
+            String last = null;
+            StringTokenizer st = new StringTokenizer(titlesList, ",");
+            while (st.hasMoreTokens()) {
+                String next = st.nextToken().trim();
+                if (next.endsWith("\\")) {
+                    next = next.substring(0, next.length()-1);
+                    if (null == last) {
+                        last = next;
+                    } else {
+                        last += next;
+                    }
+                    next = null;
+                } else if (null != last) {
+                    next = (last + next).trim();
+                    last = null;
+                } else {
+                    next = next.trim();
+                }
+                if (!LangUtil.isEmpty(next)) {
+                    result.add(next);
+                }
+            }
+            if (null != last) { 
+                String m = "unterminated entry \"" + last; // XXX messages
+                System.err.println(m + "\" in " + titlesList);
+                result.add(last.trim());
+            }
+            return Collections.unmodifiableList(result);
+        }
+
+        /**
+         * Read titles from a test result file, accepting
+         * only those prefixed with [PASS|FAIL] and
+         * excluding the "[PASS|FAIL] Suite.Spec(.." entry.
+         * @param titlesFile the File containing a
+         * list of titles from test results,
+         * with some lines of the form 
+         * <code>[PASS|FAIL] {title}()<code> (excluding
+         * <code>[PASS|FAIL] Suite.Spec(...<code>.
+         * @param titlesFile the File path to the file containing titles
+         * @param fail if true, only select titles prefixed "FAIL"
+         * @return the unmodifiable List of titles (maybe empty, never null)
+         */
+        private static List readTitlesFile(File titlesFile, boolean fail) {
+            ArrayList result = new ArrayList();
+            Reader reader = null;
+            try {
+                reader = new FileReader(titlesFile);
+                BufferedReader lines = new BufferedReader(reader);
+                String line;
+                while (null != (line = lines.readLine())) {
+                    if ((line.startsWith("FAIL ")
+                        || (!fail && line.startsWith("PASS ")))
+                        && (!line.substring(5).startsWith("Suite.Spec("))) {
+                        String title = line.substring(5);
+                        int loc = title.lastIndexOf("(");
+                        if (-1 != loc) {
+                            title = title.substring(0, loc);
+                        }
+                        result.add(title);
+                    }
+                }
+            } catch (IOException e) {
+                System.err.println("ignoring titles in " + titlesFile); // XXX messages
+                e.printStackTrace(System.err);
+            } finally {
+                if (null != reader) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        // ignore
+                    }
+                }
+            }
+            return Collections.unmodifiableList(result);
+        }
         
         /** base directory of the test suite - set before making run */
         private File suiteDir;
@@ -207,9 +338,11 @@ public class AjcTest extends RunSpecIterator {
          * AjcTest overrides this to skip if 
          * <ul>
          * <li>the spec has a keyword the parent wants to skip</li>
-         * <li>the spec does not have keyword the parent requires</li>
-         * <li>the spec does not have the bugId required</li>
+         * <li>the spec does not have a required keyword</li>
+         * <li>the spec does not have a required bugId</li>
+         * <li>the spec does not have a required title (description)n</li>
          * </ul>
+         * When skipping, this issues a messages as to why skipped.
          * @return false if this wants to be skipped, true otherwise
          * @throws Error if selected option is not of the form
          *          <pre>-ajctest[Require|Skip]Keywords=keyword{,keyword}..</pre>.
@@ -228,12 +361,23 @@ public class AjcTest extends RunSpecIterator {
                 }
                 option = option.substring(OPTION_PREFIX.length());
                 boolean keywordMustExist = false;
+                List permittedTitles = null;
+                List permittedTitleStrings = null;
                 String havePr = null;
                 if (option.startsWith(REQUIRE_KEYWORDS)) {
                     option = option.substring(REQUIRE_KEYWORDS.length());
                     keywordMustExist = true;
                 } else if (option.startsWith(SKIP_KEYWORDS)) {
                     option = option.substring(SKIP_KEYWORDS.length());
+                } else if (option.startsWith(TITLE_LIST)) {
+                    option = option.substring(TITLE_LIST.length());
+                    permittedTitles = getTitles(option);
+                } else if (option.startsWith(TITLE_FAIL_LIST)) {
+                    option = option.substring(TITLE_FAIL_LIST.length());
+                    permittedTitles = getTitles(option, true);
+                } else if (option.startsWith(TITLE_CONTAINS)) {
+                    option = option.substring(TITLE_CONTAINS.length());
+                    permittedTitleStrings = getTitles(option);
                 } else if (option.startsWith(PICK_PR)) {
                     if (0 == bugId) {
                         skipMessage(handler, "bugId required, but no bugId for this test");
@@ -246,24 +390,54 @@ public class AjcTest extends RunSpecIterator {
                     throw new Error("unrecognized suffix: " + globalOptions[i]
                         + " (expecting: " + OPTION_PREFIX + VALID_SUFFIXES + "...)");
                 }
-                List specs = LangUtil.commaSplit(option);
-                // XXX also throw Error on empty specs...
-                for (Iterator iter = specs.iterator(); iter.hasNext();) {
-					String spec = (String) iter.next();
-                    if (null != havePr) {
-                        if (havePr.equals(spec)) { // String.equals()
-                            return true;
+                if (null != permittedTitleStrings) {
+                    boolean gotHit = false;
+                    for (Iterator iter = permittedTitleStrings.iterator();
+                        !gotHit && iter.hasNext();
+                        ) {
+                        String substring = (String) iter.next();
+                        if (-1 != this.description.indexOf(substring)) {
+                            gotHit = true;
                         }
-                    } else if (keywordMustExist != keywords.contains(spec)) {
-                        String reason = "keyword " + spec  
-                            + " was " + (keywordMustExist ? "not found" : "found");
+                    }
+                    if (!gotHit) {
+                        String reason = "title " 
+                            + this.description
+                            + " does not contain any of "
+                            + option;
                         skipMessage(handler, reason);
                         return false;
                     }
-				}
-                if (null != havePr) {
-                    skipMessage(handler, "bugId required, but not matched for this test");
-                    return false;
+                } else if (null != permittedTitles) {
+                    if (!permittedTitles.contains(this.description)) {
+                        String reason = "titlesList " 
+                            + option  
+                            + " did not contain " 
+                            + this.description;
+                        skipMessage(handler, reason);
+                        return false;
+                    }                    
+                } else {
+                    // all other options handled as comma-delimited lists
+                    List specs = LangUtil.commaSplit(option);
+                    // XXX also throw Error on empty specs...
+                    for (Iterator iter = specs.iterator(); iter.hasNext();) {
+                        String spec = (String) iter.next();
+                        if (null != havePr) {
+                            if (havePr.equals(spec)) { // String.equals()
+                                return true;
+                            }
+                        } else if (keywordMustExist != keywords.contains(spec)) {
+                            String reason = "keyword " + spec  
+                                + " was " + (keywordMustExist ? "not found" : "found");
+                            skipMessage(handler, reason);
+                            return false;
+                        }
+                    }
+                    if (null != havePr) {
+                        skipMessage(handler, "bugId required, but not matched for this test");
+                        return false;
+                    }
                 }
             }
             return true;
