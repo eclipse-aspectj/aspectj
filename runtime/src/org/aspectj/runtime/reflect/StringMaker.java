@@ -81,22 +81,25 @@ class StringMaker {
         return name.substring(dot+1);
     }    
     
-    String makeTypeName(Class type, boolean shortName) {
+    String makeTypeName(Class type, String typeName, boolean shortName) {
         if (type == null) return "ANONYMOUS";
-        if (type.isArray()) return makeTypeName(type.getComponentType(), shortName) + "[]";
+        if (type.isArray()) {
+        	Class componentType = type.getComponentType();
+        	return makeTypeName(componentType, componentType.getName(), shortName) + "[]";
+        }
         if (shortName) {
-            return stripPackageName(type.getName()).replace('$', '.');
+            return stripPackageName(typeName).replace('$', '.');
         } else {
-            return type.getName().replace('$', '.');
+            return typeName.replace('$', '.');
         }
     }
        
     public String makeTypeName(Class type) {
-        return makeTypeName(type, shortTypeNames);
+        return makeTypeName(type, type.getName(),shortTypeNames);
     }
     
-    public String makePrimaryTypeName(Class type) {
-        return makeTypeName(type, shortPrimaryTypeNames);
+    public String makePrimaryTypeName(Class type, String typeName) {
+        return makeTypeName(type, typeName, shortPrimaryTypeNames);
     }
     
     public void addTypeNames(StringBuffer buf, Class[] types) {

@@ -16,6 +16,7 @@
 import java.io.*;
 
 import org.aspectj.lang.*;
+import org.aspectj.runtime.reflect.SignatureTest;
 
 import junit.framework.*;
 
@@ -24,6 +25,7 @@ public class RuntimeModuleTests extends TestCase {
     public static TestSuite suite() { 
         TestSuite suite = new TestSuite(RuntimeModuleTests.class.getName());
         suite.addTestSuite(RuntimeModuleTests.class); // minimum 1 test (testNothing)
+        suite.addTestSuite(SignatureTest.class);
         return suite;
     }
 
@@ -70,6 +72,8 @@ public class RuntimeModuleTests extends TestCase {
             System.setErr(systemErr);
         }
     }
+   
+    
     static void checkSoftExceptionString(String s) {        
         assertTrue(-1 != s.indexOf("SoftException"));
         assertTrue(-1 != s.indexOf("Caused by: java.lang.Error"));

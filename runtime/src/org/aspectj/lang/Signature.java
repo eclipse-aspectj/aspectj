@@ -92,4 +92,11 @@ public interface Signature {
      * @see java.lang.reflect.Member#getDeclaringClass
      */
     Class  getDeclaringType();
+    
+    /**
+     * Returns the fully-qualified name of the declaring type. This is
+     * equivalent to calling getDeclaringType().getName(), but caches
+     * the result for greater efficiency.
+     */
+    String getDeclaringTypeName();
 }

@@ -22,6 +22,7 @@ import java.util.StringTokenizer;
 abstract class SignatureImpl implements Signature {
     int modifiers = -1;
     String name;
+    String declaringTypeName;
     Class declaringType;
     
     SignatureImpl(int modifiers, String name, Class declaringType) {
@@ -48,7 +49,12 @@ abstract class SignatureImpl implements Signature {
         if (declaringType == null) declaringType = extractType(2);
         return declaringType;
     }
-    
+    public String getDeclaringTypeName() {
+    	if (declaringTypeName == null) {
+    		declaringTypeName = getDeclaringType().getName();
+    	}
+    	return declaringTypeName;
+    }
     
     String fullTypeName(Class type) {
         if (type == null) return "ANONYMOUS";

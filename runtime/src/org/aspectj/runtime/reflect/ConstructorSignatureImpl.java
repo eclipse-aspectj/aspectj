@@ -32,7 +32,7 @@ class ConstructorSignatureImpl extends CodeSignatureImpl implements ConstructorS
     String toString(StringMaker sm) {
         StringBuffer buf = new StringBuffer();
         buf.append(sm.makeModifiersString(getModifiers()));
-        buf.append(sm.makePrimaryTypeName(getDeclaringType()));
+        buf.append(sm.makePrimaryTypeName(getDeclaringType(),getDeclaringTypeName()));
         sm.addSignature(buf, getParameterTypes());
         sm.addThrows(buf, getExceptionTypes());
         return buf.toString();

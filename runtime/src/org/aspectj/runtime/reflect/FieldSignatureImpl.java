@@ -40,7 +40,7 @@ public class FieldSignatureImpl extends MemberSignatureImpl implements FieldSign
         buf.append(sm.makeModifiersString(getModifiers()));
         if (sm.includeArgs) buf.append(sm.makeTypeName(getFieldType()));
         if (sm.includeArgs) buf.append(" ");        
-        buf.append(sm.makePrimaryTypeName(getDeclaringType()));
+        buf.append(sm.makePrimaryTypeName(getDeclaringType(),getDeclaringTypeName()));
         buf.append(".");
         buf.append(getName());        
         return buf.toString();
