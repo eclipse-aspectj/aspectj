@@ -2212,7 +2212,7 @@ public class BcelShadow extends Shadow {
     
 	public ISourceLocation getSourceLocation() {
 		int sourceLine = getSourceLine();
-		if (sourceLine == 0) {
+		if (sourceLine == 0 || sourceLine == -1) {
 //			Thread.currentThread().dumpStack();
 //			System.err.println(this + ": " + range);
 			return getEnclosingClass().getType().getSourceLocation();
