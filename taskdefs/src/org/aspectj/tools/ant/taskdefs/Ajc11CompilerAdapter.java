@@ -10,7 +10,6 @@
  *     Wes Isberg     initial implementation
  * ******************************************************************/
 
-
 package org.aspectj.tools.ant.taskdefs;
 
 import org.apache.tools.ant.BuildException;
@@ -34,15 +33,12 @@ import java.io.IOException;
  * requires all the files every time.  To work around this,
  * set the global property CLEAN ("build.compiler.clean") to delete
  * all .class files in the destination directory before compiling.
- * This clean process only permits one compile process at a time 
- * for each destination directory because it tracks recursion by
- * writing a tag file to the destination directory.
  * 
  * <p><u>Warnings</u>: 
  * <ol>
  * <li>cleaning will not work if no destination directory
- *     is specified in the javac task
- *     (because we don't know where to put the tag file).</li>
+ *     is specified in the javac task.
+ *     (RFE: find and kill .class files in source dirs?)</li>
  * <li>cleaning will makes stepwise build processes fail
  * if they depend on the results of the prior compilation being
  * in the same directory, since this deletes <strong>all</strong>
@@ -56,108 +52,81 @@ import java.io.IOException;
  * @since AspectJ 1.1, Ant 1.5.1
  */
 public class Ajc11CompilerAdapter implements CompilerAdapter {
+
     /** 
      * Define this system/project property to signal that the 
      * destination directory should be cleaned 
      * and javac reinvoked
      * to get the complete list of files every time.
-     */    
+     */
     public static final String CLEAN = "build.compiler.clean";
-    
+
+    /** track whether we re-called <code>javac.execute()</code> */
+    private static final ThreadLocal inSelfCall = new ThreadLocal() {
+        public Object initialValue() {
+            return Boolean.FALSE;
+        }
+    };
+
     Javac javac;
-    
+
     public void setJavac(Javac javac) {
         this.javac = javac;
+        javac.setTaskName(javac.getTaskName() + " - ajc");
     }
-    
+
     public boolean execute() throws BuildException {
-        checkJavac();
-        if (recurse()) {
-            javac.execute(); // re-invokes us after recalculating file list
-        } else { 
+        if (null == javac) {
+            throw new IllegalStateException("null javac");
+        }
+        if (!((Boolean) inSelfCall.get()).booleanValue()
+            && afterCleaningDirs()) {
+            // if we are not re-calling ourself and we cleaned dirs,
+            // then re-call javac to get the list of all source files.
+            inSelfCall.set(Boolean.TRUE);
+            javac.execute();
+            // javac re-invokes us after recalculating file list
+        } else {
             try {
                 AjcTask ajc = new AjcTask();
                 String err = ajc.setupAjc(javac);
                 if (null != err) {
                     throw new BuildException(err, javac.getLocation());
                 }
-                ajc.execute(); // handles BuildException for failonerror, etc.
+                ajc.execute();
+                // handles BuildException for failonerror, etc.
             } finally {
-                doneRecursing();
+                inSelfCall.set(Boolean.FALSE);
             }
         }
         return true;
     }
 
-    /** @throws IllegalStateException if javac is not defined */
-    protected void checkJavac() {
-        if (null == javac) {
-            throw new IllegalStateException("null javac");
-        }
-    }
-    
     /**
-     * Get javac dest dir.
-     * @param client the String label for the client seeking the directory
-     *        (only used in throwing BuildException)
-     * @return File dest dir
-     * @throws BuildException if not specified and required
+     * If destDir exists and property CLEAN is set, 
+     * this cleans out the dest dir of any .class files,
+     * and returns true to signal a recursive call.
+     * @return true if destDir was cleaned.
      */
-    protected File getDestDir(String client) {
-        checkJavac();
+    private boolean afterCleaningDirs() {
+        String clean = javac.getProject().getProperty(CLEAN);
+        if (null == clean) {
+            return false;
+        }
         File destDir = javac.getDestdir();
         if (null == destDir) {
-            throw new BuildException("require destDir for " + client);
-        }
-        return destDir;
-    }
-
-    protected File getTagFile() {
-        return new File(getDestDir("getting tag file directory"), 
-                        "Ajc11CompilerAdapter.tag");
-    }
-
-    /**
-     * If property CLEAN is set, then this
-     * cleans out the dest dir of any .class files,
-     * installs a tag file, and returns true to signal a recursive call.
-     * That means this returns false if CLEAN is not set
-     * or if the tag file already exists (i.e., already recursing).
-     * The result is that javac is re-invoked after the dest dir
-     * is cleaned, so it picks up all the correct source files.
-     * (This is a costly hack to work around Javac's forcing the
-     * pruning of the file list.)
-     * @return true if javac should be re-invoked.
-     */
-    protected boolean recurse() {
-        checkJavac();
-        String cleanDirs = javac.getProject().getProperty(CLEAN);
-        if (null == cleanDirs) {
-            return false;
-        } 
-        File destDir = getDestDir("recursing to clean");
-        File tagFile = getTagFile();
-        if (tagFile.exists()) {
+            javac.log(
+                CLEAN + " specified, but no dest dir to clean",
+                Project.MSG_WARN);
             return false;
         }
-        try {
-            javac.log(CLEAN + " cleaning .class files from " + destDir,
-                Project.MSG_VERBOSE);
-            FileUtil.deleteContents(destDir, FileUtil.DIRS_AND_WRITABLE_CLASSES, true);
-            FileWriter fw = new FileWriter(tagFile);
-            fw.write("Ajc11CompilerAdapter.recursing");
-            fw.close();
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
-    protected void doneRecursing() {
-        File tagFile = getTagFile();
-        if (tagFile.exists()) {
-            tagFile.delete();
-        } 
+        javac.log(
+            CLEAN + " cleaning .class files from " + destDir,
+            Project.MSG_VERBOSE);
+        FileUtil.deleteContents(
+            destDir,
+            FileUtil.DIRS_AND_WRITABLE_CLASSES,
+            true);
+        return true;
     }
 }
-

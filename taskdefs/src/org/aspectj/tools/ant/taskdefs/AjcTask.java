@@ -130,6 +130,9 @@ public class AjcTask extends MatchingTask {
         File javacDestDir = javac.getDestdir();
         if (null != javacDestDir) {
             ajc.setDestdir(javacDestDir);
+            // filter requires dest dir
+            // mimic Javac task's behavior in copying resources,
+            ajc.setSourceRootCopyFilter("**/CVS/*,**/*.java,**/*.aj");
         }        
         ajc.setBootclasspath(javac.getBootclasspath());
         ajc.setExtdirs(javac.getExtdirs());
@@ -137,8 +140,6 @@ public class AjcTask extends MatchingTask {
         // ignore srcDir -- all files picked up in recalculated file list
 //      ajc.setSrcDir(javac.getSrcdir());        
         ajc.addFiles(javac.getFileList());
-        // mimic Javac task's behavior in copying resources,
-        ajc.setSourceRootCopyFilter("**/CVS/*,**/*.java,**/*.aj");
         // arguments can override the filter, add to paths, override options
         ajc.readArguments(javac.getCurrentCompilerArgs());
         
@@ -299,6 +300,7 @@ public class AjcTask extends MatchingTask {
     private Path argfiles;
     private List ignored;
     private Path sourceRoots;
+    private File xweaveDir;
     // ----- added by adapter - integrate better?
     private List /* File */ adapterFiles;
     private String[] adapterArguments;
@@ -381,6 +383,7 @@ public class AjcTask extends MatchingTask {
         srcdir = null;
         tmpOutjar = null;
         verbose = false;
+        xweaveDir = null;
     }
 
     protected void ignore(String ignored) {
@@ -542,6 +545,13 @@ public class AjcTask extends MatchingTask {
         this.failonerror = failonerror;
     }
 
+    /**
+     * @return true if fork was set
+     */
+    public boolean isForked() {
+        return fork;
+    }
+    
     public void setFork(boolean fork) {  
         this.fork = fork;
     }
@@ -749,7 +759,14 @@ public class AjcTask extends MatchingTask {
         }
         return sourceRoots.createPath();
     }        
-	
+	    
+    public void setXWeaveDir(File file) {
+        if ((null != file) && file.isDirectory()
+            && file.canRead()) {
+            xweaveDir = file;
+        }
+    }       
+
     public void setInjarsref(Reference ref) {
         createInjars().setRefid(ref);
     }
@@ -894,6 +911,7 @@ public class AjcTask extends MatchingTask {
         } else {
             executing = true;
         }
+        setupOptions();
         verifyOptions();
         try {
             String[] args = makeCommand();
@@ -980,6 +998,63 @@ public class AjcTask extends MatchingTask {
     }   
 
     /**
+     * Create any pseudo-options required to implement
+     * some of the macro options
+     * @throws BuildException if options conflict
+     */
+    protected void setupOptions() {
+        if (null != xweaveDir) {
+           if (DEFAULT_DESTDIR != destDir) {
+               throw new BuildException("weaveDir forces destdir"); 
+           }
+           if (null != outjar) {
+               throw new BuildException("weaveDir forces outjar"); 
+           }
+           if (null != injars) {
+               throw new BuildException("weaveDir incompatible with injars now"); 
+           }
+           File injar = zipDirectory(xweaveDir);
+           setInjars(new Path(getProject(), injar.getAbsolutePath()));
+           setDestdir(xweaveDir);
+        }
+    }
+    
+    protected File zipDirectory(File dir) {
+        File tempDir = new File(".");
+        try {
+            tempDir = File.createTempFile("AjcTest", ".tmp");
+            tempDir.mkdirs();
+            tempDir.deleteOnExit(); // XXX remove zip explicitly..
+        } catch (IOException e) {
+            // ignore
+        }
+//        File result = new File(tempDir, 
+        String filename = "AjcTask-" 
+            + System.currentTimeMillis() 
+            + ".zip";
+        File result = new File(filename);
+        Zip zip = new Zip();
+        zip.setProject(getProject());
+        zip.setDestFile(result);
+        zip.setTaskName(getTaskName() + " - zip");
+        FileSet fileset = new FileSet();
+        fileset.setDir(dir);
+        zip.addFileset(fileset);
+        zip.execute();
+        Delete delete = new Delete();
+        delete.setProject(getProject());
+        delete.setTaskName(getTaskName() + " - delete");
+        delete.setDir(dir);
+        delete.execute();
+        Mkdir mkdir = new Mkdir();
+        mkdir.setProject(getProject());
+        mkdir.setTaskName(getTaskName() + " - mkdir");
+        mkdir.setDir(dir);
+        mkdir.execute();
+        return result;
+    }
+    
+    /**
      * @throw BuildException if options conflict
      */
     protected void verifyOptions() {
@@ -987,7 +1062,6 @@ public class AjcTask extends MatchingTask {
         if (fork && isInIncrementalMode() && !isInIncrementalFileMode()) {
             sb.append("can fork incremental only using tag file.\n");
         }
-        
         if ((null != sourceRootCopyFilter) && (null == outjar) 
         	&& (DEFAULT_DESTDIR == destDir)) {        	
             final String REQ = " requires dest dir or output jar.\n";            sb.append("sourceRootCopyFilter");
@@ -1051,8 +1125,9 @@ public class AjcTask extends MatchingTask {
             int errs = holder.numMessages(IMessage.ERROR, false);
             errs -= numPreviousErrors;
             if (0 < errs) {
-                // errors should already be printed by interceptor
-                throw new BuildException(errs + " errors"); 
+                String m =  errs + " errors";
+                MessageUtil.print(System.err, holder, "", MessageUtil.MESSAGE_ALL, MessageUtil.PICK_ERROR, true);
+                throw new BuildException(m); 
             }
         } 
         // Throw BuildException if there are any fail or abort
