@@ -2276,6 +2276,16 @@ ModifiersPattern =
         requirement, since it would be private to the aspect, not private to
         the target type.
       </para>
+
+      <para>
+        The access modifier of abstract inter-type methods has
+        one constraint: It is illegal to declare an abstract
+        non-public inter-type method on a public interface.  This
+        is illegal because it would say that a public interface
+        has a constraint that only non-public implementors must
+        fulfill.  This would not be compatible with Java's type
+        system.  
+      </para>
     </sect2>
 
     <sect2>
