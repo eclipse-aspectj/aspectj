@@ -294,6 +294,10 @@
 			<param name="do.ant.target" value="aspectj"/>
 			<param name="do.ant.props" value=""/>
 		</antcall>
+		<antcall target="do-aspectj-build">
+			<param name="do.ant.target" value="eclipse.plugins"/>
+			<param name="do.ant.props" value=""/>
+		</antcall>
 	</target>
 
 	<target name="build-tests" depends="init-variables,create-tree"
