@@ -227,7 +227,7 @@ public class BcelShadow extends Shadow {
 		// if we're a constructor call, we need to remove the new:dup or the new:dup_x1:swap, 
 		// and store all our
 		// arguments on the frame.
-		
+ 		
 		// ??? This is a bit of a hack (for the Java langauge).  We do this because
 		// we sometime add code "outsideBefore" when dealing with weaving join points.  We only
 		// do this for exposing state that is on the stack.  It turns out to just work for 
@@ -238,16 +238,31 @@ public class BcelShadow extends Shadow {
 			deleteNewAndDup();
 			initializeArgVars();
 		} else if (getKind() == ExceptionHandler) {
+			
 			ShadowRange range = getRange();
 			InstructionList body = range.getBody();
-			InstructionHandle start = range.getStart();
-			InstructionHandle freshIh = body.insert(start, InstructionConstants.NOP);
+			InstructionHandle start = range.getStart();		
+			
+			// Create a store instruction to put the value from the top of the 
+			// stack into a local variable slot.  This is a trimmed version of
+			// what is in initializeArgVars() (since there is only one argument
+			// at a handler jp and only before advice is supported) (pr46298)
+	        argVars = new BcelVar[1];
+			int positionOffset = (hasTarget() ? 1 : 0) + ((hasThis() && !getKind().isTargetSameAsThis()) ? 1 : 0);
+            TypeX tx = getArgType(0);
+            argVars[0] = genTempVar(tx, "ajc$arg0");
+            InstructionHandle insertedInstruction = 
+            	range.insert(argVars[0].createStore(getFactory()), Range.OutsideBefore);
+
+            // Now the exception range starts just after our new instruction.
+            // The next bit of code changes the exception range to point at
+            // the store instruction
 			InstructionTargeter[] targeters = start.getTargeters();
 			for (int i = 0; i < targeters.length; i++) {
 				InstructionTargeter t = targeters[i];
 				if (t instanceof ExceptionRange) {
 					ExceptionRange er = (ExceptionRange) t;
-					er.updateTarget(start, freshIh, body);
+					er.updateTarget(start, insertedInstruction, body);
 				}
 			}
 		}
@@ -277,21 +292,33 @@ public class BcelShadow extends Shadow {
 	    // on the stack.		
 		InstructionFactory fact = getFactory();
 		if (getKind().argsOnStack() && argVars != null) {
-			range.insert(
+			
+			// Special case first (pr46298).  If we are an exception handler and the instruction
+			// just after the shadow is a POP then we should remove the pop.  The code 
+			// above which generated the store instruction has already cleared the stack.
+			// We also don't generate any code for the arguments in this case as it would be
+			// an incorrect aload.
+			if (getKind() == ExceptionHandler 
+				&& range.getEnd().getNext().getInstruction().equals(InstructionConstants.POP)) {
+				// easier than deleting it ...
+				range.getEnd().getNext().setInstruction(InstructionConstants.NOP);
+			} else {
+			  range.insert(
 				BcelRenderer.renderExprs(fact, world, argVars),
 				Range.InsideBefore);
-			if (targetVar != null) {
+			  if (targetVar != null) {
 				range.insert(
 					BcelRenderer.renderExpr(fact, world, targetVar),
 					Range.InsideBefore);
-			}
-			if (getKind() == ConstructorCall) {
+			  }
+			  if (getKind() == ConstructorCall) {
 				range.insert((Instruction) InstructionFactory.createDup(1), Range.InsideBefore);
 				range.insert(
 					fact.createNew(
 						(ObjectType) BcelWorld.makeBcelType(
 							getSignature().getDeclaringType())),
 					Range.InsideBefore);
+			  }
 			}
 		}
  	}
