@@ -26,7 +26,7 @@ import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.*;
-import org.eclipse.jdt.internal.compiler.util.CharOperation;
+import org.eclipse.jdt.core.compiler.CharOperation;
 
 /**
  * Base type for all inter-type declarations including methods, fields and constructors.

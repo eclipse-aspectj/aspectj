@@ -1,19 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-    <classpathentry kind="src" path="antadapter"/>
-    <classpathentry kind="src" path="batch"/>
-    <classpathentry kind="src" path="codeassist"/>
-    <classpathentry kind="src" path="compiler"/>
-    <classpathentry kind="src" path="dom"/>
-    <classpathentry kind="src" path="eval"/>
-    <classpathentry kind="src" path="formatter"/>
-    <classpathentry kind="src" path="model"/>
-    <classpathentry kind="src" path="search"/>
-    <classpathentry kind="lib" path="/lib/junit/junit.jar"/>
-    <classpathentry exported="true" kind="lib"
-        path="/lib/eclipse2.0/jdtDepends.jar" sourcepath="/lib/eclipse2.0/jdtDependsSrc.zip"/>
-    <classpathentry kind="lib" path="/lib/bcel/bcel.jar"
-        rootpath="bcel-5.0/src/java" sourcepath="/lib/bcel/bcel-src.zip"/>
+    <classpathentry exported="true" kind="lib" path="jdtcore.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

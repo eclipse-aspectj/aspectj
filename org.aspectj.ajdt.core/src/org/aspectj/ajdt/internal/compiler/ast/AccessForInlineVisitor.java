@@ -86,7 +86,7 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 		if (send.binding == null) return;
 		
 		if (send.isSuperAccess() && !send.binding.isStatic()) {
-			send.receiver = new ThisReference();
+			send.receiver = new ThisReference(send.sourceStart, send.sourceEnd);
 			send.binding = send.codegenBinding = 
 				getSuperAccessMethod((MethodBinding)send.binding);
 		} else if (!isPublic(send.binding)) {
@@ -104,14 +104,14 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 		QualifiedTypeReference ref,
 		BlockScope scope)
 	{
-		makePublic(ref.binding);
+		makePublic(ref.getTypeBinding(scope));   //??? might be trouble
 	}
 	
 	public void endVisit(
 		SingleTypeReference ref,
 		BlockScope scope)
 	{
-		makePublic(ref.binding);
+		makePublic(ref.getTypeBinding(scope));  //??? might be trouble
 	}
 	
 	private FieldBinding getAccessibleField(FieldBinding binding) {
@@ -126,7 +126,7 @@ public class AccessForInlineVisitor extends AbstractSyntaxTreeVisitorAdapter {
 			binding.modifiers = AstUtil.makePackageVisible(binding.modifiers);
 		}
 		
-		ResolvedMember m = world.makeResolvedMember(binding);
+		ResolvedMember m = EclipseFactory.makeResolvedMember(binding);
 		if (inAspect.accessForInline.containsKey(m)) return (FieldBinding)inAspect.accessForInline.get(m);
 		FieldBinding ret = new InlineAccessFieldBinding(inAspect, binding);
 		inAspect.accessForInline.put(m, ret);

@@ -6,8 +6,8 @@ import org.aspectj.lang.reflect.*;
 /** @testcase PR#885 call source locations within expression */
 public class SourceLocationWithinExpr {
     public static void main (String[] args) {
-        new                  // 9
-            C()              // 10*
+        new                  // 9*
+            C()              // 10
             .                // 11
             getD()           // 12*
             .                // 13
@@ -28,7 +28,7 @@ aspect A {
     private static final String SEP = " - ";
     static {
         // using qualifying expr?
-        Tester.expectEvent("C()" + SEP + "10");
+        Tester.expectEvent("C()" + SEP + "9");
         Tester.expectEvent("getD()" + SEP + "12");
         Tester.expectEvent("getE()" + SEP + "14");
         Tester.expectEvent("getF()" + SEP + "16");

@@ -18,31 +18,31 @@ import org.aspectj.ajdt.compiler.IAjTerminalSymbols;
 import org.eclipse.jdt.core.compiler.IScanner;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.internal.compiler.parser.Scanner;
-import org.eclipse.jdt.internal.compiler.util.CharOperation;
+import org.eclipse.jdt.core.compiler.CharOperation;
 
 
 public class AjScanner extends Scanner implements IScanner {
 	public AjScanner(
 		boolean tokenizeComments,
 		boolean tokenizeWhiteSpace,
-		boolean checkNonExternalizedStringLiterals) {
-		super(
-			tokenizeComments,
-			tokenizeWhiteSpace,
-			checkNonExternalizedStringLiterals);
-	}
-
-	public AjScanner(
-		boolean tokenizeComments,
-		boolean tokenizeWhiteSpace,
 		boolean checkNonExternalizedStringLiterals,
-		boolean assertMode) {
+		boolean assertMode,
+		char[][] taskTags,
+		char[][] taskPriorities) {
 		super(
 			tokenizeComments,
 			tokenizeWhiteSpace,
 			checkNonExternalizedStringLiterals,
-			assertMode);
+			assertMode,
+			taskTags,
+			taskPriorities);
 	}
+
+	public AjScanner() {
+		super();
+	}
+
+
 	
 	
 	private static final char[] aspectV = "aspect".toCharArray();

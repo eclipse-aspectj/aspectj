@@ -110,7 +110,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 			new InterTypeScope(scope, onTypeBinding);
 		pre.scope.parent = newParent;
 
-		pre.resolveStatements(newParent);
+		pre.resolveStatements(); //newParent);
 		
 		
 		

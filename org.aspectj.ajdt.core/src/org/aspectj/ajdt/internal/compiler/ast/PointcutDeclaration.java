@@ -27,7 +27,7 @@ import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
-import org.eclipse.jdt.internal.compiler.util.CharOperation;
+import org.eclipse.jdt.core.compiler.CharOperation;
 
 /**
  * pointcut [declaredModifiers] [declaredName]([arguments]): [pointcutDesignator];
@@ -74,17 +74,17 @@ public class PointcutDeclaration extends MethodDeclaration {
 		pointcutDesignator.postParse(typeDec, this);
 	}
 
-	public void resolveStatements(ClassScope upperScope) {
+	public void resolveStatements() {
 		if (isAbstract()) this.modifiers |= AccSemicolonBody;
 		
 		if (binding == null || ignoreFurtherInvestigation) return;
 		
 		if (pointcutDesignator != null) {
 			pointcutDesignator.finishResolveTypes(this, this.binding, arguments.length, 
-					upperScope.referenceContext.binding);
+					scope.enclosingSourceType());
 		}
 		
-		super.resolveStatements(upperScope);
+		super.resolveStatements();
 	}
 	
 

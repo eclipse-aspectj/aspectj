@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
     <classpathentry kind="src" path="src"/>
-    <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
+    <classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
     <classpathentry kind="src" path="/org.eclipse.jdt.core"/>
     <classpathentry kind="src" path="/bridge"/>
     <classpathentry kind="src" path="/weaver"/>
@@ -9,10 +9,8 @@
     <classpathentry kind="src" path="/util"/>
     <classpathentry kind="src" path="/runtime"/>
     <classpathentry kind="src" path="testsrc"/>
-    <classpathentry kind="lib" path="/lib/bcel/bcel.jar"
-        rootpath="bcel-5.0/src/java" sourcepath="/lib/bcel/bcel-src.zip"/>
+    <classpathentry kind="lib" path="/lib/bcel/bcel.jar" sourcepath="/lib/bcel/bcel-src.zip"/>
     <classpathentry kind="lib" path="/lib/junit/junit.jar" sourcepath="/lib/junit/junit-src.jar"/>
-    <classpathentry kind="lib" path="/lib/eclipse2.0/jdtDepends.jar" sourcepath="/lib/eclipse2.0/jdtDependsSrc.zip"/>
     <classpathentry kind="src" path="/testing-util"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

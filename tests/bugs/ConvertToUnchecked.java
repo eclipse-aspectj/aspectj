@@ -27,8 +27,9 @@ public aspect ConvertToUnchecked {
 
 class PersistenceException extends RuntimeException 
 {
+	Throwable cause;
   public PersistenceException(Throwable cause) {
-    super(cause);
+    this.cause = cause;
   }
 }
 

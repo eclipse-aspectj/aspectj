@@ -1632,7 +1632,7 @@
     <ajc-test dir="errors" pr="280" title="no return statement in around advice"
       keywords="from-errors,new-messages-vary">
         <compile files="NoReturnStatement.java">
-            <message kind="error" line="15"/>
+            <message kind="error" line="14"/>
         </compile>
     </ajc-test>
 
@@ -2188,7 +2188,7 @@
       title="javac correct compiler error if there is no return in around returning result"
       keywords="from-errors">
         <compile files="NoReturnInProceed.java">
-            <message kind="error" line="17"/>
+            <message kind="error" line="16"/>
         </compile>
     </ajc-test>
 

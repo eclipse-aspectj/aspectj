@@ -58,7 +58,7 @@ public class AjCompiler extends Compiler {
 	 * must be done before we use the signatures of these types to do any
 	 * name binding.
 	 */
-	protected void process(CompilationUnitDeclaration unit, int i) {
+	public void process(CompilationUnitDeclaration unit, int i) {
 		EclipseFactory world = 
 			EclipseFactory.fromLookupEnvironment(lookupEnvironment);
 		world.showMessage(IMessage.INFO, "compiling " + new String(unit.getFileName()), null, null);

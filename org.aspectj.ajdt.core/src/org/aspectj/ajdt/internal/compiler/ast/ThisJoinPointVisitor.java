@@ -200,6 +200,7 @@ public class ThisJoinPointVisitor extends AbstractSyntaxTreeVisitorAdapter {
 	private void removeParameter(int indexToRemove) {
 		TypeBinding[] parameters = method.binding.parameters;
 		method.scope.locals = removeLocalBinding(indexToRemove, method.scope.locals);
+		method.scope.localIndex -= 1;
 		method.binding.parameters = removeParameter(indexToRemove, method.binding.parameters);
 	}
 

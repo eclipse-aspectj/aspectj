@@ -15,12 +15,13 @@ package org.aspectj.ajde.internal;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.BuildProgressMonitor;
+import org.aspectj.bridge.IProgressListener;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.eclipse.jdt.internal.core.builder.BuildNotifier;
 
-public class BuildNotifierAdapter extends BuildNotifier {
+public class BuildNotifierAdapter implements IProgressListener {
 
     private BuildProgressMonitor progressMonitor;
     private int numCompilationUnitPasses = 1;
@@ -28,10 +29,8 @@ public class BuildNotifierAdapter extends BuildNotifier {
 	private boolean cancelled = false;
 
 	// ??? get rid of project coupling
-	public BuildNotifierAdapter(IProject project, BuildProgressMonitor progressMonitor, int numFiles) {
-		super(null, project);
+	public BuildNotifierAdapter(BuildProgressMonitor progressMonitor) {
 		this.progressMonitor = progressMonitor;
-		this.numCompilationUnitPasses = numFiles*2;
 	}
   
 	public void begin() {
@@ -44,24 +43,12 @@ public class BuildNotifierAdapter extends BuildNotifier {
 		cancelled = true;
 	}
 
-	public void compiled(ICompilationUnit unit) {
-		completedPasses++;
-		float val = (float)completedPasses/numCompilationUnitPasses;
-		int intVal = (int)((float)val*100);
-		progressMonitor.setProgressBarVal(intVal);
-		progressMonitor.setProgressText("compiled: " + new String(unit.getFileName()));
+	public void setProgress(double percentDone) {
+		progressMonitor.setProgressBarVal((int)(percentDone * progressMonitor.getProgressBarMax()));
 	}
 
-	public void generatedBytecode(String message) {
-		completedPasses++;
-		float val = (float)completedPasses/numCompilationUnitPasses;
-		int intVal = (int)((float)val*100);
-		progressMonitor.setProgressBarVal(intVal);
-		progressMonitor.setProgressText(message);			
-	}
-  
-	public void checkCancel() {
-		if (cancelled) throw new OperationCanceledException();
+	public void setText(String text) {
+		progressMonitor.setProgressText(text);
 	}
 
 }

@@ -29,6 +29,15 @@ public class CountingMessageHandler implements IMessageHandler {
     public final CountingMessageHandler proxy;
     private final Hashtable counters;
     
+    public static CountingMessageHandler makeCountingMessageHandler(IMessageHandler handler) {
+    	if (handler instanceof CountingMessageHandler) {
+    		return (CountingMessageHandler)handler;
+    	} else {
+    		return new CountingMessageHandler(handler);
+    	}
+    }
+    
+    
     public CountingMessageHandler(IMessageHandler delegate) {
         LangUtil.throwIaxIfNull(delegate, "delegate");
         this.delegate = delegate;
@@ -125,5 +134,10 @@ public class CountingMessageHandler implements IMessageHandler {
 
     private static class IntHolder {
         int count;
+    }
+    
+    public void reset() {
+    	if (proxy != null) proxy.reset();
+    	counters.clear();
     }
 }

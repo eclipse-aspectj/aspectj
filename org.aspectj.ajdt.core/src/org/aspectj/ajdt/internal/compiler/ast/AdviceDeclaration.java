@@ -91,15 +91,17 @@ public class AdviceDeclaration extends MethodDeclaration {
 		}
 	}
 
-	public void resolveStatements(ClassScope upperScope) {
+	public void resolveStatements() {
 		if (binding == null || ignoreFurtherInvestigation) return;
+		
+		ClassScope upperScope = (ClassScope)scope.parent;  //!!! safety
 		
 		modifiers = binding.modifiers = checkAndSetModifiers(modifiers, upperScope);
 		
 		if (kind == AdviceKind.AfterThrowing && extraArgument != null) {
 			TypeBinding argTb = extraArgument.binding.type;
 			TypeBinding expectedTb = upperScope.getJavaLangThrowable();
-			if (!upperScope.areTypesCompatible(argTb, expectedTb)) {
+			if (!argTb.isCompatibleWith(expectedTb)) {
 				scope.problemReporter().typeMismatchError(argTb, expectedTb, extraArgument);
 				ignoreFurtherInvestigation = true;
 				return;
@@ -123,7 +125,7 @@ public class AdviceDeclaration extends MethodDeclaration {
 				CharArrayOps.concat(selector, proceedMethodBinding.selector);
 		}
 		
-		super.resolveStatements(upperScope);
+		super.resolveStatements(); //upperScope);
 		if (binding != null) determineExtraArgumentFlags();
 		
 		if (kind == AdviceKind.Around) {

@@ -25,6 +25,7 @@ import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.codegen.CodeStream;
 import org.eclipse.jdt.internal.compiler.flow.FlowContext;
 import org.eclipse.jdt.internal.compiler.flow.FlowInfo;
+import org.eclipse.jdt.internal.compiler.flow.InitializationFlowContext;
 import org.eclipse.jdt.internal.compiler.lookup.*;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 
@@ -49,7 +50,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 
 	public void analyseCode(
 		ClassScope currentScope,
-		FlowContext flowContext,
+		InitializationFlowContext flowContext,
 		FlowInfo flowInfo)
 	{
 		if (Modifier.isAbstract(declaredModifiers)) return;
@@ -70,8 +71,8 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 			
 		super.resolve(upperScope);
 	}
-	public void resolveStatements(ClassScope upperScope) {
-		if (!Modifier.isAbstract(declaredModifiers)) super.resolveStatements(upperScope);
+	public void resolveStatements() {
+		if (!Modifier.isAbstract(declaredModifiers)) super.resolveStatements();
 	}
 	
 	

@@ -87,11 +87,13 @@ public class AjdtCommand implements ICommand {
 			//buildManager.setMessageHandler(handler);
             CountingMessageHandler counter = new CountingMessageHandler(handler);
             // regenerate configuration b/c world might have changed (?)
-			AjBuildConfig config = genBuildConfig(savedArgs, counter);            
+			AjBuildConfig config = genBuildConfig(savedArgs, counter);  
+			System.err.println("errs: " + counter.hasErrors());          
             return (!counter.hasErrors()
                     && buildManager.incrementalBuild(config, handler)
                     && !counter.hasErrors());
         } catch (MissingSourceFileException t) {
+        	System.err.println("missing file");
             return false; // already converted to error
 		} catch (Throwable t) {
             MessageUtil.abort(handler, ABORT_MESSAGE, t);

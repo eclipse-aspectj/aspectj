@@ -1,9 +1,9 @@
 # set these first four variables appropriately for your system
-eclipseWorkspace = "c:/eclipse/workspace"
+eclipseWorkspace = "c:/aspectj/2.1/eclipse/workspace"
 workingDir = "c:/apps/jikespg/jdt/tmp"
 
-jikespg = "c:/apps/jikespg/src/a.exe"
-makersc = "c:/jdk1.4/bin/java -classpath c:/eclipse/workspace/org.eclipse.jdt.core/bin;c:/apps/jikespg/jdt;c:/eclipse/workspace/weaver/bin UpdateParserFiles"
+jikespg = "c:/apps/jikespg/src/jikespg.exe"
+makersc = "c:/j2sdk1.4/bin/java -classpath c:/aspectj/2.1/eclipse/workspace/org.eclipse.jdt.core/bin;c:/apps/jikespg/jdt UpdateParserFiles"
 
 # the rest of this should never change
 ajCompilerHomeRel = "org.aspectj.ajdt.core/src/"
@@ -12,11 +12,10 @@ javaCompilerHomeRel = "org.eclipse.jdt.core/compiler/"
 compilerHomeRel = ajCompilerHomeRel
 parserHomeRel = ajCompilerHomeRel + "org/aspectj/ajdt/internal/compiler/parser"
 parserInfoFileRel = javaCompilerHomeRel + "org/eclipse/jdt/internal/compiler/parser/ParserBasicInformation.java"
-symbolsHomeRel = javaCompilerHomeRel + "org/eclipse/jdt/core/compiler/ITerminalSymbols.java"
+symbolsHomeRel = javaCompilerHomeRel + "org/eclipse/jdt/internal/compiler/parser/TerminalTokens.java"
 #    symbolsHomeRel = "org/aspectj/ajdt/compiler/IAjTerminalSymbols.java"
 parserClass = "AjParser.java"
-grammarFileRel = javaCompilerHomeRel + "org/eclipse/jdt/internal/compiler/parser/aj_grammar.txt"
-
+grammarFileRel = javaCompilerHomeRel + "../grammar/java_1_4.g"
 
 import os
 from os import path
@@ -102,7 +101,7 @@ writeFile(parserInfoFile, text)
 #3.4 This is the contents of the class org.eclipse.jdt.internal.compiler.parser.TerminalSymbols.
 
 defs = readFile(path.join(workingDir, "javasym.java"))
-r = re.compile(r"(public final static int[^;]*;)", re.DOTALL)
+r = re.compile(r"(int[^;]*;)", re.DOTALL)
 syms = r.search(defs).group(0)
 syms = syms.replace("$eof", "EOF")
 syms = syms.replace("$error", "ERROR")

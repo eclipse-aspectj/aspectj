@@ -35,7 +35,7 @@ import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
-import org.eclipse.jdt.internal.compiler.util.CharOperation;
+import org.eclipse.jdt.core.compiler.CharOperation;
 
 /**
  * Extends problem reporter to support compiler-side implementation of declare soft. 
@@ -103,7 +103,7 @@ public class AjProblemReporter extends ProblemReporter {
 	}
 
 	private boolean isPointcutDeclaration(MethodBinding binding) {
-		return CharOperation.startsWith(binding.selector, PointcutDeclaration.mangledPrefix);
+		return CharOperation.prefixEquals(PointcutDeclaration.mangledPrefix, binding.selector);
 	}
 
 	public void abstractMethodCannotBeOverridden(
@@ -127,7 +127,7 @@ public class AjProblemReporter extends ProblemReporter {
 			return;
 		}
 		
-		if (CharOperation.startsWith(abstractMethod.selector, "ajc$interField".toCharArray())) {
+		if (CharOperation.prefixEquals("ajc$interField".toCharArray(), abstractMethod.selector)) {
 			//??? think through how this could go wrong
 			return;
 		}
@@ -154,25 +154,25 @@ public class AjProblemReporter extends ProblemReporter {
 	public void handle(
 		int problemId,
 		String[] problemArguments,
+		String[] messageArguments,
 		int severity,
 		int problemStartPosition,
 		int problemEndPosition,
 		ReferenceContext referenceContext,
-		CompilationResult unitResult) {
-			
+		CompilationResult unitResult)
+	{
 		if (severity != Ignore && DUMP_STACK) {
 			Thread.currentThread().dumpStack();
 		}
 		super.handle(
 			problemId,
 			problemArguments,
+			messageArguments,
 			severity,
 			problemStartPosition,
 			problemEndPosition,
 			referenceContext,
 			unitResult);
 	}
-
-
 
 }

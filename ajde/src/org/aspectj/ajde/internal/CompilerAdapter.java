@@ -70,11 +70,10 @@ public class CompilerAdapter {
 		try {	 
 			AjBuildConfig buildConfig = genBuildConfig(configFile);
 			buildConfig.setGenerateModelMode(true);
-			currNotifier = new BuildNotifierAdapter(
-				AjBuildManager.DEFAULT_PROJECT,
-				progressMonitor,
-				buildConfig.getFiles().size());			
-			buildManager.setBuildNotifier(currNotifier);
+			
+			
+			currNotifier = new BuildNotifierAdapter(progressMonitor);		
+			buildManager.setProgressListener(currNotifier);
 			messageHandler.setBuildNotifierAdapter(currNotifier);
 			
 			String rtInfo = buildManager.checkRtJar(buildConfig); // !!! will get called twice
@@ -401,9 +400,10 @@ public class CompilerAdapter {
 			
 			// ??? relies on only info messages being class-file written messages
 			if (message.getKind().equals(IMessage.INFO)) {
-				if (buildNotifierAdapter != null) {
-					buildNotifierAdapter.generatedBytecode(message.getMessage());
-				}
+				// ignore, need to get this info in a better way
+//				if (buildNotifierAdapter != null) {
+//					buildNotifierAdapter.generatedBytecode(message.getMessage());
+//				}
 			} else {
 				taskListManager.addSourcelineTask(
 					message.getMessage(),

@@ -69,7 +69,7 @@ public class SuperFixerVisitor extends AbstractSyntaxTreeVisitorAdapter {
 		
 		char[] accessName;
 		if (call.isSuperAccess() && !call.binding.isStatic()) {
-			call.receiver = new ThisReference();
+			call.receiver = new ThisReference(call.receiver.sourceStart, call.receiver.sourceEnd);
 			accessName =
 				NameMangler.superDispatchMethod(EclipseFactory.fromBinding(targetClass), 
 							new String(superBinding.selector)).toCharArray();

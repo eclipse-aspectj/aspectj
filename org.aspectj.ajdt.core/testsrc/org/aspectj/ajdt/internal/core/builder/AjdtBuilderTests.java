@@ -22,8 +22,6 @@ public class AjdtBuilderTests extends TestCase {
         TestSuite suite = new TestSuite(AjdtBuilderTests.class.getName());
         //$JUnit-BEGIN$
         suite.addTestSuite(AjBuildManagerTest.class); 
-        suite.addTestSuite(ClassFileCacheTest.class); 
-        suite.addTestSuite(ClasspathContainerTestCase.class); 
         //$JUnit-END$
         return suite;
     }

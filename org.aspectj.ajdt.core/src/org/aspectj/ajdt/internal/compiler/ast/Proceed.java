@@ -98,7 +98,7 @@ public class Proceed extends MessageSend {
 			TypeBinding argType = arg.resolveType(scope);
 			if (argType != null) {
 				TypeBinding paramType = binding.parameters[i];
-				if (!scope.areTypesCompatible(argType, paramType)) {
+				if (!argType.isCompatibleWith(paramType)) {
 					scope.problemReporter().typeMismatchError(argType, paramType, arg);
 				}
 				arg.implicitWidening(binding.parameters[i], argType);

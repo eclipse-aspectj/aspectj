@@ -43,8 +43,8 @@ public class IfMethodDeclaration extends MethodDeclaration {
 		return classFile.generateMethodInfoAttribute(binding, AstUtil.getAjSyntheticAttribute());
 	}
 	
-	public void resolveStatements(ClassScope upperScope) {
-		super.resolveStatements(upperScope);
+	public void resolveStatements() {
+		super.resolveStatements();
 		if (binding != null) {
 			ThisJoinPointVisitor tjp = new ThisJoinPointVisitor(this);
 			ifPointcut.extraParameterFlags |= tjp.removeUnusedExtraArguments();

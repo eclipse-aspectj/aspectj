@@ -12,24 +12,23 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import junit.framework.TestCase;
+
 import org.aspectj.ajdt.ajc.BuildArgParser;
 import org.aspectj.asm.StructureModelManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageWriter;
-import org.aspectj.testing.util.TestUtil;
-import org.aspectj.util.*;
-import org.aspectj.workbench.resources.FilesystemFolder;
-import org.eclipse.core.internal.events.ResourceDelta;
-import org.eclipse.core.resources.*;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.*;
-import org.eclipse.jdt.internal.core.builder.*;
-import org.eclipse.jdt.internal.core.builder.SimpleLookupTable;
+import org.aspectj.util.StreamPrintWriter;
+import org.eclipse.core.runtime.CoreException;
 
 public class AjBuildManagerTest extends TestCase {
 
@@ -205,158 +204,155 @@ public class AjBuildManagerTest extends TestCase {
 		NEW.delete();
 	}
 	
-	public void testMakeDeltas() throws IOException, InterruptedException {
-		AjBuildManager manager = new AjBuildManager(messageWriter);
-		manager.buildConfig = new AjBuildConfig();
-		List sourceRoots = new ArrayList();
-		sourceRoots.add(new File("out"));
-		manager.buildConfig.setSourceRoots(sourceRoots);
-		assertTrue(manager.testInit(messageWriter));
-		List modified = Arrays.asList(new File[] { new File("A.java"), new File("B.java") });
-		List deleted = Arrays.asList(new File[] { new File("X.java") });
-		SimpleLookupTable deltas = new SimpleLookupTable();
-		manager.makeDeltas(
-			deltas,
-			modified, 
-			deleted, 
-			((File)manager.buildConfig.getSourceRoots().get(0)).getPath());
-		
-		ResourceDelta d = (ResourceDelta)deltas.get(manager.getJavaBuilder().currentProject);
-		assertNotNull(d);
-		
-		assertEquals(d.getAffectedChildren().length, 3);
-		//XXX do more testing of children
-	}
+	// don't do delta's anymore
+//	public void testMakeDeltas() throws IOException, InterruptedException {
+//		AjBuildManager manager = new AjBuildManager(messageWriter);
+//		manager.buildConfig = new AjBuildConfig();
+//		List sourceRoots = new ArrayList();
+//		sourceRoots.add(new File("out"));
+//		manager.buildConfig.setSourceRoots(sourceRoots);
+//		assertTrue(manager.testInit(messageWriter));
+//		List modified = Arrays.asList(new File[] { new File("A.java"), new File("B.java") });
+//		List deleted = Arrays.asList(new File[] { new File("X.java") });
+//		SimpleLookupTable deltas = new SimpleLookupTable();
+//		manager.makeDeltas(
+//			deltas,
+//			modified, 
+//			deleted, 
+//			((File)manager.buildConfig.getSourceRoots().get(0)).getPath());
+//		
+//		ResourceDelta d = (ResourceDelta)deltas.get(manager.getJavaBuilder().currentProject);
+//		assertNotNull(d);
+//		
+//		assertEquals(d.getAffectedChildren().length, 3);
+//		//XXX do more testing of children
+//	}
+//	
+//	// XXX should this be working??
+//	public void testDeleteRealFiles() throws CoreException, IOException {
+//		AjBuildManager manager = new AjBuildManager(messageWriter);
+//		manager.buildConfig = new AjBuildConfig();
+//		List sourceRoots = new ArrayList();
+//		sourceRoots.add(new File("testdata/src1"));
+//		manager.buildConfig.setSourceRoots(sourceRoots);
+//		manager.buildConfig.setOutputDir(new File("out"));
+//		assertTrue(manager.testInit(messageWriter));
+//		
+//		File realClassFile = new File("out/X.class");
+//		touch(realClassFile, false);
+//		
+//		assertTrue(realClassFile.exists());
+//		
+//		IFile classfile = manager.classFileCache.getFile(new Path("X.class"));
+//		classfile.create(FileUtil.getStreamFromZip("testdata/testclasses.jar", "Hello.class"), true, null);
+//		assertTrue(classfile.exists());
+//		
+//		manager.addAspectClassFilesToWeaver();
+//		
+//		classfile.delete(true, false, null);
+//		assertTrue(realClassFile.exists());
+//		
+//		manager.addAspectClassFilesToWeaver();
+//		
+//		assertTrue(!realClassFile.exists());	
+//		
+//	}
 	
-	// XXX should this be working??
-	public void testDeleteRealFiles() throws CoreException, IOException {
-		AjBuildManager manager = new AjBuildManager(messageWriter);
-		manager.buildConfig = new AjBuildConfig();
-		List sourceRoots = new ArrayList();
-		sourceRoots.add(new File("testdata/src1"));
-		manager.buildConfig.setSourceRoots(sourceRoots);
-		manager.buildConfig.setOutputDir(new File("out"));
-		assertTrue(manager.testInit(messageWriter));
-		
-		File realClassFile = new File("out/X.class");
-		touch(realClassFile, false);
-		
-		assertTrue(realClassFile.exists());
-		
-		IFile classfile = manager.classFileCache.getFile(new Path("X.class"));
-		classfile.create(FileUtil.getStreamFromZip("testdata/testclasses.jar", "Hello.class"), true, null);
-		assertTrue(classfile.exists());
-		
-		manager.addAspectClassFilesToWeaver();
-		
-		classfile.delete(true, false, null);
-		assertTrue(realClassFile.exists());
-		
-		manager.addAspectClassFilesToWeaver();
-		
-		assertTrue(!realClassFile.exists());	
-		
-	}
-	
-	public void testIncrementalCompilerCall() throws IOException, InterruptedException, CoreException {
-		AjBuildManager manager = new AjBuildManager(messageWriter);
+	//!!!
+//	public void testIncrementalCompilerCall() throws IOException, InterruptedException, CoreException {
+//		AjBuildManager manager = new AjBuildManager(messageWriter);
+//
+//		manager.buildConfig = new AjBuildConfig();
+//		List roots = new ArrayList();
+//		roots.add(new File("testdata/src1"));
+//        manager.testInit(messageWriter);
+//		manager.buildConfig.setSourceRoots(roots);
+//		assertTrue(manager.testInit(messageWriter));
+//		List modified = Arrays.asList(new File[] { source1, source2 });
+//		List deleted = Arrays.asList(new File[] { source3 });
+//		SimpleLookupTable deltas = new SimpleLookupTable();
+//		manager.makeDeltas(
+//			deltas,
+//			modified, 
+//			deleted, 
+//			((File)manager.buildConfig.getSourceRoots().get(0)).getAbsolutePath());
+//		
+//		JavaBuilder jbuilder = manager.getJavaBuilder();
+//		jbuilder.lastState = new State(jbuilder);
+//		jbuilder.binaryLocationsPerProject = new SimpleLookupTable();
+//
+//        AjBuildManager.IncrementalBuilder builder 
+//            = manager.getIncrementalBuilder(messageWriter); // XXX trap errors
+//		TestNotifier testNotifier =  new TestNotifier(builder, jbuilder.currentProject);
+//		jbuilder.notifier = testNotifier;
+//                
+//		IContainer[] sourceFolders = new IContainer[] { 
+//			new FilesystemFolder(((File)manager.buildConfig.getSourceRoots().get(0)).getAbsolutePath())
+//		};
+//		builder.setSourceFolders(sourceFolders);
+//		testNotifier.builder = builder;
+//		
+//		IFile classfile = manager.classFileCache.getFile(new Path("X.class"));
+//		classfile.create(new ByteArrayInputStream(new byte[] {1,2,3}), true, null);
+//		
+//		assertTrue(classfile.exists());
+//		
+//		
+//		try {
+//            manager.testSetHandler(messageWriter);
+//			boolean succeeded = builder.build(deltas);
+//		} catch (NonLocalExit nle) {
+//			assertEquals(nle.getExitCode(), 0);
+//		} finally {
+//            manager.testSetHandler(null);
+//        }
+//		
+//		assertTrue(!classfile.exists());
+//	}
+//	
+//	static class TestNotifier extends BuildNotifier {
+//		int state = 0;
+//		AjBuildManager.IncrementalBuilder builder;
+//		
+//		public TestNotifier(AjBuildManager.IncrementalBuilder builder, IProject project) {
+//			super(null, project);
+//			this.builder = builder;
+//		}
+//
+//
+//		public void updateProgressDelta(float percentWorked) {
+//			switch(state) {
+//				case 0:
+//					checkInitialConfig();
+//					break;
+//				case 1:
+//					checkBinaryResources();
+//					break;
+//				case 2:
+//					checkAffectedFiles();
+//					break;
+//			}	
+//			state += 1;
+//		}
+//
+//		private void checkBinaryResources() {
+//		}
+//
+//
+//		private void checkInitialConfig() {
+//			Collection files = builder.getLocations();
+//			//System.out.println("initial: " + files);
+//		}
+//
+//		private void checkAffectedFiles() {
+//			Collection files = builder.getLocations();
+//			TestUtil.assertSetEquals(Arrays.asList(new String[] { 
+//				source1.getAbsolutePath().replace(File.separatorChar, '/'),
+//				source2.getAbsolutePath().replace(File.separatorChar, '/') }), files);
+//			throw new NonLocalExit(0);
+//		}
+//	}
 
-		manager.buildConfig = new AjBuildConfig();
-		List roots = new ArrayList();
-		roots.add(new File("testdata/src1"));
-        manager.testInit(messageWriter);
-		manager.buildConfig.setSourceRoots(roots);
-		assertTrue(manager.testInit(messageWriter));
-		List modified = Arrays.asList(new File[] { source1, source2 });
-		List deleted = Arrays.asList(new File[] { source3 });
-		SimpleLookupTable deltas = new SimpleLookupTable();
-		manager.makeDeltas(
-			deltas,
-			modified, 
-			deleted, 
-			((File)manager.buildConfig.getSourceRoots().get(0)).getAbsolutePath());
-		
-		JavaBuilder jbuilder = manager.getJavaBuilder();
-		jbuilder.lastState = new State(jbuilder);
-		jbuilder.binaryResources = new SimpleLookupTable();
-
-        AjBuildManager.IncrementalBuilder builder 
-            = manager.getIncrementalBuilder(messageWriter); // XXX trap errors
-		TestNotifier testNotifier =  new TestNotifier(builder, jbuilder.currentProject);
-		jbuilder.notifier = testNotifier;
-                
-		IContainer[] sourceFolders = new IContainer[] { 
-			new FilesystemFolder(((File)manager.buildConfig.getSourceRoots().get(0)).getAbsolutePath())
-		};
-		builder.setSourceFolders(sourceFolders);
-		testNotifier.builder = builder;
-		
-		IFile classfile = manager.classFileCache.getFile(new Path("X.class"));
-		classfile.create(new ByteArrayInputStream(new byte[] {1,2,3}), true, null);
-		
-		assertTrue(classfile.exists());
-		
-		
-		try {
-            manager.testSetHandler(messageWriter);
-			boolean succeeded = builder.build(deltas);
-		} catch (NonLocalExit nle) {
-			assertEquals(nle.getExitCode(), 0);
-		} finally {
-            manager.testSetHandler(null);
-        }
-		
-		assertTrue(!classfile.exists());
-	}
-	
-	static class TestNotifier extends BuildNotifier {
-		int state = 0;
-		AjBuildManager.IncrementalBuilder builder;
-		
-		public TestNotifier(AjBuildManager.IncrementalBuilder builder, IProject project) {
-			super(null, project);
-			this.builder = builder;
-		}
-
-
-		public void updateProgressDelta(float percentWorked) {
-			switch(state) {
-				case 0:
-					checkInitialConfig();
-					break;
-				case 1:
-					checkBinaryResources();
-					break;
-				case 2:
-					checkAffectedFiles();
-					break;
-			}	
-			state += 1;
-		}
-
-		private void checkBinaryResources() {
-		}
-
-
-		private void checkInitialConfig() {
-			Collection files = builder.getLocations();
-			//System.out.println("initial: " + files);
-		}
-
-		private void checkAffectedFiles() {
-			Collection files = builder.getLocations();
-			TestUtil.assertSetEquals(Arrays.asList(new String[] { 
-				source1.getAbsolutePath().replace(File.separatorChar, '/'),
-				source2.getAbsolutePath().replace(File.separatorChar, '/') }), files);
-			throw new NonLocalExit(0);
-		}
-	}
-
-	/**
-	 * Method touch.
-	 * @param NEW
-	 * @param b
-	 */
 	private void touch(File file, boolean isAppend) throws IOException {
 		FileOutputStream s = new FileOutputStream(file.getAbsolutePath(), isAppend);
 		s.write(new byte[] {1,2,3});

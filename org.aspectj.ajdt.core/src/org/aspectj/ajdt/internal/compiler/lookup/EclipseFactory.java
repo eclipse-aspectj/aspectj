@@ -26,7 +26,7 @@ import org.eclipse.jdt.internal.compiler.ast.*;
 import org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.eclipse.jdt.internal.compiler.lookup.*;
-import org.eclipse.jdt.internal.compiler.util.CharOperation;
+import org.eclipse.jdt.core.compiler.CharOperation;
 
 /**
  * 
@@ -193,6 +193,9 @@ public class EclipseFactory {
 		if (ret == null) {
 			ret = makeTypeBinding1(typeX);
 			typexToBinding.put(typeX, ret);
+		}
+		if (ret == null) {
+			System.out.println("can't find: " + typeX);
 		}
 		return ret;
 	}

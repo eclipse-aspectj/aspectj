@@ -24,7 +24,6 @@ public class EajcModuleTests extends TestCase {
         suite.addTest(org.aspectj.ajdt.ajc.AjdtAjcTests.suite()); 
         suite.addTest(org.aspectj.ajdt.internal.compiler.batch.AjdtBatchTests.suite()); 
         suite.addTest(org.aspectj.ajdt.internal.core.builder.AjdtBuilderTests.suite()); 
-        suite.addTest(org.aspectj.workbench.resources.WorkspaceResourcesTests.suite()); 
         return suite;
     }
 

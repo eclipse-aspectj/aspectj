@@ -1,8 +1,10 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
-<suite>
-
-
-
+<suite>    
+    <ajc-test dir="new" title="new around construct"
+      keywords="from-resolved_10x">
+        <compile files="AroundAdvice.java"/>
+        <run class="AroundAdvice"/>
+    </ajc-test>
     <!--
     
     <ajc-test dir="new" pr="885"

@@ -13,12 +13,12 @@
 
 package org.aspectj.ajdt.compiler;
 
-import org.eclipse.jdt.core.compiler.ITerminalSymbols;
+import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
  
 /**
  * This should contain a list of symbols unique to AspectJ grammar, but
  * getting jikespg to do that is too much work right now.
  */
-public interface IAjTerminalSymbols extends ITerminalSymbols {
+public interface IAjTerminalSymbols extends TerminalTokens {
 
 }

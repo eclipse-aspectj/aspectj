@@ -33,7 +33,7 @@ import org.eclipse.jdt.internal.compiler.lookup.ImportBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
-import org.eclipse.jdt.internal.compiler.util.CharOperation;
+import org.eclipse.jdt.core.compiler.CharOperation;
 
 /**
  * Adaptor from org.eclipse.jdt.internal.compiler.lookup.Scope to org.aspectj.weaver.IScope

@@ -64,7 +64,7 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
 	 * Overrides super's bundle.
 	 */
 	public BuildArgParser(PrintWriter writer) {
-		super(writer, false);
+		super(writer, writer, false);
 		bundle = ResourceBundle.getBundle(BUNDLE_NAME);
         if (writer instanceof StringPrintWriter) {
             errorSink = ((StringPrintWriter) writer).stringWriter.getBuffer();
@@ -102,6 +102,7 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
             }
 				
 			List javaArgList = parser.getUnparsedArgs();
+			javaArgList.add("-warn:deprecation"); //!!! need to make this more flexible
 			if (javaArgList.size() != 0) {
 				super.configure((String[])javaArgList.toArray(new String[javaArgList.size()]));
 			}
