@@ -346,6 +346,18 @@ public class AjcTaskTest extends TestCase {
 		return task;
 	}
 
+    /** used in testMessageHolderClassName */
+    public static class InfoHolder extends MessageHandler {
+        public InfoHolder() {
+        }
+        public boolean handleMessage(IMessage message) {
+            if (0 == IMessage.INFO.compareTo(message.getKind())) {
+                AjcTaskTest.collectMessage(message.getMessage());
+            }
+            return true;
+        }
+    }
+
 	/** used in testMessageHolderClassName */
 	public static class Holder extends MessageHandler {
 		public Holder() {
@@ -373,6 +385,38 @@ public class AjcTaskTest extends TestCase {
 		MESSAGES.setLength(0);
 		assertEquals("messages", "e", result);
 	}
+
+    public void testMessageHolderClassWithDoneSignal() {
+        AjcTask task = getTask("default.lst");
+        task.setFailonerror(false);
+        String DONE = "done";
+        task.setXDoneSignal(DONE);
+        MESSAGES.setLength(0);
+        runTest(
+            task,
+            null,
+            MessageHolderChecker.INFOS,
+            InfoHolder.class.getName());
+        final String result = MESSAGES.toString();
+        String temp = new String(result);
+        MESSAGES.setLength(0);
+        if (!temp.endsWith(DONE)) {
+            if (temp.length() > 20) {
+                temp = "..." + temp.substring(temp.length()-20, temp.length());
+            }
+            assertTrue(DONE + " is not suffix of \"" + temp + "\"", false);
+        }
+        // exactly one such message
+        temp = new String(result);
+        temp = temp.substring(0, temp.length()-DONE.length());
+        if (temp.endsWith(DONE)) {
+            temp = new String(result);
+            if (temp.length() > 20) {
+                temp = "..." + temp.substring(temp.length()-20, temp.length());
+            }
+            assertTrue(DONE + " signalled twice: \"" + temp + "\"", false);
+        }
+    }
 
 	public void testDefaultListForkedNoTools() {
 		AjcTask task = getTask("default.lst");
