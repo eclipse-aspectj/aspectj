@@ -1287,7 +1287,7 @@ class JUnitXMLLogger extends TestCompleteListener {
 		PrintStream out = streamsHandler.getLogStream();
 		out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		String timeStr = new DecimalFormat("#.##").format(duration/1000.0);					
-		out.print("<testsuite errors=\"0\" failures=\"" + numFails + "\" ");
+		out.print("<testsuite errors=\"" + numFails + "\" failures=\"0\" ");
 		out.print("name=\"" + suite.getName() + "\" " );
 		out.println("tests=\"" + numTests + "\" time=\"" + timeStr + "\">");
 		out.print(junitOutput.toString());
