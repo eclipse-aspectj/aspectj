@@ -2031,25 +2031,25 @@
 
 <programlisting>
   aspect A {
-      private Registry otherPackage.*.r;
-      public void otherPackage.*.register(Registry r) {
-	  r.register(this);
-	  this.r = r;
+      private Registry otherPackage.onType.r;
+      public void otherPackage.onType.register(Registry r) {
+	    r.register(this);
+	    this.r = r;
       }
   }
 </programlisting>
 
       <para>
-        declares that every type in <literal>otherPackage</literal> has a field
+        declares that <literal>onType</literal> in <literal>otherPackage</literal> has a field
         <literal>r</literal>.  This field, however, is only accessible from the
         code inside of aspect <literal>A</literal>.  The aspect also declares
-        that every type in <literal>otherPackage</literal> has a method
+        that <literal>onType</literal> has a method
         "<literal>register</literal>", but makes this method accessible from
         everywhere.
       </para>
 
       <para>
-        If any type in <literal>otherPackage</literal> already defines a
+        If <literal>onType</literal> already defines a
         private or package-protected field "<literal>r</literal>", there is no
         conflict: The aspect cannot see such a field, and no code in
         <literal>otherPackage</literal> can see the inter-type
@@ -2057,7 +2057,7 @@
       </para>
 
       <para>
-        If any type in <literal>otherPackage</literal> defines a public field
+        If <literal>onType</literal> defines a public field
         "<literal>r</literal>", there is a conflict: The expression
       </para>
 
@@ -2072,7 +2072,7 @@
       </para>
 
       <para>
-        If any type in <literal>otherPackage</literal> defines any method
+        If <literal>onType</literal> defines a method
         "<literal>register(Registry)</literal>" there is a conflict, since it
         would be ambiguous to any code that could see such a defined method
         which "<literal>register(Registry)</literal>" method was applicable.
