@@ -32,14 +32,21 @@ public class AjMethodDeclaration extends MethodDeclaration {
 		super(compilationResult);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration#generateInfoAttributes(org.eclipse.jdt.internal.compiler.ClassFile)
+	/**
+	 * Overridden to add extra AJ stuff, also adds synthetic if boolean is true.
 	 */
-	protected int generateInfoAttributes(ClassFile classFile) {
+	protected int generateInfoAttributes(ClassFile classFile,boolean addAjSynthetic) {
 		// add extra attributes into list then call 2-arg version of generateInfoAttributes...
 		List extras = new ArrayList();
 		addDeclarationStartLineAttribute(extras,classFile);
+		if (addAjSynthetic) {
+			extras.add(new EclipseAttributeAdapter(new AjAttribute.AjSynthetic()));
+		}
 		return classFile.generateMethodInfoAttribute(binding,false,extras);
+	}
+	
+	protected int generateInfoAttributes(ClassFile classFile) {
+	    return generateInfoAttributes(classFile,false);
 	}
 	
 	protected void addDeclarationStartLineAttribute(List extraAttributeList, ClassFile classFile) {
