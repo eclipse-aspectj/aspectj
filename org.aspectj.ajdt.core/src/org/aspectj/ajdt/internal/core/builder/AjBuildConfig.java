@@ -49,6 +49,10 @@ public class AjBuildConfig {
 	private String lintMode = AJLINT_DEFAULT;
 	private File lintSpecFile = null;
 
+    // incremental variants handled by the compiler client, but parsed here
+    private boolean incrementalMode;
+    private File incrementalFile;
+    
 	/**
 	 * Intialises the javaOptions Map to hold the default 
 	 * JDT Compiler settings. Added by AMC 01.20.2003 in reponse
@@ -162,7 +166,7 @@ public class AjBuildConfig {
 	/**
 	 * This includes all entries from -bootclasspath, -extdirs, -classpath, 
 	 */
-	public List getClasspath() {
+	public List getClasspath() { // XXX setters don't respect javadoc contract...
 		return classpath;
 	}
 
@@ -218,6 +222,22 @@ public class AjBuildConfig {
 		this.generateModelMode = structureModelMode;
 	}
 	
+    public void setIncrementalMode(boolean incrementalMode) {
+        this.incrementalMode = incrementalMode;
+    }
+
+    public boolean isIncrementalMode() {
+        return incrementalMode;
+    }
+
+    public void setIncrementalFile(File incrementalFile) {
+        this.incrementalFile = incrementalFile;
+    }
+
+    public boolean isIncrementalFileMode() {
+        return (null != incrementalFile);
+    }
+
 	/**
 	 * This includes injars and aspectpath
 	 */

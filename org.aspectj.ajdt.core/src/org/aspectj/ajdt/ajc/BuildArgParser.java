@@ -79,29 +79,22 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
 			// sets filenames to be non-null in order to make sure that file paramters are ignored
 			super.filenames = new String[] { "" }; 
 			
-			List optionsList = new ArrayList(Arrays.asList(args));
 			List fileList = new ArrayList();
-			boolean incrementalMode = false;
-			if (optionsList.remove("-incremental")) {
-				incrementalMode = true;
-				args = (String[])optionsList.toArray(new String[optionsList.size()]);
-			}
 			
-			AjcConfigParser parser = new AjcConfigParser(buildConfig, handler, incrementalMode);
+			AjcConfigParser parser = new AjcConfigParser(buildConfig, handler);
 			parser.parseCommandLine(args);
+            
+            boolean incrementalMode = buildConfig.isIncrementalMode()
+                        || buildConfig.isIncrementalFileMode();
 			
-			if (!incrementalMode) {
-				if (parser.getFiles() != null) {
-					for (Iterator it = parser.getFiles().iterator(); it.hasNext(); ) {
-						fileList.add((File)it.next());
-					}	
-				} 	
-			} else {
-				if (parser.getFiles() != null && !parser.getFiles().isEmpty()) {
-					handler.handleMessage(new Message("can not directly specify files in incremental mode, use -sourceroots instead", 
-						Message.ERROR, null, null));	
-				}
-			}
+            List files = parser.getFiles();
+            if (!LangUtil.isEmpty(files)) {
+                if (incrementalMode) {
+                    MessageUtil.error(handler, "incremental mode only handles source files using -sourceroots"); 
+                } else {
+                    fileList.addAll(files);
+                }
+            }
 				
 			List javaArgList = parser.getUnparsedArgs();
 			if (javaArgList.size() != 0) {
@@ -115,24 +108,22 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
 			}
 			
 			buildConfig.setFiles(fileList);
-			if (destinationPath != null) {
+			if (destinationPath != null) { // XXX ?? unparsed but set?
 				buildConfig.setOutputDir(new File(destinationPath));
 			}
 			
 			buildConfig.setClasspath(getClasspath(parser));
 			
-			if (incrementalMode) {
-				if (buildConfig.getSourceRoots().size() == 0) {
-					handler.handleMessage(new Message("must specify a source root when in incremental mode", 
-						Message.ERROR, null, null));	
-				}
+			if (incrementalMode 
+                && (0 == buildConfig.getSourceRoots().size())) {
+                    MessageUtil.error(handler, "specify a source root when in incremental mode");
 			}
 			
 			setDebugOptions();
 			buildConfig.setJavaOptions(options);
 		} catch (InvalidInputException iie) {
-			handler.handleMessage(new Message(iie.getMessage(), Message.ERROR, null, null));
-			printUsage();
+            MessageUtil.error(handler, iie.getMessage());
+			printUsage();  // XXX extract usage as String, add to message
 		}
 		return buildConfig;
 	}
@@ -236,28 +227,28 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
     private class AjcConfigParser extends ConfigParser {
         private String bootclasspath = null;
         private String extdirs = null;
-        private boolean incrementalArgsMode = false;
         private List unparsedArgs = new ArrayList();
 		private AjBuildConfig buildConfig;
 		private IMessageHandler handler;
 		
-        public AjcConfigParser(AjBuildConfig buildConfig, IMessageHandler handler, boolean incrementalMode) {
+        public AjcConfigParser(AjBuildConfig buildConfig, IMessageHandler handler) {
         	this.buildConfig = buildConfig;	
         	this.handler = handler;
-        	this.incrementalArgsMode = incrementalMode;
         }  
         
         public List getUnparsedArgs() {
         	return unparsedArgs;	
         }
         
+        /**
+         * Extract AspectJ-specific options (except for argfiles).
+         * Caller should warn when sourceroots is empty but in 
+         * incremental mode.
+         * Signals warnings or errors through handler set in constructor.
+         */
         public void parseOption(String arg, LinkedList args) {
 			int nextArgIndex = args.indexOf(arg)+1;
-			if (arg.equals("-Xlint")) {;
-				buildConfig.getAjOptions().put(
-					AjCompilerOptions.OPTION_Xlint,
-					CompilerOptions.GENERATE);
-			} else if (arg.equals("-injars")) {;
+            if (arg.equals("-injars")) {;
 				if (args.size() > nextArgIndex) {
 					buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_InJARs, CompilerOptions.PRESERVE);
 					
@@ -267,12 +258,10 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
 		            while (st.hasMoreTokens()) {
 		            	String filename = st.nextToken();
 		            	File jarFile = makeFile(filename);
-		            	if (filename.endsWith(".jar") && jarFile.exists()) {
+		            	if (jarFile.exists() && FileUtil.hasZipSuffix(filename)) {
 			            	buildConfig.getInJars().add(jarFile);    
 		            	} else {
-		                	handler.handleMessage(new Message(
-								"ignoring bad injar: " + filename, 
-								Message.WARNING, null, null));
+                            showWarning("ignoring bad injar: " + filename);
 		            	}
 		            }
 					
@@ -286,12 +275,10 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
 		            while (st.hasMoreTokens()) {
 		            	String filename = st.nextToken();
 		            	File jarFile = makeFile(filename);
-		            	if (filename.endsWith(".jar") && jarFile.exists()) {
+                        if (jarFile.exists() && FileUtil.hasZipSuffix(filename)) {
 			            	buildConfig.getAspectpath().add(jarFile);    
 		            	} else {
-		                	handler.handleMessage(new Message(
-								"ignoring bad injar: " + filename, 
-								Message.WARNING, null, null));
+                            showWarning("ignoring bad aspectpath: " + filename);
 		            	}
 		            }
 					
@@ -305,58 +292,57 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
 						File.pathSeparator);
 		            while (st.hasMoreTokens()) {
 		            	File f = makeFile(st.nextToken());
-		            	if (f.isDirectory()) {
+		            	if (f.isDirectory() && f.canRead()) {
 			                sourceRoots.add(f);
 		            	} else {
-							handler.handleMessage(new Message(
-								f.getName() + " is not a file, not adding to sourceroots", 
-								Message.WARNING, null, null));	
+                            showWarning("ignoring bad sourceroot: " + f);
 		            	}		            		
 		            }
-					 
-									
-//					if (sourceRoots.size() > 1) {
-//						handler.handleMessage(new Message(
-//							"can not specify more than one source root (compiler limitation)\n"
-//							+ "using source root: " + sourceRoots.get(0), 
-//							Message.WARNING, null, null));	
-//					} else 
-					if (sourceRoots.size() < 1) {
-						out.println("must specify a valid source root in incremental mode");
-					} else {
+				    if (0 < sourceRoots.size()) {
 						buildConfig.setSourceRoots(sourceRoots);	
 					}
 					args.remove(args.get(nextArgIndex));
 				} else {
-					out.println("must specify a valid source root in incremental mode");
+					showWarning("-sourceroots requires list of directories");
 				}
 			} else if (arg.equals("-outjar")) { 
 				if (args.size() > nextArgIndex) {
 					buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_OutJAR, CompilerOptions.GENERATE);
 					File jarFile = makeFile(((ConfigParser.Arg)args.get(nextArgIndex)).getValue());
-					if (jarFile.getName().endsWith(".jar")) {
+					if (FileUtil.hasZipSuffix(jarFile)) {
 						try {
-							if (!jarFile.exists()) jarFile.createNewFile();
+							if (!jarFile.exists()) {
+                                jarFile.createNewFile();
+                            }
+                            buildConfig.setOutputJar(jarFile);  
 						} catch (IOException ioe) { 
-							// fail siltenty 
+                            showWarning("unable to created outjar file: " + jarFile);
 						}
-						buildConfig.setOutputJar(jarFile);	
 					} else {
-						out.println("file specified with -outjar is not a valid JAR file, ignoring");
+						showWarning("ignoring invalid -outjar file: " + jarFile);
 						buildConfig.setLintSpecFile(null);
 					}
 					args.remove(args.get(nextArgIndex));
 				} else {
-					out.println("must specify a file for -outjar");
+					showWarning("-outjar requires jar path argument");
 				}
+            } else if (arg.equals("-incremental")) {
+                buildConfig.setIncrementalMode(true);
+            } else if (arg.equals("-XincrementalFile")) {
+                if (args.size() > nextArgIndex) {
+                    File file = makeFile(((ConfigParser.Arg)args.get(nextArgIndex)).getValue());
+                    buildConfig.setIncrementalFile(file);
+                    if (!file.canRead()) {
+                        showWarning("unreadable -XincrementalFile : " + file);
+                        // if not created before recompile test, stop after first compile
+                    }
+                    args.remove(args.get(nextArgIndex));
+                } else {
+                    showWarning("-XincrementalFile requires file argument");
+                }
 			} else if (arg.equals("-emacssym")) {
 				buildConfig.setEmacsSymMode(true);
 				buildConfig.setGenerateModelMode(true);
-			} else if (arg.equals("-emacssym")) {
-				buildConfig.setEmacsSymMode(true);
-				buildConfig.setGenerateModelMode(true);
-			//AMC - added -XnoWeave to options that match, in line with
-			// AspectJ 1.1 release notes documentation.	
 			} else if (arg.equals("-noweave") || arg.equals( "-XnoWeave")) {
 				buildConfig.setNoWeave(true);
 			} else if (arg.equals("-XserializableAspects")) {
@@ -366,53 +352,69 @@ public class BuildArgParser extends org.eclipse.jdt.internal.compiler.batch.Main
 			} else if (arg.equals("-Xlintfile")) { 
 				if (args.size() > nextArgIndex) {
 					File lintSpecFile = makeFile(((ConfigParser.Arg)args.get(nextArgIndex)).getValue());
-					if (lintSpecFile.exists() && lintSpecFile.getName().endsWith(".properties")) {
+                    // XXX relax restriction on props file suffix?
+					if (lintSpecFile.canRead() && lintSpecFile.getName().endsWith(".properties")) {
 						buildConfig.setLintSpecFile(lintSpecFile);	
 					} else {
-						out.println("file specified with -Xlintfile does not exist, ignoring");
+						showWarning("ignoring as unreadable -Xlintfile file: " + lintSpecFile);
 						buildConfig.setLintSpecFile(null);
 					}
 					args.remove(args.get(nextArgIndex));
 				} else {
-					out.println("must specify a file for -outjar");
+					showWarning("-Xlintfile requires .properties file argument");
 				}
-			} else if (arg.startsWith("-Xlint")) {
-				int index = arg.indexOf(":");
-				if (index != -1) {
-					buildConfig.setLintMode(arg.substring(index+1));
-				} else {
-					buildConfig.setLintMode(AjBuildConfig.AJLINT_DEFAULT);
-				}
-			} else if (arg.equals("-bootclasspath")) {
+            } else if (arg.equals("-Xlint")) { // XXX two Xlint handlers?
+                buildConfig.getAjOptions().put(
+                    AjCompilerOptions.OPTION_Xlint,
+                    CompilerOptions.GENERATE);
+                buildConfig.setLintMode(AjBuildConfig.AJLINT_DEFAULT);
+            } else if (arg.startsWith("-Xlint:")) {
+                if (7 < arg.length()) {
+                    buildConfig.setLintMode(arg.substring(7));
+                } else {
+                    showWarning("ignoring invalid option " + arg);
+                }
+			} else if (arg.equals("-bootclasspath")) { // XXX unsupportedIn1.1
 				if (args.size() > nextArgIndex) {
 					bootclasspath = ((ConfigParser.Arg)args.get(nextArgIndex)).getValue();
 					args.remove(args.get(nextArgIndex));	
-				}
-			} else if (arg.equals("-extdirs")) {
+                } else {
+                    showWarning("-bootclasspath requires classpath entries");
+                }
+			} else if (arg.equals("-extdirs")) {     // XXX unsupportedIn1.1
 				if (args.size() > nextArgIndex) {
 					extdirs = ((ConfigParser.Arg)args.get(nextArgIndex)).getValue();
 					args.remove(args.get(nextArgIndex));
-				}	
+                } else {
+                    showWarning("-extdirs requires list of external directories");
+                }
+            } else if (arg.equals("-d")) {
+                if (args.size() > nextArgIndex) {
+                    unparsedArgs.add(arg); // XXX hmm
+//                      ConfigParser.Arg path = (ConfigParser.Arg)args.get(nextArgIndex);
+//                      path.setValue(makeFile(path.getValue()).getPath());
+                } else {
+                    showWarning("-d requires output directory");
+                }
 			} else {
-//				if (arg.equals("-d")) {
-//					int nextArgIndex = args.indexOf(arg)+1;
-//					if (args.size() > nextArgIndex) {
-//						ConfigParser.Arg path = (ConfigParser.Arg)args.get(nextArgIndex);
-//						path.setValue(makeFile(path.getValue()).getPath());
-//					}
-//		    	} 
+                // XXX unparsed aspectJ options: argfile, @file
+                // no eclipse options parsed:
+                // -d args, -help (handled), 
+                // -classpath, -target, -1.3, -1.4, -source [1.3|1.4]
+                // -nowarn, -warn:[...], -deprecation, -noImportError,
+                // -proceedOnError, -g:[...], -preserveAllLocals,
+                // -referenceInfo, -encoding, -verbose, -log, -time
+                // -noExit, -repeat
 		    	unparsedArgs.add(arg);
 			}
         }
 
         public void showError(String message) {
-//			out.println(message);
-        	handler.handleMessage(new Message(message, Message.ERROR, null, null));
+            MessageUtil.error(handler, message);
         }
         
-        
 		protected void showWarning(String message) {
-			handler.handleMessage(new Message(message, Message.WARNING, null, null));
+            MessageUtil.warn(handler, message);
         }
 
     }
