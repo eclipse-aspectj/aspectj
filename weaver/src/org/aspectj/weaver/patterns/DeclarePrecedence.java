@@ -65,10 +65,19 @@ public class DeclarePrecedence extends Declare {
 	
     public void resolve(IScope scope) {
     	patterns = patterns.resolveBindings(scope, Bindings.NONE, false, false); 
+    	boolean seenStar = false;
     	
     	for (int i=0; i < patterns.size(); i++) {
     		TypePattern pi = patterns.get(i);
-    		if (pi.isStar()) continue;
+    		if (pi.isStar()) {
+    			if (seenStar) {
+    				scope.getWorld().showMessage(IMessage.ERROR,
+    					"circularity in declare dominates, '*' occurs more than once",
+    					pi.getSourceLocation(), null);    				
+    			}
+    			seenStar = true;
+    			continue;
+    		}
     		ResolvedTypeX exactType = pi.getExactType().resolve(scope.getWorld());
     		if (exactType == ResolvedTypeX.MISSING) continue;
     		for (int j=0; j < patterns.size(); j++) {
