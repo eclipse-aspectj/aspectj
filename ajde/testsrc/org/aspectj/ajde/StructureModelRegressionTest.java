@@ -95,7 +95,7 @@ public class StructureModelRegressionTest extends AjdeTestCase {
 
 	private StructureModel getModelForFile(String lstFile) {
 		Ajde.getDefault().getConfigurationManager().setActiveConfigFile(lstFile);
-		Ajde.getDefault().getBuildManager().buildStructure();
+		Ajde.getDefault().getBuildManager().build(); // was buildStructure...
 		while(!testerBuildListener.getBuildFinished()) {
 			try {
 				Thread.sleep(300);
