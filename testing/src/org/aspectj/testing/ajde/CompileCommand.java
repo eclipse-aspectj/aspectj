@@ -38,6 +38,7 @@ public class CompileCommand implements ICommand {
     MyTaskListManager myHandler = new MyTaskListManager();
     long endTime;
     boolean buildNextFresh;
+    File tempDir;
 
     /**
      * Clients call this before repeatCommand as a one-shot
@@ -53,10 +54,14 @@ public class CompileCommand implements ICommand {
         setup(args);
         myHandler.start();
         long startTime = System.currentTimeMillis();
-        Ajde.getDefault().getBuildManager().buildFresh();
-        // System.err.println("compiling " + Arrays.asList(args));
-        waitForCompletion(startTime);
-        myHandler.finish(handler);
+        try {
+            Ajde.getDefault().getBuildManager().buildFresh();
+            // System.err.println("compiling " + Arrays.asList(args));
+            waitForCompletion(startTime);
+        } finally {
+            myHandler.finish(handler);
+            runCommandCleanup();
+        }
         return !myHandler.hasError();
     }
 
@@ -73,6 +78,12 @@ public class CompileCommand implements ICommand {
         waitForCompletion(startTime);
         myHandler.finish(handler);
         return !myHandler.hasError();
+    }
+    void runCommandCleanup() {
+        if (null != tempDir) {
+            FileUtil.deleteContents(tempDir);
+            tempDir.delete();
+        } 
     }
     
     // set by build progress monitor when done
@@ -145,7 +156,8 @@ public class CompileCommand implements ICommand {
     }
     
     private File writeConfig(String[] args) {
-        File result = new File(FileUtil.getTempDir("CompileCommand"), "config.lst");
+        tempDir = FileUtil.getTempDir("CompileCommand");
+        File result = new File(tempDir, "config.lst");
         OutputStream out = null;
         try {
             out = new FileOutputStream(result);
