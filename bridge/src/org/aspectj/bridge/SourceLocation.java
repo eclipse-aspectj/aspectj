@@ -133,9 +133,11 @@ public class SourceLocation implements ISourceLocation, java.io.Serializable {
         }
         if (sourceFile != ISourceLocation.NO_FILE) {
             sb.append(sourceFile.getPath());
-            sb.append(":");
         }
-        sb.append(startLine); //"" + startLine + "-" + endLine);
+        if (startLine > 0) {
+            sb.append(":");
+            sb.append(startLine); //"" + startLine + "-" + endLine);        	
+        }
         if (!noColumn) {
             sb.append(":" + column);
         }

@@ -42,6 +42,11 @@ public class Message implements IMessage {
             location);
     }
 
+    public Message(String message, ISourceLocation location, boolean isError, ISourceLocation[] extraSourceLocations) {
+    	this(message, "",(isError ? IMessage.ERROR : IMessage.WARNING), location, null, 
+    			(extraSourceLocations.length > 0 ? extraSourceLocations : null));
+    }
+    
 	/**
 	 * Create a message, handling null values for message and kind
 	 * if thrown is not null.
