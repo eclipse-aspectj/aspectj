@@ -25,6 +25,7 @@ public class AjdtBuilderTests extends TestCase {
 		suite.addTestSuite(AsmBuilderTest.class); 
 		suite.addTestSuite(AjCompilerOptionsTest.class);
 		suite.addTestSuite(AjStateTest.class);
+		suite.addTestSuite(OutjarTest.class);
         //$JUnit-END$
         return suite;
     }

@@ -20,6 +20,7 @@ import java.util.*;
 import org.aspectj.ajdt.internal.core.builder.*;
 import org.aspectj.bridge.*;
 import org.aspectj.util.*;
+import org.aspectj.weaver.WeaverMessages;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.internal.compiler.batch.Main;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
@@ -179,6 +180,42 @@ public class BuildArgParser extends Main {
 			if (incrementalMode 
                 && (0 == buildConfig.getSourceRoots().size())) {
                     MessageUtil.error(handler, "specify a source root when in incremental mode");
+			}
+
+			/*
+			 * Ensure we don't overwrite injars, inpath or aspectpath with outjar
+			 * bug-71339 
+			 */
+			File outjar = buildConfig.getOutputJar();
+			if (outjar != null) {
+				
+				/* Search injars */
+				for (Iterator i = buildConfig.getInJars().iterator(); i.hasNext(); ) {
+					File injar = (File)i.next();
+					if (injar.equals(outjar)) {
+						String message = WeaverMessages.format(WeaverMessages.OUTJAR_IN_INPUT_PATH);
+						MessageUtil.error(handler,message);
+					}
+				}
+
+				/* Search inpath */
+				for (Iterator i = buildConfig.getInpath().iterator(); i.hasNext(); ) {
+					File inPathElement = (File)i.next();
+					if (!inPathElement.isDirectory() && inPathElement.equals(outjar)) {				
+						String message = WeaverMessages.format(WeaverMessages.OUTJAR_IN_INPUT_PATH);
+						MessageUtil.error(handler,message);
+					}
+				}
+
+				/* Search aspectpath */
+				for (Iterator i = buildConfig.getAspectpath().iterator(); i.hasNext(); ) {
+					File pathElement = (File)i.next();
+					if (!pathElement.isDirectory() && pathElement.equals(outjar)) {				
+						String message = WeaverMessages.format(WeaverMessages.OUTJAR_IN_INPUT_PATH);
+						MessageUtil.error(handler,message);
+					}
+				}
+
 			}
 			
 			setDebugOptions();

@@ -4,12 +4,13 @@
 	<comment></comment>
 	<projects>
 		<project>asm</project>
-		<project>weaver</project>
 		<project>bridge</project>
 		<project>org.eclipse.jdt.core</project>
 		<project>runtime</project>
+		<project>testing-client</project>
 		<project>testing-util</project>
 		<project>util</project>
+		<project>weaver</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

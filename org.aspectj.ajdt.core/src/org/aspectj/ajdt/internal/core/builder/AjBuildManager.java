@@ -229,7 +229,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
             }
         } finally {
         	if (zos != null) {
-        		closeOutputStream();
+        		closeOutputStream(buildConfig.getOutputJar());
         	}
             ret = !handler.hasErrors();
             // bug 59895, don't release reference to handler as may be needed by a nested call
@@ -257,17 +257,22 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		return true;
 	}
 
-	private void closeOutputStream() {
+	private void closeOutputStream(File outJar) {
 		try {
 			if (zos != null) zos.close();
 			zos = null;
+			
+			/* Ensure we don't write an incomplete JAR bug-71339 */
+			if (handler.hasErrors()) {
+				outJar.delete(); 
+			}
 		} catch (IOException ex) {
 			IMessage message = 
 				new Message("Unable to write outjar " 
-								+ buildConfig.getOutputJar().getPath() 
+								+ outJar.getPath() 
 								+ "(" + ex.getMessage() 
 								+ ")",
-							new SourceLocation(buildConfig.getOutputJar(),0),
+							new SourceLocation(outJar,0),
 							true);
 			handler.handleMessage(message);
 		}

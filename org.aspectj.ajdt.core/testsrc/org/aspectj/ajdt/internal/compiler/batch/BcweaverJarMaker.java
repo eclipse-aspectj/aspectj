@@ -40,6 +40,8 @@ public class BcweaverJarMaker {
 		makeURLWeavingClassLoaderJars();
 		
 		makeDuplicateManifestTestJars();
+
+		makeOutjarTestJars();
 	}
 	
 	public static void makeJar0() throws IOException {
@@ -356,5 +358,59 @@ public class BcweaverJarMaker {
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/Trace.java");
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/TraceHello.java");
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+	}	
+	
+	public static void makeOutjarTestJars() throws IOException {
+		List args = new ArrayList();
+
+		/*
+		 * parent
+		 */
+		args.clear();
+		args.add("-classpath"); 
+		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar" +
+		   File.pathSeparator + System.getProperty("aspectjrt.path"));
+		args.add("-outjar");
+		args.add("./testdata/OutjarTest/parent.jar");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/OutjarTest/src/jar1/Parent.java");
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+
+		/*
+		 * child
+		 */
+		args.clear();
+		args.add("-classpath"); 
+		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar"
+			+ File.pathSeparator + System.getProperty("aspectjrt.path")
+			+ File.pathSeparator + "./testdata/OutjarTest/parent.jar");
+		args.add("-outjar");
+		args.add("./testdata/OutjarTest/child.jar");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/OutjarTest/src/jar2/Child.java");
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+
+		/*
+		 * aspects
+		 */
+		args.clear();
+		args.add("-classpath"); 
+		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar"
+			+ File.pathSeparator + System.getProperty("aspectjrt.path"));
+		args.add("-outjar");
+		args.add("./testdata/OutjarTest/aspects.jar");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/OutjarTest/src/jar3/Aspect.aj");
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+
+		/*
+		 * aspectjar
+		 */
+//		args = new ArrayList();
+//		args.add("-classpath"); 
+//		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar" +
+//		   File.pathSeparator + System.getProperty("aspectjrt.path"));
+//		args.add("-outjar");
+//		args.add("../ajde/testdata/DuplicateManifestTest/aspectjar.jar");
+//		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/Trace.java");
+//		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/TraceHello.java");
+//		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 	}	
 }

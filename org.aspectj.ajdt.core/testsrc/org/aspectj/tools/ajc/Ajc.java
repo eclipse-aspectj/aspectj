@@ -53,6 +53,8 @@ public class Ajc {
 	private int incrementalStage = 10;
 	private boolean shouldEmptySandbox = true;
 	private AjcCommandController controller;
+	private static boolean verbose = (!System.getProperty("org.aspectj.tools.ajc.Ajc.verbose","false").equals("false"));
+
 	
 	/**
 	 * Constructs a new Ajc instance, with a new AspectJ compiler
@@ -175,6 +177,11 @@ public class Ajc {
 			System.setOut(systemOut);
 			System.setErr(systemErr);
 		}
+		if (verbose) {
+			System.err.println(result.getStandardError());
+			System.out.println(result.getStandardOutput());
+			System.out.println(result);
+		}
 		return result;
 	}
 	
@@ -279,6 +286,7 @@ public class Ajc {
 				if ((args[i].equals("-aspectpath") ||
 				     args[i].equals("-inpath") ||
 					 args[i].equals("-injars") ||
+					 args[i].equals("-outjar") ||
 					 args[i].equals("-classpath") ||
 					 args[i].equals("-sourceroots") ||
 					 args[i].equals("-Xlintfile") ||
