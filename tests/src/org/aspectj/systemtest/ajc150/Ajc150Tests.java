@@ -38,11 +38,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   }
 
   public void test_typeProcessingOrderWhenDeclareParents() {
-	try {
-  		runTest("Order of types passed to compiler determines weaving behavior");
-	} finally {
-  		System.err.println(ajc.getLastCompilationResult().getStandardError());
-	}
+	runTest("Order of types passed to compiler determines weaving behavior");
   }
   
   public void test_aroundMethod() {

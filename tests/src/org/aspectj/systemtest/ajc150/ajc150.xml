@@ -925,6 +925,23 @@
            <message kind="weave" text="Type 'SimpleVarargs' (SimpleVarargs.java:27) advised by before advice from 'VarargsAspect06' (VarargsAspect06.aj:3)"/>
        </compile>
    </ajc-test>
+   
+   <ajc-test dir="java5/suppressedWarnings" vm="1.5" title="suppressing non-matching advice warnings">
+       <compile files="Suppression1.aj" options="-1.5,-showWeaveInfo">
+       	 <message kind="warning" line="13"/>
+         <message kind="warning" line="21"/>
+       </compile>
+   </ajc-test>
+   
+    <ajc-test dir="java5/suppressedWarnings" vm="1.5" title="suppressing non-matching advice warnings when multiple source files involved">
+       <compile files="A.java,A1.aj,A2.aj,A3.aj" options="-1.5,-showWeaveInfo">
+         <message kind="warning" line="4" file="A1.aj"/>
+         <message kind="warning" line="4" file="A2.aj"/>
+         <message kind="warning" line="11" file="A2.aj"/>
+         <message kind="warning" line="4" file="A3.aj"/>
+         <message kind="warning" line="11" file="A3.aj"/>
+       </compile>
+   </ajc-test>
 
    <!-- ======================================================================================= -->
    <!--               annotated aspect members                                                  -->
