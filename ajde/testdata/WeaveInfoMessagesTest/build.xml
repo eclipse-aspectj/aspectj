@@ -1,0 +1,18 @@
+<project name="aspectj-examples" default="spacewar" basedir=".">
+
+    <!--target name="init.taskdefs"-->
+      <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+          <classpath> 
+            <pathelement path="c:\aspectj1.2\lib\aspectjtools.jar"/>
+          </classpath>
+      </taskdef>
+    <!--/target-->
+
+    <target name="spacewar">
+       <iajc destdir="." argfiles="Two.lst" debug="off"
+       	fork="true" forkclasspath="c:\aspectj1.2\lib\aspectjtools.jar"
+        classpath="c:\aspectj1.2\lib\aspectjrt.jar"/>
+
+    </target>
+
+</project>

@@ -1,0 +1,1 @@
+Setting superclass of type 'Simple' (Simple.java) to 'InTheWay' (AspectDeclareExtends.aj)
