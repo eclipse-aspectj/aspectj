@@ -17,7 +17,10 @@ package org.aspectj.internal.tools.build;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 /** 
@@ -27,107 +30,124 @@ import java.util.Properties;
  * Static state has much of the Ant build properties (move?)
  */
 public class BuildSpec {
-    public static final String baseDir_NAME = "aspectj.modules.dir";
-    public static final String stagingDir_NAME = "aj.staging.dir";
-    public static final String jarDir_NAME = "aj.jar.dir";
-    public static final String tempDir_NAME = "aj.temp.dir";
-    public static final String distDir_NAME = "aj.dist.dir";
+    public static final String DEFAULT_VERSION = "DEVELOPMENT";
+//    public static final String baseDir_NAME = "aspectj.modules.dir";
+//    public static final String stagingDir_NAME = "aj.staging.dir";
+//    public static final String jarDir_NAME = "aj.jar.dir";
+//    public static final String tempDir_NAME = "aj.temp.dir";
+//    public static final String distDir_NAME = "aj.dist.dir";
     
-    /** name of a system property for reading the build version */
-    public static final String SYSTEM_BUILD_VERSION_KEY = "aspectj.build.version";
-
-    /** value of the build.version if build version not defined */
-    public static final String BUILD_VERSION_DEFAULT = "DEVELOPMENT";
-
-    /** name of a filter property for the normal build version */
-    public static final String BUILD_VERSION_NAME = "build.version";
-
-    /** name of a filter property for the company */
-    public static final String COMPANY_NAME = "company.name";
-
-    /** default value of of a filter property for the company */
-    public static final String COMPANY_NAME_DEFAULT = "aspectj.org";
-
-    /** name of a filter property for the base build version (no alpha, etc.) */
-    public static final String BUILD_VERSION_BASE_NAME = "build.version.base";
-
-    /** copyright property name */
-    public static final String COPYRIGHT_NAME = "copyright.allRights.from1998";
-
-    /** overall copyright */
-    public static final String COPYRIGHT =
-       "Copyright (c) 1998-2001 Xerox Corporation, "
-       + "2002 Palo Alto Research Center, Incorporated. All rights reserved.";
-
-    /** name of a filter property for the long build version (alpha) */
-    public static final String BUILD_VERSION_LONG_NAME = "build.version.long";
-
-    /** name of a filter property for the short build version (alpha -> a, etc.) */
-    public static final String BUILD_VERSION_SHORT_NAME = "build.version.short";
-
-    /** name of a filter property for the build time */
-    public static final String BUILD_TIME_NAME = "build.time";
-
-    /** name of a filter property for the build date */
-    public static final String BUILD_DATE_NAME = "build.date";
-    
-    /** lazily and manually generate properties */
-    public static Properties getFilterProperties(long time, String longVersion) {
-        if (time < 1) {
-            time = System.currentTimeMillis();
-        }  
-        if ((null == longVersion) || (0 == longVersion.length())) {
-            longVersion = System.getProperty(
-                        BuildSpec.SYSTEM_BUILD_VERSION_KEY, 
-                        BuildSpec.BUILD_VERSION_DEFAULT);
-        }
-        Properties filterProps = new Properties();
-
-        // build time and date  XXX set in build script?
-        String timeString = time+"L";
-        // XXX wrong date format - use Version.java template format?
-        String date = new SimpleDateFormat("MMMM d, yyyy").format(new Date());
-        filterProps.setProperty(BUILD_TIME_NAME, timeString);
-        filterProps.setProperty(BUILD_DATE_NAME, date);
-
-        // build version, short build version, and base build version 
-        // 1.1alpha1,     1.1a1,               and 1.1
-        String key = BuildSpec.BUILD_VERSION_NAME;
-        String value = longVersion;
-        value = value.trim();
-        filterProps.setProperty(key, value);
-        
-        key = BuildSpec.BUILD_VERSION_LONG_NAME;
-        filterProps.setProperty(key, value);
-
-        if (!BuildSpec.BUILD_VERSION_DEFAULT.equals(value)) {
-            value = Util.shortVersion(value);
-        }
-        key = BuildSpec.BUILD_VERSION_SHORT_NAME;
-        filterProps.setProperty(key, value);
-
-        key = BuildSpec.BUILD_VERSION_BASE_NAME;
-        if (!BuildSpec.BUILD_VERSION_DEFAULT.equals(value)) {
-            int MAX = value.length();
-            for (int i = 0; i < MAX; i++) {
-                char c = value.charAt(i);
-                if ((c != '.') && ((c < '0') || (c > '9'))) {
-                    value = value.substring(0,i);
-                    break;
-                }
-            }
-        }
-        filterProps.setProperty(key, value);
-
-        // company name, copyright XXX fix company name
-        key = BuildSpec.COMPANY_NAME;
-        value = System.getProperty(key, BuildSpec.COMPANY_NAME_DEFAULT);
-        filterProps.setProperty(key, value);
-        filterProps.setProperty(BuildSpec.COPYRIGHT_NAME, BuildSpec.COPYRIGHT);
-        
-        return filterProps;
-    }
-    
+//    /** name of a system property for reading the build version */
+//    public static final String SYSTEM_BUILD_VERSION_KEY = "aspectj.build.version";
+//
+//    /** value of the build.version if build version not defined */
+//    public static final String BUILD_VERSION_DEFAULT = "DEVELOPMENT";
+//
+//    /** name of a filter property for the normal build version */
+//    public static final String BUILD_VERSION_NAME = "build.version";
+//
+//    /** name of a filter property for the company */
+//    public static final String COMPANY_NAME = "company.name";
+//
+//    /** default value of of a filter property for the company */
+//    public static final String COMPANY_NAME_DEFAULT = "aspectj.org";
+//
+//    /** name of a filter property for the base build version (no alpha, etc.) */
+//    public static final String BUILD_VERSION_BASE_NAME = "build.version.base";
+//
+//    /** copyright property name */
+//    public static final String COPYRIGHT_NAME = "copyright.allRights.from1998";
+//
+//    /** overall copyright */
+//    public static final String COPYRIGHT =
+//       "Copyright (c) 1998-2001 Xerox Corporation, "
+//       + "2002 Palo Alto Research Center, Incorporated. All rights reserved.";
+//
+//    /** name of a filter property for the long build version (alpha) */
+//    public static final String BUILD_VERSION_LONG_NAME = "build.version.long";
+//
+//    /** name of a filter property for the short build version (alpha -> a, etc.) */
+//    public static final String BUILD_VERSION_SHORT_NAME = "build.version.short";
+//
+//    /** name of a filter property for the build time */
+//    public static final String BUILD_TIME_NAME = "build.time";
+//
+//    /** name of a filter property for the build date */
+//    public static final String BUILD_DATE_NAME = "build.date";
+//    
+//    /* default value of build date format by convention tracks 
+//     * build-properties.xml build.date.format.
+//     */
+//    public static final String BUILD_DATE_FORMAT = "EEEE MMM d, yyyy"; 
+//    
+//    /** unmodifiable List of String keys to build properties */
+//    public static final List PROPERTY_NAMES;
+//    static {
+//        String[] names = new String[]
+//            { BUILD_VERSION_NAME, COMPANY_NAME, BUILD_VERSION_BASE_NAME,
+//                COPYRIGHT_NAME, BUILD_VERSION_LONG_NAME, 
+//                BUILD_VERSION_SHORT_NAME, BUILD_TIME_NAME,
+//                BUILD_DATE_NAME
+//            };
+//        PROPERTY_NAMES = Collections.unmodifiableList(Arrays.asList(names));
+//    }
+//    
+//    /** lazily and manually generate properties */
+//    public static Properties getBuildProperties(long time, String longVersion) {
+//        if (time < 1) {
+//            time = System.currentTimeMillis();
+//        }  
+//        if ((null == longVersion) || (0 == longVersion.length())) {
+//            longVersion = System.getProperty(
+//                        BuildSpec.SYSTEM_BUILD_VERSION_KEY, 
+//                        BuildSpec.BUILD_VERSION_DEFAULT);
+//        }
+//        Properties filterProps = new Properties();
+//
+//        // build time and date  XXX set in build script?
+//        String timeString = time+"L";
+//        String date = new SimpleDateFormat("MMMM d, yyyy").format(new Date());
+//        filterProps.setProperty(BUILD_TIME_NAME, timeString);
+//        filterProps.setProperty(BUILD_DATE_NAME, date);
+//
+//        // build version, short build version, and base build version 
+//        // 1.1alpha1,     1.1a1,               and 1.1
+//        String key = BuildSpec.BUILD_VERSION_NAME;
+//        String value = longVersion;
+//        value = value.trim();
+//        filterProps.setProperty(key, value);
+//        
+//        key = BuildSpec.BUILD_VERSION_LONG_NAME;
+//        filterProps.setProperty(key, value);
+//
+//        if (!BuildSpec.BUILD_VERSION_DEFAULT.equals(value)) {
+//            value = Util.shortVersion(value);
+//        }
+//        key = BuildSpec.BUILD_VERSION_SHORT_NAME;
+//        filterProps.setProperty(key, value);
+//
+//        key = BuildSpec.BUILD_VERSION_BASE_NAME;
+//        if (!BuildSpec.BUILD_VERSION_DEFAULT.equals(value)) {
+//            int MAX = value.length();
+//            for (int i = 0; i < MAX; i++) {
+//                char c = value.charAt(i);
+//                if ((c != '.') && ((c < '0') || (c > '9'))) {
+//                    value = value.substring(0,i);
+//                    break;
+//                }
+//            }
+//        }
+//        filterProps.setProperty(key, value);
+//
+//        // company name, copyright XXX fix company name
+//        key = BuildSpec.COMPANY_NAME;
+//        value = System.getProperty(key, BuildSpec.COMPANY_NAME_DEFAULT);
+//        filterProps.setProperty(key, value);
+//        filterProps.setProperty(BuildSpec.COPYRIGHT_NAME, BuildSpec.COPYRIGHT);
+//        
+//        return filterProps;
+//    }
+//    
     // shared
     public File baseDir;
     public File moduleDir;
@@ -141,6 +161,7 @@ public class BuildSpec {
     public boolean assembleAll;
     public boolean failonerror;
     public boolean verbose;
+    private Properties buildProperties;
 
     // building products
     public File productDir;
@@ -149,6 +170,38 @@ public class BuildSpec {
     
     // building modules
     public String module;
+    public BuildSpec() {
+        version = DEFAULT_VERSION;
+    }
+    
+//    /**
+//     * Generate and cache build properties.
+//     * @return Properties
+//     */
+//    public Properties getBuildProperties() {
+//        if (null == buildProperties) {
+//            long time = System.currentTimeMillis();
+//            buildProperties = BuildSpec.getBuildProperties(time, version);
+//        } else if (null != version) { // check if version is out of sync
+//            String versionValue = buildProperties.getProperty(BUILD_VERSION_NAME);
+//            if (!version.equals(versionValue)) {
+//                // XXX ok, now what - reset? alert?
+//            }
+//        }
+//        return buildProperties;
+//    }
+    
+    public boolean isProduct() {
+        return (Util.canReadDir(productDir));
+    }
+
+    public boolean isModule() {
+        return (!isProduct() && Util.canReadDir(moduleDir));
+    }
+
+    public boolean isValid() {
+        return (isProduct() || isModule());
+    }
     
     public String toString() { // XXX better
         if (null != productDir) {

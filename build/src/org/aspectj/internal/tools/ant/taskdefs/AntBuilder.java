@@ -16,7 +16,6 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Copy;
-import org.apache.tools.ant.taskdefs.Filter;
 import org.apache.tools.ant.taskdefs.Javac;
 import org.apache.tools.ant.taskdefs.Zip;
 import org.apache.tools.ant.types.FileSet;
@@ -34,11 +33,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Implement Builder in Ant.
@@ -116,6 +113,7 @@ public class AntBuilder extends Builder {
     }
 
     protected final Project project;
+    protected boolean filterSetup;
 
     protected AntBuilder(Project project, File tempDir, boolean useEclipseCompiles,
         Messager handler) {
@@ -123,6 +121,7 @@ public class AntBuilder extends Builder {
         this.project = project;
         Util.iaxIfNull(project, "project");
     }
+    
     protected boolean copyFile(File fromFile, File toFile, boolean filter) {
         Copy copy = makeCopyTask(filter);
         copy.setFile(fromFile);
@@ -131,58 +130,54 @@ public class AntBuilder extends Builder {
         return true;
     }
     
+    /**
+      * @see org.aspectj.internal.tools.ant.taskdefs.Builder#copyFiles(File, File, String, String, boolean)
+      */
+    protected boolean copyFiles(
+         File fromDir,
+         File toDir,
+         String includes,
+         String excludes,
+         boolean filter) {
+         Copy copy = makeCopyTask(filter);
+         copy.setTodir(toDir);
+         FileSet fileset = new FileSet();
+         fileset.setDir(fromDir);
+         if (null != includes) {
+             fileset.setIncludes(includes);
+         }
+         if (null != excludes) {
+             fileset.setExcludes(excludes);
+         }
+         copy.addFileset(fileset);
+         executeTask(copy);
+        
+         return false;
+     }
+    
     protected void copyFileset(File toDir, FileSet fileSet, boolean filter) {
         Copy copy = makeCopyTask(filter);
         copy.addFileset(fileSet);
         copy.setTodir(toDir);
         executeTask(copy);
     }
-
+    
     /** filter if FILTER_ON, use filters */
     protected Copy makeCopyTask(boolean filter) {
         Copy copy = new Copy();
         copy.setProject(project);
         if (FILTER_ON == filter) {
             copy.setFiltering(true);
-            setupFilters(); 
         }
         return copy;
     }
-    
-    /** lazily and manually generate properties */
-    protected Properties getFilterProperties() { // 
-        if (filterProps == null) {
-            long time = System.currentTimeMillis();
-            String version = null; // unknown - system?
-            filterProps = BuildSpec.getFilterProperties(time, version);
-        }
-        return filterProps;
-    }
-        
-    protected void setupFilters() {
-        if (!filterSetup) { // XXX check Ant - is this static?
-            Properties props = getFilterProperties();
-            for (Enumeration enum = props.keys(); enum.hasMoreElements();) {
-                String token = (String) enum.nextElement();
-                String value = props.getProperty(token);
-                Filter filter = new Filter();
-                filter.setProject(project);
-                filter.setToken(token);
-                filter.setValue(value);
-                if (!executeTask(filter)) {
-                    return;
-                }
-            }
-            filterSetup = true;
-        }
-    }
-    
+
     protected boolean compile(Module module, File classesDir, List errors) {
         // XXX  test whether build.compiler property takes effect automatically
         // I suspect it requires the proper adapter setup.
-        Javac javac = new Javac();
+        Javac javac = new Javac(); 
         javac.setProject(project);
-        
+        javac.setTaskName("javac");     
         // -- source paths
         Path path = new Path(project);
         for (Iterator iter = module.getSrcDirs().iterator(); iter.hasNext();) {
@@ -274,16 +269,16 @@ public class AntBuilder extends Builder {
                 zipfileset.setProject(project);
                 zipfileset.setSrc(mergeJar);
                 zipfileset.setIncludes("**/*");
-                zipfileset.setExcludes("META-INF/*"); // XXXFileLiteral
-                zipfileset.setExcludes("meta-inf/*");
+                zipfileset.setExcludes("META-INF/manifest.mf"); // XXXFileLiteral
+                zipfileset.setExcludes("meta-inf/manifest.MF");
+                zipfileset.setExcludes("META-INF/MANIFEST.mf"); 
+                zipfileset.setExcludes("meta-inf/MANIFEST.MF");
                 zip.addZipfileset(zipfileset);
             }
         }
         // merge classes; put any meta-inf/manifest.mf here
         File metaInfDir = new File(classesDir, "META-INF");
-        if (metaInfDir.canWrite()) {
-            Util.deleteContents(metaInfDir); // XXX only delete manifest
-        } 
+        Util.deleteContents(metaInfDir);
 
         // -- manifest
         File manifest = new File(module.moduleDir, module.name + ".mf.txt");  // XXXFileLiteral
@@ -405,31 +400,6 @@ public class AntBuilder extends Builder {
 	protected boolean buildInstaller(
 		BuildSpec buildSpec,
 		String targDirPath) {
-		return false;
-	}
-    
-    /**
-	 * @see org.aspectj.internal.tools.ant.taskdefs.Builder#copyFiles(File, File, String, String, boolean)
-	 */
-	protected boolean copyFiles(
-		File fromDir,
-		File toDir,
-		String includes,
-		String excludes,
-		boolean filter) {
-        Copy copy = makeCopyTask(filter);
-        copy.setTodir(toDir);
-        FileSet fileset = new FileSet();
-        fileset.setDir(fromDir);
-        if (null != includes) {
-            fileset.setIncludes(includes);
-        }
-        if (null != excludes) {
-            fileset.setExcludes(excludes);
-        }
-        copy.addFileset(fileset);
-        executeTask(copy);
-        
 		return false;
 	}
     

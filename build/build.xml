@@ -49,8 +49,20 @@
 
     </target>
 
-    <target name="init-version" depends="init,init-filters" 
-         unless="init.version.done" if="release.build" > <!-- unless=version.uptodate -->
+    <target name="version-uptodate" depends="init,init-taskdefs"
+         unless="version-uptodate.done">
+		 <versionuptodate
+			version="${build.version}"
+			versionSourceFile="${aspectj.modules.dir}/bridge/src/org/aspectj/bridge/Version.java"
+			versionTagFile="${aj.temp.dir}/versionUptodate"/>
+		 
+		 <available file="${aj.temp.dir}/versionUptodate"
+		       property="version.uptodate"/>
+         <property name="version-uptodate.done" value="done"/>
+    </target>
+
+    <target name="init-version" depends="init,init-filters,version-uptodate" 
+         unless="version.uptodate">
       <antcall target="init-filters"/>
       <copy file="${aspectj.modules.dir}/build/lib/BridgeVersion.java.txt"
           tofile="${aspectj.modules.dir}/bridge/src/org/aspectj/bridge/Version.java"
@@ -216,6 +228,12 @@
 	    inheritAll="false"/> <!-- true? -->
 	</target>
 	
+	<target name="runtime" depends="init">
+	  <antcall target="build-module-all">
+	    <param name="module.name" value="runtime"/>
+	  </antcall>
+	</target>
+	
     <!-- ===================================================================== -->
     <!-- boilerplate antcalls                                                  -->
     <!-- ===================================================================== -->
@@ -223,6 +241,12 @@
 	<!-- for any-[module|product], define [module|product].name -->
 	<target name="any-module" depends="init">
 	  <antcall target="build-module">
+	    <param name="module.name" value="${module.name}"/>
+	  </antcall>
+	</target>
+
+	<target name="any-module-all" depends="init">
+	  <antcall target="build-module-all">
 	    <param name="module.name" value="${module.name}"/>
 	  </antcall>
 	</target>

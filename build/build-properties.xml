@@ -17,11 +17,18 @@
     <target name="init-properties"
            unless="aspectj.modules.build.dir">
 
-      <!-- change version manually -->
-      <property name="build.version"       value="1.1b2"/> 
+      <!-- 
+      	Changing version:
+      	- base should always be 1.1 (used for manifests, other version-parsing code)
+      	- Others should be DEVELOPMENT unless testing/doing release builds, when
+      	  they should be (e.g.,) 1.1b3 or 1.1beta3
+      	- Changing version here causes org/aspectj/bridge/Version.java to be updated
+        - also change org.aspectj.ajdt.core/src/org/aspectj/ajdt/ajc/messages.properties
+      -->
+      <property name="build.version"       value="DEVELOPMENT"/> 
       <property name="build.version.base"  value="1.1"/> 
-      <property name="build.version.long"  value="1.1beta2"/> 
-      <property name="build.version.short" value="1.1b2"/> 
+      <property name="build.version.long"  value="DEVELOPMENT"/> 
+      <property name="build.version.short" value="DEVELOPMENT"/> 
 
       <!-- formats comply with SimpleDateFormat -->
       <property name="build.time.format"   value="MM/dd/yy 'at' hh:mm:ss z"/> 
@@ -35,10 +42,9 @@
 		         timezone="PST"/>
 	  </tstamp>
 	  
+	  <property name="company.name"         value="aspectj.org"/>
 	  <property name="copyright.allRights.from1998"
                value="Copyright (c) 1998-2001 Xerox Corporation, 2002 Palo Alto Research Center, Incorporated.  All rights reserved." />
-      <!-- XXX interim hack -->
-	  <property name="aspectj.home.url"     value="http://aspectj.org" />
 
       <!-- callers define basedir as dir of build file? -->
       <property name="aspectj.modules.dir"
@@ -85,12 +91,12 @@
           unless="init-taskdefs.done" >
       <fail unless="aspectj.build.jar.available"
           message="unable to find aspectj.build.jar: ${aspectj.build.jar}"/>
+     <!-- run directly from classes in bin when debugging.
       <taskdef resource="org/aspectj/internal/tools/ant/taskdefs/taskdefs.properties"
               classpath="${aspectj.build.jar}"/>
-     <!-- when debugging, etc.
+      -->
       <taskdef resource="org/aspectj/internal/tools/ant/taskdefs/taskdefs.properties"
          classpath="${aspectj.modules.dir}/build/bin"/>
-      -->
       <property name="init-taskdefs.done" value="done"/>
     </target>
 
@@ -108,8 +114,11 @@
     <target name="init-filters"
          depends="init-properties"
           unless="init-filters.done" >
-      <!-- change version manually -->
-      <!-- see also org.aspectj.ajdt.core/src/org/aspectj/ajdt/ajc/messages.properties -->
+
+	  <!-- build.version and build.date used in filters throughout, and
+	       build.version.base used in filtering manifest, but 
+	       others used mainly for installer-resources/properties.txt -->
+
       <filter token="build.version"       value="${build.version}"/> 
       <filter token="build.version.base"  value="${build.version.base}"/> 
       <filter token="build.version.long"  value="${build.version.long}"/> 
@@ -119,6 +128,7 @@
       <filter token="build.date.format"   value="${build.date.format}"/> 
       <filter token="build.date"          value="${build.date}"/>
       <filter token="build.time"          value="${build.time}"/>
+      <filter token="company.name"        value="${company.name}"/> 
       <filter token="copyright.allRights.from1998" 
               value="${copyright.allRights.from1998}" />
       <property name="init-filters.done" value="done"/>
@@ -145,7 +155,6 @@
   aspectj.modules.dir = ${aspectj.modules.dir}
          aj.build.dir = ${aj.build.dir}
        aj.results.dir = ${aj.results.dir}
-        release.build = ${release.build}
              ant.home = ${ant.home}
             java.home = ${java.home}
 </echo>

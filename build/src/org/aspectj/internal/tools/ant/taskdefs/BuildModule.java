@@ -47,7 +47,6 @@ public class BuildModule extends Task { // quickie hack...
 
     public BuildModule() {
         buildSpec = new BuildSpec();
-        buildSpec.version = BuildSpec.BUILD_VERSION_DEFAULT;
     }
     
     public void setModuledir(Path moduleDir) {

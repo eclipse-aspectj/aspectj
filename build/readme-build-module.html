@@ -6,12 +6,11 @@
 This build module contains taskdefs and resources for doing builds
 and checking source licenses.
 
+<h3>Usage</h3>
+<h4>Running the build</h4>
 To do a build, use Ant to run <a href="build.xml">build.xml</a>
 from this directory.  To run Ant, use <a href="../lib/ant">../lib/ant</a>
-scripts and libraries.  In particular, when running Ant from eclipse,
-do not use the default Eclipse Ant classpath; remove those jars and
-add all the libraries in <a href="../lib/ant/lib">../lib/ant/lib</a>
-as well as in <a href="../lib/junit">../lib/junit</a>.  
+scripts and libraries.    
 Consider defining the following flag properties:
 <p>
 <table cellpadding="1" border="1">
@@ -20,17 +19,63 @@ Consider defining the following flag properties:
 <tr><td>check.build.jar
     </td><td>fail if build.jar is out of date
 	</td></tr>
-<tr><td>release.build
-    </td><td>regenerate org/aspectj/bridge/Version.java
-	</td></tr>
-</table>			
+</table>	
+<p>		
+
+<u>Release builds</u>: Release builds differ only in running
+from a clean, up-to-date tree and with correct build version values
+in <a href="build-properties.xml">build-properties.xml</a>, which
+will update org.aspectj.bridge.Version.  
+See below for more details on how the version is updated.
+<p>
+
+<h4>Updating module dependencies and file locations</h4>  
+Because the BuildModule taskdef extracts dependencies from the Eclipse 
+<code>.classpath</code> file, there is no need to update build scripts when
+adding or removing modules or changing their dependencies, so long
+as they are all in the base modules directory (usually the base of
+the eclipse workspace.
+All required libraries are checked into the <code>lib</code> module.
+
+<p>The BuildModule taskdef makes some assumptions about the naming, 
+position, and contents of module directories and files.  
+Understand those (documented in 
+<a href="src/org/aspectj/internal/tools/ant/taskdefs/BuildModule.java">
+   BuildModule.java</a>) before using non-standard module directories. 
 
 <p>
+<h4>Running builds or built jars under Eclipse</h4>
+When running Ant from eclipse,
+do not use the default Eclipse Ant classpath; remove those jars and
+add all the libraries in <a href="../lib/ant/lib">../lib/ant/lib</a>
+as well as in <a href="../lib/junit">../lib/junit</a>.
+<p>
+<u>warning</u>: Jar files do not seem to be closed properly when running under eclipse.
+This affects build products (e.g., installers) which are run under eclipse
+(e.g., by opening with the "default system editor") and libraries used
+when compiling under Javac (if not zip products or input).  This problem
+presents as files not being writable, i.e., deleted or modified.
+You might get no notice of the problem when
+deleting with quiet="on". (The alternative to that is to create any
+directories being deleted before deleting them).
+
+<p>
+Currently BuildModule taskdefs fork the Javac command to work around
+this problem, but the Zip commands do not work around it.
+
+If under Eclipse, you get strange behavior with Ant builds, clear 
+out everything and build from the command line. In some cases, you
+have to exit Eclipse before files can be deleted.  (*sigh*)
+
+
+<h3>Development</h3>
+<h4>BuildModule task</h4>
 The 
 <a href="src/org/aspectj/internal/tools/ant/taskdefs/BuildModule.java">
    BuildModule</a>
 taskdef implements an integrated module or product build.
-<u>Module builds</u> are based on the Eclipse .classpath file, and can produce
+<u>Module builds</u> are based on the Eclipse <code>.classpath</code>
+file, and can produce
 a jar with the module classes, with two variations: (a) include only
 the module classes, or assemble the jar complete with all antecedent
 modules and libraries; and (b) compile the module(s) without any
@@ -47,27 +92,37 @@ and a <code>dist</code> directory containing all files belonging in
 the distribution, including 0-length placeholders for the module build
 results.
 
+<h4>Build notes</h4>
 <p>
-Top-level temporary build directories are prefixed "aj-",
+<u>Directory names</u>: Top-level temporary build directories are prefixed "aj-",
 so you can safely destroy any such directory or ignore it
 in CVS or the Eclipse package explorer.  By default the build script
-puts them at the same level as other modules.
+puts them at the same level as other modules.  Property names follow
+a similar convention; those prefixed "aj-" may be deleted at will, while
+"aspectj-" names are source directories which should never be deleted.
+
 <p>
-<u>Updating this module</u>:  
+<u>Version synchronization</u>: 
+Developers use the default "DEVELOPMENT" version unless doing or testing
+release builds.
 
-Because the BuildModule taskdef extracts dependencies from the Eclipse 
-.classpath file, there is no need to update build scripts when
-adding or removing modules or changing their dependencies, so long
-as they are all in the base modules directory (usually the base of
-the eclipse workspace.
-All required libraries are checked into the <code>lib</code> module.
+The build version is set in 
+<a href="build-properties.xml">build-properties.xml</a> and tracked in
+<a href="../bridge/src/org/aspectj/bridge/Version.java">
+         ../bridge/src/org/aspectj/bridge/Version.java</a>
+which the <a href="build.xml">build.xml</a> <code>init-version</code> task
+generates from a template 
+<a href="lib/BridgeVersion.java.txt">lib/BridgeVersion.java.txt</a>
+using copy filters to set the build version and date.
+To avoid updating <code>Version.java</code> whenever 
+<code>build-properties.xml</code> changes, a task
+<a href="src/org/aspectj/internal/tools/ant/taskdefs/VersionUptodate.java">
+         src/org/aspectj/internal/tools/ant/taskdefs/VersionUptodate.java</a>
+determines whether Version.java has the same version by scanning the source file.
+(Do not change the lines flagged in the template without also
+changing the scanning code in the task.)
 
-<p>The BuildModule taskdef makes some assumptions about the naming, 
-position, and contents of module directories and files.  
-Understand those (documented in 
-<a href="src/org/aspectj/internal/tools/ant/taskdefs/BuildModule.java">
-   BuildModule.java</a>) before using non-standard module directories. 
-
+<p>
 <hr>
 
 </body>
