@@ -3,7 +3,7 @@
   <meta http-equiv="Content-Language" content="en-us">
   <title>AspectJ Documentation and Resources</title>
 </head>
-<body>
+<body> 
 
 <a name="top"></a>
 <h1>AspectJ Documentation and Resources</h1>
@@ -12,7 +12,7 @@
     is a seamless aspect-oriented extension to 
     Java<sup><small>tm</small></sup>.
     The compiler and development tools are available under 
-    an open-source license, require Java 2 to run, and produce
+    an open-source license, require Java 1.3 to run, and produce
     code that runs in JDK 1.1 and later VM's. 
     For the latest materials, see
     <a href="http://eclipse.org/aspectj">http://eclipse.org/aspectj</a>.
@@ -25,7 +25,7 @@
        <a href="quick.pdf">Quick Reference</a>, 
        <a href="progguide/index.html">programming</a> and 
        <a href="devguide/index.html">development</a> guides, 
-       <a href="api/overview-summary.html">API</a> and
+       <a href="api/index.html">API</a> and
        <a href="examples/">example code</a>.
     <tr><td><a href="#distributions">distributions</a></td><td>  
         <a href="http://eclipse.org/aspectj">AspectJ</a> itself
@@ -95,7 +95,7 @@
        <!-- end strip -->
        )
      </td>
-     <td>Find here a guide to  
+     <td>This has a guide to  
      <a href="devguide/ajc-ref.html">ajc</a>, the command-line compiler;
      <a href="devguide/ajbrowser.html">ajbrowser</a>, the stand-alone
      GUI for compiling and viewing crosscutting structure; 
@@ -104,9 +104,9 @@
      </td>
      </tr>
 
-<tr> <td><a href="api/overview-summary.html">AspectJ API</a> 
+<tr> <td><a href="api/index.html">AspectJ API</a> 
        <!-- start strip -->
-<!--          (<a href="http://eclipse.org/aspectj/doc/dist/api/overview-summary.html">web</a>) -->
+<!--          (<a href="http://eclipse.org/aspectj/doc/dist/api/index.html">web</a>) -->
        <!-- end strip -->
      </td>
      <td>API documentation for AspectJ runtime classes. <tt>JoinPoint</tt>
@@ -121,7 +121,12 @@
      <td>Frequently-asked questions about the AspectJ language, tools, and project.
      </td> </tr>
 
-<tr> <td><a href="porting.html"> Porting guide</a>
+<tr> <td><a href="README-11.html">README-11</a>
+     </td>
+     <td>Changes and porting guide for the AspectJ 1.1.0 release.
+     </td> </tr>
+
+<tr> <td><a href="porting.html">Porting guide</a>
        <!-- start strip -->
 <!--          (<a href="http://eclipse.org/aspectj/doc/dist/porting.html">web</a>) -->
        <!-- end strip -->
@@ -239,7 +244,7 @@
          (<tt>aspectj-announce@eclipse.org</tt>) 
          to get occasional emails about AspectJ releases
          and relevant events.
-         Only those subscribed to the list may post to it.
+         Only those subscribed to a list may post to it.
          Go to 
          <a href="http://eclipse.org/aspectj">
                  the AspectJ home page</a>
@@ -258,9 +263,12 @@
      and
      <a href="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Docs">
          Docs</a> (for the documentation).
+     Bugs all developers should know about are
+     <a href="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&keywords=info">
+      flagged with the "info" keyword</a>.
      See the 
      <a href="faq.html#q:ajcbugs">
-     	FAQ entry</a> for instructions on submitting bugs.
+     	FAQ entry</a> for instructions on submitting compiler bugs.
      
      </td> </tr>
 
@@ -286,10 +294,9 @@
     nearby as the best reference for AspectJ usage.
     Focus initially on the join point model and
     pointcuts, concepts AOP adds to OOP.
-    To see how the code works, tour your 
-    examples as described in the 
-    <a href="progguide/examples.html">Examples </a> section of the
-    <a href="progguide/index.html">Programming Guide</a>.
+    To read about how the <a href="examples/">examples</a> work, 
+    see the <a href="progguide/examples.html">Examples </a> section
+    in the <a href="progguide/index.html">Programming Guide</a>.
     View and navigate the crosscutting structure using 
     the <code>ajbrowser</code> structure viewer, as described in
     the <a href="devguide/ajbrowser.html">AspectJ Browser</a> section of
