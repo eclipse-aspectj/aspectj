@@ -1,0 +1,10 @@
+
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+
+<suite>
+    <ajc-test dir="new" pr="42668"
+   	 title="after returning with parameter: matching rules">
+        <compile files="AfterReturningParamMatching.java" />
+        <run class="AfterReturningParamMatching"/>
+    </ajc-test>
+</suite>  

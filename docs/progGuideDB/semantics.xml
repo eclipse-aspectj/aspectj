@@ -1456,25 +1456,39 @@
 </programlisting>
 
     <para>
-      It is an error to try to put after returning advice on a join point that
-      does not return the correct type.  For example,
+      If after returning does expose its returned object, then the
+      type of the parameter is considered to be an
+      <literal>instanceof</literal>-like constraint on the advice:  it
+      will run only when the return value is of the appropriate type.
     </para>
 
-<programlisting>
-  after() returning (byte b): call(int String.length()) {
-      // this is an error
-  }
-</programlisting>
+    <para>
+      A value is of the appropriate type if it would be assignable to
+      a variable of that type, in the Java sense.
+      <literal>byte</literal>, <literal>short</literal>,
+      <literal>char</literal> and <literal>int</literal> are
+      assignable to each other, an <literal>int</literal> is
+      assignable to a <literal>float</literal> parameter,
+      <literal>boolean</literal> values are only assignable to
+      <literal>boolean</literal> parameters, and reference types work
+      by instanceof. 
+    </para>
 
     <para>
-      is not allowed.  But if no return value is exposed, or the exposed return
-      value is typed to <literal>Object</literal>, then it may be applied to
-      any join point.  If the exposed value is typed to
-      <literal>Object</literal>, then the actual return value is converted to
-      an object type for the body of the advice:  <literal>int</literal> values
-      are represented as <literal>java.lang.Integer</literal> objects, etc, and
-      no value (from void methods, for example) is represented as
-      <literal>null</literal>.
+      There are two special cases: If the exposed value is typed to
+      <literal>Object</literal>, then the advice is not constrained by
+      that type: the actual return value is converted to an object
+      type for the body of the advice: <literal>int</literal> values
+      are represented as <literal>java.lang.Integer</literal> objects,
+      etc, and no value (from void methods, for example) is
+      represented as <literal>null</literal>.
+    </para>
+
+    <para>
+      Secondly, the <literal>null</literal> value is assignable to a
+      parameter <literal>T</literal> if the join point
+      <emphasis>could</emphasis> return something of type
+      <literal>T</literal>.
     </para>
 
     <para>
