@@ -38,8 +38,8 @@ public class WildTypePattern extends TypePattern {
 	String[] knownMatches;
 	int dim;
 
-	WildTypePattern(NamePattern[] namePatterns, boolean includeSubtypes, int dim) {
-		super(includeSubtypes,false);
+	WildTypePattern(NamePattern[] namePatterns, boolean includeSubtypes, int dim, boolean isVarArgs) {
+		super(includeSubtypes,isVarArgs);
 		this.namePatterns = namePatterns;
 		this.dim = dim;
 		ellipsisCount = 0;
@@ -50,7 +50,7 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	public WildTypePattern(List names, boolean includeSubtypes, int dim) {
-		this((NamePattern[])names.toArray(new NamePattern[names.size()]), includeSubtypes, dim);
+		this((NamePattern[])names.toArray(new NamePattern[names.size()]), includeSubtypes, dim,false);
 
 	}
 	
@@ -58,7 +58,13 @@ public class WildTypePattern extends TypePattern {
 		this(names, includeSubtypes, dim);
 		this.end = endPos;
 	}
-	
+
+	public WildTypePattern(List names, boolean includeSubtypes, int dim, int endPos, boolean isVarArg) {
+		this(names, includeSubtypes, dim);
+		this.end = endPos;
+		this.isVarArgs = isVarArg;
+	}
+
 	//XXX inefficient implementation
 	public static char[][] splitNames(String s) {
 		List ret = new ArrayList();
@@ -559,6 +565,7 @@ public class WildTypePattern extends TypePattern {
 		}
 		s.writeBoolean(includeSubtypes);
 		s.writeInt(dim);
+		s.writeBoolean(isVarArgs);
 		//??? storing this information with every type pattern is wasteful of .class
 		//    file size. Storing it on enclosing types would be more efficient
 		FileUtil.writeStringArray(knownMatches, s);
@@ -579,7 +586,8 @@ public class WildTypePattern extends TypePattern {
 		}
 		boolean includeSubtypes = s.readBoolean();
 		int dim = s.readInt();
-		WildTypePattern ret = new WildTypePattern(namePatterns, includeSubtypes, dim);
+		boolean varArg = s.readBoolean();
+		WildTypePattern ret = new WildTypePattern(namePatterns, includeSubtypes, dim,varArg);
 		ret.knownMatches = FileUtil.readStringArray(s);
 		ret.importedPrefixes = FileUtil.readStringArray(s);
 		ret.readLocation(context, s);

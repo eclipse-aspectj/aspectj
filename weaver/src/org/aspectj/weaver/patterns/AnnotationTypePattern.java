@@ -55,6 +55,7 @@ public abstract class AnnotationTypePattern extends PatternNode {
 	public static final byte AND = 5;
 	public static final byte ELLIPSIS_KEY = 6;
 	public static final byte ANY_KEY = 7;
+	public static final byte WILD = 8;
 
 	public static AnnotationTypePattern read(DataInputStream s, ISourceContext context) throws IOException {
 		byte key = s.readByte();
@@ -64,6 +65,7 @@ public abstract class AnnotationTypePattern extends PatternNode {
 			case NOT: return NotAnnotationTypePattern.read(s, context);
 			case OR: return OrAnnotationTypePattern.read(s, context);
 			case AND: return AndAnnotationTypePattern.read(s, context);
+			case WILD: return WildAnnotationTypePattern.read(s,context);
 			case ELLIPSIS_KEY: return ELLIPSIS;
 			case ANY_KEY: return ANY;
 		}

@@ -23,11 +23,8 @@ import org.aspectj.weaver.TypeX;
 
 //XXX doesn't handle errors for extra tokens very well (sometimes ignores)
 public class PatternParser {
-	
-	private static final String AT = "@";
-	
-	private ITokenSource tokenSource;
-	
+		
+	private ITokenSource tokenSource;	
 	private ISourceContext sourceContext;
 
 	/**
@@ -189,7 +186,7 @@ public class PatternParser {
 			eat(")");
 			return p;
 		}
-		if (maybeEat(AT)) {
+		if (maybeEat("@")) {
 			int startPos = tokenSource.peek().getStart();
 			Pointcut p = parseAnnotationPointcut();
 		    int endPos = tokenSource.peek(-1).getEnd();
@@ -502,6 +499,7 @@ public class PatternParser {
 	}
 	
 	private TypePattern parseAtomicTypePattern() {
+		AnnotationTypePattern ap = maybeParseAnnotationPattern();
 		if (maybeEat("!")) {
 			//int startPos = tokenSource.peek(-1).getStart();
 			//??? we lose source location for true start of !type
@@ -513,33 +511,82 @@ public class PatternParser {
 			eat(")");
 			return p;
 		}
-		if (maybeEat("@")) {
-			AnnotationTypePattern ap = null;
-			if (maybeEat("(")) {
-				ap = parseAnnotationTypePattern();
-				eat(")");
-			} else {
-				ap = parseSimpleAnnotationName();
-			}
-			int startPos = tokenSource.peek().getStart();
-		    TypePattern p = parseAtomicTypePattern();
-		    int endPos = tokenSource.peek(-1).getEnd();
-		    p.setLocation(sourceContext, startPos, endPos);
-		    if (ap != null) {
-		    	if (p == TypePattern.ANY) {
-		    		p = new WildTypePattern(new NamePattern[] {NamePattern.ANY},false,0);
-		    	}	
-		    	p.setAnnotationTypePattern(ap);	    	
-		    }
-		    return p;
-		}
+//		if (maybeEat("@")) {
+//			AnnotationTypePattern ap = null;
+//			if (maybeEat("(")) {
+//				ap = parseAnnotationTypePattern();
+//				eat(")");
+//			} else {
+//				ap = parseSimpleAnnotationName();
+//			}
+//			int startPos = tokenSource.peek().getStart();
+//		    TypePattern p = parseAtomicTypePattern();
+//		    int endPos = tokenSource.peek(-1).getEnd();
+//		    p.setLocation(sourceContext, startPos, endPos);
+//		    if (ap != null) {
+//		    	if (p == TypePattern.ANY) {
+//		    		p = new WildTypePattern(new NamePattern[] {NamePattern.ANY},false,0);
+//		    	}	
+//		    	p.setAnnotationTypePattern(ap);	    	
+//		    }
+//		    return p;
+//		}
 		int startPos = tokenSource.peek().getStart();
 	    TypePattern p = parseSingleTypePattern();
 	    int endPos = tokenSource.peek(-1).getEnd();
 	    p.setLocation(sourceContext, startPos, endPos);
 	    return p;
 	}
+	
+	public AnnotationTypePattern maybeParseAnnotationPattern() {
+		AnnotationTypePattern ret = AnnotationTypePattern.ANY;
+		AnnotationTypePattern nextPattern = null;
+		while ((nextPattern = maybeParseSingleAnnotationPattern()) != null) {
+			if (ret == AnnotationTypePattern.ANY) {
+				ret = nextPattern;
+			} else {
+				ret = new AndAnnotationTypePattern(ret,nextPattern);
+			}
+		}
+		return ret;
+	}
 
+	public AnnotationTypePattern maybeParseSingleAnnotationPattern() {
+		AnnotationTypePattern ret = null;
+		// LALR(2) - fix by making "!@" a single token
+		int startIndex = tokenSource.getIndex();
+		if (maybeEat("!")) {
+			if (maybeEat("@")) {
+				if (maybeEat("(")) {
+					TypePattern p = parseTypePattern();
+					ret = new NotAnnotationTypePattern(new WildAnnotationTypePattern(p));
+					return ret;
+				} else {
+					TypePattern p = parseSingleTypePattern();
+					ret = new NotAnnotationTypePattern(new WildAnnotationTypePattern(p));
+					return ret;
+				}
+			} else {
+				tokenSource.setIndex(startIndex); // not for us!
+				return ret;
+			}
+		}
+		if (maybeEat("@")) {
+			if (maybeEat("(")) {
+				TypePattern p = parseTypePattern();
+				ret = new WildAnnotationTypePattern(p);
+				return ret;
+			} else {
+				TypePattern p = parseSingleTypePattern();
+				ret = new WildAnnotationTypePattern(p);
+				return ret;
+			}
+		} else {
+			tokenSource.setIndex(startIndex); // not for us!
+			return ret;
+		}		
+	}
+	
 	public TypePattern parseSingleTypePattern() {
 		List names = parseDottedNamePattern(); 
 //		new ArrayList();
@@ -557,15 +604,15 @@ public class PatternParser {
 			eat("]");
 			dim++;
 		}
-			
-		
+		boolean isVarArgs = maybeEat("...");
+					
 		boolean includeSubtypes = maybeEat("+");
 		int endPos = tokenSource.peek(-1).getEnd();
 		
 		//??? what about the source location of any's????
 		if (names.size() == 1 && ((NamePattern)names.get(0)).isAny() && dim == 0) return TypePattern.ANY;
 		
-		return new WildTypePattern(names, includeSubtypes, dim, endPos);
+		return new WildTypePattern(names, includeSubtypes, dim, endPos,isVarArgs);
 	}
 	
 
@@ -604,7 +651,7 @@ public class PatternParser {
 	protected AnnotationTypePattern parseAnnotationNameOrVarTypePattern() {
 		AnnotationTypePattern p = null;
 		int startPos = tokenSource.peek().getStart();
-		if (maybeEat(AT)) {
+		if (maybeEat("@")) {
 			p = parseSimpleAnnotationName();
 		} else {
 			String formal = parseIdentifier();
@@ -1066,26 +1113,7 @@ public class PatternParser {
 			return null;
 		}
 	}
-	
-	public AnnotationTypePattern maybeParseAnnotationPattern() {
-		AnnotationTypePattern ret = null;
-		int start = tokenSource.getIndex();
-		if (maybeEat("@")) {
-			if (maybeEat("(")) {
-				ret = parseAnnotationTypePattern();
-				eat(")");
-			} else {
-				ret = parseSimpleAnnotationName();
-			}
-		}
-		if (ret == null) {
-			// failed to find one...
-			tokenSource.setIndex(start);
-			ret = AnnotationTypePattern.ANY;
-		}
-		return ret;
-	}
-	
+		
 	public boolean peek(String token) {
 		IToken next = tokenSource.peek();
 		return next.getString() == token;

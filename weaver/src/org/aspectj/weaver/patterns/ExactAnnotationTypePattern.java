@@ -38,7 +38,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	 */
 	public ExactAnnotationTypePattern(TypeX annotationType) {
 		this.annotationType = annotationType;
-		this.resolved = false;
+		this.resolved = (annotationType instanceof ResolvedTypeX);
 	}
 
 	public ExactAnnotationTypePattern(String formalName) {

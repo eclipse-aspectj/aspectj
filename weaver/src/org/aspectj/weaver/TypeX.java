@@ -555,6 +555,13 @@ public class TypeX implements AnnotatedElement {
 	public boolean hasAnnotation(ResolvedTypeX ofType) {
 		throw new UnsupportedOperationException("You should resolve this member and call hasAnnotation() on the result...");
 	}
+
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.AnnotatedElement#getAnnotationTypes()
+	 */
+	public ResolvedTypeX[] getAnnotationTypes() {
+		throw new UnsupportedOperationException("You should resolve this member and call hasAnnotation() on the result...");
+	}
 	
     // ---- fields
 

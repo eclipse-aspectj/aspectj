@@ -10,8 +10,8 @@
 package org.aspectj.weaver.patterns;
 
 import org.aspectj.weaver.AnnotatedElement;
-import org.aspectj.weaver.BcweaverTests;
 import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.BcweaverTests;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.bcel.BcelWorld;
 
@@ -334,6 +334,14 @@ public class AnnotationPatternTestCase extends TestCase {
 				if (annotationTypes[i].equals(ofType.getName())) return true;
 			}
 			return false;
+		}
+		
+		/* (non-Javadoc)
+		 * @see org.aspectj.weaver.AnnotatedElement#getAnnotationTypes()
+		 */
+		public ResolvedTypeX[] getAnnotationTypes() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 		
 	}
