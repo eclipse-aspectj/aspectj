@@ -53,11 +53,13 @@ public class Checklics extends MatchingTask {
     public static final String MPL_PARC_TAG = "mpl-parc";
     public static final String PARC_COPYRIGHT_TAG = "parc-copy";
     public static final String CPL_IBM_PARC_XEROX_TAG = "cpl-ibm|parc|xerox";
-    public static final String DEFAULT = CPL_IBM_PARC_XEROX_TAG;
+    public static final String CPL_IBM_PARC_XEROX_OTHERS_TAG = "cpl-ibm|parc|xerox|others";
+    public static final String DEFAULT = CPL_IBM_PARC_XEROX_OTHERS_TAG;
     
     static final Hashtable LICENSES; // XXX unmodifiable Map
     
 	static {
+        final String CONTRIBUTORS = "Contributors";
 		final String XEROX = "Xerox";
 		final String PARC = "Palo Alto Research Center";
 		final String APACHE = "The Apache Software Foundation";
@@ -77,6 +79,8 @@ public class Checklics extends MatchingTask {
 				                    new String[] { IBM_LONG, IBM, PARC });
         License CPL_IBM_PARC_XEROX = new License(CPL_IBM_PARC_XEROX_TAG,LIC_CPL,
                                     new String[] { IBM_LONG, IBM, PARC, XEROX });
+        License CPL_IBM_PARC_XEROX_OTHERS = new License(CPL_IBM_PARC_XEROX_OTHERS_TAG, LIC_CPL,
+                                    new String[] { IBM_LONG, IBM, PARC, XEROX, CONTRIBUTORS });
         License CPL_IBM = new License(CPL_IBM_TAG, LIC_CPL, IBM, IBM_LONG);
         License MPL_ONLY = new License(MPL_ONLY_TAG, LIC_MPL);
         License MPL_PARC = new License(MPL_PARC_TAG, LIC_MPL, PARC);
@@ -91,6 +95,7 @@ public class Checklics extends MatchingTask {
 		LICENSES.put(CPL_IBM.tag, CPL_IBM);
 		LICENSES.put(PARC_COPYRIGHT.tag, PARC_COPYRIGHT);
         LICENSES.put(CPL_IBM_PARC_XEROX.tag, CPL_IBM_PARC_XEROX);
+        LICENSES.put(CPL_IBM_PARC_XEROX_OTHERS.tag, CPL_IBM_PARC_XEROX_OTHERS);
 	}
     
     /** @param args String[] { &lt; sourcepath &gt; {, &lt; licenseTag &gt; } } */
