@@ -23,10 +23,9 @@
        2003 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated September 2, 2004
+  <para>Last updated November 30, 2004
   </para>
   <para>
-   This FAQ covers AspectJ versions 1.0 and 1.1.
    For a list of recently-updated FAQ entries, see <xref linkend="q:faqchanges"/>
   </para>
   <qandaset defaultlabel="number">
@@ -1967,7 +1966,9 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
               </listitem>
               <listitem>
                 <para>
-                  Oracle JDeveloper has an Extension SDK unfamiliar to us.
+                  Oracle JDeveloper is supported at
+                  <ulink url="https://jdeveloperaop.dev.java.net/">
+					https://jdeveloperaop.dev.java.net/</ulink>.
                 </para>
               </listitem>
               <listitem>
@@ -4515,6 +4516,7 @@ vmparam -Xmx384m
             <itemizedlist>
         <listitem><para><xref linkend="q:dynamicaop"/></para></listitem>
         <listitem><para><xref linkend="q:java5"/></para></listitem>
+        <listitem><para><xref linkend="q:idesupportplans"/></para></listitem>
             </itemizedlist>
           </para>
         </answer>
