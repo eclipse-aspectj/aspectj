@@ -386,6 +386,9 @@ public class ProgramElement implements IProgramElement {
 		return sb.toString();
 	}
 
+	/**
+	 * TODO: move the "parent != null"==>injar heuristic to more explicit 
+	 */
 	public String toLinkLabelString() {
 		String label;
 		if (kind == Kind.CODE || kind == Kind.INITIALIZER) {
@@ -399,8 +402,12 @@ public class ProgramElement implements IProgramElement {
 			}
 		} else if (kind == Kind.CLASS || kind == Kind.ASPECT) {
 			label = "";
-		} else {
-			label = parent.getName() + '.';
+		} else { 
+			if (parent != null) {
+				label = parent.getName() + '.';
+			} else { 
+				label = "injar aspect: ";  
+			}
 		}
 		label += toLabelString();
 		return label;
