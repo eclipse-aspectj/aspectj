@@ -296,7 +296,7 @@ public class BuildArgParserTestCase extends TestCase {
 	}
 
 	public void testBootclasspath() throws InvalidInputException {
-		final String PATH = "mumble/rt.jar";
+		final String PATH = "mumble" + File.separator + "rt.jar";
 		AjBuildConfig config = genBuildConfig(new String[] { 
 			"-bootclasspath", PATH }, 
 			messageWriter);		
