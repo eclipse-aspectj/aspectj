@@ -7482,7 +7482,7 @@
     </ajc-test>
 	
 	 <ajc-test dir="bugs"  pr="43714"
-    	title="weaving from an input jar into that same jar.."  >
+    	title="weaving from an aspectpath jar into that same jar.."  >
         <compile files="WeaveLocal.java" aspectpath="notAJar.jar" outjar="notAJar.jar" >         	
         </compile>
     </ajc-test>
