@@ -236,9 +236,12 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //            s.indexOf("CAUSE=org.aspectj.lang.NoAspectBoundException")!=-1);
   }
   
-  
   public void test044_ITDnameClashes() {
     	runTest("ITD name clashes with private members");
+  }
+  
+  public void test045_ITDprotectedVisibility() {
+  	runTest("Inconsistency in scoping of protected members in ITDs");
   }
   
 }
