@@ -3007,7 +3007,7 @@ ModifiersPattern =
           one object of type A is created for every object that is the
           executing object (i.e., "this") at any of the join points picked out
           by <replaceable>Pointcut</replaceable>.
-          The advice defined in A may then run at any join point where the
+          The advice defined in A will run only at a join point where the
           currently executing object has been associated with an instance of
           A.
         </para>
@@ -3017,9 +3017,9 @@ ModifiersPattern =
           then one object of type A is created for every object that is the
           target object of the join points picked out by
           <replaceable>Pointcut</replaceable>.
-          The advice defined in A may then run at any join point where the
-          target object has been associated with an instance of
-          A.
+          The advice defined in A will run only at a join point where the
+          target object has been associated with an instance of 
+		  A.
         </para>
 
         <para>
