@@ -13,7 +13,7 @@
 <!ENTITY pertypewithin      SYSTEM "pertypewithin.xml">
 <!ENTITY getthistargetobj   SYSTEM "getthistargetobj.xml">
 <!ENTITY declaresoft        SYSTEM "declaresoft.xml">
-<!ENTITY reflection         SYSTEM "reflection.xml">]>
+<!ENTITY reflection         SYSTEM "reflection.xml">
 <!ENTITY grammar            SYSTEM "grammar.xml">]>
 
 <book>
