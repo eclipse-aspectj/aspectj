@@ -460,7 +460,11 @@ public class Module {
      * Post-process initialization.  
      * This implementation trims testing-related source 
      * directories, libraries, and modules if trimTesting is enabled/true.  
-     * To build testing modules, trimTesting must be false.
+     * For modules whose names start with "testing",
+     * testing-related sources are trimmed, but this does not
+     * trim dependencies on other modules prefixed "testing"
+     * or on testing libraries like junit.  That means
+     * testing modules can be built with trimTesting enabled.
      * @return true if initialization post-processing worked 
      */
     protected boolean reviewInit() {   
@@ -475,20 +479,22 @@ public class Module {
                     iter.remove(); // XXX if verbose log
                 }   
             }
-            for (ListIterator iter = libJars.listIterator(); iter.hasNext();) {
-                File libJar = (File) iter.next();
-                String name = libJar.getName();
-                if ("junit.jar".equals(name.toLowerCase())) {  // XXXFileLiteral              
-                    iter.remove(); // XXX if verbose log
-                }   
-            }
-            for (ListIterator iter = required.listIterator(); iter.hasNext();) {
-                Module required = (Module) iter.next();
-                String name = required.name;
-                // XXX testing-util only ?
-                if (name.toLowerCase().startsWith("testing")) {  // XXXFileLiteral
-                    iter.remove(); // XXX if verbose log
-                }   
+            if (!name.startsWith("testing")) {
+                for (ListIterator iter = libJars.listIterator(); iter.hasNext();) {
+                    File libJar = (File) iter.next();
+                    String name = libJar.getName();
+                    if ("junit.jar".equals(name.toLowerCase())) {  // XXXFileLiteral              
+                        iter.remove(); // XXX if verbose log
+                    }   
+                }
+                for (ListIterator iter = required.listIterator(); iter.hasNext();) {
+                    Module required = (Module) iter.next();
+                    String name = required.name;
+                    // XXX testing-util only ?
+                    if (name.toLowerCase().startsWith("testing")) {  // XXXFileLiteral
+                        iter.remove(); // XXX if verbose log
+                    }   
+                }
             }
         } catch (UnsupportedOperationException e) {
             return false; // failed XXX log also if verbose
