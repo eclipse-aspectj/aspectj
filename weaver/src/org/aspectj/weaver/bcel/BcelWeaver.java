@@ -61,6 +61,7 @@ import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.patterns.CflowPointcut;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.FastMatchInfo;
 
@@ -320,6 +321,7 @@ public class BcelWeaver implements IWeaver {
     public void prepareForWeave() {
     	needToReweaveWorld = false;
 
+    	CflowPointcut.clearCaches();
     	
     	// update mungers
     	for (Iterator i = addedClasses.iterator(); i.hasNext(); ) { 

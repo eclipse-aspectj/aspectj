@@ -5,19 +5,16 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * In this testcase we are using cflow() with a pointcut that doesn't include state -
- * this should be managed by our new CflowCounter rather than a CflowStack.
- * 
- * Because the two cflow pointcuts are identical (both are 'cflow(execution(* main(..))' it also
- * means we can share a single counter for both of them !
+ * In this test, a cflow() pointcut is named and then reused.  It refers to state and so
+ * we must manage it with a CFlowStack - can we share the stacks?
  */
-public class CounterTest01 {
+public class CounterTest03 {
 
 	public static void main(String []argv) {
-		new CounterTest01().sayMessage();
+		new CounterTest03().sayMessage();
 		int ctrs = ReflectionHelper.howManyCflowCounterFields(Cflow1.aspectOf());
-		if (ctrs!=1) {
-			throw new RuntimeException("Should be one cflow counter, but found: "+ctrs);
+		if (ctrs!=0) {
+			throw new RuntimeException("Should be zero cflow counters, but found: "+ctrs);
 		}
 		int stacks = ReflectionHelper.howManyCflowStackFields(Cflow1.aspectOf());
 		if (stacks!=1) {
@@ -26,27 +23,30 @@ public class CounterTest01 {
 	}
 	
 	public void sayMessage() {
-		print("Hello ");
-		print("World\n");
+		printmsg("Hello "); printmsg("World\n");
 	}
 	
-	public void print(String msg) {
+	public void printmsg(String msg) {
 		System.out.print(msg);
 	}
 }
 
 aspect Cflow1 {
-	before(): execution(* print(..)) && cflow(execution(* main(..))) {
+	
+	// CflowCounter created for this pointcut should be shared below!
+	pointcut p1(Object o): cflow(execution(* main(..)) && args(o));
+	
+	before(Object o): call(* print(..)) && p1(o) {
 		// Managed by a CflowCounter
 	}
 	
-	before(): execution(* print(..)) && cflow(execution(* main(..))) {
+	before(Object o): call(* print(..)) && p1(o) {
 		// Managed by a CflowCounter
 	}
 	
-	before(Object o): execution(* print(..)) && cflow(execution(* main(..)) && target(o)) {
-		// Managed by a CflowStack - since state is exposed
-	}
+//	before(Object o): execution(* print(..)) && cflow(execution(* main(..)) && target(o)) {
+//		// Managed by a CflowStack - since state is exposed
+//	}
 }
 
 class ReflectionHelper {

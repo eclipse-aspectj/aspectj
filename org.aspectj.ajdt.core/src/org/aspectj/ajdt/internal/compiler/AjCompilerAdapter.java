@@ -25,6 +25,7 @@ import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IProgressListener;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
+import org.aspectj.weaver.patterns.CflowPointcut;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.Compiler;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ICompilerAdapter;
@@ -235,8 +236,12 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 //			addAllKnownClassesToWeaveList();
 //			resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourceSetForFullWeave));
 //		}
-
-		weaver.weave(new WeaverAdapter(this,weaverMessageHandler,progressListener));
+		try {
+		  weaver.weave(new WeaverAdapter(this,weaverMessageHandler,progressListener));
+		} finally {
+			// ???: is this the right point for this? After weaving has finished clear the caches.
+			CflowPointcut.clearCaches();
+		}
 	}
 	
 	private void addAllKnownClassesToWeaveList() {

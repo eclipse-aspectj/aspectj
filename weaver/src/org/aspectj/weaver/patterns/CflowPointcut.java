@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.List;
 
 import org.aspectj.bridge.IMessage;
@@ -41,9 +42,12 @@ import org.aspectj.weaver.ast.Test;
 
 
 public class CflowPointcut extends Pointcut {
-	private Pointcut entry;
-	private boolean isBelow;
+	private Pointcut entry; // The pointcut inside the cflow() that represents the 'entry' point
+	private boolean isBelow;// Is this cflowbelow?
 	private int[] freeVars;
+	
+	private static Hashtable cflowFields = new Hashtable();
+	private static Hashtable cflowBelowFields = new Hashtable();
 	
 	/**
 	 * Used to indicate that we're in the context of a cflow when concretizing if's
@@ -56,6 +60,7 @@ public class CflowPointcut extends Pointcut {
 
 	
 	public CflowPointcut(Pointcut entry, boolean isBelow, int[] freeVars) {
+	//	System.err.println("Building cflow pointcut "+entry.toString());
 		this.entry = entry;
 		this.isBelow = isBelow;
 		this.freeVars = freeVars;
@@ -167,21 +172,47 @@ public class CflowPointcut extends Pointcut {
 
 		List innerCflowEntries = new ArrayList(xcut.getCflowEntries());
 		innerCflowEntries.removeAll(previousCflowEntries);
+
+		  
+		Object field = getCflowfield(concreteEntry);
+		
+		// Four routes of interest through this code (did I hear someone say refactor??)
+		// 1) no state in the cflow - we can use a counter *and* we have seen this pointcut
+		//    before - so use the same counter as before.
+		// 2) no state in the cflow - we can use a counter, but this is the first time
+		//    we have seen this pointcut, so build the infrastructure.
+		// 3) state in the cflow - we need to use a stack *and* we have seen this pointcut
+		//    before - so share the stack.
+		// 4) state in the cflow - we need to use a stack, but this is the first time 
+		//    we have seen this pointcut, so build the infrastructure.
 		
 		if (freeVars.length == 0) { // No state, so don't use a stack, use a counter.
-		  ResolvedMember cflowField = new ResolvedMember(Member.FIELD,concreteAspect,Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL,
+		  ResolvedMember localCflowField = null;
+
+		  // Check if we have already got a counter for this cflow pointcut
+		  if (field != null) {
+		   	localCflowField = (ResolvedMember)field; // Use the one we already have
+		   	
+		  } else {
+		  	
+		  	// Create a counter field in the aspect
+		  	localCflowField = new ResolvedMember(Member.FIELD,concreteAspect,Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL,
 		  		NameMangler.cflowCounter(xcut),TypeX.forName(NameMangler.CFLOW_COUNTER_TYPE).getSignature());
 		  
-		  // Create type munger to add field to the aspect
-		  concreteAspect.crosscuttingMembers.addTypeMunger(world.makeCflowCounterFieldAdder(cflowField));
+		    // Create type munger to add field to the aspect
+		    concreteAspect.crosscuttingMembers.addTypeMunger(world.makeCflowCounterFieldAdder(localCflowField));
 		  
-		  // Create shadow munger to push stuff onto the stack
-		  concreteAspect.crosscuttingMembers.addConcreteShadowMunger(
-		  		Advice.makeCflowEntry(world,concreteEntry,isBelow,cflowField,freeVars.length,innerCflowEntries,inAspect));
-		  return new ConcreteCflowPointcut(cflowField, null,true);
+		    // Create shadow munger to push stuff onto the stack
+		    concreteAspect.crosscuttingMembers.addConcreteShadowMunger(
+		  		Advice.makeCflowEntry(world,concreteEntry,isBelow,localCflowField,freeVars.length,innerCflowEntries,inAspect));
+		    
+		    putCflowfield(concreteEntry,localCflowField); // Remember it
+	      }
+		  return new ConcreteCflowPointcut(localCflowField, null,true);
 		} else {
-		
+
 			List slots = new ArrayList();
+		  
 			for (int i=0, len=freeVars.length; i < len; i++) {
 				int freeVar = freeVars[i];
 				
@@ -197,25 +228,51 @@ public class CflowPointcut extends Pointcut {
 					new ConcreteCflowPointcut.Slot(formalIndex, formalType, i);
 				slots.add(slot);
 			}
-			
-			ResolvedMember cflowField = new ResolvedMember(
+			ResolvedMember localCflowField = null;
+			if (field != null) {
+				localCflowField = (ResolvedMember)field;
+			} else {
+		      
+			  localCflowField = new ResolvedMember(
 				Member.FIELD, concreteAspect, Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL,
 						NameMangler.cflowStack(xcut), 
 						TypeX.forName(NameMangler.CFLOW_STACK_TYPE).getSignature());
-			//System.out.println("adding field to: " + inAspect + " field " + cflowField);
+			  //System.out.println("adding field to: " + inAspect + " field " + cflowField);
 						
-			// add field and initializer to inAspect
-			//XXX and then that info above needs to be mapped down here to help with
-			//XXX getting the exposed state right
-			concreteAspect.crosscuttingMembers.addConcreteShadowMunger(
-					Advice.makeCflowEntry(world, concreteEntry, isBelow, cflowField, freeVars.length, innerCflowEntries,inAspect));
+			  // add field and initializer to inAspect
+			  //XXX and then that info above needs to be mapped down here to help with
+			  //XXX getting the exposed state right
+			  concreteAspect.crosscuttingMembers.addConcreteShadowMunger(
+					Advice.makeCflowEntry(world, concreteEntry, isBelow, localCflowField, freeVars.length, innerCflowEntries,inAspect));
 			
-			concreteAspect.crosscuttingMembers.addTypeMunger(
-				world.makeCflowStackFieldAdder(cflowField));
-
-			return new ConcreteCflowPointcut(cflowField, slots,false);
+			  concreteAspect.crosscuttingMembers.addTypeMunger(
+				world.makeCflowStackFieldAdder(localCflowField));
+			  putCflowfield(concreteEntry,localCflowField);
+		    }
+			return new ConcreteCflowPointcut(localCflowField, slots,false);
 		}
 		
+	}
+	
+	public static void clearCaches() {
+		cflowFields.clear();
+		cflowBelowFields.clear();
+	}
+	
+	private Object getCflowfield(Pointcut pcutkey) {
+		if (isBelow) {
+			return cflowBelowFields.get(pcutkey);
+		} else {
+			return cflowFields.get(pcutkey);
+		}
+	}
+	
+	private void putCflowfield(Pointcut pcutkey,Object o) {
+		if (isBelow) {
+			cflowBelowFields.put(pcutkey,o);
+		} else {
+			cflowFields.put(pcutkey,o);
+		}
 	}
 
 }

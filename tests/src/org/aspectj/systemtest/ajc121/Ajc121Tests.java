@@ -308,14 +308,30 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
    
   public void test057_decSoftWithSuper() {
       runTest("declare soft can cause programs with invalid exception behaviour to be generated");
-    }
+  }
 
   public void test058_npeOnTJPerror() {
     runTest("NPE on thisJoinPoint mistake");
   }
   
   public void test059_cflowOptimization_counters() {
-  	runTest("Optimization of cflow - counters");
+  	runTest("Optimization of cflow - counters (1)");
+  }
+  
+  public void test060_cflowOptimization_counters() {
+  	runTest("Optimization of cflow - shared counters (2)");
+  }
+  
+  public void test061_cflowOptimization_counters() {
+  	runTest("Optimization of cflow - shared stacks (3)");
+  }
+  
+  public void test062_cflowOptimization_counters() {
+  	runTest("Optimization of cflow - counters (4)");
+  }
+   
+  public void test063_cflowOptimization_countersWithAbstractPcuts() {
+  	runTest("Optimization of cflow - counters with abstract pointcuts (5)");
   }
 
 }

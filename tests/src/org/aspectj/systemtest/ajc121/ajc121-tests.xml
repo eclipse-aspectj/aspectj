@@ -466,10 +466,27 @@
         </compile>
     </ajc-test>
 
-	<ajc-test 
-    	dir="cflow" 
-    	pr="76030"
-		title="Optimization of cflow - counters">
+	<ajc-test dir="cflow" pr="76030" title="Optimization of cflow - counters (1)">
         <compile files="CounterTest01.java"/>
 		<run class="CounterTest01"/>
+    </ajc-test>
+	
+	<ajc-test dir="cflow" pr="76030" title="Optimization of cflow - shared counters (2)">
+        <compile files="CounterTest02.java"/>
+		<run class="CounterTest02"/>
+    </ajc-test>
+	
+	<ajc-test dir="cflow" pr="76030" title="Optimization of cflow - shared stacks (3)">
+        <compile files="CounterTest03.java"/>
+		<run class="CounterTest03"/>
+    </ajc-test>
+	
+	<ajc-test dir="cflow" pr="76030" title="Optimization of cflow - counters (4)">
+        <compile files="CounterTest04.java"/>
+		<run class="CounterTest04"/>
+    </ajc-test>
+	
+    <ajc-test dir="cflow" pr="76030" title="Optimization of cflow - counters with abstract pointcuts (5)">
+        <compile files="CounterTest05.java"/>
+		<run class="CounterTest05"/>
     </ajc-test>
