@@ -6420,4 +6420,17 @@
         <compile files="SwitchInAround.java"/>
         <run class="SwitchInAround"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs" pr="39993"
+   	 title="ajc stack trace on declaring hashcode() method in aspect">
+        <compile files="OverridingInterfaceObjectMethod.java"/>
+        <run class="OverridingInterfaceObjectMethod"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs"
+   	 title="using super in method introduced on interface with multiple supertypes">
+        <compile files="MultipleSuperCf.java">
+        	<message kind="error" line="14"/>
+        </compile>
+    </ajc-test>
 </suite>

@@ -339,21 +339,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			// XXX make sure to check that we set exceptions properly on this guy.
 			weaver.addLazyMethodGen(mg);
 			
-			Set neededSuperCalls = munger.getSuperMethodsCalled();
-
-			for (Iterator iter = neededSuperCalls.iterator(); iter.hasNext(); ) {
-				ResolvedMember superMethod = (ResolvedMember) iter.next();
-				if (weaver.addDispatchTarget(superMethod)) {
-					//System.err.println("super type: " + superMethod.getDeclaringType() + ", " + gen.getType());
-					boolean isSuper = !superMethod.getDeclaringType().equals(gen.getType());
-					String dispatchName;
-					if (isSuper) dispatchName = NameMangler.superDispatchMethod(onType, superMethod.getName());
-					else dispatchName = NameMangler.protectedDispatchMethod(onType, superMethod.getName());
-					LazyMethodGen dispatcher = makeDispatcher(gen, dispatchName, superMethod, weaver.getWorld(), isSuper);
-
-					weaver.addLazyMethodGen(dispatcher);
-				}
-			}
+			addNeededSuperCallMethods(weaver, onType, munger.getSuperMethodsCalled());
 			
     		return true;
 		} else if (onInterface && gen.getType().isTopmostImplementor(onType) && 
@@ -388,9 +374,33 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			
 			weaver.addOrReplaceLazyMethodGen(mg);
 			
+			addNeededSuperCallMethods(weaver, onType, munger.getSuperMethodsCalled());
+			
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	private void addNeededSuperCallMethods(
+		BcelClassWeaver weaver,
+		ResolvedTypeX onType,
+		Set neededSuperCalls)
+	{
+		LazyClassGen gen = weaver.getLazyClassGen();
+		
+		for (Iterator iter = neededSuperCalls.iterator(); iter.hasNext(); ) {
+			ResolvedMember superMethod = (ResolvedMember) iter.next();
+			if (weaver.addDispatchTarget(superMethod)) {
+				//System.err.println("super type: " + superMethod.getDeclaringType() + ", " + gen.getType());
+				boolean isSuper = !superMethod.getDeclaringType().equals(gen.getType());
+				String dispatchName;
+				if (isSuper) dispatchName = NameMangler.superDispatchMethod(onType, superMethod.getName());
+				else dispatchName = NameMangler.protectedDispatchMethod(onType, superMethod.getName());
+				LazyMethodGen dispatcher = makeDispatcher(gen, dispatchName, superMethod, weaver.getWorld(), isSuper);
+		
+				weaver.addLazyMethodGen(dispatcher);
+			}
 		}
 	}
 
@@ -487,15 +497,20 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		Type[] paramTypes = BcelWorld.makeBcelTypes(superMethod.getParameterTypes());
 		Type returnType = BcelWorld.makeBcelType(superMethod.getReturnType());
 				
+		int modifiers = Modifier.PUBLIC;
+		if (onGen.isInterface()) modifiers |= Modifier.ABSTRACT;
+				
 		LazyMethodGen mg = 
 				new LazyMethodGen(
-					Modifier.PUBLIC,
+					modifiers,
 					returnType,
 					dispatchName,
 					paramTypes,
 					TypeX.getNames(superMethod.getExceptions()),
 					onGen);
 		InstructionList body = mg.getBody();
+		
+		if (onGen.isInterface()) return mg;
 		
 		// assert (!superMethod.isStatic())
 		InstructionFactory fact = onGen.getFactory();

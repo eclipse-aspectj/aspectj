@@ -17,6 +17,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeScope;
 import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
@@ -63,8 +64,20 @@ public abstract class InterTypeDeclaration extends MethodDeclaration {
 		ClassScope newParent = new InterTypeScope(upperScope, onTypeBinding);
 		scope.parent = newParent;
 		this.scope.isStatic = Modifier.isStatic(declaredModifiers);
+		fixSuperCallsForInterfaceContext(upperScope);
+		if (ignoreFurtherInvestigation) return;
+		
 		super.resolve(newParent);
 		fixSuperCallsInBody();
+	}
+
+	private void fixSuperCallsForInterfaceContext(ClassScope scope) {
+		if (onTypeBinding.isInterface()) {
+			InterSuperFixerVisitor v =
+				new InterSuperFixerVisitor(this, 
+						EclipseFactory.fromScopeLookupEnvironment(scope), scope);
+			this.traverse(v, scope);
+		}
 	}
 
 	/**
