@@ -20,6 +20,7 @@
 package org.aspectj.internal.tools.build;
 
 import java.io.*;
+import java.text.DateFormat;
 import java.util.*;
 
 /**
@@ -69,6 +70,11 @@ public class SampleGatherer {
      * @throws IOException if unable to read a source file
      */
     public static void main(String[] args) throws IOException {
+        if ((null == args) || (0 == args.length)) {
+            String cname = SampleGatherer.class.getName();
+            System.err.println("java " + cname + " [dir|file]");
+            return;
+        }
         Samples result = new Samples();
         for (int i = 0; i < args.length; i++) {
             result = gather(new File(args[i]), result);
@@ -650,6 +656,10 @@ class HTMLSamplesRenderer extends SamplesRenderer {
         sink.append(INFO);
         sink.append(EOL);
         sink.append(COPYRIGHT);
+        sink.append(EOL);
+        sink.append("<p><small>Generated on ");
+        sink.append(DateFormat.getDateInstance().format(new Date()));
+        sink.append(" by SamplesGatherer</small>");
         sink.append(EOL);
         sink.append("    <h2>Contents</h2>");
         sink.append(EOL);
