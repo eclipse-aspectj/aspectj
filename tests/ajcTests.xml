@@ -6257,4 +6257,25 @@
     	</compile>
     </ajc-test>
 
+    <ajc-test dir="harness" 
+        title="valid XLintWarningTest file, default level of warning">
+        <compile files="XLintWarningTest.java">
+        	<message kind="warning" line="5"
+        		 text="Xlint:invalidAbsoluteTypeName"/> 
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness" 
+        title="XLint:ignore suppresses XLint warnings">
+        <compile files="XLintWarningTest.java" options="-Xlint:ignore"/>
+    </ajc-test>
+
+    <ajc-test dir="harness" 
+        title="XLint:error promotes XLint warnings to error">
+        <compile files="XLintWarningTest.java" options="-Xlint:error">
+        	<message kind="error" line="5" 
+        		text="Xlint:invalidAbsoluteTypeName"/> 
+        </compile>
+    </ajc-test>
+
 </suite>
