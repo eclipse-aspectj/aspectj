@@ -1,0 +1,145 @@
+
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+
+<suite >
+
+    <!-- .............................................................................
+   	  Should get 1 tests run and passed when running with global options:
+   	    -ajctestRequireKeywords=requireKeyword
+   	    -ajctestSkipKeywords=skipKeyword
+   	    !verbose
+   	    -eclipse
+   	  
+   	  This is used by a JUnit test HarnessSelectionTest.	  
+   	  Do not change the outcome without changing that test.
+    -->
+    
+    <ajc-test dir="." title="run and pass" 
+    	 keywords="requireKeyword" >
+        <compile files="TestNoTester.java"/>
+        <run class="TestNoTester"/>
+    </ajc-test>
+
+    <!-- .............................................................................
+   	  AjcTest should skip or select based on (arbitrary) keywords
+    -->
+
+    <ajc-test dir="." pr="100" title="omit if skipKeyword" keywords="requireKeyword,skipKeyword" >
+        <compile staging="false" files="TestNoTester.java"/>
+        <run class="TestNoTester"/>
+    </ajc-test>
+    
+    <!-- .............................................................................
+   	  CompilerRun should resolve soft conflicts in favor of globals. XXX
+    -->
+
+    <!-- .............................................................................
+   	  CompilerRun should skip hard conflicts (both local and global use force). XXX
+    -->
+    <ajc-test dir="." pr="101" title="skip - conflict of local ^verbose and global !verbose XXX failing - runs" 
+    	 keywords="requireKeyword" >
+        <compile files="TestNoTester.java" options="^verbose"/>
+        <run class="TestNoTester"/>
+    </ajc-test>
+
+    
+    <!-- .............................................................................
+   	  CompilerRun should skip semantic conflicts - see CompilerRun.Spec.setupArgs(..).
+    -->
+
+    <ajc-test dir="." title="skip - local conflict between -lenient, -strict" 
+    	 keywords="requireKeyword" >
+        <compile files="TestNoTester.java" options="-lenient,-strict"/>
+        <run class="TestNoTester"/>
+    </ajc-test>
+
+    <ajc-test dir="." title="skip - local conflict between forced lenient, forced strict" 
+    	 keywords="requireKeyword" >
+        <compile files="TestNoTester.java" options="!lenient,!strict"/>
+        <run class="TestNoTester"/>
+    </ajc-test>
+
+    <!-- ................... ajc limitations -->
+    <ajc-test dir="." title="skip - forced ajc with incremental tests" 
+    	 keywords="requireKeyword" >
+        <compile staging="true" files="TestNoTester.java" options="!ajc"/>
+        <run class="TestNoTester"/>
+    </ajc-test>
+
+    <!-- ................... eajc limitations -->
+    <ajc-test dir="." title="skip - forced eclipse with -strict" 
+    	 keywords="requireKeyword,ajcEclipseForceConflict,eclipseOptionSkip" >
+        <compile staging="true" files="TestNoTester.java" options="-strict,!eclipse"/>
+        <run class="TestNoTester"/>
+    </ajc-test>
+
+    <ajc-test dir="." title="skip - forced eclipse with -lenient" 
+    	 keywords="requireKeyword,ajcEclipseForceConflict,eclipseOptionSkip" >
+        <compile staging="true" files="TestNoTester.java" options="-lenient,!eclipse"/>
+        <run class="TestNoTester"/>
+    </ajc-test>
+
+    <ajc-test dir="." title="skip - forced eclipse with forced strict" 
+    	 keywords="requireKeyword,ajcEclipseForceConflict,eclipseOptionSkip" >
+        <compile staging="true" files="TestNoTester.java" options="!strict,!eclipse"/>
+        <run class="TestNoTester"/>
+    </ajc-test>
+
+    <ajc-test dir="." title="skip - forced eclipse with forced lenient" 
+    	 keywords="requireKeyword,ajcEclipseForceConflict,eclipseOptionSkip" >
+        <compile staging="true" files="TestNoTester.java" options="!lenient,!eclipse"/>
+        <run class="TestNoTester"/>
+    </ajc-test>
+
+    <ajc-test dir="." title="skip - forced eclipse with -preprocess" 
+    	 keywords="requireKeyword,ajcEclipseForceConflict,eclipseOptionSkip" >
+        <compile staging="true" files="TestNoTester.java" options="-preprocess,!eclipse"/>
+        <run class="TestNoTester"/>
+    </ajc-test>
+
+    <ajc-test dir="." title="skip - forced eclipse with -usejavac" 
+    	 keywords="requireKeyword,ajcEclipseForceConflict,eclipseOptionSkip" >
+        <compile staging="true" files="TestNoTester.java" options="-usejavac,!eclipse"/>
+        <run class="TestNoTester"/>
+    </ajc-test>
+
+    <!-- .............................................................................
+   	  CompilerRun should skip invalid options CompilerRun.Spec.INVALID_OPTIONS:
+      { "-workingdir", "-argfile", "-sourceroot", "-outjar", "-source" }
+    -->
+
+    <ajc-test dir="." title="skip - local invalid option -workingdir" 
+    	 keywords="requireKeyword,localInvalidOption" >
+        <compile files="TestNoTester.java" options="-workingdir,."/>
+        <run class="TestNoTester"/>
+    </ajc-test>
+
+    <ajc-test dir="." title="skip - local invalid option -argfile" 
+    	 keywords="requireKeyword,localInvalidOption" >
+        <compile files="TestNoTester.java" options="-argfile,f"/>
+        <run class="TestNoTester"/>
+    </ajc-test>
+
+    <ajc-test dir="." title="skip - local invalid option -sourceroot" 
+    	 keywords="requireKeyword,localInvalidOption" >
+        <compile files="TestNoTester.java" options="-sourceroot,."/>
+        <run class="TestNoTester"/>
+    </ajc-test>
+
+    <ajc-test dir="." title="skip - local invalid option -outjar"
+    	 keywords="requireKeyword,localInvalidOption" >
+        <compile files="TestNoTester.java" options="-outjar,foo.jar"/>
+        <run class="TestNoTester"/>
+    </ajc-test>
+
+    <ajc-test dir="." title="skip - local invalid option -source 1.4" 
+    	 keywords="requireKeyword,localInvalidOption" >
+        <compile files="TestNoTester.java" options="-source,1.4"/>
+        <run class="TestNoTester"/>
+    </ajc-test>
+    
+    <!-- .............................................................................
+   	  CompilerRun should skip invalid options specified as globals XXX
+    -->
+
+</suite>

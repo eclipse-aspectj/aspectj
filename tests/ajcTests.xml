@@ -13,6 +13,7 @@
                       so there may only be one copy marked "messages-vary" here.
   new-messages-vary   like messages-vary, except need to make ajcTest10 variant
 
+  incremental-test    incremental test.  All tests using inc-compile.
   fail-{...}          test fails in some configuration
   fail-unimplmented   eajc throwing "unimplemented" exception
   fail-commandLine    fails in ajc on command line (move to ajcTestsBroken.xml)
@@ -5744,7 +5745,7 @@
     </ajc-test>
 
     <ajc-test dir="incremental/stringliteral"   
-    	keywords="knownLimitation"
+    	keywords="knownLimitation,incremental-test"
     	title="incrementally change string size and wire in injar classes">
         <compile staging="true" options="-incremental" 
         	files="oneInjar.jar,twoInjar.jar"
@@ -6049,6 +6050,108 @@
         	<message kind="error" file="app/MainExecStartLines.java"
         	  line="17" text="handler(RuntimeException)"/>        	  
         </compile>
+    </ajc-test>
+
+    <ajc-test dir="incremental/initialTests/classAdded" 
+    	title="expect class added in initial incremental tests" 
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+        	sourceroots="."/>
+        <run class="main.Main"/>
+        <inc-compile tag="20" >
+            <dir-changes added="main.Target"/>
+        </inc-compile>
+        <run class="main.Main"  skipTester="true"/>
+    </ajc-test>
+
+    <ajc-test dir="incremental/initialTests/classRemoved" 
+    	title="expect class removed in initial incremental tests" 
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental" 
+        	sourceroots="."/>
+        <run class="main.Main"/>
+        <inc-compile tag="20">
+            <dir-changes removed="main.Target"/>
+        </inc-compile>
+        <run class="main.Main"/>
+    </ajc-test>
+
+    <ajc-test dir="incremental/initialTests/classUpdated" 
+    	title="expect class updated in initial incremental tests" 
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+        	sourceroots="."/>
+        <run class="main.Main"/>
+        <inc-compile tag="20">
+            <dir-changes updated="main.Main"/>
+        </inc-compile>
+        <run class="main.Main"/>
+    </ajc-test>
+
+     <ajc-test dir="incremental/initialTests/sourceAdded" 
+    	title="add file with class"
+    	comment="only expecting pickup if sourceroots"    
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+        	sourceroots="."/>
+        <run class="main.Main"/>
+        <inc-compile tag="20">
+            <dir-changes added="main.Target"/>
+        </inc-compile>
+        <inc-compile tag="30">
+            <dir-changes updated="main.Main"/>
+        </inc-compile>
+        <run class="main.Main"/>
+    </ajc-test>
+
+    <ajc-test dir="incremental/initialTests/sourceDeleted" 
+        title="delete source file before incremental compile"
+        comment="build config should permit file deletions for incremental (sourceroots)"
+        keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+    		sourceroots="."/>
+        <run class="delete.Main"/>
+        <inc-compile tag="20">
+            <dir-changes removed="delete.DeleteMe"/>
+        	<message kind="error" line="6" file="delete/Target.java"/>
+        </inc-compile>
+        <inc-compile tag="30"/> 
+        <run class="delete.Main"/>
+    </ajc-test>
+
+    <ajc-test dir="incremental/initialTests/expClasses" 
+    	title="expected class tree" >
+        <compile files="Main.java">
+            <dir-changes expDir="expected"/>
+        </compile>
+        <run class="Main"/>
+    </ajc-test>
+    
+    <ajc-test dir="incremental/initialTests/defaultPackage" 
+    	title="do everything in default package (sourceroots)" 
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+    		sourceroots="."/>
+        <run class="Main"/>
+        <inc-compile tag="20">
+            <dir-changes added="Target"/>
+        </inc-compile>
+        <run class="Target" skipTester="true"/>
+        <inc-compile tag="30">
+            <dir-changes updated="Main"/>
+        </inc-compile>
+        <run class="Main" skipTester="true"/>
+        <inc-compile tag="40"> 
+			<message kind="error" line="6" file="Main.java"/>
+        </inc-compile>
+        <inc-compile tag="50"/>
+        <run class="Main"/>
     </ajc-test>
 
 </suite>
