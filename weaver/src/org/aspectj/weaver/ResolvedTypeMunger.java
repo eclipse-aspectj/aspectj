@@ -54,7 +54,7 @@ public abstract class ResolvedTypeMunger {
     	//System.err.println("matching: " + this + " to " + matchType + " onType = " + onType);
    		if (matchType.equals(onType)) { 
    			if (!onType.isExposedToWeaver()) {
-   				if (!onType.isWovenBy(aspectType)) {
+   				if (onType.getWeaverState() != null) {
 	   				if (matchType.getWorld().getLint().typeNotExposedToWeaver.isEnabled()) {
 	   					matchType.getWorld().getLint().typeNotExposedToWeaver.signal(
 	   						matchType.getName(), signature.getSourceLocation());
@@ -181,6 +181,20 @@ public abstract class ResolvedTypeMunger {
 		}
 			
 		return null;
+	}
+
+	public boolean changesPublicSignature() {
+		return kind == Field || kind == Method || kind == Constructor;
+	}
+	
+	public boolean needsAccessToTopmostImplementor() {
+		if (kind == Field) {
+			return true;
+		} else if (kind == Method) {
+			return !signature.isAbstract();
+		} else {
+			return false;
+		}
 	}
 
 }

@@ -32,7 +32,7 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
-import org.aspectj.weaver.WeaverStateKind;
+import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.PerClause;
 
@@ -51,7 +51,7 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
     // strangely non-lazy
     private ResolvedPointcutDefinition[] pointcuts = null;
 	private PerClause perClause = null;
-	private WeaverStateKind weaverState = null;
+	private WeaverStateInfo weaverState = null;
 	private List typeMungers = Collections.EMPTY_LIST;
 	private List declares = Collections.EMPTY_LIST;
 	private ResolvedMember[] privilegedAccess = null;
@@ -212,18 +212,11 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
         unpackAspectAttributes();
     }
 
-	//XXX we've lost information so that we don't know who wove into this
-	//    class, only that someone did.  For better error messages we should
-	//    probably expand the information in weaverState
-	public boolean isWovenBy(ResolvedTypeX aspectType) {
-		return weaverState == WeaverStateKind.Woven;
-	}
-
-	public WeaverStateKind getWeaverState() {
+	public WeaverStateInfo getWeaverState() {
 		return weaverState;
 	}
 
-	public void setWeaverState(WeaverStateKind weaverState) {
+	void setWeaverState(WeaverStateInfo weaverState) {
 		this.weaverState = weaverState;
 	}
 	

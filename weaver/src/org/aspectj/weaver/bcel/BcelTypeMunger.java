@@ -36,6 +36,7 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.patterns.Pointcut;
 
 
@@ -51,21 +52,31 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	}
 
 	public boolean munge(BcelClassWeaver weaver) {
+		boolean changed = false;
+		
 		if (munger.getKind() == ResolvedTypeMunger.Field) {
-			return mungeNewField(weaver, (NewFieldTypeMunger)munger);
+			changed = mungeNewField(weaver, (NewFieldTypeMunger)munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.Method) {
-			return mungeNewMethod(weaver, (NewMethodTypeMunger)munger);
+			changed = mungeNewMethod(weaver, (NewMethodTypeMunger)munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.PerObjectInterface) {
-			return mungePerObjectInterface(weaver, (PerObjectInterfaceTypeMunger)munger);
+			changed = mungePerObjectInterface(weaver, (PerObjectInterfaceTypeMunger)munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.PrivilegedAccess) {
-			return mungePrivilegedAccess(weaver, (PrivilegedAccessMunger)munger);
+			changed = mungePrivilegedAccess(weaver, (PrivilegedAccessMunger)munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.Constructor) {
-			return mungeNewConstructor(weaver, (NewConstructorTypeMunger)munger);
+			changed = mungeNewConstructor(weaver, (NewConstructorTypeMunger)munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.Parent) {
-			return mungeNewParent(weaver, (NewParentTypeMunger)munger);
+			changed = mungeNewParent(weaver, (NewParentTypeMunger)munger);
 		} else {
 			throw new RuntimeException("unimplemented");
 		}
+		
+		if (changed && munger.changesPublicSignature()) {
+			WeaverStateInfo info = 
+				weaver.getLazyClassGen().getOrCreateWeaverStateInfo();
+			info.addConcreteMunger(this);
+		}
+		
+		return changed;
 	}
 
 

@@ -101,7 +101,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		
 		args.add("testdata/src1/binary/client/Client1.java");
 		
-		CommandTestCase.runCompiler(args, new int[] {9, 11, 15, 17});
+		CommandTestCase.runCompiler(args, new int[] {15, 17, 22});
 		
 		args = new ArrayList();
 		args.add("-classpath");

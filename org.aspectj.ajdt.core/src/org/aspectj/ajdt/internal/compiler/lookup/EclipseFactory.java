@@ -192,8 +192,8 @@ public class EclipseFactory {
 			binding.modifiers,
 			fromBinding(binding.returnType),
 			new String(binding.selector),
-			fromBindings(binding.parameters));
-		ret.setCheckedExceptions(fromBindings(binding.thrownExceptions));
+			fromBindings(binding.parameters),
+			fromBindings(binding.thrownExceptions));
 		return ret;
 	}
 

@@ -575,8 +575,8 @@ public abstract class ResolvedTypeX extends TypeX {
 			return delegate.isExposedToWeaver();  //??? where does this belong
 		}
 		
-		public boolean isWovenBy(ResolvedTypeX aspectType) {
-			return delegate.isWovenBy(aspectType);
+		public WeaverStateInfo getWeaverState() {
+			return delegate.getWeaverState();
 		}
 
 		public ResolvedMember[] getDeclaredFields() {
@@ -684,7 +684,7 @@ public abstract class ResolvedTypeX extends TypeX {
 
 //		public abstract ISourceLocation getSourceLocation();
 
-		public abstract boolean isWovenBy(ResolvedTypeX aspectType);
+		public abstract WeaverStateInfo getWeaverState();
 
 //		public ISourceContext getSourceContext() {
 //			return sourceContext;
@@ -1270,8 +1270,7 @@ public abstract class ResolvedTypeX extends TypeX {
 	
 	public ISourceLocation getSourceLocation() { return null; }
 	public boolean isExposedToWeaver() { return false; }
-	public boolean isWovenBy(ResolvedTypeX aspectType) {
-		return false;
+	public WeaverStateInfo getWeaverState() {
+		return null;
 	}
-
 }

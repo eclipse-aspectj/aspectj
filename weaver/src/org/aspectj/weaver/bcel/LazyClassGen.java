@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -49,7 +50,7 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.TypeX;
-import org.aspectj.weaver.WeaverStateKind;
+import org.aspectj.weaver.WeaverStateInfo;
 
 public final class LazyClassGen {
 
@@ -152,8 +153,13 @@ public final class LazyClassGen {
     }
 
     private void writeBack() {
-    	addAjcInitializers();
+    	if (myType != null && myType.getWeaverState() != null) {
+			myGen.addAttribute(BcelAttributes.bcelAttribute(
+				new AjAttribute.WeaverState(myType.getWeaverState()), 
+				getConstantPoolGen()));
+    	}
     	
+    	addAjcInitializers();
     	
         int len = methodGens.size();
         myGen.setMethods(new Method[0]);
@@ -305,29 +311,17 @@ public final class LazyClassGen {
         return myGen.getClassName();
     }
 
-	public WeaverStateKind getWeaverState() {
-		WeaverStateKind kind = myType.getWeaverState();
-		if (kind == null) return WeaverStateKind.Untouched;
-		return kind;
+	public boolean isWoven() {
+		return myType.getWeaverState() != null;
 	}
-
-	public void setWeaverState(WeaverStateKind s) {
-		Attribute[] attributes = myGen.getAttributes();
-		if (attributes != null) {
-			for (int i = attributes.length - 1; i >=0; i--) {
-				Attribute a = attributes[i];
-				if (a instanceof Unknown) {
-					Unknown u = (Unknown) a;
-					if (u.getName().equals(AjAttribute.WeaverState.AttributeName)) {
-						myGen.removeAttribute(u);
-					}
-				}
-			}
-		}
-		myGen.addAttribute(BcelAttributes.bcelAttribute(
-			new AjAttribute.WeaverState(s), 
-			getConstantPoolGen()));
-		myType.setWeaverState(s);
+	
+	public WeaverStateInfo getOrCreateWeaverStateInfo() {
+		WeaverStateInfo ret = myType.getWeaverState();
+		if (ret != null) return ret;
+		
+		ret = new WeaverStateInfo();
+		myType.setWeaverState(ret);
+		return ret;
 	}
 
     public InstructionFactory getFactory() {
@@ -531,4 +525,5 @@ public final class LazyClassGen {
 	public void forcePublic() {
 		myGen.setAccessFlags(Utility.makePublic(myGen.getAccessFlags()));
 	}
+
 }

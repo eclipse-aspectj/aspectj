@@ -61,7 +61,7 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
-import org.aspectj.weaver.WeaverStateKind;
+import org.aspectj.weaver.WeaverStateInfo;
 
 class BcelClassWeaver implements IClassWeaver {
     
@@ -75,7 +75,7 @@ class BcelClassWeaver implements IClassWeaver {
 		List typeMungers) 
 	{
 		boolean b =  new BcelClassWeaver(world, clazz, shadowMungers, typeMungers).weave();
-		//System.err.println(clazz.getClassName() + ", " + clazz.getWeaverState());
+		//System.out.println(clazz.getClassName() + ", " + clazz.getType().getWeaverState());
 		//clazz.print();
 		return b;
 	}
@@ -241,7 +241,7 @@ class BcelClassWeaver implements IClassWeaver {
     // ----
     
     public boolean weave() {
-        if (clazz.getWeaverState().isWoven()) {
+        if (clazz.isWoven()) {
         	world.showMessage(IMessage.ERROR, 
 				"class \'" + clazz.getType().getName() + "\' is already woven",
 				ty.getSourceLocation(), null);
@@ -309,7 +309,7 @@ class BcelClassWeaver implements IClassWeaver {
 		
 		// finally, if we changed, we add in the introduced methods.
         if (isChanged) {
-        	clazz.setWeaverState(WeaverStateKind.Woven);
+        	clazz.getOrCreateWeaverStateInfo();
 			weaveInAddedMethods();
         }
         

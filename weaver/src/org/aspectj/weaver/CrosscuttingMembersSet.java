@@ -66,6 +66,10 @@ public class CrosscuttingMembersSet {
 		return isAspect;
 	}
 	
+	public boolean containsAspect(TypeX aspectType) {
+		return members.containsKey(aspectType);
+	}
+	
 	//XXX only for testing
 	public void addFixedCrosscuttingMembers(ResolvedTypeX aspectType) {
 		members.put(aspectType, aspectType.crosscuttingMembers);

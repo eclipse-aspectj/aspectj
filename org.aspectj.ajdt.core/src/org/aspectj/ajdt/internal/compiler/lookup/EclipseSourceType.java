@@ -66,8 +66,8 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 		return declaration instanceof AspectDeclaration;
 	}
 
-	public boolean isWovenBy(ResolvedTypeX aspectType) {
-		return false;
+	public WeaverStateInfo getWeaverState() {
+		return null;
 	}
 	
 	public ResolvedTypeX getSuperclass() {

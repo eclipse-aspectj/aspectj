@@ -34,7 +34,19 @@ public class ResolvedMember extends Member implements IHasPosition {
 	protected int start, end;
 	protected ISourceContext sourceContext = null;
     
-    // ----
+    //XXX deprecate this in favor of the constructor below
+	public ResolvedMember(
+		Kind kind,
+		TypeX declaringType,
+		int modifiers,
+		TypeX returnType,
+		String name,
+		TypeX[] parameterTypes)
+	{
+		super(kind, declaringType, modifiers, returnType, name, parameterTypes);
+	}
+
+    
     
 	public ResolvedMember(
 		Kind kind,
@@ -42,9 +54,11 @@ public class ResolvedMember extends Member implements IHasPosition {
 		int modifiers,
 		TypeX returnType,
 		String name,
-		TypeX[] parameterTypes) 
+		TypeX[] parameterTypes,
+		TypeX[] checkedExceptions) 
 	{
 		super(kind, declaringType, modifiers, returnType, name, parameterTypes);
+		this.checkedExceptions = checkedExceptions;
 	}
     
 	public ResolvedMember(

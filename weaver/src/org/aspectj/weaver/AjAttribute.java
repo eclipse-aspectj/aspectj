@@ -88,7 +88,7 @@ public abstract class AjAttribute {
 			if (name.equals(Aspect.AttributeName)) {
 				return new Aspect(PerClause.readPerClause(s, context));
 			} else if (name.equals(WeaverState.AttributeName)) {
-				return new WeaverState(WeaverStateKind.read(s));
+				return new WeaverState(WeaverStateInfo.read(s, context));
 			} else if (name.equals(AdviceAttribute.AttributeName)) {
 				return AdviceAttribute.read(s, context);
 			} else if (name.equals(PointcutDeclarationAttribute.AttributeName)) {
@@ -162,15 +162,15 @@ public abstract class AjAttribute {
 		public String getNameString() {
 			return AttributeName;
 		}
-		private WeaverStateKind kind;
-		public WeaverState(WeaverStateKind kind) {
+		private WeaverStateInfo kind;
+		public WeaverState(WeaverStateInfo kind) {
 			this.kind = kind;
 		}
 		public void write(DataOutputStream s) throws IOException {
 			kind.write(s);
 		}
 		
-		public WeaverStateKind reify() {
+		public WeaverStateInfo reify() {
 			return kind;
 		}
 	}

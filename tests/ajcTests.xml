@@ -6549,6 +6549,7 @@
 		<compile 
 			files="Client.java" 
 			classpath="aspectedInterfaceOnly.jar">
+			<message kind="error" line="0" text="LibraryAspect"/>
 			<message kind="error" line="9" text="LibraryInterface"/>
 			</compile>
 		</ajc-test>
@@ -6625,6 +6626,43 @@
 		dir="bugs/interfaceLibrary"
 		title="exception clause for aspect-declared class methods - negative">
 		<compile files="ClassClientCE.java,LibraryClassAspect.java,lib/LibraryClass.java">
+			<message kind="error" file="ClassClientCE.java" line="5"/>
+			</compile>
+		</ajc-test>
+		
+	<ajc-test dir="bugs"
+		pr="41175"
+		title="reflective check of declared exceptions from aspect-declared methods">
+		<compile files="DeclaredExceptions.java"/>
+		<run class="DeclaredExceptions"/>
+		</ajc-test>
+
+	<ajc-test dir="bugs/interfaceLibrary"
+		pr="41175"
+		title="exception clause for aspect-declared interface methods - positive binary">
+		<compile files="Client.java" aspectpath="lib.jar"/>
+		<run class="Client"/>
+		</ajc-test>
+
+	<ajc-test dir="bugs/interfaceLibrary"
+		pr="41175"
+		title="exception clause for aspect-declared interface methods - negative binary">
+		<compile files="ClientCE.java" aspectpath="lib.jar">
+			<message kind="error" file="ClientCE.java" line="5"/>
+			</compile>
+		</ajc-test>
+
+	<ajc-test dir="bugs/interfaceLibrary"
+		pr="41175"
+		title="exception clause for aspect-declared class methods - positive binary">
+		<compile files="ClassClient.java" aspectpath="libClass.jar"/>
+		<run class="ClassClient"/>
+		</ajc-test>
+
+	<ajc-test dir="bugs/interfaceLibrary"
+		pr="41175"
+		title="exception clause for aspect-declared class methods - negative binary">
+		<compile files="ClassClientCE.java" aspectpath="libClass.jar">
 			<message kind="error" file="ClassClientCE.java" line="5"/>
 			</compile>
 		</ajc-test>

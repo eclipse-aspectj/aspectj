@@ -12,36 +12,6 @@
 		<run class="Client"/>
 		</ajc-test>
 
-	<ajc-test dir="bugs/interfaceLibrary"
-		pr="41175"
-		title="exception clause for aspect-declared interface methods - positive binary">
-		<compile files="Client.java" aspectpath="lib.jar"/>
-		<run class="Client"/>
-		</ajc-test>
-
-	<ajc-test dir="bugs/interfaceLibrary"
-		pr="41175"
-		title="exception clause for aspect-declared interface methods - negative binary">
-		<compile files="ClientCE.java" aspectpath="lib.jar">
-			<message kind="error" file="ClientCE.java" line="5"/>
-			</compile>
-		</ajc-test>
-
-	<ajc-test dir="bugs/interfaceLibrary"
-		pr="41175"
-		title="exception clause for aspect-declared class methods - positive binary">
-		<compile files="ClassClient.java" aspectpath="libClass.jar"/>
-		<run class="Client"/>
-		</ajc-test>
-
-	<ajc-test dir="bugs/interfaceLibrary"
-		pr="41175"
-		title="exception clause for aspect-declared class methods - negative binary">
-		<compile files="ClassClientCE.java" aspectpath="libClass.jar">
-			<message kind="error" file="ClassClientCE.java" line="5"/>
-			</compile>
-		</ajc-test>
-
 	<ajc-test dir="new/pointcutLibrary" title="libraries-pointcuts compiles"
 		comment="interim test just to show library compiles...">
 		<compile files="langlib/Pointcuts.java"/>

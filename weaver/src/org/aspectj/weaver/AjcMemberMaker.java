@@ -232,8 +232,8 @@ public class AjcMemberMaker {
 			Modifier.PUBLIC,
 			method.getReturnType(),
 			NameMangler.superDispatchMethod(baseType, method.getName()),
-			method.getParameterTypes());
-			//XXX needs thrown exceptions to be correct
+			method.getParameterTypes(),
+			method.getExceptions());
 	}
 	
 	public static ResolvedMember inlineAccessMethodForMethod(TypeX aspectType, ResolvedMember method) {
@@ -249,8 +249,7 @@ public class AjcMemberMaker {
 			
 			NameMangler.inlineAccessMethodForMethod(method.getName(),
 												method.getDeclaringType(), aspectType),
-			paramTypes);
-			//XXX needs thrown exceptions to be correct
+			paramTypes, method.getExceptions());
 	}
 	
 	public static ResolvedMember inlineAccessMethodForFieldGet(TypeX aspectType, Member field) {
@@ -382,7 +381,8 @@ public class AjcMemberMaker {
 				Modifier.PUBLIC,
 				ResolvedTypeX.VOID,
 				"<init>",
-				constructor.getParameterTypes());
+				constructor.getParameterTypes(),
+				constructor.getExceptions());
 		//System.out.println("ret: " + ret + " mods: " + Modifier.toString(modifiers));
 		if (Modifier.isPublic(constructor.getModifiers()))
 			return ret;
@@ -429,7 +429,8 @@ public class AjcMemberMaker {
 		return new ResolvedMember(Member.METHOD, aspectType, PUBLIC_STATIC,
 			field.getReturnType(),
 			NameMangler.interFieldGetDispatcher(aspectType, field.getDeclaringType(), field.getName()),
-			field.isStatic() ? TypeX.NONE : new TypeX[] {field.getDeclaringType()}
+			field.isStatic() ? TypeX.NONE : new TypeX[] {field.getDeclaringType()},
+			TypeX.NONE
 			);
 	}
 	
@@ -451,7 +452,7 @@ public class AjcMemberMaker {
 			makePublicNonFinal(field.getModifiers()),
 			field.getReturnType(), 
 			NameMangler.interFieldClassField(field.getModifiers(), aspectType, field.getDeclaringType(), field.getName()),
-			TypeX.NONE
+			TypeX.NONE, TypeX.NONE
 			);
 	}
 	
@@ -464,7 +465,7 @@ public class AjcMemberMaker {
 		return new ResolvedMember(Member.FIELD, onClass, makePublicNonFinal(field.getModifiers()),
 			field.getReturnType(), 
 			NameMangler.interFieldInterfaceField(aspectType, field.getDeclaringType(), field.getName()),
-			TypeX.NONE
+			TypeX.NONE, TypeX.NONE
 			);
 	}
 	
@@ -478,7 +479,7 @@ public class AjcMemberMaker {
 		return new ResolvedMember(Member.METHOD, onType, modifiers,
 			ResolvedTypeX.VOID,
 			NameMangler.interFieldInterfaceSetter(aspectType, field.getDeclaringType(), field.getName()),
-			new TypeX[] {field.getReturnType()}
+			new TypeX[] {field.getReturnType()}, TypeX.NONE
 			);
 	}
 	
@@ -492,7 +493,7 @@ public class AjcMemberMaker {
 		return new ResolvedMember(Member.METHOD, onType, modifiers,
 			field.getReturnType(), 
 			NameMangler.interFieldInterfaceGetter(aspectType, field.getDeclaringType(), field.getName()),
-			TypeX.NONE
+			TypeX.NONE, TypeX.NONE
 			);
 	}
 	
@@ -514,7 +515,7 @@ public class AjcMemberMaker {
 			modifiers,
 			meth.getReturnType(), 
 			NameMangler.interMethod(meth.getModifiers(), aspectType, meth.getDeclaringType(), meth.getName()),
-			meth.getParameterTypes());	
+			meth.getParameterTypes(), meth.getExceptions());	
 	}
 
 	/**
@@ -530,7 +531,7 @@ public class AjcMemberMaker {
 		return new ResolvedMember(Member.METHOD, aspectType, PUBLIC_STATIC,
 			meth.getReturnType(), 
 			NameMangler.interMethodDispatcher(aspectType, meth.getDeclaringType(), meth.getName()),
-			paramTypes);
+			paramTypes, meth.getExceptions());
 	}
 
 	/**
@@ -552,7 +553,7 @@ public class AjcMemberMaker {
 		return new ResolvedMember(Member.METHOD, aspectType, modifiers,
 			meth.getReturnType(), 
 			NameMangler.interMethodBody(aspectType, meth.getDeclaringType(), meth.getName()),
-			paramTypes);
+			paramTypes, meth.getExceptions());
 	}
 	
 	
@@ -568,7 +569,7 @@ public class AjcMemberMaker {
 			ret.getModifiers(),
 			ret.getReturnType(),
 			ret.getName(),
-			freshParams);
+			freshParams, ret.getExceptions());
 	}
 
 	public static ResolvedMember toObjectConversionMethod(TypeX fromType) {
@@ -580,7 +581,7 @@ public class AjcMemberMaker {
 				PUBLIC_STATIC,
 				TypeX.OBJECT,
 				name,
-				new TypeX[] { fromType });
+				new TypeX[] { fromType }, TypeX.NONE);
 		} else {
 			return null;
 		}

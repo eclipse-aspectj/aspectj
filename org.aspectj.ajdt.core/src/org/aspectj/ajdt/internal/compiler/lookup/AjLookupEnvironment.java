@@ -43,6 +43,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
 	
 //	private boolean builtInterTypesAndPerClauses = false;
 	private List pendingTypesToWeave = new ArrayList();
+	private Map dangerousInterfaces = new HashMap();
 	
 	public AjLookupEnvironment(
 		ITypeRequestor typeRequestor,
@@ -151,16 +152,49 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		}
 	}
 	
-	
-	
 	private void weaveInterTypeDeclarations(SourceTypeBinding sourceType, Collection typeMungers, Collection declareParents, boolean skipInners) {
-//		if (new String(sourceType.sourceName()).equals("Target")) {
-//			Thread.currentThread().dumpStack();
-//		}
-//		
-//		System.out.println("weaving types: " + new String(sourceType.sourceName()));
-//		System.out.println("  mungers: " + typeMungers);
 		ResolvedTypeX onType = factory.fromEclipse(sourceType);
+		WeaverStateInfo info = onType.getWeaverState();
+
+		if (info != null && !info.isOldStyle()) {		
+			Collection mungers = 
+				onType.getWeaverState().getTypeMungers(onType);
+				
+			//System.out.println("mungers: " + mungers);
+			for (Iterator i = mungers.iterator(); i.hasNext(); ) {
+				ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
+				EclipseTypeMunger munger = factory.makeEclipseTypeMunger(m);
+				if (munger.munge(sourceType)) {
+					if (onType.isInterface() &&
+						munger.getMunger().needsAccessToTopmostImplementor())
+					{
+						if (!onType.getWorld().getCrosscuttingMembersSet().containsAspect(munger.getAspectType())) {
+							dangerousInterfaces.put(onType, 
+								"implementors of " + onType + " must be woven by " +
+								munger.getAspectType());
+						}
+					}
+				}
+				
+			}
+			
+			return;
+		}
+		
+		//System.out.println("dangerousInterfaces: " + dangerousInterfaces);
+		
+		for (Iterator i = dangerousInterfaces.entrySet().iterator(); i.hasNext();) {
+			Map.Entry entry = (Map.Entry) i.next();
+			ResolvedTypeX interfaceType = (ResolvedTypeX)entry.getKey();
+			if (onType.isTopmostImplementor(interfaceType)) {
+				factory.showMessage(IMessage.ERROR, 
+					onType + ": " + entry.getValue(),
+					onType.getSourceLocation(), null);
+			}
+		}
+		
+		boolean needOldStyleWarning = (info != null && info.isOldStyle());
+		
 		onType.clearInterTypeMungers();
 		
 		for (Iterator i = declareParents.iterator(); i.hasNext();) {
@@ -170,6 +204,12 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		for (Iterator i = typeMungers.iterator(); i.hasNext();) {
 			EclipseTypeMunger munger = (EclipseTypeMunger) i.next();
 			if (munger.matches(onType)) {
+				if (needOldStyleWarning) {
+					factory.showMessage(IMessage.WARNING, 
+						"The class for " + onType + " should be recompiled with ajc-1.1.1 for best results",
+						onType.getSourceLocation(), null);
+					needOldStyleWarning = false;
+				}
 				onType.addInterTypeMunger(munger);
 			}
 		}
