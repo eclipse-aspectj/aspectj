@@ -26,11 +26,13 @@ public class AnnotationRuntimeTests extends TestUtils {
     	baseDir = new File("../tests/java5/annotations/thisOrtarget");
     }
     
-    public void test001_NoBinding() {
-        CompilationResult cR = binaryWeave("TestingAnnotations.jar","BindingLimitation.aj",1,0);
-        List errors = cR.getErrorMessages();
-        assertTrue("Binding not supported",errors.get(0).toString().startsWith("error Binding not supported"));
-    }
+//    No longer a limitation ASC 31Jan05
+//    public void test001_BindingWithAtTargetAllowed() {
+//        CompilationResult cR = binaryWeave("TestingAnnotations.jar","BindingWithAtTarget.aj",0,0);
+//        List errors = cR.getErrorMessages();
+//        RunResult rR = run("TestingAnnotations");
+//        System.err.println(rR.getStdErr());
+//    }
     
     public void test002_MustHaveRuntimeRetention() {
         CompilationResult cR = binaryWeave("TestingAnnotations.jar","NotRuntimeRetention.aj",2,0);
