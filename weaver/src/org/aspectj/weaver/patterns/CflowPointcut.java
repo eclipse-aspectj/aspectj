@@ -72,6 +72,11 @@ public class CflowPointcut extends Pointcut {
 		return Shadow.ALL_SHADOW_KINDS;
 	}
 	
+	// enh 76055
+	public Pointcut getEntry() {
+		return entry; 
+	}
+	
     public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}

@@ -77,6 +77,11 @@ public class IfPointcut extends Pointcut {
 		return false;
 	}
 	
+	// enh 76055
+	public Pointcut getResidueSource() {
+		return residueSource;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
 	 */
