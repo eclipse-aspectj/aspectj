@@ -7,6 +7,7 @@ public class PlainJava {
 	public int i;
 	 
 	public int getI() { 
+		assert true;
 		
 		new FileFilter() {
 			public boolean accept(File f) {

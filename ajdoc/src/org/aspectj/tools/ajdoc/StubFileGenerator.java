@@ -112,7 +112,10 @@ class StubFileGenerator {
 		    	    && !member.getKind().equals(IProgramElement.Kind.ADVICE)) {
 		    		signature = member.getSourceSignature();//StructureUtil.genSignature(member);
 		    	} 
-		    	if (signature != null &&
+		    	
+		    	if (member.getKind().isDeclare()) {
+		    		System.err.println("> Skipping declare (ajdoc limitation): " + member.toLabelString());
+		    	} else if (signature != null &&
 		    		signature != "" && 
 		    		!member.getKind().isInterTypeMember() &&
 					!member.getKind().equals(IProgramElement.Kind.INITIALIZER) &&

@@ -29,14 +29,20 @@ public class CoverageTestCase extends TestCase {
 		File aspect1 = new File("testdata/simple/foo/AspectA.java");
 		File file2 = new File("testdata/simple/foo/InterfaceI.java");
 		File file3 = new File("testdata/simple/foo/PlainJava.java");
+		File file4 = new File("testdata/simple/foo/ModelCoverage.java");
 		File outdir = new File("testdata/simple/doc");
 		
-		String[] args = { "-d", 
+		String[] args = { 
+//				"-XajdocDebug",
+				"-source",
+				"1.4",
+				"-d", 
 				outdir.getAbsolutePath(),
 				aspect1.getAbsolutePath(),
 				file1.getAbsolutePath(), 
 				file2.getAbsolutePath(),
-				file3.getAbsolutePath()};
+				file3.getAbsolutePath(),
+				file4.getAbsolutePath()};
 		
 		org.aspectj.tools.ajdoc.Main.main(args);
 	}

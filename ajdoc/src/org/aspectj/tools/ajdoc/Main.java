@@ -33,10 +33,10 @@ public class Main implements Config {
     static SymbolManager symbolManager = null;
 
     /** Command line options. */
-    static Vector options = new Vector();
+    static Vector options;
 
     /** Options to pass to ajc. */
-    static Vector ajcOptions = new Vector();
+    static Vector ajcOptions;
 
     /** All of the files to be processed by ajdoc. */
     static Vector filenames;
@@ -82,10 +82,13 @@ public class Main implements Config {
 
     public static void main(String[] args) {
     	aborted = false;
+    	deleteTempFilesOnExit = true;
    
         filenames = new Vector();
         fileList= new Vector();
         packageList = new Vector();
+        options = new Vector();
+        ajcOptions = new Vector();
 //    	if (!JavadocRunner.has14ToolsAvailable()) {
 //    		System.err.println("ajdoc requires a JDK 1.4 or later tools jar - exiting");
 //    		aborted = true;
@@ -113,9 +116,11 @@ public class Main implements Config {
             }
 
             // PHASE 0: call ajc
-            ajcOptions.addElement( "-noExit" );
-			ajcOptions.addElement( "-XjavadocsInModel" );  	// TODO: wrong option to force model gen
-            String[] argsToCompiler = new String[ajcOptions.size() + inputFiles.length];
+            ajcOptions.addElement("-noExit");
+			ajcOptions.addElement("-XjavadocsInModel");  	// TODO: wrong option to force model gen
+            ajcOptions.addElement("-d"); 
+            ajcOptions.addElement(rootDir.getAbsolutePath());
+			String[] argsToCompiler = new String[ajcOptions.size() + inputFiles.length];
             int i = 0;
             for ( ; i < ajcOptions.size(); i++ ) {
                 argsToCompiler[i] = (String)ajcOptions.elementAt(i);
@@ -126,6 +131,7 @@ public class Main implements Config {
                 i++;
             }
 
+//            System.out.println(Arrays.asList(argsToCompiler));
             System.out.println( "> Calling ajc..." );
             CompilerWrapper.main(argsToCompiler);
             if (CompilerWrapper.hasErrors()) {
@@ -308,7 +314,6 @@ public class Main implements Config {
     static File createSignatureFile(File inputFile) throws IOException {
     	String packageName = StructureUtil.getPackageDeclarationFromFile(inputFile);
     	
-//    	System.err.println(">>> package: " + packageName);
         String filename    = "";
         if ( packageName != null ) {
             String pathName =  Config.WORKING_DIR + '/' + packageName.replace('.', '/');
@@ -331,45 +336,45 @@ public class Main implements Config {
     }
 
 
-    static void verifyPackageDirExists( String packageName, String offset ) {
-        System.err.println(">>> name: " + packageName + ", offset: " + offset);
-        if ( packageName.indexOf( "." ) != -1 ) {
-            File tempFile = new File("c:/aspectj-test/d1/d2/d3");
-            tempFile.mkdirs();
-            String currPkgDir = packageName.substring( 0, packageName.indexOf( "." ) );
-            String remainingPkg = packageName.substring( packageName.indexOf( "." )+1 );
-            String filePath = null;
-            if ( offset != null ) {
-                filePath = Config.WORKING_DIR + Config.DIR_SEP_CHAR +
-                           offset + Config.DIR_SEP_CHAR + currPkgDir ;
-            }
-            else {
-                filePath = Config.WORKING_DIR + Config.DIR_SEP_CHAR + currPkgDir;
-            }
-            File packageDir = new File( filePath );
-            if ( !packageDir.exists() ) {
-                packageDir.mkdir();
-                if (deleteTempFilesOnExit) packageDir.deleteOnExit();
-            }
-            if ( remainingPkg != "" ) {
-                verifyPackageDirExists( remainingPkg, currPkgDir );
-            }
-        }
-        else {
-            String filePath = null;
-            if ( offset != null ) {
-                filePath = Config.WORKING_DIR + Config.DIR_SEP_CHAR + offset + Config.DIR_SEP_CHAR + packageName;
-            }
-            else {
-                filePath = Config.WORKING_DIR + Config.DIR_SEP_CHAR + packageName;
-            }
-            File packageDir = new File( filePath );
-            if ( !packageDir.exists() ) {
-                packageDir.mkdir();
-                if (deleteTempFilesOnExit) packageDir.deleteOnExit();
-            }
-        }
-    }
+//    static void verifyPackageDirExists( String packageName, String offset ) {
+//        System.err.println(">>> name: " + packageName + ", offset: " + offset);
+//        if ( packageName.indexOf( "." ) != -1 ) {
+//            File tempFile = new File("c:/aspectj-test/d1/d2/d3");
+//            tempFile.mkdirs();
+//            String currPkgDir = packageName.substring( 0, packageName.indexOf( "." ) );
+//            String remainingPkg = packageName.substring( packageName.indexOf( "." )+1 );
+//            String filePath = null;
+//            if ( offset != null ) {
+//                filePath = Config.WORKING_DIR + Config.DIR_SEP_CHAR +
+//                           offset + Config.DIR_SEP_CHAR + currPkgDir ;
+//            }
+//            else {
+//                filePath = Config.WORKING_DIR + Config.DIR_SEP_CHAR + currPkgDir;
+//            }
+//            File packageDir = new File( filePath );
+//            if ( !packageDir.exists() ) {
+//                packageDir.mkdir();
+//                if (deleteTempFilesOnExit) packageDir.deleteOnExit();
+//            }
+//            if ( remainingPkg != "" ) {
+//                verifyPackageDirExists( remainingPkg, currPkgDir );
+//            }
+//        }
+//        else {
+//            String filePath = null;
+//            if ( offset != null ) {
+//                filePath = Config.WORKING_DIR + Config.DIR_SEP_CHAR + offset + Config.DIR_SEP_CHAR + packageName;
+//            }
+//            else {
+//                filePath = Config.WORKING_DIR + Config.DIR_SEP_CHAR + packageName;
+//            }
+//            File packageDir = new File( filePath );
+//            if ( !packageDir.exists() ) {
+//                packageDir.mkdir();
+//                if (deleteTempFilesOnExit) packageDir.deleteOnExit();
+//            }
+//        }
+//    }
 
     /**
      * Can read Eclipse-generated single-line arg
@@ -485,6 +490,13 @@ public class Main implements Config {
                 addNextToAJCOptions = true;
                 options.addElement( arg );
                 ajcOptions.addElement( arg );
+            } 
+            else if ( arg.equals( "-source" ) ) {
+                addNextAsOption = true;
+                addNextToAJCOptions = true;
+                addNextAsClasspath = true;
+                options.addElement( arg );
+                ajcOptions.addElement( arg );
             }
             else if ( arg.equals( "-classpath" ) ) {
                 addNextAsOption = true;
@@ -498,6 +510,9 @@ public class Main implements Config {
                 //options.addElement( arg );
                 //ajcOptions.addElement( arg );
             }
+            else if (arg.equals("-XajdocDebug")) {
+            	deleteTempFilesOnExit = false;
+            } 
             else if (arg.startsWith("-") || addNextAsOption) {
                 if ( arg.equals( "-private" ) ) {
                     docModifier = "private";
@@ -533,7 +548,7 @@ public class Main implements Config {
                 } else if ( addNextAsOption ) {
                     //  pass through
                 } else {
-                	System.err.println("> uncrecognized arg: " + arg);
+                	System.err.println("> unrecognized argument: " + arg);
                     displayHelpAndExit( null );
                 }  
                 options.addElement(arg);
