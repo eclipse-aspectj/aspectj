@@ -592,7 +592,7 @@ public class Ajc10 extends MatchingTask {
         } catch (Throwable t) {
             while (t instanceof AbortException) {
                 // check for "just quit -- message printed already"
-                if (AbortException.ABORT.equals(t)) { 
+                if (((AbortException)t).isSilent()) { 
                     t = null;
                     break;
                 }

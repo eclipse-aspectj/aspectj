@@ -88,7 +88,7 @@ public class Ajc11CompilerAdapter extends DefaultCompilerAdapter {
         } catch (BuildException e) {
             throw e;
         } catch (AbortException x) {
-            if (AbortException.ABORT.equals(x)) { // no message, just return
+            if (x.isSilent()) { // no message, just return
                 return false;
             } else {
                 Throwable t = x.getThrown();
