@@ -27,6 +27,8 @@ public class BcweaverJarMaker {
 		makeJar1();
 		makeJar1a();
 		makeJar2();
+		
+		makeTestJars();
 	}
 	
 	public static void makeJar0() throws IOException {
@@ -87,4 +89,35 @@ public class BcweaverJarMaker {
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 	}	
+	
+	public static void makeTestJars() throws IOException {
+		List args = new ArrayList();
+
+		args.add("-classpath"); args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar");
+		args.add("-outjar");
+		args.add("../tests/new/options11/aspectlib1.jar");		
+		args.add("../tests/new/options11/library1/*.java");
+		
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+		
+		args = new ArrayList();
+
+		args.add("-classpath"); args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar");
+		args.add("-outjar");
+		args.add("../tests/new/options11/aspectlib2.jar");		
+		args.add("../tests/new/options11/library2/*.java");
+		
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+		
+		args = new ArrayList();
+
+		args.add("-classpath"); args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar");
+		args.add("-outjar");
+		args.add("../tests/new/options11/injar.jar");		
+		args.add("../tests/new/options11/injar/*.java");
+		
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+	}	
+	
+	
 }
