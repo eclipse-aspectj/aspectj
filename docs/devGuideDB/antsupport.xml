@@ -1,20 +1,1510 @@
-<refentry>
-  <refnamediv>
-    <refname>Ant Support</refname>
-    <refpurpose>Support of Ant</refpurpose>
-  </refnamediv>
+<chapter id="antTasks" xreflabel="AspectJ Ant Tasks">
 
-  <refsynopsisdiv>
-        <cmdsynopsis>
-          <command>ant </command>
-        </cmdsynopsis>
-      </refsynopsisdiv>
+  <title>AspectJ Ant Tasks</title>
 
-  <refsect1>
-    <title>Description</title>
-    <para></para>
-  </refsect1>
-</refentry>
+  <sect1 id="antTasks-intro">
+    <title>Introduction</title>
+
+	<para>
+	AspectJ contains a compiler, ajc, that can be run from Ant. 
+	Included in the aspectjtools.jar are Ant binaries to support three 
+	ways of running the compiler:
+    <orderedlist>
+      <listitem>
+        <para>
+	<xref linkend="antTasks-iajc"/>, 
+	a task to run the new AspectJ 1.1 compiler, 
+	which supports all the eclipse and ajc options, including incremental mode.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+	<xref linkend="antTasks-adapter"/>, 
+	an adapter class to run the new compiler using Javac tasks 
+	by setting the build.compiler property
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+	<xref linkend="antTasks-ajc"/>, 
+	a task to run build scripts compatible with the AspectJ 1.0 tasks
+        </para>
+      </listitem>
+    </orderedlist>
+	</para>
+	
+    <para>
+	This describes how to install and use the tasks and the adapter. 
+	For an example Ant script, see 
+		<ulink url="../examples/build.xml">examples/build.xml</ulink>.
+    </para>
+  </sect1>
+  
+  <sect1 id="antTasks-install" xreflabel="Installing Ant Tasks">
+    <title>Installing Ant Tasks</title>
+    <para>
+	Install Jakarta Ant 1.5.1:  
+	Please see the official Jakarta Ant website for more information 
+	and the 1.5.1 distribution. This release is source-compatible 
+	with Ant 1.3 and Ant 1.4, but the task sources must be 
+	compiled with those versions of the Ant libraries to be used 
+	under those versions of Ant. 
+	Sources are available under the Common Public License v. 1.0 
+	at <ulink url="http://eclipse.org/aspectj">http://eclipse.org/aspectj</ulink>.
+	</para>
+	<para>
+	In Ant, third-party tasks can be declared using a taskdef entry in 
+	the build script, to identify the name and classes. 
+	When declaring a task, include the aspectjtools.jar either in the 
+	taskdef classpath or in ${ANT_HOME}/lib where it will be added 
+	to the system class path by the ant script. 
+	You may specify the task script names directly, 
+	or use the "resource" attribute to specify the default names:
+    </para>
+    <programlisting>
+    <![CDATA[
+  <taskdef 
+      resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+]]>
+    </programlisting>
+
+    <para>
+	The current resource file retains the name "ajc" for the Ajc10 task, 
+	and uses "iajc" for the AspectJ 1.1 task.
+    </para>
+    <para>
+	For more information on using Ant, please refer to Jakarta's 
+	documentation on integrating user-defined Ant tasks into builds.
+    </para>
+
+  </sect1>
+  <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .  iajc -->
+  <sect1 id="antTasks-iajc" xreflabel="AjcTask (iajc)">
+    <title>AjcTask (iajc)</title>
+    <para>
+	This task uses the AspectJ 1.1 compiler ajc. 
+	The AspectJ compiler can be used like Javac to compile Java sources, 
+	but it can also compile AspectJ sources or weave binary aspects 
+	with Java bytecode. 
+	It can run in normal "batch" mode or in an "incremental" mode, 
+	where it only recompiles files it has to revisit. 
+	For more information on ajc, see <xref linkend="ajc-ref"/>.
+    </para>
+    <para>
+		Beyond the normal ajc 1.1 compiler options, this task also supports
+		an experimental option for an incremental "tag" file, and it
+		can copy resources from source directories or 
+		input jars to the output jar or directory.
+    </para>
+    
+    <para>
+    This task is named iajc now to avoid conflict with the 1.0 task ajc, 
+    but the name may change to ajc in the future.
+    </para>
+
+  	<sect2 id="antTasks-iajc-options" xreflabel="AjcTask (iajc) Options">
+	    <title>AjcTask (iajc) Options</title>
+	    <para>
+		The following tables list the supported parameters. 
+		For any parameter specified as a Path, a single path can be 
+		specified directly as an attribute, 
+		multiple paths can be specified using a nested element of 
+		the same name, and a common path can be reused by defining it as a
+		global and passing the id to the corresponding {name}ref attribute. 
+		See <xref linkend="antTasks-iajc-paths"/> 
+		below for more information.
+	    </para>
+	    <para>
+		Most attributes and nested elements are optional.	
+		The compiler requires that the same version of aspectjrt.jar 
+		be specified on the classpath, and that some sources be
+		be specified
+	    (using one or more of 
+	    <literal>sourceroots</literal>
+	    <literal>injars</literal>
+	    <literal>argfiles</literal> and 
+	    <literal>srcdir</literal> (with patterns)).
+	    When in incremental mode, only
+	    <literal>sourceroots</literal> may be specified.
+	    </para>
+	    <para>Boolean parameters default to <literal>false</literal>
+	    unless otherwise stated.
+	    </para>
+
+		<!-- . . . . . . . . . . . . . . . . iajc options table -->
+		<table>
+		<title>AjcTask (iajc) options for specifying sources</title>
+		<tgroup cols="2">
+			<thead>
+			<row>
+			<entry>Attribute</entry>
+			<entry>Description</entry>
+			</row>
+			</thead>
+			<tbody>
+			<row>
+				<entry><para>argfiles, argfilesRef
+				(<xref linkend="antTasks-iajc-paths"/>)
+				</para></entry>
+				<entry><para>
+				An argument file contains a list of arguments read by the compiler. 
+				Each line is read into one element of the argument array 
+				and may include another argfile by reference.		
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>sourceRoots, sourceRootsRef
+				(<xref linkend="antTasks-iajc-paths"/>)
+				</para></entry>
+				<entry><para>
+				 Directories containing source files (ending with .java or .aj) to compile.						
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>srcdir
+				(<xref linkend="antTasks-iajc-paths"/>)
+				</para></entry>
+				<entry><para>						
+				Base directory of sources to compile, assuming there are 
+				TODO link nested elements  
+				for includes or excludes. This uses the Ant process 
+				for matching .java files and is not compatible with incremental 
+				mode. Unless using filters to limit the sources included, 
+				use sourceroots instead.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>injars, injarsRef
+				(<xref linkend="antTasks-iajc-paths"/>)
+				</para></entry>
+				<entry><para>
+				Input zip files with .class file entries for bytecode weaving.					
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>classpath, classpathRef
+				(<xref linkend="antTasks-iajc-paths"/>)
+				</para></entry>
+				<entry><para>
+				The classpath used by the sources being compiled.
+				When compiling aspects, include the same version of the
+				<literal>aspectjrt.jar</literal>.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>bootclasspath, bootclasspathRef
+				(<xref linkend="antTasks-iajc-paths"/>)
+				</para></entry>
+				<entry><para>
+				The bootclasspath specified types to use instead of the 
+				invoking VM's when seeking types during compilation.					
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>extDirs, extDirsRef
+				(<xref linkend="antTasks-iajc-paths"/>)
+				</para></entry>
+				<entry><para>					
+				The extension directories to use instead of those in the 
+				invoking VM when seeking types during compilation.	
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>aspectPath, aspectPathRef
+				(<xref linkend="antTasks-iajc-paths"/>)
+				</para></entry>
+				<entry><para>						
+				Similar to classpath, aspectpath contains read-only, 
+				binary aspect libraries.  
+				Unlike classpath, it only accepts jar/zip files, 
+				not directories.
+				</para></entry>
+			</row>
+			</tbody>
+		</tgroup>
+		</table> 
+
+		<table>
+		<title>AjcTask (iajc) options for specifying output</title>
+		<tgroup cols="2">
+			<thead>
+			<row>
+			<entry>Attribute</entry>
+			<entry>Description</entry>
+			</row>
+			</thead>
+			<tbody>
+			<row>
+				<entry><para>destDir
+				</para></entry>
+				<entry><para>						
+				The directory in which to place the generated class files. 
+				Conflicts with outjar.	
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>outJar
+				</para></entry>
+				<entry><para>						
+				The zip file in which to place the generated output class files. 
+				Conflicts with destdir.	
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>outJar
+				</para></entry>
+				<entry><para>						
+				Copy all non-.class files from input jar(s) to the output jar or destination 
+				directory after the compile (or incremental compile) completes. 
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>sourceRootCopyFilter
+				</para></entry>
+				<entry><para>						
+				When set, copy all files from the sourceroot directories to the output jar 
+				or destination directory except those specified in the filter pattern. 
+				The pattern should be compatible with an Ant fileset excludes filter; 
+				when using this, most developers pass 
+				<literal>**/CVS/*,**/*.java</literal> to exclude any CVS directories 
+				or source files.
+				</para></entry>
+			</row>
+			</tbody>
+		</tgroup>
+		</table> 
+
+		<table>
+		<title>AjcTask (iajc) options for specifying compiler behavior</title>
+		<tgroup cols="2">
+			<thead>
+			<row>
+			<entry>Attribute</entry>
+			<entry>Description</entry>
+			</row>
+			</thead>
+			<tbody>
+			<row>
+				<entry><para>fork
+				</para></entry>
+				<entry><para>						
+				Run process in another VM (usually to specify memory or avoid locking any 
+				jar files used on the classpath). 
+				When set, this requires 
+				<literal>aspectjtools.jar</literal>
+				be on the system/Ant classpath, and only uses the aspectjtools.jar 
+				to invoke the compiler (so nothing else on the system/Ant classpath 
+				is included implicitly in the compiler/user classpath). 
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>maxmem
+				</para></entry>
+				<entry><para>		
+				The maximum memory to use for the new VM when fork is true. 
+				Values should have the same form as accepted by the VM, e.g., "128m".				
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>tagfile
+				</para></entry>
+				<entry><para>		
+				incremental mode: Build once, then recompile only required source 
+				files when user provides input. 
+				Requires that source files be specified only using sourceroots. 
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>tagfile
+				</para></entry>
+				<entry><para>		
+				incremental mode: Build once, then recompile only required source 
+				files when the tag file is updated, finally exiting when tag file 
+				is deleted (also requires and only permits sourceroots).				
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>X
+				</para></entry>
+				<entry><para>						
+				Set experimental option(s), using comma-separated list of accepted options 
+				(unlisted here). Options should not contain the leading X. 
+				XLint options should be specified using the xlint... entries.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>Xnoweave
+				</para></entry>
+				<entry><para>		
+				Experimental option to produce binaries that can only be used as input 
+				for the -injars option.
+				</para></entry>
+			</row>
+			</tbody>
+		</tgroup>
+		</table> 
+
+		<table>
+		<title>AjcTask (iajc) options for specifying compiler side-effects and messages</title>
+		<tgroup cols="2">
+			<thead>
+			<row>
+			<entry>Attribute</entry>
+			<entry>Description</entry>
+			</row>
+			</thead>
+			<tbody>
+			<row>
+				<entry><para>emacssym
+				</para></entry>
+				<entry><para>
+				Whether to emit <literal>.ajesym</literal> symbol files for Emacs support.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>verbose
+				</para></entry>
+				<entry><para>
+				Whether to emit compiler status messages during the compile.				
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>Xlistfileargs
+				</para></entry>
+				<entry><para>			
+				Whether to emit list of file arguments during 
+				the compile (but behaves now like verbose).			
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>version
+				</para></entry>
+				<entry><para>	
+				If true, do not compile - just print AspectJ version.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>help
+				</para></entry>
+				<entry><para>	
+					If true, just print help for the command-line compiler.					
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>Xlintwarnings
+				</para></entry>
+				<entry><para>			
+				Same as <literal>xlint:warning</literal>:
+				if enabled, set default level of all language 
+				usage messages to warning.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>Xlint
+				</para></entry>
+				<entry><para>
+				Specify default level of all language usage messages to one of 
+				(<literal>error warning ignore]</literal>.						
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>XlintFile
+				</para></entry>
+				<entry><para>		
+				Specify property file containing <literal>name:level</literal> associations 
+				setting level for language messages emitted during compilation. 
+				Any levels set override the default associations in 
+				<literal>org/aspectj/weaver/XLintDefault.properties</literal>.				
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>failonerror
+				</para></entry>
+				<entry><para>			
+				Whether the build continues notwithstanding compile errors.
+				Defaults to <literal>true</literal>.			
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>messageHolderClass
+				</para></entry>
+				<entry><para>					
+				Specify a class to use as the message holder for the compile process. 
+				The entry must be a fully-qualified name of a class resolveable from 
+				the task classpath complying with the 
+				<literal>org.aspectj.bridge.IMessageHolder</literal> interface 
+				and having a public no-argument constructor.	
+				</para></entry>
+			</row>
+			</tbody>
+		</tgroup>
+		</table> 
+
+
+		<table>
+		<title>AjcTask (iajc) options for specifying Eclipse compiler options</title>
+		<tgroup cols="2">
+			<thead>
+			<row>
+			<entry>Attribute</entry>
+			<entry>Description</entry>
+			</row>
+			</thead>
+			<tbody>
+			<row>
+				<entry><para>nowarn
+				</para></entry>
+				<entry><para>		
+				 	Same as <literal>warn:none</literal>.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>deprecation
+				</para></entry>
+				<entry><para>			
+				Same as <literal>warn:deprecation</literal>			
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>warn
+				</para></entry>
+				<entry><para>		
+				One or more comma-separated warning specifications from
+				[<literal>constructorName packageDefaultMethod deprecation, 
+				  maskedCatchBlocks unusedLocals unusedArguments, 
+				 unusedImports syntheticAccess assertIdentifier</literal>].				
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>debug
+				</para></entry>
+				<entry><para>
+				Same as <literal>debug:lines,vars,source</literal>					
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>debugLevel
+				</para></entry>
+				<entry><para>
+				 	One or more comma-separated debug specifications from
+				 	[<literal>lines vars source</literal>].			
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>PreserveAllLocals
+				</para></entry>
+				<entry><para>			
+				 	Code gen preserves all local variables (for debug purposes).		
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>noimporterror
+				</para></entry>
+				<entry><para>			
+				 	No errors for unresolved imports.			
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>referenceinfo
+				</para></entry>
+				<entry><para>			
+				Compute reference info.			
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>log
+				</para></entry>
+				<entry><para>	
+				 	File to log compiler messages to.					
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>encoding
+				</para></entry>
+				<entry><para> 	Default source encoding format
+				(per-file encoding not supported in Ant tasks).				
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>proceedOnError
+				</para></entry>
+				<entry><para>				
+				Keep compiling when error, dumping class files with problem methods.		
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>progress
+				</para></entry>
+				<entry><para>		
+				 	Show progress (requires log).				
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>time
+				</para></entry>
+				<entry><para>	
+				 	Display speed information.					
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>target
+				</para></entry>
+				<entry><para>		
+				 	Specify target class file format (one of
+				 	[<literal>1.1 1.2</literal>].
+				 	Defaults to 1.1 class file.				
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>
+				</para></entry>
+				<entry><para>		
+				 	Set source compliance level to one of
+				 	[<literal>1.3 1.4</literal>]
+				 	(e.g., no import from default package in 1.4).
+				 	Defaults to 1.3 compliance level. 				
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>source
+				</para></entry>
+				<entry><para>
+				Set source assertion mode to one of
+				 	[<literal>1.3 1.4</literal>].
+				Default depends on compliance mode.				
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>
+				</para></entry>
+				<entry><para>						
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>
+				</para></entry>
+				<entry><para>						
+				</para></entry>
+			</row>
+			</tbody>
+		</tgroup>
+		</table> 
+
+
+		<!-- bug  Specifying sources morerows and rotate are failing 
+		<table>
+		<title>AjcTask (iajc) options</title>
+		<tgroup cols="3">
+			<thead>
+			<row>
+			<entry></entry>
+			<entry>Attribute</entry>
+			<entry>Description</entry>
+			</row>
+			</thead>
+			<tbody>
+				<row><entry morerows="7" rotate="1"><para>
+				Specifying sources
+				</para></entry></row>
+				<row><entrytbl spanname="both">
+					<tbody><row>
+						<entry><para>argfiles, argfilesRef
+						<xref linkend="antTasks-iajc-paths"/>)
+						</para></entry>
+						<entry><para>
+						An argument file contains a list of arguments read by the compiler. 
+						Each line is read into one element of the argument array 
+						and may include another argfile by reference.		
+						</para></entry>
+					</row></tbody>
+				</entrytbl></row>
+			</tbody>
+		</tgroup>
+		</table> 
+		-->
+		<!-- bug  Specifying sources spanname is failing 
+		<table>
+		<title>AjcTask (iajc) options</title>
+		<tgroup cols="2">
+		    <colspec colnum="1" colname="option" colwidth="4*"/>
+		    <colspec colnum="2" colname="description" colwidth="1*"/>
+		    <spanspec spanname="both" namest="option" nameend="description"/>
+			<thead>
+			<row>
+			<entry>Attribute</entry>
+			<entry>Description</entry>
+			</row>
+			</thead>
+			<tbody>
+				<row><entry spanname="both"><bold>Specifying sources</bold>
+				</entry></row>
+				<row><entrytbl spanname="both">
+					<tbody><row>
+						<entry spanname="option">
+						argfiles, argfilesRef
+						<xref linkend="antTasks-iajc-paths"/>)
+						</entry>
+						<entry spanname="description"><para>
+						An argument file contains a list of arguments read by the compiler. 
+						Each line is read into one element of the argument array 
+						and may include another argfile by reference.		
+						</para></entry>
+					</row></tbody>
+				</entrytbl></row>
+			</tbody>
+		</tgroup>
+		</table> 
+		-->
+		<!-- . . . . . . . . . . . . . . . . iajc options table -->
+	</sect2>
+	
+  	<sect2>
+    <title>AjcTask parameters specified as nested elements</title>
+    <para>
+	This task forms an implicit FileSet and supports all attributes of 
+	<literal>&lt;fileset&gt;</literal> (dir becomes srcdir) as well as 
+	the nested 
+	<literal>&lt;include&gt;</literal>, 
+	<literal>&lt;exclude&gt;</literal>, and 
+	<literal>&lt;patternset&gt;</literal> elements
+	as described in <xref linkend="antTasks-ajc-nested"/>. 
+	These can be used to specify source files. However, we recommend 
+	using sourceRoots to specify source directories unless using 
+	filters to exclude some files from compilation.
+    </para>
+  	</sect2>
+  	
+  	<sect2 id="antTasks-iajc-paths" xreflabel="Path">
+    <title>AjcTask Path-like Structures</title>
+    <para>
+	Some parameters are path-like structures containing one or more 
+	elements; these are
+	<literal>sourceroots</literal>,
+	<literal>argfiles</literal>,
+	<literal>injars</literal>,
+	<literal>classpath</literal>, and
+	<literal>aspectpath</literal>.
+	In all cases, these may be specified as nested elements, something 
+	like this:
+    </para>
+	<programlisting>
+    <![CDATA[
+    <iajc {attributes..} />
+        <{name}>    
+            <pathelement path="{first-location}"/>
+            <pathelement path="{second-location}"/>
+            ...
+        <{name}>    
+        ...
+    </iajc>
+]]>
+	</programlisting>
+	<para>
+	As with other Path-like structures, they may be defined elsewhere 
+	and specified using the refid attribute:
+	</para>
+	<programlisting>
+    <![CDATA[
+    <path id="aspect.path">
+        <pathelement path="${home}/lib/persist.jar"/>
+        <pathelement path="${home}/lib/trace.jar"/>
+    </path>
+    ...
+    <iajc {attributes..} />
+        <aspectpath refid="aspect.path"/>    
+        ...
+    </iajc>
+]]>
+	</programlisting>
+	<para>
+	The task also supports an attribute <literal>{name}ref</literal>
+	for each such parameter. E.g., for <literal>aspectpath</literal>:
+	</para>
+	<programlisting>
+    <![CDATA[
+    <iajc {attributes..} aspectpathref="aspect.path"/>    
+]]>
+	</programlisting>
+  	</sect2>
+  	
+  	<sect2 id="antTasks-iajc-sample" xreflabel="Sample of iajc task">
+	    <title>Sample of iajc task</title>
+		<para>
+		A minimal build script defines the task and runs it, specifying the sources:
+		</para>
+		<programlisting>
+		<![CDATA[
+<project name="simple-example" default="compile" >
+  <taskdef 
+      resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    <classpath>
+      <pathelement location="${home.dir}/tools/aspectj/lib/aspectjtools.jar"/>
+    </classpath>
+  </taskdef>
+
+  <target name="compile" >
+    <iajc sourceroots="${home.dir}/ec/project/src" /> 
+  </target>
+</project>
+]]>
+		</programlisting>
+		<para>
+		Below is script with most everything in it. The compile process...
+		</para>
+	    <orderedlist>
+	      <listitem>
+	        <para>Runs in incremental mode, recompiling when the user hits return;
+	        </para>
+	      </listitem>
+	      <listitem>
+	        <para>Reads all the sources from two directories;
+	        </para>
+	      </listitem>
+	      <listitem>
+	        <para>Reads extrinsic module bytecode as input jar for weaving;
+	        </para>
+	      </listitem>
+	      <listitem>
+	        <para>Uses a binary aspect library for persistence;
+	        </para>
+	      </listitem>
+	      <listitem>
+	        <para>Outputs to an application jar; and
+	        </para>
+	      </listitem>
+	      <listitem>
+	        <para>
+	        </para>Copies resources from the input jar and source directories into the application jar.
+	      </listitem>
+	    </orderedlist>
+		<para>
+		When this target is built, the compiler will build once and then 
+		wait for input from the user. 
+		Messages are printed as usual. 
+		When the user has quit, then this runs the application.
+		</para>
+
+		<programlisting>
+		<![CDATA[
+  <target name="build-test" >
+    <iajc outjar="${home.dir}/output/application.jar" 
+            injars="${home.dir}/build/module.jar"
+            copyInjars="true"
+            sourceRootCopyFilter="**/CVS/*,**/*.java"
+            incremental="true" >
+      <sourceroots>
+        <pathelement location="${home.dir}/ec/project/src"/>
+        <pathelement location="${home.dir}/ec/project/testsrc"/>
+      </sourceroots>
+      <aspectpath>
+        <pathelement location="${home.dir}/ec/int/persist.jar"/>
+      </aspectpath>
+      <classpath>
+        <pathelement location="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/>
+      </classpath>
+    </iajc>
+    
+    <java classname="org.smart.app.Main">
+      <classpath>
+        <pathelement location="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/>
+        <pathelement location="${home.dir}/ec/int/persist.jar"/>
+        <pathelement location="${home.dir}/output/application.jar"/>
+      </classpath>
+    </java>
+  </target>
+]]>
+		</programlisting>
+		<para>
+		For an in-depth example of a build script,
+		see <ulink url="../examples/build.xml">
+						../examples/build.xml</ulink>.
+		</para>
+  	</sect2>
+
+  	<sect2>
+    <title>Programmatically handling compiler messages</title>
+    <para>
+	Users may specify a message holder to which the compiler will pass 
+	all messages as they are generated. This will override all of the 
+	normal message printing, but does not prevent the task from failing 
+	if exceptions were thrown or if failonerror is true and the compiler 
+	detected errors in the sources.
+	</para>
+	<para>
+	Handling messages programmatically could be useful when using the 
+	compiler to verify code. If aspects consist of declare [error|warning],
+	then the compiler can act to detect invariants in the code being 
+	processed. For code to compare expected and actual messages, see the 
+	AspectJ testing module (which is not included in the binary 
+	distribution). 
+	</para>
+  </sect2>
+  </sect1>
+
+  <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .  adapter -->
+  <sect1 id="antTasks-adapter" xreflabel="Ajc11CompilerAdapter (javac)">
+    <title>Ajc11CompilerAdapter (javac)</title>
+    <para>
+	This CompilerAdapter can be used in javac task calls by setting the 
+	<literal>build.compiler</literal> property. 
+	This enables users to to easily switch between the Javac and AspectJ 
+	compilers. 
+	However, the Javac task's pruning of source files prevents the 
+	adapter from doing a correct compile in some cases, 
+	so use AjcTask where possible.
+    </para>
+  	<sect2 id="antTasks-adapter-sample" xreflabel="Sample of compiler adapter">
+	    <title>Sample of compiler adapter</title>
+		<para>
+		To build using the adapter, put the 
+		<literal>aspectjtools.jar</literal> 
+		on the system/ant classpath (e.g., in 
+		<literal>${ANT_HOME}/lib</literal>) 
+		and define the 
+		<literal>build.compiler</literal>
+		property as the fully-qualified name of the class, 
+		<literal>org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter</literal>. 
+		</para>
+		<para>
+		The AspectJ compiler should run for any compile using the Javac task 
+		(for options, see the Ant documentation for the Javac task). 
+		For example, the call below passes all out-of-date source files in the 
+		<literal>src/org/aspectj</literal> subdirectories to the 
+		<literal>ajc</literal> command along with the destination directory:
+		</para>
+		<programlisting>
+		<![CDATA[
+-- command:
+
+    cp aspectj1.1/lib/aspectjtools.jar ant/lib
+    ant/bin/ant -Dbuild.compiler=org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter ...
+
+-- task invocation in the build script:
+
+  <javac srcdir="src" includes="org/aspectj/**/*.java" destdir="dest" />
+]]>
+		</programlisting>
+		
+		<para>
+		To pass ajc-specific arguments, use a compilerarg entry.
+		</para>
+		<programlisting>
+		<![CDATA[
+-- command
+
+  Ant -Dbuild.compiler=org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter
+
+-- build script
+
+  <property name="ajc" 
+              value="org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter"/>
+
+  <javac srcdir="src" includes="org/aspectj/**/*.java" destdir="dest" >
+    <compilerarg compiler="${ajc}" line="-argfile src/args.lst"/>
+  <javac/>
+]]>
+		</programlisting>
+	</sect2>
+	
+  	<sect2 id="antTasks-adapter-options" xreflabel="Compiler adapter compilerarg options">
+	    <title>Compiler adapter compilerarg options</title>
+	<para>
+	The adapter supports any ajc command-line option passed using compilerarg, 
+	as well as the following options available only in AjcTask. 
+	Find more details on the following options in <xref linkend="antTasks-iajc"/>.
+	</para>
+	<itemizedlist>
+		<listitem><para>
+		<literal>-Xmaxmem</literal>: 
+			set maximum memory for forking (also settable in javac).		
+		</para></listitem>
+		<listitem><para>
+		<literal>-Xlistfileargs</literal>: 
+			list file arguments (also settable in javac).		
+		</para></listitem>
+		<listitem><para>
+		<literal>-Xfailonerror</literal>: 
+			throw BuildException on compiler error (also settable in javac).
+		</para></listitem>
+		<listitem><para>
+		<literal>-Xmessageholderclass</literal>: 
+			specify fully-qualified name of class to use as the message holder.	
+		</para></listitem>
+		<listitem><para>
+		<literal>-Xcopyinjars</literal>: 
+			copy resources from any input jars to output
+		</para></listitem>
+		<listitem><para>
+		<literal>-Xsourcerootcopyfilter {filter}</literal>: 
+			copy resources from source directories to output (minus files specified in filter)
+		</para></listitem>
+		<listitem><para>
+		<literal>-Xtagfile {file}</literal>: 
+			use file to control incremental compilation		
+		</para></listitem>
+		<listitem><para>
+		<literal>-Xsrcdir {dir}</literal>: 		
+			add to list of ajc source roots (all source files will be included).
+		</para></listitem>
+	</itemizedlist>
+	<para>
+	Special considerations when using Javac and compilerarg:
+	</para>
+	<itemizedlist>
+		<listitem><para>
+		The names above may differ slightly from what you might expect 
+		from AjcTask; use these forms when specifying compilerarg.
+		</para></listitem>
+	</itemizedlist>
+	<itemizedlist>
+		<listitem><para>
+		By default the adapter will mimic the Javac task's copying of resource 
+		files by specifying 
+		<literal>"**/CVS/*,**/*.java,**/*.aj"</literal>
+		for the sourceroot copy filter. 
+		To change this behavior, supply your own value 
+		(e.g., <literal>"**/*"</literal> to copy nothing).
+		</para></listitem>
+	</itemizedlist>
+	<itemizedlist>
+		<listitem><para>
+		Warning - use build.compiler.clean to get all files, when available,
+		because Javac prunes the source file list of "up-to-date" source files 
+		based on the timestamps of corresponding .class files 
+		(and will not compile if no sources are out of date). 
+		This is wrong for ajc which requires all the files for each compile 
+		and which may refer indirectly to sources using argument files. 
+		</para>
+		<para>
+		To work around this, set the global property 
+		<literal>build.compiler.clean</literal>. 
+		This tells the compiler adapter to delete all .class files 
+		in the destination directory and re-execute the javac 
+		task so javac can recalculate the list of source files. e.g.,
+		</para>
+		<programlisting>
+		<![CDATA[
+  Ant -Dbuild.compiler=org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter
+      -Dbuild.compiler.clean=anything ...
+]]>
+		</programlisting>
+		<para>		
+		Caveats to consider when using this global 
+		<literal>build.compiler.clean</literal> property:
+		</para>		
+		<orderedlist>
+			<listitem><para>
+		   If javac believes there are no out-of-date source files, 
+		   then the adapter is never called and cannot clean up, 
+		   and the "compile" will appear to complete successfully 
+		   though it did nothing.
+			</para></listitem>
+			<listitem><para>
+		   Cleaning will makes stepwise build processes fail if 
+		   they depend on the results of the prior compilation being 
+		   in the same directory, since cleaning deletes all .class files.
+			</para></listitem>
+			<listitem><para>
+		   This clean process only permits one compile process at a 
+		   time for each destination directory because it tracks 
+		   recursion by writing a tag file to the destination directory.
+			</para></listitem>
+			<listitem><para>
+		   When running incrementally, the clean happens only before 
+		   the initial compile.
+			</para></listitem>
+		</orderedlist>
+		</listitem>
+	</itemizedlist>
+  	</sect2>
+  </sect1>
+
+  <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .  Ajc10 -->
+  <sect1 id="antTasks-ajc" xreflabel="Ajc10 (ajc)">
+    <title>Ajc10 (ajc)</title>
+    <para>
+	This task handles the same arguments as those used by the AspectJ 1.0 task.
+	This should permit those with existing build scripts using the Ajc Ant 
+	task to continue using the same scripts when compiling with 1.1. 
+	This will list any use of options no longer supported in 1.1 
+	(e.g., <literal>lenient, strict, workingdir, preprocess, usejavac</literal>,...), 
+	and does not provide access to the new features of AspectJ 1.1. 
+	(Developers using AspectJ 1.1 only should upgrade their scripts 
+	to use AjcTask instead.)
+	</para>
+	
+  	<sect2 id="antTasks-ajc-options" xreflabel="Ajc10 (ajc) Options">
+	    <title>Ajc10 (ajc) Options</title>
+	    <para>
+	    </para>
+	    <para>
+		Most attributes and nested elements are optional.	
+		The compiler requires that the same version of aspectjrt.jar 
+		be specified on the classpath, and that some sources be
+		be specified
+	    (using one or more of 
+	    <literal>argfiles</literal> and 
+	    <literal>srcdir</literal> (with patterns)).
+	    </para>
+	    <para>Boolean parameters default to <literal>false</literal>
+	    unless otherwise stated.
+	    </para>
+
+		<!-- . . . . . . . . . . . . . . . . ajc options table -->
+		<table>
+		<title>AjcTask (ajc) options for specifying sources</title>
+		<tgroup cols="2">
+			<thead>
+			<row>
+			<entry>Attribute</entry>
+			<entry>Description</entry>
+			</row>
+			</thead>
+			<tbody>
+			<row>
+				<entry><para>srcdir
+				</para></entry>
+				<entry><para>
+				The base directory of the java files.
+				See 
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>destdir
+				</para></entry>
+				<entry><para>
+				The target directory for the output .class files
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>includes
+				</para></entry>
+				<entry><para>
+				Comma-separated list of patterns of files that must be included.
+				No files are included when omitted.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>includesfile
+				</para></entry>
+				<entry><para>
+				The path to a file containing include patterns.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>excludes
+				</para></entry>
+				<entry><para>
+				Comma-separated list of patterns of files that must be excluded.
+				No files (except default excludes) are excluded when omitted.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>excludesfile
+				</para></entry>
+				<entry><para>
+				The path to a file containing exclude patterns.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>defaultexcludes
+				</para></entry>
+				<entry><para>
+				If true, then default excludes are used.
+				Default excludes are used when omitted
+				(i.e., defaults to <literal>true</literal>).
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>classpath, classpathref
+				</para></entry>
+				<entry><para>
+				The classpath to use, 
+				optionally given as a reference to a classpath Path
+				element defined elsewhere. 
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>bootclasspath, bootclasspathref
+				</para></entry>
+				<entry><para>
+				The bootclasspath to use, 
+				optionally given as a reference to a bootclasspath Path
+				element defined elsewhere. 
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>extdirs
+				</para></entry>
+				<entry><para>
+				Paths to directories containting installed extensions.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>debug
+				</para></entry>
+				<entry><para>
+				If true, emit debug info in the .class files.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>deprecation
+				</para></entry>
+				<entry><para>
+				If true, emit messages about use of deprecated API.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>verbose
+				</para></entry>
+				<entry><para>
+				Emit compiler status messages during the compile.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>version
+				</para></entry>
+				<entry><para>
+				Emit version information and quit.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>failonerror
+				</para></entry>
+				<entry><para>
+				If true, build continues notwithstanding compile errors.
+				Defaults to <literal>true</literal>.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>source
+				</para></entry>
+				<entry><para>
+				Value of -source option - ignored unless <literal>1.4</literal>.
+				</para></entry>
+			</row>
+			</tbody>
+		</tgroup>
+		</table>
+		
+		<table>
+		<title>Parameters ignored by the old ajc taskdef, 
+				but now supported or buggy</title>
+		<tgroup cols="3">
+			<thead>
+			<row>
+			<entry>Attribute</entry>
+			<entry>Description</entry>
+			<entry>Supported?</entry>
+			</row>
+			</thead>
+			<tbody>
+			<row>
+				<entry><para>encoding
+				</para></entry>
+				<entry><para>Default encoding of source files.
+				</para></entry>
+				<entry><para>yes
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>optimize
+				</para></entry>
+				<entry><para>
+					Whether source should be compiled with optimization.
+				</para></entry>
+				<entry><para>yes?
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>target
+				</para></entry>
+				<entry><para>
+				Generate class files for specific VM version, one of
+				[<literal>1.1 1.2</literal>].
+				</para></entry>
+				<entry><para>yes
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>depend
+				</para></entry>
+				<entry><para>
+				Enables dependency-tracking.
+				</para></entry>
+				<entry><para>no
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>includeAntRuntime
+				</para></entry>
+				<entry><para>
+				Whether to include the Ant run-time libraries.
+				</para></entry>
+				<entry><para>no
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>includeJavaRuntime
+				</para></entry>
+				<entry><para>
+				Whether to include the run-time libraries from the executing VM.
+				</para></entry>
+				<entry><para>no
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>threads
+				</para></entry>
+				<entry><para>Multi-threaded compilation
+				</para></entry>
+				<entry><para>no
+				</para></entry>
+			</row>
+			</tbody>
+		</tgroup>
+		</table>
+
+		<para>
+		The following table shows that many of the unique parameters in 
+		AspectJ 1.0 are no longer supported.
+		</para>
+		<table>
+		<title>Parameters unique to ajc</title>
+		<tgroup cols="3">
+			<thead>
+			<row>
+			<entry>Attribute</entry>
+			<entry>Description</entry>
+			</row>
+			</thead>
+			<tbody>
+			<row>
+				<entry><para>X
+				</para></entry>
+				<entry><para>
+				 	comma-delimited list of extended (-X...) options, 
+				 	entered without -X (e.g., 
+				 	<literal>X="lint"</literal> for -Xlint).
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>emacssym
+				</para></entry>
+				<entry><para>
+				Generate symbols for Emacs IDE support.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>argfiles
+				</para></entry>
+				<entry><para>
+				A comma-delimited list of argfiles that contain a line-delimited 
+				list of source file paths (absolute or relative to the argfile).
+				</para></entry>
+			</row>
+			</tbody>
+		</tgroup>
+		</table>
+		
+		
+		<sect3>
+		<title>argfiles - argument list files</title>
+		<para>
+		An argument file is a file (usually <literal>{file}.lst</literal>) 
+		containing a list of source file paths 
+		(absolute or relative to the argfile). 
+		You can use it to specify all source files to be compiled, 
+		which ajc requires to avoid searching every possible source file 
+		in the source path when building aspects. 
+		If you specify an argfile to the ajc task, it will not include all 
+		files in any specified source directory (which is the default 
+		behavior for the Javac task when no includes are specified). 
+		Conversely, if you specify excludes, they will be removed from 
+		the list of files compiled even if they were specified 
+		in an argument file. 
+		</para>
+		<para>
+		The compiler also accepts arguments that are not source files,
+		but the IDE support for such files varies, and Javac does not
+		support them.  Be sure to include exactly one argument on each line.
+		</para>
+		</sect3>
+  	</sect2>
+
+  	<sect2 id="antTasks-ajc-nested">
+	    <title>Ajc10 parameters specified as nested elements</title>
+	    <para>
+		This task forms an implicit FileSet and supports all attributes of 
+		<literal>&lt;fileset&gt;</literal> (dir becomes srcdir) as well as 
+		the nested 
+		<literal>&lt;include&gt;</literal>, 
+		<literal>&lt;exclude&gt;</literal>, and 
+		<literal>&lt;patternset&gt;</literal> elements. 
+		These can be used to specify source files. However, we recommend 
+		using sourceRoots to specify source directories unless using 
+		filters to exclude some files from compilation.
+	    </para>
+	    <para>
+		<literal>ajc</literal>'s
+		<literal>srcdir</literal>, 
+		<literal>classpath</literal>, 
+		<literal>bootclasspath</literal>, 
+		<literal>extdirs</literal>, and 
+		<literal>jvmarg</literal>
+		attributes are path-like structures and can also be set via nested 
+		<literal>&lt;src&gt;</literal>, 
+		<literal>&lt;classpath&gt;</literal>, 
+		<literal>&lt;bootclasspath&gt;</literal>, 
+		<literal>&lt;extdirs&gt;</literal>, and 
+		<literal>&lt;jvmargs&gt;</literal> elements, respectively.
+		</para>
+
+  	</sect2>
+	
+  	<sect2 id="antTasks-ajc-sample" xreflabel="Sample of ajc task">
+	    <title>Sample of ajc task</title>
+		<para>
+		Following is a declaration for the ajc task and a sample invocation 
+		that uses the ajc compiler to compile the files listed in 
+		<literal>default.lst</literal> into the dest dir:
+		</para>
+		<programlisting>
+		<![CDATA[
+<project name="example" default="compile" >
+  <taskdef name="ajc"
+    classname="org.aspectj.tools.ant.taskdefs.Ajc10" >
+    <!-- declare classes needed to run the tasks and tools -->
+    <classpath>
+      <pathelement location="${home.dir}/tools/aspectj/lib/aspectjtools.jar"/>
+    </classpath>
+  </taskdef>
+
+  <target name="compile" >
+    <mkdir dir="dest" />
+    <ajc destdir="dest" argfiles="default.lst" >
+      <!-- declare classes needed to compile the target files -->
+      <classpath>
+        <pathelement location="${home.dir}/tools/aspectj/lib/aspectjrt.jar"/>
+      </classpath>
+    </ajc>
+  </target>
+</project>
+]]>
+		</programlisting>
+		<para>
+		This build script snippet
+		</para>
+		<programlisting>
+		<![CDATA[		
+		  <ajc srcdir="${src}"
+		       destdir="${build}"
+		       argfiles="demo.lst"
+		  />
+]]>
+		</programlisting>
+		<para>		
+		compiles all .java files specified in the demo.lst and stores the .class files in the ${build} directory.  Unlike the Javac task, the includes attribute is empty by default, so only those files specified in demo.lst are included.
+		</para>		
+		<para>				
+		This next example
+		</para>
+		<programlisting>
+		<![CDATA[		
+		  <ajc srcdir="${src}"
+		       destdir="${build}"
+		       includes="spacewar/*,coordination/*"
+		       excludes="spacewar/Debug.java"
+		  />
+]]>
+		</programlisting>
+		<para>		
+		compiles .java files under the <literal>${src}</literal> directory in the 
+		spacewar and coordination packages, and stores the .class files in the 
+		<literal>${build}</literal> directory.  
+		All source files under spacewar/ and coordination/ are used, except Debug.java.		
+		</para>
+		<para>
+		See <ulink url="../examples/builds.xml">../examples/builds.xml</ulink>
+		for an example build script.
+		</para>
+	  </sect2>
+
+  </sect1>
+
+  <sect1 id="antTasks-problems">
+    <title>Isolating problems running the Ant tasks</title>
+
+	<para>
+	If you have problems with the tasks not solved by the documentation, 
+	please try to see if you have the same problems when running ajc 
+	directly on the command line.
+	</para>
+	<itemizedlist>
+		<listitem><para>
+		If the problem occurs on the command line also, then the problem 
+		is not in the task. 
+		(It may be in the tools; please send bug reports.)
+		</para></listitem>
+		<listitem><para>
+		If the problem does not occur on the command line, then it may 
+		lie in the parameters you are supplying in Ant or in the task's 
+		handling of them.
+		</para></listitem>
+		<listitem><para>
+		If the build script looks correct and the problem only occurs when 
+		building from Ant, then please send a report 
+		(including your build file, if possible).
+		</para></listitem>
+	</itemizedlist>
+	
+	<sect2 id="antTasks-knownProblems">
+	    <title>Known issues with the Ant tasks</title>
+		<para>
+		For the most up-to-date information on known problems, 
+		see the 
+		<ulink url="http://dev.eclipse.org/bugs">bug database</ulink>
+		for unresolved 
+		<ulink url="http://dev.eclipse.org/bugs/buglist.cgi?&amp;product=AspectJ&amp;component=Compiler&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">
+			compiler bugs
+			</ulink> or 
+		<ulink url="http://dev.eclipse.org/bugs/buglist.cgi?&amp;product=AspectJ&amp;component=Ant&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">
+			taskdef bugs
+			</ulink>.
+		</para>
+		<para>
+	    Memory and forking: Users email most often about the ajc task running 
+	    out of memory. 
+	    This is not a problem with the task; some compiles take a lot of 
+	    memory, often more than similar compiles using javac.
+		</para>      
+		<para>      
+    	Forking is now supported in both the 
+    	<xref linkend="antTasks-adapter"/> and 
+    	<xref linkend="antTasks-iajc"/>, 
+    	and you can set the maximum memory available. 
+    	You can also not fork and increase the memory available to Ant 
+    	(see the Ant documentation, searching for ANT_OPTS, 
+    	the variable they use in their scripts to pass VM options, 
+    	e.g., ANT_OPTS=-Xmx128m).
+		</para>
+	</sect2>
+	<sect2 id="antTasks-feedback">
+		<title>Ant task questions and bugs</title>
+		<para>
+        For questions, you can send email to 
+        <ulink url="mailto:aspectj-users@dev.eclipse.org">
+        aspectj-users@dev.eclipse.org</ulink>. 
+        (Do join the list to participate!) 
+        We also welcome any bug reports, patches, and features; 
+        you can submit them to the bug database at 
+        <ulink url="http://dev.eclipse.org/bugs">
+           http://dev.eclipse.org/bugs</ulink>
+        using the AspectJ product and Ant component. 
+		</para>
+	</sect2>
+	</sect1>
+</chapter>
 
 <!-- Local variables: -->
 <!-- fill-column: 79 -->

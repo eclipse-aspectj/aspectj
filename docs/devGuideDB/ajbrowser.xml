@@ -1,63 +1,70 @@
-<refentry>
-  <refnamediv>
-    <refname>AspectJ Browser</refname>
+<chapter id="ajbrowser" xreflabel="AspectJ Browser">
 
-    <refpurpose>GUI tool for compiling programs with ajc and navigating the
-    crosscutting structure</refpurpose>
+  <title>AspectJ Browser</title>
 
-  </refnamediv>
-
-    <refsect1 id="ajbrowser" xreflabel="AspectJ Browser">
-        <title>Overview</title>
-
-
+  <sect1 id="ajbrowser-intro">
+	<para>
+	AJBrowser presents a GUI for compiling programs with ajc 
+	and navigating crosscutting structure.
+	</para>
         <para>
             The AspectJ Browser can edit program source files,
             compile using the AspectJ compiler
-            <xref linkend="ajc">ajc</xref>, 
+            <xref linkend="ajc-ref"/>
             run a program,
             and graphically navigate the program's 
             crosscutting structure.
         </para>
+     
         <para>
             Launch the browser from the command line either
             by typing "ajbrowser" to invoke the script in
             <literal>{aspectj}/bin</literal>
              (if AspectJ is installed correctly) 
             or by using the
-            <literal>aspectjtools.jar</literal> directly:
+            <literal>aspectjtools.jar</literal> directly,
+            and specifying no arguments or some number of
+            build configuration files 
+            (suffix <literal>.lst</literal>):
             <programlisting>
-  java -jar aspectj1.1/lib/aspectjtools.jar ...                    
+  java -jar aspectj1.1/lib/aspectjtools.jar aspectj1.1/doc/examples/spacewar/debug.lst                    
             </programlisting>
         </para>
 
-    </refsect1>
+    </sect1>
 
-    <refsect1>
-        <title>Program Build Configurations</title>
+    <sect1>
+        <title>Building Programs</title>
+	    <sect2>
+        <title>Build Configurations</title>
 
+        <para>A build configuration is a set of files to compile for a
+        program (and optionally some additional compile arguments).
+        Because <literal>ajc</literal> requires all sources to be specified
+        (at least using the <literal>-sourceroots</literal> option),
+        most users create <literal>.lst</literal> files that list
+        the files to compile (one argument per line, globbing 
+        permitted - for more details, see <xref linkend="ajc-ref"/>).
+        </para>
         <para>
-        	To work with a particular program, point the 
-        	AspectJ browser to the program source files
-        	listed in a ".lst" build configuration file.
-            (Build configuration files are described 
-			in the documentation for 
-			<xref linkend="ajc">ajc</xref>.)
-            Open a build configuration file from the GUI using
-            the File menu, "open" item, or by using the 
+        	To work with a particular program, select the 
+        	corresponding ".lst" build configuration file
+            from the GUI using the File menu, "open" item, 
+            or by using the 
             "Open Build Configuration" button
 	        (<inlinemediaobject>
 	           <imageobject>
 	             <imagedata fileref="openConfig.gif"/>
 	           </imageobject>
 	        </inlinemediaobject>).
-            From the command line
-            you can also pass any number of ".lst" paths. 
-            (If you pass in any non-".lst" arguments, it will run the
-            command-line compiler directly.)
+            
+            You can populate the build list from the command line
+            by passing any number of ".lst" paths. 
+            (However, if you pass in any non-".lst" arguments, 
+            it will run the command-line compiler directly.)
         </para>
         <para>
-            You can work with multiple build configurations;
+            To switch between build configurations,
             select, add, or remove them
             using the corresponding toolbar buttons.  
         </para>
@@ -65,13 +72,13 @@
         <literal>.ajbrowser</literal> file in your HOME directory.
         Edit these from the GUI by clicking the "Options" button 
         or selecting the Tools menu item "Options...".  
-        This is how you can set classpath, aspectpath, etc.
-        (ajbrowser, unlike ajc, does not support setting these 
-        options from the ".lst" files.).
+        This is how to set classpath, aspectpath, etc.
         </para>
-    </refsect1>
-  <refsect1>
-    <title>Compiling a Program Build Configuration</title>
+        <para>The following sections walks through a build.
+        </para>
+	    </sect2>
+	    <sect2>
+    	<title>Compiling a Program Build Configuration</title>
 
     <para>
         To compile click the "Build" button
@@ -79,21 +86,33 @@
            <imageobject>
              <imagedata fileref="build.gif"/>
            </imageobject>
-        </inlinemediaobject>), or click &lt;ctrl&gt;F11.  
+        </inlinemediaobject>), or 
+		or use the tools menu. 
+	</para>
+    <para>To build using AspectJ 1.1's incremental mode,
+    click the <literal>incremental compile</literal> checkbox in
+    the <literal>AspectJ Build Options</literal> tab
+    of the <literal>Options</literal> dialog.
+    Once in incremental mode, you can force a full rebuild
+    by holding the shift key down when selecting the 
+    build menu item or button.
+    </para>
+	<para>
         You may select
         from different build configurations in the GUI
         (see label 1 in the graphic below).
         (If you get classpath or other errors, set up the
         global build options as described above.)
     </para>
-          <imageobject>
-            <imagedata fileref="ajbrowser-building.gif"/>
-          </imageobject>
-  </refsect1>
+      <imageobject>
+        <imagedata fileref="ajbrowser-building.gif"/>
+      </imageobject>
+  </sect2>
+  </sect1>
 
-  <refsect1>
-    <title>Navigating the Program Structure</title>
-
+  <sect1>
+    <title>Navigating Program Structure</title>
+	
     <para>
         Select nodes in the program structure by clicking them (see label 2).
         If one node is related to one or more other nodes by an association the
@@ -102,10 +121,11 @@
         below the association.  If there is no corresponding source for the
         link it will appear light-blue.
     </para>
+      <imageobject>
+        <imagedata fileref="ajbrowser-building.gif"/>
+      </imageobject>
 
-  </refsect1>
-
-    <refsect1>
+  	<sect2>
         <title>Example: Exploring the "Spacewar" sample code </title>
         <para>
         <itemizedlist>
@@ -134,7 +154,7 @@
              shows up as in label 4.
               </para>
 
-              <para>Note: If you did not install in the default location, the
+              <para>Note: If you did not set up your classpath, the
           compile will fail with a message that you need to install
           aspectjrt.jar on your compile classpath.  To do that, select "Tools
           -&gt; Options" or click the "Options" button
@@ -144,8 +164,12 @@
            </imageobject>
         </inlinemediaobject>).  Click the <literal>Build Options</literal> tab
            to view the Build Paths pane.  Edit the classpath entry to use your
-           install location, ok the dialog, and retry the compile.
-
+           install location.  For example, if you ran from the base Aspectj
+           directory, the classpath need only include 
+           <literal>lib/aspectjrt.jar</literal> (though the browser may populate
+           the classpath with the bootclasspath and classpath initially.) 
+           Be sure to use the
+           <literal>lib/aspectjrt.jar</literal> that came with the browser.
               </para>
 
               <para>
@@ -250,8 +274,108 @@
           </listitem>
         </itemizedlist>
       </para>
-    </refsect1>
-</refentry>
+    </sect2>
+    </sect1>
+  <sect1>
+    <title>Running Programs</title>
+    <para>
+    The browser supports a limited form of running compiled programs.
+    To run programs that have been built, click the run button
+    or select one of the run menu items in the project menu.
+    You can run in the same VM or spawn a new process;
+    the latter is generally better for GUI programs.
+    </para>
+    <para>Both require that any classpath you set be specified 
+    using platform-specific paths and path separators (the
+    compiler might be more tolerant).
+    Output and error streams will be
+    merged into the streams of the browser (using separate
+    threads, so it may take a few seconds for the pipe
+    threads to gain control.) Errors should 
+    be detected and displayed in a dialog.
+    </para>
+    <para>
+    There GUI does not support killing a running program,
+    so if your program might hang,
+    be sure to save your files since you may need to 
+    kill the browser itself to kill its child processes.
+    </para>
+  </sect1>
+
+  <sect1 id="ajbrowser-problems">
+    <title>Isolating problems running the AspectJ browser</title>
+
+	<para>
+	If you have problems with the browser not solved by the documentation, 
+	please try to see if you have the same problems when running ajc 
+	directly on the command line.
+	</para>
+	<itemizedlist>
+		<listitem><para>
+		If the problem occurs on the command line also, then the problem 
+		is not in the browser. 
+		(It may be in the compiler; please send bug reports.)
+		</para></listitem>
+		<listitem><para>
+		If the problem does not occur on the command line, then it may 
+		lie in the parameters you are supplying in the build options.
+		</para></listitem>
+		<listitem><para>
+		If the build options look correct and the problem only occurs 
+		when building from the browser, then please submit a bug report.
+		</para></listitem>		
+	</itemizedlist>
+
+	<sect2 id="ajbrowser-knownProblems">
+	    <title>Known issues with the AspectJ browser</title>
+		<para>
+		For the most up-to-date information on known problems, 
+		see the 
+		<ulink url="http://dev.eclipse.org/bugs">bug database</ulink>
+		for unresolved 
+		<ulink url="http://dev.eclipse.org/bugs/buglist.cgi?&amp;product=AspectJ&amp;component=Compiler&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">
+			compiler bugs
+			</ulink> or 
+		<ulink url="http://dev.eclipse.org/bugs/buglist.cgi?&amp;product=AspectJ&amp;component=IDE&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">
+			IDE bugs
+			</ulink>.
+		</para>
+		<para>
+		<itemizedlist>
+		<listitem><para>
+	    Memory and forking: Users email most about the browser task running 
+	    out of memory. 
+	    This is not a problem with the browser; some compiles take a lot of 
+	    memory, often more than similar compiles using javac.
+	    The browser does not support forking, so the only solution is to
+	    edit the java command line or script that launches the browser
+	    to add memory.
+		</para></listitem>		
+		<listitem><para>
+		Editing build configuration files: this is not currently supported.
+		</para></listitem>		
+		<listitem><para>
+		Key bindings: these do not seem to work on some machines.
+		</para></listitem>		
+		</itemizedlist>
+		</para>      
+	</sect2>
+	<sect2 id="ajbrowser-feedback">
+		<title>AspectJ browser questions and bugs</title>
+		<para>      
+        You can send email to 
+        <ulink url="mailto:aspectj-users@dev.eclipse.org">
+        aspectj-users@dev.eclipse.org</ulink>. 
+        (Do join the list to participate!) 
+        We also welcome any bug reports, patches, and feature requests; 
+        you can submit them to the bug database at 
+        <ulink url="http://dev.eclipse.org/bugs">
+           http://dev.eclipse.org/bugs</ulink>
+        using the AspectJ product and IDE component. 
+		</para>
+	</sect2>
+	</sect1>
+</chapter>
 
 <!-- Local variables: -->
 <!-- fill-column: 79 -->

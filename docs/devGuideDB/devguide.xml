@@ -35,20 +35,43 @@
     <abstract>
       <para>
         This guide describes the tools in the AspectJ 1.1 development
-        environment.  See also <ulink url="../progguide/index.html">The
-        AspectJ Programming Guide</ulink>, the documentation for the
-        AspectJ <ulink url="../ant-tasks.html">Ant tasks</ulink>, and the
-        documentation available with the AspectJ support available for
-        various integrated development environments (e.g., Eclipse, Emacs,
-        JBuilder, and NetBeans).
+        environment.  See also 
+              <ulink url="../progguide/index.html">The
+        				AspectJ Programming Guide</ulink>,       				
+              the documentation available with the AspectJ support available for
+		        various integrated development environments (e.g., Eclipse, Emacs,
+		        JBuilder, and NetBeans), 
+              and the most-recent documentation available from 
+              the AspectJ project page, at
+              	<ulink url="http://eclipse.org/aspectj">
+              				http://eclipse.org/aspectj</ulink>.
+        <!--
+        <itemizedlist>
+              <listitem><ulink url="../progguide/index.html">The
+        				AspectJ Programming Guide</ulink>
+              </listitem>
+              <listitem>the
+		        documentation available with the AspectJ support available for
+		        various integrated development environments (e.g., Eclipse, Emacs,
+		        JBuilder, and NetBeans)
+              </listitem>
+              <listitem>the most-recent documentation available from 
+              the AspectJ project page, at
+              	<ulink url="http://eclipse.org/aspectj">
+              				http://eclipse.org/aspectj</ulink>.
+              </listitem>
+        </itemizedlist>
+		-->
       </para>
     </abstract>
   </bookinfo>
 
   <reference>
       &ajc;
-      &ajbrowser;
   </reference>
+  
+  &ajbrowser;
+  &antsupport;
 
 </book>
 
