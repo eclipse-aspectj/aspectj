@@ -19,10 +19,11 @@
 <article class="faq">
   <title>Frequently Asked Questions about AspectJ</title>
   <para>Copyright (c) 1997-2001 Xerox Corporation, 
-       2002 Palo Alto Research Center, Incorporated. All rights reserved.
+       2002 Palo Alto Research Center, Incorporated,
+       2003 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated January 8, 2003.
+  <para>Last updated February 26, 2003.
   </para>
   <para>
    
@@ -3124,22 +3125,92 @@ vmparam -Xmx384m
         </answer>
       </qandaentry>
       <qandaentry>
-        <question id="q:contributions"
-            xreflabel="Q:What can I do to help on the AspectJ project?">
-          <para>What can I do to help on the AspectJ project?
+        <question id="q:eclipseetc"
+            xreflabel="Q:What are the relationships between AspectJ, JDT, 
+                Eclipse, AJDT, and IDE support generally?">
+          <para>What are the relationships between AspectJ, JDT, 
+                Eclipse, AJDT, and IDE support generally?
           </para>
         </question>
         <answer>
-          <para>Here's a general list, in no particular order:
+          <para>Eclipse is a software platform.
+          </para>
+          <para>JDT is an eclipse project to support Java development.  
+			JDT has a Java compiler.
+          </para>
+		  <para>AspectJ 1.1 is built on Eclipse/JDT's Java compiler
+                but is distributed standalone and can run standalone.
+                With the AspectJ distribution, you can compile and run
+                AspectJ programs and use the AspectJ structure browser.
+          </para>
+		  <para>AJDT is an eclipse project to integrate AspectJ 
+		  into Eclipse/JDT so you can use Eclipse to develop 
+		  AspectJ programs.  AJDT aims to support the full Eclipse
+		  experience - searching, compiler-error tasks, etc.
+		  AJDT will use the AspectJ Development Environment (AJDE)
+		  API's for creating IDE integrations, as well as hooking
+		  in to the model underlying the Java compiler.
+          </para>
+          <para>Similarly, Sourceforge has projects integrating 
+          AspectJ into other development environments
+          using the AJDE API's: 
+          <ulink url="http://aspectj4emacs.sourceforge.net">
+              AspectJ for Emacs</ulink>, 
+          <ulink url="http://aspectj4jbuildr.sourceforge.net">
+              AspectJ for JBuilder</ulink>, and 
+          <ulink url="http://aspectj4netbean.sourceforge.net">
+              AspectJ for NetBeans</ulink>.
+          </para>
+          <para>This is the right level of separation/integration.  
+          AspectJ is available standalone, leverages an existing open-source
+          compliant Java compiler, and supports external projects 
+          doing IDE integrations in Eclipse, Emacs, JBuilder, and NetBeans
+          through a common API, AJDE.
+          </para>
+        </answer>
+      </qandaentry>
+    </qandadiv>
+    <qandadiv id="Developers" xreflabel="AspectJ Project Development">
+      <title>AspectJ Project Development</title>
+      <qandaentry>
+        <question id="q:contributions"
+            xreflabel="Q:I'm interested in the code implementing AspectJ.
+                How can I get involved with developing the AspectJ project?">
+          <para>I'm interested in the code implementing AspectJ.
+                How can I get involved with developing the AspectJ project?
+          </para>
+        </question>
+        <answer>
+          <para>Most people do not need to see the code for AspectJ;
+          they can download the binary distribution for documentation
+          and tools for writing AspectJ programs.
+          </para>
+          <para>For people who want to know how the AspectJ technology works,
+          the source code is the best resource.  
+		  There are no white papers or high-level design documents for AspectJ.
+		  To get and compile the Java source code for the AspectJ 
+          distribution, see
+                 <xref linkend="q:buildingsource"/>.
+		  </para>
+		  <para>Bear in mind when looking at the code that there are many
+		  ways to implement the AspectJ language, and the code inspected
+		  might be an initial version of a new architecture (e.g., bytecode
+		  weaving).
+		  </para>
+          <para>For those who want to contribute to the project,
+          here's a general list of ways to do so, in no particular order:
           <itemizedlist>
             <listitem>
               <para>Participate effectively in the mailing lists.
-                 The quality of the mailing lists makes a big difference
+                 The quality of the mailing lists makes a huge difference
                  in the ability of new and experienced AspectJ users
                  to write good code.  For guidance on effective
                  participation, see
-                 <xref id="q:talktousers"/> and
-                 <xref id="q:writingbugsandemails"/>.
+                 <xref linkend="q:talktousers"/> and
+                 <xref linkend="q:writingbugsandemails"/>.
+                 Also, the time that experienced users take in answering emails
+                 can directly translate to time developers can use (instead)
+                 for fixing bugs or adding features.
               </para>
             </listitem>
             <listitem>
@@ -3152,7 +3223,7 @@ vmparam -Xmx384m
               any which do not have test case attachments or a comment that
               a test case has been written.  
               Here is a query for open compiler bugs:
-              <!-- ulink gacks on the = next - quote it -->
+              <!-- ulink gacks on ampersands in url value, so quote them -->
               <ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;component=Compiler&amp;bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">
               http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;component=Compiler&amp;bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED
               </ulink>
@@ -3161,8 +3232,141 @@ vmparam -Xmx384m
                  <xref linkend="q:harnesstestcases"/>.
               </para>
             </listitem>
+            <listitem>
+              <para>Write patches to fix bugs.
+              If you particularly need a bug to be fixed, or if you're interested in 
+              learning about the system, then get the source code and try to fix the
+              bug.  Most likely you'll want to email aspectj-dev@eclipse.org to 
+              declare your intentions and the approach you propose (based on having
+              looked at the code).
+              Mailing the list gives those experienced with the code a chance to
+              guide you away from pitfalls.  To submit the patch, attach it to
+              the bug.  (When creating patches, do so on a per-module basis; that 
+              means if fixing the bug involves changes to three modules, submit
+              three patches.)
+              </para>
+            </listitem>
+            <listitem>
+              <para>Write patches for other reasons.
+              Often documentation needs to be fixed, or there may be a small new 
+              feature you'd like to see.  You can just do it and then submit it
+              as a patch to a bug you create.  As with bugs, in some cases you
+              might want to declare your intentions on the mailing list to avoid
+              wasting time on something that's been fixed but not committed or
+              on an approach that will be fruitless.
+              </para>
+            </listitem>
           </itemizedlist>
           </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:buildingsource"
+            xreflabel="Q:How do I get and compile the source code for AspectJ?">
+          <para>How do I get and compile the source code for AspectJ?
+          </para>
+        </question>
+        <answer>
+          <para>AspectJ 1.1 source code is available through CVS using the CVS Root 
+           <literal>dev.eclipse.org:/home/technology</literal>.  For more information
+           on accessing the CVS tree at eclipse.org, see the documentation 
+           from <ulink url="http://eclipse.org">http://eclipse.org</ulink>.
+           Find specific instructions in the AspectJ tree at
+           <ulink url="http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/readme-build-and-test-aspectj.html?rev=HEAD&amp;content-type=text/html&amp;cvsroot=Technology_Project">
+           org.aspectj/modules/build/readme-build-and-test-aspectj.html</ulink>.
+          </para>
+          <para>The AspectJ tree is organized into modules as follows:
+          <programlisting>
+  org.aspectj/
+    modules/
+      ajbrowser/
+      ajde/
+      ...
+      lib/
+      ...
+          </programlisting>
+          </para>
+          <para>
+          You can check out the entire modules directory and build using the
+          Ant build script <literal>modules/build/build.xml</literal>.
+          All required libraries are included in <literal>modules/lib/</literal>,
+          (including Ant 1.5.1 in <literal>modules/lib/ant</literal>).
+          If you are using Eclipse, you can check out any <literal>modules/</literal> 
+          subdirectory as an eclipse Java project.  
+          Depending on what you are trying to build, you need not check out
+          all modules; as of this writing, here are the modules to get 
+          when trying to build something:
+          </para>
+          <para>
+          <itemizedlist>
+            <listitem>For any builds: build, lib
+            </listitem>
+            <listitem>For the documentation: docs
+            </listitem>
+            <listitem>For the compiler: bridge, util, testing-util,
+            weaver, asm, org.eclipse.jdt.core, org.aspectj.ajdt.core,
+            and runtime.
+            </listitem>
+            <listitem>For ajbrowser: the compiler modules, plus
+            ajbrowser, taskdefs, and ajde.
+            </listitem>
+            <listitem>For the test harness: the ajbrowser modules, plus
+            testing, testing-client, and testing-drivers.
+            </listitem>
+            <listitem>To run the test suite: the test harness modules, plus
+            tests.
+            </listitem>
+          </itemizedlist>
+          </para>
+          <para>
+          Note that module interdependencies are recorded only in the eclipse 
+          <literal>modules/{module}/.classpath
+          </literal>
+           files and may
+          change, so the list above may not be correct when you read it.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:devDocs"
+            xreflabel="Q:Where do I find developer documentation on building and testing AspectJ source code?">
+          <para>Where do I find developer documentation on building and testing AspectJ source code?
+          </para>
+        </question>
+        <answer>
+          <para>Find the developer documentation in HTML files in the CVS tree,
+          inside the <literal>build</literal> and <literal>testing</literal> modules 
+          (i.e., in <literal>org.aspectj/modules/build/...</literal>).
+          Most pertinant:          
+            <itemizedlist>
+              <listitem><literal>../build/readme-build-and-test-aspectj.html</literal>
+                  describes how to build the AspectJ distribution in Eclipse
+                  and in Ant.
+              </listitem>
+              <listitem><literal>../build/readme-docs-module.html</literal>
+                  describes the AspectJ documentation sources and
+                  how to build the documentation using Ant.
+              </listitem>
+              <listitem><literal>../build/readme-tests-module.html</literal>
+                  describes the all the tests 
+                  in the <literal>tests</literal> module.
+              </listitem>
+              <listitem><literal>../build/readme-writing-compiler-tests.html</literal>
+                  describes how to write compiler tests that can be run by
+                  the AspectJ test harness.
+              </listitem>
+              <listitem><literal>../build/readme-testing-drivers-module.html</literal>
+                  describes the test harness used to run the compiler tests
+                  in the <literal>tests</literal> module.
+              </listitem>
+              <listitem><literal>../build/readme-testing-drivers-module.html</literal>
+                  describes the test harness used to run the compiler tests
+                  in the <literal>testing</literal> module.
+              </listitem>
+            </itemizedlist>
+          </para> 
+          <para>
+          </para> 
         </answer>
       </qandaentry>
       <qandaentry>
@@ -3209,8 +3413,8 @@ vmparam -Xmx384m
          p2/
            BeforeConstructor.java
 
-    Note the bug number goes in the pr attribute
-    ("pr" for "problem report");
+    Note the bug number goes in the pr attribute.
+    ("pr" stands for "problem report")
  -->
 <ajc-test dir="one" pr="234" title="before constructor call">
     <compile files="pack1/Main.java,p2/BeforeConstructor.java"/>
@@ -3286,76 +3490,13 @@ vmparam -Xmx384m
         </answer>
       </qandaentry>
       <qandaentry>
-        <question id="q:buildingsource"
-            xreflabel="Q:How do I get and compile the source code for AspectJ?">
-          <para>How do I get and compile the source code for AspectJ?
-          </para>
-        </question>
-        <answer>
-          <para>AspectJ 1.1 source code is available through CVS using the CVS Root 
-           <literal>dev.eclipse.org:/home/technology</literal>.  For more information
-           on accessing the CVS tree at eclipse.org, see the documentation 
-           from <ulink url="http://eclipse.org">http://eclipse.org</ulink>.
-          </para>
-          <para>The AspectJ tree is organized into modules as follows:
-          <programlisting>
-  org.aspectj/
-    modules/
-      ajbrowser/
-      ajde/
-      ...
-          </programlisting>
-          </para>
-          <para>
-          You can check out the entire modules directory and build using the
-          Ant build script <literal>modules/build/build.xml</literal>.
-          All required libraries are included in <literal>modules/lib/</literal>,
-          (including Ant 1.5.1 in <literal>modules/lib/ant</literal>).
-          If you are using Eclipse, you can check out any <literal>modules/</literal> 
-          subdirectory as an eclipse Java project.  
-          Depending on what you are trying to build, you need not check out
-          all modules; as of this writing, here are the modules to get 
-          when trying to build something:
-          </para>
-          <para>
-          <itemizedlist>
-            <listitem>For any builds: build, lib
-            </listitem>
-            <listitem>For the documentation: docs
-            </listitem>
-            <listitem>For the compiler: bridge, util, testing-util,
-            weaver, asm, org.eclipse.jdt.core, org.aspectj.ajdt.core,
-            and runtime.
-            </listitem>
-            <listitem>For ajbrowser: the compiler modules, plus
-            ajbrowser, taskdefs, and ajde.
-            </listitem>
-            <listitem>For the test harness: the ajbrowser modules, plus
-            testing, testing-client, and testing-drivers.
-            </listitem>
-            <listitem>To run the test suite: the test harness modules, plus
-            tests.
-            </listitem>
-          </itemizedlist>
-          </para>
-          <para>
-          Note that module interdependencies are recorded only in the eclipse 
-          <literal>modules/{module}/.classpath
-          </literal>
-           files and may
-          change, so the list above may not be correct when you read it.
-          </para>
-        </answer>
-      </qandaentry>
-      <qandaentry>
         <question id="q:testharness"
             xreflabel="Q:I'd like to run my test case.  How do I get the test harness?">
           <para>I'd like to run my test case.  How do I get the test harness?
           </para>
         </question>
         <answer>
-          <para>The test harness is not distributed
-          (though we may put it on an AspectJ page.)
+          <para>The test harness is not distributed.
           To build it, get the source tree as
           described in <xref linkend="q:buildingsource"/> and then
           build the <literal>build-testing-drivers</literal> target:
@@ -3871,11 +4012,6 @@ vmparam -Xmx384m
                 <row>
                   <entry align="left">Version</entry>
                   <entry align="left">Description</entry>
-                </row>
-                <row>
-                  <entry valign="top" align="center">1.1</entry>
-                  <entry>Language changes, bytecode weaving and incremental compilation.
-                  </entry>
                 </row>
                 <row>
                   <entry valign="top" align="center">1.0</entry>
