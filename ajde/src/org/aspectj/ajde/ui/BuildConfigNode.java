@@ -18,6 +18,7 @@ import java.io.*;
 import java.util.*;
 
 import org.aspectj.bridge.*;
+import org.aspectj.util.FileUtil;
 
 /**
  * @author Mik Kersten
@@ -159,9 +160,7 @@ public class BuildConfigNode {
 	}
 	
 	public boolean isValidResource() {
-		return name.endsWith(".java") 
-			|| name.endsWith(".aj") 
-			|| name.endsWith(".lst");	
+		return FileUtil.hasSourceSuffix(name) || name.endsWith(".lst");	
 	}
 	
 	public boolean isActive() {

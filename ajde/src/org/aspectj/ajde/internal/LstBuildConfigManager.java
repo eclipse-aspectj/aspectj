@@ -21,6 +21,7 @@ import org.aspectj.ajde.*;
 import org.aspectj.ajde.ui.*;
 import org.aspectj.bridge.*;
 import org.aspectj.util.ConfigParser;
+import org.aspectj.util.FileUtil;
 
 /**
  * @author	Mik Kersten
@@ -34,9 +35,7 @@ public class LstBuildConfigManager implements BuildConfigManager {
 	
     private static final FilenameFilter SOURCE_FILE_FILTER = new FilenameFilter() {
         public boolean accept(File dir, String name) {
-            return name.endsWith(".java") 
-            	|| name.endsWith(".aj") 
-            	|| name.endsWith(".lst");
+            return FileUtil.hasSourceSuffix(name) || name.endsWith(".lst");
         }
     };
 

@@ -24,6 +24,7 @@ import org.aspectj.ajde.ui.*;
 import org.aspectj.ajde.ui.internal.UserPreferencesStore;
 import org.aspectj.ajde.ui.swing.*;
 import org.aspectj.asm.*;
+import org.aspectj.util.FileUtil;
 //import org.aspectj.asm.internal.*;
 
 /**
@@ -160,7 +161,7 @@ public class BrowserManager {
 			if (filePath.endsWith(".lst")) {
 				AjdeUIManager.getDefault().getBuildConfigEditor().openFile(filePath);
 				topFrame.setEditorPanel(AjdeUIManager.getDefault().getBuildConfigEditor());
-			} else if (filePath.endsWith(".java") || filePath.endsWith(".aj")){
+			} else if (FileUtil.hasSourceSuffix(filePath)){
 				editorManager.showSourceLine(filePath, 0, false);		
 			} else {
 				Ajde.getDefault().getErrorHandler().handleError("File: " + filePath 

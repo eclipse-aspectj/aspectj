@@ -26,6 +26,7 @@ import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.tools.ajc.Main;
 import org.aspectj.tools.ajc.Main.MessagePrinter;
+import org.aspectj.util.FileUtil;
 
 import java.io.File;
 import java.util.Arrays;
@@ -457,8 +458,7 @@ public class Ajc10 extends MatchingTask {
                 String[] files = getDirectoryScanner(dir).getIncludedFiles();
                 for (int j = 0; j < files.length; j++) {
                     File file = new File(dir, files[j]);
-                    if (file.getName().endsWith(".java")
-                        || file.getName().endsWith(".aj")) {
+                    if (FileUtil.hasSourceSuffix(file)) {
                         cmd.createArgument().setFile(file);
                         numfiles++;
                     }
