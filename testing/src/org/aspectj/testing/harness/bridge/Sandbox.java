@@ -133,8 +133,13 @@ public class Sandbox {
         this.validator = validator;
         Sandbox.iaxRead(testBaseDir, "testBaseDir");
         this.testBaseDir = testBaseDir;
-        
-        sandboxDir = FileUtil.getTempDir("Sandbox");
+        {
+           File baseDir = FileUtil.getTempDir("Sandbox");
+           if (!baseDir.isAbsolute()) {
+               baseDir = baseDir.getAbsoluteFile();
+           }
+           sandboxDir = baseDir;
+        }
         Sandbox.iaxWrite(sandboxDir, "sandboxDir"); // XXX not really iax
 
         workingDir = FileUtil.makeNewChildDir(sandboxDir, "workingDir");
