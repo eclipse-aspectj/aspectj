@@ -14,6 +14,7 @@
 package org.aspectj.langlib;
 
 import java.io.*;
+import java.util.*;
 
 /**
  * Library of pointcut idioms to use in combination with
@@ -141,6 +142,18 @@ public final class Pointcuts {
         call(Process Runtime.exec(..))
         || call(Class ClassLoader.loadClass(..));
 
+    /** Write methods on Collection
+     * Warning: Does not pick out <code>iterator()</code>, even though
+     * an Iterator can remove elements.
+     */
+    public pointcut anyCollectionWriteCalls() :
+        call(boolean Collection+.add(Object)) 
+        || call(boolean Collection+.addAll(Collection)) 
+        || call(void Collection+.clear())
+        || call(boolean Collection+.remove(Object))
+        || call(boolean Collection+.removeAll(Collection))
+        || call(boolean Collection+.retainAll(Collection));
+        
     public pointcut mostThrowableReadCalls() :
         call(* Throwable+.get*(..))
         || call(* Throwable+.print*(..))
