@@ -501,9 +501,10 @@
         <listitem>
           Picks out each join point where the boolean expression
           evaluates to <literal>true</literal>.  The boolean expression used
-          can only access static members, variables exposed by teh enclosing
+          can only access static members, parameters exposed by the enclosing
           pointcut or advice, and <literal>thisJoinPoint</literal> forms.  In
-          particular, it cannot call non-static methods on the aspect.
+          particular, it cannot call non-static methods on the aspect or
+		  use return values or exceptions exposed by after advice.
         </listitem>
       </varlistentry>
 
@@ -1521,8 +1522,8 @@ aspect A {
         </para>
 
 	<para>
-	  If a type pattern is an exact type&mdash;if it doesn't
-	  include a wildcard&mdash;then the matching works just
+	  If a type pattern is an exact type - if it doesn't
+	  include a wildcard - then the matching works just
 	  like normal type lookup in Java: </para>
 
         <itemizedlist>
@@ -1616,7 +1617,7 @@ aspect A {
 
 	<para>
 	  Type patterns with wildcards do not depend on Java's
-	  usual scope rules&mdash;they match against all types
+	  usual scope rules - they match against all types
 	  available to the weaver, not just those that are
 	  imported into an Aspect's declaring file.
         </para>
