@@ -17,8 +17,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -54,9 +52,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
 
 
 /** 
@@ -915,38 +911,15 @@ public final class LazyMethodGen {
         }
         // now add local variables
         gen.removeLocalVariables();
-        
-        // BCEL sometimes creates extra local variables with the same name.  We now
-        // remove them and add back to the gen.
+
+		// this next iteration _might_ be overkill, but we had problems with
+		// bcel before with duplicate local variables.  Now that we're patching
+		// bcel we should be able to do without it if we're paranoid enough
+		// through the rest of the compiler.
         
         Map duplicatedLocalMap = new HashMap();
-        // Reverse sort these keys
-	List keys = new ArrayList(); 
+		List keys = new ArrayList(); 
         keys.addAll(localVariableStarts.keySet());
-//		System.err.println("Keys for local variable tags"); 
-//		for (int i = 0;i <keys.size();i++) {
-//			System.err.println("Before sort: #"+i+"="+keys.get(i));
-//		}
-        Collections.sort(keys, new Comparator() {
-            public int compare(Object a, Object b) {
-                LocalVariableTag taga = (LocalVariableTag) a;
-                LocalVariableTag tagb = (LocalVariableTag) b;
-                if (taga.getName().startsWith("arg")) {
-                    if (tagb.getName().startsWith("arg")) {
-                        return -taga.getName().compareTo(tagb.getName());
-                    } else {
-                        return 1; // Whatever tagb is, it must come out before 'arg'
-                    }
-                } else if (tagb.getName().startsWith("arg")) {
-                    return -1; // Whatever taga is, it must come out before 'arg'
-                } else {
-                    return -taga.getName().compareTo(tagb.getName());
-                }
-            }
-        });
-//		for (int i = 0;i <keys.size();i++) {
-//			System.err.println("After  sort: #"+i+"="+keys.get(i));
-//		}
         for (Iterator iter = keys.iterator(); iter.hasNext(); ) {
             LocalVariableTag tag = (LocalVariableTag) iter.next();
         	// have we already added one with the same slot number and start location?  

@@ -4,21 +4,36 @@
 
   <target name="jar">
     <copy file="../lib/regexp/jakarta-regexp-1.2.jar"
-        tofile="bcel/lib/regexp-1.2.jar" />
+        tofile="bcel/lib/Regex.jar" />
     <ant dir="bcel" target="jar" />
     <copy file="bcel/bin/bcel.jar" toDir="." />
   </target>
 
-  <target name="pack">
+  <target name="update">
+    <copy file="bcel.jar" todir="../lib/bcel" />
   </target>
 
-  <target name="unpack" depends="extract,patch" />
+  <target name="pack">
+    <move toDir="bcel/src/java">
+      <fileset dir="src" />
+    </move>
+  </target>
+
+  <target name="unpack" depends="extract,patch,srcclean">
+    <move toDir="src">
+      <fileset dir="bcel/src/java" />
+    </move>
+  </target>
 
   <target name="extract">
     <unzip src="bcel-5.1-src.zip" dest="." />
   </target>
 
-  <target name="clean">
+  <target name="srcclean">
+    <delete dir="src/org" />
+  </target>
+
+  <target name="clean" depends="srcclean">
     <delete dir="bcel-5.1" />
     <delete dir="bcel" />
   </target>
