@@ -397,8 +397,8 @@ public class WeavingURLClassLoaderTest extends TestCase {
 		
 		/* Restore system properties */
 		Properties systemProperties = System.getProperties();
-		for (Enumeration enum = savedProperties.keys(); enum.hasMoreElements(); ) {
-			String key = (String)enum.nextElement();
+		for (Enumeration enu = savedProperties.keys(); enu.hasMoreElements(); ) {
+			String key = (String)enu.nextElement();
 			String value = savedProperties.getProperty(key);
 			if (value == NULL) systemProperties.remove(key);
 			else systemProperties.setProperty(key,value);
