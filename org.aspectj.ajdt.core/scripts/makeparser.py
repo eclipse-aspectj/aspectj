@@ -45,11 +45,11 @@ if grammarFileRel == None:
     match = r.search(parserText)
     grammar = match.group(1)
 else:
-    grammar = readFile(path.join(eclipseWorkspace, grammarFileRel))
+    grammar = readFile(path.join(eclipseWorkspace, grammarFileRel), 'b')
 #print grammar
 
 grammarFile = path.join(workingDir, "java.g")
-writeFile(grammarFile, grammar)
+writeFile(grammarFile, grammar, 'b')
 os.chdir(workingDir)
 os.system("%s java.g" % jikespg)
 
@@ -101,7 +101,7 @@ writeFile(parserInfoFile, text)
 #3.4 This is the contents of the class org.eclipse.jdt.internal.compiler.parser.TerminalSymbols.
 
 defs = readFile(path.join(workingDir, "javasym.java"))
-r = re.compile(r"(int[^;]*;)", re.DOTALL)
+r = re.compile(r"(int\s+TokenNameIdentifier[^;]*;)", re.DOTALL)
 syms = r.search(defs).group(0)
 syms = syms.replace("$eof", "EOF")
 syms = syms.replace("$error", "ERROR")
