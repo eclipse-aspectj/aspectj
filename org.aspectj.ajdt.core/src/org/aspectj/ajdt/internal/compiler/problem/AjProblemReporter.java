@@ -41,7 +41,7 @@ import org.eclipse.jdt.internal.compiler.util.CharOperation;
  * @author Jim Hugunin
  */
 public class AjProblemReporter extends ProblemReporter {
-	private static final boolean DUMP_STACK = true;
+	private static final boolean DUMP_STACK = false;
 	
 	public EclipseWorld world;
 
