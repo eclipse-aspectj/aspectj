@@ -104,7 +104,7 @@ programs from 1.1 to 1.2.
   <li><a href="#SOFTEX"><code>SoftException</code></a> now supports <code>getCause()</code>.</li>
   
   <li>Although not part of <code>aspectjrt.jar</code> this release also provides a new set of
-  tools APIs in the <a href="#LTW"><code>org.aspectj.weaver.tools</code></a> that provide a weaving class loader
+  tools APIs in the <a href="#LTW2"><code>org.aspectj.weaver.tools</code></a> that provide a weaving class loader
   and an adapter that can be used to integrate load-time weaving into an existing class loader
   hierarchy.<li>
   </ul>
@@ -136,6 +136,10 @@ programs from 1.1 to 1.2.
   incremental compilation implementation in AspectJ 1.2 approximately twice as fast
   as in AspectJ 1.1.1, so when this is combined with the weave time improvements you
   should see speed-ups of up to 4x for incremental compilation.</p>
+  
+  <p>In addition, AspectJ 1.2 maintains only weak references to some of its recoverable data structures,
+  allowing the JVM to optimise between performance and memory usage. Experiments forcing GC
+  showed that we can achieve about a 20% memory usage reduction in this manner if needed.</p>
   
   <h3><a name="LAZY_TJP">The -XlazyTjp option.</a></h3>  
   
@@ -430,7 +434,99 @@ programs from 1.1 to 1.2.
   <p><code>ajdoc</code> sample output for advised methods:</p>
   
   <p><img src="images/ajdoc2.JPG"/></p>
+
+  <h3><a name="LTW">A sample script is supplied that supports load-time weaving from the command-line</a></h3>  
+  
+  <p>The AspectJ 1.2 distribution ships with sample scripts for Windows and Unix platforms that exploit AspectJ's 
+  binary weaving capabilities at application load time. You will find these scripts in the 
+  <code>doc/examples/ltw</code> directory of your AspectJ installation. </p>
+  
+  <p>The scripts allow you to set an environment variable, <code>ASPECTPATH</code>, containing a path-separator
+  delimited list of aspect-library jar files. A Java application can then be launched using the "<code>aj</code>"
+  script ("<code>aj</code>" is to "<code>ajc</code>" as "<code>java</code>" is to "<code>javac</code>"). If the
+  <code>ASPECTPATH</code> is unset or empty, "<code>aj</code>" behaves exactly the same as "<code>java</code>",
+  but if the <code>ASPECTPATH</code> contains one or more aspect libraries, the aspects in the library will be 
+  linked (woven) with the application code as it is loaded.<p>
+  
+  <p>The <code>doc/examples/ltw</code> directory of your AspectJ installation contains a sample application that
+  demonstrates these capabilities. Following the instructions in the <code>README</code> file in that directory,
+  running "<code>aj tracing.ExampleMain</code>" with <code>ASPECTPATH</code> unset produces the output:</p>
+  
+  <font color="blue">
+  <pre>
+  c1.perimeter() = 12.566370614359172
+  c1.area() = 12.566370614359172
+  s1.perimeter() = 4.0
+  s1.area() = 1.0
+  c2.distance(c1) = 4.242640687119285
+  s1.distance(c1) = 2.23606797749979
+  s1.toString(): Square side = 1.0 @ (1.0, 2.0)
+  </pre>
+  </font>
+  
+  <p>If you set <code>ASPECTPATH</code> to include <code>../jars/tracingLib.jar</code>, and run
+  "<code>aj tracing.ExampleMain</code>" again, the output will be:</p>
   
   
+  <font color="blue">
+  <pre>
+  --> tracing.TwoDShape(double, double)
+  <-- tracing.TwoDShape(double, double)
+  --> tracing.Circle(double, double, double)
+  <-- tracing.Circle(double, double, double)
+  --> tracing.TwoDShape(double, double)
+  <-- tracing.TwoDShape(double, double)
+  --> tracing.Circle(double, double, double)
+  <-- tracing.Circle(double, double, double)
+  --> tracing.Circle(double)
+  <-- tracing.Circle(double)
+  --> tracing.TwoDShape(double, double)
+  <-- tracing.TwoDShape(double, double)
+  --> tracing.Square(double, double, double)
+  <-- tracing.Square(double, double, double)
+  --> tracing.Square(double, double)
+  <-- tracing.Square(double, double)
+  --> double tracing.Circle.perimeter()
+  <-- double tracing.Circle.perimeter()
+c1.perimeter() = 12.566370614359172
+  --> double tracing.Circle.area()
+  <-- double tracing.Circle.area()
+c1.area() = 12.566370614359172
+  --> double tracing.Square.perimeter()
+  <-- double tracing.Square.perimeter()
+s1.perimeter() = 4.0
+  --> double tracing.Square.area()
+  <-- double tracing.Square.area()
+s1.area() = 1.0
+  --> double tracing.TwoDShape.distance(TwoDShape)
+    --> double tracing.TwoDShape.getX()
+    <-- double tracing.TwoDShape.getX()
+    --> double tracing.TwoDShape.getY()
+    <-- double tracing.TwoDShape.getY()
+  <-- double tracing.TwoDShape.distance(TwoDShape)
+  etc...
+  </pre>
+  </font>
+  
+  <p>The scripts only support JDK 1.4 and above - attempting to use them with a 1.3 or lower JDK will most
+  likely produce <code>NoClassDefFound</code> errors. We welcome contributions from users to improve these
+  scripts.</p>
+  
+<!-- ============================== -->
+<hr>
+  
+  <h3><a name="SOFTEX">SoftException now supports getCause()</a></h3>  
+  
+  <p><code>org.aspectj.lang.SoftException</code> now supports the <code>getCause()</code> method, which returns the
+  original exception wrapped by the <code>SoftException</code>. This means that exception chains will print correctly
+  on 1.4 and later JREs.
+
+  <h3><a name="LTW2">org.aspectj.weaver.tools package added</a></h3>  
+  
+  <p>A new set of public APIs are exported by the 
+  <a href="api/index.html"><code>org.aspectj.weaver.tools</code></a> package that can be used
+  to integrate load-time weaving into an existing class loader hierachy. The package implementation
+  is included in <code>aspectjtools.jar</code>. For an example of how to use these APIs, see the
+  <code>org.aspectj.weaver.WeavingURLClassLoader</code> implementation.
   
 </body> </html>
