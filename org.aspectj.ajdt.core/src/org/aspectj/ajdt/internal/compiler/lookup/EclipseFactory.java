@@ -32,8 +32,10 @@ import org.eclipse.jdt.internal.compiler.lookup.*;
 public class EclipseFactory {
 	public static boolean DEBUG = false;
 	
-	public AjBuildManager buildManager;
+	private AjBuildManager buildManager;
 	private LookupEnvironment lookupEnvironment;
+	private boolean xSerializableAspects;
+	private World world;
 	
 	private Map/*TypeX, TypeBinding*/ typexToBinding = new HashMap();
 	//XXX currently unused
@@ -49,12 +51,22 @@ public class EclipseFactory {
 	}
 	
 	
-	public EclipseFactory(LookupEnvironment lookupEnvironment) {
+	public EclipseFactory(LookupEnvironment lookupEnvironment,AjBuildManager buildManager) {
 		this.lookupEnvironment = lookupEnvironment;
+		this.buildManager = buildManager;
+		this.world = buildManager.getWorld();
+		this.xSerializableAspects = buildManager.buildConfig.isXserializableAspects();
+	}
+	
+	public EclipseFactory(LookupEnvironment lookupEnvironment, World world, boolean xSer) {
+		this.lookupEnvironment = lookupEnvironment;
+		this.world = world;
+		this.xSerializableAspects = xSer;
+		this.buildManager = null;
 	}
 	
 	public World getWorld() {
-		return buildManager.getWorld();
+		return world;
 	}
 	
 	public void showMessage(
@@ -304,7 +316,7 @@ public class EclipseFactory {
 	}
 
 	public void finishedCompilationUnit(CompilationUnitDeclaration unit) {
-		if (buildManager.doGenerateModel()) {
+		if ((buildManager != null) && buildManager.doGenerateModel()) {
 			AsmHierarchyBuilder.build(unit, buildManager.getStructureModel(), buildManager.buildConfig);
 		}
 	}
@@ -337,5 +349,11 @@ public class EclipseFactory {
 		for (int i = 0, length = memberTypes.length; i < length; i++) {
 			addSourceTypeBinding((SourceTypeBinding) memberTypes[i]);
 		}
+	}
+	
+	// XXX this doesn't feel like it belongs here, but it breaks a hard dependency on
+	// exposing AjBuildManager (needed by AspectDeclaration).
+	public boolean isXSerializableAspects() {
+		return xSerializableAspects;
 	}
 }
