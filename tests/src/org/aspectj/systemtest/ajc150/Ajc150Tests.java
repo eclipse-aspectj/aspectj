@@ -111,7 +111,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void test051_arrayCloningInJava5() {
     runTest("AJC possible bug with static nested classes");
   }
-  
+ 
   public void testBadASMforEnums() throws IOException {
   	runTest("bad asm for enums");
   	
@@ -127,6 +127,14 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   
   public void npeOnTypeNotFound() {
 	  runTest("structure model npe on type not found");
+  }
+ 
+  public void testNoRuntimeExceptionSoftening() {
+	  runTest("declare soft of runtime exception");
+  }
+  
+  public void testRuntimeNoSoftenWithHandler() {
+	  runTest("declare soft w. catch block");
   }
   
   // helper methods.....

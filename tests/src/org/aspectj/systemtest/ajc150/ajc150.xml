@@ -54,6 +54,25 @@
         <run class="B"/>
     </ajc-test>
     
+    <ajc-test dir="decs" pr="42743" title="declare soft of runtime exception">
+        <compile files="DeclareSoftRuntimeException.aj">
+            <message kind="warning" line="3" text="MyRuntimeException will not be softened as it is already a RuntimeException"/>
+        </compile>
+        <run class="DeclareSoftRuntimeException">
+            <stdout>
+                <line text="MyRuntimeException"/>
+                <line text="org.aspectj.lang.SoftException"/>
+                <line text="MyRuntimeException"/>
+            </stdout>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="decs" pr="42743" title="declare soft w. catch block">
+        <compile files="VerifyError.aj">
+        </compile>
+        <run class="VerifyError"/>
+    </ajc-test>
+        
     <ajc-test dir="bugs" pr="61568" title="Various kinds of ambiguous bindings">
         <compile files="AmbiguousBindings.aj">
             <message line="17" text="ambiguous binding of parameter(s) foo across '||' in pointcut"></message>
