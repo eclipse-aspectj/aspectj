@@ -47,7 +47,7 @@ final class BcelField extends ResolvedMember {
 	
 	private void unpackAttributes(World world) {
 		Attribute[] attrs = field.getAttributes();
-		List as = BcelAttributes.readAjAttributes(attrs, getSourceContext(world));
+		List as = BcelAttributes.readAjAttributes(attrs, getSourceContext(world),world.getMessageHandler());
 		for (Iterator iter = as.iterator(); iter.hasNext();) {
 			AjAttribute a = (AjAttribute) iter.next();
 			if (a instanceof AjAttribute.AjSynthetic) {

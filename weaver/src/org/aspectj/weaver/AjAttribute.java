@@ -19,7 +19,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FileUtil;
+import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -81,7 +84,7 @@ public abstract class AjAttribute {
 		}
 	}
 
-	public static AjAttribute read(String name, byte[] bytes, ISourceContext context) {
+	public static AjAttribute read(String name, byte[] bytes, ISourceContext context,IMessageHandler msgHandler) {
 		try {
 			if (bytes == null) bytes = new byte[0];
 			DataInputStream s = new DataInputStream(new ByteArrayInputStream(bytes));
@@ -91,6 +94,8 @@ public abstract class AjAttribute {
 			   return MethodDeclarationLineNumberAttribute.read(s);
 			} else if (name.equals(WeaverState.AttributeName)) {
 				return new WeaverState(WeaverStateInfo.read(s, context));
+			} else if (name.equals(WeaverVersionInfo.AttributeName)) {
+				return WeaverVersionInfo.read(s);
 			} else if (name.equals(AdviceAttribute.AttributeName)) {
 				return AdviceAttribute.read(s, context);
 			} else if (name.equals(PointcutDeclarationAttribute.AttributeName)) {
@@ -108,7 +113,10 @@ public abstract class AjAttribute {
 			} else if (name.equals(EffectiveSignatureAttribute.AttributeName)) {
 				return EffectiveSignatureAttribute.read(s, context);
 			} else {
-				throw new BCException("unknown attribute" + name);
+				// We have to tell the user about this...
+				if (msgHandler == null) throw new BCException("unknown attribute" + name);
+				msgHandler.handleMessage(MessageUtil.warn("unknown attribute encountered "+name));
+				return null;
 			}
 		} catch (IOException e) {
 			throw new BCException("malformed " + name + " attribute " + e);
@@ -175,6 +183,82 @@ public abstract class AjAttribute {
 		public WeaverStateInfo reify() {
 			return kind;
 		}
+	}
+	
+	public static class WeaverVersionInfo extends AjAttribute {
+		public static final String AttributeName = "org.aspectj.weaver.WeaverVersion";
+	
+		// If you change the format of an AspectJ class file, you have two options:
+		// - changing the minor version means you have not added anything that prevents
+		//   previous versions of the weaver from operating (e.g. MethodDeclarationLineNumber attribute)
+		// - changing the major version means you have added something that prevents previous
+		//   versions of the weaver from operating correctly.
+		//
+		// The user will get a warning for any org.aspectj.weaver attributes the weaver does
+		// not recognize.
+		
+		// These are the weaver major/minor numbers for AspectJ 1.2.1
+		private static short WEAVER_VERSION_MAJOR_AJ121 = 1;
+		private static short WEAVER_VERSION_MINOR_AJ121 = 0;
+		
+		// These are the weaver major/minor versions for *this* weaver
+		private static short CURRENT_VERSION_MAJOR      = WEAVER_VERSION_MAJOR_AJ121;
+		private static short CURRENT_VERSION_MINOR      = WEAVER_VERSION_MINOR_AJ121;
+		
+		// These are the versions read in from a particular class file.
+		private short major_version; 
+		private short minor_version;
+		
+		public String getNameString() {
+			return AttributeName;
+		}
+
+		// Default ctor uses the current version numbers
+		public WeaverVersionInfo() {
+			this.major_version = CURRENT_VERSION_MAJOR;
+			this.minor_version = CURRENT_VERSION_MINOR;
+		}
+		
+		public WeaverVersionInfo(short major,short minor) {
+			major_version = major;
+			minor_version = minor;
+		}
+		
+		public void write(DataOutputStream s) throws IOException {
+			s.writeShort(CURRENT_VERSION_MAJOR);
+			s.writeShort(CURRENT_VERSION_MINOR);
+		}
+		
+		public static WeaverVersionInfo read(DataInputStream s) throws IOException {
+			short major = s.readShort();
+			short minor = s.readShort();
+			return new WeaverVersionInfo(major,minor);
+		}
+		
+		public short getMajorVersion() {
+			return major_version;
+		}
+		
+		public short getMinorVersion() {
+			return minor_version;
+		}
+		
+		public static short getCurrentWeaverMajorVersion() {
+			return CURRENT_VERSION_MAJOR;
+		}
+		
+		public static short getCurrentWeaverMinorVersion() {
+			return CURRENT_VERSION_MINOR;
+		}
+		
+		public String toString() {
+			return major_version+"."+minor_version;
+		}
+		
+		public static String toCurrentVersionString() {
+			return CURRENT_VERSION_MAJOR+"."+CURRENT_VERSION_MINOR;
+		}
+		
 	}
 	
 	public static class SourceContextAttribute extends AjAttribute {

@@ -50,6 +50,7 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
     private ResolvedPointcutDefinition[] pointcuts = null;
 	private PerClause perClause = null;
 	private WeaverStateInfo weaverState = null;
+	private AjAttribute.WeaverVersionInfo wvInfo = null;
 	private List typeMungers = Collections.EMPTY_LIST;
 	private List declares = Collections.EMPTY_LIST;
 	private ResolvedMember[] privilegedAccess = null;
@@ -163,7 +164,7 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 		List pointcuts = new ArrayList();
 		typeMungers = new ArrayList();
 		declares = new ArrayList();
-		List l = BcelAttributes.readAjAttributes(javaClass.getAttributes(), getResolvedTypeX().getSourceContext());
+		List l = BcelAttributes.readAjAttributes(javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld().getMessageHandler());
 		for (Iterator iter = l.iterator(); iter.hasNext();) {
 			AjAttribute a = (AjAttribute) iter.next();
 			//System.err.println("unpacking: " + this + " and " + a);
@@ -182,6 +183,15 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 			} else if (a instanceof AjAttribute.SourceContextAttribute) {
 				if (getResolvedTypeX().getSourceContext() instanceof BcelSourceContext) {
 					((BcelSourceContext)getResolvedTypeX().getSourceContext()).addAttributeInfo((AjAttribute.SourceContextAttribute)a);
+				}
+			} else if (a instanceof AjAttribute.WeaverVersionInfo) {
+				wvInfo = (AjAttribute.WeaverVersionInfo)a;
+				if (wvInfo.getMajorVersion() > wvInfo.getCurrentWeaverMajorVersion()) {
+					// The class file containing this attribute was created by a version of AspectJ that
+					// added some behavior that 'this' version of AspectJ doesn't understand.  And the
+					// class file contains changes that mean 'this' version of AspectJ cannot continue.
+					throw new BCException("Unable to continue, this version of AspectJ supports classes built with weaver version "+
+							wvInfo.toCurrentVersionString()+" but the class "+ javaClass.getClassName()+" is version "+wvInfo.toString());
 				}
 			} else {
 				throw new BCException("bad attribute " + a);
@@ -278,6 +288,10 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 
 	public ISourceLocation getSourceLocation() {
 		return getResolvedTypeX().getSourceContext().makeSourceLocation(0); //FIXME, we can do better than this
+	}
+	
+	public AjAttribute.WeaverVersionInfo getWeaverVersionAttribute() {
+		return wvInfo;
 	}
 
 	public void addParent(ResolvedTypeX newParent) {

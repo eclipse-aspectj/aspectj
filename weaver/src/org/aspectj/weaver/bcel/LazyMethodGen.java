@@ -439,7 +439,7 @@ public final class LazyMethodGen {
 		if (enclosingClass != null && enclosingClass.getType() != null) {
 			context = enclosingClass.getType().getSourceContext();
 		}
-		List as = BcelAttributes.readAjAttributes(attributes, context);
+		List as = BcelAttributes.readAjAttributes(attributes, context,null);
 		if (! as.isEmpty()) {
 			out.println("    " + as.get(0)); // XXX assuming exactly one attribute, munger...
 		}

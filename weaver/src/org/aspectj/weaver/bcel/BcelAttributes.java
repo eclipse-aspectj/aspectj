@@ -19,6 +19,7 @@ import java.util.List;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
+import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ISourceContext;
 
@@ -27,7 +28,7 @@ import org.aspectj.weaver.ISourceContext;
 // bcel to AjAttribute.
 class BcelAttributes {
 
-	public static List readAjAttributes(Attribute[] as, ISourceContext context) {
+	public static List readAjAttributes(Attribute[] as, ISourceContext context,IMessageHandler msgHandler) {
 		List l = new ArrayList();
 		for (int i = as.length - 1; i >= 0; i--) {
 			Attribute a = as[i];
@@ -35,7 +36,8 @@ class BcelAttributes {
 				Unknown u = (Unknown) a;
 				String name = u.getName();
 				if (name.startsWith(AjAttribute.AttributePrefix)) {
-					l.add(AjAttribute.read(name, u.getBytes(), context));
+					AjAttribute attr = AjAttribute.read(name, u.getBytes(), context,msgHandler);
+					if (attr!=null) l.add(attr);
 				}
 			}
 		}

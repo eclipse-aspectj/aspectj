@@ -395,7 +395,11 @@ public final class LazyClassGen {
     			    );
         	return;
         }
-    	if (myType != null && myType.getWeaverState() != null) {
+        
+        // Add a weaver version attribute to the file being produced
+        myGen.addAttribute(BcelAttributes.bcelAttribute(new AjAttribute.WeaverVersionInfo(),getConstantPoolGen()));
+
+        if (myType != null && myType.getWeaverState() != null) {
 			myGen.addAttribute(BcelAttributes.bcelAttribute(
 				new AjAttribute.WeaverState(myType.getWeaverState()), 
 				getConstantPoolGen()));
