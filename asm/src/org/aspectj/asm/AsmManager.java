@@ -41,9 +41,7 @@ public class AsmManager {
 
 	public static boolean attemptIncrementalModelRepairs = false;
 //	for debugging ...	
-//	static {
-//		setReporting("c:/model.nfo",true,true,true,true);
-//	}
+	
 
 
     // For offline debugging, you can now ask for the AsmManager to
@@ -54,7 +52,9 @@ public class AsmManager {
 	private static String  dumpFilename = "";
 	private static boolean reporting = false;
 
-
+//	static {
+//		setReporting("c:/model.nfo",true,true,true,true);
+//	}
 	
     protected AsmManager() {
     	hierarchy = new AspectJElementHierarchy();
@@ -417,6 +417,11 @@ public class AsmManager {
 	
 	//===================== DELTA PROCESSING CODE ============== start ==========//
 	
+	// XXX shouldn't be aware of the delimiter
+	private String getFilename(String hid) {
+		return hid.substring(0,hid.indexOf("|"));
+	}
+	
 	// This code is *SLOW* but it isnt worth fixing until we address the
 	// bugs in binary weaving.
 	public void fixupStructureModel(Writer fw,List filesToBeCompiled,Set files_added,Set files_deleted) throws IOException {
@@ -433,7 +438,7 @@ public class AsmManager {
 		
 		Set filesToRemoveFromStructureModel = new HashSet(filesToBeCompiled);
 		filesToRemoveFromStructureModel.addAll(files_deleted);
-		
+		Set deletedNodes = new HashSet();
 		for (Iterator iter = filesToRemoveFromStructureModel.iterator(); iter.hasNext();) {
 			File fileForCompilation = (File) iter.next();
 			String correctedPath = AsmManager.getDefault().getCanonicalFilePath(fileForCompilation);
@@ -444,15 +449,15 @@ public class AsmManager {
 					fw.write("Deleting "+progElem+" node for file "+fileForCompilation+"\n");
 				}
 				removeNode(progElem);
-				verifyAssumption(
-					model.removeFromFileMap(correctedPath.toString()),
-					"Whilst repairing model, couldn't remove entry for file: "+correctedPath.toString()+" from the filemap");
+				deletedNodes.add(getFilename(progElem.getHandleIdentifier()));
+				if (!model.removeFromFileMap(correctedPath.toString())) 
+						throw new RuntimeException("Whilst repairing model, couldn't remove entry for file: "+correctedPath.toString()+" from the filemap");
 				modelModified = true;
 			} 
 		}
 		if (modelModified) {
 			model.flushTypeMap();
-			model.flushHandleMap();
+			model.updateHandleMap(deletedNodes);
 		}
 	}
 	
@@ -641,26 +646,26 @@ public class AsmManager {
 	 */
 	private void removeNode(IProgramElement progElem) {
 		
-		StringBuffer flightrecorder = new StringBuffer();
+//		StringBuffer flightrecorder = new StringBuffer();
 		try {
-			flightrecorder.append("In removeNode, about to chuck away: "+progElem+"\n");
+//			flightrecorder.append("In removeNode, about to chuck away: "+progElem+"\n");
 		
 			verifyAssumption(progElem!=null);
 			boolean deleteOK = false;
 			IProgramElement parent = progElem.getParent();
-			flightrecorder.append("Parent of it is "+parent+"\n");
+//			flightrecorder.append("Parent of it is "+parent+"\n");
 			List kids = parent.getChildren();
-			flightrecorder.append("Which has "+kids.size()+" kids\n");
+//			flightrecorder.append("Which has "+kids.size()+" kids\n");
 			for (int i =0 ;i<kids.size();i++) {
-				flightrecorder.append("Comparing with "+kids.get(i)+"\n");
+//				flightrecorder.append("Comparing with "+kids.get(i)+"\n");
 		  		if (kids.get(i).equals(progElem)) {
 			 		kids.remove(i); 
-			  		flightrecorder.append("Removing it\n");
+//			  		flightrecorder.append("Removing it\n");
 			  		deleteOK=true;
 			  		break;
 		  		}
 			}
-			verifyAssumption(deleteOK,flightrecorder.toString());
+//			verifyAssumption(deleteOK,flightrecorder.toString());
 			// Are there any kids left for this node?
 			if (parent.getChildren().size()==0  && parent.getParent()!=null && 
 				(parent.getKind().equals(IProgramElement.Kind.CODE) ||
@@ -672,7 +677,7 @@ public class AsmManager {
 			}
 		} catch (NullPointerException npe ){
 			// Occurred when commenting out other 2 ras classes in wsif?? reproducable?
-			System.err.println(flightrecorder.toString());
+//			System.err.println(flightrecorder.toString());
 			npe.printStackTrace();
 		}
 	}

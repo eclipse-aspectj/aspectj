@@ -367,5 +367,25 @@ public class AspectJElementHierarchy implements IHierarchy {
 	public void flushHandleMap() {
 		handleMap.clear();
 	}
+
+	public void updateHandleMap(Set deletedFiles) {
+		// Only delete the entries we need to from the handle map - for performance reasons
+		List forRemoval = new ArrayList();
+		Set k = handleMap.keySet();
+		for (Iterator iter = k.iterator(); iter.hasNext();) {
+			String handle = (String) iter.next();
+			if (deletedFiles.contains(getFilename(handle))) forRemoval.add(handle);
+		}
+		for (Iterator iter = forRemoval.iterator(); iter.hasNext();) {
+			String handle = (String) iter.next();
+			handleMap.remove(handle);
+		}
+	}
+	
+    // XXX shouldn't be aware of the delimiter
+	private String getFilename(String hid) {
+		return hid.substring(0,hid.indexOf("|"));
+	}
+
 }
 

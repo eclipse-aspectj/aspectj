@@ -99,4 +99,6 @@ public interface IHierarchy extends Serializable {
 	public void flushTypeMap();
 
 	public void flushHandleMap();
+
+	public void updateHandleMap(Set deletedFiles);
 }
