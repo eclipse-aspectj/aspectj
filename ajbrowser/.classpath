@@ -9,5 +9,6 @@
     <classpathentry kind="src" path="/bridge"/>
     <classpathentry kind="src" path="/asm"/>
     <classpathentry kind="src" path="/taskdefs"/>
+    <classpathentry kind="src" path="/ajdoc"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
