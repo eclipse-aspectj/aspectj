@@ -225,6 +225,8 @@ public abstract class ResolvedTypeMunger {
 	
 	public static final Kind Parent = new Kind("Parent", 6);
 	public static final Kind PerTypeWithinInterface = new Kind("PerTypeWithinInterface",7); // PTWIMPL not serialized, used during concretization of aspects
+	
+	public static final Kind AnnotationOnType = new Kind("AnnotationOnType",8); // not serialized
 
 	public static final String SUPER_DISPATCH_NAME = "superDispatch";
 
