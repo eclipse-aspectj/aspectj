@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                      "../../lib/docbook/docbook-dtd/docbookx.dtd"
+[
+<!ENTITY annotations        SYSTEM "annotations.xml">
+<!ENTITY generics		    SYSTEM "generics.xml">
+<!ENTITY enumeratedtypes    SYSTEM "enumeratedtypes.xml">
+<!ENTITY autoboxing         SYSTEM "autoboxing.xml">
+<!ENTITY covariance         SYSTEM "covariance.xml">
+<!ENTITY varargs            SYSTEM "varargs.xml">
+<!ENTITY pertypewithin      SYSTEM "pertypewithin.xml">
+<!ENTITY getthistargetobj   SYSTEM "getthistargetobj.xml">
+<!ENTITY declaresoft        SYSTEM "declaresoft.xml">
+<!ENTITY reflection         SYSTEM "reflection.xml">]>
+
+<book>
+  <bookinfo>
+    <title>The AspectJ<superscript>TM</superscript> Development Kit v1.5 Developer's Notebook</title>
+
+    <authorgroup>
+      <author>
+        <othername>the AspectJ Team</othername>
+      </author>
+    </authorgroup>
+      
+    <legalnotice>
+      <para>
+        Copyright (c) 2004 Contributors,  
+        All rights reserved.
+      </para>
+    </legalnotice>
+
+    <abstract>
+      <para>
+        This guide describes the changes to the AspectJ language
+        in version 1.5. These changes are primarily, but not exclusively,
+        to support Java 5.0 (Tiger) features.
+        If you are new to AspectJ, we recommend you start 
+        by reading the programming guide.
+      </para>
+
+    </abstract>
+  </bookinfo>
+
+  &annotations;
+  &generics;
+  &enumeratedtypes;
+  &autoboxing;
+  &covariance;
+  &varargs;
+  &pertypewithin;
+  &getthistargetobj;
+  &declaresoft;
+  &reflection;
+
+</book>
