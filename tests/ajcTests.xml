@@ -7502,5 +7502,13 @@
         </inc-compile>
     </ajc-test>
 
-    
+    <ajc-test dir="bugs"
+		title="Private members introduced via an interface are visible to the class"
+		pr="52928">
+		<compile
+			files="VisiblePrivateInterfaceITDs.java" >
+            <message kind="error" line="13"/>
+		</compile>
+	</ajc-test>
+	
 </suite>
