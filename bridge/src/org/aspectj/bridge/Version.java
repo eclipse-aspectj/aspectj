@@ -1,16 +1,15 @@
-/* *******************************************************************
- * Copyright (c) 1999-2002 Xerox Corporation, 
+/* ********************************************************************
+ * Copyright (c) 1998-2001 Xerox Corporation, 
  *               2002 Palo Alto Research Center, Incorporated (PARC).
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/cpl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
- * ******************************************************************/
-
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     Xerox/PARC     initial implementation
+ * *******************************************************************/
 
 package org.aspectj.bridge;
 
@@ -28,13 +27,13 @@ public class Version {
     public static final long NOTIME = 0L;
     
     /** set by build script */
-    public static final String text = DEVELOPMENT;
+    public static final String text = "1.1b2";
     
     /** 
       * Time text set by build script using SIMPLE_DATE_FORMAT.
       * (if DEVELOPMENT version, invalid)
       */
-    public static final String time_text = "";
+    public static final String time_text = "12/18/02 at 03:20:03 PST";
 
     /** 
       * time in seconds-since-... format, used by programmatic clients.
@@ -43,7 +42,7 @@ public class Version {
     public static final long time;
     
 	/** format used by build script to set time_text */
-    public static final String SIMPLE_DATE_FORMAT = "";
+    public static final String SIMPLE_DATE_FORMAT = "MM/dd/yy 'at' hh:mm:ss z";
     
     // if not DEVELOPMENT version, read time text using format used to set time 
     static {
