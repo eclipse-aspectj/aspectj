@@ -1,6 +1,11 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 <suite>
-
+    <ajc-test dir="new" pr="29934"
+      title="can't apply around advice to the execution of around advice"
+      keywords="from-resolved_10x">
+        <compile files="CflowCycles.java"/>
+        <run class="CflowCycles"/>
+    </ajc-test>
 
     <!--
     

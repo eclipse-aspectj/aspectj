@@ -1206,6 +1206,10 @@ public class BcelShadow extends Shadow {
 			return;
 		}
 		
+		// We can't inline around methods if they have around advice on them, this
+		// is because the weaving will extract the body and hence the proceed call.
+		//??? should consider optimizations to recognize simple cases that don't require body extraction
+		enclosingMethod.setCanInline(false);
 		
 		
 		// start by exposing various useful things into the frame

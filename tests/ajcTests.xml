@@ -5659,4 +5659,11 @@
             <message kind="warning" line="74"/>
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="new" pr="29934"
+      title="can't apply around advice to the execution of around advice"
+      keywords="from-resolved_10x">
+        <compile files="CflowCycles.java"/>
+        <run class="CflowCycles"/>
+    </ajc-test>
 </suite>
