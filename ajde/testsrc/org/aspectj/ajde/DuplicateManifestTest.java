@@ -48,6 +48,9 @@ public class DuplicateManifestTest extends AjdeTestCase {
 			"Build warnings",
 			ideManager.getCompilationSourceLineTasks().isEmpty());
 		compareManifests(openFile(injarName),openFile(outjarName));
+		outjar.delete(); // Tidy up !
+		File rogueSymFile = new File(currTestDataPath + File.separatorChar + "build.ajsym");
+		if (rogueSymFile.exists()) rogueSymFile.delete();
 	}
 	
 	private void compareManifests (File inFile, File outFile) {
