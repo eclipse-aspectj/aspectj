@@ -40,12 +40,21 @@ public class AjcMemberMaker {
 	public static final TypeX NO_ASPECT_BOUND_EXCEPTION =
 		TypeX.forName("org.aspectj.lang.NoAspectBoundException");
 
-	public static ResolvedMember ajcClinitMethod(TypeX declaringType) {
+	public static ResolvedMember ajcPreClinitMethod(TypeX declaringType) {
 		return new ResolvedMember(
 			Member.METHOD, 
 			declaringType,
 			PRIVATE_STATIC,
-			NameMangler.AJC_CLINIT_NAME,
+			NameMangler.AJC_PRE_CLINIT_NAME,
+			"()V");
+	}
+
+	public static ResolvedMember ajcPostClinitMethod(TypeX declaringType) {
+		return new ResolvedMember(
+			Member.METHOD, 
+			declaringType,
+			PRIVATE_STATIC,
+			NameMangler.AJC_POST_CLINIT_NAME,
 			"()V");
 	}
 

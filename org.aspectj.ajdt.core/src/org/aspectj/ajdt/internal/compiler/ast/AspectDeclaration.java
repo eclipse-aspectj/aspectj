@@ -169,13 +169,13 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 			} else if (perClause.getKind() == PerClause.SINGLETON) {
 				binding.addField(world.makeFieldBinding(AjcMemberMaker.perSingletonField(
 						typeX)));
-				methods[0] = new AspectClinit((Clinit)methods[0], compilationResult);
+				methods[0] = new AspectClinit((Clinit)methods[0], compilationResult, false, true);
 			} else if (perClause.getKind() == PerClause.PERCFLOW) {
 				binding.addField(
 					world.makeFieldBinding(
 						AjcMemberMaker.perCflowField(
 							typeX)));
-				methods[0] = new AspectClinit((Clinit)methods[0], compilationResult);
+				methods[0] = new AspectClinit((Clinit)methods[0], compilationResult, true, false);
 			} else if (perClause.getKind() == PerClause.PEROBJECT) {
 //				binding.addField(
 //					world.makeFieldBinding(
@@ -367,7 +367,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 		ClassFile classFile) 
 	{
 		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
-		generateMethod(classFile, world.makeMethodBinding(AjcMemberMaker.ajcClinitMethod(
+		generateMethod(classFile, world.makeMethodBinding(AjcMemberMaker.ajcPreClinitMethod(
 				world.fromBinding(binding))), 
 		new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
@@ -549,7 +549,7 @@ public class AspectDeclaration extends MemberTypeDeclaration {
 		ClassFile classFile) 
 	{
 		final EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(this.scope);
-		generateMethod(classFile, world.makeMethodBinding(AjcMemberMaker.ajcClinitMethod(
+		generateMethod(classFile, world.makeMethodBinding(AjcMemberMaker.ajcPostClinitMethod(
 				world.fromBinding(binding))), 
 		new BodyGenerator() {
 			public void generate(CodeStream codeStream) {

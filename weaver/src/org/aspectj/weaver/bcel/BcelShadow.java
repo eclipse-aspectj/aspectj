@@ -309,13 +309,27 @@ public class BcelShadow extends Shadow {
             LazyMethodGen enclosingMethod) 
     {
         InstructionList body = enclosingMethod.getBody();
-        InstructionHandle ih = body.getStart();
-        if (ih.getInstruction() instanceof InvokeInstruction) {
-        	InvokeInstruction ii = (InvokeInstruction)ih.getInstruction();
-        	if (ii.getName(enclosingMethod.getEnclosingClass().getConstantPoolGen()).equals(NameMangler.AJC_CLINIT_NAME)) {
-        		ih = ih.getNext();
+        // move the start past ajc$preClinit
+        InstructionHandle clinitStart = body.getStart();
+        if (clinitStart.getInstruction() instanceof InvokeInstruction) {
+        	InvokeInstruction ii = (InvokeInstruction)clinitStart.getInstruction();
+        	if (ii.getName(enclosingMethod.getEnclosingClass().getConstantPoolGen()).equals(NameMangler.AJC_PRE_CLINIT_NAME)) {
+        		clinitStart = clinitStart.getNext();
         	}
         }
+        
+        InstructionHandle clinitEnd = body.getEnd();
+        
+        //XXX should move the end before the postClinit, but the return is then tricky...
+//        if (clinitEnd.getInstruction() instanceof InvokeInstruction) {
+//        	InvokeInstruction ii = (InvokeInstruction)clinitEnd.getInstruction();
+//        	if (ii.getName(enclosingMethod.getEnclosingClass().getConstantPoolGen()).equals(NameMangler.AJC_POST_CLINIT_NAME)) {
+//        		clinitEnd = clinitEnd.getPrev();
+//        	}
+//        }
+        
+        
+        
         BcelShadow s =
             new BcelShadow(
                 world,
@@ -326,8 +340,8 @@ public class BcelShadow extends Shadow {
         ShadowRange r = new ShadowRange(body);
         r.associateWithShadow(s);
         r.associateWithTargets(
-            Range.genStart(body, ih),
-            Range.genEnd(body));
+            Range.genStart(body, clinitStart),
+            Range.genEnd(body, clinitEnd));
         return s;
     }
     

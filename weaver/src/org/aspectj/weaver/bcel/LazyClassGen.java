@@ -319,15 +319,15 @@ public final class LazyClassGen {
         return clinit;
     }
     
-    public LazyMethodGen getAjcClinit() {
+    public LazyMethodGen getAjcPreClinit() {
         for (Iterator i = methodGens.iterator(); i.hasNext();) {
             LazyMethodGen gen = (LazyMethodGen) i.next();
-			if (gen.getName().equals(NameMangler.AJC_CLINIT_NAME)) return gen;
+			if (gen.getName().equals(NameMangler.AJC_PRE_CLINIT_NAME)) return gen;
         }
         LazyMethodGen ajcClinit = new LazyMethodGen(
         	Modifier.STATIC,
         	Type.VOID,
-        	NameMangler.AJC_CLINIT_NAME,
+        	NameMangler.AJC_PRE_CLINIT_NAME,
         	new Type[0],
         	CollectionUtil.NO_STRINGS,
         	this);

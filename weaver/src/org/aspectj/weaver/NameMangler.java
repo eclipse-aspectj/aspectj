@@ -39,7 +39,9 @@ public class NameMangler {
 
 	public static final String PEROBJECT_BIND_METHOD = PREFIX + "perObjectBind";
 
-	public static final String AJC_CLINIT_NAME = PREFIX + "clinit";
+	public static final String AJC_PRE_CLINIT_NAME = PREFIX + "preClinit";
+
+	public static final String AJC_POST_CLINIT_NAME = PREFIX + "postClinit";
 
 
 
