@@ -1,26 +1,39 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html> <head>
-<title>AspectJ Tutorial Exercises</title>
+<title>AspectJ Exercises</title>
 </head>
 
 <body bgcolor="white">
-<h1>AspectJ Tutorial Exercises</h1>
+<h1>AspectJ Exercises</h1>
 
 <h3>Organization</h3>
 
-<p> The exercises work with a figure editor together with JUnit test
-cases.  They progress, as most users do in their adoption of AspectJ,
-from non-functional, development-only aspects to aspects which augment
-a deployed program with crosscutting features.  </p>
+<p> This tutorial consists of the attendees solving AspectJ
+programming tasks (with unit tests) in pairs or triples and discussing
+the answers with the group and with the tutorial presenters.  The
+exercises work with a figure editor together with JUnit test cases.
+They progress, as most users do in their adoption of AspectJ, from
+non-functional, development-only aspects to aspects which augment a
+deployed program with crosscutting features.  </p>
 
-<p> Before the tutorial we will make available a package that includes
-the tests, the base code, JUnit, and a distribution of AspectJ.  All
-it needs is information about where Java lives (so set your JAVA_HOME
-environment variable).  It assumes that you unzip it in c:\ (on
-Windows) or in your home directory (on Linux): If you put it somewhere
-else, edit setpaths or setpaths.bat, as appropriate.  Once all this is
-done, run <code>setpaths.bat</code> or <code>source setpaths</code> to
-export some other needed environment variables. </p>
+<p> These notes consist of four sections of exercises, a quick
+reference to AspectJ syntax, and a UML diagram of a figure editor
+program.  While you should feel free to have a quick look through
+these notes before the tutorial, please do not try to seriously read
+or do the exercises; you'll learn a lot more by working through it in
+groups. </p>
+
+<h3>Command-line usage</h3>
+
+<p> At the beginning of the tutorial we will make available a binary
+package that includes the tests, the base code, JUnit, and a
+distribution of AspectJ.  All it needs is information about where Java
+lives (so set your JAVA_HOME environment variable).  It assumes that
+you unzip it in c:\ (on Windows) or in your home directory (on Linux):
+If you put it somewhere else, edit setpaths or setpaths.bat, as
+appropriate.  Once all this is done, run <code>setpaths.bat</code> or
+<code>source setpaths</code> to export some other needed environment
+variables. </p>
 
 <p> All the files in the program are listed in base.lst, including
 test cases and an empty answer aspect,
@@ -29,7 +42,7 @@ answers there, all you need to do is compile base.lst, either in an
 IDE or with </p>
 
 <blockquote><PRE>
-$ ajc -Xlint -argfile base.lst
+$ ajc -argfile base.lst
 </PRE></blockquote>
 
 <p> Before you move onto another exercise, though, make sure to copy
@@ -39,18 +52,11 @@ together:
 
 <blockquote><PRE>
 &gt; copy answers/Answer.java answers/2a.java  (Windows)
-$ cp answers/Answer.java answers/2a.java    (Linux)
+$ cp answers/Answer.java answers/2a.java    (Unix)
 </PRE></blockquote>
 
-<p> If you want to put your answer in a different file, say,
-<code>answers/Answer2a.java</code>, you can compile with </p>
-
-<blockquote><PRE>
-$ ajc -Xlint -argfile base.lst answers/Answer2a.java
-</PRE> </blockquote>
-
-<p> In any case, after building the system, you should invoke Java on
-the compiled test class.  On the command-line, this this would be </p>
+<p> After building the system, you should invoke Java on the compiled
+test class.  On the command-line, this this would be </p>
 
 <blockquote><PRE>
 $ java tests.Test2a
@@ -66,7 +72,7 @@ rudimentary tests on figure elements, and so is a useful test to run
 periodically.  Looking at the JUnit tests for each exercise may also
 be helpful. </p>
 
-<p> Again, ae will be looking at some solutions and having discussion,
+<p> Again, we will be looking at some solutions and having discussion,
 which is much more difficult without incremental solutions.  So when
 you go from one exercise to the next, make sure to save your work in a
 file and go on to work in a different file, even if you plan to
@@ -91,12 +97,14 @@ shell, though, to run the JUnit tests (and don't forget to run the
 set up the run button to run a test through the Options menu, but
 we've found this is fairly cumbersome. </p>
 
-
-<hr>
 <!-- ============================== -->
 
 <br style="page-break-after: always" />
 <h2>1. Static Invariants</h2>
+
+<p> The easiest way to get started with AspectJ is to use it to
+enforce static invariants. 
+</p>
 
 <h3>a. Catch old tracing</h3>
 
@@ -114,7 +122,7 @@ test.  </p>
 to use <code>System.out.println()</code>, so that is what we typically
 use for one-off debugging traces.  It's a common mistake to leave
 these in your system longer than is necessary.  Type in the aspect
-below to forces an error at compile time if this mistake is made.
+below to force an error at compile time if this mistake is made.
 </p>
 
 <p> When you use this on the given system, you'll find one incorrect
@@ -163,6 +171,7 @@ aspect Answer1a {
 of the <code>out</code> field is illegal.  This will also catch those
 users who bind System.out to a static field to save typing.  </p>
 
+<br style="page-break-after: always" />
 
 <h3>b. Mandate setters</h3>
 
@@ -191,9 +200,8 @@ outside of setter methods.  "Outside", here, means that the code for
 the assignment is outside the <em>text</em> of the setter. 
 
 <p> Make sure your program still passes the JUnit test
-<code>tests.Test</code> before continuing, and that you see all of the
-following warning messages.  Make sure you get 11 warnings from this.
-Wait to fix them until the next exercise.  </p>
+<code>tests.Test</code> before continuing.  Make sure you get 11
+warnings from this.  Wait to fix them until the next exercise.  </p>
 
 <h3>c. Refine setters mandate</h3>
 
@@ -205,9 +213,9 @@ Wait to fix them until the next exercise.  </p>
 <p> Look at some of the warnings from the previous exercise.  Notice
 that a lot of them are from within constructors.  Actually, the common
 coding convention is that no private field should be set outside of
-setter methods <em>or constructors</em>.  Modify your answer (in a new
-file) to signal an actual error at compile time (rather than just a
-warning) when such an illegal assignment expression exists.  </p>
+setter methods <em>or constructors</em>.  Modify your answer to signal
+an actual error at compile time (rather than just a warning) when such
+an illegal assignment expression exists.  </p>
 
 <p>You'll want to add another <code>withincode</code> primitive
 pointcut to deal with the constructors. 
@@ -217,32 +225,37 @@ pointcut to deal with the constructors.
 the convention is violated twice in the figures package.  You should see
 the following two errors:</p>
 
-<pre>
-.\figures\Point.java:28:9: bad field set
-        _x += dx;
-        ^
-.\figures\Point.java:29:9: bad field set
-        _y += dy;
-        ^
+<PRE>
+.\figures\Point.java:37 bad field set
+.\figures\Point.java:38 bad field set
+
 2 errors
-</pre>
+</PRE>
 
 <p>Rewrite these two occurrences so as not to violate
 the convention.  Make sure your program still passes the JUnit test
 <code>tests.Test</code> before continuing.  </p>
 
-<h3>d. Congratulatoins</h3>
+<h3>d. Congratulations</h3>
 
 <p> You've taken your first steps.  At this point, check the people to
 your left and right.  If they're stuck somewhere, see if you can help
 them.  </p>
 
-<hr />
-
 <!-- ============================== -->
 
 <br style="page-break-after: always" />
 <h2>2. Dynamic invariants</h2>
+
+<p> The next step in AspectJ adoption is often to augment a test suite
+by including additional dynamic tests.
+</p>
+
+<p> Tutorial attendees typically progress at different speeds through
+these questions.  Throughout this tutorial, if you finish early, see
+what the people around you are doing and if they need help.  Feel free
+to help them out of naked self-interest; we promise you'll learn a lot
+about AspectJ by explaining it. </p>
 
 <h3>a. Check a simple precondition</h3>
 
@@ -280,7 +293,7 @@ Tests run: 7,  Failures: 2,  Errors: 0
 </p>
 
 <blockquote><PRE>
-$ ajc -Xlint -argfile base.lst answers/Answer.java
+$ ajc -argfile base.lst answers/Answer.java
 
 $ java tests.Test2a
 .......
@@ -309,6 +322,9 @@ aspect Answer2a {
 <h3>b. Check another precondition</h3>
 
 <p> <strong>Task:</strong> Pass <code>tests.Test2b</code>. </p>
+
+<p> <strong>Tools: </strong> <code>call</code>.
+</p>
 
 <p> <code>Group</code> is a <code>FigureElement</code> class that
 encapsulates groups of other figure elements.  As such, only actual
@@ -340,19 +356,32 @@ call.
 
 <h3>d. Assure input</h3>
 
-<p> <strong>Task: </strong> Pass <code>tests.Test2g</code>.
+<p> <strong>Task: </strong> Pass <code>tests.Test2d</code>.
 </p>
 
 <p> <strong>Tools: </strong>  around advice
 </p>
 
 <p> Instead of throwing an exception when one of <code>Point</code>'s
-<code>int</code> fields are set to an out-of-bounds value, write an
-aspect to trim the value into an in-bounds one.  You'll want to use
-<code>around</code> advice that exposes the new value of the field
-assignment with an <code>args</code> pointcut, and
-<code>proceed</code> with the trimmed value. </p>
+<code>int</code> fields are set to a negative value, write an aspect
+to trim the value to zero.  You'll want to use <code>around</code>
+advice that exposes the new value of the field assignment with an
+<code>args</code> pointcut, and <code>proceed</code> with the trimmed
+value. </p>
 
+<p> This is going to look something like
+</p>
+
+<pre>
+aspect A {
+    void around(int val): <var>&lt;Pointcut&gt;</var> {
+        <var>&lt;Do something with val&gt;</var>
+        proceed(val);
+    }
+}
+</pre>
+
+<br style="page-break-after: always" />
 <h3>e. Check a postcondition</h3>
 
 <p> <strong>Task: </strong>  Pass <code>tests.Test2e</code>
@@ -363,7 +392,7 @@ assignment with an <code>args</code> pointcut, and
 
 <p> A postcondition of a <code>Point</code>'s <code>move</code>
 operation is that the <code>Point</code>'s coordinates should change.
-If a call to move move didn't actually move a point by the desired
+If a call to move didn't actually move a point by the desired
 offset, then the point is in an illegal state and so an
 <code>IllegalStateException</code> should be thrown.
 </p>
@@ -389,22 +418,14 @@ element's bounds rectangle should move by the same amount as the
 figure itself.  Write an aspect to check for this postcondition --
 throw an <code>IllegalStateException</code> if it is violated.  </p>
 
-<h3>Help Yourself by Helping Others</h3>
-
-<p> At this point, check the people to your left and right.  If
-they're stuck somewhere, see if you can help them.  </p>
-
-<hr />
-
 <!-- ============================== -->
 
 <br style="page-break-after: always" />
 <h2>3. Tracing</h2>
 
-<p> The crosscutting feature you will be adding in part (4) will be
-support for caching the bound objects of <code>Group</code> figure
-elements, which may be costly to compute.  On the way to that, though,
-it's useful to explore the system with some tracing aspects.  </p>
+<p> Tracing is one of the classic AspectJ applications, and is often
+the first where AspectJ is used on deployed code.
+</p>
 
 <h3>a. Simple logging</h3>
 
@@ -420,7 +441,7 @@ in the figures package.  To do this, use the utility class
 <code>Log</code> (with an import from <code>support.Log</code>) 
 and call <code>Log.log(String)</code></p>
 
-<h3>b. Simple logging</h3>
+<h3>b. Exposing a value</h3>
 
 <p> <strong>Task:</strong> Pass <code>tests.Test3b</code>.</p>
 
@@ -441,34 +462,15 @@ but also the target object, with the form
 
 <p> <strong>Task:</strong> Pass <code>tests.Test3c</code>.</p>
 
-<p> <strong>Tools:</strong>
+<p> <strong>Tools:</strong> <code>args</code>.
 </p>
 
-<p> Write an aspect to log whenever a <code>Point</code> is added to
-a group (including initially).  To do this, use the utility class
-<code>Log</code> (with an import from <code>support.Log</code>) and
-call </p>
+<p> Write an aspect to log whenever a <code>Point</code> is added to a
+group. The <code>args</code> pointcut allows you to select join points
+based on the type of a parameter to a method call. </p>
 
-<blockquote><PRE>
-Log.log("adding Point")
-</PRE></blockquote>
-
-<p> This will write the string "adding Point", followed by a semicolon
-terminator, to the Log. For example, with your aspect enabled, </p>
-
-<blockquote><PRE>
-Point p1 = new Point(10, 100);
-Point p2 = new Point(10, 100);
-Group g = new Group(p1);
-g.add(p2);
-System.out.println(Log.getString());
-</PRE></blockquote>
-
-<p> should print out "adding Point;adding Point;".  
+<p> Look at the test case for details about the tested log message.
 </p>
-
-<p> <em>Hint: The <code>args</code> pointcut allows you to select join points
-based on the type of a parameter to a method call. </em> </p>
 
 <h3>d. Logging extended to checking an invariant</h3>
 
@@ -477,8 +479,18 @@ based on the type of a parameter to a method call. </em> </p>
 <p> <strong>Tools:</strong> <code>inter-type field declaration</code>
 </p>
 
-<p>Make sure that a Point is never added to more than one Group.</p>
+<p> Make sure that a Point is never added to more than one Group.  
+To do so, associate a boolean flag with each Point using an inter-type
+declaration, such as </p>
 
+<blockquote><pre>
+boolean Point.hasBeenAdded = false;
+</pre></blockquote>
+
+<p> Check and set this flag with the same kind of advice from your
+answer to problem (c).  Throw an <code>IllegalStateException</code> if
+the point has already been added.
+</p>
 
 <h3>e. Better error messages for 3d</h3>
 
@@ -487,53 +499,9 @@ based on the type of a parameter to a method call. </em> </p>
 <p> <strong>Tools:</strong>
 </p>
 
-<p>Make sure that a Point is never added to more than one Group.
-Include the Group that the Point was previously a part of in the
-thrown exception.</p>
-
-<h3>c. Keeping track of state</h3>
-
-<p> In this exercise, perform the tracing from part (a), but also log
-the enclosing group, if any, of the moving point.  You can use an
-inter-type declaration inside your aspect to associate a
-<code>Group</code> field with <code>Point</code> objects, and then
-work with that field, setting it appropriately when the
-<code>Point</code> is added to a <code>Group</code> (at the same join
-points you were tracing in part b).  So </p>
-
-<blockquote><PRE>
-Point p1 = new Point(10, 100);
-p1.move(0, 0);
-System.out.println(Log.getString());
-</PRE></blockquote>
-
-<p> should print out "moving as a part of null;", but   
-</p>
-
-<blockquote><PRE>
-Point p1 = new Point(10, 100);
-Group g = new Group(p1);
-p1.move(0, 0);
-System.out.println(Log.getString());
-</PRE></blockquote>
-
-<p> should print out "moving as a part of Group(Point(10, 100));",
-which you can do by using the toString() method already defined on
-Group.  </p>
-
-<p> <em> Hint: This exercise combines the tracing from parts a and b.
-If you start with an aspect that includes the solutions to those
-previous exercises, you'll be most of the way there. </em> </p>
-
-<p> Test this with the JUnit test case <code>tests.Test3c</code>.
-
-
-<h3>Help Yourself by Helping Others</h3>
-
-<p> At this point, check the people to your left and right.  If
-they're stuck somewhere, see if you can help them.  </p>
-
-<hr />
+<p> Extend your solution to problem (d) by using the string
+representation of the Point's containing group as the <code>msg</code>
+part of the <code>IllegalStateException</code>. </p>
 
 <!-- ============================== -->
 
@@ -577,7 +545,7 @@ around advice intercepting the method.
 <p> <strong>Task:</strong> Pass <code>tests.Test4b</code>.
 </p>
 
-<p> <strong>Tools:</strong> <code>private Rectangle Group.mumble;</code>
+<p> <strong>Tools:</strong> inter-type field.
 </p>
 
 <p> Instead of making the (very) conservative approximation of
@@ -605,11 +573,10 @@ Change your aspect so that it invalidates the cache whenever the
 <code>move()</code> method of <code>Group</code> is called. 
 </p>
 
+<br style="page-break-after: always" />
 <h3>d. Invalidate, part 2</h3>
 
 <p> <strong>Task:</strong> Pass <code>tests.Test4d</code>.</p>
-
-<p> <strong>Tools:</strong> <code>your solution to 3c</code></p>
 
 <p> Of course, part (c) didn't really solve the problem.  What if a
 <code>Point</code> that is part of a <code>Group</code> moves?
