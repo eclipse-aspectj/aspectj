@@ -242,6 +242,8 @@ public abstract class ResolvedTypeX extends TypeX {
     
     
     public static boolean matches(Member m1, Member m2) {
+        if (m1 == null) return m2 == null;
+        if (m2 == null) return false;
     	return m1.getName().equals(m2.getName()) && m1.getSignature().equals(m2.getSignature());
     }
     

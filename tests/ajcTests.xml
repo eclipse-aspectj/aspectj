@@ -6730,4 +6730,11 @@
 		    <message line="7" kind="warning" text="throws both"/>
 		</compile>
 	</ajc-test>
+	
+   <!-- This test needs a corresponding bug report -->
+    <ajc-test dir="bugs" 
+   	 title="perthis and signature bad interaction">
+        <compile files="InterPerCall.java"/>
+        <run class="InterPerCall"/>
+    </ajc-test>
 </suite>
