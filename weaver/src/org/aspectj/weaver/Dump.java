@@ -349,7 +349,7 @@ public class Dump {
             if (o instanceof Exception) {
                 println((Exception)o);
             } else {
-            	println(i.next().toString());
+            	println(o.toString());
             }
 		}
 	}
