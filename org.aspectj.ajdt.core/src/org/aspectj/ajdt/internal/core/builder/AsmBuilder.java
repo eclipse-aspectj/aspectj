@@ -14,6 +14,7 @@
 package org.aspectj.ajdt.internal.core.builder;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.CollationElementIterator;
 import java.util.*;
 import java.util.List;
@@ -91,10 +92,12 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 		stack.push(cuNode);
 		unit.traverse(this, unit.scope);  
 		
-        StructureModelManager.INSTANCE.getStructureModel().getFileMap().put(
-        	file.getAbsolutePath().replace('\\', '/'),
-        	cuNode
-        );
+		try {
+	        StructureModelManager.INSTANCE.getStructureModel().getFileMap().put(
+	        	file.getCanonicalPath(),//.replace('\\', '/'),
+	        	cuNode
+	        );
+		} catch (IOException ioe) { }
 //		if (currImports != null) peNode.addChild(0, currImports);
 //		currImports = null;
 	}
@@ -205,6 +208,7 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 			label = translateAdviceName(label);
 		} else if (methodDeclaration instanceof PointcutDeclaration) { 
 			kind = ProgramElementNode.Kind.POINTCUT;
+			label = translatePointcutName(label);
 		} else if (methodDeclaration instanceof DeclareDeclaration) { 
 			DeclareDeclaration declare = (DeclareDeclaration)methodDeclaration;
 			label = translateDeclareName(declare.toString());
@@ -239,7 +243,6 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 		
 		return true;
 	}
-
 
 	public void endVisit(MethodDeclaration methodDeclaration, ClassScope scope) {
 		stack.pop();
@@ -368,6 +371,17 @@ public class AsmBuilder extends AbstractSyntaxTreeVisitorAdapter {
 		int index = name.lastIndexOf('$');
 		if (index != -1) {
 			return name.substring(index+1);
+		} else { 
+			return name;
+		}
+	}
+
+	// !!! move or replace
+	private String translatePointcutName(String name) {
+		int index = name.indexOf("$$")+2;
+		int endIndex = name.lastIndexOf('$');
+		if (index != -1 && endIndex != -1) {
+			return name.substring(index, endIndex);
 		} else { 
 			return name;
 		}

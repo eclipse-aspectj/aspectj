@@ -42,6 +42,8 @@ class Main {
 }
 
 privileged aspect Test {
+    pointcut testptct(): call(* *.*(..));
+
     before(Point p, int newval): target(p) && set(int Point.xx) && args(newval) {
         System.err.println("> new value of x is: " + p.x + ", setting to: " + newval);
     }

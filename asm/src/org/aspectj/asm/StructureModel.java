@@ -114,18 +114,22 @@ public class StructureModel implements Serializable {
 	 * @param		sourceFilePath	modified to '/' delimited path for consistency
 	 * @return		a new structure node for the file if it was not found in the model
 	 */
-	public StructureNode findRootNodeForSourceFile(String sourceFilePath) {
-       	if (!isValid() || sourceFilePath == null) {  
-            return StructureModel.NO_STRUCTURE;
-        } else {
-            String correctedPath = sourceFilePath;//.replace('\\', '/');
-            StructureNode node = (StructureNode)getFileMap().get(correctedPath);//findFileNode(filePath, model);
-            if (node != null) {
-                return node;
-            } else {
-                return createFileStructureNode(sourceFilePath);
-            }
-        }
+	public StructureNode findRootNodeForSourceFile(String sourceFile) {
+       	try {
+	       	if (!isValid() || sourceFile == null) {   
+	            return StructureModel.NO_STRUCTURE;
+	        } else {
+	            String correctedPath = new File(sourceFile).getCanonicalPath();//.replace('\\', '/');
+	            StructureNode node = (StructureNode)getFileMap().get(correctedPath);//findFileNode(filePath, model);
+	            if (node != null) {
+	                return node;
+	            } else {
+	                return createFileStructureNode(correctedPath);
+	            }
+	        }
+		} catch (Exception e) {
+			return StructureModel.NO_STRUCTURE;
+		}
     }
 
 	/**
@@ -175,6 +179,12 @@ public class StructureModel implements Serializable {
 
 	private boolean matches(StructureNode node, String sourceFilePath, int lineNumber) {
 		try {			
+//			if (node != null && node.getSourceLocation() != null)
+//				System.err.println("====\n1: " + 
+//					sourceFilePath + "\n2: " +
+//					node.getSourceLocation().getSourceFile().getCanonicalPath().equals(sourceFilePath)
+//				);	
+			
 			return node != null 
 				&& node.getSourceLocation() != null
 				&& node.getSourceLocation().getSourceFile().getCanonicalPath().equals(sourceFilePath)
