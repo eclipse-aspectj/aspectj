@@ -348,7 +348,7 @@ public final class LazyMethodGen {
         }
 
         void run() {
-        	killNops();
+        	//killNops();
             assignLabels();
             print();
         }
@@ -810,28 +810,29 @@ public final class LazyMethodGen {
 
     }
 
-
-	public void killNops() {
-    	InstructionHandle curr = body.getStart();
-    	while (true) {
-			if (curr == null) break;
-			InstructionHandle next = curr.getNext();
-    		if (curr.getInstruction() instanceof NOP) {
-    			InstructionTargeter[] targeters = curr.getTargeters();
-    			if (targeters != null) {
-    				for (int i = 0, len = targeters.length; i < len; i++) {
-						InstructionTargeter targeter = targeters[i];
-						targeter.updateTarget(curr, next);
-    				}
-    			}
-				try {
-					body.delete(curr);
-				} catch (TargetLostException e) {
-				}
-    		}
-			curr = next;
-    	}
-	}
+	/** This proedure should not currently be used.
+	 */
+//	public void killNops() {
+//    	InstructionHandle curr = body.getStart();
+//    	while (true) {
+//			if (curr == null) break;
+//			InstructionHandle next = curr.getNext();
+//    		if (curr.getInstruction() instanceof NOP) {
+//    			InstructionTargeter[] targeters = curr.getTargeters();
+//    			if (targeters != null) {
+//    				for (int i = 0, len = targeters.length; i < len; i++) {
+//						InstructionTargeter targeter = targeters[i];
+//						targeter.updateTarget(curr, next);
+//    				}
+//    			}
+//				try {
+//					body.delete(curr);
+//				} catch (TargetLostException e) {
+//				}
+//    		}
+//			curr = next;
+//    	}
+//	}
 
     private static InstructionHandle remap(InstructionHandle ih, Map map) {
         while (true) {
