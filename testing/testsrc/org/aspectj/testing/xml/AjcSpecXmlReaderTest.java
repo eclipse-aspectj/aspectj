@@ -62,7 +62,8 @@ public class AjcSpecXmlReaderTest extends TestCase {
     /** test that all AjcSpecXmlReader.me.expectedProperties() are bean-writable */
     public void testBeanInfo() throws IntrospectionException {
         AjcSpecXmlReader me = AjcSpecXmlReader.getReader();
-        AjcSpecXmlReader.BProps[] expected = me.expectedProperties();
+        AjcSpecXmlReader.BProps[] expected
+            = AjcSpecXmlReader.expectedProperties();
         PropertyDescriptor[] des;
         for (int i = 0; i < expected.length; i++) {
             Class clazz = expected[i].cl;
