@@ -8,52 +8,32 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
   end public void <init>()
 
   public static void main(String[]):
-    method-execution(void DynamicHelloWorld.main(java.lang.String[]))
-    | catch java.lang.UnsupportedOperationException -> E0
-    | |             NEW DynamicHelloWorld   (line 12)
-    | |             DUP
-    | | constructor-call(void DynamicHelloWorld.<init>())
-    | | |           INVOKESPECIAL DynamicHelloWorld.<init> ()V
-    | | constructor-call(void DynamicHelloWorld.<init>())
-    | |             LDC "hello"
-    | | field-get(java.util.List java.util.Collections.EMPTY_LIST)
-    | | |           GETSTATIC java.util.Collections.EMPTY_LIST Ljava/util/List;
-    | | field-get(java.util.List java.util.Collections.EMPTY_LIST)
-    | | method-call(java.lang.String DynamicHelloWorld.doit(java.lang.String, java.util.List))
-    | | |           INVOKEVIRTUAL DynamicHelloWorld.doit (Ljava/lang/String;Ljava/util/List;)Ljava/lang/String;
-    | | method-call(java.lang.String DynamicHelloWorld.doit(java.lang.String, java.util.List))
-    | |             POP
-    | |             GOTO L0
-    | catch java.lang.UnsupportedOperationException -> E0
-    |           E0: ASTORE_1   (line 13)
-    | field-get(java.io.PrintStream java.lang.System.out)
-    | |             GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 14)
-    | field-get(java.io.PrintStream java.lang.System.out)
-    |               NEW java.lang.StringBuffer
+    catch java.lang.UnsupportedOperationException -> E0
+    |               NEW DynamicHelloWorld   (line 12)
     |               DUP
-    |               LDC "expected and caught: "
-    | constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
-    | |             INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
-    | constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
-    |               ALOAD_1     // java.lang.UnsupportedOperationException t
-    | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))
-    | |             INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/Object;)Ljava/lang/StringBuffer;
-    | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))
-    | method-call(java.lang.String java.lang.StringBuffer.toString())
-    | |             INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;
-    | method-call(java.lang.String java.lang.StringBuffer.toString())
-    | method-call(void java.io.PrintStream.println(java.lang.String))
-    | |             INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
-    | method-call(void java.io.PrintStream.println(java.lang.String))
-    |               RETURN   (line 15)
-    |           L0: NEW java.lang.RuntimeException   (line 17)
-    |               DUP
-    |               LDC "should have caught exception"
-    | constructor-call(void java.lang.RuntimeException.<init>(java.lang.String))
-    | |             INVOKESPECIAL java.lang.RuntimeException.<init> (Ljava/lang/String;)V
-    | constructor-call(void java.lang.RuntimeException.<init>(java.lang.String))
-    |               ATHROW
-    method-execution(void DynamicHelloWorld.main(java.lang.String[]))
+    |               INVOKESPECIAL DynamicHelloWorld.<init> ()V
+    |               LDC "hello"
+    |               GETSTATIC java.util.Collections.EMPTY_LIST Ljava/util/List;
+    |               INVOKEVIRTUAL DynamicHelloWorld.doit (Ljava/lang/String;Ljava/util/List;)Ljava/lang/String;
+    |               POP
+    |               GOTO L0
+    catch java.lang.UnsupportedOperationException -> E0
+                E0: ASTORE_1   (line 13)
+                    GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 14)
+                    NEW java.lang.StringBuffer
+                    DUP
+                    LDC "expected and caught: "
+                    INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
+                    ALOAD_1     // java.lang.UnsupportedOperationException t
+                    INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/Object;)Ljava/lang/StringBuffer;
+                    INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;
+                    INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+                    RETURN   (line 15)
+                L0: NEW java.lang.RuntimeException   (line 17)
+                    DUP
+                    LDC "should have caught exception"
+                    INVOKESPECIAL java.lang.RuntimeException.<init> (Ljava/lang/String;)V
+                    ATHROW
   end public static void main(String[])
 
   String doit(String, java.util.List):
@@ -86,14 +66,10 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
   static final String doit_aroundBody0(DynamicHelloWorld, String, java.util.List):
                     ALOAD_2   (line 21)
                     ALOAD_1
-    method-call(boolean java.util.List.add(java.lang.Object))
-    |               INVOKEINTERFACE java.util.List.add (Ljava/lang/Object;)Z
-    method-call(boolean java.util.List.add(java.lang.Object))
+                    INVOKEINTERFACE java.util.List.add (Ljava/lang/Object;)Z
                     POP
                     ALOAD_2   (line 22)
-    method-call(java.lang.String java.lang.Object.toString())
-    |               INVOKEVIRTUAL java.lang.Object.toString ()Ljava/lang/String;
-    method-call(java.lang.String java.lang.Object.toString())
+                    INVOKEVIRTUAL java.lang.Object.toString ()Ljava/lang/String;
                     ARETURN
   end static final String doit_aroundBody0(DynamicHelloWorld, String, java.util.List)
 
