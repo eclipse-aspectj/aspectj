@@ -137,6 +137,9 @@ public class BcelWeaver implements IWeaver {
 	}
 
 
+	// The ANT copy task should be used to copy resources across.
+	private final static boolean CopyResourcesFromInpathDirectoriesToOutput=false;
+	
 	/**
 	 * Add any .class files in the directory to the outdir.  Anything other than .class files in
 	 * the directory (or its subdirectories) are considered resources and are also copied. 
@@ -168,8 +171,10 @@ public class BcelWeaver implements IWeaver {
 				// System.err.println("BCELWeaver: processing class from input directory "+classFile);
 				this.addClassFile(classFile);
 			} else {
+			  if (CopyResourcesFromInpathDirectoriesToOutput) {
 				// System.err.println("BCELWeaver: processing resource from input directory "+filename);
 				addResource(filename,classFile);
+			  }
 			}
 			fis.close();
 		}

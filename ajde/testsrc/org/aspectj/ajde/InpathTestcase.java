@@ -73,9 +73,10 @@ public class InpathTestcase extends AjdeTestCase {
 
 		Set expectedOutputJarContents = new HashSet();
 		// From indir1
-		expectedOutputJarContents.add("META-INF/MANIFEST.MF");
-		expectedOutputJarContents.add("META-INF/test.xml");
-		expectedOutputJarContents.add("test/test.props");
+// If we don't copy resources, these next three files won't make it.
+//		expectedOutputJarContents.add("META-INF/MANIFEST.MF");
+//		expectedOutputJarContents.add("META-INF/test.xml");
+//		expectedOutputJarContents.add("test/test.props");
 		expectedOutputJarContents.add("test/TestProperties.class");
 		// From src
 		expectedOutputJarContents.add("Main.class");
@@ -107,9 +108,10 @@ public class InpathTestcase extends AjdeTestCase {
 
 		Set expectedBindirContents = new HashSet();
 		// From indir1
-		expectedBindirContents.add("META-INF/MANIFEST.MF");
-		expectedBindirContents.add("META-INF/test.xml");
-		expectedBindirContents.add("test/test.props");
+// If we don't copy resources, these next three files won't make it
+//		expectedBindirContents.add("META-INF/MANIFEST.MF");
+//		expectedBindirContents.add("META-INF/test.xml");
+//		expectedBindirContents.add("test/test.props");
 		expectedBindirContents.add("test/TestProperties.class");
 		// From src
 		expectedBindirContents.add("Main.class");
@@ -149,7 +151,9 @@ public class InpathTestcase extends AjdeTestCase {
 		Set expectedOutputJarContents = new HashSet();
 		// From indir1
 		expectedOutputJarContents.add("example/HelloWorld.class");
-		expectedOutputJarContents.add("example/HelloWorld.java");
+
+//		If we don't copy resources, this file won't make it
+//		expectedOutputJarContents.add("example/HelloWorld.java");
 		// From src
 		expectedOutputJarContents.add("Aspect.class");
 
@@ -201,7 +205,9 @@ public class InpathTestcase extends AjdeTestCase {
 
 		// From indir1
 		expectedBindirContents.add("example/HelloWorld.class");
-		expectedBindirContents.add("example/HelloWorld.java");
+
+//		If we don't copy resources, this file won't make it
+//		expectedBindirContents.add("example/HelloWorld.java");
 		// From injar.jar
 		expectedBindirContents.add("props/resources.properties");
 		// From src
