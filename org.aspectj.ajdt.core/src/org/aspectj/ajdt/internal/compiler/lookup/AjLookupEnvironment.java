@@ -18,7 +18,6 @@ import java.util.*;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.*;
-import org.aspectj.weaver.bcel.BcelTypeMunger;
 import org.aspectj.weaver.patterns.*;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.env.IBinaryType;
@@ -155,6 +154,12 @@ public class AjLookupEnvironment extends LookupEnvironment {
 	
 	
 	private void weaveInterTypeDeclarations(SourceTypeBinding sourceType, Collection typeMungers, Collection declareParents, boolean skipInners) {
+//		if (new String(sourceType.sourceName()).equals("Target")) {
+//			Thread.currentThread().dumpStack();
+//		}
+//		
+//		System.out.println("weaving types: " + new String(sourceType.sourceName()));
+//		System.out.println("  mungers: " + typeMungers);
 		ResolvedTypeX onType = factory.fromEclipse(sourceType);
 		onType.clearInterTypeMungers();
 		
@@ -171,7 +176,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		
 		for (Iterator i = onType.getInterTypeMungers().iterator(); i.hasNext();) {
 			EclipseTypeMunger munger = (EclipseTypeMunger) i.next();
-			//System.err.println("applying: " + munger + " to " + new String(sourceType.sourceName));
+			//System.out.println("applying: " + munger + " to " + new String(sourceType.sourceName));
 			munger.munge(sourceType);
 		}
 		

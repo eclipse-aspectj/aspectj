@@ -95,114 +95,114 @@ public class AjBuildManagerTest extends TestCase {
 	
 
 	//XXX add test for resource deltas
-
-	public void testUpdateBuildConfig() {
-		final File FILE_1 = new File("testdata/testclasses/Temp1.java");
-		final File FILE_2 = new File("testdata/testclasses/Temp2.java");
-		final File FILE_3 = new File("testdata/testclasses/Temp3.java");
-		List files = new ArrayList();
-		files.add(FILE_1);
-		files.add(FILE_2);
-		
-		AjBuildManager manager = new AjBuildManager(messageWriter);
-		AjBuildConfig buildConfig = new AjBuildConfig();
-		manager.buildConfig = buildConfig;
-		buildConfig.setFiles(files);
-		
-		manager.updateBuildConfig(buildConfig);
-		assertTrue("no change", manager.deletedFiles.isEmpty());
-		
-		AjBuildConfig newConfig = new AjBuildConfig();
-		newConfig.getFiles().add(FILE_1);
-		newConfig.getFiles().add(FILE_2);
-		newConfig.getFiles().add(FILE_3);
-		manager.updateBuildConfig(newConfig);
-		assertTrue("added file", manager.deletedFiles.isEmpty());
-		assertTrue(manager.addedFiles.size() == 1);
-		assertTrue(manager.addedFiles.contains(FILE_3));
-		
-		newConfig = new AjBuildConfig();
-		newConfig.getFiles().add(FILE_3);
-		manager.updateBuildConfig(newConfig);
-		assertTrue("deleted 2 files", manager.addedFiles.isEmpty());
-		assertTrue(manager.deletedFiles.size() == 2);
-		assertTrue(manager.deletedFiles.contains(FILE_1));		
-
-		newConfig = new AjBuildConfig();
-		newConfig.getFiles().add(FILE_2);
-		manager.updateBuildConfig(newConfig);
-		assertTrue("added file", manager.addedFiles.size() == 1);
-		assertTrue("deleted file", manager.deletedFiles.size() == 1);
-		assertTrue(manager.deletedFiles.size() == 1);
-		assertTrue(manager.addedFiles.contains(FILE_2));	
-		assertTrue(manager.deletedFiles.contains(FILE_3));
-	}	
-
-	/**
-	 * Pretends that the files 'have been' modified in the future and waits.  
-	 * Tests:
-	 * 1) no change, 
-	 * 2) added file, 
-	 * 3) removed file 
-	 * 
-	 * XXX should just test modified
-	 */ 
-	public void testGetModifiedFiles() throws IOException, InterruptedException {
-		final File TEMP_1 = new File("testdata/testclasses/TempChanged.java");
-		final File EXISTS_2 = new File("testdata/testclasses/p1/Foo.java");
-		final File NEW = new File("testdata/testclasses/TempNew.java");
-		NEW.delete();
-		touch(TEMP_1, false);
-		List files = new ArrayList();
-		files.add(TEMP_1);
-		files.add(EXISTS_2);
-		
-		assertTrue("input files", TEMP_1.exists() && EXISTS_2.exists());
-		assertTrue("new file", !NEW.exists());
-
-		Thread.sleep(100);
-		long lastBuildTime = System.currentTimeMillis();
-		
-		AjBuildManager manager = new AjBuildManager(messageWriter);
-		manager.buildConfig = new AjBuildConfig();
-		manager.buildConfig.setFiles(files);
-		Collection changedFiles = manager.getModifiedFiles(lastBuildTime);
-		assertTrue("nothing changed: " + changedFiles, changedFiles.isEmpty());
-
-		lastBuildTime = System.currentTimeMillis();
-		Thread.sleep(100);
-	
-		touch(NEW, false);
-
-		//NEW.createNewFile();
-		files.add(NEW);
-		changedFiles = manager.getModifiedFiles(lastBuildTime);
-		assertTrue("new file: " + changedFiles, changedFiles.contains(NEW));
-		  
-		lastBuildTime = System.currentTimeMillis();
-		Thread.sleep(100);
-
-		files.remove(NEW);
-		changedFiles = manager.getModifiedFiles(lastBuildTime);
-		assertTrue("nothing changed", changedFiles.isEmpty());
-		
-		lastBuildTime = System.currentTimeMillis();
-		Thread.sleep(100);
-		
-		touch(TEMP_1, true);
-		changedFiles = manager.getModifiedFiles(lastBuildTime);
-		assertTrue("touched file: " + changedFiles, changedFiles.contains(TEMP_1));
-		
-		lastBuildTime = System.currentTimeMillis();
-		Thread.sleep(100);
-
-		files.remove(NEW);
-		changedFiles = manager.getModifiedFiles(lastBuildTime);
-		assertTrue("nothing changed", changedFiles.isEmpty());
-		
-		TEMP_1.delete();
-		NEW.delete();
-	}
+//
+//	public void testUpdateBuildConfig() {
+//		final File FILE_1 = new File("testdata/testclasses/Temp1.java");
+//		final File FILE_2 = new File("testdata/testclasses/Temp2.java");
+//		final File FILE_3 = new File("testdata/testclasses/Temp3.java");
+//		List files = new ArrayList();
+//		files.add(FILE_1);
+//		files.add(FILE_2);
+//		
+//		AjBuildManager manager = new AjBuildManager(messageWriter);
+//		AjBuildConfig buildConfig = new AjBuildConfig();
+//		manager.buildConfig = buildConfig;
+//		buildConfig.setFiles(files);
+//		
+//		manager.updateBuildConfig(buildConfig);
+//		assertTrue("no change", manager.deletedFiles.isEmpty());
+//		
+//		AjBuildConfig newConfig = new AjBuildConfig();
+//		newConfig.getFiles().add(FILE_1);
+//		newConfig.getFiles().add(FILE_2);
+//		newConfig.getFiles().add(FILE_3);
+//		manager.updateBuildConfig(newConfig);
+//		assertTrue("added file", manager.deletedFiles.isEmpty());
+//		assertTrue(manager.addedFiles.size() == 1);
+//		assertTrue(manager.addedFiles.contains(FILE_3));
+//		
+//		newConfig = new AjBuildConfig();
+//		newConfig.getFiles().add(FILE_3);
+//		manager.updateBuildConfig(newConfig);
+//		assertTrue("deleted 2 files", manager.addedFiles.isEmpty());
+//		assertTrue(manager.deletedFiles.size() == 2);
+//		assertTrue(manager.deletedFiles.contains(FILE_1));		
+//
+//		newConfig = new AjBuildConfig();
+//		newConfig.getFiles().add(FILE_2);
+//		manager.updateBuildConfig(newConfig);
+//		assertTrue("added file", manager.addedFiles.size() == 1);
+//		assertTrue("deleted file", manager.deletedFiles.size() == 1);
+//		assertTrue(manager.deletedFiles.size() == 1);
+//		assertTrue(manager.addedFiles.contains(FILE_2));	
+//		assertTrue(manager.deletedFiles.contains(FILE_3));
+//	}	
+//
+//	/**
+//	 * Pretends that the files 'have been' modified in the future and waits.  
+//	 * Tests:
+//	 * 1) no change, 
+//	 * 2) added file, 
+//	 * 3) removed file 
+//	 * 
+//	 * XXX should just test modified
+//	 */ 
+//	public void testGetModifiedFiles() throws IOException, InterruptedException {
+//		final File TEMP_1 = new File("testdata/testclasses/TempChanged.java");
+//		final File EXISTS_2 = new File("testdata/testclasses/p1/Foo.java");
+//		final File NEW = new File("testdata/testclasses/TempNew.java");
+//		NEW.delete();
+//		touch(TEMP_1, false);
+//		List files = new ArrayList();
+//		files.add(TEMP_1);
+//		files.add(EXISTS_2);
+//		
+//		assertTrue("input files", TEMP_1.exists() && EXISTS_2.exists());
+//		assertTrue("new file", !NEW.exists());
+//
+//		Thread.sleep(100);
+//		long lastBuildTime = System.currentTimeMillis();
+//		
+//		AjBuildManager manager = new AjBuildManager(messageWriter);
+//		manager.buildConfig = new AjBuildConfig();
+//		manager.buildConfig.setFiles(files);
+//		Collection changedFiles = manager.getModifiedFiles(lastBuildTime);
+//		assertTrue("nothing changed: " + changedFiles, changedFiles.isEmpty());
+//
+//		lastBuildTime = System.currentTimeMillis();
+//		Thread.sleep(100);
+//	
+//		touch(NEW, false);
+//
+//		//NEW.createNewFile();
+//		files.add(NEW);
+//		changedFiles = manager.getModifiedFiles(lastBuildTime);
+//		assertTrue("new file: " + changedFiles, changedFiles.contains(NEW));
+//		  
+//		lastBuildTime = System.currentTimeMillis();
+//		Thread.sleep(100);
+//
+//		files.remove(NEW);
+//		changedFiles = manager.getModifiedFiles(lastBuildTime);
+//		assertTrue("nothing changed", changedFiles.isEmpty());
+//		
+//		lastBuildTime = System.currentTimeMillis();
+//		Thread.sleep(100);
+//		
+//		touch(TEMP_1, true);
+//		changedFiles = manager.getModifiedFiles(lastBuildTime);
+//		assertTrue("touched file: " + changedFiles, changedFiles.contains(TEMP_1));
+//		
+//		lastBuildTime = System.currentTimeMillis();
+//		Thread.sleep(100);
+//
+//		files.remove(NEW);
+//		changedFiles = manager.getModifiedFiles(lastBuildTime);
+//		assertTrue("nothing changed", changedFiles.isEmpty());
+//		
+//		TEMP_1.delete();
+//		NEW.delete();
+//	}
 	
 	// don't do delta's anymore
 //	public void testMakeDeltas() throws IOException, InterruptedException {

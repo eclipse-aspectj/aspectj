@@ -31,9 +31,12 @@ import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 
 
 public class EclipseTypeMunger extends ConcreteTypeMunger {
-	protected ReferenceBinding targetBinding = null;
+	private ResolvedTypeX targetTypeX;
+	//protected ReferenceBinding targetBinding = null;
 	private AbstractMethodDeclaration sourceMethod;
 	private EclipseFactory world;
+	private ISourceLocation sourceLocation;
+	
 
 	public EclipseTypeMunger(EclipseFactory world, ResolvedTypeMunger munger, ResolvedTypeX aspectType,
 								AbstractMethodDeclaration sourceMethod)
@@ -41,8 +44,13 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 		super(munger, aspectType);
 		this.world = world;
 		this.sourceMethod = sourceMethod;
-		TypeX targetTypeX = munger.getSignature().getDeclaringType();
-		targetBinding = (ReferenceBinding)world.makeTypeBinding(targetTypeX);
+		if (sourceMethod != null) {
+			this.sourceLocation =
+				new EclipseSourceLocation(sourceMethod.compilationResult, 
+						sourceMethod.sourceStart, sourceMethod.sourceEnd);
+		}
+		targetTypeX = munger.getSignature().getDeclaringType().resolve(world.getWorld());
+		//targetBinding = (ReferenceBinding)world.makeTypeBinding(targetTypeX);
 	}
 	
 	public static boolean supportsKind(ResolvedTypeMunger.Kind kind) {
@@ -60,7 +68,10 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 	 * i.e. adds Method|FieldBindings, plays with inheritance, ...
 	 */
 	public boolean munge(SourceTypeBinding sourceType) {
-		if (sourceType != targetBinding) return false; //??? move this test elsewhere
+		if (!world.fromEclipse(sourceType).equals(targetTypeX)) return false; //??? move this test elsewhere
+		//System.out.println("munging: " + sourceType);
+//		System.out.println("match: " + world.fromEclipse(sourceType) +
+//				" with " + targetTypeX);
 		if (munger.getKind() == ResolvedTypeMunger.Field) {
 			mungeNewField(sourceType, (NewFieldTypeMunger)munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.Method) {
@@ -100,7 +111,7 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 	}
 
 	private void mungeNewField(SourceTypeBinding sourceType, NewFieldTypeMunger munger) {		
-		if (shouldTreatAsPublic() && !targetBinding.isInterface()) {
+		if (shouldTreatAsPublic() && !targetTypeX.isInterface()) {
 			FieldBinding binding = world.makeFieldBinding(munger.getSignature());
 			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeField(binding);
 			//classScope.referenceContext.binding.addField(binding);
@@ -132,8 +143,18 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 	}
 	
 	public ISourceLocation getSourceLocation() {
-		return new EclipseSourceLocation(sourceMethod.compilationResult, 
-					sourceMethod.sourceStart, sourceMethod.sourceEnd);
+		return sourceLocation;
+	}
+
+	public void setSourceLocation(ISourceLocation sourceLocation) {
+		this.sourceLocation = sourceLocation;
+	}
+
+	/**
+	 * @return AbstractMethodDeclaration
+	 */
+	public AbstractMethodDeclaration getSourceMethod() {
+		return sourceMethod;
 	}
 
 }

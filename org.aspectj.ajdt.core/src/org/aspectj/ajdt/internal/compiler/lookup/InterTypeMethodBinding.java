@@ -59,6 +59,8 @@ public class InterTypeMethodBinding extends MethodBinding {
 
 	//XXX this is identical to InterTypeFieldBinding
 	public boolean canBeSeenBy(TypeBinding receiverType, InvocationSite invocationSite, Scope scope) {
+		scope.compilationUnitScope().recordTypeReference(declaringClass);
+		
 		if (isPublic()) return true;	
 	
 		SourceTypeBinding invocationType = scope.invocationType();

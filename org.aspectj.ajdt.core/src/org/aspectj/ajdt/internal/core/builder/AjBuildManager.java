@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,18 +72,13 @@ public class AjBuildManager {
 	
 	private StructureModel structureModel;
 	public AjBuildConfig buildConfig;
+	
+	AjState state = new AjState(this);
     
-	private BcelWeaver bcelWeaver;
+	BcelWeaver bcelWeaver;
 	public BcelWorld bcelWorld;
 	
 	public CountingMessageHandler handler;
-
-	long lastStructuralBuildTime;
-
-	Set addedFiles;
- 	Set deletedFiles;
- 	
- 	List addedClassFiles;
 
 	public AjBuildManager(IMessageHandler holder) {
 		super();
@@ -102,6 +98,7 @@ public class AjBuildManager {
  
 		try {
 			setBuildConfig(buildConfig);
+			state.prepareForNextBuild(buildConfig);
 			
 			String check = checkRtJar(buildConfig);
 			if (check != null) {
@@ -115,27 +112,22 @@ public class AjBuildManager {
             if (handler.hasErrors()) {
                 return false;
             }
-//            initJavaBuilder(counter);
-//            if (counter.hasErrors()) {
-//                return false;
-//            }
 
 			if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {  
 				bcelWorld.setModel(StructureModelManager.INSTANCE.getStructureModel());
 			}
 			
-			performCompilation();
-			
-//			BatchBuilder builder = new BatchBuilder(javaBuilder, counter);
-//			State newState = builder.run();
+			performCompilation(buildConfig.getFiles());
+
 			if (buildConfig.isEmacsSymMode()) {
 				new org.aspectj.ajdt.internal.core.builder.EmacsStructureModelManager().externalizeModel();
 			}
-//			System.err.println("check error: " + counter + ", " + 
-//					counter.numMessages(IMessage.ERROR) + ", " + counter.numMessages(IMessage.FAIL, false));
+
 			if (handler.hasErrors()) {
                 return false;
             }
+            
+            state.successfulCompile(buildConfig);  //!!! a waste of time when not incremental
 
 			boolean weaved = weaveAndGenerateClassFiles();
 			
@@ -169,8 +161,61 @@ public class AjBuildManager {
 	}
 
 	//XXX fake incremental
-	public boolean incrementalBuild(AjBuildConfig buildConfig, IMessageHandler messageHandler) throws IOException {
-		return batchBuild(buildConfig, messageHandler);
+	public boolean incrementalBuild(AjBuildConfig buildConfig, IMessageHandler baseHandler) throws IOException {
+		if (!state.prepareForNextBuild(buildConfig)) {
+			return batchBuild(buildConfig, baseHandler);
+		}
+		
+		//!!! too much cut-and-paste from batchBuild
+		this.handler = CountingMessageHandler.makeCountingMessageHandler(baseHandler);
+ 
+		try {
+			setBuildConfig(buildConfig);
+
+			//setupModel();
+//			initBcelWorld(handler);
+//			if (handler.hasErrors()) {
+//				return false;
+//			}
+
+//			if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {  
+//				bcelWorld.setModel(StructureModelManager.INSTANCE.getStructureModel());
+//			}
+			int count = 0;
+			List filesToCompile;
+			while ( !(filesToCompile = state.getFilesToCompile(count == 0)).isEmpty() ) {
+				//if (count > 0) return batchBuild(buildConfig, baseHandler);  //??? only 1 try
+				performCompilation(filesToCompile);
+				
+				if (handler.hasErrors()) return false;
+				
+				if (count++ > 5) {
+					return batchBuild(buildConfig, baseHandler);
+				}
+			}
+			
+			//System.err.println("built in " + count + " cycles");
+
+//			if (buildConfig.isEmacsSymMode()) {
+//				new org.aspectj.ajdt.internal.core.builder.EmacsStructureModelManager().externalizeModel();
+//			}
+
+			if (handler.hasErrors()) {
+				return false;
+			}
+            
+			state.successfulCompile(buildConfig);
+
+			boolean weaved = weaveAndGenerateClassFiles();
+			
+			if (buildConfig.isGenerateModelMode()) {
+				StructureModelManager.INSTANCE.fireModelUpdated();  
+			}
+			return !handler.hasErrors();
+		} finally {
+			handler = null;        
+		}		
+		
 	}
 
 //        if (javaBuilder == null || javaBuilder.currentProject == null || javaBuilder.lastState == null) {
@@ -211,20 +256,7 @@ public class AjBuildManager {
 //            currentHandler = null;
 //        }
 //    
-//	}
-    
-
-	
-	void updateBuildConfig(AjBuildConfig newBuildConfig) {
-		Set oldFiles = new HashSet(buildConfig.getFiles());
-		Set newFiles = new HashSet(newBuildConfig.getFiles());
-		
-		addedFiles = new HashSet(newFiles);
-		addedFiles.removeAll(oldFiles);
-		deletedFiles = new HashSet(oldFiles);
-		deletedFiles.removeAll(newFiles);
-		setBuildConfig(newBuildConfig);		
-	}	
+//	}	
 		
 	private void initBcelWorld(IMessageHandler handler) throws IOException {
 		bcelWorld = new BcelWorld(buildConfig.getClasspath(), handler);
@@ -259,25 +291,18 @@ public class AjBuildManager {
 		return bcelWorld;
 	}
 	
-	void addAspectClassFilesToWeaver() throws IOException {
-		//System.out.println("added or changed: " + classFileCache.getAddedOrChanged());
-		
+	void addAspectClassFilesToWeaver(List addedClassFiles) throws IOException {
 		for (Iterator i = addedClassFiles.iterator(); i.hasNext(); ) {
 			UnwovenClassFile classFile = (UnwovenClassFile) i.next();
 			bcelWeaver.addClassFile(classFile);
 		}
-//		for (Iterator i = classFileCache.getDeleted().iterator(); i.hasNext(); ) {
-//			UnwovenClassFile classFile = (UnwovenClassFile) i.next();
-//			bcelWeaver.deleteClassFile(classFile.getClassName());
-//			classFile.deleteRealFile();
-//		}
 	}
 
 	public boolean weaveAndGenerateClassFiles() throws IOException {
 		handler.handleMessage(MessageUtil.info("weaving"));
 		if (progressListener != null) progressListener.setText("weaving aspects");
 		//!!! doesn't provide intermediate progress during weaving
-		addAspectClassFilesToWeaver();
+		addAspectClassFilesToWeaver(state.addedClassFiles);
 		if (buildConfig.isNoWeave()) {
 			if (buildConfig.getOutputJar() != null) {
 				bcelWeaver.dumpUnwoven(buildConfig.getOutputJar());
@@ -320,6 +345,7 @@ public class AjBuildManager {
 			defaultEncoding = null; //$NON-NLS-1$
 
 		for (int i = 0; i < fileCount; i++) {
+//			these tests are performed for AjBuildConfig
 //			char[] charName = filenames[i].toCharArray();
 //			if (knownFileNames.get(charName) != null) {
 //				MessageUtil.error(handler, "duplicate file " + filenames[i]);
@@ -330,7 +356,6 @@ public class AjBuildManager {
 //			if (!file.exists()) {
 //				MessageUtil.error(handler, "missing file " + filenames[i]);
 //			}
-	        // these tests are performed for AjBuildConfig
 			String encoding = encodings[i];
 			if (encoding == null)
 				encoding = defaultEncoding;
@@ -353,17 +378,12 @@ public class AjBuildManager {
 	}
     
     
-	public void performCompilation() {
-		List files = buildConfig.getFiles();
-		
+	public void performCompilation(List files) {
 		if (progressListener != null) {
 			compiledCount = 0;
 			sourceFileCount = files.size();
 			progressListener.setText("compiling source files");
 		}
-		
-		
-
 		//System.err.println("got files: " + files);
 		String[] filenames = new String[files.size()];
 		String[] encodings = new String[files.size()];
@@ -380,6 +400,10 @@ public class AjBuildManager {
 		
 		//System.out.println("compiling");
 		INameEnvironment environment = getLibraryAccess(classpaths, filenames);
+		
+		if (!state.classesFromName.isEmpty()) {
+			environment = new StatefulNameEnvironment(environment, state.classesFromName);
+		}
 		
 //		Compiler batchCompiler =
 //			new Compiler(
@@ -421,11 +445,7 @@ public class AjBuildManager {
 
 		CompilerOptions options = compiler.options;
 
-		// set the non-externally configurable options.
-		//options.setVerboseMode(verbose);
-		//TODO:  options.produceReferenceInfo(produceRefInfo);
-		
-		addedClassFiles = new ArrayList();
+		options.produceReferenceInfo(true); //TODO turn off when not needed
 		
 		compiler.compile(getCompilationUnits(filenames, encodings));
 		
@@ -463,8 +483,11 @@ public class AjBuildManager {
 	}
 
 	public void outputClassFiles(CompilationResult unitResult) {
-		//System.err.println("writing: " + new String(unitResult.fileName));
-		if (!((unitResult == null) || (unitResult.hasErrors() && !proceedOnError()))) {
+		if (unitResult == null) return;
+		
+		String sourceFileName = new String(unitResult.fileName);
+		if (!(unitResult.hasErrors() && !proceedOnError())) {
+			List unwovenClassFiles = new ArrayList();
 			Enumeration classFiles = unitResult.compiledTypes.elements();
 			while (classFiles.hasMoreElements()) {
 				ClassFile classFile = (ClassFile) classFiles.nextElement();
@@ -477,40 +500,27 @@ public class AjBuildManager {
 				}
 				filename = new File(destinationPath, filename).getPath();
 				//System.out.println("classfile: " + filename);
-				addedClassFiles.add(new UnwovenClassFile(filename, classFile.getBytes()));
+				unwovenClassFiles.add(new UnwovenClassFile(filename, classFile.getBytes()));
 			}
+			state.noteClassesFromFile(unitResult, sourceFileName, unwovenClassFiles);
+//			System.out.println("file: " + sourceFileName);
+//			for (int i=0; i < unitResult.simpleNameReferences.length; i++) {
+//				System.out.println("simple: " + new String(unitResult.simpleNameReferences[i]));
+//			}
+//			for (int i=0; i < unitResult.qualifiedReferences.length; i++) {
+//				System.out.println("qualified: " +
+//					new String(CharOperation.concatWith(unitResult.qualifiedReferences[i], '/')));
+//			}
+		} else {
+			state.noteClassesFromFile(null, sourceFileName, Collections.EMPTY_LIST);
 		}
 	}
-    
-    
-    
-    
     
 
 	private void setBuildConfig(AjBuildConfig buildConfig) {
 		this.buildConfig = buildConfig;
 		handler.reset();
 	}
-	
-	private Collection getModifiedFiles() {		
-		return getModifiedFiles(lastStructuralBuildTime);
-	}
-
-	Collection getModifiedFiles(long lastBuildTime) {
-		List ret = new ArrayList();
-		//not our job to account for new and deleted files
-		for (Iterator i = buildConfig.getFiles().iterator(); i.hasNext(); ) {
-			File file = (File)i.next();
-			
-			long modTime = file.lastModified();
-			//System.out.println("check: " + file + " mod " + modTime + " build " + lastBuildTime);			
-			if (modTime > lastBuildTime) {
-				ret.add(file);
-			} 
-		}
-		return ret;
-	}	
-	
 	
 	String makeClasspathString() {
 		if (buildConfig == null || buildConfig.getClasspath() == null) return "";
@@ -597,20 +607,6 @@ public class AjBuildManager {
 	public StructureModel getStructureModel() {
 		return structureModel;
 	}
-
-//	public void setBuildNotifier(BuildNotifier notifier) {
-//		buildNotifier = notifier;
-//	}
-    
-    /** callback for builders used only during build */
-    private boolean handleProblem(ICompilationUnit unit, IProblem problem) {
-        if (handler == null) {
-            throw new IllegalStateException("no current handler when handling "
-                + problem + " in " + unit);
-        }
-        IMessage message = EclipseAdapterUtils.makeMessage(unit, problem);
-        return handler.handleMessage(message);
-    }
     
 	public IProgressListener getProgressListener() {
 		return progressListener;
@@ -619,7 +615,5 @@ public class AjBuildManager {
 	public void setProgressListener(IProgressListener progressListener) {
 		this.progressListener = progressListener;
 	}
-
-
 }   // class AjBuildManager
 

@@ -50,6 +50,7 @@ public class InterTypeFieldBinding extends FieldBinding {
 	}
 	
 	public boolean canBeSeenBy(TypeBinding receiverType, InvocationSite invocationSite, Scope scope) {
+		scope.compilationUnitScope().recordTypeReference(declaringClass);
 		//System.err.println("canBeSeenBy: " + this + ", " + isPublic());
 		if (isPublic()) return true;	
 	

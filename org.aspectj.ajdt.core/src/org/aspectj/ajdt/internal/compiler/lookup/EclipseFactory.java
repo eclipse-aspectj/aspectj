@@ -140,21 +140,35 @@ public class EclipseFactory {
 	
 	public void finishTypeMungers() {
 		// make sure that type mungers are
-		finishedTypeMungers = new ArrayList();
+		Collection ret = new ArrayList();
 		Collection baseTypeMungers = 
 			getWorld().getCrosscuttingMembersSet().getTypeMungers();
 		for (Iterator i = baseTypeMungers.iterator(); i.hasNext(); ) {
 			ConcreteTypeMunger munger = (ConcreteTypeMunger) i.next();
 			EclipseTypeMunger etm = makeEclipseTypeMunger(munger);
-			if (etm != null) finishedTypeMungers.add(etm);
-		}		
+			if (etm != null) ret.add(etm);
+		}
+		finishedTypeMungers = ret;
 	}
 	
 	public EclipseTypeMunger makeEclipseTypeMunger(ConcreteTypeMunger concrete) {
-		if (concrete instanceof EclipseTypeMunger) return (EclipseTypeMunger)concrete;
+		//System.err.println("make munger: " + concrete);
+		//!!! can't do this if we want incremental to work right
+		//if (concrete instanceof EclipseTypeMunger) return (EclipseTypeMunger)concrete;
+		//System.err.println("   was not eclipse");
+		
 		
 		if (concrete.getMunger() != null && EclipseTypeMunger.supportsKind(concrete.getMunger().getKind())) {
-			return new EclipseTypeMunger(this, concrete.getMunger(), concrete.getAspectType(), null);
+			AbstractMethodDeclaration method = null;
+			if (concrete instanceof EclipseTypeMunger) {
+				method = ((EclipseTypeMunger)concrete).getSourceMethod();
+			}
+			EclipseTypeMunger ret = 
+				new EclipseTypeMunger(this, concrete.getMunger(), concrete.getAspectType(), method);
+			if (ret.getSourceLocation() == null) {
+				ret.setSourceLocation(concrete.getSourceLocation());
+			}
+			return ret;
 		} else {
 			return null;
 		}
