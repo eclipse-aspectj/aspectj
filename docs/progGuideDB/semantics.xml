@@ -1930,6 +1930,14 @@
         an error for <replaceable>OnType</replaceable> to be an interface.
       </para>
 
+	  <para>
+	    Inter-type declared constructors cannot be used to assign a
+	    value to a final variable declared in <replaceable>OnType</replaceable>.
+	    This limitation significantly increases the ability to both understand
+	    and compile the <replaceable>OnType</replaceable> class and the
+	    declaring aspect separately.
+	  </para>
+
       <para>
         Note that in the Java language, classes that define no constructors
         have an implicit no-argument constructor that just calls
