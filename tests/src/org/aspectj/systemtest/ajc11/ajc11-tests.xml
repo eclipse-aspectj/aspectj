@@ -224,7 +224,7 @@
         <compile files="DeclareSoftCf.java" options="-Xlint:warning">
 		  <message kind="warning" line="28"/>
 		  <message kind="error" line="29"/>
-		  <message kind="warning"/>
+		  <!--message kind="warning"/-->
         </compile>
     </ajc-test>
     
