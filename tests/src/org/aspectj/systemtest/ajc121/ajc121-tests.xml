@@ -362,18 +362,18 @@
 			<message kind="warning" line="5" text="static init"/>
 			<message kind="warning" line="12" text="cons execution"/>
 			<message kind="warning" line="12" text="pre-init"/>
-			<message kind="warning" line="12" text="init"/>
+			<message kind="warning" line="12" text="just-init"/>
 			<message kind="warning" line="16" text="cons execution"/>
-			<message kind="warning" line="16" text="init"/>
+			<message kind="warning" line="16" text="just-init"/>
 			<message kind="warning" line="16" text="pre-init"/>
 			<message kind="warning" line="20" text="method execution"/>
 			<message kind="warning" line="24" text="method execution"/>
 			<message kind="warning" line="28" text="method execution"/>
 			<message kind="warning" line="35" text="static init"/>
-			<message kind="warning" line="35" text="init"/>
+			<message kind="warning" line="35" text="just-init"/>
 			<message kind="warning" line="35" text="pre-init"/>
 			<message kind="warning" line="39" text="pre-init"/>
-			<message kind="warning" line="39" text="init"/>
+			<message kind="warning" line="39" text="just-init"/>
 			<message kind="warning" line="39" text="static init"/>
 			<message kind="warning" line="47" text="advice"/>
 		</compile>

@@ -41,7 +41,7 @@ aspect CheckLineNumbers {  // L39
 	declare warning : execution(* TestSourceLines.*(..)) : "method execution";
 	declare warning : execution(TestSourceLines.new(..)) : "cons execution";
 	declare warning : staticinitialization(*) : "static init";
-	declare warning : initialization(*.new(..)) : "init";
+	declare warning : initialization(*.new(..)) : "just-init";
 	declare warning : preinitialization(*.new(..)) : "pre-init";
 	
 	before() : execution(* TestSourceLines.*(..)) {  // L47
