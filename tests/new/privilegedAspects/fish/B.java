@@ -1,5 +1,4 @@
 package fish;
-import main.Main;
 
 privileged aspect B {
     private static String privateStatic = "B's private";
@@ -7,8 +6,8 @@ privileged aspect B {
     //introduction PrivateClass {
     public void PrivateClass.fooB() {
         b--;
-        Main.doThang("B: " + b);
-        Main.doThang("B: " + b());
+        main.Main.doThang("B: " + b);
+        main.Main.doThang("B: " + b());
 
 	System.out.println(privateStatic + "::" + FooC.privateStatic);
     }
@@ -17,8 +16,8 @@ privileged aspect B {
     
     before(PrivateClass obj): call(void PrivateClass.goo()) && target(obj) {
 	obj.b--;
-	Main.doThang("B: " + obj.b);
-	Main.doThang("B: " + obj.b());
+	main.Main.doThang("B: " + obj.b);
+	main.Main.doThang("B: " + obj.b());
     }
 }
 

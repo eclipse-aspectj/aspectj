@@ -1,5 +1,4 @@
 package fish;
-import main.Main;
 
 public class PrivateClass {
     private int a = 999;
@@ -18,14 +17,14 @@ privileged aspect A {
     
     public void PrivateClass.fooA() {
         a--;
-        Main.doThang("A: " + a);
-        Main.doThang("A: " + a());
+        main.Main.doThang("A: " + a);
+        main.Main.doThang("A: " + a());
     }
     
     before(PrivateClass obj): call(void PrivateClass.goo()) && target(obj) {
 	obj.a--;
-	Main.doThang("A: " + obj.a);
-	Main.doThang("A: " + obj.a());
+	main.Main.doThang("A: " + obj.a);
+	main.Main.doThang("A: " + obj.a());
     }
 }
 
