@@ -19,6 +19,8 @@ aspect A {
     
 }
 
+// XXX platform invariants: J2ME, J2EE, AWT thread, ...
+
 /* @author Wes Isberg */
 
 aspect TypeConstraints {
