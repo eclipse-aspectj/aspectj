@@ -17,6 +17,7 @@
    <!ATTLIST compile files CDATA #IMPLIED >
    <!ATTLIST compile argfiles CDATA #IMPLIED >
    <!ATTLIST compile aspectpath CDATA #IMPLIED >
+   <!ATTLIST compile classpath CDATA #IMPLIED >
    <!ATTLIST compile options CDATA #IMPLIED >
 
    <!ELEMENT inc-compile (dir-changes*,message*)>
