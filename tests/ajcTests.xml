@@ -7172,4 +7172,10 @@
         <compile files="TraceWithInnerV2.aj"/>
         <run class="Main"/>
     </ajc-test>
+    
+	<ajc-test dir="bugs/protectedvf"
+		title="mail list VerifyError with protected access">
+		<compile files="main/Driver.java,main/p2/AbstractTest.aj,main/p1/ConcreteTest.aj"/>
+		<run class="main.Driver"/>
+	</ajc-test>
 </suite>

@@ -182,10 +182,14 @@ public class EclipseFactory {
 	}
 	
 	public static ResolvedMember makeResolvedMember(MethodBinding binding) {
+		return makeResolvedMember(binding, binding.declaringClass);
+	}
+
+	public static ResolvedMember makeResolvedMember(MethodBinding binding, TypeBinding declaringType) {
 		//System.err.println("member for: " + binding + ", " + new String(binding.declaringClass.sourceName));
 		ResolvedMember ret =  new ResolvedMember(
 			binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD,
-			fromBinding(binding.declaringClass),
+			fromBinding(declaringType),
 			binding.modifiers,
 			fromBinding(binding.returnType),
 			new String(binding.selector),
@@ -195,9 +199,13 @@ public class EclipseFactory {
 	}
 
 	public static ResolvedMember makeResolvedMember(FieldBinding binding) {
+		return makeResolvedMember(binding, binding.declaringClass);
+	}
+	
+	public static ResolvedMember makeResolvedMember(FieldBinding binding, TypeBinding receiverType) {
 		return new ResolvedMember(
 			Member.FIELD,
-			fromBinding(binding.declaringClass),
+			fromBinding(receiverType),
 			binding.modifiers,
 			fromBinding(binding.type),
 			new String(binding.name),

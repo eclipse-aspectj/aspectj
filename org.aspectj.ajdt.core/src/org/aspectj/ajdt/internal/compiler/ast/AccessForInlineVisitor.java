@@ -35,12 +35,14 @@ import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.ThisReference;
+import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 
 /**
  * Walks the body of around advice
@@ -75,29 +77,35 @@ public class AccessForInlineVisitor extends ASTVisitor {
 	
 	public void endVisit(SingleNameReference ref, BlockScope scope) {
 		if (ref.binding instanceof FieldBinding) {
-			ref.binding = getAccessibleField((FieldBinding)ref.binding);
+			ref.binding = getAccessibleField((FieldBinding)ref.binding, ref.actualReceiverType);
 		}
 	}
 
 	public void endVisit(QualifiedNameReference ref, BlockScope scope) {
-		//System.err.println("qref: " + ref + ", " + ref.binding.getClass().getName() + ", " + ref.codegenBinding.getClass().getName());
-		//System.err.println("   others: " + Arrays.asList(ref.otherBindings));
 		if (ref.binding instanceof FieldBinding) {
-			ref.binding = getAccessibleField((FieldBinding)ref.binding);
+			ref.binding = getAccessibleField((FieldBinding)ref.binding, ref.actualReceiverType);
 		}
-		if (ref.otherBindings != null) {
+		if (ref.otherBindings != null && ref.otherBindings.length > 0) {
+			TypeBinding receiverType;
+			if (ref.binding instanceof FieldBinding) {
+				receiverType = ((FieldBinding)ref.binding).type;
+			} else if (ref.binding instanceof VariableBinding) {
+				receiverType = ((VariableBinding)ref.binding).type;
+			} else {
+				//!!! understand and fix this case later
+				receiverType = ref.otherBindings[0].declaringClass;
+			}
+			
 			for (int i=0, len=ref.otherBindings.length; i < len; i++) {
-				if (ref.otherBindings[i] instanceof FieldBinding) {
-					ref.otherBindings[i] = getAccessibleField((FieldBinding)ref.otherBindings[i]);
-				}
+				FieldBinding binding = ref.otherBindings[i];
+				ref.otherBindings[i] = getAccessibleField(binding, receiverType);
+				receiverType = binding.type;
 			}
 		}
 	}
 
 	public void endVisit(FieldReference ref, BlockScope scope) {
-		if (ref.binding instanceof FieldBinding) {
-			ref.binding = getAccessibleField((FieldBinding)ref.binding);
-		}
+		ref.binding = getAccessibleField(ref.binding, ref.receiverType);
 	}
 	public void endVisit(MessageSend send, BlockScope scope) {
 		if (send instanceof Proceed) return;
@@ -105,10 +113,10 @@ public class AccessForInlineVisitor extends ASTVisitor {
 		
 		if (send.isSuperAccess() && !send.binding.isStatic()) {
 			send.receiver = new ThisReference(send.sourceStart, send.sourceEnd);
-			MethodBinding superAccessBinding = getSuperAccessMethod((MethodBinding)send.binding);
+			MethodBinding superAccessBinding = getSuperAccessMethod(send.binding);
 			AstUtil.replaceMethodBinding(send, superAccessBinding);
 		} else if (!isPublic(send.binding)) {
-			send.syntheticAccessor = getAccessibleMethod((MethodBinding)send.binding);
+			send.syntheticAccessor = getAccessibleMethod(send.binding, send.receiverType);
 		}
 	}
 	public void endVisit(AllocationExpression send, BlockScope scope) {
@@ -132,11 +140,11 @@ public class AccessForInlineVisitor extends ASTVisitor {
 		makePublic(ref.resolvedType); //getTypeBinding(scope));  //??? might be trouble
 	}
 	
-	private FieldBinding getAccessibleField(FieldBinding binding) {
+	private FieldBinding getAccessibleField(FieldBinding binding, TypeBinding receiverType) {
 		//System.err.println("checking field: " + binding);
 		if (!binding.isValidBinding()) return binding;
 		
-		makePublic(binding.declaringClass);
+		makePublic(receiverType);
 		if (isPublic(binding)) return binding;
 		if (binding instanceof PrivilegedFieldBinding) return binding;
 		if (binding instanceof InterTypeFieldBinding) return binding;
@@ -145,9 +153,9 @@ public class AccessForInlineVisitor extends ASTVisitor {
 			binding.modifiers = AstUtil.makePackageVisible(binding.modifiers);
 		}
 		
-		ResolvedMember m = EclipseFactory.makeResolvedMember(binding);
+		ResolvedMember m = EclipseFactory.makeResolvedMember(binding, receiverType);
 		if (inAspect.accessForInline.containsKey(m)) return (FieldBinding)inAspect.accessForInline.get(m);
-		FieldBinding ret = new InlineAccessFieldBinding(inAspect, binding);
+		FieldBinding ret = new InlineAccessFieldBinding(inAspect, binding, m);
 		
 		//System.err.println("   made accessor: " + ret);
 		
@@ -155,10 +163,10 @@ public class AccessForInlineVisitor extends ASTVisitor {
 		return ret;
 	}
 	
-	private MethodBinding getAccessibleMethod(MethodBinding binding) {
+	private MethodBinding getAccessibleMethod(MethodBinding binding, TypeBinding receiverType) {
 		if (!binding.isValidBinding()) return binding;
 		
-		makePublic(binding.declaringClass);  //???
+		makePublic(receiverType);  //???
 		if (isPublic(binding)) return binding;
 		if (binding instanceof InterTypeMethodBinding) return binding;
 
@@ -167,7 +175,7 @@ public class AccessForInlineVisitor extends ASTVisitor {
 		}
 
 		
-		ResolvedMember m = EclipseFactory.makeResolvedMember(binding);
+		ResolvedMember m = EclipseFactory.makeResolvedMember(binding, receiverType);
 		if (inAspect.accessForInline.containsKey(m)) return (MethodBinding)inAspect.accessForInline.get(m);
 		MethodBinding ret = world.makeMethodBinding(
 			AjcMemberMaker.inlineAccessMethodForMethod(inAspect.typeX, m)
@@ -226,6 +234,13 @@ public class AccessForInlineVisitor extends ASTVisitor {
 
 	public void endVisit(ClassLiteralAccess classLiteral, BlockScope scope) {
 		isInlinable = false;
+	}
+
+	public boolean visit(
+		TypeDeclaration localTypeDeclaration,
+		BlockScope scope) {
+		// we don't want to transform any local anonymous classes as they won't be inlined
+		return false;
 	}
 
 }

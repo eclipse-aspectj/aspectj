@@ -15,6 +15,7 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.ResolvedMember;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
@@ -40,17 +41,17 @@ public class InlineAccessFieldBinding extends FieldBinding {
 	
 	public FieldBinding baseField;
 	
-	public InlineAccessFieldBinding(AspectDeclaration inAspect, FieldBinding baseField) {
+	public InlineAccessFieldBinding(AspectDeclaration inAspect, FieldBinding baseField, ResolvedMember resolvedField) {
 		super(baseField, baseField.declaringClass);
 
 		this.reader = new SimpleSyntheticAccessMethodBinding(
 			inAspect.factory.makeMethodBinding(
 				AjcMemberMaker.inlineAccessMethodForFieldGet(
-					inAspect.typeX, EclipseFactory.makeResolvedMember(baseField)
+					inAspect.typeX, resolvedField
 			)));
 		this.writer = new SimpleSyntheticAccessMethodBinding(inAspect.factory.makeMethodBinding(
 				AjcMemberMaker.inlineAccessMethodForFieldSet(
-					inAspect.typeX, EclipseFactory.makeResolvedMember(baseField)
+					inAspect.typeX, resolvedField
 			)));
 			
 		this.constant = ASTNode.NotAConstant;

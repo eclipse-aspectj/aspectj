@@ -9,10 +9,10 @@ public class Driver{
 	}
 
 	private void doOtherStuff() {
-		System.out.println("doing other stuff");
+		//System.out.println("doing other stuff");
 	}
 
 	private void doStuff() {
-		System.out.println("doing stuff");
+		//System.out.println("doing stuff");
 	}
 }
