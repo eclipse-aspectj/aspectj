@@ -23,7 +23,7 @@
        2003 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated August 6, 2003.
+  <para>Last updated November 5, 2003.
   </para>
   <para>
    This FAQ covers AspectJ versions 1.0 and 1.1.
@@ -2960,6 +2960,23 @@ aspect A {
           for the IDE to determine how to increase available memory.
           </para>
         </answer>
+      </qandaentry> 
+      <qandaentry>
+        <question id="q:duplicateclass"
+            xreflabel="Q:Why do I get a message that my class is already defined?">
+          <para>
+            Why do I get a message that my class is already defined?
+          </para>
+        </question>
+        <answer>
+          <para>
+            Most commonly, a source file was specified twice on the command line
+            (e.g., directly and by a *.java entry in a .lst file).
+            However, sometimes you have defined a class in two files in the
+            same package, and you need to rename the class or change its 
+            scope.  You should get this message from any Java compiler.
+          </para>
+        </answer>
       </qandaentry>
       <qandaentry>
         <question id="q:ajcrecompile"
@@ -4172,6 +4189,7 @@ vmparam -Xmx384m
           Entries changed since the earlier September, 2003 version:
             <itemizedlist>
         <listitem><para><xref linkend="q:noaspectbound"/></para></listitem>
+        <listitem><para><xref linkend="q:duplicateclass"/></para></listitem>
             </itemizedlist>
           </para>
         </answer>
