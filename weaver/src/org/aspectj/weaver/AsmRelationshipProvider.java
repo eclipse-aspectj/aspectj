@@ -46,12 +46,14 @@ public class AsmRelationshipProvider {
 		String sourceHandle = ProgramElement.createHandleIdentifier(
 			checker.getSourceLocation().getSourceFile(),
 			checker.getSourceLocation().getLine(),
-			checker.getSourceLocation().getColumn());
+			checker.getSourceLocation().getColumn(),
+			checker.getSourceLocation().getOffset());
 			
 		String targetHandle = ProgramElement.createHandleIdentifier(
 			shadow.getSourceLocation().getSourceFile(),
 			shadow.getSourceLocation().getLine(),
-			shadow.getSourceLocation().getColumn());
+			shadow.getSourceLocation().getColumn(),
+			shadow.getSourceLocation().getOffset());
 
 		IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
 		if (sourceHandle != null && targetHandle != null) {
@@ -78,19 +80,22 @@ public class AsmRelationshipProvider {
 			sourceHandle = ProgramElement.createHandleIdentifier(
 										munger.getSourceLocation().getSourceFile(),
 										munger.getSourceLocation().getLine(),
-										munger.getSourceLocation().getColumn());
+										munger.getSourceLocation().getColumn(),
+										munger.getSourceLocation().getOffset());
 		} else {
 			sourceHandle = ProgramElement.createHandleIdentifier(
 							originatingAspect.getSourceLocation().getSourceFile(),
 							originatingAspect.getSourceLocation().getLine(),
-							originatingAspect.getSourceLocation().getColumn());
+							originatingAspect.getSourceLocation().getColumn(),
+							originatingAspect.getSourceLocation().getOffset());
 		}
 		if (originatingAspect.getSourceLocation() != null) {
 				
 			String targetHandle = ProgramElement.createHandleIdentifier(
 				onType.getSourceLocation().getSourceFile(),
 				onType.getSourceLocation().getLine(),
-				onType.getSourceLocation().getColumn());
+				onType.getSourceLocation().getColumn(),
+				onType.getSourceLocation().getOffset());
 				
 			IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
 			if (sourceHandle != null && targetHandle != null) {
@@ -107,7 +112,7 @@ public class AsmRelationshipProvider {
 	
 	public void addDeclareParentsRelationship(ISourceLocation decp,ResolvedTypeX targetType, List newParents) {
 
-		String sourceHandle = ProgramElement.createHandleIdentifier(decp.getSourceFile(),decp.getLine(),decp.getColumn());
+		String sourceHandle = ProgramElement.createHandleIdentifier(decp.getSourceFile(),decp.getLine(),decp.getColumn(),decp.getOffset());
 		
 		IProgramElement ipe = AsmManager.getDefault().getHierarchy().findElementForHandle(sourceHandle);
 		
@@ -115,7 +120,8 @@ public class AsmRelationshipProvider {
 		String targetHandle = ProgramElement.createHandleIdentifier(
 				targetType.getSourceLocation().getSourceFile(),
 				targetType.getSourceLocation().getLine(),
-				targetType.getSourceLocation().getColumn());
+				targetType.getSourceLocation().getColumn(),
+				targetType.getSourceLocation().getOffset());
 				
 		IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
 		if (sourceHandle != null && targetHandle != null) {
@@ -212,11 +218,13 @@ public class AsmRelationshipProvider {
 		
 		ISourceLocation sl = shadow.getSourceLocation();
 		
+//		XXX why not use shadow file? new SourceLocation(sl.getSourceFile(), sl.getLine()),
+		SourceLocation peLoc = new SourceLocation(enclosingNode.getSourceLocation().getSourceFile(),sl.getLine());
+		peLoc.setOffset(sl.getOffset());
 		IProgramElement peNode = new ProgramElement(
 			shadow.toString(),
 			IProgramElement.Kind.CODE,
-		//XXX why not use shadow file? new SourceLocation(sl.getSourceFile(), sl.getLine()),
-			new SourceLocation(enclosingNode.getSourceLocation().getSourceFile(), sl.getLine()),
+			peLoc,
 			0,
 			"",
 			new ArrayList());

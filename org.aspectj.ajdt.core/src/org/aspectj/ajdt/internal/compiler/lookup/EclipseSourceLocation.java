@@ -44,6 +44,10 @@ public class EclipseSourceLocation implements ISourceLocation {
 		return result;
 	}
 	
+	public int getOffset() {
+		return startPos;
+	}
+	
 	public int getStartPos() {
 		return startPos;
 	}
@@ -123,6 +127,7 @@ public class EclipseSourceLocation implements ISourceLocation {
         if (getColumn() != 0) {
             sb.append(":" + getColumn());
         }
+        if (getOffset()>=0) { sb.append("::").append(getOffset()); }
         return sb.toString();
     }
 }

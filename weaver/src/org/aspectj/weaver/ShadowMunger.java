@@ -90,7 +90,8 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 				handle = ProgramElement.createHandleIdentifier(
 				            sl.getSourceFile(),
 				            sl.getLine(),
-				            sl.getColumn());
+				            sl.getColumn(),
+							sl.getOffset());
 			}
 		}
 		return handle;

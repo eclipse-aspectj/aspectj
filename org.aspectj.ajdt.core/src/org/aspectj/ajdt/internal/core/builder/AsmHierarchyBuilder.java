@@ -106,8 +106,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
             // AMC - use the source start and end from the compilation unit decl
             int startLine = getStartLine(unit);
             int endLine = getEndLine(unit);     
-            ISourceLocation sourceLocation 
+            SourceLocation sourceLocation 
                 = new SourceLocation(file, startLine, endLine);
+            sourceLocation.setOffset(unit.sourceStart);
             cuNode = new ProgramElement(
                 new String(file.getName()),
                 IProgramElement.Kind.FILE_JAVA,
@@ -716,12 +717,14 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		// AMC - different strategies based on node kind
 		int startLine = getStartLine(node);
 		int endLine = getEndLine(node);
-		ISourceLocation loc = null;
+		SourceLocation loc = null;
 		if ( startLine <= endLine ) {
 			// found a valid end line for this node...
-			loc = new SourceLocation(new File(fileName), startLine, endLine);			
+			loc = new SourceLocation(new File(fileName), startLine, endLine);	
+			loc.setOffset(node.sourceStart);
 		} else {
 			loc = new SourceLocation(new File(fileName), startLine);
+			loc.setOffset(node.sourceStart);
 		}
 		return loc;
 	}

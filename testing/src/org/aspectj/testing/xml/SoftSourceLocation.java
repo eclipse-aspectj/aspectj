@@ -115,6 +115,10 @@ public class SoftSourceLocation implements ISourceLocation  {
 	public String getLocationContext() {
 		return null;
 	}
+	
+	public int getOffset() {
+		return -1;
+	}
     
     /** @return String : {context\n}file:line:column */
     public String toString() {

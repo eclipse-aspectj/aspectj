@@ -333,6 +333,7 @@ public class AjcSpecTest extends TestCase {
         assertTrue(rhs != null);
         assertTrue(lhs.getLine() == rhs.getLine());
         assertTrue(lhs.getColumn() == rhs.getColumn());
+        assertTrue(lhs.getOffset() == rhs.getOffset());
         assertTrue(lhs.getEndLine() == rhs.getEndLine());
         // XXX need to compare files, permitting null == NONE        
 	}

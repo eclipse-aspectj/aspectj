@@ -145,7 +145,7 @@ public abstract class ResolvedTypeMunger {
 
 	protected static ISourceLocation readSourceLocation(DataInputStream s) throws IOException {
 		if (!persistSourceLocation) return null;
-		ISourceLocation ret = null;
+		SourceLocation ret = null;
 		ObjectInputStream ois = null;
 		try {
 			// This logic copes with the location missing from the attribute - an EOFException will 
@@ -155,7 +155,9 @@ public abstract class ResolvedTypeMunger {
 			if (validLocation.booleanValue()) {
 				File f 	   = (File) ois.readObject();
 				Integer ii = (Integer)ois.readObject();
+				Integer offset = (Integer)ois.readObject();
 				ret = new SourceLocation(f,ii.intValue());
+				ret.setOffset(offset.intValue());
 			}
 		} catch (EOFException eof) {
 			return null; // This exception occurs if processing an 'old style' file where the
@@ -180,6 +182,7 @@ public abstract class ResolvedTypeMunger {
 		if (location !=null) {
 		  oos.writeObject(location.getSourceFile());
 		  oos.writeObject(new Integer(location.getLine()));
+		  oos.writeObject(new Integer(location.getOffset()));
 		}
 		oos.flush();
 		oos.close();

@@ -55,6 +55,7 @@ public class SourceLocation implements ISourceLocation, java.io.Serializable {
     private final int startLine;
     private final int column;
     private final int endLine;
+    private int offset;
     private final String context;
     private boolean noColumn;
 
@@ -141,8 +142,17 @@ public class SourceLocation implements ISourceLocation, java.io.Serializable {
         if (!noColumn) {
             sb.append(":" + column);
         }
+        if (offset>=0) {
+        	sb.append("::"+offset);
+        }
         return sb.toString();
     }
+    
+    // XXX Ctors for this type should know about an offset, rather than
+    // it being set through these methods - but there are just too many
+    // ctors at the moment! It needs sorting out.
+    public int getOffset() { return offset;}
+    public void setOffset(int i) { offset=i;}
 
 
 }

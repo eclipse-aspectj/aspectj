@@ -447,13 +447,15 @@ public class ProgramElement implements IProgramElement {
 		return label;
 	}
 
-	public static String createHandleIdentifier(File sourceFile, int line,int column) {
+	public static String createHandleIdentifier(File sourceFile, int line,int column,int offset) {
 			StringBuffer sb = new StringBuffer();
 			sb.append(AsmManager.getDefault().getCanonicalFilePath(sourceFile));
 			sb.append(ID_DELIM);
 			sb.append(line);
 			sb.append(ID_DELIM);
 			sb.append(column);
+			sb.append(ID_DELIM);
+			sb.append(offset);
 			return sb.toString();		
 	}
 
@@ -475,6 +477,8 @@ public class ProgramElement implements IProgramElement {
 		sb.append(sourceLocation.getLine());
 		sb.append(ID_DELIM);
 		sb.append(sourceLocation.getColumn());
+		sb.append(ID_DELIM);
+		sb.append(sourceLocation.getOffset());
 		return sb.toString();
 	}
 	

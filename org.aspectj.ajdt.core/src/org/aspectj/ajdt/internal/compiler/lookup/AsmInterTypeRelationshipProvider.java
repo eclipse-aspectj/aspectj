@@ -50,12 +50,14 @@ public class AsmInterTypeRelationshipProvider {
 			String sourceHandle = ProgramElement.createHandleIdentifier(
 				munger.getSourceLocation().getSourceFile(),
 				munger.getSourceLocation().getLine(),
-				munger.getSourceLocation().getColumn());
+				munger.getSourceLocation().getColumn(),
+				munger.getSourceLocation().getOffset());
 				
 			String targetHandle = ProgramElement.createHandleIdentifier(
 				onType.getSourceLocation().getSourceFile(),
 				onType.getSourceLocation().getLine(),
-				onType.getSourceLocation().getColumn());
+				onType.getSourceLocation().getColumn(),
+				onType.getSourceLocation().getOffset());
 				
 			IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
 			if (sourceHandle != null && targetHandle != null) {

@@ -53,6 +53,11 @@ public interface ISourceLocation  {
      */
     int getColumn();    
     
+    /**
+     * @return offset into file
+     */
+    int getOffset();
+    
     /** @return getLine()..MAX_LINE */
     int getEndLine();
     
