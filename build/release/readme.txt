@@ -40,19 +40,27 @@ Known imperfect results in the AspectJ 1.1 release:
 
 
 ------ untested bash/sh script
-#!/bin/sh
+#!/bin/bash
+[ -n "$DEBUG" ] && set -vx
+scriptDir=`dirname "${0}"`
+scriptDir=`cd "$scriptDir"; pwd | sed 's|/cygdrive/c/|c:/|'`
+
 sp="-Dskip.cvs=true -Daspectj.modules.dir=../.."
-sp="$${sp} -Djava13.home=d:/jdk13 -Djava14.home=d:/jdk14"
-alias myant="../../lib/ant/bin/ant"
+sp="${sp} -Djava13.home=c:/home/apps/jdk13"
+sp="${sp} -Djava14.home=c:/home/apps/jdk14"
+sp="${sp} -Djava15.home=c:/home/apps/jdk15"
+
+#alias myant="$scriptDir/../../lib/ant/bin/ant"
+myant="$scriptDir/../../lib/ant/bin/ant"
 
 # clean
 cd `dirname "$0"`
 cd ..
-myant clean
+"$myant" clean
 
 # build local tree and install distribution:
 cd release
-myant install ${sp}
+"$myant" install ${sp}
   
 # test installation and sources in local tree:
-myant test ${sp} -Dskip.build=true 
+[ -z "$skipTest" ] && "$myant" test ${sp} -Dskip.build=true 
