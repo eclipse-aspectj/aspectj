@@ -16,7 +16,7 @@
 
 	<target name="info">
 	<echo>
-  This downloads and build the AspectJ source tree:
+  This downloads and builds the AspectJ source tree:
   
   - checkout entire tree
   - build distribution
@@ -44,7 +44,44 @@
      aspectj.workspace     location for new cvs tree
      aspectj.modules.dir   location for existing cvs tree
      aj.build.install.dir  location for installed distribution
-     
+
+  Trails
+  - clean first
+
+    cd build
+    ant clean
+
+  - test only sources in local tree (junit and harness tests):
+  
+    cd build/release
+    ant test-sources \
+        -Dskip.cvs=true \
+        -Daspectj.modules.dir=../.. 
+
+  - build local tree and install distribution:
+  
+    cd build/release
+    ant install \
+        -Dskip.cvs=true \
+        -Daspectj.modules.dir=../.. 
+  
+  - test installation and sources in local tree:
+  
+    cd build/release
+    ant test \
+        -Dskip.cvs=true \
+        -Daspectj.modules.dir=../.. \
+        -Dskip.build=true 
+  
+  - do everything but checkout from cvs:
+  
+    cd build
+    ant clean
+    cd release
+    ant all \
+        -Dskip.cvs=true \
+        -Daspectj.modules.dir=../.. 
+  
 	</echo>
 	</target>
 	
@@ -236,6 +273,11 @@
 	
 <!-- ========================================================================= -->
 
+	<target name="all">
+		<antcall target="install"/>
+		<antcall target="test"/>
+	</target>
+
 	<target name="test" depends="test-sources,test-install"/>
 	
 	<target name="test-sources" 
@@ -297,6 +339,7 @@
 
 	<target name="compile-aspectj-using-aspectj" 
 		depends="init-variables,sources-available">
+		<echo message="WARNING: output dir created in tests/product/build-aspectj"/>
 		<antcall target="run-ant">
 			<param name="ant.dir" 
 				location="${aspectj.modules.dir}/tests/product/build-aspectj"/>
