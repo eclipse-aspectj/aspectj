@@ -5850,5 +5850,11 @@
         </compile>
         <run class="cap.OptionList"/>
     </ajc-test>  
+
+    <ajc-test dir="new"
+      title="try/finally in around advice (same as ...messy arounds?)">
+        <compile files="TryFinallyInAround.java"/>
+        <run class="TryFinallyInAround"/>
+    </ajc-test>
     
 </suite>
