@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Common Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/cpl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Common Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package tests;
@@ -19,8 +19,8 @@ import junit.framework.*;
 
 public class Test4a extends Test {
     Rectangle wholeCanvas =
-	new Rectangle(FigureElement.MIN_VALUE, FigureElement.MIN_VALUE,
-		      FigureElement.MAX_VALUE, FigureElement.MAX_VALUE);
+        new Rectangle(FigureElement.MIN_VALUE, FigureElement.MIN_VALUE,
+                      FigureElement.MAX_VALUE, FigureElement.MAX_VALUE);
 
     public Test4a(String name) { super(name); }
 

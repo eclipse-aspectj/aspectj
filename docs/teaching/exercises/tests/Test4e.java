@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Common Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/cpl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Common Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package tests;
@@ -30,38 +30,38 @@ public class Test4e extends Test {
     }
 
     public void testBasicEquality() {
-	assertTrue(g.getBounds() == g.getBounds());
+        assertTrue(g.getBounds() == g.getBounds());
     }
 
     public void testNonGroupMove() {
-	p1.move(3, 27);
+        p1.move(3, 27);
     }
 
     public void testEqualityAfterAddition() {
-	Rectangle r = g.getBounds();
-	g.add(new Point(37, 90));
-	assertTrue(g.getBounds() == r);
+        Rectangle r = g.getBounds();
+        g.add(new Point(37, 90));
+        assertTrue(g.getBounds() == r);
     }
 
     public void testEqualityAfterMove() {
-	g = new Group(p1);
-	Rectangle r0 = g.getBounds();
-	assertTrue(g.getBounds() == r0);
-	p1.move(3, 1);
-	Rectangle r1 = g.getBounds();
-	assertTrue(r0 != r1);
-	assertTrue(r1 == g.getBounds());
+        g = new Group(p1);
+        Rectangle r0 = g.getBounds();
+        assertTrue(g.getBounds() == r0);
+        p1.move(3, 1);
+        Rectangle r1 = g.getBounds();
+        assertTrue(r0 != r1);
+        assertTrue(r1 == g.getBounds());
     }
 
     public void testSecondEnclosingGroup() {
-	g = new Group(p1);
-	Group h = new Group(g);
-	Rectangle r0 = h.getBounds();
-	assertTrue(h.getBounds() == r0);
-	p1.move(3, 1);
-	Rectangle r1 = h.getBounds();
-	assertTrue(r0 != r1);
-	assertTrue(r1 == h.getBounds());
+        g = new Group(p1);
+        Group h = new Group(g);
+        Rectangle r0 = h.getBounds();
+        assertTrue(h.getBounds() == r0);
+        p1.move(3, 1);
+        Rectangle r1 = h.getBounds();
+        assertTrue(r0 != r1);
+        assertTrue(r1 == h.getBounds());
     }
 }
 
