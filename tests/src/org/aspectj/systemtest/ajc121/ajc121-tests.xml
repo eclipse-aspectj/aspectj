@@ -280,3 +280,28 @@
 			<message kind="error" line="37" text="No enclosing instance of type Aspect is accessible"/>
 		</compile>
 	</ajc-test>
+
+	<ajc-test dir="bugs/doYouHaveVisiblePrivates" pr="71372"
+	  	title="NoSuchMethodError calling private method from around advice in inner aspect">
+		<compile files="PrivateCall.java"/>
+		<run class="PrivateCall"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs/doYouHaveVisiblePrivates" pr="71372"
+	  	title="NoSuchMethodError calling private method from around advice in inner aspect (2)">
+		<compile files="PrivateCall2.java,PrivateCall3.java"/>
+		<run class="def.PrivateCall3"/>
+	</ajc-test>
+		
+	<ajc-test dir="bugs/doYouHaveVisiblePrivates" pr="71372"
+	  	title="NoSuchMethodError calling private method from around advice in inner aspect (3)">
+		<compile files="PrivateCallInstance.java"/>
+		<run class="PrivateCallInstance"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs/doYouHaveVisiblePrivates" pr="71372"
+	  	title="NoSuchMethodError calling private method from around advice in inner aspect (4)">
+		<compile files="PrivateCall_Instance_Package1.java,PrivateCall_Instance_Package2.java"/>
+		<run class="def.PrivateCall_Instance_Package2"/>
+	</ajc-test>
+

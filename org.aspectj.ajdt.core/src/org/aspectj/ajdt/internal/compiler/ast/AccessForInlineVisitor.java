@@ -170,16 +170,24 @@ public class AccessForInlineVisitor extends ASTVisitor {
 		if (isPublic(binding)) return binding;
 		if (binding instanceof InterTypeMethodBinding) return binding;
 
+		ResolvedMember m = null;
 		if (binding.isPrivate() &&  binding.declaringClass != inAspect.binding) {
+			// does this always mean that the aspect is an inner aspect of the bindings
+			// declaring class?  After all, the field is private but we can see it from 
+			// where we are.
 			binding.modifiers = AstUtil.makePackageVisible(binding.modifiers);
+			m = EclipseFactory.makeResolvedMember(binding);
+		} else {
+			// Sometimes receiverType and binding.declaringClass are *not* the same.
+			
+			// Sometimes receiverType is a subclass of binding.declaringClass.  In these situations
+			// we want the generated inline accessor to call the method on the subclass (at
+			// runtime this will be satisfied by the super).
+			m = EclipseFactory.makeResolvedMember(binding, receiverType);
 		}
-
-		
-		ResolvedMember m = EclipseFactory.makeResolvedMember(binding, receiverType);
 		if (inAspect.accessForInline.containsKey(m)) return (MethodBinding)inAspect.accessForInline.get(m);
 		MethodBinding ret = world.makeMethodBinding(
-			AjcMemberMaker.inlineAccessMethodForMethod(inAspect.typeX, m)
-			);
+			AjcMemberMaker.inlineAccessMethodForMethod(inAspect.typeX, m));
 		inAspect.accessForInline.put(m, ret);
 		return ret;
 	}

@@ -180,7 +180,35 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
   public void test034_scopeForITDS_pr61768() {
       runTest("scope for inter-type methods");
-    }
+  }
+  
+  public void test035_innerAspectCallsPrivateMethod_pr71372() {
+    runTest("NoSuchMethodError calling private method from around advice in inner aspect");
+    String s = getLastRunResult().getStdErr();
+    assertTrue("Expected ':before:around' but got "+s,
+    		   s.equals(":before:around"));
+  }
+  
+  public void test036_innerAspectCallsPrivateMethod_pr71372_2() {
+    runTest("NoSuchMethodError calling private method from around advice in inner aspect (2)");
+    String s = getLastRunResult().getStdErr();
+    assertTrue("Expected ':before:around' but got "+s,
+    		   s.equals(":before:around"));
+  }
+  
+  public void test037_innerAspectCallsPrivateMethod_pr71372_3() {
+    runTest("NoSuchMethodError calling private method from around advice in inner aspect (3)");
+    String s = getLastRunResult().getStdErr();
+    assertTrue("Expected ':before:around' but got "+s,
+    		   s.equals(":before:around"));
+  }
+  
+  public void test038_innerAspectCallsPrivateMethod_pr71372_4() {
+    runTest("NoSuchMethodError calling private method from around advice in inner aspect (4)");
+    String s = getLastRunResult().getStdErr();
+    assertTrue("Expected ':before:around' but got "+s,
+    		   s.equals(":before:around"));
+  }
 
 }
 
