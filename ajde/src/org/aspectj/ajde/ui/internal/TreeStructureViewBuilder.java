@@ -150,9 +150,11 @@ public class TreeStructureViewBuilder {
 	}
 	
 	private boolean acceptGranularity(ProgramElementNode.Kind kind, StructureViewProperties.Granularity granularity) {
-		if (kind == ProgramElementNode.Kind.CODE) return false;
-
-		if (granularity == StructureViewProperties.Granularity.MEMBER) {
+		
+		if (granularity == StructureViewProperties.Granularity.DECLARED_ELEMENTS) {
+			return true;
+		} else if (granularity == StructureViewProperties.Granularity.MEMBER && 
+			(kind == ProgramElementNode.Kind.CODE)) {
 			return true;
 		} else if (granularity == StructureViewProperties.Granularity.TYPE
 			&& (kind == ProgramElementNode.Kind.PROJECT

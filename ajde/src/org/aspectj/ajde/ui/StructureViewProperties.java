@@ -236,7 +236,8 @@ public class StructureViewProperties {
 		public static final Granularity FILE = new Granularity("file");
 		public static final Granularity TYPE = new Granularity("type");
 		public static final Granularity MEMBER = new Granularity("member");
-		public static final Granularity[] ALL = { PACKAGE, FILE, TYPE, MEMBER };
+		public static final Granularity DECLARED_ELEMENTS = new Granularity("declared body elements");
+		public static final Granularity[] ALL = { PACKAGE, FILE, TYPE, MEMBER, DECLARED_ELEMENTS };
 		
 		private final String name;
 		
