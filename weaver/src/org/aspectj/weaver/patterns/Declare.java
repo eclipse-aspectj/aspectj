@@ -55,4 +55,15 @@ public abstract class Declare extends PatternNode {
      * is ultimately inherited by.
      */
     public abstract boolean isAdviceLike();
+
+	/**
+	 * Declares have methods in the .class file against which info can be stored
+	 * (for example, the annotation in the case of declare annotation).  The
+	 * name is of the form ajc$declare_XXX_NNN where XXX can optionally be set in
+	 * this 'getNameSuffix()' method - depending on whether, at weave time, we
+	 * want to easily differentiate between the declare methods.
+	 */
+	public String getNameSuffix() {
+	  return "";
+	}
 }
