@@ -312,7 +312,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		stack.pop();
 	}
 	
-	private String genSourceSignature(TypeDeclaration typeDeclaration) {
+	protected String genSourceSignature(TypeDeclaration typeDeclaration) {
 		StringBuffer output = new StringBuffer();
 		typeDeclaration.printHeader(0, output);
 		return output.toString();
@@ -400,7 +400,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return output.toString();
 	}
 	
-	private void genBytecodeInfo(MethodDeclaration methodDeclaration, IProgramElement peNode) {
+	protected void genBytecodeInfo(MethodDeclaration methodDeclaration, IProgramElement peNode) {
 		if (methodDeclaration.binding != null) {
 			String memberName = "";
 			String memberBytecodeSignature = "";
@@ -479,7 +479,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	/**
 	 * Checks if comments should be added to the model before generating.
 	 */
-	private String generateJavadocComment(ASTNode astNode) {
+	protected String generateJavadocComment(ASTNode astNode) {
 		if (buildConfig != null && !buildConfig.isGenerateJavadocsInModelMode()) return null;
 		
 		StringBuffer sb = new StringBuffer(); // !!! specify length?
@@ -658,7 +658,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	}
 
 	// ??? handle non-existant files
-	private ISourceLocation makeLocation(ASTNode node) {		
+	protected ISourceLocation makeLocation(ASTNode node) {		
 		String fileName = "";
 		if (currCompilationResult.getFileName() != null) {
 			fileName = new String(currCompilationResult.getFileName());
@@ -680,7 +680,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// AMC - overloaded set of methods to get start and end lines for
 	// various ASTNode types. They have no common ancestor in the
 	// hierarchy!!
-	private int getStartLine( ASTNode n){
+	protected int getStartLine( ASTNode n){
 //		if (  n instanceof AbstractVariableDeclaration ) return getStartLine( (AbstractVariableDeclaration)n);
 //		if (  n instanceof AbstractMethodDeclaration ) return getStartLine( (AbstractMethodDeclaration)n);
 //		if (  n instanceof TypeDeclaration ) return getStartLine( (TypeDeclaration)n);
@@ -692,7 +692,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// AMC - overloaded set of methods to get start and end lines for
 	// various ASTNode types. They have no common ancestor in the
 	// hierarchy!!
-	private int getEndLine( ASTNode n){
+	protected int getEndLine( ASTNode n){
 		if (  n instanceof AbstractVariableDeclaration ) return getEndLine( (AbstractVariableDeclaration)n);
 		if (  n instanceof AbstractMethodDeclaration ) return getEndLine( (AbstractMethodDeclaration)n);
 		if (  n instanceof TypeDeclaration ) return getEndLine( (TypeDeclaration)n);	
