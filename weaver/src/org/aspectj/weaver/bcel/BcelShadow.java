@@ -59,6 +59,9 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.NewConstructorTypeMunger;
+import org.aspectj.weaver.NewFieldTypeMunger;
+import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
@@ -1283,6 +1286,7 @@ public class BcelShadow extends Shadow {
     	thisAnnotationVars = new HashMap();
     	// populate..
     }
+	
     public void initializeTargetAnnotationVars() {
     	if (targetAnnotationVars != null) return;
         if (getKind().isTargetSameAsThis()) {
@@ -1308,6 +1312,7 @@ public class BcelShadow extends Shadow {
 			// what the full set of annotations could be (due to static/dynamic type differences...)
 		}
     }
+	
     public void initializeKindedAnnotationVars() {
     	if (kindedAnnotationVars != null) return;
     	kindedAnnotationVars = new HashMap();
@@ -1316,100 +1321,156 @@ public class BcelShadow extends Shadow {
     	// Then create one BcelVar entry in the map for each annotation, keyed by
     	// annotation type (TypeX).
     	
-    	// FIXME asc Refactor these once all shadow kinds added - there is lots of commonality
+    	// FIXME asc Refactor this code, there is duplication
     	ResolvedTypeX[] annotations = null;
-    	TypeX relevantType = null;
+    	ResolvedMember itdMember =null;
+    	Member relevantMember = getSignature();
+    	TypeX  relevantType   = null;
+    	TypeX aspect = null;
     	
     	if (getKind() == Shadow.StaticInitialization) {
     		relevantType = getSignature().getDeclaringType();
     		annotations  = relevantType.resolve(world).getAnnotationTypes();
-    	}
-    	if (getKind() == Shadow.ExceptionHandler) {
+    		
+    	} else if (getKind() == Shadow.MethodCall  || getKind() == Shadow.ConstructorCall) {
+    		relevantType = getSignature().getDeclaringType();
+            relevantMember = findMethod2(relevantType.getDeclaredMethods(world),getSignature());
+    		
+			if (relevantMember == null) {
+				// check the ITD'd dooberries
+				List mungers = relevantType.resolve(world).getInterTypeMungers();
+				for (Iterator iter = mungers.iterator(); iter.hasNext();) {
+					BcelTypeMunger typeMunger = (BcelTypeMunger) iter.next();
+					if (typeMunger.getMunger() instanceof NewMethodTypeMunger ||
+						typeMunger.getMunger() instanceof NewConstructorTypeMunger) {
+					  ResolvedMember fakerm = typeMunger.getSignature();
+					  //if (fakerm.hasAnnotations()) 
+					   
+					  ResolvedMember ajcMethod = (getSignature().getKind()==ResolvedMember.CONSTRUCTOR?
+						  AjcMemberMaker.postIntroducedConstructor(typeMunger.getAspectType(),fakerm.getDeclaringType(),fakerm.getParameterTypes()):
+						  AjcMemberMaker.interMethodBody(fakerm,typeMunger.getAspectType()));
+				  	  ResolvedMember rmm       = findMethod(typeMunger.getAspectType(),ajcMethod);
+					  if (fakerm.getName().equals(getSignature().getName()) &&
+						  fakerm.getParameterSignature().equals(getSignature().getParameterSignature())) {
+						relevantType = typeMunger.getAspectType();
+						relevantMember = rmm;
+					  }
+					}
+				}
+			}
+    		annotations = relevantMember.getAnnotationTypes();
+    		
+    	} else if (getKind() == Shadow.FieldSet || getKind() == Shadow.FieldGet) {
+    		relevantType = getSignature().getDeclaringType();
+    		relevantMember = findField(relevantType.getDeclaredFields(world),getSignature());
+    		
+			if (relevantMember==null) {
+              // check the ITD'd dooberries
+				List mungers = relevantType.resolve(world).getInterTypeMungers();
+				for (Iterator iter = mungers.iterator(); iter.hasNext();) {
+					BcelTypeMunger typeMunger = (BcelTypeMunger) iter.next();
+					if (typeMunger.getMunger() instanceof NewFieldTypeMunger) {
+					  ResolvedMember fakerm = typeMunger.getSignature();
+					  //if (fakerm.hasAnnotations()) 
+					  ResolvedMember ajcMethod = AjcMemberMaker.interFieldInitializer(fakerm,typeMunger.getAspectType());
+				  	  ResolvedMember rmm       = findMethod(typeMunger.getAspectType(),ajcMethod);
+					  if (fakerm.equals(getSignature())) {
+						relevantType = typeMunger.getAspectType();
+						relevantMember = rmm;
+					  }
+					}
+				}	
+			}
+    		annotations = relevantMember.getAnnotationTypes();
+    		
+    	} else if (getKind() == Shadow.MethodExecution || getKind() == Shadow.ConstructorExecution || 
+    		        getKind() == Shadow.AdviceExecution) {
+    		relevantType = getSignature().getDeclaringType();
+    		ResolvedMember rm[] = relevantType.getDeclaredMethods(world);
+    		relevantMember = findMethod2(relevantType.getDeclaredMethods(world),getSignature());
+    		
+			if (relevantMember == null) {
+				// check the ITD'd dooberries
+				List mungers = relevantType.resolve(world).getInterTypeMungers();
+				for (Iterator iter = mungers.iterator(); iter.hasNext();) {
+					BcelTypeMunger typeMunger = (BcelTypeMunger) iter.next();
+					if (typeMunger.getMunger() instanceof NewMethodTypeMunger ||
+						typeMunger.getMunger() instanceof NewConstructorTypeMunger) {
+					  ResolvedMember fakerm = typeMunger.getSignature();
+					  //if (fakerm.hasAnnotations()) 
+					  
+					  ResolvedMember ajcMethod = (getSignature().getKind()==ResolvedMember.CONSTRUCTOR?
+						  AjcMemberMaker.postIntroducedConstructor(typeMunger.getAspectType(),fakerm.getDeclaringType(),fakerm.getParameterTypes()):
+						  AjcMemberMaker.interMethodBody(fakerm,typeMunger.getAspectType()));
+				  	  ResolvedMember rmm       = findMethod(typeMunger.getAspectType(),ajcMethod);
+					  if (fakerm.getName().equals(getSignature().getName()) &&
+						  fakerm.getParameterSignature().equals(getSignature().getParameterSignature())) {
+						relevantType = typeMunger.getAspectType();
+						relevantMember = rmm;
+					  }
+					}
+				}
+			}
+    		annotations = relevantMember.getAnnotationTypes();
+    		
+    	} else if (getKind() == Shadow.ExceptionHandler) {
     		relevantType = getSignature().getParameterTypes()[0];
     		annotations  =  relevantType.resolve(world).getAnnotationTypes();
-    	}
-    	if (getKind() == Shadow.MethodCall  || getKind() == Shadow.ConstructorCall) {
+    		
+    	} else if (getKind() == Shadow.PreInitialization || getKind() == Shadow.Initialization) {
     		relevantType = getSignature().getDeclaringType();
-    		ResolvedMember rm[] = relevantType.getDeclaredMethods(world);
-    		ResolvedMember found = null;
-    		String searchString = getSignature().getName()+getSignature().getParameterSignature();
-    		for (int i = 0; i < rm.length && found==null; i++) {
-				ResolvedMember member = rm[i];
-				if ((member.getName()+member.getParameterSignature()).equals(searchString)) {
-					found = member;
-				}
-			}
-    		annotations = found.getAnnotationTypes();
-    	}
-    	if (getKind() == Shadow.MethodExecution || getKind() == Shadow.ConstructorExecution || 
-    		getKind() == Shadow.AdviceExecution) {
-    		relevantType = getSignature().getDeclaringType();
-    		ResolvedMember rm[] = relevantType.getDeclaredMethods(world);
-    		ResolvedMember found = null;
-    		String searchString = getSignature().getName()+getSignature().getParameterSignature();
-    		for (int i = 0; i < rm.length && found==null; i++) {
-				ResolvedMember member = rm[i];
-				if ((member.getName()+member.getParameterSignature()).equals(searchString)) {
-					found = member;
-				}
-			}
-    		annotations = found.getAnnotationTypes();
-    	}
-    	if (getKind() == Shadow.PreInitialization || getKind() == Shadow.Initialization) {
-    		relevantType = getSignature().getDeclaringType();
-    		ResolvedMember rm[] = relevantType.getDeclaredMethods(world);
-    		ResolvedMember found = null;
-    		String searchString = getSignature().getName()+getSignature().getParameterSignature();
-    		for (int i = 0; i < rm.length && found==null; i++) {
-				ResolvedMember member = rm[i];
-				if ((member.getName()+member.getParameterSignature()).equals(searchString)) {
-					found = member;
-				}
-			}
-    		annotations = found.getAnnotationTypes();
-    	}
-    	if (getKind() == Shadow.FieldSet) {
-    		relevantType = getSignature().getDeclaringType();
-    		ResolvedMember rm[] = relevantType.getDeclaredFields(world);
-    		ResolvedMember found = null;
-    		for (int i = 0; i < rm.length && found==null; i++) {
-				ResolvedMember member = rm[i];
-				if ( member.getName().equals(getSignature().getName()) &&
-				     member.getType().equals(getSignature().getType()))  {
-					found = member;
-				}
-			}
-    		annotations = found.getAnnotationTypes();
-    	}
-    	if (getKind() == Shadow.FieldGet) {
-    		relevantType = getSignature().getDeclaringType();
-    		ResolvedMember rm[] = relevantType.getDeclaredFields(world);
-    		ResolvedMember found = null;
-    		for (int i = 0; i < rm.length && found==null; i++) {
-				ResolvedMember member = rm[i];
-				if ( member.getName().equals(getSignature().getName()) &&
-				     member.getType().equals(getSignature().getType()))  {
-					found = member;
-				}
-			}
+    		ResolvedMember found = findMethod2(relevantType.getDeclaredMethods(world),getSignature());
     		annotations = found.getAnnotationTypes();
     	}
     	
     	if (annotations == null) {
     		// We can't have recognized the shadow - should blow up now to be on the safe side
-    		throw new BCException("Didn't recognize shadow: "+getKind());
+    		throw new BCException("Couldn't discover annotations for shadow: "+getKind());
     	}
     	
 		for (int i = 0; i < annotations.length; i++) {
 			ResolvedTypeX aTX = annotations[i];
-    		kindedAnnotationVars.put(aTX,
-    				new KindedAnnotationAccessVar(getKind(),aTX.resolve(world),relevantType,getSignature()));
+			KindedAnnotationAccessVar kaav =  new KindedAnnotationAccessVar(getKind(),aTX.resolve(world),relevantType,relevantMember);
+    		kindedAnnotationVars.put(aTX,kaav);
 		}
-
-    	
-    	
     }
-    public void initializeWithinAnnotationVars() {
+    
+//FIXME asc whats the real diff between this one and the version in findMethod()?
+	 ResolvedMember findMethod2(ResolvedMember rm[], Member sig) {
+		ResolvedMember found = null;
+		// String searchString = getSignature().getName()+getSignature().getParameterSignature();
+		for (int i = 0; i < rm.length && found==null; i++) {
+			ResolvedMember member = rm[i];
+			if (member.getName().equals(sig.getName()) && member.getParameterSignature().equals(sig.getParameterSignature()))
+			  found = member;
+		}
+		return found;
+	 }
+    
+    private ResolvedMember findMethod(ResolvedTypeX aspectType, ResolvedMember ajcMethod) {
+       ResolvedMember decMethods[] = aspectType.getDeclaredMethods();
+       for (int i = 0; i < decMethods.length; i++) {
+		ResolvedMember member = decMethods[i];
+		if (member.equals(ajcMethod)) return member;
+	   }
+		return null;
+	}
+
+	
+   
+	private ResolvedMember findField(ResolvedMember[] members,Member lookingFor) {
+	  for (int i = 0; i < members.length; i++) {
+		ResolvedMember member = members[i];
+		if ( member.getName().equals(getSignature().getName()) &&
+		     member.getType().equals(getSignature().getType()))  {
+		     return member;
+		}
+	  }
+	  return null;
+	}
+	
+	
+	public void initializeWithinAnnotationVars() {
     	if (withinAnnotationVars != null) return;
     	withinAnnotationVars = new HashMap();
     	

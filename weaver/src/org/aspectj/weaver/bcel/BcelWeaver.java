@@ -1134,7 +1134,7 @@ public class BcelWeaver implements IWeaver {
 		boolean didSomething = false;
 		if (decA.matches(onType)) {
 			
-			//FIXME asc CRITICAL this should be guarded by the 'already has annotation' check below but isn't since the compiler is producing classfiles with deca affected things in...
+			//FIXME asc important this should be guarded by the 'already has annotation' check below but isn't since the compiler is producing classfiles with deca affected things in...
 			AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decA.getSourceLocation(),onType.getSourceLocation());
 			
 		    if (onType.hasAnnotation(decA.getAnnotationX().getSignature())) {

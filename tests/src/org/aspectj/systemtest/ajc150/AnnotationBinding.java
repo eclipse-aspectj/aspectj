@@ -267,4 +267,36 @@ public class AnnotationBinding extends XMLBasedAjcTestCase {
   public void testCallsAndExecutionsOfStaticMethods() {
   	runTest("binding with static methods");
   }
+  
+  /////////////////////////////////////////////////////////////////////////////////
+  // annotation binding with ITDs
+  
+  public void testAnnotationBindingAndITDs1() {
+  	runTest("simple binding annotation values where itd method is annotated");
+  }
+  
+  public void testAnnotationBindingAndITDs2() {
+  	runTest("simple binding annotation values where itd field is annotated");
+  }
+ 
+  public void testAnnotationBindingAndITDs3() {
+  	runTest("simple binding annotation values where itd ctor is annotated");
+  }
+  
+  public void testAnnotationBindingAndITDs4() {
+  	runTest("simple binding annotation values where itd method is annotated via declare");
+  }  
+  
+  public void testAnnotationBindingAndITDs5() {
+  	runTest("simple binding annotation values where itd field is annotated via declare");
+  }  
+  
+  public void testAnnotationBindingAndITDs6() {
+  	runTest("simple binding annotation values where itd field is annotated multiple times via declare");
+  }  
+  
+  public void testAnnotationBindingAndITDs7() {
+  	runTest("simple binding annotation values where itd ctor is annotated via declare");
+  }  
+  
 }

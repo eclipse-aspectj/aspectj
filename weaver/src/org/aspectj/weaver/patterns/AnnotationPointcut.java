@@ -14,18 +14,19 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
@@ -35,6 +36,7 @@ import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.ast.Var;
+import org.aspectj.weaver.bcel.BcelTypeMunger;
 
 /**
  * @annotation(@Foo) or @annotation(foo)
@@ -110,11 +112,38 @@ public class AnnotationPointcut extends NameBindingPointcut {
 			toMatchAgainst = rMember.getParameterTypes()[0].resolve(shadow.getIWorld());
 		} else {
 			toMatchAgainst = rMember;
+			// FIXME asc I'd like to get rid of this bit of logic altogether, shame ITD fields don't have an effective sig attribute
+			// FIXME asc perf cache the result of discovering the member that contains the real annotations
+			if (rMember.isAnnotatedElsewhere()) {
+			  if (kind==Shadow.FieldGet || kind==Shadow.FieldSet) {
+			  List mungers = rMember.getDeclaringType().resolve(shadow.getIWorld()).getInterTypeMungers(); // FIXME asc should include supers with getInterTypeMungersIncludingSupers?
+			  for (Iterator iter = mungers.iterator(); iter.hasNext();) {
+					BcelTypeMunger typeMunger = (BcelTypeMunger) iter.next();
+					if (typeMunger.getMunger() instanceof NewFieldTypeMunger) {
+					  ResolvedMember fakerm = typeMunger.getSignature();
+					  if (fakerm.equals(member)) {
+					    ResolvedMember ajcMethod = AjcMemberMaker.interFieldInitializer(fakerm,typeMunger.getAspectType());
+				  	    ResolvedMember rmm       = findMethod(typeMunger.getAspectType(),ajcMethod);
+						toMatchAgainst = rmm;
+					  }
+					}
+				}	
+			  }
+			}
 		}
 		
 		annotationTypePattern.resolve(shadow.getIWorld());
 		return annotationTypePattern.matches(toMatchAgainst);
 	}
+	
+	private ResolvedMember findMethod(ResolvedTypeX aspectType, ResolvedMember ajcMethod) {
+	       ResolvedMember decMethods[] = aspectType.getDeclaredMethods();
+	       for (int i = 0; i < decMethods.length; i++) {
+			ResolvedMember member = decMethods[i];
+			if (member.equals(ajcMethod)) return member;
+		   }
+			return null;
+		}
 	
 
 	/* (non-Javadoc)
@@ -148,24 +177,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	 */
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 
-		if (shadow.getKind()!=Shadow.MethodCall &&
-			shadow.getKind()!=Shadow.ConstructorCall &&
-			shadow.getKind()!=Shadow.ConstructorExecution &&
-			shadow.getKind()!=Shadow.MethodExecution &&
-			shadow.getKind()!=Shadow.FieldSet &&
-			shadow.getKind()!=Shadow.FieldGet &&
-			shadow.getKind()!=Shadow.StaticInitialization &&
-			shadow.getKind()!=Shadow.PreInitialization &&
-			shadow.getKind()!=Shadow.AdviceExecution &&
-			shadow.getKind()!=Shadow.Initialization &&
-			shadow.getKind()!=Shadow.ExceptionHandler
-			) {
-			IMessage lim = MessageUtil.error("Binding not supported in @pcds (1.5.0 M2 limitation) for "+shadow.getKind()+" join points, see: " +
-						getSourceLocation());
-			shadow.getIWorld().getMessageHandler().handleMessage(lim);
-			throw new BCException("Binding not supported in @pcds (1.5.0 M2 limitation) for "+shadow.getKind()+" join points, see: " +
-			getSourceLocation());
-		}
+
 
 		
 		if (annotationTypePattern instanceof BindingAnnotationTypePattern) {

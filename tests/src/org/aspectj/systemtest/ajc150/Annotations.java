@@ -76,7 +76,11 @@ public class Annotations extends XMLBasedAjcTestCase {
   
   // more implementation work needed before this test passes
   public void testAnnotatedITDs() {
+	  try {
   	runTest("annotated itds");
+	  } finally {
+		  System.err.println(ajc.getLastCompilationResult().getStandardError());
+	  }
   }
 
   public void testAnnotatedITDsWithWrongAnnotationType() {

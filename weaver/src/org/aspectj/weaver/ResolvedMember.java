@@ -17,6 +17,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
 
@@ -28,6 +31,12 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
     
     public String[] parameterNames = null;
     protected TypeX[] checkedExceptions = TypeX.NONE;
+    private Set annotationTypes = null;
+	// Some members are 'created' to represent other things (for example ITDs).  These
+	// members have their annotations stored elsewhere, and this flag indicates that is
+	// the case.  It is up to the caller to work out where that is!
+	// Once determined the caller may choose to stash the annotations in this member...
+	private boolean isAnnotatedElsewhere = false; // this field is not serialized.
     
     
     // these three fields hold the source location of this member
@@ -101,13 +110,18 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
     public boolean isAjSynthetic() {
     	return true;
     }
+	
+	public boolean hasAnnotations() {
+		return  (annotationTypes==null);
+	}
 
     public boolean hasAnnotation(TypeX ofType) {
         // The ctors don't allow annotations to be specified ... yet - but
         // that doesn't mean it is an error to call this method.
         // Normally the weaver will be working with subtypes of 
         // this type - BcelField/BcelMethod
-    	return false;
+        if (annotationTypes==null) return false;
+		return annotationTypes.contains(ofType);
     }
     
     public ResolvedTypeX[] getAnnotationTypes() {
@@ -115,9 +129,24 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
     	// that doesn't mean it is an error to call this method.
     	// Normally the weaver will be working with subtypes of
     	// this type - BcelField/BcelMethod
-    	return null;
+    	if (annotationTypes == null) return null;
+		return (ResolvedTypeX[])annotationTypes.toArray(new ResolvedTypeX[]{});
     }
     
+	public void setAnnotationTypes(TypeX[] annotationtypes) {
+		if (annotationTypes == null) annotationTypes = new HashSet();
+		for (int i = 0; i < annotationtypes.length; i++) {
+			TypeX typeX = annotationtypes[i];
+			annotationTypes.add(typeX);
+		}
+	}
+	
+	public void addAnnotation(AnnotationX annotation) {
+	    // FIXME asc only allows for annotation types, not instances - should it?
+		if (annotationTypes == null) annotationTypes = new HashSet();
+		annotationTypes.add(annotation.getSignature());
+	}
+	    
     public boolean isBridgeMethod() {
     	return (modifiers & Constants.ACC_BRIDGE)!=0;
     }
@@ -172,6 +201,15 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
     
     
 	public ResolvedMember resolve(World world) {
+	    // FIXME asc guard with a check on resolution having happened !
+        if (annotationTypes!=null) {
+          Set r = new HashSet();
+          for (Iterator iter = annotationTypes.iterator(); iter.hasNext();) {
+			TypeX element = (TypeX) iter.next();
+			r.add(world.resolve(element));
+		  }
+		  annotationTypes = r;
+	    }
 		return this;
 	}
 	
@@ -243,6 +281,14 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 	}
 	public void setCheckedExceptions(TypeX[] checkedExceptions) {
 		this.checkedExceptions = checkedExceptions;
+	}
+
+	public void setAnnotatedElsewhere(boolean b) {
+		isAnnotatedElsewhere = b;
+	}
+
+	public boolean isAnnotatedElsewhere() {
+		return isAnnotatedElsewhere;
 	}
 }
    

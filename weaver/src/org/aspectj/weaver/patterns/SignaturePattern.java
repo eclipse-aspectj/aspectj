@@ -30,15 +30,18 @@ import org.aspectj.lang.reflect.ConstructorSignature;
 import org.aspectj.lang.reflect.FieldSignature;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.Constants;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.BcelTypeMunger;
 
 
 public class SignaturePattern extends PatternNode {
@@ -132,8 +135,40 @@ public class SignaturePattern extends PatternNode {
 			return false;
 	  }
 	  annotationPattern.resolve(world);
+	 
+	  // optimization before we go digging around for annotations on ITDs
+	  if (annotationPattern instanceof AnyAnnotationTypePattern) return true;
+	  
+	  // fake members represent ITD'd fields - for their annotations we should go and look up the
+	  // relevant member in the original aspect
+	  if (rMember.isAnnotatedElsewhere() && member.getKind()==Member.FIELD) {
+	    // FIXME asc duplicate of code in AnnotationPattern.matchInternal()?  same fixmes apply here.
+	    ResolvedMember [] mems = rMember.getDeclaringType().resolve(world).getDeclaredFields(); // FIXME asc should include supers with getInterTypeMungersIncludingSupers?
+	    List mungers = rMember.getDeclaringType().resolve(world).getInterTypeMungers(); 
+		for (Iterator iter = mungers.iterator(); iter.hasNext();) {
+	        BcelTypeMunger typeMunger = (BcelTypeMunger) iter.next();
+			if (typeMunger.getMunger() instanceof NewFieldTypeMunger) {
+			  ResolvedMember fakerm = typeMunger.getSignature();
+			  ResolvedMember ajcMethod = AjcMemberMaker.interFieldInitializer(fakerm,typeMunger.getAspectType());
+		  	  ResolvedMember rmm       = findMethod(typeMunger.getAspectType(),ajcMethod);
+			  if (fakerm.equals(member)) {
+				rMember = rmm;
+			  }
+			}
+		}
+	  }
+	  
 	  return annotationPattern.matches(rMember).alwaysTrue();
 	}
+	
+	private ResolvedMember findMethod(ResolvedTypeX aspectType, ResolvedMember ajcMethod) {
+	       ResolvedMember decMethods[] = aspectType.getDeclaredMethods();
+	       for (int i = 0; i < decMethods.length; i++) {
+			ResolvedMember member = decMethods[i];
+			if (member.equals(ajcMethod)) return member;
+	   }
+			return null;
+		}
 	
 	public boolean matchesIgnoringAnnotations(Member member, World world) {
 		//XXX performance gains would come from matching on name before resolving
@@ -143,7 +178,6 @@ public class SignaturePattern extends PatternNode {
 		//		String n2 = this.getName().maybeGetSimpleName();
 		//		if (n2!=null && !n1.equals(n2)) return false;
 
-		// FIXME ASC : 
 		if (member == null) return false;
 		ResolvedMember sig = member.resolve(world);
 		

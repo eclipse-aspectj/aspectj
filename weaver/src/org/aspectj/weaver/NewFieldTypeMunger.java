@@ -21,6 +21,7 @@ import java.util.Set;
 public class NewFieldTypeMunger extends ResolvedTypeMunger {
 	public NewFieldTypeMunger(ResolvedMember signature, Set superMethodsCalled) {
 		super(Field, signature);
+		signature.setAnnotatedElsewhere(true);
 		this.setSuperMethodsCalled(superMethodsCalled);
 	}
 

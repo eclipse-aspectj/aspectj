@@ -15,6 +15,7 @@ package org.aspectj.weaver.bcel;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -61,11 +62,15 @@ import org.aspectj.weaver.IClassWeaver;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.aspectj.weaver.NewFieldTypeMunger;
+import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.WeaverStateInfo;
@@ -115,6 +120,8 @@ class BcelClassWeaver implements IClassWeaver {
     private final Map  addedSuperInitializers = new HashMap(); // Interface -> IfaceInitList
     private        List addedThisInitializers  = new ArrayList(); // List<NewFieldMunger>
     private        List addedClassInitializers  = new ArrayList(); // List<NewFieldMunger>
+	
+	private Map mapToAnnotations = new HashMap();
     
     private BcelShadow clinitShadow = null;
     
@@ -415,26 +422,40 @@ class BcelClassWeaver implements IClassWeaver {
      * Weave any declare @method/@ctor statements into the members of the supplied class
      */
     private boolean weaveDeclareAtMethodCtor(LazyClassGen clazz) {
+		List reportedProblems = new ArrayList();
+		
+		List allDecams = world.getDeclareAnnotationOnMethods();
+		if (allDecams.isEmpty()) return false; // nothing to do
 		
 		boolean isChanged = false;
-        List decaMs = getMatchingSubset(world.getDeclareAnnotationOnMethods(),clazz.getType());
+
+		// deal with ITDs
+		List itdMethodsCtors = getITDSubset(clazz,ResolvedTypeMunger.Method);
+		itdMethodsCtors.addAll(getITDSubset(clazz,ResolvedTypeMunger.Constructor));		
+		if (!itdMethodsCtors.isEmpty()) {
+			// Can't use the subset called 'decaMs' as it won't be right for ITDs...
+ 	        isChanged = weaveAtMethodOnITDSRepeatedly(allDecams,itdMethodsCtors,reportedProblems);
+		}
+		
+		// deal with all the other methods...
         List members = clazz.getMethodGens();
-		if (!members.isEmpty() && !decaMs.isEmpty()) {
-          // go through all the fields
+		List decaMs = getMatchingSubset(allDecams,clazz.getType());		
+		if (decaMs.isEmpty()) return false; // nothing to do
+		if (!members.isEmpty()) {
           for (int memberCounter = 0;memberCounter<members.size();memberCounter++) {
             LazyMethodGen mg = (LazyMethodGen)members.get(memberCounter);
             if (!mg.getName().startsWith(NameMangler.PREFIX)) {
+
             // Single first pass
             List worthRetrying = new ArrayList();
             boolean modificationOccured = false;
-            // go through all the declare @field statements
+            
             for (Iterator iter = decaMs.iterator(); iter.hasNext();) {
 				DeclareAnnotation decaM = (DeclareAnnotation) iter.next();
 				
 				if (decaM.matches(mg.getMemberView(),world)) {
-	  				if (doesAlreadyHaveAnnotation(mg.getMemberView(),decaM,true)) continue; // skip this one...
+	  				if (doesAlreadyHaveAnnotation(mg.getMemberView(),decaM,reportedProblems)) continue; // skip this one...
 					mg.addAnnotation(decaM.getAnnotationX());
-					//System.err.println("Mloc ("+mg+") ="+mg.getSourceLocation());
 					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaM.getSourceLocation(),clazz.getName(),mg.getMethod());
 					isChanged = true;
 					modificationOccured = true;
@@ -452,7 +473,7 @@ class BcelClassWeaver implements IClassWeaver {
               for (Iterator iter = worthRetrying.iterator(); iter.hasNext();) {
 				DeclareAnnotation decaM = (DeclareAnnotation) iter.next();
 				if (decaM.matches(mg.getMemberView(),world)) {
-					if (doesAlreadyHaveAnnotation(mg.getMemberView(),decaM,false)) continue; // skip this one...
+					if (doesAlreadyHaveAnnotation(mg.getMemberView(),decaM,reportedProblems)) continue; // skip this one...
 					mg.addAnnotation(decaM.getAnnotationX());
 					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaM.getSourceLocation(),clazz.getName(),mg.getMethod());
 					isChanged = true;
@@ -474,19 +495,185 @@ class BcelClassWeaver implements IClassWeaver {
 	 */
 	private List getMatchingSubset(List declareAnnotations, ResolvedTypeX type) {
 	    List subset = new ArrayList();
-	    //System.err.println("For type="+type+"\nPrior set: "+declareAnnotations);
 	    for (Iterator iter = declareAnnotations.iterator(); iter.hasNext();) {
 			DeclareAnnotation da = (DeclareAnnotation) iter.next();
 			if (da.couldEverMatch(type)) {
 				subset.add(da);
 			}
 		}
-		//System.err.println("After set: "+subset);
 		return subset;
 	}
 
+	
+    /**
+     * Get a subset of all the type mungers defined on this aspect
+     */
+	private List getITDSubset(LazyClassGen clazz,ResolvedTypeMunger.Kind wantedKind) {
+		List subset = new ArrayList();
+		Collection c = clazz.getBcelObjectType().getTypeMungers();
+		for (Iterator iter = c.iterator();iter.hasNext();) {
+			BcelTypeMunger typeMunger = (BcelTypeMunger)iter.next();
+			if (typeMunger.getMunger().getKind()==wantedKind) 
+				subset.add(typeMunger);
+		}
+		return subset;
+	}
+	
+	public LazyMethodGen locateAnnotationHolderForFieldMunger(LazyClassGen clazz,BcelTypeMunger fieldMunger) {
+		NewFieldTypeMunger nftm = (NewFieldTypeMunger)fieldMunger.getMunger();
+		ResolvedMember lookingFor =AjcMemberMaker.interFieldInitializer(nftm.getSignature(),clazz.getType());
+		List meths = clazz.getMethodGens();
+		for (Iterator iter = meths.iterator(); iter.hasNext();) {
+			LazyMethodGen element = (LazyMethodGen) iter.next();
+			if (element.getName().equals(lookingFor.getName())) return element;
+		}
+		return null;
+	}
+	
+	// FIXME asc refactor this to neaten it up
+	public LazyMethodGen locateAnnotationHolderForMethodCtorMunger(LazyClassGen clazz,BcelTypeMunger methodCtorMunger) {
+		if (methodCtorMunger.getMunger() instanceof NewMethodTypeMunger) {
+		NewMethodTypeMunger nftm = (NewMethodTypeMunger)methodCtorMunger.getMunger();
+		ResolvedMember lookingFor =AjcMemberMaker.interMethodBody(nftm.getSignature(),methodCtorMunger.getAspectType());
+		List meths = clazz.getMethodGens();
+		for (Iterator iter = meths.iterator(); iter.hasNext();) {
+			LazyMethodGen element = (LazyMethodGen) iter.next();
+			if (element.getName().equals(lookingFor.getName()) && element.getParameterSignature().equals(lookingFor.getParameterSignature())) return element;
+		}
+		return null;
+		} else if (methodCtorMunger.getMunger() instanceof NewConstructorTypeMunger) {
+			NewConstructorTypeMunger nftm = (NewConstructorTypeMunger)methodCtorMunger.getMunger();
+			ResolvedMember lookingFor =AjcMemberMaker.postIntroducedConstructor(methodCtorMunger.getAspectType(),nftm.getSignature().getDeclaringType(),nftm.getSignature().getParameterTypes());
+			List meths = clazz.getMethodGens();
+			for (Iterator iter = meths.iterator(); iter.hasNext();) {
+				LazyMethodGen element = (LazyMethodGen) iter.next();
+				if (element.getName().equals(lookingFor.getName()) && element.getParameterSignature().equals(lookingFor.getParameterSignature())) return element;
+			}
+			return null;
+		} else {
+			throw new RuntimeException("Not sure what this is: "+methodCtorMunger);
+		}
+	}
+	
+    /**
+     * Applies some set of declare @field constructs (List<DeclareAnnotation>) to some bunch 
+     * of ITDfields (List<BcelTypeMunger>.  It will iterate over the fields repeatedly until
+     * everything has been applied.
+     * 
+     */
+	private boolean weaveAtFieldRepeatedly(List decaFs, List itdFields,List reportedErrors) {
+		boolean isChanged = false;
+		for (Iterator iter = itdFields.iterator(); iter.hasNext();) {
+			BcelTypeMunger fieldMunger = (BcelTypeMunger) iter.next();
+			ResolvedMember itdIsActually = fieldMunger.getSignature();
+			List worthRetrying = new ArrayList();
+			boolean modificationOccured = false;
+			
+			for (Iterator iter2 = decaFs.iterator(); iter2.hasNext();) {
+				DeclareAnnotation decaF = (DeclareAnnotation) iter2.next();
+				
+				if (decaF.matches(itdIsActually,world)) {
+					LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz,fieldMunger);
+					if (doesAlreadyHaveAnnotation(annotationHolder,itdIsActually,decaF,reportedErrors)) continue; // skip this one...
+					annotationHolder.addAnnotation(decaF.getAnnotationX());
+					//FIXME asc you need to add relationships for these things
+					// AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),fields[fieldCounter]);
+					isChanged = true;
+					modificationOccured = true;
+					
+				} else {
+					if (!decaF.isStarredAnnotationPattern()) 
+						worthRetrying.add(decaF); // an annotation is specified that might be put on by a subsequent decaf
+				}
+			}
+			
+		    while (!worthRetrying.isEmpty() && modificationOccured) {
+				modificationOccured = false;
+                List forRemoval = new ArrayList();
+                for (Iterator iter2 = worthRetrying.iterator(); iter.hasNext();) {
+				  DeclareAnnotation decaF = (DeclareAnnotation) iter2.next();
+				  if (decaF.matches(itdIsActually,world)) {
+					LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz,fieldMunger);
+					if (doesAlreadyHaveAnnotation(annotationHolder,itdIsActually,decaF,reportedErrors)) continue; // skip this one...
+					annotationHolder.addAnnotation(decaF.getAnnotationX());
+					//FIXME asc you need to add relationships for these things
+					// AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),fields[fieldCounter]);
+					isChanged = true;
+					modificationOccured = true;
+					forRemoval.add(decaF);
+				  }
+				  worthRetrying.removeAll(forRemoval);
+                }
+		    }
+	      }
+	      return isChanged;
+	}
+	
+	
+	/**
+     * Applies some set of declare @method/@ctor constructs (List<DeclareAnnotation>) to some bunch 
+     * of ITDmembers (List<BcelTypeMunger>.  It will iterate over the fields repeatedly until
+     * everything has been applied.
+     */
+	private boolean weaveAtMethodOnITDSRepeatedly(List decaMCs, List itdMethodsCtors,List reportedErrors) {
+		boolean isChanged = false;
+		for (Iterator iter = itdMethodsCtors.iterator(); iter.hasNext();) {
+			BcelTypeMunger methodctorMunger = (BcelTypeMunger) iter.next();
+			ResolvedMember itdIsActually = methodctorMunger.getSignature();
+			List worthRetrying = new ArrayList();
+			boolean modificationOccured = false;
+			
+			for (Iterator iter2 = decaMCs.iterator(); iter2.hasNext();) {
+				DeclareAnnotation decaMC = (DeclareAnnotation) iter2.next();
+				
+				if (decaMC.matches(itdIsActually,world)) {
+					LazyMethodGen annotationHolder = locateAnnotationHolderForMethodCtorMunger(clazz,methodctorMunger);
+					if (doesAlreadyHaveAnnotation(annotationHolder,itdIsActually,decaMC,reportedErrors)) continue; // skip this one...
+					annotationHolder.addAnnotation(decaMC.getAnnotationX());
+					itdIsActually.addAnnotation(decaMC.getAnnotationX());
+					isChanged=true;
+					//FIXME asc you need to add relationships for these things
+					// AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),fields[fieldCounter]);
+					isChanged = true;
+					modificationOccured = true;
+					
+				} else {
+					if (!decaMC.isStarredAnnotationPattern()) 
+						worthRetrying.add(decaMC); // an annotation is specified that might be put on by a subsequent decaf
+				}
+			}
+			
+		    while (!worthRetrying.isEmpty() && modificationOccured) {
+				modificationOccured = false;
+                List forRemoval = new ArrayList();
+                for (Iterator iter2 = worthRetrying.iterator(); iter.hasNext();) {
+				  DeclareAnnotation decaF = (DeclareAnnotation) iter2.next();
+				  if (decaF.matches(itdIsActually,world)) {
+					LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz,methodctorMunger);
+					if (doesAlreadyHaveAnnotation(annotationHolder,itdIsActually,decaF,reportedErrors)) continue; // skip this one...
+					annotationHolder.addAnnotation(decaF.getAnnotationX());
+					//FIXME asc you need to add relationships for these things
+					// AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),fields[fieldCounter]);
+					isChanged = true;
+					modificationOccured = true;
+					forRemoval.add(decaF);
+				  }
+				  worthRetrying.removeAll(forRemoval);
+                }
+		    }
+	      }
+	      return isChanged;
+	}
+	
+	
 	/**
 	 * Weave any declare @field statements into the fields of the supplied class
+	 * 
+	 * Interesting case relating to public ITDd fields.  The annotations are really stored against
+     * the interfieldinit method in the aspect, but the public field is placed in the target
+     * type and then is processed in the 2nd pass over fields that occurs.  I think it would be
+     * more expensive to avoid putting the annotation on that inserted public field than just to
+     * have it put there as well as on the interfieldinit method.
 	 */
 	private boolean weaveDeclareAtField(LazyClassGen clazz) {
 	  
@@ -498,14 +685,26 @@ class BcelClassWeaver implements IClassWeaver {
         // decafs and check that to see if an error needs to be reported - this
         // would be expensive so lets skip it for now
 
-        List decaFs = getMatchingSubset(world.getDeclareAnnotationOnFields(),clazz.getType());
+		List reportedProblems = new ArrayList();
+
+		List allDecafs = world.getDeclareAnnotationOnFields();
+		if (allDecafs.isEmpty()) return false; // nothing to do
+		
+		
 		boolean isChanged = false;
+		List itdFields = getITDSubset(clazz,ResolvedTypeMunger.Field);
+		if (itdFields!=null) {
+			isChanged = weaveAtFieldRepeatedly(allDecafs,itdFields,reportedProblems);
+		}
+		
+        List decaFs = getMatchingSubset(allDecafs,clazz.getType());
+		if (decaFs.isEmpty()) return false; // nothing more to do
 		Field[] fields = clazz.getFieldGens();
-		if (fields!=null && !decaFs.isEmpty()) {
-          // go through all the fields
+		if (fields!=null) {
+		  
           for (int fieldCounter = 0;fieldCounter<fields.length;fieldCounter++) {
             BcelField aBcelField = new BcelField(clazz.getBcelObjectType(),fields[fieldCounter]);
-			if (!aBcelField.getName().startsWith(NameMangler.PREFIX)) {
+			if (!aBcelField.getName().startsWith(NameMangler.PREFIX)) {				
             // Single first pass
             List worthRetrying = new ArrayList();
             boolean modificationOccured = false;
@@ -513,7 +712,7 @@ class BcelClassWeaver implements IClassWeaver {
             for (Iterator iter = decaFs.iterator(); iter.hasNext();) {
 				DeclareAnnotation decaF = (DeclareAnnotation) iter.next();
 				if (decaF.matches(aBcelField,world)) {
-					if (doesAlreadyHaveAnnotation(aBcelField,decaF,true)) continue; // skip this one...
+					if (doesAlreadyHaveAnnotation(aBcelField,decaF,reportedProblems)) continue; // skip this one...
 					aBcelField.addAnnotation(decaF.getAnnotationX());
 					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),fields[fieldCounter]);
 					isChanged = true;
@@ -532,7 +731,7 @@ class BcelClassWeaver implements IClassWeaver {
               for (Iterator iter = worthRetrying.iterator(); iter.hasNext();) {
 				DeclareAnnotation decaF = (DeclareAnnotation) iter.next();
 				if (decaF.matches(aBcelField,world)) {
-					if (doesAlreadyHaveAnnotation(aBcelField,decaF,false)) continue; // skip this one...
+					if (doesAlreadyHaveAnnotation(aBcelField,decaF,reportedProblems)) continue; // skip this one...
 					aBcelField.addAnnotation(decaF.getAnnotationX());
 					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),fields[fieldCounter]);
 					isChanged = true;
@@ -552,17 +751,38 @@ class BcelClassWeaver implements IClassWeaver {
      * Check if a resolved member (field/method/ctor) already has an annotation, if it
      * does then put out a warning and return true
      */
-	private boolean doesAlreadyHaveAnnotation(ResolvedMember rm,DeclareAnnotation deca,boolean reportProblems) {
+	private boolean doesAlreadyHaveAnnotation(ResolvedMember rm,DeclareAnnotation deca,List reportedProblems) {
 	  if (rm.hasAnnotation(deca.getAnnotationTypeX())) {
-	    if (reportProblems) {
-        world.getLint().elementAlreadyAnnotated.signal(
-      		new String[]{rm.toString(),deca.getAnnotationTypeX().toString()},
-      		rm.getSourceLocation(),new ISourceLocation[]{deca.getSourceLocation()});
+	    if (world.getLint().elementAlreadyAnnotated.isEnabled()) {
+		  Integer uniqueID = new Integer(rm.hashCode()*deca.hashCode());
+		  if (!reportedProblems.contains(uniqueID)) {
+		    reportedProblems.add(uniqueID);
+	        world.getLint().elementAlreadyAnnotated.signal(
+      		    new String[]{rm.toString(),deca.getAnnotationTypeX().toString()},
+      		    rm.getSourceLocation(),new ISourceLocation[]{deca.getSourceLocation()});
+	      }
 	    }
-      	return true;
+		return true;
 	  }
 	  return false;
 	}
+	
+	private boolean doesAlreadyHaveAnnotation(LazyMethodGen rm,ResolvedMember itdfieldsig,DeclareAnnotation deca,List reportedProblems) {
+		  if (rm.hasAnnotation(deca.getAnnotationTypeX())) {
+			  if (world.getLint().elementAlreadyAnnotated.isEnabled()) {
+				  Integer uniqueID = new Integer(rm.hashCode()*deca.hashCode());
+				  if (!reportedProblems.contains(uniqueID)) {
+					  reportedProblems.add(uniqueID);
+					  reportedProblems.add(new Integer(itdfieldsig.hashCode()*deca.hashCode()));
+					  world.getLint().elementAlreadyAnnotated.signal(
+						new String[]{rm.toString(),deca.getAnnotationTypeX().toString()},
+						rm.getSourceLocation(),new ISourceLocation[]{deca.getSourceLocation()});
+				  }
+			  }
+	      	return true;
+		  }
+		  return false;
+		}
 	
 	private Set findAspectsForMungers(LazyMethodGen mg) {
 		Set aspectsAffectingType = new HashSet();
@@ -982,12 +1202,16 @@ class BcelClassWeaver implements IClassWeaver {
 				if (effective == null) {
 					enclosingShadow = BcelShadow.makeMethodExecution(world, mg, !canMatchBodyShadows);
 				} else if (effective.isWeaveBody()) {
-					enclosingShadow =
-						BcelShadow.makeShadowForMethod(
-							world,
-							mg,
-							effective.getShadowKind(),
-							effective.getEffectiveSignature());
+				  ResolvedMember rm = effective.getEffectiveSignature();
+
+				  // Annotations for things with effective signatures are never stored in the effective 
+				  // signature itself -  we have to hunt for them.  Storing them in the effective signature
+				  // would mean keeping two sets up to date (no way!!)
+				  
+				  fixAnnotationsForResolvedMember(rm,mg.getMemberView());
+				  				  
+				  enclosingShadow =
+					BcelShadow.makeShadowForMethod(world,mg,effective.getShadowKind(),rm);
 				} else {
 					return false;
 				}
@@ -1000,7 +1224,8 @@ class BcelClassWeaver implements IClassWeaver {
 					match(mg, h, enclosingShadow, shadowAccumulator);
 				}
 			}
-			if (canMatch(enclosingShadow.getKind())) {
+			// FIXME asc change from string match if we can, rather brittle.  this check actually prevents field-exec jps
+			if (canMatch(enclosingShadow.getKind()) && !mg.getName().startsWith("ajc$interFieldInit")) {
 				if (match(enclosingShadow, shadowAccumulator)) {
 					enclosingShadow.init();
 				}
@@ -1259,6 +1484,56 @@ class BcelClassWeaver implements IClassWeaver {
 			match(BcelShadow.makeFieldGet(world, mg, ih, enclosingShadow), shadowAccumulator);
 		}
 	}
+	
+	/**
+	 * For a given resolvedmember, this will discover the real annotations for it.
+	 * <b>Should only be used when the resolvedmember is the contents of an effective signature
+	 * attribute, as thats the only time when the annotations aren't stored directly in the
+	 * resolvedMember</b>
+	 * @param rm the sig we want it to pretend to be 'int A.m()' or somesuch ITD like thing
+	 * @param declaredSig the real sig 'blah.ajc$xxx'
+	 */
+	private void fixAnnotationsForResolvedMember(ResolvedMember rm,ResolvedMember declaredSig) {
+	  try {
+		TypeX memberHostType = declaredSig.getDeclaringType();
+		ResolvedTypeX[] annotations = (ResolvedTypeX[])mapToAnnotations.get(rm);
+		String methodName = declaredSig.getName();
+		// FIXME asc shouldnt really rely on string names !
+		if (annotations == null) {
+			if (rm.getKind()==Member.FIELD) {
+				if (methodName.startsWith("ajc$inlineAccessField")) {
+					ResolvedMember resolvedDooberry = world.resolve(rm);
+					annotations = resolvedDooberry.getAnnotationTypes();
+				} else {
+					ResolvedMember realthing = AjcMemberMaker.interFieldInitializer(rm,memberHostType);
+					ResolvedMember resolvedDooberry = world.resolve(realthing);
+					annotations = resolvedDooberry.getAnnotationTypes();
+				}
+			} else if (rm.getKind()==Member.METHOD && !rm.isAbstract()) {
+				if (methodName.startsWith("ajc$inlineAccessMethod")) {
+					ResolvedMember resolvedDooberry = world.resolve(declaredSig);
+					annotations = resolvedDooberry.getAnnotationTypes();
+				} else {
+					ResolvedMember realthing = AjcMemberMaker.interMethodBody(rm,memberHostType);
+					ResolvedMember resolvedDooberry = world.resolve(realthing);
+					annotations = resolvedDooberry.getAnnotationTypes();
+				}
+			} else if (rm.getKind()==Member.CONSTRUCTOR) {
+				ResolvedMember realThing = AjcMemberMaker.postIntroducedConstructor(memberHostType.resolve(world),rm.getDeclaringType(),rm.getParameterTypes());
+				ResolvedMember resolvedDooberry = world.resolve(realThing);
+				annotations = resolvedDooberry.getAnnotationTypes();
+			}
+			if (annotations == null) 
+		      annotations = new ResolvedTypeX[0];
+			mapToAnnotations.put(rm,annotations);
+		}
+		rm.setAnnotationTypes(annotations);
+		} catch (Throwable t) {
+		  //FIXME asc remove this catch after more testing has confirmed the above stuff is OK
+		  throw new RuntimeException("Unexpectedly went bang when searching for annotations on "+rm,t);
+		}
+	}
+
 
 	private void matchInvokeInstruction(LazyMethodGen mg,
 		InstructionHandle ih,
@@ -1292,10 +1567,15 @@ class BcelClassWeaver implements IClassWeaver {
 				if (effectiveSig == null) return;
 				//System.err.println("call to inter-type member: " + effectiveSig);
 				if (effectiveSig.isWeaveBody()) return;
-				if (canMatch(effectiveSig.getShadowKind()))
+
+				
+			    ResolvedMember rm = effectiveSig.getEffectiveSignature();
+				
+				fixAnnotationsForResolvedMember(rm,declaredSig); // abracadabra
+			  
+				if (canMatch(effectiveSig.getShadowKind())) 
 					match(BcelShadow.makeShadowForMethodCall(world, mg, ih, enclosingShadow,
-							effectiveSig.getShadowKind(), effectiveSig.getEffectiveSignature()),
-							shadowAccumulator);
+							effectiveSig.getShadowKind(), rm), shadowAccumulator);
 			}
 		} else {
 			if (canMatch(Shadow.MethodCall))

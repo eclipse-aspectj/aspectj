@@ -486,39 +486,57 @@
     
     <ajc-test dir="java5/annotations/itds" vm="1.5" title="nasty annotation and itds test">
         <compile files="AnnotationsAndITDs.aj" options="-1.5">
-            <message kind="warning" line="25" text="execution(@SomeAnnotation ...)"/>        
-            <message kind="warning" line="28" text="execution(@SomeAnnotation ...)"/>        
-            <message kind="warning" line="52" text="execution(@SomeAnnotation ...)"/>        
-            <message kind="warning" line="53" text="execution(@SomeAnnotation ...)"/>    
+            <!-- first two are ITCs, second two are ITCs annotated via declare @ctor, third is default ctor -->
             <message kind="warning" line="17" text="execution(@SomeAnnotation ...new(..)"/>    
             <message kind="warning" line="20" text="execution(@SomeAnnotation ...new(..)"/>    
             <message kind="warning" line="45" text="execution(@SomeAnnotation ...new(..)"/>    
             <message kind="warning" line="46" text="execution(@SomeAnnotation ...new(..)"/>
+            <message kind="warning" line="180" text="execution(@SomeAnnotation ...new(..)"/>
+
+			<!-- first four are fields annotated via declare, last two are directly annotated ITDs -->
+            <message kind="warning" line="59" text="set(@SomeAnnotation...)"/>    
+            <message kind="warning" line="60" text="set(@SomeAnnotation...)"/>    
             <message kind="warning" line="70" text="set(@SomeAnnotation...)"/>    
             <message kind="warning" line="71" text="set(@SomeAnnotation...)"/>    
             <message kind="warning" line="76" text="set(@SomeAnnotation...)"/>    
             <message kind="warning" line="77" text="set(@SomeAnnotation...)"/>  
+
+			<!-- annotations added via declare -->
             <message kind="warning" line="175" text="si(@SomeAnnotation...)"/>  
             <message kind="warning" line="180" text="si(@SomeAnnotation...)"/>  
+            
+            <message kind="warning" line="25" text="execution(@SomeAnnotation ...)"/>        
+            <message kind="warning" line="28" text="execution(@SomeAnnotation ...)"/>        
+            <message kind="warning" line="52" text="execution(@SomeAnnotation ...)"/>        
+            <message kind="warning" line="53" text="execution(@SomeAnnotation ...)"/>    
+            <!--message kind="warning" line="70" text="set(@SomeAnnotation...)"/>    
+            <message kind="warning" line="71" text="set(@SomeAnnotation...)"/-->    
         </compile>
         <run class="AnnotationsAndITDs">
-            <stdout>
-                <line text="@type System"/>
-                <line text="hello AnnotationsAndITDs"/>
-                <line text="goodbye String"/>
-                <line text="x Object"/>
-                <line text="y Integer"/>
+            <stderr>
+                <line text="@type java.lang.System (AnnotationsAndITDs.aj:0)"/>
+                <line text="hello AnnotationsAndITDs (AnnotationsAndITDs.aj:17)"/>
+                <line text="goodbye java.lang.String (AnnotationsAndITDs.aj:20)"/>
+                <line text="goodbye java.lang.String (AnnotationsAndITDs.aj:20)"/>
+                <line text="y java.lang.Integer (AnnotationsAndITDs.aj:28)"/>
+                <line text="d java.lang.Double (AnnotationsAndITDs.aj:70)"/>
+                <line text="f java.lang.Double (AnnotationsAndITDs.aj:71)"/>
+                <line text="@type java.lang.System (AnnotationsAndITDs.aj:0)"/>
+                <line text="@field ITDMe2 (AnnotationsAndITDs.aj:59)"/>
+                <line text="@field ITDMe2 (AnnotationsAndITDs.aj:60)"/>
+                <line text="@cons java.lang.String (AnnotationsAndITDs.aj:45)"/>
+                <line text="@field ITDMe2 (AnnotationsAndITDs.aj:59)"/>
+                <line text="@field ITDMe2 (AnnotationsAndITDs.aj:60)"/>
+                <line text="@cons java.lang.String (AnnotationsAndITDs.aj:46)"/>
+                <line text="@cons java.lang.String (AnnotationsAndITDs.aj:46)"/>
+                <line text="@method ITDMe2 (AnnotationsAndITDs.aj:53)"/>
+                <line text="@field ITDMe2 (AnnotationsAndITDs.aj:76)"/>
+                <line text="@field ITDMe2 (AnnotationsAndITDs.aj:77)"/>
+                
+                <!--
                 <line text="method bar has 1 params, first param annotation is @ParamAnnotation"/>
-                <line text="d Double"/>
-                <line text="f Double"/>
-                <line text="@type System"/>
-                <line text="@cons String"/>
-                <line text="@cons String"/>
-                <line text="@method ITDMe2"/>
-                <line text="@method ITDMe2"/>
-                <line text="@field ITDMe2"/>
-                <line text="@field ITDMe2"/>
-            </stdout>
+                -->
+            </stderr>
         </run>
     </ajc-test>
 
@@ -1066,6 +1084,7 @@
             <message kind="warning" line="8" text="annotated field"/>
             <message kind="warning" line="10" text="annotated method"/>
             <message kind="warning" line="12" text="annotated constructor"/>
+            <message kind="warning" line="12" text="annotated field"/>
         </compile>
     </ajc-test>
 
@@ -2022,9 +2041,94 @@
       <compile files="DeathByAnnotations.aj" options="-1.5,-emacssym" xlintfile="ignoreTypeNotExposed.properties"/>
       <run class="p.q.DeathByAnnotations"/>
    </ajc-test>
+   
+   <!-- ======================================================================================= -->
+   <!--               annotation binding with ITDs                                              -->
+   <!-- ======================================================================================= -->
 
+   <ajc-test dir="java5/annotations/binding" title="simple binding annotation values where itd method is annotated">
+      <compile files="BindingWithAnnotatedItds1.aj" options="-1.5"/>
+      <run class="BindingWithAnnotatedItds1">
+        <stderr>
+          <line text="Found apple at jp execution(int A.m()) (BindingWithAnnotatedItds1.aj:8)"/>
+        </stderr>
+      </run>
+   </ajc-test>
+   
+   <ajc-test dir="java5/annotations/binding" title="simple binding annotation values where itd field is annotated">
+      <compile files="BindingWithAnnotatedItds2.aj" options="-1.5"/>
+      <run class="BindingWithAnnotatedItds2">
+        <stderr>
+          <line text="Found banana at jp set(int A.i) (BindingWithAnnotatedItds2.aj:16)"/>
+          <line text="Found apple at jp set(String A.j) (BindingWithAnnotatedItds2.aj:17)"/>
+          <line text="Found orange at jp set(int[] A.k) (BindingWithAnnotatedItds2.aj:18)"/>
+        </stderr>
+      </run>
+   </ajc-test>
 
-    <!-- ============================================================== -->
+   <ajc-test dir="java5/annotations/binding" title="simple binding annotation values where itd ctor is annotated">
+      <compile files="BindingWithAnnotatedItds3.aj" options="-1.5"/>
+      <run class="BindingWithAnnotatedItds3">
+        <stderr>
+          <line text="Found pear at jp execution(A(String)) (BindingWithAnnotatedItds3.aj:8)"/>
+          <line text="Found orange at jp execution(A(int)) (BindingWithAnnotatedItds3.aj:10)"/>
+          <line text="Found tomato at jp execution(A(boolean)) (BindingWithAnnotatedItds3.aj:12)"/>
+        </stderr>
+      </run>
+   </ajc-test>
+   
+   <!-- ======================================================================================= -->
+   <!--              declare annotation targetting ITDs                                         --> 
+   <!-- ======================================================================================= -->
+   
+   
+   <ajc-test dir="java5/annotations/binding" title="simple binding annotation values where itd method is annotated via declare">
+      <compile files="BindingWithDeclaredAnnotationItds1.aj" options="-1.5"/>
+      <run class="BindingWithDeclaredAnnotationItds1">
+        <stderr>
+          <line text="Found orange at jp call(int A.m()) (BindingWithDeclaredAnnotationItds1.aj:16)"/>
+          <line text="Found orange at jp execution(int A.m()) (BindingWithDeclaredAnnotationItds1.aj:8)"/>
+          <line text="Found banana at jp call(int A.n()) (BindingWithDeclaredAnnotationItds1.aj:17)"/>
+          <line text="Found banana at jp execution(int A.n()) (BindingWithDeclaredAnnotationItds1.aj:10)"/>
+          <line text="Found tomato at jp call(int A.o()) (BindingWithDeclaredAnnotationItds1.aj:18)"/>
+          <line text="Found tomato at jp execution(int A.o()) (BindingWithDeclaredAnnotationItds1.aj:12)"/>
+        </stderr>
+      </run>
+   </ajc-test>
+   
+   <ajc-test dir="java5/annotations/binding" title="simple binding annotation values where itd field is annotated via declare">
+      <compile files="BindingWithDeclaredAnnotationItds2.aj" options="-1.5"/>
+      <run class="BindingWithDeclaredAnnotationItds2">
+        <stderr>
+          <line text="Found orange at jp set(int A.i) (BindingWithDeclaredAnnotationItds2.aj:16)"/>
+		  <line text="Found banana at jp set(String A.j) (BindingWithDeclaredAnnotationItds2.aj:17)"/>
+		  <line text="Found apple at jp set(boolean[] A.k) (BindingWithDeclaredAnnotationItds2.aj:18)"/>
+        </stderr>
+      </run>
+   </ajc-test>
+   
+    <ajc-test dir="java5/annotations/binding" title="simple binding annotation values where itd field is annotated multiple times via declare">
+      <compile files="BindingWithDeclaredAnnotationItds3.aj" options="-1.5"/>
+      <run class="BindingWithDeclaredAnnotationItds3">
+        <stderr>
+			<line text="Found fruit orange at jp set(int A.i) (BindingWithDeclaredAnnotationItds3.aj:13)"/>
+			<line text="Found drink margarita at jp set(int A.i) (BindingWithDeclaredAnnotationItds3.aj:13)"/>
+        </stderr>
+      </run>
+   </ajc-test>
+   
+   <ajc-test dir="java5/annotations/binding" title="simple binding annotation values where itd ctor is annotated via declare">
+      <compile files="BindingWithDeclaredAnnotationItds4.aj" options="-1.5"/>
+      <run class="BindingWithDeclaredAnnotationItds4">
+        <stderr>
+          <line text="Found pear at jp execution(A(String)) (BindingWithDeclaredAnnotationItds4.aj:8)"/>
+		  <line text="Found orange at jp execution(A(int)) (BindingWithDeclaredAnnotationItds4.aj:10)"/>
+		  <line text="Found tomato at jp execution(A(boolean)) (BindingWithDeclaredAnnotationItds4.aj:12)"/>
+        </stderr>
+      </run>
+   </ajc-test>
+
+   <!-- ============================================================== -->
     
     <ajc-test dir="options/aspectpath" title="dirs on aspectpath">
         <compile files="MyAspect.aj" options="-d out"/>

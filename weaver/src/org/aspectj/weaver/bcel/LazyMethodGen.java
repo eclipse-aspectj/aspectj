@@ -32,6 +32,7 @@ import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Synthetic;
+import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.generic.BranchHandle;
 import org.aspectj.apache.bcel.generic.BranchInstruction;
 import org.aspectj.apache.bcel.generic.CPInstruction;
@@ -58,6 +59,7 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverMessages;
 
 
@@ -84,7 +86,7 @@ public final class LazyMethodGen {
     private  String[]        declaredExceptions;
     private  InstructionList body; // leaving null for abstracts
     private  Attribute[]     attributes;
-    private AnnotationGen[]  annotations;
+   // private AnnotationGen[]  annotations;
     /* private */ final LazyClassGen    enclosingClass;   
     private final BcelMethod      memberView;
     int highestLineNumber = 0;
@@ -181,19 +183,25 @@ public final class LazyMethodGen {
     
     public void addAnnotation(AnnotationX ax) {
     	initialize();
-//		if (!hasAnnotation(TypeX.forSignature(a.getTypeSignature()))) {
-    	AnnotationGen ag = new AnnotationGen(ax.getBcelAnnotation(),enclosingClass.getConstantPoolGen(),true);
-    	AnnotationGen[] newAnnotations = new AnnotationGen[annotations.length+1];
-    	System.arraycopy(annotations,0,newAnnotations,0,annotations.length);
-    	newAnnotations[annotations.length]=ag;
-    	annotations = newAnnotations;
-    	// FIXME asc does this mean we are managing two levels of annotations again?
-    	// one here and one in the memberView??!?
-    	memberView.addAnnotation(ax);
+		if (memberView==null) {
+			System.err.println("REPORT THIS! 01: Lost annotation: "+ax+" cant be put onto "+this);
+			return;
+		}
+		memberView.addAnnotation(ax);
     }
-    
+	
+
+	public boolean hasAnnotation(TypeX annotationTypeX) {
+		initialize();
+		if (memberView==null) {
+			System.err.println("REPORT THIS! 02: Can't determine if "+this+" has annotation "+annotationTypeX);
+			return false;
+		}
+		return memberView.hasAnnotation(annotationTypeX);
+	}
+	
     private void initialize() {
-    	if (returnType != null) return;
+    	if (returnType != null) return; 
     	
     	//System.err.println("initializing: " + getName() + ", " + enclosingClass.getName() + ", " + returnType + ", " + savedMethod);
     	
@@ -204,7 +212,7 @@ public final class LazyMethodGen {
 
 		this.declaredExceptions = gen.getExceptions();
 		this.attributes = gen.getAttributes();
-		this.annotations = gen.getAnnotations();
+		//this.annotations = gen.getAnnotations();
 		this.maxLocals = gen.getMaxLocals();
         
 //		this.returnType = BcelWorld.makeBcelType(memberView.getReturnType());
@@ -799,9 +807,21 @@ public final class LazyMethodGen {
             gen.addAttribute(attributes[i]);
         }
         
-        if (annotations!=null) { 
-          for (int i = 0, len = annotations.length; i < len; i++) {
-            gen.addAnnotation(annotations[i]);
+// We don't manage our own set of annotations...
+//        if (annotations!=null) { 
+//          for (int i = 0, len = annotations.length; i < len; i++) {
+//            gen.addAnnotation(annotations[i]);
+//          }
+//        }
+		
+		// work with the annotations from the memberView rather
+		// than any set we know about.  This assumes we only work with
+		// annotations on LazyMethodGens that represent real members.
+        if (memberView!=null && memberView.getAnnotations()!=null && memberView.getAnnotations().length!=0) {
+		  AnnotationX[] ans = memberView.getAnnotations();
+          for (int i = 0, len = ans.length; i < len; i++) {
+			Annotation a= ans[i].getBcelAnnotation();
+            gen.addAnnotation(new AnnotationGen(a,gen.getConstantPool(),true));
           }
         }
         
