@@ -24,6 +24,7 @@ public class AllTestsAspectJ150 {
 		suite.addTestSuite(MigrationTests.class);
 		suite.addTest(Ajc150Tests.suite());
 		suite.addTestSuite(Ajc150TestsNoHarness.class); 
+        suite.addTestSuite(SCCSFixTests.class);
 		
 		// These are binary weaving tests
 		suite.addTest(AccBridgeMethods.suite());
