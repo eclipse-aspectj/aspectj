@@ -90,6 +90,12 @@ public class BcelWorld extends World {
 		setXRefHandler(xrefHandler);
 	}
 	
+	public BcelWorld(ClassPathManager cpm, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
+		this.classPath = cpm;
+		setMessageHandler(handler);
+		setXRefHandler(xrefHandler);
+	}
+	
 	public void addPath (String name) {
 		classPath.addPath(name, this.getMessageHandler());
 	}
