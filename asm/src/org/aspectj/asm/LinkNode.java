@@ -44,11 +44,22 @@ public class LinkNode extends StructureNode {
         if (programElementNode.getProgramElementKind().equals(ProgramElementNode.Kind.ADVICE) ||
             programElementNode.getProgramElementKind().equals(ProgramElementNode.Kind.INTRODUCTION) ||
             programElementNode.getProgramElementKind().equals(ProgramElementNode.Kind.CODE)) {
-            return programElementNode.parent.toString() + ": " + programElementNode.getName();
+            name = programElementNode.parent.toString() + ": " + programElementNode.getName();
+			StructureNode grandparent = programElementNode.parent.parent;
+            if ( grandparent instanceof ProgramElementNode ) {
+            	ProgramElementNode pe_grandparent = (ProgramElementNode)grandparent;
+            	if ( pe_grandparent.getProgramElementKind().equals(ProgramElementNode.Kind.CLASS) ||
+					 pe_grandparent.getProgramElementKind().equals(ProgramElementNode.Kind.INTERFACE)
+            	    ) {
+            		name = pe_grandparent.toString() + "." + name;	
+            	}
+            }
+            
         } else if (programElementNode.isMemberKind()) {
-            return programElementNode.parent.toString() + '.' + programElementNode.getName(); 
+            name = programElementNode.parent.toString() + '.' + programElementNode.getName(); 
         } else {
-            return programElementNode.toString();
+            name = programElementNode.toString();
         }
+        return name;
     }
 }
