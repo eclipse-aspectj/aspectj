@@ -38,6 +38,7 @@ import org.aspectj.weaver.ast.Var;
 public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 
 	private boolean isThis;
+	private boolean alreadyWarnedAboutDEoW = false;
 	private ExactAnnotationTypePattern annotationTypePattern;
 	private ShadowMunger munger;
 	
@@ -87,6 +88,10 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 		annotationTypePattern = (ExactAnnotationTypePattern) annotationTypePattern.resolveBindings(scope,bindings,true);
 		// must be either a Var, or an annotation type pattern
 		// if annotationType does not have runtime retention, this is an error
+		if (annotationTypePattern.annotationType == null) {
+			// it's a formal with a binding error
+			return;
+		}
 		ResolvedTypeX rAnnotationType = (ResolvedTypeX) annotationTypePattern.annotationType;
 		if (!(rAnnotationType.isAnnotationWithRuntimeRetention())) {
 		    IMessage m = MessageUtil.error(
@@ -111,14 +116,19 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	protected Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
 		if (isDeclare(bindings.getEnclosingAdvice())) {
 			  // Enforce rule about which designators are supported in declare
-			  inAspect.getWorld().showMessage(IMessage.ERROR,
-			  		WeaverMessages.format(WeaverMessages.THIS_OR_TARGET_IN_DECLARE,isThis?"this":"target"),
-					bindings.getEnclosingAdvice().getSourceLocation(), null);
+			  if (!alreadyWarnedAboutDEoW) {
+				  inAspect.getWorld().showMessage(IMessage.ERROR,
+				  		WeaverMessages.format(WeaverMessages.THIS_OR_TARGET_IN_DECLARE,isThis?"this":"target"),
+						bindings.getEnclosingAdvice().getSourceLocation(), null);
+				  alreadyWarnedAboutDEoW = true;
+			  }
 			  return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 		}
 
 		ExactAnnotationTypePattern newType = (ExactAnnotationTypePattern) annotationTypePattern.remapAdviceFormals(bindings);		
-		Pointcut ret = new ThisOrTargetAnnotationPointcut(isThis, newType, bindings.getEnclosingAdvice());
+		ThisOrTargetAnnotationPointcut ret = 
+			new ThisOrTargetAnnotationPointcut(isThis, newType, bindings.getEnclosingAdvice());
+		ret.alreadyWarnedAboutDEoW = alreadyWarnedAboutDEoW;
         ret.copyLocationFrom(this);
         return ret;
 	}

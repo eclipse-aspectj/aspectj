@@ -102,7 +102,7 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
     	return true;
     }
 
-    public boolean hasAnnotation(ResolvedTypeX ofType) {
+    public boolean hasAnnotation(TypeX ofType) {
         // The ctors don't allow annotations to be specified ... yet - but
         // that doesn't mean it is an error to call this method.
         // Normally the weaver will be working with subtypes of 
