@@ -9,6 +9,8 @@ public aspect TraceMains {
     before() : execution(static void main(String[])) {
         Tester.event("before main " + className(thisJoinPointStaticPart));
     }
+    // this event is submitted after the Tester does its check,
+    // so it is ignored.
     after() returning: execution(static void main(String[])) {
         Tester.event("after main " + className(thisJoinPointStaticPart));
     }
