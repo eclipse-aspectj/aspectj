@@ -42,17 +42,20 @@ import java.util.*;
 public class JavaRun implements IAjcRun {
     public static String FORK_KEY = "javarun.fork";
     public static String JAVA_KEY = "javarun.java";
+    public static String VM_ARGS_KEY = "javarun.vmargs";
     public static String JAVA_HOME_KEY = "javarun.java.home";
     public static String BOOTCLASSPATH_KEY = "javarun.bootclasspath";
     private static final boolean FORK;
     private static final String JAVA;
     private static final String JAVA_HOME;
+    private static final String VM_ARGS;
     static final String BOOTCLASSPATH;
     static {
         FORK = (null != getProperty(FORK_KEY));
         JAVA = getProperty(JAVA_KEY);
         JAVA_HOME = getProperty(JAVA_HOME_KEY);
         BOOTCLASSPATH = getProperty(BOOTCLASSPATH_KEY);
+        VM_ARGS = getProperty(VM_ARGS_KEY);
         try {
             System.setSecurityManager(RunSecurityManager.ME);
         } catch (Throwable t) {
@@ -228,6 +231,12 @@ public class JavaRun implements IAjcRun {
             java = jfile.getAbsolutePath();
         } 
         cmd.add(java);
+        if (null != VM_ARGS) {
+            String[] args = XMLWriter.unflattenList(VM_ARGS);
+            for (int i = 0; i < args.length; i++) {
+                cmd.add(args[i]);
+            }
+        }
         cmd.add("-classpath");
         cmd.add(classpath);
         cmd.add(spec.className);

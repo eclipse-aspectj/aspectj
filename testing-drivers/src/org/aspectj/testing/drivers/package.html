@@ -1,13 +1,24 @@
 <html>
+	<head><title>Harness Package Documentation</title></head>
 <body>
-This document you how to run the harness,
-specifying options on the command-line for the
-various components that form the harness.
+<p>
+The AspectJ compiler test harness can compile and run AspectJ programs
+as specified by the test definitions.
+This document tells you how to run the harness.
+It describes the options you can specify on the command-line to
+control various components that form the harness, either to 
+specify options that augment the test definitions or to
+change how the harness works, e.g., selecting particular tests
+or logging more information.
+For information on how to write a test definition, see
+<code>readme-writing-compiler-tests.html</code> in the testing module.
+</p>
 <p>
 The harness drives compiler tests, using  
 a chain of responsibility to map elements
-in the schema of a test definition to implementing classes:
-<p>
+in the schema of a test definition to implementing classes.
+
+</p>
 <table border="1" cellpadding="1">
 <tr><th align="left">Test feature</th>
     <th align="left">Description</th>
@@ -21,23 +32,23 @@ in the schema of a test definition to implementing classes:
     <td>subclass feature harness</td>
     <td>FeatureHarness</td>
 </tr>
-<tr><td><code>&lt;suite&gt;<code></td>
+<tr><td><code>&lt;suite&gt;</code></td>
     <td>Test suite</td>
     <td>AjcTest.Suite</td>
 </tr>
-<tr><td>&nbsp;&nbsp;<code>&lt;ajc-test&gt;<code></td>
+<tr><td>&nbsp;&nbsp;<code>&lt;ajc-test&gt;</code></td>
     <td>Test case</td>
     <td>AjcTest</td>
 </tr>
-<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;compile&gt;<code></td>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;compile&gt;</code></td>
     <td>Initial (batch) compile run</td>
     <td>CompilerRun</td>
 </tr>
-<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;inc-compile&gt;<code></td>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;inc-compile&gt;</code></td>
     <td>Incremental re-compile</td>
     <td>IncCompilerRun</td>
 </tr>
-<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;run&gt;<code></td>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;run&gt;</code></td>
     <td>Run class</td>
     <td>JavaRun</td>
 </tr>
@@ -51,12 +62,12 @@ in the schema of a test definition to implementing classes:
           &lt;run&gt; {sub-} run component         (JavaRun)
           ...
 -->
-<p>
+<p/>
 The compiler used is the AspectJ compiler <code>ajc</code>
 (optionally as wrapped by the Ant task or AJDE API's), but
 in principle any compiler accepting similar options can be
 used.
-<p>
+<p/>
 To run from the command-line, use 
 <code>Harness.main(String[])</code>.
 To run programmatically, use <code>Harness.getHarness()</code>.
@@ -64,13 +75,13 @@ To run programmatically, use <code>Harness.getHarness()</code>.
 each component in the chain may accept and interpret, so
 you can modify how the tests run by specifying the following 
 arguments on the harness command line:
-<p>
+<p/>
 <table cellpadding="1" border="1">
 <tr><th>Component</th><th>Options</th></tr>
 
 <tr><td rowspan="6" valign="top">Harness 
     <p>suite files, harness verbosity, temp files, option variants
-    </td></tr>
+    </p></td></tr>
   <tr><td><u>suite files</u>: ajcTest-compliant .txt or .xml files are accepted.
      <!-- XXX link to ajcTestSuite.dtd and .txt definitions -->
      </td></tr>
@@ -103,7 +114,7 @@ arguments on the harness command line:
     
 <tr><td rowspan="5" valign="top">FeatureHarness 
     <p>output and logging options
-    </td></tr>
+    </p></td></tr>
   <tr><td><u>tracing</u>: 
      <code>-progressDots</code> will print "." for every passed
      test completed and "!" for every test completed but not passed.
@@ -148,7 +159,7 @@ arguments on the harness command line:
     
 <tr><td rowspan="5" valign="top">AjcTest
     <p>selection options for keywords, bugID (PR), or title (description)
-    </td></tr>
+    </p></td></tr>
   <tr><td><u>keywords</u>: <code>-ajctest[Require|Skip]Keywords=one{,two}</code>
      will either require or skip a test that has one of the 
      specified keywords.
@@ -161,13 +172,13 @@ arguments on the harness command line:
      will require that the title (description) of a test contain 
      one of the specified substrings, here either "one" or "two".
      Use this to select a few tests you know generally.
-     <br>
+     <br/>
      <code>"-ajctestTitleList=first title\, in theory, second title"</code>
      will require that the title (description) of a test be
      exactly "first title, in theory" or "second title".  
      The entire option must be one argument on the command line.
      Use this when working with just a few specific tests.
-     <br>
+     <br/>
      <code>"-ajctestTitleList=../tests/ajcTestResults.txt"</code>
      will require that the title (description) of a test be
      equal to one listed in <code>../tests/ajcTestResults.txt</code>
@@ -176,7 +187,7 @@ arguments on the harness command line:
      This option only differs from the prior in that the parameter
      is a valid file to read.
      Use this to re-run a large set of tests.
-     <br>
+     <br/>
      <code>"-ajctestTitleFailList=../tests/ajcTestResults.txt"</code>
      is the same as the <code>-ajctestTitleList={file}</code> variant,
      except that only results prefixed "FAIL" are included.
@@ -203,7 +214,7 @@ arguments on the harness command line:
     
 <tr><td rowspan="6" valign="top">CompilerRun
 <p>compiler options and side-effects
-    </td></tr>
+    </p></td></tr>
   <tr><td><u>supported options</u>: 
      The command line passed to the compiler by <code>CompilerRun</code>
      is composed of entries derived from the <code>&lt;compile&gt;</code>
@@ -259,8 +270,9 @@ arguments on the harness command line:
         if they are in the same family.  For example, <code>-ajc</code> and
         <code>eclipse</code> are both compiler, and <code>-source 1.4</code>
         and <code>-source 1.3</code> are both source.
+		<br/>
         </li>
-     <ul><p>
+     </ul>
      </td></tr>
   <tr><td><u>auto-skip</u>: After combining global and local options, there may be
      conflicting or impossible options, which cause the test to be skipped:
@@ -269,8 +281,9 @@ arguments on the harness command line:
            - e.g., <code>-lenient</code> and <code>-strict</code></li>
      <li><u>impossible option</u>: It may not be possible in the current configuration to 
          implement an option - e.g., <code>-usejavac</code> or <code>-eclipse</code> 
-         when javac or the eclipse implementation is not on the classpath</li>
-     <ul><p>
+         when javac or the eclipse implementation is not on the classpath		
+		<br/></li>
+     </ul>
      </td></tr>
      
   <tr><td><u>source searching</u>: Given <code>-seek:{literal}</code>,  
@@ -284,7 +297,7 @@ arguments on the harness command line:
     
      
   <tr><td rowspan="2" valign="top">JavaRun
-  	  <p>Options and forking</td>
+  	  <p>Options and forking</p></td>
      <td><u>options</u>: options specified in the test are passed
       to the main method as they would be on the command-line.
       No options passed to the harness are passed through to
@@ -295,7 +308,7 @@ arguments on the harness command line:
         than can be supported by the harness (i.e., some 1.1 flavor);
         it's very time-consuming otherwise.
   		Currently forking is only controllable through system properties
-  		of the invoking vm (defined in JavaRun):
+  		of the invoking vm (defined in JavaRun.java):
   		<ul>
   		   <li><u>javarun.fork</u>: anything to run in a new vm.
   		      </li>
@@ -310,50 +323,55 @@ arguments on the harness command line:
   		      run classpath.  Multiple entries must be separated by
   		      the system-dependent path separator.
   		      </li>
+  		   <li><u>javarun.vmargs</u>: this is added to the fork command-line
+			right after java.  Multiple entries must be separated by a comma
+			(and the whole thing should be one parameter), e.g.,
+			<code>-Djavarun.vmargs=-Dname=value,-Dname2="value 2"</code>
+  		      </li>
   		</ul>
      </td></tr>
 </table>
-<p>
+<br/>
 Following are some sample configurations:
 <ul>
 <li><code>java {harness} -hideStreams {suiteFile}</code>
  <p>Use this to output only a 1-line summary of the test results
-    (tests skipped, incomplete, failed, passed).<p>
+    (tests skipped, incomplete, failed, passed).<br/></p>
   </li>
   
 <li><code>java {harness} -hideStreams -traceTestsMin {suiteFile} > results.txt</code>
  <p>This writes to result.txt one line [PASS|FAIL] per test, plus a
-    1-line summary of the test results.<p>
+    1-line summary of the test results.<br/></p>
   </li>
   
 <li><code>java {harness} -logFail {suiteFile} -ajctestTitleFailList=results.txt</code>
  <p>This re-runs any test that failed from the "results.txt" run,
-    verbosely logging any fails.<p>
+    verbosely logging any fails.<br/></p>
   </li>
   
 <li><code>java {harness} -hideStreams -logMinFail {suiteFile}</code>
  <p>Use this when running tests mainly to see if they pass or
     if the failure messages are typically enough information
     to indicate why the test is failing.  It produces only minimal
-    output for failed tests.<p>
+    output for failed tests.<br/></p>
   </li>
   
 <li><code>java {harness} -hideStreams -verboseHarness -logFail {suiteFile}</code>
  <p>When it's not clear at first glance why a test is failing, before
     looking at the test code you can run it and print any harness or test
-    setup failures and all the associated messages from the test components.<p>
+    setup failures and all the associated messages from the test components.<br/></p>
   </li>
 
 <li><code>java {harness} -hideStreams -usejavac- -ajc -Xlint- {suiteFile}</code>
  <p>Because of the trailing '-' on two of the options,
     this would do four complete runs with the old (Ajc 1.0) compiler: one with
-    no options, one with -lenient, one with -Xlint, and one with both.<p>
+    no options, one with -lenient, one with -Xlint, and one with both.<br/></p>
   </li>
   
 
 <li><code>java {harness} --ajctestPR=101,102 -Xlint- ^usejavac !eclipse {suiteFile}</code>
  <p>Run any tests associated with bugs 101 and 102, with and without -Xlint,
-    forcing off -usejavac and forcing the use of the new eclipse-based compiler.<p>
+    forcing off -usejavac and forcing the use of the new eclipse-based compiler.<br/></p>
   </li>
   
 </ul>
@@ -361,7 +379,7 @@ Following are some sample configurations:
 If you have a set of options you use often, you can define a single-word
 option alias for it; see <code>Harness.optionAliases</code>.
 
-<p><u>Configuration</u>: Most tests use the library jars in 
+<br/><u>Configuration</u>: Most tests use the library jars in 
 <code>modules/lib/test</code>, defined in 
 <code>org.aspectj.testing.harness.bridge.Globals</code>.  
 Normally the harness finds these by relative path 
@@ -373,7 +391,7 @@ define the environment variable <code>harness.libdir</code> - e.g.,
     $ java -Dharness.libdir=../modules/lib/test ...
 </pre>
 
-<p><u>Forking:</u>:
+<br/><u>Forking:</u>:
 The harness must be run in a compiler-compatible VM, and the
 compiler steps run in-process.
 However, the java steps can be run in forked mode, which is useful
