@@ -726,7 +726,7 @@ public class PatternParser {
 			}
 			int endPos = tokenSource.peek(-1).getEnd();
 			if (buf.length() == 0 && names.isEmpty()) {
-				throw new ParserException("expected name pattern", tok);
+				throw new ParserException("name pattern", tok);
 			} 
 			
 			if (buf.length() == 0 && justProcessedEllipsis) {
@@ -788,7 +788,7 @@ public class PatternParser {
 		}
 		int endPos = tokenSource.peek(-1).getEnd();
 		if (buf.length() == 0) {
-			throw new ParserException("expected name pattern", tok);
+			throw new ParserException("name pattern", tok);
 		} 
 		
 		checkLegalName(buf.toString(), previous);

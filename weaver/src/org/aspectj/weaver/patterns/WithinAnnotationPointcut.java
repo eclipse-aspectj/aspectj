@@ -91,4 +91,14 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
 
 	}
 
+	/* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append("@within(");
+		buf.append(type.toString());
+		buf.append(")");
+		return buf.toString();
+    }
 }

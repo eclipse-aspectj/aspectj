@@ -98,7 +98,7 @@ public class AnnotationPatternTestCase extends TestCase {
 			AnnotationTypePattern bad = p.maybeParseAnnotationPattern();
 			fail("ParserException expected");
 		} catch(ParserException pEx) {
-			assertEquals("expected name pattern",pEx.getMessage());
+			assertEquals("name pattern",pEx.getMessage());
 		}
 	}
 	

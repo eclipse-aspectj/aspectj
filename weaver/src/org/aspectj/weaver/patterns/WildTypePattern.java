@@ -520,6 +520,7 @@ public class WildTypePattern extends TypePattern {
     			buf.append(name.toString());
     		}
     	}
+    	if (includeSubtypes) buf.append('+');
     	if (annotationPattern != AnnotationTypePattern.ANY) {
     		buf.append(')');
     	}

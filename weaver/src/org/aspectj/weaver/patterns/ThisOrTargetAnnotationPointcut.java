@@ -54,6 +54,8 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 		return null;
 	}
 
+	public boolean isThis() { return isThis; }
+	
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#resolveBindings(org.aspectj.weaver.patterns.IScope, org.aspectj.weaver.patterns.Bindings)
 	 */
@@ -94,4 +96,13 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 
 	}
 
+	/* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append(isThis ? "@this(" : "@target(");
+		buf.append(type.toString());
+		buf.append(")");
+		return buf.toString();    }
 }

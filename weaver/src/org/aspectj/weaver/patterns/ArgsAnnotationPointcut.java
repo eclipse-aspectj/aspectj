@@ -91,4 +91,12 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 
 	}
 
+	/* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+        StringBuffer buf = new StringBuffer("@args");
+        buf.append(arguments.toString());
+        return buf.toString();
+    }
 }

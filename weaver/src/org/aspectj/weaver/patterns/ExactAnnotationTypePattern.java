@@ -153,6 +153,9 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	}
 	
 	public String toString() {
-		return "@" + annotationType.toString();
+	    if (!resolved && formalName != null) return formalName;
+		String ret = "@" + annotationType.toString();
+		if (formalName != null) ret = ret + " " + formalName;
+		return ret;
 	}
 }
