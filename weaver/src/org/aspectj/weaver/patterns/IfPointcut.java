@@ -161,6 +161,21 @@ public class IfPointcut extends Pointcut {
 		}
 		IfPointcut ret = new IfPointcut(testMethod, extraParameterFlags);
 		partiallyConcretized = ret;
+		
+		// It is possible to directly code your pointcut expression in a per clause
+		// rather than defining a pointcut declaration and referencing it in your
+		// per clause.  If you do this, we have problems (bug #62458).  For now,
+		// let's police that you are trying to code a pointcut in a per clause and
+		// put out a compiler error.
+		if (bindings.directlyInAdvice() && bindings.getEnclosingAdvice()==null) {
+			// Assumption: if() is in a per clause if we say we are directly in advice
+			// but we have no enclosing advice.
+			inAspect.getWorld().showMessage(IMessage.ERROR,
+				"if() pointcut designator cannot be used directly in a per clause (compiler limitation).  Create a named pointcut containing the if() and refer to it",
+				this.getSourceLocation(),null);
+			return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
+		}
+		
 		if (bindings.directlyInAdvice()) {
 			ShadowMunger advice = bindings.getEnclosingAdvice();
 			if (advice instanceof Advice) {
