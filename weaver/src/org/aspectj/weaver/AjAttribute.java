@@ -22,7 +22,6 @@ import java.io.IOException;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FileUtil;
-import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;

@@ -18,9 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Set;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ClassParser;
