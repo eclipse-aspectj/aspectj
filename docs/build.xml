@@ -62,7 +62,7 @@
       <!-- default value for xml-html copying (copy all graphics) -->
       <property name="xml-html-copy" value="*.gif,*.png" />
       <property name="binary.pattern" 
-               value="**/*.gif,**/*.png,**/*.doc,**/*.pdf"/>
+               value="**/*.gif,**/*.png,**/*.doc,**/*.pdf,**/*.jpg,**/*.JPG"/>
       <uptodate property="local.dist.uptodate"
               targetfile="${docs.dist.dir}/doc/faq.html"> <!-- use faq as tag file -->
          <srcfiles dir="${docs.src.dir}" includes="${docs.src.pattern}"/>  
@@ -202,10 +202,18 @@
     </target>
 
     <target name="devguide" depends="init">
+    
+<!-- GCH -->
+<echo message="**** docs: just inside devguide target"/>
+    
       <copy todir="${docs.src.dir}/devGuideDB" filtering="off" >
          <fileset dir="${devguide.icons.dir}"
              includes="${include.devguide.icons}" />
         </copy>
+        
+<!-- GCH -->
+<echo message="**** docs: about to make call to build-guide target"/>
+        
       <antcall target="build-guide">
         <param name="xml-html-copy" value="ajbrowser-building.gif,ajbrowser-options.gif,${include.devguide.icons}" />
         <param name="guide.dir" value="devGuideDB"/>
