@@ -136,14 +136,5 @@
         	files="Main.java"/>
         <run class="Main"/>
     </ajc-test>
-    
-    <ajc-test dir="bugs/jpOptimization" 
-    	pr="45441"
-    	title="JoinPoint Optimization when targetting 1.4">
-        <compile 
-        	files="de/test/MyMain.java,
-        		   de/test/MyAspect.java"
-            options="-1.4"/>
-        <run class="de.test.MyMain"/>
-    </ajc-test>
+
 </suite>

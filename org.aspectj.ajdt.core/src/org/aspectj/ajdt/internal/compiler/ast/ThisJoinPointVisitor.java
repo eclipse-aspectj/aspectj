@@ -161,6 +161,14 @@ public class ThisJoinPointVisitor extends AbstractSyntaxTreeVisitorAdapter {
 		//System.err.println("replace static ref: " + receiver + " is " + System.identityHashCode(receiver));
 		receiver.binding = thisJoinPointStaticPartDecLocal; //thisJoinPointStaticPartDec;
 		receiver.codegenBinding = thisJoinPointStaticPartDecLocal;
+		
+		ReferenceBinding thisJoinPointStaticPartType = 
+			(ReferenceBinding)thisJoinPointStaticPartDec.type;
+			
+		receiver.receiverType = receiver.actualReceiverType =
+			receiver.resolvedType = thisJoinPointStaticPartType;
+			
+		call.setActualReceiverType(thisJoinPointStaticPartType);
 
 		call.binding = call.codegenBinding = getEquivalentStaticBinding(call.binding);
 	}
