@@ -372,9 +372,6 @@ To use testing client jar in tests,
     	<mkdir dir="${aj.dist.dir}/tools_tmp"/>
     	<unjar dest="${aj.dist.dir}/tools_tmp"
     		   src="${aj.dist.dir}/tools/lib/aspectjtools.jar"/>
-    	<!-- put the runtime classes in too -->
-    	<unjar dest="${aj.dist.dir}/tools_tmp" 
-    		src="${aj.dist.dir}/tools/lib/aspectjrt.jar"/>
     	<!-- Ant 1.5.1 doesn't overwrite the jar, even with update set to false -->
     	<delete file="${aj.dist.dir}/tools/lib/aspectjtools.jar" />
 		<jar manifest="${aj.dist.dir}/tools_tmp/META-INF/MANIFEST.MF" 

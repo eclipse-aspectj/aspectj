@@ -134,7 +134,8 @@ public class Module {
         if (null == requiredJar) {
             return true;
         } else {
-            return "runtime.jar".equals(requiredJar.getName());
+            //return "runtime.jar".equals(requiredJar.getName());
+        	return false;
         }
     }
 
