@@ -263,11 +263,18 @@ public class AdviceDeclaration extends MethodDeclaration {
 		return ret;
 	}
 
-
 	
 	public void postParse(TypeDeclaration typeDec) {
+		int adviceSequenceNumberInType = ((AspectDeclaration)typeDec).adviceCounter++;
+		
+		StringBuffer stringifiedPointcut = new StringBuffer(30);
+		pointcutDesignator.print(0,stringifiedPointcut);
 		this.selector =
-			NameMangler.adviceName(EclipseFactory.fromBinding(typeDec.binding), kind, sourceStart).toCharArray();
+			NameMangler.adviceName(
+			  EclipseFactory.fromBinding(typeDec.binding), 
+			  kind, 
+			  adviceSequenceNumberInType,
+			  stringifiedPointcut.toString().hashCode()).toCharArray();
 		if (arguments != null) {
 			baseArgumentCount = arguments.length;
 		}

@@ -7142,9 +7142,34 @@
         <run class="HandlerSig"/>
     </ajc-test>
     
+
     <ajc-test dir="new" pr="42668"
    	 title="after returning with parameter: matching rules">
         <compile files="AfterReturningParamMatching.java" />
         <run class="AfterReturningParamMatching"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs/binaryCompat" pr="50641"
+      title="binary compatibility of advice method names - expect no error">
+        <compile files="Main.java,TraceV1.aj"/>
+        <run class="Main"/>
+        <compile files="TraceV2.aj"/>
+        <run class="Main"/>
+    </ajc-test>
+   
+    <ajc-test dir="bugs/binaryCompat" pr="50641"
+      title="binary compatibility of advice method names - expect error">
+        <compile files="Main.java,TraceV1.aj"/>
+        <run class="Main"/>
+        <compile files="TraceRE.aj"/>
+        <run class="Main"/>
+    </ajc-test>
+    
+     <ajc-test dir="bugs/binaryCompat" pr="50641"
+      title="binary compatibility of advice method names - expect no error">
+        <compile files="Main.java,TraceWithInnerV1.aj"/>
+        <run class="Main"/>
+        <compile files="TraceWithInnerV2.aj"/>
+        <run class="Main"/>
     </ajc-test>
 </suite>

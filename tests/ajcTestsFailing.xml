@@ -127,22 +127,6 @@
         <run class="InterfaceMethodDeclarationNonPublic"/>
     </ajc-test>
 
-    <ajc-test dir="bugs/binaryCompat" pr="50641"
-      title="binary compatibility of advice method names - expect no error">
-        <compile files="Main.java,TraceV1.aj"/>
-        <run class="Main"/>
-        <compile files="TraceV2.aj"/>
-        <run class="Main"/>
-    </ajc-test>
-   
-    <ajc-test dir="bugs/binaryCompat" pr="50641"
-      title="binary compatibility of advice method names - expect error">
-        <compile files="Main.java,TraceV1.aj"/>
-        <run class="Main"/>
-        <compile files="TraceRE.aj"/>
-        <run class="Main"/>
-    </ajc-test>
-
     <ajc-test dir="bugs" pr="36787"
       title="interface initialization order">
         <compile files="InterfaceInitializerOrder.java"/>

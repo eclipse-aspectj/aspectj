@@ -3,7 +3,9 @@ aspect Trace {
 	
 	before(): execution(void doit(..)) {
 		System.out.println("entering");
+		
 	}
+	
 	
 	after() returning: execution(void doit(..)) {
 		System.out.println("exiting");

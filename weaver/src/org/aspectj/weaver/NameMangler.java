@@ -89,13 +89,17 @@ public class NameMangler {
 	}
 	
 	
-	
 	/**
 	 * The name of methods corresponding to advice declarations
+	 * Of the form: "ajc$[AdviceKind]$[AspectName]$[NumberOfAdviceInAspect]$[PointcutHash]"
 	 */
-	public static String adviceName(TypeX aspectType, AdviceKind kind, int position) {
-		return makeName(kind.getName(), aspectType.getNameAsIdentifier(),
-					Integer.toHexString(position));
+	public static String adviceName(TypeX aspectType, AdviceKind kind, int adviceSeqNumber,int pcdHash) {
+		String newname = makeName(
+			kind.getName(),
+			aspectType.getNameAsIdentifier(),
+			Integer.toString(adviceSeqNumber),
+			Integer.toHexString(pcdHash));
+		return newname;
 	}
 	
 	/**

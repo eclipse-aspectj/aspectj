@@ -33,12 +33,12 @@ public class AroundAMain extends TestCase {
 		Object instance = Reflection.getStaticField(Class.forName("AroundA"),
 			"ajc$perSingletonInstance");
 
-		Reflection.invoke(Class.forName("AroundA"), instance, "ajc$around$AroundA$46",
+		Reflection.invoke(Class.forName("AroundA"), instance, "ajc$around$AroundA$1$73ebb943", // was $AroundA$46
 					new Integer(10), new Boolean(true), closure);
 
-		Reflection.invoke(Class.forName("AroundA"), instance, "ajc$around$AroundA$c5",
+		Reflection.invoke(Class.forName("AroundA"), instance, "ajc$around$AroundA$2$a758212d",  // Was $AroundA$c5
 					"hello there", closure);
-		Reflection.invoke(Class.forName("AroundA"), instance, "ajc$around$AroundA$150",
+		Reflection.invoke(Class.forName("AroundA"), instance, "ajc$around$AroundA$3$a758212d",  // Was $AroundA$150
 					new String[1], closure);
 
 	}
