@@ -18,7 +18,9 @@ import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
 
-// TODO: check for return types
+/**
+ * @author Mik Kersten
+ */
 public class AsmRelationshipsTest extends AjdeTestCase {
   
 	private AsmManager manager = null;
@@ -28,10 +30,31 @@ public class AsmRelationshipsTest extends AjdeTestCase {
 		super(name);
 	}
 
+	public void testUsesPointcut() {
+	    IProgramElement ptUsage = AsmManager.getDefault().getHierarchy().findElementForType(null, "PointcutUsage");
+	    assertNotNull(ptUsage);
+	    IProgramElement pts = AsmManager.getDefault().getHierarchy().findElementForType(null, "Pointcuts");
+	    assertNotNull(pts);
+	    
+		IProgramElement pUsesA = manager.getHierarchy().findElementForLabel(
+		        ptUsage, 
+				IProgramElement.Kind.POINTCUT, 
+				"usesA()"/*Point"*/);
+		assertNotNull(pUsesA);
+
+		IProgramElement ptsA = manager.getHierarchy().findElementForLabel(
+		        pts, 
+				IProgramElement.Kind.POINTCUT, 
+				"a()"/*Point"*/);
+		assertNotNull(ptsA);
+		
+		assertTrue(AsmManager.getDefault().getRelationshipMap().get(pUsesA).size()>0);
+		assertTrue(AsmManager.getDefault().getRelationshipMap().get(ptsA).size()>0);
+	}
+	
 	public void testDeclareParents() {		
 		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, "DeclareCoverage");
-//		System.err.println(aspect.getChildren());
-		
+
 		IProgramElement dp = manager.getHierarchy().findElementForLabel(
 				aspect, 
 				IProgramElement.Kind.DECLARE_PARENTS, 

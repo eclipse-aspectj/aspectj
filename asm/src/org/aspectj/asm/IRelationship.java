@@ -48,11 +48,12 @@ public interface IRelationship extends Serializable {
 		public static final Kind ADVICE                = new Kind("advice");
 		public static final Kind DECLARE               = new Kind("declare");
 		public static final Kind DECLARE_INTER_TYPE    = new Kind("inter-type declaration");
+		public static final Kind USES_POINTCUT    		= new Kind("uses pointcut");
 		
 		public static final Kind[] ALL = { 
 			DECLARE_WARNING, DECLARE_ERROR,
 			ADVICE_AROUND,ADVICE_AFTERRETURNING,ADVICE_AFTERTHROWING,ADVICE_AFTER,ADVICE_BEFORE,
-			ADVICE, DECLARE, DECLARE_INTER_TYPE };
+			ADVICE, DECLARE, DECLARE_INTER_TYPE, USES_POINTCUT };
 			
 		private final String name;
 		

@@ -142,6 +142,19 @@ abstract class ModifiersCoverage {
 	abstract void abstractM();
 }
 
+aspect Pointcuts {
+    pointcut a(): call(Point.new(..));   
+}
+
+aspect PointcutUsage {
+   
+    pointcut usesA(): Pointcuts.a() && within(Point);
+    
+    pointcut usesUsesA(): usesA();
+    
+    after(): usesUsesA() { }
+}
+
 
 
 

@@ -459,21 +459,25 @@ public class ProgramElement implements IProgramElement {
 
 	private String handle = null;
 	public String getHandleIdentifier() {
-		    if (null == handle) {
-				if (sourceLocation != null) {
-					StringBuffer sb = new StringBuffer();
-					sb.append(AsmManager.getDefault()
-										.getCanonicalFilePath(sourceLocation.getSourceFile()));
-					sb.append(ID_DELIM);
-					sb.append(sourceLocation.getLine());
-					sb.append(ID_DELIM);
-					sb.append(sourceLocation.getColumn());
-					handle = sb.toString();
-				}
-		    }
-		    return handle;
+	    if (null == handle) {
+			if (sourceLocation != null) {
+			    return genHandleIdentifier(sourceLocation);
+			}
+	    }
+	    return handle;
 	}
 
+	public static String genHandleIdentifier(ISourceLocation sourceLocation) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(AsmManager.getDefault()
+							.getCanonicalFilePath(sourceLocation.getSourceFile()));
+		sb.append(ID_DELIM);
+		sb.append(sourceLocation.getLine());
+		sb.append(ID_DELIM);
+		sb.append(sourceLocation.getColumn());
+		return sb.toString();
+	}
+	
 	public List getParameterNames() {
 		return parameterNames;
 	}

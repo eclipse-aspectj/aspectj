@@ -8,56 +8,49 @@
  *  
  * Contributors: 
  *     PARC     initial implementation 
+ *     Mik Kersten	revisions, added additional relationships 
  * ******************************************************************/
 
-
+ 
 package org.aspectj.ajdt.internal.core.builder;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.ListIterator;
-import java.util.Stack;
+import java.util.*;
 
+import org.aspectj.ajdt.internal.compiler.ast.*;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.InterTypeDeclaration;
+import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
+import org.aspectj.asm.*;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.internal.ProgramElement;
+import org.aspectj.asm.internal.Relationship;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
-import org.aspectj.util.LangUtil;
-import org.aspectj.weaver.Member;
-import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExtendedStringLiteral;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ImportReference;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Initializer;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemHandler;
+import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.*;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.patterns.*;
 
 /**
  * At each iteration of <CODE>processCompilationUnit</CODE> the declarations for a 
  * particular compilation unit are added to the hierarchy passed as a a parameter.
- * 
+ * <p>
  * Clients who extend this class need to ensure that they do not override any of the existing
  * behavior.  If they do, the structure model will not be built properly and tools such as IDE
  * structure views and ajdoc will fail.
+ * <p>
+ * <b>Note:</b> this class is not considered public API and the overridable 
+ * methods are subject to change.
  * 
  * @author Mik Kersten
  */
@@ -312,7 +305,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		stack.pop();
 	}
 	
-	protected String genSourceSignature(TypeDeclaration typeDeclaration) {
+	private String genSourceSignature(TypeDeclaration typeDeclaration) {
 		StringBuffer output = new StringBuffer();
 		typeDeclaration.printHeader(0, output);
 		return output.toString();
@@ -331,7 +324,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	
 	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {			
 		IProgramElement peNode = null;
-		
 		// For intertype decls, use the modifiers from the original signature, not the generated method
 
 		if (methodDeclaration instanceof InterTypeDeclaration) {
@@ -346,7 +338,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 						new ArrayList());  
 		
 		} else {
-		
 			peNode = new ProgramElement(
 				"",
 				IProgramElement.Kind.ERROR,
@@ -357,7 +348,11 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		}
 		formatter.genLabelAndKind(methodDeclaration, peNode);
 		genBytecodeInfo(methodDeclaration, peNode);
-
+		List namedPointcuts = genNamedPointcuts(methodDeclaration);
+//		System.err.println(">>>>>>>>>>>>>>>>> " + methodDeclaration.);
+		addUsesPointcutRelationsForNode(peNode, namedPointcuts, methodDeclaration);
+//		System.err.println("> named: " + namedPointcuts);
+		
 		if (methodDeclaration.returnType!=null) {
 		  peNode.setCorrespondingType(methodDeclaration.returnType.toString());
 		} else {
@@ -379,7 +374,77 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return true;
 	}
 
-	private String genSourceSignature(MethodDeclaration methodDeclaration) {
+    private void addUsesPointcutRelationsForNode(IProgramElement peNode, List namedPointcuts, MethodDeclaration declaration) {
+        for (Iterator it = namedPointcuts.iterator(); it.hasNext();) {
+            ReferencePointcut rp = (ReferencePointcut) it.next();
+            ResolvedMember member = getPointcutDeclaration(rp, declaration);
+            if (member != null) {
+                IRelationship foreward = AsmManager.getDefault().getRelationshipMap().get(peNode.getHandleIdentifier(), IRelationship.Kind.USES_POINTCUT, "uses pointcut", false, true);
+                foreward.addTarget(ProgramElement.genHandleIdentifier(member.getSourceLocation()));            
+                
+                IRelationship back = AsmManager.getDefault().getRelationshipMap().get(ProgramElement.genHandleIdentifier(member.getSourceLocation()), IRelationship.Kind.USES_POINTCUT, "pointcut used by", false, true);
+                back.addTarget(peNode.getHandleIdentifier());             
+            } 
+        }        
+    }
+    
+    private ResolvedMember getPointcutDeclaration(ReferencePointcut rp, MethodDeclaration declaration) {
+		World world = ((AjLookupEnvironment)declaration.scope.environment()).factory.getWorld();
+		TypeX onType = rp.onType;
+		if (onType == null) {
+		    Member member = EclipseFactory.makeResolvedMember(declaration.binding);
+			onType = member.getDeclaringType();
+		}
+		ResolvedMember[] members = onType.getDeclaredPointcuts(world);
+		if (members != null) {
+			for (int i = 0; i < members.length; i++) {
+			    if (members[i].getName().equals(rp.name)) {
+			        return members[i];
+			    }
+			}
+		}
+		return null;
+    }
+
+    /**
+     * @param methodDeclaration 
+     * @return	all of the named pointcuts referenced by the PCD of this declaration
+     */
+    private List genNamedPointcuts(MethodDeclaration methodDeclaration) {
+        List pointcuts = new ArrayList();
+        if (methodDeclaration instanceof AdviceDeclaration) {
+//            ((AdviceDeclaration)methodDeclaration).
+//            System.err.println(">>>>>>>> got advice: " + new String(methodDeclaration.selector));
+            if (((AdviceDeclaration)methodDeclaration).pointcutDesignator != null) 
+                addAllNamed(((AdviceDeclaration)methodDeclaration).pointcutDesignator.getPointcut(), pointcuts);
+		} else if (methodDeclaration instanceof PointcutDeclaration) { 
+		    if (((PointcutDeclaration)methodDeclaration).pointcutDesignator != null)
+		        addAllNamed(((PointcutDeclaration)methodDeclaration).pointcutDesignator.getPointcut(), pointcuts);	
+		} 
+		return pointcuts;
+    }
+
+    /**
+     * @param left
+     * @param pointcuts	accumulator for named pointcuts
+     */
+    private void addAllNamed(Pointcut pointcut, List pointcuts) {
+        if (pointcut == null) return;
+        if (pointcut instanceof ReferencePointcut) {
+			ReferencePointcut rp = (ReferencePointcut)pointcut;
+			pointcuts.add(rp);
+		} else if (pointcut instanceof AndPointcut) {
+		    AndPointcut ap = (AndPointcut)pointcut;
+		    addAllNamed(ap.getLeft(), pointcuts);
+		    addAllNamed(ap.getRight(), pointcuts);
+		} else if (pointcut instanceof OrPointcut) {
+			OrPointcut op = (OrPointcut)pointcut;
+			addAllNamed(op.getLeft(), pointcuts);
+		    addAllNamed(op.getRight(), pointcuts);
+		} 
+    }
+
+    private String genSourceSignature(MethodDeclaration methodDeclaration) {
 		StringBuffer output = new StringBuffer();
 		ASTNode.printModifiers(methodDeclaration.modifiers, output);
 		methodDeclaration.printReturnType(0, output).append(methodDeclaration.selector).append('(');
@@ -515,7 +580,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	/**
 	 * Doesn't print qualified allocation expressions.
 	 */
-	private String genSourceSignature(FieldDeclaration fieldDeclaration) {
+	protected String genSourceSignature(FieldDeclaration fieldDeclaration) {
 		StringBuffer output = new StringBuffer();
 		FieldDeclaration.printModifiers(fieldDeclaration.modifiers, output);
 		fieldDeclaration.type.print(0, output).append(' ').append(fieldDeclaration.name); 
