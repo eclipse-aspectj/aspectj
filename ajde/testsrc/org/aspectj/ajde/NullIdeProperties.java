@@ -28,6 +28,7 @@ public class NullIdeProperties implements ProjectPropertiesAdapter {
 	private List buildConfigFiles = new ArrayList();
 
 	private Set inJars;
+	private Set inpath;
 	private Set sourceRoots;
 	private Set aspectPath;
 	private String outJar;
@@ -101,8 +102,14 @@ public class NullIdeProperties implements ProjectPropertiesAdapter {
     
     public void setInJars( Set jars ) { this.inJars = jars; }
     
+    public void setInpath( Set path) { this.inpath = path; }
+    
     public Set getInJars( ) {
     	return inJars;
+    }
+    
+    public Set getInpath( ) {
+    	return inpath;
     }
     
 	public Map getSourcePathResources() {

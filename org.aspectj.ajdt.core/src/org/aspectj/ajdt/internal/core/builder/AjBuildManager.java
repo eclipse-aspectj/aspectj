@@ -209,7 +209,12 @@ public class AjBuildManager {
 		//??? incremental issues
 		for (Iterator i = buildConfig.getInJars().iterator(); i.hasNext(); ) {
 			File inJar = (File)i.next();
-			bcelWeaver.addJarFile(inJar, buildConfig.getOutputDir());
+			bcelWeaver.addJarFile(inJar, buildConfig.getOutputDir(),false);
+		}
+		
+		for (Iterator i = buildConfig.getInpath().iterator(); i.hasNext(); ) {
+			File inPathElement = (File)i.next();
+			bcelWeaver.addJarFile(inPathElement,buildConfig.getOutputDir(),true);
 		}
 		
 		if (buildConfig.getSourcePathResources() != null) {

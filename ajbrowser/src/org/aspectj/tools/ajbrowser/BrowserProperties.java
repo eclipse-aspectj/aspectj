@@ -150,6 +150,10 @@ public class BrowserProperties implements ProjectPropertiesAdapter {
     	return null;
     }
     
+    public Set getInpath() {
+    	return null;
+    }
+    
     public String getOutJar( ) { // XXX unimplemented
     	return null;
     }

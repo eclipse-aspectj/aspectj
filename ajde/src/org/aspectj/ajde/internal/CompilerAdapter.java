@@ -451,8 +451,8 @@ public class CompilerAdapter {
 	/**
 	 * Add new options from the ProjectPropertiesAdapter to the configuration.
      * <ul>
-     * <li>New list entries are added if not duplicates,
-     *     for classpath, aspectpath, injars, and sourceroots</li>
+     * <li>New list entries are added if not duplicates in,
+     *     for classpath, aspectpath, injars, inpath and sourceroots</li>
      * <li>New bootclasspath entries are ignored XXX</li>
      * <li>Set only one new entry for output dir or output jar
      *     only if there is no output dir/jar entry in the config</li>
@@ -497,6 +497,7 @@ public class CompilerAdapter {
 
         join(config.getSourceRoots(), properties.getSourceRoots());
         join(config.getInJars(), properties.getInJars());
+        join(config.getInpath(),properties.getInpath());
 		config.setSourcePathResources(properties.getSourcePathResources());
         join(config.getAspectpath(), properties.getAspectPath());
 	}

@@ -69,6 +69,14 @@ public interface ProjectPropertiesAdapter {
 	public Set getInJars();
 	
 	/**
+	 * Get the set of input path elements for this compilation.
+	 * Set members should be of the type java.io.File.
+	 * An empty set or null is acceptable for this option.
+	 * From -injars
+	 */
+	public Set getInpath();
+	
+	/**
 	 * Get the set of non-Java resources for this compilation.
 	 * Set members should be of type java.io.File.
 	 * An empty set or null is acceptable for this option.

@@ -411,7 +411,7 @@ public class FileUtil {
                         file.delete();
                     }
                 } else {
-                    file.delete();
+                    boolean ret = file.delete();
                     result++;
                 }
             }

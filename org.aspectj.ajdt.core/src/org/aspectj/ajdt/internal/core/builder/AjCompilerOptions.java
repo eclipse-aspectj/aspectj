@@ -22,6 +22,7 @@ public class AjCompilerOptions {
 	public static final String OPTION_Xlint = "org.aspectj.ajdt.core.compiler.Xlint"; 
 	public static final String OPTION_InJARs = "org.aspectj.ajdt.core.compiler.injars"; 
 	public static final String OPTION_OutJAR = "org.aspectj.ajdt.core.compiler.outjar"; 
+	public static final String OPTION_Inpath = "org.aspectj.ajdt.core.compiler.inpath";
 
 }
   

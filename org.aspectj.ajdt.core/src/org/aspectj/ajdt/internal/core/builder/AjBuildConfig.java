@@ -41,6 +41,7 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 	private List/*File*/ sourceRoots = new ArrayList();
 	private List/*File*/ files = new ArrayList();
 	private List/*File*/ inJars = new ArrayList();
+	private List/*File*/ inPath = new ArrayList();
 	private Map/*String->File*/ sourcePathResources = new HashMap();
 	private List/*File*/ aspectpath = new ArrayList();
 	private List/*String*/ classpath = new ArrayList();
@@ -189,6 +190,11 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 	public File getOutputJar() {
 		return outputJar;
 	}
+	
+	public List/*File*/ getInpath() {
+		// Elements of the list are either archives (jars/zips) or directories
+		return inPath;
+	}
 
 	public List/*File*/ getInJars() {
 		return inJars;
@@ -255,14 +261,17 @@ public class AjBuildConfig { // XXX needs bootclasspath?
     }
 
     /**
-     * @return List (String) classpath of injars, aspectpath entries,
-     *   specified classpath (bootclasspath, extdirs, and classpath),
-     *   and output dir or jar
+     * @return List (String) classpath of injars, inpath, aspectpath 
+     *   entries, specified classpath (bootclasspath, extdirs, and 
+     *   classpath), and output dir or jar
      */
     public List getFullClasspath() {
         List full = new ArrayList();
         for (Iterator i = inJars.iterator(); i.hasNext(); ) {
             full.add(((File)i.next()).getAbsolutePath());
+        }
+        for (Iterator i = inPath.iterator();i.hasNext();) {
+        	full.add(((File)i.next()).getAbsolutePath());
         }
         for (Iterator i = aspectpath.iterator(); i.hasNext(); ) {
             full.add(((File)i.next()).getAbsolutePath());
@@ -324,12 +333,13 @@ public class AjBuildConfig { // XXX needs bootclasspath?
 		XnoInline = xnoInline;
 	}
     
-    /** @return true if any config file, sourceroots, sourcefiles, or injars */
+    /** @return true if any config file, sourceroots, sourcefiles, injars or inpath */
     public boolean hasSources() {
         return ((null != configFile)
             || (0 < sourceRoots.size())
             || (0 < files.size())
             || (0 < inJars.size())
+            || (0 < inPath.size())
             );
     }
     
@@ -377,6 +387,7 @@ public class AjBuildConfig { // XXX needs bootclasspath?
             incrementalMode = true;
         }
         join(inJars, global.inJars);
+        join(inPath, global.inPath);
         join(javaOptions, global.javaOptions);
         if ((null == lintMode) 
             || (AJLINT_DEFAULT.equals(lintMode))) {

@@ -352,6 +352,7 @@ class ProjectProperties implements ProjectPropertiesAdapter {
         = ProjectProperties.class.getName() + ": ";
     final private String outputDir;
     private Set inJars;
+    private Set inpath;
     private Set sourceRoots;
     private Set aspectPath;
     private String outJar;
@@ -363,7 +364,9 @@ class ProjectProperties implements ProjectPropertiesAdapter {
     // known used, per logging proxy
     public String getDefaultBuildConfigFile() { return null; }
     public void setInJars(Set input) { inJars = input; }
+    public void setInpath(Set input) { inpath = input; }
     public Set getInJars( ) { return inJars; }
+    public Set getInpath() { return inpath; }
     public void setSourceRoots(Set input) { sourceRoots = input; }
     public Set getSourceRoots() { return sourceRoots; }
     public void setAspectPath(Set path) { aspectPath = path; }        

@@ -188,6 +188,7 @@ public class AspectJBuildManager implements BuildManager {
 				+ "\n-> classpath: " + properties.getClasspath()
 				+ "\n-> bootclasspath: " + properties.getBootClasspath()
 				+ "\n-> -injars " + formatSet(properties.getInJars())
+				+ "\n-> -inpath " + formatSet(properties.getInpath())
 				+ "\n-> -outjar " + formatOptionalString(properties.getOutJar())
 				+ "\n-> -sourceroots " + formatSet(properties.getSourceRoots())
 				+ "\n-> -aspectpath " + formatSet(properties.getAspectPath())

@@ -13,18 +13,40 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.io.*;
-import java.util.*;
-import java.util.zip.*;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IProgressListener;
 import org.aspectj.util.FileUtil;
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.ConcreteTypeMunger;
+import org.aspectj.weaver.CrosscuttingMembersSet;
+import org.aspectj.weaver.IWeaver;
+import org.aspectj.weaver.NewParentTypeMunger;
+import org.aspectj.weaver.ResolvedTypeMunger;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.patterns.DeclareParents;
-import org.aspectj.weaver.patterns.Pointcut;
 
 public class BcelWeaver implements IWeaver {
     private BcelWorld world;
@@ -109,34 +131,80 @@ public class BcelWeaver implements IWeaver {
 	}
 
 
-	/** Adds all class files in the jar
+	/**
+	 * Add any .class files in the directory to the outdir.  Anything other than .class files in
+	 * the directory (or its subdirectories) are considered resources and are also copied. 
+	 *  
 	 */
-	public void addJarFile(File inFile, File outDir) throws IOException {
-//		System.err.println("? addJarFile(" + inFile + ", " + outDir + ")");
-		needToReweaveWorld = true;
-		ZipInputStream inStream = new ZipInputStream(new FileInputStream(inFile)); //??? buffered
+	public void addDirectoryContents(File inFile,File outDir) throws IOException {
 		
-		while (true) {
-			ZipEntry entry = inStream.getNextEntry();
-			if (entry == null) break;
-			
-			byte[] bytes = FileUtil.readAsByteArray(inStream);
-			String filename = entry.getName();
-			UnwovenClassFile classFile = new UnwovenClassFile(new File(outDir, filename).getAbsolutePath(), bytes);
-
-			if (filename.endsWith(".class")) {
-				this.addClassFile(classFile);
+		// Get a list of all files (i.e. everything that isnt a directory)
+		File[] files = FileUtil.listFiles(inFile,new FileFilter() {
+			public boolean accept(File f) {
+				boolean accept = !f.isDirectory();
+				return accept;
 			}
-			else if (!entry.isDirectory()) {
-
-				/* bug-44190 Copy meta-data */
+		});
+		
+		// For each file, add it either as a real .class file or as a resource
+		for (int i = 0; i < files.length; i++) {
+			
+			FileInputStream fis = new FileInputStream(files[i]);
+			byte[] bytes = FileUtil.readAsByteArray(fis);
+			String relativePath = files[i].getPath();
+			
+			// ASSERT: files[i].getAbsolutePath().startsWith(inFile.getAbsolutePath()
+			// or we are in trouble...
+			String filename = files[i].getAbsolutePath().substring(
+			                    inFile.getAbsolutePath().length()+1);
+			UnwovenClassFile classFile = new UnwovenClassFile(new File(outDir,filename).getAbsolutePath(),bytes);
+			if (filename.endsWith(".class")) {
+				// System.err.println("BCELWeaver: processing class from input directory "+classFile);
+				this.addClassFile(classFile);
+			} else {
+				// System.err.println("BCELWeaver: processing resource from input directory "+filename);
 				addResource(filename,classFile);
 			}
-
-			inStream.closeEntry();
+			fis.close();
 		}
 		
-		inStream.close();
+	}
+
+
+	/** Adds all class files in the jar
+	 */
+	public void addJarFile(File inFile, File outDir, boolean canBeDirectory) throws IOException {
+//		System.err.println("? addJarFile(" + inFile + ", " + outDir + ")");
+		needToReweaveWorld = true;
+		
+		// Is this a directory we are looking at?
+		if (inFile.isDirectory() && canBeDirectory) {
+			addDirectoryContents(inFile,outDir);
+		} else {
+		
+			ZipInputStream inStream = new ZipInputStream(new FileInputStream(inFile)); //??? buffered
+		
+			while (true) {
+				ZipEntry entry = inStream.getNextEntry();
+				if (entry == null) break;
+			
+				byte[] bytes = FileUtil.readAsByteArray(inStream);
+				String filename = entry.getName();
+				UnwovenClassFile classFile = new UnwovenClassFile(new File(outDir, filename).getAbsolutePath(), bytes);
+
+				if (filename.endsWith(".class")) {
+					this.addClassFile(classFile);
+				}
+				else if (!entry.isDirectory()) {
+
+					/* bug-44190 Copy meta-data */
+					addResource(filename,classFile);
+				}
+
+				inStream.closeEntry();
+			}
+			inStream.close();
+		}
 	}
 
 	public void addResource(String name, File inPath, File outDir) throws IOException {

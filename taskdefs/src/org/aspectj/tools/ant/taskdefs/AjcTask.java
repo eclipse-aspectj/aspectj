@@ -292,6 +292,7 @@ public class AjcTask extends MatchingTask {
 	// ------- lists resolved in addListArgs() at execute() time
     private Path srcdir;
     private Path injars;
+    private Path inpath;
     private Path classpath;
     private Path bootclasspath;
     private Path forkclasspath;
@@ -311,6 +312,7 @@ public class AjcTask extends MatchingTask {
     // -------- resource-copying
     /** true if copying injar non-.class files to the output jar */
     private boolean copyInjars;
+    private boolean copyInpath;
     
     /** non-null if copying all source root files but the filtered ones */
     private String sourceRootCopyFilter;
@@ -328,7 +330,7 @@ public class AjcTask extends MatchingTask {
      * When possibly copying resources to the output jar,
      * pass ajc a fake output jar to copy from,
      * so we don't change the modification time of the output jar
-     * when copying injars into the actual outjar.
+     * when copying injars/inpath into the actual outjar.
      */
     private File tmpOutjar;
 
@@ -364,6 +366,7 @@ public class AjcTask extends MatchingTask {
         classpath = null;
         cmd = new GuardedCommand();
         copyInjars = false;
+        copyInpath = false;
         destDir = DEFAULT_DESTDIR;
         executing = false;
         executingInOtherVM = false;
@@ -374,6 +377,7 @@ public class AjcTask extends MatchingTask {
         inIncrementalFileMode = false;
         ignored = new ArrayList();
         injars = null;
+        inpath = null;
         listFileArgs = false;
         maxMem = null;
         messageHolder = null;
@@ -647,6 +651,8 @@ public class AjcTask extends MatchingTask {
         log("copyInjars not required since 1.1.1.\n", Project.MSG_WARN);
         //this.copyInjars = doCopy;
     }
+
+    
     /**
      * Option to copy all files from
      * all source root directories
@@ -771,8 +777,16 @@ public class AjcTask extends MatchingTask {
         createInjars().setRefid(ref);
     }
     
+    public void setInpathref(Reference ref) {
+    	createInpath().setRefid(ref);
+    }
+    
     public void setInjars(Path path) {
         injars = incPath(injars, path);
+    }
+    
+    public void setInpath(Path path) {
+    	inpath = incPath(inpath,path);
     }
 
     public Path createInjars() {
@@ -781,6 +795,13 @@ public class AjcTask extends MatchingTask {
         }
         return injars.createPath();
     }        
+    
+    public Path createInpath() {
+    	if (inpath == null) {
+    		inpath = new Path(project);
+    	}
+    	return inpath.createPath();
+    }
     
     public void setClasspath(Path path) {
         classpath = incPath(classpath, path);
@@ -967,7 +988,7 @@ public class AjcTask extends MatchingTask {
         // when copying resources, use temp jar for class output
         // then copy temp jar contents and resources to output jar
         if ((null != outjar) && !outjarFixedup) {
-            if (copyInjars || (null != sourceRootCopyFilter)) {
+            if (copyInjars || copyInpath || (null != sourceRootCopyFilter)) {
                 String path = outjar.getAbsolutePath();
                 int len = FileUtil.zipSuffixLength(path);
                 if (len < 1) {
@@ -1013,6 +1034,7 @@ public class AjcTask extends MatchingTask {
            if (null != injars) {
                throw new BuildException("weaveDir incompatible with injars now"); 
            }
+           
            File injar = zipDirectory(xweaveDir);
            setInjars(new Path(getProject(), injar.getAbsolutePath()));
            setDestdir(xweaveDir);
@@ -1315,6 +1337,7 @@ public class AjcTask extends MatchingTask {
         addFlaggedPath("-extdirs", extdirs, list);
         addFlaggedPath("-aspectpath", aspectpath, list);
         addFlaggedPath("-injars", injars, list);
+        addFlaggedPath("-inpath", inpath, list);
         addFlaggedPath("-sourceroots", sourceRoots, list);
         
         if (argfiles != null) {
@@ -1608,6 +1631,8 @@ public class AjcTask extends MatchingTask {
                 setIncremental(true);
             } else if ("-injars".equals(flag)) {
                 setInjars(new Path(project, in.next()));
+            } else if ("-inpath".equals(flag)) {
+            	setInpath(new Path(project,in.next()));
             } else if ("-Xlistfileargs".equals(flag)) {
                 setListFileArgs(true);
             } else if ("-Xmaxmem".equals(flag)) {

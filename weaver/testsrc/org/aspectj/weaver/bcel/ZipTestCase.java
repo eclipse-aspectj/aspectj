@@ -56,10 +56,10 @@ public class ZipTestCase extends TestCase {
 		BcelWeaver weaver = new BcelWeaver(world);
 		
 		long startTime = System.currentTimeMillis();
-		weaver.addJarFile(inFile, new File("."));
+		weaver.addJarFile(inFile, new File("."),false);
 		if (aspectjar != null) {
 			if (isInJar) {
-				weaver.addJarFile(new File(aspectjar), new File("."));
+				weaver.addJarFile(new File(aspectjar), new File("."),false);
 			} else {
 				weaver.addLibraryJarFile(new File(aspectjar));
 			}

@@ -28,7 +28,7 @@ public class ZipFileWeaver {
 	public void weave(BcelWeaver weaver, File outFile) throws IOException {
 		int count = 0;
 		long startTime = System.currentTimeMillis();
-		weaver.addJarFile(inFile, new File("."));
+		weaver.addJarFile(inFile, new File("."),false);
 		weaver.weave(outFile);
 		long stopTime = System.currentTimeMillis();
 		

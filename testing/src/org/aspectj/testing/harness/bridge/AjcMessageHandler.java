@@ -225,19 +225,22 @@ public class AjcMessageHandler extends MessageHandler {
      * @return true if we expect a message of this kind with this line number 
      */
     private boolean expecting(IMessage message) {
+    	boolean match = false;
         if (null != message) {
             for (Iterator iter = expectedMessagesAsList.iterator(); 
                 iter.hasNext();
                 ) {
+            	// amc - we have to compare against all messages to consume multiple
+            	// text matches on same line. Return true if any matches.
                 if (0 == COMP_IMessage.compare(message, iter.next())) {
-                    return true;
+                    match = true;
                 }
             }
         }
-        if (null != diffs) {
+        if (!match) {
             diffs = null;
         }
-        return false;
+        return match;
     }
 
     private IMessage[] getMessagesWithoutExpectedFails() {

@@ -297,6 +297,29 @@ public class BuildArgParser extends Main {
             // trim arg?
             if (LangUtil.isEmpty(arg)) {
                 showWarning("empty arg found");
+            } else if (arg.equals("-inpath")) {;
+            	if (args.size() > nextArgIndex) {
+					buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_Inpath, CompilerOptions.PRESERVE);
+					
+					StringTokenizer st = new StringTokenizer(
+						((ConfigParser.Arg)args.get(nextArgIndex)).getValue(), 
+						File.pathSeparator);
+					while (st.hasMoreTokens()) {
+						String filename = st.nextToken();
+						File file = makeFile(filename);
+						if (file.exists() && FileUtil.hasZipSuffix(filename)) {
+							buildConfig.getInpath().add(file);    
+						} else {
+							if (file.isDirectory()) {
+								buildConfig.getInpath().add(file);
+							} else 
+		            		
+							showError("bad inpath component: " + filename);  
+						}
+					}
+					
+					args.remove(args.get(nextArgIndex));            		
+            	}
             } else if (arg.equals("-injars")) {;
 				if (args.size() > nextArgIndex) {
 					buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_InJARs, CompilerOptions.PRESERVE);
@@ -310,6 +333,11 @@ public class BuildArgParser extends Main {
 		            	if (jarFile.exists() && FileUtil.hasZipSuffix(filename)) {
 			            	buildConfig.getInJars().add(jarFile);    
 		            	} else {
+		            		File dirFile = makeFile(filename);
+		            		if (dirFile.isDirectory()) {
+		            			buildConfig.getInJars().add(dirFile);
+		            		} else 
+		            		
                             showError("bad injar: " + filename);  
 		            	}
 		            }
