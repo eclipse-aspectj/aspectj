@@ -212,7 +212,7 @@ public class ReferencePointcut extends Pointcut {
 	private boolean concretizing = false;
 	public Pointcut concretize1(ResolvedTypeX searchStart, IntMap bindings) {
 		if (concretizing) {
-			Thread.currentThread().dumpStack();
+			//Thread.currentThread().dumpStack();
 			searchStart.getWorld().getMessageHandler().handleMessage(
 				MessageUtil.error("circular pointcut declaration involving: " + this,
 									getSourceLocation()));
