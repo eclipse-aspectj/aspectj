@@ -13,19 +13,11 @@
 
 package org.aspectj.bridge;
 
-import java.io.File;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 import org.aspectj.bridge.IMessage.Kind;
-import org.aspectj.util.LangUtil;
-import org.aspectj.util.LineReader;
+import org.aspectj.util.*;
 
 /**
  * Convenience API's for constructing, printing, and sending messages.
@@ -343,6 +335,33 @@ public class MessageUtil {
     }
 
     
+    /** 
+     * Select all messages in holder except those of the same
+     * kind (optionally or greater).
+     * If kind is null, then all messages are rejected,
+     * so an empty list is returned.
+     * @return unmodifiable list of specified IMessage  
+     */
+    public static IMessage[] getMessagesExcept(IMessageHolder holder, 
+            final IMessage.Kind kind, final boolean orGreater) { 
+        if ((null == holder) || (null == kind)) {
+            return new IMessage[0];
+        }
+        
+        IMessageHandler selector = new IMessageHandler(){
+            public boolean handleMessage(IMessage message) {
+                IMessage.Kind test = message.getKind();
+                return (!(orGreater
+                        ? kind.isSameOrLessThan(test)
+                        : kind == test));
+            }
+            public boolean isIgnoring(Kind kind) {
+                return false;
+            }
+        };
+        return visitMessages(holder, selector, true, false);
+    }
+
     /** @return unmodifiable list of IMessage complying with parameters */
     public static List getMessages(IMessageHolder holder, 
             IMessage.Kind kind, boolean orGreater, String infix) { // XXX untested
@@ -964,4 +983,95 @@ public class MessageUtil {
 
     /** utility class */
     private MessageUtil() {}
+
+    /**
+     * Handle all messages in the second handler using the first
+     * @param handler the IMessageHandler sink for all messages in source
+     * @param holder the IMessageHolder source for all messages to handle
+     * @param fastFail if true, stop on first failure
+     * @return false if any sink.handleMessage(..) failed
+     */
+    public static boolean handleAll(
+        IMessageHandler sink, 
+        IMessageHolder source,
+        boolean fastFail) {
+        return handleAll(sink, source, null, true, fastFail);
+    }
+    
+    /**
+     * Handle messages in the second handler using the first
+     * @param handler the IMessageHandler sink for all messages in source
+     * @param holder the IMessageHolder source for all messages to handle
+     * @param kind the IMessage.Kind to select, if not null
+     * @param orGreater if true, also accept greater kinds
+     * @param fastFail if true, stop on first failure
+     * @return false if any sink.handleMessage(..) failed
+     */
+    public static boolean handleAll(
+        IMessageHandler sink, 
+        IMessageHolder source,
+        IMessage.Kind kind,
+        boolean orGreater, 
+        boolean fastFail) {
+        LangUtil.throwIaxIfNull(sink, "sink");
+        LangUtil.throwIaxIfNull(source, "source");
+        return handleAll(sink, source.getMessages(kind, orGreater), fastFail);
+    }
+    
+    /**
+     * Handle messages in the second handler using the first
+     * if they are NOT of this kind (optionally, or greater).
+     * If you pass null as the kind, then all messages are 
+     * ignored and this returns true.
+     * @param handler the IMessageHandler sink for all messages in source
+     * @param holder the IMessageHolder source for all messages to handle
+     * @param kind the IMessage.Kind to reject, if not null
+     * @param orGreater if true, also reject greater kinds
+     * @param fastFail if true, stop on first failure
+     * @return false if any sink.handleMessage(..) failed
+     */
+    public static boolean handleAllExcept(
+        IMessageHandler sink, 
+        IMessageHolder source,
+        IMessage.Kind kind,
+        boolean orGreater, 
+        boolean fastFail) {
+        LangUtil.throwIaxIfNull(sink, "sink");
+        LangUtil.throwIaxIfNull(source, "source");
+        if (null == kind) {
+            return true;
+        }
+        IMessage[] messages = getMessagesExcept(source, kind, orGreater);
+        return handleAll(sink, messages, fastFail);
+    }
+
+    /**
+     * Handle messages in the sink.
+     * @param handler the IMessageHandler sink for all messages in source
+     * @param sources the IMessage[] messages to handle
+     * @param fastFail if true, stop on first failure
+     * @return false if any sink.handleMessage(..) failed
+     * @throws IllegalArgumentException if sink is null
+     */
+    public static boolean handleAll(
+        IMessageHandler sink, 
+        IMessage[] sources,
+        boolean fastFail) {
+        LangUtil.throwIaxIfNull(sink, "sink");
+        if (LangUtil.isEmpty(sources)) {
+            return true;
+        }
+        boolean result = true;
+        for (int i = 0; i < sources.length; i++) {
+            if (!sink.handleMessage(sources[i])) {
+                if (fastFail) {
+                    return false;
+                }
+                if (result) {
+                    result = false;
+                }
+            }
+        }
+        return result;
+    }
 }
