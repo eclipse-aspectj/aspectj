@@ -65,7 +65,11 @@
     constructor body in question.
   	The end of an exception handler is underdetermined in bytecode,
   	so ajc will not implement after or around advice on handler join 
-  	points, instead signalling a compile-time error.
+  	points.
+  	Similarly, ajc cannot implement around advice on initialization 
+  	or preinitialization join points.  
+    In cases where ajc cannot implement advice, it will emit a 
+    compile-time error noting this as a compiler limitation.
   </para>
 
   <para>
