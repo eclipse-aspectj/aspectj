@@ -71,8 +71,8 @@ public class Utility {
         return fact.createInvoke(
             signature.getDeclaringType().getName(),
             signature.getName(),
-            world.makeBcelType(signature.getReturnType()),
-            world.makeBcelTypes(signature.getParameterTypes()),
+            BcelWorld.makeBcelType(signature.getReturnType()),
+            BcelWorld.makeBcelTypes(signature.getParameterTypes()),
             kind);
 	}
     
@@ -206,10 +206,10 @@ public class Utility {
 
         if (toType.equals(ResolvedTypeX.VOID)) {
             // assert fromType.equals(TypeX.OBJECT)
-            il.append(fact.createPop(fromType.getSize()));
+            il.append(InstructionFactory.createPop(fromType.getSize()));
         } else if (fromType.equals(ResolvedTypeX.VOID)) {
             // assert toType.equals(TypeX.OBJECT)
-            il.append(fact.createNull(Type.OBJECT));
+            il.append(InstructionFactory.createNull(Type.OBJECT));
             return;
         } else if (fromType.equals(TypeX.OBJECT)) {
             Type to = BcelWorld.makeBcelType(toType);
@@ -264,14 +264,14 @@ public class Utility {
         if (fromType.equals(toType))
             return il;
         if (toType.equals(Type.VOID)) {
-            il.append(fact.createPop(fromType.getSize()));
+            il.append(InstructionFactory.createPop(fromType.getSize()));
             return il;
         }
 
         if (fromType.equals(Type.VOID)) {
             if (toType instanceof BasicType) 
                 throw new BCException("attempting to cast from void to basic type");
-            il.append(fact.createNull(Type.OBJECT));
+            il.append(InstructionFactory.createNull(Type.OBJECT));
             return il;
         }
 
@@ -449,7 +449,8 @@ public class Utility {
 			}
 				  
 			// Create a new select statement with the new targets array
-			SWITCH switchStatement = new SWITCH(freshSelect.getMatchs(),targets,freshSelect.getTarget());
+			SWITCH switchStatement =
+				new SWITCH(freshSelect.getMatchs(), targets, freshSelect.getTarget());
 			return (Select)switchStatement.getInstruction();	
 		} else {
 			return i.copy(); // Use clone for shallow copy...
@@ -521,7 +522,7 @@ public class Utility {
 			Type type = BcelWorld.makeBcelType(typeX);
 			int local = enclosingMethod.allocateLocal(type);
 			
-			il.append(fact.createStore(type, local));
+			il.append(InstructionFactory.createStore(type, local));
 			ret[i] = new BcelVar(typeX, local);
 		}		
 		return ret;

@@ -56,7 +56,8 @@ public class UnwovenClassFile {
 		//XXX this is an important optimization
 		if (getBytes() == null) {
 			System.out.println("no bytes for: " + getFilename());
-			Thread.currentThread().dumpStack();
+			//Thread.currentThread().dumpStack();
+			Thread.dumpStack();			
 		}
 		return Utility.makeJavaClass(filename, getBytes());
 //		if (javaClass == null) javaClass = Utility.makeJavaClass(filename, getBytes());

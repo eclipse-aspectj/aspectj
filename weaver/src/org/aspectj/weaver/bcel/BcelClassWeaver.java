@@ -32,6 +32,7 @@ import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.IndexedInstruction;
 import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionConstants;
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
@@ -425,7 +426,7 @@ class BcelClassWeaver implements IClassWeaver {
 		boolean keepReturns) 
 	{
 		InstructionList footer = new InstructionList();
-		InstructionHandle end = footer.append(fact.NOP);
+		InstructionHandle end = footer.append(InstructionConstants.NOP);
 
 		InstructionList ret = new InstructionList();
 		InstructionList sourceList = donor.getBody();
@@ -449,7 +450,10 @@ class BcelClassWeaver implements IClassWeaver {
 				// a computation leak... we're testing this LOTS of times.  Sigh.
 				if (isAcrossClass) {
 					CPInstruction cpi = (CPInstruction) fresh;
-					cpi.setIndex(recipientCpg.addConstant(donorCpg.getConstant(cpi.getIndex()), donorCpg));
+					cpi.setIndex(
+						recipientCpg.addConstant(
+							donorCpg.getConstant(cpi.getIndex()),
+							donorCpg));
 				}
 			}
 			if (src.getInstruction() == Range.RANGEINSTRUCTION) {
@@ -458,7 +462,8 @@ class BcelClassWeaver implements IClassWeaver {
 				if (keepReturns) {
 					dest = ret.append(fresh);
 				} else {
-					dest = ret.append(fact.createBranchInstruction(Constants.GOTO, end));
+					dest = 
+						ret.append(InstructionFactory.createBranchInstruction(Constants.GOTO, end));
 				}
 			} else if (fresh instanceof BranchInstruction) {
 				dest = ret.append((BranchInstruction) fresh);
@@ -590,7 +595,7 @@ class BcelClassWeaver implements IClassWeaver {
 		// writing ret back to front because we're popping. 
 		if (! donor.isStatic()) {
 			int targetSlot = recipient.allocateLocal(Type.OBJECT);
-			ret.insert(fact.createStore(Type.OBJECT, targetSlot));
+			ret.insert(InstructionFactory.createStore(Type.OBJECT, targetSlot));
 			frameEnv.put(donorFramePos, targetSlot);
 			donorFramePos += 1;
 		}
@@ -598,7 +603,7 @@ class BcelClassWeaver implements IClassWeaver {
 		for (int i = 0, len = argTypes.length; i < len; i++) {
 			Type argType = argTypes[i];
 			int argSlot = recipient.allocateLocal(argType);
-			ret.insert(fact.createStore(argType, argSlot));
+			ret.insert(InstructionFactory.createStore(argType, argSlot));
 			frameEnv.put(donorFramePos, argSlot);
 			donorFramePos += argType.getSize();
 		}
@@ -648,14 +653,19 @@ class BcelClassWeaver implements IClassWeaver {
 		InstructionFactory fact = clazz.getFactory();
 
 		setup.append(fact.createNew(aspectType));
-		setup.append(fact.createDup(1));
+		setup.append(InstructionFactory.createDup(1));
 		setup.append(fact.createInvoke(
 			aspectName, 
 			"<init>", 
 			Type.VOID, 
 			new Type[0], 
 			Constants.INVOKESPECIAL));
-		setup.append(fact.createFieldAccess(aspectName, field.getName(), aspectType, Constants.PUTSTATIC));
+		setup.append(
+			fact.createFieldAccess(
+				aspectName,
+				field.getName(),
+				aspectType,
+				Constants.PUTSTATIC));
 		clinit.getBody().insert(setup);
     }
 
@@ -728,7 +738,9 @@ class BcelClassWeaver implements IClassWeaver {
 							curr,
 							ifaceInitSig);
 					if (match(cexecShadow, shadowAccumulator)) {
-						cexecShadow.getRange().getBody().append(cexecShadow.getRange().getStart(), fact.NOP);
+						cexecShadow.getRange().getBody().append(
+							cexecShadow.getRange().getStart(),
+							InstructionConstants.NOP);
 					}
 					// generate the init jp around it
 					BcelShadow initShadow =
@@ -776,7 +788,12 @@ class BcelClassWeaver implements IClassWeaver {
 				if (effective == null) {
 					enclosingShadow = BcelShadow.makeMethodExecution(world, mg);
 				} else if (effective.isWeaveBody()) {
-					enclosingShadow = BcelShadow.makeShadowForMethod(world, mg, effective.getShadowKind(), effective.getEffectiveSignature());
+					enclosingShadow =
+						BcelShadow.makeShadowForMethod(
+							world,
+							mg,
+							effective.getShadowKind(),
+							effective.getEffectiveSignature());
 				} else {
 					return false;
 				}
@@ -816,7 +833,7 @@ class BcelClassWeaver implements IClassWeaver {
 			ConcreteTypeMunger cmunger = (ConcreteTypeMunger) i.next();
 			NewFieldTypeMunger munger = (NewFieldTypeMunger) cmunger.getMunger();
 			ResolvedMember initMethod = munger.getInitMethod(cmunger.getAspectType());
-			if (!isStatic) ret.append(fact.ALOAD_0);
+			if (!isStatic) ret.append(InstructionConstants.ALOAD_0);
 			ret.append(Utility.createInvoke(fact, world, initMethod));
 		}
 		return ret;
@@ -841,7 +858,7 @@ class BcelClassWeaver implements IClassWeaver {
 				InstructionHandle prevHandle = ih.getPrev();
 				Instruction prevI = prevHandle.getInstruction();
 				if (Utility.isConstantPushInstruction(prevI)) {
-					Member field = world.makeFieldSignature(clazz, (FieldInstruction) i);
+					Member field = BcelWorld.makeFieldSignature(clazz, (FieldInstruction) i);
 					ResolvedMember resolvedField = field.resolve(world);
 					if (resolvedField == null) {
 						// we can't find the field, so it's not a join point.
@@ -899,16 +916,20 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 
 
-	private void matchSetInstruction(LazyMethodGen mg, InstructionHandle ih, BcelShadow enclosingShadow, List shadowAccumulator) {
+	private void matchSetInstruction(
+		LazyMethodGen mg,
+		InstructionHandle ih,
+		BcelShadow enclosingShadow,
+		List shadowAccumulator) {
 		FieldInstruction fi = (FieldInstruction) ih.getInstruction();
-		Member field = world.makeFieldSignature(clazz, fi);
+		Member field = BcelWorld.makeFieldSignature(clazz, fi);
 		ResolvedMember resolvedField = field.resolve(world);
 		if (resolvedField == null) {
 			// we can't find the field, so it's not a join point.
 			return;
-		} else if (Modifier.isFinal(resolvedField.getModifiers()) && 
-					Utility.isConstantPushInstruction(ih.getPrev().getInstruction()))
-		{
+		} else if (
+			Modifier.isFinal(resolvedField.getModifiers())
+				&& Utility.isConstantPushInstruction(ih.getPrev().getInstruction())) {
 			// it's the set of a final constant, so it's
 			// not a join point according to 1.0.6 and 1.1.
 			return;
@@ -916,13 +937,15 @@ class BcelClassWeaver implements IClassWeaver {
 			// sets of synthetics aren't join points in 1.1
 			return;
 		} else {
-			match(BcelShadow.makeFieldSet(world, mg, ih, enclosingShadow), shadowAccumulator);
+			match(
+				BcelShadow.makeFieldSet(world, mg, ih, enclosingShadow),
+				shadowAccumulator);
 		}
 	}
 
 	private void matchGetInstruction(LazyMethodGen mg, InstructionHandle ih, BcelShadow enclosingShadow, List shadowAccumulator) {
 		FieldInstruction fi = (FieldInstruction) ih.getInstruction();
-		Member field = world.makeFieldSignature(clazz, fi);
+		Member field = BcelWorld.makeFieldSignature(clazz, fi);
 		ResolvedMember resolvedField = field.resolve(world);
 		if (resolvedField == null) {
 			// we can't find the field, so it's not a join point.
@@ -944,7 +967,7 @@ class BcelClassWeaver implements IClassWeaver {
 		String methodName = invoke.getName(cpg);
 		if (methodName.startsWith(NameMangler.PREFIX)) {
 			Member method =
-				world.makeMethodSignature(clazz, invoke);
+				BcelWorld.makeMethodSignature(clazz, invoke);
 			ResolvedMember declaredSig = method.resolve(world);
 			//System.err.println(method + ", declaredSig: "  +declaredSig);
 			if (declaredSig == null) return;
@@ -961,7 +984,8 @@ class BcelClassWeaver implements IClassWeaver {
 						kind, declaredSig),
 					shadowAccumulator);
 			} else {
-				AjAttribute.EffectiveSignatureAttribute effectiveSig = declaredSig.getEffectiveSignature();
+				AjAttribute.EffectiveSignatureAttribute effectiveSig =
+					declaredSig.getEffectiveSignature();
 				if (effectiveSig == null) return;
 				//System.err.println("call to inter-type member: " + effectiveSig);
 				if (effectiveSig.isWeaveBody()) return;

@@ -40,28 +40,37 @@ public class BcelVar extends Var {
     public int getSlot() { return slot; }
 
     public Instruction createLoad(InstructionFactory fact) {
-        return fact.createLoad(BcelWorld.makeBcelType(getType()), slot);
+		// TODO: remove fact
+        return InstructionFactory.createLoad(BcelWorld.makeBcelType(getType()), slot);
     }
     public Instruction createStore(InstructionFactory fact) {
-        return fact.createStore(BcelWorld.makeBcelType(getType()), slot);
+    	// TODO: remove fact
+        return InstructionFactory.createStore(BcelWorld.makeBcelType(getType()), slot);
     }
 
 	public void appendStore(InstructionList il, InstructionFactory fact) {
+		// TODO: remove fact
 		il.append(createStore(fact));
 	}
     public void appendLoad(InstructionList il, InstructionFactory fact) {
+		// TODO: remove fact
         il.append(createLoad(fact));
     }
-    public void appendLoadAndConvert(InstructionList il, InstructionFactory fact, ResolvedTypeX toType) {
-        il.append(createLoad(fact));
-        Utility.appendConversion(il, fact, getType(), toType);
-    }    
+	public void appendLoadAndConvert(
+		InstructionList il,
+		InstructionFactory fact,
+		ResolvedTypeX toType) {
+		il.append(createLoad(fact));
+		Utility.appendConversion(il, fact, getType(), toType);
+	} 
     public void insertLoad(InstructionList il, InstructionFactory fact) {
+		// TODO: remove fact    	
         il.insert(createLoad(fact));
     }
     public InstructionList createCopyFrom(InstructionFactory fact, int oldSlot) {
+		// TODO: remove fact
         InstructionList il = new InstructionList();
-        il.append(fact.createLoad(BcelWorld.makeBcelType(getType()), oldSlot));
+        il.append(InstructionFactory.createLoad(BcelWorld.makeBcelType(getType()), oldSlot));
         il.append(createStore(fact));
         return il;
     }
@@ -76,7 +85,7 @@ public class BcelVar extends Var {
         ResolvedTypeX convertFromType = getType().getResolvedComponentType();
         appendLoad(il, fact);
         il.append(Utility.createConstant(fact, index));
-        il.append(fact.createArrayLoad(BcelWorld.makeBcelType(convertFromType)));
+        il.append(InstructionFactory.createArrayLoad(BcelWorld.makeBcelType(convertFromType)));
         Utility.appendConversion(il, fact, convertFromType, convertTo);
     }
 
@@ -91,7 +100,7 @@ public class BcelVar extends Var {
         il.append(Utility.createConstant(fact, index));
         storee.appendLoad(il, fact);
         Utility.appendConversion(il, fact, storee.getType(), convertToType);
-        il.append(fact.createArrayStore(BcelWorld.makeBcelType(convertToType)));
+        il.append(InstructionFactory.createArrayStore(BcelWorld.makeBcelType(convertToType)));
     }
     
     InstructionList createConvertableArrayStore(

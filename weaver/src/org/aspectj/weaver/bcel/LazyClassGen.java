@@ -33,6 +33,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldGen;
+import org.apache.bcel.generic.InstructionConstants;
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
@@ -337,7 +338,7 @@ public final class LazyClassGen {
         	new Type[0],
         	CollectionUtil.NO_STRINGS,
         	this);
-       	clinit.getBody().insert(getFactory().RETURN);
+       	clinit.getBody().insert(InstructionConstants.RETURN);
         methodGens.add(clinit);
         return clinit;
     }
@@ -354,7 +355,7 @@ public final class LazyClassGen {
         	new Type[0],
         	CollectionUtil.NO_STRINGS,
         	this);
-       	ajcClinit.getBody().insert(getFactory().RETURN);
+       	ajcClinit.getBody().insert(InstructionConstants.RETURN);
         methodGens.add(ajcClinit);
         
         getStaticInitializer().getBody().insert(Utility.createInvoke(getFactory(), ajcClinit));
@@ -405,7 +406,7 @@ public final class LazyClassGen {
     	
     	// make a new factory
     	list.append(fact.createNew(factoryType));
-    	list.append(fact.createDup(1));
+    	list.append(InstructionFactory.createDup(1));
     	
     	list.append(new PUSH(getConstantPoolGen(), getFileName()));
     	
@@ -421,7 +422,7 @@ public final class LazyClassGen {
     				Type.VOID, new Type[] {Type.STRING, classType},
     				Constants.INVOKESPECIAL));
     				
-    	list.append(fact.createStore(factoryType, 0));
+    	list.append(InstructionFactory.createStore(factoryType, 0));
     	
     	List entries = new ArrayList(tjpFields.entrySet());
     	Collections.sort(entries, new Comparator() {
@@ -450,13 +451,13 @@ public final class LazyClassGen {
     	//ResolvedMember mem = shadow.getSignature().resolve(shadow.getWorld());
     	
     	// load the factory
-    	list.append(fact.createLoad(factoryType, 0));
+    	list.append(InstructionFactory.createLoad(factoryType, 0));
     	
     	// load the kind
     	list.append(new PUSH(getConstantPoolGen(), shadow.getKind().getName()));
     	
     	// create the signature
-    	list.append(fact.createLoad(factoryType, 0));
+    	list.append(InstructionFactory.createLoad(factoryType, 0));
     	list.append(new PUSH(getConstantPoolGen(), sig.getSignatureString(shadow.getWorld())));
     	list.append(fact.createInvoke(factoryType.getClassName(), 
     					sig.getSignatureMakerName(),

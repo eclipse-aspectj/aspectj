@@ -657,7 +657,7 @@ public class PatternParser {
 		    							tokenSource.peek());
 		    	}
 		    	if (declaringType.toString().equals("")) {
-		    		declaringType = declaringType.ANY;
+		    		declaringType = TypePattern.ANY;
 		    	}
 			}
 		}
@@ -699,7 +699,7 @@ public class PatternParser {
 	    } else {
 	    	name = tryToExtractName(declaringType);
 	    	if (declaringType.toString().equals("")) {
-	    		declaringType = declaringType.ANY;
+	    		declaringType = TypePattern.ANY;
 	    	}
 		}
 		SignaturePattern ret = new SignaturePattern(Member.FIELD, modifiers, returnType,

@@ -30,6 +30,7 @@ import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionConstants;
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
@@ -198,7 +199,7 @@ public class BcelShadow extends Shadow {
 			retargetFrom(newHandle, nextHandle);
 			// add a POP here... we found a NEW w/o a dup or anything else, so
 			// we must be in statement context.
-			getRange().insert(getFactory().POP, Range.OutsideAfter);
+			getRange().insert(InstructionConstants.POP, Range.OutsideAfter);
 		}
 		// assert (dupHandle.getInstruction() instanceof DUP);
 
@@ -235,7 +236,7 @@ public class BcelShadow extends Shadow {
 			ShadowRange range = getRange();
 			InstructionList body = range.getBody();
 			InstructionHandle start = range.getStart();
-			InstructionHandle freshIh = body.insert(start, getFactory().NOP);
+			InstructionHandle freshIh = body.insert(start, InstructionConstants.NOP);
 			InstructionTargeter[] targeters = start.getTargeters();
 			for (int i = 0; i < targeters.length; i++) {
 				InstructionTargeter t = targeters[i];
@@ -276,7 +277,7 @@ public class BcelShadow extends Shadow {
 					Range.InsideBefore);
 			}
 			if (getKind() == ConstructorCall) {
-				range.insert((Instruction) fact.createDup(1), Range.InsideBefore);
+				range.insert((Instruction) InstructionFactory.createDup(1), Range.InsideBefore);
 				range.insert(
 					fact.createNew(
 						(ObjectType) BcelWorld.makeBcelType(
@@ -353,9 +354,11 @@ public class BcelShadow extends Shadow {
         InstructionHandle clinitStart = body.getStart();
         if (clinitStart.getInstruction() instanceof InvokeInstruction) {
         	InvokeInstruction ii = (InvokeInstruction)clinitStart.getInstruction();
-        	if (ii.getName(enclosingMethod.getEnclosingClass().getConstantPoolGen()).equals(NameMangler.AJC_PRE_CLINIT_NAME)) {
-        		clinitStart = clinitStart.getNext();
-        	}
+			if (ii
+				.getName(enclosingMethod.getEnclosingClass().getConstantPoolGen())
+				.equals(NameMangler.AJC_PRE_CLINIT_NAME)) {
+				clinitStart = clinitStart.getNext();
+			}
         }
         
         InstructionHandle clinitEnd = body.getEnd();
@@ -568,9 +571,9 @@ public class BcelShadow extends Shadow {
     {
         final InstructionList body = enclosingMethod.getBody();
         
-        Member sig = world.makeMethodSignature(
-                    enclosingMethod.getEnclosingClass(),
-                    (InvokeInstruction) callHandle.getInstruction());
+        Member sig = BcelWorld.makeMethodSignature(
+                    	enclosingMethod.getEnclosingClass(),
+                    	(InvokeInstruction) callHandle.getInstruction());
                     
 		BcelShadow s = 
 			new BcelShadow(
@@ -599,7 +602,7 @@ public class BcelShadow extends Shadow {
             new BcelShadow(
                 world,
                 MethodCall,
-                world.makeMethodSignature(
+                BcelWorld.makeMethodSignature(
                     enclosingMethod.getEnclosingClass(),
                     (InvokeInstruction) callHandle.getInstruction()),
                 enclosingMethod,
@@ -651,7 +654,7 @@ public class BcelShadow extends Shadow {
             new BcelShadow(
                 world,
                 FieldGet,
-                world.makeFieldSignature(
+                BcelWorld.makeFieldSignature(
                     enclosingMethod.getEnclosingClass(),
                     (FieldInstruction) getHandle.getInstruction()),
                 enclosingMethod,
@@ -676,7 +679,7 @@ public class BcelShadow extends Shadow {
             new BcelShadow(
                 world,
                 FieldSet,
-                world.makeFieldSignature(
+                BcelWorld.makeFieldSignature(
                     enclosingMethod.getEnclosingClass(),
                     (FieldInstruction) setHandle.getInstruction()),
                 enclosingMethod,
@@ -704,10 +707,10 @@ public class BcelShadow extends Shadow {
 
     // ---- type access methods
     private ObjectType getTargetBcelType() {
-        return (ObjectType) world.makeBcelType(getTargetType());
+        return (ObjectType) BcelWorld.makeBcelType(getTargetType());
     }
     private Type getArgBcelType(int arg) {
-        return world.makeBcelType(getArgType(arg));
+        return BcelWorld.makeBcelType(getArgType(arg));
     }
 
     // ---- kinding
@@ -960,7 +963,7 @@ public class BcelShadow extends Shadow {
             retList = new InstructionList(ret);
             afterAdvice = retList.getStart();
         } else /* if (munger.hasDynamicTests()) */ {
-            retList = new InstructionList(fact.NOP);            
+            retList = new InstructionList(InstructionConstants.NOP);            
             afterAdvice = retList.getStart();
 //        } else {
 //        	retList = new InstructionList();
@@ -973,11 +976,11 @@ public class BcelShadow extends Shadow {
             TypeX tempVarType = getReturnType();
             if (tempVarType.equals(ResolvedTypeX.VOID)) {
             	tempVar = genTempVar(TypeX.OBJECT);
-            	advice.append(getFactory().ACONST_NULL);
+            	advice.append(InstructionConstants.ACONST_NULL);
             	tempVar.appendStore(advice, getFactory());
             } else {
 	            tempVar = genTempVar(tempVarType);
-	            advice.append(getFactory().createDup(tempVarType.getSize()));
+	            advice.append(InstructionFactory.createDup(tempVarType.getSize()));
 	            tempVar.appendStore(advice, getFactory());
             }
         }
@@ -985,10 +988,15 @@ public class BcelShadow extends Shadow {
 
         if (ret != null) {
             InstructionHandle gotoTarget = advice.getStart();           
-            for (Iterator i = returns.iterator(); i.hasNext(); ) {
-                InstructionHandle ih = (InstructionHandle) i.next();
-                Utility.replaceInstruction(ih, fact.createBranchInstruction(Constants.GOTO, gotoTarget), enclosingMethod);
-            }
+			for (Iterator i = returns.iterator(); i.hasNext();) {
+				InstructionHandle ih = (InstructionHandle) i.next();
+				Utility.replaceInstruction(
+					ih,
+					InstructionFactory.createBranchInstruction(
+						Constants.GOTO,
+						gotoTarget),
+					enclosingMethod);
+			}
             range.append(advice);
             range.append(retList);
         } else {
@@ -1012,12 +1020,12 @@ public class BcelShadow extends Shadow {
             exceptionVar.createLoad(fact));
         handler.append(munger.getAdviceInstructions(this, exceptionVar, endHandler.getStart()));
         handler.append(endHandler);
-        handler.append(fact.ATHROW);        
+        handler.append(InstructionConstants.ATHROW);        
         InstructionHandle handlerStart = handler.getStart();
                                     
         if (isFallsThrough()) {
-            InstructionHandle jumpTarget = handler.append(fact.NOP);
-            handler.insert(fact.createBranchInstruction(Constants.GOTO, jumpTarget));
+            InstructionHandle jumpTarget = handler.append(InstructionConstants.NOP);
+            handler.insert(InstructionFactory.createBranchInstruction(Constants.GOTO, jumpTarget));
         }
 		InstructionHandle protectedEnd = handler.getStart();
         range.insert(handler, Range.InsideAfter);       
@@ -1042,16 +1050,16 @@ public class BcelShadow extends Shadow {
         exceptionVar.appendStore(handler, fact);
 
 		handler.append(fact.createNew(NameMangler.SOFT_EXCEPTION_TYPE));
-		handler.append(fact.createDup(1));   
+		handler.append(InstructionFactory.createDup(1));   
         handler.append(exceptionVar.createLoad(fact));
         handler.append(fact.createInvoke(NameMangler.SOFT_EXCEPTION_TYPE, "<init>", 
         					Type.VOID, new Type[] { Type.THROWABLE }, Constants.INVOKESPECIAL));  //??? special
-        handler.append(fact.ATHROW);        
+        handler.append(InstructionConstants.ATHROW);        
         InstructionHandle handlerStart = handler.getStart();
                                     
         if (isFallsThrough()) {
             InstructionHandle jumpTarget = range.getEnd();//handler.append(fact.NOP);
-            handler.insert(fact.createBranchInstruction(Constants.GOTO, jumpTarget));
+            handler.insert(InstructionFactory.createBranchInstruction(Constants.GOTO, jumpTarget));
         }
 		InstructionHandle protectedEnd = handler.getStart();
         range.insert(handler, Range.InsideAfter);       
@@ -1122,12 +1130,17 @@ public class BcelShadow extends Shadow {
 	
 		        int alen = cflowStateVars.length;
 		        entrySuccessInstructions.append(Utility.createConstant(fact, alen));
-		        entrySuccessInstructions.append((Instruction)fact.createNewArray(Type.OBJECT, (short)1));
+				entrySuccessInstructions.append(
+					(Instruction) fact.createNewArray(Type.OBJECT, (short) 1));
 		        arrayVar.appendStore(entrySuccessInstructions, fact);
 		 
-		        for (int i = 0; i < alen; i++) {
-		            arrayVar.appendConvertableArrayStore(entrySuccessInstructions, fact, i, cflowStateVars[i]);
-		        }			
+				for (int i = 0; i < alen; i++) {
+					arrayVar.appendConvertableArrayStore(
+						entrySuccessInstructions,
+						fact,
+						i,
+						cflowStateVars[i]);
+				}		
 	
 	      		entrySuccessInstructions.append(
 	      			Utility.createGet(fact, cflowStackField));
@@ -1151,18 +1164,31 @@ public class BcelShadow extends Shadow {
 		
 		// this is the same for both per and non-per
 		weaveAfter(new BcelAdvice(null, null, null, 0, 0, 0, null, null) {
-			public InstructionList getAdviceInstructions(BcelShadow s, BcelVar extraArgVar, InstructionHandle ifNoAdvice) {
-          		InstructionList exitInstructions = new InstructionList(); 
-          		if (munger.hasDynamicTests()) {
-               		 testResult.appendLoad(exitInstructions, fact);
-            		 exitInstructions.append(fact.createBranchInstruction(Constants.IFEQ, ifNoAdvice));
-          		}
-          		exitInstructions.append(
-          			Utility.createGet(fact, cflowStackField));
-          		exitInstructions.append(
-          			fact.createInvoke(NameMangler.CFLOW_STACK_TYPE, "pop", Type.VOID, new Type[] {}, Constants.INVOKEVIRTUAL));
+			public InstructionList getAdviceInstructions(
+				BcelShadow s,
+				BcelVar extraArgVar,
+				InstructionHandle ifNoAdvice) {
+				InstructionList exitInstructions = new InstructionList();
+				if (munger.hasDynamicTests()) {
+					testResult.appendLoad(exitInstructions, fact);
+					exitInstructions.append(
+						InstructionFactory.createBranchInstruction(
+							Constants.IFEQ,
+							ifNoAdvice));
+				}
+				exitInstructions.append(Utility.createGet(fact, cflowStackField));
+				exitInstructions
+					.append(
+						fact
+						.createInvoke(
+							NameMangler.CFLOW_STACK_TYPE,
+							"pop",
+							Type.VOID,
+							new Type[] {
+				}, Constants.INVOKEVIRTUAL));
 				return exitInstructions;
-			}});
+			}
+		});
 
 
 		range.insert(entryInstructions, Range.InsideBefore);
@@ -1269,14 +1295,27 @@ public class BcelShadow extends Shadow {
         
         Type[] adviceParameterTypes = adviceMethod.getArgumentTypes();
         Type[] extractedMethodParameterTypes = extractedMethod.getArgumentTypes();
-		Type[] parameterTypes = new Type[extractedMethodParameterTypes.length + adviceParameterTypes.length + 1];
+		Type[] parameterTypes =
+			new Type[extractedMethodParameterTypes.length
+				+ adviceParameterTypes.length
+				+ 1];
 		int parameterIndex = 0;
-		System.arraycopy(extractedMethodParameterTypes, 0, parameterTypes, parameterIndex, extractedMethodParameterTypes.length);
+		System.arraycopy(
+			extractedMethodParameterTypes,
+			0,
+			parameterTypes,
+			parameterIndex,
+			extractedMethodParameterTypes.length);
 		parameterIndex += extractedMethodParameterTypes.length;
 
-        parameterTypes[parameterIndex++] =
-        	BcelWorld.makeBcelType(adviceMethod.getEnclosingClass().getType());
-		System.arraycopy(adviceParameterTypes, 0, parameterTypes, parameterIndex, adviceParameterTypes.length);
+		parameterTypes[parameterIndex++] =
+			BcelWorld.makeBcelType(adviceMethod.getEnclosingClass().getType());
+		System.arraycopy(
+			adviceParameterTypes,
+			0,
+			parameterTypes,
+			parameterIndex,
+			adviceParameterTypes.length);
 
         LazyMethodGen localAdviceMethod =
 					new LazyMethodGen(
@@ -1322,17 +1361,21 @@ public class BcelShadow extends Shadow {
 				var.appendLoad(advice, fact);
 			}       	
         	// ??? we don't actually need to push NULL for the closure if we take care
-		    advice.append(munger.getAdviceArgSetup(this, null, new InstructionList(fact.ACONST_NULL)));
+			advice.append(
+				munger.getAdviceArgSetup(
+					this,
+					null,
+					new InstructionList(InstructionConstants.ACONST_NULL)));
 		    adviceMethodInvocation =
 		        advice.append(
 		        	Utility.createInvoke(fact, localAdviceMethod)); //(fact, getWorld(), munger.getSignature()));
 			advice.append(
 		        Utility.createConversion(
 		            getFactory(), 
-		            world.makeBcelType(munger.getSignature().getReturnType()), 
+		            BcelWorld.makeBcelType(munger.getSignature().getReturnType()), 
 		            extractedMethod.getReturnType()));
 		    if (! isFallsThrough()) {
-		        advice.append(fact.createReturn(extractedMethod.getReturnType()));
+		        advice.append(InstructionFactory.createReturn(extractedMethod.getReturnType()));
 		    }
         }
         
@@ -1341,15 +1384,24 @@ public class BcelShadow extends Shadow {
         if (! hasDynamicTest) {
             range.append(advice);
         } else {
-        	InstructionList afterThingie = new InstructionList(fact.NOP);
+        	InstructionList afterThingie = new InstructionList(InstructionConstants.NOP);
             InstructionList callback = makeCallToCallback(extractedMethod);
-            if (terminatesWithReturn()) {
-                callback.append(fact.createReturn(extractedMethod.getReturnType()));
-            } else {
-            	//InstructionHandle endNop = range.insert(fact.NOP, Range.InsideAfter);
-                advice.append(fact.createBranchInstruction(Constants.GOTO, afterThingie.getStart()));
-            }
-            range.append(munger.getTestInstructions(this, advice.getStart(), callback.getStart(), advice.getStart()));
+			if (terminatesWithReturn()) {
+				callback.append(
+					InstructionFactory.createReturn(extractedMethod.getReturnType()));
+			} else {
+				//InstructionHandle endNop = range.insert(fact.NOP, Range.InsideAfter);
+				advice.append(
+					InstructionFactory.createBranchInstruction(
+						Constants.GOTO,
+						afterThingie.getStart()));
+			}
+			range.append(
+				munger.getTestInstructions(
+					this,
+					advice.getStart(),
+					callback.getStart(),
+					advice.getStart()));
             range.append(advice);
             range.append(callback);
             range.append(afterThingie);          
@@ -1369,10 +1421,16 @@ public class BcelShadow extends Shadow {
 			InstructionHandle next = curr.getNext();
 			Instruction inst = curr.getInstruction();
 			if ((inst instanceof INVOKESTATIC)
-					&& proceedName.equals(((INVOKESTATIC) inst).getMethodName(cpg))) {
+				&& proceedName.equals(((INVOKESTATIC) inst).getMethodName(cpg))) {
 
-					
-				localAdviceMethod.getBody().append(curr, getRedoneProceedCall(fact, extractedMethod, munger, localAdviceMethod, proceedVarList));
+				localAdviceMethod.getBody().append(
+					curr,
+					getRedoneProceedCall(
+						fact,
+						extractedMethod,
+						munger,
+						localAdviceMethod,
+						proceedVarList));
 				Utility.deleteInstruction(curr, localAdviceMethod);
 			}
 			curr = next;
@@ -1397,7 +1455,8 @@ public class BcelShadow extends Shadow {
 //		System.out.println(proceedMap + " for " + this);
 //		System.out.println(argVarList);
 		
-		ResolvedTypeX[] proceedParamTypes = world.resolve(munger.getSignature().getParameterTypes());
+		ResolvedTypeX[] proceedParamTypes =
+			world.resolve(munger.getSignature().getParameterTypes());
 		// remove this*JoinPoint* as arguments to proceed
 		if (munger.getBaseParameterCount()+1 < proceedParamTypes.length) {
 			int len = munger.getBaseParameterCount()+1;
@@ -1491,7 +1550,7 @@ public class BcelShadow extends Shadow {
 			
 			Type[] stateTypes = getSuperConstructorParameterTypes();
 			
-			returnConversionCode.append(fact.ALOAD_0); // put "this" back on the stack
+			returnConversionCode.append(InstructionConstants.ALOAD_0); // put "this" back on the stack
 			for (int i = 0, len = stateTypes.length; i < len; i++) {
 				stateTempVar.appendConvertableArrayLoad(
 					returnConversionCode, 
@@ -1503,11 +1562,12 @@ public class BcelShadow extends Shadow {
 	        returnConversionCode = 
 	            Utility.createConversion(
 	                getFactory(), 
-	                world.makeBcelType(munger.getSignature().getReturnType()), 
+	                BcelWorld.makeBcelType(munger.getSignature().getReturnType()), 
 	                callbackMethod.getReturnType());
-	        if (! isFallsThrough()) {
-	            returnConversionCode.append(fact.createReturn(callbackMethod.getReturnType()));
-	        }
+			if (!isFallsThrough()) {
+				returnConversionCode.append(
+					InstructionFactory.createReturn(callbackMethod.getReturnType()));
+			}
 		}
         
         InstructionList advice = new InstructionList();
@@ -1516,21 +1576,30 @@ public class BcelShadow extends Shadow {
         advice.append(munger.getNonTestAdviceInstructions(this));
         advice.append(returnConversionCode);         
         
-        if (! hasDynamicTest) {
-            range.append(advice);
-        } else {
-            InstructionList callback = makeCallToCallback(callbackMethod);
-            InstructionList postCallback = new InstructionList();
-            if (terminatesWithReturn()) {
-                callback.append(fact.createReturn(callbackMethod.getReturnType()));
-            } else {
-                advice.append(fact.createBranchInstruction(Constants.GOTO, postCallback.append(fact.NOP)));
-            }
-            range.append(munger.getTestInstructions(this, advice.getStart(), callback.getStart(), advice.getStart()));
-            range.append(advice);
-            range.append(callback);   
-            range.append(postCallback);         
-        }
+		if (!hasDynamicTest) {
+			range.append(advice);
+		} else {
+			InstructionList callback = makeCallToCallback(callbackMethod);
+			InstructionList postCallback = new InstructionList();
+			if (terminatesWithReturn()) {
+				callback.append(
+					InstructionFactory.createReturn(callbackMethod.getReturnType()));
+			} else {
+				advice.append(
+					InstructionFactory.createBranchInstruction(
+						Constants.GOTO,
+						postCallback.append(InstructionConstants.NOP)));
+			}
+			range.append(
+				munger.getTestInstructions(
+					this,
+					advice.getStart(),
+					callback.getStart(),
+					advice.getStart()));
+			range.append(advice);
+			range.append(callback);
+			range.append(postCallback);
+		}
     }
     
     // exposed for testing
@@ -1538,7 +1607,7 @@ public class BcelShadow extends Shadow {
     	InstructionFactory fact = getFactory();
         InstructionList callback = new InstructionList();
         if (thisVar != null) {
-        	callback.append(fact.ALOAD_0); 
+        	callback.append(InstructionConstants.ALOAD_0); 
         }
         if (targetVar != null && targetVar != thisVar) {
             callback.append(BcelRenderer.renderExpr(fact, world, targetVar));
@@ -1593,7 +1662,7 @@ public class BcelShadow extends Shadow {
         arrayVar.appendLoad(il, fact);
         il.append(Utility.createInvoke(fact, world, constructor));
         if (getKind() == PreInitialization) {
-			il.append(fact.DUP);
+			il.append(InstructionConstants.DUP);
 			holder.appendStore(il, fact);
         }
         return il;
@@ -1649,11 +1718,11 @@ public class BcelShadow extends Shadow {
                                                       new String[] {}, 
                                                       closureClass);        
         InstructionList cbody = constructor.getBody();        
-		cbody.append(fact.createLoad(Type.OBJECT, 0));
-		cbody.append(fact.createLoad(objectArrayType, 1));
+		cbody.append(InstructionFactory.createLoad(Type.OBJECT, 0));
+		cbody.append(InstructionFactory.createLoad(objectArrayType, 1));
 		cbody.append(fact.createInvoke(superClassName, "<init>", Type.VOID, 
 			new Type[] {objectArrayType}, Constants.INVOKESPECIAL));
-		cbody.append(fact.createReturn(Type.VOID));
+		cbody.append(InstructionFactory.createReturn(Type.VOID));
 
         closureClass.addMethodGen(constructor);
         
@@ -1667,9 +1736,10 @@ public class BcelShadow extends Shadow {
         InstructionList mbody = runMethod.getBody();
         BcelVar proceedVar = new BcelVar(TypeX.OBJECTARRAY.resolve(world), 1);
     //        int proceedVarIndex = 1;
-        BcelVar stateVar = new BcelVar(TypeX.OBJECTARRAY.resolve(world), runMethod.allocateLocal(1));
+		BcelVar stateVar =
+			new BcelVar(TypeX.OBJECTARRAY.resolve(world), runMethod.allocateLocal(1));
     //        int stateVarIndex = runMethod.allocateLocal(1);
-		mbody.append(fact.createThis());
+		mbody.append(InstructionFactory.createThis());
 		mbody.append(fact.createGetField(superClassName, "state", objectArrayType));
         mbody.append(stateVar.createStore(fact));
     //		mbody.append(fact.createStore(objectArrayType, stateVarIndex));
@@ -1697,7 +1767,7 @@ public class BcelShadow extends Shadow {
 			mbody.append(Utility.createSet(
 				fact, 
 				AjcMemberMaker.aroundClosurePreInitializationField()));
-			mbody.append(fact.ACONST_NULL);
+			mbody.append(InstructionConstants.ACONST_NULL);
 		} else {
 			mbody.append(
 	            Utility.createConversion(
@@ -1705,7 +1775,7 @@ public class BcelShadow extends Shadow {
 	                callbackMethod.getReturnType(), 
 	                Type.OBJECT));
 		}
-		mbody.append(fact.createReturn(Type.OBJECT));
+		mbody.append(InstructionFactory.createReturn(Type.OBJECT));
 
 		closureClass.addMethodGen(runMethod);
 				
@@ -1769,14 +1839,14 @@ public class BcelShadow extends Shadow {
 			// push object array
 			arrayVar.appendLoad(body, fact);
 			// swap
-			body.append(fact.SWAP);
+			body.append(InstructionConstants.SWAP);
         	// do object array store.
 			body.append(Utility.createConstant(fact, i));
-			body.append(fact.SWAP);
-			body.append(fact.createArrayStore(Type.OBJECT));
+			body.append(InstructionConstants.SWAP);
+			body.append(InstructionFactory.createArrayStore(Type.OBJECT));
         }
         arrayVar.appendLoad(body, fact);
-        body.append(fact.ARETURN);
+        body.append(InstructionConstants.ARETURN);
 	}
 
 	private Type[] getSuperConstructorParameterTypes() {
@@ -1841,7 +1911,7 @@ public class BcelShadow extends Shadow {
      * ??? rewrite this to do less array munging, please
      */
     private LazyMethodGen createMethodGen(String newMethodName) {
-        Type[] parameterTypes = world.makeBcelTypes(getArgTypes()); 
+        Type[] parameterTypes = BcelWorld.makeBcelTypes(getArgTypes()); 
         int modifiers = Modifier.FINAL;
 
         // XXX some bug
@@ -1860,11 +1930,11 @@ public class BcelShadow extends Shadow {
             	}
             	targetType = getThisType();
             }
-            parameterTypes = addType(world.makeBcelType(targetType), parameterTypes);
+            parameterTypes = addType(BcelWorld.makeBcelType(targetType), parameterTypes);
         }
         if (thisVar != null) {
         	TypeX thisType = getThisType();
-        	parameterTypes = addType(world.makeBcelType(thisType), parameterTypes);
+        	parameterTypes = addType(BcelWorld.makeBcelType(thisType), parameterTypes);
         }
         
         // We always want to pass down thisJoinPoint in case we have already woven
@@ -1883,7 +1953,7 @@ public class BcelShadow extends Shadow {
         return
             new LazyMethodGen(
                 modifiers, 
-                world.makeBcelType(returnType), 
+                BcelWorld.makeBcelType(returnType), 
                 newMethodName,
                 parameterTypes,
                 new String[0],

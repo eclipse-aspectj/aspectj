@@ -47,7 +47,7 @@ public class BcelCflowStackFieldAdder extends BcelTypeMunger {
 		InstructionFactory fact = gen.getFactory();
 
 		setup.append(fact.createNew(new ObjectType(NameMangler.CFLOW_STACK_TYPE)));
-		setup.append(fact.createDup(1));
+		setup.append(InstructionFactory.createDup(1));
 		setup.append(fact.createInvoke(
 			NameMangler.CFLOW_STACK_TYPE, 
 			"<init>", 

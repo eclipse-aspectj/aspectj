@@ -304,8 +304,7 @@ public final class LazyMethodGen {
 	}
 
     public String toShortString() {
-        org.apache.bcel.classfile.Utility util = null; // EVIL!
-        String access = util.accessToString(getAccessFlags());
+        String access = org.apache.bcel.classfile.Utility.accessToString(getAccessFlags());
         
         StringBuffer buf = new StringBuffer();
         
@@ -313,20 +312,29 @@ public final class LazyMethodGen {
             buf.append(access);
             buf.append(" ");
         }
-        buf.append(util.signatureToString(getReturnType().getSignature(), true));
+		buf.append(
+			org.apache.bcel.classfile.Utility.signatureToString(
+				getReturnType().getSignature(),
+				true));
         buf.append(" ");
         buf.append(getName());
         buf.append("(");
-        {
-            int len = argumentTypes.length;
-            if (len > 0) {
-                buf.append(util.signatureToString(argumentTypes[0].getSignature(), true));  
-                for (int i = 1; i < argumentTypes.length; i++) {
-                    buf.append(", ");
-                    buf.append(util.signatureToString(argumentTypes[i].getSignature(), true));
-                }
-            }
-        }
+		{
+			int len = argumentTypes.length;
+			if (len > 0) {
+				buf.append(
+					org.apache.bcel.classfile.Utility.signatureToString(
+						argumentTypes[0].getSignature(),
+						true));
+				for (int i = 1; i < argumentTypes.length; i++) {
+					buf.append(", ");
+					buf.append(
+						org.apache.bcel.classfile.Utility.signatureToString(
+							argumentTypes[i].getSignature(),
+							true));
+				}
+			}
+		}
         buf.append(")");
         
         {

@@ -72,7 +72,7 @@ public class BcelRenderer implements ITestVisitor, IExprVisitor {
         BcelRenderer renderer = new BcelRenderer(fact, world);
         e.accept(renderer);
         InstructionList il = renderer.instructions;
-        il.append(Utility.createConversion(fact, world.makeBcelType(e.getType()), desiredType));
+        il.append(Utility.createConversion(fact, BcelWorld.makeBcelType(e.getType()), desiredType));
         return il;
     }
 
@@ -167,7 +167,7 @@ public class BcelRenderer implements ITestVisitor, IExprVisitor {
     public void visit(Instanceof i) {
         instructions.insert(createJumpBasedOnBooleanOnStack());
         instructions.insert(
-            Utility.createInstanceof(fact, (ReferenceType) world.makeBcelType(i.getType())));
+            Utility.createInstanceof(fact, (ReferenceType) BcelWorld.makeBcelType(i.getType())));
         i.getVar().accept(this);
     }
 
@@ -176,18 +176,18 @@ public class BcelRenderer implements ITestVisitor, IExprVisitor {
         if (sk == fk) {
             // don't bother generating if it doesn't matter
             if (sk != next) {
-                il.insert(fact.createBranchInstruction(Constants.GOTO, sk));
+                il.insert(InstructionFactory.createBranchInstruction(Constants.GOTO, sk));
             }
             return il;
         }
 
         if (fk == next) {
-            il.insert(fact.createBranchInstruction(Constants.IFNE, sk));
+            il.insert(InstructionFactory.createBranchInstruction(Constants.IFNE, sk));
         } else if (sk == next) {
-            il.insert(fact.createBranchInstruction(Constants.IFEQ, fk));
+            il.insert(InstructionFactory.createBranchInstruction(Constants.IFEQ, fk));
         } else {
-            il.insert(fact.createBranchInstruction(Constants.GOTO, sk));
-            il.insert(fact.createBranchInstruction(Constants.IFEQ, fk));
+            il.insert(InstructionFactory.createBranchInstruction(Constants.GOTO, sk));
+            il.insert(InstructionFactory.createBranchInstruction(Constants.IFEQ, fk));
         }
         return il;		
 	}

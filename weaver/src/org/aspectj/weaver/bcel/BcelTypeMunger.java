@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.FieldGen;
+import org.apache.bcel.generic.InstructionConstants;
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.Type;
@@ -115,7 +116,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			} else if (member.getKind() == Member.CONSTRUCTOR) {
 				for (Iterator i = gen.getMethodGens().iterator(); i.hasNext(); ) {
 					LazyMethodGen m = (LazyMethodGen)i.next();
-					if (m.getMemberView() != null && m.getMemberView().getKind() == Member.CONSTRUCTOR) {
+					if (m.getMemberView() != null
+						&& m.getMemberView().getKind() == Member.CONSTRUCTOR) {
 						// m.getMemberView().equals(member)) {
 						m.forcePublic();
 						//return true;
@@ -147,13 +149,13 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				field.getName(),
 				BcelWorld.makeBcelType(field.getType()), Constants.GETSTATIC));
 		} else {
-			il.append(fact.ALOAD_0);
+			il.append(InstructionConstants.ALOAD_0);
 			il.append(fact.createFieldAccess(
 				gen.getClassName(), 
 				field.getName(),
 				BcelWorld.makeBcelType(field.getType()), Constants.GETFIELD));
 		}
-		il.append(fact.createReturn(BcelWorld.makeBcelType(field.getType())));
+		il.append(InstructionFactory.createReturn(BcelWorld.makeBcelType(field.getType())));
 		mg.getBody().insert(il);
 				
 		gen.addMethodGen(mg);
@@ -170,20 +172,20 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		Type fieldType = BcelWorld.makeBcelType(field.getType());
 		
 		if (field.isStatic()) {
-			il.append(fact.createLoad(fieldType, 0));
+			il.append(InstructionFactory.createLoad(fieldType, 0));
 			il.append(fact.createFieldAccess(
 				gen.getClassName(), 
 				field.getName(),
 				fieldType, Constants.PUTSTATIC));
 		} else {
-			il.append(fact.ALOAD_0);
-			il.append(fact.createLoad(fieldType, 1));
+			il.append(InstructionConstants.ALOAD_0);
+			il.append(InstructionFactory.createLoad(fieldType, 1));
 			il.append(fact.createFieldAccess(
 				gen.getClassName(), 
 				field.getName(),
 				fieldType, Constants.PUTFIELD));
 		}
-		il.append(fact.createReturn(Type.VOID));
+		il.append(InstructionFactory.createReturn(Type.VOID));
 		mg.getBody().insert(il);
 				
 		gen.addMethodGen(mg);
@@ -203,17 +205,17 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		int pos = 0;
 	
 		if (!method.isStatic()) {
-			il.append(fact.ALOAD_0);
+			il.append(InstructionConstants.ALOAD_0);
 			pos++;
 		}
 		for (int i = 0, len = paramTypes.length; i < len; i++) {
 			Type paramType = paramTypes[i];
-			il.append(fact.createLoad(paramType, pos));
+			il.append(InstructionFactory.createLoad(paramType, pos));
 			pos+=paramType.getSize();
 		}
 		il.append(Utility.createInvoke(fact, (BcelWorld)aspectType.getWorld(), 
 				method));
-		il.append(fact.createReturn(BcelWorld.makeBcelType(method.getReturnType())));
+		il.append(InstructionFactory.createReturn(BcelWorld.makeBcelType(method.getReturnType())));
 
 		mg.getBody().insert(il);
 				
@@ -268,12 +270,12 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				gen);
 			InstructionList il = new InstructionList();
 			InstructionFactory fact = gen.getFactory();
-			il.append(fact.ALOAD_0);
+			il.append(InstructionConstants.ALOAD_0);
 			il.append(fact.createFieldAccess(
 				gen.getClassName(), 
 				fg.getName(),
 				fieldType, Constants.GETFIELD));
-			il.append(fact.createReturn(fieldType));
+			il.append(InstructionFactory.createReturn(fieldType));
 			mg.getBody().insert(il);
 				
 			gen.addMethodGen(mg);
@@ -286,13 +288,13 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				new Type[]{fieldType,}, new String[0],
 				gen);
 			InstructionList il1 = new InstructionList();
-			il1.append(fact.ALOAD_0);
-			il1.append(fact.createLoad(fieldType, 1));
+			il1.append(InstructionConstants.ALOAD_0);
+			il1.append(InstructionFactory.createLoad(fieldType, 1));
 			il1.append(fact.createFieldAccess(
 				gen.getClassName(), 
 				fg.getName(), 
 				fieldType, Constants.PUTFIELD));
-			il1.append(fact.createReturn(Type.VOID));
+			il1.append(InstructionFactory.createReturn(Type.VOID));
 			mg1.getBody().insert(il1);
 				
 			gen.addMethodGen(mg1);
@@ -332,17 +334,19 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				int pos = 0;
 	
 				if (!signature.isStatic()) {
-					body.append(fact.createThis());
+					body.append(InstructionFactory.createThis());
 					pos++;
 				}
 				Type[] paramTypes = BcelWorld.makeBcelTypes(introMethod.getParameterTypes());
 				for (int i = 0, len = paramTypes.length; i < len; i++) {
 					Type paramType = paramTypes[i];
-					body.append(fact.createLoad(paramType, pos));
+					body.append(InstructionFactory.createLoad(paramType, pos));
 					pos+=paramType.getSize();
 				}
 				body.append(Utility.createInvoke(fact, weaver.getWorld(), dispatchMethod));
-				body.append(fact.createReturn(BcelWorld.makeBcelType(introMethod.getReturnType())));
+				body.append(
+					InstructionFactory.createReturn(
+						BcelWorld.makeBcelType(introMethod.getReturnType())));
 			} else {
 				//??? this is okay
 				//if (!(mg.getBody() == null)) throw new RuntimeException("bas");
@@ -373,16 +377,16 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			int pos = 0;
 
 			if (!introMethod.isStatic()) {
-				body.append(fact.createThis());
+				body.append(InstructionFactory.createThis());
 				pos++;
 			}
 			for (int i = 0, len = paramTypes.length; i < len; i++) {
 				Type paramType = paramTypes[i];
-				body.append(fact.createLoad(paramType, pos));
+				body.append(InstructionFactory.createLoad(paramType, pos));
 				pos+=paramType.getSize();
 			}
 			body.append(Utility.createInvoke(fact, weaver.getWorld(), dispatchMethod));
-			body.append(fact.createReturn(returnType));
+			body.append(InstructionFactory.createReturn(returnType));
 			mg.definingType = onType;
 			
 			weaver.addOrReplaceLazyMethodGen(mg);
@@ -402,16 +406,28 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	{
 		LazyClassGen gen = weaver.getLazyClassGen();
 		
-		for (Iterator iter = neededSuperCalls.iterator(); iter.hasNext(); ) {
+		for (Iterator iter = neededSuperCalls.iterator(); iter.hasNext();) {
 			ResolvedMember superMethod = (ResolvedMember) iter.next();
 			if (weaver.addDispatchTarget(superMethod)) {
 				//System.err.println("super type: " + superMethod.getDeclaringType() + ", " + gen.getType());
 				boolean isSuper = !superMethod.getDeclaringType().equals(gen.getType());
 				String dispatchName;
-				if (isSuper) dispatchName = NameMangler.superDispatchMethod(onType, superMethod.getName());
-				else dispatchName = NameMangler.protectedDispatchMethod(onType, superMethod.getName());
-				LazyMethodGen dispatcher = makeDispatcher(gen, dispatchName, superMethod, weaver.getWorld(), isSuper);
-		
+				if (isSuper)
+					dispatchName =
+						NameMangler.superDispatchMethod(onType, superMethod.getName());
+				else
+					dispatchName =
+						NameMangler.protectedDispatchMethod(
+							onType,
+							superMethod.getName());
+				LazyMethodGen dispatcher =
+					makeDispatcher(
+						gen,
+						dispatchName,
+						superMethod,
+						weaver.getWorld(),
+						isSuper);
+
 				weaver.addLazyMethodGen(dispatcher);
 			}
 		}
@@ -446,28 +462,33 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		Type[] paramTypes = freshConstructor.getArgumentTypes();
 		int frameIndex = 1;
 		for (int i = 0, len = declaredParams.length; i < len; i++) {
-			body.append(fact.createLoad(paramTypes[i], frameIndex));
+			body.append(InstructionFactory.createLoad(paramTypes[i], frameIndex));
 			frameIndex += paramTypes[i].getSize();
 		}
 		// do call to pre
-		Member preMethod = AjcMemberMaker.preIntroducedConstructor(aspectType, onType, declaredParams);
+		Member preMethod =
+			AjcMemberMaker.preIntroducedConstructor(aspectType, onType, declaredParams);
 		body.append(Utility.createInvoke(fact, null, preMethod));
 		
 		// create a local, and store return pre stuff into it.
 		int arraySlot = freshConstructor.allocateLocal(1);
-		body.append(fact.createStore(Type.OBJECT, arraySlot));
+		body.append(InstructionFactory.createStore(Type.OBJECT, arraySlot));
 		
 		// put this on the stack
-		body.append(fact.ALOAD_0);
+		body.append(InstructionConstants.ALOAD_0);
 		
 		// unpack pre args onto stack
 		TypeX[] superParamTypes = explicitConstructor.getParameterTypes();
 		
 		for (int i = 0, len = superParamTypes.length; i < len; i++) {
-			body.append(fact.createLoad(Type.OBJECT, arraySlot));
+			body.append(InstructionFactory.createLoad(Type.OBJECT, arraySlot));
 			body.append(Utility.createConstant(fact, i));
-			body.append(fact.createArrayLoad(Type.OBJECT));
-			body.append(Utility.createConversion(fact, Type.OBJECT, BcelWorld.makeBcelType(superParamTypes[i])));
+			body.append(InstructionFactory.createArrayLoad(Type.OBJECT));
+			body.append(
+				Utility.createConversion(
+					fact,
+					Type.OBJECT,
+					BcelWorld.makeBcelType(superParamTypes[i])));
 		}
 
 		// call super/this
@@ -476,17 +497,22 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		
 		// put this back on the stack
 
-		body.append(fact.ALOAD_0);
+		body.append(InstructionConstants.ALOAD_0);
 		
 		// unpack params onto stack
-		Member postMethod = AjcMemberMaker.postIntroducedConstructor(aspectType, onType, declaredParams);
+		Member postMethod =
+			AjcMemberMaker.postIntroducedConstructor(aspectType, onType, declaredParams);
 		TypeX[] postParamTypes = postMethod.getParameterTypes();
 		
 		for (int i = 1, len = postParamTypes.length; i < len; i++) {
-			body.append(fact.createLoad(Type.OBJECT, arraySlot));
+			body.append(InstructionFactory.createLoad(Type.OBJECT, arraySlot));
 			body.append(Utility.createConstant(fact, superParamTypes.length + i-1));
-			body.append(fact.createArrayLoad(Type.OBJECT));
-			body.append(Utility.createConversion(fact, Type.OBJECT, BcelWorld.makeBcelType(postParamTypes[i])));
+			body.append(InstructionFactory.createArrayLoad(Type.OBJECT));
+			body.append(
+				Utility.createConversion(
+					fact,
+					Type.OBJECT,
+					BcelWorld.makeBcelType(postParamTypes[i])));
 		}		
 		
 		// call post
@@ -494,7 +520,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		
 		// don't forget to return!!
 		
-		body.append(fact.RETURN);
+		body.append(InstructionConstants.RETURN);
 		
 		return true;		
 	}
@@ -529,11 +555,11 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		InstructionFactory fact = onGen.getFactory();
 		int pos = 0;
 		
-		body.append(fact.createThis());
+		body.append(InstructionFactory.createThis());
 		pos++;
 		for (int i = 0, len = paramTypes.length; i < len; i++) {
 			Type paramType = paramTypes[i];
-			body.append(fact.createLoad(paramType, pos));
+			body.append(InstructionFactory.createLoad(paramType, pos));
 			pos+=paramType.getSize();
 		}
 		if (isSuper) {
@@ -541,7 +567,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		} else {
 			body.append(Utility.createInvoke(fact, world, superMethod));
 		}
-		body.append(fact.createReturn(returnType));
+		body.append(InstructionFactory.createReturn(returnType));
 
 		return mg;
 	}	
@@ -596,13 +622,13 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					fg.getName(),
 					fieldType, Constants.GETSTATIC));
 			} else {
-				il.append(fact.ALOAD_0);
+				il.append(InstructionConstants.ALOAD_0);
 				il.append(fact.createFieldAccess(
 					gen.getClassName(), 
 					fg.getName(),
 					fieldType, Constants.GETFIELD));
 			}
-			il.append(fact.createReturn(fieldType));
+			il.append(InstructionFactory.createReturn(fieldType));
 			mg.getBody().insert(il);
 				
 			gen.addMethodGen(mg);
@@ -611,20 +637,20 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					AjcMemberMaker.interFieldInterfaceSetter(field, gen.getType(), aspectType));
 			InstructionList il1 = new InstructionList();
 			if (field.isStatic()) {
-				il1.append(fact.createLoad(fieldType, 0));
+				il1.append(InstructionFactory.createLoad(fieldType, 0));
 				il1.append(fact.createFieldAccess(
 					gen.getClassName(), 
 					fg.getName(),
 					fieldType, Constants.PUTSTATIC));
 			} else {
-				il1.append(fact.ALOAD_0);
-				il1.append(fact.createLoad(fieldType, 1));
+				il1.append(InstructionConstants.ALOAD_0);
+				il1.append(InstructionFactory.createLoad(fieldType, 1));
 				il1.append(fact.createFieldAccess(
 					gen.getClassName(), 
 					fg.getName(), 
 					fieldType, Constants.PUTFIELD));
 			}
-			il1.append(fact.createReturn(Type.VOID));
+			il1.append(InstructionFactory.createReturn(Type.VOID));
 			mg1.getBody().insert(il1);
 				
 			gen.addMethodGen(mg1);

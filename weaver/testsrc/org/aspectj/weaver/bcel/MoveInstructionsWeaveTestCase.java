@@ -15,6 +15,7 @@ package org.aspectj.weaver.bcel;
 
 import java.io.*;
 
+import org.apache.bcel.generic.InstructionFactory;
 import org.aspectj.weaver.*;
 
 public class MoveInstructionsWeaveTestCase extends WeaveTestCase {
@@ -31,15 +32,18 @@ public class MoveInstructionsWeaveTestCase extends WeaveTestCase {
             	super.specializeOn(s);
                 ((BcelShadow) s).initializeForAroundClosure();
             }
-            public void implementOn(Shadow s) {
-                BcelShadow shadow = (BcelShadow) s;
-                LazyMethodGen newMethod = shadow.extractMethod(shadow.getSignature().getExtractableName() + "_extracted");
-                shadow.getRange().append(shadow.makeCallToCallback(newMethod));
+			public void implementOn(Shadow s) {
+				BcelShadow shadow = (BcelShadow) s;
+				LazyMethodGen newMethod =
+					shadow.extractMethod(
+						shadow.getSignature().getExtractableName() + "_extracted");
+				shadow.getRange().append(shadow.makeCallToCallback(newMethod));
 
-                if (! shadow.isFallsThrough()) {
-                    shadow.getRange().append(shadow.getFactory().createReturn(newMethod.getReturnType()));
-                }
-            }
+				if (!shadow.isFallsThrough()) {
+					shadow.getRange().append(
+						InstructionFactory.createReturn(newMethod.getReturnType()));
+				}
+			}
         };
 
         weaveTest("HelloWorld", "ExtractedHelloWorld", p);
@@ -58,7 +62,7 @@ public class MoveInstructionsWeaveTestCase extends WeaveTestCase {
                 shadow.getRange().append(shadow.makeCallToCallback(newMethod));
 
                 if (! shadow.isFallsThrough()) {
-                    shadow.getRange().append(shadow.getFactory().createReturn(newMethod.getReturnType()));
+                    shadow.getRange().append(InstructionFactory.createReturn(newMethod.getReturnType()));
                 }
             }
   		};

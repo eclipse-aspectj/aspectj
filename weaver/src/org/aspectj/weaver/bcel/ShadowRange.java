@@ -182,8 +182,7 @@ final class ShadowRange extends Range {
         if (addReturn) {
             // we really should pull this out somewhere...
             ret = freshBody.append(
-                new InstructionFactory(freshMethod.getEnclosingClass().getConstantPoolGen())
-                    .createReturn(freshMethod.getReturnType()));
+                InstructionFactory.createReturn(freshMethod.getReturnType()));
         }
 		// and remap all the old targeters of the end handle of the range to the return.
         InstructionTargeter[] ts = end.getTargeters();
