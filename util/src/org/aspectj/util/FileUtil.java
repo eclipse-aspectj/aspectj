@@ -1169,6 +1169,31 @@ public class FileUtil {
 		return new BufferedOutputStream(new FileOutputStream(file));
 	}
 
+    /**
+     * Sleep until after the last last-modified stamp from the files.
+     * @param files the File[] of files to inspect for last modified times
+     *        (this ignores null or empty files array
+     *         and null or non-existing components of files array)
+     * @return true if succeeded without 100 interrupts
+     */
+    public static boolean sleepPastFinalModifiedTime(File[] files) {
+        if ((null == files) || (0 == files.length)) {
+            return true;
+        }
+        long delayUntil = System.currentTimeMillis();
+        for (int i = 0; i < files.length; i++) {
+            File file = files[i];
+            if ((null == file) || !file.exists()) {
+                continue;
+            }
+            long nextModTime = file.lastModified();
+            if (nextModTime > delayUntil) {
+                delayUntil = nextModTime;
+            }
+        }
+        return LangUtil.sleepUntil(++delayUntil);
+    }
+
     /** map name to result, removing any fromSuffix and adding any toSuffix */
     private static String map(String name, String fromSuffix, String toSuffix) {
         if (null != name) {
@@ -1386,4 +1411,5 @@ public class FileUtil {
         protected void completing(long totalWritten, Throwable thrown) {
         }
     }
+
 }

@@ -980,6 +980,44 @@ public class LangUtil {
             }
         }
         return result;
+    } 
+    
+    /**
+     * Sleep for a particular period (in milliseconds).
+     * @param time the long time in milliseconds to sleep
+     * @return true if delay succeeded, false if interrupted 100 times
+     */
+    public static boolean sleep(long milliseconds) {
+        if (milliseconds == 0) {
+            return true;
+        } else if (milliseconds < 0) {
+            throw new IllegalArgumentException("negative: " + milliseconds);
+        }
+        return sleepUntil(milliseconds + System.currentTimeMillis());
+    }
+    
+    /**
+     * Sleep until a particular time.
+     * @param time the long time in milliseconds to sleep until
+     * @return true if delay succeeded, false if interrupted 100 times
+     */
+    public static boolean sleepUntil(long time) {
+        if (time == 0) {
+            return true;
+        } else if (time < 0) {
+            throw new IllegalArgumentException("negative: " + time);
+        }
+        final Thread thread = Thread.currentThread();
+        long curTime = System.currentTimeMillis();
+        for (int i = 0; (i < 100) && (curTime < time); i++) {
+            try {
+                thread.sleep(time-curTime);            
+            } catch (InterruptedException e) {
+                // ignore
+            }
+            curTime = System.currentTimeMillis();
+        }
+        return (curTime >= time);
     }  
       
     /**
@@ -1336,7 +1374,8 @@ public class LangUtil {
                 }
             }
         } // class Thrown
-    }  // class ProcessController
+    }
+
 }
 
 
