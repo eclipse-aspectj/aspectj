@@ -13,6 +13,7 @@
 
 package org.aspectj.testing.harness.bridge;
 
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -22,6 +23,7 @@ import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
+import org.aspectj.bridge.*;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageUtil;
@@ -71,8 +73,10 @@ public class AjcSpecTest extends TestCase {
         // XXX sameList(lhs.globalOptions, rhs.globalOptions, a);
         sameList(lhs.getOptionsList(), rhs.getOptionsList(), a);
         sameList(lhs.getPathsList(), rhs.getPathsList(), a);
-        sameList(lhs.keywords, rhs.keywords, a); // XXX getters
-        assertEquals(lhs.comment, rhs.comment); // XXX getters
+        assertEquals(lhs.isStaging(), rhs.isStaging());
+        sameList(lhs.keywords, rhs.keywords, a);
+        assertEquals(lhs.comment, rhs.comment); 
+        assertEquals(lhs.badInput, rhs.badInput);
         // xml adds sourceloc?
         //sameSourceLocation(lhs.getSourceLocation(), rhs.getSourceLocation(), a);
         // XXX also sourceLocations?
@@ -270,12 +274,13 @@ public class AjcSpecTest extends TestCase {
         sameList(lhs.added, rhs.added, a);
     }
 
-    public static void sameMessages(List one, List two, Assert a) {
+    public static void sameMessages(IMessageHolder one, IMessageHolder two, Assert a) {
         if ((null == one) && (null == two)) {
             return;
         }
-        Iterator lhs = one.iterator();
-        Iterator rhs = two.iterator();
+        // order matters here
+        ListIterator lhs = one.getUnmodifiableListView().listIterator();
+        ListIterator rhs = two.getUnmodifiableListView().listIterator();
         while (lhs.hasNext() && rhs.hasNext()) {
             sameMessage((IMessage) lhs.next(), (IMessage) rhs.next(), a);
         }
