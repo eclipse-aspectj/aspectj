@@ -19,7 +19,8 @@
 	      Java 5 introduces <emphasis>annotation types</emphasis> which can
 	      be used to express metadata relating to program members in the
 	      form of <emphasis>annotations</emphasis>. Annotations in Java 5 
-	      can be applied to package and type declarations, constructors, methods, 
+	      can be applied to package and type declarations (classes,
+	      interfaces, enums, and annotations), constructors, methods, 
 	      fields, parameters, and variables. Annotations are specified in the
 	      program source by using the <literal>@</literal> symbol. For example,
 	      the following piece of code uses the <literal>@Deprecated</literal>
@@ -43,7 +44,7 @@
 		</para>
 		
 		<programlisting><![CDATA[
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings({"unchecked"})
 		public void someMethod() {...}
 		]]></programlisting>
 		
@@ -62,7 +63,7 @@
 		</para>
 		
 		<programlisting><![CDATA[
-		@Authenticated(role="supervisor",clearanceLevel="5")
+		@Authenticated(role="supervisor",clearanceLevel=5)
 		public void someMethod() {...}
 		]]></programlisting>
 		
@@ -114,7 +115,7 @@
 	    </variablelist>
 	    
 	    <para>Local variable annotations are not retained in class files (or at runtime)
-	    regardless of the retention policy set on the annotation type.</para>
+	    regardless of the retention policy set on the annotation type. See JLS 9.6.1.2.</para>
     </sect2>		
 
     <sect2>
@@ -195,7 +196,8 @@
     
     <para>
     	AspectJ 1.5 supports annotations on aspects, and on method, field,
-    	constructor, advice, and inter-type declarations within aspects.
+    	constructor, advice, and inter-type declarations within aspects. 
+    	Method and advice parameters may also be annotated.
     	Annotations are not permitted on pointcut declarations or on 
     	<literal>declare</literal> statements.
     </para>
@@ -241,6 +243,10 @@
 		}
 	]]></programlisting>
 
+    <para>
+    An annotation on an aspect will be inherited by sub-aspects, iff it has
+    the <literal>@Inherited</literal> meta-annotation.
+    </para>
 
     <para>
         AspectJ 1.5 supports a new XLint warning, "the pointcut associated with this
@@ -248,23 +254,19 @@
         will be emitted by the compiler if the pointcut expression associated with an 
         advice statement can be statically determined to not match any join points. The
         warning can be suppressed for an individual advice statement by using the 
-        <literal>@SuppressWarnings("unmatched")</literal> annotation.
+        <literal>@SuppressWarnings({"unmatched"})</literal> annotation. (See JLS 9.6.1.5).
     </para>
-  	<para>
-  		<emphasis>Discussion point: is it wise to allow annotations on advice? It may
-  		have limited usage - eg. an @SuppressWarnings("unchecked") annotation. On the other
-  		hand it opens a door to people wanting to match adviceexecution join points based
-  		on annotations. Is that a model we should be encouraging or even something we 
-  		want to support? </emphasis>
-  	</para>
-  
   </sect1>
 
   <!-- ============================== -->
     
   <sect1 id="annotations-pointcuts-and-advice">
     <title>Join Point Matching based on Annotations</title>
-  
+
+    <para><emphasis>Note: compared to the previous version, this version restricts the
+    use of annotations in type patterns (package annotations and outer type annotations
+    cannot be specified inline), and requires parenthesis more often. These changes were
+    made to make pointcut expressions easier to read and interpret.</emphasis></para>  
   
   <para>
   	This section discusses changes to type pattern and signature pattern matching in
@@ -272,6 +274,55 @@
   	annotations. We then discuss means of exposing annotation values within the body
   	of advice.
   </para>
+  	
+  <sect2>
+    <title>Annotation Patterns</title>
+  
+      <para>
+          For any kind of annotated element (type, method, constructor, package, etc.), 
+          an annotation pattern can be used to match against the set of annotations
+          on the annotated element.
+      </para>
+      
+      <programlisting><![CDATA[
+		AnnotationPattern := AnnotationName |
+  		                     '!' AnnotationPattern |
+  		                     '(' AnnotationPatern '&&' AnnotationPattern ')' |
+  		                     '(' AnnotationPattern '||' AnnotationPattern ')' |
+  		                     '(' AnnotationPattern ')'
+  		                     
+  		AnnotationName := '@' JavaIdentifierCharacter+ ('.' JavaIdentifierCharacter+)*      
+      ]]></programlisting>
+        
+      <para>For example:</para>  
+
+      <programlisting><![CDATA[
+      @Immutable
+      ]]></programlisting>
+
+      <para>Matches any annotated element which has an annotation of type <literal>@Immutable</literal>.</para>
+
+      <programlisting><![CDATA[
+      !@Persistent
+      ]]></programlisting>
+
+      <para>Matches any annotated element which does not have an annotation of type <literal>@Persistent</literal>.</para>
+
+      <programlisting><![CDATA[
+      (@Foo && @Goo)
+      ]]></programlisting>
+
+      <para>Matches any annotated element which has both an annotation of type <literal>@Foo</literal> and
+      an annotation of type <literal>@Goo</literal>. (The parenthesis are required in this example).</para>
+
+      <programlisting><![CDATA[
+      (@Foo || @Goo)
+      ]]></programlisting>
+
+      <para>Matches any annotated element which has either an annotation of type <literal>@Foo</literal> or
+      an annotation of type <literal>@Goo</literal> (or both). (The parenthesis are required in this example).</para>
+
+  </sect2>
   
   <sect2>
   	<title>Type Patterns</title>
@@ -294,147 +345,78 @@
 		SimpleNamePattern := ('*' | JavaIdentifierCharacter)+							 				  		             
 	]]></programlisting>
 
-	<para>Java 5 (and hence AspectJ 1.5) allows annotations on both types
-	and packages, and type patterns in AspectJ 1.5 are extended to allow
-	matching based on such annotations:</para>
+	<para>AspectJ 1.5 extends type patterns to allow an optional <literal>AnnotationPattern</literal>
+	prefix.</para>
 
   	<programlisting><![CDATA[
-  		TypePattern := PackagePattern? NestedTypeNamesPattern |
-  		               '!' TypePattern |
-  		               TypePattern '&&' TypePattern |
-  		               TypePattern '||' TypePattern |
-  		               TypePattern '+' |
-  		               TypePattern ('[]')* |
-  		               '(' TypePattern ')'
-		  		
-  		PackagePattern := QualifiedNamePattern DotSeparator |
-  		                  '(' AnnotationPattern QualifiedNamePattern DotSeparator ')'
-  		
-  		DotSeparator := '.' | '..'
-  		
-		QualifiedNamePattern := SimpleNamePattern |
-		                        SimpleNamePattern DotSeparator SimpleNamePattern
+  	    TypePattern := PlainTypePattern |
+  	                   '!' TypePattern |
+  	                   '(' AnnotationPattern PlainTypePattern ')'|
+  	                   TypePattern '&&' TypePattern |
+  	                   TypePattern '||' TypePattern |
+  	                   '(' TypePattern ')'
+  	  	
+  	  	OptionalParensTypePattern := TypePattern |
+  	  	                             AnnotationPattern PlainTypePattern
+  	  		
+  		PlainTypePattern := IdPattern |
+  		               '!' PlainTypePattern |
+  		               PlainTypePattern '&&' TypePattern |
+  		               PlainTypePattern '||' TypePattern |
+  		               PlainTypePattern '+' |
+  		               PlainTypePattern ('[]')* |
+  		               '(' PlainTypePattern ')' 
+  		               
+		IdPattern := SimpleNamePattern |
+		             SimpleNamePattern '.' SimpleNamePattern |
+		             SimpleNamePattern '..' SimpleNamePattern
 					 
-		SimpleNamePattern := ('*' | JavaIdentifierCharacter)+
-		
-		AnnotationPattern := AnnotationName |
-  		                     '!' AnnotationName |
-  		                     AnnotationName '&&' AnnotationName |
-  		                     AnnotationName '||' AnnotationName |
-  		                     '(' AnnotationPattern ')'
-  		                     
-  		AnnotationName := '@' JavaIdentifierCharacter+ ('.' JavaIdentifierCharacter+)*
-
-  		NestedTypeNamesPattern := MaybeAnnotatedNamePattern |
-  		                          MaybeAnnotatedNamePattern DotSeparator MaybeAnnotatedNamePattern
-
-  		MaybeAnnotatedNamePattern := SimpleNamePattern |
-  		                             AnnotationPattern SimpleNamePattern |
-  		                             '( MaybeAnnotatedNamePattern ')'  									 				  		               	
+		SimpleNamePattern := ('*' | JavaIdentifierCharacter)+							 				  		             
 	]]></programlisting>
-
+    
 	<para>
 		The following examples illustrate the use of annotations in type
-		patterns.
+		patterns:
 	</para>
 
-    <variablelist>
+     <programlisting><![CDATA[
+     (@Immutable *)
+     ]]></programlisting>
 
-        <varlistentry>
-          <term>@SomeAnnotation *</term>
-          <listitem>
-            <para>
-            	Matches any type which has an annotation of type <literal>SomeAnnotation</literal>.
-            </para>
-          </listitem>
-        </varlistentry>
+     <para>Matches any type with the <literal>@Immutable</literal> annotation.</para>
 
-        <varlistentry>
-          <term>(@MyAnnotation || @YourAnnotation) *</term>
-          <listitem>
-            <para>
-            	Matches any type which has eithir an annotation of type <literal>MyAnnotation</literal>
-            	or an annotation of type <literal>YourAnnotation</literal>.
-            </para>
-          </listitem>
-        </varlistentry>
+     <programlisting><![CDATA[
+     (!@Immutable *)
+     ]]></programlisting>
 
-        <varlistentry>
-          <term>!@SomeAnnotation *</term>
-          <listitem>
-            <para>
-            	Matches any type which does not have an annotation of type <literal>SomeAnnotation</literal>.
-            </para>
-          </listitem>
-        </varlistentry>
-        
-        <varlistentry>
-          <term>org.xyz..(@SomeAnnotation *)</term>
-          <listitem>
-            <para>
-            	Matches any type declared in a package beginning with the prefix
-            	<literal>org.xyz</literal> and which has an annotation of type
-            	<literal>SomeAnnotation</literal>.
-            </para>
-          </listitem>
-        </varlistentry>
+     <para>Matches any type which does not have the <literal>@Immutable</literal> annotation.</para>
 
-        <varlistentry>
-          <term>(@SomeAnnotation org.xzy..)*</term>
-          <listitem>
-            <para>
-            	Matches any type in a package beginning with the prefix
-            	<literal>org.xyz</literal>, where the package has an 
-            	annotation of type <literal>SomeAnnotation</literal>.
-            </para>
-          </listitem>
-        </varlistentry>
+     <programlisting><![CDATA[
+     (@Immutable (org.xyz.* || org.abc.*))
+     ]]></programlisting>
 
-        <varlistentry>
-          <term>(@SomeAnnotation *..)*</term>
-          <listitem>
-            <para>
-            	Matches any type in a package with a package 
-            	annotation of type <literal>SomeAnnotation</literal>.
-            </para>
-          </listitem>
-        </varlistentry>
+     <para>Matches any type in the <literal>org.xyz</literal> or <literal>org.abc</literal>
+     packages with the <literal>@Immutable</literal> annotation.</para>
 
-        <varlistentry>
-          <term>org.xyz.abc.(@SomeAnnotation *) || org.xyz.abc.(@SomeAnnotation *)..*</term>
-          <listitem>
-            <para>
-            	Matches any type in the package <literal>org.xyz.abc</literal> that has an
-            	annotation of type <literal>SomeAnnotation</literal>, or any nested type within
-            	such a type.
-            </para>
-          </listitem>
-        </varlistentry>
+     <programlisting><![CDATA[
+     (@Immutable Foo+ || Goo)
+     ]]></programlisting>
 
-        <varlistentry>
-          <term>@SomeAnnotation BankAccount+</term>
-          <listitem>
-            <para>
-            	Matches any type with an annotation of type <literal>SomeAnnotation</literal>,
-            	in the set of types comprised of <literal>BankAccount</literal> and all types extending 
-            	<literal>BankAccount</literal>.
-            </para>
-          </listitem>
-        </varlistentry>
-    
-        <varlistentry>
-          <term>(@SomeAnnotation BankAccount)+</term>
-          <listitem>
-            <para>
-            	Matches a type <literal>BankAccount</literal> with an annotation of type
-            	<literal>SomeAnnotation</literal>, or any subtype of such a type.
-            </para>
-          </listitem>
-        </varlistentry>
-        
-	</variablelist>	        
+     <para>Matches a type <literal>Foo</literal> or any of its subtypes, which have the <literal>@Immutable</literal>
+     annotation, or a type <literal>Goo</literal>. An <literal>AnnotationPattern</literal> has higher
+     precedence than <literal>&amp;&amp;</literal> or <literal>||</literal>, so the previous expression
+     is equivalent to <literal>((@Immutable Foo+) || Goo)</literal>.</para>
+     
+     <programlisting><![CDATA[
+     ((@Immutable || @NonPersistent) org.xyz..*)
+     ]]></programlisting>
 
-    
+     <para>
+     Matches any type in a package beginning with the prefix <literal>org.xyz</literal>,
+     which has either the <literal>@Immutable</literal> annotation or the
+     <literal>@NonPersistent</literal> annotation.
+     </para>
+
   </sect2>
   
   <sect2>
@@ -445,7 +427,8 @@
   	
   	<programlisting><![CDATA[  	
   		FieldPattern := 
-  		    AnnotationPattern? FieldModifiersPattern? TypePattern (TypePattern '.')? SimpleNamePattern
+  		    AnnotationPattern? FieldModifiersPattern? 
+  		    TypePattern (TypePattern '.')? SimpleNamePattern
 
 		FieldModifiersPattern := FieldModifier*
 		
@@ -482,6 +465,27 @@
           </listitem>
         </varlistentry>
 
+        <varlistentry>
+          <term>(@SensitiveData *) org.xyz..*.*</term>
+          <listitem>
+            <para>
+            	Matches a member field of a type in a package with prefix <literal>org.xzy</literal>,
+            	where the field is of a type which has a <literal>@SensitiveData</literal> annotation.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>@Foo (@Goo *) (@Hoo *..*).*</term>
+          <listitem>
+            <para>
+            	Matches a field with an annotation <literal>@Foo</literal>, of a type with an 
+            	annotation <literal>@Goo</literal>, declared in a type with annotation
+            	<literal>@Hoo</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
     </variablelist>
   	
   	<para>A <literal>MethodPattern</literal> is of the form</para>
@@ -498,24 +502,24 @@
 		            'synchronized' | 'final' 
 		            		      
 		FormalsPattern := '..' (',' FormalsPatternAfterDotDot)* |
-		                  Formal (',' FormalsPattern)*
+		                  OptionalParensTypePattern (',' FormalsPattern)*
 		                  
-		FormalsPatternAfterDotDot := Formal (',' FormalsPatternAfterDotDot)*                  
+		FormalsPatternAfterDotDot := OptionalParensTypePattern (',' FormalsPatternAfterDotDot)*                  
 		                  
-		Formal := AnnotationPattern '(' TypePattern ')' |
-		          TypePattern
-		
 		ThrowsPattern := 'throws' TypePatternList
 		
 		TypePatternList := TypePattern (',' TypePattern)*
 		            					            
 	]]></programlisting>
   	
+  	<para><emphasis>Note: compared to the previous version, this definition of MethodPattern does
+  	not allow parameter annotation matching (only matching on annotations of parameter types).</emphasis></para>
+  	
   	<para>A <literal>ConstructorPattern</literal> has the form</para>
 
   	<programlisting><![CDATA[  	
   		ConstructorPattern := 
-  		    AnnotationPattern? ModifiersPattern? TypePattern 
+  		    AnnotationPattern? ModifiersPattern?  
   		                       (TypePattern '.')? 'new' '(' FormalsPattern ')'
   		                       ThrowsPattern?
 	]]></programlisting>
@@ -539,52 +543,28 @@
         </varlistentry>
 
         <varlistentry>
-          <term>@Transaction * org.xyz..(@Persistent *).*(..)</term>
+          <term>@Transaction * (@Persistent org.xyz..*).*(..)</term>
           <listitem>
             <para>
             	Matches a method with the <literal>@Transaction</literal> annotation,
-            	declared in a type with the <literal>@Persitent</literal> annotation.
+            	declared in a type with the <literal>@Persistent</literal> annotation, and
+            	in a package beginning with the <literal>org.xyz</literal> prefix.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>* *.*(@Immutable *,..)</term>
+          <listitem>
+            <para>
+            	Matches any method taking at least one parameter, where the parameter
+            	type has an annotation <literal>@Immutable</literal>.
             </para>
           </listitem>
         </varlistentry>
 
     </variablelist>
 
-    <para>
-        Since Java 5 allows parameters to be annotated as well as types, method and
-        constructor patterns in AspectJ 1.5 also supporting matching of signatures
-        based on parameter annotations. For example:
-    </para>
-    
-    <variablelist>
-
-        <varlistentry>
-          <term>* *(@Sensitive (*))</term>
-          <listitem>
-            <para>
-            	Matches a method taking a single argument, where the parameter
-            	has an annotation of type <literal>Sensitive</literal>. E.g.
-  	<programlisting><![CDATA[
-  	   public byte[] encrypt(@Sensitive byte[] data) {...}  	
-	]]></programlisting>        	
-            </para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>* InsurancePolicy+.*(@Sensitive (@Foo *),..)</term>
-          <listitem>
-            <para>
-                Matches a method defined in the <literal>InsurancePolicy</literal>
-                type or one of its subtypes, taking at least one argument, where the
-                parameter has an annotation of type <literal>Sensitive</literal>,
-                and the parameter type has an annotation of type <literal>Foo</literal>.
-            </para>
-          </listitem>
-        </varlistentry>
-
-    </variablelist>
-          	
   </sect2>
   
   <sect2>
@@ -593,11 +573,12 @@
    <variablelist>
 
         <varlistentry>
-          <term>within((@Secure *..)*)</term>
+          <term>within(@Secure *)</term>
           <listitem>
             <para>
-            	Matches any join point occuring in a package with the <literal>@Secure</literal>
-            	annotation.
+            	Matches any join point occuring in a type with an <literal>@Secure</literal>
+            	annotation. The format of the <literal>within</literal> pointcut designator
+            	in AspectJ 1.5 is <literal>'within' '(' OptionalParensTypePattern ')'</literal>.
             </para>
           </listitem>
         </varlistentry>
@@ -607,7 +588,9 @@
           <listitem>
             <para>
             	Matches the staticinitialization join point of any type with the
-            	<literal>@Persistent</literal> annotation.
+            	<literal>@Persistent</literal> annotation. The format of the 
+            	<literal>staticinitialization</literal> pointcut designator
+            	in AspectJ 1.5 is <literal>'staticinitialization' '(' OptionalParensTypePattern ')'</literal>.
             </para>
           </listitem>
         </varlistentry>
@@ -641,10 +624,132 @@
           </listitem>
         </varlistentry>
 
+        <varlistentry>
+          <term>handler(!@Catastrophic *)</term>
+          <listitem>
+            <para>
+                Matches the handler join point for the handling of any exception that is
+                not <literal>Catastrophic</literal>. The format of the <literal>handler</literal>
+                pointcut designator in AspectJ 1.5 is <literal>'handler' '(' OptionalParensTypePattern ')'</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
     </variablelist>
 
   </sect2>
 
+  <sect2>
+      <title>Package and Parameter Annotations</title>
+      
+      <para>
+          Java 5 allows both packages and parameters to be annotated. To allow matching on package and parameter annotations,
+          AspectJ 1.5 introduces the <literal>@package</literal> and <literal>@parameters</literal> pointcut designators. 
+          <emphasis>Note: we could consider deferring implementation of these to a dot release after 1.5.0?</emphasis>
+      </para>
+      
+  	<programlisting><![CDATA[  	
+  		PackageAnnotationPointcut := '@package' '(' AnnotationPattern ')'
+	]]></programlisting>
+	
+	<para>The <literal>@package</literal> pointcut matches any join point 
+	occuring within the scope of a package with
+	annotations matching the giving <literal>AnnotationPattern</literal>. For
+	example:
+	 </para>
+    
+  	<programlisting><![CDATA[  	
+  		@package(@Model)
+	]]></programlisting>
+    
+    <para>
+        Matches any join point occuring within the scope of a package with the
+        <literal>@Model</literal> annotation.
+    </para>
+    
+    <para>
+    <emphasis>
+        Note: we added @package as a result of a conscious decision not to allow the
+        specification of package annotation patterns within a general TypePattern. A 
+        consequence of this decision is that we lose the ability to say the following
+        things: "a call to a method defined in a type in a package with annotations
+        matching..." ; "the set of a field defined in a type in a package with annotations
+        matching..." ; "the get of a field defined in a type in a package with annotations
+        matching...". As well as the package of the target at these join points, there is
+        also the package of the runtime type of the target (call/target difference). So
+        there are at least three possible sets of package annotations you could theoretically
+        want to match on at a call, get, or set join point. We have chosen to provide the
+        means to express the simplest of these, and could consider extending the language
+        to allow for the others in the future when we better understanding how users will
+        really use both package annotations and these features.
+    </emphasis>
+    </para>  
+    
+    <para>
+        The <literal>@parameter</literal> pointcut designator acts in a similar manner to
+        <literal>args</literal> in that it matches based on number and position of arguments
+        at a join point (and supports the same wildcard options of <literal>*</literal> and
+        <literal>..</literal>.    
+    </para>
+
+  	<programlisting><![CDATA[  	
+  		ParamsAnnotationPointcut := '@parameters' '(' ParamsAnnotationPattern ')'
+  		
+  		ParamsAnnotationPattern := AnnotationPattern (',' ParamsAnnotationPattern)? |
+  		                         '*' (',' ParamsAnnotationPattern)? |
+  		                         '..' (',' SingleParamsAnnotationPattern)* 
+  		
+  		SingleParamsAnnotationPattern := AnnotationPattern (',' SingleParamsAnnotationPattern)? |
+  		                               '*' (',' SingleParamsAnnotationPattern)?  		
+	]]></programlisting>
+    
+    <para>The <literal>*</literal> wildcard matches a single parameter regardless of its annotations. 
+    The <literal>..</literal> wildcard matches zero or more parameters with any annotations. An
+    annotation pattern in a given parameter position matches a parameter in that position with annotations
+    matching the given annotation pattern. For example, the method signature</para>
+
+  	<programlisting><![CDATA[
+  	    public void foo(@Immutable int i, String s, @Cached Object o);  	
+	]]></programlisting>
+
+    <para>
+    Is matched by:
+    </para>
+
+  	<programlisting><![CDATA[
+  	    @parameters(@Immutable, *, @Cached);
+  	    
+  	    and,
+  	    
+  	    @parameters(..,@Cached);
+  	    
+  	    and,
+  	    
+  	    @parameters(@Immutable, *, *); 	
+	]]></programlisting>
+
+    <para>
+     It is not matched by:
+    </para>
+
+  	<programlisting><![CDATA[
+  	    @parameters(@Immutable, *);
+  	    
+  	    or,
+  	    
+  	    @parameters(*,@Immutable);
+  	    
+  	    or,
+  	    
+  	    @parameters(*, int, @Cached); 	
+	]]></programlisting>
+    
+    <para>
+    This last example will result in a compilation error since <literal>int</literal> is not a 
+    valid annotation pattern.
+    </para>
+    
+  </sect2>
 
    <sect2>
   	<title>Runtime type matching and context exposure</title>
@@ -654,8 +759,8 @@
         <literal>args()</literal> pointcut designators allow matching based
         on the runtime type of an object, as opposed to the statically 
         declared type. In AspectJ 1.5, these designators are supplemented
-        with three new designators : <literal>this@()</literal> (read, "this
-        annotation"), <literal>target@()</literal>, and <literal>@args()</literal>.    
+        with three new designators : <literal>@this()</literal> (read, "this
+        annotation"), <literal>@target()</literal>, and <literal>@args()</literal>.    
     </para>
     
     <para>
@@ -665,11 +770,11 @@
     </para>
     
   	<programlisting><![CDATA[  	
-  		ThisAnnotation := 'this@' '(' AnnotationNameOrVar ')'
+  		ThisAnnotation := '@this' '(' AnnotationNameOrVar ')'
   		
-  		TargetAnnotation := 'target@' '(' AnnotationNameOrVar ')'
+  		TargetAnnotation := '@target' '(' AnnotationNameOrVar ')'
   		
-  		ArgsAnnotation := 'args@' '(' ArgsAnnotationPattern ')'
+  		ArgsAnnotation := '@args' '(' ArgsAnnotationPattern ')'
   		
   		ArgsAnnotationPattern := AnnotationNameOrVar (',' ArgsAnnotationPattern)? |
   		                         '*' (',' ArgsAnnotationPattern)? |
@@ -683,7 +788,7 @@
 	]]></programlisting>
 
     <para>
-        The forms of <literal>this@()</literal> and <literal>target@()</literal> that
+        The forms of <literal>@this()</literal> and <literal>@target()</literal> that
         take a single annotation name are analogous to their counterparts that take
         a single type name. They match at join points where the object bound to 
         <literal>this</literal> (or <literal>target</literal>, respectively) has an
@@ -693,7 +798,7 @@
    <variablelist>
 
         <varlistentry>
-          <term>this@(@Foo)</term>
+          <term>@this(@Foo)</term>
           <listitem>
             <para>
             	Matches any join point where the object currently bound to 'this'
@@ -703,7 +808,7 @@
         </varlistentry>
 
         <varlistentry>
-          <term>call(* *(..)) &amp;&amp; target@(@Classified)</term>
+          <term>call(* *(..)) &amp;&amp; @target(@Classified)</term>
           <listitem>
             <para>
             	Matches a call to any object where the target of the call has
@@ -716,21 +821,21 @@
     
     <para>
         Annotations can be exposed as context in the body of advice by 
-        using the forms of <literal>this@(), target@()</literal> and
+        using the forms of <literal>@this(), @target()</literal> and
         <literal>@args()</literal> that use bound variables in the place
         of annotation names. For example:
     </para>
 
   	<programlisting><![CDATA[
   	pointcut callToClassifiedObject(Classified classificationInfo) :
-  	    call(* *(..)) && target@(classificationInfo);
+  	    call(* *(..)) && @target(classificationInfo);
 	]]></programlisting>
 
     <para>
-        The <literal>args@</literal> pointcut designator behaves as its <literal>args</literal>
+        The <literal>@args</literal> pointcut designator behaves as its <literal>args</literal>
         counterpart, matching join points based on number and position of arguments, and 
         supporting the <literal>*</literal> wildcard and at most one <literal>..</literal>
-        wildcard. An annotation at a given position in an <literal>args@</literal> expression
+        wildcard. An annotation at a given position in an <literal>@args</literal> expression
         indicates that the runtime type of the argument in that position at a join point must
         have an annotation of the indicated type. For example:
     </para>
@@ -740,19 +845,15 @@
   	 * matches any join point with at least one argument, and where the
   	 * type of the first argument has the @Classified annotation
   	 */
-  	pointcut classifiedArgument() : args@(@Classified,..);
+  	pointcut classifiedArgument() : @args(@Classified,..);
   	
   	/**
   	 * matches any join point with three arguments, where the third
   	 * argument has an annotation of type @Untrusted.
   	 */
   	pointcut untrustedData(Untrusted untrustedDataSource) : 
-  	    args@(*,*,untrustedDataSource);
+  	    @args(*,*,untrustedDataSource);
 	]]></programlisting>
-
-    <para><emphasis>We could use @this, @target, and @args instead. These forms
-    don't read as well to me, but they may look more 'familiar' in the program
-    source.</emphasis></para>
 
     <para>TODO: We need to extend org.aspectj.lang.JoinPoint too. It would be
     nice to use the <literal>AnnotatedElement</literal> interface, but this would
@@ -820,7 +921,8 @@
     
     <para>
         It would be useful to be able to match join points based on annotation values, rather than merely the presence of
-        an annotation of a given type. This facility may be supported in a future version of AspectJ.
+        an annotation of a given type. This facility may be supported in a future version of AspectJ, by expanding the
+        definition of <literal>AnnotationPattern</literal>.
     </para>
   </sect2>
   
@@ -848,9 +950,9 @@
 	]]></programlisting>
 
   	<programlisting><![CDATA[
-  	declare error : call(* (@DataLayer org.xyz..)*.*(..)) &&
-  	                within((@UI org.xyz..)*)
-  	                : "User interface should not call the data layer directly";
+  	declare error : call(* org.xyz.model.*.*(..)) &&
+  	                @package(@Untrusted)
+  	                : "Untrusted code should not call the model classes directly";
 	]]></programlisting>
     
   </sect2>
@@ -878,7 +980,7 @@
 	    <variablelist>
 	
 	        <varlistentry>
-	          <term>declare parents : @Secured * implements SecuredObject;</term>
+	          <term>declare parents : (@Secured *) implements SecuredObject;</term>
 	          <listitem>
 	            <para>
 	            	All types with the <literal>@Secured</literal> annotation
@@ -888,23 +990,13 @@
 	        </varlistentry>
 	        
 	        <varlistentry>
-	          <term>declare parents : @Secured BankAccount+ implements SecuredObject;</term>
+	          <term>declare parents : (@Secured BankAccount+) implements SecuredObject;</term>
 	          <listitem>
 	            <para>
 	            	The subset of types drawn from the <literal>BankAccount</literal> type and any subtype of
 	            	<literal>BankAccount</literal>, where the 
-	            	<literal>@SecuredAnnotation</literal> is present, implement the
+	            	<literal>@Secured</literal> annotation is present, implement the
 	            	<literal>SecuredObject</literal> interface.
-	            </para>
-	          </listitem>
-	        </varlistentry>
-	        
-	        <varlistentry>
-	          <term>declare parents : (@Secured *..)* implements SecuredObject;</term>
-	          <listitem>
-	            <para>
-	            	Every type in an <literal>@Secured</literal> package implements
-	            	the <literal>SecuredObject</literal> interface.
 	            </para>
 	          </listitem>
 	        </varlistentry>
@@ -932,7 +1024,7 @@
     <variablelist>
 
         <varlistentry>
-          <term>declare precedence : @Security *,*;</term>
+          <term>declare precedence : (@Security *),*;</term>
           <listitem>
             <para>
             	All aspects with the <literal>@Security</literal> annotation
