@@ -47,6 +47,7 @@ public class BuildModule extends Task { // quickie hack...
 
     public BuildModule() {
         buildSpec = new BuildSpec();
+        setTaskName("ajbuild");
     }
     
     public void setModuledir(Path moduleDir) {
@@ -122,7 +123,7 @@ public class BuildModule extends Task { // quickie hack...
         try  {
 			// try using script first if not a product
             boolean built = false;
-			if (null == buildSpec.productDir) { 
+			if ((null == buildSpec.productDir) && (null != buildSpec.moduleDir)) { 
 	            File buildScript = new File(buildSpec.moduleDir, "build.xml");  // XXXFileLiteral
 	            if (buildScript.canRead()) {
 	                built = buildByScript(buildSpec, buildScript);
