@@ -83,6 +83,7 @@ public class Harness {
      * including the two-space leader
      */
     protected static final String SYNTAX_PAD = "                    "; 
+    protected static final String OPTION_DELIM = ";";
     private static final String JAVA_VERSION;
     private static final String ASPECTJ_VERSION;
     static {
@@ -378,7 +379,7 @@ public class Harness {
         if (null != aliases) {
             String args = aliases.getProperty(option);
             if (!LangUtil.isEmpty(args)) {
-                return LangUtil.commaSplit(args);
+                return LangUtil.anySplit(args, OPTION_DELIM);
             }
         }
         return null;
@@ -542,10 +543,23 @@ public class Harness {
 class FeatureHarness extends Harness {
 
     private static final String[] ALIASES = new String[] 
-        { "-hideStreams", "-hideCompilerStreams,-hideRunStreams",
-          "-jim", "!eclipse,-logMinFail,-hideStreams",
-          "-loud", "-verboseHarness",
-          "-baseline", "-verboseHarness,-traceTestsMin,-hideStreams,!eclipse"
+        { "-hideStreams", 
+            "-hideCompilerStreams" 
+            + OPTION_DELIM + "-hideRunStreams",
+          "-jim", 
+            "!eclipse" 
+            + OPTION_DELIM + "-logMinFail"   
+            + OPTION_DELIM + "-hideStreams",
+          "-loud", 
+            "-verboseHarness",
+          "-baseline", 
+            "-verboseHarness" 
+            + OPTION_DELIM + "-traceTestsMin" 
+            + OPTION_DELIM + "-hideStreams" 
+            + OPTION_DELIM + "!eclipse",
+          "-release", 
+              "-baseline" 
+              + OPTION_DELIM + "-ajctestSkipKeywords=knownLimitations,purejava" 
         };
     static {
         Properties optionAliases = Harness.getOptionAliases();

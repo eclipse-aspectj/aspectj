@@ -169,15 +169,32 @@ public class LangUtil {
      * @return List of String of elements.
      */
     public static List commaSplit(String input) {
+        return anySplit(input, ",");
+    }
+    
+    /**
+     * Splits <code>input</code>, removing delimiter and 
+     * trimming any white space.
+     * Returns an empty collection if the input is null.
+     * If delimiter is null or empty or if the input contains
+     * no delimiters, the input itself is returned
+     * after trimming white space.
+     *
+     * @param text <code>String</code> to split.
+     * @param delimiter <code>String</code> separators for input.
+     * @return List of String of elements.
+     */
+    public static List anySplit(String input, String delim) {
         if (null == input) {
             return Collections.EMPTY_LIST;
         } 
         ArrayList result = new ArrayList();
         
-        if (-1 == input.indexOf(",")) {
+        if (LangUtil.isEmpty(delim)
+            || (-1 == input.indexOf(delim))) {
             result.add(input.trim());
         } else {
-            StringTokenizer st = new StringTokenizer(input, ",");
+            StringTokenizer st = new StringTokenizer(input, delim);
             while (st.hasMoreTokens()) {
                 result.add(st.nextToken().trim());
             }
@@ -568,6 +585,26 @@ public class LangUtil {
         return LangUtil.unqualifiedClassName(null == o ? null : o.getClass());
     }
 
+    /** inefficient way to replace all instances of sought with replace */
+    public static String replace(String in, String sought, String replace) {
+        if (LangUtil.isEmpty(in) || LangUtil.isEmpty(sought)) {
+            return in;
+        }
+        StringBuffer result = new StringBuffer();
+        final int len = sought.length();
+        int start = 0;
+        int loc;
+        while (-1 != (loc = in.indexOf(sought, start))) {
+            result.append(in.substring(start, loc));
+            if (!LangUtil.isEmpty(replace)) {
+                result.append(in.substring(start, loc));
+            }
+            start = loc + len;
+        }
+        result.append(in.substring(start));
+        return result.toString();    
+    }
+    
     /** render i right-justified with a given width less than about 40 */
     public static String toSizedString(long i, int width) {
         String result = "" + i;
