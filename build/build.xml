@@ -47,6 +47,7 @@
       <available property="testing.drivers.all.available"
          file="${aj.jar.dir}/testing-drivers-all.jar"
          value="${aj.jar.dir}/testing-drivers-all.jar"/>
+
     </target>
 
     <target name="version-uptodate" depends="init,init-taskdefs"
@@ -76,6 +77,7 @@
     <!-- ===================================================================== -->
     <!-- Misc setup and warnings                                               -->
     <!-- ===================================================================== -->
+
     <target name="warn.ant.lib.aspectjrt" if="ant.lib.aspectjrt">
       <echo message="----- WARNING: ${ant.lib.aspectjrt}" /> 
     </target>
@@ -225,6 +227,12 @@
           assembleall="true"
           failonerror="true"/>
 	</target>
+
+	<target name="build-testing-jars" 
+		depends="aspectjrt,
+				build,
+				ajbrowser-all,
+				build-testing-drivers"/>
 
 	<target name="build-testing-client" depends="init-taskdefs,init">
 	  <antcall target="build-module-all">
