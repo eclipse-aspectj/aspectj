@@ -512,7 +512,7 @@ public class Member implements Comparable {
 		} else {
 			boolean b = false;
 			for (Iterator i = curr.getDirectSupertypes(); i.hasNext(); ) {
-				b |= walkUp(acc, (ResolvedTypeX)i.next());
+				b |= walkUpStatic(acc, (ResolvedTypeX)i.next());
 			}
 			if (b) acc.add(curr);
 			return b;
