@@ -49,8 +49,15 @@ public interface IProgramElement extends Serializable {
 	public String getDeclaringType();  // TODO: remove (Emacs uses it)
 	public String getPackageName();
 
-	public void setReturnType(String returnType);
-	public String getReturnType();
+	/**
+	 * @param method return types or field types
+	 */
+	public void setCorrespondingType(String returnType);
+
+	/** 
+	 * This correponds to both method return types and field types.
+	 */
+	public String getCorrespondingType();
 	
 	public String toSignatureString();
 	
@@ -71,6 +78,11 @@ public interface IProgramElement extends Serializable {
 	
 	public String toString();
 
+	/**
+	 * @return the javadoc comment for this program element, null if not available
+	 */
+	public String getFormalComment();
+	
 	/**
 	 * Includes information about the origin of the node.
 	 */

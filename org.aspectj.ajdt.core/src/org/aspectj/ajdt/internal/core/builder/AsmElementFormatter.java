@@ -38,7 +38,7 @@ public class AsmElementFormatter {
 			node.setKind(IProgramElement.Kind.ADVICE);
 
 			if (ad.kind == AdviceKind.Around) {
-				node.setReturnType(ad.returnType.toString()); //returnTypeToString(0));
+				node.setCorrespondingType(ad.returnType.toString()); //returnTypeToString(0));
 			}
 	
 			String details = "";
@@ -131,7 +131,7 @@ public class AsmElementFormatter {
 				node.setKind(IProgramElement.Kind.ERROR);
 			}
 			node.setName(name);
-			node.setReturnType(itd.returnType.toString());
+			node.setCorrespondingType(itd.returnType.toString());
 			if (node.getKind() != IProgramElement.Kind.INTER_TYPE_FIELD) {
 				setParameters(methodDeclaration, node);
 			}		

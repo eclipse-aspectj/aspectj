@@ -276,6 +276,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		formatter.genLabelAndKind(methodDeclaration, peNode);
 		genBytecodeInfo(methodDeclaration, peNode);
 		peNode.setModifiers(methodDeclaration.modifiers);
+		peNode.setCorrespondingType(methodDeclaration.returnType.toString());
 
 		// TODO: add return type test
 		if (peNode.getKind().equals(IProgramElement.Kind.METHOD)) {
@@ -285,6 +286,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				((IProgramElement)stack.peek()).setRunnable(true);
 			}	
 		}
+		
 		stack.push(peNode);
 		return true;
 	}
@@ -351,7 +353,10 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			makeLocation(fieldDeclaration),
 			fieldDeclaration.modifiers,
 			"",
-			new ArrayList());	
+			new ArrayList());
+		
+		peNode.setCorrespondingType(fieldDeclaration.type.toString());
+		
 		((IProgramElement)stack.peek()).addChild(peNode);
 		stack.push(peNode);
 		return true;		

@@ -33,7 +33,7 @@ public class ProgramElement implements IProgramElement {
 	protected List children = new ArrayList();
 	protected IMessage message = null;
 	protected ISourceLocation sourceLocation = null;
-		
+
 	private List modifiers = new ArrayList();
 	private List relations = new ArrayList();
 
@@ -281,11 +281,11 @@ public class ProgramElement implements IProgramElement {
 		this.kind = kind;
 	}
 
-	public void setReturnType(String returnType) {
+	public void setCorrespondingType(String returnType) {
 		this.returnType = returnType;
 	}
 
-	public String getReturnType() {
+	public String getCorrespondingType() {
 		return returnType;
 	}
 
