@@ -138,9 +138,9 @@ public class AjdtCommand implements ICommand {
     
     /** @return IMessage.WARNING unless message contains error or info */
     protected static IMessage.Kind inferKind(String message) { // XXX dubious
-        if (-1 == message.indexOf("error")) {
+        if (-1 != message.indexOf("error")) {
             return IMessage.ERROR;
-        } else if (-1 == message.indexOf("info")) {
+        } else if (-1 != message.indexOf("info")) {
             return IMessage.INFO;
         } else {
             return IMessage.WARNING;
