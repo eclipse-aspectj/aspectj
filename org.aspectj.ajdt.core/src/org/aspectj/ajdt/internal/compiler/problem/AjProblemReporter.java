@@ -136,6 +136,38 @@ public class AjProblemReporter extends ProblemReporter {
 	}
 
 
+	public void inheritedMethodReducesVisibility(SourceTypeBinding type, MethodBinding concreteMethod, MethodBinding[] abstractMethods) {
+		// if we implemented this method by a public inter-type declaration, then there is no error
+		
+		ResolvedTypeX onTypeX = null;		
+		// If the type is anonymous, look at its supertype
+		if (!type.isAnonymousType()) {
+			onTypeX = factory.fromEclipse(type);
+		} else {
+			// Hmmm. If the ITD is on an interface that is being 'instantiated' using an anonymous type,
+			// we sort it out elsewhere and don't come into this method - 
+			// so we don't have to worry about interfaces, just the superclass.
+		    onTypeX = factory.fromEclipse(type.superclass()); //abstractMethod.declaringClass);
+		}
+		for (Iterator i = onTypeX.getInterTypeMungersIncludingSupers().iterator(); i.hasNext(); ) {
+			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
+			ResolvedMember sig = m.getSignature();
+            if (!Modifier.isAbstract(sig.getModifiers())) {
+				if (ResolvedTypeX
+					.matches(
+						AjcMemberMaker.interMethod(
+							sig,
+							m.getAspectType(),
+							sig.getDeclaringType().isInterface(
+								factory.getWorld())),
+						EclipseFactory.makeResolvedMember(concreteMethod))) {
+					return;
+				}
+			}
+		}
+
+		super.inheritedMethodReducesVisibility(type,concreteMethod,abstractMethods);
+	}
 
 	public void abstractMethodMustBeImplemented(
 		SourceTypeBinding type,

@@ -73,6 +73,11 @@ public class Ajc150TestsNoHarness extends TestUtils {
 //	}
   }
   
+  public void testCanOverrideProtectedMethodsViaITDandDecp_pr83303() {
+  	CompilationResult cR = ajc(baseDir,new String[]{"PR83303.java"});
+  	assertTrue("Should be no errors:"+cR,!cR.hasErrorMessages());
+  }
+  
   
   
   
