@@ -22,7 +22,7 @@
        2002 Palo Alto Research Center, Incorporated. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated December 31, 2002.
+  <para>Last updated January 8, 2003.
   </para>
   <para>
    
@@ -165,16 +165,14 @@
           <para>How is AspectJ licensed?</para>
         </question>
         <answer>
-          <para>The AspectJ tools are open-source software available under the
-            <ulink url="http://aspectj.org/MPL">Mozilla Public License 1.1</ulink>.
-            The documentation is available under a separate
-            <ulink url="http://aspectj.org/servlets/AJSite?channel=download&amp;subChannel=docTerms">
-              license
-            </ulink> that precludes for-profit or commercial
-              redistribution.  Generally, we permit some usage for
-              internal presentations; please contact us at
-              <ulink url="mailto:support@aspectj.org?subject=Presentation%20materials">support@aspectj.org</ulink>
-              for permission.
+          <para>AspectJ 1.1 source code and documentation is available under the
+            <ulink url="http://eclipse.org/legal/cpl-v10.html">Common Public License 1.0</ulink>.
+          </para>
+          <para>The AspectJ 1.0 tools are open-source software available under the
+            <ulink url="http://www.opensource.org/licenses/mozilla1.1">Mozilla Public License 1.1</ulink>.
+            That documentation is available under a separate license
+            that precludes for-profit or commercial
+              redistribution.  
           </para>
           <para>Most users only want to use AspectJ to build programs they distribute.
           There are no restrictions here.  When you distribute your program, be sure to
@@ -182,10 +180,6 @@
           When distributing only the runtime classes, you need not provide any notice that 
           the program was compiled with AspectJ or includes binaries from the AspectJ project,
           except as necessary to preserve the warranty disclaimers in our license.
-          Although the license does not require it, please email 
-          <ulink url="mailto:support@aspectj.org">support@aspectj.org</ulink>
-          if you are shipping applications built with AspectJ; knowing that is 
-          critical for ongoing support from our sponsors.
           </para>
           <para>
           </para>
@@ -203,19 +197,26 @@
 	as funded by Xerox, a U.S. Government grant (NISTATP), and a
             DARPA contract.
           </para>
-          <para>It has evolved through open-source releases to a strong
-	  user community.
+          <para>It has evolved through open-source releases 
+          to a strong user community and now operates as an
+          open source project at 
+           <ulink url="http://eclipse.org/aspectj">
+                       http://eclipse.org/aspectj</ulink>
             The AspectJ team works closely with the community
             to ensure AspectJ continues to evolve as an effective 
             aspect-oriented programming language and tool set.
           </para>
-          <para>The latest release is 1.0.6 <!-- XXX todo Update me! --> 
-	    which can be downloaded from the AspectJ
-            <ulink url="http://aspectj.org/dl">download</ulink> page.
-	Further development is focused on supporting applications, 
-	improving performance of the 1.0 compiler, 
-        enhancing integration with IDEs,
-        and building the next generations of the language.
+          <para>
+            The latest release is 1.0.6 <!-- XXX todo Update me! --> 
+	        which can be downloaded from the 1.0 AspectJ
+            <ulink url="http://aspectj.org/dl.html">download</ulink> page.
+            The current release train is 1.1, <!-- XXX todo Update me! --> 
+	        which can be downloaded from the 
+             <ulink url="http://eclipse.org/aspectj">AspectJ home page</ulink>.
+             This development is focused on supporting applications, 
+	         improving performance of the 1.1 compiler, 
+             enhancing integration with IDE's,
+             and building the next generations of the language.
           </para>
         </answer>
       </qandaentry>
@@ -247,34 +248,28 @@
           <para>How do I download and install AspectJ?</para>
         </question>
         <answer>
-          <para>Go to AspectJ's
-            <ulink url="http://aspectj.org/dl">download web
-              page
-            </ulink> and choose which components you want download.
-            The <literal>jar</literal> files are installed by executing
+          <para>From AspectJ's
+            <ulink url="http://elipse.org/aspectj">web page
+            </ulink>, download the AspectJ distribution.
+            The <literal>jar</literal> file is installed by executing
           </para>
           <programlisting>
             java -jar <emphasis>jar file name</emphasis>
           </programlisting>
           <para>Do <emphasis role="bold">not</emphasis> try to extract the
             <literal>jar</literal> file contents and then attempt to execute
-            <literal>java org.aspectj.Main</literal>. (A
+            <literal>java org.aspectj.tools.Main</literal>. (A
             <classname>NoClassDefFoundError</classname> exception will be
             thrown.) The AspectJ distribution is not designed to be installed
             this way. Use the <literal>java -jar</literal> form shown above.
-          </para>
-          <para>The compressed <literal>tar</literal> files (suffix:
-            <literal>.tgz</literal>) are extracted by decompressing them with
-            <literal>tar</literal> or with <literal>WinZip</literal>.
           </para>
           <para>To uninstall, remove the files the installer wrote in your 
             file system.  In most cases, you can delete the top-level install
 	        directory (and all contained files), after you remove any
 	        new or updated files you want to keep. On Windows, no
             registry settings were added or changed, so nothing needs to be
-            undone.  You may install over prior versions, but if the files are
-            locked the installer will warn you but still complete; in this case,
-            remove the locked files and reinstall.
+            undone.  Do not install over prior versions, which might have 
+            different files.  Delete the prior version first.
           </para>
         </answer>
       </qandaentry>
@@ -349,10 +344,10 @@
           <para>AspectJ products are designed to make it easy to integrate
           AspectJ into an existing development process.  
           Each release includes 
-          Ant taskdefs for building programs,
+          Ant tasks for building programs,
           the AspectJ Development Environment (AJDE) for writing
           aspects inside popular IDE's,  and
-          command-line tools for compiling, documenting, and debugging.
+          command-line tools for compiling and documenting Java and AspectJ code.
           </para>
           <!-- ok to order for style, not priority? -->
           <para>AspectJ provides replacements for standard Java tools:
@@ -364,19 +359,21 @@
                 </para>
               </listitem>
               <listitem>
-                <para><literal>ajdoc</literal> works like
-                  Sun's <literal>javadoc</literal> API documentation generator
-                  to produce HTML describing the semantics of Java and
-                  AspectJ source files, including entries and cross-references 
-                  for the crosscutting structure.
+                <para><literal>ajdoc</literal> produces API documentation like
+                javadoc, with additional crosscutting links.  For example,
+                it shows advice affecting
+                a particular method or all code affected by a given aspect.
+                At present, <literal>ajdoc</literal> is only supported in AspectJ 1.0.
                 </para>
               </listitem>
-              <listitem>
-                <para><literal>ajdb</literal> is an aspect-aware debugger
-                akin to Java's <literal>jdb</literal>.
-                </para>
-              </listitem>
+              <!-- restore ajdb, ajdoc -->
             </itemizedlist>
+          </para>
+          <para>For debugging, AspectJ supports JSR-45, which provides a mechanism for 
+          debugging .class files that have multiple source files.
+          Debugger clients and VM's are beginning to support this;
+          see Sun's J2SE 1.4.1 VM and jdb debugger
+          and recent versions of JBuilder.
           </para>
           <para>The AspectJ Development Environment (AJDE)
            enables programmers to view and navigate the crosscutting structures
@@ -388,23 +385,42 @@
            having to abandon their existing tools.
           </para>
           <para>
-            AJDE integrates with the following tools:
+            AJDE is a set of API's providing the basis for the following
+            development tool integrations:
           </para>
           <itemizedlist>
             <listitem>
-              <para>Borland's JBuilder (versions 4 and 5)</para>
-            </listitem>
-            <listitem>
-              <para>Sun Microsystems' Forte for Java (versions 2 and 3), 
-                      and Netbeans 3.2
+              <para>Eclipse (version 2.0)
+                   in the Eclipse AspectJ Development Tools project
+                    <ulink url="http://eclipse.org/ajdt">
+                                http://eclipse.org/ajdt
+                    </ulink>
               </para>
             </listitem>
             <listitem>
-              <para>Eclipse (version 2.0)</para>
+              <para>Emacs (GNU version 20.3) 
+                    and XEmacs (version 21.1 on Unix and 21.4 on Windows), 
+                   in the SourceForge AspectJ for Emacs project
+                    <ulink url="http://aspectj4emacs.sourceforge.net">
+                                http://aspectj4emacs.sourceforge.net
+                    </ulink>
+              </para>
             </listitem>
             <listitem>
-              <para>GNU Emacs (version 20.3) and XEmacs (version 21.1 on Unix
-                and 21.4 on Windows)
+              <para>JBuilder (versions 4 through 7) from Borland
+                    in the SourceForge AspectJ for JBuilder project
+                    <ulink url="http://aspectj4jbuildr.sourceforge.net">
+                                http://aspectj4jbuildr.sourceforge.net
+                    </ulink>
+              </para>
+            </listitem>
+            <listitem>
+              <para>Netbeans up to 3.4
+                    (and Sun Microsystems' Forte for Java (versions 2 and 3), Sun/One)
+                    in the SourceForge AspectJ for NetBeans project
+                    <ulink url="http://aspectj4netbean.sourceforge.net">
+                                http://aspectj4netbean.sourceforge.net
+                    </ulink>
               </para>
             </listitem>
           </itemizedlist>
@@ -413,8 +429,9 @@
             the stand-alone source code browser <literal>ajbrowser</literal>,
             included in the tools distribution.
           </para>
-          <para>AspectJ also supports building with Ant by providing
-           taskdef interfaces to the ajc and ajdoc tools.
+          <para>Finally, as mentioned above,
+           AspectJ also supports building with Ant by providing
+           task interfaces to the ajc and ajdoc tools.
           </para>
         </answer>
       </qandaentry>
@@ -793,11 +810,8 @@
             distinguished by the fact that it was designed from the ground up
             to be compatible with Java.
           </para>
-          <para>See the
-            <ulink url="http://aspectj.org/relatedSites">Related
-              Sites
-            </ulink> page of the AspectJ web site for more
-              information.
+          <para>For more alternatives for aspect-oriented programming, see 
+            <ulink url="http://aosd.net">http://aosd.net</ulink>.
           </para>
         </answer>
       </qandaentry>
@@ -955,17 +969,24 @@ aspect.
               </listitem>
               <listitem>
                 <para>The AspectJ compiler accepts standard Java as
-                  input and produces standard Java bytecode as output. An
-                  optional mode produces standard Java source code which may
-                  then be compiled with any compliant Java compiler, e.g. Sun's
-                  <literal>javac</literal> compiler 
-                  or IBM's <literal>jikes</literal> compiler.
+                  input and produces standard Java bytecode as output. 
+                  In 1.0, an optional mode produces standard Java source code 
+                  which may then be compiled with any compliant Java compiler
+                  (e.g. Sun's <literal>javac</literal> compiler 
+                  or IBM's <literal>jikes</literal> compiler).
+                  In 1.1, an optional mode accepts standard Java bytecode 
+                  from any compliant Java compiler 
+                  and weaves in the aspects to produce new bytecode.
                 </para>
               </listitem>
               <listitem>
-                <para>AspectJ is available under the
-                  <ulink url="http://aspectj.org/MPL">Mozilla Public License</ulink>,
-                  a non-proprietary, open source license. This ensures that
+                <para>AspectJ is available under a non-proprietary, open source license,
+                 either the 
+                  <ulink url="http://www.opensource.org/licenses/mozilla1.1">
+                            Mozilla Public License 1.1</ulink>
+                  for 1.0 or the
+                  <ulink url="http://eclipse.org/legal/cpl-v10.html">
+                   Common Public License 1.0</ulink> for 1.1.
                   AspectJ will continue to evolve and be available, regardless
                   of the fate of any particular organization involved with
                   AspectJ.
@@ -1400,25 +1421,38 @@ aspect PublicErrorLogging {
         </question>
         <answer>
           <para>
-            The AspectJ users mailing list provides an
-            informal network of AspectJ experts. To subscribe,
-            visit the <ulink url="http://aspectj.org/servlets/AJSite?channel=userCommunity&amp;subChannel=mailingLists">Mailing Lists</ulink>
-              page of the AspectJ web site.
+            The AspectJ users mailing list 
+            (<literal>aspectj-users@eclipse.org</literal>)
+            provides an informal network of AspectJ language experts who
+            can answer usage questions about AspectJ programs
+            and the AspectJ tools.
           </para>
-          <para>If you have a problem that is not a bug, you may email 
-          the AspectJ team at 
-          <ulink url="mailto:support@aspectj.org">support@aspectj.org</ulink>.
+          <para>
+            The AspectJ developers mailing list 
+            (<literal>aspectj-dev@eclipse.org</literal>)
+            provides an informal network of AspectJ technology experts who
+            aim to understand the technology behind AspectJ.
+            They can answer questions about what's possible and about
+            integrating AspectJ technology with other technologies.
+            This is also the place to request commercial support, 
+            tutorials, or presentations.
+          </para>
+          <para>
+            For both mailing lists, only subscribed members may post messages.
+            To subscribe, visit the 
+            <ulink url="http://eclipse.org/aspectj">AspectJ web site</ulink>.
+          </para>
+          <para>
           You may view and submit bug reports and feature requests at 
-          <ulink url="http://aspectj.org/bugs">http://aspectj.org/bugs</ulink>.
-          </para>
-          <para>Members of the AspectJ team are available to work with users in
-            more depth on both program design and implementation issues. 
-          The team also presents educational courses and speakers for 
-          interested groups and offers commercial support 
-          and consulting for businesses. 
-            Please contact the
-            <ulink url="mailto:support@aspectj.org">AspectJ team</ulink>.
-              with your request.
+          <ulink url="http://dev.eclipse.org/bugs">http://dev.eclipse.org/bugs</ulink>,
+          using the product <literal>AspectJ</literal>.  Here are direct links to
+              <ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;component=Compiler&amp;bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">
+               view open compiler bugs</ulink>,
+              <ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ">
+               view all Aspectj bugs (open or closed)</ulink>, or
+              <ulink url="http://dev.eclipse.org/bugs/enter_bug.cgi?product=AspectJ">
+               add new bugs</ulink>.
+            
           </para>
         </answer>
       </qandaentry>
@@ -1729,23 +1763,47 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
           between method and advice affecting that method and between a type
           and declarations in an aspect on that type.  (The IDE support may
           have more features than <literal>ajbrowser</literal>, depending
-          on the IDE.)
+          on the IDE.
+          See <xref linkend="q:integrateWithDevTools"/> for more
+            information on which Java development environments are
+            supported.)
           </para>
           <para>
-            When you are looking at documentation,
+            When you are looking at documentation for AspectJ 1.0,
             <literal>ajdoc</literal> will provide links from aspects and
             advice to the affected code, but it provides less information
             than the IDE support because it only parses declarations.
+          </para>
+          <para>
+            When you are compiling your program, pointcuts that are
+            statically-determinable can be used in declare statements
+            to identify the code picked out by the pointcut.
+            (A pointcut is statically determinable if it only uses
+             the pointcut designators
+             <literal>within</literal>,
+             <literal>withincode</literal>,
+             <literal>execution</literal>,
+             <literal>call</literal>,
+             <literal>get</literal>,
+             <literal>set</literal>,
+             <literal>initialiation</literal>, and
+             <literal>staticinitialiation</literal>.)
+             The compiler will list the static code points which will be 
+             affected by any advice specifying the same pointcut.
+             For example, the following will print a warning
+             whereever some code in class Bar gets a field value from Foo:
+             <programlisting>
+  declare warning: get(* Foo.*) &amp;&amp; within(Bar) 
+     : "reading Foo state from Bar";
+             </programlisting>
           </para>
           <para>
             When you are running your program,
             you can trace advice as it executes.  This
             enables you to identify advice on join points picked out 
             dynamically, which cannot be reflected precisely by IDE support.
-          </para>
-          <para>See <xref linkend="q:integrateWithDevTools"/> for more
-            information on which Java development environments are
-            supported.
+            For a related tracing question,
+               see <xref linkend="q:seeingjoinpoints"/>
           </para>
         </answer>
       </qandaentry>
@@ -1814,13 +1872,16 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
         </question>
         <answer>
           <para>
-            The AspectJ team directly provides components for JBuilder, Forte,
-            and Emacs.  We also support the open-source AspectJ plugin project
+            The AspectJ team directly provided components for JBuilder, Forte,
+            and Emacs and supported the open-source AspectJ plugin project
             at <ulink url="http://eclipse.org/ajdt">http://eclipse.org/ajdt</ulink>
-            which uses the AJDE API support for IDE's.  We
-            are interested in supporting other developers as they use AJDE 
-            to provide components for the following IDE's (roughly in
-            order of interest and viability).
+            which uses the AJDE API support for IDE's.  
+            Supporting new IDE's is a matter of building on the AJDE API's,
+            mostly likely adopting one of the existing open-source IDE
+            extensions as a design template.
+            Here are the IDE's where we know people have expressed interest,
+            so interested developer may want to join with others in their
+            developer communities to build the integration.
             <itemizedlist>
               <title></title>
               <listitem>
@@ -1838,32 +1899,16 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
                 </para>
               </listitem>
               <listitem>
-                <para>Together extensibility API is too limited</para>
-              </listitem>
-              <listitem>
-                <para>
-                  VisualCafe may have a difficult extensibility API
-                </para>
-              </listitem>
-              <listitem>
-                <para>
-                  IBM's VisualAge for Java is to be replaced with Eclipse
-                </para>
-              </listitem>
-              <listitem>
                 <para>Some have suggested Codeguide from Omnicore
 	         <ulink url="http://www.omnicore.com">http://www.omnicore.com/</ulink>
                 </para>
               </listitem>
-               <listitem><para>Visual SlickEdit ??</para></listitem>
-              <listitem><para>Kawa  has been discontinued</para></listitem>
-              <listitem> <para>VIM has been suggested.</para></listitem>
             </itemizedlist>
           </para>
           <para>
-            If you would like to build support for an IDE, contact us so we can help.
-            To contribute or propose new IDE's, please
-            <ulink url="mailto:support@aspectj.org?subject=IDE%20Support:%20">mail us</ulink>.
+            For questions on AJDE, join the developer's list
+            <literal>aspectj-dev@eclipse.org</literal>.
+            For questions on the current IDE integrations, contact those projects.
           </para>
         </answer>
       </qandaentry>
@@ -1904,10 +1949,10 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
             around advice instead of introduction.  This solution is described
             in
             <ulink url="http://aspectj.org/pipermail/users/2000/000534.html">
-              this thread
+              this thread (no longer available)
             </ulink> on the AspectJ users list, with some
             <ulink url="http://aspectj.org/pipermail/users/2000/000536.html">
-              additional comments
+              additional comments (no longer available)
             </ulink>.
           </para>
         </answer>
@@ -1921,12 +1966,146 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
         </question>
         <answer>
           <para>
-	    Try using an aspect posted to the user's list called
-            <ulink url="http://aspectj.org/pipermail/users/2002/001883.html">
-              TraceJoinPoints.java
-            </ulink>.
+          You can trace them using using an aspect.
            For example, you can start logging at a particular method call and 
 	   see what join points occur after the call and before it returns.
+          </para>
+          <para>
+          Here's some code Jim Hugunin wrote to trace join points
+          and posted to the users list. To reuse the aspect, 
+          define a subaspect and implement the pointcuts, for example:
+          <programlisting>
+
+aspect JoinPointSampleAspect extends aj.TraceJoinPoints {
+    protected pointcut entry() : 
+        execution(static void JoinPointSample.main(String[]));
+    protected pointcut exit() : 
+        call(static void JoinPointSampleAspect.exit());
+
+    public static void main (String[] args) {
+        JoinPointSample.main(args);   
+        JoinPointSampleAspect.exit();   
+    } 
+    public static void exit() {}
+}
+
+class JoinPointSample {
+    public static void main(String[] args) {}
+}
+          </programlisting>
+          </para>
+          <para>Here's the aspect:
+          <programlisting>
+<![CDATA[
+/* TraceJoinPoints.java */
+
+package aj;
+
+import org.aspectj.lang.*;
+import org.aspectj.lang.reflect.*;
+import java.io.*;
+
+public abstract aspect TraceJoinPoints dominates * {
+    protected abstract pointcut entry();
+    protected pointcut exit(): call(* java..*.*(..));
+
+    final pointcut start(): entry() && !cflowbelow(entry());
+
+    final pointcut trace():
+        cflow(entry()) && !cflowbelow(exit()) && !within(TraceJoinPoints+);
+
+    before(): start() { makeLogStream(); }
+
+    before(): trace() { logEnter(thisJoinPointStaticPart); }
+    after(): trace() { logExit(thisJoinPointStaticPart); }
+
+    after(): start() { closeLogStream(); }
+
+    //------------ added
+    /**
+     * Emit a message in the log, e.g.,
+     * <pre>TraceJoinPoints tjp = TraceJoinPoints.aspectOf();
+     * if (null != tjp) tjp.message("Hello, World!");</pre>
+     */
+    public void message(String s) {
+        out.println("<message>" + prepareMessage(s) + "</message>");
+    }
+    public void message(String sink, String s) {
+        if (null == sink) {
+            message(s);
+        } else {
+            out.println("<message sink=" + quoteXml(sink)
+                        + " >" + prepareMessage(s) + "</message>");
+        }
+    }
+    protected String prepareMessage(String s) { return s; } // XXX implement
+
+    //--------- end of added
+
+    PrintStream out;
+    int logs = 0;
+    protected void makeLogStream() {
+        try {
+            out = new PrintStream(new FileOutputStream("log" + logs++ + ".xml"));
+        } catch (IOException ioe) {
+            out = System.err;
+        }
+    }
+
+    protected void closeLogStream() {
+        out.close();
+    }
+
+
+    int depth = 0;
+    boolean terminal = false;
+    protected void logEnter(JoinPoint.StaticPart jp) {
+        if (terminal) out.println(">");
+        indent(depth);
+        out.print("<" + jp.getKind());
+        writeSig(jp);
+        writePos(jp);
+
+        depth += 1;
+        terminal = true;
+    }
+
+    void writeSig(JoinPoint.StaticPart jp) {
+        out.print(" sig=");
+        out.print(quoteXml(jp.getSignature().toShortString()));
+    }
+
+    void writePos(JoinPoint.StaticPart jp) {
+        SourceLocation loc = jp.getSourceLocation();
+        if (loc == null) return;
+
+        out.print(" pos=");
+        out.print(quoteXml(loc.getFileName() +
+                           ":" + loc.getLine() +
+                           ":" + loc.getColumn()));
+    }
+
+    String quoteXml(String s) {
+        return "\"" + s.replace('<', '_').replace('>', '_') + "\"";
+    }
+
+    protected void logExit(JoinPoint.StaticPart jp) {
+        depth -= 1;
+        if (terminal) {
+            out.println("/>");
+        } else {
+            indent(depth);
+            out.println("</" + jp.getKind() + ">");
+        }
+        terminal = false;
+    }
+
+    void indent(int i) {
+        while (i-- > 0) out.print("  ");
+    }
+}
+]]>
+          </programlisting>
           </para>
         </answer>
       </qandaentry>
@@ -1981,11 +2160,7 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
                 by return or throwing an exception), so the execution join
                 point always happens within the bounds of the corresponding
                 call join point.  You can see this if you use the
-	        join-point tracing aspect in
-            <ulink url="http://aspectj.org/pipermail/users/2002/001883.html">
-              TraceJoinPoints.java
-            </ulink>.
-	        as described above.
+	        join-point tracing aspect in see <xref linkend="q:seeingjoinpoints"/>.
           </para>
           <para>As you would expect, the context differs 
                 in advice on pointcuts picking out execution and call join
@@ -2087,7 +2262,8 @@ aspect LogFactorial {
           Test which implements an interface and extends a class
           along with a trace of the join points below and including
           the constructor call obtained using 
-          <literal>TraceJointPoints.java</literal> (linked above).
+          <literal>TraceJointPoints.java</literal>
+               from <xref linkend="q:seeingjoinpoints"/>.
           </para>
           <programlisting>
             <![CDATA[
@@ -2289,12 +2465,10 @@ aspect MyMarker extends MarkerExample {
         </question>
         <answer>
           <para>Some libraries are distributed in the release under the
-            examples folder in the distribution. If you develop a library and
-            want to make it available to other users, make sure to
-            <ulink
-                url="http://aspectj.org/servlets/AJSite?channel=supportAndBugs&amp;subChannel=askAQuestion">
-              contact us
-            </ulink>.
+            examples folder in the distribution. 
+            If you develop a library and want to make it available to 
+            other users, join the users mailing list
+            <literal>aspectj-users@eclipse.org</literal>.
           </para>
         </answer>
       </qandaentry>
@@ -2399,7 +2573,7 @@ java.lang.Integer
           </programlisting>
           <para>
 	For more information, see the Programming Guide
-            <ulink url="http://aspectj.org/doc/dist/progguide/apbs02.html">
+            <ulink url="progguide/apbs02.html">
               semantics section "Context Exposure"
             </ulink>.
           </para>
@@ -2630,8 +2804,7 @@ vmparam -Xmx384m
           <para>
         If it turns out that your project is too big to use with AJDE, your IDE 
         may nonetheless support external commands or Ant build processes, which
-        run outside the IDE memory space.  For an Ant taskdef, see 
-        <ulink url="http://aspectj.org/dl"/>.  For a JBuilder Ant plugin, some
+        run outside the IDE memory space.  For a JBuilder Ant plugin, some
         people have directed us to <ulink url="http://antrunner.sourceforge.net"/>.
           </para>
         </answer>
@@ -2663,24 +2836,25 @@ vmparam -Xmx384m
         </question>
         <answer>
           <para>When advice is not running, it is probably a problem in the
-          pointcut.  Sometimes users specify pointcuts that do not mean what they intend -
-	      most often when they misspell a type name.  Run the compiler in
+          pointcut.  
+          Sometimes users specify pointcuts that do not mean what they intend -
+	      most often when they misspell a type name. Run the compiler in
 	      <literal>-Xlint</literal> mode, which will flag some likely mistakes,
-	      like the type name.  If that does not work, use
-            <ulink url="http://aspectj.org/pipermail/users/2002/001883.html">
-              TraceJoinPoints.java
-            </ulink> to see if your join points are executing at all.
+	      like the type name.  
+          If that does not work, and your pointcut is staticly-determinable,
+          use a declare statement to identify affected code.  (For more 
+          information, see <xref linkend="q:knowWhenAspectsAffectClasses"/>.)
+          If that does not work and your pointcut is dynamically determined, 
+          see if your join points are executing at all by using
+              TraceJoinPoints.java from <xref linkend="q:seeingjoinpoints"/>.
           </para>
           <para>When advice is running more than it should, it may be that your
           pointcut picks out more join points than you intend.  
           If you are using IDE support, you should be able to trace back from
           the pointcut or advice to the join points which can be statically
           determined to be affected.  To identify advised dynamic join points,
-          you can try using
-            <ulink url="http://aspectj.org/pipermail/users/2002/001883.html">
-              TraceJoinPoints.java
-            </ulink>, but often it is easier to update the advice to
-          print the source location of the join point.  
+          you can try using <literal>TraceJoinPoints.java</literal> as above, 
+          or update the advice to print the source location of the join point.  
           This will show if the advice applies to code that you did
           not consider.
           </para>
@@ -2845,14 +3019,327 @@ vmparam -Xmx384m
           <itemizedlist>
             <listitem>
               <para>
-                <ulink url="http://aspectj.org/bugs/ajdoc?id=813">813</ulink>
-              - Ajdoc requires J2SE 1.3 tools.jar, not that of 1.2 or 1.4.
               </para>
             </listitem>
           </itemizedlist>
         </answer>
       </qandaentry>
     </qandadiv>
+
+    <qandadiv id="aj11" xreflabel="AspectJ 1.1 and eclipse.org">
+      <title>AspectJ 1.1 and eclipse.org</title>
+      <qandaentry>
+        <question id="q:whyeclipse"
+            xreflabel="Q:Why did the AspectJ project move to eclipse.org?">
+          <para>Why did the AspectJ project move to eclipse.org?
+          </para>
+        </question>
+        <answer>
+          <para>From the message sent to users:
+          </para>
+          <para>
+            AspectJ has come a long way -- the language has
+            stabilized; there are a rapidly growing number of
+            commercial users; the 1.1 release is imminent and will
+            include byte-code weaving and incremental compilation;
+            and the tool support is now well integrated with several
+            major IDEs. 
+          </para>
+          <para>
+            This growth of the community and the technology means
+            that the original research and prototype development of
+            AspectJ is complete. As such it is time for ongoing
+            development and support of AspectJ to move outside of
+            PARC. This has already started to happen; the Eclipse
+            AJDT plug-in and the several books in preparation are
+            examples. 
+          </para>
+          <para>
+            To encourage the growth of the AspectJ technology and
+            community, PARC is transferring AspectJ to an
+            openly-developed eclipse.org project. This project will
+            include documentation, web site, mailing lists, bug
+            database, and sources for the compiler. The
+            command-line AspectJ compiler is still the primary tool
+            produced by this project, in addition to APIs that support
+            integration with a variety of IDEs. The Eclipse plug-in will
+            remain at eclipse.org, while the NetBeans, JBuilder and
+            Emacs support will move to SourceForge.net projects.
+            We look forward to your involvement with and
+            contribution to those projects. 
+          </para>
+          <para>
+            We see Eclipse as an excellent new home for core
+            AspectJ technology development -- it is an active
+            community of Open Source development and innovation
+            in the Java space. Once development moves to
+            Eclipse.org, others will be able to contribute more easily.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:eclipserequired"
+            xreflabel="Q:Do I have to download Eclipse to use AspectJ?">
+          <para>Do I have to download Eclipse to use AspectJ?
+          </para>
+        </question>
+        <answer>
+          <para>No.  The AspectJ tools download is completely self-contained
+                and does not require that you work in Eclipse.
+                For information on IDE support, see
+                 <xref linkend="q:integrateWithDevTools"/>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:contributions"
+            xreflabel="Q:What can I do to help on the AspectJ project?">
+          <para>What can I do to help on the AspectJ project?
+          </para>
+        </question>
+        <answer>
+          <para>Here's a general list, in no particular order:
+          <itemizedlist>
+            <listitem>
+              <para>Participate effectively in the mailing lists.
+                 The quality of the mailing lists makes a big difference
+                 in the ability of new and experienced AspectJ users
+                 to write good code.  For guidance on effective
+                 participation, see
+                 <xref id="q:talktousers"/> and
+                 <xref id="q:writingbugsandemails"/>.
+              </para>
+            </listitem>
+            <listitem>
+              <para>Write test cases for compiler bugs without test cases.
+              Compiler bugs without test cases are much less likely to be fixed;
+              until they are rendered in code, they might be user mistakes,
+              and they might duplicate another bug or actually cover many bugs.
+              </para>
+              <para>Find them by searching open compiler bugs and picking out
+              any which do not have test case attachments or a comment that
+              a test case has been written.  
+              Here is a query for open compiler bugs:
+              <!-- ulink gacks on the = next - quote it -->
+              <ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;component=Compiler&amp;bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">
+              http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;component=Compiler&amp;bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED
+              </ulink>
+              </para>
+              <para>For how to write test cases, see
+                 <xref linkend="q:harnesstestcases"/>.
+              </para>
+            </listitem>
+          </itemizedlist>
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:harnesstestcases"
+            xreflabel="Q:How should I submit test cases for bugs?">
+          <para>How should I submit test cases for bugs?
+          </para>
+        </question>
+        <answer>
+          <para>You can attach files to a bug after it has been created.
+          The code of course should replicate the actual behavior
+          described in the bug when run on the target version.
+          If you have a single source file, you can attach it directly,
+          describing in the comments the expected result
+          (e.g., error on line 14, or successful compile/run).
+          The most helpful form for describing the test scenario
+          and the expected results are the test definitions
+          described next.
+          </para>
+          <para>For more complex bugs requiring many files, 
+          create a zip file of a directory containing all the files
+          and an XML test definition file.  
+          The XML test definition file contains specifications
+          for how to compile, recompile, or run the test sources.
+          Complete documentation is available in the CVS tree
+          at <literal>tests/readme-writing-compiler-tests.html</literal>
+          but here is a sample file with some example definitions,
+          preceded by comments showing the directory layout
+          of the files referred to in the test definitions.
+          </para>
+          <para>
+          <programlisting>
+<![CDATA[
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+<suite>
+
+<!-- Compile and run
+     using the following files:
+
+       {testDefinitions}.xml
+       one/
+         pack1/
+           Main.java
+         p2/
+           BeforeConstructor.java
+
+    Note the bug number goes in the pr attribute
+    ("pr" for "problem report");
+ -->
+<ajc-test dir="one" pr="234" title="before constructor call">
+    <compile files="pack1/Main.java,p2/BeforeConstructor.java"/>
+    <run class="pack1.Main"/>
+</ajc-test>
+
+<!-- Check that compiler warning was emitted 
+     using the following files:
+
+       {testDefinitions}.xml
+       two/
+         UsesDeprecated.java
+ -->
+<ajc-test dir="two" pr="244" title="deprecated, noImportError">
+    <compile options="-warn:deprecated,-noImportError" 
+          files="UsesDeprecated.java">
+        <message kind="warning" line="20"/>
+    </compile>
+</ajc-test>
+
+<!-- Cooked example that uses all compiler attributes 
+     and the following files:
+       {testDefinitions}.xml
+       testCaseDir/
+         jars/
+           injar.jar
+           required.jar
+           requiredAspects.jar
+         pack/
+           Main.java
+         providedClassesDir/
+           ClassInDefaultPackage.class
+           org/
+             foo/
+               AnotherRequired.class
+  -->
+<ajc-test dir="testCaseDir" title="attributes test">
+    <compile files="pack/Main.java,jars/injar.jar" 
+           staging="true"
+           options="-Xlint,-g:none"
+          argfiles="debug.lst,aspects/test.lst"
+        aspectpath="jars/requiredAspects.jar"
+         classpath="providedClassesDir,jars/required.jar"/>
+    <run class="Main"/>
+</ajc-test>
+
+<!-- Compiler errors, recompile after changing files, and run
+     using the following files:
+
+       {testDefinitions}.xml
+       three/
+         pack/
+           IncCompileFix.java
+           IncCompileFix.20.java
+
+     Before compiling, IncCompileFix.java is copied to a staging
+     directory.  Before recompiling, IncCompileFix.20.java 
+     replaces it, so the compiler treats file as updated.
+  -->
+<ajc-test dir="three" pr="622" title="incremental fix">
+    <compile staging="true" files="pack/IncCompileFix.java">
+        <message kind="error" line="20"/>
+        <message kind="error" line="42"/>
+    </compile>
+    <inc-compile tag="20"/>
+    <run class="pack.IncCompileFix"/>
+</ajc-test>
+
+</suite>
+]]>
+          </programlisting>
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:buildingsource"
+            xreflabel="Q:How do I get and compile the source code for AspectJ?">
+          <para>How do I get and compile the source code for AspectJ?
+          </para>
+        </question>
+        <answer>
+          <para>AspectJ 1.1 source code is available through CVS using the CVS Root 
+           <literal>dev.eclipse.org:/home/technology</literal>.  For more information
+           on accessing the CVS tree at eclipse.org, see the documentation 
+           from <ulink url="http://eclipse.org">http://eclipse.org</ulink>.
+          </para>
+          <para>The AspectJ tree is organized into modules as follows:
+          <programlisting>
+  org.aspectj/
+    modules/
+      ajbrowser/
+      ajde/
+      ...
+          </programlisting>
+          </para>
+          <para>
+          You can check out the entire modules directory and build using the
+          Ant build script <literal>modules/build/build.xml</literal>.
+          All required libraries are included in <literal>modules/lib/</literal>,
+          (including Ant 1.5.1 in <literal>modules/lib/ant</literal>).
+          If you are using Eclipse, you can check out any <literal>modules/</literal> 
+          subdirectory as an eclipse Java project.  
+          Depending on what you are trying to build, you need not check out
+          all modules; as of this writing, here are the modules to get 
+          when trying to build something:
+          </para>
+          <para>
+          <itemizedlist>
+            <listitem>For any builds: build, lib
+            </listitem>
+            <listitem>For the documentation: docs
+            </listitem>
+            <listitem>For the compiler: bridge, util, testing-util,
+            weaver, asm, org.eclipse.jdt.core, org.aspectj.ajdt.core,
+            and runtime.
+            </listitem>
+            <listitem>For ajbrowser: the compiler modules, plus
+            ajbrowser, taskdefs, and ajde.
+            </listitem>
+            <listitem>For the test harness: the ajbrowser modules, plus
+            testing, testing-client, and testing-drivers.
+            </listitem>
+            <listitem>To run the test suite: the test harness modules, plus
+            tests.
+            </listitem>
+          </itemizedlist>
+          </para>
+          <para>
+          Note that module interdependencies are recorded only in the eclipse 
+          <literal>modules/{module}/.classpath
+          </literal>
+           files and may
+          change, so the list above may not be correct when you read it.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:testharness"
+            xreflabel="Q:I'd like to run my test case.  How do I get the test harness?">
+          <para>I'd like to run my test case.  How do I get the test harness?
+          </para>
+        </question>
+        <answer>
+          <para>The test harness is not distributed
+          (though we may put it on an AspectJ page.)
+          To build it, get the source tree as
+          described in <xref linkend="q:buildingsource"/> and then
+          build the <literal>build-testing-drivers</literal> target:
+          <programlisting>
+  cd build
+  ../lib/ant/bin/ant -f build.xml build-testing-drivers
+          </programlisting>
+          This produces 
+          <literal>../aj-build/jars/testing-drivers-all.jar</literal>
+          which you can run as described in
+          <literal>tests/readme-tests-module.html</literal>.
+          </para>
+        </answer>
+      </qandaentry>
+    </qandadiv>
+
     <qandadiv id="help" xreflabel="Getting Help">
       <title>Getting Help</title>
       <qandaentry>
@@ -2864,7 +3351,7 @@ vmparam -Xmx384m
         </question>
         <answer>
           <para>Visit the AspectJ project web site:
-            <ulink url="http://aspectj.org">http://aspectj.org</ulink>.
+            <ulink url="http://eclipse.org/aspectj">http://eclipse.org/aspectj</ulink>.
           </para>
         </answer>
       </qandaentry>
@@ -2874,34 +3361,15 @@ vmparam -Xmx384m
           <para>How do I submit a bug report?</para>
         </question>
         <answer>
-          <para>You can submit a bug using the web interface
-            <ulink url="http://aspectj.org/bugs">http://aspectj.org/bugs</ulink>
-            (preferred), or you may send email to
-            <ulink url="mailto:jitterbug@aspectj.org">jitterbug@aspectj.org</ulink> directly.
-            See also
-
-If it seems to be a bug in the compiler,
-            please include in the body of the email source code to reproduce the problem.
-          </para>
-        </answer>
-      </qandaentry>
-      <qandaentry>
-        <question id="q:comments"
-            xreflabel="Q:How do I submit comments and feature requests?">
-          <para>
-            How do I submit comments and feature requests?
-          </para>
-        </question>
-        <answer>
-          <para>You can email comments to all users at 
-          <ulink url="mailto:users@aspectj.org">users@aspectj.org</ulink>,
-          email the AspectJ team at 
-          <ulink url="mailto:support@aspectj.org">support@aspectj.org</ulink>.
-          You can view and submit bug reports and feature requests at
-          <ulink url="http://aspectj.org/bugs">http://aspectj.org/bugs</ulink>.
-	  If you think you might simply be making a mistake, you might
-	  email some source code to 
-          <ulink url="mailto:users@aspectj.org">users@aspectj.org</ulink>.
+          <para>You can submit a bug from 
+              <ulink url="http://dev.eclipse.org/bugs/enter_bug.cgi?product=AspectJ">
+                          http://dev.eclipse.org/bugs/enter_bug.cgi?product=AspectJ
+              </ulink>.
+            If it seems to be a bug in the compiler,
+            please attach a small test case (source code) 
+            to reproduce the problem.
+            For more information on writing compiler test cases, see
+            <xref linkend="q:ajcbugs"/>.
           </para>
         </answer>
       </qandaentry>
@@ -2914,10 +3382,10 @@ If it seems to be a bug in the compiler,
         </question>
         <answer>
           <para>You can reach other AspectJ users by using the
-            aspectj-users mailing list. To subscribe to the list or view the
-            list archives go to the user community page:
-            <ulink url="http://aspectj.org/lists">
-              http://aspectj.org/lists
+            aspectj-users mailing list.  You can subscribe to the list or view the
+            list archives from the AspectJ home page
+            <ulink url="http://eclipse.org/aspectj">
+              http://eclipse.org/aspectj
             </ulink>.
           </para>
         </answer>
@@ -2931,11 +3399,15 @@ If it seems to be a bug in the compiler,
         </question>
         <answer>
           <para>
-	There is a search entry box on the left navigation bar of the web site,
-	but it is generally more effective to do a google search of the form,
-            <ulink url="http://www.google.com/search?q=site%3Aaspectj.org+%22abstract pointcuts%22">
-              http://www.google.com/search?q=site%3Aaspectj.org+%22abstract pointcuts%22
+	It is generally most effective to do a google search of the form,
+            <ulink url="http://www.google.com/search?q=site:eclipse.org+cflowbelow">
+              http://www.google.com/search?q=site:eclipse.org+cflowbelow
             </ulink>
+    but this may not get results inside the mail archives.
+    Be sure to check the old archives available for download from
+    the AspectJ home page. <ulink url="http://eclipse.org/aspectj">
+              http://eclipse.org/aspectj
+            </ulink>.
           </para>
         </answer>
       </qandaentry>
@@ -2947,23 +3419,25 @@ If it seems to be a bug in the compiler,
           </para>
         </question>
         <answer>
+              <para>Here's the general form of a good email:
+              </para>
           <orderedlist>
             <listitem>
               <para>
-                Here's the big picture of what I'm trying to do...
+                Describe the big picture of what you are trying to do...
               </para>
             </listitem>
             <listitem>
               <para>
-  	Here's what I think it takes, in AspectJ terms
+  	Describe what you think it takes, in AspectJ terms
   	(concepts, syntax, and semantics) from the 
             <ulink url="progguide/index.html">Programming Guide</ulink>...
               </para>
             </listitem>
             <listitem>
               <para>
-	Here's the AspectJ code I'm using, the output it
-  	produces when run, and what I expect...
+	Show the AspectJ code you are using, what output it
+  	produces when run, and what output you expect...
               </para>
             </listitem>
           </orderedlist>
@@ -2976,6 +3450,8 @@ If it seems to be a bug in the compiler,
            response.  On the mail list, someone can reply by fixing your 
            code.  In bugs, the developers can reproduce the problem immediately
            and start analyzing the fix.
+           The code should not be incomplete; it should run (or fail) as-is,
+           without additional libraries or source files.
           </para>
           <para>
              For the mail lists, we try to follow the conventions for open-source
@@ -3006,25 +3482,31 @@ If it seems to be a bug in the compiler,
           from the command line.
           </para>
           <para>
-	Bug reports for the Eclipse support go to the Eclipse
+          Bug report for the IDE extensions go to their respective projects,
+          listed in
+             <xref linkend="q:integrateWithDevTools"/>
+          (including bug reports for the AJDE Eclipse support,
+          which you can submit at
             <ulink url="http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AJDT">
-              bugzilla
-            </ulink> database.
-        Bug reports on other IDE support should have version
-	information for both Java and the IDE, and
+                        http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AJDT
+            </ulink>).
+          </para>
+          <para>
+        Bug reports on ajbrowser should have version
+	information for both Java and AspectJ, and
 	(most importantly) clear steps for reproducing the bug.  
-        You may submit the bugs via the web form 
-        (<ulink url="http://aspectj.org/bugs">http://aspectj.org/bugs</ulink>)
-	or via email
-        (<ulink url="mailto:jitterbug@aspectj.org">jitterbug@aspectj.org</ulink>).
+        You may submit ajbrowser bugs against the IDE component of AspectJ 
+        via the web form 
+            <ulink url="http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ">
+                        http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ
+            </ulink>.
           </para>
           <para>
 	One of the benefits of open-source is that you can
 	find and fix the bug for yourself; when you submit
 	the fix back to us, we can validate the fix for you
-	and incorporate it into the next release.  Email
-        <ulink url="mailto:support@aspectj.org">support@aspectj.org</ulink>
-        for instructions on submitting a patch.
+	and incorporate it into the next release.  
+    You can submit a patch by attaching it to the bug.
           </para>
         </answer>
       </qandaentry>
@@ -3062,17 +3544,18 @@ If it seems to be a bug in the compiler,
               </listitem>
               <listitem>
                 <para>
-	At the end of the report, append each source file,
-        separated with a line and the file name.
-  	(Include all sources, and do not send attachments.)
+	Submit the bugs via the web form 
+            <ulink url="http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ">
+                        http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ
+            </ulink>.
                 </para>
               </listitem>
               <listitem>
-                <para>
-	Submit the bugs via the web form 
-        (<ulink url="http://aspectj.org/bugs">http://aspectj.org/bugs</ulink>)
-	or via email
-        (<ulink url="mailto:jitterbug@aspectj.org">jitterbug@aspectj.org</ulink>).
+                <para>Attach the test case to the bug.
+                The test case may be a single file
+                or it may be multiple files in a single zip archive,
+                of the form discussed in
+                <xref linkend="q:harnesstestcases"/>.
                 </para>
               </listitem>
             </orderedlist>
@@ -3087,53 +3570,13 @@ If it seems to be a bug in the compiler,
           </para>
         </question>
         <answer>
-          <para>The documentation available on this site is a primary source of
-          material on AspectJ:
-            <informaltable frame="none">
-              <tgroup cols="2">
-                <tbody>
-                  <row>
-                    <entry valign="top">
-                      <ulink url="http://aspectj.org/doc/papersAndSlides">
-                        Selected AspectJ Papers and Presentations
-                      </ulink>
-                    </entry>
-                    <entry>Papers presented at various conferences; tutorial
-                      slide presentations.
-                    </entry>
-                  </row>
-                  <row>
-                    <entry valign="top">
-                      <ulink url="http://aspectj.org/documentation/papersAndSlides/ECOOP1997-AOP.pdf">
-                        Aspect-Oriented Programming
-                      </ulink>
-                    </entry>
-                    <entry valign="top">
-                      The seminal AOP/AspectJ paper
-                    </entry>
-                  </row>
-                  <row>
-                    <entry valign="top">
-                      <ulink url="progguide/index.html">
-                        The AspectJ Programming Guide
-                      </ulink>
-                    </entry>
-                    <entry valign="top">A practical guide for programmers.
-                    Includes a number of examples, some quite
-                    sophisticated.
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <ulink url="tutorial.pdf">The AspectJ Tutorial</ulink>
-                    </entry>
-                    <entry>Slides from a day-long tutorial presentation on
-                    AspectJ.
-                    </entry>
-                  </row>
-                </tbody>
-              </tgroup>
-            </informaltable>
+          <para>The documentation available in the distribution is the 
+          best source for language and usage questions.  You can also find
+          selected AspectJ papers and presentations on the 
+          <ulink url="http://www.parc.com/groups/csl/projects/aspectj/index.html">
+                            PARC AspectJ page</ulink>.
+          For links to Aspect-oriented programming materials in general, see
+          <ulink url="http://aosd.net">http://aosd.net</ulink>.
           </para>
         </answer>
       </qandaentry>
@@ -3145,10 +3588,8 @@ If it seems to be a bug in the compiler,
           </para>
         </question>
         <answer>
-          <para>Beyond what's available on the aspectj.org web site,
-	        the AspectJ team does a limited amount of consulting
-	        and support for qualified groups.  For more information, 
-		see <xref linkend="q:support"/>.
+          <para>The best thing to to is join and email the
+           <literal>aspectj-dev@eclipse.org</literal> mailing list.
           </para>
         </answer>
       </qandaentry>
@@ -3161,9 +3602,20 @@ If it seems to be a bug in the compiler,
         </question>
         <answer>
           <para>
-   Entries changed since the earlier November 26 version:
+          The FAQ has been updated to reflect the move to eclipse.org;
+          but some answers apply to the released 1.0 version
+          rather than the 1.1 version in development.
+          Entries changes to reflect the move are not listed here.
+    Other entries changed since the earlier November 26 version:
             <itemizedlist>
         <listitem><para><xref linkend="q:adviseconstructors"/></para></listitem>
+        <listitem><para><xref linkend="q:whyeclipse"/></para></listitem>
+        <listitem><para><xref linkend="q:eclipserequired"/></para></listitem>
+        <listitem><para><xref linkend="q:contributions"/></para></listitem>
+        <listitem><para><xref linkend="q:harnesstestcases"/></para></listitem>
+        <listitem><para><xref linkend="q:buildingsource"/></para></listitem>
+        <listitem><para><xref linkend="q:testharness"/></para></listitem>
+        <listitem><para><xref linkend="q:integrateWithDevTools"/></para></listitem>
             </itemizedlist>
           </para>
         </answer>
@@ -3386,6 +3838,11 @@ If it seems to be a bug in the compiler,
                 <row>
                   <entry align="left">Version</entry>
                   <entry align="left">Description</entry>
+                </row>
+                <row>
+                  <entry valign="top" align="center">1.1</entry>
+                  <entry>Language changes, bytecode weaving and incremental compilation.
+                  </entry>
                 </row>
                 <row>
                   <entry valign="top" align="center">1.0</entry>
