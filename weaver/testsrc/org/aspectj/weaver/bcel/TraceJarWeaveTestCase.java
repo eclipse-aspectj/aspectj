@@ -17,7 +17,7 @@ import java.io.IOException;
 
 public class TraceJarWeaveTestCase extends WeaveTestCase {
 	{
-		regenerate = true;
+		regenerate = false;
 	}
 
 	public TraceJarWeaveTestCase(String name) {
