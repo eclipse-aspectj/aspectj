@@ -17,12 +17,14 @@ AspectJ contains a compiler, <tt>ajc</tt>, that can be run from Ant.
 Included in the <tt>aspectjtools.jar</tt> are Ant binaries to support
 three ways of running the compiler:
 <ol>
-<li><tt>Ajc10</tt> (<a href="ant-ajc10-task.html">parameters</a>),
+<li><tt><a href="#ajc10">Ajc10</a></tt> 
+    (<a href="ant-ajc10-task.html">parameters</a>),
     a task to run build scripts compatible with the AspectJ 1.0 tasks,</li>
-<li><tt>AjcTask</tt> (<a href="ant-ajc-task.html">parameters</a>),
+<li><tt><a href="#ajctask">AjcTask</a></tt> 
+    (<a href="ant-ajc-task.html">parameters</a>),
     a task to run the new AspectJ 1.1 compiler, which supports
     all the eclipse and ajc options, including incremental mode;
-<li><tt>Ajc11CompilerAdapter</tt>,
+<li><tt><a href="#adapter">Ajc11CompilerAdapter</a></tt>,
     an adapter class to run the new compiler using Javac tasks
     by setting the build.compiler property.</li>
 </ol>
@@ -60,14 +62,13 @@ the "resource" attribute to specify the default names:
 </pre>
 The current resource file retains the name "ajc" for the Ajc10 task, 
 and uses "iajc" for the AspectJ 1.1 task.  
-This may change in the final release of AspectJ 1.1. <!-- XXX -->
 </p> 
 <p>For more information on using Ant, please refer to 
 Jakarta's <a href="http://jakarta.apache.org/ant/manual/develop.html">documentation</a>
 on integrating user-defined Ant tasks into builds.</p></li>
 <p>
 
-<h3><a name="#ajc10">Ajc10 (script name: ajc)
+<h3><a name="ajc10">Ajc10 (script name: ajc)
 <small><a href="ant-ajc10-task.html">parameters</a></small>
 </a></h3>
 This task handles the same arguments as those used by the AspectJ 1.0 task.
@@ -106,7 +107,7 @@ that uses the ajc compiler to compile the files listed in
 &lt;/project&gt;
 </pre>
 
-<h3><a name="#ajctask">AjcTask (script name: iajc)
+<h3><a name="ajctask">AjcTask (script name: iajc)
 <small><a href="ant-ajc-task.html">parameters</a></small>
 </a></h3>
 This task handles all the ajc 1.1 compiler options, including
@@ -187,48 +188,123 @@ When the user has quit, then this runs the application.
 </pre>
 
 
-<h3><a name="#adapter">Ajc11CompilerAdapter</a></h3>
+<h3><a name="adapter">Ajc11CompilerAdapter</a></h3>
 This CompilerAdapter can be used in <tt>javac</tt> tasks calls
 by setting the <code>build.compiler</code>
 property to the class name.  This enables users to
 to easily switch between Javac and the AspectJ compiler.
+However, javac's handling of source files prevents the adapter from
+doing a correct compile in some cases, so use
+<a href="#ajctask">AjcTask</a> where possible.
 
-To build this way, install <tt>aspectjtools.jar</tt> in <tt>${ANT_HOME}/lib</tt> 
+<p>To build using the adapter, 
+put the <tt>aspectjtools.jar</tt> on the system/ant
+classpath (e.g., in <tt>${ANT_HOME}/lib</tt>)
 and define the <tt>build.compiler</tt>
-property as the fully-qualified name of the class:
-
-<pre>
-    cp aspectj1.1/lib/aspectjtools.jar ant/lib
-    ant/bin/ant -Dbuild.compiler=org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter ...
-</pre>
-
+property as the fully-qualified name of the class.
 The AspectJ compiler should run for any compile using the <tt>Javac</tt> task
 (for options, see the Ant documentation for the Javac task).
+For example, this passes all out-of-date source files in the 
+<code>src/org/aspectj/</code> subdirectories to the ajc command
+along with the destination directory:
+
+<pre>
+-- command:
+
+    cp aspectj1.1/lib/aspectjtools.jar ant/lib
+    ant/bin/ant -Dbuild.compiler=org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter ...
+
+-- task invocation in the build script:
+
+  &lt;javac srcdir="src" includes="org/aspectj/**/*.java" destdir="dest" />
+
+</pre>
+
 
 <p>
 To pass <tt>ajc</tt>-specific arguments, use a <code>compilerarg</code> entry.
-For example,
 
 <pre>
-
 -- command
 
-  Ant -Dbuild.compiler=org.aspectj.tools.ant.taskdefs.Ajc11BuildCompiler
+  Ant -Dbuild.compiler=org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter
 
 -- build script
 
   &lt;property name="ajc" 
-              value="org.aspectj.tools.ant.taskdefs.Ajc11BuildCompiler"/>
+              value="org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter"/>
 
-  &lt;javac srcdir="src" destdir="dest" >
-    &lt;compilerarg compiler="$${ajc}" line="-argfile src/args.lst"/>
+  &lt;javac srcdir="src" includes="org/aspectj/**/*.java" destdir="dest" >
+    &lt;compilerarg compiler="${ajc}" line="-argfile src/args.lst"/>
   &lt;javac >
 </pre>
 
-Beware of using regular source lists with this; javac may prune unchanged
-files, which excludes them from the compile process for ajc, which requires
-that all files affected by any aspects be listed explicitly.
+The adapter supports any <code>ajc</code> command-line option 
+passed using <tt>compilerarg</tt>, as well as
+the following options available only in AjcTask.  
+Find more details on the following options in the 
+<a href="ant-ajc-task.html">AjcTask</a> documentation.
+<ul>
+  <li>-Xmaxmem: set maximum memory for forking (also settable in javac)
+      </li>
+  <li>-Xlistfileargs: list file arguments (also settable in javac)
+      </li>
+  <li>-Xfailonerror:  throw BuildException on compiler error (also settable in javac)
+      </li>
+  <li>-Xmessageholderclass: specify fully-qualified name of class
+      to use as the message holder.
+      </li>
+  <li>-Xcopyinjars: copy resources from any input jars to output
+      </li>
+  <li>-Xsourcerootcopyfilter: copy resources from source directories
+      to output (minus files specified in filter)
+      </li>
+  <li>-Xtagfile {file}: use file to control incremental compilation
+      </li>
+  <li>-Xsrcdir {dir}: add to list of ajc source roots 
+      (all source files will be included).
+      </li>
+</ul>
+Note the names above may differ slightly here from what you might
+expect from AjcTask; use these forms when specifying <tt>compilerarg</tt>.
 
+<p><u>Warning - use <code>build.compiler.clean</code></u> 
+      to get all files, when available: 
+Javac prunes the source file list of "up-to-date" source files
+based on the timestamps of corresponding .class files (and will not
+compile if no sources are out of date).
+This is wrong for ajc which requires all the files for each compile
+and which may refer indirectly to sources using argument files.
+To work around this, set the global property "build.compiler.clean".
+This tells the compiler adapter 
+to delete all .class files in the destination directory 
+and re-execute the javac task 
+so javac can recalculate the list of source files.  e.g., 
+<pre>
+  Ant -Dbuild.compiler=org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter
+      -Dbuild.compiler.clean=anything ...
+</pre>
+
+Caveats to consider when using this global property:
+<ol>
+<li>If javac believes there are no out-of-date source files,
+    then the adapter is never called and cannot clean up,
+    and the "compile" will appear to complete successfully
+    though it did nothing.
+   </li>
+<li>Cleaning will makes stepwise build processes fail
+    if they depend on the results of the prior compilation being
+    in the same directory, since cleaning deletes <strong>all</strong>
+    .class files.
+    </li>
+<li>This clean process only permits one compile process at a time 
+    for each destination directory because it tracks recursion by
+    writing a tag file to the destination directory.
+    </li>
+<li>When running incrementally, the clean happens only before
+    the initial compile.
+    </li>
+</ol>
 <hr>
 
 <h3>4. What to do if you encounter problems</h3>
@@ -257,15 +333,20 @@ from Ant, then please send a report (including your build file, if possible).</l
   or
   <a href="http://dev.eclipse.org/bugs/buglist.cgi?&product=AspectJ&component=Ant&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED">taskdef bugs</a>.
 
+<ul>
 <li><u>Memory and forking</u>:
 Users email most often about the ajc task running out of memory.  This is
 not a problem with the task; some compiles take a lot of memory,
 often more than similar compiles using javac.  
-
-<u>Forking is not supported in this release</u>, so the only solution is to 
+<p>
+Forking is <u>now supported</u> in both the adapter and AjcTask (iajc),
+and you can set the maximum memory available.
+You can also not fork and 
 increase the memory available to Ant (see the Ant documentation, searching for ANT_OPTS,
 the variable they use in their scripts to pass VM options, e.g., ANT_OPTS=-Xmx128m). 
 </li>
+<ul>
+
 
 <p>
 You can send email to <a href="mailto:aspectj-users@dev.eclipse.org">
