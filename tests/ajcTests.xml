@@ -6462,4 +6462,13 @@
         <compile files="ClassLiteralField.java" options="-source14"/>
         <run class="ClassLiteralField"/>
     </ajc-test>
+
+	<ajc-test dir="errors"
+		title="compile error expected for abstract pointcut outside abstract aspect">
+		<compile files="AbstractPointcutCE.java">
+			<message kind="error" line="5"/>
+			<message kind="error" line="10"/>
+		</compile>
+	</ajc-test>
+
 </suite>
