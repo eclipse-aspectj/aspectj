@@ -5664,7 +5664,8 @@
     <ajc-test dir="new/declare" pr="31724"
             title="omnibus declare warning context with no initializer/constructor">
         <compile files="DeclareWarningEmpty.java">
-            <message kind="warning" line="3"/>
+            <message kind="warning" line="3" text="initialization(DeclareWarningEmpty)"/>
+            <message kind="warning" line="3" text="staticinitialization(DeclareWarningEmpty)"/>
         </compile>
     </ajc-test>
     
@@ -5672,21 +5673,22 @@
     <ajc-test dir="new/declare" pr="31724"
             title="omnibus declare warning context">
         <compile files="DeclareWarning.java">
-            <message kind="warning" line="5"/>
-            <message kind="warning" line="12"/>
-            <message kind="warning" line="13"/>
-            <message kind="warning" line="14"/>
-            <message kind="warning" line="15"/>
-            <message kind="warning" line="16"/>
-            <message kind="warning" line="17"/>
-            <message kind="warning" line="18"/>
-            <message kind="warning" line="21"/>
-            <message kind="warning" line="22"/>
-            <message kind="warning" line="23"/>
-            <message kind="warning" line="33"/>
-            <message kind="warning" line="36"/>
-            <message kind="warning" line="39"/>
-            <message kind="warning" line="74"/>
+            <message kind="warning" line="5" text="staticinitialization(DeclareWarning)"/>
+            <message kind="warning" line="12" text="call(DeclareWarning.new())"/>
+            <message kind="warning" line="13" text="get staticInt"/>
+            <message kind="warning" line="14" text="get instanceInt"/>
+            <message kind="warning" line="15" text="set staticInt"/>
+            <message kind="warning" line="16" text="set instanceInt"/>
+            <message kind="warning" line="17" text="call(void run())"/>
+            <message kind="warning" line="18" text="call(void irun())"/>
+            <message kind="warning" line="21" text="execution(void run())"/>
+            <message kind="warning" line="22" text="execution(void irun())"/>
+            <message kind="warning" line="23" text="execution(DeclareWarning.new())"/>
+            <message kind="warning" line="23" text="initialization(DeclareWarning)"/>
+            <message kind="warning" line="33" text="handler(OutOfMemoryError) &amp;&amp; within(DeclareWarning)"/>
+            <message kind="warning" line="36" text="handler(Error)"/>
+            <message kind="warning" line="39" text="handler(RuntimeException) &amp;&amp; withincode(DeclareWarning.new())"/>
+            <message kind="warning" line="74" text="adviceExecution() &amp;&amp; within(A)"/>
         </compile>
     </ajc-test>
     
