@@ -1,0 +1,10 @@
+
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+
+<suite>
+    <ajc-test dir="bugs/bootstrapClasspath" pr="39959" 
+            title="AJC Compiler generates invalid class files under certain circumstances."> 
+        <compile files="UsesDOMParser.java" classpath="xerces.jar" /> 
+        <run class="UsesDOMParser"/> 
+    </ajc-test> 
+</suite>
