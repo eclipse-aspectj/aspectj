@@ -30,6 +30,8 @@ import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.EnumElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
+import org.aspectj.apache.bcel.generic.ClassGen;
+import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 
 
@@ -225,6 +227,15 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		SyntheticRepository repos = createRepos("testcode.jar");
 		JavaClass           clazz = repos.loadClass("AnnotatedWithClassClass");
 		verifyClassAnnotation(clazz);
+	}
+	
+	public void testAnnotationClassElementCopying() throws ClassNotFoundException {
+		SyntheticRepository repos = createRepos("testcode.jar");
+		JavaClass           clazz = repos.loadClass("AnnotatedWithClassClass");
+		Annotation[] anns = clazz.getAnnotations();
+		ClassGen cg = new ClassGen(clazz);
+		// Checks we can copy class values in an annotation
+		new AnnotationGen(anns[0],cg.getConstantPool());
 	}
 	
 	public void testAnnotationClassElementReadWrite() throws ClassNotFoundException,IOException {

@@ -18,6 +18,7 @@ import java.io.IOException;
 
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.ClassElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.EnumElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
@@ -130,6 +131,9 @@ public abstract class ElementValueGen {
 		     case '[': // Array
 		     	return new ArrayElementValueGen((ArrayElementValue)value,cpool);
 
+		     case 'c': // Class
+		     	return new ClassElementValueGen((ClassElementValue)value,cpool);
+		     	
 			default:
 				throw new RuntimeException("Not implemented yet! ("+value.getElementValueType()+")");
 		}
