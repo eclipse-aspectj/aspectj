@@ -17,29 +17,12 @@
 package org.aspectj.ajde.internal;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 
-import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.BuildOptionsAdapter;
-import org.aspectj.ajde.BuildProgressMonitor;
-import org.aspectj.ajde.ProjectPropertiesAdapter;
-import org.aspectj.ajde.TaskListManager;
-import org.aspectj.ajdt.ajc.AjdtCommand;
-import org.aspectj.ajdt.ajc.BuildArgParser;
-import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
-import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
-import org.aspectj.bridge.AbortException;
-import org.aspectj.bridge.CountingMessageHandler;
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.MessageHandler;
-import org.aspectj.bridge.MessageUtil;
+import org.aspectj.ajde.*;
+import org.aspectj.ajdt.ajc.*;
+import org.aspectj.ajdt.internal.core.builder.*;
+import org.aspectj.bridge.*;
 import org.aspectj.util.LangUtil;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
@@ -147,72 +130,75 @@ public class CompilerAdapter {
      * @return null if invalid configuration, 
      *   corresponding AjBuildConfig otherwise
      */
-	public AjBuildConfig genBuildConfig(String configFile) {
-		
-
+	public AjBuildConfig genBuildConfig(String configFilePath) {
         init();
-	    File config = new File(configFile);
-        if (!config.exists()) {
+	    File configFile = new File(configFilePath);
+        if (!configFile.exists()) {
             signalError("Config file \"" + configFile + "\" does not exist."); 
             return null;
         }
-        String[] args = new String[] { "@" + config.getAbsolutePath() };
-        CountingMessageHandler counter 
+        String[] args = new String[] { "@" + configFile.getAbsolutePath() };
+        CountingMessageHandler handler 
             = CountingMessageHandler.makeCountingMessageHandler(messageHandler);
 		BuildArgParser parser = new BuildArgParser();
-        AjBuildConfig local = parser.genBuildConfig(args, counter, false);  
-             
-        if (counter.hasErrors()) {
-            return null; 
-        } 
-        
-        local.setConfigFile(config);
-
-        // -- get globals, treat as defaults used if no local values
-        AjBuildConfig global = new AjBuildConfig();
-        // AMC refactored into two methods to populate buildConfig from buildOptions and
-        // project properties - bugzilla 29769.
-        BuildOptionsAdapter buildOptions 
-            = Ajde.getDefault().getBuildManager().getBuildOptions();
-        if (!configureBuildOptions(global, buildOptions, counter)) {
-            return null;
-        }
-        ProjectPropertiesAdapter projectOptions =
-            Ajde.getDefault().getProjectProperties();
-        configureProjectOptions(global, projectOptions);
 		
-        local.installGlobals(global); // XXX other post-evaluation?
-        String errs = local.configErrors();
-        if (null != errs) {
-            MessageUtil.error(counter, errs);
-            return null;
-        }
-        // always force model generation in AJDE
-        local.setGenerateModelMode(true);       
+        AjBuildConfig config = parser.genBuildConfig(args, handler, false, configFile);  
+		configureProjectOptions(config, Ajde.getDefault().getProjectProperties());  // !!! not what the API intended
 
-        return fixupBuildConfig(local, global, buildOptions, projectOptions);
+		// -- get globals, treat as defaults used if no local values
+		AjBuildConfig global = new AjBuildConfig();
+		// AMC refactored into two methods to populate buildConfig from buildOptions and
+		// project properties - bugzilla 29769.
+		BuildOptionsAdapter buildOptions 
+			= Ajde.getDefault().getBuildManager().getBuildOptions();
+		if (!configureBuildOptions(global, buildOptions, handler)) {
+			return null;
+		}
+		ProjectPropertiesAdapter projectOptions =
+			Ajde.getDefault().getProjectProperties();
+		configureProjectOptions(global, projectOptions);
+		config.installGlobals(global);
+
+		ISourceLocation location = null;
+		if (config.getConfigFile() != null) {
+			location = new SourceLocation(config.getConfigFile(), 0); 
+		}
+        
+		String message = parser.getOtherMessages(true);
+		if (null != message) {  
+			IMessage m = new Message(message, IMessage.ERROR, null, location);            
+			handler.handleMessage(m);
+		}
+        
+        // always force model generation in AJDE
+        config.setGenerateModelMode(true);       
+		if (Ajde.getDefault().getBuildManager().getBuildOptions().getJavaOptionsMap() != null) {
+			config.getJavaOptions().putAll(Ajde.getDefault().getBuildManager().getBuildOptions().getJavaOptionsMap());
+		}
+		return config;
+//        return fixupBuildConfig(config);
 	}
 
-    /**
-     * Fix up build configuration just before using to compile.
-     * This should be delegated to a BuildAdapter callback (XXX)
-     * for implementation-specific value checks
-     * (e.g., to force use of project classpath rather
-     * than local config classpath).
-     * This implementation does no checks and returns local.
-     * @param local the AjBuildConfig generated to validate
-     * @param global
-     * @param buildOptions
-     * @param projectOptions
-     * @return null if unable to fix problems or fixed AjBuildConfig if no errors
-     * 
-     */
-    protected AjBuildConfig fixupBuildConfig(AjBuildConfig local, AjBuildConfig global, BuildOptionsAdapter buildOptions, ProjectPropertiesAdapter projectOptions) {
-		if (Ajde.getDefault().getBuildManager().getBuildOptions().getJavaOptionsMap() != null) {
-			local.getJavaOptions().putAll(Ajde.getDefault().getBuildManager().getBuildOptions().getJavaOptionsMap());
-		}
-        return local;
-    }
+//    /**
+//     * Fix up build configuration just before using to compile.
+//     * This should be delegated to a BuildAdapter callback (XXX)
+//     * for implementation-specific value checks
+//     * (e.g., to force use of project classpath rather
+//     * than local config classpath).
+//     * This implementation does no checks and returns local.
+//     * @param local the AjBuildConfig generated to validate
+//     * @param global
+//     * @param buildOptions
+//     * @param projectOptions
+//     * @return null if unable to fix problems or fixed AjBuildConfig if no errors
+//     * 
+//     */
+//    protected AjBuildConfig fixupBuildConfig(AjBuildConfig local) {
+//		if (Ajde.getDefault().getBuildManager().getBuildOptions().getJavaOptionsMap() != null) {
+//			local.getJavaOptions().putAll(Ajde.getDefault().getBuildManager().getBuildOptions().getJavaOptionsMap());
+//		}
+//        return local;
+//    }
 
     /** signal error text to user */
     protected void signalError(String text) {
@@ -550,4 +536,4 @@ public class CompilerAdapter {
 			this.buildNotifierAdapter = buildNotifierAdapter;
 		}
 	}
-}
+} 
