@@ -8,25 +8,51 @@
  *  
  * Contributors: 
  *     PARC     initial implementation
+ *     Mik Kersten	2004-07-26 extended to allow overloading of 
+ * 					hierarchy builder
  * ******************************************************************/
 
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-import org.aspectj.ajdt.internal.compiler.ast.*;
-import org.aspectj.ajdt.internal.core.builder.*;
+import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.AstUtil;
+import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
+import org.aspectj.ajdt.internal.core.builder.AsmHierarchyBuilder;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.IMessage.Kind;
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.ConcreteTypeMunger;
+import org.aspectj.weaver.IHasPosition;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.World;
 import org.eclipse.jdt.core.compiler.CharOperation;
-import org.eclipse.jdt.internal.compiler.ast.*;
-import org.eclipse.jdt.internal.compiler.impl.*;
-import org.eclipse.jdt.internal.compiler.lookup.*;
+import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.EmptyStatement;
+import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.eclipse.jdt.internal.compiler.impl.Constant;
+import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
+import org.eclipse.jdt.internal.compiler.lookup.BaseTypes;
+import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
+import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.eclipse.jdt.internal.compiler.lookup.Scope;
+import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
  
 /**
- * 
  * @author Jim Hugunin
  */
 public class EclipseFactory {
@@ -36,6 +62,7 @@ public class EclipseFactory {
 	private LookupEnvironment lookupEnvironment;
 	private boolean xSerializableAspects;
 	private World world;
+	private AsmHierarchyBuilder asmHierarchyBuilder;
 	
 	private Map/*TypeX, TypeBinding*/ typexToBinding = new HashMap();
 	//XXX currently unused
@@ -317,10 +344,9 @@ public class EclipseFactory {
 
 	public void finishedCompilationUnit(CompilationUnitDeclaration unit) {
 		if ((buildManager != null) && buildManager.doGenerateModel()) {
-			AsmHierarchyBuilder.build(unit, buildManager.getStructureModel(), buildManager.buildConfig);
+		    AjBuildManager.getAsmHierarchyBuilder().buildStructureForCompilationUnit(unit, buildManager.getStructureModel(), buildManager.buildConfig);
 		}
 	}
-
 
 	public void addTypeBinding(TypeBinding binding) {
 		typexToBinding.put(fromBinding(binding), binding);

@@ -56,6 +56,13 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 				return f.getName().endsWith(".class");
 			}};
 			
+	/**
+	 * This builder is static so that it can be subclassed and reset.  However, note
+	 * that there is only one builder present, so if two extendsion reset it, only
+	 * the latter will get used.
+	 */
+	private static AsmHierarchyBuilder asmHierarchyBuilder = new AsmHierarchyBuilder();
+			
 	private IProgressListener progressListener = null;
 	
 	private int compiledCount;
@@ -900,6 +907,16 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	public Map getBinarySourcesForThisWeave() {
 		return binarySourcesForTheNextCompile;
 	}
-	
+
+    public static AsmHierarchyBuilder getAsmHierarchyBuilder() {
+        return asmHierarchyBuilder;
+    }
+
+    /**
+     * Override the the default hierarchy builder.
+     */
+    public static void setAsmHierarchyBuilder(AsmHierarchyBuilder newBuilder) {
+        asmHierarchyBuilder = newBuilder;
+    }
 }   // class AjBuildManager
 
