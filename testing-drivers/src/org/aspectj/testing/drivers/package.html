@@ -69,7 +69,12 @@ each component in the chain may accept and interpret:
      <code>-traceTestsMin</code> 
      <code>-hideStreams</code> and 
      <code>!eclipse</code>, used to emit tests results in a form
-     comparable by <code>org.aspectj.testing.util.TestDiffs</code>.     
+     comparable by <code>org.aspectj.testing.util.TestDiffs</code>. 
+     Note that output in the form emitted by <code>-traceTestsMin</code>
+     is input for the options to select tests by title
+     (e.g., <code>-ajctestTitleList</code>)
+     and for the tool which compare results from different test runs
+     (<code>org.aspectj.testing.util.TestDiffs</code>).    
      </td></tr>
      
   <tr><td><u>output</u>: <code>-hide{Compiler|Run}Streams</code> will prevent output and
@@ -95,14 +100,40 @@ each component in the chain may accept and interpret:
      hide streams for passing tests but emit them for failing tests.
      </td></tr>
     
-<tr><td rowspan="3" valign="top">AjcTest
-    <p>selection options for keywords, bugID (PR)
+<tr><td rowspan="4" valign="top">AjcTest
+    <p>selection options for keywords, bugID (PR), or title (description)
     </td></tr>
   <tr><td><u>keywords</u>: <code>-ajctest[Require|Skip]Keywords=one{,two}</code>
      will either require or skip tests that have the specified keywords.
      </td></tr>
   <tr><td><u>Bugs</u>: <code>-ajctestPR=101{,102}</code>
      will run only tests that are associated with one of the bug id's listed.
+     </td></tr>
+  <tr><td><u>title</u>: 
+     <code>"-ajctestTitleContains=one,two"</code>
+     will require that the title (description) of the test contain 
+     either "one" or "two".
+     Use this to select a few tests you know generally.
+     <br>
+     <code>"-ajctestTitleList=../tests/ajcTestResults.txt"</code>
+     will require that the title (description) of the test be
+     equal to one listed in <code>../tests/ajcTestResults.txt</code>
+     as a line of the form "[PASS|FAIL] {title}(.."
+     (emitted by the <code>-traceTestsMin</code> option).
+     Use this to re-run a set of tests.
+     <br>
+     <code>"-ajctestTitleList=first title\, in theory, second title"</code>
+     will require that the title (description) of the test be
+     exactly "first title, in theory" or "second title".  
+     The entire option must be one argument on the command line.
+     This option only differs from the prior in not specifying
+     a valid file to read.
+     Use this when working with just a few specific tests.
+     <br>
+     <code>"-ajctestTitleFailList=../tests/ajcTestResults.txt"</code>
+     is the same as the <code>-ajctestTitleList=..</code> variant,
+     except that only results prefixed "FAIL" are included.
+     Use this to re-run only the tests that failed from a large set.
      </td></tr>
     
 <tr><td rowspan="6" valign="top">CompilerRun
@@ -208,6 +239,16 @@ Following are some sample configurations:
     (tests skipped, incomplete, failed, passed).<p>
   </li>
   
+<li><code>java {harness} -hideStreams -traceTestsMin {suiteFile} > results.txt</code>
+ <p>This writes to result.txt one line [PASS|FAIL] per test, plus a
+    1-line summary of the test results.<p>
+  </li>
+  
+<li><code>java {harness} -logFail {suiteFile} -ajctestTitleFailList=results.txt</code>
+ <p>This re-runs any test that failed from the "results.txt" run,
+    verbosely logging any fails.<p>
+  </li>
+  
 <li><code>java {harness} -hideStreams -logMinFail {suiteFile}</code>
  <p>Use this when running tests mainly to see if they pass or
     if the failure messages are typically enough information
@@ -222,7 +263,8 @@ Following are some sample configurations:
   </li>
 
 <li><code>java {harness} -hideStreams -usejavac- -ajc -Xlint- {suiteFile}</code>
- <p>This would do four complete runs with the old (Ajc 1.0) compiler: one with
+ <p>Because of the trailing '-' on two of the options,
+    this would do four complete runs with the old (Ajc 1.0) compiler: one with
     no options, one with -lenient, one with -Xlint, and one with both.<p>
   </li>
   
@@ -238,7 +280,7 @@ If you have a set of options you use often, you can define a single-word
 option alias for it; see <code>Harness.optionAliases</code>.
 
 <p><u>Configuration</u>: Most tests use the library jars in 
-<code>aspectj/modules/lib/test</code>, defined in 
+<code>modules/lib/test</code>, defined in 
 <code>org.aspectj.testing.harness.bridge.Globals</code>.  
 Normally the harness finds these by relative path 
 <code>../lib/tests/*.jar</code>, which works whenever the tests are
@@ -254,8 +296,10 @@ The harness must be run in a compiler-compatible VM, and the
 compiler steps run in-process.
 However, the java steps can be run in forked mode, which is useful
 when compiling for a VM which can't run the compiler.
-Here's how you would run the harness to compile against a 
-specific version of 1.1:
+To compile for a different target VM could require
+setting the options for bootclasspath, target, and source.
+To run the harness so that any &lt;run.. tasks run in a
+separate vm, do something like this:
 <pre>
    java -Djavarun.java=d:\jdk1.1.8\bin\java.exe \
         -Djavarun.bootclasspath=d:\jdk1.1.8\lib\classes.zip \
@@ -278,6 +322,7 @@ to the classpath, with an effect like these commands
                  c:\TEMP\sandbox7wers\classes"
      {mainClass} {option..}
 </pre>
+
 
 </body>
 </html>
