@@ -254,7 +254,7 @@ public class AjcTask extends MatchingTask {
         xs = new String[]
         	{"constructorName", "packageDefaultMethod", "deprecation",
         		"maskedCatchBlocks", "unusedLocals", "unusedArguments",
-        		"unusedImports", "syntheticAccess", "assertIdentifier" };
+        		"unusedImports", "syntheticAccess", "assertIdentifier", "none" };
         VALID_WARNINGS = Collections.unmodifiableList(Arrays.asList(xs));
 
         xs = new String[] {"none", "lines", "vars", "source" };
