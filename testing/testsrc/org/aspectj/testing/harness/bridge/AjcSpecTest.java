@@ -219,6 +219,8 @@ public class AjcSpecTest extends TestCase {
             assertEquals(l.className, r.className);
             assertEquals(l.javaVersion, r.javaVersion);
             assertEquals(l.skipTester, r.skipTester);
+            assertEquals(l.outStreamIsError, r.outStreamIsError);
+            assertEquals(l.errStreamIsError, r.errStreamIsError);
         } else if (c == IncCompilerRun.class) {
             IncCompilerRun.Spec l = ((IncCompilerRun) lhs).spec;
             IncCompilerRun.Spec r = ((IncCompilerRun) rhs).spec;

@@ -143,6 +143,13 @@ public class JavaRun implements IAjcRun {
         ClassLoader loader = null;
         URL[] urls = FileUtil.getFileURLs(libs);
         boolean completedNormally = false;
+        if (spec.outStreamIsError) {
+            // XXX implement same-vm stream snooping
+            // strictly speaking, also warn for errStream, but 
+            // it is on by default (in same-VM, Tester controls;
+            // in other-vm stream-snooping controls)
+            MessageUtil.info(status, "unimplemented: stream-based error implemented in same vm");
+        }
         Class targetClass = null;
         try {
             loader = new TestClassLoader(urls, dirs);
@@ -281,7 +288,10 @@ public class JavaRun implements IAjcRun {
         commandLabel.append(Arrays.asList(controller.getCommand()).toString());
         final ByteArrayOutputStream errSnoop 
             = new ByteArrayOutputStream();
+        final ByteArrayOutputStream outSnoop 
+            = new ByteArrayOutputStream();
         controller.setErrSnoop(errSnoop);
+        controller.setOutSnoop(outSnoop);
         controller.start();
         // give it 3 minutes...
         long maxTime = System.currentTimeMillis() + 3 * 60 * 1000;
@@ -305,10 +315,24 @@ public class JavaRun implements IAjcRun {
             }
         }
         if (0 < errSnoop.size()) {
-            MessageUtil.error(handler, errSnoop.toString());
-            if (!doneFlag.failed) {
-                doneFlag.failed = true;
-            } 
+            if (spec.errStreamIsError) {
+                MessageUtil.error(handler, errSnoop.toString());
+                if (!doneFlag.failed) {
+                    doneFlag.failed = true;
+                } 
+            } else {
+                MessageUtil.info(handler, "Error stream: " + errSnoop.toString());
+            }
+        }
+        if (0 < outSnoop.size()) {
+            if (spec.outStreamIsError) {
+                MessageUtil.error(handler, outSnoop.toString());
+                if (!doneFlag.failed) {
+                    doneFlag.failed = true;
+                } 
+            } else {
+                MessageUtil.info(handler, "Output stream: " + outSnoop.toString());
+            }
         }
         if (doneFlag.failed) {
             MessageUtil.info(handler, "other-vm command-line: " + commandLabel);
@@ -409,6 +433,12 @@ public class JavaRun implements IAjcRun {
         /** if true, skip Tester setup (e.g., if Tester n/a) */
         protected boolean skipTester;
         
+        /** if true, report text to output stream as error */
+        protected boolean outStreamIsError;
+
+        /** if true, report text to error stream as error */
+        protected boolean errStreamIsError = true;
+        
         public Spec() {
             super(XMLNAME);
             setXMLNames(NAMES);
@@ -428,6 +458,14 @@ public class JavaRun implements IAjcRun {
             this.className = className;
         }
         
+        public void setErrStreamIsError(boolean errStreamIsError) {
+            this.errStreamIsError = errStreamIsError;
+        }
+
+        public void setOutStreamIsError(boolean outStreamIsError) {
+            this.outStreamIsError = outStreamIsError;
+        }
+
         /** @param skip if true, then do not set up Tester */
         public void setSkipTester(boolean skip) {
             skipTester = skip;
@@ -466,6 +504,12 @@ public class JavaRun implements IAjcRun {
             }
             if (null != javaVersion) {
                 out.printAttribute("vm", javaVersion);
+            }
+            if (outStreamIsError) {
+                out.printAttribute("outStreamIsError", "true");
+            }
+            if (!errStreamIsError) { // defaults to true
+                out.printAttribute("errStreamIsError", "false");
             }
             super.writeAttributes(out);
             out.endAttributes();

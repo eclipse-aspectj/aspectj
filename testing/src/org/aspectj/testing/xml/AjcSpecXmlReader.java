@@ -395,7 +395,9 @@ public class AjcSpecXmlReader {
         jrunspec.addMessage((IMessage) null);
         // input s.b. interpretable by Boolean.valueOf(String)
         jrunspec.setSkipTester(true); 
-
+        jrunspec.setErrStreamIsError(true);
+        jrunspec.setOutStreamIsError(true);
+        
         DirChanges.Spec dcspec = new DirChanges.Spec();
         dcspec.setAdded((String) null);
         dcspec.setRemoved((String) null);

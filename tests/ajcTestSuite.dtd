@@ -33,6 +33,8 @@
    <!ATTLIST run skipTester CDATA #IMPLIED >
    <!ATTLIST run vm CDATA #IMPLIED >
    <!ATTLIST run options CDATA #IMPLIED >
+   <!ATTLIST run errStreamIsError CDATA #IMPLIED >
+   <!ATTLIST run outStreamIsError CDATA #IMPLIED >
 
    <!ELEMENT file (#PCDATA)>
    <!ATTLIST file path CDATA #IMPLIED >
