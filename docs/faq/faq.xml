@@ -20,10 +20,10 @@
   <title>Frequently Asked Questions about AspectJ</title>
   <para>Copyright (c) 1997-2001 Xerox Corporation, 
        2002 Palo Alto Research Center, Incorporated,
-       2003 Contributors. All rights reserved.
+       2003-2005 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated November 30, 2004
+  <para>Last updated March 10, 2005
   </para>
   <para>
    For a list of recently-updated FAQ entries, see <xref linkend="q:faqchanges"/>
@@ -891,9 +891,11 @@ aspect.
           the impact of aspects on a system.
           On the other hand, weaving at load-time simplifies build and deployment.
           Before AspectJ 1.2, the user had to write a class loader that used the 
-          weaver API to weave at load time; since 1.2, AspectJ come with a 
+          weaver API to weave at load time; since 1.2, AspectJ comes with a 
           command-line launcher to support weaving at class-load-time without 
-          any other changes to a build configuration.
+          any other changes to a build configuration.  In AspectJ 5, we expect
+		  to get a similar level of support as AspectWerkz, and to exploit
+		  the class bytecode weaving hook available in Java 5 VM's.
           </para>
           <para>
           Second, AspectJ programs, like Java programs generally, can be
@@ -4514,9 +4516,8 @@ vmparam -Xmx384m
           <para>
           Entries changed recently:
             <itemizedlist>
-        <listitem><para><xref linkend="q:dynamicaop"/></para></listitem>
         <listitem><para><xref linkend="q:java5"/></para></listitem>
-        <listitem><para><xref linkend="q:idesupportplans"/></para></listitem>
+        <listitem><para><xref linkend="q:dynamicaop"/></para></listitem>
             </itemizedlist>
           </para>
         </answer>
@@ -4781,7 +4782,7 @@ vmparam -Xmx384m
                   </entry>
                 </row>
                 <row>
-                  <entry valign="top" align="center">1.3</entry>
+                  <entry valign="top" align="center">1.3 (AspectJ 5)</entry>
                   <entry>Support for Java 1.5
                   </entry>
                 </row>
@@ -4799,31 +4800,10 @@ vmparam -Xmx384m
         </question>
         <answer>
           <para>
-          Yes. We are working on Java 5 support in phases:
+          Yes. We will support weaving Java 5 classes and upgrade the language
+		  to use annotations and generics.  For more information, see the
+		  documentation for the AspectJ 5 release.
           </para>
-          <itemizedlist>
-            <listitem><para>
-            Ensure the weaver can cope with class files
-            produced by a Java 5 compiler.
-            We know we should not create join points for execution or call
-            of methods that have the ACC_BRIDGE attribute (bug 70704), and 
-            we will look at covariance and members with the ACC_ENUM attribute.
-            When we are done, users will be able to compile Java source using 
-            a Java 5 compiler, and weave with AspectJ.
-			</para></listitem>
-            <listitem><para>
-			Extend the AspectJ compiler so that it can compile the 
-			new Java 5 features correctly. Mostly this involves waiting for the 
-			Eclipse JDT team to get their Java 5 support sufficiently down the road, 
-			and then we will pick this up and work out how to re-integrate it into 
-			AspectJ.   When this is done, users will be able to use ajc to compile
-			code with Java 5 constructs.
-			</para></listitem>
-            <listitem><para>
-			Finally, we'll consider changes in the AspectJ language (pointcut 
-			expressions, treatment of generics, support of annotations, etc.).
-			</para></listitem>
-          </itemizedlist>
         </answer>
       </qandaentry>
     </qandadiv>
