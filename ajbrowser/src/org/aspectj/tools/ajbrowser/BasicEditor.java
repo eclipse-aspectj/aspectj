@@ -12,7 +12,7 @@
  * ******************************************************************/
 
 
-package org.aspectj.ajde.ui.swing;
+package org.aspectj.tools.ajbrowser;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -107,7 +107,7 @@ public class BasicEditor implements EditorAdapter {
         } catch (BadLocationException ble) {
             Ajde.getDefault().getErrorHandler().handleError("Could not highlight location.", ble);
         }
-        Ajde.getDefault().getEditorManager().notifyCurrentFileChanged(filePath);
+        BrowserManager.getDefault().getEditorManager().notifyCurrentFileChanged(filePath);
     }
 
     /**

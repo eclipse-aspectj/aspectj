@@ -15,22 +15,15 @@
 package org.aspectj.tools.ajbrowser;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import javax.swing.JFrame;
 
-import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.BuildConfigManager;
-import org.aspectj.ajde.BuildListener;
-import org.aspectj.ajde.TaskListManager;
-import org.aspectj.ajde.ui.InvalidResourceException;
-import org.aspectj.ajde.ui.UserPreferencesAdapter;
+import org.aspectj.ajde.*;
+import org.aspectj.ajde.ui.*;
 import org.aspectj.ajde.ui.internal.UserPreferencesStore;
-import org.aspectj.ajde.ui.swing.AjdeUIManager;
-import org.aspectj.ajde.ui.swing.BasicEditor;
-import org.aspectj.ajde.ui.swing.IconRegistry;
-import org.aspectj.ajde.ui.swing.MultiStructureViewPanel;
+import org.aspectj.ajde.ui.swing.*;
+import org.aspectj.asm.*;
 
 /**
  * IDE manager for standalone AJDE application.
@@ -41,6 +34,8 @@ public class BrowserManager {
 	
 	private static final BrowserManager INSTANCE = new BrowserManager();
 	private BrowserProperties browserProjectProperties;
+	private EditorManager editorManager;
+	private StructureViewPanel fileStructurePanel = null;
 	
 	public static BrowserManager getDefault() {
 		return INSTANCE;
@@ -51,6 +46,15 @@ public class BrowserManager {
 	public static final String TITLE = "AspectJ Browser";
     
     private static TopFrame topFrame = null;
+    
+	public final StructureModelListener VIEW_LISTENER = new StructureModelListener() {
+		public void modelUpdated(StructureModel model) {        	
+			FileStructureView fsv = Ajde.getDefault().getStructureViewManager().getDefaultFileView();
+			if (fsv != null) {
+				fsv.setSourceFile(BrowserManager.getDefault().getEditorManager().getCurrFile());
+			}
+		}
+	}; 
     
 	public void init(String[] configFilesArgs, boolean visible) {
 		try {
@@ -69,20 +73,28 @@ public class BrowserManager {
 				preferencesAdapter,
 				browserUIAdapter,
 				new IconRegistry(),
-				topFrame,
-				true);	
+				topFrame);	
+			
+			editorManager = new EditorManager(ajdeEditor);
+			
+			FileStructureView structureView = Ajde.getDefault().getStructureViewManager().createViewForSourceFile(
+				editorManager.getCurrFile(),
+				Ajde.getDefault().getStructureViewManager().getDefaultViewProperties()
+			);
+			Ajde.getDefault().getStructureViewManager().setDefaultFileView(structureView);			
+			fileStructurePanel = new StructureViewPanel(structureView);
 			
 			Ajde.getDefault().getBuildManager().addListener(BUILD_MESSAGES_LISTENER);
 			
 			MultiStructureViewPanel multiViewPanel = new MultiStructureViewPanel(
 				AjdeUIManager.getDefault().getViewManager().getBrowserPanel(),
-				AjdeUIManager.getDefault().getFileStructurePanel()
+				fileStructurePanel
 			);
 			
 			topFrame.init(
 				multiViewPanel,
 				(CompilerMessagesPanel)taskListManager,
-				Ajde.getDefault().getEditorManager().getEditorPanel()
+				editorManager.getEditorPanel()
 			);
 				
 			if (visible) topFrame.setVisible(true);
@@ -97,8 +109,10 @@ public class BrowserManager {
 		
 			AjdeUIManager.getDefault().getOptionsFrame().addOptionsPanel(new BrowserOptionsPanel());
 		
+			StructureModelManager.getDefault().addListener(VIEW_LISTENER);	
+		
 			//String lastOpenFilePath = browserProjectProperties.getLastOpenSourceFilePath();
-			//Ajde.getDefault().getEditorManager().showSourceLine(lastOpenFilePath, 1, false);	
+			//editorManager.showSourceLine(lastOpenFilePath, 1, false);	
 			//Ajde.getDefault().getStructureViewManager().fireNavigationAction(lastOpenFilePath, 6);
 			//Ajde.getDefault().enableLogging(System.out); 
 		
@@ -132,7 +146,7 @@ public class BrowserManager {
     }
 
     public void saveAll() {
-        Ajde.getDefault().getEditorManager().saveContents();
+        editorManager.saveContents();
     }
 
     public void showMessages() {
@@ -153,7 +167,7 @@ public class BrowserManager {
 				AjdeUIManager.getDefault().getBuildConfigEditor().openFile(filePath);
 				topFrame.setEditorPanel(AjdeUIManager.getDefault().getBuildConfigEditor());
 			} else if (filePath.endsWith(".java") || filePath.endsWith(".aj")){
-				Ajde.getDefault().getEditorManager().showSourceLine(filePath, 0, false);		
+				editorManager.showSourceLine(filePath, 0, false);		
 			} else {
 				Ajde.getDefault().getErrorHandler().handleError("File: " + filePath 
 					+ " could not be opened because the extension was not recoginzed.");	
@@ -226,4 +240,11 @@ public class BrowserManager {
 	public BrowserProperties getBrowserProjectProperties() {
 		return browserProjectProperties;
 	}
+	/**
+	 * @return
+	 */
+	public EditorManager getEditorManager() {
+		return editorManager;
+	}
+
 }

@@ -12,7 +12,7 @@
  * ******************************************************************/
 
 
-package org.aspectj.ajde.ui.swing;
+package org.aspectj.tools.ajbrowser;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,7 +24,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.EditorManager;
+import org.aspectj.ajde.ui.swing.*;
 import org.aspectj.asm.ProgramElementNode;
 
 public class BuildConfigPopupMenu extends JPopupMenu {

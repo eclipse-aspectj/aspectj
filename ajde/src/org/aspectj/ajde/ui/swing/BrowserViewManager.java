@@ -14,20 +14,11 @@
 
 package org.aspectj.ajde.ui.swing;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Stack;
+import java.util.*;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.GlobalStructureView;
-import org.aspectj.ajde.ui.GlobalViewProperties;
-import org.aspectj.ajde.ui.StructureViewProperties;
-import org.aspectj.asm.AdviceAssociation;
-import org.aspectj.asm.InheritanceAssociation;
-import org.aspectj.asm.LinkNode;
-import org.aspectj.asm.ProgramElementNode;
-import org.aspectj.asm.StructureNode;
-import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.ajde.ui.*;
+import org.aspectj.asm.*;
 
 /**
  * Responsible for displaying and controlling the configuration and output of a
@@ -64,24 +55,6 @@ public class BrowserViewManager {
 
     public StructureViewPanel getBrowserPanel() {
         return browserPanel;
-    }
-
-    public void showSourcesNodes(java.util.List nodes) {
-        for (Iterator it = nodes.iterator(); it.hasNext(); ) {
-            ProgramElementNode currNode = null;
-            StructureNode structureNode = (StructureNode)it.next();
-            if (structureNode instanceof LinkNode) {
-                currNode = ((LinkNode)structureNode).getProgramElementNode();
-            } else {
-                currNode = (ProgramElementNode)structureNode;
-            }
-            ISourceLocation sourceLoc = currNode.getSourceLocation();
-            if (null != sourceLoc) {
-                Ajde.getDefault().getEditorManager().addViewForSourceLine(
-                    sourceLoc.getSourceFile().getAbsolutePath(),
-                    sourceLoc.getLine());
-            }
-        }
     }
 
     public void extractAndInsertSignatures(java.util.List signatures, boolean calls) {

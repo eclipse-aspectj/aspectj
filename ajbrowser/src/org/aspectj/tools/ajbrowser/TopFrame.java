@@ -14,26 +14,16 @@
 
 package org.aspectj.tools.ajbrowser;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
+import javax.swing.border.*;
 import javax.swing.filechooser.FileFilter;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.EditorManager;
-import org.aspectj.ajde.ui.swing.AJButtonMenuCombo;
-import org.aspectj.ajde.ui.swing.AjdeUIManager;
-import org.aspectj.ajde.ui.swing.BuildConfigPopupMenu;
-import org.aspectj.ajde.ui.swing.MultiStructureViewPanel;
+import org.aspectj.ajde.ui.swing.*;
 import org.aspectj.asm.ProgramElementNode;
 
 /**
@@ -465,7 +455,7 @@ public class TopFrame extends JFrame {
     void treeMode_comboBox_actionPerformed(ActionEvent e) { }
 
     void save_button_actionPerformed(ActionEvent e) {
-        Ajde.getDefault().getEditorManager().saveContents();
+        BrowserManager.getDefault().getEditorManager().saveContents();
     }
 
 
@@ -483,13 +473,8 @@ public class TopFrame extends JFrame {
         messages_panel.setVisible(false);
     }
 
-
-    void emacsTest_button_actionPerformed(ActionEvent e) {
-//        Tester.emacsCompile(TopManager.BROWSER_MANAGER.getCurrConfigFile());
-    }
-
     void jMenuItem1_actionPerformed(ActionEvent e) {
-        Ajde.getDefault().getEditorManager().saveContents();
+		BrowserManager.getDefault().getEditorManager().saveContents();
     }
 
     void projectBuild_menuItem_actionPerformed(ActionEvent e) {

@@ -102,7 +102,7 @@ public class StructureViewPanel extends JPanel implements StructureViewRenderer 
 		ProgramElementNode pNode = (ProgramElementNode)node.getStructureNode();
  		treeManager.highlightNode(pNode);
  		if (pNode.getSourceLocation() != null) {
-	 		Ajde.getDefault().getEditorManager().showSourceLine(
+	 		Ajde.getDefault().getEditorAdapter().showSourceLine(
 	 			pNode.getSourceLocation().getSourceFile().getAbsolutePath(),
 	 			pNode.getSourceLocation().getLine() + lineOffset,
 	 			true

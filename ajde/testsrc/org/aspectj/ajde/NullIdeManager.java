@@ -45,7 +45,7 @@ public class NullIdeManager {
 			UserPreferencesAdapter preferencesAdapter = new UserPreferencesStore(false);
 			ProjectPropertiesAdapter browserProjectProperties = new NullIdeProperties(testProjectPath);
 			taskListManager = new NullIdeTaskListManager();
-			BasicEditor ajdeEditor = new BasicEditor();
+			EditorAdapter ajdeEditor = new NullIdeEditorAdapter();
 			IdeUIAdapter uiAdapter = new NullIdeUIAdapter();
 			JFrame nullFrame = new JFrame();
 			//configurationManager.setConfigFiles(getConfigFilesList(configFiles));	
@@ -57,8 +57,7 @@ public class NullIdeManager {
 				preferencesAdapter,
 				uiAdapter,
 				new IconRegistry(),
-				nullFrame,
-				true);	
+				nullFrame);	
 				
 			//Ajde.getDefault().enableLogging( System.out );
 		} catch (Throwable t) {

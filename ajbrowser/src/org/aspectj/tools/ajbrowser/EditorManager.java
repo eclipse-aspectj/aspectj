@@ -12,23 +12,16 @@
  * ******************************************************************/
 
 
-package org.aspectj.ajde.ui;
+package org.aspectj.tools.ajbrowser;
 
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.*;
 
-import javax.swing.Box;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
-import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.EditorAdapter;
-import org.aspectj.ajde.EditorListener;
-import org.aspectj.ajde.ui.swing.BasicEditor;
+import org.aspectj.ajde.*;
 import org.aspectj.bridge.ISourceLocation;
 
 /**

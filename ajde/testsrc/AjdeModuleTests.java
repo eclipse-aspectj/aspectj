@@ -18,7 +18,7 @@ import junit.framework.*;
 
 public class AjdeModuleTests extends TestCase {
 
-    public static Test suite() { 
+    public static TestSuite suite() { 
         TestSuite suite = new TestSuite(AjdeModuleTests.class.getName());
         suite.addTest(org.aspectj.ajde.AjdeTests.suite()); 
         suite.addTest(org.aspectj.ajde.internal.AjdeInternalTests.suite()); 

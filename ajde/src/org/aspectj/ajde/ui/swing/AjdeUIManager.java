@@ -16,16 +16,8 @@ package org.aspectj.ajde.ui.swing;
 
 import java.awt.Frame;
 
-import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.BuildListener;
-import org.aspectj.ajde.BuildProgressMonitor;
-import org.aspectj.ajde.EditorAdapter;
-import org.aspectj.ajde.ErrorHandler;
-import org.aspectj.ajde.ProjectPropertiesAdapter;
-import org.aspectj.ajde.TaskListManager;
-import org.aspectj.ajde.ui.FileStructureView;
-import org.aspectj.ajde.ui.IdeUIAdapter;
-import org.aspectj.ajde.ui.UserPreferencesAdapter;
+import org.aspectj.ajde.*;
+import org.aspectj.ajde.ui.*;
 import org.aspectj.ajde.ui.internal.AjcBuildOptions;
 
 /**
@@ -45,7 +37,6 @@ public class AjdeUIManager {
 	
 	private OptionsFrame optionsFrame = null;
 	private Frame rootFrame = null;
-	private StructureViewPanel fileStructurePanel = null;
 
 	/**
 	 * Order of initialization is critical here.
@@ -57,8 +48,7 @@ public class AjdeUIManager {
 		UserPreferencesAdapter userPreferencesAdapter,
 		IdeUIAdapter ideUIAdapter,
 		IconRegistry iconRegistry,
-		Frame rootFrame,
-		boolean useFileView) {
+		Frame rootFrame) {
 		try {	
 			BuildProgressMonitor compileProgress = new DefaultBuildProgressMonitor(rootFrame);
 			ErrorHandler errorHandler = new AjdeErrorHandler();
@@ -81,15 +71,6 @@ public class AjdeUIManager {
 			
 			Ajde.getDefault().getBuildManager().addListener(STATUS_TEXT_UPDATER);
 			//Ajde.getDefault().setConfigurationManager(configManager);	
-			
-			if (useFileView) {
-				FileStructureView structureView = Ajde.getDefault().getStructureViewManager().createViewForSourceFile(
-	    			Ajde.getDefault().getEditorManager().getCurrFile(),
-	    			Ajde.getDefault().getStructureViewManager().getDefaultViewProperties()
-		    	);
-		    	Ajde.getDefault().getStructureViewManager().setDefaultFileView(structureView);			
-				fileStructurePanel = new StructureViewPanel(structureView);
-			}
 			
 			viewManager = new BrowserViewManager();
 			optionsFrame = new OptionsFrame(iconRegistry);
@@ -161,10 +142,6 @@ public class AjdeUIManager {
 		return buildConfigEditor;
 	}
 
-	public StructureViewPanel getFileStructurePanel() {
-		return fileStructurePanel;
-	}
-	
 	public IconRegistry getIconRegistry() {
 		return iconRegistry;
 	}

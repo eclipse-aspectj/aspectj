@@ -85,7 +85,7 @@ public class CompilerMessagesPanel extends JPanel implements TaskListManager {
      */
     protected void displayMessage(IMessage message) {
         ISourceLocation loc = message.getISourceLocation();
-        Ajde.getDefault().getEditorManager().showSourceLine(loc, true);
+		BrowserManager.getDefault().getEditorManager().showSourceLine(loc, true);
         // show dialog with stack trace if thrown
         Throwable thrown = message.getThrown();
         if (null != thrown) { 

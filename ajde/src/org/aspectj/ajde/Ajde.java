@@ -16,7 +16,6 @@ package org.aspectj.ajde;
 
 import org.aspectj.ajde.internal.AspectJBuildManager;
 import org.aspectj.ajde.internal.LstBuildConfigManager;
-import org.aspectj.ajde.ui.EditorManager;
 import org.aspectj.ajde.ui.IdeUIAdapter;
 import org.aspectj.ajde.ui.StructureSearchManager;
 import org.aspectj.ajde.ui.StructureViewManager;
@@ -36,14 +35,15 @@ import java.util.List;
  *
  * @author Mik Kersten
  */
-public class Ajde {  
+public class Ajde {    
 
 	private static final Ajde INSTANCE = new Ajde();
 	private static final String NOT_INITIALIZED_MESSAGE = "Ajde is not initialized.";
 	private static boolean isInitialized = false;
     
 	private BuildManager buildManager;
-	private EditorManager editorManager;
+//	private EditorManager editorManager;
+	private EditorAdapter editorAdapter;
 	private StructureViewManager structureViewManager;
 	private StructureSearchManager structureSearchManager;
 	private BuildConfigManager configurationManager ;
@@ -77,7 +77,8 @@ public class Ajde {
 			INSTANCE.projectProperties = projectProperties;
 			INSTANCE.errorHandler = errorHandler;
 			INSTANCE.taskListManager = taskListManager;
-			INSTANCE.editorManager = new EditorManager(editorAdapter);
+//			INSTANCE.editorManager = new EditorManager(editorAdapter);
+			INSTANCE.editorAdapter = editorAdapter;
 			INSTANCE.buildManager = new AspectJBuildManager(
 				taskListManager, 
 				compileProgressMonitor,
@@ -117,9 +118,13 @@ public class Ajde {
 		return buildManager;
 	}
 	
-	public EditorManager getEditorManager() {
-		return editorManager;
-	}	
+//	public EditorManager getEditorManager() {
+//		return editorManager;
+//	}	
+	
+	public EditorAdapter getEditorAdapter() {
+		return editorAdapter;
+	}
 	
 	public StructureViewManager getStructureViewManager() {
 		return structureViewManager;	
@@ -171,7 +176,7 @@ public class Ajde {
 	 * instead.
 	 */
 	public StructureModelManager getStructureModelManager() {
-		return StructureModelManager.INSTANCE;	
+		return StructureModelManager.getDefault();	
 	}
 	
 	public void logEvent(String message) {
@@ -302,7 +307,7 @@ public class Ajde {
         public void compileFinished(String buildConfig, int buildTime, boolean succeeded, boolean warnings) { 
         	String configFilePath = projectProperties.getDefaultBuildConfigFile();
         	if (!succeeded) {
-	        	StructureModelManager.INSTANCE.fireModelUpdated();	
+	        	StructureModelManager.getDefault().fireModelUpdated();	
     	    }
         }
         
@@ -355,6 +360,9 @@ public class Ajde {
             this.valid = valid;
         }
     }
+
+
+
 }
 
 

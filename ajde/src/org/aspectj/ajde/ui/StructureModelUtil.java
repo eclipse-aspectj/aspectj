@@ -52,7 +52,7 @@ public class StructureModelUtil {
 	public static Map getLinesToAspectMap(String sourceFilePath) {
 
 		Map annotationsMap =
-			StructureModelManager.INSTANCE.getInlineAnnotations(
+			StructureModelManager.getDefault().getInlineAnnotations(
 				sourceFilePath,
 				true,
 				true);

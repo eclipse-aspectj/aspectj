@@ -119,6 +119,25 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
             showSourcesItem.addActionListener(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
                     //AjdeUIManager.getDefault().getViewManager().showSourcesNodes(signatures);
+                    // USED THE FOLLOWING FROM: BrowserViewManager:
+//					public void showSourcesNodes(java.util.List nodes) {
+//						for (Iterator it = nodes.iterator(); it.hasNext(); ) {
+//							ProgramElementNode currNode = null;
+//							StructureNode structureNode = (StructureNode)it.next();
+//							if (structureNode instanceof LinkNode) {
+//								currNode = ((LinkNode)structureNode).getProgramElementNode();
+//							} else {
+//								currNode = (ProgramElementNode)structureNode;
+//							}
+//							ISourceLocation sourceLoc = currNode.getSourceLocation();
+//							if (null != sourceLoc) {
+//								Ajde.getDefault().getEditorManager().addViewForSourceLine(
+//									sourceLoc.getSourceFile().getAbsolutePath(),
+//									sourceLoc.getLine());
+//							}
+//						}
+//					}
+
                 }
             });
             popup.add(showSourcesItem);

@@ -50,10 +50,10 @@ public class StructureViewManager {
     public final StructureModelListener VIEW_LISTENER = new StructureModelListener() {
         public void modelUpdated(StructureModel model) {        	
         	Ajde.getDefault().logEvent("updating structure views: " + structureViews);
-        	
-        	if (defaultFileView != null) {
-        		defaultFileView.setSourceFile(Ajde.getDefault().getEditorManager().getCurrFile());
-        	}
+//        	
+//        	if (defaultFileView != null) {
+//        		defaultFileView.setSourceFile(Ajde.getDefault().getEditorManager().getCurrFile());
+//        	}
         	
         	for (Iterator it = structureViews.iterator(); it.hasNext(); ) {
         		treeViewBuilder.buildView((StructureView)it.next(), (StructureModel)model);
@@ -67,7 +67,7 @@ public class StructureViewManager {
 	public StructureViewManager(StructureViewNodeFactory nodeFactory) {
 		treeViewBuilder = new TreeStructureViewBuilder(nodeFactory);
 				
-		StructureModelManager.INSTANCE.addListener(VIEW_LISTENER);			
+		StructureModelManager.getDefault().addListener(VIEW_LISTENER);			
 	}
 	
 	public void fireNavigateBackAction(StructureView view) {
@@ -138,7 +138,7 @@ public class StructureViewManager {
 			if (defaultFileView.getSourceFile() != null
 				&& !defaultFileView.getSourceFile().equals(newFilePath)) {
 				defaultFileView.setSourceFile(newFilePath);
-				treeViewBuilder.buildView(defaultFileView, StructureModelManager.INSTANCE.getStructureModel());
+				treeViewBuilder.buildView(defaultFileView, StructureModelManager.getDefault().getStructureModel());
 			}
 		}
 		   
@@ -206,7 +206,7 @@ public class StructureViewManager {
 		if (properties == null) properties = DEFAULT_VIEW_PROPERTIES;
 		FileStructureView view = new FileStructureView(properties);
 		view.setSourceFile(sourceFilePath);
-		treeViewBuilder.buildView(view, StructureModelManager.INSTANCE.getStructureModel()); 
+		treeViewBuilder.buildView(view, StructureModelManager.getDefault().getStructureModel()); 
 		structureViews.add(view);
 		return view; 
 	}
@@ -220,6 +220,10 @@ public class StructureViewManager {
 
 	public void setDefaultFileView(FileStructureView defaultFileView) {
 		this.defaultFileView = defaultFileView;
+	}
+
+	public FileStructureView getDefaultFileView() {
+		return defaultFileView;
 	}
 
 	static {
@@ -242,6 +246,7 @@ public class StructureViewManager {
         DEFAULT_VIEW_PROPERTIES = new StructureViewProperties();
         DEFAULT_VIEW_PROPERTIES.setRelations(AVAILABLE_RELATIONS);
 	}   
+
 }
 
 //		this.multiFileViewMode = multiFileViewMode;

@@ -14,26 +14,14 @@
 
 package org.aspectj.ajde.ui.swing;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 
-import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.GlobalViewProperties;
-import org.aspectj.ajde.ui.StructureViewProperties;
+import org.aspectj.ajde.ui.*;
 import org.aspectj.asm.InheritanceAssociation;
-import org.aspectj.asm.ProgramElementNode;
 
 /**
  * @author Mik Kersten
@@ -65,15 +53,17 @@ class PointcutWizard extends JFrame {
         ArrayList views = new ArrayList();
         views.add(StructureViewProperties.Hierarchy.INHERITANCE);
         typeTreeView = new BrowserViewPanel(AjdeUIManager.getDefault().getIconRegistry(), views, StructureViewProperties.Hierarchy.INHERITANCE);
-        typeTreeView.updateTree(Ajde.getDefault().getEditorManager().getCurrFile());
-        try {
-            jbInit();
-        }
-        catch(Exception e) {
-            Ajde.getDefault().getErrorHandler().handleError("Could not initialize GUI.", e);
-        }
-        this.setSize(400, 400);
-        this.setIconImage(((ImageIcon)AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.POINTCUT)).getImage());
+        
+        throw new RuntimeException("unimplemented, can't get the current file");
+        //typeTreeView.updateTree(Ajde.getDefault().getEditorManager().getCurrFile());
+//        try {
+//            jbInit();
+//        }
+//        catch(Exception e) {
+//            Ajde.getDefault().getErrorHandler().handleError("Could not initialize GUI.", e);
+//        }
+//        this.setSize(400, 400);
+//        this.setIconImage(((ImageIcon)AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.POINTCUT)).getImage());
     }
 
     private Map getViewProperties() {
@@ -143,8 +133,9 @@ class PointcutWizard extends JFrame {
     }
 
     private void ok_button_actionPerformed(ActionEvent e) {
-        Ajde.getDefault().getEditorManager().pasteToCaretPos(generatePcd());
-        this.dispose();
+		throw new RuntimeException("unimplemented, can't paste");
+//        Ajde.getDefault().getEditorManager().pasteToCaretPos(generatePcd());
+//        this.dispose();
     }
 
     private void cancel_button_actionPerformed(ActionEvent e) {
