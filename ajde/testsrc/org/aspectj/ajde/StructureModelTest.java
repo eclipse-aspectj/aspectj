@@ -113,10 +113,11 @@ public class StructureModelTest extends AjdeTestCase {
   	 * @todo	add negative test to make sure things that aren't runnable aren't annotated
   	 */ 
 	public void testMainClassNodeInfo() throws IOException {
-		assertTrue("root exists", Ajde.getDefault().getStructureModelManager().getStructureModel().getRoot() != null);
-		File testFile = createFile("figures-coverage/figures/Main.java");	
-		StructureNode node = Ajde.getDefault().getStructureModelManager().getStructureModel().findNodeForSourceLine(
-			testFile.getAbsolutePath(), 11);	
+        StructureModel model = Ajde.getDefault().getStructureModelManager().getStructureModel();
+        assertTrue("model exists", model != null);
+		assertTrue("root exists", model.getRoot() != null);
+		File testFile = createFile("figures-coverage/figures/Main.java");
+		StructureNode node = model.findNodeForSourceLine(testFile.getCanonicalPath(), 11);	
 			
 		assertTrue("find result", node != null);	
 			
