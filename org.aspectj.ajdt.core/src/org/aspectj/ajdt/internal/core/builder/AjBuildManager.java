@@ -507,7 +507,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 //	}
 	
 	public FileSystem getLibraryAccess(String[] classpaths, String[] filenames) {
-		String defaultEncoding = (String) buildConfig.getJavaOptions().get(CompilerOptions.OPTION_Encoding);
+		String defaultEncoding = buildConfig.getOptions().defaultEncoding;
 		if ("".equals(defaultEncoding)) //$NON-NLS-1$
 			defaultEncoding = null; //$NON-NLS-1$	
 		// Bug 46671: We need an array as long as the number of elements in the classpath - *even though* not every
@@ -531,7 +531,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		CompilationUnit[] units = new CompilationUnit[fileCount];
 //		HashtableOfObject knownFileNames = new HashtableOfObject(fileCount);
 
-		String defaultEncoding = (String) buildConfig.getJavaOptions().get(CompilerOptions.OPTION_Encoding);
+		String defaultEncoding = buildConfig.getOptions().defaultEncoding;
 		if ("".equals(defaultEncoding)) //$NON-NLS-1$
 			defaultEncoding = null; //$NON-NLS-1$
 
@@ -589,7 +589,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		org.eclipse.jdt.internal.compiler.Compiler compiler = 
 			new org.eclipse.jdt.internal.compiler.Compiler(environment,
 					DefaultErrorHandlingPolicies.proceedWithAllProblems(),
-				    buildConfig.getJavaOptions(),
+				    buildConfig.getOptions().getMap(),
 					getBatchRequestor(),
 					getProblemFactory());
 		
@@ -872,10 +872,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			
 		AjLookupEnvironment le =
 			new AjLookupEnvironment(forCompiler, forCompiler.options, pr, environment);
-		EclipseFactory factory = new EclipseFactory(le);
+		EclipseFactory factory = new EclipseFactory(le,this);
 		le.factory = factory;
 		pr.factory = factory;
-		le.factory.buildManager = this;
 		
 		forCompiler.lookupEnvironment = le;
 		
