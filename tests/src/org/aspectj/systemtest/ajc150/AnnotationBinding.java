@@ -11,6 +11,8 @@
 package org.aspectj.systemtest.ajc150;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.aspectj.tools.ajc.CompilationResult;
 
@@ -305,6 +307,25 @@ public class AnnotationBinding extends TestUtils {
   			new String[]{"A.java","B.java","Color.java","X2.java","-1.5","-d","."});
   	assertMessages(cR,new EmptyMessageSpec());
   	RunResult rR = run("a.b.c.A");
+  }
+  
+  // declare parents: @Color * implements Serializable
+  public void testDeclareParentsWithAnnotatedAnyPattern() {
+  	CompilationResult cR = ajc(new File(baseDir,"complexExample"),
+  			new String[]{"A.java","B.java","C.java","Color.java","X3.java","-1.5","-d","."});
+  	assertMessages(cR,new EmptyMessageSpec());
+  	RunResult rR = run("g.h.i.C"); // C should now be serializable
+  	          rR = run("a.b.c.A"); // A should not be serializable
+  }
+  
+  // Should error (in a nice way!) on usage of an annotation that isnt imported
+  public void testAnnotationUsedButNotImported() {
+  	CompilationResult cR = ajc(new File(baseDir,"complexExample"),
+  			new String[]{"A.java","B.java","Color.java","X4.java","-1.5","-d","."});
+  	List warnings = new ArrayList();
+  	warnings.add(new Message(6));
+  	assertMessages(cR,new MessageSpec(warnings,null));
+  	RunResult rR = run("a.b.c.A"); 
   }
   
   // Binding with calls/executions of static methods
