@@ -1,6 +1,7 @@
 /* *******************************************************************
  * Copyright (c) 1999-2001 Xerox Corporation, 
- *               2002 Palo Alto Research Center, Incorporated (PARC).
+ *               2002 Palo Alto Research Center, Incorporated (PARC),
+ *               2005 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -43,6 +44,7 @@ import junit.framework.TestCase;
  */
 public class BuildModuleTest extends TestCase {
 
+    private static boolean printedMessage;
     private static final String SKIP_MESSAGE = 
         "Define \"run.build.tests\" as a system property to run tests to build ";
     private static final String BUILD_CONFIG;
@@ -121,8 +123,7 @@ public class BuildModuleTest extends TestCase {
     }
     
     public void testAspectjtools() {
-        if (!building) {
-            System.err.println(SKIP_MESSAGE + "aspectjtools");
+        if (!shouldBuild("aspectjtools")) {
             return;
         }
         File baseDir = new File("..");
@@ -163,8 +164,7 @@ public class BuildModuleTest extends TestCase {
     }
 
     void checkBuildProduct(File productDir, File baseDir, File distDir, File jarDir) {
-        if (!building) {
-            System.err.println(SKIP_MESSAGE + "product " + productDir);
+        if (!shouldBuild(productDir.getPath())) {
             return;
         }
         assertTrue(null != productDir);
@@ -233,13 +233,19 @@ public class BuildModuleTest extends TestCase {
         String[] args) {
         checkBuild(module, classname, args, false);
     }
-    
+
+    boolean shouldBuild(String target) {
+        if (!building && !printedMessage) {
+            System.err.println(SKIP_MESSAGE + target + " (this is the only warning)");
+            printedMessage = true;
+        }
+        return building;
+    }
     void checkBuild(String module, 
         String classname, 
         String[] args,
         boolean addAnt) {
-        if (!building) {
-            System.err.println(SKIP_MESSAGE + "module " + module);
+        if (!shouldBuild(module)) {
             return;
         }
         assertTrue(null != module);

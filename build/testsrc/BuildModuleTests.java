@@ -32,9 +32,6 @@ public class BuildModuleTests extends TestCase {
     
     private static final String BASE_DIR = "../";
     private static final String[] JDT_SOURCE_DIRS = new String[] {};
-    // sources moved to shadow/ directory
-//        {"antadapter", "batch", "codeassist", "compiler", 
-//         "dom", "eval", "formatter", "model", "search" };
 
     public static Test suite() { 
         TestSuite suite = new TestSuite("Build module tests");
@@ -46,10 +43,7 @@ public class BuildModuleTests extends TestCase {
 
     /** @return String tag of license if not default */
     public static String getLicense(String module) {
-        if ("org.eclipse.jdt.core".equals(module)) {
-            return Checklics.CPL_IBM_PARC_TAG;
-        }
-        return null;
+        return null; // use permissive default
     }
 
     public BuildModuleTests(String name) { super(name); }
@@ -72,6 +66,9 @@ public class BuildModuleTests extends TestCase {
     }
     public void testLicense_org_aspectj_ajdt_core() {
         checkLicense("org.aspectj.ajdt.core");    
+    }
+    public void testLicense_org_aspectj_lib() {
+        checkLicense("org.aspectj.lib");    
     }
     public void testLicense_org_eclipse_jdt_core() {
         final String mod = "org.eclipse.jdt.core";
@@ -129,7 +126,7 @@ public class BuildModuleTests extends TestCase {
 //            assertTrue(!replaceFailed);
 //            license = Checklics.CPL_IBM_PARC_XEROX_TAG;
 //        }
-        int fails = Checklics.runDirect(moduleDir.getPath(), license);
+        int fails = Checklics.runDirect(moduleDir.getPath(), license, true);
         if (0 != fails) {
             if (replacing) {
                 BuildModuleTests.replaceFailed = true;
