@@ -65,4 +65,18 @@
         <run class="ConstructorDeclaration"/>
     </ajc-test>
 
+    <ajc-test dir="errors"  keywords="error"
+    		title="class extending abstract aspect">
+        <compile files="ClassExtendingAbstractAspectCE.java">
+			<message kind="error" line="20"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors"  keywords="error"
+    		title="inter-type declaration of void field">
+        <compile files="VoidFieldDeclarationCE.java">
+			<message kind="error" line="7"/>
+        </compile>
+    </ajc-test>
+
 </suite>
