@@ -104,8 +104,8 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		binding = classScope.referenceContext.binding.resolveTypesFor(binding);
 		if (binding == null) {
 			// if binding is null, we failed to find a type used in the method params, this error
-			// has already been reported. 
-			throw new AbortCompilation();
+			// has already been reported.
+			throw new AbortCompilation(compilationResult);
 		}
 		ResolvedMember sig = new ResolvedMember(Member.METHOD, EclipseFactory.fromBinding(onTypeBinding),
 			declaredModifiers, EclipseFactory.fromBinding(binding.returnType), new String(declaredSelector),
