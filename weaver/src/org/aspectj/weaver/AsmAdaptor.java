@@ -33,19 +33,45 @@ public class AsmAdaptor {
 //			System.out.println("--------------------------");
 			ProgramElementNode targetNode = getNode(model, shadow);
 			ProgramElementNode adviceNode = getNode(model, a);  
+			
+			Relation relation;
+			if (shadow.getKind().equals(Shadow.FieldGet) || shadow.getKind().equals(Shadow.FieldSet)) {
+				relation = AdviceAssociation.FIELD_ACCESS_RELATION;
+			} else if (shadow.getKind().equals(Shadow.Initialization) || shadow.getKind().equals(Shadow.StaticInitialization)) {
+				relation = AdviceAssociation.INITIALIZER_RELATION;
+			} else if (shadow.getKind().equals(Shadow.ExceptionHandler)) {
+				relation = AdviceAssociation.HANDLER_RELATION;
+			} else if (shadow.getKind().equals(Shadow.MethodCall)) {
+				relation = AdviceAssociation.METHOD_CALL_SITE_RELATION;
+			} else if (shadow.getKind().equals(Shadow.ConstructorCall)) {
+				relation = AdviceAssociation.CONSTRUCTOR_CALL_SITE_RELATION;
+			} else if (shadow.getKind().equals(Shadow.MethodExecution) || shadow.getKind().equals(Shadow.AdviceExecution)) {
+				relation = AdviceAssociation.METHOD_RELATION;
+			} else if (shadow.getKind().equals(Shadow.ConstructorExecution)) {
+				relation = AdviceAssociation.CONSTRUCTOR_RELATION;
+			} else {
+				System.err.println("> unmatched relation: " + shadow.getKind());
+				relation = AdviceAssociation.METHOD_RELATION;
+			}
+			
 //			System.out.println("> target: " + targetNode + ", advice: " + adviceNode);
-			createAppropriateLinks(targetNode, adviceNode);
+			createAppropriateLinks(targetNode, adviceNode, relation);
 		}
 	}
 
 	private static void createAppropriateLinks(
 		ProgramElementNode target,
-		ProgramElementNode advice)
+		ProgramElementNode advice,
+		Relation relation)
 	{
 		if (target == null || advice == null) return;
-		addLink(target, new LinkNode(advice),  org.aspectj.asm.AdviceAssociation.METHOD_RELATION, true);
-		addLink(advice, new LinkNode(target),  org.aspectj.asm.AdviceAssociation.METHOD_RELATION, false);
-//		System.out.println(">> added target: " + target + ", advice: " + advice);
+		
+		
+		addLink(target, new LinkNode(advice),  relation, true);
+		addLink(advice, new LinkNode(target),  relation, false);
+		
+//		System.out.println(">> added target: " + target.getProgramElementKind() + ", advice: " + advice);
+//		System.out.println(">> target: " + target + ", advice: " + target.getSourceLocation());
 	}
 
 	private static void addLink(
@@ -120,7 +146,8 @@ public class AsmAdaptor {
 		ProgramElementNode peNode = new ProgramElementNode(
 			shadow.toString(),
 			ProgramElementNode.Kind.CODE,
-			new SourceLocation(enclosingNode.getSourceLocation().getSourceFile(), sl.getLine()),
+//			new SourceLocation(enclosingNode.getSourceLocation().getSourceFile(), sl.getLine()),
+			enclosingNode.getSourceLocation(),
 			0,
 			"",
 			new ArrayList());
@@ -158,7 +185,6 @@ public class AsmAdaptor {
 			}
 		}
 	 	// if we can't find the member, we'll just put it in the class
-	 	//??? is this what the IDEs want
 		return classNode;
 	}
 

@@ -1,5 +1,5 @@
 
-import java.io.*;;
+import java.io.*;
 
 class Point { 
 
@@ -23,24 +23,25 @@ class Point {
 			System.err.println("!");	
 		}	
 		setX(10);
+		new Point();
 	}
 } 
 
-aspect PcdCoverage {
+aspect AdvisesRelationCoverage {
     before(): get(int *.*) { }
     before(): set(int *.*) { }
     before(): initialization(Point.new(..)) { }
     before(): staticinitialization(Point) { }
     before(): handler(IOException) { }
-    before(): call(String Point.setX(int)) { }
-//    before(): call(String Point.new()) { }
-//    execution(): call(String Point.setX(int)) { }
+    before(): call(* Point.setX(int)) { }
+    before(): call(Point.new()) { }
+    before(): within(*) && execution(* Point.setX(..)) { }
+    before(): within(*) && execution(Point.new()) { }
 }
 
 aspect InterTypeDecCoverage {
 
-    pointcut illegalNewFigElt():  call(FigureElement+.new(..)) &&
-	                          !withincode(* Main.main(..));
+    pointcut illegalNewFigElt(): call(Point.new(..)) && !withincode(* *.doIt(..));
 
     declare error: illegalNewFigElt():
 	    "Illegal figure element constructor call.";

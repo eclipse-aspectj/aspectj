@@ -23,14 +23,14 @@ import org.aspectj.asm.*;
 public class AdviceAssociation implements Association {
 	
     public static final String NAME = "Advice";
-    public static final Relation METHOD_RELATION = new Relation("affects methods", "method affected by", NAME, true, false);
-    public static final Relation METHOD_CALL_SITE_RELATION = new Relation("affects method call sites", "method call site affected by", NAME, true, false);
-    public static final Relation CONSTRUCTOR_RELATION = new Relation("affects constructors", "constructor affected by", NAME, true, false);
-    public static final Relation CONSTRUCTOR_CALL_SITE_RELATION = new Relation("affects constructions", "construction affected by", NAME, true, false);
-    public static final Relation HANDLER_RELATION = new Relation("affects handlers", "handler affected by", NAME, true, false);
-    public static final Relation INITIALIZER_RELATION = new Relation("affects initializers", "initializer affected by", NAME, true, false);
-    public static final Relation FIELD_ACCESS_RELATION = new Relation("affects field access", "field access affected by", NAME, true, false);
-    public static final Relation INTRODUCTION_RELATION = new Relation("affects introduction", "introduction affected by", NAME, true, false);
+    public static final Relation METHOD_RELATION = new Relation("advises methods", "method advised by", NAME, true, false);
+    public static final Relation METHOD_CALL_SITE_RELATION = new Relation("advises method call sites", "method call site advised by", NAME, true, false);
+    public static final Relation CONSTRUCTOR_RELATION = new Relation("advises constructors", "constructors advised by", NAME, true, false);
+    public static final Relation CONSTRUCTOR_CALL_SITE_RELATION = new Relation("advises constructions", "construction advised by", NAME, true, false);
+    public static final Relation HANDLER_RELATION = new Relation("advises exception handlers", "exception handler advised by", NAME, true, false);
+    public static final Relation INITIALIZER_RELATION = new Relation("advises initializers", "initializers advised by", NAME, true, false);
+    public static final Relation FIELD_ACCESS_RELATION = new Relation("advises field access", "field access advised by", NAME, true, false);
+    public static final Relation INTRODUCTION_RELATION = new Relation("advises introduction", "introduction advised by", NAME, true, false);
 
     private List relations = new ArrayList();
 
