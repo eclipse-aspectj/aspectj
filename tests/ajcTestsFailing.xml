@@ -2,45 +2,14 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 
 <suite>
-
-    <ajc-test dir="new"
-      title="unmatched type name in a declare parents should result in a warning in -Xlint mode"
-      keywords="tofix">
-        <compile options="-Xlint" files="MissingTypeInDeclareParents.java">
-            <message kind="warning" line="20"/>
-        </compile>
-        <run class="MissingTypeInDeclareParents"/>
-    </ajc-test>
-
+	<!-- This is an open question.  Is it better for aspect static initializers
+	     to run before or after the instance is constructed???
+	-->
     <ajc-test dir="new" pr="804"
       title="aspect static initializers should run before instance constructed"
       keywords="tofix">
         <compile files="AspectStaticInit.java"/>
         <run class="AspectStaticInit"/>
-    </ajc-test>
-
-
-    <ajc-test dir="new" pr="838"
-      title="checking around join point for advice return type - numeric"
-      keywords="tofix" comment="may need to fix error line when bug is fixed">
-        <compile files="AroundNumericCastCE.java">
-            <message kind="error" line="17"/>
-        </compile>
-    </ajc-test>
-
-    <ajc-test dir="new" pr="836" title="void around advice without proceed"
-      keywords="tofix">
-        <compile files="VoidAround.java">
-            <message kind="error" line="29"/>
-        </compile>
-    </ajc-test>
-
-    <ajc-test dir="new/PR852" pr="852"
-      title="declaring method on superclass and subclass">
-        <compile files="aspect/Aspect.java,target/SubClass.java,target/SuperClass.java">
-          <dir-changes added="target.SubClass,target.SuperClass"/>
-        </compile>
-        <run class="aspect.Aspect"/>
     </ajc-test>
 
     <ajc-test dir="new/PR862" pr="862"
@@ -50,14 +19,6 @@
           <dir-changes added="pack.ImportInnerFromInterfaceImplementor"/>
         </compile>
         <run class="pack.ImportInnerFromInterfaceImplementor"/>
-    </ajc-test>
-
-    <ajc-test dir="bugs" pr="906"
-      title="privileged access to code outside the control of the compiler">
-        <compile files="PrivilegeBeyondScope.java">
-		  <message kind="error" line="21"/>
-        </compile>
-        <run class="PrivilegeBeyondScope"/>
     </ajc-test>
     
     <ajc-test dir="new"
