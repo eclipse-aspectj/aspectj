@@ -68,6 +68,8 @@ class Point implements FigureElement {
 }
 
 class Line implements FigureElement {
+
+	
     private Point _p1, _p2;
 
     Line (Point p1, Point p2) {
@@ -141,16 +143,30 @@ aspect MoveTracking {
  }
 
 aspect Mobility { declare dominates: Mobility, MoveTracking;
+	
     private static boolean enableMoves = true;
     
     static void enableMoves()  { enableMoves = true; }
     static void disableMoves() { enableMoves = false; }
     
+    private int getSomething() { return 10; }
+    
     void around(): MoveTracking.moves() {
-        if ( enableMoves )
+    	int x = getSomething();
+        if ( enableMoves || enableMoves )
             proceed(); //!!! in versions prior to 0.7b10 runNext is a
         //!!! method on the join point object, so the
         //!!! syntax of this call is slightly different
         //!!! than in the paper
     }
+    
+    void around(int i): args(i) && call(void *gaoijbal()) {
+    	if (enableMoves) throw new RuntimeException("bad things");
+    }
+}
+
+privileged aspect Foo {
+	public static boolean getEnableMoves() {
+		return Mobility.enableMoves;
+	}
 }
