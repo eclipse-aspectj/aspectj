@@ -123,7 +123,7 @@ public class ReferencePointcut extends Pointcut {
 		
 		ResolvedPointcutDefinition pointcutDef = searchType.findPointcut(name);
 		// if we're not a static reference, then do a lookup of outers
-		if (onType == null) {
+		if (pointcutDef == null && onType == null) {
 			while (true) {
 				TypeX declaringType = searchType.getDeclaringType();
 				if (declaringType == null) break;
