@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <meta name="GENERATOR" content="Microsoft FrontPage 4.0">
 <meta name="ProgId" content="FrontPage.Editor.Document">
-<title>AspectJ Installation Note</title>
+<title>AspectJ Readme</title>
 <STYLE TYPE="text/css">
 <!--
 
@@ -141,31 +141,43 @@
 
 <BODY BGCOLOR="white">
 
-<h2 align="center">AspectJ<sup><small>TM</small></sup> Compiler and Core Tools</h2>
+<h2 align="center">AspectJ<sup><small>TM</small></sup></h2>
 
 <p align="center"><i>Version @build.version.long@ released on @build.date@.</i></p>
 
 <h3>1 Contents of this Package</h3>
 
 <UL>
-  <li>in the directory <CODE>&lt;aspectj install dir&gt;/bin</CODE>
+  <li>the <a href="bin"><CODE>&lt;aspectj install dir&gt;/bin</CODE></a>
+      directory has scripts for 
        <ul>
-	 <li><CODE>ajc</CODE>: compiler for the AspectJ language</li>
+	 <li><CODE>ajc</CODE>: the compiler for the AspectJ language</li>
 
      <!-- XXX removed references to ajdoc and ajdb -->
-	 <li><CODE>ajbrowser</CODE>: GUI for compiling programs with 
-                             <CODE>ajc</CODE> and navigating the 
-                           crosscutting structure</li>
+	 <li><CODE>ajbrowser</CODE>: a graphical editor for 
+	 compiling programs with <CODE>ajc</CODE> 
+	 and navigating the crosscutting structure of those programs</li>
        </ul>
 
-  <li>in the directory <CODE>&lt;aspectj install dir&gt;/lib</CODE>
+  <li>the directory <a href="lib"><CODE>&lt;aspectj install dir&gt;/lib</CODE></a>
+      has the AspectJ binaries,
        <ul>
 	 <li><CODE>aspectjtools.jar</CODE>: libraries for the
-	 AspectJ compiler, core tools, and Ant tasks</li>
+	 <code>ajc</code>, <code>ajbrowser</code>, and Ant tasks</li>
 
 	 <li><CODE>aspectjrt.jar</CODE>: libraries for compiled
 	 AspectJ code</li>
        </ul>
+  </li>
+  <li>the directory <a href="doc"><CODE>&lt;aspectj install dir&gt;/doc</CODE></a>
+      has examples, guides for programming and development environments,
+      instructions for the Ant tasks, and a quick reference, all available
+      from <a href="doc/index.html">index</a> page.
+  </li>
+  <li>this <a href="README-AspectJ.html">README-AspectJ.html</a>, and
+  </li>
+  <li>the <a href="LICENSE-AspectJ.html">LICENSE-AspectJ.html</a>
+      applying to this distribution.
   </li>
 </UL>
 
@@ -173,15 +185,23 @@
 
 <h3>2 Install Procedure</h3>
 
-<p>After finishing automatic installation, we recommend that you perform the
+<p>The AspectJ tools <code>ajc</code> and <code>ajbrowser</code> are
+Java programs that can be run indirectly from the scripts or 
+directly from <code>aspectjtools.jar</code>.  
+The <code>aspectjrt.jar</code> needs to be on the classpath
+when compiling or running programs compiled
+by <code>ajc</code>.  This procedure shows ways to do that.
+</p>
+
+<p>After finishing automatic installation, we recommend that the
 following steps to complete your installation:</p>
 
-  <p><b>2.1 Add <CODE>&lt;aspectj install dir&gt;/lib/aspectjrt.jar</CODE> to your class path</b></p>
+  <p><b>2.1 Add <CODE>&lt;aspectj install dir&gt;/lib/aspectjrt.jar</CODE> 
+      to your class path</b></p>
 
 <blockquote>
-  <p>This .jar file contains several small classes that are
-  required to compile programs with the ajc compiler, and are the only
-  extra classes necessary to run programs compiled with the ajc
+  <p>This small .jar file contains classes required to compile programs 
+  with the ajc compiler, and to run programs compiled with the ajc
   compiler.  You must have these classes somewhere on your class path
   when running programs compiled with ajc.  For detailed instructions
   please see the <a href="#configInstructions">Configuration
