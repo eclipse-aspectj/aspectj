@@ -244,5 +244,9 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   	runTest("Inconsistency in scoping of protected members in ITDs");
   }
   
+  public void test045_wrongLineForExecutionJoinPoint() {
+  	runTest("wrong line for method execution join point");
+  }
+
 }
 

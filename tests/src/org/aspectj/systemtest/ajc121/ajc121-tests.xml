@@ -355,3 +355,26 @@
 			<message kind="error" line="12" text="The method clone() from the type Object is not static"/>
 		</compile>
 	</ajc-test>
+	
+	<ajc-test dir="design/sourceLines" pr="37020"
+	  	title="wrong line for method execution join point">
+		<compile files="TestSourceLines.java">
+			<message kind="warning" line="5" text="static init"/>
+			<message kind="warning" line="12" text="cons execution"/>
+			<message kind="warning" line="12" text="pre-init"/>
+			<message kind="warning" line="12" text="init"/>
+			<message kind="warning" line="16" text="cons execution"/>
+			<message kind="warning" line="16" text="init"/>
+			<message kind="warning" line="16" text="pre-init"/>
+			<message kind="warning" line="20" text="method execution"/>
+			<message kind="warning" line="24" text="method execution"/>
+			<message kind="warning" line="28" text="method execution"/>
+			<message kind="warning" line="35" text="static init"/>
+			<message kind="warning" line="35" text="init"/>
+			<message kind="warning" line="35" text="pre-init"/>
+			<message kind="warning" line="39" text="pre-init"/>
+			<message kind="warning" line="39" text="init"/>
+			<message kind="warning" line="39" text="static init"/>
+			<message kind="warning" line="47" text="advice"/>
+		</compile>
+	</ajc-test>
