@@ -9,7 +9,6 @@
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
@@ -20,6 +19,7 @@ import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 
@@ -102,7 +102,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		writeLocation(s);
 	}
 
-	public static AnnotationTypePattern read(DataInputStream s,ISourceContext context) throws IOException {
+	public static AnnotationTypePattern read(VersionedDataInputStream s,ISourceContext context) throws IOException {
 		AnnotationTypePattern ret;
 		byte version = s.readByte();
 		if (version > VERSION) {

@@ -24,6 +24,7 @@ public class AllTestsJava5_binaryWeaving {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Java5 - binary weaving");
 		//$JUnit-BEGIN$
+		suite.addTestSuite(MigrationTests.class);
 		suite.addTest(Ajc150Tests.suite());
 		suite.addTest(AccBridgeMethods.suite());
 		suite.addTestSuite(CovarianceTests.class);

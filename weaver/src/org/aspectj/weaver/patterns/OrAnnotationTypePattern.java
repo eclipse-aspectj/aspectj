@@ -9,13 +9,13 @@
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 
 public class OrAnnotationTypePattern extends AnnotationTypePattern {
@@ -48,7 +48,7 @@ public class OrAnnotationTypePattern extends AnnotationTypePattern {
 		return this;
 	}
 
-	public static AnnotationTypePattern read(DataInputStream s, ISourceContext context) throws IOException {
+	public static AnnotationTypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		AnnotationTypePattern p = new OrAnnotationTypePattern(
 				AnnotationTypePattern.read(s,context),
 				AnnotationTypePattern.read(s,context));

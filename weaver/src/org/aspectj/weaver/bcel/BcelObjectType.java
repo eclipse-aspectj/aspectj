@@ -35,7 +35,6 @@ import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverStateInfo;
-import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.patterns.PerClause;
 
 // ??? exposed for testing
@@ -169,7 +168,7 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 		List pointcuts = new ArrayList();
 		typeMungers = new ArrayList();
 		declares = new ArrayList();
-		List l = BcelAttributes.readAjAttributes(javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld().getMessageHandler());
+		List l = BcelAttributes.readAjAttributes(javaClass.getClassName(),javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld().getMessageHandler());
 		for (Iterator iter = l.iterator(); iter.hasNext();) {
 			AjAttribute a = (AjAttribute) iter.next();
 			//System.err.println("unpacking: " + this + " and " + a);
@@ -190,20 +189,19 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 					((BcelSourceContext)getResolvedTypeX().getSourceContext()).addAttributeInfo((AjAttribute.SourceContextAttribute)a);
 				}
 			} else if (a instanceof AjAttribute.WeaverVersionInfo) {
-				wvInfo = (AjAttribute.WeaverVersionInfo)a;
-				if (wvInfo.getMajorVersion() > WeaverVersionInfo.getCurrentWeaverMajorVersion()) {
-					// The class file containing this attribute was created by a version of AspectJ that
-					// added some behavior that 'this' version of AspectJ doesn't understand.  And the
-					// class file contains changes that mean 'this' version of AspectJ cannot continue.
-					throw new BCException("Unable to continue, this version of AspectJ supports classes built with weaver version "+
-							WeaverVersionInfo.toCurrentVersionString()+" but the class "+ javaClass.getClassName()+" is version "+wvInfo.toString());
-				}
+				wvInfo = (AjAttribute.WeaverVersionInfo)a; // Set the weaver version used to build this type
 			} else {
 				throw new BCException("bad attribute " + a);
 			}
 		}
 		this.pointcuts = (ResolvedPointcutDefinition[]) 
 			pointcuts.toArray(new ResolvedPointcutDefinition[pointcuts.size()]);
+		// Test isn't quite right, leaving this out for now...
+//		if (isAspect() && wvInfo.getMajorVersion() == WeaverVersionInfo.UNKNOWN.getMajorVersion()) {
+//			throw new BCException("Unable to continue, this version of AspectJ cannot use aspects as input that were built "+
+//					"with an AspectJ earlier than version 1.2.1.  Please rebuild class: "+javaClass.getClassName());
+//		}
+		
 //		this.typeMungers = (BcelTypeMunger[]) 
 //			typeMungers.toArray(new BcelTypeMunger[typeMungers.size()]);
 //		this.declares = (Declare[])

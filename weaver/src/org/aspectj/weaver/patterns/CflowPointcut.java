@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
@@ -37,6 +36,7 @@ import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Test;
@@ -106,7 +106,7 @@ public class CflowPointcut extends Pointcut {
 		FileUtil.writeIntArray(freeVars, s);
 		writeLocation(s);
 	}
-	public static Pointcut read(DataInputStream s, ISourceContext context) throws IOException {
+	public static Pointcut read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 
 		CflowPointcut ret = new CflowPointcut(Pointcut.read(s, context), s.readBoolean(), FileUtil.readIntArray(s));
 		ret.readLocation(context, s);

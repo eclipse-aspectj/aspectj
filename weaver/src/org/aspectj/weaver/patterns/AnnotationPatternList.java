@@ -9,7 +9,6 @@
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -18,6 +17,7 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 
 /**
@@ -155,7 +155,7 @@ public class AnnotationPatternList extends PatternNode {
         return result;
     }
     
-	public static AnnotationPatternList read(DataInputStream s, ISourceContext context) throws IOException  {
+	public static AnnotationPatternList read(VersionedDataInputStream s, ISourceContext context) throws IOException  {
 		short len = s.readShort();
 		AnnotationTypePattern[] arguments = new AnnotationTypePattern[len];
 		for (int i=0; i<len; i++) {

@@ -9,7 +9,6 @@
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
@@ -18,6 +17,7 @@ import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 
 public abstract class AnnotationTypePattern extends PatternNode {
@@ -64,7 +64,7 @@ public abstract class AnnotationTypePattern extends PatternNode {
 	public static final byte ANY_KEY = 7;
 	public static final byte WILD = 8;
 
-	public static AnnotationTypePattern read(DataInputStream s, ISourceContext context) throws IOException {
+	public static AnnotationTypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		byte key = s.readByte();
 		switch(key) {
 			case EXACT: return ExactAnnotationTypePattern.read(s, context);

@@ -13,12 +13,13 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.aspectj.weaver.VersionedDataInputStream;
 
 public class ModifiersPattern extends PatternNode {
 	private int requiredModifiers;
@@ -58,7 +59,7 @@ public class ModifiersPattern extends PatternNode {
 	}
 	
 
-	public static ModifiersPattern read(DataInputStream s) throws IOException {
+	public static ModifiersPattern read(VersionedDataInputStream s) throws IOException {
 		int requiredModifiers = s.readShort();
 		int forbiddenModifiers = s.readShort();
 		if (requiredModifiers == 0 && forbiddenModifiers == 0) return ANY;

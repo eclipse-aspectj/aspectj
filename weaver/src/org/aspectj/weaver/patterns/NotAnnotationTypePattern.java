@@ -9,13 +9,13 @@
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 
 public class NotAnnotationTypePattern extends AnnotationTypePattern {
@@ -59,7 +59,7 @@ public class NotAnnotationTypePattern extends AnnotationTypePattern {
 		writeLocation(s);
 	}
 
-	public static AnnotationTypePattern read(DataInputStream s, ISourceContext context) throws IOException {
+	public static AnnotationTypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		AnnotationTypePattern ret = new NotAnnotationTypePattern(AnnotationTypePattern.read(s,context));
 		ret.readLocation(context,s);
 		return ret;

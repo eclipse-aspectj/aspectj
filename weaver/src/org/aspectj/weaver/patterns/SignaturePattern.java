@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -30,6 +29,7 @@ import org.aspectj.lang.reflect.AdviceSignature;
 import org.aspectj.lang.reflect.ConstructorSignature;
 import org.aspectj.lang.reflect.FieldSignature;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.Constants;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
@@ -37,6 +37,7 @@ import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 
 
@@ -516,7 +517,7 @@ public class SignaturePattern extends PatternNode {
 		writeLocation(s);
 	}
 
-	public static SignaturePattern read(DataInputStream s, ISourceContext context) throws IOException {
+	public static SignaturePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		Member.Kind kind = Member.Kind.read(s);
 		ModifiersPattern modifiers = ModifiersPattern.read(s);
 		TypePattern returnType = TypePattern.read(s, context);
@@ -524,7 +525,13 @@ public class SignaturePattern extends PatternNode {
 		NamePattern name = NamePattern.read(s);
 		TypePatternList parameterTypes = TypePatternList.read(s, context);
 		ThrowsPattern throwsPattern = ThrowsPattern.read(s, context);
-		AnnotationTypePattern annotationPattern = AnnotationTypePattern.read(s,context);
+		
+		AnnotationTypePattern annotationPattern = AnnotationTypePattern.ANY;
+		
+		if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
+		  annotationPattern = AnnotationTypePattern.read(s,context);
+		}
+
 		SignaturePattern ret = new SignaturePattern(kind, modifiers, returnType, declaringType,
 					name, parameterTypes, throwsPattern,annotationPattern);
 		ret.readLocation(context, s);

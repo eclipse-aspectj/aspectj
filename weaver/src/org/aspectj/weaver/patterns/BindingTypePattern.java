@@ -13,13 +13,13 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.VersionedDataInputStream;
 
 public class BindingTypePattern extends ExactTypePattern implements BindingPattern {
 	private int formalIndex;
@@ -59,7 +59,7 @@ public class BindingTypePattern extends ExactTypePattern implements BindingPatte
 		writeLocation(out);
 	}
 	
-	public static TypePattern read(DataInputStream s, ISourceContext context) throws IOException {
+	public static TypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		TypePattern ret = new BindingTypePattern(TypeX.read(s), s.readShort(), s.readBoolean());
 		ret.readLocation(context, s);
 		return ret;

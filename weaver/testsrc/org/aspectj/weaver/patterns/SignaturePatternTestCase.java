@@ -166,7 +166,7 @@ public class SignaturePatternTestCase extends TestCase {
 		out.close();
 		
 		ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
-		DataInputStream in = new DataInputStream(bi);
+		VersionedDataInputStream in = new VersionedDataInputStream(bi);
 		SignaturePattern newP = SignaturePattern.read(in, null);
 		
 		assertEquals("write/read", p, newP);	

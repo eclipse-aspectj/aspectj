@@ -15,7 +15,6 @@ package org.aspectj.weaver;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
@@ -82,11 +81,12 @@ public abstract class AjAttribute {
 			throw new RuntimeException("sanity check");
 		}
 	}
-
-	public static AjAttribute read(String name, byte[] bytes, ISourceContext context,IMessageHandler msgHandler) {
+	
+	public static AjAttribute read(AjAttribute.WeaverVersionInfo v, String name, byte[] bytes, ISourceContext context,IMessageHandler msgHandler) {
 		try {
 			if (bytes == null) bytes = new byte[0];
-			DataInputStream s = new DataInputStream(new ByteArrayInputStream(bytes));
+			VersionedDataInputStream s = new VersionedDataInputStream(new ByteArrayInputStream(bytes));
+			s.setVersion(v);
 			if (name.equals(Aspect.AttributeName)) {
 				return new Aspect(PerClause.readPerClause(s, context));
 			} else if (name.equals(MethodDeclarationLineNumberAttribute.AttributeName)) {
@@ -196,13 +196,25 @@ public abstract class AjAttribute {
 		// The user will get a warning for any org.aspectj.weaver attributes the weaver does
 		// not recognize.
 		
+		// When we don't know ... (i.e. pre 1.2.1)
+		public static short WEAVER_VERSION_MAJOR_UNKNOWN = 0;
+		public static short WEAVER_VERSION_MINOR_UNKNOWN = 0;
+		
+		
 		// These are the weaver major/minor numbers for AspectJ 1.2.1
-		private static short WEAVER_VERSION_MAJOR_AJ121 = 1;
-		private static short WEAVER_VERSION_MINOR_AJ121 = 0;
+		public static short WEAVER_VERSION_MAJOR_AJ121 = 1;
+		public static short WEAVER_VERSION_MINOR_AJ121 = 0;
+		
+		// These are the weaver major/minor numbers for AspectJ 1.5.0
+		public static short WEAVER_VERSION_MAJOR_AJ150 = 2;
+		public static short WEAVER_VERSION_MINOR_AJ150 = 0;
 		
 		// These are the weaver major/minor versions for *this* weaver
-		private static short CURRENT_VERSION_MAJOR      = WEAVER_VERSION_MAJOR_AJ121;
-		private static short CURRENT_VERSION_MINOR      = WEAVER_VERSION_MINOR_AJ121;
+		private static short CURRENT_VERSION_MAJOR      = WEAVER_VERSION_MAJOR_AJ150;
+		private static short CURRENT_VERSION_MINOR      = WEAVER_VERSION_MINOR_AJ150;
+		
+		public static final WeaverVersionInfo UNKNOWN = 
+			new WeaverVersionInfo(WEAVER_VERSION_MAJOR_UNKNOWN,WEAVER_VERSION_MINOR_UNKNOWN);
 		
 		// These are the versions read in from a particular class file.
 		private short major_version; 
@@ -228,10 +240,12 @@ public abstract class AjAttribute {
 			s.writeShort(CURRENT_VERSION_MINOR);
 		}
 		
-		public static WeaverVersionInfo read(DataInputStream s) throws IOException {
+		public static WeaverVersionInfo read(VersionedDataInputStream s) throws IOException {
 			short major = s.readShort();
 			short minor = s.readShort();
-			return new WeaverVersionInfo(major,minor);
+			WeaverVersionInfo wvi = new WeaverVersionInfo(major,minor);
+//			s.setVersion(wvi);		
+			return wvi;
 		}
 		
 		public short getMajorVersion() {
@@ -279,7 +293,7 @@ public abstract class AjAttribute {
 			FileUtil.writeIntArray(lineBreaks, s);
 		}
 		
-		public static SourceContextAttribute read(DataInputStream s) throws IOException {
+		public static SourceContextAttribute read(VersionedDataInputStream s) throws IOException {
 			return new SourceContextAttribute(s.readUTF(), FileUtil.readIntArray(s));
 		}
 		public int[] getLineBreaks() {
@@ -311,7 +325,7 @@ public abstract class AjAttribute {
 			s.writeInt(lineNumber);
 		}
 		
-		public static MethodDeclarationLineNumberAttribute read(DataInputStream s) throws IOException {
+		public static MethodDeclarationLineNumberAttribute read(VersionedDataInputStream s) throws IOException {
 			return new MethodDeclarationLineNumberAttribute(s.readInt());
 		}
 
@@ -417,7 +431,7 @@ public abstract class AjAttribute {
 			this.declaredExceptions = declaredExceptions;
 		}
 		
-		public static AdviceAttribute read(DataInputStream s, ISourceContext context) throws IOException {
+		public static AdviceAttribute read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 			AdviceKind kind = AdviceKind.read(s);
 			if (kind == AdviceKind.Around) {
 				return new AdviceAttribute(
@@ -544,7 +558,7 @@ public abstract class AjAttribute {
 			return accessedMembers;
 		}
 
-		public static PrivilegedAttribute read(DataInputStream s, ISourceContext context) throws IOException {
+		public static PrivilegedAttribute read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 			return new PrivilegedAttribute(ResolvedMember.readResolvedMemberArray(s, context));
 		}
 	}	
@@ -571,7 +585,7 @@ public abstract class AjAttribute {
 			s.writeBoolean(weaveBody);
 		}		
 
-		public static EffectiveSignatureAttribute read(DataInputStream s, ISourceContext context) throws IOException {
+		public static EffectiveSignatureAttribute read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 			return new EffectiveSignatureAttribute(
 					ResolvedMember.readResolvedMember(s, context),
 					Shadow.Kind.read(s),

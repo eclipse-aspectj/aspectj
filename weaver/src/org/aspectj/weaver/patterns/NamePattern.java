@@ -13,9 +13,10 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
+import org.aspectj.weaver.VersionedDataInputStream;
 
 public class NamePattern extends PatternNode {
 	char[] pattern;
@@ -135,7 +136,7 @@ public class NamePattern extends PatternNode {
 		out.writeUTF(new String(pattern));
 	}
 	
-	public static NamePattern read(DataInputStream in) throws IOException {
+	public static NamePattern read(VersionedDataInputStream in) throws IOException {
 		String s = in.readUTF();
 		if (s.length() == 0) return ELLIPSIS;
 		return new NamePattern(s);

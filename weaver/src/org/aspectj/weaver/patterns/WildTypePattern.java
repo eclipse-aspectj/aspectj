@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,10 +23,12 @@ import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 
 //XXX need to use dim in matching
@@ -607,11 +608,36 @@ public class WildTypePattern extends TypePattern {
 		annotationPattern.write(s);
 	}
 	
-	public static TypePattern read(DataInputStream s, ISourceContext context) throws IOException {
-		byte version = s.readByte();
-		if (version > VERSION) {
-			throw new BCException("WildTypePattern was written by a more recent version of AspectJ, cannot read");
-		}
+	public static TypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
+		if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
+			return readTypePattern150(s,context);
+		} else {
+			return readTypePatternOldStyle(s,context);
+	    }
+    }
+
+    public static TypePattern readTypePattern150(VersionedDataInputStream s, ISourceContext context) throws IOException {
+	  byte version = s.readByte();
+	  if (version > VERSION) {
+		throw new BCException("WildTypePattern was written by a more recent version of AspectJ, cannot read");
+	  }
+	  int len = s.readShort();
+	  NamePattern[] namePatterns = new NamePattern[len];
+	  for (int i=0; i < len; i++) {
+		namePatterns[i] = NamePattern.read(s);
+	  }
+	  boolean includeSubtypes = s.readBoolean();
+	  int dim = s.readInt();
+	  boolean varArg = s.readBoolean();
+	  WildTypePattern ret = new WildTypePattern(namePatterns, includeSubtypes, dim, varArg);
+	  ret.knownMatches = FileUtil.readStringArray(s);
+	  ret.importedPrefixes = FileUtil.readStringArray(s);
+	  ret.readLocation(context, s);
+	  ret.setAnnotationTypePattern(AnnotationTypePattern.read(s,context));
+	  return ret;
+	}
+    
+	public static TypePattern readTypePatternOldStyle(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		int len = s.readShort();
 		NamePattern[] namePatterns = new NamePattern[len];
 		for (int i=0; i < len; i++) {
@@ -619,12 +645,10 @@ public class WildTypePattern extends TypePattern {
 		}
 		boolean includeSubtypes = s.readBoolean();
 		int dim = s.readInt();
-		boolean varArg = s.readBoolean();
-		WildTypePattern ret = new WildTypePattern(namePatterns, includeSubtypes, dim,varArg);
+		WildTypePattern ret = new WildTypePattern(namePatterns, includeSubtypes, dim, false);
 		ret.knownMatches = FileUtil.readStringArray(s);
 		ret.importedPrefixes = FileUtil.readStringArray(s);
 		ret.readLocation(context, s);
-		ret.setAnnotationTypePattern(AnnotationTypePattern.read(s,context));
 		return ret;
 	}
 

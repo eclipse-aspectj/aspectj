@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -21,6 +20,7 @@ import java.util.List;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 
 public class DeclarePrecedence extends Declare {
@@ -60,7 +60,7 @@ public class DeclarePrecedence extends Declare {
 		writeLocation(s);
 	}
 
-	public static Declare read(DataInputStream s, ISourceContext context) throws IOException {
+	public static Declare read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		Declare ret = new DeclarePrecedence(TypePatternList.read(s, context));
 		ret.readLocation(context, s);
 		return ret;

@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
@@ -21,6 +20,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 
 public class DeclareSoft extends Declare {
@@ -65,7 +65,7 @@ public class DeclareSoft extends Declare {
 		writeLocation(s);
 	}
 
-	public static Declare read(DataInputStream s, ISourceContext context) throws IOException {
+	public static Declare read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		Declare ret = new DeclareSoft(
 			TypePattern.read(s, context),
 			Pointcut.read(s, context)

@@ -21,22 +21,35 @@ import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 
 // this is a class o' static methods for reading attributes.  It's pretty much a bridge from 
 // bcel to AjAttribute.
 class BcelAttributes {
 
-	public static List readAjAttributes(Attribute[] as, ISourceContext context,IMessageHandler msgHandler) {
+	public static List readAjAttributes(String classname,Attribute[] as, ISourceContext context,IMessageHandler msgHandler) {
 		List l = new ArrayList();
+		AjAttribute.WeaverVersionInfo version = new WeaverVersionInfo();
 		for (int i = as.length - 1; i >= 0; i--) {
 			Attribute a = as[i];
 			if (a instanceof Unknown) {
 				Unknown u = (Unknown) a;
 				String name = u.getName();
 				if (name.startsWith(AjAttribute.AttributePrefix)) {
-					AjAttribute attr = AjAttribute.read(name, u.getBytes(), context,msgHandler);
+					AjAttribute attr = AjAttribute.read(version,name,u.getBytes(),context,msgHandler); 
+					if (attr!=null && attr instanceof AjAttribute.WeaverVersionInfo) {
+						version = (AjAttribute.WeaverVersionInfo)attr;
+						
+						// Do a version check, this weaver can't process versions 
+						// from a future AspectJ (where the major number has changed)
+						if (version.getMajorVersion() > WeaverVersionInfo.getCurrentWeaverMajorVersion()) {
+							throw new BCException("Unable to continue, this version of AspectJ supports classes built with weaver version "+
+									WeaverVersionInfo.toCurrentVersionString()+" but the class "+classname+" is version "+version.toString());
+						}
+					}
 					if (attr!=null) l.add(attr);
 				}
 			}

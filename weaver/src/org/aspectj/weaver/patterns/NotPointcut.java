@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Member;
@@ -25,6 +24,7 @@ import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.ast.Test;
 
 public class NotPointcut extends Pointcut {
@@ -117,7 +117,7 @@ public class NotPointcut extends Pointcut {
 		writeLocation(s);
 	}
 	
-	public static Pointcut read(DataInputStream s, ISourceContext context) throws IOException {
+	public static Pointcut read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		NotPointcut ret = new NotPointcut(Pointcut.read(s, context));
 		ret.readLocation(context, s);
 		return ret;

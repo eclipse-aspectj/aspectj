@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Member;
@@ -32,6 +31,7 @@ import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 
@@ -298,7 +298,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	//XXX currently it's unused  we're keeping it around as a stub
 	public void postRead(ResolvedTypeX enclosingType) {}
 	
-	public static Pointcut read(DataInputStream s, ISourceContext context) throws IOException {
+	public static Pointcut read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		byte kind = s.readByte();
 		Pointcut ret;
 		

@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
@@ -28,6 +27,7 @@ import org.aspectj.weaver.PerObjectInterfaceTypeMunger;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Test;
@@ -115,7 +115,7 @@ public class PerObject extends PerClause {
     	writeLocation(s);
     }
     
-	public static PerClause readPerClause(DataInputStream s, ISourceContext context) throws IOException {
+	public static PerClause readPerClause(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		PerClause ret = new PerObject(Pointcut.read(s, context), s.readBoolean());
 		ret.readLocation(context, s);
 		return ret;

@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 
 import org.aspectj.util.TypeSafeEnum;
@@ -22,7 +21,7 @@ import org.aspectj.weaver.*;
 public abstract class PerClause extends Pointcut {
 	protected ResolvedTypeX inAspect;
 
-	public static PerClause readPerClause(DataInputStream s, ISourceContext context) throws IOException {
+	public static PerClause readPerClause(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		Kind kind = Kind.read(s);
 		if (kind == SINGLETON) return PerSingleton.readPerClause(s, context);
 		else if (kind == PERCFLOW) return PerCflow.readPerClause(s, context);
@@ -43,7 +42,7 @@ public abstract class PerClause extends Pointcut {
 	public static class Kind extends TypeSafeEnum {
         public Kind(String name, int key) { super(name, key); }
         
-        public static Kind read(DataInputStream s) throws IOException {
+        public static Kind read(VersionedDataInputStream s) throws IOException {
             int key = s.readByte();
             switch(key) {
                 case 1: return SINGLETON;

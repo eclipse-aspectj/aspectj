@@ -20,10 +20,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.VersionedDataInputStream;
 
 public class ExactTypePattern extends TypePattern {
 	protected TypeX type;
@@ -197,7 +199,15 @@ public class ExactTypePattern extends TypePattern {
 		writeLocation(out);
 	}
 	
-	public static TypePattern read(DataInputStream s, ISourceContext context) throws IOException {
+	public static TypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
+		if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
+			return readTypePattern150(s,context);
+		} else {
+			return readTypePatternOldStyle(s,context);
+	    }
+    }
+	
+	public static TypePattern readTypePattern150(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		byte version = s.readByte();
 		if (version > EXACT_VERSION) throw new BCException("ExactTypePattern was written by a more recent version of AspectJ");
 		TypePattern ret = new ExactTypePattern(TypeX.read(s), s.readBoolean(), s.readBoolean());
@@ -206,7 +216,13 @@ public class ExactTypePattern extends TypePattern {
 		return ret;
 	}
 
-    public String toString() {
+	public static TypePattern readTypePatternOldStyle(DataInputStream s, ISourceContext context) throws IOException {
+		TypePattern ret = new ExactTypePattern(TypeX.read(s), s.readBoolean(),false);
+		ret.readLocation(context, s);
+		return ret;
+	}
+
+	public String toString() {
 		StringBuffer buff = new StringBuffer();
 		if (annotationPattern != AnnotationTypePattern.ANY) {
 			buff.append('(');

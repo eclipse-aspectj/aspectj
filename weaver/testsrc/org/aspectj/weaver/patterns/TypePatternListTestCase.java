@@ -181,7 +181,7 @@ public class TypePatternListTestCase extends TestCase {
 		out.close();
 		
 		ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
-		DataInputStream in = new DataInputStream(bi);
+		VersionedDataInputStream in = new VersionedDataInputStream(bi);
 		TypePatternList newP = TypePatternList.read(in, null);
 		
 		assertEquals("write/read", p, newP);	

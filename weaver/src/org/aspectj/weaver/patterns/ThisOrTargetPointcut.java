@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Member;
@@ -32,6 +31,7 @@ import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
@@ -127,7 +127,7 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		type.write(s);
 		writeLocation(s);
 	}
-	public static Pointcut read(DataInputStream s, ISourceContext context) throws IOException {
+	public static Pointcut read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		boolean isThis = s.readBoolean();
 		TypePattern type = TypePattern.read(s, context);
 		ThisOrTargetPointcut ret = new ThisOrTargetPointcut(isThis, type);

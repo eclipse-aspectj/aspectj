@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
@@ -33,6 +32,7 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Test;
@@ -105,7 +105,7 @@ public class PerCflow extends PerClause {
     	writeLocation(s);
     }
     
-	public static PerClause readPerClause(DataInputStream s, ISourceContext context) throws IOException {
+	public static PerClause readPerClause(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		PerCflow ret = new PerCflow(Pointcut.read(s, context), s.readBoolean());
 		ret.readLocation(context, s);
 		return ret;

@@ -90,7 +90,7 @@ final class BcelMethod extends ResolvedMember {
 	}
 
 	private void unpackAjAttributes(World world) {
-		List as = BcelAttributes.readAjAttributes(method.getAttributes(), getSourceContext(world),world.getMessageHandler());
+		List as = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),method.getAttributes(), getSourceContext(world),world.getMessageHandler());
 		//System.out.println("unpack: " + this + ", " + as);
 		for (Iterator iter = as.iterator(); iter.hasNext();) {
 			AjAttribute a = (AjAttribute) iter.next();

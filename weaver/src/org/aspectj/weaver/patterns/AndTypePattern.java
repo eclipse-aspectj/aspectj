@@ -13,13 +13,13 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.VersionedDataInputStream;
 
 /**
  * left && right
@@ -75,7 +75,7 @@ public class AndTypePattern extends TypePattern {
 		writeLocation(s);
 	}
 	
-	public static TypePattern read(DataInputStream s, ISourceContext context) throws IOException {
+	public static TypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		TypePattern ret = new AndTypePattern(TypePattern.read(s, context), TypePattern.read(s, context));
 		ret.readLocation(context, s);
 		return ret;

@@ -294,7 +294,7 @@ public class TypePatternTestCase extends TestCase {
 		out.close();
 		
 		ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
-		DataInputStream in = new DataInputStream(bi);
+		VersionedDataInputStream in = new VersionedDataInputStream(bi);
 		TypePattern newP = TypePattern.read(in, null);
 		
 		assertEquals("write/read", p, newP);	

@@ -15,9 +15,10 @@ package org.aspectj.weaver.patterns;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
+import org.aspectj.weaver.VersionedDataInputStream;
 
 import junit.framework.TestCase;
 
@@ -111,7 +112,7 @@ public class NamePatternTestCase extends TestCase {
 		out.close();
 		
 		ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
-		DataInputStream in = new DataInputStream(bi);
+		VersionedDataInputStream in = new VersionedDataInputStream(bi);
 		NamePattern newP = NamePattern.read(in);
 		
 		assertEquals("write/read", p, newP);	

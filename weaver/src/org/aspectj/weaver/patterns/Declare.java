@@ -13,10 +13,10 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.VersionedDataInputStream;
 
 public abstract class Declare extends PatternNode {
 	public static final byte ERROR_OR_WARNING = 1;
@@ -24,7 +24,7 @@ public abstract class Declare extends PatternNode {
 	public static final byte SOFT = 3;
 	public static final byte DOMINATES = 4;
 
-	public static Declare read(DataInputStream s, ISourceContext context) throws IOException {
+	public static Declare read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		byte kind = s.readByte();
 		switch (kind) {
 			case ERROR_OR_WARNING:

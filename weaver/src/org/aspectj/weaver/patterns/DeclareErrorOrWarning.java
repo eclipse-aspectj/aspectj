@@ -13,11 +13,11 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.VersionedDataInputStream;
 
 public class DeclareErrorOrWarning extends Declare {
 	private boolean isError;
@@ -67,7 +67,7 @@ public class DeclareErrorOrWarning extends Declare {
 		writeLocation(s);
 	}
 
-	public static Declare read(DataInputStream s, ISourceContext context) throws IOException {
+	public static Declare read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		Declare ret = new DeclareErrorOrWarning(
 			s.readBoolean(),
 			Pointcut.read(s, context),

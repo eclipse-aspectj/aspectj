@@ -13,13 +13,13 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 
 
@@ -129,7 +129,7 @@ public class ThrowsPattern extends PatternNode {
 		return false;
 	}
 
-	public static ThrowsPattern read(DataInputStream s, ISourceContext context) throws IOException {
+	public static ThrowsPattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		TypePatternList required = TypePatternList.read(s, context);
 		TypePatternList forbidden = TypePatternList.read(s, context);
 		if (required.size() == 0 && forbidden.size() == 0) return ANY;

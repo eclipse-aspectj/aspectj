@@ -9,7 +9,6 @@
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
@@ -19,6 +18,7 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 
@@ -103,7 +103,7 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 		writeLocation(s);
 	}	
 	
-	public static AnnotationTypePattern read(DataInputStream s, ISourceContext context) throws IOException {
+	public static AnnotationTypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		byte version = s.readByte();
 		if (version > VERSION) {
 			throw new BCException("BindingAnnotationTypePattern was written by a more recent version of AspectJ");

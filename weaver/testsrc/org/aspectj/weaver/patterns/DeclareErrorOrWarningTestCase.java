@@ -15,6 +15,8 @@ package org.aspectj.weaver.patterns;
 
 import java.io.*;
 
+import org.aspectj.weaver.VersionedDataInputStream;
+
 import junit.framework.TestCase;
 
 public class DeclareErrorOrWarningTestCase extends TestCase {
@@ -53,7 +55,7 @@ public class DeclareErrorOrWarningTestCase extends TestCase {
 		out.close();
 		
 		ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
-		DataInputStream in = new DataInputStream(bi);
+		VersionedDataInputStream in = new VersionedDataInputStream(bi);
 		Declare newDeclare = Declare.read(in, null);
 		
 		assertEquals("write/read", declare, newDeclare);	

@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 
 import org.aspectj.util.TypeSafeEnum;
@@ -35,7 +34,7 @@ public class AdviceKind extends TypeSafeEnum {
     	this.isCflow = isCflow;
     }
     
-    public static AdviceKind read(DataInputStream s) throws IOException {
+    public static AdviceKind read(VersionedDataInputStream s) throws IOException {
         int key = s.readByte();
         switch(key) {
             case 1: return Before;

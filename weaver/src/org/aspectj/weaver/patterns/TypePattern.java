@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
@@ -25,6 +24,7 @@ import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 /**
@@ -267,7 +267,7 @@ public abstract class TypePattern extends PatternNode {
 	public static final byte AND = 8;
 	public static final byte NO_KEY = 9;
 
-	public static TypePattern read(DataInputStream s, ISourceContext context) throws IOException {
+	public static TypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		byte key = s.readByte();
 		switch(key) {
 			case WILD: return WildTypePattern.read(s, context);

@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Set;
@@ -23,6 +22,7 @@ import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
@@ -71,7 +71,7 @@ public class PerSingleton extends PerClause {
     	writeLocation(s);
     }
     
-	public static PerClause readPerClause(DataInputStream s, ISourceContext context) throws IOException {
+	public static PerClause readPerClause(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		PerSingleton ret = new PerSingleton();
 		ret.readLocation(context, s);
 		return ret;

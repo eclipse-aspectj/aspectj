@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,6 +24,7 @@ import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.VersionedDataInputStream;
 
 public class TypePatternList extends PatternNode {
 	private TypePattern[] typePatterns;
@@ -471,7 +471,7 @@ public class TypePatternList extends PatternNode {
     }
     
 
-	public static TypePatternList read(DataInputStream s, ISourceContext context) throws IOException  {
+	public static TypePatternList read(VersionedDataInputStream s, ISourceContext context) throws IOException  {
 		short len = s.readShort();
 		TypePattern[] arguments = new TypePattern[len];
 		for (int i=0; i<len; i++) {

@@ -108,7 +108,7 @@ public class PatternWeaveTestCase extends WeaveTestCase {
 		out.close();
 		
 		ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
-		DataInputStream in = new DataInputStream(bi);
+		VersionedDataInputStream in = new VersionedDataInputStream(bi);
 		Pointcut newP = Pointcut.read(in, null);
 		
 		assertEquals("write/read", p, newP);	

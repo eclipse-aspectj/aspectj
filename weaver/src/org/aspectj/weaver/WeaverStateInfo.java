@@ -84,7 +84,7 @@ public class WeaverStateInfo {
 	private static final byte REWEAVABLE_BIT             = 1<<4;
 	private static final byte REWEAVABLE_COMPRESSION_BIT = 1<<5;
 	
-	public static final WeaverStateInfo read(DataInputStream s, ISourceContext context) throws IOException {
+	public static final WeaverStateInfo read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		byte b = s.readByte();
 		
 		boolean isReweavable = ((b&REWEAVABLE_BIT)!=0);

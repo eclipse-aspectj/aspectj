@@ -130,7 +130,7 @@ public class ModifiersPatternTestCase extends TestCase {
 		out.close();
 		
 		ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
-		DataInputStream in = new DataInputStream(bi);
+		VersionedDataInputStream in = new VersionedDataInputStream(bi);
 		ModifiersPattern newP = ModifiersPattern.read(in);
 		
 		assertEquals("write/read", p, newP);	

@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
@@ -52,7 +51,7 @@ public class ResolvedPointcutDefinition extends ResolvedMember {
 		pointcut.write(s);
 	}
 	
-	public static ResolvedPointcutDefinition read(DataInputStream s, ISourceContext context) throws IOException {
+	public static ResolvedPointcutDefinition read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		return new ResolvedPointcutDefinition(
 			TypeX.read(s),
 			s.readInt(),
