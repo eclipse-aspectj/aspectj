@@ -158,13 +158,60 @@ For example, here is a directory layout for the test above:
 </pre>
 The result will be one compile and two re-compiles:
 <ol>
-  <li>Compile Main.java and DeleteMe.java</li>
-  <li>Update Main.java with the contents of Main.20.java
-      and recompile </li>
-  <li>Delete DeleteMe.java, 
-      add NewFile.java,
-      update Main.java with the contents of Main.30.java
-      and recompile</li>
+  <li>Initially compile <code>Main.java</code> and <code>DeleteMe.java</code>
+  <pre>
+    &lt;compile staging="true"
+              files="Main.java,DeleteMe.java"/>
+
+    {some dir}
+        {testDefinition}.xml
+        new/
+          incremental1/
+            ...
+            DeleteMe.java
+            ...
+            Main.java
+            ...
+  </pre>
+  </li>
+  <li>For incremental tag 20,
+      update <code>Main.java</code> with the contents of 
+      <code>Main.20.java</code>
+      and recompile, expecting an error on line 15:
+  <pre>
+    &lt;inc-compile tag="20">
+        &lt;message kind="error" line="15">
+    &lt;/inc-compile>
+
+    {some dir}
+        {testDefinition}.xml
+        new/
+          incremental1/
+            ...
+            Main.20.java
+            ...
+  </pre></li>
+
+  <li>For incremental tag 30,
+      delete <code>DeleteMe.java</code>, 
+      add <code>NewFile.java</code>,
+      update <code>Main.java</code> with the contents of 
+      <code>Main.30.java</code>
+      and recompile with no error or warning messages:
+  <pre>
+    &lt;inc-compile tag="30"/>
+
+    {some dir}
+        {testDefinition}.xml
+        new/
+          incremental1/
+            DeleteMe.delete.30.java
+            ...
+            Main.30.java
+            ...
+            NewFile.30.java
+  </pre>
+  </li>
 </ol>
 
 <a name="verifying"></a>
@@ -267,7 +314,7 @@ Here's an example specification:
 It checks after a recompile that
 <ul>
   <li><code>Main.class</code> was updated</li>
-  <li><code>DeleteMe.class<code> was deleted</li>
+  <li><code>DeleteMe.class</code> was deleted</li>
   <li><code>Unchanged.class</code> was not touched</li>
 </ul>
 
@@ -343,7 +390,7 @@ the <code>options</code> attribute:
         &lt;/compile>
 </pre>
 This should work even for complex single-arg options like
-<code>-g:none<code>, but will fail for comma-delimited single-arg options like
+<code>-g:none</code>, but will fail for comma-delimited single-arg options like
 <code>-g:lines,vars</code> because the comma delimiters
 are ambiguous (yes, a design bug!).
 For -source 1.4 and -source 1.3 options,
@@ -392,7 +439,7 @@ harness components for
 use information set up earlier by <code>compile</code>,
 some of which is only implicit.  
 When a test is run, the harness creates a staging directory
-for temporary files and a sandbox for sharing information
+for temporary files and a sandbox component for sharing information
 between test components, particularly classpath entries
 shared between the compile and run components.  
 The compile and run components share classpath information
@@ -419,6 +466,8 @@ For more information, see the API documentation for the harness.
    <li><u>option dominance and overriding</u>:
        Both in test specifications and on the command line
        you can force compiler options on or off.
+       (Forcing means that, e.g., even if an option is enabled in the
+        test specification, it can be disabled from the command line.)
        These appear in the test specifications as options
        with prefixes
        '!' or '~' rather than '-' (e.g., '~emacssym' to force
@@ -426,7 +475,7 @@ For more information, see the API documentation for the harness.
      </li>
 </ul>
 <hr>
-<small>last updated January 7, 2002 </small> <!-- CVS variable -->
+<small>last updated January 29, 2002 </small> <!-- CVS variable -->
 
 </body>
 </html>
