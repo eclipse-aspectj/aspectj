@@ -35,6 +35,8 @@ public class WeavingURLClassLoaderTest extends TestCase {
 	private final static String WOVEN_JAR = BcweaverTests.TESTDATA_PATH + "/ltw-woven.jar";
 	private final static String JUNK_JAR = BcweaverTests.TESTDATA_PATH + "/ltw-junk.jar";
 	private final static String ADVICE_ASPECTS = BcweaverTests.TESTDATA_PATH + "/ltw-aspects.jar";
+	private final static String DW_ADVICE_ASPECTS = BcweaverTests.TESTDATA_PATH + "/ltw-dwaspects.jar";
+	private final static String DE_ADVICE_ASPECTS = BcweaverTests.TESTDATA_PATH + "/ltw-deaspects.jar";
 	private final static String AROUNDCLOSURE_ASPECTS = BcweaverTests.TESTDATA_PATH + "/ltw-acaspects.jar";
 	private final static String ITD_ASPECTS = BcweaverTests.TESTDATA_PATH + "/ltw-itdaspects.jar";
 	private final static String PER_ASPECTS = BcweaverTests.TESTDATA_PATH + "/ltw-peraspects.jar";
@@ -114,6 +116,35 @@ public class WeavingURLClassLoaderTest extends TestCase {
 		}
 		catch (Exception ex) {
 			fail(ex.toString());
+		}
+	}
+
+	public void testWeaveDeclareWarningAdvice () {
+		System.setProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,DW_ADVICE_ASPECTS);
+		System.setProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,DW_ADVICE_ASPECTS + File.pathSeparator + CLASSES_JAR);
+		WeavingURLClassLoader loader = new WeavingURLClassLoader(getClass().getClassLoader());
+
+		try {
+			Class clazz = loader.loadClass("LTWHelloWorld");
+			invokeMain(clazz,new String[] {} ); 
+		}
+		catch (Exception ex) {
+			fail(ex.toString());
+		}
+	}
+
+	public void testWeaveDeclareErrorAdvice () {
+		System.setProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,DE_ADVICE_ASPECTS);
+		System.setProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,DE_ADVICE_ASPECTS + File.pathSeparator + CLASSES_JAR);
+		WeavingURLClassLoader loader = new WeavingURLClassLoader(getClass().getClassLoader());
+
+		try {
+			Class clazz = loader.loadClass("LTWHelloWorld");
+			invokeMain(clazz,new String[] {} ); 
+			fail("Expecting org.aspectj.bridge.AbortException");
+		}
+		catch (Exception ex) {
+			assertTrue("Expecting org.aspectj.bridge.AbortException caught " + ex,(ex instanceof AbortException));
 		}
 	}
 

@@ -232,6 +232,30 @@ public class BcweaverJarMaker {
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 
 		/*
+		 * Declare warning advice
+		 */
+		args = new ArrayList();
+		args.add("-classpath"); 
+		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar;../weaver/testdata/ltw-classes.jar" +
+		   File.pathSeparator + System.getProperty("aspectjrt.path"));
+		args.add("-outjar");
+		args.add("../weaver/testdata/ltw-dwaspects.jar");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/LTWDeclareWarning.aj");
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+
+		/*
+		 * Declare error advice
+		 */
+		args = new ArrayList();
+		args.add("-classpath"); 
+		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar;../weaver/testdata/ltw-classes.jar" +
+		   File.pathSeparator + System.getProperty("aspectjrt.path"));
+		args.add("-outjar");
+		args.add("../weaver/testdata/ltw-deaspects.jar");
+		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/LTWDeclareError.aj");
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+
+		/*
 		 * Around closure advice
 		 */
 		args = new ArrayList();

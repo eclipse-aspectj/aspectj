@@ -17,10 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.aspectj.util.UtilClassLoader;
-import org.aspectj.weaver.tools.*;
+import org.aspectj.weaver.tools.WeavingAdaptor;
+import org.aspectj.weaver.tools.WeavingClassLoader;
 
 public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements WeavingClassLoader {
 
