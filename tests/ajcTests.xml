@@ -6720,4 +6720,14 @@
 				aspectpath="lib.jar"/>
 		<run class="PerCFlowCompileFromJarTest"/>
 	</ajc-test>
+	
+	<ajc-test dir="bugs/throwsSignature"
+		pr="42539"
+		title="throw derivative pointcuts not advised">
+		<compile files="ExceptionBugTest.java,ExceptionAspect.java">
+		    <message line="5" kind="warning" text="throws both"/>
+		    <message line="5" kind="error" text="throws Exception"/>
+		    <message line="7" kind="warning" text="throws both"/>
+		</compile>
+	</ajc-test>
 </suite>

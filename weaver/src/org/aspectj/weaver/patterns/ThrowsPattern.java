@@ -91,7 +91,7 @@ public class ThrowsPattern extends PatternNode {
 		ResolvedTypeX[] types) 
 	{
 		for (int i = types.length - 1; i >= 0; i--) {
-			if (typePattern.matchesExactly(types[i])) return true;	
+			if (typePattern.matchesStatically(types[i])) return true;	
 		}
 		return false;
 	}
