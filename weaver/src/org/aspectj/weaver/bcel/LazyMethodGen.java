@@ -331,7 +331,10 @@ public final class LazyMethodGen {
 									  this.getName(),
 									  e.getMessage()),
     			this.getMemberView() == null ? null : this.getMemberView().getSourceLocation(), null);
-    		throw e;
+//    		throw e; PR 70201.... let the normal problem reporting infrastructure deal with this rather than crashing.
+    		body = null;
+   		    MethodGen gen = pack();
+   		    return gen.getMethod();
     	}
     }
     
