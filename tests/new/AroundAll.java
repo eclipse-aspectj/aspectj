@@ -154,7 +154,7 @@ aspect A {
     }
 
     Object around(): //initialization(C.new(String)) { 
-                    if(test()) && !within(A) && !call(* A.*(..)) {
+                    if(test()) && !within(A) && !call(* A.*(..)) && !preinitialization(new(..)) {
        A.log("enter " + thisJoinPoint);
        Object ret = proceed();
        A.log("exit " + thisJoinPoint);
