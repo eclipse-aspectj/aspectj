@@ -28,19 +28,14 @@ import java.util.List;
  * Implement messages.
  * This implementation is immutable if ISourceLocation is immutable.
  */
-public class Message implements IMessage { // XXX toString or renderer?
+public class Message implements IMessage {
     private final String message;
     private final IMessage.Kind kind;
     private final Throwable thrown;
     private final ISourceLocation sourceLocation;
     private final String details;
     private final List/*SourceLocation*/ extraSourceLocations;
-    
-    /** convenience for constructing failure messages */
-    public static Message fail(String message, Throwable thrown) {
-        return new Message(message, IMessage.FAIL, thrown, null);
-    }
-    
+        
     /**
      * Create a (compiler) error or warning message
      * @param message the String used as the underlying message
@@ -67,20 +62,24 @@ public class Message implements IMessage { // XXX toString or renderer?
 	public Message(String message, String details, IMessage.Kind kind, 
 		ISourceLocation sourceLocation, Throwable thrown, ISourceLocation[] extraSourceLocations) {
 		this.details = details;
-		this.message = (message==null) ? thrown.getMessage() : message;
+		this.message = ((message!=null) ? message : ((thrown==null) ? null : thrown.getMessage()));
 		this.kind = kind;
 		this.sourceLocation = sourceLocation;
 		this.thrown = thrown;
         
 		if (extraSourceLocations != null) {
-			this.extraSourceLocations = Arrays.asList(extraSourceLocations);
+			this.extraSourceLocations 
+                = Collections.unmodifiableList(Arrays.asList(extraSourceLocations));
 		}
         else {
             this.extraSourceLocations = Collections.EMPTY_LIST;
         }
-		if (null == kind) {
+		if (null == this.kind) {
 			 throw new IllegalArgumentException("null kind");
 		}
+        if (null == this.message) {
+            throw new IllegalArgumentException("null message");
+        }
 	}
     
     /**
@@ -97,22 +96,6 @@ public class Message implements IMessage { // XXX toString or renderer?
     public Message(String message, IMessage.Kind kind, Throwable thrown,
                     ISourceLocation sourceLocation) {
           this(message, "", kind, sourceLocation, thrown, null );              
-//        this.message = message;
-//        this.kind = kind;
-//        this.thrown = thrown;
-//        this.sourceLocation = sourceLocation;
-//        this.details = "";
-//        if (null == message) {
-//            if (null != thrown) {
-//                message = thrown.getMessage();
-//            } 
-//            if (null == message) {
-//                throw new IllegalArgumentException("null message");
-//            }
-//        }
-//        if (null == kind) {
-//             throw new IllegalArgumentException("null kind");
-//        }
     }
     
     /** @return the kind of this message */
@@ -171,28 +154,6 @@ public class Message implements IMessage { // XXX toString or renderer?
     
     public String toString() {
         return MessageUtil.renderMessage(this,false);
-    }
-    
-
-    public static String render(Throwable thrown) { // XXX cf LangUtil.debugStr
-        if (null == thrown) return "null throwable";
-        Throwable t = null;
-        if (thrown instanceof InvocationTargetException) {
-            t = ((InvocationTargetException)thrown).getTargetException();
-        } else if (thrown instanceof ClassNotFoundException) {
-            t = ((ClassNotFoundException) thrown).getException();
-        }
-        if (null != t) {
-            return render(t);
-        }
-        StringWriter buf = new StringWriter();
-        PrintWriter writer = new PrintWriter(buf);
-        writer.println(" Message rendering thrown=" + thrown.getClass().getName());
-        writer.println(thrown.getMessage());
-        thrown.printStackTrace(writer);
-        try { buf.close(); } 
-        catch (IOException ioe) {} 
-        return buf.getBuffer().toString();        
     }
 
 	public String getDetails() {

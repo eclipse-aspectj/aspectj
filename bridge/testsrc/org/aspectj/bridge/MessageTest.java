@@ -206,6 +206,9 @@ public class MessageTest extends TestCase {
         String descriptor, Class exClass) {
         try {
             IMessage m = make(input, kind, thrown, sourceLocation, descriptor);
+            if ((null == input) && (null != thrown)) {
+                input = thrown.getMessage();
+            }
             roundTripCheck(m, input, kind, thrown, sourceLocation);
         } catch (AssertionFailedError x) {
             throw x;
@@ -219,7 +222,7 @@ public class MessageTest extends TestCase {
         Throwable thrown, ISourceLocation sourceLocation) {
             IMessage m = message;
             assertTrue("not null", null != m);
-            assertTrue(""+input, equals(input, m.getMessage()));
+            assertEquals(input, m.getMessage());
             assertTrue(""+kind, kind == m.getKind());
             assertTrue(""+thrown, equals(thrown, m.getThrown()));
             assertTrue(""+sourceLocation, 
