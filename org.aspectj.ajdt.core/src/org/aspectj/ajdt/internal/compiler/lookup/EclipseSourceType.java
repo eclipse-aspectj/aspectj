@@ -236,6 +236,11 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 		if (as == null) return false;
 		for (int i = 0; i < as.length; i++) {
 			Annotation annotation = as[i];
+			if (annotation.resolvedType == null) {
+				// Something has gone wrong - probably we have a 1.4 rt.jar around
+				// which will result in a separate error message.
+				return false;
+			}
 			String tname = CharOperation.charToString(annotation.resolvedType.constantPoolName());
 			if (TypeX.forName(tname).equals(ofType)) {
 				return true;
