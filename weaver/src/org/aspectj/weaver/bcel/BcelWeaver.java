@@ -935,7 +935,7 @@ public class BcelWeaver implements IWeaver {
                       AnnotationX[] anns = (AnnotationX[])meth.getAnnotations();
                       // Check if they want to suppress the warning on this piece of advice
                	      if (!Utility.isSuppressing(anns,"adviceDidNotMatch")) {
-                        world.getLint().adviceDidNotMatch.signal(ba.getDeclaringAspect().getNameAsIdentifier(),element.getSourceLocation());
+                        world.getLint().adviceDidNotMatch.signal(ba.getDeclaringAspect().toString(),element.getSourceLocation());
                       }
                     }
                   }
