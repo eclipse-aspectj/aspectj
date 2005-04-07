@@ -136,7 +136,10 @@ public class AspectJElementHierarchy implements IHierarchy {
 			if (packageName == null) {
 				packageNode = root;
 			} else {
-				for (Iterator it = root.getChildren().iterator(); it.hasNext(); ) {
+				if (root == null) return null;
+				List kids = root.getChildren();
+				if (kids == null) return null;
+				for (Iterator it = kids.iterator(); it.hasNext(); ) {
 					IProgramElement node = (IProgramElement)it.next();
 					if (packageName.equals(node.getName())) {
 						packageNode = node;
