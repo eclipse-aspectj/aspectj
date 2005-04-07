@@ -72,7 +72,7 @@
         <sequential>
             <echo message="compile ... @{project}"/>
             <mkdir dir="../@{project}/${build.dir}"/>
-            <javac debug="on" destdir="../@{project}/${build.dir}" source="1.2" target="1.1">
+            <javac debug="on" destdir="../@{project}/${build.dir}" source="1.3" target="1.3">
                 <src path="../@{project}/${src.dir}"/>
                 <classpath refid="@{path}"/>
             </javac>
@@ -85,7 +85,7 @@
         <sequential>
             <echo message="test:compile ... @{project}"/>
             <mkdir dir="../@{project}/${test.build.dir}"/>
-            <javac debug="on" destdir="../@{project}/${test.build.dir}" source="1.2" target="1.1">
+            <javac debug="on" destdir="../@{project}/${test.build.dir}" source="1.3" target="1.3">
                 <src path="../@{project}/${test.src.dir}"/>
                 <classpath refid="@{path}"/>
                 <classpath path="../@{project}/${build.dir}"/>
@@ -99,7 +99,7 @@
         <attribute name="suite"/>
         <sequential>
             <!--   showoutput="on" -->
-            <junit showoutput="on" fork="on" haltonfailure="on" haltonerror="on" printsummary="on">
+            <junit showoutput="on" fork="on" haltonfailure="on" haltonerror="on" printsummary="on" dir="../@{project}">
                 <classpath>
                     <pathelement path="../@{project}/${build.dir}"/>
                     <pathelement path="../@{project}/${test.build.dir}"/>

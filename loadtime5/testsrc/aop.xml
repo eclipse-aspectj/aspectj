@@ -1,0 +1,11 @@
+<!-- FIXME fails when DTD here and call from Ant-->
+<!--<!DOCTYPE aspectj PUBLIC-->
+<!--    "-//AspectJ//DTD//EN"-->
+<!--    "http://www.aspectj.org/dtd/aspectj_1_5_0.dtd">-->
+<aspectj>
+    <weaver options="-showWeaveInfo"/> 
+    <aspects>
+        <!-- see here nested class with ".", "$" is accepted as well -->
+        <aspect name="test.loadtime5.AtAspectJTest.TestAspect"/>
+    </aspects>
+</aspectj>

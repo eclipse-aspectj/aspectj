@@ -228,7 +228,11 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 			if (kind == IMessage.DEBUG || kind == IMessage.INFO) return true;
 			return false;
 		}
-		
+
+        public void dontIgnore(IMessage.Kind kind) {
+            ;
+        }
+
 	}
 	
 	

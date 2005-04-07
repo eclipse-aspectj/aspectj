@@ -14,6 +14,7 @@
 package org.aspectj.ajdt.internal.core.builder;
 
 import java.util.Map;
+import java.util.HashMap;
 
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
@@ -122,7 +123,33 @@ public class AjCompilerOptions extends CompilerOptions {
 		
 		return map;
 	}
-	
+
+    public void setLintMode(String lintMode) {
+        String lintValue = null;
+        if (AjBuildConfig.AJLINT_IGNORE.equals(lintMode)) {
+            lintValue = AjCompilerOptions.IGNORE;
+        } else if (AjBuildConfig.AJLINT_WARN.equals(lintMode)) {
+            lintValue = AjCompilerOptions.WARNING;
+        } else if (AjBuildConfig.AJLINT_ERROR.equals(lintMode)) {
+            lintValue = AjCompilerOptions.ERROR;
+        }
+
+        if (lintValue != null) {
+            Map lintOptions = new HashMap();
+            lintOptions.put(AjCompilerOptions.OPTION_ReportInvalidAbsoluteTypeName,lintValue);
+            lintOptions.put(AjCompilerOptions.OPTION_ReportInvalidWildcardTypeName,lintValue);
+            lintOptions.put(AjCompilerOptions.OPTION_ReportUnresolvableMember,lintValue);
+            lintOptions.put(AjCompilerOptions.OPTION_ReportTypeNotExposedToWeaver,lintValue);
+            lintOptions.put(AjCompilerOptions.OPTION_ReportShadowNotInStructure,lintValue);
+            lintOptions.put(AjCompilerOptions.OPTION_ReportUnmatchedSuperTypeInCall,lintValue);
+            lintOptions.put(AjCompilerOptions.OPTION_ReportCannotImplementLazyTJP,lintValue);
+            lintOptions.put(AjCompilerOptions.OPTION_ReportNeedSerialVersionUIDField,lintValue);
+            lintOptions.put(AjCompilerOptions.OPTION_ReportIncompatibleSerialVersion,lintValue);
+            set(lintOptions);
+        }
+    }
+
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.compiler.impl.CompilerOptions#set(java.util.Map)
 	 */

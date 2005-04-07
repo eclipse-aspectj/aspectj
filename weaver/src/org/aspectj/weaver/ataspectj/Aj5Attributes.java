@@ -87,8 +87,9 @@ public class Aj5Attributes {
         ISourceContext context;
         IMessageHandler handler;
 
-        public AjAttributeStruct(ResolvedTypeX type) {
+        public AjAttributeStruct(ResolvedTypeX type, ISourceContext sourceContext) {
             enclosingType = type;
+            context = sourceContext;
         }
     }
 
@@ -107,8 +108,8 @@ public class Aj5Attributes {
 
         Method method;
 
-        public AjAttributeMethodStruct(Method method, ResolvedTypeX type) {
-            super(type);
+        public AjAttributeMethodStruct(Method method, ResolvedTypeX type, ISourceContext sourceContext) {
+            super(type, sourceContext);
             this.method = method;
         }
 
@@ -140,7 +141,7 @@ public class Aj5Attributes {
      * @return list of AjAttributes
      */
     public static List readAj5ClassAttributes(JavaClass javaClass, ResolvedTypeX type, ISourceContext context,IMessageHandler msgHandler) {
-        AjAttributeStruct struct = new AjAttributeStruct(type);
+        AjAttributeStruct struct = new AjAttributeStruct(type, context);
         Attribute[] attributes = javaClass.getAttributes();
         for (int i = 0; i < attributes.length; i++) {
             Attribute attribute = attributes[i];
@@ -158,7 +159,8 @@ public class Aj5Attributes {
         //TODO can that be too slow ?
         for (int m = 0; m < javaClass.getMethods().length; m++) {
             Method method = javaClass.getMethods()[m];
-            AjAttributeMethodStruct mstruct = new AjAttributeMethodStruct(method, type);
+            //TODO optimize, this method struct will gets recreated for advice extraction
+            AjAttributeMethodStruct mstruct = new AjAttributeMethodStruct(method, type, context);
             Attribute[] mattributes = method.getAttributes();
 
             for (int i = 0; i < mattributes.length; i++) {
@@ -184,7 +186,7 @@ public class Aj5Attributes {
      * @return list of AjAttributes
      */
     public static List readAj5MethodAttributes(Method method, ResolvedTypeX type, ISourceContext context,IMessageHandler msgHandler) {
-        AjAttributeMethodStruct struct = new AjAttributeMethodStruct(method, type);
+        AjAttributeMethodStruct struct = new AjAttributeMethodStruct(method, type, context);
         Attribute[] attributes = method.getAttributes();
 
         for (int i = 0; i < attributes.length; i++) {

@@ -455,7 +455,11 @@ public class Main {
             }
             return false;
 		}
-        
+
+        public void dontIgnore(IMessage.Kind kind) {
+            ;
+        }
+
         /**
          * Render message differently.
          * If abort, then prefix stack trace with feedback request.

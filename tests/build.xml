@@ -79,6 +79,7 @@
         <testrun project="tests" path="tests.test.src.path" suite="org.aspectj.systemtest.AllTests"/>
     </target>
 
+    <!-- run a single test with "ant -Dtest=org.aspectj.systemtest.AllTests15 atest" -->
     <target name="atest" depends="test:compile,
                                  runtime.compile,
                                  weaver.compile">

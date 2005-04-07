@@ -14,7 +14,7 @@ public class AllTests15 {
 		TestSuite suite = new TestSuite("AspectJ System Test Suite - JDK 1.5");
 		//$JUnit-BEGIN$
 		suite.addTest(AllTests14.suite());
-		suite.addTestSuite(AllTestsAspectJ150_NeedJava15.class);
+		suite.addTest(AllTestsAspectJ150_NeedJava15.suite());
 		//$JUnit-END$
 		return suite;
 	}

@@ -140,4 +140,12 @@ public class CountingMessageHandler implements IMessageHandler {
     	if (proxy != null) proxy.reset();
     	counters.clear();
     }
+
+    /**
+     * Not supported
+     * @param kind
+     */
+    public void dontIgnore(IMessage.Kind kind) {
+        ;
+    }
 }

@@ -277,7 +277,11 @@ public class RunStatus implements IRunStatus {
 	public boolean isIgnoring(IMessage.Kind kind) {
 		return messageHolder.isIgnoring(kind);
 	}
-    
+
+    public void dontIgnore(IMessage.Kind kind) {
+        ;
+    }
+
     /**
 	 * @see org.aspectj.bridge.IMessageHolder#hasAnyMessage(Kind, boolean)
 	 */

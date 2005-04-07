@@ -18,9 +18,9 @@
     <target name="compile" if="jdk15" depends="init,
                                                runtime.compile">
         <!-- FIXME: we override compile due to use of java5-src instead of src.. and source/target attrs -->
-        <mkdir dir="${basedir}/bin"/>
-        <javac debug="on" destdir="${basedir}/bin" source="1.5" target="1.5">
-            <src path="${basedir}/java5-src"/>
+        <mkdir dir="../aspectj5rt/bin"/>
+        <javac debug="on" destdir="../aspectj5rt/bin" source="1.5" target="1.5">
+            <src path="../aspectj5rt/java5-src"/>
             <classpath refid="aspectj5rt.src.path"/>
         </javac>
     </target>

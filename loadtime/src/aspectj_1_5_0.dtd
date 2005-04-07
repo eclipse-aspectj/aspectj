@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--*****************************************************************************************************************************
+	AspectJ 5 DTD
+
+To use this DTD, start your defintion file with
+	<!DOCTYPE aspectj PUBLIC
+	    "-//AspectJ//DTD 1.5.0//EN"
+	    "http://.../dtd/aspectj_1_5_0.dtd">
+
+You can also use the "aliasing DTD" that matchs always the latest release of AspectJ
+<!DOCTYPE aspectj PUBLIC
+    "-//AspectJ//DTD//EN"
+    "http://.../dtd/aspectj.dtd">
+
+To not use this DTD, start your definition file with
+	<?xml version="1.0"?>
+
+******************************************************************************************************************************-->
+
+
+<!--*****************************************************************************************************************************
+aspectj
+*********************************************************************************************************************************
+[aspectj] defines the root element
+******************************************************************************************************************************-->
+<!ELEMENT aspectj (
+    weaver?,
+    aspects?
+)>
+<!--*****************************************************************************************************************************
+weaver
+*********************************************************************************************************************************
+[weaver] defines the weaver configuration
+@options defines a command like line of option
+    When multiple aspectj DD are found, the options are simply toggled
+    TODO: Note: the scope of the options can be ClassLoader aware but should be assumed JVM wide
+******************************************************************************************************************************-->
+<!ELEMENT weaver (
+    (include | exclude)*
+)>
+<!ATTLIST weaver
+    options CDATA #IMPLIED
+>
+<!--*****************************************************************************************************************************
+include
+*********************************************************************************************************************************
+[include] narrows the scope of the weaver
+A class must be matched by ALL the include elements to be exposed to the weaver
+@within defines a type pattern
+    (it is not a startWith)
+******************************************************************************************************************************-->
+<!ELEMENT include EMPTY>
+<!ATTLIST include
+    within CDATA #REQUIRED
+>
+<!--*****************************************************************************************************************************
+exclude
+*********************************************************************************************************************************
+[exclude] narrows the scope of the weaver
+A class must be matched by NONE of the exclude elements to be exposed to the weaver
+@within defines a type pattern
+    (it is not a startWith)
+    TODO should it be called @from: "<exclude from=..>  instead of <exclude within=..>
+    TODO: AND must be written that way and not with the "&&" symbol. Thus NOT and OR exists as well.
+******************************************************************************************************************************-->
+<!ELEMENT exclude EMPTY>
+<!ATTLIST exclude
+    within CDATA #REQUIRED
+>
+<!--*****************************************************************************************************************************
+aspects
+*********************************************************************************************************************************
+[aspects] defines a set of aspects
+TODO we were about to use include but it is already used for weaver scope with "within" which is not relevant
+for aspects. I (AV) decided to use only aspect and provide include= thru name, and exclude= as exclude.
+see sample.
+******************************************************************************************************************************-->
+<!ELEMENT aspects (
+    (aspect | exclude | concrete-aspect)*
+)>
+<!--*****************************************************************************************************************************
+aspect
+TODO: did not used include since already used in weaver/include@within and @within does not makes sense
+*********************************************************************************************************************************
+[aspect] defines an aspect to include
+    @name   FQN of the aspect, nested class must use $
+******************************************************************************************************************************-->
+<!ELEMENT aspect EMPTY>
+<!ATTLIST aspect
+    name CDATA #REQUIRED
+>
+<!--*****************************************************************************************************************************
+exclude
+*********************************************************************************************************************************
+[exclude] defines a set of aspect to exclude
+    @within within pattern (even from other systems / parent classloader)
+SAME AS FOR weaver/exclude
+******************************************************************************************************************************-->
+<!--*****************************************************************************************************************************
+concrete-aspect
+*********************************************************************************************************************************
+[concrete-aspect] defines a concrete aspect from an abstract one
+    @name   FQN of the concrete aspect (use $ for nested class) [will be jit generated]
+    @extends FQN of the abstract aspect (use $ for nested class)
+******************************************************************************************************************************-->
+<!ELEMENT concrete-aspect (
+    pointcut+
+)>
+<!ATTLIST concrete-aspect
+    name CDATA #REQUIRED
+    extends CDATA #REQUIRED
+>
+<!--*****************************************************************************************************************************
+pointcut
+*********************************************************************************************************************************
+[pointcut] defines a concrete pointcut within a concrete aspect from an abstract one
+    @name   name of the abstract pointcut (method name, unique in aspect class hierarchy)
+    @expression pointcut expression
+        Note: for argument binding, the bounded arguments must be present and bounded:
+        <pointcut name="myAdvice(int i)" expression="... AND args(i)"/>
+        TODO: AND must be written that way and not with the "&&" symbol. Thus NOT and OR exists as well.
+******************************************************************************************************************************-->
+<!ELEMENT pointcut EMPTY>
+<!ATTLIST pointcut
+    name CDATA #REQUIRED
+    expression CDATA #REQUIRED
+>

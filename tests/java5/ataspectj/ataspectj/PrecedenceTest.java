@@ -39,7 +39,7 @@ public class PrecedenceTest extends TestCase {
     public void testPrecedence() {
         s_log = new StringBuffer();
         hello();
-        assertEquals("TestAspect_3 TestAspect_2 TestAspect_1 hello", s_log.toString());
+        assertEquals("TestAspect_3 TestAspect_2 TestAspect_1 hello ", s_log.toString());
     }
 
 

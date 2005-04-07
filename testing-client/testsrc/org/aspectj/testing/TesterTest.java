@@ -202,7 +202,11 @@ public class TesterTest extends TestCase {
         public boolean isIgnoring(IMessage.Kind kind) {
             return false;
         }
-        
+
+        public void dontIgnore(IMessage.Kind kind) {
+            ;
+        }
+
         public boolean handleMessage(IMessage message) {
             (message.isFailed() ? failures : passes).add(message);
             return true;

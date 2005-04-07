@@ -36,7 +36,10 @@ import org.aspectj.weaver.ataspectj.Aj5Attributes;
 
 final class BcelMethod extends ResolvedMember {
 
-	private Method method;
+	Method method;
+    public int foo() {
+        return method.getLineNumberTable().getLineNumberTable()[0].getLineNumber();//getSourceLine(0);
+    }
 	private boolean isAjSynthetic;
 	private ShadowMunger associatedShadowMunger;
 	private AjAttribute.EffectiveSignatureAttribute effectiveSignature;

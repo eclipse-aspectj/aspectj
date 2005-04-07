@@ -12,6 +12,7 @@ package org.aspectj.systemtest.ajc150;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import junit.framework.TestCase;
 import org.aspectj.systemtest.ajc150.ataspectj.AtAjc150Tests;
 
 /**
@@ -27,7 +28,7 @@ public class AllTestsAspectJ150_NeedJava15 {
 		suite.addTestSuite(Annotations.class);
 		suite.addTestSuite(AnnotationBinding.class);
 		
-        //ATAJ tests
+        //ATAeJ tests
         suite.addTest(AtAjc150Tests.suite());
 
 		//$JUnit-END$

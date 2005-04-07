@@ -23,7 +23,9 @@
                                  testing-drivers/build.xml,
                                  ajdoc/build.xml,
                                  ajbrowser/build.xml,
-                                 tests/build.xml"/>
+                                 tests/build.xml,
+                                 loadtime/build.xml,
+                                 loadtime5/build.xml"/>
             </subant>
         </sequential>
     </macrodef>
@@ -62,7 +64,9 @@
                              ajde/build.xml,
                              taskdefs/build.xml,
                              ajdoc/build.xml,
-                             ajbrowser/build.xml"/>
+                             ajbrowser/build.xml,
+                             loadtime/build.xml,
+                             loadtime5/build.xml"/>
             <!-- TODO av org.aspectj.lib -->
         </subant>
         <!-- FIXME av bcel-builder -->

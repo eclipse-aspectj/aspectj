@@ -134,6 +134,10 @@ public class AjcTaskCompileCommandTest extends TestCase {
             public boolean isIgnoring(IMessage.Kind kind) {
                 return false;
             }
+
+            public void dontIgnore(IMessage.Kind kind) {
+                ;
+            }
         });
         String[] parms = (String[]) args.toArray(new String[0]);
         boolean result = command.runCommand(parms, handler);

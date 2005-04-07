@@ -411,28 +411,7 @@ public class AjBuildConfig {
 
 	public void setLintMode(String lintMode) {
 		this.lintMode = lintMode;
-		String lintValue = null;
-		if (AJLINT_IGNORE.equals(lintMode)) {
-			lintValue = AjCompilerOptions.IGNORE;
-		} else if (AJLINT_WARN.equals(lintMode)) {
-			lintValue = AjCompilerOptions.WARNING;
-		} else if (AJLINT_ERROR.equals(lintMode)) {
-			lintValue = AjCompilerOptions.ERROR;
-		}
-		
-		if (lintValue != null) {
-			Map lintOptions = new HashMap();
-			lintOptions.put(AjCompilerOptions.OPTION_ReportInvalidAbsoluteTypeName,lintValue);
-			lintOptions.put(AjCompilerOptions.OPTION_ReportInvalidWildcardTypeName,lintValue);
-			lintOptions.put(AjCompilerOptions.OPTION_ReportUnresolvableMember,lintValue);
-			lintOptions.put(AjCompilerOptions.OPTION_ReportTypeNotExposedToWeaver,lintValue);
-			lintOptions.put(AjCompilerOptions.OPTION_ReportShadowNotInStructure,lintValue);
-			lintOptions.put(AjCompilerOptions.OPTION_ReportUnmatchedSuperTypeInCall,lintValue);
-			lintOptions.put(AjCompilerOptions.OPTION_ReportCannotImplementLazyTJP,lintValue);
-			lintOptions.put(AjCompilerOptions.OPTION_ReportNeedSerialVersionUIDField,lintValue);
-			lintOptions.put(AjCompilerOptions.OPTION_ReportIncompatibleSerialVersion,lintValue);
-			options.set(lintOptions);
-		}
+        options.setLintMode(lintMode);
 	}
 	
 	public boolean isNoWeave() {

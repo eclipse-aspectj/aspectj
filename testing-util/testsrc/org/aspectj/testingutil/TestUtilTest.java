@@ -34,7 +34,7 @@ public class TestUtilTest extends TestCase {
     
     public void testFileCompareNonClass() throws IOException {
         MessageHandler holder = new MessageHandler();
-        File thisFile = new File(UtilTests.TESTING_UTIL_PATH + "/testsrc/org/aspectj/testing/util/TestUtilTest.java");
+        File thisFile = new File(UtilTests.TESTING_UTIL_PATH + "/testsrc/org/aspectj/testingutil/TestUtilTest.java");
         //File thisFile = new File("src/testing-util.lst");
         assertTrue(TestUtil.sameFiles(holder, thisFile, thisFile));
         
@@ -100,7 +100,7 @@ public class TestUtilTest extends TestCase {
         }
         MessageHandler holder = new MessageHandler();
         File classBase = new File(UtilTests.TESTING_UTIL_PATH + "/testdata/testCompareClassFiles");
-        String path = "org/aspectj/testing/util/TestCompareClassFile.class";
+        String path = "org/aspectj/testingutil/TestCompareClassFile.class";
         File classFile = new File(classBase, path);
         
         try {

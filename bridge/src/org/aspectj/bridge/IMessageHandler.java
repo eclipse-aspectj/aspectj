@@ -49,6 +49,9 @@ public interface IMessageHandler {
 			public boolean isIgnoring(IMessage.Kind kind) {
 				return false;
 			}
+            public void dontIgnore(IMessage.Kind kind) {
+                ;
+            }
 		};
 
 	/** 
@@ -66,4 +69,11 @@ public interface IMessageHandler {
 	 * @return true if this handler is ignoring all messages of this type
 	 */
 	boolean isIgnoring(IMessage.Kind kind);
+
+    /**
+     * Allow fine grained configuration. This implementation does not ignore anything.
+     * @param kind
+     */
+    void dontIgnore(IMessage.Kind kind);
+
 }
