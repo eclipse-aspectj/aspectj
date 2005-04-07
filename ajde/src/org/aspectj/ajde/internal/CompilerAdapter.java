@@ -355,6 +355,14 @@ public class CompilerAdapter {
                 config.setIncrementalMode(true);
         }
         				
+		Map jom = options.getJavaOptionsMap();
+		if (jom!=null) {
+			String version = (String)jom.get(CompilerOptions.OPTION_Compliance);
+			if (version!=null && version.equals(CompilerOptions.VERSION_1_5)) {
+				config.setBehaveInJava5Way(true);
+			}
+		}
+		
 		config.getOptions().set(optionsToSet);
 		String toAdd = options.getNonStandardOptions();
         return LangUtil.isEmpty(toAdd) 
