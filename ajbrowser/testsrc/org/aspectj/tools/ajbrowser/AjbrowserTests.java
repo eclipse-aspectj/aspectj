@@ -31,4 +31,4 @@ public class AjbrowserTests extends TestCase {
     public AjbrowserTests(String name) { super(name); }
 
     public void testNothing() {}
-}  
+}

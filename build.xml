@@ -1,11 +1,20 @@
 <?xml version="1.0"?>
 <project name="aspectj" basedir=".">
 
+   <target name="patch">
+       <cvs output="patch">
+            <commandline>
+                <argument line="-q diff -u -N"/>
+            </commandline>
+        </cvs>
+    </target>
+
     <macrodef name="targets">
         <attribute name="name"/>
         <sequential>
             <subant target="@{name}">
                 <!-- TODO ant 1.7 stuff here would be better.. -->
+                <!-- TODO: we do not call RunBeforeCommit since all test will be run thru each module separately -->
                 <filelist dir="."
                           files="runtime/build.xml,
                                  util/build.xml,
