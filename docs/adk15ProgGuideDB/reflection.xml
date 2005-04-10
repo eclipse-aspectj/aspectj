@@ -2,5 +2,18 @@
 
   <title>New Reflection Interfaces</title>
   
+  <para>
+      AspectJ 5 provides support for runtime reflection of aspect types. The class <literal>Aspect</literal> is
+      analogous to the Java class <literal>Class</literal> and provides access to the members of an aspect. 
+  </para>
+  
+   <sect1 id="reflection_api">
+    <title>The Aspect Class</title>
+	<para>
+	    
+	</para>
+	
+  </sect1>
+  
 </chapter>
 

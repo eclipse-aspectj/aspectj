@@ -209,14 +209,15 @@
 
     <informaltable frame="1">
       <tgroup cols="4" align="left">
-        <tbody valign="top">
+        <thead valign="top">
           <row>
             <entry><emphasis role="bold">Join Point</emphasis></entry>
             <entry><emphasis role="bold">Current Object</emphasis></entry>
             <entry><emphasis role="bold">Target Object</emphasis></entry>
             <entry><emphasis role="bold">Arguments</emphasis></entry>
           </row>
-
+       </thead>   
+       <tbody>
           <row>
             <entry>Method Call</entry>
             <entry>executing object*</entry>

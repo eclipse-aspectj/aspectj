@@ -86,7 +86,7 @@ is suppressed.
 </doc:param>
 
 <!-- ==================================================================== -->
-<xsl:param name="html.stylesheet" select="''" doc:type='string'/>
+<xsl:param name="html.stylesheet" doc:type='string'>aspectj-docs.css</xsl:param>
 
 <doc:param name="html.stylesheet" xmlns="">
 <refpurpose>Name of the stylesheet to use in the generated HTML</refpurpose>

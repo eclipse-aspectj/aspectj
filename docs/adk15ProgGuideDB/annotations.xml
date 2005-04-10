@@ -341,47 +341,65 @@
       
       <para>Some examples of annotation patterns follow:</para>    
 
-      <programlisting><![CDATA[
-      @Immutable
-      ]]></programlisting>
+  	<variablelist>
 
-      <para>Matches any annotated element which has an annotation of 
-      type <literal>Immutable</literal>.</para>
+        <varlistentry>
+          <term>@Immutable</term>
+          <listitem>
+            <para>
+            	Matches any annotated element which has an annotation of 
+      			type <literal>Immutable</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
 
-      <programlisting><![CDATA[
-      !@Persistent
-      ]]></programlisting>
+        <varlistentry>
+          <term>!@Persistent</term>
+          <listitem>
+            <para>
+				Matches any annotated element which does not have an annotation of 
+      			type <literal>Persistent</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
 
-      <para>Matches any annotated element which does not have an annotation of 
-      type <literal>Persistent</literal>.</para>
+        <varlistentry>
+          <term>@Foo @Goo</term>
+          <listitem>
+            <para>
+				Matches any annotated element which has both an annotation of type <literal>Foo</literal> and
+      			an annotation of type <literal>Goo</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
 
-      <programlisting><![CDATA[
-      @Foo @Goo
-      ]]></programlisting>
+        <varlistentry>
+          <term>@(Foo || Goo)</term>
+          <listitem>
+            <para>
+				  Matches any annotated element which has either an annotation of a type matching
+			      the type pattern <literal>(Foo || Goo)</literal>. 
+			      In other words, an annotated element with either an
+			      annotation of type <literal>Foo</literal> or
+			      an annotation of type <literal>Goo</literal> (or both). (The parenthesis are required in this example).
+            </para>
+          </listitem>
+        </varlistentry>
 
-      <para>Matches any annotated element which has both an annotation of type <literal>Foo</literal> and
-      an annotation of type <literal>Goo</literal>.</para>
+        <varlistentry>
+          <term>@(org.xyz..*)</term>
+          <listitem>
+            <para>
+		      Matches any annotated element which has either an annotation of a type matching
+		      the type pattern <literal>(org.xyz..*)</literal>. 
+		      In other words, an annotated element with an annotation that is declared in the
+		      org.xyz package or a sub-package. (The parenthesis are required in this example).
+            </para>
+          </listitem>
+        </varlistentry>
 
-      <programlisting><![CDATA[
-      @(Foo || Goo)
-      ]]></programlisting>
-
-      <para>Matches any annotated element which has either an annotation of a type matching
-      the type pattern <literal>(Foo || Goo)</literal>. 
-      In other words, an annotated element with either an
-      annotation of type <literal>Foo</literal> or
-      an annotation of type <literal>Goo</literal> (or both). (The parenthesis are required in this example).
-      </para>
-
-      <programlisting><![CDATA[
-      @(org.xyz..*)
-      ]]></programlisting>
-
-      <para>Matches any annotated element which has either an annotation of a type matching
-      the type pattern <literal>(org.xyz..*)</literal>. 
-      In other words, an annotated element with an annotation that is declared in the
-      org.xyz package or a sub-package. (The parenthesis are required in this example).</para>
-
+	</variablelist>
+    
   </sect2>
   
   <sect2>
@@ -425,64 +443,83 @@
 		patterns:
 	</para>
 
-     <programlisting><![CDATA[
-     (@Immutable *)
-     ]]></programlisting>
+  <variablelist>
 
-     <para>Matches any type with an <literal>@Immutable</literal> annotation.</para>
+        <varlistentry>
+          <term>(@Immutable *)</term>
+          <listitem>
+            <para>
+            	Matches any type with an <literal>@Immutable</literal> annotation.
+            </para>
+          </listitem>
+        </varlistentry>
 
-     <programlisting><![CDATA[
-     (!@Immutable *)
-     ]]></programlisting>
+        <varlistentry>
+          <term>(!@Immutable *)</term>
+          <listitem>
+            <para>
+            	Matches any type which does not have an <literal>@Immutable</literal> annotation.
+            </para>
+          </listitem>
+        </varlistentry>
 
-     <para>Matches any type which does not have an <literal>@Immutable</literal> annotation.</para>
+        <varlistentry>
+          <term>  (@Immutable (org.xyz.* || org.abc.*))</term>
+          <listitem>
+            <para>
+            	Matches any type in the <literal>org.xyz</literal> or <literal>org.abc</literal>
+ 			    packages with the <literal>@Immutable</literal> annotation.
+            </para>
+          </listitem>
+        </varlistentry>
 
-     <programlisting><![CDATA[
-     (@Immutable (org.xyz.* || org.abc.*))
-     ]]></programlisting>
+        <varlistentry>
+          <term>((@Immutable Foo+) || Goo)</term>
+          <listitem>
+            <para>
+            	Matches a type <literal>Foo</literal> or any of its subtypes, which have the <literal>@Immutable</literal>
+     			annotation, or a type <literal>Goo</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
 
-     <para>Matches any type in the <literal>org.xyz</literal> or <literal>org.abc</literal>
-     packages with the <literal>@Immutable</literal> annotation.</para>
+        <varlistentry>
+          <term>((@(Immutable || NonPersistent) org.xyz..*)</term>
+          <listitem>
+            <para>
+            	Matches any type in a package beginning with the prefix <literal>org.xyz</literal>,
+     			which has either the <literal>@Immutable</literal> annotation or the
+     			<literal>@NonPersistent</literal> annotation.            	
+            </para>
+          </listitem>
+        </varlistentry>
 
-     <programlisting><![CDATA[
-     ((@Immutable Foo+) || Goo)
-     ]]></programlisting>
+        <varlistentry>
+          <term>(@Immutable @NonPersistent org.xyz..*)</term>
+          <listitem>
+            <para>
+            	 Matches any type in a package beginning with the prefix <literal>org.xyz</literal>,
+			     which has both an <literal>@Immutable</literal> annotation and an
+			     <literal>@NonPersistent</literal> annotation.
+            </para>
+          </listitem>
+        </varlistentry>
 
-     <para>Matches a type <literal>Foo</literal> or any of its subtypes, which have the <literal>@Immutable</literal>
-     annotation, or a type <literal>Goo</literal>.</para>
-     
-     <programlisting><![CDATA[
-     ((@(Immutable || NonPersistent) org.xyz..*)
-     ]]></programlisting>
+        <varlistentry>
+          <term>  (@(@Inherited *) org.xyz..*)</term>
+          <listitem>
+            <para>
+            	Matches any type in a package beginning with the prefix <literal>org.xyz</literal>,
+			     which has an inheritable annotation. The annotation pattern 
+			     <literal>@(@Inherited *)</literal> matches any annotation of a type matching the
+			     type pattern <literal>@Inherited *</literal>, which in turn matches any type with the
+			     <literal>@Inherited</literal> annotation.
+            </para>
+          </listitem>
+        </varlistentry>
 
-     <para>
-     Matches any type in a package beginning with the prefix <literal>org.xyz</literal>,
-     which has either the <literal>@Immutable</literal> annotation or the
-     <literal>@NonPersistent</literal> annotation.
-     </para>
-
-     <programlisting><![CDATA[
-     (@Immutable @NonPersistent org.xyz..*)
-     ]]></programlisting>
-
-     <para>
-     Matches any type in a package beginning with the prefix <literal>org.xyz</literal>,
-     which has both an <literal>@Immutable</literal> annotation and an
-     <literal>@NonPersistent</literal> annotation.
-     </para>
-     
-     <programlisting><![CDATA[
-     (@(@Inherited *) org.xyz..*)
-     ]]></programlisting>
-
-     <para>
-     Matches any type in a package beginning with the prefix <literal>org.xyz</literal>,
-     which has an inheritable annotation. The annotation pattern 
-     <literal>@(@Inherited *)</literal> matches any annotation of a type matching the
-     type pattern <literal>@Inherited *</literal>, which in turn matches any type with the
-     <literal>@Inherited</literal> annotation.
-     </para>
-     
+  </variablelist>
+       
   </sect2>
   
   <sect2 id="signaturePatterns" xreflabel="Signature Patterns">
