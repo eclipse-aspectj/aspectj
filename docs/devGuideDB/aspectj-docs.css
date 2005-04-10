@@ -3,6 +3,11 @@ body {
   line-height: 1.1em;
  }
 
+h1 {
+  margin-bottom: 3px;
+  padding-bottom: 5px;
+}
+
 h2 { 
      font-size: 130%; 
      font-weight: bold ; 
