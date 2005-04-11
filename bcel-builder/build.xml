@@ -3,7 +3,7 @@
     <!-- *********************************************************************** -->
     <!-- compliance for Alex build -->
     <!-- *********************************************************************** -->
-    <import file="../build-common.xml"/>
+    <import file="../build/build-common.xml"/>
 
     <path id="bcel-builder.test.src.path">
         <fileset dir="${basedir}/../lib">

@@ -1,89 +1,42 @@
 <?xml version="1.0"?>
-<project name="aspectj" basedir=".">
+<project name="aspectj" basedir="." default="all">
 
-   <target name="patch">
-       <cvs output="patch">
-            <commandline>
-                <argument line="-q diff -u -N"/>
-            </commandline>
-        </cvs>
-    </target>
-
-    <macrodef name="targets">
-        <attribute name="name"/>
-        <sequential>
-            <subant target="@{name}">
-                <!-- TODO ant 1.7 stuff here would be better.. -->
-                <!-- TODO: we do not call RunBeforeCommit since all test will be run thru each module separately -->
-                <filelist dir="."
-                          files="runtime/build.xml,
-                                 util/build.xml,
-                                 bridge/build.xml,
-                                 aspectj5rt/build.xml,
-                                 bcel-builder/build.xml,
-                                 testing-util/build.xml,
-                                 asm/build.xml,
-                                 weaver/build.xml,
-                                 org.aspectj.ajdt.core/build.xml,
-                                 ajde/build.xml,
-                                 testing-client/build.xml,
-                                 taskdefs/build.xml,
-                                 testing/build.xml,
-                                 testing-drivers/build.xml,
-                                 ajdoc/build.xml,
-                                 ajbrowser/build.xml,
-                                 tests/build.xml,
-                                 loadtime/build.xml,
-                                 loadtime5/build.xml"/>
-            </subant>
-        </sequential>
-    </macrodef>
-
-    <target name="all">
-        <targets name="all"/>
-    </target>
+    <!-- a root build.xml that redirects to build/build-ant.xml for convenience so that ones can type
+    "ant .." straight in the modules/ root --> 
 
     <target name="clean">
-        <targets name="clean"/>
-        <mkdir dir="aj-build/dist"/>
-        <mkdir dir="aj-build/jars"/>
+        <subant target="clean">
+            <fileset dir="." includes="build/build-ant.xml"/>
+        </subant>
     </target>
 
     <target name="cleanall">
-        <targets name="cleanall"/>
-        <delete dir="aj-build"/>
+        <subant target="cleanall">
+            <fileset dir="." includes="build/build-ant.xml"/>
+        </subant>
+    </target>
+
+    <target name="all">
+        <subant target="all">
+            <fileset dir="." includes="build/build-ant.xml"/>
+        </subant>
+    </target>
+
+    <target name="compile">
+        <subant target="compile">
+            <fileset dir="." includes="build/build-ant.xml"/>
+        </subant>
     </target>
 
     <target name="test">
-        <targets name="test"/>
+        <subant target="test">
+            <fileset dir="." includes="build/build-ant.xml"/>
+        </subant>
     </target>
 
     <target name="jar">
         <subant target="jar">
-            <!-- TODO ant 1.7 stuff here would be better.. -->
-            <filelist dir="."
-                      files="runtime/build.xml,
-                             util/build.xml,
-                             bridge/build.xml,
-                             aspectj5rt/build.xml,
-                             bcel-builder/build.xml,
-                             asm/build.xml,
-                             weaver/build.xml,
-                             org.aspectj.ajdt.core/build.xml,
-                             ajde/build.xml,
-                             taskdefs/build.xml,
-                             ajdoc/build.xml,
-                             ajbrowser/build.xml,
-                             loadtime/build.xml,
-                             loadtime5/build.xml"/>
-            <!-- TODO av org.aspectj.lib -->
-        </subant>
-        <!-- FIXME av bcel-builder -->
-    </target>
-
-    <target name="docs">
-        <subant target="dist">
-            <filelist dir="." files="docs/build.xml"/>
+            <fileset dir="." includes="build/build-ant.xml"/>
         </subant>
     </target>
 

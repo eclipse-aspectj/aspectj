@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="ajde" default="all" basedir=".">
 
-    <import file="../build-common.xml"/>
+    <import file="../build/build-common.xml"/>
     <import file="../runtime/build.xml"/>
     <import file="../org.aspectj.ajdt.core/build.xml"/>
 

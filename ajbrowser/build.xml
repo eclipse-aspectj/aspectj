@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="ajbrowser" default="all" basedir=".">
 
-    <import file="../build-common.xml"/>
+    <import file="../build/build-common.xml"/>
     <import file="../ajde/build.xml"/>
     <import file="../asm/build.xml"/>
     <import file="../bridge/build.xml"/>

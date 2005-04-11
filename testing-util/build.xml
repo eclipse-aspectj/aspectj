@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="testing-util" default="all" basedir=".">
 
-    <import file="../build-common.xml"/>
+    <import file="../build/build-common.xml"/>
     <import file="../bridge/build.xml"/>
     <import file="../util/build.xml"/>
     <import file="../runtime/build.xml"/>
