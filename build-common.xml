@@ -99,23 +99,23 @@
         <attribute name="suite"/>
         <sequential>
             <!--   showoutput="on" -->
-            <junit showoutput="on" fork="on" haltonfailure="on" haltonerror="on" printsummary="on" dir="../@{project}">
-                <classpath>
-                    <pathelement path="../@{project}/${build.dir}"/>
-                    <pathelement path="../@{project}/${test.build.dir}"/>
-                    <path refid="@{path}"/>
-                </classpath>
-                <test name="@{suite}"/>
-            </junit>
-            <!-- TODO AV - using java to invoke JUnit since the junit task is hidding errors - don't know why -->
-<!--            <java classname="@{suite}" fork="on" dir="../@{project}">-->
-<!--                <jvmarg line=""/>-->
+<!--            <junit showoutput="on" fork="on" haltonfailure="on" haltonerror="on" printsummary="on" dir="../@{project}">-->
 <!--                <classpath>-->
 <!--                    <pathelement path="../@{project}/${build.dir}"/>-->
 <!--                    <pathelement path="../@{project}/${test.build.dir}"/>-->
 <!--                    <path refid="@{path}"/>-->
 <!--                </classpath>-->
-<!--            </java>-->
+<!--                <test name="@{suite}"/>-->
+<!--            </junit>-->
+            <!-- TODO AV - using java to invoke JUnit since the junit task is hidding errors - don't know why -->
+            <java classname="@{suite}" fork="on" dir="../@{project}">
+                <jvmarg line=""/>
+                <classpath>
+                    <pathelement path="../@{project}/${build.dir}"/>
+                    <pathelement path="../@{project}/${test.build.dir}"/>
+                    <path refid="@{path}"/>
+                </classpath>
+            </java>
         </sequential>
     </macrodef>
 

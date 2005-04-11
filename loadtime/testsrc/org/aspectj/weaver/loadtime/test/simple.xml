@@ -1,0 +1,7 @@
+<aspectj>
+    <weaver options="-showWeaveInfo">
+    </weaver>
+    <aspects>
+        <aspect name="test.Aspect"/>
+    </aspects>
+</aspectj>

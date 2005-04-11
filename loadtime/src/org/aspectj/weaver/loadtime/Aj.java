@@ -13,6 +13,8 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.weaver.ICrossReferenceHandler;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.patterns.PatternParser;
+import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.loadtime.definition.Definition;
@@ -95,56 +97,7 @@ public class Aj implements ClassPreProcessor {
         }
     }
 
-    /**
-     * Adaptor with the AspectJ WeavingAdaptor
-     */
-    static class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
-
-        public ClassLoaderWeavingAdaptor(final ClassLoader loader) {
-            super(null);// at this stage we don't have yet a generatedClassHandler to define to the VM the closures
-            this.generatedClassHandler = new GeneratedClassHandler() {
-                /**
-                 * Callback when we need to define a Closure in the JVM
-                 *
-                 * @param name
-                 * @param bytes
-                 */
-                public void acceptClass(String name, byte[] bytes) {
-                    //TODO av make dump configurable
-                    try {
-                        __dump(name, bytes);
-                    } catch (Throwable throwable) {
-                        throwable.printStackTrace();
-                    }
-                    defineClass(loader, name, bytes);// could be done lazily using the hook
-                }
-            };
-
-            bcelWorld = new BcelWorld(
-                    loader, messageHandler, new ICrossReferenceHandler() {
-                        public void addCrossReference(ISourceLocation from, ISourceLocation to, IRelationship.Kind kind, boolean runtimeTest) {
-                            ;// for tools only
-                        }
-                    }
-            );
-
-//            //TODO this AJ code will call
-//            //org.aspectj.apache.bcel.Repository.setRepository(this);
-//            //ie set some static things
-//            //==> bogus as Bcel is expected to be
-//            org.aspectj.apache.bcel.Repository.setRepository(new ClassLoaderRepository(loader));
-
-            weaver = new BcelWeaver(bcelWorld);
-
-            // register the definitions
-            registerDefinitions(weaver, loader);
-
-            // after adding aspects
-            weaver.prepareForWeave();
-        }
-    }
-
-    private static void defineClass(ClassLoader loader, String name, byte[] bytes) {
+    static void defineClass(ClassLoader loader, String name, byte[] bytes) {
         try {
             //TODO av protection domain, and optimize
             Method defineClass = ClassLoader.class.getDeclaredMethod(
@@ -173,7 +126,7 @@ public class Aj implements ClassPreProcessor {
      * @param b
      * @throws Throwable
      */
-    private static void __dump(String name, byte[] b) throws Throwable {
+    static void __dump(String name, byte[] b) throws Throwable {
         String className = name.replace('.', '/');
         final File dir;
         if (className.indexOf('/') > 0) {
@@ -188,105 +141,4 @@ public class Aj implements ClassPreProcessor {
         os.close();
     }
 
-    /**
-     * Load and cache the aop.xml/properties according to the classloader visibility rules
-     *
-     * @param weaver
-     * @param loader
-     */
-    private static void registerDefinitions(final BcelWeaver weaver, final ClassLoader loader) {
-        try {
-            //TODO av underoptimized: we will parse each XML once per CL that see it
-            Enumeration xmls = loader.getResources("/META-INF/aop.xml");
-            List definitions = new ArrayList();
-
-            //TODO av dev mode needed ? TBD -Daj5.def=...
-            if (loader != null && loader != ClassLoader.getSystemClassLoader().getParent()) {
-                String file = System.getProperty("aj5.def", null);
-                if (file != null) {
-                    definitions.add(DocumentParser.parse((new File(file)).toURL()));
-                }
-            }
-
-            while (xmls.hasMoreElements()) {
-                URL xml = (URL) xmls.nextElement();
-                definitions.add(DocumentParser.parse(xml));
-            }
-            registerOptions(weaver, loader, definitions);
-            registerAspects(weaver, loader, definitions);
-            registerFilters(weaver, loader, definitions);
-        } catch (Exception e) {
-            weaver.getWorld().getMessageHandler().handleMessage(
-                    new Message("Register definition failed", IMessage.FAIL, e, null)
-            );
-        }
-    }
-
-    /**
-     * Configure the weaver according to the option directives
-     * TODO av - don't know if it is that good to reuse, since we only allow a small subset of options in LTW
-     *
-     * @param weaver
-     * @param loader
-     * @param definitions
-     */
-    private static void registerOptions(final BcelWeaver weaver, final ClassLoader loader, final List definitions) {
-        StringBuffer allOptions = new StringBuffer();
-        for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
-            Definition definition = (Definition) iterator.next();
-            allOptions.append(definition.getWeaverOptions()).append(' ');
-        }
-
-        Options.WeaverOption weaverOption = Options.parse(allOptions.toString(), loader);
-
-        // configure the weaver and world
-        // AV - code duplicates AspectJBuilder.initWorldAndWeaver()
-        World world = weaver.getWorld();
-        world.setMessageHandler(weaverOption.messageHandler);
-        world.setXlazyTjp(weaverOption.lazyTjp);
-        weaver.setReweavableMode(weaverOption.reWeavable, false);
-        world.setXnoInline(weaverOption.noInline);
-        world.setBehaveInJava5Way(weaverOption.java5);
-        //TODO proceedOnError option
-    }
-
-    /**
-     * Register the aspect, following include / exclude rules
-     *
-     * @param weaver
-     * @param loader
-     * @param definitions
-     */
-    private static void registerAspects(final BcelWeaver weaver, final ClassLoader loader, final List definitions) {
-        //TODO: the exclude aspect allow to exclude aspect defined upper in the CL hierarchy - is it what we want ??
-        // if not, review the getResource so that we track which resource is defined by which CL
-
-        //it aspectClassNames
-        //exclude if in any of the exclude list
-        for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
-            Definition definition = (Definition) iterator.next();
-            for (Iterator aspects = definition.getAspectClassNames().iterator(); aspects.hasNext();) {
-                String aspectClassName = (String) aspects.next();
-                if (!Definition.isAspectExcluded(aspectClassName, definitions)) {
-                    weaver.addLibraryAspect(aspectClassName);
-                }
-            }
-        }
-
-        //it concreteAspects
-        //exclude if in any of the exclude list
-        //TODO
-    }
-
-    /**
-     * Register the include / exclude filters
-     *
-     * @param weaver
-     * @param loader
-     * @param definitions
-     */
-    private static void registerFilters(final BcelWeaver weaver, final ClassLoader loader, final List definitions) {
-        //TODO
-        ;
-    }
 }

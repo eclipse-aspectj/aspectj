@@ -7,10 +7,15 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime.definition;
 
+import org.aspectj.weaver.patterns.PatternParser;
+
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
+ * A POJO that contains raw strings from the XML (sort of XMLBean for our simple LTW DTD)
+ *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class Definition {
@@ -79,11 +84,6 @@ public class Definition {
             this.name = name;
             this.expression = expression;
         }
-    }
-
-    public static boolean isAspectExcluded(String aspectClassName, List definitions) {
-        //TODO
-        return false;
     }
 
     public void appendWeaverOptions(String option) {

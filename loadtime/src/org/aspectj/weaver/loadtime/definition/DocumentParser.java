@@ -7,26 +7,26 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime.definition;
 
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.InputSource;
 import org.xml.sax.Attributes;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.DTDHandler;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
-import org.aspectj.weaver.loadtime.definition.Definition;
 
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.List;
-import java.net.URL;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.File;
+import java.net.URL;
+
+import com.sun.org.apache.xerces.internal.impl.XMLEntityManager;
 
 /**
+ * FIXME AV - doc, concrete aspect
+ *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class DocumentParser extends DefaultHandler {
@@ -48,6 +48,8 @@ public class DocumentParser extends DefaultHandler {
 
     private final static String ASPECTJ_ELEMENT = "aspectj";
     private final static String WEAVER_ELEMENT = "weaver";
+    private final static String INCLUDE_ELEMENT = "include";
+    private final static String EXCLUDE_ELEMENT = "exclude";
     private final static String OPTIONS_ATTRIBUTE = "options";
     private final static String ASPECTS_ELEMENT = "aspects";
     private final static String ASPECT_ELEMENT = "aspect";
@@ -55,12 +57,15 @@ public class DocumentParser extends DefaultHandler {
     private final static String NAME_ATTRIBUTE = "name";
     private final static String EXTEND_ATTRIBUTE = "extends";
     private final static String POINTCUT_ELEMENT = "pointcut";
+    private final static String WITHIN_ATTRIBUTE = "within";
     private final static String EXPRESSION_ATTRIBUTE = "expression";
 
 
     private final Definition m_definition;
 
     private boolean m_inAspectJ;
+    private boolean m_inWeaver;
+    private boolean m_inAspects;
 
     private Definition.ConcreteAspect m_lastConcreteAspect;
 
@@ -74,26 +79,27 @@ public class DocumentParser extends DefaultHandler {
             DocumentParser parser = new DocumentParser();
 
             XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-            xmlReader.setEntityResolver(parser);
             xmlReader.setContentHandler(parser);
-            //TODO use a locator for error location reporting ?
+            xmlReader.setErrorHandler(parser);
 
             try {
-              if (xmlReader.getFeature("http://xml.org/sax/features/validation")) {
                 xmlReader.setFeature("http://xml.org/sax/features/validation", false);
-              }
-//              xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
-//              xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-            }
-            catch (SAXNotRecognizedException e) {
-              ;//fine, the parser don't do validation
+                xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            } catch (SAXNotRecognizedException e) {
+                ;//fine, the parser don't do validation
             }
 
+            xmlReader.setEntityResolver(parser);
             in = url.openStream();
             xmlReader.parse(new InputSource(in));
             return parser.m_definition;
         } finally {
-            try {in.close();} catch (Throwable t) {;}
+            try {
+                in.close();
+            } catch (Throwable t) {
+                ;
+            }
         }
     }
 
@@ -101,19 +107,18 @@ public class DocumentParser extends DefaultHandler {
         if (publicId.equals(DTD_PUBLIC_ID) || publicId.equals(DTD_PUBLIC_ID_ALIAS)) {
             InputStream in = DTD_STREAM;
             if (in == null) {
-//                System.err.println("AspectJ - WARN - could not open DTD");
                 return null;
             } else {
                 return new InputSource(in);
             }
         } else {
-//            System.err.println(
-//                    "AspectJ - WARN - deprecated DTD "
-//                    + publicId
-//                    + " - consider upgrading to "
-//                    + DTD_PUBLIC_ID
-//            );
-            return null;//new InputSource();
+            System.err.println(
+                    "AspectJ - WARN - unknown DTD "
+                    + publicId
+                    + " - consider using "
+                    + DTD_PUBLIC_ID
+            );
+            return null;
         }
     }
 
@@ -128,6 +133,7 @@ public class DocumentParser extends DefaultHandler {
             if (!isNull(options)) {
                 m_definition.appendWeaverOptions(options);
             }
+            m_inWeaver = true;
         } else if (CONCRETE_ASPECT_ELEMENT.equals(qName)) {
             String name = attributes.getValue(NAME_ATTRIBUTE);
             String extend = attributes.getValue(EXTEND_ATTRIBUTE);
@@ -147,11 +153,25 @@ public class DocumentParser extends DefaultHandler {
             }
             m_inAspectJ = true;
         } else if (ASPECTS_ELEMENT.equals(qName)) {
-            ;//nothing to do
+            m_inAspects = true;
+        } else if (INCLUDE_ELEMENT.equals(qName) && m_inWeaver) {
+            String typePattern = attributes.getValue(WITHIN_ATTRIBUTE);
+            if (!isNull(typePattern)) {
+                m_definition.getIncludePatterns().add(typePattern);
+            }
+        } else if (EXCLUDE_ELEMENT.equals(qName) && m_inWeaver) {
+            String typePattern = attributes.getValue(WITHIN_ATTRIBUTE);
+            if (!isNull(typePattern)) {
+                m_definition.getExcludePatterns().add(typePattern);
+            }
+        } else if (EXCLUDE_ELEMENT.equals(qName) && m_inAspects) {
+            String typePattern = attributes.getValue(WITHIN_ATTRIBUTE);
+            if (!isNull(typePattern)) {
+                m_definition.getAspectExcludePatterns().add(typePattern);
+            }
         } else {
             throw new SAXException("Unknown element while parsing <aspectj> element: " + qName);
         }
-        //TODO include / exclude
         super.startElement(uri, localName, qName, attributes);
     }
 
@@ -160,10 +180,15 @@ public class DocumentParser extends DefaultHandler {
             m_lastConcreteAspect = null;
         } else if (ASPECTJ_ELEMENT.equals(qName)) {
             m_inAspectJ = false;
+        } else if (WEAVER_ELEMENT.equals(qName)) {
+            m_inWeaver = false;
+        } else if (ASPECTS_ELEMENT.equals(qName)) {
+            m_inAspects = false;
         }
         super.endElement(uri, localName, qName);
     }
 
+    //TODO AV - define what we want for XML parser error - for now stderr
     public void warning(SAXParseException e) throws SAXException {
         super.warning(e);
     }
@@ -177,20 +202,15 @@ public class DocumentParser extends DefaultHandler {
     }
 
 
-
     private static String replaceXmlAnd(String expression) {
-        //TODO av do we need to handle "..)AND" or "AND(.." ?
-        //FIXME av Java 1.4 code - if KO, use some Strings util
+        //TODO AV do we need to handle "..)AND" or "AND(.." ?
+        //FIXME AV Java 1.4 code - if KO, use some Strings util
         return expression.replaceAll(" AND ", " && ");
-    }
-
-    public static void main(String args[]) throws Throwable {
-        Definition def = parse(new File(args[0]).toURL());
-        System.out.println(def);
     }
 
     private boolean isNull(String s) {
         return (s == null || s.length() <= 0);
     }
+
 
 }

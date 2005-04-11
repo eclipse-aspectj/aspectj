@@ -3,7 +3,9 @@
 <!--    "-//AspectJ//DTD//EN"-->
 <!--    "http://www.aspectj.org/dtd/aspectj_1_5_0.dtd">-->
 <aspectj>
-    <weaver options="-showWeaveInfo"/> 
+    <weaver options="-showWeaveInfo">
+        <include within="test..*"/>
+    </weaver>
     <aspects>
         <!-- see here nested class with ".", "$" is accepted as well -->
         <aspect name="test.loadtime5.AtAspectJTest.TestAspect"/>

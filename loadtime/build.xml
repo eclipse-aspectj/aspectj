@@ -31,12 +31,22 @@
                                     util.compile,
                                     weaver.compile">
         <srccompile project="loadtime" path="loadtime.src.path"/>
+        <!-- copy resources -->
+        <copy todir="../loadtime/bin">
+            <fileset dir="../loadtime/src" includes="**/*.dtd"/>
+        </copy>
     </target>
 
     <target name="test:compile" depends="compile">
+        <testcompile project="loadtime" path="loadtime.src.path"/>
+        <!-- copy resources -->
+        <copy todir="../loadtime/bin">
+            <fileset dir="../loadtime/testsrc" includes="**/*.xml"/>
+        </copy>
     </target>
 
     <target name="test" depends="test:compile">
+        <testrun project="loadtime" path="loadtime.test.src.path" suite="LoadtimeModuleTests"/>
     </target>
 
     <target name="jar" depends="compile">

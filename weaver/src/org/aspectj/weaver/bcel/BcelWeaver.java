@@ -82,6 +82,7 @@ import org.aspectj.weaver.patterns.OrPointcut;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.PointcutRewriter;
 import org.aspectj.weaver.patterns.WithinPointcut;
+import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.ataspectj.Aj5Attributes;
 
 
@@ -91,7 +92,7 @@ public class BcelWeaver implements IWeaver {
     private IProgressListener progressListener = null;
     private double progressMade;
     private double progressPerClassFile;
-    
+
     private boolean inReweavableMode = false;
     
     public BcelWeaver(BcelWorld world) {

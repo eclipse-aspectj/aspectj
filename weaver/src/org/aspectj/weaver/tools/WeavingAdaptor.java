@@ -184,9 +184,14 @@ public class WeavingAdaptor {
 	private boolean shouldWeave (String name) {
 		name = name.replace('/','.');
 		boolean b = (enabled && !generatedClasses.containsKey(name) && shouldWeaveName(name) && shouldWeaveAspect(name));
-		return b;
+		return b && accept(name);
 	}
-	
+
+    //ATAJ
+    protected boolean accept(String name) {
+        return true;
+    }
+
 	private boolean shouldWeaveName (String name) {
 		return !((name.startsWith("org.apache.bcel.") || name.startsWith("org.aspectj.") || name.startsWith("java.") || name.startsWith("javax.")));
 	}
