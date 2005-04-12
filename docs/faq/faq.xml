@@ -4008,18 +4008,52 @@ vmparam -Xmx384m
 				distribution, and test everything, see <ulink 
 				url="http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/release/build.xml?rev=HEAD&amp;content-type=text/xml&amp;cvsroot=Technology_Project"> 
 				org.aspectj/modules/build/release/build.xml</ulink>. </para>
-          <para>The AspectJ tree is organized into modules as follows:
-          <programlisting>
-  org.aspectj/
-    modules/
-      ajbrowser/
-      ajde/
-      ...
-      lib/
-      ...
-          </programlisting>
+          <para>
+          To check out the source code in Eclipse go to (<literal>File > new > Other > CVS > Checkout Projects from CVS</literal>). You'll need about 125 MB of space for the source and build.
+          	Host: <literal>dev.eclipse.org</literal>,
+          	Repository Path: <literal>/home/technology</literal>,
+          	user name: <literal>anonymous</literal>,
+          	password: (your email address),
+          	connection type: <literal>pserver</literal>,
+          	default port.
+			Then select the individual modules you want to check out (you probably want all of them bar aspectj-attic and java5) and click Next and choose to check out the modules you selected as Java projects.
+			Once thats done each module you checked out should show up as a project in the package explorer.
+			If you have problems after this point you can view the build instructions that come with AspectJ by going in the package explorer to: <literal>build > readme-build-and-test-aspectj.html</literal>.
           </para>
           <para>
+            To get the modules to build you have to set some classpath variables (<literal>Window > Preferences > Java > Build Path > Classpath Variables</literal>):
+          </para>
+		  <para>
+		  <itemizedlist>
+		  	<listitem>
+		  	<para>
+			Name: <literal>JAVA_HOME</literal>, Value: (wherever your Java JDK is installed)
+			</para>
+			</listitem>
+			<listitem>
+			<para>
+			Name: <literal>JRE15_LIB</literal>, Value: (wherever your Java 5 Runtime is installed)<literal>\jre\lib\rt.jar</literal>
+			</para>
+			</listitem>
+			<listitem>
+			<para>
+			Name: <literal>ASPECTJRT_LIB</literal>, Value: (wherever your workspace is)<literal>\lib\aspectj\lib\aspectjrt.jar</literal>. To find out where your workspace is go to <literal>File > Switch Workspace</literal>.
+			</para>
+			</listitem>
+		  </itemizedlist>
+		  </para>
+			<para>
+			When you've added the variables click OK to do a full rebuild, then run the tests by going in the Package Explorer to:
+			<literal>run-all-junit-tests > testsrc > (default package) > RunTheseBeforeYouCommitTests.java</literal>
+			and running this as a JUnit test (right click and select <literal>Run As > JUnit Test</literal>).
+			Don't worry about any errors that appear in the console output,
+			just check that there are no failures in the JUnit view (<literal>Window > Show View > Other > Java > JUnit</literal>).
+			If that finishes with no Failures and a full green bar you have the AspectJ compiler source and it's building and testing properly.
+			</para>
+          <para>
+          Further details:
+			</para>
+			<para>                             
           You can check out the entire modules directory and build using the
           Ant build script <literal>modules/build/build.xml</literal>.
           All required libraries are included in <literal>modules/lib/</literal>,
@@ -4028,7 +4062,7 @@ vmparam -Xmx384m
           subdirectory as an eclipse Java project.  
           Depending on what you are trying to build, you need not check out
           all modules; as of this writing, here are the modules to get 
-          when trying to build something:
+          for building the specific parts of AspectJ:
           </para>
           <para>
           <itemizedlist>
