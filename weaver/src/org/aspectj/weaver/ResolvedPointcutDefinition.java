@@ -52,12 +52,15 @@ public class ResolvedPointcutDefinition extends ResolvedMember {
 	}
 	
 	public static ResolvedPointcutDefinition read(VersionedDataInputStream s, ISourceContext context) throws IOException {
-		return new ResolvedPointcutDefinition(
+		ResolvedPointcutDefinition rpd =
+		  new ResolvedPointcutDefinition(
 			TypeX.read(s),
 			s.readInt(),
 			s.readUTF(),
 			TypeX.readArray(s),
 			Pointcut.read(s, context));
+		rpd.setSourceContext(context); // whilst we have a source context, let's remember it
+		return rpd;
 	}
 	
 	public String toString() {
