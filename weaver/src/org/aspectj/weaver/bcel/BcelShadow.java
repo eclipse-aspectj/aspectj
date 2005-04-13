@@ -2722,7 +2722,11 @@ public class BcelShadow extends Shadow {
 //			System.err.println(this + ": " + range);
 			return getEnclosingClass().getType().getSourceLocation();
 		} else {
-			return getEnclosingClass().getType().getSourceContext().makeSourceLocation(sourceLine);
+		    // For staticinitialization, if we have a nice offset, don't build a new source loc
+			if (getKind()==Shadow.StaticInitialization && getEnclosingClass().getType().getSourceLocation().getOffset()!=0)
+				return getEnclosingClass().getType().getSourceLocation();
+			else 
+			    return getEnclosingClass().getType().getSourceContext().makeSourceLocation(sourceLine);
 		}
 	}
 
