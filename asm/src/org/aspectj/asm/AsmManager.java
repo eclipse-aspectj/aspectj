@@ -391,7 +391,12 @@ public class AsmManager {
 
 	public static void dumptree(Writer w,IProgramElement node,int indent) throws IOException {
 		for (int i =0 ;i<indent;i++) w.write(" ");
-		w.write(node+"  ["+(node==null?"null":node.getKind().toString())+"]\n");
+		String loc = "";
+		if (node!=null) { 
+			if (node.getSourceLocation()!=null) 
+				loc = node.getSourceLocation().toString();
+		}
+		w.write(node+"  ["+(node==null?"null":node.getKind().toString())+"] "+loc+"\n");
 		if (node!=null) 
 		for (Iterator i = node.getChildren().iterator();i.hasNext();) {
 			dumptree(w,(IProgramElement)i.next(),indent+2);
