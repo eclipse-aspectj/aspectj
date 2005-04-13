@@ -1,0 +1,13 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[
+]>
+
+<!-- AspectJ v1.5.0 Tests -->
+
+<suite>
+    
+    <ajc-test dir="bugs150/pr90588"
+		pr="90588" title="NullPointerException in jdt when using generics and inpath">
+        <compile files="AbstractClass.java,ConcreteClass.java">
+        </compile>
+    </ajc-test>
+</suite>
