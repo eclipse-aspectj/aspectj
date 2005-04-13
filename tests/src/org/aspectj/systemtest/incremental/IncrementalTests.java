@@ -249,5 +249,11 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
       assertTrue("Should say updated hello",after.getStdOut().startsWith("updated hello"));
   }
   
+  public void testUsesPointcutRelsWhenReferringToPCTIn2ndFile_pr90806() throws Exception {
+	    runTest("NPE in genHandleIdentifier");
+	    nextIncrement(true);
+	    copyFileAndDoIncrementalBuild("changes/X.20.aj","src/X.aj");
+  }
+  
 }
 

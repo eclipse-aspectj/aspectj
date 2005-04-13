@@ -369,3 +369,12 @@
         <run class="Main"/>
         -->
     </ajc-test>
+    
+    <ajc-test dir="incremental/structureModel"
+      pr="90806"
+      keywords="incremental-test"
+   	  title="NPE in genHandleIdentifier">
+        <compile staging="true"	options="-incremental,-verbose,-emacssym" sourceroots="src"/>
+        <!--inc-compile tag="20"/-->
+    </ajc-test>
+	
