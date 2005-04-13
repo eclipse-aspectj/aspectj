@@ -34,7 +34,7 @@
     <ajc-test dir="new/binaryWarnings/src" pr="37020"
    	 title="declare warnings on main">
         <compile files="aspects/MainWarnings.java,app/Main.java">
-        	<message line="6"  text="staticinitialization(Main)" kind="warning" file="app/Main.java" />
+        	<message line="4"  text="staticinitialization(Main)" kind="warning" file="app/Main.java" />
         	<message line="6"  text="set(String Main.staticString)" kind="warning" file="app/Main.java" />
         	<message line="8"  text="set(String Main.s)" kind="warning" file="app/Main.java" />
         	<message line="12" text="get(String Main.staticString)" kind="warning" file="app/Main.java" />

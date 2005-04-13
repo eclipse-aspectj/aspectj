@@ -354,7 +354,7 @@
 	<ajc-test dir="design/sourceLines" pr="37020"
 	  	title="wrong line for method execution join point">
 		<compile files="TestSourceLines.java">
-			<message kind="warning" line="5" text="static init"/>
+			<message kind="warning" line="1" text="static init"/>
 			<message kind="warning" line="12" text="cons execution"/>
 			<message kind="warning" line="12" text="pre-init"/>
 			<message kind="warning" line="12" text="just-init"/>

@@ -391,7 +391,7 @@
     <ajc-test dir="new/declare" pr="31724"
             title="omnibus declare warning context">
         <compile files="DeclareWarning.java">
-            <message kind="warning" line="5" text="staticinitialization(DeclareWarning)"/>
+            <message kind="warning" line="3" text="staticinitialization(DeclareWarning)"/>
             <message kind="warning" line="12" text="call(DeclareWarning.new())"/>
             <message kind="warning" line="13" text="get staticInt"/>
             <message kind="warning" line="14" text="get instanceInt"/>
