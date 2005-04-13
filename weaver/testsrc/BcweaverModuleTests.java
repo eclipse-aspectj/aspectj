@@ -12,6 +12,7 @@
 
 // default package
 
+import org.aspectj.weaver.LocaleTest;
 import org.aspectj.weaver.tools.ToolsTests;
 
 import junit.framework.*;

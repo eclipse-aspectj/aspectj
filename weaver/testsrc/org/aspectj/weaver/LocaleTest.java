@@ -1,3 +1,5 @@
+package org.aspectj.weaver;
+
 import java.io.IOException;
 import java.util.Locale;
 

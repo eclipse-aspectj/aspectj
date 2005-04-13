@@ -24,7 +24,8 @@ public class UtilityTestCase extends TestCase {
 
     public void disassembleTest(String name) throws IOException {
         BcelWorld world = new BcelWorld("../weaver/bin");
-        
+        world.addPath(WeaveTestCase.classDir);
+
         LazyClassGen clazz = new LazyClassGen(BcelWorld.getBcelObjectType(world.resolve(name)));
         clazz.print();
         System.out.println();

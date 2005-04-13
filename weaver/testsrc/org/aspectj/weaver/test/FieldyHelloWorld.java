@@ -1,3 +1,5 @@
+package org.aspectj.weaver.test;
+
 public class FieldyHelloWorld {
 
 	public static String str = "Hello";

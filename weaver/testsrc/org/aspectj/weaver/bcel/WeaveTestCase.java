@@ -33,6 +33,9 @@ public abstract class WeaveTestCase extends TestCase {
     String outDirPath;
     	
 	public BcelWorld world = new BcelWorld();
+    {
+        world.addPath(classDir);
+    }
 
     public WeaveTestCase(String name) {
         super(name);
@@ -118,6 +121,8 @@ public abstract class WeaveTestCase extends TestCase {
 			+ File.pathSeparator
 			+ getTraceJar() 
 			+ File.pathSeparator
+            + classDir
+            + File.pathSeparator
 			+ System.getProperty("java.class.path");
    	}
    	

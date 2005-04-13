@@ -1,4 +1,4 @@
-
+package org.aspectj.weaver.test;
 
 public class MultiArgHelloWorld {
 

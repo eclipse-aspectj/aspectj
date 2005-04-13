@@ -1,7 +1,13 @@
+package org.aspectj.weaver.test;
+
 import java.io.*;
 import java.util.*;
 
 /**
+ * FIXME regen with an Eclipse 2.1 the testdata/bin with this new package
+ * same for all classes in that package
+ * and update tests then (pointcuts etc)
+ *
  * @version 	1.0
  * @author
  */

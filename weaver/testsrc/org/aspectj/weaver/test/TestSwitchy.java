@@ -1,3 +1,5 @@
+package org.aspectj.weaver.test;
+
 /**
  * @author hilsdale
  *

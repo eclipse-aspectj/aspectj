@@ -20,7 +20,7 @@
  *
  * Contributor(s):
  */
-
+package org.aspectj.weaver.test;
 import java.util.*;
 
 import org.aspectj.runtime.internal.*;

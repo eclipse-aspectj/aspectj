@@ -1,3 +1,5 @@
+package org.aspectj.weaver.test;
+
 /**
  * @version 	1.0
  * @author
