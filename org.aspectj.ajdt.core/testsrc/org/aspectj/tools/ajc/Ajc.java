@@ -166,6 +166,10 @@ public class Ajc {
 			args = adjustToSandbox(args,!isIncremental);
 			MessageHandler holder = new MessageHandler();
 			main.setHolder(holder);
+			if (incrementalStage==10 && hasSpecifiedIncremental(args)) {
+			  // important to sleep after preparing the sandbox on first incremental stage (see notes in pr90806)
+			  try { Thread.sleep(1000); } catch (Exception e) {}
+			}
 			if (isIncremental) {
 				controller.doIncremental(holder);
 			} else {
@@ -191,6 +195,14 @@ public class Ajc {
 		return result;
 	}
 	
+	private boolean hasSpecifiedIncremental(String[] args) {
+		if (args==null) return false;
+		for (int i = 0; i < args.length; i++) {
+			if (args[i].equals("-incremental")) return true;
+		}
+		return false;
+	}
+
 	/**
 	 * After compiling for the first time with compile(), if the -incremental option was specified
 	 * you can do as many subsequent incremental compiles as you like by calling this method.
