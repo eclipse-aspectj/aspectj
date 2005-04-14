@@ -47,13 +47,13 @@ public class AsmInterTypeRelationshipProvider {
 	
 		if (munger.getSourceLocation() != null
 			&& munger.getSourceLocation() != null) {
-			String sourceHandle = ProgramElement.createHandleIdentifier(
+			String sourceHandle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(
 				munger.getSourceLocation().getSourceFile(),
 				munger.getSourceLocation().getLine(),
 				munger.getSourceLocation().getColumn(),
 				munger.getSourceLocation().getOffset());
 				
-			String targetHandle = ProgramElement.createHandleIdentifier(
+			String targetHandle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(
 				onType.getSourceLocation().getSourceFile(),
 				onType.getSourceLocation().getLine(),
 				onType.getSourceLocation().getColumn(),

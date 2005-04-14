@@ -55,13 +55,13 @@ public class AsmRelationshipProvider {
 		// Ensure a node for the target exists
 		IProgramElement targetNode = getNode(AsmManager.getDefault().getHierarchy(), shadow);
 
-		String sourceHandle = ProgramElement.createHandleIdentifier(
+		String sourceHandle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(
 			checker.getSourceLocation().getSourceFile(),
 			checker.getSourceLocation().getLine(),
 			checker.getSourceLocation().getColumn(),
 			checker.getSourceLocation().getOffset());
 			
-		String targetHandle = ProgramElement.createHandleIdentifier(
+		String targetHandle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(
 			shadow.getSourceLocation().getSourceFile(),
 			shadow.getSourceLocation().getLine(),
 			shadow.getSourceLocation().getColumn(),
@@ -90,13 +90,13 @@ public class AsmRelationshipProvider {
 	  if (!AsmManager.isCreatingModel()) return;
 		String sourceHandle = "";
 		if (munger.getSourceLocation()!=null) {
-			sourceHandle = ProgramElement.createHandleIdentifier(
+			sourceHandle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(
 										munger.getSourceLocation().getSourceFile(),
 										munger.getSourceLocation().getLine(),
 										munger.getSourceLocation().getColumn(),
 										munger.getSourceLocation().getOffset());
 		} else {
-			sourceHandle = ProgramElement.createHandleIdentifier(
+			sourceHandle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(
 							originatingAspect.getSourceLocation().getSourceFile(),
 							originatingAspect.getSourceLocation().getLine(),
 							originatingAspect.getSourceLocation().getColumn(),
@@ -104,7 +104,7 @@ public class AsmRelationshipProvider {
 		}
 		if (originatingAspect.getSourceLocation() != null) {
 				
-			String targetHandle = ProgramElement.createHandleIdentifier(
+			String targetHandle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(
 				onType.getSourceLocation().getSourceFile(),
 				onType.getSourceLocation().getLine(),
 				onType.getSourceLocation().getColumn(),
@@ -126,12 +126,12 @@ public class AsmRelationshipProvider {
 	public void addDeclareParentsRelationship(ISourceLocation decp,ResolvedTypeX targetType, List newParents) {
 	    if (!AsmManager.isCreatingModel()) return;
 
-		String sourceHandle = ProgramElement.createHandleIdentifier(decp.getSourceFile(),decp.getLine(),decp.getColumn(),decp.getOffset());
+		String sourceHandle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(decp.getSourceFile(),decp.getLine(),decp.getColumn(),decp.getOffset());
 		
 		IProgramElement ipe = AsmManager.getDefault().getHierarchy().findElementForHandle(sourceHandle);
 		
 	
-		String targetHandle = ProgramElement.createHandleIdentifier(
+		String targetHandle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(
 				targetType.getSourceLocation().getSourceFile(),
 				targetType.getSourceLocation().getLine(),
 				targetType.getSourceLocation().getColumn(),
@@ -154,11 +154,11 @@ public class AsmRelationshipProvider {
 	 */
 	public void addDeclareAnnotationRelationship(ISourceLocation declareAnnotationLocation,ISourceLocation annotatedLocation) {
 	    if (!AsmManager.isCreatingModel()) return;
-		String sourceHandle = ProgramElement.createHandleIdentifier(declareAnnotationLocation.getSourceFile(),declareAnnotationLocation.getLine(),
+		String sourceHandle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(declareAnnotationLocation.getSourceFile(),declareAnnotationLocation.getLine(),
 																	declareAnnotationLocation.getColumn(),declareAnnotationLocation.getOffset());
 		IProgramElement declareAnnotationPE = AsmManager.getDefault().getHierarchy().findElementForHandle(sourceHandle);
 		
-		String targetHandle = ProgramElement.createHandleIdentifier(
+		String targetHandle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(
 				annotatedLocation.getSourceFile(),
 				annotatedLocation.getLine(),
 				annotatedLocation.getColumn(),
@@ -384,7 +384,7 @@ public class AsmRelationshipProvider {
 	  
 	  try {
 	    String sourceHandle = 
-	      ProgramElement.createHandleIdentifier(sourceLocation.getSourceFile(),sourceLocation.getLine(),
+            AsmManager.getDefault().getHandleProvider().createHandleIdentifier(sourceLocation.getSourceFile(),sourceLocation.getLine(),
 		 	sourceLocation.getColumn(),sourceLocation.getOffset());
 			  	
 	    String targetHandle = methodElem.getHandleIdentifier();
@@ -425,7 +425,7 @@ public class AsmRelationshipProvider {
         if (fieldElem== null) return;
 
 		String sourceHandle = 
-		  ProgramElement.createHandleIdentifier(sourceLocation.getSourceFile(),sourceLocation.getLine(),
+            AsmManager.getDefault().getHandleProvider().createHandleIdentifier(sourceLocation.getSourceFile(),sourceLocation.getLine(),
 		  	sourceLocation.getColumn(),sourceLocation.getOffset());
 		  	
 		String targetHandle = fieldElem.getHandleIdentifier();

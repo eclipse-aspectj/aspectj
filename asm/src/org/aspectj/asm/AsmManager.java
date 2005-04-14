@@ -34,6 +34,7 @@ public class AsmManager {
 	 * @deprecated	use getDefault() method instead
 	 */  
 	private static AsmManager INSTANCE = new AsmManager();
+    private IElementHandleProvider handleProvider;
 	private boolean shouldSaveModel = true;
     protected IHierarchy hierarchy;
     private List structureListeners = new ArrayList();
@@ -44,8 +45,6 @@ public class AsmManager {
 	public static boolean dumpModelPostBuild = false; // Dumping the model is expensive
 	public static boolean attemptIncrementalModelRepairs = false;
 //	for debugging ...	
-	
-
 
     // For offline debugging, you can now ask for the AsmManager to
     // dump the model - see the method setReporting()
@@ -63,6 +62,7 @@ public class AsmManager {
     	hierarchy = new AspectJElementHierarchy();
 //    	List relationships = new ArrayList();
 		mapper = new RelationshipMap(hierarchy);
+        handleProvider = new FullPathHandleProvider(); 
     }
 
     public IHierarchy getHierarchy() {
@@ -159,6 +159,14 @@ public class AsmManager {
         }
     }
 
+    public IElementHandleProvider getHandleProvider() {
+        return handleProvider;
+    }
+    
+    public void setHandleProvider(IElementHandleProvider handleProvider) {
+        this.handleProvider = handleProvider;
+    }
+    
 	/**
 	 * Fails silently.
 	 */
@@ -788,6 +796,7 @@ public class AsmManager {
 								 AsmManager.getDefault().getRelationshipMap());
 		}
 	}
+
 
     /**
      * Set to indicate whether we are currently building a structure model, should

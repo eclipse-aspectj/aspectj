@@ -36,11 +36,13 @@ public class AspectJElementHierarchy implements IHierarchy {
 		IProgramElement cachedEntry = (IProgramElement)handleMap.get(handle);
 		if (cachedEntry!=null) return cachedEntry;
 		
-		StringTokenizer st = new StringTokenizer(handle, ProgramElement.ID_DELIM);
-		String file = st.nextToken();
-		int line = new Integer(st.nextToken()).intValue();
-		// int col = new Integer(st.nextToken()).intValue(); TODO: use column number when available
-		String canonicalSFP = AsmManager.getDefault().getCanonicalFilePath(new File(file));
+//		StringTokenizer st = new StringTokenizer(handle, ProgramElement.ID_DELIM);
+//        int line = new Integer(st.nextToken()).intValue();
+        // int col = new Integer(st.nextToken()).intValue(); TODO: use column number when available
+        String file = AsmManager.getDefault().getHandleProvider().getFileForHandle(handle); // st.nextToken();
+        int line = AsmManager.getDefault().getHandleProvider().getLineNumberForHandle(handle); // st.nextToken();
+        
+        String canonicalSFP = AsmManager.getDefault().getCanonicalFilePath(new File(file));
 		IProgramElement ret = findNodeForSourceLineHelper(root,canonicalSFP, line);
 		if (ret!=null) {
 			handleMap.put(handle,ret);
@@ -318,11 +320,14 @@ public class AspectJElementHierarchy implements IHierarchy {
 		IProgramElement ret = (IProgramElement) handleMap.get(handle);
 		if (ret != null) return ret;
 		
-		StringTokenizer st = new StringTokenizer(handle, ProgramElement.ID_DELIM);
-		String file = st.nextToken();
-		int line = new Integer(st.nextToken()).intValue();
+//		StringTokenizer st = new StringTokenizer(handle, ProgramElement.ID_DELIM);
+//		String file = st.nextToken();
+//		int line = new Integer(st.nextToken()).intValue();
 //		int col = new Integer(st.nextToken()).intValue();
 		// TODO: use column number when available
+        String file = AsmManager.getDefault().getHandleProvider().getFileForHandle(handle); // st.nextToken();
+        int line = AsmManager.getDefault().getHandleProvider().getLineNumberForHandle(handle); // st.nextToken();
+        
 		ret = findElementForSourceLine(file, line);
 		if (ret != null) { 
 			cache(handle,(ProgramElement)ret);

@@ -31,8 +31,6 @@ import org.aspectj.bridge.ISourceLocation;
  */
 public class ProgramElement implements IProgramElement {
 		
-	static final String ID_DELIM = "|";
-		
 	protected IProgramElement parent = null;
 	protected String name = "";
 	// children.listIterator() should support remove() operation
@@ -447,39 +445,15 @@ public class ProgramElement implements IProgramElement {
 		return label;
 	}
 
-	public static String createHandleIdentifier(File sourceFile, int line,int column,int offset) {
-			StringBuffer sb = new StringBuffer();
-			sb.append(AsmManager.getDefault().getCanonicalFilePath(sourceFile));
-			sb.append(ID_DELIM);
-			sb.append(line);
-			sb.append(ID_DELIM);
-			sb.append(column);
-			sb.append(ID_DELIM);
-			sb.append(offset);
-			return sb.toString();		
-	}
-
 	private String handle = null;
 	public String getHandleIdentifier() {
 	    if (null == handle) {
 			if (sourceLocation != null) {
-			    return genHandleIdentifier(sourceLocation);
-			}
+                return AsmManager.getDefault().getHandleProvider().createHandleIdentifier(sourceLocation);
+//			    return genHandleIdentifier(sourceLocation);
+			} 
 	    }
 	    return handle;
-	}
-
-	public static String genHandleIdentifier(ISourceLocation sourceLocation) {
-		StringBuffer sb = new StringBuffer();
-		sb.append(AsmManager.getDefault()
-							.getCanonicalFilePath(sourceLocation.getSourceFile()));
-		sb.append(ID_DELIM);
-		sb.append(sourceLocation.getLine());
-		sb.append(ID_DELIM);
-		sb.append(sourceLocation.getColumn());
-		sb.append(ID_DELIM);
-		sb.append(sourceLocation.getOffset());
-		return sb.toString();
 	}
 	
 	public List getParameterNames() {

@@ -369,9 +369,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
             ResolvedMember member = getPointcutDeclaration(rp, declaration);
             if (member != null) {
                 IRelationship foreward = AsmManager.getDefault().getRelationshipMap().get(peNode.getHandleIdentifier(), IRelationship.Kind.USES_POINTCUT, "uses pointcut", false, true);
-                foreward.addTarget(ProgramElement.genHandleIdentifier(member.getSourceLocation()));            
+                foreward.addTarget(AsmManager.getDefault().getHandleProvider().createHandleIdentifier(member.getSourceLocation()));            
                 
-                IRelationship back = AsmManager.getDefault().getRelationshipMap().get(ProgramElement.genHandleIdentifier(member.getSourceLocation()), IRelationship.Kind.USES_POINTCUT, "pointcut used by", false, true);
+                IRelationship back = AsmManager.getDefault().getRelationshipMap().get(AsmManager.getDefault().getHandleProvider().createHandleIdentifier(member.getSourceLocation()), IRelationship.Kind.USES_POINTCUT, "pointcut used by", false, true);
                 back.addTarget(peNode.getHandleIdentifier());             
             } 
         }        

@@ -15,6 +15,7 @@ package org.aspectj.weaver;
 
 import java.util.Collection;
 
+import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.PartialOrder;
@@ -87,7 +88,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		if (null == handle) {
 			ISourceLocation sl = getSourceLocation();
 			if (sl != null) {
-				handle = ProgramElement.createHandleIdentifier(
+				handle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(
 				            sl.getSourceFile(),
 				            sl.getLine(),
 				            sl.getColumn(),
