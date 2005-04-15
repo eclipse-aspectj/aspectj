@@ -53,6 +53,7 @@ public class BuildCancellingTest extends AjdeTestCase {
 	private CompilerAdapter compilerAdapter;
 	public static final String PROJECT_DIR = "BuildCancelling";
 	public static final String binDir = "bin";
+	private static final boolean debugTests = false;
 
 	public BuildCancellingTest(String arg0) {
 		super(arg0);
@@ -71,7 +72,7 @@ public class BuildCancellingTest extends AjdeTestCase {
 	 * message about cancelling the compile and their should be nothing on the disk.
 	 */
 	public void testCancelFirstCompile() {
-		System.out.println("\n\n\ntestCancelFirstCompile: Building with LoadsaCode.lst");
+		if (debugTests) System.out.println("\n\n\ntestCancelFirstCompile: Building with LoadsaCode.lst");
 		compilerAdapter = new CompilerAdapter();
 		compilerAdapter.showInfoMessages(false);
 		BuildProgMon programmableBPM = new BuildProgMon();
@@ -102,7 +103,7 @@ public class BuildCancellingTest extends AjdeTestCase {
 	 * message about cancelling the compile and their should be nothing on the disk.
 	 */
 	public void testCancelThirdCompile() {
-		System.out.println("\n\n\ntestCancelThirdCompile: Building with LoadsaCode.lst");
+		if (debugTests) System.out.println("\n\n\ntestCancelThirdCompile: Building with LoadsaCode.lst");
 		compilerAdapter = new CompilerAdapter();
 		compilerAdapter.showInfoMessages(false);
 		BuildProgMon programmableBPM = new BuildProgMon();
@@ -132,7 +133,7 @@ public class BuildCancellingTest extends AjdeTestCase {
 	 * message about cancelling the weave and their should be nothing on the disk.
 	 */
 	public void testCancelFirstAspectWeave() {
-		System.out.println("\n\n\ntestCancelFirstAspectWeave: Building with LoadsaCode.lst");
+		if (debugTests) System.out.println("\n\n\ntestCancelFirstAspectWeave: Building with LoadsaCode.lst");
 		compilerAdapter = new CompilerAdapter();
 		compilerAdapter.showInfoMessages(false);
 		BuildProgMon programmableBPM = new BuildProgMon();
@@ -160,7 +161,7 @@ public class BuildCancellingTest extends AjdeTestCase {
 	 * message about cancelling the weave and their should be nothing on the disk.
 	 */	
 	public void testCancelThirdAspectWeave() {
-		System.out.println("\n\n\ntestCancelThirdAspectWeave: Building with LoadsaCode.lst");
+		if (debugTests) System.out.println("\n\n\ntestCancelThirdAspectWeave: Building with LoadsaCode.lst");
 		compilerAdapter = new CompilerAdapter();
 		compilerAdapter.showInfoMessages(false);
 		
@@ -204,7 +205,7 @@ public class BuildCancellingTest extends AjdeTestCase {
 	 * 
 	 */
 	public void testCancelFirstClassWeave() {
-		System.out.println("testCancelFirstClassWeave: Building with EvenMoreCode.lst");
+		if (debugTests) System.out.println("testCancelFirstClassWeave: Building with EvenMoreCode.lst");
 		compilerAdapter = new CompilerAdapter();
 		compilerAdapter.showInfoMessages(false);
 		BuildProgMon programmableBPM = new BuildProgMon();
@@ -245,7 +246,7 @@ public class BuildCancellingTest extends AjdeTestCase {
 	 * 
 	 */
 	public void testCancelSecondClassWeave() {
-		System.out.println("testCancelSecondClassWeave: Building with EvenMoreCode.lst");
+		if (debugTests) System.out.println("testCancelSecondClassWeave: Building with EvenMoreCode.lst");
 		compilerAdapter = new CompilerAdapter();
 		compilerAdapter.showInfoMessages(false);
 		BuildProgMon programmableBPM = new BuildProgMon();
@@ -304,7 +305,7 @@ public class BuildCancellingTest extends AjdeTestCase {
 				&& text.indexOf(programmableString) != -1) {
 				count--;
 				if (count==0) {
-					System.out.println("Just got message '"+newText+"' - asking build to cancel");
+					if (debugTests) System.out.println("Just got message '"+newText+"' - asking build to cancel");
 					compilerAdapter.requestCompileExit();
 					programmableString = null;
 				}
@@ -399,6 +400,7 @@ public class BuildCancellingTest extends AjdeTestCase {
 	}
 	
 	private void dumpTaskData() {
+		if (!debugTests) return;
 		List ll = ideManager.getCompilationSourceLineTasks();
 		for (Iterator iter = ll.iterator(); iter.hasNext();) {
 			Object element = (Object) iter.next();

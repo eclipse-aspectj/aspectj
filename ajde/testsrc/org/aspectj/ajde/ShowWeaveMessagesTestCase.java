@@ -61,6 +61,7 @@ import org.aspectj.util.FileUtil;
 public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 
 	private static boolean regenerate;
+	private static boolean debugTests = false;
 	
 	static {
 		// Switch this to true for a single iteration if you want to reconstruct the
@@ -101,7 +102,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	 * Weave all the possible kinds of advice and verify the messages that come out.
 	 */
 	public void testWeaveMessagesAdvice() {
-		System.out.println("testWeaveMessagesAdvice: Building with One.lst");
+		if (debugTests) System.out.println("testWeaveMessagesAdvice: Building with One.lst");
 		compilerAdapter = new CompilerAdapter();
 		compilerAdapter.showInfoMessages(true);
 		compilerAdapter.compile((String) openFile("One.lst").getAbsolutePath(),new BPM(),false);
@@ -115,7 +116,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	 * Weave field and method ITDs and check the weave messages that come out.
 	 */
 	public void testWeaveMessagesITD() {
-		System.out.println("\n\n\n\n\n\ntestWeaveMessagesITD: Building with Two.lst");
+		if (debugTests) System.out.println("\ntestWeaveMessagesITD: Building with Two.lst");
 		compilerAdapter = new CompilerAdapter();
 		compilerAdapter.showInfoMessages(true);
 		compilerAdapter.compile((String) openFile("Two.lst").getAbsolutePath(),new BPM(),false);
@@ -127,7 +128,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	 * Weave "declare parents: implements" and check the weave messages that come out.
 	 */
 	public void testWeaveMessagesDeclare() {
-		System.out.println("\n\n\n\n\n\ntestWeaveMessagesDeclare: Building with Three.lst");
+		if (debugTests) System.out.println("\ntestWeaveMessagesDeclare: Building with Three.lst");
 		compilerAdapter = new CompilerAdapter();
 		compilerAdapter.showInfoMessages(true);
 		compilerAdapter.compile((String) openFile("Three.lst").getAbsolutePath(),new BPM(),false);
@@ -139,7 +140,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	 * Can't do equivalent binary test - as can't do extends in binary.
 	 */
 	public void testWeaveMessagesDeclareExtends() {
-		System.out.println("\n\n\n\n\n\ntestWeaveMessagesDeclareExtends: Building with Four.lst");
+		if (debugTests) System.out.println("\ntestWeaveMessagesDeclareExtends: Building with Four.lst");
 		compilerAdapter = new CompilerAdapter();
 		compilerAdapter.showInfoMessages(true);
 		compilerAdapter.compile((String) openFile("Four.lst").getAbsolutePath(),new BPM(),false);
@@ -150,7 +151,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	 * Weave "declare soft: type: pointcut" and check the weave messages that come out.
 	 */
 	public void testWeaveMessagesDeclareSoft() {
-		System.out.println("\n\n\n\n\n\ntestWeaveMessagesDeclareSoft: Building with Five.lst");
+		if (debugTests) System.out.println("\ntestWeaveMessagesDeclareSoft: Building with Five.lst");
 		compilerAdapter = new CompilerAdapter();
 		compilerAdapter.showInfoMessages(true);
 		compilerAdapter.compile((String) openFile("Five.lst").getAbsolutePath(),new BPM(),false);
@@ -167,7 +168,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	 * of weaving messages we expect is less.
 	 */
 	public void testWeaveMessagesBinaryAdvice() {
-		System.out.println("\n\n\n\n\n\ntestWeaveMessagesBinaryAdvice: Simple.jar + AspectAdvice.jar");
+		if (debugTests) System.out.println("\ntestWeaveMessagesBinaryAdvice: Simple.jar + AspectAdvice.jar");
 		Set inpath = new HashSet();
 		inpath.add(openFile("Simple.jar"));
 		ideManager.getProjectProperties().setInpath(inpath);
@@ -180,7 +181,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	}
 	
 	public void testWeaveMessagesBinaryITD() {
-		System.out.println("\n\n\n\n\n\ntestWeaveMessagesBinaryITD: Simple.jar + AspectITD.jar");
+		if (debugTests) System.out.println("\ntestWeaveMessagesBinaryITD: Simple.jar + AspectITD.jar");
 		Set inpath = new HashSet();
 		inpath.add(openFile("Simple.jar"));
 		ideManager.getProjectProperties().setInpath(inpath);
@@ -194,7 +195,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 
 	
 	public void testWeaveMessagesBinaryDeclare() {
-		System.out.println("\n\n\n\n\n\ntestWeaveMessagesBinaryDeclare: Simple.jar + AspectDeclare.jar");
+		if (debugTests) System.out.println("\ntestWeaveMessagesBinaryDeclare: Simple.jar + AspectDeclare.jar");
 		Set inpath = new HashSet();
 		inpath.add(openFile("Simple.jar"));
 		ideManager.getProjectProperties().setInpath(inpath);
@@ -209,7 +210,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	 * Weave "declare soft: type: pointcut" and check the weave messages that come out.
 	 */
 	public void testWeaveMessagesBinaryDeclareSoft() {
-		System.out.println("\n\n\n\n\n\ntestWeaveMessagesBinaryDeclareSoft: Simple.jar + AspectDeclareSoft.jar");
+		if (debugTests) System.out.println("\ntestWeaveMessagesBinaryDeclareSoft: Simple.jar + AspectDeclareSoft.jar");
 		Set inpath = new HashSet();
 		inpath.add(openFile("Simple.jar"));
 		ideManager.getProjectProperties().setInpath(inpath);
@@ -226,7 +227,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	// BINARY WEAVING WHEN WE'VE LOST THE SOURCE POINTERS
 
 	public void testWeaveMessagesBinaryAdviceNoDebugInfo() {
-		System.out.println("\n\n\n\n\n\ntestWeaveMessagesBinaryAdvice: Simple.jar + AspectAdvice.jar");
+		if (debugTests) System.out.println("\ntestWeaveMessagesBinaryAdvice: Simple.jar + AspectAdvice.jar");
 		Set inpath = new HashSet();
 		inpath.add(openFile("Simple_nodebug.jar"));
 		ideManager.getProjectProperties().setInpath(inpath);
@@ -239,7 +240,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	}
 	
 	public void testWeaveMessagesBinaryITDNoDebugInfo() {
-		System.out.println("\n\n\n\n\n\ntestWeaveMessagesBinaryITD: Simple.jar + AspectITD.jar");
+		if (debugTests) System.out.println("\ntestWeaveMessagesBinaryITD: Simple.jar + AspectITD.jar");
 		Set inpath = new HashSet();
 		inpath.add(openFile("Simple_nodebug.jar"));
 		ideManager.getProjectProperties().setInpath(inpath);
@@ -252,7 +253,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	}
 	
 	public void testWeaveMessagesBinaryDeclareNoDebugInfo() {
-		System.out.println("\n\n\n\n\n\ntestWeaveMessagesBinaryDeclareNoDebugInfo: Simple.jar + AspectDeclare.jar");
+		if (debugTests) System.out.println("\ntestWeaveMessagesBinaryDeclareNoDebugInfo: Simple.jar + AspectDeclare.jar");
 		Set inpath = new HashSet();
 		inpath.add(openFile("Simple_nodebug.jar"));
 		ideManager.getProjectProperties().setInpath(inpath);
@@ -267,7 +268,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	 * Weave "declare soft: type: pointcut" and check the weave messages that come out.
 	 */
 	public void testWeaveMessagesBinaryDeclareSoftNoDebugInfo() {
-		System.out.println("\n\n\n\n\n\ntestWeaveMessagesBinaryDeclareSoftNoDebugInfo: Simple.jar + AspectDeclareSoft.jar");
+		if (debugTests) System.out.println("\ntestWeaveMessagesBinaryDeclareSoftNoDebugInfo: Simple.jar + AspectDeclareSoft.jar");
 		Set inpath = new HashSet();
 		inpath.add(openFile("Simple_nodebug.jar"));
 		ideManager.getProjectProperties().setInpath(inpath);
@@ -338,7 +339,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 				}
 			}
 			assertTrue("Didn't get these expected messages: "+fileContents,fileContents.size()==0);
-			System.out.println("Successfully verified "+msgCount+" weaving messages");
+			if (debugTests) System.out.println("Successfully verified "+msgCount+" weaving messages");
 		} catch (Exception e) {
 			fail("Unexpected exception saving weaving messages:"+e);
 		}

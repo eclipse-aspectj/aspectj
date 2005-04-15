@@ -30,7 +30,7 @@ import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
 public class ExtensionTests extends AjcTestCase {
 
 	public static final String PROJECT_DIR = "extensions";
-
+	private static final boolean debugTests = false;
 	private File baseDir;
 	
 	protected void setUp() throws Exception {
@@ -59,7 +59,7 @@ public class ExtensionTests extends AjcTestCase {
 		CompilationResult result = ajc(baseDir,args);
 		List l = result.getWarningMessages();
 		Properties p = AsmManager.ModelInfo.summarizeModel().getProperties();
-		System.out.println("Structure Model for InnerClasses.java:");
+		if (debugTests) System.out.println("Structure Model for InnerClasses.java:");
 		walkit(AsmManager.getDefault().getHierarchy().getRoot(),0);
 		foundNode = null;
 		findChild("main",AsmManager.getDefault().getHierarchy().getRoot());
@@ -115,8 +115,8 @@ public class ExtensionTests extends AjcTestCase {
 	
 	public void walkit(IProgramElement ipe,int indent) {
 	  if (ipe!=null) {
-	  	for (int i = 0 ;i<indent;i++) System.out.print(" ");
-	  	System.out.println(ipe.toLabelString());//getName());
+		  if (debugTests) for (int i = 0 ;i<indent;i++) System.out.print(" ");
+		  if (debugTests) System.out.println(ipe.toLabelString());//getName());
 	    if (ipe.getChildren()!=null) {
 	    	List kids = ipe.getChildren();
 	    	for (Iterator iter = kids.iterator(); iter.hasNext();) {

@@ -16,9 +16,9 @@ package org.aspectj.ajde;
 import org.aspectj.ajde.ui.*;
 
 public class NullIdeUIAdapter implements IdeUIAdapter {
-	
+	private final static boolean debugTests = false;
 	public void displayStatusInformation(String message) {
-		System.out.println("NullIde>" + message);
+		if (debugTests) System.out.println("NullIde>" + message);
 	}
 	
     public void resetGUI() {

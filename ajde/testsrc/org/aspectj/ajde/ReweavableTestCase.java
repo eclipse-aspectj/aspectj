@@ -25,6 +25,8 @@ public class ReweavableTestCase extends AjdeTestCase {
 
 	private CompilerAdapter compilerAdapter;
 	public static final String PROJECT_DIR = "ReweavableTest";
+	
+	private static final boolean debugTests = false;
 
 	public static final String binDir = "bin";
 
@@ -73,7 +75,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 	 *                   should not report it is running in reweavable mode.
 	 */
 	public void testNonReweavableCompile() {
-		System.out.println("testNonReweavableCompile: Building with NonReweavable1.lst");
+		if (debugTests) System.out.println("testNonReweavableCompile: Building with NonReweavable1.lst");
 		compilerAdapter = new CompilerAdapter();
 		compilerAdapter.showInfoMessages(true);
 		compilerAdapter.compile((String) openFile("NonReweavable1.lst").getAbsolutePath(),new BPM(),false);
@@ -85,9 +87,9 @@ public class ReweavableTestCase extends AjdeTestCase {
 		File fLog = openFile("bin/Logger.class");
 		assertTrue("bin/CalculatePI.class should exist?!?",fCalc.exists());
 		assertTrue("bin/Logger.class should exist?!?",fLog.exists());
-		System.out.println("CalculatePI.class is of size: "+fCalc.length());
-		System.out.println("Logger.class is of size: "+fLog.length());
-		System.out.println("\n\n\n");
+		if (debugTests) System.out.println("CalculatePI.class is of size: "+fCalc.length());
+		if (debugTests) System.out.println("Logger.class is of size: "+fLog.length());
+		if (debugTests) System.out.println("\n\n\n");
 		nonreweavesize_CalculatePI = (int)fCalc.length();
 		nonreweavesize_Logger = (int)fLog.length();
 	}
@@ -111,7 +113,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 	 *  				 should be larger than those created during the last test.
 	 */
 	public void testReweavableCompile() {
-		System.out.println("testReweavableCompile: Building with Reweavable1.lst");
+		if (debugTests) System.out.println("testReweavableCompile: Building with Reweavable1.lst");
 		compilerAdapter = new CompilerAdapter();
 		compilerAdapter.showInfoMessages(true);
 		compilerAdapter.compile((String) openFile("Reweavable1.lst").getAbsolutePath(),new BPM(),false);
@@ -123,8 +125,8 @@ public class ReweavableTestCase extends AjdeTestCase {
 		File fLog = openFile("bin/Logger.class");
 		assertTrue("bin/CalculatePI.class should exist?!?",fCalc.exists());
 		assertTrue("bin/Logger.class should exist?!?",fLog.exists());
-		System.out.println("CalculatePI.class is of size: "+fCalc.length());
-		System.out.println("Logger.class is of size: "+fLog.length());
+		if (debugTests) System.out.println("CalculatePI.class is of size: "+fCalc.length());
+		if (debugTests) System.out.println("Logger.class is of size: "+fLog.length());
 		// Temporarily remove these tests - it seems the order in which the testXXX methods are run cannot be relied upon
 		// so reweavablesize_XXX fields might not have been set yet.
 //		assertTrue("Reweavable version should be larger than non-reweavable version of CalculatePI",
@@ -135,7 +137,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 		reweavablesize_CalculatePI = (int)fCalc.length();
 		reweavablesize_Logger = (int)fLog.length();
 		
-		System.out.println("\n\n\n");
+		if (debugTests) System.out.println("\n\n\n");
 	}
 	
 	
@@ -158,7 +160,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 	 * 					 compression) versions.
 	 */
 	public void testReweavableCompressCompile() {
-		System.out.println("testReweavableCompressCompile: Building with ReweavableCompress1.lst");
+		if (debugTests) System.out.println("testReweavableCompressCompile: Building with ReweavableCompress1.lst");
 		compilerAdapter = new CompilerAdapter();
 		compilerAdapter.showInfoMessages(true);
 		compilerAdapter.compile((String) openFile("ReweavableCompress1.lst").getAbsolutePath(),new BPM(),false);
@@ -172,8 +174,8 @@ public class ReweavableTestCase extends AjdeTestCase {
 		assertTrue("bin/Logger.class should exist?!?",fLog.exists());
 		int calclen = (int)fCalc.length();
 		int loglen = (int)fLog.length();
-		System.out.println("CalculatePI.class is of size: "+calclen);
-		System.out.println("Logger.class is of size: "+loglen);
+		if (debugTests) System.out.println("CalculatePI.class is of size: "+calclen);
+		if (debugTests) System.out.println("Logger.class is of size: "+loglen);
 		// Temporarily remove these tests - it seems the order in which the testXXX methods are run cannot be relied upon
 		// so reweavablesize_XXX fields might not have been set yet.	
 //		assertTrue("Reweavable version should be larger than non-reweavable version of CalculatePI",
@@ -189,7 +191,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 //		"  Compressed version:"+loglen+"bytes   Non-compressed version:"+reweavablesize_Logger+"bytes",
 //		  loglen<reweavablesize_Logger);  
 		 
-		System.out.println("\n\n\n");
+		if (debugTests) System.out.println("\n\n\n");
 	}
 	
 	
@@ -218,7 +220,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 	 * Expected result = Both compiles will succeed.
 	 */
 	public void testReweavableSimpleCompile() {
-		System.out.println("testReweavableSimpleCompile: Building with Reweavable1.lst");
+		if (debugTests) System.out.println("testReweavableSimpleCompile: Building with Reweavable1.lst");
 		compilerAdapter = new CompilerAdapter();
 		compilerAdapter.showInfoMessages(true);
 		compilerAdapter.compile((String) openFile("Reweavable1.lst").getAbsolutePath(),new BPM(),false);
@@ -227,7 +229,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 		  checkFor("weaver operating in reweavable mode"));
 		  
 		  
-		System.out.println("\ntestReweavableSimpleCompile: Building with Reweavable2.lst");
+		if (debugTests) System.out.println("\ntestReweavableSimpleCompile: Building with Reweavable2.lst");
 		Set paths = new HashSet();
 		paths.add(openFile(binDir));
 		ideManager.getProjectProperties().setInpath(paths);
@@ -245,7 +247,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 		assertTrue("bin/Logger.class should exist?!?",fLog.exists());
 		assertTrue("bin/SecondAspect.class should exist?!?",fSec.exists());
 		 
-		System.out.println("\n\n\n");
+		if (debugTests) System.out.println("\n\n\n");
 	}
 	
 	
@@ -272,7 +274,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 	 * Expected result = Second compile will fail - reporting that Logger is missing (it 'touched' in the first compile CalculatePI)
 	 */
 	public void testForReweavableSimpleErrorCompile() {
-		System.out.println("testForReweavableSimpleErrorCompile: Building with Reweavable2.lst");
+		if (debugTests) System.out.println("testForReweavableSimpleErrorCompile: Building with Reweavable2.lst");
 		compilerAdapter = new CompilerAdapter();
 		compilerAdapter.showInfoMessages(true);
 		compilerAdapter.compile((String) openFile("Reweavable1.lst").getAbsolutePath(),new BPM(),false);
@@ -284,7 +286,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 		assertTrue("Could not delete bin/Logger.class??",openFile("bin/Logger.class").delete());
 
 
-		System.out.println("\ntestForReweavableSimpleErrorCompile: Building with Reweavable2.lst");
+		if (debugTests) System.out.println("\ntestForReweavableSimpleErrorCompile: Building with Reweavable2.lst");
 		Set paths = new HashSet();
 		paths.add(openFile(binDir));
 		ideManager.getProjectProperties().setInpath(paths);
@@ -302,7 +304,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 		assertTrue("bin/Logger.class should not exist!",!fLog.exists());
 		assertTrue("bin/SecondAspect.class should not exist!",fSec.exists());
 		 
-		System.out.println("\n\n\n");
+		if (debugTests) System.out.println("\n\n\n");
 	}
 	
 	
@@ -328,7 +330,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 	 * Expected result = Second compile will fail - reporting that tjp.GetInfo is missing (it 'touched' in the first compile tjp.Demo)
 	 */
 	public void testErrorScenario2Compile() {
-		System.out.println("testErrorScenario2: Building with TJP1.lst");
+		if (debugTests) System.out.println("testErrorScenario2: Building with TJP1.lst");
 		compilerAdapter = new CompilerAdapter();
 		compilerAdapter.showInfoMessages(true);
 		compilerAdapter.compile((String) openFile("TJP1.lst").getAbsolutePath(),new BPM(),false);
@@ -340,7 +342,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 		assertTrue("Could not delete bin/tjp/GetInfo.class??",openFile("bin/tjp/GetInfo.class").delete());
 
 
-		System.out.println("\ntestErrorScenario2: Building with TJP2.lst");
+		if (debugTests) System.out.println("\ntestErrorScenario2: Building with TJP2.lst");
 		Set paths = new HashSet();
 		paths.add(openFile(binDir));
 		ideManager.getProjectProperties().setInpath(paths);
@@ -356,11 +358,11 @@ public class ReweavableTestCase extends AjdeTestCase {
 		assertTrue("bin/tjp/Demo.class should exist!",fDemo.exists());
 		assertTrue("bin/tjp/GetInfo.class should not exist!",!fGetInfo.exists());
 		 
-		System.out.println("\n\n\n");
+		if (debugTests) System.out.println("\n\n\n");
 	}
 	
 	public void testWorkingScenario2Compile() {
-			System.out.println("testWorkingScenario2: Building with TJP1.lst");
+		if (debugTests) System.out.println("testWorkingScenario2: Building with TJP1.lst");
 			compilerAdapter = new CompilerAdapter();
 			compilerAdapter.showInfoMessages(true);
 			compilerAdapter.compile((String) openFile("TJP1.lst").getAbsolutePath(),new BPM(),false);
@@ -369,7 +371,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 			  checkFor("weaver operating in reweavable mode"));
 		  
 		
-			System.out.println("\ntestWorkingScenario2: Building with TJP2.lst");
+			if (debugTests) System.out.println("\ntestWorkingScenario2: Building with TJP2.lst");
 			Set paths = new HashSet();
 			paths.add(openFile(binDir));
 			ideManager.getProjectProperties().setInpath(paths);
@@ -385,7 +387,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 			assertTrue("bin/tjp/GetInfo.class should exist!",fGetInfo.exists());
 			assertTrue("bin/tjp/Demo.class should not exist!",fDemo.exists());
 			
-			System.out.println("\n\n\n");
+			if (debugTests) System.out.println("\n\n\n");
 		}
 	
 

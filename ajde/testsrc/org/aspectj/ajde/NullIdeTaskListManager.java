@@ -27,6 +27,7 @@ public class NullIdeTaskListManager implements TaskListManager {
 	
 	List sourceLineTasks = new ArrayList();
     boolean hasWarning = false;
+	private static boolean debugTests = false;
 
     public void addSourcelineTask(
         String message,
@@ -37,6 +38,7 @@ public class NullIdeTaskListManager implements TaskListManager {
             hasWarning = true;
         }
     }
+	
     
     public void addSourcelineTask(IMessage message) {
     	sourceLineTasks.add(new SourceLineTask(message));
@@ -44,6 +46,7 @@ public class NullIdeTaskListManager implements TaskListManager {
             hasWarning = true;
         }        
 		/* Guard against null source locations e.g. JAR file messages */
+		if (!debugTests) return;
 		if (null != message.getSourceLocation()) {
 			System.out.println("NullIde> task: " + message.getMessage() + ", file: " + message.getSourceLocation().getSourceFile().getAbsolutePath()
 				+ ": " +  message.getSourceLocation().getLine());
