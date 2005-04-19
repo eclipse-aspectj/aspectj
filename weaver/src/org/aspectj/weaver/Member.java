@@ -25,7 +25,7 @@ import java.util.List;
 import org.aspectj.util.TypeSafeEnum;
 
 public class Member implements Comparable, AnnotatedElement {
-
+    
     private final Kind kind;
     private final TypeX declaringType;
     protected final int modifiers; // protected because ResolvedMember uses it
@@ -528,6 +528,16 @@ public class Member implements Comparable, AnnotatedElement {
     public static final Kind HANDLER   = new Kind("HANDLER", 7);    
   
     
+
+//    //ATAJ.  Should probably be ajc$, used only for slow impl of Aspects.aspectOf()
+//    public static final Member ajClassField = new Member(
+//            FIELD,
+//            TypeX.OBJECT,//any one
+//            Modifier.PRIVATE | Modifier.STATIC | Modifier.FINAL,
+//            "aj$class",
+//            TypeX.JAVA_LANG_CLASS.getSignature()
+//    );
+
 
     
 	public Collection/*ResolvedTypeX*/ getDeclaringTypes(World world) {
