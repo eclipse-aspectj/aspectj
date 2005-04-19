@@ -29,6 +29,7 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.PerClause;
 
 public abstract class World implements Dump.INode {
 	protected IMessageHandler messageHandler = IMessageHandler.SYSTEM_ERR;
@@ -283,6 +284,18 @@ public abstract class World implements Dump.INode {
 	public ConcreteTypeMunger makeCflowCounterFieldAdder(ResolvedMember cflowField) {
 		throw new RuntimeException("unimplemented");
 	}
+
+    /**
+     * Register a munger for perclause @AJ aspect so that we add aspectOf(..) to them as needed
+     * @see org.aspectj.weaver.bcel.BcelWorld#makePerClauseAspect(ResolvedTypeX, org.aspectj.weaver.patterns.PerClause.Kind)
+     * 
+     * @param aspect
+     * @param kind
+     * @return
+     */
+    public ConcreteTypeMunger makePerClauseAspect(ResolvedTypeX aspect, PerClause.Kind kind) {
+        throw new RuntimeException("unimplemented");
+    }
 
     public abstract ConcreteTypeMunger concreteTypeMunger(ResolvedTypeMunger munger, ResolvedTypeX aspectType);
 
