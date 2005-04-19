@@ -155,7 +155,7 @@ public class ReferencePointcut extends Pointcut {
 		}
 		
 		if (pointcutDef == null) {
-			scope.message(IMessage.ERROR, this, "can't find referenced pointcut");
+			scope.message(IMessage.ERROR, this, "can't find referenced pointcut " + name);
 			return;
 		}
 		
