@@ -37,6 +37,9 @@ import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.patterns.PerClause;
+import org.aspectj.weaver.ataspectj.Aj5Attributes;
+import org.aspectj.weaver.ataspectj.Ajc5MemberMaker;
+
 
 // ??? exposed for testing
 public class BcelObjectType extends ResolvedTypeX.ConcreteName {
@@ -60,8 +63,11 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 	private List typeMungers = Collections.EMPTY_LIST;
 	private List declares = Collections.EMPTY_LIST;
 	private ResolvedMember[] privilegedAccess = null;
-	
-	
+
+	private boolean discoveredWhetherAnnotationStyle = false;
+    private boolean isAnnotationStyleAspect = false;// set upon construction
+
+
 	public Collection getTypeMungers() {
 		return typeMungers;	
 	}
@@ -81,7 +87,11 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
     BcelObjectType(ResolvedTypeX.Name resolvedTypeX, JavaClass javaClass, boolean exposedToWeaver) {
         super(resolvedTypeX, exposedToWeaver);
         this.javaClass = javaClass;
-        
+
+        //ATAJ: set the delegate right now for @AJ poincut, else it is done too late to lookup
+        // @AJ pc refs annotation in class hierarchy
+        resolvedTypeX.setDelegate(this);
+
         if (resolvedTypeX.getSourceContext() == null) {
         	resolvedTypeX.setSourceContext(new BcelSourceContext(this));
         }
@@ -166,11 +176,28 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 		return perClause != null;
     }
 
+    /**
+     * Check if the type is an @AJ aspect (no matter if used from an LTW point of view).
+     * Such aspects are annotated with @Aspect
+     *
+     * @return true for @AJ aspect
+     */
+    public boolean isAnnotationStyleAspect() {
+		if (!discoveredWhetherAnnotationStyle) {
+			discoveredWhetherAnnotationStyle = true;
+			isAnnotationStyleAspect = hasAnnotation(Ajc5MemberMaker.ASPECT);
+		}
+        return isAnnotationStyleAspect;
+    }
+
 	private void unpackAspectAttributes() {
 		List pointcuts = new ArrayList();
 		typeMungers = new ArrayList();
 		declares = new ArrayList();
-		List l = BcelAttributes.readAjAttributes(javaClass.getClassName(),javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld().getMessageHandler());
+		// Pass in empty list that can store things for readAj5 to process
+        List l = BcelAttributes.readAjAttributes(javaClass.getClassName(),javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld().getMessageHandler());
+        l.addAll(Aj5Attributes.readAj5ClassAttributes(javaClass, getResolvedTypeX(), getResolvedTypeX().getSourceContext(), getResolvedTypeX().getWorld().getMessageHandler()));
+
 		for (Iterator iter = l.iterator(); iter.hasNext();) {
 			AjAttribute a = (AjAttribute) iter.next();
 			//System.err.println("unpacking: " + this + " and " + a);
@@ -232,6 +259,8 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
     	
     	isObject = (javaClass.getSuperclassNameIndex() == 0);
         unpackAspectAttributes();
+		discoveredWhetherAnnotationStyle = false;
+		isAnnotationStyleAspect=false;
     }
     
     public void finishedWith() {
