@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<project name="aspectj5rt" default="all" basedir=".">
+
+    <import file="../build/build-common.xml"/>
+    <import file="../runtime/build.xml"/>
+
+    <path id="aspectj5rt.test.src.path">
+        <fileset dir="${basedir}/../lib">
+            <include name="junit/*.jar"/>
+        </fileset>
+        <path refid="aspectj5rt.src.path"/>
+    </path>
+
+    <path id="aspectj5rt.src.path">
+        <pathelement path="../runtime/bin"/>
+    </path>
+
+    <target name="compile" if="jdk15" depends="init,
+                                               runtime.compile">
+        <!-- FIXME: we override compile due to use of java5-src instead of src.. and source/target attrs -->
+        <mkdir dir="../aspectj5rt/bin"/>
+        <javac debug="on" destdir="../aspectj5rt/bin" source="1.5" target="1.5">
+            <src path="../aspectj5rt/java5-src"/>
+            <classpath refid="aspectj5rt.src.path"/>
+        </javac>
+    </target>
+
+    <target name="test:compile" depends="compile" if="jdk15">
+        <!-- TODO: if test relies on 1.5 source, then needs to override below -->
+        <testcompile project="aspectj5rt" path="aspectj5rt.test.src.path"/>
+    </target>
+
+    <target name="test" depends="test:compile" if="jdk15">
+        <testrun project="aspectj5rt" path="aspectj5rt.test.src.path" suite="Aspectj5rtModuleTests"/>
+    </target>
+
+    <target name="jar" depends="compile" if="jdk15">
+        <delete file="${build.ajdir}/jars/aspectj5rt.jar"/>
+        <copy file="aspectj5rt.mf.txt" todir="${build.ajdir}/temp" filtering="yes"/>
+        <jar destfile="${build.ajdir}/jars/aspectj5rt.jar" manifest="${build.ajdir}/temp/aspectj5rt.mf.txt">
+            <fileset dir="bin">
+                <include name="**/*"/>
+            </fileset>
+        </jar>
+    </target>
+
+</project>
+

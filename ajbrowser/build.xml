@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<project name="ajbrowser" default="all" basedir=".">
+
+    <import file="../build/build-common.xml"/>
+    <import file="../ajde/build.xml"/>
+    <import file="../asm/build.xml"/>
+    <import file="../bridge/build.xml"/>
+
+    <path id="ajbrowser.test.src.path">
+        <path refid="ajbrowser.src.path"/>
+        <fileset dir="${basedir}/../lib">
+            <include name="junit/*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="ajbrowser.src.path">
+        <pathelement path="../asm/bin"/>
+        <pathelement path="../bridge/bin"/>
+        <pathelement path="../ajde/bin"/>
+        <pathelement path="../util/bin"/>
+    </path>
+
+    <target name="compile" depends="init,
+                                    ajde.compile,
+                                    asm.compile,
+                                    bridge.compile,
+                                    util.compile">
+        <srccompile project="ajbrowser" path="ajbrowser.src.path"/>
+    </target>
+
+    <target name="test:compile" depends="compile">
+        <testcompile project="ajbrowser" path="ajbrowser.test.src.path"/>
+    </target>
+
+    <target name="test" depends="test:compile">
+        <testrun project="ajbrowser" path="ajbrowser.test.src.path" suite="AjbrowserModuleTests"/>
+    </target>
+
+    <target name="jar" depends="compile">
+        <delete file="${build.ajdir}/jars/ajbrowser.jar"/>
+        <copy file="ajbrowser.mf.txt" todir="${build.ajdir}/temp" filtering="yes"/>
+        <jar destfile="${build.ajdir}/jars/ajbrowser.jar" manifest="${build.ajdir}/temp/ajbrowser.mf.txt">
+            <fileset dir="bin">
+                <include name="**/*"/>
+            </fileset>
+        </jar>
+    </target>
+
+</project>
+

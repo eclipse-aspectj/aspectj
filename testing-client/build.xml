@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<project name="testing-client" default="all" basedir=".">
+
+    <import file="../build/build-common.xml"/>
+    <import file="../bridge/build.xml"/>
+
+    <path id="testing-client.test.src.path">
+        <fileset dir="${basedir}/../lib">
+            <include name="junit/*.jar"/>
+        </fileset>
+        <path refid="testing-client.src.path"/>
+    </path>
+
+    <path id="testing-client.src.path">
+        <pathelement path="../bridge/bin"/>
+        <pathelement path="../util/bin"/>
+    </path>
+
+    <target name="compile" depends="init,
+                                    bridge.compile,
+                                    util.compile">
+        <srccompile project="testing-client" path="testing-client.src.path"/>
+    </target>
+
+    <target name="test:compile" depends="compile">
+        <testcompile project="testing-client" path="testing-client.test.src.path"/>
+    </target>
+
+    <target name="test" depends="test:compile">
+        <testrun project="testing-client" path="testing-client.test.src.path" suite="TestingClientModuleTests"/>
+    </target>
+
+
+</project>
+

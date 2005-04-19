@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<project name="runtime" default="all" basedir=".">
+
+    <import file="../build/build-common.xml"/>
+
+    <path id="runtime.test.src.path">
+        <fileset dir="${basedir}/../lib">
+            <include name="junit/*.jar"/>
+        </fileset>
+        <path refid="runtime.src.path"/>
+    </path>
+
+    <path id="runtime.src.path">
+    </path>
+
+    <target name="compile" depends="init">
+        <srccompile project="runtime" path="runtime.src.path"/>
+    </target>
+
+    <target name="test:compile" depends="compile">
+        <testcompile project="runtime" path="runtime.test.src.path"/>
+    </target>
+
+    <target name="test" depends="test:compile">
+        <testrun project="runtime" path="runtime.test.src.path" suite="RuntimeModuleTests"/>
+    </target>
+
+    <target name="all" depends="init, compile, test:compile"/>
+
+    <target name="jar" depends="compile">
+        <delete file="${build.ajdir}/jars/aspectjrt.jar"/>
+        <copy file="runtime.mf.txt" todir="${build.ajdir}/temp" filtering="yes"/>
+        <jar destfile="${build.ajdir}/jars/aspectjrt.jar" manifest="${build.ajdir}/temp/runtime.mf.txt">
+            <fileset dir="bin">
+                <include name="**/*"/>
+            </fileset>
+        </jar>
+    </target>
+
+</project>
+

@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<project name="common" basedir=".">
+
+    <condition property="jdk15" value="yes">
+        <contains string="${java.version}" substring="1.5"/>
+    </condition>
+    <condition property="jdk14" value="yes">
+        <contains string="${java.version}" substring="1.4"/>
+    </condition>
+    <condition property="jdk13" value="yes">
+        <contains string="${java.version}" substring="1.3"/>
+    </condition>
+
+    <target name="init">
+        <property name="src.dir" value="src"/>
+        <property name="test.src.dir" value="testsrc"/>
+        <property name="build.dir" value="bin"/>
+        <property name="test.build.dir" value="bintest"/>
+        <property name="build.ajdir" value="../aj-build"/>
+        <mkdir dir="${build.ajdir}"/>
+        <mkdir dir="${build.ajdir}/jars"/>
+
+
+        <!-- props for manifest files -->
+        <property name="build.version"       value="DEVELOPMENT"/>
+        <property name="build.version.base"  value="1.2"/>
+        <property name="build.version.long"  value="DEVELOPMENT"/>
+        <property name="build.version.short" value="DEVELOPMENT"/>
+        <property name="build.version.eclipse.plugins" value="9.9.9"/>
+        <!-- formats comply with SimpleDateFormat -->
+        <property name="build.time.format"   value="EEEE MMM d, yyyy 'at' HH:mm:ss z"/>
+        <property name="build.date.format"   value="EEEE MMM d, yyyy"/>
+        <tstamp>
+          <format property="build.date"
+                   pattern="${build.date.format}"
+                   timezone="GMT"/>
+          <format property="build.time"
+                   pattern="${build.time.format}"
+                   timezone="GMT"/>
+        </tstamp>
+        <filter token="build.version"       value="${build.version}"/>
+        <filter token="build.version.base"  value="${build.version.base}"/>
+        <filter token="build.version.long"  value="${build.version.long}"/>
+        <filter token="build.version.short" value="${build.version.short}"/>
+
+        <filter token="build.time.format"   value="${build.time.format}"/>
+        <filter token="build.date.format"   value="${build.date.format}"/>
+        <filter token="build.date"          value="${build.date}"/>
+        <filter token="build.time"          value="${build.time}"/>
+        <filter token="company.name"        value="${company.name}"/><!-- FIXME av undefined -->
+        <filter token="copyright.allRights.from1998"
+                value="${copyright.allRights.from1998}" /><!-- FIXME av where used ? -->
+    </target>
+
+    <target name="clean" depends="init, cleanall">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${test.build.dir}"/>
+    </target>
+
+    <target name="cleanall" depends="init">
+        <delete dir="${build.dir}"/>
+        <delete dir="${test.build.dir}"/>
+        <!-- rather common to have ajcore files produced after a test run -->
+        <delete>
+            <fileset dir="${basedir}" includes="ajcore.*.txt"/>
+        </delete>
+    </target>
+
+    <macrodef name="srccompile">
+        <attribute name="project"/>
+        <attribute name="path"/>
+        <sequential>
+            <echo message="compile ... @{project}"/>
+            <mkdir dir="../@{project}/${build.dir}"/>
+            <javac debug="on" destdir="../@{project}/${build.dir}" source="1.3" target="1.3">
+                <src path="../@{project}/${src.dir}"/>
+                <classpath refid="@{path}"/>
+            </javac>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="testcompile">
+        <attribute name="project"/>
+        <attribute name="path"/>
+        <sequential>
+            <echo message="test:compile ... @{project}"/>
+            <mkdir dir="../@{project}/${test.build.dir}"/>
+            <javac debug="on" destdir="../@{project}/${test.build.dir}" source="1.3" target="1.3">
+                <src path="../@{project}/${test.src.dir}"/>
+                <classpath refid="@{path}"/>
+                <classpath path="../@{project}/${build.dir}"/>
+            </javac>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="testrun">
+        <attribute name="project"/>
+        <attribute name="path"/>
+        <attribute name="suite"/>
+        <sequential>
+            <!--   showoutput="on" -->
+<!--            <junit showoutput="on" fork="on" haltonfailure="on" haltonerror="on" printsummary="on" dir="../@{project}">-->
+<!--                <classpath>-->
+<!--                    <pathelement path="../@{project}/${build.dir}"/>-->
+<!--                    <pathelement path="../@{project}/${test.build.dir}"/>-->
+<!--                    <path refid="@{path}"/>-->
+<!--                </classpath>-->
+<!--                <test name="@{suite}"/>-->
+<!--            </junit>-->
+            <!-- TODO AV - using java to invoke JUnit since the junit task is hidding errors - don't know why -->
+            <java classname="@{suite}" fork="on" dir="../@{project}">
+                <jvmarg line=""/>
+                <classpath>
+                    <pathelement path="../@{project}/${build.dir}"/>
+                    <pathelement path="../@{project}/${test.build.dir}"/>
+                    <path refid="@{path}"/>
+                </classpath>
+            </java>
+        </sequential>
+    </macrodef>
+
+    <target name="all" depends="init, compile, test:compile"/>
+
+
+</project>

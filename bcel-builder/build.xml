@@ -1,4 +1,43 @@
-<project default="packageAndPush" basedir=".">
+<project name="bcel-builder" default="packageAndPush" basedir=".">
+
+    <!-- *********************************************************************** -->
+    <!-- compliance for Alex build -->
+    <!-- *********************************************************************** -->
+    <import file="../build/build-common.xml"/>
+
+    <path id="bcel-builder.test.src.path">
+        <fileset dir="${basedir}/../lib">
+            <include name="junit/*.jar"/>
+        </fileset>
+        <path refid="bcel-builder.src.path"/>
+    </path>
+
+    <path id="bcel-builder.src.path">
+        <fileset dir="${basedir}/../lib">
+            <include name="regexp/*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="cleanall" depends="clean">
+        <delete dir="bin"/>
+        <!-- FIXME: not consistent with Alex policy -->
+        <mkdir dir="bin"/>
+    </target>
+
+    <target name="compile" depends="init">
+        <srccompile project="bcel-builder" path="bcel-builder.src.path"/>
+    </target>
+
+    <target name="test:compile" depends="compile">
+        <testcompile project="bcel-builder" path="bcel-builder.test.src.path"/>
+    </target>
+
+    <target name="test" depends="test:compile">
+        <testrun project="bcel-builder" path="bcel-builder.test.src.path" suite="org.aspectj.apache.bcel.classfile.tests.AllTests"/>
+    </target>
+    <!-- *********************************************************************** -->
+
+
 
   <!-- top-level -->
   <target name="extractAndPatchAndJar" depends="extractAndPatch,jar,srcjar" />

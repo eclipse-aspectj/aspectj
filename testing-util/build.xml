@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<project name="testing-util" default="all" basedir=".">
+
+    <import file="../build/build-common.xml"/>
+    <import file="../bridge/build.xml"/>
+    <import file="../util/build.xml"/>
+    <import file="../runtime/build.xml"/>
+
+
+    <path id="testing-util.test.src.path">
+        <fileset dir="${basedir}/../lib">
+            <include name="junit/*.jar"/>
+            <include name="bcel/*.jar"/>
+        </fileset>
+        <!-- depends on weaver to use Dissasemble feature on LazyClassGen to test comparison of .class file -->
+        <pathelement path="../weaver/bin"/>
+        <pathelement path="../runtime/bin"/>
+        <path refid="testing-util.src.path"/>
+    </path>
+
+    <path id="testing-util.src.path">
+        <fileset dir="${basedir}/../lib">
+            <include name="jdiff/*.jar"/>
+        </fileset>
+        <pathelement path="../bridge/bin"/>
+        <pathelement path="../util/bin"/>
+    </path>
+
+    <target name="compile" depends="init,
+                                    bridge.compile,
+                                    util.compile">
+        <srccompile project="testing-util" path="testing-util.src.path"/>
+    </target>
+
+    <target name="test:compile" depends="compile">
+        <testcompile project="testing-util" path="testing-util.test.src.path"/>
+    </target>
+
+    <target name="test" depends="test:compile,
+                                 runtime.compile">
+        <!-- depends on weaver to access .class dissassemble utility hence circular -->
+        <subant antfile="build.xml" target="test:compile" buildpath="../weaver" />
+        <testrun project="testing-util" path="testing-util.test.src.path" suite="TestingUtilModuleTests"/>
+    </target>
+
+</project>
+
