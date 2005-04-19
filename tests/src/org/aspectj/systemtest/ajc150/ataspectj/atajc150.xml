@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[
+<!ENTITY tests SYSTEM "../tests/src/org/aspectj/systemtest/ajc150/ataspectj/atajc150-tests.xml">
+]>
+
+<!--  @AspectJ v1.5.0 Tests -->
+
+<suite>
+
+&tests;
+
+</suite>
+

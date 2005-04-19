@@ -1,0 +1,41 @@
+<!-- @AspectJ v1.5.0 Tests -->
+
+    <ajc-test dir="java5/ataspectj" title="singletonAspectBindings">
+        <compile files="ataspectj/SingletonAspectBindingsTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline"/>
+        <run class="ataspectj.SingletonAspectBindingsTest"/>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj" title="CflowTest">
+        <compile files="ataspectj/CflowTest.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <run class="ataspectj.CflowTest"/>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj" title="PointcutReferenceTest">
+        <compile files="ataspectj/PointcutReferenceTest.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <run class="ataspectj.PointcutReferenceTest"/>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj" title="XXJoinPointTest">
+        <compile files="ataspectj/XXJoinPointTest.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <run class="ataspectj.XXJoinPointTest"/>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj" title="PrecedenceTest">
+        <compile files="ataspectj/PrecedenceTest.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <run class="ataspectj.PrecedenceTest"/>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj" title="AfterXTest">
+        <compile files="ataspectj/AfterXTest.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <run class="ataspectj.AfterXTest"/>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj" title="IfPointcutTest">
+        <compile files="ataspectj/IfPointcutTest.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <run class="ataspectj.IfPointcutTest"/>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj" title="BindingTest">
+        <compile files="ataspectj/BindingTest.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <run class="ataspectj.BindingTest"/>
+    </ajc-test>
