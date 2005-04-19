@@ -27,7 +27,7 @@ public class SimpleScope implements IScope {
 
     private World world;
     private ResolvedTypeX enclosingType;
-    private FormalBinding[] bindings;
+    protected FormalBinding[] bindings;
 
 	private String[] importedPrefixes = javaLangPrefixArray;
 	private String[] importedNames = ZERO_STRINGS;
@@ -37,7 +37,7 @@ public class SimpleScope implements IScope {
         this.world = world;
         this.bindings = bindings;
     }
-	
+
 	// ---- impl
 
 	//XXX doesn't report any problems
