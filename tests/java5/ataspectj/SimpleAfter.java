@@ -15,7 +15,7 @@ public class SimpleAfter {
   }
 
 
-    @Aspect("issingleton")
+    @Aspect()
     public static class X {
 
         public static StringBuffer s = new StringBuffer("");
