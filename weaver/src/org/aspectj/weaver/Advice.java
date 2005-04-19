@@ -236,6 +236,9 @@ public abstract class Advice extends ShadowMunger {
         	p = new AndPointcut(clause, p);
         	p.copyLocationFrom(oldP);
         	p.state = Pointcut.CONCRETE;
+
+            //FIXME ? ATAJ copy unbound bindings to ignore
+            p.m_ignoreUnboundBindingForNames  =oldP.m_ignoreUnboundBindingForNames;
         }
         
 		Advice munger = world.concreteAdvice(attribute, p, signature);
@@ -247,14 +250,18 @@ public abstract class Advice extends ShadowMunger {
 	// ---- from object
 
 	public String toString() {
-		return "("
-			+ getKind()
-            + extraParametersToString() 
-			+ ": "
-			+ pointcut
-			+ "->"
-			+ signature
-			+ ")";
+		StringBuffer sb = new StringBuffer();
+		sb.append("(").append(getKind()).append(extraParametersToString());
+		sb.append(": ").append(pointcut).append("->").append(signature).append(")");
+		return sb.toString();
+//		return "("
+//			+ getKind()
+//            + extraParametersToString() 
+//			+ ": "
+//			+ pointcut
+//			+ "->"
+//			+ signature
+//			+ ")";
 	}
     public boolean equals(Object other) {
         if (! (other instanceof Advice)) return false;
