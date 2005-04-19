@@ -25,13 +25,19 @@ public abstract class Expr extends ASTNode {
     public static final Expr[] NONE = new Expr[0];
 
     public abstract void accept(IExprVisitor v);    
+
  	public abstract ResolvedTypeX getType();
 
     public static FieldGet makeFieldGet(Member myField, ResolvedTypeX inAspect) {
         return new FieldGet(myField, inAspect);
     }
-	public static Expr makeCallExpr(Member member, Expr[] exprs, ResolvedTypeX returnType) {
+
+	public static CallExpr makeCallExpr(Member member, Expr[] exprs, ResolvedTypeX returnType) {
 		return new CallExpr(member, exprs, returnType);
 	}
+
+    public static Expr makeStringConstantExpr(final String stringConst) {
+        return new StringConstExpr(stringConst);
+    }
 
 }
