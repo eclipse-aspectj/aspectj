@@ -26,9 +26,11 @@ import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.ast.And;
 import org.aspectj.weaver.ast.Call;
 import org.aspectj.weaver.ast.CallExpr;
+import org.aspectj.weaver.ast.CastExpr;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.FieldGet;
 import org.aspectj.weaver.ast.FieldGetCall;
+import org.aspectj.weaver.ast.FieldGetOn;
 import org.aspectj.weaver.ast.HasAnnotation;
 import org.aspectj.weaver.ast.IExprVisitor;
 import org.aspectj.weaver.ast.ITestVisitor;
@@ -36,6 +38,7 @@ import org.aspectj.weaver.ast.Instanceof;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Not;
 import org.aspectj.weaver.ast.Or;
+import org.aspectj.weaver.ast.StringConstExpr;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.ast.Var;
 
@@ -278,4 +281,29 @@ public class BcelRenderer implements ITestVisitor, IExprVisitor {
 		callIl.append(Utility.createInvoke(fact, world, method));
 		instructions.insert(callIl);		
 	}
+
+    /**
+     * Visit a string constant
+     * @param stringConst
+     */
+    public void visit(StringConstExpr stringConst) {
+        instructions.insert(fact.createConstant(stringConst.getStringConst()));
+    }
+
+    /**
+     * Visit a CHECKCAST
+     * @param castExpr
+     */
+    public void visit(CastExpr castExpr) {
+        instructions.append(fact.createCheckCast(new ObjectType(castExpr.getTypeName())));
+    }
+
+    /**
+     * Visit a field GET (static or not, depends on the field)
+     * @param fieldGet
+     */
+    public void visit(FieldGetOn fieldGet) {
+		Member field = fieldGet.getField();
+		instructions.insert(Utility.createGetOn(fact, field, fieldGet.getDeclaringType()));		
+    }
 }
