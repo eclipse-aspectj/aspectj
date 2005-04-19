@@ -31,6 +31,15 @@ public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
 	  return new File("../tests/src/org/aspectj/systemtest/ajc150/ataspectj/atajc150.xml");
 	}
 	
+// FIXME ATAJ Crashes because of specifying issingleton
+//    public void testSimpleBefore() {
+//        runTest("SimpleBefore");
+//    }
+	
+    public void testSimpleAfter() {
+        runTest("SimpleAfter");
+    }
+	
     public void testSingletonAspectBinding() {
         runTest("singletonAspectBindings");
     }

@@ -1,5 +1,17 @@
 <!-- @AspectJ v1.5.0 Tests -->
 
+    <ajc-test dir="java5/ataspectj" title="SimpleBefore">
+        <compile files="SimpleBefore.java" options="-1.5 -showWeaveInfo -XnoInline"/>
+        <run class="SimpleBefore"/>
+    </ajc-test>
+    
+     <ajc-test dir="java5/ataspectj" title="SimpleAfter">
+        <compile files="SimpleAfter.java" options="-1.5 -showWeaveInfo -XnoInline">
+          <message kind="weave" text="(SimpleAfter.java:13) advised by after advice from 'SimpleAfter$X'"/>
+        </compile>
+        <run class="SimpleAfter"/>
+    </ajc-test>
+    
     <ajc-test dir="java5/ataspectj" title="singletonAspectBindings">
         <compile files="ataspectj/SingletonAspectBindingsTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline"/>
         <run class="ataspectj.SingletonAspectBindingsTest"/>
