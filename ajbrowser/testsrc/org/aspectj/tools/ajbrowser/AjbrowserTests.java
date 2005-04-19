@@ -28,5 +28,8 @@ public class AjbrowserTests extends TestCase {
     }
 
     public AjbrowserTests(String name) { super(name); }
-    public void testNothing() {}
+    
+	// AjBrowser is waiting for some tests - have to have a placeholder to 
+	// keep JUnit happy...
+	public void testNothing() {}
 }  
