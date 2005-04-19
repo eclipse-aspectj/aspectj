@@ -66,4 +66,28 @@ public abstract class PerClause extends Pointcut {
 	public static final Kind PEROBJECT  = new Kind("perobject", 3);
 	public static final Kind FROMSUPER  = new Kind("fromsuper", 4);
 	public static final Kind PERTYPEWITHIN = new Kind("pertypewithin",5);
+
+    public static class KindAnnotationPrefix extends TypeSafeEnum {
+        private KindAnnotationPrefix(String name, int key) {
+            super(name, key);
+        }
+
+        public String extractPointcut(String perClause) {
+            int from = getName().length();
+            int to = perClause.length()-1;
+            if (!perClause.startsWith(getName())
+                || !perClause.endsWith(")")
+                || from > perClause.length()) {
+                throw new RuntimeException("cannot read perclause " + perClause);
+            }
+
+            return perClause.substring(from, to);
+        }
+
+        public static final KindAnnotationPrefix PERCFLOW = new KindAnnotationPrefix("percflow(", 1);
+        public static final KindAnnotationPrefix PERCFLOWBELOW = new KindAnnotationPrefix("percflowbelow(", 2);
+        public static final KindAnnotationPrefix PERTHIS = new KindAnnotationPrefix("perthis(", 3);
+        public static final KindAnnotationPrefix PERTARGET = new KindAnnotationPrefix("pertarget(", 4);
+        public static final KindAnnotationPrefix PERTYPEWITHIN = new KindAnnotationPrefix("pertypewithin(", 5);
+    }
 }
