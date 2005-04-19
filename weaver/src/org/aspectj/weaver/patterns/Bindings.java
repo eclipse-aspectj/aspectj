@@ -108,7 +108,12 @@ public class Bindings {
 	public void checkAllBound(IScope scope) {
 		for (int i=0, len=bindings.length; i < len; i++) {
 			if (bindings[i] == null) {
-				scope.message(IMessage.ERROR, scope.getFormal(i), "formal unbound in pointcut");
+                // ATAJ: avoid warnings for implicit bindings
+                if (scope.getFormal(i) instanceof FormalBinding.ImplicitFormalBinding) {
+                    bindings[i] = new BindingTypePattern(scope.getFormal(i), false);
+                } else {
+				    scope.message(IMessage.ERROR, scope.getFormal(i), "formal unbound in pointcut ");
+                }
 			}
 		}
 
