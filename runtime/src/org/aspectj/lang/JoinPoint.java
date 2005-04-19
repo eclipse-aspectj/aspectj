@@ -155,8 +155,9 @@ public interface JoinPoint {
         String toLongString();
     }
 
+    public interface EnclosingStaticPart extends StaticPart {}
 
-    /** 
+    /**
      * Returns an object that encapsulates the static parts of this join point.
      */
     StaticPart getStaticPart();
@@ -177,4 +178,5 @@ public interface JoinPoint {
     static String EXCEPTION_HANDLER = "exception-handler";
 
     static String ADVICE_EXECUTION = "advice-execution"; //??? consider this vs. pcd
+
 }
