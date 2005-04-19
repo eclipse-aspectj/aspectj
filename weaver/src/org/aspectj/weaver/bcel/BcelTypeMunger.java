@@ -575,8 +575,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	}
 	
 	
-	
-	private LazyMethodGen makeMethodGen(LazyClassGen gen, ResolvedMember member) {
+	protected LazyMethodGen makeMethodGen(LazyClassGen gen, ResolvedMember member) {
 		LazyMethodGen ret = new LazyMethodGen(
 			member.getModifiers(),
 			BcelWorld.makeBcelType(member.getReturnType()),
@@ -591,7 +590,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	}
 
 
-	private FieldGen makeFieldGen(LazyClassGen gen, ResolvedMember member) {
+	protected FieldGen makeFieldGen(LazyClassGen gen, ResolvedMember member) {
 		return new FieldGen(
 			member.getModifiers(),
 			BcelWorld.makeBcelType(member.getReturnType()),
