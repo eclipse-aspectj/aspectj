@@ -970,8 +970,8 @@
        <compile files="P.java,Q.java,R.java"/>
        <run class="P">
            <stderr>
-               <line text="Q reporting 2"/>
                <line text="R reporting 3"/>
+               <line text="Q reporting 2"/>
            </stderr>
        </run>
    </ajc-test> 
