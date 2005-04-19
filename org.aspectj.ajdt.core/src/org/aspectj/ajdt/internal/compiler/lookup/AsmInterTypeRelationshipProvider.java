@@ -14,9 +14,10 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 
 //import java.io.IOException;
 
-import org.aspectj.asm.*;
-import org.aspectj.asm.internal.ProgramElement;
-import org.aspectj.weaver.*;
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IRelationship;
+import org.aspectj.asm.IRelationshipMap;
+import org.aspectj.weaver.ResolvedTypeX;
 
 /**
  * !!! is this class still being used?
