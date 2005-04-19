@@ -31,7 +31,8 @@ import org.aspectj.weaver.patterns.DeclareParents;
  */
 public class CrosscuttingMembersSet {
 	private World world;
-	private Map members = new HashMap();
+	//FIXME Alex: we may need a sequencedHashMap there to ensure source based precedence for @AJ advice
+    private Map members = new HashMap();
 	
 	private List shadowMungers = null;
 	private List typeMungers = null;
