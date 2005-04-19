@@ -18,7 +18,7 @@ package org.aspectj.runtime.internal;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 public abstract class AroundClosure {
-    private Object[] state;
+    protected Object[] state;
     protected Object[] preInitializationState;
 
     public AroundClosure() {
