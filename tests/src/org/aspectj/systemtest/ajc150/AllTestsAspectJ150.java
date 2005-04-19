@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc150;
 
+import org.aspectj.systemtest.ajc150.ataspectj.AtAjSyntaxTests;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -40,6 +42,8 @@ public class AllTestsAspectJ150 {
 		
 		suite.addTest(SuppressedWarnings.suite());
 		suite.addTest(DeclareAnnotationTests.suite());
+		
+		suite.addTest(AtAjSyntaxTests.suite());
 		//$JUnit-END$
 		return suite;
 	}
