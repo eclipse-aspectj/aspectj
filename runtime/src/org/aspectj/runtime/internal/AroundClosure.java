@@ -9,22 +9,29 @@
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
+ *    Alex Vasseur    wired up for @AJ proceeding
  * ******************************************************************/
 
 
 package org.aspectj.runtime.internal;
 
-public abstract class AroundClosure {
-    //private Object[] state;
+import org.aspectj.lang.ProceedingJoinPoint;
 
-    public AroundClosure(/* Object[] state */) {
-        // this.state = state;
+public abstract class AroundClosure {
+    private Object[] state;
+    protected Object[] preInitializationState;
+
+    public AroundClosure() {
     }
     
-    protected Object[] state;
-    protected Object[] preInitializationState;
     public AroundClosure(Object[] state) {
     	this.state = state;
+    }
+    
+    
+
+    public Object[] getState() {
+      return state;
     }
     
 	public Object[] getPreInitializationState() {
@@ -36,4 +43,15 @@ public abstract class AroundClosure {
 	 * call in the around advice (with primitives coerced to Object types)
 	 */
     public abstract Object run(Object[] args) throws Throwable;
+
+    /**
+     * This method is called to implicitly associate the closure with the joinpoint
+     * as required for @AJ aspect proceed()
+     */
+    public ProceedingJoinPoint linkClosureAndJoinPoint() {
+        //TODO is this cast safe ?
+        ProceedingJoinPoint jp = (ProceedingJoinPoint)state[state.length-1];
+        jp.set$AroundClosure(this);
+        return jp;
+    }
 }

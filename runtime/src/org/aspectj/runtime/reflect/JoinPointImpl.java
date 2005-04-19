@@ -14,11 +14,13 @@
 
 package org.aspectj.runtime.reflect;
 
-import org.aspectj.lang.*;
-
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.SourceLocation;
+import org.aspectj.runtime.internal.AroundClosure;
 
-class JoinPointImpl implements JoinPoint {
+class JoinPointImpl implements ProceedingJoinPoint {
     static class StaticPartImpl implements JoinPoint.StaticPart {
         String kind;
         Signature signature;
@@ -46,6 +48,12 @@ class JoinPointImpl implements JoinPoint {
         public final String toString() { return toString(StringMaker.middleStringMaker); }
         public final String toShortString() { return toString(StringMaker.shortStringMaker); }
         public final String toLongString() { return toString(StringMaker.longStringMaker); }
+    }
+
+    static class EnclosingStaticPartImpl extends StaticPartImpl implements EnclosingStaticPart {
+        public EnclosingStaticPartImpl(String kind, Signature signature, SourceLocation sourceLocation) {
+            super(kind, signature, sourceLocation);
+        }
     }
 
     Object _this;
@@ -78,4 +86,37 @@ class JoinPointImpl implements JoinPoint {
     public final String toString() { return staticPart.toString(); }
     public final String toShortString() { return staticPart.toShortString(); }
     public final String toLongString() { return staticPart.toLongString(); }
+
+    // To proceed we need a closure to proceed on
+    private AroundClosure arc;
+    public void set$AroundClosure(AroundClosure arc) {
+        this.arc = arc;
+    }
+
+    public Object proceed() throws Throwable {
+        // when called from a before advice, but be a no-op
+        if (arc == null)
+            return null;
+        else
+            return arc.run(arc.getState());
+    }
+
+    public Object proceed(Object[] adviceBindings) throws Throwable {
+        // when called from a before advice, but be a no-op
+        if (arc == null)
+            return null;
+        else {
+            // state is always consistent with caller?,callee?,formals...,jp
+            Object[] state = arc.getState();
+            for (int i = state.length-2; i >= 0; i--) {
+                int formalIndex = (adviceBindings.length - 1) - (state.length-2) + i;
+                if (formalIndex >= 0 && formalIndex < adviceBindings.length) {
+                    state[i] = adviceBindings[formalIndex];
+                }
+            }
+            return arc.run(state);
+        }
+    }
+
+
 }
