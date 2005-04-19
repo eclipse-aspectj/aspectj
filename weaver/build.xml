@@ -44,7 +44,7 @@
     </target>
 
     <target name="test" depends="test:compile">
-        <testrun project="weaver" path="weaver.test.src.path" suite="org.aspectj.weaver.BcweaverModuleTests"/>
+        <testrun project="weaver" path="weaver.test.src.path" suite="BcweaverModuleTests"/>
     </target>
 
     <target name="jar" depends="compile">
