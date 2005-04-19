@@ -70,6 +70,19 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 		return declaration instanceof AspectDeclaration;
 	}
 
+    // FIXME ATAJ  isAnnotationStyleAspect() needs implementing?
+    public boolean isAnnotationStyleAspect() {
+        if (declaration.annotations == null) {
+            return false;
+        }
+        for (int i = 0; i < declaration.annotations.length; i++) {
+            Annotation annotation = declaration.annotations[i];
+            // do something there
+            ;
+        }
+        return false;
+    }
+
 	public WeaverStateInfo getWeaverState() {
 		return null;
 	}
