@@ -5,6 +5,7 @@
     <import file="../ajde/build.xml"/>
     <import file="../bridge/build.xml"/>
     <import file="../taskdefs/build.xml"/>
+    <import file="../testing-client/build.xml"/>
 
     <path id="testing.test.src.path">
         <path refid="testing.src.path"/>
@@ -28,6 +29,7 @@
         <pathelement path="../asm/bin"/>
         <pathelement path="../bridge/bin"/>
         <pathelement path="../taskdefs/bin"/>
+        <pathelement path="../testing-client/bin"/>
         <pathelement path="../testing-util/bin"/>
         <pathelement path="../util/bin"/>
         <fileset dir="${basedir}/../lib">
@@ -42,6 +44,7 @@
                                     asm.compile,
                                     bridge.compile,
                                     taskdefs.compile,
+                                    testing-client.compile,
                                     testing-util.compile,
                                     util.compile">
         <srccompile project="testing" path="testing.src.path"/>

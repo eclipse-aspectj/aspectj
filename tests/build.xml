@@ -13,7 +13,6 @@
         <!-- all are for test run -->
         <path refid="tests.src.path"/>
         <pathelement path="../runtime/bin"/>
-        <pathelement path="../org.aspectj.ajdt.core/bin"/>
         <pathelement path="../weaver/bin"/>
         <fileset dir="${basedir}/../lib">
             <include name="junit/*.jar"/>
@@ -28,6 +27,7 @@
         <pathelement path="../ajde/bin"/>
         <pathelement path="../asm/bin"/>
         <pathelement path="../bridge/bin"/>
+        <pathelement path="../org.aspectj.ajdt.core/bin"/>
         <pathelement path="../org.aspectj.ajdt.core/bintest"/>
         <pathelement path="../testing/bin"/>
         <pathelement path="../testing-drivers/bin"/>

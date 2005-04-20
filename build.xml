@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<project name="aspectj" basedir="." default="all">
+
+    <!-- a root build.xml that redirects to build/build-master.xml for convenience so that ones can type
+    "ant .." straight in the modules/ root -->
+
+    <target name="patch">
+        <cvs output="patch">
+             <commandline>
+                 <argument line="-q diff -u -N"/>
+             </commandline>
+         </cvs>
+     </target>
+
+    <target name="clean">
+        <subant target="clean">
+            <fileset dir="." includes="build/build-master.xml"/>
+        </subant>
+    </target>
+
+    <target name="cleanall">
+        <subant target="cleanall">
+            <fileset dir="." includes="build/build-master.xml"/>
+        </subant>
+    </target>
+
+    <target name="all">
+        <subant target="all">
+            <fileset dir="." includes="build/build-master.xml"/>
+        </subant>
+    </target>
+
+    <target name="compile">
+        <subant target="compile">
+            <fileset dir="." includes="build/build-master.xml"/>
+        </subant>
+    </target>
+
+    <target name="test">
+        <subant target="test">
+            <fileset dir="." includes="build/build-master.xml"/>
+        </subant>
+    </target>
+
+    <target name="jar">
+        <subant target="jar">
+            <fileset dir="." includes="build/build-master.xml"/>
+        </subant>
+    </target>
+
+</project>
