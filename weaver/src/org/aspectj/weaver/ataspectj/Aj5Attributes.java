@@ -27,6 +27,8 @@ import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.weaver.Advice;
@@ -81,14 +83,15 @@ public class Aj5Attributes {
         /**
          * The resolved type (class) for which we are reading @AJ for (be it class, method, field annotations)
          */
-        ResolvedTypeX enclosingType;
+        final ResolvedTypeX enclosingType;
 
-        ISourceContext context;
-        IMessageHandler handler;
+        final ISourceContext context;
+        final IMessageHandler handler;
 
-        public AjAttributeStruct(ResolvedTypeX type, ISourceContext sourceContext) {
+        public AjAttributeStruct(ResolvedTypeX type, ISourceContext sourceContext, IMessageHandler messageHandler) {
             enclosingType = type;
             context = sourceContext;
+            handler = messageHandler;
         }
     }
 
@@ -105,10 +108,10 @@ public class Aj5Attributes {
          */
         private String[] m_argumentNamesLazy = null;
 
-        Method method;
+        final Method method;
 
-        public AjAttributeMethodStruct(Method method, ResolvedTypeX type, ISourceContext sourceContext) {
-            super(type, sourceContext);
+        public AjAttributeMethodStruct(Method method, ResolvedTypeX type, ISourceContext sourceContext, IMessageHandler messageHandler) {
+            super(type, sourceContext, messageHandler);
             this.method = method;
         }
 
@@ -140,7 +143,7 @@ public class Aj5Attributes {
      * @return list of AjAttributes
      */
     public static List readAj5ClassAttributes(JavaClass javaClass, ResolvedTypeX type, ISourceContext context,IMessageHandler msgHandler) {
-        AjAttributeStruct struct = new AjAttributeStruct(type, context);
+        AjAttributeStruct struct = new AjAttributeStruct(type, context, msgHandler);
         Attribute[] attributes = javaClass.getAttributes();
         for (int i = 0; i < attributes.length; i++) {
             Attribute attribute = attributes[i];
@@ -159,7 +162,7 @@ public class Aj5Attributes {
         for (int m = 0; m < javaClass.getMethods().length; m++) {
             Method method = javaClass.getMethods()[m];
             //FIXME alex optimize, this method struct will gets recreated for advice extraction
-            AjAttributeMethodStruct mstruct = new AjAttributeMethodStruct(method, type, context);
+            AjAttributeMethodStruct mstruct = new AjAttributeMethodStruct(method, type, context, msgHandler);
             Attribute[] mattributes = method.getAttributes();
 
             for (int i = 0; i < mattributes.length; i++) {
@@ -185,7 +188,7 @@ public class Aj5Attributes {
      * @return list of AjAttributes
      */
     public static List readAj5MethodAttributes(Method method, ResolvedTypeX type, ISourceContext context,IMessageHandler msgHandler) {
-        AjAttributeMethodStruct struct = new AjAttributeMethodStruct(method, type, context);
+        AjAttributeMethodStruct struct = new AjAttributeMethodStruct(method, type, context, msgHandler);
         Attribute[] attributes = method.getAttributes();
 
         for (int i = 0; i < attributes.length; i++) {
@@ -236,7 +239,7 @@ public class Aj5Attributes {
                 if (perX == null || perX.length()<=0) {
                      clause = new PerSingleton();
                 } else {
-                    clause = readPerClausePointcut(perX);
+                    clause = parsePerClausePointcut(perX, struct);
                 }
                 clause.setLocation(struct.context, -1, -1);
                 struct.ajAttributes.add(new AjAttribute.Aspect(clause));
@@ -248,10 +251,11 @@ public class Aj5Attributes {
      * Read a perClause
      *
      * @param perClause like "pertarget(.....)"
+     * @param struct for which we are parsing the per clause
      * @return a PerClause instance
      */
-    private static PerClause readPerClausePointcut(String perClause) {
-        String pointcut;
+    private static PerClause parsePerClausePointcut(String perClause, AjAttributeStruct struct) {
+        final String pointcut;
         if (perClause.startsWith(PerClause.KindAnnotationPrefix.PERCFLOW.getName())) {
             pointcut = PerClause.KindAnnotationPrefix.PERCFLOW.extractPointcut(perClause);
             return new PerCflow(Pointcut.fromString(pointcut), false);
@@ -267,7 +271,17 @@ public class Aj5Attributes {
         } else if (perClause.startsWith(PerClause.KindAnnotationPrefix.PERTYPEWITHIN.getName())) {
             pointcut = PerClause.KindAnnotationPrefix.PERTYPEWITHIN.extractPointcut(perClause);
             return new PerTypeWithin(new PatternParser(pointcut).parseTypePattern());
+        } else if (perClause.equalsIgnoreCase(PerClause.SINGLETON.getName())) {
+            return new PerSingleton();
         }
+        // could not parse the @AJ perclause
+        struct.handler.handleMessage(
+                new Message(
+                        "cannot read per clause from @Aspect: " + perClause,
+                        null,//TODO
+                        true
+                )
+        );
         throw new RuntimeException("cannot read perclause " + perClause);
     }
 

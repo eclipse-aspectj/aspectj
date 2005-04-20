@@ -48,10 +48,11 @@
 	<target name="packageAndPush" depends="buildTheJars,push"/>
 	
   <target name="jar" depends="pack">
-    <copy file="../lib/regexp/jakarta-regexp-1.2.jar"
-        tofile="bcel/lib/Regex.jar" />
-    <ant dir="bcel" target="jar" />
-    <copy file="bcel/bin/bcel.jar" toDir="." />
+      <!-- FIXME AV: someone fix this target since it is broken... looks for bcel/build.xml that does not exist -->
+<!--    <copy file="../lib/regexp/jakarta-regexp-1.2.jar"-->
+<!--        tofile="bcel/lib/Regex.jar" />-->
+<!--    <ant dir="bcel" target="jar" />-->
+<!--    <copy file="bcel/bin/bcel.jar" toDir="." />-->
   </target>
   
   <target name="srcjar" depends="pack">

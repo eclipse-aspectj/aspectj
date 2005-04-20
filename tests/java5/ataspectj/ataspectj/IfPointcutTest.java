@@ -30,6 +30,7 @@ public class IfPointcutTest extends TestCase {
     }
 
     public void testIf() {
+        fail("FIXME AV: see below, TestAspect has its advice and pointcut commented out");
         IfPointcutTest me = new IfPointcutTest();
         me.hello(1);
         me.hello(-1);

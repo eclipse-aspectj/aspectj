@@ -31,10 +31,9 @@ public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
 	  return new File("../tests/src/org/aspectj/systemtest/ajc150/ataspectj/atajc150.xml");
 	}
 	
-// FIXME ATAJ Crashes because of specifying issingleton
-//    public void testSimpleBefore() {
-//        runTest("SimpleBefore");
-//    }
+    public void testSimpleBefore() {
+        runTest("SimpleBefore");
+    }
 	
     public void testSimpleAfter() {
         runTest("SimpleAfter");
@@ -65,12 +64,11 @@ public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
 //        runTest("AfterXTest");
 //    }
 
-// FIXME alex @AJ impl + test
-// FIXME andy is this working or not Alex? It was commented out in the branch but uncommenting it - it
-//       runs fine for me.
-    public void testIfPointcut() {
-        runTest("IfPointcutTest");
-    }
+    //FIXME AV uncomment when IfPointcutTest.TestAspect can be compiled ie if() pcd can be parsed.
+    // right now the aspect is commented out.
+//    public void testIfPointcut() {
+//        runTest("IfPointcutTest");
+//    }
 
 // FIXME alex java.lang.VerifyError: (class: ataspectj/BindingTest, method: dup_aroundBody5$advice signature: (ILorg/aspectj/lang/JoinPoint;Lataspectj/BindingTest$TestAspect_1;ILorg/aspectj/lang/ProceedingJoinPoint;)Ljava/lang/Object;) Register 0 contains wrong type
 //    public void testBindings() {
