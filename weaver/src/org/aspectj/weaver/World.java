@@ -137,6 +137,11 @@ public abstract class World implements Dump.INode {
                 dumpState_cantFindTypeExceptions.add(new RuntimeException("Can't find type "+ty.getName()));
             }
         }
+		if (ty.isParameterized()) {
+			for (int i = 0; i < ty.typeParameters.length; i++) {
+				ty.typeParameters[i] = resolve(ty.typeParameters[i],allowMissing);
+			}
+		}
         //System.out.println("ret: " + ret);
         typeMap.put(signature, ret);
         return ret;
@@ -147,7 +152,14 @@ public abstract class World implements Dump.INode {
     	return resolve(TypeX.forName(name));
     }
     protected final ResolvedTypeX resolveObjectType(TypeX ty) {
-    	ResolvedTypeX.Name name = new ResolvedTypeX.Name(ty.getSignature(), this);
+		String signature = ty.getSignature();
+		if (signature.indexOf("<") != -1) {
+			// extract the raw type...
+			// XXX - might need to do more in the future to propagate full parameterized info...
+			signature = signature.substring(0,signature.indexOf("<"));
+		}
+
+    	ResolvedTypeX.Name name = new ResolvedTypeX.Name(signature, this);
     	ResolvedTypeX.ConcreteName concreteName = resolveObjectType(name);
     	if (concreteName == null) return ResolvedTypeX.MISSING;
     	name.setDelegate(concreteName);

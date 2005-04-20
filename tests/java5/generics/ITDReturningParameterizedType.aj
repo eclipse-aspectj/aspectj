@@ -2,6 +2,8 @@ import java.util.*;
 
 public aspect ITDReturningParameterizedType {
 	
+	private List<String> myStrings = new ArrayList<String>();
+	
 	private List<String> C.strings = new ArrayList<String>();
 	
 	public List<String> C.getStrings() {

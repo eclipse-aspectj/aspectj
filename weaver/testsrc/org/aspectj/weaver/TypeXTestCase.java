@@ -61,6 +61,21 @@ public class TypeXTestCase extends TestCase {
     	assertEquals(t.getOutermostType(), TypeX.forName("java.util.Map"));
     	assertEquals(TypeX.forName("java.util.Map").getOutermostType(), TypeX.forName("java.util.Map"));
     }
+	
+	public void testNameAndSigWithParameters() {
+		TypeX t = TypeX.forName("java.util.List<java.lang.String>");
+		assertEquals(t.getName(),"java.util.List<java.lang.String>");
+		assertEquals(t.getSignature(),"Ljava/util/List<Ljava/lang/String;>;");
+		t = new TypeX("Ljava/util/List<Ljava/lang/String;>;");
+		assertEquals(t.getName(),"java.util.List<java.lang.String>");
+		assertEquals(t.getSignature(),"Ljava/util/List<Ljava/lang/String;>;");
+		t = TypeX.forName("java.util.Map<java.util.String,java.util.List<java.lang.Integer>>");
+		assertEquals(t.getName(),"java.util.Map<java.util.String,java.util.List<java.lang.Integer>>");
+		assertEquals(t.getSignature(),"Ljava/util/Map<Ljava/util/String;Ljava/util/List<Ljava/lang/Integer;>;>;");
+		t = new TypeX("Ljava/util/Map<Ljava/util/String;Ljava/util/List<Ljava/lang/Integer;>;>;");
+		assertEquals(t.getName(),"java.util.Map<java.util.String,java.util.List<java.lang.Integer>>");
+		assertEquals(t.getSignature(),"Ljava/util/Map<Ljava/util/String;Ljava/util/List<Ljava/lang/Integer;>;>;");
+	}
 
     private void isPrimitiveTest(TypeX[] types, boolean[] isPrimitives) {
         for (int i = 0, len = types.length; i < len; i++) {

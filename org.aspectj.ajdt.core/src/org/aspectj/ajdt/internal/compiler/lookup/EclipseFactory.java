@@ -47,11 +47,13 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BaseTypes;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
  
 /**
  * @author Jim Hugunin
@@ -164,6 +166,19 @@ public class EclipseFactory {
 			// this is a type variable...
 			TypeVariableBinding tvb = (TypeVariableBinding) binding;
 			return TypeX.forName(getName(tvb.firstBound)); // XXX needs more investigation as to whether this is correct in all cases
+		}
+		if (binding instanceof ParameterizedTypeBinding) {
+			ParameterizedTypeBinding ptb = (ParameterizedTypeBinding) binding;
+			String[] arguments = new String[ptb.arguments.length];
+			for (int i = 0; i < arguments.length; i++) {
+				if (ptb.arguments[i] instanceof WildcardBinding) {
+					WildcardBinding wcb = (WildcardBinding) ptb.arguments[i];
+					arguments[i] = getName(((TypeVariableBinding)wcb.typeVariable()).firstBound);
+				}  else {
+					arguments[i] = getName(ptb.arguments[i]);
+				}
+			}
+			return TypeX.forParameterizedTypeNames(getName(binding), arguments);
 		}
 		return TypeX.forName(getName(binding));
 	}
@@ -307,21 +322,32 @@ public class EclipseFactory {
 				typeX = typeX.getComponentType();
 			}
 			return lookupEnvironment.createArrayType(makeTypeBinding(typeX), dim);
+		} else if (typeX.isParameterized()){
+			TypeX[] typeParameters = typeX.getTypeParameters();
+			ReferenceBinding baseTypeBinding = lookupBinding(typeX.getBaseName());
+			ReferenceBinding[] argumentBindings = new ReferenceBinding[typeParameters.length];
+			for (int i = 0; i < argumentBindings.length; i++) {
+				argumentBindings[i] = lookupBinding(typeParameters[i].getName());
+			}
+			ParameterizedTypeBinding ptb = 
+				lookupEnvironment.createParameterizedType(baseTypeBinding,argumentBindings,baseTypeBinding.enclosingType());
+			return ptb;
 		} else {
-			String n = typeX.getName();
-			char[][] name = CharOperation.splitOn('.', n.toCharArray());
-			ReferenceBinding rb = lookupEnvironment.getType(name);
-			// XXX We do this because the pertypewithin aspectOf(Class) generated method needs it.  Without this
-			// we don't get a 'rawtype' as the argument type for a messagesend to aspectOf() and this leads to 
-			// a compile error if some client class calls aspectOf(A.class) or similar as it says Class<A> isn't
-			// compatible with Class<T>
-			if (n.equals("java.lang.Class")) 
-				rb = lookupEnvironment.createRawType(rb,rb.enclosingType());
-			return rb;
+			return lookupBinding(typeX.getName());
 		}
 	}
 	
-	
+	private ReferenceBinding lookupBinding(String sname) {
+		char[][] name = CharOperation.splitOn('.', sname.toCharArray());
+		ReferenceBinding rb = lookupEnvironment.getType(name);
+		// XXX We do this because the pertypewithin aspectOf(Class) generated method needs it.  Without this
+		// we don't get a 'rawtype' as the argument type for a messagesend to aspectOf() and this leads to 
+		// a compile error if some client class calls aspectOf(A.class) or similar as it says Class<A> isn't
+		// compatible with Class<T>
+		if (sname.equals("java.lang.Class")) 
+			rb = lookupEnvironment.createRawType(rb,rb.enclosingType());
+		return rb;		
+	}
 	
 	public TypeBinding[] makeTypeBindings(TypeX[] types) {
 		int len = types.length;

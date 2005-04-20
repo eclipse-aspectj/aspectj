@@ -23,6 +23,11 @@ public class TypeX implements AnnotatedElement {
 	 * This is the bytecode string representation of this Type
 	 */
     protected String signature;
+	
+	/**
+	 * If this is a parameterized type, these are its parameters
+	 */
+	protected TypeX[] typeParameters;
 
 	/**
 	 * @param      signature   the bytecode string representation of this Type
@@ -101,7 +106,29 @@ public class TypeX implements AnnotatedElement {
         }
         return ret;
     }  
-    
+	
+	/**
+	 * Makes a parameterized type with the given name
+	 * and parameterized type names.
+	 */
+    public static TypeX forParameterizedTypeNames(String name, String[] paramTypeNames) {
+		TypeX ret = TypeX.forName(name);
+		ret.typeParameters = new TypeX[paramTypeNames.length];
+		for (int i = 0; i < paramTypeNames.length; i++) {
+			ret.typeParameters[i] = TypeX.forName(paramTypeNames[i]);
+		}
+		// sig for e.g. List<String> is Ljava/util/List<Ljava/lang/String;>;
+		StringBuffer sigAddition = new StringBuffer();
+		sigAddition.append("<");
+		for (int i = 0; i < ret.typeParameters.length; i++) {
+			sigAddition.append(ret.typeParameters[i].signature);
+			sigAddition.append(">");
+			sigAddition.append(";");
+		}
+		ret.signature = ret.signature + sigAddition.toString();
+		return ret;
+    }
+	
 	/**
 	 * Creates a new type array with a fresh type appended to the end.
 	 * 
@@ -205,6 +232,15 @@ public class TypeX implements AnnotatedElement {
     public String getName() {
         return signatureToName(signature);
     }
+	
+	public String getBaseName() {
+		String name = getName();
+		if (isParameterized()) {
+			return name.substring(0,name.indexOf("<"));
+		} else {
+			return name;
+		}
+	}
 
     /**
      * Returns an array of strings representing the java langauge names of 
@@ -250,6 +286,14 @@ public class TypeX implements AnnotatedElement {
     public final boolean isArray() {
         return signature.startsWith("[");
     }
+	
+	/**
+	 * Determines if this represents a parameterized type.
+	 */
+	public final boolean isParameterized() {
+		return signature.indexOf("<") != -1; 
+		//(typeParameters != null) && (typeParameters.length > 0);
+	}
     
     /**
      * Returns a TypeX object representing the effective outermost enclosing type
@@ -603,7 +647,48 @@ public class TypeX implements AnnotatedElement {
             case 'I': return "int";
             case 'J': return "long";
             case 'L':
-                return signature.substring(1, signature.length() - 1).replace('/', '.');
+                String name =  signature.substring(1, signature.length() - 1).replace('/', '.');
+				if (name.indexOf("<") == -1) return name;
+				// signature for parameterized types is e.g.
+				// List<String> -> Ljava/util/List<Ljava/lang/String;>;
+				// Map<String,List<Integer>> -> Ljava/util/Map<java/lang/String;Ljava/util/List<Ljava/lang/Integer;>;>;
+				StringBuffer nameBuff = new StringBuffer();
+				boolean justSeenLeftArrowChar = false;
+				boolean justSeenSemiColon= false;
+				int paramNestLevel = 0;
+				for (int i = 0 ; i < name.length(); i++) {
+					char c = name.charAt(i);
+					switch (c) {
+						case '<' : 
+							justSeenLeftArrowChar = true;
+							paramNestLevel++;
+							nameBuff.append(c); 
+							break;
+						case ';' :
+							justSeenSemiColon = true;
+							break;
+						case '>' :
+							paramNestLevel--;
+							nameBuff.append(c);
+							break;
+						case 'L' :
+							if (justSeenLeftArrowChar) {
+								justSeenLeftArrowChar = false;
+								break;
+							}
+							if (justSeenSemiColon) {
+								nameBuff.append(",");
+							} else {
+								nameBuff.append("L");
+							}
+							break;
+						default: 
+							justSeenSemiColon = false;
+							justSeenLeftArrowChar = false;
+							nameBuff.append(c);
+					}
+				}
+				return nameBuff.toString();
             case 'S': return "short";
             case 'V': return "void";
             case 'Z': return "boolean";
@@ -631,7 +716,27 @@ public class TypeX implements AnnotatedElement {
         	
         	// 1) If it is already an array type, do not mess with it.
         	if (name.charAt(0)=='[' && name.charAt(name.length()-1)==';') return name;
-        	else return "L" + name.replace('.', '/') + ";";
+        	else {
+				if (name.indexOf("<") == -1) {
+					// not parameterised
+					return "L" + name.replace('.', '/') + ";";
+				} else {
+					StringBuffer nameBuff = new StringBuffer();
+					nameBuff.append("L");
+					for (int i = 0; i < name.length(); i++) {
+						char c = name.charAt(i);
+						switch (c) {
+						case '.' : nameBuff.append('/'); break;
+						case '<' : nameBuff.append("<L"); break;
+						case '>' : nameBuff.append(";>"); break;
+						case ',' : nameBuff.append(";L"); break;
+						default: nameBuff.append(c);
+						}
+					}
+					nameBuff.append(";");
+					return nameBuff.toString();
+				}
+        	}
         }
         else 
             throw new BCException("Bad type name: " + name);
@@ -719,6 +824,10 @@ public class TypeX implements AnnotatedElement {
 		} else {
 			return name.substring(0, index);
 		}
+	}
+	
+	public TypeX[] getTypeParameters() {
+		return typeParameters == null ? new TypeX[0] : typeParameters;
 	}
 	
 	/**
