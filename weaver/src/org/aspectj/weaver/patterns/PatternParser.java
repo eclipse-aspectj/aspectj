@@ -139,8 +139,7 @@ public class PatternParser {
 		} else if (kind.equals("constructor")) {
 			ret = parseDeclareAtMethod(false);			
 		} else {
-			throw new ParserException("expected one of type, method, field, constructor",
-				tokenSource.peek(-1));
+			throw new ParserException("one of type, method, field, constructor",tokenSource.peek(-1));
 		}
 		eat(";");
 	    int endPos = tokenSource.peek(-1).getEnd();

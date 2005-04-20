@@ -322,4 +322,9 @@ public class DeclareAnnotationTests extends XMLBasedAjcTestCase {
 	  	assertTrue("Should have a relationship but does not ",l.size()>0);
   	}
   }
+  
+  public void testDeclareTypeMisspelled() {
+	  	runTest("declare @Type (should be @type)");
+  }
+
 }

@@ -125,11 +125,6 @@
     <ajc-test dir="bugs150" title="bad asm for enums" vm="1.5">
         <compile files="Rainbow.java" options="-emacssym,-1.5"/>
     </ajc-test>
-
-    <ajc-test dir="bugs150" pr="83645" title="pertypewithin({interface}) illegal field modifier">
-        <compile files="PR83645.java"/>
-        <run class="PR83645"/>
-    </ajc-test>
         
     <ajc-test dir="../docs/dist/doc/examples/introduction" title="introduction sample" vm="1.5">
         <compile files="CloneablePoint.java,ComparablePoint.java,HashablePoint.java,Point.java" options="-1.5"/>
@@ -545,6 +540,12 @@
         </run>
     </ajc-test>
 
+    <ajc-test dir="java5/annotations/declare" pr="91858" title="declare @Type (should be @type)">
+        <compile files="DeathByPoorSpelling.aj" options="-1.5">
+            <message kind="error" line="6" text="Syntax error on token &quot;:&quot;, &quot;one of type, method, field, constructor&quot; expected"/>
+        </compile>
+    </ajc-test>
+    
    <!-- ======================================================================================= -->
    <!--               Autoboxing tests                                                          -->
    <!-- ======================================================================================= -->

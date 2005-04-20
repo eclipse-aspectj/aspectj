@@ -80,7 +80,9 @@ public class DeclareAnnotationDeclaration extends DeclareDeclaration {
    
 	public void postParse(TypeDeclaration typeDec) {
 		super.postParse(typeDec);
-	    ((DeclareAnnotation)declareDecl).setAnnotationMethod(new String(selector));
+		if (declareDecl != null){
+			((DeclareAnnotation)declareDecl).setAnnotationMethod(new String(selector));
+		}
 	}
 	
 }
