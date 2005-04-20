@@ -53,6 +53,7 @@
     <!-- override to remove generated doc directories -->
     <target name="cleanall" depends="init">
         <delete dir="${basedir}/ajdocworkingdir"/>
+        <delete dir="${basedir}/bintest"/>
         <delete>
             <fileset  dir="${basedir}/testdata" includes="*/doc/**/*"/>
             <fileset  dir="${basedir}/testdata" includes="*/docdir/**/*"/>

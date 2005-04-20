@@ -20,6 +20,7 @@
 
     <target name="cleanall" depends="clean">
         <delete dir="bin"/>
+        <delete dir="bintest"/>
         <!-- FIXME: not consistent with Alex policy -->
         <mkdir dir="bin"/>
     </target>
