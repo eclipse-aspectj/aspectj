@@ -10,9 +10,7 @@
  * Contributors: 
  *     Xerox/PARC     initial implementation 
  * ******************************************************************/
-
-
-package org.aspectj.testing.util;
+package org.aspectj.testingutil;
 
 import junit.framework.*;
 
@@ -23,7 +21,7 @@ public class UtilTests extends TestCase {
         TestSuite suite = new TestSuite(UtilTests.class.getName());
         // for now, do not include SuiteTest because it would take 15 minutes
         //$JUnit-BEGIN$
-        suite.addTestSuite(TestUtilTest.class); 
+        suite.addTestSuite(TestUtilTest.class);
         //$JUnit-END$
         return suite;
     }

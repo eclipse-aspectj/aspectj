@@ -11,7 +11,7 @@
  *     Xerox/PARC     initial implementation 
  * ******************************************************************/
 
-package org.aspectj.testing.util;
+package org.aspectj.testingutil;
 
 import org.aspectj.util.LangUtil;
 
@@ -103,7 +103,6 @@ public class TestCompareClassFile implements Runnable {
      * Trim ending lines from a StringBuffer,
      * clipping to maxLines and further removing any number of
      * trailing lines accepted by checker.
-     * @param checker returns true if trailing line should be elided.
      * @param stack StringBuffer with lines to elide
      * @param maxLines int for maximum number of resulting lines
      */
