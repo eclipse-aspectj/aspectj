@@ -551,6 +551,28 @@ public class Main {
         }
     }
     
+	public static class LogModeMessagePrinter extends MessagePrinter {
+        
+		protected final PrintStream logStream;
+	    public LogModeMessagePrinter(boolean verbose, PrintStream logStream) {
+            super(verbose);
+			this.logStream = logStream;
+        }
+		
+		protected PrintStream getStreamFor(IMessage.Kind kind) {
+		    if (IMessage.WARNING.isSameOrLessThan(kind)) {
+                return logStream;
+            } else if (verbose && IMessage.INFO.equals(kind)) {
+                return logStream;
+            } else if (IMessage.WEAVEINFO.equals(kind)) {
+            	return logStream;
+            } else {
+                return null;
+            }
+        }
+		
+	}
+	
     /** controller for repeatable command delays until input or file changed or removed */
     public static class CommandController {
         public static String TAG_FILE_OPTION = "-XincrementalFile"; 
