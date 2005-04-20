@@ -25,6 +25,7 @@ import org.apache.tools.ant.types.*;
 import org.aspectj.bridge.*;
 import org.aspectj.tools.ajc.Main;
 import org.aspectj.tools.ajc.Main.MessagePrinter;
+import org.aspectj.tools.ajc.Main.LogModeMessagePrinter;
 import org.aspectj.util.*;
 
 
@@ -291,6 +292,8 @@ public class AjcTask extends MatchingTask {
 	// ---------------------------- state and Ant interface thereto
     private boolean verbose;
     private boolean listFileArgs;
+	private boolean loggingMode;
+	private File logFile;
     private boolean failonerror;
     private boolean fork;
     private String maxMem;
@@ -404,6 +407,8 @@ public class AjcTask extends MatchingTask {
         verbose = false;
         xweaveDir = null;
         xdoneSignal = null;
+		loggingMode = false;
+		logFile = null;
     }
 
     protected void ignore(String ignored) {
@@ -537,7 +542,9 @@ public class AjcTask extends MatchingTask {
     }
 
     public void setLog(File file) {
-        cmd.addFlagged("-log", file.getAbsolutePath());        
+        //cmd.addFlagged("-log", file.getAbsolutePath());
+		this.loggingMode = true;
+		this.logFile = file;
     }
     
     public void setProceedOnError(boolean proceedOnError) {  
@@ -555,10 +562,6 @@ public class AjcTask extends MatchingTask {
 
     public void setReferenceInfo(boolean referenceInfo) {  
         cmd.addFlag("-referenceInfo", referenceInfo);
-    }
-
-    public void setProgress(boolean progress) {  
-        cmd.addFlag("-progress", progress);
     }
 
     public void setTime(boolean time) {  
@@ -1158,6 +1161,7 @@ public class AjcTask extends MatchingTask {
      * 
      */
     protected void executeInSameVM(String[] args) {
+		PrintStream logStream = null;
         if (null != maxMem) {
             log("maxMem ignored unless forked: " + maxMem, Project.MSG_WARN);
         }
@@ -1165,8 +1169,27 @@ public class AjcTask extends MatchingTask {
         int numPreviousErrors;
         if (null == holder) {
             MessageHandler mhandler = new MessageHandler(true);
-            final IMessageHandler delegate 
-                = verbose ? MessagePrinter.VERBOSE: MessagePrinter.TERSE;
+			final IMessageHandler delegate;
+			if (!loggingMode){
+              delegate  = verbose ? MessagePrinter.VERBOSE: MessagePrinter.TERSE;
+			}
+			else{
+				String logFileName = logFile.toString(); 
+				try {
+					 logFile.createNewFile();
+				     FileOutputStream fos = new FileOutputStream(logFileName, true);
+					 logStream = new PrintStream(fos,true);
+					 delegate = new LogModeMessagePrinter(verbose, logStream);
+					 Date now = new Date();
+					 logStream.println("Log started: " + now.toString());
+				} catch (IOException e){
+					if (logStream != null) {
+						logStream.close();
+						logStream = null;
+					}
+					throw new BuildException("Logfile couldn't be written to: ",e);
+				}
+			}
             mhandler.setInterceptor(delegate);
             if (!verbose) {
                 mhandler.ignore(IMessage.INFO);
@@ -1194,6 +1217,9 @@ public class AjcTask extends MatchingTask {
             main.runMain(args, false);
         } finally {
             main = null;
+			if (logStream != null) {
+				logStream.close();					
+			}
         }
         if (failonerror) {
             int errs = holder.numMessages(IMessage.ERROR, false);
@@ -1782,9 +1808,7 @@ public class AjcTask extends MatchingTask {
                 setPreserveAllLocals(true);
             } else if ("-proceedOnError".equals(flag)) {
                 setProceedOnError(true);
-            } else if ("-progress".equals(flag)) {
-                setProgress(true);
-            } else if ("-referenceInfo".equals(flag)) {
+            }  else if ("-referenceInfo".equals(flag)) {
                 setReferenceInfo(true);
             } else if ("-source".equals(flag)) {
                 setSource(in.next());

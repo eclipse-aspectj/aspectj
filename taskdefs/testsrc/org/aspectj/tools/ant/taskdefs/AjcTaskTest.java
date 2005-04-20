@@ -2,6 +2,7 @@
  * Copyright (c) 1999-2001 Xerox Corporation, 
  *               2002 Palo Alto Research Center, Incorporated (PARC)
  *               2003 Contributors.
+ *               2005 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -9,7 +10,8 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     IBM	            ongoing maintenance 
  * ******************************************************************/
 
 package org.aspectj.tools.ant.taskdefs;
@@ -155,7 +157,7 @@ public class AjcTaskTest extends TestCase {
 			assertTrue(!"-d".equals(cmd[i]));
 		}
 	}
-
+	
 	public void testOutputRequirement() {
 		AjcTask task = getTask("default.lst");
 		checkRun(task, null);
@@ -285,6 +287,40 @@ public class AjcTaskTest extends TestCase {
         // expecting error
         checkRun(task, "inpathDirCopyFilter");
     }
+
+	// this test method submitted by patch from Andrew Huff (IBM)
+	// verifies that the log attribute of AjcTask writes output to the given log file
+	public void testLoggingMode() {
+		AjcTask task = getTask("default.lst");
+		File logFile = new File("testLogFile.txt");
+		logFile.delete();
+		try {
+			logFile.createNewFile();
+		} catch (IOException e) {
+			fail("unexpected " + e.getMessage());
+		}
+		long initialLength = logFile.length();
+		task.setLog(logFile);
+		checkRun(task, null);
+		long newLength = logFile.length();
+		assertTrue(newLength > initialLength);
+		logFile.delete();
+	}
+	
+	// this test method submitted by patch from Andrew Huff (IBM)
+	// verifies that the log attribute of AjcTask appends output to the given log file
+	public void testLoggingIsAppending(){
+		AjcTask task = getTask("compileError.lst");
+		task.setFailonerror(false);
+ 		File logFile = new File("testLogFile.txt");
+ 		task.setLog(logFile);
+ 		checkRun(task,null);		
+ 		long oldLength = logFile.length();
+		checkRun(task,null);
+		long newLength = logFile.length();
+		assertTrue(newLength > oldLength);
+ 		logFile.delete();
+ 	}
 
     private void checkRun(AjcTask task, String exceptionString) {
 		try {
