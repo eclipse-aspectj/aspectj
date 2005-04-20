@@ -137,24 +137,18 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 	                    WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_ARG_TYPE,argType.getName()),
 	                    "",IMessage.ERROR,shadow.getSourceLocation(),null,new ISourceLocation[]{getSourceLocation()});
 	            }
-				if (ap.matches(rArgType).alwaysTrue()) { // !!! ASC Can we ever take this branch?
-					                                     // !!! AMC - Yes, if annotation is @Inherited
-					argsIndex++;
-					continue;
-				} else {
+
+				ResolvedTypeX rAnnType = ap.annotationType.resolve(shadow.getIWorld());
+				if (ap instanceof BindingAnnotationTypePattern) {
+					BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern)ap;
+					Var annvar = shadow.getArgAnnotationVar(argsIndex,rAnnType);
+					state.set(btp.getFormalIndex(),annvar);
+				}
+				if (!ap.matches(rArgType).alwaysTrue()) {
 					// we need a test...
-					ResolvedTypeX rAnnType = ap.annotationType.resolve(shadow.getIWorld());
-					if (ap instanceof BindingAnnotationTypePattern) {
-						BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern)ap;
-						Var annvar = shadow.getArgAnnotationVar(argsIndex,rAnnType);
-						state.set(btp.getFormalIndex(),annvar);
-						ret = Test.makeAnd(ret,Test.makeHasAnnotation(shadow.getArgVar(argsIndex),rAnnType));
-						argsIndex++;
-					} else {
-						ret = Test.makeAnd(ret,Test.makeHasAnnotation(shadow.getArgVar(argsIndex),rAnnType));
-						argsIndex++;
-					}
-				}				
+					ret = Test.makeAnd(ret,Test.makeHasAnnotation(shadow.getArgVar(argsIndex),rAnnType));
+				}			
+				argsIndex++;
 			}
 		}   	
     	return ret;

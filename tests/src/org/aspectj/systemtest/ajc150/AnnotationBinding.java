@@ -393,5 +393,9 @@ public class AnnotationBinding extends XMLBasedAjcTestCase {
 			assertTrue("Should point to line 10 but doesnt: "+tgt,tgt.indexOf("|10|")!=-1);
 	  	}
   }  
+  
+  public void testAnnotationBindingArgsVerifyError_pr92053() {
+	runTest("AtArgs causes a VerifyError: Unable to pop operand off an empty stack");
+  }  
  
 }

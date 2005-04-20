@@ -2149,5 +2149,10 @@
         <compile files="ITDReturningParameterizedType.aj" options="-1.5"/>
         <run class="ITDReturningParameterizedType"/>
     </ajc-test>
+    
+    <ajc-test dir="java5/annotations/binding/bugs" title="AtArgs causes a VerifyError: Unable to pop operand off an empty stack" vm="1.5">
+        <compile files="Test3.java" options="-1.5"/>
+        <run class="Test3"/>
+    </ajc-test>
  
 </suite>
