@@ -38,8 +38,6 @@ public interface IRelationship extends Serializable {
 	 */
 	public static class Kind implements Serializable {
 		
-		public static final Kind DECLARE_WARNING       = new Kind("declare warning");
-		public static final Kind DECLARE_ERROR         = new Kind("declare error");
 		public static final Kind ADVICE_AROUND         = new Kind("around advice");
 		public static final Kind ADVICE_AFTERRETURNING = new Kind("after returning advice");
 		public static final Kind ADVICE_AFTERTHROWING  = new Kind("after throwing advice");
@@ -47,11 +45,14 @@ public interface IRelationship extends Serializable {
 		public static final Kind ADVICE_BEFORE         = new Kind("before advice");
 		public static final Kind ADVICE                = new Kind("advice");
 		public static final Kind DECLARE               = new Kind("declare");
-		public static final Kind DECLARE_INTER_TYPE    = new Kind("inter-type declaration");
-		public static final Kind USES_POINTCUT    		= new Kind("uses pointcut");
+        public static final Kind DECLARE_WARNING       = new Kind("declare warning");
+        public static final Kind DECLARE_ERROR         = new Kind("declare error");
+        public static final Kind DECLARE_SOFT          = new Kind("declare soft");
+        public static final Kind DECLARE_INTER_TYPE    = new Kind("inter-type declaration");
+		public static final Kind USES_POINTCUT    	   = new Kind("uses pointcut");
 		
 		public static final Kind[] ALL = { 
-			DECLARE_WARNING, DECLARE_ERROR,
+			DECLARE_WARNING, DECLARE_ERROR, DECLARE_SOFT,
 			ADVICE_AROUND,ADVICE_AFTERRETURNING,ADVICE_AFTERTHROWING,ADVICE_AFTER,ADVICE_BEFORE,
 			ADVICE, DECLARE, DECLARE_INTER_TYPE, USES_POINTCUT };
 			

@@ -40,7 +40,9 @@ public class AsmRelationshipProvider {
 	public static final String ADVISED_BY = "advised by";
 	public static final String DECLARES_ON = "declares on";
 	public static final String DECLAREDY_BY = "declared by";
-	public static final String MATCHED_BY = "matched by";
+    public static final String SOFTENS = "softens";
+    public static final String SOFTENED_BY = "softened by"; 
+    public static final String MATCHED_BY = "matched by";
 	public static final String MATCHES_DECLARE = "matches declare";
 	public static final String INTER_TYPE_DECLARES = "declared on";
 	public static final String INTER_TYPE_DECLARED_BY = "aspect declarations";
@@ -205,14 +207,21 @@ public class AsmRelationshipProvider {
 			if (adviceHandle != null && targetNode != null) {
 		
 				if (targetNode != null) {
-					String targetHandle = targetNode.getHandleIdentifier();	
-				
-					IRelationship foreward = mapper.get(adviceHandle, IRelationship.Kind.ADVICE, ADVISES,runtimeTest,true);
-					if (foreward != null) foreward.addTarget(targetHandle);//foreward.getTargets().add(targetHandle);
-					
-					IRelationship back = mapper.get(targetHandle, IRelationship.Kind.ADVICE, ADVISED_BY,runtimeTest,true);
-					if (back != null)     back.addTarget(adviceHandle);//back.getTargets().add(adviceHandle);
-				}
+                    String targetHandle = targetNode.getHandleIdentifier(); 
+                    if (advice.getKind().equals(AdviceKind.Softener)) {
+                        IRelationship foreward = mapper.get(adviceHandle, IRelationship.Kind.DECLARE_SOFT, SOFTENS,runtimeTest,true);
+                        if (foreward != null) foreward.addTarget(targetHandle);//foreward.getTargets().add(targetHandle);
+                        
+                        IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE, SOFTENED_BY,runtimeTest,true);
+                        if (back != null)     back.addTarget(adviceHandle);//back.getTargets().add(adviceHandle);
+                    } else {
+    					IRelationship foreward = mapper.get(adviceHandle, IRelationship.Kind.ADVICE, ADVISES,runtimeTest,true);
+    					if (foreward != null) foreward.addTarget(targetHandle);//foreward.getTargets().add(targetHandle);
+    					
+    					IRelationship back = mapper.get(targetHandle, IRelationship.Kind.ADVICE, ADVISED_BY,runtimeTest,true);
+    					if (back != null)     back.addTarget(adviceHandle);//back.getTargets().add(adviceHandle);
+                    }
+                }
 			}
 
 		}
