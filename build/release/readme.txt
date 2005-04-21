@@ -64,3 +64,8 @@ cd release
   
 # test installation and sources in local tree:
 [ -z "$skipTest" ] && "$myant" test ${sp} -Dskip.build=true 
+
+# check 1.1 runtime - compile will fail,
+# but should only be in known 1.2-dependent classes
+#export JAVA_HOME=c:/home/apps/jdk13
+#"$myant" compile-runtime-11 ${sp}
