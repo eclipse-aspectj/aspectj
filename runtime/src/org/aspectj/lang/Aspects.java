@@ -71,22 +71,21 @@ public class Aspects {
 
     private static Method getSingletonAspectOf(Class aspectClass) throws NoSuchMethodException {
         Method method = aspectClass.getDeclaredMethod(ASPECTOF, EMPTY_CLASS_ARRAY);
-        method.setAccessible(true);
-        if (!method.isAccessible()
-            || !Modifier.isPublic(method.getModifiers())
-            || !Modifier.isStatic(method.getModifiers())) {
-            throw new RuntimeException(aspectClass.getName(), new Exception("aspectOf is not public static"));
-        }
-        return method;
+        return checkAspectOf(method, aspectClass);
     }
 
     private static Method getPerObjectAspectOf(Class aspectClass) throws NoSuchMethodException {
         Method method = aspectClass.getDeclaredMethod(ASPECTOF, PEROBJECT_CLASS_ARRAY);
+        return checkAspectOf(method, aspectClass);
+    }
+
+    private static Method checkAspectOf(Method method, Class aspectClass) 
+        throws NoSuchMethodException {
         method.setAccessible(true);
         if (!method.isAccessible()
             || !Modifier.isPublic(method.getModifiers())
-            || !Modifier.isStatic(method.getModifiers())) {
-            throw new RuntimeException(aspectClass.getName(), new Exception("aspectOf is not public static"));
+            || !Modifier.isStatic(method.getModifiers())) {            
+            new NoSuchMethodException(aspectClass.getName() + ".aspectOf(..) is not accessible public static");
         }
         return method;
     }
