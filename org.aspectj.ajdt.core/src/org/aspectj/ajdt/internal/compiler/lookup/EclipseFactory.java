@@ -48,6 +48,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
@@ -167,7 +168,8 @@ public class EclipseFactory {
 			TypeVariableBinding tvb = (TypeVariableBinding) binding;
 			return TypeX.forName(getName(tvb.firstBound)); // XXX needs more investigation as to whether this is correct in all cases
 		}
-		if (binding instanceof ParameterizedTypeBinding) {
+		// FIXME asc/amc cope properly with RawTypeBindings
+		if (binding instanceof ParameterizedTypeBinding && !(binding instanceof RawTypeBinding)) {
 			ParameterizedTypeBinding ptb = (ParameterizedTypeBinding) binding;
 			String[] arguments = new String[ptb.arguments.length];
 			for (int i = 0; i < arguments.length; i++) {
