@@ -21,7 +21,7 @@ public class RuntimeInvisibleParameterAnnotations extends RuntimeParameterAnnota
 	  }
 	  
 	  public RuntimeInvisibleParameterAnnotations(int nameIndex, int len, byte[] rvaData,ConstantPool cpool) {
-		super(Constants.ATTR_RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS,true,nameIndex,len,rvaData,cpool);
+		super(Constants.ATTR_RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS,false,nameIndex,len,rvaData,cpool);
 	  }
 
 	  public void accept(Visitor v) {
