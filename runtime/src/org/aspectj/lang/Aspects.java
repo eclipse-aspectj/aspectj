@@ -85,7 +85,7 @@ public class Aspects {
         if (!method.isAccessible()
             || !Modifier.isPublic(method.getModifiers())
             || !Modifier.isStatic(method.getModifiers())) {            
-            new NoSuchMethodException(aspectClass.getName() + ".aspectOf(..) is not accessible public static");
+            throw new NoSuchMethodException(aspectClass.getName() + ".aspectOf(..) is not accessible public static");
         }
         return method;
     }
