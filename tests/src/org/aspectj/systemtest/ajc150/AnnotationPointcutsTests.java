@@ -34,19 +34,19 @@ public class AnnotationPointcutsTests extends XMLBasedAjcTestCase {
   public void test001_usingAnnotationsInPointcuts() {
   	runTest("annotation matching on call");
   }
-  
+
   public void test002_AtAnnotationMatching() {
   	runTest("at annotation matching");
   }
-  
+
   public void test003_Within_Code() {
   	runTest("annotations and within(code)");
   }
-  
+
   public void test004_Within() {
   	runTest("annotations and within");
   }
-  
+
   // TODO extra tests
   // 3) @annotation on the different join point kinds, matches with inherited annotation
   
