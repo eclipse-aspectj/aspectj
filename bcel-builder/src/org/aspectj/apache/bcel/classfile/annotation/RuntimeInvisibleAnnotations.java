@@ -22,7 +22,7 @@ public class RuntimeInvisibleAnnotations extends RuntimeAnnotations {
 	  }
 	  
 	  public RuntimeInvisibleAnnotations(int nameIndex, int len, byte[] rvaData,ConstantPool cpool) {
-		super(Constants.ATTR_RUNTIME_INVISIBLE_ANNOTATIONS,true,nameIndex,len,rvaData,cpool);
+		super(Constants.ATTR_RUNTIME_INVISIBLE_ANNOTATIONS,false,nameIndex,len,rvaData,cpool);
 	  }
 
 	  public void accept(Visitor v) {
