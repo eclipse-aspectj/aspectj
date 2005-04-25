@@ -11,15 +11,15 @@
  * ******************************************************************/
 package org.aspectj.lang.reflect;
 
-public interface Pointcut {
-
-	String getPointcutExpression();
-	
-	String getName();
-	
-	int getModifiers();
-	
-	Class<?>[] getParameterTypes();
-	
-	AjType getDeclaringType();
+/**
+ * @author colyer
+ * The different perclauses (aspect instantiation models)
+ */
+public enum PerClauseKind {
+	SINGLETON,
+	PERTHIS,
+	PERTARGET,
+	PERCFLOW,
+	PERCFLOWBELOW,
+	PERTYPEWITHIN;
 }

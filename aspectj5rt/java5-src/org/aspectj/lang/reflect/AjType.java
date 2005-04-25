@@ -11,12 +11,13 @@
  * ******************************************************************/
 package org.aspectj.lang.reflect;
 
-import java.lang.reflect.Method;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.lang.annotation.Annotation;
+import java.util.Set;
 
 /**
  * The runtime representation of a type (Aspect, Class, Interface, Annotation, Enum, or Array) in an AspectJ
@@ -96,9 +97,9 @@ public interface AjType<T> extends Type {
 	
 	// pointcuts
 	
-	public Pointcut getDeclaredPointcut(String name);
+	public Pointcut getDeclaredPointcut(String name) throws NoSuchPointcutException;
 	
-	public Pointcut getPointcut(String name);
+	public Pointcut getPointcut(String name) throws NoSuchPointcutException;
 	
 	public Pointcut[] getDeclaredPointcuts();
 	
@@ -106,9 +107,13 @@ public interface AjType<T> extends Type {
 	
 	// advice
 	
-	public Advice[] getDeclaredAdvice(AdviceType adviceType);
+	public Advice[] getDeclaredAdvice(AdviceType... ofTypes);
 	
-	public Advice[] getAdvice(AdviceType adviceType);
+	public Advice[] getAdvice(AdviceType... ofTypes);
+	
+	public Advice getAdvice(String name) throws NoSuchAdviceException;
+	
+	public Advice getDeclaredAdvice(String name) throws NoSuchAdviceException;
 		
 	// inter-type declarations
 	
@@ -172,16 +177,6 @@ public interface AjType<T> extends Type {
 	
 	public boolean isMemberAspect();
 	
+	public boolean isPrivileged();
+	
 }
-
-
-// implementation notes:
-
-// additional runtime info we need:
-// whether or not a class is an aspect
-// pointcuts in a type (+ name, parameter types, parameter names, expression)
-// itds in a type (is there enough in the class file already?)
-// advice in a type (should be enough in the class file already?)
-// declares in an aspect (+ associated info)
-
-// anchor in a generated static member on the type: ajc$reflectionInfo ? or use annotations??

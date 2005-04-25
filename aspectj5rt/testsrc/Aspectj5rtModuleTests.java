@@ -12,12 +12,19 @@
 
 // default package
 
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
+import org.aspectj.internal.lang.reflect.AjTypeTests;
+import org.aspectj.internal.lang.reflect.AjTypeTestsWithAspects;
 
 public class Aspectj5rtModuleTests extends TestCase {
 
     public static Test suite() { 
         TestSuite suite = new TestSuite("Aspectj5rt module tests");
+		suite.addTestSuite(AjTypeTests.class);
+		suite.addTestSuite(AjTypeTestsWithAspects.class);
         return suite;
     }
 

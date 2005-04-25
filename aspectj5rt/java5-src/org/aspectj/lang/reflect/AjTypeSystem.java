@@ -11,6 +11,8 @@
  * ******************************************************************/
 package org.aspectj.lang.reflect;
 
+import org.aspectj.internal.lang.reflect.AjTypeImpl;
+
 /**
  * @author colyer
  *
@@ -18,6 +20,6 @@ package org.aspectj.lang.reflect;
 public class AjTypeSystem {
 
 		public static AjType getAjType(Class fromClass) {
-			return null;
+			return new AjTypeImpl(fromClass);
 		}
 }

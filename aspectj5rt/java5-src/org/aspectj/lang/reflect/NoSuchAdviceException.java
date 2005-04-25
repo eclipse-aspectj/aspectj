@@ -11,15 +11,21 @@
  * ******************************************************************/
 package org.aspectj.lang.reflect;
 
-public interface Pointcut {
+/**
+ * @author colyer
+ *
+ */
+public class NoSuchAdviceException extends Exception {
 
-	String getPointcutExpression();
+	private static final long serialVersionUID = 3256444698657634352L;
+	private String name;
 	
-	String getName();
+	public NoSuchAdviceException(String name) {
+		this.name = name;
+	}
 	
-	int getModifiers();
-	
-	Class<?>[] getParameterTypes();
-	
-	AjType getDeclaringType();
+	public String getName() {
+		return name;
+	}
+
 }

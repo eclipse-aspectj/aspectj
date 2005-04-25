@@ -17,10 +17,23 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
+import org.aspectj.internal.lang.annotation.ajcPrivileged;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.Advice;
 import org.aspectj.lang.reflect.AdviceType;
 import org.aspectj.lang.reflect.AjType;
+import org.aspectj.lang.reflect.AjTypeSystem;
 import org.aspectj.lang.reflect.DeclareAnnotation;
 import org.aspectj.lang.reflect.DeclareErrorOrWarning;
 import org.aspectj.lang.reflect.DeclareParents;
@@ -29,8 +42,12 @@ import org.aspectj.lang.reflect.DeclareSoft;
 import org.aspectj.lang.reflect.InterTypeConstructorDeclaration;
 import org.aspectj.lang.reflect.InterTypeFieldDeclaration;
 import org.aspectj.lang.reflect.InterTypeMethodDeclaration;
+import org.aspectj.lang.reflect.NoSuchAdviceException;
+import org.aspectj.lang.reflect.NoSuchPointcutException;
 import org.aspectj.lang.reflect.PerClause;
+import org.aspectj.lang.reflect.PerClauseKind;
 import org.aspectj.lang.reflect.Pointcut;
+
 
 /**
  * @author colyer
@@ -38,7 +55,13 @@ import org.aspectj.lang.reflect.Pointcut;
  */
 public class AjTypeImpl<T> implements AjType {
 	
+	private static final String ajcMagic = "ajc$";
+	
 	private Class<T> clazz;
+	private Pointcut[] declaredPointcuts = null;
+	private Pointcut[] pointcuts = null;
+	private Advice[] declaredAdvice = null;
+	private Advice[] advice = null;
 	
 	public AjTypeImpl(Class<T> fromClass) {
 		this.clazz = fromClass;
@@ -117,7 +140,27 @@ public class AjTypeImpl<T> implements AjType {
 	}
 	
 	public PerClause getPerClause() {
-		return null;
+		if (isAspect()) {
+			Aspect aspectAnn = clazz.getAnnotation(Aspect.class);
+			String perClause = aspectAnn.value();
+			if (perClause.equals("")) {
+				return new PerClauseImpl(PerClauseKind.SINGLETON,"");
+			} else if (perClause.startsWith("perthis(")) {
+				return new PerClauseImpl(PerClauseKind.PERTHIS,perClause.substring("perthis(".length(),perClause.length() - 1));
+			} else if (perClause.startsWith("pertarget(")) {
+				return new PerClauseImpl(PerClauseKind.PERTARGET,perClause.substring("pertarget(".length(),perClause.length() - 1));				
+			} else if (perClause.startsWith("percflow(")) {
+				return new PerClauseImpl(PerClauseKind.PERCFLOW,perClause.substring("percflow(".length(),perClause.length() - 1));								
+			} else if (perClause.startsWith("percflowbelow(")) {
+				return new PerClauseImpl(PerClauseKind.PERCFLOWBELOW,perClause.substring("percflowbelow(".length(),perClause.length() - 1));
+			} else if (perClause.startsWith("pertypewithin")) {
+				return new PerClauseImpl(PerClauseKind.PERTYPEWITHIN,perClause.substring("pertypewithin(".length(),perClause.length() - 1));				
+			} else {
+				throw new IllegalStateException("Per-clause not recognized: " + perClause);
+			}
+		} else {
+			return null;
+		}
 	}
 
 	/* (non-Javadoc)
@@ -201,106 +244,289 @@ public class AjTypeImpl<T> implements AjType {
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredField(java.lang.String)
 	 */
 	public Field getDeclaredField(String name) throws NoSuchFieldException {
-		return clazz.getDeclaredField(name);
+		Field f =  clazz.getDeclaredField(name);
+		if (f.getName().startsWith(ajcMagic)) throw new NoSuchFieldException(name);
+		return f;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredFields()
 	 */
 	public Field[] getDeclaredFields() {
-		return clazz.getDeclaredFields();
+		Field[] fields = clazz.getDeclaredFields();
+		List<Field> filteredFields = new ArrayList<Field>();
+		for (Field field : fields)
+			if (!field.getName().startsWith(ajcMagic)) filteredFields.add(field);
+		Field[] ret = new Field[filteredFields.size()];
+		filteredFields.toArray(ret);
+		return ret;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getField(java.lang.String)
 	 */
 	public Field getField(String name)  throws NoSuchFieldException {
-		return clazz.getField(name);
+		Field f =  clazz.getDeclaredField(name);
+		if (f.getName().startsWith(ajcMagic)) throw new NoSuchFieldException(name);
+		return f;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getFields()
 	 */
 	public Field[] getFields() {
-		return clazz.getFields();
+		Field[] fields = clazz.getFields();
+		List<Field> filteredFields = new ArrayList<Field>();
+		for (Field field : fields)
+			if (!field.getName().startsWith(ajcMagic)) filteredFields.add(field);
+		Field[] ret = new Field[filteredFields.size()];
+		filteredFields.toArray(ret);
+		return ret;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredMethod(java.lang.String, java.lang.Class...)
 	 */
 	public Method getDeclaredMethod(String name, Class... parameterTypes) throws NoSuchMethodException {
-		return clazz.getDeclaredMethod(name,parameterTypes);
+		Method m =  clazz.getDeclaredMethod(name,parameterTypes);
+		if (!isReallyAMethod(m)) throw new NoSuchMethodException(name);
+		return m;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getMethod(java.lang.String, java.lang.Class...)
 	 */
 	public Method getMethod(String name, Class... parameterTypes) throws NoSuchMethodException {
-		return clazz.getMethod(name,parameterTypes);
+		Method m =  clazz.getMethod(name,parameterTypes);
+		if (!isReallyAMethod(m)) throw new NoSuchMethodException(name);
+		return m;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredMethods()
 	 */
 	public Method[] getDeclaredMethods() {
-		return clazz.getDeclaredMethods();
+		Method[] methods = clazz.getDeclaredMethods();
+		List<Method> filteredMethods = new ArrayList<Method>();
+		for (Method method : methods) {
+			if (isReallyAMethod(method)) filteredMethods.add(method);
+		}
+		Method[] ret = new Method[filteredMethods.size()];
+		filteredMethods.toArray(ret);
+		return ret;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getMethods()
 	 */
 	public Method[] getMethods() {
-		return clazz.getMethods();
+		Method[] methods = clazz.getMethods();
+		List<Method> filteredMethods = new ArrayList<Method>();
+		for (Method method : methods) {
+			if (isReallyAMethod(method)) filteredMethods.add(method);
+		}
+		Method[] ret = new Method[filteredMethods.size()];
+		filteredMethods.toArray(ret);
+		return ret;
 	}
 
+	private boolean isReallyAMethod(Method method) {
+		if (method.getName().startsWith(ajcMagic)) return false;
+		if (method.isAnnotationPresent(org.aspectj.lang.annotation.Pointcut.class)) return false;
+		if (method.isAnnotationPresent(Before.class)) return false;
+		if (method.isAnnotationPresent(After.class)) return false;
+		if (method.isAnnotationPresent(AfterReturning.class)) return false;
+		if (method.isAnnotationPresent(AfterThrowing.class)) return false;
+		if (method.isAnnotationPresent(Around.class)) return false;
+		return true;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredPointcut(java.lang.String)
 	 */
-	public Pointcut getDeclaredPointcut(String name) {
-		// TODO Auto-generated method stub
-		return null;
+	public Pointcut getDeclaredPointcut(String name) throws NoSuchPointcutException {
+		Pointcut[] pcs = getDeclaredPointcuts();
+		for (Pointcut pc : pcs)
+			if (pc.getName().equals(name)) return pc;
+		throw new NoSuchPointcutException(name);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getPointcut(java.lang.String)
 	 */
-	public Pointcut getPointcut(String name) {
-		// TODO Auto-generated method stub
-		return null;
+	public Pointcut getPointcut(String name) throws NoSuchPointcutException {
+		Pointcut[] pcs = getDeclaredPointcuts();
+		for (Pointcut pc : pcs)
+			if (pc.getName().equals(name)) return pc;
+		throw new NoSuchPointcutException(name);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredPointcuts()
 	 */
 	public Pointcut[] getDeclaredPointcuts() {
-		// TODO Auto-generated method stub
-		return null;
+		if (declaredPointcuts != null) return declaredPointcuts;
+		List<Pointcut> pointcuts = new ArrayList<Pointcut>();
+		Method[] methods = clazz.getDeclaredMethods();
+		for (Method method : methods) {
+			Pointcut pc = asPointcut(method);
+			if (pc != null) pointcuts.add(pc);
+		}
+		Pointcut[] ret = new Pointcut[pointcuts.size()];
+		pointcuts.toArray(ret);
+		declaredPointcuts = ret;
+		return ret;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getPointcuts()
 	 */
 	public Pointcut[] getPointcuts() {
-		// TODO Auto-generated method stub
-		return null;
+		if (pointcuts != null) return pointcuts;
+		List<Pointcut> pcuts = new ArrayList<Pointcut>();
+		Method[] methods = clazz.getMethods();
+		for (Method method : methods) {
+			Pointcut pc = asPointcut(method);
+			if (pc != null) pcuts.add(pc);
+		}
+		Pointcut[] ret = new Pointcut[pcuts.size()];
+		pcuts.toArray(ret);
+		pointcuts  = ret;
+		return ret;
+	}
+
+	private Pointcut asPointcut(Method method) {
+		org.aspectj.lang.annotation.Pointcut pcAnn = method.getAnnotation(org.aspectj.lang.annotation.Pointcut.class);
+		if (pcAnn != null) {
+			String name = method.getName();
+			if (name.startsWith(ajcMagic)) {
+				// extract real name
+				int nameStart = name.indexOf("$$");
+				name = name.substring(nameStart +2,name.length());
+				int nextDollar = name.indexOf("$");
+				if (nextDollar != -1) name = name.substring(0,nextDollar);
+			}
+			return new PointcutImpl(name,pcAnn.value(),method,AjTypeSystem.getAjType(method.getDeclaringClass()));
+		} else {
+			return null;
+		}
+	}
+	
+	
+	public Advice[] getDeclaredAdvice(AdviceType... ofType) {
+		Set<AdviceType> types;
+		if (ofType.length == 0) {
+			types = EnumSet.allOf(AdviceType.class);
+		} else {
+			types = EnumSet.noneOf(AdviceType.class);
+			types.addAll(Arrays.asList(ofType));
+		}
+		return getDeclaredAdvice(types);
+	}
+	
+	public Advice[] getAdvice(AdviceType... ofType) {
+		Set<AdviceType> types;
+		if (ofType.length == 0) {
+			types = EnumSet.allOf(AdviceType.class);
+		} else {
+			types = EnumSet.noneOf(AdviceType.class);
+			types.addAll(Arrays.asList(ofType));
+		}
+		return getAdvice(types);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredAdvice(org.aspectj.lang.reflect.AdviceType)
 	 */
-	public Advice[] getDeclaredAdvice(AdviceType adviceType) {
-		// TODO Auto-generated method stub
-		return null;
+	private Advice[] getDeclaredAdvice(Set ofAdviceTypes) {
+		if (declaredAdvice == null) initDeclaredAdvice();
+		List<Advice> adviceList = new ArrayList<Advice>();
+		for (Advice a : declaredAdvice) {
+			if (ofAdviceTypes.contains(a.getKind())) adviceList.add(a);
+		}
+		Advice[] ret = new Advice[adviceList.size()];
+		adviceList.toArray(ret);
+		return ret;
+	}
+
+	private void initDeclaredAdvice() {
+		Method[] methods = clazz.getDeclaredMethods();
+		List<Advice> adviceList = new ArrayList<Advice>();
+		for (Method method : methods) {
+			Advice advice = asAdvice(method);
+			if (advice != null) adviceList.add(advice);
+		}
+		declaredAdvice = new Advice[adviceList.size()];
+		adviceList.toArray(declaredAdvice);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#getAdvice(org.aspectj.lang.reflect.AdviceType)
+	 * @see org.aspectj.lang.reflect.AjType#getDeclaredAdvice(org.aspectj.lang.reflect.AdviceType)
 	 */
-	public Advice[] getAdvice(AdviceType adviceType) {
-		// TODO Auto-generated method stub
-		return null;
+	private Advice[] getAdvice(Set ofAdviceTypes) {
+		if (advice == null) initAdvice();
+		List<Advice> adviceList = new ArrayList<Advice>();
+		for (Advice a : advice) {
+			if (ofAdviceTypes.contains(a.getKind())) adviceList.add(a);
+		}
+		Advice[] ret = new Advice[adviceList.size()];
+		adviceList.toArray(ret);
+		return ret;
 	}
 
+	private void initAdvice() {
+		Method[] methods = clazz.getDeclaredMethods();
+		List<Advice> adviceList = new ArrayList<Advice>();
+		for (Method method : methods) {
+			Advice advice = asAdvice(method);
+			if (advice != null) adviceList.add(advice);
+		}
+		advice = new Advice[adviceList.size()];
+		adviceList.toArray(advice);
+	}
+
+
+	public Advice getAdvice(String name) throws NoSuchAdviceException {
+		if (name.equals("")) throw new IllegalArgumentException("use getAdvice(AdviceType...) instead for un-named advice");
+		if (advice == null) initAdvice();
+		for (Advice a : advice) {
+			if (a.getName().equals(name)) return a;
+		}
+		throw new NoSuchAdviceException(name);
+	}
+	
+	public Advice getDeclaredAdvice(String name) throws NoSuchAdviceException {
+		if (name.equals("")) throw new IllegalArgumentException("use getAdvice(AdviceType...) instead for un-named advice");
+		if (declaredAdvice == null) initDeclaredAdvice();
+		for (Advice a : declaredAdvice) {
+			if (a.getName().equals(name)) return a;
+		}
+		throw new NoSuchAdviceException(name);
+	}
+	
+	private Advice asAdvice(Method method) {
+		if (method.getAnnotations().length == 0) return null;
+		Before beforeAnn = method.getAnnotation(Before.class);
+		if (beforeAnn != null) return new AdviceImpl(method,beforeAnn.value(),AdviceType.BEFORE);
+		After afterAnn = method.getAnnotation(After.class);
+		if (afterAnn != null) return new AdviceImpl(method,afterAnn.value(),AdviceType.AFTER);
+		AfterReturning afterReturningAnn = method.getAnnotation(AfterReturning.class);
+		if (afterReturningAnn != null) {
+			String pcExpr = afterReturningAnn.pointcut();
+			if (pcExpr.equals("")) pcExpr = afterReturningAnn.value();
+			return new AdviceImpl(method,pcExpr,AdviceType.AFTER_RETURNING);
+		}
+		AfterThrowing afterThrowingAnn = method.getAnnotation(AfterThrowing.class);
+		if (afterThrowingAnn != null) {
+			String pcExpr = afterThrowingAnn.pointcut();
+			if (pcExpr == null) pcExpr = afterThrowingAnn.value();
+			return new AdviceImpl(method,pcExpr,AdviceType.AFTER_THROWING);
+		}
+		Around aroundAnn = method.getAnnotation(Around.class);
+		if (aroundAnn != null) return new AdviceImpl(method,aroundAnn.value(),AdviceType.AROUND);
+		return null;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredITDMethod(java.lang.String, java.lang.Class, java.lang.Class...)
 	 */
@@ -509,12 +735,7 @@ public class AjTypeImpl<T> implements AjType {
 	 * @see org.aspectj.lang.reflect.AjType#isAspect()
 	 */
 	public boolean isAspect() {
-		// 2 tests we could use today... presence of aspectOf method (but what if user defines one in 
-		// a class), and presence of @Aspect annotation (@AspectJ style only). 
-		// Is the solution to put the @Aspect annotation on a code-style aspect too during weaving?
-		// Or should we generate some private structure with all the reflection info in it, including the aspect
-		// info?
-		return false;
+		return clazz.getAnnotation(Aspect.class) != null;
 	}
 
 	/* (non-Javadoc)
@@ -522,6 +743,22 @@ public class AjTypeImpl<T> implements AjType {
 	 */
 	public boolean isMemberAspect() {
 		return clazz.isMemberClass() && isAspect();
+	}
+
+	public boolean isPrivileged() {
+		return isAspect() && clazz.isAnnotationPresent(ajcPrivileged.class);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof AjTypeImpl)) return false;
+		AjTypeImpl other = (AjTypeImpl) obj;
+		return other.clazz.equals(clazz);
+	}
+	
+	@Override
+	public int hashCode() {
+		return clazz.hashCode();
 	}
 
 }

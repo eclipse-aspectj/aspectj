@@ -9,17 +9,19 @@
  * Contributors: 
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
-package org.aspectj.lang.reflect;
+package org.aspectj.internal.lang.annotation;
 
-public interface Pointcut {
+import java.lang.annotation.Target;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-	String getPointcutExpression();
-	
-	String getName();
-	
-	int getModifiers();
-	
-	Class<?>[] getParameterTypes();
-	
-	AjType getDeclaringType();
-}
+
+/**
+ * @author colyer
+ * Marker annotation for privileged aspects.
+ * ajc prefix used to indicate that this annotation is *internal*
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface ajcPrivileged {}

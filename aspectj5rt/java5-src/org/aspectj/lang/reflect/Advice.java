@@ -13,4 +13,9 @@ package org.aspectj.lang.reflect;
 
 public interface Advice {
 
+	AdviceType getKind();
+	
+	String getName();
+	
+	String getPointcutExpression();
 }
