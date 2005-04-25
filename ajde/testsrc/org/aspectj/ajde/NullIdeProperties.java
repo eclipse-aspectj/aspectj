@@ -72,7 +72,7 @@ public class NullIdeProperties implements ProjectPropertiesAdapter {
     	// AMC - subsequently added value of "aspectjrt.path property so that
     	// when testing with a non-development jar the version tests find the right one. 
     	return testProjectPath + File.pathSeparator +
-    		System.getProperty("sun.boot.class.path") + File.pathSeparator +  "../runtime/bin" +
+    		System.getProperty("sun.boot.class.path") + File.pathSeparator +  "../runtime/bin" + File.pathSeparator + "../aspectj5rt/bin" +
     		File.pathSeparator + System.getProperty("aspectjrt.path");	
     }
 
