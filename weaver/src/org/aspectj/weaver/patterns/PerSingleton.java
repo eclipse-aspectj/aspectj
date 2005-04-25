@@ -126,5 +126,9 @@ public class PerSingleton extends PerClause {
 	public String toString() {
 		return "persingleton(" + inAspect + ")";
 	}
+	
+	public String toDeclarationString() {
+		return "";
+	}
 
 }

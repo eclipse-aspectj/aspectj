@@ -29,6 +29,7 @@ import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.TypeX;
@@ -40,6 +41,7 @@ final class BcelMethod extends ResolvedMember {
 	private Method method;
 	private boolean isAjSynthetic;
 	private ShadowMunger associatedShadowMunger;
+	private ResolvedPointcutDefinition preResolvedPointcut;  // used when ajc has pre-resolved the pointcut of some @Advice
 	
     private ResolvedTypeX[] annotationTypes = null;
     private AnnotationX[] annotations = null;
@@ -96,27 +98,33 @@ final class BcelMethod extends ResolvedMember {
 	}
 
 	private void unpackAjAttributes(World world) {
+		associatedShadowMunger = null;
         List as = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),method.getAttributes(), getSourceContext(world),world.getMessageHandler());
-        as.addAll(Aj5Attributes.readAj5MethodAttributes(method, world.resolve(getDeclaringType()), getSourceContext(world), world.getMessageHandler()));
+		processAttributes(world, as);
+		as = Aj5Attributes.readAj5MethodAttributes(method, world.resolve(getDeclaringType()), preResolvedPointcut,getSourceContext(world), world.getMessageHandler());
+		processAttributes(world,as);
+	}
 
-		//System.out.println("unpack: " + this + ", " + as);
+	private void processAttributes(World world, List as) {
 		for (Iterator iter = as.iterator(); iter.hasNext();) {
 			AjAttribute a = (AjAttribute) iter.next();
 			if (a instanceof AjAttribute.MethodDeclarationLineNumberAttribute) {
 				declarationLineNumber = (AjAttribute.MethodDeclarationLineNumberAttribute)a;
 			} else if (a instanceof AjAttribute.AdviceAttribute) {
 				associatedShadowMunger = ((AjAttribute.AdviceAttribute)a).reify(this, world);
-				return;
+				// return;
 			} else if (a instanceof AjAttribute.AjSynthetic) {
 				isAjSynthetic = true;
 			} else if (a instanceof AjAttribute.EffectiveSignatureAttribute) {
 				//System.out.println("found effective: " + this);
 				effectiveSignature = (AjAttribute.EffectiveSignatureAttribute)a;
+			} else if (a instanceof AjAttribute.PointcutDeclarationAttribute) {
+				// this is an @AspectJ annotated advice method, with pointcut pre-resolved by ajc
+				preResolvedPointcut = ((AjAttribute.PointcutDeclarationAttribute)a).reify();
 			} else {
 				throw new BCException("weird method attribute " + a);
 			}
 		}
-		associatedShadowMunger = null;
 	}
 
 	public boolean isAjSynthetic() {

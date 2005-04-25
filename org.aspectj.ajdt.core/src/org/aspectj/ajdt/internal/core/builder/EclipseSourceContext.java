@@ -27,9 +27,19 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 public class EclipseSourceContext implements ISourceContext {
 	
 	CompilationResult result;
+	int offset = 0;
 
 	public EclipseSourceContext(CompilationResult result) {
 		this.result = result;
+	}
+	
+	public EclipseSourceContext(CompilationResult result, int offset) {
+		this.result = result;
+		this.offset = offset;
+	}
+	
+	public int getOffset() {
+		return offset;
 	}
 	
 	private File getSourceFile() {

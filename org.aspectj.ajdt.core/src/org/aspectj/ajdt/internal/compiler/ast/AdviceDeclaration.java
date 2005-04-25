@@ -20,14 +20,10 @@ import java.util.List;
 import org.aspectj.ajdt.internal.compiler.lookup.AjTypeConstants;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedHandler;
-import org.aspectj.weaver.Advice;
-import org.aspectj.weaver.AdviceKind;
-import org.aspectj.weaver.AjAttribute;
-import org.aspectj.weaver.NameMangler;
-import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
@@ -37,7 +33,12 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
-import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
+import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.AdviceKind;
+import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.TypeX;
 
 /**
  * Represents before, after and around advice in an aspect.
@@ -47,22 +48,21 @@ import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
  * @author Jim Hugunin
  */
 public class AdviceDeclaration extends AjMethodDeclaration {
-	public PointcutDesignator pointcutDesignator;
-	int baseArgumentCount;
+	public PointcutDesignator pointcutDesignator;  // set during parsing
+	int baseArgumentCount;                               // referenced by IfPseudoToken.makeArguments
 	
-	public Argument extraArgument;
+	public Argument extraArgument;                    // set during parsing, referenced by Proceed
 	
-	public AdviceKind kind;
+	public AdviceKind kind;									// set during parsing, referenced by Proceed and AsmElementFormatter
 	private int extraArgumentFlags = 0;
 	
-	public MethodBinding proceedMethodBinding;
+	public MethodBinding proceedMethodBinding;   // set during this.resolveStaments, referenced by Proceed
+	public List proceedCalls = new ArrayList(2);    // populated during Proceed.findEnclosingAround
 	
-	
-	public List proceedCalls = new ArrayList(2);
-	public boolean proceedInInners;
-	public ResolvedMember[] proceedCallSignatures;
-	public boolean[] formalsUnchangedToProceed;
-	public TypeX[] declaredExceptions;
+	private boolean proceedInInners;
+	private ResolvedMember[] proceedCallSignatures;
+	private boolean[] formalsUnchangedToProceed;
+	private TypeX[] declaredExceptions;
 	
 	
 	public AdviceDeclaration(CompilationResult result, AdviceKind kind) {
@@ -71,7 +71,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		this.kind = kind;
 	}
 
-	
+	// override
 	protected int generateInfoAttributes(ClassFile classFile) {
 		List l = new ArrayList(1);
 		l.add(new EclipseAttributeAdapter(makeAttribute()));
@@ -80,7 +80,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		return classFile.generateMethodInfoAttribute(binding, false, l);
 	}
 	
-	public AjAttribute makeAttribute() {
+	private AjAttribute makeAttribute() {
 		if (kind == AdviceKind.Around) {
 			return new AjAttribute.AdviceAttribute(kind, pointcutDesignator.getPointcut(), 
 					extraArgumentFlags, sourceStart, sourceEnd, null,
@@ -92,6 +92,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		}
 	}
 
+	// override
 	public void resolveStatements() {
 		if (binding == null || ignoreFurtherInvestigation) return;
 		
@@ -172,14 +173,14 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		}
 	}
 
-
+     // called by Proceed.resolveType
 	public int getDeclaredParameterCount() {
 		// this only works before code generation
 		return this.arguments.length - 3 - ((extraArgument == null) ? 0 : 1);
 		//Advice.countOnes(extraArgumentFlags);
 	}
 
-	public void generateProceedMethod(ClassScope classScope, ClassFile classFile) {
+	private void generateProceedMethod(ClassScope classScope, ClassFile classFile) {
 		MethodBinding binding = (MethodBinding)proceedMethodBinding;
 		
 		classFile.generateMethodInfoHeader(binding);
@@ -243,7 +244,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 	}
 
 
-
+	// override
 	public void generateCode(ClassScope classScope, ClassFile classFile) {
 		if (ignoreFurtherInvestigation) return;
 		
@@ -268,7 +269,39 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		return ret;
 	}
 
+	/**
+	 * Add either the @Before, @After, @Around, @AfterReturning or @AfterThrowing annotation
+	 */
+	public void addAtAspectJAnnotations() {
+		Annotation adviceAnnotation = null;
+		String pointcutExpression = pointcutDesignator.getPointcut().toString();
+		String extraArgumentName = "";
+		if (extraArgument != null) {
+			extraArgumentName = new String(extraArgument.name);
+		}
+		
+		if (kind == AdviceKind.Before) {
+			adviceAnnotation = AtAspectJAnnotationFactory.createBeforeAnnotation(pointcutExpression,declarationSourceStart);
+		} else if (kind == AdviceKind.After) {
+			adviceAnnotation = AtAspectJAnnotationFactory.createAfterAnnotation(pointcutExpression,declarationSourceStart);			
+		} else if (kind == AdviceKind.AfterReturning) {
+			adviceAnnotation = AtAspectJAnnotationFactory.createAfterReturningAnnotation(pointcutExpression,extraArgumentName,declarationSourceStart);
+		} else if (kind == AdviceKind.AfterThrowing) {
+			adviceAnnotation = AtAspectJAnnotationFactory.createAfterThrowingAnnotation(pointcutExpression,extraArgumentName,declarationSourceStart);
+		} else if (kind == AdviceKind.Around) {
+			adviceAnnotation = AtAspectJAnnotationFactory.createAroundAnnotation(pointcutExpression,declarationSourceStart);
+		}
+		if (annotations == null) {
+			annotations = new Annotation[] { adviceAnnotation };
+		} else {
+			Annotation[] old = annotations;
+			annotations = new Annotation[old.length +1];
+			System.arraycopy(old,0,annotations,0,old.length);
+			annotations[old.length] = adviceAnnotation;
+		}
+	}
 	
+	// override, Called by ClassScope.postParse
 	public void postParse(TypeDeclaration typeDec) {
 		int adviceSequenceNumberInType = ((AspectDeclaration)typeDec).adviceCounter++;
 		
@@ -321,7 +354,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		}
 	}
 
-	
+	// called by IfPseudoToken
 	public static Argument[]  addTjpArguments(Argument[] arguments) {
 		int index = arguments.length;
 		arguments = extendArgumentsLength(arguments, 3);

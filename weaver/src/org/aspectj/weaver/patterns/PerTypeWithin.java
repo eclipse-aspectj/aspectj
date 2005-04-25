@@ -169,6 +169,10 @@ public class PerTypeWithin extends PerClause {
 		return "pertypewithin("+typePattern+")";
 	}
 	
+	public String toDeclarationString() {
+		return toString();
+	}
+	
 	private FuzzyBoolean isWithinType(ResolvedTypeX type) {
 		while (type != null) {
 			if (typePattern.matchesStatically(type)) {

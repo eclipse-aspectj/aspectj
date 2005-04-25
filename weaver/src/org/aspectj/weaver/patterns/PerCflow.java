@@ -126,4 +126,9 @@ public class PerCflow extends PerClause {
 	public String toString() {
 		return "percflow(" + inAspect + " on " + entry + ")";
 	}
+	
+	public String toDeclarationString() {
+		if (isBelow) return  "percflowbelow(" + entry + ")";
+		return "percflow(" + entry + ")";
+	}
 }

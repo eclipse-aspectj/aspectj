@@ -31,11 +31,11 @@ public abstract class PatternNode implements IHasSourceLocation {
 	}
 
 	public int getStart() {
-		return start;
+		return start + (sourceContext != null ? sourceContext.getOffset() : 0);
 	}
 
 	public int getEnd() {
-		return end;
+		return end + (sourceContext != null ? sourceContext.getOffset() : 0);
 	}
 	
 	public ISourceContext getSourceContext() {

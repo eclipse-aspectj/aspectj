@@ -508,6 +508,13 @@ public class AjBuildConfig {
 		options.generateModel = structureModelMode;
 	}
 	
+	public boolean isNoAtAspectJAnnotationProcessing() {
+		return options.noAtAspectJProcessing;
+	}
+	
+	public void setNoAtAspectJAnnotationProcessing(boolean noProcess) {
+		options.noAtAspectJProcessing = noProcess;
+	}
 	
 	public void setShowWeavingInformation(boolean b) {
 		options.showWeavingInformation = true;

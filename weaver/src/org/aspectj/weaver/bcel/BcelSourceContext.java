@@ -51,6 +51,8 @@ public class BcelSourceContext implements ISourceContext {
 		
 		return new File(fileName);
 	}
+	
+	public int getOffset() { return 0; }
 		
 		/*
 		// AMC - a temporary "fudge" to give as much information as possible about the identity of the

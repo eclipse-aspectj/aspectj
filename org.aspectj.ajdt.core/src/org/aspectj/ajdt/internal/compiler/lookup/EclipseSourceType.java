@@ -34,6 +34,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
  * @author Jim Hugunin
  */
 public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
+	private static final char[] pointcutSig = "Lorg/aspectj/lang/annotation/Pointcut;".toCharArray();
 	protected ResolvedPointcutDefinition[] declaredPointcuts = null;
 	protected ResolvedMember[] declaredMethods = null;
 	protected ResolvedMember[] declaredFields = null;
@@ -83,6 +84,19 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
         return false;
     }
 
+	private boolean isAnnotationStylePointcut(Annotation[] annotations) {
+		if (annotations == null) return false;
+		for (int i = 0; i < annotations.length; i++) {
+			if (annotations[i].resolvedType == null) continue; // XXX happens if we do this very early from buildInterTypeandPerClause
+			                                                                     // may prevent us from resolving references made in @Pointcuts to
+			                                                                     // an @Pointcut in a code-style aspect
+			char[] sig = annotations[i].resolvedType.signature();
+			if (CharOperation.equals(pointcutSig,sig)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	public WeaverStateInfo getWeaverState() {
 		return null;
 	}
@@ -113,7 +127,7 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 					PointcutDeclaration d = (PointcutDeclaration)amd;
 					ResolvedPointcutDefinition df = d.makeResolvedPointcutDefinition();
 					declaredPointcuts.add(df);
-				} else if (amd instanceof InterTypeDeclaration) {
+				} else if (amd instanceof InterTypeDeclaration) {				
 					// these are handled in a separate pass
 					continue;
 				} else if (amd instanceof DeclareDeclaration && 
@@ -123,6 +137,10 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 				} else if (amd instanceof AdviceDeclaration) {
 					// these are ignored during compilation and only used during weaving
 					continue;
+				}  else if ((amd.annotations != null) && isAnnotationStylePointcut(amd.annotations)) {
+					// consider pointcuts defined via annotations
+					ResolvedPointcutDefinition df = makeResolvedPointcutDefinition(amd);
+					declaredPointcuts.add(df);
 				} else {
 					if (amd.binding == null || !amd.binding.isValidBinding()) continue;
 					declaredMethods.add(EclipseFactory.makeResolvedMember(amd.binding));
@@ -144,6 +162,18 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 			declaredFields.toArray(new ResolvedMember[declaredFields.size()]);
 	}
 
+	private ResolvedPointcutDefinition makeResolvedPointcutDefinition(AbstractMethodDeclaration md) {
+		ResolvedPointcutDefinition resolvedPointcutDeclaration = new ResolvedPointcutDefinition(
+            EclipseFactory.fromBinding(md.binding.declaringClass), 
+            md.modifiers, 
+            new String(md.selector),
+			EclipseFactory.fromBindings(md.binding.parameters),
+			null); //??? might want to use null 
+			
+		resolvedPointcutDeclaration.setPosition(md.sourceStart, md.sourceEnd);
+		resolvedPointcutDeclaration.setSourceContext(new EclipseSourceContext(md.compilationResult));
+		return resolvedPointcutDeclaration;
+	}
 
 	public ResolvedMember[] getDeclaredFields() {
 		if (declaredFields == null) fillDeclaredMembers();

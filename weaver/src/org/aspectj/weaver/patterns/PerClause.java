@@ -41,6 +41,8 @@ public abstract class PerClause extends Pointcut {
 	
 	public abstract PerClause.Kind getKind();
 	
+	public abstract String toDeclarationString();
+	
 	public static class Kind extends TypeSafeEnum {
         public Kind(String name, int key) { super(name, key); }
         

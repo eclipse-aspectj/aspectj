@@ -1160,6 +1160,10 @@ public class PatternParser {
 
 	
 	public PatternParser(String data) {
-		this(BasicTokenSource.makeTokenSource(data));
+		this(BasicTokenSource.makeTokenSource(data,null));
+	}
+	
+	public PatternParser(String data, ISourceContext context) {
+		this(BasicTokenSource.makeTokenSource(data,context));
 	}
 }

@@ -14,23 +14,53 @@
 package org.aspectj.ajdt.internal.compiler.ast;
 
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import org.aspectj.ajdt.internal.compiler.lookup.*;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.patterns.*;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseScope;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseSourceType;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
+import org.aspectj.ajdt.internal.compiler.lookup.HelperInterfaceBinding;
+import org.aspectj.ajdt.internal.compiler.lookup.InlineAccessFieldBinding;
+import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedHandler;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
-//import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Clinit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
-//import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.ExceptionLabel;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.Label;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IGenericType;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BaseTypes;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.patterns.Declare;
+import org.aspectj.weaver.patterns.FormalBinding;
+import org.aspectj.weaver.patterns.PerClause;
+import org.aspectj.weaver.patterns.PerFromSuper;
+import org.aspectj.weaver.patterns.PerSingleton;
+import org.aspectj.weaver.patterns.TypePattern;
 //import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 
 
@@ -157,6 +187,28 @@ public class AspectDeclaration extends TypeDeclaration {
 	}
 	
 	private FieldBinding initFailureField= null;
+	
+	/**
+	 * AMC - this method is called by the AtAspectJVisitor during beforeCompilation processing in
+	 * the AjCompiler adapter. We use this hook to add in the @AspectJ annotations.
+	 */
+	public void addAtAspectJAnnotations() {		
+		Annotation atAspectAnnotation = AtAspectJAnnotationFactory.createAspectAnnotation(perClause.toDeclarationString(), declarationSourceStart);
+		Annotation privilegedAnnotation = null;
+		if (isPrivileged) privilegedAnnotation = AtAspectJAnnotationFactory.createPrivilegedAnnotation(declarationSourceStart);
+		Annotation[] toAdd = new Annotation[isPrivileged ? 2 : 1];
+		toAdd[0] = atAspectAnnotation;
+		if (isPrivileged) toAdd[1] = privilegedAnnotation;
+		if (annotations == null) {
+			annotations = toAdd;
+		} else {
+			Annotation[] old = annotations;
+			annotations = new Annotation[annotations.length + toAdd.length];
+			System.arraycopy(old,0,annotations,0,old.length);
+			System.arraycopy(toAdd,0,annotations,old.length,toAdd.length);
+		}		
+	}
+	
 	
 	public void generateCode(ClassFile enclosingClassFile) {
 		if (ignoreFurtherInvestigation) {

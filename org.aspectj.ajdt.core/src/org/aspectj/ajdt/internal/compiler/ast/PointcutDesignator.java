@@ -13,20 +13,20 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseScope;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
-import org.aspectj.weaver.TypeX;
-import org.aspectj.weaver.patterns.FormalBinding;
-import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.patterns.FormalBinding;
+import org.aspectj.weaver.patterns.Pointcut;
 
 public class PointcutDesignator extends ASTNode {
 	private Pointcut pointcut;
@@ -46,8 +46,14 @@ public class PointcutDesignator extends ASTNode {
 		pointcut = pc;
 	}
 	
+	// called by AtAspectJVisitor
+	public PointcutDesignator(Pointcut pc) {
+		this.pointcut = pc;
+	}
+	
 	public void postParse(TypeDeclaration typeDec, MethodDeclaration enclosingDec) {
-		tokens.postParse(typeDec, enclosingDec);
+		if (tokens != null)
+			tokens.postParse(typeDec, enclosingDec);
 	}
 
 

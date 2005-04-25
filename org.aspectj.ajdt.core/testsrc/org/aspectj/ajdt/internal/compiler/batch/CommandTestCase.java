@@ -166,7 +166,7 @@ public abstract class CommandTestCase extends TestCase {
 
 	/** get the location of the org.aspectj.lang & runtime classes */
 	protected static String getRuntimeClasspath() {
-		return "../runtime/bin" + File.pathSeparator + 
+		return "../runtime/bin" + File.pathSeparator + "../aspectj5rt/bin" + File.pathSeparator + 
 			   System.getProperty("aspectjrt.path");
 		
 	}

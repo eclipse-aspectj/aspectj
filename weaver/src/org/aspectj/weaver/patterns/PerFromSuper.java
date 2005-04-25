@@ -97,6 +97,10 @@ public class PerFromSuper extends PerClause {
 	public String toString() {
 		return "perFromSuper(" + kind + ", " + inAspect + ")";
 	}
+	
+	public String toDeclarationString() {
+		return "";
+	}
 
 	public PerClause.Kind getKind() {
 		return kind;

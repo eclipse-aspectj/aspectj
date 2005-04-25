@@ -66,6 +66,7 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 
 	private boolean discoveredWhetherAnnotationStyle = false;
     private boolean isAnnotationStyleAspect = false;// set upon construction
+	private boolean isCodeStyleAspect = false; // not redundant with field above!
 
 
 	public Collection getTypeMungers() {
@@ -185,7 +186,7 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
     public boolean isAnnotationStyleAspect() {
 		if (!discoveredWhetherAnnotationStyle) {
 			discoveredWhetherAnnotationStyle = true;
-			isAnnotationStyleAspect = hasAnnotation(Ajc5MemberMaker.ASPECT);
+			isAnnotationStyleAspect = !isCodeStyleAspect && hasAnnotation(Ajc5MemberMaker.ASPECT);
 		}
         return isAnnotationStyleAspect;
     }
@@ -196,13 +197,32 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 		declares = new ArrayList();
 		// Pass in empty list that can store things for readAj5 to process
         List l = BcelAttributes.readAjAttributes(javaClass.getClassName(),javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld().getMessageHandler());
-        l.addAll(Aj5Attributes.readAj5ClassAttributes(javaClass, getResolvedTypeX(), getResolvedTypeX().getSourceContext(), getResolvedTypeX().getWorld().getMessageHandler()));
+		processAttributes(l,pointcuts,false);
+		l = Aj5Attributes.readAj5ClassAttributes(javaClass, getResolvedTypeX(), getResolvedTypeX().getSourceContext(), getResolvedTypeX().getWorld().getMessageHandler(),isCodeStyleAspect);
+		processAttributes(l,pointcuts,true);
+		
+		this.pointcuts = (ResolvedPointcutDefinition[]) 
+			pointcuts.toArray(new ResolvedPointcutDefinition[pointcuts.size()]);
+		// Test isn't quite right, leaving this out for now...
+//		if (isAspect() && wvInfo.getMajorVersion() == WeaverVersionInfo.UNKNOWN.getMajorVersion()) {
+//			throw new BCException("Unable to continue, this version of AspectJ cannot use aspects as input that were built "+
+//					"with an AspectJ earlier than version 1.2.1.  Please rebuild class: "+javaClass.getClassName());
+//		}
+		
+//		this.typeMungers = (BcelTypeMunger[]) 
+//			typeMungers.toArray(new BcelTypeMunger[typeMungers.size()]);
+//		this.declares = (Declare[])
+//			declares.toArray(new Declare[declares.size()]);	
+	}
 
-		for (Iterator iter = l.iterator(); iter.hasNext();) {
+
+	private void processAttributes(List attributeList, List pointcuts, boolean fromAnnotations) {
+		for (Iterator iter = attributeList.iterator(); iter.hasNext();) {
 			AjAttribute a = (AjAttribute) iter.next();
 			//System.err.println("unpacking: " + this + " and " + a);
 			if (a instanceof AjAttribute.Aspect) {
 				perClause = ((AjAttribute.Aspect)a).reify(this.getResolvedTypeX());
+				if (!fromAnnotations) isCodeStyleAspect = true;
 			} else if (a instanceof AjAttribute.PointcutDeclarationAttribute) {
 				pointcuts.add(((AjAttribute.PointcutDeclarationAttribute)a).reify());
 			} else if (a instanceof AjAttribute.WeaverState) {
@@ -223,18 +243,6 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 				throw new BCException("bad attribute " + a);
 			}
 		}
-		this.pointcuts = (ResolvedPointcutDefinition[]) 
-			pointcuts.toArray(new ResolvedPointcutDefinition[pointcuts.size()]);
-		// Test isn't quite right, leaving this out for now...
-//		if (isAspect() && wvInfo.getMajorVersion() == WeaverVersionInfo.UNKNOWN.getMajorVersion()) {
-//			throw new BCException("Unable to continue, this version of AspectJ cannot use aspects as input that were built "+
-//					"with an AspectJ earlier than version 1.2.1.  Please rebuild class: "+javaClass.getClassName());
-//		}
-		
-//		this.typeMungers = (BcelTypeMunger[]) 
-//			typeMungers.toArray(new BcelTypeMunger[typeMungers.size()]);
-//		this.declares = (Declare[])
-//			declares.toArray(new Declare[declares.size()]);	
 	}
 
 	public PerClause getPerClause() {

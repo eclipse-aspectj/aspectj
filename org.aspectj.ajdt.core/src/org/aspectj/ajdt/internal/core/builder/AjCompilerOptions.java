@@ -41,8 +41,9 @@ public class AjCompilerOptions extends CompilerOptions {
 	public static final String OPTION_XNoInline               = "org.aspectj.ajdt.core.compiler.weaver.XNoInline";
 	public static final String OPTION_XReweavable             = "org.aspectj.ajdt.core.compiler.weaver.XReweavable";
 	public static final String OPTION_XReweavableCompress     = "org.aspectj.ajdt.core.compiler.weaver.XReweavableCompress";
-
-	// these next three not exposed by IDEs
+	
+	// these next four not exposed by IDEs
+	public static final String OPTION_XDevNoAtAspectJProcessing = "org.aspectj.ajdt.core.compiler.ast.NoAtAspectJProcessing";
     public static final String OPTION_GenerateModel           = "org.aspectj.ajdt.core.compiler.model.GenerateModel";
     public static final String OPTION_GenerateJavaDocsInModel = "org.aspectj.ajdt.core.compiler.model.GenerateJavaDocsInModel";
     public static final String OPTION_Emacssym                = "org.aspectj.ajdt.core.compiler.model.Emacssym";
@@ -69,10 +70,12 @@ public class AjCompilerOptions extends CompilerOptions {
 	// If true - autoboxing behaves differently ...
 	public boolean behaveInJava5Way = false;
 	
-	// these next three not exposed by IDEs
+	// these next four not exposed by IDEs
 	public boolean generateModel = false;
 	public boolean generateJavaDocsInModel = false;
 	public boolean generateEmacsSymFiles = false;
+	public boolean noAtAspectJProcessing = false;
+	
 	public boolean proceedOnError = false;
 
 	
@@ -119,6 +122,7 @@ public class AjCompilerOptions extends CompilerOptions {
 		map.put(OPTION_GenerateModel,this.generateModel ? ENABLED : DISABLED);
 		map.put(OPTION_GenerateJavaDocsInModel,this.generateJavaDocsInModel ? ENABLED : DISABLED);
 		map.put(OPTION_Emacssym,this.generateEmacsSymFiles ? ENABLED : DISABLED);
+		map.put(OPTION_XDevNoAtAspectJProcessing,this.noAtAspectJProcessing ? ENABLED : DISABLED);
 		
 		return map;
 	}
@@ -203,6 +207,13 @@ public class AjCompilerOptions extends CompilerOptions {
 				this.generateEmacsSymFiles = false;
 			}
 		}
+		if ((optionValue = optionsMap.get(OPTION_XDevNoAtAspectJProcessing)) != null) {
+			if (ENABLED.equals(optionValue)) {
+				this.noAtAspectJProcessing = true;
+			} else if (DISABLED.equals(optionValue)) {
+				this.noAtAspectJProcessing = false;
+			}
+		}
 		
 	}
 	
@@ -235,7 +246,8 @@ public class AjCompilerOptions extends CompilerOptions {
 
 		buf.append("\n\t- generate AJDE model: ").append(this.generateModel ? ENABLED : DISABLED); //$NON-NLS-1$		
 		buf.append("\n\t- generate Javadocs in AJDE model: ").append(this.generateJavaDocsInModel ? ENABLED : DISABLED); //$NON-NLS-1$		
-		buf.append("\n\t- generate Emacs symbol files: ").append(this.generateEmacsSymFiles ? ENABLED : DISABLED); //$NON-NLS-1$		
+		buf.append("\n\t- generate Emacs symbol files: ").append(this.generateEmacsSymFiles ? ENABLED : DISABLED); //$NON-NLS-1$
+		buf.append("\n\t- suppress @AspectJ processing: ").append(this.noAtAspectJProcessing ? ENABLED : DISABLED); //$NON-NLS-1$
 		
 		buf.append("\n\t- invalid absolute type name (XLint): ").append(getSeverityString(InvalidAbsoluteTypeName)); //$NON-NLS-1$
 		buf.append("\n\t- invalid wildcard type name (XLint): ").append(getSeverityString(InvalidWildCardTypeName)); //$NON-NLS-1$

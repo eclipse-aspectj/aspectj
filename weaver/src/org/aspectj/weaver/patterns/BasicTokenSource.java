@@ -80,7 +80,7 @@ public class BasicTokenSource implements ITokenSource {
 	
 	//////////////////////////////////////////////////////
 	// Convenience, maybe just for testing
-	static ITokenSource makeTokenSource(String input) {
+	static ITokenSource makeTokenSource(String input, ISourceContext context) {
 		char[] chars = input.toCharArray();
 		
 		int i = 0;
@@ -136,7 +136,7 @@ public class BasicTokenSource implements ITokenSource {
 
 		//System.out.println(tokens);
 		
-		return new BasicTokenSource((IToken[])tokens.toArray(new IToken[tokens.size()]), null);
+		return new BasicTokenSource((IToken[])tokens.toArray(new IToken[tokens.size()]), context);
 	}
 
 	private static String makeString(char ch) {
@@ -152,6 +152,9 @@ public class BasicTokenSource implements ITokenSource {
 	}
 	public ISourceContext getSourceContext() {
 		return sourceContext;
+	}
+	public void setSourceContext(ISourceContext context) {
+		this.sourceContext = context;
 	}
 
 }

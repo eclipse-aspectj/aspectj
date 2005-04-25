@@ -29,6 +29,8 @@ import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.AccessRestriction;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
@@ -307,7 +309,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		// test classes don't extend aspects
 		if (sourceType.superclass != null) {
 			ResolvedTypeX parent = factory.fromEclipse(sourceType.superclass);
-			if (parent.isAspect() && !(dec instanceof AspectDeclaration)) {
+			if (parent.isAspect() && !isAspect(dec)) {
 				factory.showMessage(IMessage.ERROR, "class \'" + new String(sourceType.sourceName) + 
 						"\' can not extend aspect \'" + parent.getName() + "\'",
 						factory.fromEclipse(sourceType).getSourceLocation(), null);
@@ -318,6 +320,31 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		for (int i = 0, length = memberTypes.length; i < length; i++) {
 			buildInterTypeAndPerClause(((SourceTypeBinding) memberTypes[i]).scope);
 		}
+	}
+	
+	private boolean isAspect(TypeDeclaration decl) {
+		if ((decl instanceof AspectDeclaration)) {
+			return true;
+		} else if (decl.annotations == null) {
+			return false;
+		} else {
+			for (int i = 0; i < decl.annotations.length; i++) {
+				Annotation ann = decl.annotations[i];
+				if (ann.type instanceof SingleTypeReference) {
+					if (CharOperation.equals("Aspect".toCharArray(),((SingleTypeReference)ann.type).token)) return true;
+				} else if (ann.type instanceof QualifiedTypeReference) {
+					QualifiedTypeReference qtr = (QualifiedTypeReference) ann.type;
+					if (qtr.tokens.length != 5) return false;
+					if (!CharOperation.equals("org".toCharArray(),qtr.tokens[0])) return false;
+					if (!CharOperation.equals("aspectj".toCharArray(),qtr.tokens[1])) return false;
+					if (!CharOperation.equals("lang".toCharArray(),qtr.tokens[2])) return false;
+					if (!CharOperation.equals("annotation".toCharArray(),qtr.tokens[3])) return false;
+					if (!CharOperation.equals("Aspect".toCharArray(),qtr.tokens[4])) return false;
+					return true;
+				}
+			}
+		}
+		return false;		
 	}
 		
 	private void weaveInterTypeDeclarations(CompilationUnitScope unit, Collection typeMungers, 

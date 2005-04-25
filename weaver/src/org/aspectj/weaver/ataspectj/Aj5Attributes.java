@@ -27,7 +27,6 @@ import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -36,6 +35,7 @@ import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
@@ -142,14 +142,14 @@ public class Aj5Attributes {
      * @param msgHandler
      * @return list of AjAttributes
      */
-    public static List readAj5ClassAttributes(JavaClass javaClass, ResolvedTypeX type, ISourceContext context,IMessageHandler msgHandler) {
+    public static List readAj5ClassAttributes(JavaClass javaClass, ResolvedTypeX type, ISourceContext context,IMessageHandler msgHandler, boolean isCodeStyleAspect) {
         AjAttributeStruct struct = new AjAttributeStruct(type, context, msgHandler);
         Attribute[] attributes = javaClass.getAttributes();
         for (int i = 0; i < attributes.length; i++) {
             Attribute attribute = attributes[i];
             if (acceptAttribute(attribute)) {
                 RuntimeAnnotations rvs = (RuntimeAnnotations) attribute;
-                handleAspectAnnotation(rvs, struct);
+                if (!isCodeStyleAspect) handleAspectAnnotation(rvs, struct);
                 handlePrecedenceAnnotation(rvs, struct);
             }
         }
@@ -161,6 +161,7 @@ public class Aj5Attributes {
         //FIXME alex can that be too slow ?
         for (int m = 0; m < javaClass.getMethods().length; m++) {
             Method method = javaClass.getMethods()[m];
+			if (method.getName().startsWith(NameMangler.PREFIX)) continue;  // already dealt with by ajc...
             //FIXME alex optimize, this method struct will gets recreated for advice extraction
             AjAttributeMethodStruct mstruct = new AjAttributeMethodStruct(method, type, context, msgHandler);
             Attribute[] mattributes = method.getAttributes();
@@ -187,19 +188,21 @@ public class Aj5Attributes {
      * @param msgHandler
      * @return list of AjAttributes
      */
-    public static List readAj5MethodAttributes(Method method, ResolvedTypeX type, ISourceContext context,IMessageHandler msgHandler) {
-        AjAttributeMethodStruct struct = new AjAttributeMethodStruct(method, type, context, msgHandler);
+    public static List readAj5MethodAttributes(Method method, ResolvedTypeX type, ResolvedPointcutDefinition preResolvedPointcut, ISourceContext context,IMessageHandler msgHandler) {
+		if (method.getName().startsWith(NameMangler.PREFIX)) return Collections.EMPTY_LIST;  // already dealt with by ajc...
+
+		AjAttributeMethodStruct struct = new AjAttributeMethodStruct(method, type, context, msgHandler);
         Attribute[] attributes = method.getAttributes();
 
         for (int i = 0; i < attributes.length; i++) {
             Attribute attribute = attributes[i];
             if (acceptAttribute(attribute)) {
                 RuntimeAnnotations rvs = (RuntimeAnnotations) attribute;
-                handleBeforeAnnotation(rvs, struct);
-                handleAfterAnnotation(rvs, struct);
-                handleAfterReturningAnnotation(rvs, struct);
-                handleAfterThrowingAnnotation(rvs, struct);
-                handleAroundAnnotation(rvs, struct);
+                handleBeforeAnnotation(rvs, struct, preResolvedPointcut);
+                handleAfterAnnotation(rvs, struct, preResolvedPointcut);
+                handleAfterReturningAnnotation(rvs, struct, preResolvedPointcut);
+                handleAfterThrowingAnnotation(rvs, struct, preResolvedPointcut);
+                handleAroundAnnotation(rvs, struct, preResolvedPointcut);
             }
         }
         return struct.ajAttributes;
@@ -215,6 +218,7 @@ public class Aj5Attributes {
      * @return list of AjAttributes, always empty for now
      */
     public static List readAj5FieldAttributes(Field field, ResolvedTypeX type, ISourceContext context,IMessageHandler msgHandler) {
+		if (field.getName().startsWith(NameMangler.PREFIX)) return Collections.EMPTY_LIST;  // already dealt with by ajc...
         return EMPTY_LIST;
     }
 
@@ -271,7 +275,7 @@ public class Aj5Attributes {
         } else if (perClause.startsWith(PerClause.KindAnnotationPrefix.PERTYPEWITHIN.getName())) {
             pointcut = PerClause.KindAnnotationPrefix.PERTYPEWITHIN.extractPointcut(perClause);
             return new PerTypeWithin(new PatternParser(pointcut).parseTypePattern());
-        } else if (perClause.equalsIgnoreCase(PerClause.SINGLETON.getName())) {
+        } else if (perClause.equalsIgnoreCase(PerClause.SINGLETON.getName() + "()")) {
             return new PerSingleton();
         }
         // could not parse the @AJ perclause
@@ -310,7 +314,7 @@ public class Aj5Attributes {
      * @param runtimeAnnotations
      * @param struct
      */
-    private static void handleBeforeAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct) {
+    private static void handleBeforeAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
         Annotation before = getAnnotation(runtimeAnnotations, "org.aspectj.lang.annotation.Before");
         if (before != null) {
             ElementNameValuePair beforeAdvice = getAnnotationElement(before, "value");
@@ -325,7 +329,12 @@ public class Aj5Attributes {
                 // joinpoint, staticJoinpoint binding
                 int extraArgument = extractExtraArgument(struct.method);
 
-                Pointcut pc = Pointcut.fromString(beforeAdvice.getValue().stringifyValue()).resolve(binding);
+				Pointcut pc = null;
+				if (preResolvedPointcut != null) {
+					pc = preResolvedPointcut.getPointcut();
+				} else {
+                  pc = Pointcut.fromString(beforeAdvice.getValue().stringifyValue()).resolve(binding);
+				}
                 setIgnoreUnboundBindingNames(pc, bindings);
 
                 struct.ajAttributes.add(new AjAttribute.AdviceAttribute(
@@ -347,7 +356,7 @@ public class Aj5Attributes {
      * @param runtimeAnnotations
      * @param struct
      */
-    private static void handleAfterAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct) {
+    private static void handleAfterAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
         Annotation after = getAnnotation(runtimeAnnotations, "org.aspectj.lang.annotation.After");
         if (after != null) {
             ElementNameValuePair afterAdvice = getAnnotationElement(after, "value");
@@ -362,7 +371,12 @@ public class Aj5Attributes {
                 // joinpoint, staticJoinpoint binding
                 int extraArgument = extractExtraArgument(struct.method);
 
-                Pointcut pc = Pointcut.fromString(afterAdvice.getValue().stringifyValue()).resolve(binding);
+				Pointcut pc = null;
+				if (preResolvedPointcut != null) {
+					pc = preResolvedPointcut.getPointcut();
+				} else {
+                  pc = Pointcut.fromString(afterAdvice.getValue().stringifyValue()).resolve(binding);
+				}
                 setIgnoreUnboundBindingNames(pc, bindings);
 
                 struct.ajAttributes.add(new AjAttribute.AdviceAttribute(
@@ -384,7 +398,7 @@ public class Aj5Attributes {
      * @param runtimeAnnotations
      * @param struct
      */
-    private static void handleAfterReturningAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct) {
+    private static void handleAfterReturningAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
         Annotation after = getAnnotation(runtimeAnnotations, "org.aspectj.lang.annotation.AfterReturning");
         if (after != null) {
             ElementNameValuePair annValue = getAnnotationElement(after, "value");
@@ -427,7 +441,12 @@ public class Aj5Attributes {
                 extraArgument |= Advice.ExtraArgument;
             }
 
-            Pointcut pc = Pointcut.fromString(pointcut).resolve(binding);
+			Pointcut pc = null;
+			if (preResolvedPointcut != null) {
+				pc = preResolvedPointcut.getPointcut();
+			} else {
+              pc = Pointcut.fromString(pointcut).resolve(binding);
+			}
             setIgnoreUnboundBindingNames(pc, bindings);
 
             struct.ajAttributes.add(new AjAttribute.AdviceAttribute(
@@ -448,7 +467,7 @@ public class Aj5Attributes {
      * @param runtimeAnnotations
      * @param struct
      */
-    private static void handleAfterThrowingAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct) {
+    private static void handleAfterThrowingAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
         Annotation after = getAnnotation(runtimeAnnotations, "org.aspectj.lang.annotation.AfterThrowing");
         if (after != null) {
             ElementNameValuePair annValue = getAnnotationElement(after, "value");
@@ -491,7 +510,12 @@ public class Aj5Attributes {
                 extraArgument |= Advice.ExtraArgument;
             }
 
-            Pointcut pc = Pointcut.fromString(pointcut).resolve(binding);
+			Pointcut pc = null;
+			if (preResolvedPointcut != null) {
+				pc = preResolvedPointcut.getPointcut();
+			} else {
+              pc = Pointcut.fromString(pointcut).resolve(binding);
+			}
             setIgnoreUnboundBindingNames(pc, bindings);
 
             struct.ajAttributes.add(new AjAttribute.AdviceAttribute(
@@ -512,7 +536,7 @@ public class Aj5Attributes {
      * @param runtimeAnnotations
      * @param struct
      */
-    private static void handleAroundAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct) {
+    private static void handleAroundAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
         Annotation around = getAnnotation(runtimeAnnotations, "org.aspectj.lang.annotation.Around");
         if (around != null) {
             ElementNameValuePair aroundAdvice = getAnnotationElement(around, "value");
@@ -527,7 +551,12 @@ public class Aj5Attributes {
                 // joinpoint, staticJoinpoint binding
                 int extraArgument = extractExtraArgument(struct.method);
 
-                Pointcut pc = Pointcut.fromString(aroundAdvice.getValue().stringifyValue()).resolve(binding);
+				Pointcut pc = null;
+				if (preResolvedPointcut != null) {
+					pc = preResolvedPointcut.getPointcut();
+				} else {
+                    pc = Pointcut.fromString(aroundAdvice.getValue().stringifyValue()).resolve(binding);
+				}
                 setIgnoreUnboundBindingNames(pc, bindings);
 
                 struct.ajAttributes.add(new AjAttribute.AdviceAttribute(

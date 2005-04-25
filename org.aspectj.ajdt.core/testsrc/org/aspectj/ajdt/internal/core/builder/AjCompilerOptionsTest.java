@@ -45,6 +45,7 @@ public class AjCompilerOptionsTest extends TestCase {
 		assertFalse(options.generateModel);
 		assertFalse(options.generateJavaDocsInModel);
 		assertFalse(options.generateEmacsSymFiles);
+		assertFalse(options.noAtAspectJProcessing);
 		
 		Map map = options.getMap();
 		assertEquals(CompilerOptions.WARNING,map.get(AjCompilerOptions.OPTION_ReportInvalidAbsoluteTypeName));
@@ -68,6 +69,7 @@ public class AjCompilerOptionsTest extends TestCase {
 		options.generateModel = true;
 		options.generateJavaDocsInModel = true;
 		options.generateEmacsSymFiles = true;
+		options.noAtAspectJProcessing = true;
 
 		Map map = options.getMap();
 		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_NoWeave));
@@ -79,6 +81,7 @@ public class AjCompilerOptionsTest extends TestCase {
 		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_GenerateModel));
 		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_GenerateJavaDocsInModel));
 		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_Emacssym));
+		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_XDevNoAtAspectJProcessing));
 	}
 
 	
@@ -103,6 +106,7 @@ public class AjCompilerOptionsTest extends TestCase {
 		map.put(AjCompilerOptions.OPTION_GenerateModel,CompilerOptions.ENABLED);
 		map.put(AjCompilerOptions.OPTION_GenerateJavaDocsInModel,CompilerOptions.ENABLED);
 		map.put(AjCompilerOptions.OPTION_Emacssym,CompilerOptions.ENABLED);
+		map.put(AjCompilerOptions.OPTION_XDevNoAtAspectJProcessing,CompilerOptions.ENABLED);
 		
 		options.set(map);
 		
@@ -115,6 +119,7 @@ public class AjCompilerOptionsTest extends TestCase {
 		assertTrue(options.generateModel);
 		assertTrue(options.generateJavaDocsInModel);
 		assertTrue(options.generateEmacsSymFiles);
+		assertTrue(options.noAtAspectJProcessing);
 		
 		Map newMap = options.getMap();
 		

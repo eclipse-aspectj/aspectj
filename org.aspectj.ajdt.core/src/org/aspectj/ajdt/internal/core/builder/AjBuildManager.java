@@ -974,7 +974,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 						state.binarySourceFiles,
 						state.resultsFromFile.values(),
 						buildConfig.isNoWeave(),
-						buildConfig.getProceedOnError());
+						buildConfig.getProceedOnError(),
+						buildConfig.isNoAtAspectJAnnotationProcessing());
 	}
 
 	/* (non-Javadoc)

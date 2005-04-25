@@ -137,4 +137,8 @@ public class PerObject extends PerClause {
 		return "per" + (isThis ? "this" : "target") +
 			"(" + entry + ")";
 	}
+	
+	public String toDeclarationString() {
+		return toString();
+	}
 }

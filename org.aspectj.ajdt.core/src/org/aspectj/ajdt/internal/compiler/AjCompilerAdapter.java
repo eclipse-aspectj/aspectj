@@ -19,20 +19,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.aspectj.ajdt.internal.compiler.ast.AddAtAspectJAnnotationsVisitor;
+import org.aspectj.ajdt.internal.compiler.ast.ValidateAtAspectJAnnotationsVisitor;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
+import org.aspectj.ajdt.internal.core.builder.AjCompilerOptions;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IProgressListener;
-import org.aspectj.weaver.bcel.BcelWeaver;
-import org.aspectj.weaver.bcel.BcelWorld;
-import org.aspectj.weaver.patterns.CflowPointcut;
 import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.Compiler;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ICompilerAdapter;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
+import org.aspectj.weaver.bcel.BcelWeaver;
+import org.aspectj.weaver.bcel.BcelWorld;
+import org.aspectj.weaver.patterns.CflowPointcut;
 
 /**
  * @author colyer
@@ -48,6 +52,8 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 	private boolean reportedErrors;
 	private boolean isXNoWeave;
 	private boolean proceedOnError;
+	private boolean inJava5Mode;
+	private boolean noAtAspectJAnnotationProcessing;
 	private IIntermediateResultsRequestor intermediateResultsRequestor;
 	private IProgressListener progressListener;
 	private IOutputClassFileNameProvider outputFileNameProvider;
@@ -55,7 +61,6 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 	private WeaverMessageHandler weaverMessageHandler;
 	private Map /* fileName |-> List<UnwovenClassFile> */ binarySourceSetForFullWeave = new HashMap();
 	private Collection /*InterimCompilationResult*/ resultSetForFullWeave = Collections.EMPTY_LIST;
-
 	
 	List /*InterimResult*/ resultsPendingWeave = new ArrayList();
 
@@ -86,7 +91,8 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 							 Map fullBinarySourceEntries, /* fileName |-> List<UnwovenClassFile> */
 							 Collection /* InterimCompilationResult */ resultSetForFullWeave,
 							 boolean isXNoWeave,
-							 boolean proceedOnError) {
+							 boolean proceedOnError,
+							 boolean noAtAspectJProcessing) {
 		this.compiler = compiler;
 		this.isBatchCompile = isBatchCompile;
 		this.weaver = weaver;
@@ -99,6 +105,10 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 		this.binarySourceSetForFullWeave = fullBinarySourceEntries;
 		this.resultSetForFullWeave = resultSetForFullWeave;
 		this.eWorld = eFactory;
+		this.inJava5Mode = false;
+		this.noAtAspectJAnnotationProcessing = noAtAspectJProcessing;
+		
+		if (compiler.options.complianceLevel == CompilerOptions.JDK1_5) inJava5Mode = true;
 		
 		IMessageHandler msgHandler = world.getMessageHandler();
 		weaverMessageHandler = new WeaverMessageHandler(msgHandler, compiler);
@@ -133,6 +143,17 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 
 	public void beforeProcessing(CompilationUnitDeclaration unit) {
 		eWorld.showMessage(IMessage.INFO, "compiling " + new String(unit.getFileName()), null, null);
+		if (inJava5Mode && !noAtAspectJAnnotationProcessing) {
+			AddAtAspectJAnnotationsVisitor atAspectJVisitor = new AddAtAspectJAnnotationsVisitor(unit);
+			unit.traverse(atAspectJVisitor, unit.scope);
+		}		
+	}
+	
+	public void beforeAnalysing(CompilationUnitDeclaration unit) {
+		if (inJava5Mode && !noAtAspectJAnnotationProcessing) {
+			ValidateAtAspectJAnnotationsVisitor atAspectJVisitor = new ValidateAtAspectJAnnotationsVisitor(unit);
+			unit.traverse(atAspectJVisitor, unit.scope);
+		}		
 	}
 
 	public void afterProcessing(CompilationUnitDeclaration unit, int unitIndex) {
