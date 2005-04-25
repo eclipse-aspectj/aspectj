@@ -11,7 +11,8 @@
  * ******************************************************************/
 
 // default package
-import junit.framework.*;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 public class AllTests extends TestCase {
 
@@ -28,6 +29,7 @@ public class AllTests extends TestCase {
         suite.addTest(TestingDriversModuleTests.suite());
         suite.addTest(UtilModuleTests.suite());
         suite.addTest(BcweaverModuleTests.suite());
+		suite.addTest(Aspectj5rtModuleTests.suite());
         return suite;
     }
 

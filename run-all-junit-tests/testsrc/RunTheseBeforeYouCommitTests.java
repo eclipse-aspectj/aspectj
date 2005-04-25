@@ -1,7 +1,7 @@
-import org.aspectj.systemtest.AllTests14;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import org.aspectj.systemtest.AllTests15;
 
 /*
  * Created on 03-Aug-2004
@@ -22,7 +22,7 @@ public class RunTheseBeforeYouCommitTests {
 		TestSuite suite = new TestSuite("Test for default package");
 		//$JUnit-BEGIN$
 		suite.addTest(AllTests.suite());
-		suite.addTest(AllTests14.suite());
+		suite.addTest(AllTests15.suite());
 		//$JUnit-END$
 		return suite;
 	}
